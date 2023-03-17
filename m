@@ -2,124 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1D86BEB3B
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:29:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59BE06BEB3E
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:29:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbjCQO3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 10:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
+        id S231192AbjCQO3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 10:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbjCQO33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:29:29 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E4DD5A70;
-        Fri, 17 Mar 2023 07:29:23 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id x3so21041256edb.10;
-        Fri, 17 Mar 2023 07:29:23 -0700 (PDT)
+        with ESMTP id S231280AbjCQO3t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:29:49 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC448D30AC
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 07:29:40 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id m35so3458488wms.4
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 07:29:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679063362;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=WbJNlgfkQTcIcyauJojLunW4hotdL0Nx1hjKKHYLlTI=;
-        b=oc59BrlN2yrTwiyQOaLLKV1foWciYfkFG3M+xvSoDZ8xJuEjYy2B5kTBe4hCwqWTXJ
-         xihpvuVcFhr2TpoAPjQE/SEQe2r4YG7VGLx1ir9mrXRK0EVy0YIbtOr8+fGkMWf10T7r
-         +RCDJUSXaEprvmjbWPbb2lPde+rxpjfqGtQLOSkIhYfldaoG5QQ3EPLruMghgJsWxFgq
-         FmldHiuf4dAFbPDGYo6dyCSrg3N/NScB48Id2Wg5xG11aYL+A+p+gxvoEbt+jP109cQx
-         odIkL6L8fcxIzbLa1ACYDpeWiZz4avAliotV8rebvCWfXuQ5UW9QrquxchvugWdLZu5r
-         9e9A==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1679063379;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TC4JhN24VRkXfCJn3EN0pxyu20Kc6X0LVvYiiW34KUw=;
+        b=Oh2pDDoySWwlh5slWc7GLkY+Jp79GbDkTlt2ELVfSNR7zocx4j+tfZJYOAy+bKqFPF
+         6JGRUrG65BceY55xIyuyE9/6LofdMYqb1JdOr5NKxY9ODXT75EkOVFL4e5gUPLs7QXVa
+         rLFtGyLPgFQFKiVsgTUmqW8ZAyyQ+dVbOjPataEZmI/xn+28OdTYW03So49vOO3jHGUi
+         NYDBAJLcKJjbZmlJAi0fdP6UQtmDSIjjFqtj9mXdlFt1AY0HHDcweEpFn98OQAymhIKk
+         t+mukt1JydnfTmZ6lX27W7hotLQsbKcMfmZNfWEfQ1KY7q9b+u5HHaytYu3tR69hyEQ1
+         7/ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679063362;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WbJNlgfkQTcIcyauJojLunW4hotdL0Nx1hjKKHYLlTI=;
-        b=crG4krjrH6VfURFkMy2mt1OOQoATe8vDfFVc0LfYTGNCNZShAkiAQ9dcn6fHHy4uKK
-         PLks1/TDr+MHgWzGGT4QGXnrkrSSxYfosiYoQKg48hKUHdxshIvzcoUV4oDBTvtIB3A/
-         Oxs467O9Q30opNZmBdz72XiNIsxCn4OZlw7oGr2EBZGp52Ozuwm9jFz+QQXtGJe78/vL
-         qvuDjZoogQwbIkLycBJkp9ztyrkLvTLE5XhV9Y1YVT6KJSVBsjBwK3n9CjS80xnyFejS
-         L8lKZGhtAf1hvU0VsAtYc7KZRbUGdXNhk6Vx19ZK0cT5tid+CycIoFYml2e5QNATaiVS
-         JWWw==
-X-Gm-Message-State: AO0yUKUFT6vVxKEQ/TY0WXP5XuMJLqU9MEPK3Zuw3fSmcU+++HbCe4NS
-        72x8UKGl0AzAkngbVL9TamAc8GFo+uLcuw==
-X-Google-Smtp-Source: AK7set86PnzPDdgOAKEnlLnoHq+mEbpGvfPk6cycza1324IuDdfYr0vINgCd/CG8jj2xL8q/RZ9XHg==
-X-Received: by 2002:a17:907:1de4:b0:932:4378:b237 with SMTP id og36-20020a1709071de400b009324378b237mr1500641ejc.77.1679063361626;
-        Fri, 17 Mar 2023 07:29:21 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id i3-20020a508703000000b004fbd365fb33sm1165721edb.38.2023.03.17.07.29.20
+        d=1e100.net; s=20210112; t=1679063379;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TC4JhN24VRkXfCJn3EN0pxyu20Kc6X0LVvYiiW34KUw=;
+        b=6Ro3Cr74BbUebOHkDwuw7gvutQTZytWcryJST+QXRNdTJcKsX+QhD7LKdqhk0oynRK
+         7jCQuIT0FqR8vA/BygM+eVEB7jIgyE3Lbwb3O1RH6NdfQEILV32aJz8yny/W5/zSqElG
+         jRjFGmEEGMx0UKbI9CxvQFwcm8Zp1knWbRcF01fZVqmBLjWe+6KNZZS7Kul8qY2p0/aX
+         1EGMuaImlRjNsoWU/j3R/l356Zzpe34Nil6rEUXntpZrnNNS0f6RniU1VmJdzHUDLQL6
+         aQ3KnneLEaUYBKwFsQHtC1WxD02LeZ4/SoKo4EQCXVYyMq5SW1kmP9hBEVrXtYIfTTCq
+         1GIg==
+X-Gm-Message-State: AO0yUKWWjwTLauE+MBiyf9KkSdWumo2E8pF+Ualo8pmzS6zkaYAdOS2+
+        wjdYeEeJA/USg3RNTct0Jv79qQ==
+X-Google-Smtp-Source: AK7set/5yd8eHA/DHRjrURRwh9fCclvu/hQ9JlKTY+8G1Q7lpRH91RRBU3SBEdu+8h+TjVDv7J/NsQ==
+X-Received: by 2002:a05:600c:28c:b0:3ed:5d41:f964 with SMTP id 12-20020a05600c028c00b003ed5d41f964mr1878674wmk.1.1679063378822;
+        Fri, 17 Mar 2023 07:29:38 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id r6-20020a05600c35c600b003ed29189777sm8444894wmq.47.2023.03.17.07.29.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Mar 2023 07:29:21 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 16:29:19 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?w4FsdmFybyBGZXJuw6FuZGV6?= Rojas <noltari@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, f.fainelli@gmail.com,
-        jonas.gorski@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] net: dsa: b53: mmap: register MDIO Mux bus controller
-Message-ID: <20230317142919.hhjd64juws35j47o@skbuf>
-References: <20230317113427.302162-1-noltari@gmail.com>
- <20230317113427.302162-3-noltari@gmail.com>
- <20230317115115.s32r52rz3svuj4ed@skbuf>
- <CAKR-sGe3xHkN-1+aLn0ixnskctPK4GTzfXu8O_dkFhHyY1nTeg@mail.gmail.com>
- <20230317130434.7cbzk5gxx5guarcz@skbuf>
- <CAKR-sGeFZLnuqH=4Gok1URJEvrQKxbk203Q8zdMd9830G_XD7A@mail.gmail.com>
+        Fri, 17 Mar 2023 07:29:38 -0700 (PDT)
+Date:   Fri, 17 Mar 2023 15:29:36 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+Cc:     Vadim Fedorenko <vadfed@meta.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        poros <poros@redhat.com>, mschmidt <mschmidt@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "Michalik, Michal" <michal.michalik@intel.com>
+Subject: Re: [PATCH RFC v6 1/6] dpll: spec: Add Netlink spec in YAML
+Message-ID: <ZBR5UC5cF15ciXPf@nanopsycho>
+References: <20230312022807.278528-1-vadfed@meta.com>
+ <20230312022807.278528-2-vadfed@meta.com>
+ <ZBCIPg1u8UFugEFj@nanopsycho>
+ <DM6PR11MB4657F423D2B3B4F0799B0F019BBC9@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <ZBMdZkK91GHDrd/4@nanopsycho>
+ <DM6PR11MB465709625C2C391D470C33F49BBD9@DM6PR11MB4657.namprd11.prod.outlook.com>
+ <ZBQ7ZuJSXRfFOy1b@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKR-sGeFZLnuqH=4Gok1URJEvrQKxbk203Q8zdMd9830G_XD7A@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <ZBQ7ZuJSXRfFOy1b@nanopsycho>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 03:17:12PM +0100, Álvaro Fernández Rojas wrote:
-> > The proposed solution is too radical for a problem that was not properly
-> > characterized yet, so this patch set has my temporary NACK.
-> 
-> Forgive me, but why do you consider this solution too radical?
+Fri, Mar 17, 2023 at 11:05:26AM CET, jiri@resnulli.us wrote:
+>Fri, Mar 17, 2023 at 01:52:44AM CET, arkadiusz.kubalewski@intel.com wrote:
+>>>From: Jiri Pirko <jiri@resnulli.us>
+>>>Sent: Thursday, March 16, 2023 2:45 PM
+>>>
+>>
+>>[...]
+>>
+>>>>>>+attribute-sets:
+>>>>>>+  -
+>>>>>>+    name: dpll
+>>>>>>+    enum-name: dplla
+>>>>>>+    attributes:
+>>>>>>+      -
+>>>>>>+        name: device
+>>>>>>+        type: nest
+>>>>>>+        value: 1
+>>>>>>+        multi-attr: true
+>>>>>>+        nested-attributes: device
+>>>>>
+>>>>>What is this "device" and what is it good for? Smells like some leftover
+>>>>>and with the nested scheme looks quite odd.
+>>>>>
+>>>>
+>>>>No, it is nested attribute type, used when multiple devices are returned
+>>>>with netlink:
+>>>>
+>>>>- dump of device-get command where all devices are returned, each one nested
+>>>>inside it:
+>>>>[{'device': [{'bus-name': 'pci', 'dev-name': '0000:21:00.0_0', 'id': 0},
+>>>>             {'bus-name': 'pci', 'dev-name': '0000:21:00.0_1', 'id': 1}]}]
+>>>
+>>>Okay, why is it nested here? The is one netlink msg per dpll device
+>>>instance. Is this the real output of you made that up?
+>>>
+>>>Device nest should not be there for DEVICE_GET, does not make sense.
+>>>
+>>
+>>This was returned by CLI parser on ice with cmd:
+>>$ ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml /
+>>--dump device-get
+>>
+>>Please note this relates to 'dump' request , it is rather expected that there
+>>are multiple dplls returned, thus we need a nest attribute for each one.
+>
+>No, you definitelly don't need to nest them. Dump format and get format
+>should be exactly the same. Please remove the nest.
 
-Because it involves changing device tree bindings (stable ABI) in an
-incompatible way.
+Another example:
+$ ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/netdev.yaml --dump dev-get
+[{'ifindex': 1, 'xdp-features': set()},
+ {'ifindex': 2, 'xdp-features': {'basic', 'rx-sg', 'redirect'}},
+ {'ifindex': 3, 'xdp-features': {'basic', 'rx-sg', 'redirect'}},
+ {'ifindex': 4, 'xdp-features': set()},
+ {'ifindex': 5, 'xdp-features': {'basic', 'rx-sg', 'xsk-zerocopy', 'redirect'}},
+ {'ifindex': 6, 'xdp-features': {'basic', 'rx-sg', 'xsk-zerocopy', 'redirect'}}]
 
-> >
-> > > But maybe Florian or Jonas can give some more details about the issue...
-> >
-> > I think you also have the tools necessary to investigate this further.
-> > We need to know what resource belonging to the switch is it that the
-> > MDIO mux needs. Where is the earliest place you can add the call to
-> > b53_mmap_mdiomux_init() such that your board works reliably? Note that
-> > b53_switch_register() indirectly calls b53_setup(). By placing this
-> > function where you have, the entirety of b53_setup() has finished
-> > execution, and we don't know exactly what is it from there that is
-> > needed.
-> 
-> In the following link you will find different bootlogs related to
-> different scenarios all of them with the same result: any attempt of
-> calling b53_mmap_mdiomux_init() earlier than b53_switch_register()
-> will either result in a kernel panic or a device hang:
-> https://gist.github.com/Noltari/b0bd6d5211160ac7bf349d998d21e7f7
-> 
-> 1. before b53_switch_register():
-> 
-> 2. before dsa_register_switch():
-> 
-> 3. before b53_switch_init():
-
-Did you read what I said?
-
-| Note that b53_switch_register() indirectly calls b53_setup(). By placing
-| this function where you have, the entirety of b53_setup() has finished
-| execution, and we don't know exactly what is it from there that is
-| needed.
-
-Can you place the b53_mmap_mdiomux_init() in various places within
-b53_setup() to restrict the search further?
+[...]
