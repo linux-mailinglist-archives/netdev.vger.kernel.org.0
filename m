@@ -2,270 +2,566 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21DA46BEA8F
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2EB6BEA97
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 15:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbjCQOB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 10:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37844 "EHLO
+        id S229541AbjCQOBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 10:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbjCQOB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:01:26 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2008C298EB;
-        Fri, 17 Mar 2023 07:01:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679061676; x=1710597676;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=AhBsa0Y69PBUaAs55HDXcxmxnkbzYgMsBfozd/r3ZYs=;
-  b=muDnoVOasCfRXxJC3xCv3dRU0V7sZPzwuhl5J1MwC6Lc+zj5yay3AzzN
-   v34b6dqlGHMgSXhb53yW/HaKr6Q4+KEMhLfV4AtMIYfuvo9NXVJcdJ4c/
-   jAIH66I1NPXX3gXQhK8d/HoIcbRgnf52OrfqVGrGlXeJMIqcHAneOTGku
-   x8zERG1llapnI4yPYqPPmgs6zq+uaO4VQTKf5v0gC6jY7OWwdwr8gkFAE
-   m0Ps2BjJdtWgVZ3jr3LLjcDxhJYPRiHSTbqBFLPnJhoU2IExLM4McdaDM
-   Knfy6QcHnRCZssOQJJLqJsGUvLZwjabTVQFN3lhomexGk90ZFIZDvfJSG
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="338283270"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="338283270"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 07:01:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10652"; a="926152163"
-X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
-   d="scan'208";a="926152163"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Mar 2023 07:01:12 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Fri, 17 Mar 2023 07:01:12 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Fri, 17 Mar 2023 07:01:12 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.104)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Fri, 17 Mar 2023 07:01:11 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HTVzKtsAtDsfixBVTP2bYYAwzWSLatAuF+i/U2ZjRVGV0YYgHkDTQK+tAL3HONyR3j/QKxZBbq6EScurHuAu4cElhMUzALn/7OpSOxLiyUfCrQyMZDFpc2zUSRI/jwVX737rqeCDZx+imehBMlunK07ym0VcnONOF4WEtfD12gRotvFrbENh7s8jxPRAeIDHO9JSBkhUYsTRHQY6juZKAuD/RYV8JSqN1yrSfwXVfNLFyXeYWUOloMYxX6NxyOvI4fZacE/urF99iTS0cQ3wlXEl0ggCISkLtvg/fu1cd6bLCi3uhgKmdBpVa88M6rq9Q9iET5lim/aQ/ELfJtfqCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rKAAmiJ3kbv04xcVkLhq9ka2a8osBBoby3qov+xTIxw=;
- b=dT0w8bzaFjzn+nC+kc6lNhnqhFRkcrk26q4cLI8uF/FvY3C/xRSi0kSzQ5ME830Gg+gSIyyh7+PTU3qe1c+ApV/d358B1nmVYbRCDrL4a6qnCMg6cWBEs0138iYau2Pj5Nc7eS4ISWk20rR4NRXAdvpdQPbcOUCopkoVCHUCwdRc54ylQQquFEb2PqoV0cGGZD5OG8bxdRAGbLm83DlSTQ78nHmizNhos0RyIfS6lNnxTIJdAJ/1GCaC2pF7faB2Hjwd6hcmaTVbsjRLQzkZjOy2CvKzPNWF2P+iOzkUPDpIHZHprEQ4kulpy/37KU2k2iXwxOkCRg23PCqfGc2TsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
- SJ0PR11MB6717.namprd11.prod.outlook.com (2603:10b6:a03:44f::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.26; Fri, 17 Mar 2023 14:01:09 +0000
-Received: from DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448]) by DM6PR11MB2937.namprd11.prod.outlook.com
- ([fe80::cece:5e80:b74f:9448%7]) with mapi id 15.20.6178.035; Fri, 17 Mar 2023
- 14:01:09 +0000
-Date:   Fri, 17 Mar 2023 15:01:00 +0100
-From:   Michal Kubiak <michal.kubiak@intel.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S231159AbjCQOBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 10:01:41 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFDF77E1A;
+        Fri, 17 Mar 2023 07:01:33 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id g18so3428603wmk.0;
+        Fri, 17 Mar 2023 07:01:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679061692;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=4g+7qXIgl8tKun1PkLdqKM5UX/0bPZp9PeHZGL6mcqI=;
+        b=Snigh0B+H6j5JhCLGgbUUwp1JhKvu8IM20d9j5dQjT+KC5GT74tIxCNRVplimy7eWz
+         jNdA53tmHVfKZsOnXYUYqg6uKi5xrx/DhdlDHvZqTmnOlBf4ZSWkps8LN/Bg3n6KItAy
+         NpeZ37IcWO+QhgyIL5wNczMa05dWkRUvoeMD8u8ymSPN1q2zqO7L0b2aOa6haPJM9d4x
+         bPZQsAXxvkFw/B7Qe2Cu0HjzqMRRiHnpkVgqw8zhhmaYV3S5ZvKBPbj//raqDHyOowBD
+         LI6OsO3dxkEgQq0EbmZU6xqM2Usj6bNgyWjQdLB0QDP7RohufnSFi41i/OD0lQnaM2Fe
+         KNGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679061692;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4g+7qXIgl8tKun1PkLdqKM5UX/0bPZp9PeHZGL6mcqI=;
+        b=0pk/zjna86pG9IYM4erkaVQKJTODJfHkyvA3KLm/9W9moKG9PHkh+7NVsYI6C+RCAi
+         yZmDH3Ayzc1/Qjc9BwhuYZFPYq8WAebfelfdub44YnrgLYBCbyyjc+03/wS4qAmdzwVQ
+         MW/sGqiaQzH4tJfcirjBSkhT2FWrUhpnov1B1dehMKgn7SFnJSm+JrKnXDlriYTGIf7b
+         tlUiwH/+kTpw0hSFN86TBf56kJa0av92djMov/dIGUzwLiv360TjGlPW0pw40k3/XVox
+         QHiyJQkwpyY70Ok9Dspf2DwwSaSDaH6x7MEEvEFbgqYBAS2kaHI/ifiTkgyen6Aug+E1
+         9vIA==
+X-Gm-Message-State: AO0yUKV/odqnOkOtVsNf3ei0nEdMJZc/V4bNZ80gWW4HGRLFVVHdqURT
+        BYqNcGaj3iO59okmE3r91as=
+X-Google-Smtp-Source: AK7set8/6R97KAbtiwbH4u9Kk45VO85T33YCGOkTn0N5+jNA/ezDXHmspkCGlkKUPuLpm6cY/o1sTw==
+X-Received: by 2002:a05:600c:4452:b0:3ed:2709:2edf with SMTP id v18-20020a05600c445200b003ed27092edfmr17344455wmn.13.1679061691799;
+        Fri, 17 Mar 2023 07:01:31 -0700 (PDT)
+Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
+        by smtp.gmail.com with ESMTPSA id s11-20020a1cf20b000000b003db0bb81b6asm2392326wmc.1.2023.03.17.07.01.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Mar 2023 07:01:31 -0700 (PDT)
+Message-ID: <641472bb.1c0a0220.b0870.f070@mx.google.com>
+X-Google-Original-Message-ID: <ZBRyuLmxjx2Ay/cq@Ansuel-xps.>
+Date:   Fri, 17 Mar 2023 15:01:28 +0100
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Michal Kubiak <michal.kubiak@intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         Gregory Clement <gregory.clement@bootlin.com>,
         Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         Andy Gross <agross@kernel.org>,
-        "Bjorn Andersson" <andersson@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
         Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, "Lee Jones" <lee@kernel.org>,
-        <linux-leds@vger.kernel.org>
-Subject: Re: [net-next PATCH v4 05/14] net: phy: phy_device: Call into the
- PHY driver to set LED brightness
-Message-ID: <ZBRynEEAefKZcVgS@localhost.localdomain>
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, Lee Jones <lee@kernel.org>,
+        linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v4 02/14] net: dsa: qca8k: add LEDs basic support
 References: <20230317023125.486-1-ansuelsmth@gmail.com>
- <20230317023125.486-6-ansuelsmth@gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20230317023125.486-6-ansuelsmth@gmail.com>
-X-ClientProxiedBy: FR0P281CA0066.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:49::12) To DM6PR11MB2937.namprd11.prod.outlook.com
- (2603:10b6:5:62::13)
+ <20230317023125.486-3-ansuelsmth@gmail.com>
+ <ZBRN563Zw9Z28aET@localhost.localdomain>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|SJ0PR11MB6717:EE_
-X-MS-Office365-Filtering-Correlation-Id: ece2cf97-f55c-419e-c8b2-08db26f00eea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wqqUfhumSp5SXsY36aD4EvUca+q4gc7L7nYbXLR5ACS9ijgTzeF/U5K674WSW80iY8/wc90JgFCoE++QzNS3Sz19Ph0qD/T1TRK1PwUHaZs1SudnTcX7bij1oxIdeZnTJMoTNHblNpDN0CYx0KV8wnH4dFkwI5MZJLoNPoHMDRfOnCb+WBhjw+OXK3S+aydAvnGdZCvOmWM4SnaRIn+XYCjCPT7uf952l6vHWyYwzVbc/5Uk1i2eNZ0CB3IZ3W4Zq8F/adOx+40H4S07Z8DGl1ZC6Xzjtnu4Mfa5fxWANz/bEHUJbQzocgyBT+xUbMuJymohZHxBCrvYQc7+uXMUcWW6q1Ua7GkX3jzmlG1EiebYl5tpfnKGNfnd4AWG8MhrijUJFQTmHIrDTvxK+FqocYxZeioTcQs7bCez40+QGbALxKgKUISzzHRo85ltjkEDvY0JuXiApa6to4Yp1KC8Cl6DvmXkiGDomM5UUZEOLPo2iZHLvXOZ8JilvILV5attz2bBffzbBlJITx9ic4eULW/I0I5212aV5RNFhehWqrX9kYQ9ZR2MNxaQqA9BjtecxWG/TzCtk2kmVgMCSRcTDRaBX90jFtVFMqhyY1Ia6pyvIxmUQP1NUNQ3pHMIatJPPBSf+o+HTJd0/Zje7t3P8Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(366004)(346002)(136003)(376002)(396003)(451199018)(6666004)(54906003)(316002)(86362001)(38100700002)(9686003)(82960400001)(83380400001)(6506007)(186003)(26005)(6512007)(7416002)(478600001)(8936002)(6486002)(6916009)(5660300002)(8676002)(66946007)(2906002)(41300700001)(66476007)(4326008)(66556008)(44832011);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CDsOTAHe/8J6Dsyum4sur2QNyYUEhUfR+G54mvwn/7mIyRrv8rwrPb7Hl9un?=
- =?us-ascii?Q?dgFo1tMbyl5TiC4/A0DqCOG0yCpZ2FKi8GI7HEQqKEaqQ3Voln+tdZhHbZ3T?=
- =?us-ascii?Q?zT7KSD9/04oWSVdAp1Kp3Wq90YBFVrPTWKABfRwjKBe6UirZZgT+XJIqNBjv?=
- =?us-ascii?Q?lV0K2fJ8kzDYYqHLrfUQ28J21o791U2EnDvDNj+7dVaMcavXonHIrcnoUFnl?=
- =?us-ascii?Q?14bpGVcK07d3ke/ey/ECcQFaYODTTqNbhLi0k9NQNS6rIFgtFZDMupqPMzwR?=
- =?us-ascii?Q?NXj6M+QW++w8iz8QCkHR93Ig7B6bADG+NY50iDnJIMXccqo1FM8zc3nFl0Ss?=
- =?us-ascii?Q?ejfyNXKG/26GHNO9QpuPFTun0hHGH6NBf/C6qDoslfKjkZCQdFJSRXSBJyfk?=
- =?us-ascii?Q?+aHP6qjGZye0++WjcpVyr+qlP2mqHMQerIFIRqoPHleXjPsJQOT+Hq9Sipov?=
- =?us-ascii?Q?rKJqL8uJ25ratzqOncjF0sqtSLhNLT5ZUCJdNSZiCU/nY3yv6leg3xRWlAkJ?=
- =?us-ascii?Q?4EhMDrolypC/PNRZ3BVlt0jeVE4bF+AwROOlfBHU8j2IPTlCET+IQE7wvbNx?=
- =?us-ascii?Q?C1VCiSrOguD0x+uKSMsUvv9gPQSK1BA2Lu8XQx+kOGOEFhJEu+BGtwfiKqAa?=
- =?us-ascii?Q?hmkMizZqz4y6h5QuMLkerq2mAaxYR23bG3Ikj/KXdq1W+4WghrqnM+7/eRBe?=
- =?us-ascii?Q?02N2TD2OHNw0214sQDKZdgXcU3/BXSUEwvx7PKsQZN8nK9+3gOtbey1SoD8V?=
- =?us-ascii?Q?MnuYrVhDU/qP37wj8rCpLBIVFgpz2Po9Un8G4WBWA3qIRuT4O4Y49Aqp7Fpz?=
- =?us-ascii?Q?4FQKegjflK2FiqaTVndA2WeGkxkDaEsnXWjYcnaoGZmAa943dYJK4dwH26dK?=
- =?us-ascii?Q?JaYefCXhcwKKvRAGUSBo+TJCvsfLAwxGAMTFL/TuPZFPZjJV9jpVxLP5RAQH?=
- =?us-ascii?Q?bPIsOZry9plEHgFKq2cBjz44B/Gm5TA+BST6h58sgeWNaLPrNKzU1B16YZYu?=
- =?us-ascii?Q?WRqepMIWjgUkMnk7X6tKQTxoKjBOr/9oCFhKypA+Mgc18TllCWB1OVO+2mZw?=
- =?us-ascii?Q?6x2f6LvjCWUtkwRVsDQAuam/7vIWA2dq3GSJGyg8uBpvL30EvtBHbs/gFMOL?=
- =?us-ascii?Q?j5ZVt+Iyzq8c0P5Z4wTZ6eWIHTv5bB/TM41WlLsibf6wn9ekGtLfHUjOv4wh?=
- =?us-ascii?Q?iXYP0MMD/mOVLmGJeEV12magRs3Hd7AKCWAiKrC9dZxQ3NJBJRC0fy26axuX?=
- =?us-ascii?Q?1yPsGdvh2zk9xODXi4IRMCtWY9uvfecHMz6RCOTjmxg8SMsER7bYNBPptCIw?=
- =?us-ascii?Q?UClLRrWybaNpKH0R6riZ6dm27GmBTiige0uWQGZqPdNvakDswIlEpxb3/2Wk?=
- =?us-ascii?Q?b1GtKT3vtdwQbCBBUwDp4Py+9W0DTeMsvaT5GCCo4D1K9bnVh9swrLO76z5r?=
- =?us-ascii?Q?9fHh80+THLrdwDIG7geRTirkVO7n0sgMbRLtH3oMJt6Kl8BnE9//LIgJ4hZL?=
- =?us-ascii?Q?/r3qsOSfgJzBS663mJYigOBI8HYr6kPIDnarqIbFbEWytzNZ+LTY1Ighlc49?=
- =?us-ascii?Q?Vdr3S9uGlAAVm3Yx/7ULqhc4DzkyBdlyVVP6t4PwbUV9d1FkRpQ1UO16OgHd?=
- =?us-ascii?Q?Wg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: ece2cf97-f55c-419e-c8b2-08db26f00eea
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2023 14:01:08.9675
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X94XrkkUejram/1xnF5lkrgtge8wkv7Na9/Eax5msbWX86yYiV2B054Y341MVCLARukyad8Elf5GTRAwn7/ibg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB6717
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBRN563Zw9Z28aET@localhost.localdomain>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 03:31:16AM +0100, Christian Marangi wrote:
-> From: Andrew Lunn <andrew@lunn.ch>
+On Fri, Mar 17, 2023 at 12:24:23PM +0100, Michal Kubiak wrote:
+> On Fri, Mar 17, 2023 at 03:31:13AM +0100, Christian Marangi wrote:
+> > Add LEDs basic support for qca8k Switch Family by adding basic
+> > brightness_set() support.
+> > 
+> > Since these LEDs refelect port status, the default label is set to
+> > ":port". DT binding should describe the color, function and number of
+> > the leds using standard LEDs api.
+> > 
+> > These LEDs supports only blocking variant of the brightness_set()
+> > function since they can sleep during access of the switch leds to set
+> > the brightness.
+> > 
+> > While at it add to the qca8k header file each mode defined by the Switch
+> > Documentation for future use.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > 
-> Linux LEDs can be software controlled via the brightness file in /sys.
-> LED drivers need to implement a brightness_set function which the core
-> will call. Implement an intermediary in phy_device, which will call
-> into the phy driver if it implements the necessary function.
+> Hi Christian,
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
+> Please find my comments inline.
+> 
+> Thanks,
+> Michal
+> 
+> > ---
+> >  drivers/net/dsa/qca/Kconfig      |   8 ++
+> >  drivers/net/dsa/qca/Makefile     |   3 +
+> >  drivers/net/dsa/qca/qca8k-8xxx.c |   5 +
+> >  drivers/net/dsa/qca/qca8k-leds.c | 192 +++++++++++++++++++++++++++++++
+> >  drivers/net/dsa/qca/qca8k.h      |  59 ++++++++++
+> >  drivers/net/dsa/qca/qca8k_leds.h |  16 +++
+> >  6 files changed, 283 insertions(+)
+> >  create mode 100644 drivers/net/dsa/qca/qca8k-leds.c
+> >  create mode 100644 drivers/net/dsa/qca/qca8k_leds.h
+> > 
+> > diff --git a/drivers/net/dsa/qca/Kconfig b/drivers/net/dsa/qca/Kconfig
+> > index ba339747362c..7a86d6d6a246 100644
+> > --- a/drivers/net/dsa/qca/Kconfig
+> > +++ b/drivers/net/dsa/qca/Kconfig
+> > @@ -15,3 +15,11 @@ config NET_DSA_QCA8K
+> >  	help
+> >  	  This enables support for the Qualcomm Atheros QCA8K Ethernet
+> >  	  switch chips.
+> > +
+> > +config NET_DSA_QCA8K_LEDS_SUPPORT
+> > +	bool "Qualcomm Atheros QCA8K Ethernet switch family LEDs support"
+> > +	depends on NET_DSA_QCA8K
+> > +	depends on LEDS_CLASS
+> > +	help
+> > +	  This enabled support for LEDs present on the Qualcomm Atheros
+> > +	  QCA8K Ethernet switch chips.
+> > diff --git a/drivers/net/dsa/qca/Makefile b/drivers/net/dsa/qca/Makefile
+> > index 701f1d199e93..ce66b1984e5f 100644
+> > --- a/drivers/net/dsa/qca/Makefile
+> > +++ b/drivers/net/dsa/qca/Makefile
+> > @@ -2,3 +2,6 @@
+> >  obj-$(CONFIG_NET_DSA_AR9331)	+= ar9331.o
+> >  obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
+> >  qca8k-y 			+= qca8k-common.o qca8k-8xxx.o
+> > +ifdef CONFIG_NET_DSA_QCA8K_LEDS_SUPPORT
+> > +qca8k-y				+= qca8k-leds.o
+> > +endif
+> > diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+> > index 8dfc5db84700..5decf6fe3832 100644
+> > --- a/drivers/net/dsa/qca/qca8k-8xxx.c
+> > +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+> > @@ -22,6 +22,7 @@
+> >  #include <linux/dsa/tag_qca.h>
+> >  
+> >  #include "qca8k.h"
+> > +#include "qca8k_leds.h"
+> >  
+> >  static void
+> >  qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
+> > @@ -1727,6 +1728,10 @@ qca8k_setup(struct dsa_switch *ds)
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > +	ret = qca8k_setup_led_ctrl(priv);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> >  	qca8k_setup_pcs(priv, &priv->pcs_port_0, 0);
+> >  	qca8k_setup_pcs(priv, &priv->pcs_port_6, 6);
+> >  
+> > diff --git a/drivers/net/dsa/qca/qca8k-leds.c b/drivers/net/dsa/qca/qca8k-leds.c
+> > new file mode 100644
+> > index 000000000000..adbe7f6e2994
+> > --- /dev/null
+> > +++ b/drivers/net/dsa/qca/qca8k-leds.c
+> > @@ -0,0 +1,192 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <linux/regmap.h>
+> > +#include <net/dsa.h>
+> > +
+> > +#include "qca8k.h"
+> > +#include "qca8k_leds.h"
+> > +
+> > +static int
+> > +qca8k_get_enable_led_reg(int port_num, int led_num, struct qca8k_led_pattern_en *reg_info)
+> > +{
+> > +	switch (port_num) {
+> > +	case 0:
+> > +		reg_info->reg = QCA8K_LED_CTRL_REG(led_num);
+> > +		reg_info->shift = QCA8K_LED_PHY0123_CONTROL_RULE_SHIFT;
+> > +		break;
+> > +	case 1:
+> > +	case 2:
+> > +	case 3:
+> > +		/* Port 123 are controlled on a different reg */
+> > +		reg_info->reg = QCA8K_LED_CTRL_REG(3);
+> > +		reg_info->shift = QCA8K_LED_PHY123_PATTERN_EN_SHIFT(port_num, led_num);
+> > +		break;
+> > +	case 4:
+> > +		reg_info->reg = QCA8K_LED_CTRL_REG(led_num);
+> > +		reg_info->shift = QCA8K_LED_PHY4_CONTROL_RULE_SHIFT;
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int
+> > +qca8k_led_brightness_set(struct qca8k_led *led,
+> > +			 enum led_brightness brightness)
+> > +{
+> > +	struct qca8k_led_pattern_en reg_info;
+> > +	struct qca8k_priv *priv = led->priv;
+> > +	u32 mask, val = QCA8K_LED_ALWAYS_OFF;
+> 
+> Nitpick: RCT
+> 
+> > +
+> > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
+> > +
+> > +	if (brightness)
+> > +		val = QCA8K_LED_ALWAYS_ON;
+> > +
+> > +	if (led->port_num == 0 || led->port_num == 4) {
+> > +		mask = QCA8K_LED_PATTERN_EN_MASK;
+> > +		val <<= QCA8K_LED_PATTERN_EN_SHIFT;
+> > +	} else {
+> > +		mask = QCA8K_LED_PHY123_PATTERN_EN_MASK;
+> > +	}
+> > +
+> > +	return regmap_update_bits(priv->regmap, reg_info.reg,
+> > +				  mask << reg_info.shift,
+> > +				  val << reg_info.shift);
+> > +}
+> > +
+> > +static int
+> > +qca8k_cled_brightness_set_blocking(struct led_classdev *ldev,
+> > +				   enum led_brightness brightness)
+> > +{
+> > +	struct qca8k_led *led = container_of(ldev, struct qca8k_led, cdev);
+> > +
+> > +	return qca8k_led_brightness_set(led, brightness);
+> > +}
+> > +
+> > +static enum led_brightness
+> > +qca8k_led_brightness_get(struct qca8k_led *led)
+> > +{
+> > +	struct qca8k_led_pattern_en reg_info;
+> > +	struct qca8k_priv *priv = led->priv;
+> > +	u32 val;
+> > +	int ret;
+> > +
+> > +	qca8k_get_enable_led_reg(led->port_num, led->led_num, &reg_info);
+> > +
+> > +	ret = regmap_read(priv->regmap, reg_info.reg, &val);
+> > +	if (ret)
+> > +		return 0;
+> > +
+> > +	val >>= reg_info.shift;
+> > +
+> > +	if (led->port_num == 0 || led->port_num == 4) {
+> > +		val &= QCA8K_LED_PATTERN_EN_MASK;
+> > +		val >>= QCA8K_LED_PATTERN_EN_SHIFT;
+> > +	} else {
+> > +		val &= QCA8K_LED_PHY123_PATTERN_EN_MASK;
+> > +	}
+> > +
+> > +	/* Assume brightness ON only when the LED is set to always ON */
+> > +	return val == QCA8K_LED_ALWAYS_ON;
+> > +}
+> > +
+> > +static int
+> > +qca8k_parse_port_leds(struct qca8k_priv *priv, struct fwnode_handle *port, int port_num)
+> > +{
+> > +	struct fwnode_handle *led = NULL, *leds = NULL;
+> > +	struct led_init_data init_data = { };
+> > +	enum led_default_state state;
+> > +	struct qca8k_led *port_led;
+> > +	int led_num, port_index;
+> > +	int ret;
+> > +
+> > +	leds = fwnode_get_named_child_node(port, "leds");
+> > +	if (!leds) {
+> > +		dev_dbg(priv->dev, "No Leds node specified in device tree for port %d!\n",
+> > +			port_num);
+> > +		return 0;
+> > +	}
+> > +
+> > +	fwnode_for_each_child_node(leds, led) {
+> > +		/* Reg represent the led number of the port.
+> > +		 * Each port can have at least 3 leds attached
+> > +		 * Commonly:
+> > +		 * 1. is gigabit led
+> > +		 * 2. is mbit led
+> > +		 * 3. additional status led
+> > +		 */
+> > +		if (fwnode_property_read_u32(led, "reg", &led_num))
+> > +			continue;
+> > +
+> > +		if (led_num >= QCA8K_LED_PORT_COUNT) {
+> > +			dev_warn(priv->dev, "Invalid LED reg defined %d", port_num);
+> > +			continue;
+> > +		}
+> 
+> In the comment above you say "each port can have AT LEAST 3 leds".
+> However, now it seems that if the port has more than 3 leds, all the
+> remaining leds are not initialized.
+> Is this intentional? If so, maybe it is worth describing in the comment
+> that for ports with more than 3 leds, only the first 3 leds are
+> initialized?
+> 
+> According to the code it looks like the port can have up to 3 leds.
+>
 
-As I have already mentioned in my comments for the patch 4, the final
-version of "phy_led_set_brightness()" can appear here (without
-an intermediate step with a dummy implementation).
+Think I should rework the comments and make them more direct/simple.
 
-Thanks,
-Michal
+qca8k switch have a max of 5 port.
 
->  drivers/net/phy/phy_device.c | 15 ++++++++++++---
->  include/linux/phy.h          | 11 +++++++++++
->  2 files changed, 23 insertions(+), 3 deletions(-)
+each port CAN have a max of 3 leds connected.
+
+It's really a limitation of pin on the switch chip and hw regs so the
+situation can't happen.
+
+> > +
+> > +		port_index = 3 * port_num + led_num;
 > 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index ee800f93c8c3..c7312a9e820d 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -2967,11 +2967,18 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
->  	return phydrv->config_intr && phydrv->handle_interrupt;
->  }
->  
-> -/* Dummy implementation until calls into PHY driver are added */
->  static int phy_led_set_brightness(struct led_classdev *led_cdev,
->  				  enum led_brightness value)
->  {
-> -	return 0;
-> +	struct phy_led *phyled = to_phy_led(led_cdev);
-> +	struct phy_device *phydev = phyled->phydev;
-> +	int err;
-> +
-> +	mutex_lock(&phydev->lock);
-> +	err = phydev->drv->led_brightness_set(phydev, phyled->index, value);
-> +	mutex_unlock(&phydev->lock);
-> +
-> +	return err;
->  }
->  
->  static int of_phy_led(struct phy_device *phydev,
-> @@ -2988,12 +2995,14 @@ static int of_phy_led(struct phy_device *phydev,
->  		return -ENOMEM;
->  
->  	cdev = &phyled->led_cdev;
-> +	phyled->phydev = phydev;
->  
->  	err = of_property_read_u32(led, "reg", &phyled->index);
->  	if (err)
->  		return err;
->  
-> -	cdev->brightness_set_blocking = phy_led_set_brightness;
-> +	if (phydev->drv->led_brightness_set)
-> +		cdev->brightness_set_blocking = phy_led_set_brightness;
->  	cdev->max_brightness = 1;
->  	init_data.devicename = dev_name(&phydev->mdio.dev);
->  	init_data.fwnode = of_fwnode_handle(led);
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 88a77ff60be9..94fd21d5e145 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -832,15 +832,19 @@ struct phy_plca_status {
->   * struct phy_led: An LED driven by the PHY
->   *
->   * @list: List of LEDs
-> + * @phydev: PHY this LED is attached to
->   * @led_cdev: Standard LED class structure
->   * @index: Number of the LED
->   */
->  struct phy_led {
->  	struct list_head list;
-> +	struct phy_device *phydev;
->  	struct led_classdev led_cdev;
->  	u32 index;
->  };
->  
-> +#define to_phy_led(d) container_of(d, struct phy_led, led_cdev)
-> +
->  /**
->   * struct phy_driver - Driver structure for a particular PHY type
->   *
-> @@ -1063,6 +1067,13 @@ struct phy_driver {
->  	/** @get_plca_status: Return the current PLCA status info */
->  	int (*get_plca_status)(struct phy_device *dev,
->  			       struct phy_plca_status *plca_st);
-> +
-> +	/* Set a PHY LED brightness. Index indicates which of the PHYs
-> +	 * led should be set. Value follows the standard LED class meaning,
-> +	 * e.g. LED_OFF, LED_HALF, LED_FULL.
-> +	 */
-> +	int (*led_brightness_set)(struct phy_device *dev,
-> +				  u32 index, enum led_brightness value);
->  };
->  #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
->  				      struct phy_driver, mdiodrv)
-> -- 
-> 2.39.2
+> Can QCA8K_LED_PORT_COUNT be used instead of "3"? I guess it is the number
+> of LEDs per port.
 > 
+
+This variable it's really to make it easier to reference the led in the
+priv struct. If asked I can rework this to an array of array (one per
+port and each port out of 3 possigle LED).
+
+> > +
+> > +		port_led = &priv->ports_led[port_index];
+> 
+> Also, the name of the "port_index" variable seems confusing to me. It is
+> not an index of the port, but rather a unique index of the LED across
+> all ports, right?
+> 
+
+As said above, they are unique index that comes from port and LED of the
+port. Really something to represent the code easier internally.
+
+> > +		port_led->port_num = port_num;
+> > +		port_led->led_num = led_num;
+> > +		port_led->priv = priv;
+> > +
+> > +		state = led_init_default_state_get(led);
+> > +		switch (state) {
+> > +		case LEDS_DEFSTATE_ON:
+> > +			port_led->cdev.brightness = 1;
+> > +			qca8k_led_brightness_set(port_led, 1);
+> > +			break;
+> > +		case LEDS_DEFSTATE_KEEP:
+> > +			port_led->cdev.brightness =
+> > +					qca8k_led_brightness_get(port_led);
+> > +			break;
+> > +		default:
+> > +			port_led->cdev.brightness = 0;
+> > +			qca8k_led_brightness_set(port_led, 0);
+> > +		}
+> > +
+> > +		port_led->cdev.max_brightness = 1;
+> > +		port_led->cdev.brightness_set_blocking = qca8k_cled_brightness_set_blocking;
+> > +		init_data.default_label = ":port";
+> > +		init_data.devicename = "qca8k";
+> > +		init_data.fwnode = led;
+> > +
+> > +		ret = devm_led_classdev_register_ext(priv->dev, &port_led->cdev, &init_data);
+> > +		if (ret)
+> > +			dev_warn(priv->dev, "Failed to int led");
+> 
+> Typo: "init".
+> How about adding an index of the LED that could not be initialized?
+> 
+
+Ok will add more info in the port and led that failed to init.
+
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +int
+> > +qca8k_setup_led_ctrl(struct qca8k_priv *priv)
+> > +{
+> > +	struct fwnode_handle *ports, *port;
+> > +	int port_num;
+> > +	int ret;
+> > +
+> > +	ports = device_get_named_child_node(priv->dev, "ports");
+> > +	if (!ports) {
+> > +		dev_info(priv->dev, "No ports node specified in device tree!\n");
+> > +		return 0;
+> > +	}
+> > +
+> > +	fwnode_for_each_child_node(ports, port) {
+> > +		if (fwnode_property_read_u32(port, "reg", &port_num))
+> > +			continue;
+> > +
+> > +		/* Each port can have at least 3 different leds attached.
+> > +		 * Switch port starts from 0 to 6, but port 0 and 6 are CPU
+> > +		 * port. The port index needs to be decreased by one to identify
+> > +		 * the correct port for LED setup.
+> > +		 */
+> 
+> Again, are there really "at least 3 different leds" per port?
+> It's confusing a little bit, because  QCA8K_LED_PORT_COUNT == 3, so I
+> would say it cannot have more than 3.
+> 
+> > +		ret = qca8k_parse_port_leds(priv, port, qca8k_port_to_phy(port_num));
+> 
+> As I checked, the function "qca8k_port_to_phy()" can return all 0xFFs
+> for port_num == 0. Then, this value is implicitly casted to int (as the
+> last parameter of "qca8k_parse_port_leds()"). Internally, in
+> "qca8k_parse_port_leds()" this parameter can be used to do some
+> computing - that looks dangerous.
+> In summary, I think a special check for CPU port_num == 0 should be
+> added.
+> (I guess the LED configuration i only makes sense for non-CPU ports? It
+> seems you want to configure up to 15 LEDs in total for 5 ports).
+> 
+
+IMHO for this, we can ignore handling this corner case. The hw doesn't
+supports leds for port0 and port6 (the 2 CPU port) so the case won't
+ever apply. But if asked I can add the case, not that it will cause any
+problem in how the regs and shift are referenced in the code.
+
+> > +		if (ret)
+> > +			return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> > index 4e48e4dd8b0f..3c3c072fa9c2 100644
+> > --- a/drivers/net/dsa/qca/qca8k.h
+> > +++ b/drivers/net/dsa/qca/qca8k.h
+> > @@ -11,6 +11,7 @@
+> >  #include <linux/delay.h>
+> >  #include <linux/regmap.h>
+> >  #include <linux/gpio.h>
+> > +#include <linux/leds.h>
+> >  #include <linux/dsa/tag_qca.h>
+> >  
+> >  #define QCA8K_ETHERNET_MDIO_PRIORITY			7
+> > @@ -85,6 +86,50 @@
+> >  #define   QCA8K_MDIO_MASTER_DATA(x)			FIELD_PREP(QCA8K_MDIO_MASTER_DATA_MASK, x)
+> >  #define   QCA8K_MDIO_MASTER_MAX_PORTS			5
+> >  #define   QCA8K_MDIO_MASTER_MAX_REG			32
+> > +
+> > +/* LED control register */
+> > +#define QCA8K_LED_COUNT					15
+> > +#define QCA8K_LED_PORT_COUNT				3
+> > +#define QCA8K_LED_RULE_COUNT				6
+> > +#define QCA8K_LED_RULE_MAX				11
+> > +
+> > +#define QCA8K_LED_PHY123_PATTERN_EN_SHIFT(_phy, _led)	((((_phy) - 1) * 6) + 8 + (2 * (_led)))
+> > +#define QCA8K_LED_PHY123_PATTERN_EN_MASK		GENMASK(1, 0)
+> > +
+> > +#define QCA8K_LED_PHY0123_CONTROL_RULE_SHIFT		0
+> > +#define QCA8K_LED_PHY4_CONTROL_RULE_SHIFT		16
+> > +
+> > +#define QCA8K_LED_CTRL_REG(_i)				(0x050 + (_i) * 4)
+> > +#define QCA8K_LED_CTRL0_REG				0x50
+> > +#define QCA8K_LED_CTRL1_REG				0x54
+> > +#define QCA8K_LED_CTRL2_REG				0x58
+> > +#define QCA8K_LED_CTRL3_REG				0x5C
+> > +#define   QCA8K_LED_CTRL_SHIFT(_i)			(((_i) % 2) * 16)
+> > +#define   QCA8K_LED_CTRL_MASK				GENMASK(15, 0)
+> > +#define QCA8K_LED_RULE_MASK				GENMASK(13, 0)
+> > +#define QCA8K_LED_BLINK_FREQ_MASK			GENMASK(1, 0)
+> > +#define QCA8K_LED_BLINK_FREQ_SHITF			0
+> > +#define   QCA8K_LED_BLINK_2HZ				0
+> > +#define   QCA8K_LED_BLINK_4HZ				1
+> > +#define   QCA8K_LED_BLINK_8HZ				2
+> > +#define   QCA8K_LED_BLINK_AUTO				3
+> > +#define QCA8K_LED_LINKUP_OVER_MASK			BIT(2)
+> > +#define QCA8K_LED_TX_BLINK_MASK				BIT(4)
+> > +#define QCA8K_LED_RX_BLINK_MASK				BIT(5)
+> > +#define QCA8K_LED_COL_BLINK_MASK			BIT(7)
+> > +#define QCA8K_LED_LINK_10M_EN_MASK			BIT(8)
+> > +#define QCA8K_LED_LINK_100M_EN_MASK			BIT(9)
+> > +#define QCA8K_LED_LINK_1000M_EN_MASK			BIT(10)
+> > +#define QCA8K_LED_POWER_ON_LIGHT_MASK			BIT(11)
+> > +#define QCA8K_LED_HALF_DUPLEX_MASK			BIT(12)
+> > +#define QCA8K_LED_FULL_DUPLEX_MASK			BIT(13)
+> > +#define QCA8K_LED_PATTERN_EN_MASK			GENMASK(15, 14)
+> > +#define QCA8K_LED_PATTERN_EN_SHIFT			14
+> > +#define   QCA8K_LED_ALWAYS_OFF				0
+> > +#define   QCA8K_LED_ALWAYS_BLINK_4HZ			1
+> > +#define   QCA8K_LED_ALWAYS_ON				2
+> > +#define   QCA8K_LED_RULE_CONTROLLED			3
+> > +
+> >  #define QCA8K_GOL_MAC_ADDR0				0x60
+> >  #define QCA8K_GOL_MAC_ADDR1				0x64
+> >  #define QCA8K_MAX_FRAME_SIZE				0x78
+> > @@ -383,6 +428,19 @@ struct qca8k_pcs {
+> >  	int port;
+> >  };
+> >  
+> > +struct qca8k_led_pattern_en {
+> > +	u32 reg;
+> > +	u8 shift;
+> > +};
+> > +
+> > +struct qca8k_led {
+> > +	u8 port_num;
+> > +	u8 led_num;
+> > +	u16 old_rule;
+> > +	struct qca8k_priv *priv;
+> > +	struct led_classdev cdev;
+> > +};
+> > +
+> >  struct qca8k_priv {
+> >  	u8 switch_id;
+> >  	u8 switch_revision;
+> > @@ -407,6 +465,7 @@ struct qca8k_priv {
+> >  	struct qca8k_pcs pcs_port_0;
+> >  	struct qca8k_pcs pcs_port_6;
+> >  	const struct qca8k_match_data *info;
+> > +	struct qca8k_led ports_led[QCA8K_LED_COUNT];
+> >  };
+> >  
+> >  struct qca8k_mib_desc {
+> > diff --git a/drivers/net/dsa/qca/qca8k_leds.h b/drivers/net/dsa/qca/qca8k_leds.h
+> > new file mode 100644
+> > index 000000000000..ab367f05b173
+> > --- /dev/null
+> > +++ b/drivers/net/dsa/qca/qca8k_leds.h
+> > @@ -0,0 +1,16 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > +
+> > +#ifndef __QCA8K_LEDS_H
+> > +#define __QCA8K_LEDS_H
+> > +
+> > +/* Leds Support function */
+> > +#ifdef CONFIG_NET_DSA_QCA8K_LEDS_SUPPORT
+> > +int qca8k_setup_led_ctrl(struct qca8k_priv *priv);
+> > +#else
+> > +static inline int qca8k_setup_led_ctrl(struct qca8k_priv *priv)
+> > +{
+> > +	return 0;
+> > +}
+> > +#endif
+> > +
+> > +#endif /* __QCA8K_LEDS_H */
+> > -- 
+> > 2.39.2
+> > 
+
+-- 
+	Ansuel
