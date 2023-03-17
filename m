@@ -2,228 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 329386BED85
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:59:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D58426BED95
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 17:02:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231404AbjCQP7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53342 "EHLO
+        id S230322AbjCQQCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 12:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbjCQP7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:59:41 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98A3E39295;
-        Fri, 17 Mar 2023 08:59:39 -0700 (PDT)
-Received: from [192.168.2.1] (77-166-152-30.fixed.kpn.net [77.166.152.30])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 3470720C32D1;
-        Fri, 17 Mar 2023 08:59:38 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3470720C32D1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1679068779;
-        bh=eSD4HrH/QXippuTgT51HeCPn4/58lROw7Skk1W+wJbw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Kx9KjArZYqGLXeRI3pu1t2eekDre+Qmg99Kv/rQabwrnvCZNyVsr1CzY9yJxEPdGq
-         jJlP2tF1Re3eNOSPPFw/uEYX5sUf+5oUgQpdkMiOyCR6f6tvWijYOFXfIgHSUV3HKl
-         93Jvh84n+JCMaWfU8COQy/1R5w0HF7/JQl7Uga/Q=
-Message-ID: <14d92d4b-d2c9-3a63-31b4-b083dba0878e@linux.microsoft.com>
-Date:   Fri, 17 Mar 2023 16:59:37 +0100
+        with ESMTP id S229879AbjCQQCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 12:02:50 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1271A4741D;
+        Fri, 17 Mar 2023 09:02:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=8jvxC/cI3fuMCxuOzLp5kkLkPCuNIeHm7MIIEgtYwp0=; b=QhENWArrtirPbhzhLN30jRAefc
+        lz8GpWMl3QuOk6oBP0IsKB5XWyFBxKy09l3Nw0LaoTIA14YELZMINqf23Su8H5fqRgm8TbsZX0pPr
+        SUTaEqmDdOFsWkLazi3MEIkn5UJu/YeAlYXezAUetbFCiStVTv/VFa8efWpFLiFc3bkw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pdCXL-007cwr-7Z; Fri, 17 Mar 2023 17:02:35 +0100
+Date:   Fri, 17 Mar 2023 17:02:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Lee Jones <lee@kernel.org>, linux-leds@vger.kernel.org,
+        pavel@ucw.cz, Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [net-next PATCH v4 10/14] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Message-ID: <c087d270-56f6-4ead-a15b-aa3bfb732ba8@lunn.ch>
+References: <20230317023125.486-1-ansuelsmth@gmail.com>
+ <20230317023125.486-11-ansuelsmth@gmail.com>
+ <20230317091410.58787646@dellmb>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v2 RESEND] ptp: kvm: Use decrypted memory in confidential
- guest on x86
-To:     linux-kernel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <20230308150531.477741-1-jpiotrowski@linux.microsoft.com>
-Content-Language: en-US
-From:   Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-In-Reply-To: <20230308150531.477741-1-jpiotrowski@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230317091410.58787646@dellmb>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/03/2023 16:05, Jeremi Piotrowski wrote:
-> KVM_HC_CLOCK_PAIRING currently fails inside SEV-SNP guests because the
-> guest passes an address to static data to the host. In confidential
-> computing the host can't access arbitrary guest memory so handling the
-> hypercall runs into an "rmpfault". To make the hypercall work, the guest
-> needs to explicitly mark the memory as decrypted. Do that in
-> kvm_arch_ptp_init(), but retain the previous behavior for
-> non-confidential guests to save us from having to allocate memory.
-> 
-> Add a new arch-specific function (kvm_arch_ptp_exit()) to free the
-> allocation and mark the memory as encrypted again.
-> 
-> Signed-off-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-> ---
-> Hi,
-> 
-> I would love to not allocate a whole page just for this driver, swiotlb is
-> decrypted but I don't have access to a 'struct device' here. Does anyone have
-> any suggestion?
-> 
-> Jeremi
-> 
+> I would like to start a discussion on this and hear about your opinions,
+> because I think that the trigger-sources and function properties were
+> proposed in good faith, but currently the implementation and usage is a
+> mess.
+ 
+Hi Marek
 
-Hi,
+We are pushing the boundaries of the LED code here, doing things which
+have not been done before, as far as i know. So i expect some
+discussion about this. However, that discussion should not really
+affect this patchset, which is just adding plain boring software
+controlled LEDs.
 
-Does anyone have any comments or suggestions? Or can this be merged.
+A quick recap about ledtrig-netdev.
 
-Jeremi
+If you have a plain boring LED, you have:
 
-> Changes since v1:
-> - forgot to commit include/linux/ptp_kvm.h
-> 
->  drivers/ptp/ptp_kvm_arm.c    |  4 +++
->  drivers/ptp/ptp_kvm_common.c |  1 +
->  drivers/ptp/ptp_kvm_x86.c    | 59 +++++++++++++++++++++++++++++-------
->  include/linux/ptp_kvm.h      |  1 +
->  4 files changed, 54 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/ptp/ptp_kvm_arm.c b/drivers/ptp/ptp_kvm_arm.c
-> index b7d28c8dfb84..e68e6943167b 100644
-> --- a/drivers/ptp/ptp_kvm_arm.c
-> +++ b/drivers/ptp/ptp_kvm_arm.c
-> @@ -22,6 +22,10 @@ int kvm_arch_ptp_init(void)
->  	return 0;
->  }
->  
-> +void kvm_arch_ptp_exit(void)
-> +{
-> +}
-> +
->  int kvm_arch_ptp_get_clock(struct timespec64 *ts)
->  {
->  	return kvm_arch_ptp_get_crosststamp(NULL, ts, NULL);
-> diff --git a/drivers/ptp/ptp_kvm_common.c b/drivers/ptp/ptp_kvm_common.c
-> index 9141162c4237..2418977989be 100644
-> --- a/drivers/ptp/ptp_kvm_common.c
-> +++ b/drivers/ptp/ptp_kvm_common.c
-> @@ -130,6 +130,7 @@ static struct kvm_ptp_clock kvm_ptp_clock;
->  static void __exit ptp_kvm_exit(void)
->  {
->  	ptp_clock_unregister(kvm_ptp_clock.ptp_clock);
-> +	kvm_arch_ptp_exit();
->  }
->  
->  static int __init ptp_kvm_init(void)
-> diff --git a/drivers/ptp/ptp_kvm_x86.c b/drivers/ptp/ptp_kvm_x86.c
-> index 4991054a2135..902844cc1a17 100644
-> --- a/drivers/ptp/ptp_kvm_x86.c
-> +++ b/drivers/ptp/ptp_kvm_x86.c
-> @@ -14,27 +14,64 @@
->  #include <uapi/linux/kvm_para.h>
->  #include <linux/ptp_clock_kernel.h>
->  #include <linux/ptp_kvm.h>
-> +#include <linux/set_memory.h>
->  
->  static phys_addr_t clock_pair_gpa;
-> -static struct kvm_clock_pairing clock_pair;
-> +static struct kvm_clock_pairing clock_pair_glbl;
-> +static struct kvm_clock_pairing *clock_pair;
->  
->  int kvm_arch_ptp_init(void)
->  {
-> +	struct page *p;
->  	long ret;
->  
->  	if (!kvm_para_available())
->  		return -ENODEV;
->  
-> -	clock_pair_gpa = slow_virt_to_phys(&clock_pair);
-> -	if (!pvclock_get_pvti_cpu0_va())
-> -		return -ENODEV;
-> +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-> +		p = alloc_page(GFP_KERNEL | __GFP_ZERO);
-> +		if (!p)
-> +			return -ENOMEM;
-> +
-> +		clock_pair = page_address(p);
-> +		ret = set_memory_decrypted((unsigned long)clock_pair, 1);
-> +		if (ret) {
-> +			__free_page(p);
-> +			clock_pair = NULL;
-> +			goto nofree;
-> +		}
-> +	} else {
-> +		clock_pair = &clock_pair_glbl;
-> +	}
-> +
-> +	clock_pair_gpa = slow_virt_to_phys(clock_pair);
-> +	if (!pvclock_get_pvti_cpu0_va()) {
-> +		ret = -ENODEV;
-> +		goto err;
-> +	}
->  
->  	ret = kvm_hypercall2(KVM_HC_CLOCK_PAIRING, clock_pair_gpa,
->  			     KVM_CLOCK_PAIRING_WALLCLOCK);
-> -	if (ret == -KVM_ENOSYS)
-> -		return -ENODEV;
-> +	if (ret == -KVM_ENOSYS) {
-> +		ret = -ENODEV;
-> +		goto err;
-> +	}
->  
->  	return ret;
-> +
-> +err:
-> +	kvm_arch_ptp_exit();
-> +nofree:
-> +	return ret;
-> +}
-> +
-> +void kvm_arch_ptp_exit(void)
-> +{
-> +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-> +		WARN_ON(set_memory_encrypted((unsigned long)clock_pair, 1));
-> +		free_page((unsigned long)clock_pair);
-> +		clock_pair = NULL;
-> +	}
->  }
->  
->  int kvm_arch_ptp_get_clock(struct timespec64 *ts)
-> @@ -49,8 +86,8 @@ int kvm_arch_ptp_get_clock(struct timespec64 *ts)
->  		return -EOPNOTSUPP;
->  	}
->  
-> -	ts->tv_sec = clock_pair.sec;
-> -	ts->tv_nsec = clock_pair.nsec;
-> +	ts->tv_sec = clock_pair->sec;
-> +	ts->tv_nsec = clock_pair->nsec;
->  
->  	return 0;
->  }
-> @@ -81,9 +118,9 @@ int kvm_arch_ptp_get_crosststamp(u64 *cycle, struct timespec64 *tspec,
->  			pr_err_ratelimited("clock pairing hypercall ret %lu\n", ret);
->  			return -EOPNOTSUPP;
->  		}
-> -		tspec->tv_sec = clock_pair.sec;
-> -		tspec->tv_nsec = clock_pair.nsec;
-> -		*cycle = __pvclock_read_cycles(src, clock_pair.tsc);
-> +		tspec->tv_sec = clock_pair->sec;
-> +		tspec->tv_nsec = clock_pair->nsec;
-> +		*cycle = __pvclock_read_cycles(src, clock_pair->tsc);
->  	} while (pvclock_read_retry(src, version));
->  
->  	*cs = &kvm_clock;
-> diff --git a/include/linux/ptp_kvm.h b/include/linux/ptp_kvm.h
-> index c2e28deef33a..746fd67c3480 100644
-> --- a/include/linux/ptp_kvm.h
-> +++ b/include/linux/ptp_kvm.h
-> @@ -14,6 +14,7 @@ struct timespec64;
->  struct clocksource;
->  
->  int kvm_arch_ptp_init(void);
-> +void kvm_arch_ptp_exit(void);
->  int kvm_arch_ptp_get_clock(struct timespec64 *ts);
->  int kvm_arch_ptp_get_crosststamp(u64 *cycle,
->  		struct timespec64 *tspec, struct clocksource **cs);
+root@370rd:/sys/class/net/eth0/phydev/leds/f1072004.mdio-mii:00:WAN# ls
+brightness  device  max_brightness  power  subsystem  trigger  uevent
+
+You can turn the LED on with
+
+root@370rd:/sys/class/net/eth0/phydev/leds/f1072004.mdio-mii:00:WAN# echo 1 > brightness 
+
+and turn it off with:
+
+root@370rd:/sys/class/net/eth0/phydev/leds/f1072004.mdio-mii:00:WAN# echo 0 > brightness 
+
+You select the trigger via the trigger sysfs file:
+
+root@370rd:/sys/class/net/eth0/phydev/leds/f1072004.mdio-mii:00:WAN# cat trigger 
+[none] kbd-scrolllock kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock kbd-ctrlrlock timer heartbeat netdev mmc0
+
+root@370rd:/sys/class/net/eth0/phydev/leds/f1072004.mdio-mii:00:WAN# echo netdev > trigger
+root@370rd:/sys/class/net/eth0/phydev/leds/f1072004.mdio-mii:00:WAN# ls
+activity	brightness  device_name  half_duplex  link     link_100   max_brightness  rx	     trigger  uevent
+available_mode	device	    full_duplex  interval     link_10  link_1000  power		  subsystem  tx
+
+When you select a trigger, that trigger can add additional sysfs
+files. For the netdev trigger we gain link, link_10, link_100, link_1000, rx & tx.
+
+Nothing special here, if you selected the timer trigger you get
+delay_off delay_on. The oneshot trigger has invert, delay_on,
+delay_off etc.
+
+You then configure the trigger via setting values in the sysfs
+files. If you want the LED to indicate if there is link, you would do:
+
+echo 1 > link
+
+The LED would then light up if the netdev has carrier.
+
+If you want link plus RX packets
+
+echo 1 > link
+echo 1 > rx
+
+The LED will then be on if there is link, and additionally blink if
+the netdev stats indicate received frames.
+
+For the netdev trigger, all the configuration values are boolean. So a
+simple way to represent this in DT would be boolean properties:
+
+	netdev-link = <1>;
+	netdev->rx = <1>;
+
+We probably want these properties name spaced, because we have oneshot
+delay_on and timer delay_on for example. The same sysfs name could
+have different types, bool vs milliseconds, etc.
+
+I would make it, that when the trigger is activated, the values are
+read from DT and used. There is currently no persistent state for
+triggers. If you where to swap to the timer trigger and then return to
+the netdev trigger, all state is lost, so i would re-read DT.
+
+Offloading to hardware should not make an difference here. All we are
+going to do is pass the current configuration to the LED and ask it,
+can you do this? If it says no, we keep blinking in software. If yes,
+we leave the blinking to the hardware.
+
+There is the open question of if DT should be used like this.  It is
+not describing hardware, it is describing configuration of
+hardware. So it could well get rejected. You then need to configure it
+in software.
+
+   Andrew
