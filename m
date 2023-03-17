@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15EA86BED70
+	by mail.lfdr.de (Postfix) with ESMTP id 61B636BED71
 	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 16:56:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbjCQP4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 11:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
+        id S231458AbjCQP4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 11:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231371AbjCQPz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:55:58 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAF2D5A64
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:53 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-544d2dc2649so5077937b3.15
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:53 -0700 (PDT)
+        with ESMTP id S230032AbjCQPz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 11:55:59 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10093C9C8C
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:55 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id e129-20020a251e87000000b00b56598237f5so5656866ybe.16
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 08:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679068552;
+        d=google.com; s=20210112; t=1679068554;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=frW+YtgkbUT1EDOBzFr367nCrSEoGgXXQPUi+ytLe5k=;
-        b=oTVzi9supt7cBSOk5zvarGLCUGogER8ZvemDKakQr2zIxN3ciK7UdCsYRXe2vo9b0r
-         q02TPeh+3WCr8XvhNbPS71EBRI/JeNqnFr6o9jOLRMYY3UyCB+sxuyEbRHzuGjplH8Sn
-         iYhSfelyREuY98UZ2a2yDOsA7Ksfix9yJJMoxSU7GhkZ5NVO9rCxocJPSb8wVnh41h76
-         CusZPPnaegHWiWl5dIp9BCeSdE5xuOsDB+x6bzsqh/WfMc7HwMUZtJC78y5HFpkgwufi
-         avakD+1zrKK4xBKAebIOjeP31rSnUtDX05zjO+8d6txLzQNprVxiUv7tdB+zYoJ4jg1/
-         PFhg==
+        bh=QUMjTTGpzBj+/EOJevtTMimZE+jsZWH0mBOWQgcIhgo=;
+        b=Xujbwsw3x4OoRepnMegRlckHrwC/lXhnrpjU+yw/4mttzeyAoQYg4lMuuTGIC3394P
+         SgfBBP21hoUw53mWCf8efu9HSkX1wtUmWlh1zIf0SarPE/TU9LGguX1LGQWwAdqNonsN
+         kiq2HkwqfL03D1gWmLv0Jb7lDngMura6vQjbiL3kbU5kCxJKJAU4xfca5UI18XkSUMZB
+         B5w6pkRYoURTIqvzJh2JaTHvTUD0T3y/78qba3d7cWsXgGsZQp0jimNgEquLQcOBnHs6
+         PKpKj6k8yzMMzss2FG7H2hUmpd4lJ37CwDuf5JK5Ciov3MsI48V9aQTtVfZaZSFar5fi
+         EOCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679068552;
+        d=1e100.net; s=20210112; t=1679068554;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=frW+YtgkbUT1EDOBzFr367nCrSEoGgXXQPUi+ytLe5k=;
-        b=euPkujjwNxTxMBGTfKyYabkBdmNcs1+pCnzFNtsv+J7VI4Jwp1etX+n/yaSrHKAre9
-         pgi1iQR2oN6Yc6S6Z/ThBob3acK8l2gMFe8rwy78RKZo7wUmhQp7t26OBZwPmz6sXagW
-         qlf2DpvqR8Thun2vSxxTQUnfqxA3trwD8KJyuzL3NXotsGNckcPjWBpgfkZ+xPNXXIaE
-         qcqIfyuGla+X2uXXu9KO1j0ASIks9Vx9F6yHa2354P3rmvIZTEcreU4IQPOeABB0kQh5
-         ridyoj/cRd9DbCQKh+lIQa1HchnpCZjC+TyC4ffd9O8cJ+9CLbXQ243N+onR6wDOQ4eE
-         89vQ==
-X-Gm-Message-State: AO0yUKVTLqVWTnHnV70BFtfJQRP2XzdOHAYHNjfbh7ORt8jI1xcA2thY
-        Hv4YeiOT8zQIM8tqPDuAyvq1nLa+pYM8Mw==
-X-Google-Smtp-Source: AK7set/t+RE89LC44fEXLvbvUcNQgILPK3oj6/BHSvi9Wx4XFF1g5gNOuHJsmTIzrR/K75PVv8Hh9m3BKSSmFw==
+        bh=QUMjTTGpzBj+/EOJevtTMimZE+jsZWH0mBOWQgcIhgo=;
+        b=LKE8JgCEwpVfVgRxWRr8y+gvDVTyU5nyGA78C1fsfFDLDiHKhcMyvkeNBnJTWADmmO
+         /6WX/Po/6tcFNYKayLywvx7km6Nip20XKl21Qe+rWo3oXDdxAs/8bKbqsN0ThMSMBvg5
+         Q4yPsGibOT+8Nu12EerGIN9spJq0TQocPgSsrs4hNScXrkqgiaZ9P4xLVOgiO5cokF4s
+         RsUKXnJRbxC664cCM3+8H5kBJYq8uV7zgz7Q66GJ+4ti8qeAEwf3Hljuwf6EW1/28GJp
+         owhOGUlw3anowCQ3VhzXo7IpqnyK9gJr76CBTvvGO/HMkZrklSQmLkf0Gws7EvjITbeo
+         3WIg==
+X-Gm-Message-State: AO0yUKVo7/LDD0rh0X0EPdsDZioGJO6fZIF314mxupcOU1bF6pQM+D/6
+        wOz06KmLAVf9lWEFHuwuXKvTohqY0QygJQ==
+X-Google-Smtp-Source: AK7set+GInZDisGh1DidYg0ZOFjrslTZLNeYTSuX13P7iJAnSVheMz7W84NJwKBajZ1uyKHRg4zZlEE8BN2iGA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:511:b0:b2e:f387:b428 with SMTP
- id x17-20020a056902051100b00b2ef387b428mr56527ybs.5.1679068552330; Fri, 17
- Mar 2023 08:55:52 -0700 (PDT)
-Date:   Fri, 17 Mar 2023 15:55:36 +0000
+ (user=edumazet job=sendgmr) by 2002:a5b:c8:0:b0:914:fc5e:bbec with SMTP id
+ d8-20020a5b00c8000000b00914fc5ebbecmr5059ybp.13.1679068554310; Fri, 17 Mar
+ 2023 08:55:54 -0700 (PDT)
+Date:   Fri, 17 Mar 2023 15:55:37 +0000
 In-Reply-To: <20230317155539.2552954-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230317155539.2552954-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230317155539.2552954-8-edumazet@google.com>
-Subject: [PATCH net-next 07/10] smc: preserve const qualifier in smc_sk()
+Message-ID: <20230317155539.2552954-9-edumazet@google.com>
+Subject: [PATCH net-next 08/10] x25: preserve const qualifier in [a]x25_sk()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -60,10 +60,7 @@ Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Simon Horman <simon.horman@corigine.com>,
         Willem de Bruijn <willemb@google.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
-        eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Jan Karcher <jaka@linux.ibm.com>
+        eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -75,33 +72,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can change smc_sk() to propagate its argument const qualifier,
+We can change [a]x25_sk() to propagate their argument const qualifier,
 thanks to container_of_const().
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Karsten Graul <kgraul@linux.ibm.com>
-Cc: Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Jan Karcher <jaka@linux.ibm.com>
 ---
- net/smc/smc.h | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ include/net/ax25.h | 5 +----
+ include/net/x25.h  | 5 +----
+ 2 files changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index 5ed765ea0c731a7f0095cd6a99a0e42d227eaca9..2eeea4cdc7187eed2a3b12888d8f647382f6f2ac 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -283,10 +283,7 @@ struct smc_sock {				/* smc sock container */
- 						 * */
+diff --git a/include/net/ax25.h b/include/net/ax25.h
+index f8cf3629a41934f96f33e5d70ad90cc8ae796d38..0d939e5aee4eca38d2b1bd86f87fe3cd990af67b 100644
+--- a/include/net/ax25.h
++++ b/include/net/ax25.h
+@@ -260,10 +260,7 @@ struct ax25_sock {
+ 	struct ax25_cb		*cb;
  };
  
--static inline struct smc_sock *smc_sk(const struct sock *sk)
+-static inline struct ax25_sock *ax25_sk(const struct sock *sk)
 -{
--	return (struct smc_sock *)sk;
+-	return (struct ax25_sock *) sk;
 -}
-+#define smc_sk(ptr) container_of_const(ptr, struct smc_sock, sk)
++#define ax25_sk(ptr) container_of_const(ptr, struct ax25_sock, sk)
  
- static inline void smc_init_saved_callbacks(struct smc_sock *smc)
+ static inline struct ax25_cb *sk_to_ax25(const struct sock *sk)
  {
+diff --git a/include/net/x25.h b/include/net/x25.h
+index d7d6c2b4ffa7153b0caef7dd249ba93f5f39e414..597eb53c471e3386108447d46b054852abfcce6c 100644
+--- a/include/net/x25.h
++++ b/include/net/x25.h
+@@ -177,10 +177,7 @@ struct x25_forward {
+ 	atomic_t		refcnt;
+ };
+ 
+-static inline struct x25_sock *x25_sk(const struct sock *sk)
+-{
+-	return (struct x25_sock *)sk;
+-}
++#define x25_sk(ptr) container_of_const(ptr, struct x25_sock, sk)
+ 
+ /* af_x25.c */
+ extern int  sysctl_x25_restart_request_timeout;
 -- 
 2.40.0.rc2.332.ga46443480c-goog
 
