@@ -2,190 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26F276BE4ED
-	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:07:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C246BE4C4
+	for <lists+netdev@lfdr.de>; Fri, 17 Mar 2023 10:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbjCQJHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 05:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S231920AbjCQJDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 05:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbjCQJHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:07:35 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F120B4ED0;
-        Fri, 17 Mar 2023 02:06:33 -0700 (PDT)
-X-UUID: d938815ec49b11edbd2e61cc88cc8f98-20230317
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=FGfHOBVymC0DHuKRYmnC5Uxx4OWvdn5zdJ7U9DYtQ5U=;
-        b=ikcEbLkIxAEIvahriLsuh87t+6pHsv62MC2euRW7W9W4qEOlBJ6pq1fuLCxlffXOOWcIw3Nul//yFdEu+x7OqO1j1SkiVGlFbGd9tr17LgJXEBn00x6Yg/FDGWEzfkWUqdjNezUVC38sZdappQlZYPcKaLgfK1dj7yDJyyXGVe8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.21,REQID:80b96f3b-72fc-4b21-b459-4786f0e423e3,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-        release,TS:0
-X-CID-META: VersionHash:83295aa,CLOUDID:8859ac28-564d-42d9-9875-7c868ee415ec,B
-        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-UUID: d938815ec49b11edbd2e61cc88cc8f98-20230317
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
-        (envelope-from <yanchao.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1577523023; Fri, 17 Mar 2023 16:15:16 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Fri, 17 Mar 2023 16:15:14 +0800
-Received: from mcddlt001.gcn.mediatek.inc (10.19.240.15) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1118.25 via Frontend Transport; Fri, 17 Mar 2023 16:15:13 +0800
-From:   Yanchao Yang <yanchao.yang@mediatek.com>
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev ML <netdev@vger.kernel.org>,
-        kernel ML <linux-kernel@vger.kernel.org>
-CC:     Intel experts <linuxwwan@intel.com>,
-        Chetan <m.chetan.kumar@intel.com>,
-        MTK ML <linux-mediatek@lists.infradead.org>,
-        Liang Lu <liang.lu@mediatek.com>,
-        Haijun Liu <haijun.liu@mediatek.com>,
-        Hua Yang <hua.yang@mediatek.com>,
-        Ting Wang <ting.wang@mediatek.com>,
-        Felix Chen <felix.chen@mediatek.com>,
-        Mingliang Xu <mingliang.xu@mediatek.com>,
-        Min Dong <min.dong@mediatek.com>,
-        Aiden Wang <aiden.wang@mediatek.com>,
-        Guohao Zhang <guohao.zhang@mediatek.com>,
-        Chris Feng <chris.feng@mediatek.com>,
-        Yanchao Yang <yanchao.yang@mediatek.com>,
-        Lambert Wang <lambert.wang@mediatek.com>,
-        Mingchuang Qiao <mingchuang.qiao@mediatek.com>,
-        Xiayu Zhang <xiayu.zhang@mediatek.com>,
-        Haozhe Chang <haozhe.chang@mediatek.com>
-Subject: [PATCH net-next v4 10/10] net: wwan: tmi: Add maintainers and documentation
-Date:   Fri, 17 Mar 2023 16:09:42 +0800
-Message-ID: <20230317080942.183514-11-yanchao.yang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20230317080942.183514-1-yanchao.yang@mediatek.com>
-References: <20230317080942.183514-1-yanchao.yang@mediatek.com>
+        with ESMTP id S231929AbjCQJDV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 05:03:21 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6849749D;
+        Fri, 17 Mar 2023 02:01:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679043693; x=1710579693;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=unQNSA3lrBtSH9iO4Nk11Mene7Oo6ams4jIxJtPFxBk=;
+  b=k91dNV7Jdl9wQNx4kbnUebOyLy17Cx5p5Na7iqqe14vzy1wS+BT0epFv
+   vmJr2CPxPKKQAjndSNC83LdYDXY9+W2LTpjvL0BFC+zn+OjlZ/+79ZAUw
+   nwIYIYi+N8VwgMUGtK2C8Ay9XY3/vSIhb18glcKwaCgFKleu+DTFGn5ia
+   Dwhrth9VuRE0WZIbZ4t15UDOTjJC5RbiHZGPAEq5Iq3v4dfNg1+a/gGfr
+   XCGip6XYa8tFu4GXTgjbvj5jKuA1YKEXoP5Ufd6ma6TShUHHnfq6R+lo9
+   1XGUkm/ehD71OuC4fpW4+o84JyZNeYiOtVv9nzI0/wvWTt0o+VBr95bIV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="318612745"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="318612745"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 02:00:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10651"; a="673486823"
+X-IronPort-AV: E=Sophos;i="5.98,268,1673942400"; 
+   d="scan'208";a="673486823"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2023 02:00:37 -0700
+Date:   Fri, 17 Mar 2023 10:00:28 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     kuba@kernel.org, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, richardcochran@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] octeontx2-vf: Add missing free for alloc_percpu
+Message-ID: <ZBQsIrtlGNuJEZCM@localhost.localdomain>
+References: <20230317064337.18198-1-jiasheng@iscas.ac.cn>
+ <ZBQiPmhuH7aNJo5p@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBQiPmhuH7aNJo5p@localhost.localdomain>
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds maintainers and documentation for MediaTek TMI 5G WWAN modem
-device driver.
+On Fri, Mar 17, 2023 at 09:18:06AM +0100, Michal Swiatkowski wrote:
+> On Fri, Mar 17, 2023 at 02:43:37PM +0800, Jiasheng Jiang wrote:
+> > Add the free_percpu for the allocated "vf->hw.lmt_info" in order to avoid
+> > memory leak, same as the "pf->hw.lmt_info" in
+> > `drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c`.
+> > 
+> > Fixes: 5c0512072f65 ("octeontx2-pf: cn10k: Use runtime allocated LMTLINE region")
+> > Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > Acked-by: Geethasowjanya Akula <gakula@marvell.com>
+> > ---
+> > Changelog:
+> > 
+> > v1 -> v2:
+> > 
+> > 1. Remove the if () checks.
+> Hi,
+> 
+> Did You change that because of my comments? I am not sure it is correct.
+> I meant moving these two ifs to new function, because they are called
+> two times. It will be easier to do changes in the future.
+> 
+> void cn10k_lmtst_deinit(struct otx2_nic *pfvf)
+> {
+> 	if (vf->hw.lmt_info)
+> 		free_percpu(vf->hw.lmt_info);
+> 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+> 		qmem_free(vf->dev, vf->dync_lmt);
+> }
+> 
+> Thanks,
+> Michal
+> 
 
-Signed-off-by: Yanchao Yang <yanchao.yang@mediatek.com>
-Signed-off-by: Felix Chen <felix.chen@mediatek.com>
----
- .../networking/device_drivers/wwan/index.rst  |  1 +
- .../networking/device_drivers/wwan/tmi.rst    | 48 +++++++++++++++++++
- MAINTAINERS                                   | 11 +++++
- 3 files changed, 60 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/wwan/tmi.rst
+Sorry, ignore, I just saw a message that free_percpu handle NULL
+correctly.
 
-diff --git a/Documentation/networking/device_drivers/wwan/index.rst b/Documentation/networking/device_drivers/wwan/index.rst
-index 370d8264d5dc..8298629b4d55 100644
---- a/Documentation/networking/device_drivers/wwan/index.rst
-+++ b/Documentation/networking/device_drivers/wwan/index.rst
-@@ -10,6 +10,7 @@ Contents:
- 
-    iosm
-    t7xx
-+   tmi
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/networking/device_drivers/wwan/tmi.rst b/Documentation/networking/device_drivers/wwan/tmi.rst
-new file mode 100644
-index 000000000000..3655779bf692
---- /dev/null
-+++ b/Documentation/networking/device_drivers/wwan/tmi.rst
-@@ -0,0 +1,48 @@
-+.. SPDX-License-Identifier: BSD-3-Clause-Clear
-+
-+.. Copyright (c) 2022, MediaTek Inc.
-+
-+.. _tmi_driver_doc:
-+
-+====================================================
-+TMI driver for MTK PCIe based T-series 5G Modem
-+====================================================
-+The TMI(T-series Modem Interface) driver is a WWAN PCIe host driver developed
-+for data exchange over PCIe interface between Host platform and MediaTek's
-+T-series 5G modem. The driver exposes control plane and data plane interfaces
-+to applications. The control plane provides device node interfaces for control
-+data transactions. The data plane provides network link interfaces for IP data
-+transactions.
-+
-+Control channel userspace ABI
-+=============================
-+/dev/wwan0at0 character device
-+------------------------------
-+The driver exposes an AT port by implementing AT WWAN Port.
-+The userspace end of the control channel pipe is a /dev/wwan0at0 character
-+device. Application shall use this interface to issue AT commands.
-+
-+/dev/wwan0mbim0 character device
-+--------------------------------
-+The driver exposes an MBIM interface to the MBIM function by implementing
-+MBIM WWAN Port. The userspace end of the control channel pipe is a
-+/dev/wwan0mbim0 character device. Applications shall use this interface
-+for MBIM protocol communication.
-+
-+Data channel userspace ABI
-+==========================
-+wwan0-X network device
-+----------------------
-+The TMI driver exposes IP link interfaces "wwan0-X" of type "wwan" for IP
-+traffic. Iproute network utility is used for creating "wwan0-X" network
-+interfaces and for associating it with the MBIM IP session.
-+
-+The userspace management application is responsible for creating a new IP link
-+prior to establishing an MBIM IP session where the SessionId is greater than 0.
-+
-+For example, creating a new IP link for an MBIM IP session with SessionId 1:
-+
-+  ip link add dev wwan0-1 parentdev wwan0 type wwan linkid 1
-+
-+The driver will automatically map the "wwan0-1" network device to MBIM IP
-+session 1.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index edd3d562beee..5224a42be5ff 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13187,6 +13187,17 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/wwan/t7xx/
- 
-+MEDIATEK TMI 5G WWAN MODEM DRIVER
-+M:	Yanchao Yang <yanchao.yang@mediatek.com>
-+M:	Min Dong <min.dong@mediatek.com>
-+M:	MediaTek Corporation <linuxwwan@mediatek.com>
-+R:	Liang Lu <liang.lu@mediatek.com>
-+R:	Haijun Liu <haijun.liu@mediatek.com>
-+R:	Lambert Wang <lambert.wang@mediatek.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/wwan/tmi/
-+
- MEDIATEK USB3 DRD IP DRIVER
- M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
- L:	linux-usb@vger.kernel.org
--- 
-2.32.0
-
+> > ---
+> >  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> > index 7f8ffbf79cf7..ab126f8706c7 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+> > @@ -709,6 +709,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> >  err_ptp_destroy:
+> >  	otx2_ptp_destroy(vf);
+> >  err_detach_rsrc:
+> > +	free_percpu(vf->hw.lmt_info);
+> >  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+> >  		qmem_free(vf->dev, vf->dync_lmt);
+> >  	otx2_detach_resources(&vf->mbox);
+> > @@ -762,6 +763,7 @@ static void otx2vf_remove(struct pci_dev *pdev)
+> >  	otx2_shutdown_tc(vf);
+> >  	otx2vf_disable_mbox_intr(vf);
+> >  	otx2_detach_resources(&vf->mbox);
+> > +	free_percpu(vf->hw.lmt_info);
+> >  	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+> >  		qmem_free(vf->dev, vf->dync_lmt);
+> >  	otx2vf_vfaf_mbox_destroy(vf);
+> > -- 
+> > 2.25.1
+> > 
