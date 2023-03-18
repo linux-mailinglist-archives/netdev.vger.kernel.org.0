@@ -2,98 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 057986BF6AD
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 00:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2470D6BF6E0
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 01:23:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229971AbjCQXvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Mar 2023 19:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
+        id S229925AbjCRAXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Mar 2023 20:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbjCQXvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 19:51:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3EE3B23E;
-        Fri, 17 Mar 2023 16:50:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5502BB82741;
-        Fri, 17 Mar 2023 23:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EB6A8C433D2;
-        Fri, 17 Mar 2023 23:50:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679097056;
-        bh=WR+tqewczy5kh9G0x5J34eXgDDCY5t9xJhykv7aIXN4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ptxVKc0dN/q8hYKuRw3Ps+YJg5t6XwIU6VqruWwjxVhouF71Kc/eeYZ21fCk8Dsk7
-         QcVbB6EJPmY0asHTvd7uiPP7LNnHL50Ag34RpRpO0jV3SKCVxtCN7HoFtRTwzNObxd
-         D649t4FFcAFzy1rPMsEHsjInuNuBuf2isyWfxs30brJZcIoHGv3nJBPXZkg60jmFQf
-         7viIGijL/yij7Imw0csg5gJwKflshfD7mIXP3Wa78rWtm/S5g9pZKB06Amn2n+C8Aw
-         E/SyzdqzRPBoWLjrL66URd29BM+cw9u4HYO1fap6iO7rWNdV7BO2tVR1R2PMlVRgMc
-         9S3vqVi6mlfOQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C744EE66CBF;
-        Fri, 17 Mar 2023 23:50:55 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v13 0/4] Add support for NXP bluetooth chipsets
-From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <167909705581.28336.12052092434994272835.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Mar 2023 23:50:55 +0000
-References: <20230316172214.3899786-1-neeraj.sanjaykale@nxp.com>
-In-Reply-To: <20230316172214.3899786-1-neeraj.sanjaykale@nxp.com>
-To:     Neeraj Sanjay Kale <neeraj.sanjaykale@nxp.com>
+        with ESMTP id S229488AbjCRAXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Mar 2023 20:23:43 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FC319C54
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 17:23:42 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id y186-20020a62cec3000000b00627df3d6ec4so204275pfg.12
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 17:23:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679099022;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=POn92RWfNuQQQ9DSGkjDiwKFBxA3POONxTo0DfDdP8Y=;
+        b=pRxFAC0sHVzeZ3vKazvfLS+l+8lNdcPmP61zW5x4j3LYQZYpUPrlUDemktMiybVmR2
+         aZGEoMvMgwAWBT+IoBcwnjy+DDNaMYNNERoX3hzKpSqkcADKzk0uAxRzVXJpiyBDDhoD
+         q7MO2vuv633R9UgrPoNiN7SMjw9yGESbY3og/AUA3LNZ5Ri5PBXHNICaucgoQSIUYPTM
+         gh47o00EQm52IsSmDJE7FcHGej0X0tfFicYusw7svCHemUvNyNkZjDiCQoLDkISsku6n
+         k3KMWCTbIz2f9rxHs02FSn30zAFp2w3OiGjVzOOxLoxUpcJlHfArTCCReFOpzHXFsfZa
+         u9hA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679099022;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=POn92RWfNuQQQ9DSGkjDiwKFBxA3POONxTo0DfDdP8Y=;
+        b=S3tnQR4cxObVCmBfe/pSYwxE4FT9J+9UEzf5r0z9iLb0LoD4Iz1TpSR1Rfc/0bWQeT
+         5sktZ3yBGCcL6yiGlQfyJEoJ+McLgLawaDP6SVhbsVX6oVfe0msIloNlvN28o8y1+PzT
+         /49Rmwg/2S9xwfdz/flwjr34V40+0/+7sbtiOjF+bpn+ohdYysgvZ6KYdDFK5XXPOwza
+         VyYR1lKMWIYsWpse1aCk1m0exsPO7yuWsWRPFfxomniaPBKix7N6V46SDcmrkJNCRONc
+         kf5n3fCTltGaM4HnHIUDTTLdOkEq0h9LBBcHoDROeAuSstwGsasR1JZQOsoh+W7R2D3c
+         rQjA==
+X-Gm-Message-State: AO0yUKUI/UaepQu1cEih1IuiN8isoecYov9mck9Dr966FjajpVcE+pJe
+        btuFk5U3nLR59Pzj0eKPO8lgL8Ny6C/F0iMZaq/SdgxH/RwUT1nsgm1jphIbz6i7K9IV501ZJ/n
+        UvED7T1kDiLblFhT1QPjCSJGvYaJTR1vv0dXDp/gAXutMteMYzH2arw==
+X-Google-Smtp-Source: AK7set+qpo44KtBzRAB3KfSFYB5cTNsY5+Q5RvJVxvUX6hNlwgwYO966FOFLjWmAYIKqep6ssMEU6oc=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:902:db09:b0:1a0:503a:2a42 with SMTP id
+ m9-20020a170902db0900b001a0503a2a42mr3751054plx.12.1679099021783; Fri, 17 Mar
+ 2023 17:23:41 -0700 (PDT)
+Date:   Fri, 17 Mar 2023 17:23:36 -0700
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
+Message-ID: <20230318002340.1306356-1-sdf@google.com>
+Subject: [PATCH net-next 0/4] ynl: fill in some gaps of ethtool spec
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alok.a.tiwari@oracle.com, hdanton@sina.com,
-        ilpo.jarvinen@linux.intel.com, leon@kernel.org,
-        simon.horman@corigine.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-serial@vger.kernel.org,
-        amitkumar.karwar@nxp.com, rohit.fule@nxp.com, sherry.sun@nxp.com
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        pabeni@redhat.com, Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+I was trying to fill in the spec while exploring ethtool API for some
+related work. I don't think I'll have the patience to fill in the rest,
+so decided to share whatever I currently have.
 
-This series was applied to bluetooth/bluetooth-next.git (master)
-by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
+Patches 1-2 add the be16 + spec.
+Patches 3-4 implement an ethtool-like python tool to test the spec.
 
-On Thu, 16 Mar 2023 22:52:10 +0530 you wrote:
-> This patch adds a driver for NXP bluetooth chipsets.
-> 
-> The driver is based on H4 protocol, and uses serdev APIs. It supports host
-> to chip power save feature, which is signalled by the host by asserting
-> break over UART TX lines, to put the chip into sleep state.
-> 
-> To support this feature, break_ctl has also been added to serdev-tty along
-> with a new serdev API serdev_device_break_ctl().
-> 
-> [...]
+Patches 3-4 are there because it felt more fun do the tool instead
+of writing the actual tests; feel free to drop it; sharing mostly
+to show that the spec is not a complete nonsense.
 
-Here is the summary with links:
-  - [v13,1/4] serdev: Replace all instances of ENOTSUPP with EOPNOTSUPP
-    https://git.kernel.org/bluetooth/bluetooth-next/c/d227f286d259
-  - [v13,2/4] serdev: Add method to assert break signal over tty UART port
-    https://git.kernel.org/bluetooth/bluetooth-next/c/5ea260df53c2
-  - [v13,3/4] dt-bindings: net: bluetooth: Add NXP bluetooth support
-    https://git.kernel.org/bluetooth/bluetooth-next/c/02986ce4a4fe
-  - [v13,4/4] Bluetooth: NXP: Add protocol support for NXP Bluetooth chipsets
-    https://git.kernel.org/bluetooth/bluetooth-next/c/3e662aa4453a
+The spec is not 100% complete, see patch 2 for what's missing.
+I was hoping to finish the stats-get message, but I'm too dump
+to implement bitmask marshaling (multi-attr).
 
-You are awesome, thank you!
+Stanislav Fomichev (4):
+  ynl: support be16 in schemas
+  ynl: populate most of the ethtool spec
+  ynl: replace print with NlError
+  ynl: ethtool testing tool
+
+ Documentation/netlink/genetlink-c.yaml      |    2 +-
+ Documentation/netlink/genetlink-legacy.yaml |    4 +-
+ Documentation/netlink/genetlink.yaml        |    2 +-
+ Documentation/netlink/specs/ethtool.yaml    | 1473 +++++++++++++++++--
+ tools/net/ynl/ethtool                       |  424 ++++++
+ tools/net/ynl/lib/nlspec.py                 |    9 +
+ tools/net/ynl/lib/ynl.py                    |   31 +-
+ 7 files changed, 1827 insertions(+), 118 deletions(-)
+ create mode 100755 tools/net/ynl/ethtool
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.40.0.rc1.284.g88254d51c5-goog
 
