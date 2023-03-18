@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C3906BFAE2
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 15:32:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C3F6BFAEB
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 15:40:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbjCROcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 10:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S229713AbjCROkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 10:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbjCROcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 10:32:00 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8DB75B88;
-        Sat, 18 Mar 2023 07:31:50 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id h19so8615393qtn.1;
-        Sat, 18 Mar 2023 07:31:50 -0700 (PDT)
+        with ESMTP id S229517AbjCROku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 10:40:50 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F952823F;
+        Sat, 18 Mar 2023 07:40:49 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id t9so8604186qtx.8;
+        Sat, 18 Mar 2023 07:40:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679149910;
+        d=gmail.com; s=20210112; t=1679150448;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=omCnbS+/el6Gly59ONAmBPzqOmEUBWn8/iuc5jWJ1YQ=;
-        b=L2R/pBH1xsowFR2hmOG6tXoKiu793PrNxctl4YrquecUGvxll7o/4jX7faMLqVDj8V
-         RO2gZ6LVmfFgC2WTzX3EiMULshBzX1RoQsMbMfZz5ViDwZitplHGul8M7RmeU40FTz8y
-         rv1VzTM5ezwA05recgzoOYDhzA2I2foAISTgAmFLSPPqIYhem1XJi8VBMKcuDeevZPxR
-         HjpGuAh9in4fX15aIiJNwLMd6lcGa1Nv/ZEk2p8NvTtle68Ic3ZmK+q1JJl/g+G1gZ4x
-         KEdkIktgBz8U0F82mB2yLcBLKifnrXL0mc+mI4GORA5xQwfd/LyHTetRsoY1nKE3or4J
-         gGZg==
+        bh=Q9G0FvrgkjWRK1hTA7j4UZr/0beYu/ds7XI4Rl+67Co=;
+        b=OP9VCPeUp/I4MMRhvatgg5LSb5P+yMRi51JCqeLlfLMyImF8irPk4MjelmlgeImKR9
+         u90VCi68iRYla6dGMHCwM4kddaNZ3CCRT9SwSM9fU19y8MOCvXM8WGOw0RcVZOgp/DaK
+         gwQLVppTbu42PN4wWmMFzU+87FmjFhGVj2VEsyWj+K9YyNcDNqK1dK5lE/zC4mRQVUed
+         J848AEnUOPQVxfhAcyac8C6+rdrf/hKBTp81NNHLqR6JRHSBHUwIA5M/Fzs+q7XdmBV5
+         AlRZrgLkFj0Nam4a9lHLhPIAWd1zW0/aCh4aDDei6kBTsAa+PvUg1k8OOxL+HmOx0A1w
+         4Kig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679149910;
+        d=1e100.net; s=20210112; t=1679150448;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=omCnbS+/el6Gly59ONAmBPzqOmEUBWn8/iuc5jWJ1YQ=;
-        b=5FiSmaUMHO/S04DmAA+0uXTTqROhglI6zvMi88ORIZ7yETnb7DnFDSN80Zv1HSYwr7
-         IR9kbCgmtCBlke4vu69rf3Kk0xQWstc/YaHgHfclqIxZ10vYJnLeRb5lJ0EtvO0k9cW4
-         fusxxUYPyMOeOO5lgu+9ljLPZ//7JbrNUqepsU0nH4cOX3Os6FafMz+KJLLoMhWxdsAd
-         WZcrfdE/EyyiTQWm4E1h26xlJg0t8Wfp2vZxwDjbbFGrEInCVKJ5YzBfO72HCCimltK1
-         9M2dHQdxGvEZYVjaIpja6Kmd/2+DW9nrvAglZkge5rcUkpv/FV9kHsmD/+OJUEu8giQo
-         UARg==
-X-Gm-Message-State: AO0yUKXBmJBlfV0rGZ1vTJ+h07w4NE52ngDyUz7evXPp8C7E5gNuDtrk
-        7Am77NaUS9IUZGDWqDYhr2U=
-X-Google-Smtp-Source: AK7set8G64Xq6FLgbzcP7GqrJFvNKbAeHHtLFIhn/5F9U5byCRAWghjBQ9ZW9xZegZXzRmnCe7TGIA==
-X-Received: by 2002:a05:622a:170c:b0:3b9:bc8c:c212 with SMTP id h12-20020a05622a170c00b003b9bc8cc212mr10993812qtk.29.1679149909883;
-        Sat, 18 Mar 2023 07:31:49 -0700 (PDT)
+        bh=Q9G0FvrgkjWRK1hTA7j4UZr/0beYu/ds7XI4Rl+67Co=;
+        b=wHjsZU7bk2CI2UaTUNm96E3CEi7tXJ5FmKXekhrf2wlVMoHMIKquuqJ0G94AGF657J
+         aCaVOIL7H1/T3woNZlcB6tpvF9TGil/ApKWbfe3NJmNHuys4KWkIjyeSFglu1HK45wlf
+         BKU8WLN/FhmJ/mLRGOHZWd7zQUqx41OFLLVFPvYp4hO6xIPrSyuuzbotWk7IeO6bpL1S
+         LkhBU6iYNqk12OluW91F+ceKZQzqjNwdWjZQ+4ZvL5JnuqiLZBy0FvT7lQgkrpgbOBc/
+         z0w/0G+K7THZWsCtJ8yMOFtsaHM/DlHRoHH+KbjjKQI3wAhNYnh0+Te42I/XKhy1X8gk
+         PF0g==
+X-Gm-Message-State: AO0yUKXhfS9eLRy501CK7Kh/4YeSFV1nSsTjvrJ5ZvyMWpicGxkKZahb
+        KqcWhNlNYtI9AjBM8NvieFA=
+X-Google-Smtp-Source: AK7set/rfp345B44AxEmW2qmslJ6JcZKkUqbDjv4Bidq/HLJPhryfVWPstBlxmUZnm72WNuHJMiMwQ==
+X-Received: by 2002:ac8:5bd6:0:b0:3bf:c431:ea6e with SMTP id b22-20020ac85bd6000000b003bfc431ea6emr17163478qtb.3.1679150448065;
+        Sat, 18 Mar 2023 07:40:48 -0700 (PDT)
 Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id i62-20020a37b841000000b00742a252ba06sm3635115qkf.135.2023.03.18.07.31.49
+        by smtp.gmail.com with ESMTPSA id k18-20020ac84792000000b003ba19e53e43sm106750qtq.25.2023.03.18.07.40.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Mar 2023 07:31:49 -0700 (PDT)
-Message-ID: <ef07016f-fe3b-99d5-1f93-fc8e34baf18c@gmail.com>
-Date:   Sat, 18 Mar 2023 10:31:48 -0400
+        Sat, 18 Mar 2023 07:40:47 -0700 (PDT)
+Message-ID: <7bf5761c-abdd-a3cb-267c-5e61641b15f8@gmail.com>
+Date:   Sat, 18 Mar 2023 10:40:46 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v3 1/9] net: sunhme: Just restart autonegotiation
- if we can't bring the link up
+Subject: Re: [PATCH net-next v3 9/9] net: sunhme: Consolidate common probe
+ tasks
 Content-Language: en-US
 To:     Simon Horman <simon.horman@corigine.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -64,9 +64,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20230314003613.3874089-1-seanga2@gmail.com>
- <20230314003613.3874089-2-seanga2@gmail.com> <ZBV4LSBOwEzSiAvA@corigine.com>
+ <20230314003613.3874089-10-seanga2@gmail.com> <ZBXCWUm/1ffaD1B+@corigine.com>
 From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <ZBV4LSBOwEzSiAvA@corigine.com>
+In-Reply-To: <ZBXCWUm/1ffaD1B+@corigine.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,151 +79,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/18/23 04:37, Simon Horman wrote:
-> On Mon, Mar 13, 2023 at 08:36:05PM -0400, Sean Anderson wrote:
->> If we've tried regular autonegotiation and forcing the link mode, just
->> restart autonegotiation instead of reinitializing the whole NIC.
+On 3/18/23 09:53, Simon Horman wrote:
+> On Mon, Mar 13, 2023 at 08:36:13PM -0400, Sean Anderson wrote:
+>> Most of the second half of the PCI/SBUS probe functions are the same.
+>> Consolidate them into a common function.
 >>
 >> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+>> ---
+>>
+>> (no changes since v1)
+>>
+>>   drivers/net/ethernet/sun/sunhme.c | 183 ++++++++++++------------------
+>>   1 file changed, 71 insertions(+), 112 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+>> index a59b998062d9..a384b162c46d 100644
+>> --- a/drivers/net/ethernet/sun/sunhme.c
+>> +++ b/drivers/net/ethernet/sun/sunhme.c
+>> @@ -2430,6 +2430,71 @@ static void happy_meal_addr_init(struct happy_meal *hp,
+>>   	}
+>>   }
+>>   
+>> +static int happy_meal_common_probe(struct happy_meal *hp,
+>> +				   struct device_node *dp, int minor_rev)
+>> +{
+>> +	struct net_device *dev = hp->dev;
+>> +	int err;
+>> +
+>> +#ifdef CONFIG_SPARC
+>> +	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+>> +	if (hp->hm_revision == 0xff)
+>> +		hp->hm_revision = 0xc0 | minor_rev;
+>> +#else
+>> +	/* works with this on non-sparc hosts */
+>> +	hp->hm_revision = 0x20;
+>> +#endif
 > 
 > ...
 > 
->> @@ -606,6 +604,124 @@ static int is_lucent_phy(struct happy_meal *hp)
->>   	return ret;
->>   }
->>   
->> +/* hp->happy_lock must be held */
->> +static void
->> +happy_meal_begin_auto_negotiation(struct happy_meal *hp,
->> +				  void __iomem *tregs,
->> +				  const struct ethtool_link_ksettings *ep)
->> +{
->> +	int timeout;
->> +
->> +	/* Read all of the registers we are interested in now. */
->> +	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
->> +	hp->sw_bmcr      = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
->> +	hp->sw_physid1   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID1);
->> +	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
->> +
->> +	/* XXX Check BMSR_ANEGCAPABLE, should not be necessary though. */
->> +
->> +	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
->> +	if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
->> +		/* Advertise everything we can support. */
->> +		if (hp->sw_bmsr & BMSR_10HALF)
->> +			hp->sw_advertise |= (ADVERTISE_10HALF);
->> +		else
->> +			hp->sw_advertise &= ~(ADVERTISE_10HALF);
->> +
->> +		if (hp->sw_bmsr & BMSR_10FULL)
->> +			hp->sw_advertise |= (ADVERTISE_10FULL);
->> +		else
->> +			hp->sw_advertise &= ~(ADVERTISE_10FULL);
->> +		if (hp->sw_bmsr & BMSR_100HALF)
->> +			hp->sw_advertise |= (ADVERTISE_100HALF);
->> +		else
->> +			hp->sw_advertise &= ~(ADVERTISE_100HALF);
->> +		if (hp->sw_bmsr & BMSR_100FULL)
->> +			hp->sw_advertise |= (ADVERTISE_100FULL);
->> +		else
->> +			hp->sw_advertise &= ~(ADVERTISE_100FULL);
->> +		happy_meal_tcvr_write(hp, tregs, MII_ADVERTISE, hp->sw_advertise);
->> +
->> +		/* XXX Currently no Happy Meal cards I know off support 100BaseT4,
->> +		 * XXX and this is because the DP83840 does not support it, changes
->> +		 * XXX would need to be made to the tx/rx logic in the driver as well
->> +		 * XXX so I completely skip checking for it in the BMSR for now.
->> +		 */
->> +
->> +		ASD("Advertising [ %s%s%s%s]\n",
->> +		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
->> +		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
->> +		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
->> +		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " : "");
->> +
->> +		/* Enable Auto-Negotiation, this is usually on already... */
->> +		hp->sw_bmcr |= BMCR_ANENABLE;
->> +		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
->> +
->> +		/* Restart it to make sure it is going. */
->> +		hp->sw_bmcr |= BMCR_ANRESTART;
->> +		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
->> +
->> +		/* BMCR_ANRESTART self clears when the process has begun. */
->> +
->> +		timeout = 64;  /* More than enough. */
->> +		while (--timeout) {
->> +			hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
->> +			if (!(hp->sw_bmcr & BMCR_ANRESTART))
->> +				break; /* got it. */
->> +			udelay(10);
+>> +#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+>> +	/* Hook up SBUS register/descriptor accessors. */
+>> +	hp->read_desc32 = sbus_hme_read_desc32;
+>> +	hp->write_txd = sbus_hme_write_txd;
+>> +	hp->write_rxd = sbus_hme_write_rxd;
+>> +	hp->read32 = sbus_hme_read32;
+>> +	hp->write32 = sbus_hme_write32;
+>> +#endif
 > 
-> nit: Checkpatch tells me that usleep_range() is preferred over udelay().
->       Perhaps it would be worth looking into that for a follow-up patch.
-
-This will be fixed in another series.
-
->> +		}
->> +		if (!timeout) {
->> +			netdev_err(hp->dev,
->> +				   "Happy Meal would not start auto negotiation BMCR=0x%04x\n",
->> +				   hp->sw_bmcr);
->> +			netdev_notice(hp->dev,
->> +				      "Performing force link detection.\n");
->> +			goto force_link;
->> +		} else {
->> +			hp->timer_state = arbwait;
->> +		}
->> +	} else {
->> +force_link:
->> +		/* Force the link up, trying first a particular mode.
->> +		 * Either we are here at the request of ethtool or
->> +		 * because the Happy Meal would not start to autoneg.
->> +		 */
->> +
->> +		/* Disable auto-negotiation in BMCR, enable the duplex and
->> +		 * speed setting, init the timer state machine, and fire it off.
->> +		 */
->> +		if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
->> +			hp->sw_bmcr = BMCR_SPEED100;
->> +		} else {
->> +			if (ep->base.speed == SPEED_100)
->> +				hp->sw_bmcr = BMCR_SPEED100;
->> +			else
->> +				hp->sw_bmcr = 0;
->> +			if (ep->base.duplex == DUPLEX_FULL)
->> +				hp->sw_bmcr |= BMCR_FULLDPLX;
->> +		}
->> +		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
->> +
->> +		if (!is_lucent_phy(hp)) {
->> +			/* OK, seems we need do disable the transceiver for the first
->> +			 * tick to make sure we get an accurate link state at the
->> +			 * second tick.
->> +			 */
->> +			hp->sw_csconfig = happy_meal_tcvr_read(hp, tregs,
->> +							       DP83840_CSCONFIG);
->> +			hp->sw_csconfig &= ~(CSCONFIG_TCVDISAB);
->> +			happy_meal_tcvr_write(hp, tregs, DP83840_CSCONFIG,
->> +					      hp->sw_csconfig);
->> +		}
->> +		hp->timer_state = ltrywait;
->> +	}
->> +
->> +	hp->timer_ticks = 0;
->> +	hp->happy_timer.expires = jiffies + (12 * HZ)/10;  /* 1.2 sec. */
+> This looks correct for the SBUS case.
+> But I'm not sure about the PCIE case.
 > 
-> nit: as a follow-up perhaps you could consider something like this.
->       (* completely untested! * )
+> gcc 12 tells me when compiling with sparc allmodconfig that the following
+> functions are now unused.
 > 
-> 	hp->happy_timer.expires = jiffies + msecs_to_jiffies(1200);
+>    pci_hme_read_desc32
+>    pci_hme_write_txd
+>    pci_hme_write_rxd
+>    pci_hme_read32
+>    pci_hme_write32
 
-ditto.
+Oh, looks like I missed that these were different while refactoring.
 
->> +	add_timer(&hp->happy_timer);
+That said, I haven't seen any issues here...
+
+>> +
+>> +	/* Grrr, Happy Meal comes up by default not advertising
+>> +	 * full duplex 100baseT capabilities, fix this.
+> b
+>> +	 */
+>> +	spin_lock_irq(&hp->happy_lock);
+>> +	happy_meal_set_initial_advertisement(hp);
+>> +	spin_unlock_irq(&hp->happy_lock);
+>> +
+>> +	err = devm_register_netdev(hp->dma_dev, dev);
+>> +	if (err)
+>> +		dev_err(hp->dma_dev, "Cannot register net device, aborting.\n");
+>> +	return err;
 >> +}
 >> +
+>>   #ifdef CONFIG_SBUS
+>>   static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+>>   {
+> 
+>> @@ -2511,70 +2576,18 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+>>   		goto err_out_clear_quattro;
+>>   	}
+>>   
+>> -	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+>> -	if (hp->hm_revision == 0xff)
+>> -		hp->hm_revision = 0xa0;
+> 
+> It's not clear to me that the same value will be set by the call to
+> happy_meal_common_probe(hp, dp, 0); where the logic is:
+> 
+> #ifdef CONFIG_SPARC
+> 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+> 	if (hp->hm_revision == 0xff)
+> 		hp->hm_revision = 0xc0 | minor_rev;
+
+OK, so maybe this should be xor, with sbus passing in 0x30.
+
+> #else
+> 	/* works with this on non-sparc hosts */
+> 	hp->hm_revision = 0x20;
+> #endif
+> 
+> I am assuming that the SPARC logic is run.
+> But another question: is it strictly true that SBUS means SPARC?
+
+Yes.
+
+>> -
+>> -#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+>> -	/* Hook up SBUS register/descriptor accessors. */
+>> -	hp->read_desc32 = sbus_hme_read_desc32;
+>> -	hp->write_txd = sbus_hme_write_txd;
+>> -	hp->write_rxd = sbus_hme_write_rxd;
+>> -	hp->read32 = sbus_hme_read32;
+>> -	hp->write32 = sbus_hme_write32;
+>> -#endif
+> 
+> ...
+> 
+>> @@ -2689,21 +2702,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+>>   	hp->bigmacregs = (hpreg_base + 0x6000UL);
+>>   	hp->tcvregs    = (hpreg_base + 0x7000UL);
+>>   
+>> -#ifdef CONFIG_SPARC
+>> -	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+>> -	if (hp->hm_revision == 0xff)
+>> -		hp->hm_revision = 0xc0 | (pdev->revision & 0x0f);
+>> -#else
+>> -	/* works with this on non-sparc hosts */
+>> -	hp->hm_revision = 0x20;
+>> -#endif
+> 
+> ...
+> 
+>> -#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+>> -	/* Hook up PCI register/descriptor accessors. */
+>> -	hp->read_desc32 = pci_hme_read_desc32;
+>> -	hp->write_txd = pci_hme_write_txd;
+>> -	hp->write_rxd = pci_hme_write_rxd;
+>> -	hp->read32 = pci_hme_read32;
+>> -	hp->write32 = pci_hme_write32;
+>> -#endif
 > 
 > ...
 
