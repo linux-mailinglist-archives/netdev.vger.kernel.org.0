@@ -2,111 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F355C6BFA2C
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 14:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 188476BFA8E
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 14:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbjCRNOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 09:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
+        id S229602AbjCRNt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 09:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbjCRNOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 09:14:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A5818AB7
-        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 06:13:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679145230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jgoarmppOveCAhzhSS+yukRVNHlYy4ELLTt4seUigM0=;
-        b=M+B80kD7s2yHbrf1k6sdg5t8L3+aEr0dTAHtVhaXfl+KjQOL7KcbbQpBNedlWFT46rHVe9
-        ebq3OQSw6EkpaU72yrovow6BxJ74DdYPEemu0C5Jcy13BK6wMdJ4ioo2TV0WrTVCfvvSje
-        8jmNNYaNMu7NwvsyA4iecN6IbbCgYa8=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-601-PtyRKgWaMnq12IXMG-lveg-1; Sat, 18 Mar 2023 09:13:47 -0400
-X-MC-Unique: PtyRKgWaMnq12IXMG-lveg-1
-Received: by mail-qv1-f71.google.com with SMTP id g6-20020ad45426000000b005a33510e95aso4171750qvt.16
-        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 06:13:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679145227;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jgoarmppOveCAhzhSS+yukRVNHlYy4ELLTt4seUigM0=;
-        b=48WHkDcgsnXCi6gtIgLoMijO1e9fx6fPaNW/KYUVJOHoEu0yEbekblYtmY5SAoSfSZ
-         q5F8PPz5svAo5nHdN2D9SdTOErCg5MVmosO9GLERt/jE2hWz7u1BjeR5mRFYpObobwo+
-         SEGtSU7FOkibdrnBYCzxsyxTx2kbNnZtrDhokyrmu6en2mjKivRqhUeNjhSpGTO0BxVA
-         G1gC0XiM40ysATYGl/klJJK5DvMkaJ5TQkCNZwQLpk/SSaCVwGuIBv7+kzL0fVzGytsj
-         sLacxojI6pguKdiHXcpm7zzyB2gjEtE1BIAZ9yl/2g9MbXoJwG8e+o7v48BMnl2se9WN
-         cZFQ==
-X-Gm-Message-State: AO0yUKVawX6XhLZyqaC0YBzc3CZs06FoEOJoJ5ybWBgtL2VTSK5Qofcy
-        NL7WHA6nNrJXE1ymWYSf6uhCe8UrwuQ/VBSxBI92oCGM2eKzbLhcaxMdktoF4U0eUn8OWuwT62w
-        xRQJzCz2vRSnS13qh
-X-Received: by 2002:a05:622a:1116:b0:3d3:6285:a63 with SMTP id e22-20020a05622a111600b003d362850a63mr10899540qty.10.1679145227299;
-        Sat, 18 Mar 2023 06:13:47 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+Sm2ecyLp2qn8isjtzfX8KwHzTIP8qxzV+utPo3ZIhQHxrfPrkzvAXLPrT24ch0L/LOoDWJQ==
-X-Received: by 2002:a05:622a:1116:b0:3d3:6285:a63 with SMTP id e22-20020a05622a111600b003d362850a63mr10899504qty.10.1679145226993;
-        Sat, 18 Mar 2023 06:13:46 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bl28-20020a05620a1a9c00b007339c5114a9sm3575523qkb.103.2023.03.18.06.13.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Mar 2023 06:13:46 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com,
-        stern@rowland.harvard.edu, studentxswpy@163.com,
-        gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] usb: plusb: remove unused pl_clear_QuickLink_features function
-Date:   Sat, 18 Mar 2023 09:13:42 -0400
-Message-Id: <20230318131342.1684103-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229473AbjCRNt0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 09:49:26 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2105.outbound.protection.outlook.com [40.107.212.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A08059FC;
+        Sat, 18 Mar 2023 06:49:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m2TixXpZhyGPGXOhDSg8xaMNMirWNOoDxckej+jWYd7SIPULalTc/pq9rQ2odcDF0K91zBj3ogkn8iCC9GFYS4OSA9O8Wv3UWbqrsave2TNwClN2hEdBi4lwAN3OqQdKOwnmFcF+Eag4L1vRa8UGqMOEE6VRwX0kNeci5q+Dig8VA1q4TjEur6HBSw0hUrVutKkRAJZtx6CYbS/z3EHNjqf0utWllRYm3tekkkqvB84aACReoeiEFw0BgN9Lulo5yHBrdVfNjM9bLFaCWSijV81UXD/+FMkTtdjrfw7xasDW6jXFw8rwhfWaewyEbtogTm/wKSoSfR4DEf+HsffOZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ek6Kk6wm9kfZZFx9/QwYk09Wl80G3rCE0FAYlTaI6aM=;
+ b=m0i3whDSaV/yaO5Vacuw+dYOW4J4un29CcDOts9yJg267FmzXuaaa/PmMDwwC62hFbxnOtdg1zdCW8O2sWo7p44ZZa7nDctt95Rd5bEde8iJ9qFrNesgB/JfAz6tR8en1YJhgWNHlW5af3j2KP9FRozmPxri2lQAoic5owIurSDV/W8GcJDDuGnpns+yCqEpvACvESkgWAVr79oyvSusui7C1RPpK4eTii1mknd91WeXVLe1zgOh2CTnsjAIvgkhDuSOD0OR6hG30Vdk/nGdFHrJ2BuF/UH4AF0kRJ4RBEV76z3m1aM/MoW1WrxdHaDLhZ+hKRwlKEVY+CzWKEuERg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ek6Kk6wm9kfZZFx9/QwYk09Wl80G3rCE0FAYlTaI6aM=;
+ b=WYjP2UGQhH8SDMCEuErx3AGdxn8ED5MynUMvEAcEq0quDbwta8tYgJNxbW9eb23ZPSgUY4v6xyoNQwCTWQu+mkqCJz7OgyPubqa/krZOVI0PzNJ4b8DK/O7TO/yI+TDi7XiYRF3DxocBwelpPegAOZGUEUYoGmvjrKh/36qR6Gs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MW3PR13MB4059.namprd13.prod.outlook.com (2603:10b6:303:53::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Sat, 18 Mar
+ 2023 13:49:20 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.036; Sat, 18 Mar 2023
+ 13:49:20 +0000
+Date:   Sat, 18 Mar 2023 14:49:14 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Sean Anderson <seanga2@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH net-next v3 8/9] net: sunhme: Inline error returns
+Message-ID: <ZBXBWnAqsRECYYqH@corigine.com>
+References: <20230314003613.3874089-1-seanga2@gmail.com>
+ <20230314003613.3874089-9-seanga2@gmail.com>
+ <20230315005149.6e06c2bb@kernel.org>
+ <8ea1c66e-e4c2-b30d-b8d0-9740ecb8bd6e@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8ea1c66e-e4c2-b30d-b8d0-9740ecb8bd6e@gmail.com>
+Organisation: Horms Solutions BV
+X-ClientProxiedBy: AM4PR0902CA0006.eurprd09.prod.outlook.com
+ (2603:10a6:200:9b::16) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW3PR13MB4059:EE_
+X-MS-Office365-Filtering-Correlation-Id: da631662-3956-4ddb-2a63-08db27b792e1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qRId8vN2zr6cB2uUrs9hwzy5LhOL31jyhLa9heB039lZ/9sRwaQVEH/Vlc2Ox3fTrLyVHzDyzqk5Dj7U7WqhfZ9NpirgmSa0heE1PHYhBzzjOtyhebqw0BsgC1muyXx0Sft/N8AErea04i8I38G67RfWX66gUZV6ynC4dHQr+3lx6kw7iCthjgxqfD5Y4ybRw6OiLvvE+wgUuQnIB/gnuRITU8NpoL/Eq92u1gvgbXz6h6pBMlGkQ/janhuVoPnvyBq5PaXQ8IbCV/Bbeye9gzuENR6/Z4xdI2kjiqcyeObfrcNL4aA5qp5aPH4xBd9dMGKng8hkUtfcbyyHq4iKaAhKrBCcDvrL3hqniEvBcbMYzdOylkFBWg+0QG9CXdYhFfMy2MnpeqaFto+23o6xKEVqbrFxd1ZT2nEef7i/FZruXTYst/7J19tWIOoDhwr232zOImHJXXXEfPKJqHTNZCnWfJ0tcaSXVL4KoCh0GFYQc40tAf5oy687K+Y4++Le206TwH5O6rjMDYgkGdKsbCnlymJZ1hj2oaVXXSaFknNntwTJWGnw1N3Gy50amfR6JjooQhLaOH2ok+cZwHbNSyXwy97F+rFWw/sGS17cB8qMN60qv5muqDLWvKr6YMPLyTM01/z/mBbxl+1ughc0Fg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(346002)(39830400003)(396003)(376002)(451199018)(36756003)(38100700002)(478600001)(4326008)(316002)(54906003)(66946007)(6916009)(66556008)(8676002)(41300700001)(66476007)(86362001)(8936002)(44832011)(4744005)(6486002)(2616005)(6666004)(186003)(5660300002)(2906002)(6506007)(6512007)(53546011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VGuKkSxqC0MpFbuUWw15rMSeuZJyzBiHl97+eeulkwEjoX2gckKfmsrk/jzJ?=
+ =?us-ascii?Q?45K3HAmaAcVwOe7FYc6BNckoszzqXRYQHJG5xcKD9iPKPbxr07vOf8FWqICL?=
+ =?us-ascii?Q?OW4mgZ5H+8ZFldF2gNYmjMWO0w8jf/lpJEQNsxGYklut3VYI6rFrnPE1AZoA?=
+ =?us-ascii?Q?/Z7t98QWCxwrSOUrc/Y6iscgy42s/I7hm5HcjuFM4+nhF5ktvcOyrjbvikqv?=
+ =?us-ascii?Q?jjuVKfsBxJuiOYxzYOlN5GM9zdH55qgKMI26R5maBheQW0ITR2EXp07DgCdh?=
+ =?us-ascii?Q?3lMZm9EAubGT1pHutH2HCCjzGPuE/cee9TwsS+znFUKC1IwyZ53N4ZMI8jSH?=
+ =?us-ascii?Q?jdNaBKpxrRZakaSl4ouy2YbQswM1TbCZMrJ8SqQ4CliJNp8ZsLLvKRx7Pdm0?=
+ =?us-ascii?Q?28nFLdpG6Z4X98TkKmryh2tDtq2xbJUSO0ELmQPmrlysLW1hhaDcCt0iDd8A?=
+ =?us-ascii?Q?gydt2JzOjk0GJFYJuzk0ocrF4EVtpgEV9mkjUDbUy9taB+Kx8WKsHBuHkIBK?=
+ =?us-ascii?Q?bIgr8txPA9A/5KXbUg06rtdfIWr3eXegncfBn4sQALhPYM7n4TBav9jbEOrN?=
+ =?us-ascii?Q?lZMUZ0ukxe8+PlnGybUWFF9S9w51YB9HJRgNJB9bfbKijYrw7Gno13G66mzo?=
+ =?us-ascii?Q?PmwTGybg0Sznyn9bDusgk+wKSsZ19cokyDqh/lfhGIzLPpmds3gN+tCBUTTx?=
+ =?us-ascii?Q?7zPkacMCKGr1NR2kDLeUIrudJgwbt91+UWTJPBuNzedakltSdmjhHJXjJD0z?=
+ =?us-ascii?Q?S5vv0dOqmFs3AI1x90CSP7wELFbBo5/LroH6dkm23uU9+8XQknxBKYEnHHfY?=
+ =?us-ascii?Q?6KmRNyVSSwhJrRrQ4APgOhaTkYLQKS+TuwJL45wgX1nHhfi2z+F8AqXhZPUb?=
+ =?us-ascii?Q?/oVl4JQkBihc7i2iPiYjFNIge+wdbSI7LCscxh7uQYHt0qBW67HqDC5cVQTT?=
+ =?us-ascii?Q?6LmKbLbgQBZaNsbLSFgM2sM8P2tSOCPI2GwrXloWm3RdCOu+RB/X36r9Kcuz?=
+ =?us-ascii?Q?/nDXuos3V2prGRB6kDrsiLSu8fMrmqe0BRYWXm+2kJ7fo6daMTWlswEZI63b?=
+ =?us-ascii?Q?Xb29o4n3eSH8/J+sIWEusXOlifAGWSmY+Lse7IxH6b90nFZqp3r/APz3goCh?=
+ =?us-ascii?Q?fz42O3KFa929sbiktHPRJyhG1yNdxgYDPPnjMH4IoGEGLqT8zp+SjvhPnyvN?=
+ =?us-ascii?Q?3b9vaNmdrEwkQZ6v40QL00irxTzwyR/O6m5V0stWh7O4tygJoJ+q+NFr4Djc?=
+ =?us-ascii?Q?C8tL6qAFT2wNp/kFkq/xZTLIvO7LCh+gsSusxlPZr63PttA6zDy2K2PgedWR?=
+ =?us-ascii?Q?1Mjh1NWEaTstRbEVNc9L5g0Ml6Nj4aCAFYjweWYyZiRQCwm6zTEcfbTA71Tk?=
+ =?us-ascii?Q?XEshKGxTTfhJp53xLQBUMWyhpgIJHk/ft3MFGQZ3uJIwYdYNbZri/wuz9NLc?=
+ =?us-ascii?Q?vns+MYYupPlH9jWFySuDCVtchpEkm2KlSEMyfZR0Xze59Yp/fhETH10N3uPH?=
+ =?us-ascii?Q?4mPkE7X8whAFxD4G2Zd8Y7wJ4ofHBM/09bJCsU2azIREOqeXmimu1JrY0+ub?=
+ =?us-ascii?Q?W1Fi4MxtgpRLeq5+VfDQp8qPtB6QOId1AzkQlLC0ZkRn3EdKlOxaDWKn+44L?=
+ =?us-ascii?Q?K7c29ljrWDMHiuhfPfH1k/ExsxDJJINMQfYujEZ6zPu+MnzSxjf+YXyQxQh7?=
+ =?us-ascii?Q?VTZ3UQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: da631662-3956-4ddb-2a63-08db27b792e1
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2023 13:49:20.1660
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hTwIkMEunFHpArnfT2G9OSxm1dLZOLlZ/QLQM3pEbzK/vg+BzTvbbnqbVoIiIorUxysZ6OgMmOn+Y+pDDZMsoI424DoMQYkOzHPrE4DPSXA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR13MB4059
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang with W=1 reports
-drivers/net/usb/plusb.c:65:1: error:
-  unused function 'pl_clear_QuickLink_features' [-Werror,-Wunused-function]
-pl_clear_QuickLink_features(struct usbnet *dev, int val)
-^
-This static function is not used, so remove it.
+On Wed, Mar 15, 2023 at 11:36:25AM -0400, Sean Anderson wrote:
+> On 3/15/23 03:51, Jakub Kicinski wrote:
+> > On Mon, 13 Mar 2023 20:36:12 -0400 Sean Anderson wrote:
+> > > Fixes: 96c6e9faecf1 ("sunhme: forward the error code from pci_enable_device()")
+> > 
+> > No such	commit in our trees :(
+> 
+> Ah, looks like I forgot this was bad when copying the other commit. It should be acb3f35f920b.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/usb/plusb.c | 6 ------
- 1 file changed, 6 deletions(-)
+I agree that is the correct commit.
+And the code changes look good to me.
 
-diff --git a/drivers/net/usb/plusb.c b/drivers/net/usb/plusb.c
-index 7a2b0094de51..2894114858a2 100644
---- a/drivers/net/usb/plusb.c
-+++ b/drivers/net/usb/plusb.c
-@@ -61,12 +61,6 @@ pl_vendor_req(struct usbnet *dev, u8 req, u8 val, u8 index)
- 				val, index, NULL, 0);
- }
- 
--static inline int
--pl_clear_QuickLink_features(struct usbnet *dev, int val)
--{
--	return pl_vendor_req(dev, 1, (u8) val, 0);
--}
--
- static inline int
- pl_set_QuickLink_features(struct usbnet *dev, int val)
- {
--- 
-2.27.0
-
+But I wonder if the fix should be separated into another patch,
+separate from the cleanup.
