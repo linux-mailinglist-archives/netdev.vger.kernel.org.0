@@ -2,54 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 867146BF824
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 06:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 721A96BF86C
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 08:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbjCRFu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 01:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
+        id S229737AbjCRHGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 03:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbjCRFuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 01:50:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB49AD022;
-        Fri, 17 Mar 2023 22:50:22 -0700 (PDT)
+        with ESMTP id S229478AbjCRHGX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 03:06:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D774FCDD;
+        Sat, 18 Mar 2023 00:06:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCBF960A5F;
-        Sat, 18 Mar 2023 05:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 21E7BC433D2;
-        Sat, 18 Mar 2023 05:50:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59A5FB80E8D;
+        Sat, 18 Mar 2023 07:06:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52137C433EF;
+        Sat, 18 Mar 2023 07:06:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679118621;
-        bh=g3pi7VoFTzyzFGqKTpOE0DL5x6+2CKyYeqc25riQfCw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Nd7KlbmO/akwqzA5sgZ/W2aT8xKoA/BqDny3pNmze26kDIz00M748EUoBHDtpnHeb
-         krlsMtHtSYe16DN0o2dOAWhj9zUj6/+3q8aZt3zaPdvmySYAIlvuUQfsMpMDskr6Qp
-         IHKJlWh30LsnYJGDuu8dm32ulNtdK9iypeFScB26q72C1oZ/BjegA4a2tSR3E5ecjZ
-         qgPIs8Dz9JFarOX21ktyEjrQWPXwNA95D3sucKBjF7YeUH0/z6JN6BvSx9eb/c5K+I
-         8h74QgNLshWNYlHaXBao/CnWi4XAaLZFHSjRiuLQSen7xp+yqBGgBRAewl9q+RgttN
-         pwydyNfF2WPQQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0FF53E21EE5;
-        Sat, 18 Mar 2023 05:50:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1679123179;
+        bh=49KA3iNvSyleR2UVuJjsn11DXyb3q1V2rfZ2s1YjuCg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=PGVY03EK8gdnEB1pOuQ9qT81m5rreHG+0YJsainUKyEGrqiuh0GPB1hf7iA7qXRCP
+         4mRQavKUVsh5I04bxF70f9qjj+a/vJ1867uGlJ4zPaV2ObclItHfLCXE5GZmJxJ4s/
+         zeCtWZCg+rvMtuXLzWK6STUZwzqJH/o520nHUdjdDEXNxbYCkSmE0ELE5a9WHAxi2W
+         cgnR/vHgs6Q9NAkBXIWPrcu0Y1xbLWU3u5gXsiamDETdL69OsScc1yDl8Bqnbh/7d4
+         UsAyiUskYk7Ru7GkEv9NcvzVXzNyGC6Jm2Av6jliMEa1hXHlG43KcaL/W9U9+AwyFS
+         0d7Rw40oSnF9w==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Nick Morrow <morrownr@gmail.com>
+Cc:     Reese Russell <git@qrsnap.io>, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Deren Wu <deren.wu@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        Ben Greear <greearb@candelatech.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Added Netgear AXE3000 (A8000) usb_device_id to mt7921u_device_table[]
+References: <20230123090555.21415-1-git@qrsnap.io>
+        <CAFktD2eFdaCAdE=zxVx05QYWPRcr5StompKr+ehn7piYpQHjzA@mail.gmail.com>
+Date:   Sat, 18 Mar 2023 09:06:09 +0200
+In-Reply-To: <CAFktD2eFdaCAdE=zxVx05QYWPRcr5StompKr+ehn7piYpQHjzA@mail.gmail.com>
+        (Nick Morrow's message of "Fri, 17 Mar 2023 14:49:56 -0500")
+Message-ID: <87wn3ev8ri.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v8 0/5] net/mlx5e: Add GBP VxLAN HW offload support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167911862106.13068.1349424509665979718.git-patchwork-notify@kernel.org>
-Date:   Sat, 18 Mar 2023 05:50:21 +0000
-References: <20230316070758.83512-1-gavinl@nvidia.com>
-In-Reply-To: <20230316070758.83512-1-gavinl@nvidia.com>
-To:     Gavin Li <gavinl@nvidia.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, roopa@nvidia.com,
-        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gavi@nvidia.com, roid@nvidia.com, maord@nvidia.com,
-        saeedm@nvidia.com
+Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,36 +68,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Nick Morrow <morrownr@gmail.com> writes:
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+>> Issue: Though the Netgear AXE3000 (A8000) is based on the mt7921
+>> chipset because of the unique USB VID:PID combination this device
+>> does not initialize/register. Thus making it not plug and play.
+>>
+>> Fix: Adds support for the Netgear AXE3000 (A8000) based on the Mediatek
+>> mt7921au chipset. The method of action is adding the USD VID/PID
+>> pair to the mt7921u_device_table[] array.
+>>
+>> Notes: A retail sample of the Netgear AXE3000 (A8000) yeilds the following
+>> from lsusb D 0846:9060 NetGear, Inc. Wireless_Device. This pair
+>> 0846:9060 VID:PID has been reported by other users on Github.
+>>
+>> Signed-off-by: Reese Russell <git@qrsnap.io>
+>> ---
+>>  drivers/net/wireless/mediatek/mt76/mt7921/usb.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+>> index 5321d20dcdcb..62e9728588f8 100644
+>> --- a/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+>> +++ b/drivers/net/wireless/mediatek/mt76/mt7921/usb.c
+>> @@ -15,6 +15,8 @@
+>>  static const struct usb_device_id mt7921u_device_table[] = {
+>>         { USB_DEVICE_AND_INTERFACE_INFO(0x0e8d, 0x7961, 0xff, 0xff, 0xff),
+>>                 .driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
+>> +       { USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9060, 0xff, 0xff, 0xff),
+>> +               .driver_info = (kernel_ulong_t)MT7921_FIRMWARE_WM },
+>>         { },
+>>  };
+>>
+>> --
+>> 2.37.2
+>
+>
+> I can confirm this VID/PID needs to go into 6.1 LTS and the current
+> testing version of the kernel as I am getting an increasing amount of
+> traffic from users that have purchased the Netgear A8000.
+>
+> My site is github.com/morrownr/USB-WiFi
+>
+> Helping Linux users with USB WiFi is what we do.
+>
+> The OP could have added a comment to the patch showing the adapter
+> that is causing this patch to be submitted. Maybe he can submit a v2
+> that can be expedited?
+>
+> Guidance?
 
-On Thu, 16 Mar 2023 09:07:53 +0200 you wrote:
-> Patch-1: Remove unused argument from functions.
-> Patch-2: Expose helper function vxlan_build_gbp_hdr.
-> Patch-3: Add helper function for encap_info_equal for tunnels with options.
-> Patch-4: Preserving the const-ness of the pointer in ip_tunnel_info_opts.
-> Patch-5: Add HW offloading support for TC flows with VxLAN GBP encap/decap
->         in mlx ethernet driver.
-> 
-> [...]
+I assigned this to me on patchwork, I'll queue this for v6.3 and change
+the commit log to below. Felix&Lorenzo, ack?
 
-Here is the summary with links:
-  - [net-next,v8,1/5] vxlan: Remove unused argument from vxlan_build_gbp_hdr( ) and vxlan_build_gpe_hdr( )
-    https://git.kernel.org/netdev/net-next/c/df5e87f16c33
-  - [net-next,v8,2/5] vxlan: Expose helper vxlan_build_gbp_hdr
-    https://git.kernel.org/netdev/net-next/c/c641e9279f35
-  - [net-next,v8,3/5] net/mlx5e: Add helper for encap_info_equal for tunnels with options
-    https://git.kernel.org/netdev/net-next/c/58de53c10258
-  - [net-next,v8,4/5] ip_tunnel: Preserve pointer const in ip_tunnel_info_opts
-    https://git.kernel.org/netdev/net-next/c/bc9d003dc48c
-  - [net-next,v8,5/5] net/mlx5e: TC, Add support for VxLAN GBP encap/decap flows offload
-    https://git.kernel.org/netdev/net-next/c/6ee44c518159
+wifi: mt76: mt7921: add Netgear AXE3000 (A8000)
 
-You are awesome, thank you!
+Add support for the Netgear AXE3000 (A8000) based on the Mediatek
+mt7921au chipset. A retail sample of the Netgear AXE3000 (A8000) yeilds
+the following from lsusb D 0846:9060 NetGear, Inc. Wireless_Device. This
+has been reported by other users on Github.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
