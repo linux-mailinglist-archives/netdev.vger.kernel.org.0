@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A886BF7FD
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 06:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96DAB6BF7FF
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 06:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbjCRF1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 01:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        id S230049AbjCRF3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 01:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbjCRF1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 01:27:05 -0400
+        with ESMTP id S229470AbjCRF3r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 01:29:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C625E92BE4;
-        Fri, 17 Mar 2023 22:27:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD20817CF6
+        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 22:29:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1505C60A0C;
-        Sat, 18 Mar 2023 05:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C95C433D2;
-        Sat, 18 Mar 2023 05:27:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4221C60A0C
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 05:29:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DE2EC433D2;
+        Sat, 18 Mar 2023 05:29:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679117223;
-        bh=r4+BqP3YSFtjbv0/3mAVAwU8CYroXzeU3ygvL9ZK6no=;
+        s=k20201202; t=1679117385;
+        bh=eq5aKD4N05+/7J//J37274UWWL8jwXYsmeh2x+kmDvw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u5nsWYtljKwlJbqnqxDA3eiTLKleC3/EU5gUGHeZ7yQPAjtoN0XidGcLChStmtYUB
-         4aNApDQAC4CaHvXWGzxdinMfp6VWuPw0eNorlO3MgC47eyQOtGwaBD1zLqHFplU5Bl
-         7Dwks9NNQJIt0iv+cIbpIdP+zJiQkvKU7vgPwL+GdYGMdLXE8/ba5ofThEuMdBQfYq
-         GW7H5tXQfW3wWKCG4UGtT10I38axlYHjomIZd6LXvF2pTswd4iI0LsbQ/uFY7oiaVy
-         yexBVceaUZLmC/ZsWb5jyLe2o7z4lTgE+Rz5DA9/vIYV4CcoRLyfUV4CutK4rRGKik
-         K4tv5v9OoHQcg==
-Date:   Fri, 17 Mar 2023 22:27:02 -0700
+        b=g/skgbYoPMuhxPJVt9UirU0dj2rQeGK6h5M3fi3UKCxQbqobaFdjotlX7A0dK0vww
+         BtumP065mntmHru387PBPbgcF07VeKzxWKh98HXpqNG5ZOrEJ9ZZqcMXHyuvI8Y5xl
+         P8I/9AtOREXLZe+bZKjRMx/QyBAVTN3zfMQT90hmAlo+iNVcqsi63/L2c4FsftXvqy
+         t6YXeg6KPDhPjrYBOowBgXaWtR5KmDkcJa8c0Do4eo9dQp5l6UPirt4Va76H6OI9vf
+         k3gz7whJLt/jQuOww0ndsrQHevdc43OxVnyPRebovbStpLIfOIA5VCfpgm/yolSKAO
+         GgB5kfgToPZAA==
+Date:   Fri, 17 Mar 2023 22:29:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Szymon Heidrich <szymon.heidrich@gmail.com>
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2] net: usb: lan78xx: Limit packet length to skb->len
-Message-ID: <20230317222702.1bfd2613@kernel.org>
-In-Reply-To: <20230317173606.91426-1-szymon.heidrich@gmail.com>
-References: <202303180031.EsiDo4qY-lkp@intel.com>
-        <20230317173606.91426-1-szymon.heidrich@gmail.com>
+To:     Liang He <windhl@126.com>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] ethernet: sun: add check for the mdesc_grab()
+Message-ID: <20230317222944.64f66377@kernel.org>
+In-Reply-To: <20230315060021.1741151-1-windhl@126.com>
+References: <20230315060021.1741151-1-windhl@126.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,14 +52,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Mar 2023 18:36:06 +0100 Szymon Heidrich wrote:
-> Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
-> Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-> Reported-by: kernel test robot <lkp@intel.com>
+On Wed, 15 Mar 2023 14:00:21 +0800 Liang He wrote:
+>  	hp = mdesc_grab();
+>  
+> +	if (!hp)
+> +		return -ENODEV;
 
-I'd drop the Reported-by: tag in this case, since it makes it look like
-the bot reported the bug you're fixing, rather than merely reported a
-build issue.
-
-When you repost please avoid posting in reply to previous version.
-Makes the review queue easier to organize for mentainers.
+no empty line between the function call and error check, please
