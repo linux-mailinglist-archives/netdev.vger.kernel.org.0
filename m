@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7813D6BFACC
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 15:24:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7BD6BFACE
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 15:24:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbjCROYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 10:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
+        id S229958AbjCROYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 10:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbjCROYe (ORCPT
+        with ESMTP id S229822AbjCROYe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 10:24:34 -0400
+X-Greylist: delayed 705 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 18 Mar 2023 07:24:29 PDT
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD2235246;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D2A34F65;
         Sat, 18 Mar 2023 07:24:29 -0700 (PDT)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id B7F2918838A8;
-        Sat, 18 Mar 2023 14:12:42 +0000 (UTC)
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 63259188398F;
+        Sat, 18 Mar 2023 14:12:43 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 9E47E25002BC;
-        Sat, 18 Mar 2023 14:12:42 +0000 (UTC)
+        by mailout.gigahost.dk (Postfix) with ESMTP id 5299225002BC;
+        Sat, 18 Mar 2023 14:12:43 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 929E49B403E4; Sat, 18 Mar 2023 14:12:42 +0000 (UTC)
+        id 4764D9B403E4; Sat, 18 Mar 2023 14:12:43 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id D42DE91201E3;
-        Sat, 18 Mar 2023 14:12:41 +0000 (UTC)
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 91AFB9B403E2;
+        Sat, 18 Mar 2023 14:12:42 +0000 (UTC)
 From:   "Hans J. Schultz" <netdev@kapio-technology.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
@@ -64,106 +65,57 @@ Cc:     netdev@vger.kernel.org,
         DRIVER),
         bridge@lists.linux-foundation.org (moderated list:ETHERNET BRIDGE),
         linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK)
-Subject: [PATCH v2 net-next 0/6] ATU and FDB synchronization on locked ports
-Date:   Sat, 18 Mar 2023 15:10:04 +0100
-Message-Id: <20230318141010.513424-1-netdev@kapio-technology.com>
+Subject: [PATCH v2 net-next 1/6] net: bridge: add dynamic flag to switchdev notifier
+Date:   Sat, 18 Mar 2023 15:10:05 +0100
+Message-Id: <20230318141010.513424-2-netdev@kapio-technology.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230318141010.513424-1-netdev@kapio-technology.com>
+References: <20230318141010.513424-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set makes it possible to have synchronized dynamic ATU and FDB
-entries on locked ports. As locked ports are not able to automatically
-learn, they depend on userspace added entries, where userspace can add
-static or dynamic entries. The lifetime of static entries are completely
-dependent on userspace intervention, and thus not of interest here. We
-are only concerned with dynamic entries, which can be added with a
-command like:
+To be able to add dynamic FDB entries to drivers from userspace, the
+dynamic flag must be added when sending RTM_NEWNEIGH events down.
 
-bridge fdb replace ADDR dev <DEV> master dynamic
+Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+---
+ include/net/switchdev.h   | 1 +
+ net/bridge/br_switchdev.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-We choose only to support this feature on locked ports, as it involves
-utilizing the CPU to handle ATU related switchcore events (typically
-interrupts) and thus can result in significant performance loss if
-exposed to heavy traffic.
-
-On locked ports it is important for userspace to know when an authorized
-station has become silent, hence not breaking the communication of a
-station that has been authorized based on the MAC-Authentication Bypass
-(MAB) scheme. Thus if the station keeps being active after authorization,
-it will continue to have an open port as long as it is active. Only after
-a silent period will it have to be reauthorized. As the ageing process in
-the ATU is dependent on incoming traffic to the switchcore port, it is
-necessary for the ATU to signal that an entry has aged out, so that the
-FDB can be updated at the correct time.
-
-This patch set includes a solution for the Marvell mv88e6xxx driver, where
-for this driver we use the Hold-At-One feature so that an age-out
-violation interrupt occurs when a station has been silent for the
-system-set age time. The age out violation interrupt allows the switchcore
-driver to remove both the ATU and the FDB entry at the same time.
-
-It is up to the maintainers of other switchcore drivers to implement the
-feature for their specific driver.
-
-LOG:
-	V2:	Ensure the port is locked when using the feature as we
-		must ensure that learning is enabled at all times for
-		the interrupts to occur. This was missed in the previous
-		version.
-
-		Instead of ignoring unsupported flags, ensure that
-		drivers are only called when supporting the feature.
-		As 'dynamic' flag is legacy, all drivers support it at
-		least by their previous handling.
-
-Hans J. Schultz (6):
-  net: bridge: add dynamic flag to switchdev notifier
-  net: dsa: propagate flags down towards drivers
-  drivers: net: dsa: add fdb entry flags incoming to switchcore drivers
-  net: bridge: ensure FDB offloaded flag is handled as needed
-  net: dsa: mv88e6xxx: implementation of dynamic ATU entries
-  selftests: forwarding: add dynamic FDB test
-
- drivers/net/dsa/b53/b53_common.c              |  4 +-
- drivers/net/dsa/b53/b53_priv.h                |  4 +-
- drivers/net/dsa/hirschmann/hellcreek.c        |  4 +-
- drivers/net/dsa/lan9303-core.c                |  4 +-
- drivers/net/dsa/lantiq_gswip.c                |  4 +-
- drivers/net/dsa/microchip/ksz_common.c        |  6 +-
- drivers/net/dsa/mt7530.c                      |  4 +-
- drivers/net/dsa/mv88e6xxx/chip.c              | 20 ++++--
- drivers/net/dsa/mv88e6xxx/chip.h              |  9 ++-
- drivers/net/dsa/mv88e6xxx/global1_atu.c       | 21 +++++++
- drivers/net/dsa/mv88e6xxx/port.c              |  6 +-
- drivers/net/dsa/mv88e6xxx/switchdev.c         | 61 +++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/switchdev.h         |  5 ++
- drivers/net/dsa/mv88e6xxx/trace.h             |  5 ++
- drivers/net/dsa/ocelot/felix.c                |  4 +-
- drivers/net/dsa/qca/qca8k-common.c            |  4 +-
- drivers/net/dsa/qca/qca8k.h                   |  4 +-
- drivers/net/dsa/rzn1_a5psw.c                  |  4 +-
- drivers/net/dsa/sja1105/sja1105_main.c        | 11 ++--
- include/net/dsa.h                             |  9 ++-
- include/net/switchdev.h                       |  1 +
- net/bridge/br_fdb.c                           |  5 +-
- net/bridge/br_switchdev.c                     |  1 +
- net/dsa/dsa.c                                 |  6 ++
- net/dsa/port.c                                | 28 +++++----
- net/dsa/port.h                                |  8 +--
- net/dsa/slave.c                               | 20 ++++--
- net/dsa/switch.c                              | 26 +++++---
- net/dsa/switch.h                              |  1 +
- .../net/forwarding/bridge_locked_port.sh      | 36 +++++++++++
- 30 files changed, 258 insertions(+), 67 deletions(-)
-
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index ca0312b78294..aaf918d4ba67 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -249,6 +249,7 @@ struct switchdev_notifier_fdb_info {
+ 	u8 added_by_user:1,
+ 	   is_local:1,
+ 	   locked:1,
++	   is_dyn:1,
+ 	   offloaded:1;
+ };
+ 
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index de18e9c1d7a7..9707d3fdb396 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -134,6 +134,7 @@ static void br_switchdev_fdb_populate(struct net_bridge *br,
+ 	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+ 	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+ 	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
++	item->is_dyn = !test_bit(BR_FDB_STATIC, &fdb->flags);
+ 	item->locked = false;
+ 	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
+ 	item->info.ctx = ctx;
 -- 
 2.34.1
 
