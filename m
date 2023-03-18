@@ -2,580 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41F716C88A6
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BDFF6C89A5
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 01:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232111AbjCXW5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 18:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
+        id S231580AbjCYA3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 20:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232210AbjCXW5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:57:07 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DC81B2DD
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:57:05 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id d4-20020a056a00198400b00628000145bcso1640998pfl.0
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:57:05 -0700 (PDT)
+        with ESMTP id S230125AbjCYA3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 20:29:06 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DD1AD;
+        Fri, 24 Mar 2023 17:28:48 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id e15-20020a17090ac20f00b0023d1b009f52so6626057pjt.2;
+        Fri, 24 Mar 2023 17:28:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679698625;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/fIRRdgPCgBRvDIGGoFa8ok4zH3WFx33TPTLVE0KAd8=;
-        b=SYD3OTPFduy/T7MgK+/Y4Vmd6gcz2iAYriMbT3n5YgDXFHLH+u8BznSuJ7KHLy5G8A
-         NisvIEBG7ZGnPzcowYPruW/9cRWXRUZdicoR6qsewdGO9VLV6/ditI3b3CQTWGieKF2A
-         aBiSFylQf5X+iNmkblLxbHjEL/oHBQ3GIBgUsE7cDdF07DeqqIAHrj0/hQxRkGSvD72W
-         gOvVqz+jm8uL+KAAAMHLcPbA5OBKTS7rQSXxKQAumBRmpUiseOlNv907xwfFYv3fRttL
-         AYFdLlYwnIMjt/YpBU0ScAyM5+jj024dJ6eYmokA5PhqT7bF7z8jePdpSbz1R8nmTp66
-         Nqdw==
+        d=gmail.com; s=20210112; t=1679704128;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+OJY+zSJTEbG+AuJjykC53+E1s0LzCafsUtUrzK3O/Y=;
+        b=ZIqETiwHYCeFzJpsQdChujE4OTMgqGWZc55KzIxJ2BcDhSYGQMPiy2JCN5J8gDoU3W
+         NhjzA+cKhG6JcsF2VqcQhXufOS97wdhqeY91wIqi24BJJiv/i4UTJaFLzCb7AJ+4znpr
+         UDmD+EhI6ePI1NnQrHXt+hen+ThFhf02rmNo2f6rVOnSa2lxu4TW4LrRv4XIo0GySa3B
+         XcPgxhKSbFwXYL4vaPtRCIXrobQCE1lRIdOTVsyMYA6zRGWoPMeabbMYME7muXufjPhI
+         glPlyVG81xV4Enq+x4bP+WQavcFwNHwhkepPcSoRGkM9f/067IUEigs7wtrQab7DM9Fz
+         CNZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679698625;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/fIRRdgPCgBRvDIGGoFa8ok4zH3WFx33TPTLVE0KAd8=;
-        b=cgRR9vybXu31seBgHVGTKhMFDeEIBiatQM6oER0bcPxcuKrB+M7DFZy5yqr8oWsX0+
-         nMAL9Z3kXyVabraM/cG1EqeWXqoUcbel3Ew65jT1Z2g8bV8VlgO9xSDxKz89TFTrJzZV
-         49Rb9Jvlvw5JEzdHgIPLaBf48/FnuJy8Nnwp7Nqfj+aqooyAqMUaT3AVtpWm5aYX/7x7
-         yZX9+lQR7ABRp3dsKudFa+OSKaIP6U5IfdhMIY4WdTXDy4DVEHP8Qx7ZUkEr1zqSu9gj
-         WADsnb5WAf3WRSEsbA1QgQHZyyUqwlUfHPJ6GztIJShMy7yYiMP4IJqtXN4pSpau5PS0
-         RcLw==
-X-Gm-Message-State: AAQBX9dNkth7yxl3STvFlE03EHrLGN+M58+ltEa53RG52L3f7wKIR3S6
-        /ijOLYNgLUKhJApWbH3/RV2F4+CtMm2sVtlBgKf/ykEWHeobGMvswhuBxSwThzoloLtO/R1MdX7
-        U93L+PLWMFKojrK6fx9zT/N5QT6ILj5yLflaSsvcNqnbEtaIcarU8Fw==
-X-Google-Smtp-Source: AKy350ZxgarTgNAJY012bEkiG0uUm1FWhP4hKTWNz/Npzd+p46a9VeLvBfeTlofogL5iXgI7aFTXBZ0=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90a:690f:b0:23f:a26e:daa3 with SMTP id
- r15-20020a17090a690f00b0023fa26edaa3mr1320651pjj.9.1679698625129; Fri, 24 Mar
- 2023 15:57:05 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 15:56:56 -0700
-In-Reply-To: <20230324225656.3999785-1-sdf@google.com>
-Mime-Version: 1.0
-References: <20230324225656.3999785-1-sdf@google.com>
-X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
-Message-ID: <20230324225656.3999785-5-sdf@google.com>
-Subject: [PATCH net-next v2 4/4] tools: ynl: ethtool testing tool
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        d=1e100.net; s=20210112; t=1679704128;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+OJY+zSJTEbG+AuJjykC53+E1s0LzCafsUtUrzK3O/Y=;
+        b=Kx4j0UvgYwBQgClYZftupCtTYd5Xc6drXh7hdKvb1BHs9bVVOIgWu3xPhf9+s7nO0/
+         id4eF299c9u5Zu92sXTAUo2ELB+dbOD/ai7DAiM/m/oVvGgzgDaxP/jKrPMKcMWBqOQC
+         Tcn1Rtmc3bmVACAVyD/t4X6UDf1HG37ZBkMXdhaQbFCNgzAxQTsXQsJ4d3LS8hbx+zgy
+         rbaC95y71hMhXsX+BAD8za9YXNAk1LZSvGtmFRki3ZC2tNJEp+tLM3936oAiXAY0m4PJ
+         skB/7tAMY0DLpb1cpsqVUnQfb6UPdgBSUC+tp4xGJLpftBu4j+Og2dKte8nkjgsJj7DU
+         grNg==
+X-Gm-Message-State: AAQBX9caMFX5l5K/REQyjBE1r1Ge5rUbSuMQQOZIvtcSnotkJMTFocrZ
+        DR+uHQa7yDCmavogbn3mdzNAu6xzhCxMtQ==
+X-Google-Smtp-Source: AKy350ZrHPNC9SOz6cEZTAj1pSiTqDkl0dFv2BqMWx7x8G+KNbE5ILINLToJgrFvAp3VLdXvonPyTA==
+X-Received: by 2002:a17:902:d409:b0:1a1:a44f:70ed with SMTP id b9-20020a170902d40900b001a1a44f70edmr3726975ple.61.1679704128050;
+        Fri, 24 Mar 2023 17:28:48 -0700 (PDT)
+Received: from localhost (ec2-54-67-115-33.us-west-1.compute.amazonaws.com. [54.67.115.33])
+        by smtp.gmail.com with ESMTPSA id x8-20020a170902820800b0019a7ef5e9a8sm14813074pln.82.2023.03.24.17.28.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Mar 2023 17:28:47 -0700 (PDT)
+Date:   Sat, 18 Mar 2023 00:15:35 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, avkrasnov@sberdevices.ru,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
+Subject: Re: [PATCH net] vsock/loopback: use only sk_buff_head.lock to
+ protect the packet queue
+Message-ID: <ZBUCp4sSBURn5zRl@bullseye>
+References: <20230324115450.11268-1-sgarzare@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230324115450.11268-1-sgarzare@redhat.com>
+X-Spam-Status: No, score=1.9 required=5.0 tests=DATE_IN_PAST_96_XX,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is what I've been using to see whether the spec makes sense.
-A small subset of getters (mostly the unprivileged ones) is implemented.
-Some setters (channels) also work.
-Setters for messages with bitmasks are not implemented.
+On Fri, Mar 24, 2023 at 12:54:50PM +0100, Stefano Garzarella wrote:
+> pkt_list_lock was used before commit 71dc9ec9ac7d ("virtio/vsock:
+> replace virtio_vsock_pkt with sk_buff") to protect the packet queue.
+> After that commit we switched to sk_buff and we are using
+> sk_buff_head.lock in almost every place to protect the packet queue
+> except in vsock_loopback_work() when we call skb_queue_splice_init().
+> 
+> As reported by syzbot, this caused unlocked concurrent access to the
+> packet queue between vsock_loopback_work() and
+> vsock_loopback_cancel_pkt() since it is not holding pkt_list_lock.
+> 
+> With the introduction of sk_buff_head, pkt_list_lock is redundant and
+> can cause confusion, so let's remove it and use sk_buff_head.lock
+> everywhere to protect the packet queue access.
+> 
+> Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+> Cc: bobby.eshleman@bytedance.com
+> Reported-and-tested-by: syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  net/vmw_vsock/vsock_loopback.c | 10 ++--------
+>  1 file changed, 2 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loopback.c
+> index 671e03240fc5..89905c092645 100644
+> --- a/net/vmw_vsock/vsock_loopback.c
+> +++ b/net/vmw_vsock/vsock_loopback.c
+> @@ -15,7 +15,6 @@
+>  struct vsock_loopback {
+>  	struct workqueue_struct *workqueue;
+>  
+> -	spinlock_t pkt_list_lock; /* protects pkt_list */
+>  	struct sk_buff_head pkt_queue;
+>  	struct work_struct pkt_work;
+>  };
+> @@ -32,9 +31,7 @@ static int vsock_loopback_send_pkt(struct sk_buff *skb)
+>  	struct vsock_loopback *vsock = &the_vsock_loopback;
+>  	int len = skb->len;
+>  
+> -	spin_lock_bh(&vsock->pkt_list_lock);
+>  	skb_queue_tail(&vsock->pkt_queue, skb);
+> -	spin_unlock_bh(&vsock->pkt_list_lock);
+>  
+>  	queue_work(vsock->workqueue, &vsock->pkt_work);
+>  
+> @@ -113,9 +110,9 @@ static void vsock_loopback_work(struct work_struct *work)
+>  
+>  	skb_queue_head_init(&pkts);
+>  
+> -	spin_lock_bh(&vsock->pkt_list_lock);
+> +	spin_lock_bh(&vsock->pkt_queue.lock);
+>  	skb_queue_splice_init(&vsock->pkt_queue, &pkts);
+> -	spin_unlock_bh(&vsock->pkt_list_lock);
+> +	spin_unlock_bh(&vsock->pkt_queue.lock);
+>  
+>  	while ((skb = __skb_dequeue(&pkts))) {
+>  		virtio_transport_deliver_tap_pkt(skb);
+> @@ -132,7 +129,6 @@ static int __init vsock_loopback_init(void)
+>  	if (!vsock->workqueue)
+>  		return -ENOMEM;
+>  
+> -	spin_lock_init(&vsock->pkt_list_lock);
+>  	skb_queue_head_init(&vsock->pkt_queue);
+>  	INIT_WORK(&vsock->pkt_work, vsock_loopback_work);
+>  
+> @@ -156,9 +152,7 @@ static void __exit vsock_loopback_exit(void)
+>  
+>  	flush_work(&vsock->pkt_work);
+>  
+> -	spin_lock_bh(&vsock->pkt_list_lock);
+>  	virtio_vsock_skb_queue_purge(&vsock->pkt_queue);
+> -	spin_unlock_bh(&vsock->pkt_list_lock);
+>  
+>  	destroy_workqueue(vsock->workqueue);
+>  }
+> -- 
+> 2.39.2
+> 
 
-Initially I was trying to make this tool look 1:1 like real ethtool,
-but eventually gave up :-)
+Makes sense to me. Thanks for getting to this so fast.
 
-Sample output:
+Best,
+Bobby
 
-$ ./tools/net/ynl/ethtool enp0s31f6
-Settings for enp0s31f6:
-Supported ports: [ TP ]
-Supported link modes: 10baseT/Half 10baseT/Full 100baseT/Half
-100baseT/Full 1000baseT/Full
-Supported pause frame use: no
-Supports auto-negotiation: yes
-Supported FEC modes: Not reported
-Speed: Unknown!
-Duplex: Unknown! (255)
-Auto-negotiation: on
-Port: Twisted Pair
-PHYAD: 2
-Transceiver: Internal
-MDI-X: Unknown (auto)
-Current message level: drv probe link
-Link detected: no
-
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/net/ynl/ethtool       | 424 ++++++++++++++++++++++++++++++++++++
- tools/net/ynl/lib/nlspec.py |   9 +
- tools/net/ynl/lib/ynl.py    |  11 +
- 3 files changed, 444 insertions(+)
- create mode 100755 tools/net/ynl/ethtool
-
-diff --git a/tools/net/ynl/ethtool b/tools/net/ynl/ethtool
-new file mode 100755
-index 000000000000..26a5d93acc70
---- /dev/null
-+++ b/tools/net/ynl/ethtool
-@@ -0,0 +1,424 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+
-+import argparse
-+import json
-+import pprint
-+import sys
-+import re
-+
-+from lib import YnlFamily
-+
-+def args_to_req(ynl, op_name, args, req):
-+  """
-+  Verify and convert command-line arguments to the ynl-compatible request.
-+  """
-+  valid_attrs = ynl.operation_do_attributes(op_name)
-+  valid_attrs.remove('header') # not user-provided
-+
-+  if len(args) == 0:
-+    print(f'no attributes, expected: {valid_attrs}')
-+    sys.exit(1)
-+
-+  i = 0
-+  while i < len(args):
-+    attr = args[i]
-+    if i + 1 >= len(args):
-+      print(f'expected value for \'{attr}\'')
-+      sys.exit(1)
-+
-+    if attr not in valid_attrs:
-+      print(f'invalid attribute \'{attr}\', expected: {valid_attrs}')
-+      sys.exit(1)
-+
-+    val = args[i+1]
-+    i += 2
-+
-+    req[attr] = val
-+
-+def print_field(reply, *desc):
-+  """
-+  Pretty-print a set of fields from the reply. desc specifies the
-+  fields and the optional type (bool/yn).
-+  """
-+  if len(desc) == 0:
-+    return print_field(reply, *zip(reply.keys(), reply.keys()))
-+
-+  for spec in desc:
-+    try:
-+      field, name, tp = spec
-+    except:
-+      field, name = spec
-+      tp = 'int'
-+
-+    value = reply.get(field, None)
-+    if tp == 'yn':
-+      value = 'yes' if value else 'no'
-+    elif tp == 'bool' or isinstance(value, bool):
-+      value = 'on' if value else 'off'
-+    else:
-+      value = 'n/a' if value is None else value
-+
-+    print(f'{name}: {value}')
-+
-+def print_speed(name, value):
-+  """
-+  Print out the speed-like strings from the value dict.
-+  """
-+  speed_re = re.compile(r'[0-9]+base[^/]+/.+')
-+  speed = [ k for k, v in value.items() if v and speed_re.match(k) ]
-+  print(f'{name}: {" ".join(speed)}')
-+
-+def doit(ynl, args, op_name):
-+  """
-+  Prepare request header, parse arguments and doit.
-+  """
-+  req = {
-+      'header': {
-+        'dev-name': args.device,
-+      },
-+  }
-+
-+  args_to_req(ynl, op_name, args.args, req)
-+  ynl.do(op_name, req)
-+
-+def dumpit(ynl, args, op_name, extra = {}):
-+  """
-+  Prepare request header, parse arguments and dumpit (filtering out the
-+  devices we're not interested in).
-+  """
-+  reply = ynl.dump(op_name, { 'header': {} } | extra)
-+  if not reply:
-+    return {}
-+
-+  for msg in reply:
-+    if msg['header']['dev-name'] == args.device:
-+      if args.json:
-+        pprint.PrettyPrinter().pprint(msg)
-+        sys.exit(0)
-+      msg.pop('header', None)
-+      return msg
-+
-+  print(f"Not supported for device {args.device}")
-+  sys.exit(1)
-+
-+def bits_to_dict(attr):
-+  """
-+  Convert ynl-formatted bitmask to a dict of bit=value.
-+  """
-+  ret = {}
-+  if 'bits' not in attr:
-+    return dict()
-+  if 'bit' not in attr['bits']:
-+    return dict()
-+  for bit in attr['bits']['bit']:
-+    if bit['name'] == '':
-+      continue
-+    name = bit['name']
-+    value = bit.get('value', False)
-+    ret[name] = value
-+  return ret
-+
-+def main():
-+  parser = argparse.ArgumentParser(description='ethtool wannabe')
-+  parser.add_argument('--json', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('--show-priv-flags', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('--set-priv-flags', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('--show-eee', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('--set-eee', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-a', '--show-pause', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-A', '--set-pause', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-c', '--show-coalesce', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-C', '--set-coalesce', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-g', '--show-ring', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-G', '--set-ring', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-k', '--show-features', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-K', '--set-features', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-l', '--show-channels', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-L', '--set-channels', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-T', '--show-time-stamping', action=argparse.BooleanOptionalAction)
-+  parser.add_argument('-S', '--statistics', action=argparse.BooleanOptionalAction)
-+  # TODO: --show-tunnels        tunnel-info-get
-+  # TODO: --show-module         module-get
-+  # TODO: --get-plca-cfg        plca-get
-+  # TODO: --get-plca-status     plca-get-status
-+  # TODO: --show-mm             mm-get
-+  # TODO: --show-fec            fec-get
-+  # TODO: --dump-module-eerpom  module-eeprom-get
-+  # TODO:                       pse-get
-+  # TODO:                       rss-get
-+  parser.add_argument('device', metavar='device', type=str)
-+  parser.add_argument('args', metavar='args', type=str, nargs='*')
-+  global args
-+  args = parser.parse_args()
-+
-+  spec = '/usr/local/google/home/sdf/src/linux/Documentation/netlink/specs/ethtool.yaml'
-+  schema = '/usr/local/google/home/sdf/src/linux/Documentation/netlink/genetlink-legacy.yaml'
-+
-+  ynl = YnlFamily(spec, schema)
-+
-+  if args.set_priv_flags:
-+    # TODO: parse the bitmask
-+    print("not implemented")
-+    return
-+
-+  if args.set_eee:
-+    return doit(ynl, args, 'eee-set')
-+
-+  if args.set_pause:
-+    return doit(ynl, args, 'pause-set')
-+
-+  if args.set_coalesce:
-+    return doit(ynl, args, 'coalesce-set')
-+
-+  if args.set_features:
-+    # TODO: parse the bitmask
-+    print("not implemented")
-+    return
-+
-+  if args.set_channels:
-+    return doit(ynl, args, 'channels-set')
-+
-+  if args.set_ring:
-+    return doit(ynl, args, 'rings-set')
-+
-+  if args.show_priv_flags:
-+    flags = bits_to_dict(dumpit(ynl, args, 'privflags-get')['flags'])
-+    print_field(flags)
-+    return
-+
-+  if args.show_eee:
-+    eee = dumpit(ynl, args, 'eee-get')
-+    ours = bits_to_dict(eee['modes-ours'])
-+    peer = bits_to_dict(eee['modes-peer'])
-+
-+    if 'enabled' in eee:
-+        status = 'enabled' if eee['enabled'] else 'disabled'
-+        if 'active' in eee and eee['active']:
-+            status = status + ' - active'
-+        else:
-+            status = status + ' - inactive'
-+    else:
-+        status = 'not supported'
-+
-+    print(f'EEE status: {status}')
-+    print_field(eee, ('tx-lpi-timer', 'Tx LPI'))
-+    print_speed('Advertised EEE link modes', ours)
-+    print_speed('Link partner advertised EEE link modes', peer)
-+
-+    return
-+
-+  if args.show_pause:
-+    print_field(dumpit(ynl, args, 'pause-get'),
-+            ('autoneg', 'Autonegotiate', 'bool'),
-+            ('rx', 'RX', 'bool'),
-+            ('tx', 'TX', 'bool'))
-+    return
-+
-+  if args.show_coalesce:
-+    print_field(dumpit(ynl, args, 'coalesce-get'))
-+    return
-+
-+  if args.show_features:
-+    reply = dumpit(ynl, args, 'features-get')
-+    available = bits_to_dict(reply['hw'])
-+    requested = bits_to_dict(reply['wanted']).keys()
-+    active = bits_to_dict(reply['active']).keys()
-+    never_changed = bits_to_dict(reply['nochange']).keys()
-+
-+    for f in sorted(available):
-+      value = "off"
-+      if f in active:
-+        value = "on"
-+
-+      fixed = ""
-+      if f not in available or f in never_changed:
-+        fixed = " [fixed]"
-+
-+      req = ""
-+      if f in requested:
-+        if f in active:
-+          req = " [requested on]"
-+        else:
-+          req = " [requested off]"
-+
-+      print(f'{f}: {value}{fixed}{req}')
-+
-+    return
-+
-+  if args.show_channels:
-+    reply = dumpit(ynl, args, 'channels-get')
-+    print(f'Channel parameters for {args.device}:')
-+
-+    print(f'Pre-set maximums:')
-+    print_field(reply,
-+        ('rx-max', 'RX'),
-+        ('tx-max', 'TX'),
-+        ('other-max', 'Other'),
-+        ('combined-max', 'Combined'))
-+
-+    print(f'Current hardware settings:')
-+    print_field(reply,
-+        ('rx-count', 'RX'),
-+        ('tx-count', 'TX'),
-+        ('other-count', 'Other'),
-+        ('combined-count', 'Combined'))
-+
-+    return
-+
-+  if args.show_ring:
-+    reply = dumpit(ynl, args, 'channels-get')
-+
-+    print(f'Ring parameters for {args.device}:')
-+
-+    print(f'Pre-set maximums:')
-+    print_field(reply,
-+        ('rx-max', 'RX'),
-+        ('rx-mini-max', 'RX Mini'),
-+        ('rx-jumbo-max', 'RX Jumbo'),
-+        ('tx-max', 'TX'))
-+
-+    print(f'Current hardware settings:')
-+    print_field(reply,
-+        ('rx', 'RX'),
-+        ('rx-mini', 'RX Mini'),
-+        ('rx-jumbo', 'RX Jumbo'),
-+        ('tx', 'TX'))
-+
-+    print_field(reply,
-+        ('rx-buf-len', 'RX Buf Len'),
-+        ('cqe-size', 'CQE Size'),
-+        ('tx-push', 'TX Push', 'bool'))
-+
-+    return
-+
-+  if args.statistics:
-+    print(f'NIC statistics:')
-+
-+    # TODO: pass id?
-+    strset = dumpit(ynl, args, 'strset-get')
-+    pprint.PrettyPrinter().pprint(strset)
-+
-+    req = {
-+      'groups': {
-+        'size': 1,
-+        'bits': {
-+          'bit':
-+            # TODO: support passing the bitmask
-+            #[
-+              #{ 'name': 'eth-phy', 'value': True },
-+              { 'name': 'eth-mac', 'value': True },
-+              #{ 'name': 'eth-ctrl', 'value': True },
-+              #{ 'name': 'rmon', 'value': True },
-+            #],
-+        },
-+      },
-+    }
-+
-+    rsp = dumpit(ynl, args, 'stats-get', req)
-+    pprint.PrettyPrinter().pprint(rsp)
-+    return
-+
-+  if args.show_time_stamping:
-+    tsinfo = dumpit(ynl, args, 'tsinfo-get')
-+
-+    print(f'Time stamping parameters for {args.device}:')
-+
-+    print('Capabilities:')
-+    [print(f'\t{v}') for v in bits_to_dict(tsinfo['timestamping'])]
-+
-+    print(f'PTP Hardware Clock: {tsinfo["phc-index"]}')
-+
-+    print('Hardware Transmit Timestamp Modes:')
-+    [print(f'\t{v}') for v in bits_to_dict(tsinfo['tx-types'])]
-+
-+    print('Hardware Receive Filter Modes:')
-+    [print(f'\t{v}') for v in bits_to_dict(tsinfo['rx-filters'])]
-+    return
-+
-+  print(f'Settings for {args.device}:')
-+  linkmodes = dumpit(ynl, args, 'linkmodes-get')
-+  ours = bits_to_dict(linkmodes['ours'])
-+
-+  supported_ports = ('TP',  'AUI', 'BNC', 'MII', 'FIBRE', 'Backplane')
-+  ports = [ p for p in supported_ports if ours.get(p, False)]
-+  print(f'Supported ports: [ {" ".join(ports)} ]')
-+
-+  print_speed('Supported link modes', ours)
-+
-+  print_field(ours, ('Pause', 'Supported pause frame use', 'yn'))
-+  print_field(ours, ('Autoneg', 'Supports auto-negotiation', 'yn'))
-+
-+  supported_fec = ('None',  'PS', 'BASER', 'LLRS')
-+  fec = [ p for p in supported_fec if ours.get(p, False)]
-+  fec_str = " ".join(fec)
-+  if len(fec) == 0:
-+    fec_str = "Not reported"
-+
-+  print(f'Supported FEC modes: {fec_str}')
-+
-+  speed = 'Unknown!'
-+  if linkmodes['speed'] > 0 and linkmodes['speed'] < 0xffffffff:
-+    speed = f'{linkmodes["speed"]}Mb/s'
-+  print(f'Speed: {speed}')
-+
-+  duplex_modes = {
-+          0: 'Half',
-+          1: 'Full',
-+  }
-+  duplex = duplex_modes.get(linkmodes["duplex"], None)
-+  if not duplex:
-+    duplex = f'Unknown! ({linkmodes["duplex"]})'
-+  print(f'Duplex: {duplex}')
-+
-+  autoneg = "off"
-+  if linkmodes.get("autoneg", 0) != 0:
-+    autoneg = "on"
-+  print(f'Auto-negotiation: {autoneg}')
-+
-+  ports = {
-+          0: 'Twisted Pair',
-+          1: 'AUI',
-+          2: 'MII',
-+          3: 'FIBRE',
-+          4: 'BNC',
-+          5: 'Directly Attached Copper',
-+          0xef: 'None',
-+  }
-+  linkinfo = dumpit(ynl, args, 'linkinfo-get')
-+  print(f'Port: {ports.get(linkinfo["port"], "Other")}')
-+
-+  print_field(linkinfo, ('phyaddr', 'PHYAD'))
-+
-+  transceiver = {
-+          0: 'Internal',
-+          1: 'External',
-+  }
-+  print(f'Transceiver: {transceiver.get(linkinfo["transceiver"], "Unknown")}')
-+
-+  mdix_ctrl = {
-+          1: 'off',
-+          2: 'on',
-+  }
-+  mdix = mdix_ctrl.get(linkinfo['tp-mdix-ctrl'], None)
-+  if mdix:
-+    mdix = mdix + ' (forced)'
-+  else:
-+    mdix = mdix_ctrl.get(linkinfo['tp-mdix'], 'Unknown (auto)')
-+  print(f'MDI-X: {mdix}')
-+
-+  debug = dumpit(ynl, args, 'debug-get')
-+  msgmask = bits_to_dict(debug.get("msgmask", [])).keys()
-+  print(f'Current message level: {" ".join(msgmask)}')
-+
-+  linkstate = dumpit(ynl, args, 'linkstate-get')
-+  detected_states = {
-+          0: 'no',
-+          1: 'yes',
-+  }
-+  # TODO: wol-get
-+  detected = detected_states.get(linkstate['link'], 'unknown')
-+  print(f'Link detected: {detected}')
-+
-+if __name__ == '__main__':
-+  main()
-diff --git a/tools/net/ynl/lib/nlspec.py b/tools/net/ynl/lib/nlspec.py
-index d04450c2a44a..174690fccfcd 100644
---- a/tools/net/ynl/lib/nlspec.py
-+++ b/tools/net/ynl/lib/nlspec.py
-@@ -392,6 +392,15 @@ jsonschema = None
- 
-             self.msgs[op.name] = op
- 
-+    def find_operation(self, name):
-+      """
-+      For a given operation name, find and return operation spec.
-+      """
-+      for op in self.yaml['operations']['list']:
-+        if name == op['name']:
-+          return op
-+      return None
-+
-     def resolve(self):
-         self.resolve_up(super())
- 
-diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
-index b05c341e278c..cd9d815bb6ec 100644
---- a/tools/net/ynl/lib/ynl.py
-+++ b/tools/net/ynl/lib/ynl.py
-@@ -490,6 +490,17 @@ genl_family_name_to_id = None
- 
-                 self.handle_ntf(nl_msg, gm)
- 
-+    def operation_do_attributes(self, name):
-+      """
-+      For a given operation name, find and return a supported
-+      set of attributes (as a dict).
-+      """
-+      op = self.find_operation(name)
-+      if not op:
-+        return None
-+
-+      return op['do']['request']['attributes'].copy()
-+
-     def _op(self, method, vals, dump=False):
-         op = self.ops[method]
- 
--- 
-2.40.0.348.gf938b09366-goog
-
+Reviewed-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
