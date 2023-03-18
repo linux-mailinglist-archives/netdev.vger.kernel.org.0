@@ -2,86 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 757C26BFCB6
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 21:25:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D3236BFCBB
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 21:30:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbjCRUZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 16:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36962 "EHLO
+        id S229823AbjCRUaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 16:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbjCRUZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 16:25:27 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5516233CE;
-        Sat, 18 Mar 2023 13:25:25 -0700 (PDT)
-Received: from fpc (unknown [46.242.14.200])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 6B7B144C1023;
-        Sat, 18 Mar 2023 20:25:20 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 6B7B144C1023
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-        s=default; t=1679171120;
-        bh=6V3Vbhrq5BYhBe6TJBntt2bA0uy7QayeFqJtV4fw6hg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=soQxhSvxWXuee3nKUyKkYgp6CetKvYpQINXItjNmJI2RZamrhgEhF1QaVlUy6i0Pd
-         9v3mCHVdeAO1vejvn0x4hflG/BgeDuB9GwhGgNlSYFa4+eIf/Uv9F/zKKbmV5amFMN
-         cmpudPAOc5UdYpN/2GbcEGlbvG8cFRHjCO+67G7o=
-Date:   Sat, 18 Mar 2023 23:25:16 +0300
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229621AbjCRUaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 16:30:11 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC012CFFB
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 13:30:09 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id eg48so32758912edb.13
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 13:30:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679171407;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IoJ8JNTe6wgzO9Cu9r3XRL6EXOxlsCLor10dstEGt+M=;
+        b=g40b3H0zZRAvEDmN5gsozoaCZe0pVY4ujMUgn3wY3DyQEOiSq+vLjbllc5GdtmBTFA
+         MZsS3K3shYab31Arp5ZYn4DA0annOnjFXni8CTSdVf/nU1oWb1z0x9LfF3o2JxHC6Qpv
+         1IfpzXMSyNIp12BQGEu61tKLwNqbdfmlcdTDOCHzlqVpND6baRMTsNHodiskrOE9bM07
+         kBwR/HMK8/nVTe16Cz0oETvhhVygtHAXploBmLpGE86bn+I/wC+x5F2tEx8zi5tlxg0k
+         WRSW7+shSNFtFLxp4em2qpha18akYK3yjKSmF/51wX9BCYYzG/iv60oNnE3k8/w4e9kT
+         IrHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679171407;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=IoJ8JNTe6wgzO9Cu9r3XRL6EXOxlsCLor10dstEGt+M=;
+        b=37mHq7KgEw5wNLY/dZnkx/3BtHdfMfhtyPnBskyjST6PQ5tGCKObNq9JwaBQ36HjB+
+         iZFuRLlZ0bjtxSIMc5R1pH8FdIC/ut93gDKY8/tz/rhxSnEES+NpkpDgwqWPY8h16Iwl
+         VyK2hxKb2AeLL0J0i5hQco3SXyh5YMJ3DhwL8Bm05QlrWFTDu9neb8MbvZQMfrLpxBds
+         NXKh9tkU5cZnjfooDPmEPMQUG0nZ4KJCwFzZNFuPzHovfn8ZldwQDK2MukjmdghivTQd
+         rdAVmBrXMlyiSBnCzEy8nJyAWBPMSAz/oKFSuSpz+/+kCqBVkQPY3YH2xOJDbTfl+g4z
+         nDEA==
+X-Gm-Message-State: AO0yUKWj0kyWkg3gM/pqu6TkR1HrGKD6i4HFBFcc3M+mqlfA7g8FFg3n
+        JjLZ0HNF5ruqiZfwSpvSXJ4=
+X-Google-Smtp-Source: AK7set8mzwG6ka99OP8sVaSJIO9h9mx6jh7tIi2qCJ2AQYcsP0HbNRYMiw2o2YIYLWA+0Cv4dLCPEg==
+X-Received: by 2002:a17:907:b9d0:b0:88a:2e57:9813 with SMTP id xa16-20020a170907b9d000b0088a2e579813mr4915106ejc.33.1679171407449;
+        Sat, 18 Mar 2023 13:30:07 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c073:a00:b51a:ddab:12c0:b88a? (dynamic-2a01-0c23-c073-0a00-b51a-ddab-12c0-b88a.c23.pool.telefonica.de. [2a01:c23:c073:a00:b51a:ddab:12c0:b88a])
+        by smtp.googlemail.com with ESMTPSA id j30-20020a508a9e000000b004af5968cb3bsm2734039edj.17.2023.03.18.13.30.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Mar 2023 13:30:06 -0700 (PDT)
+Message-ID: <683422c6-c1e1-90b9-59ed-75d0f264f354@gmail.com>
+Date:   Sat, 18 Mar 2023 21:30:01 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Content-Language: en-US
+To:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Senthil Balasubramanian <senthilkumar@atheros.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
-        Sujith <Sujith.Manoharan@atheros.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        lvc-project@linuxtesting.org,
-        syzbot+f2cb6e0ffdb961921e4d@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/3] wifi: ath9k: avoid referencing uninit memory in
- ath9k_wmi_ctrl_rx
-Message-ID: <20230318202516.2dpebysmo6uxilab@fpc>
-References: <20230315202112.163012-1-pchelkin@ispras.ru>
- <20230315202112.163012-2-pchelkin@ispras.ru>
- <871qlovtho.fsf@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871qlovtho.fsf@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Chris Healy <cphealy@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/2] net: phy: reuse SMSC PHY driver functionality in
+ the meson-gxl PHY driver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 07:26:11AM +0200, Kalle Valo wrote:
-> 
-> It would be also nice to know how you have tested these. Syzkaller is no
-> substitute for testing on a real hardware.
-> 
+The Amlogic Meson internal PHY's have the same register layout as
+certain SMSC PHY's (also for non-c22-standard registers). This seems
+to be more than just coincidence. Apparently they also need the same
+workaround for EDPD mode (energy detect power down). Therefore let's
+reuse SMSC PHY driver functionality in the meson-gxl PHY driver.
 
-Unfortunately, currently I can't test this on real hardware so probably we
-should postpone the patch discussion for some time. Roughly in a week or
-two I'll be able to do some testing and try to reproduce the problem
-there.
+Heiner Kallweit (2):
+  net: phy: smsc: export functions for use by meson-gxl PHY driver
+  net: phy: meson-gxl: reuse functionality of the SMSC PHY driver
 
-For sure this should be tested on real hardware as some issues may arise.
-I sent the patch based on the commit b383e8abed41 ("wifi: ath9k: avoid
-uninit memory read in ath9k_htc_rx_msg()") where it is explained
-thoroughly what can lead to such behaviour. At the moment I don't see
-anything in the code which can prevent that invalid scenario to happen for
-endpoint callbacks path.
+ drivers/net/phy/Kconfig     |  1 +
+ drivers/net/phy/meson-gxl.c | 77 ++++---------------------------------
+ drivers/net/phy/smsc.c      | 20 ++++++----
+ include/linux/smscphy.h     |  6 +++
+ 4 files changed, 28 insertions(+), 76 deletions(-)
 
-Actually, sanity checks for SKB length have been added everywhere inside
-ath9k_htc_rx_msg() except where the endpoint callbacks are called. As for
-the repro, the SKB inside ath9k_hif_usb_rx_stream() is allocated with
-pkt_len=8 so it passes the 'htc_frame_hdr' check and processing in
-ath9k_htc_rx_msg() but it obviously cannot be handled correctly in the
-endpoint callbacks then.
+-- 
+2.39.2
+
