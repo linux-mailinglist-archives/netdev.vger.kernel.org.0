@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 954416BF7CF
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 05:52:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA126BF7DE
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 06:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229516AbjCREwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 00:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        id S229908AbjCRFAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 01:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjCREwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 00:52:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A204DBD0
-        for <netdev@vger.kernel.org>; Fri, 17 Mar 2023 21:52:30 -0700 (PDT)
+        with ESMTP id S229681AbjCRFAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 01:00:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1143113DE6;
+        Fri, 17 Mar 2023 22:00:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2D3A6068E
-        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 04:52:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C8D4C433EF;
-        Sat, 18 Mar 2023 04:52:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3581B826CF;
+        Sat, 18 Mar 2023 05:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E911C433A4;
+        Sat, 18 Mar 2023 05:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679115149;
-        bh=E72n6PaRuyO/6nbFK5Qk/7oP3L08DkRj7Zo4HvvN9KY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bQ8CmJramRwhEtvWypjCNHImpTEiGyuE46fj3zgsjxJP6jbP5oMa/JYKkG+D1LRZ5
-         WIaWmvuJx6fT2KEhkfUT2o3AGfcI3HPycSXepCbtjn008sr3CW/N4y4oNHdSPkggVr
-         oxM/oVhBmbgBx1WrGVahLon5q6slQjSV6eoA5pnxi8BVJYVyr6q6GqO+oXi6V/5yr8
-         XYYLQAXj/PCMYgFyy99QdUaWJAE8EdySn3PBUf7t3VP7ZWYc6Ba3ELx2JA/Uzv7WlB
-         speYrLfGgFLnbJBVBhtsPRHmD3+2WbjEwRJaKW/6fie7AZICumegkAgdCxBiwuS5nj
-         Q40qpFp5DSZaQ==
-Date:   Fri, 17 Mar 2023 21:52:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Donald Hunter <donald.hunter@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, donald.hunter@redhat.com
-Subject: Re: [PATCH net-next v1 2/2] netlink: specs: add partial
- specification for openvswitch
-Message-ID: <20230317215228.68ad300a@kernel.org>
-In-Reply-To: <20230316120142.94268-3-donald.hunter@gmail.com>
-References: <20230316120142.94268-1-donald.hunter@gmail.com>
-        <20230316120142.94268-3-donald.hunter@gmail.com>
+        s=k20201202; t=1679115618;
+        bh=FZnujrGCp1B1CEc+INX4HbI+DIg2aKML9zdPExFTr2Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rQ22Acr2mLqdmI68YY2zGJnc0xxq+GDrBto5oASbFEdkJRbrBkOPoN/3G1m0FkqC1
+         TPuPoDI+Y3vtT1en2Qa3y/Si2OVaxcuZwsdgjzjUtibjzTKqgrgp6YX5Kygd8/EMpv
+         H1Kh5f9uxFLyT7WeqiB10Iv/jCJ+OddmnlQVwMAruCWfZpds0PFPsDe4UsmZcx+VkC
+         JagCrVZ4ZJS0+5k3GOaUbGowFOxvTv5BIWd/xl22wO6mZgwc6GreA9EEDGlxDH5RjD
+         /pXrCXVrq6uklTRlkM9EorQ21FpTAK/bDW6uIDg5jchSsFDG8GGlO6hG4hVDbUqyMs
+         /gBqUOfFx+5TQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A73FE21EE5;
+        Sat, 18 Mar 2023 05:00:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 RESEND] ptp: kvm: Use decrypted memory in confidential
+ guest on x86
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167911561836.25115.1462637997047748542.git-patchwork-notify@kernel.org>
+Date:   Sat, 18 Mar 2023 05:00:18 +0000
+References: <20230308150531.477741-1-jpiotrowski@linux.microsoft.com>
+In-Reply-To: <20230308150531.477741-1-jpiotrowski@linux.microsoft.com>
+To:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        richardcochran@gmail.com, hch@lst.de
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,10 +56,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Mar 2023 12:01:42 +0000 Donald Hunter wrote:
-> +user-header: ovs_header
+Hello:
 
-Let's place this attr inside 'operations'?
+This patch was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
-also s/_/-/ everywhere, we try to use - as a separator in the spec, 
-the C codegen replaces it with underscores
+On Wed,  8 Mar 2023 15:05:31 +0000 you wrote:
+> KVM_HC_CLOCK_PAIRING currently fails inside SEV-SNP guests because the
+> guest passes an address to static data to the host. In confidential
+> computing the host can't access arbitrary guest memory so handling the
+> hypercall runs into an "rmpfault". To make the hypercall work, the guest
+> needs to explicitly mark the memory as decrypted. Do that in
+> kvm_arch_ptp_init(), but retain the previous behavior for
+> non-confidential guests to save us from having to allocate memory.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,RESEND] ptp: kvm: Use decrypted memory in confidential guest on x86
+    https://git.kernel.org/netdev/net-next/c/6365ba64b4db
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
