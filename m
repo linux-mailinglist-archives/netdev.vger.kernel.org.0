@@ -2,146 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C696BFB4E
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 16:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B3836BFB7B
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 17:18:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbjCRPnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 11:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        id S229602AbjCRQSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 12:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbjCRPnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 11:43:20 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258FB1A964;
-        Sat, 18 Mar 2023 08:43:19 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id fy17so6151138qtb.2;
-        Sat, 18 Mar 2023 08:43:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679154198;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=83azAsLsNv6lIAaa/44pUgNbDjt9kE7NkMwa/ioRqlg=;
-        b=d83uusW0G/mwN787AdzNErFHeJ23t0Ds715cf4Bvgj0jsIYYxLxibyJcQQzupn3zJG
-         8k77NqHeTwAlJI0gj+swxb4V+Ed7yPhsfC4BS2yZi57TfzsXrSp0Sion9u7ZHgGOBawK
-         EqcD1BByqof7cURiX5a1ccLX2uUaJ5SQvYoZA5D1UBaFo3lpwECjLvAguFpbQ6ZOFKV9
-         8cG6FtcyeSxMSEoXLMvu3NDNCDIq0kyUQTiPVLq/QMSbsz0ZgUQbz2IX7p/ewHeR3y3g
-         Rj+BsXaiY09In7xuTHsdcKCgix57EDruIkpPGGY9QezAQuO0UYatS6s1PcYkRApEpFCC
-         glug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679154198;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=83azAsLsNv6lIAaa/44pUgNbDjt9kE7NkMwa/ioRqlg=;
-        b=ycRiHAjtWjkBGAfjYmmBtWgyBR5i1jEGtOkEKEiB879LlFDePXTMstvmXlZ60CZCIJ
-         L6wS2W0BlCSTvAfe5ql/8FNWOn8Rh4mktMNrpd1wsizThigvUMU05RtieG18MO2MqkG9
-         zZRborAIX26UUXam2hDaI5z2p6cYBRckwH/VAmQDUFMHfvrPoy7EMrxb5FfolE1wzwMB
-         WuFfomwu8h0mTcKeKk4SZTCVKzfKnhngzqRZxkvLBIzQ0tykdLg8+L5ut8yBevF1yUES
-         YuDeQfU2erOD1WEzdHleQeDgtgrLOiemba1yGemNNQhRKP5IamfyXTBDSzg9bvG/HydT
-         Ix2A==
-X-Gm-Message-State: AO0yUKXPcvuz0jU4UUsxFakiQWhp3MxHaAAfXOzKWo2Kp/qFQOHkebnu
-        jCtCRWW1N/mR9ZcW8GVoqPE=
-X-Google-Smtp-Source: AK7set8v1aDLON8+cHTsGWTYZ1rj3siqD+d/qt/qKIoUbvYrQS6svga3YKTATlz5dhgNie/5UdRFIw==
-X-Received: by 2002:a05:622a:1653:b0:3bf:db29:b79e with SMTP id y19-20020a05622a165300b003bfdb29b79emr17693986qtj.5.1679154198218;
-        Sat, 18 Mar 2023 08:43:18 -0700 (PDT)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id z72-20020a37654b000000b0074283b87a4esm3800225qkb.90.2023.03.18.08.43.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Mar 2023 08:43:17 -0700 (PDT)
-Message-ID: <7389fef5-8fe8-4f24-f762-4f3597ad0943@gmail.com>
-Date:   Sat, 18 Mar 2023 11:43:16 -0400
+        with ESMTP id S229478AbjCRQST (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 12:18:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14092241CD
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 09:18:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3DF2B8087F
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 16:18:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E6DC433EF;
+        Sat, 18 Mar 2023 16:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679156294;
+        bh=0sp9nB8WMIYFymL5QG9kFHYSPgsej4USJc3ZonvqLWY=;
+        h=Subject:From:To:Cc:Date:From;
+        b=N81DMfKXGoeySmf0coLHzirxMj9zRk1PjJE6ttFHplT+1p0C478GpGAh3khXIdtAA
+         zmiX4mKkSOq3pVXZ/rKX/teYo//f7vW5g9mC1ameFaxP5fY3QMSUHRuNIrcLdjYz6q
+         Nh3q7LM5fNqoaXjDuzTq63sJVGRr5NVaOtiROukkC3zCd008DfGmZAfcwpVhDsNRNH
+         hQVNcHCvK+uLctGhWVR98Ug2SNV3D/NJljEZ8Rj9CMmo6XjeUPqV6rcBZoAAvjJKQ2
+         X29bxgrQesO9K+UiSewWq49iO5D6vgi13pqRnxcaawidQK3NY2V4gnk+9YsxHFuyh8
+         sNm+QzsevFONA==
+Subject: [PATCH v7 0/2] Another crack at a handshake upcall mechanism
+From:   Chuck Lever <cel@kernel.org>
+To:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
+Cc:     netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev,
+        john.haxby@oracle.com
+Date:   Sat, 18 Mar 2023 12:18:12 -0400
+Message-ID: <167915594811.91792.15722842400657376706.stgit@manet.1015granger.net>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v3 7/9] net: sunhme: Clean up mac address init
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230314003613.3874089-1-seanga2@gmail.com>
- <20230314003613.3874089-8-seanga2@gmail.com> <ZBV+cK8YAXI15tsL@corigine.com>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <ZBV+cK8YAXI15tsL@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/18/23 05:03, Simon Horman wrote:
-> On Mon, Mar 13, 2023 at 08:36:11PM -0400, Sean Anderson wrote:
->> Clean up some oddities suggested during review.
->>
->> Signed-off-by: Sean Anderson <seanga2@gmail.com>
->> ---
->>
->> (no changes since v2)
->>
->> Changes in v2:
->> - New
->>
->>   drivers/net/ethernet/sun/sunhme.c | 9 ++++-----
->>   1 file changed, 4 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
->> index c2737f26afbe..1f27e99abf17 100644
->> --- a/drivers/net/ethernet/sun/sunhme.c
->> +++ b/drivers/net/ethernet/sun/sunhme.c
->> @@ -2348,9 +2348,7 @@ static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsi
->>   		p += 6;
->>   
->>   		if (index == 0) {
->> -			int i;
->> -
->> -			for (i = 0; i < 6; i++)
->> +			for (int i = 0; i < 6; i++)
->>   				dev_addr[i] = readb(p + i);
->>   			return 1;
->>   		}
->> @@ -2362,9 +2360,10 @@ static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsi
->>   static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
->>   						unsigned char *dev_addr)
->>   {
->> +	void __iomem *p;
->>   	size_t size;
->> -	void __iomem *p = pci_map_rom(pdev, &size);
->>   
->> +	p = pci_map_rom(pdev, &size);
->>   	if (p) {
->>   		int index = 0;
->>   		int found;
->> @@ -2386,7 +2385,7 @@ static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
->>   	dev_addr[2] = 0x20;
->>   	get_random_bytes(&dev_addr[3], 3);
->>   }
->> -#endif /* !(CONFIG_SPARC) */
->> +#endif
-> 
-> Hi Sean,
-> 
-> I think this problem was added by patch 6/9,
-> so perhaps best to squash it into that patch.
+Hi-
 
-> Actually, I'd squash all these changes into 6/9.
-> But I don't feel strongly about it.
+Here is v7 of a series to add generic support for transport layer
+security handshake on behalf of kernel socket consumers (user space
+consumers use a security library directly, of course). A summary of
+the purpose of these patches is archived here:
 
-6/9 just moves code around. I am keeping the modifications for other commits.
+https://lore.kernel.org/netdev/1DE06BB1-6BA9-4DB4-B2AA-07DE532963D6@oracle.com/
 
---Sean
+v7 again has considerable churn, for two reasons:
 
-> So in any case,
-> 
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> 
-> I will pause my review here (again!) because I need to go to a football match.
+- I incorporated more C code generated from the YAML spec, and
+- I moved net/tls/tls_handshake.c to net/handshake/
+
+Other significant changes are listed below.
+
+The full patch set to support SunRPC with TLSv1.3 is available in
+the topic-rpc-with-tls-upcall branch here, based on net-next/main:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git
+
+This patch set includes support for in-transit confidentiality and
+peer authentication for both the Linux NFS client and server.
+
+A user space handshake agent for TLSv1.3 to go along with the kernel
+patches is available in the "netlink-v7" branch here:
+
+https://github.com/oracle/ktls-utils
+
+---
+
+Major changes since v6:
+- YAML spec and generated artifacts are now under dual license
+- Addressed Jakub's v6 review comments
+- Implemented a memory-sensitive limit on the number of pending
+  handshake requests
+- Implemented upcall support for multiple peer identities
+
+Major changes since v5:
+- Added a "timeout" attribute to the handshake netlink protocol
+- Removed the GnuTLS-specific "priorities" attribute
+- Added support for keyrings to restrict access to keys
+- Simplified the kernel consumer TLS handshake API
+- The handshake netlink protocol can handle multiple peer IDs or
+  certificates in the ACCEPT and DONE operations, though the
+  implementation does not yet support it.
+
+Major changes since v4:
+- Rebased onto net-next/main
+- Replaced req reference counting with ->sk_destruct
+- CMD_ACCEPT now does the equivalent of a dup(2) rather than an
+  accept(2)
+- CMD_DONE no longer closes the user space socket endpoint
+- handshake_req_cancel is now tested and working
+- Added a YAML specification for the netlink upcall protocol, and
+  simplified the protocol to fit the YAML schema
+- Added an initial set of tracepoints
+
+Changes since v3:
+- Converted all netlink code to use Generic Netlink
+- Reworked handshake request lifetime logic throughout
+- Global pending list is now per-net
+- On completion, return the remote's identity to the consumer
+
+Changes since v2:
+- PF_HANDSHAKE replaced with NETLINK_HANDSHAKE
+- Replaced listen(2) / poll(2) with a multicast notification service
+- Replaced accept(2) with a netlink operation that can return an
+  open fd and handshake parameters
+- Replaced close(2) with a netlink operation that can take arguments
+
+Changes since RFC:
+- Generic upcall support split away from kTLS
+- Added support for TLS ServerHello
+- Documentation has been temporarily removed while API churns
+
+---
+
+Chuck Lever (2):
+      net/handshake: Create a NETLINK service for handling handshake requests
+      net/tls: Add kernel APIs for requesting a TLSv1.3 handshake
+
+
+ Documentation/netlink/specs/handshake.yaml | 124 ++++++
+ Documentation/networking/index.rst         |   1 +
+ Documentation/networking/tls-handshake.rst | 217 +++++++++++
+ MAINTAINERS                                |  10 +
+ include/net/handshake.h                    |  43 +++
+ include/trace/events/handshake.h           | 159 ++++++++
+ include/uapi/linux/handshake.h             |  72 ++++
+ net/Kconfig                                |   5 +
+ net/Makefile                               |   1 +
+ net/handshake/Makefile                     |  11 +
+ net/handshake/genl.c                       |  58 +++
+ net/handshake/genl.h                       |  24 ++
+ net/handshake/handshake.h                  |  82 ++++
+ net/handshake/netlink.c                    | 316 ++++++++++++++++
+ net/handshake/request.c                    | 307 +++++++++++++++
+ net/handshake/tlshd.c                      | 417 +++++++++++++++++++++
+ net/handshake/trace.c                      |  20 +
+ 17 files changed, 1867 insertions(+)
+ create mode 100644 Documentation/netlink/specs/handshake.yaml
+ create mode 100644 Documentation/networking/tls-handshake.rst
+ create mode 100644 include/net/handshake.h
+ create mode 100644 include/trace/events/handshake.h
+ create mode 100644 include/uapi/linux/handshake.h
+ create mode 100644 net/handshake/Makefile
+ create mode 100644 net/handshake/genl.c
+ create mode 100644 net/handshake/genl.h
+ create mode 100644 net/handshake/handshake.h
+ create mode 100644 net/handshake/netlink.c
+ create mode 100644 net/handshake/request.c
+ create mode 100644 net/handshake/tlshd.c
+ create mode 100644 net/handshake/trace.c
+
+--
+Chuck Lever
 
