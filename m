@@ -2,115 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 188476BFA8E
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 14:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 300BD6BFA94
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 14:53:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbjCRNt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 09:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
+        id S229778AbjCRNxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 09:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjCRNt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 09:49:26 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2105.outbound.protection.outlook.com [40.107.212.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A08059FC;
-        Sat, 18 Mar 2023 06:49:24 -0700 (PDT)
+        with ESMTP id S229754AbjCRNxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 09:53:43 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2107.outbound.protection.outlook.com [40.107.212.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE8D2F076;
+        Sat, 18 Mar 2023 06:53:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=m2TixXpZhyGPGXOhDSg8xaMNMirWNOoDxckej+jWYd7SIPULalTc/pq9rQ2odcDF0K91zBj3ogkn8iCC9GFYS4OSA9O8Wv3UWbqrsave2TNwClN2hEdBi4lwAN3OqQdKOwnmFcF+Eag4L1vRa8UGqMOEE6VRwX0kNeci5q+Dig8VA1q4TjEur6HBSw0hUrVutKkRAJZtx6CYbS/z3EHNjqf0utWllRYm3tekkkqvB84aACReoeiEFw0BgN9Lulo5yHBrdVfNjM9bLFaCWSijV81UXD/+FMkTtdjrfw7xasDW6jXFw8rwhfWaewyEbtogTm/wKSoSfR4DEf+HsffOZw==
+ b=W2fm49qRHYnlKCUQeUlXGdt6iIR3cpC2QoC/4ioeFPeEUvK8YTq0ZDUObgPUw0gAeV3hqSWQT88hW+5aeRurwYJmAp4ScB+mdDff+tj//e0QqjeFwDdaFHzpYsne5dUoI2BJXjlYxt1JP2To2j1+picDI+ItU+fTyViHAoREolzjoyNJA8LxfY5rmU5fZBICz+A6a+nObk0tAdEFRyD3yHpONvOLONZTJbRdsikH6ej+MnlqWOBjWkfEQ8oJ9URFVo+WunzwQWl0PbLSxF1UgweUpf31cf62EaRozY3ZdEuOaQxWq0Kg8clccJAG1ysZYusy6EfhAuWWyCXl9W5YlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ek6Kk6wm9kfZZFx9/QwYk09Wl80G3rCE0FAYlTaI6aM=;
- b=m0i3whDSaV/yaO5Vacuw+dYOW4J4un29CcDOts9yJg267FmzXuaaa/PmMDwwC62hFbxnOtdg1zdCW8O2sWo7p44ZZa7nDctt95Rd5bEde8iJ9qFrNesgB/JfAz6tR8en1YJhgWNHlW5af3j2KP9FRozmPxri2lQAoic5owIurSDV/W8GcJDDuGnpns+yCqEpvACvESkgWAVr79oyvSusui7C1RPpK4eTii1mknd91WeXVLe1zgOh2CTnsjAIvgkhDuSOD0OR6hG30Vdk/nGdFHrJ2BuF/UH4AF0kRJ4RBEV76z3m1aM/MoW1WrxdHaDLhZ+hKRwlKEVY+CzWKEuERg==
+ bh=TRxTsydyg850faUYXrKkjA7ABGXZXAUtj24URrzKN3k=;
+ b=Z6abv7rZXg3lUCq/nU1enznOA9xmx/QYXcQ/t1Ty/iQqS4QNQh/4LRkOIVrqlB5RNyndw+iZPhUPNN+jdu5liY6gvps7JepJT2owvfvoXz7Kzwx7dHwvemHYfO5ZXP4nBd7rP8AabkUZtqrM1h7s5JBnv8i70yZEmlJIVUzwcAkSgdLNZdRxjRCPSmz09pYopUuw30gpEAaJoAMcc445UhM7QLmNtaUmtqGVGiJ2EsHosdr2zZ7a6bxFfyyTe1NDkev6MaCz400FK1LbHrSdjvDnwYvbsd1bBYgmsis6qeM7qTMdEKiQmaHxkKuuGmpZjipDFB688VxtLuNANPiNug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ek6Kk6wm9kfZZFx9/QwYk09Wl80G3rCE0FAYlTaI6aM=;
- b=WYjP2UGQhH8SDMCEuErx3AGdxn8ED5MynUMvEAcEq0quDbwta8tYgJNxbW9eb23ZPSgUY4v6xyoNQwCTWQu+mkqCJz7OgyPubqa/krZOVI0PzNJ4b8DK/O7TO/yI+TDi7XiYRF3DxocBwelpPegAOZGUEUYoGmvjrKh/36qR6Gs=
+ bh=TRxTsydyg850faUYXrKkjA7ABGXZXAUtj24URrzKN3k=;
+ b=uAIZ3yG5WxS3N0rAIgUAcs5ASBWrQl4HSkjYBcxtf3PoSsKIAtqhjqlvra5TNNiI+lJu5qWeTIVKNwkoFoNdjByBppI8c73CDgCF/qmPhCgBQiv/0dxugLURHPNNhaZlB9vSs57kxcx4Lhicj9/B/QErg+nsz6ksc1CMQ025Exo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by MW3PR13MB4059.namprd13.prod.outlook.com (2603:10b6:303:53::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Sat, 18 Mar
- 2023 13:49:20 +0000
+ 2023 13:53:34 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.036; Sat, 18 Mar 2023
- 13:49:20 +0000
-Date:   Sat, 18 Mar 2023 14:49:14 +0100
+ 13:53:34 +0000
+Date:   Sat, 18 Mar 2023 14:53:29 +0100
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Sean Anderson <seanga2@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH net-next v3 8/9] net: sunhme: Inline error returns
-Message-ID: <ZBXBWnAqsRECYYqH@corigine.com>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 9/9] net: sunhme: Consolidate common probe
+ tasks
+Message-ID: <ZBXCWUm/1ffaD1B+@corigine.com>
 References: <20230314003613.3874089-1-seanga2@gmail.com>
- <20230314003613.3874089-9-seanga2@gmail.com>
- <20230315005149.6e06c2bb@kernel.org>
- <8ea1c66e-e4c2-b30d-b8d0-9740ecb8bd6e@gmail.com>
+ <20230314003613.3874089-10-seanga2@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8ea1c66e-e4c2-b30d-b8d0-9740ecb8bd6e@gmail.com>
+In-Reply-To: <20230314003613.3874089-10-seanga2@gmail.com>
 Organisation: Horms Solutions BV
-X-ClientProxiedBy: AM4PR0902CA0006.eurprd09.prod.outlook.com
- (2603:10a6:200:9b::16) To PH0PR13MB4842.namprd13.prod.outlook.com
+X-ClientProxiedBy: AM0PR01CA0116.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:168::21) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW3PR13MB4059:EE_
-X-MS-Office365-Filtering-Correlation-Id: da631662-3956-4ddb-2a63-08db27b792e1
+X-MS-Office365-Filtering-Correlation-Id: 7a73a61b-5a58-4c3a-4291-08db27b82a9b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qRId8vN2zr6cB2uUrs9hwzy5LhOL31jyhLa9heB039lZ/9sRwaQVEH/Vlc2Ox3fTrLyVHzDyzqk5Dj7U7WqhfZ9NpirgmSa0heE1PHYhBzzjOtyhebqw0BsgC1muyXx0Sft/N8AErea04i8I38G67RfWX66gUZV6ynC4dHQr+3lx6kw7iCthjgxqfD5Y4ybRw6OiLvvE+wgUuQnIB/gnuRITU8NpoL/Eq92u1gvgbXz6h6pBMlGkQ/janhuVoPnvyBq5PaXQ8IbCV/Bbeye9gzuENR6/Z4xdI2kjiqcyeObfrcNL4aA5qp5aPH4xBd9dMGKng8hkUtfcbyyHq4iKaAhKrBCcDvrL3hqniEvBcbMYzdOylkFBWg+0QG9CXdYhFfMy2MnpeqaFto+23o6xKEVqbrFxd1ZT2nEef7i/FZruXTYst/7J19tWIOoDhwr232zOImHJXXXEfPKJqHTNZCnWfJ0tcaSXVL4KoCh0GFYQc40tAf5oy687K+Y4++Le206TwH5O6rjMDYgkGdKsbCnlymJZ1hj2oaVXXSaFknNntwTJWGnw1N3Gy50amfR6JjooQhLaOH2ok+cZwHbNSyXwy97F+rFWw/sGS17cB8qMN60qv5muqDLWvKr6YMPLyTM01/z/mBbxl+1ughc0Fg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(366004)(346002)(39830400003)(396003)(376002)(451199018)(36756003)(38100700002)(478600001)(4326008)(316002)(54906003)(66946007)(6916009)(66556008)(8676002)(41300700001)(66476007)(86362001)(8936002)(44832011)(4744005)(6486002)(2616005)(6666004)(186003)(5660300002)(2906002)(6506007)(6512007)(53546011);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 15zYj+60XpJPlr7fJ2+FFGZK2/bahW7KfH8yBHH/1P7wX4QUtra8TbO1gEFG1YGtUWdyOVl0SDkAprGcXNgg70tyYIvCNPS5rl7dVd16MrLg0ErWpwaxkDHUKZl7Ws62Df0ki8xmJQJmRkV8jw8tQeHQ+x1hGnn4J/XzAH0eMVYlzk0gU/Ig2nbp0qNnfaqtzG+gKTcXYWIYRaD4iWbF5DM1Hgj62IRIZalod0QVFGvpU4RMz2rKRCO7Tw47jZqIaoyM6ZN26sish/H/PUXpbXGHyDOqsoDIpwNjsx9TUDQRUE4PN9pMYXCPR4IdAwFdJixErOSITH3iQk7wE4gsm3Bx8DOqKoolepW2N6UFrJnc9kra8vP1Iv4QQfk3A/4WRlblPdZdYh0uZCld3pt/jH7pQ6Qzr3Wksh8YDeImbhl1buVb6Uxb02Iw0Gwqf9/Do+4ByPauJt6eC3teezd0UmxRw3OmoBds8DCMPKWFvNbzfCY5zhn+kQGrwhj5fLf26tCPEf1inmmhz8+UB3/z87sT7qFCaW0Jy3KGZ96ELrCH93nMCniy9nDifQVLwM2TJav9iJdFRa5WaJ22DfkfPfk62PsR+4kzHhN9Un7g4EW1XQ9GsJzHPIBEKLsu55W1J01b2ECTgtMaUock5MsDhA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(366004)(346002)(396003)(376002)(451199018)(36756003)(38100700002)(478600001)(4326008)(316002)(54906003)(66946007)(6916009)(66556008)(8676002)(41300700001)(66476007)(86362001)(8936002)(83380400001)(44832011)(6486002)(2616005)(6666004)(186003)(5660300002)(2906002)(6506007)(6512007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VGuKkSxqC0MpFbuUWw15rMSeuZJyzBiHl97+eeulkwEjoX2gckKfmsrk/jzJ?=
- =?us-ascii?Q?45K3HAmaAcVwOe7FYc6BNckoszzqXRYQHJG5xcKD9iPKPbxr07vOf8FWqICL?=
- =?us-ascii?Q?OW4mgZ5H+8ZFldF2gNYmjMWO0w8jf/lpJEQNsxGYklut3VYI6rFrnPE1AZoA?=
- =?us-ascii?Q?/Z7t98QWCxwrSOUrc/Y6iscgy42s/I7hm5HcjuFM4+nhF5ktvcOyrjbvikqv?=
- =?us-ascii?Q?jjuVKfsBxJuiOYxzYOlN5GM9zdH55qgKMI26R5maBheQW0ITR2EXp07DgCdh?=
- =?us-ascii?Q?3lMZm9EAubGT1pHutH2HCCjzGPuE/cee9TwsS+znFUKC1IwyZ53N4ZMI8jSH?=
- =?us-ascii?Q?jdNaBKpxrRZakaSl4ouy2YbQswM1TbCZMrJ8SqQ4CliJNp8ZsLLvKRx7Pdm0?=
- =?us-ascii?Q?28nFLdpG6Z4X98TkKmryh2tDtq2xbJUSO0ELmQPmrlysLW1hhaDcCt0iDd8A?=
- =?us-ascii?Q?gydt2JzOjk0GJFYJuzk0ocrF4EVtpgEV9mkjUDbUy9taB+Kx8WKsHBuHkIBK?=
- =?us-ascii?Q?bIgr8txPA9A/5KXbUg06rtdfIWr3eXegncfBn4sQALhPYM7n4TBav9jbEOrN?=
- =?us-ascii?Q?lZMUZ0ukxe8+PlnGybUWFF9S9w51YB9HJRgNJB9bfbKijYrw7Gno13G66mzo?=
- =?us-ascii?Q?PmwTGybg0Sznyn9bDusgk+wKSsZ19cokyDqh/lfhGIzLPpmds3gN+tCBUTTx?=
- =?us-ascii?Q?7zPkacMCKGr1NR2kDLeUIrudJgwbt91+UWTJPBuNzedakltSdmjhHJXjJD0z?=
- =?us-ascii?Q?S5vv0dOqmFs3AI1x90CSP7wELFbBo5/LroH6dkm23uU9+8XQknxBKYEnHHfY?=
- =?us-ascii?Q?6KmRNyVSSwhJrRrQ4APgOhaTkYLQKS+TuwJL45wgX1nHhfi2z+F8AqXhZPUb?=
- =?us-ascii?Q?/oVl4JQkBihc7i2iPiYjFNIge+wdbSI7LCscxh7uQYHt0qBW67HqDC5cVQTT?=
- =?us-ascii?Q?6LmKbLbgQBZaNsbLSFgM2sM8P2tSOCPI2GwrXloWm3RdCOu+RB/X36r9Kcuz?=
- =?us-ascii?Q?/nDXuos3V2prGRB6kDrsiLSu8fMrmqe0BRYWXm+2kJ7fo6daMTWlswEZI63b?=
- =?us-ascii?Q?Xb29o4n3eSH8/J+sIWEusXOlifAGWSmY+Lse7IxH6b90nFZqp3r/APz3goCh?=
- =?us-ascii?Q?fz42O3KFa929sbiktHPRJyhG1yNdxgYDPPnjMH4IoGEGLqT8zp+SjvhPnyvN?=
- =?us-ascii?Q?3b9vaNmdrEwkQZ6v40QL00irxTzwyR/O6m5V0stWh7O4tygJoJ+q+NFr4Djc?=
- =?us-ascii?Q?C8tL6qAFT2wNp/kFkq/xZTLIvO7LCh+gsSusxlPZr63PttA6zDy2K2PgedWR?=
- =?us-ascii?Q?1Mjh1NWEaTstRbEVNc9L5g0Ml6Nj4aCAFYjweWYyZiRQCwm6zTEcfbTA71Tk?=
- =?us-ascii?Q?XEshKGxTTfhJp53xLQBUMWyhpgIJHk/ft3MFGQZ3uJIwYdYNbZri/wuz9NLc?=
- =?us-ascii?Q?vns+MYYupPlH9jWFySuDCVtchpEkm2KlSEMyfZR0Xze59Yp/fhETH10N3uPH?=
- =?us-ascii?Q?4mPkE7X8whAFxD4G2Zd8Y7wJ4ofHBM/09bJCsU2azIREOqeXmimu1JrY0+ub?=
- =?us-ascii?Q?W1Fi4MxtgpRLeq5+VfDQp8qPtB6QOId1AzkQlLC0ZkRn3EdKlOxaDWKn+44L?=
- =?us-ascii?Q?K7c29ljrWDMHiuhfPfH1k/ExsxDJJINMQfYujEZ6zPu+MnzSxjf+YXyQxQh7?=
- =?us-ascii?Q?VTZ3UQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u47KZV0wKcgP1tMALy5uM2HzWp3SmGrWBuF6bKNeJ9kpo6FJLB1nYl1vnF0h?=
+ =?us-ascii?Q?XzNFa6gOEsqrlT7VzhmGet0E6f61MUHMj5GTZYPZclbqhZ9hy7FhJNmc96vc?=
+ =?us-ascii?Q?wg2cfLaf+QrOruw1EwAXLYnJute+3rl+kzAD37nSmJqnDE6/oYvbog4p3Ihc?=
+ =?us-ascii?Q?PTY2+K6mUIbFUCjtySrQv9DTzyE73xKCaYFUsASgxJdepmgIGAtvgQOLY+jk?=
+ =?us-ascii?Q?OXn3gMZ0AWIZ8mR82gFoOzHRVXwyJpxUPde/XNgG92MFWktp5cvxsv2xP1Y5?=
+ =?us-ascii?Q?4HfWe0ccN9SdOq5KdKDGYH0/IKQT0LS1Hupsei9W6hRvDPoBTh4dh9gbOLzi?=
+ =?us-ascii?Q?wwN1lz+34EqFaV6hlzBTQDZQX4j5OVOlWle6D0Vvk9MWrTXl+xGWA48XB5eP?=
+ =?us-ascii?Q?Tlyz+CNNukvNkKo+Q/fxJ8+Kyl6vNK46x3JiUIOLxIYzI4LfdWmekK6ArE10?=
+ =?us-ascii?Q?lXAwpwA2TA4/4RXeweiHl37h0EvAR6wvNPfQ5GgZ/5f/i1FPErphNG2FcFL7?=
+ =?us-ascii?Q?CTnzWaEW5A3Y1DhSwzD6QL8L3xmwS4bKiJI7APCPSkGGTgnRN5ib4ZUBkcOc?=
+ =?us-ascii?Q?1Mv+qi1peGZNEtSMQAAbYjjy04HcVCRyAjHriXSBp8jEU/aeiDRPv4i1TvsW?=
+ =?us-ascii?Q?JKDpn8gFsIV0Bv34nVbyl2adiIzbHKZ7+p3LNjekcbc21pY5YlQMjWxqcqQp?=
+ =?us-ascii?Q?JwHMG0BF0s0LYCxIs7xQRzhgbln9m/0ZRFANLD+Ad3XoL+jCwO0yXQLCLKxY?=
+ =?us-ascii?Q?hn1U7dqZQ7DeltDLpArrFvhhXbuoevUEYenrPGT4mTHSEXBFwtXErnKVDbRy?=
+ =?us-ascii?Q?GS4Vbdt89GulaiRwf54K7ON/bRLUwf3+i0AYBrxMMbW5E98SQkgeFP5IwQ7S?=
+ =?us-ascii?Q?Xi9cxjapg6ZxBQWS5mJ09Xdg6djovYslMPHWrWcLSfiODgRTMocEYEgNJ7ul?=
+ =?us-ascii?Q?Jkk74SEDL56jiLGQUlpTSsmmd4iAz1i/glk402Rv0XSwLa1ozZ4xjllCc6NM?=
+ =?us-ascii?Q?G6zNQf5+mQ8DZ0OX6UfLdGgW6YDkJc4qe2/ndCVx0Zv7zblSUO1yv67UboJy?=
+ =?us-ascii?Q?0AW64rZbX/mpuHI7vV+Zb9zA+8PZnPC8SXcG1Z6uOl8m4R4Xq0EvJLDnx2Og?=
+ =?us-ascii?Q?pHEwP1naFNuSisq4zSwYWOZWPh+craw9nNI2Li9Qm8XvoWydGnOVth4dpQXr?=
+ =?us-ascii?Q?Lw3FiDSHvhi/I9LERa0g3OmZ71fQEqlS9TXLZ9o4ivrCOKaB/LPA04qL5fEg?=
+ =?us-ascii?Q?tl7WT/a2RvhAms3tibAp+UnHfuGfH9YCyWHXX6V/wxBS46UubCX8UnOIAC8P?=
+ =?us-ascii?Q?sscO4yeJBCWtDhzFZk9pEa803GzfiFyOCeXMJFlQssXoy90TUl0RH58MFl1i?=
+ =?us-ascii?Q?cY3q62v20jkF2j1OsTVoUwxHJE8TtVfrdQqDJz3bLLcO+w1yJh61Zc3DlgFL?=
+ =?us-ascii?Q?/WcSvr30bXoQytjkjLhzjuwqyJ7sDS2HbdwLB5UQxzMT9goVf8bdVCJJl9lp?=
+ =?us-ascii?Q?f2tQjWdcetFg3asw+LxlPE13YM0ymcJElYtUs1bBTJMme+/Ii5rakZrYKrc/?=
+ =?us-ascii?Q?nbucFgxLr5kyU7fbw4XCEelq/AJCPZ33OgLaRFJVD5x4P6EnbN9I/Sq/rM8/?=
+ =?us-ascii?Q?k5jpHArZZwAajIExToTxoOo4lMyZ6z7kMn9berJUOYbcpIAkjAlXG3bezy2n?=
+ =?us-ascii?Q?+/f1zg=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da631662-3956-4ddb-2a63-08db27b792e1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a73a61b-5a58-4c3a-4291-08db27b82a9b
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2023 13:49:20.1660
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2023 13:53:34.7059
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hTwIkMEunFHpArnfT2G9OSxm1dLZOLlZ/QLQM3pEbzK/vg+BzTvbbnqbVoIiIorUxysZ6OgMmOn+Y+pDDZMsoI424DoMQYkOzHPrE4DPSXA=
+X-MS-Exchange-CrossTenant-UserPrincipalName: vcu2g2C7UJvkebmm5gdMOXfe4KX4QSuBGdFiYpgJJ0EGh+9HBFrGNOFblLSR/ekdubznowDOSJKlIm+5IvJt8VjgpouMUB909zHTb1niYIs=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR13MB4059
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -121,17 +119,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 15, 2023 at 11:36:25AM -0400, Sean Anderson wrote:
-> On 3/15/23 03:51, Jakub Kicinski wrote:
-> > On Mon, 13 Mar 2023 20:36:12 -0400 Sean Anderson wrote:
-> > > Fixes: 96c6e9faecf1 ("sunhme: forward the error code from pci_enable_device()")
-> > 
-> > No such	commit in our trees :(
+On Mon, Mar 13, 2023 at 08:36:13PM -0400, Sean Anderson wrote:
+> Most of the second half of the PCI/SBUS probe functions are the same.
+> Consolidate them into a common function.
 > 
-> Ah, looks like I forgot this was bad when copying the other commit. It should be acb3f35f920b.
+> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+> ---
+> 
+> (no changes since v1)
+> 
+>  drivers/net/ethernet/sun/sunhme.c | 183 ++++++++++++------------------
+>  1 file changed, 71 insertions(+), 112 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+> index a59b998062d9..a384b162c46d 100644
+> --- a/drivers/net/ethernet/sun/sunhme.c
+> +++ b/drivers/net/ethernet/sun/sunhme.c
+> @@ -2430,6 +2430,71 @@ static void happy_meal_addr_init(struct happy_meal *hp,
+>  	}
+>  }
+>  
+> +static int happy_meal_common_probe(struct happy_meal *hp,
+> +				   struct device_node *dp, int minor_rev)
+> +{
+> +	struct net_device *dev = hp->dev;
+> +	int err;
+> +
+> +#ifdef CONFIG_SPARC
+> +	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+> +	if (hp->hm_revision == 0xff)
+> +		hp->hm_revision = 0xc0 | minor_rev;
+> +#else
+> +	/* works with this on non-sparc hosts */
+> +	hp->hm_revision = 0x20;
+> +#endif
 
-I agree that is the correct commit.
-And the code changes look good to me.
+...
 
-But I wonder if the fix should be separated into another patch,
-separate from the cleanup.
+> +#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+> +	/* Hook up SBUS register/descriptor accessors. */
+> +	hp->read_desc32 = sbus_hme_read_desc32;
+> +	hp->write_txd = sbus_hme_write_txd;
+> +	hp->write_rxd = sbus_hme_write_rxd;
+> +	hp->read32 = sbus_hme_read32;
+> +	hp->write32 = sbus_hme_write32;
+> +#endif
+
+This looks correct for the SBUS case.
+But I'm not sure about the PCIE case.
+
+gcc 12 tells me when compiling with sparc allmodconfig that the following
+functions are now unused.
+
+  pci_hme_read_desc32
+  pci_hme_write_txd
+  pci_hme_write_rxd
+  pci_hme_read32
+  pci_hme_write32
+
+> +
+> +	/* Grrr, Happy Meal comes up by default not advertising
+> +	 * full duplex 100baseT capabilities, fix this.
+b
+> +	 */
+> +	spin_lock_irq(&hp->happy_lock);
+> +	happy_meal_set_initial_advertisement(hp);
+> +	spin_unlock_irq(&hp->happy_lock);
+> +
+> +	err = devm_register_netdev(hp->dma_dev, dev);
+> +	if (err)
+> +		dev_err(hp->dma_dev, "Cannot register net device, aborting.\n");
+> +	return err;
+> +}
+> +
+>  #ifdef CONFIG_SBUS
+>  static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+>  {
+
+> @@ -2511,70 +2576,18 @@ static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+>  		goto err_out_clear_quattro;
+>  	}
+>  
+> -	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+> -	if (hp->hm_revision == 0xff)
+> -		hp->hm_revision = 0xa0;
+
+It's not clear to me that the same value will be set by the call to
+happy_meal_common_probe(hp, dp, 0); where the logic is:
+
+#ifdef CONFIG_SPARC
+	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+	if (hp->hm_revision == 0xff)
+		hp->hm_revision = 0xc0 | minor_rev;
+#else
+	/* works with this on non-sparc hosts */
+	hp->hm_revision = 0x20;
+#endif
+
+I am assuming that the SPARC logic is run.
+But another question: is it strictly true that SBUS means SPARC?
+
+...
+
+> -
+> -#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+> -	/* Hook up SBUS register/descriptor accessors. */
+> -	hp->read_desc32 = sbus_hme_read_desc32;
+> -	hp->write_txd = sbus_hme_write_txd;
+> -	hp->write_rxd = sbus_hme_write_rxd;
+> -	hp->read32 = sbus_hme_read32;
+> -	hp->write32 = sbus_hme_write32;
+> -#endif
+
+...
+
+> @@ -2689,21 +2702,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+>  	hp->bigmacregs = (hpreg_base + 0x6000UL);
+>  	hp->tcvregs    = (hpreg_base + 0x7000UL);
+>  
+> -#ifdef CONFIG_SPARC
+> -	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
+> -	if (hp->hm_revision == 0xff)
+> -		hp->hm_revision = 0xc0 | (pdev->revision & 0x0f);
+> -#else
+> -	/* works with this on non-sparc hosts */
+> -	hp->hm_revision = 0x20;
+> -#endif
+
+...
+
+> -#if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+> -	/* Hook up PCI register/descriptor accessors. */
+> -	hp->read_desc32 = pci_hme_read_desc32;
+> -	hp->write_txd = pci_hme_write_txd;
+> -	hp->write_rxd = pci_hme_write_rxd;
+> -	hp->read32 = pci_hme_read32;
+> -	hp->write32 = pci_hme_write32;
+> -#endif
+
+...
