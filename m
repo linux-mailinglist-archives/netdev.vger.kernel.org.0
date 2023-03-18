@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4BC76BF904
-	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 09:37:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48B106BF91E
+	for <lists+netdev@lfdr.de>; Sat, 18 Mar 2023 09:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbjCRIh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 04:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
+        id S229588AbjCRI6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 04:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbjCRIh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 04:37:26 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2112.outbound.protection.outlook.com [40.107.244.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8794C5370A;
-        Sat, 18 Mar 2023 01:37:24 -0700 (PDT)
+        with ESMTP id S229533AbjCRI6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 04:58:44 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2118.outbound.protection.outlook.com [40.107.244.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA1F34033;
+        Sat, 18 Mar 2023 01:58:39 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H09nDHZ2zc6WvmzB0wp2+Cgb62theqG1uliUzRd0q6uKhz+Vs/n//z2LlTcTYM/24IsUg3QCZc9Mhj95tGFvwkyRmhR3uTspN3yi31kAm7QiAc4+tKSUu2yrjNiC4essIEAuCBynjNW1sIFYf9mrEiyMNgPgJtbmw8jB7M4flS6dGJ5mybyGOpd6ECENkgu28mskZUo6A4ClCjB/niA3kdHfnxse385CUK1wpPbFlUcX3pfivTT7q/8mmVdzWBwBCscR/v6Iz2CxPLG0+xpZI37DcpIRYbmjzYNU8CnM8Iwno060Dp5i9HCSv/xcml1QiaYi6S2epC9QwlxIyN1VEA==
+ b=VLYpuCTDIk2ATMOf+GRjAY1wwVV4qwYWLigz6c81gTEcNKpGK5E/iqG4H8m2LOzRAZcOC+XVc8wsN23+/AIJjVdsqibuIp3gFSyEiFtLhWrFRHbvQj7GVw5n2NgJAvFv2tRex6vWc5+MR5AzYqU9SYQGhvfOpitvRNdwn30aN5eO26izW1RcHIiO3jFVdO94SiHehXBvmYlqvqaODiXwjyc/mJFH9xNL6ugXrLRvzP/WAvjOV1pndYBtZAhBkbna3jZjsS+Vl4Jd288mBfp9Q5M0B+iMN4cxy/boYZ87YaTcwdyE12WpIpNY85yYQEb4Zrq9W7WptyOH98INCfBTjA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Rw/S28SXIUJJd8o7aeRVVEk+e+YJNoJezl+p/Pg7Qs=;
- b=NIPu1WObablpnysYaOw7VBsoXRB4mOs10E6CCuIOAl+Fi4F3cbWGLh/l+ENhiV3nVr93fn5h473VQV2w5MvezHsk2xSyFNXLxlAL/YSvw9tre4+kbKOppfuh0G+sYFmSl4aq+RMflrMfAl8Bb7MEG9+IZOMnqseFDE/jNYpivlZUYBadsOao6dC5kEbxHdZwFC5NryXMHo6FcyMyTvPtO4fZnyTv+8m4VADS39Uzwy/9s7Tsb6Zt0qWFiIzn4h6F8dZ7YfjkpVHFzI7u1rK6C1c/7QHTNbzar6tzR+5bL5pMo3T6VSZVjwur3UeAzrqAapv3g7N78OVKJ39t5VV+ig==
+ bh=JiND5gPrxpyYr8EEr1ldxK84N/Q3JRJsn1zXC3drx+E=;
+ b=jh/z7kovHz1bp0CVlPR8BExqUKfDpcSUGxPeU9nZddsxJI/EeMTezjva3ynDBwzC890IlhoF0zfR23TrH8aXSJZ94b59f6ovBjSysATsHM62jW7+536Bavn+D1ukJGY8KHMFTRxBIxnmCWxs8ouuTQMQjXH4ydbkH10afz1q6V2JFZsWcj/uXwK/Qsy5jyzp2uh8jnZnZL456F1V8lSyOoBRi1JufLVXJj7xxJ/5Facap2qDpS5G+Eq/d+Rs3uChTdNjN87g1ZfTOue+3dp5PDQcXYtBw6ww285Ev7ztd6oxZVk/qGCzewIdQd225OJggPl3DUc9jB+tiEtCGcrNIw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Rw/S28SXIUJJd8o7aeRVVEk+e+YJNoJezl+p/Pg7Qs=;
- b=cCDBjcadus4w/j3J0Ip2GNJ/WZgMZu01JB64KVMw9NeP3ZPhd9BQ0Mi7smaA+JLz6J36VCMxjycCrivEZIyAydIYcni+JtTAVZ65t/BPClOBaU+oNv959XUEkkUN+E/OqqT5BI1zvUzhq7rLSFr30FAV/HZ4MkjYx35KevsXrMQ=
+ bh=JiND5gPrxpyYr8EEr1ldxK84N/Q3JRJsn1zXC3drx+E=;
+ b=aIawd3X9Gl1NZQUkiDbohkKu6APSsvkisJwig/t7fmkArEqhEXrVlc1/chVR9yrkZe1hYUwkqolo8wpiG5tc+lTp44ISN44rThmW6Qr5rOKrl+VoaNYVmE7BftIpfU6QsSbc+PmzKeDaC+Um/ex94MbxLFg4FOAYT3veTl8l1YM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN0PR13MB4632.namprd13.prod.outlook.com (2603:10b6:408:116::24) with
+ by PH0PR13MB4985.namprd13.prod.outlook.com (2603:10b6:510:96::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.36; Sat, 18 Mar
- 2023 08:37:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.24; Sat, 18 Mar
+ 2023 08:58:35 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.036; Sat, 18 Mar 2023
- 08:37:19 +0000
-Date:   Sat, 18 Mar 2023 09:37:01 +0100
+ 08:58:35 +0000
+Date:   Sat, 18 Mar 2023 09:58:27 +0100
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Sean Anderson <seanga2@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -48,66 +48,67 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 1/9] net: sunhme: Just restart
- autonegotiation if we can't bring the link up
-Message-ID: <ZBV4LSBOwEzSiAvA@corigine.com>
+Subject: Re: [PATCH net-next v3 6/9] net: sunhme: Consolidate mac address
+ initialization
+Message-ID: <ZBV9M28EhKFYrHnc@corigine.com>
 References: <20230314003613.3874089-1-seanga2@gmail.com>
- <20230314003613.3874089-2-seanga2@gmail.com>
+ <20230314003613.3874089-7-seanga2@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230314003613.3874089-2-seanga2@gmail.com>
-X-ClientProxiedBy: AM3PR04CA0138.eurprd04.prod.outlook.com (2603:10a6:207::22)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+In-Reply-To: <20230314003613.3874089-7-seanga2@gmail.com>
+X-ClientProxiedBy: AM0PR06CA0105.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::46) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB4632:EE_
-X-MS-Office365-Filtering-Correlation-Id: cb0a4e3d-84b6-45ca-d8ee-08db278bfc47
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB4985:EE_
+X-MS-Office365-Filtering-Correlation-Id: 12dc2513-6ade-4509-e17a-08db278ef4d7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m9XzZbF/FD+zFwryd6fVx1razRNveS35ftNGqXud2NQ2f4oFmykRSoh4zIcUFTbZzymrK3XcLS+Z+0+swDBcYJGRYpwU/+iN92WUHjH2Uj5j6F/PZCgYdkJ3oZVCD/LtLMAIiwH03XMOcVxbiGulBZqtGiPPbK2Qct68I613B1eVNjaD3HHmagKl48aJttKbd+b6qrWOrSWDFk0cQOYlrpLw8MuGi9vtxWRbayCYPNxe0BIMwe4xf5pC9xiBAUJmpnbHiI2ox1HU5IbTHPwWFQnoKsUuGO59zBY+SdlkBoWtIkK8teGmmh80PMrNvYKLqpoEGEGENC+D4Vb/wxhpJd1n3gw0mGuktcHUaLClmMu6XxUTNJc/qn0tlHt7rJjDdcDAJ5Xlm0zb5bZh/mH7CBCj0V3LKYhPqW6rwIxCYf0kONVxVKXnn1ZEUyH3uRcKjQpNZ/9XjnYNojLnYhBaUJzfgusFsQpoBuyzDQkNpEgs9Vi7+JAAt0fbVKi97CH7qBQpIxt8JoK39Ct72wnbfLsePPu9q3MUO4d4t9H61mu7+kqE+KI7OrIZzxgjdl5aV/I5CxVxQ5GP1OHnd4cpBQBpjm6DXM2PUPzhZrthNFjWnOKgR41uzY9Z0CzMjnHiXMsCrqZXdkZxIajls4AIHfWeVHQVze4kbbAWaXF7vSmGenWJPRHnnfabTvlXivD9sPrsT1Cor+l2oSUxu3RsMhVOANcjAjODT+qojzhE9UE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(366004)(346002)(396003)(136003)(39840400004)(451199018)(186003)(6666004)(478600001)(6486002)(83380400001)(6506007)(6512007)(54906003)(316002)(2616005)(66946007)(66476007)(66556008)(8676002)(4326008)(6916009)(8936002)(44832011)(5660300002)(41300700001)(38100700002)(2906002)(36756003)(86362001)(21314003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 6flwsbEjNZPSjQ5VOQ0ZxkgwEjjs/h/fuH82X6L6/Knm2+bsNfibIGoNMPRsfYdNGqpvVNv6R0M6+BUCp4+b4uHa81vfPRTDeTraukJlZti/muuOSur9R65L5S3GAAPv3z2wW1rnCCjmRbzNFSmGitlBesucwX1ihfL8wmDWCMdypNbfpWRzO7YVnonb1n4cuylHVXu3+xNzkXG/6K+ZcjkRLCuNp69+jLdq6W87syDe9W3kOclaOluuxGDixRmYrDdopqtHQf+A8us25WFkgeT6WxQgWDxxQVxRXTj63XGGRpsjS8mgwGQXyO6GWTk6QgGvnkV+/zJJ9Sm9FooUgtlIsa6Nr1UsKekOZV0Nb8Q7GxyF6iRY+Vv66NYAgO+ubvhFqrnFZDkRT2iiZ/JiYc9zlNXZwzKenQMD6qIWb47IF/7R/A7UYoSf/2Jh1m87RvNDqVrw6Nihp1wIz7nCjauWyUrLXKYVP1Jv49nDhmQGybkhWBOCUlfLRtSXd66lgl4CUvXluSo5Mn1gzDHoYuoUjEETBEI96WxgF2r2jBGUr17i/HiUqOwkHQVUa6pcsQRmZ7l6RhWpMHY6No+W4oNN7jF3RM9B+l3EWmI2GPdhKQ6ZlI5fRxaGtBLqmiThAKISyNSXzzRBU5lXtYIb15T9y5FxuVlHOU+tNeECOcNwEzWDlxUJ/E4hxOaUbluk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(366004)(376002)(396003)(346002)(451199018)(8936002)(44832011)(2616005)(5660300002)(6486002)(316002)(54906003)(83380400001)(6512007)(6506007)(86362001)(478600001)(38100700002)(2906002)(36756003)(6666004)(66556008)(66946007)(66476007)(6916009)(41300700001)(8676002)(4326008)(186003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A0AFVge41KP7Xh+XAIem9H99eEeIJYh4jqGOem2P4GvD7tQd9LEmAbOTJvTS?=
- =?us-ascii?Q?g0F/TJkMkVq5QBPKM5KEeYNersTMF1HHRrJ4ntkXXxcLqacSeW2UyfAjXFNQ?=
- =?us-ascii?Q?O+5u3dKAe6ggFYcj3n3h8Z1ihB+5gOXd286WasTIMSPrFIem+cBl8KFUqbA2?=
- =?us-ascii?Q?Rf9yQqdWc1/XSYvegIf7NkoFPC6nF/WO5gn9lXoodiyf50y3JgIN6Wl2dlID?=
- =?us-ascii?Q?3slAEpaeKuo+EMyZOU/pCGvQ/Ws7o+Ki3Amy/uAOoWkTuqGm06pWjLGzxTaw?=
- =?us-ascii?Q?/QBbmuev68kZ1iFzo9M9MOaDOLtXo+fJ8mZ4BQLsJAtIN72N9Xn6dxzaP20C?=
- =?us-ascii?Q?kHRGNTsCpMUGJdPiNQyyZY1QkBzIPJbJkL+WjCp/B+a/vXbqFyNrv1XX4leT?=
- =?us-ascii?Q?1J87hjmvHIUFskpoCUK6LEI1MGcE40kBfmEwWv9/hO5DA+tGKw7MUYe7Xf/L?=
- =?us-ascii?Q?0vFKvHTLVgPgpXYIsqUmVJwf45YUkjMIJjDTYw0ZErE44R/2v2TSvSgAEVZ5?=
- =?us-ascii?Q?dSUWJMzWH5eGL18mmA2qJtj1AOdwgmw3pJiADf2nuKX91oiKtSz1JoxigxvL?=
- =?us-ascii?Q?FVI2mopxJZZgRs+/yF2HxD4QeYWpQ3M+BoSP+Vh+zlYUWryLNL4JAn4ARJ+9?=
- =?us-ascii?Q?LZV+2cVWyTwQAJ6I7NB73X4vkmR+bCs5TFX/+he7kQpnJWB+416FMN981tiP?=
- =?us-ascii?Q?gZzfIcbUf5x/FoQRfxh10vvlSkgZ2HqTuQlTa2zijqqRNO/G7TCV0dX3/0UE?=
- =?us-ascii?Q?dDdTU+a7sFXgWPZP+ALIND7FOPB/lcqs/op06LPSoysZSDVFUM4S0iQVmFZ4?=
- =?us-ascii?Q?XuMHYC0vICRvF4sV5p7X8+gljdnUadpexHDbIPKtu34nGwPN3LmyHsHBPJga?=
- =?us-ascii?Q?pjLgqoOcneJJxq+6w2avVOGx6Qv1LOn85FWC/GG5T8PFib4cAF9rFKweJRh0?=
- =?us-ascii?Q?RMtkyv2I1imTwVuHmK7sIdj0RuRe0gkCr5unwcnVuDM8ekJyW69s/t15UWyo?=
- =?us-ascii?Q?4p7IF6GrRmZG8y+dg5zov8HBYprWDD7qrFA8l/vGPj9YTvur726GJkN3kldG?=
- =?us-ascii?Q?kkUTdVwGWfoFRQ9oYOarUcPZuQACDHfpq+R/YJFTXv67gx/lOSWnSTl0vq4x?=
- =?us-ascii?Q?KdToK+lflyOpHudY3nD4DGWwCtRSZvojSrl6FENyrHLJCZbytDonYcfb5tSF?=
- =?us-ascii?Q?qUW/EACxj+O8ha9aEIZYk7CoeUKkcIuRW7NwR1cqjU/FZYzcfcSI13YRj9mO?=
- =?us-ascii?Q?EnEOasjnzUEZke6phZQjOmD/1vqhkg9z1em3SKwyMsx1JWaFfcQ5plQQyYTW?=
- =?us-ascii?Q?Su6GJ7KrbyjeM3FX+vf/TG1+MnRKok2CDTxAvBDvB9KTjbbX5aPtKkT0zkEZ?=
- =?us-ascii?Q?c0wGCJkLEFGd5monrrCPGzCmrmx4cbVsBpqAGFzYvKfCUcMyCZ4r/wv27Ktm?=
- =?us-ascii?Q?5oo7qNZqf5HTdjkMwqlaSgv15j00ZbQzxmbpwF9t7RHCV83uo/qWEZQvFqDV?=
- =?us-ascii?Q?HXlbOORLsie0EAQTY5s50u+uLgBG5H9PhvGkfnixG/N1IZLdGLTs4CfkCxwx?=
- =?us-ascii?Q?TQnz54efiBrVytmWz6ic0an6e/eBO3+rLtRswajWzqb/c/lecEOSIPmr/TcL?=
- =?us-ascii?Q?snftqn3P7I9EidFdI5sfgJID2as+6HctIxIyizNLjw71kK2qBXOjtGBx5t6Z?=
- =?us-ascii?Q?ns+vIQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TwPDNPZdW1j+ZySczMCeSVagwG+Gw+KWt98eexUbfdf8w/usoI9dFpYy2lez?=
+ =?us-ascii?Q?JQm5j/Up1qRY5BDTLizGHdeoc+ayLzUMYe61y0x/MZ6Lab4pe6RXWEhdd2PO?=
+ =?us-ascii?Q?H4e0Wh3IQQaj0h76D9g0mTJQTVTt2wRnCtG6Nozt9Sni3FR8NE0C/OzwfTTI?=
+ =?us-ascii?Q?8rFkHagmoM9KcE0tk2TwCS7UzdF4JDYHW9LHqpqpAEnavn5yOtUybMQq2eZb?=
+ =?us-ascii?Q?Edvy4m8Wowl9mwPqF1k0HplGR98yKTdcIj5LpIshHaB5c93gIsXU3pNGHKDS?=
+ =?us-ascii?Q?8Ym78X94zs2NAUzkPuRbra+hVtZA6ctwBftgaKk/usDf00NXHv3BBtKvL0dt?=
+ =?us-ascii?Q?dkc84jiGVXzsFXNcC3nfmK7fHbgSlsBJnFkDzk2d9sq7M/jV7qGbgkCWl3gv?=
+ =?us-ascii?Q?qA5E9qvip2BMen6BEYFJTD4Sg9QBqoGUoezkjgJyzOTp7moBhaab6X7F0G/e?=
+ =?us-ascii?Q?iM7aH10c7l5F0JK5kH6FTzaLbn6BNDovaze+k9rn43+5mD92dbZI0DoLrjF6?=
+ =?us-ascii?Q?pCzuzNOTgGPoL7NMvPBM/kIbqC+5Vxusits8HBpvLKukeRTmc9MQ464P/IKn?=
+ =?us-ascii?Q?nJ02nRpzWG7Px2wauUupgEpQJs3ooSvrgJp+q1LhCfg8cHPc8La6vC7I+2t7?=
+ =?us-ascii?Q?VdE3NDQqzCaDUkFu404fWT5PqzR0SzK7XE4Qm52FczFwQX5N1lFzvxppB07t?=
+ =?us-ascii?Q?WO4SfAOc7Qva841XzZzMYmFTtXUdujjqamRezuGpesEsTBZAZcxRNHEvUtt5?=
+ =?us-ascii?Q?Zm0BFqXRwkQVsHWxg34xZzc4o2wYlWVPFL2GQOpD0BpDTL6OG/2MTT+3DPW/?=
+ =?us-ascii?Q?rpAnnqGd0rSKokfJoU//URuXslWTPzZsJeKKDZHu7poTu9N2iwVd1L8csqFp?=
+ =?us-ascii?Q?XOjUAs3mB4qdKuhXWip0K/DOHjzrtpqSMfGz3R8M1ArxGy+HtSGEL6gBuGtl?=
+ =?us-ascii?Q?d48lpRejqIN5OFKEGa2aiC7qEoWy7zHxFEbYdxtm/RikX6hFa7bD73YuGq9y?=
+ =?us-ascii?Q?0PMVipKPw2H6bGsI+y+XqaDSHGndHKq6B3JU3hhFHKf+sSNlykXU89xVV/vq?=
+ =?us-ascii?Q?o1ssa3XKFvI/X4Gz236tIYGYsd28R2/CmBxxMd1sFWpJszquEsD68EunPfjU?=
+ =?us-ascii?Q?x2b9+pqJnxT+L3Jq+NMHYvYYQpWcLejM+s5p3xflMaR8vJJjhLM8in07985P?=
+ =?us-ascii?Q?q0MZD3URH2nrMPlB4WP+qLqRjPSP0WMLPkbo8I4oe5Psenf4GTtMY+3uN+qD?=
+ =?us-ascii?Q?HgsX1+NBUFqHm9iejpj95Y4xsWXPChMTqavQ5f4i7frbXbE/7RPXEjLzGai4?=
+ =?us-ascii?Q?+r2a9/T3jvr2APrYrt/a7NaEa35hhuNsCLrGblKj8D/52c/GeU8PS81S+e2i?=
+ =?us-ascii?Q?BDZQcX6+Pov1pRW5u7ByEgOzW+cmwFV4I5MmBGYYEoL7uG6+tQTUjnBCd8WG?=
+ =?us-ascii?Q?OODhbAe0IFaAbkzShTxBvta+rKh9jIppbgxcL/JBCJ5suQADyrfzcv9nPU6S?=
+ =?us-ascii?Q?M+3Nmta6AG8zIyWJUtePYyTgxpPkR6EV5y3vmVpRI4+CU0YcTBRJi5koEISp?=
+ =?us-ascii?Q?ysJ3LrA1h8L1AHvievYQ11okGvr5dAPiV62n0oq67y2Y+eEH423ikP8t+7bP?=
+ =?us-ascii?Q?syl4T9XJZWdMp5pH3Uqje3MStEIUlDcJFi/pIu3XTzSgwlxuppLxWC/1GuHo?=
+ =?us-ascii?Q?lrHTlA=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb0a4e3d-84b6-45ca-d8ee-08db278bfc47
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12dc2513-6ade-4509-e17a-08db278ef4d7
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2023 08:37:19.3168
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2023 08:58:35.2028
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jLXQUrJlSINE0UnTD+W7mddjl4wPpHr35+39PytDOGHwmSHNnvOwwgh+aIGs4xio6gvVawnZcrkWWqvZE2Sef3ls6tqSn4WWN2+SIZym6H8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB4632
+X-MS-Exchange-CrossTenant-UserPrincipalName: DKWD+qcTrSfmKlT11VdDqAPRJtF15ErSY5RPJQEYco7dIW/iShejGnFtfnvBKH72BVmiJcXMXDrtzEHMPLvlwpBr+WUUEt7YuzSXRsUfx84=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4985
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -117,145 +118,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 13, 2023 at 08:36:05PM -0400, Sean Anderson wrote:
-> If we've tried regular autonegotiation and forcing the link mode, just
-> restart autonegotiation instead of reinitializing the whole NIC.
+On Mon, Mar 13, 2023 at 08:36:10PM -0400, Sean Anderson wrote:
+> The mac address initialization is braodly the same between PCI and SBUS,
+> and one was clearly copied from the other. Consolidate them. We still have
+> to have some ifdefs because pci_(un)map_rom is only implemented for PCI,
+> and idprom is only implemented for SPARC.
 > 
 > Signed-off-by: Sean Anderson <seanga2@gmail.com>
 
+Hi Sean,
+
+Nits aside, this looks good to me.
+
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+
+> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+> index 3072578c334a..c2737f26afbe 100644
+> --- a/drivers/net/ethernet/sun/sunhme.c
+> +++ b/drivers/net/ethernet/sun/sunhme.c
+
 ...
 
-> @@ -606,6 +604,124 @@ static int is_lucent_phy(struct happy_meal *hp)
->  	return ret;
->  }
->  
-> +/* hp->happy_lock must be held */
-> +static void
-> +happy_meal_begin_auto_negotiation(struct happy_meal *hp,
-> +				  void __iomem *tregs,
-> +				  const struct ethtool_link_ksettings *ep)
+> +static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
+> +						unsigned char *dev_addr)
 > +{
-> +	int timeout;
-> +
-> +	/* Read all of the registers we are interested in now. */
-> +	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
-> +	hp->sw_bmcr      = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
-> +	hp->sw_physid1   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID1);
-> +	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
-> +
-> +	/* XXX Check BMSR_ANEGCAPABLE, should not be necessary though. */
-> +
-> +	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
-> +	if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
-> +		/* Advertise everything we can support. */
-> +		if (hp->sw_bmsr & BMSR_10HALF)
-> +			hp->sw_advertise |= (ADVERTISE_10HALF);
-> +		else
-> +			hp->sw_advertise &= ~(ADVERTISE_10HALF);
-> +
-> +		if (hp->sw_bmsr & BMSR_10FULL)
-> +			hp->sw_advertise |= (ADVERTISE_10FULL);
-> +		else
-> +			hp->sw_advertise &= ~(ADVERTISE_10FULL);
-> +		if (hp->sw_bmsr & BMSR_100HALF)
-> +			hp->sw_advertise |= (ADVERTISE_100HALF);
-> +		else
-> +			hp->sw_advertise &= ~(ADVERTISE_100HALF);
-> +		if (hp->sw_bmsr & BMSR_100FULL)
-> +			hp->sw_advertise |= (ADVERTISE_100FULL);
-> +		else
-> +			hp->sw_advertise &= ~(ADVERTISE_100FULL);
-> +		happy_meal_tcvr_write(hp, tregs, MII_ADVERTISE, hp->sw_advertise);
-> +
-> +		/* XXX Currently no Happy Meal cards I know off support 100BaseT4,
-> +		 * XXX and this is because the DP83840 does not support it, changes
-> +		 * XXX would need to be made to the tx/rx logic in the driver as well
-> +		 * XXX so I completely skip checking for it in the BMSR for now.
-> +		 */
-> +
-> +		ASD("Advertising [ %s%s%s%s]\n",
-> +		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
-> +		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
-> +		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
-> +		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " : "");
-> +
-> +		/* Enable Auto-Negotiation, this is usually on already... */
-> +		hp->sw_bmcr |= BMCR_ANENABLE;
-> +		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
-> +
-> +		/* Restart it to make sure it is going. */
-> +		hp->sw_bmcr |= BMCR_ANRESTART;
-> +		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
-> +
-> +		/* BMCR_ANRESTART self clears when the process has begun. */
-> +
-> +		timeout = 64;  /* More than enough. */
-> +		while (--timeout) {
-> +			hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
-> +			if (!(hp->sw_bmcr & BMCR_ANRESTART))
-> +				break; /* got it. */
-> +			udelay(10);
+> +	size_t size;
+> +	void __iomem *p = pci_map_rom(pdev, &size);
 
-nit: Checkpatch tells me that usleep_range() is preferred over udelay().
-     Perhaps it would be worth looking into that for a follow-up patch.
+nit: reverse xmas tree - longest line to shortest - would be nice here.
 
-> +		}
-> +		if (!timeout) {
-> +			netdev_err(hp->dev,
-> +				   "Happy Meal would not start auto negotiation BMCR=0x%04x\n",
-> +				   hp->sw_bmcr);
-> +			netdev_notice(hp->dev,
-> +				      "Performing force link detection.\n");
-> +			goto force_link;
-> +		} else {
-> +			hp->timer_state = arbwait;
-> +		}
-> +	} else {
-> +force_link:
-> +		/* Force the link up, trying first a particular mode.
-> +		 * Either we are here at the request of ethtool or
-> +		 * because the Happy Meal would not start to autoneg.
-> +		 */
+	void __iomem *p;
+	size_t size;
+
+	p = pci_map_rom(pdev, &size);
+
 > +
-> +		/* Disable auto-negotiation in BMCR, enable the duplex and
-> +		 * speed setting, init the timer state machine, and fire it off.
-> +		 */
-> +		if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
-> +			hp->sw_bmcr = BMCR_SPEED100;
-> +		} else {
-> +			if (ep->base.speed == SPEED_100)
-> +				hp->sw_bmcr = BMCR_SPEED100;
-> +			else
-> +				hp->sw_bmcr = 0;
-> +			if (ep->base.duplex == DUPLEX_FULL)
-> +				hp->sw_bmcr |= BMCR_FULLDPLX;
-> +		}
-> +		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
+> +	if (p) {
+> +		int index = 0;
+> +		int found;
 > +
-> +		if (!is_lucent_phy(hp)) {
-> +			/* OK, seems we need do disable the transceiver for the first
-> +			 * tick to make sure we get an accurate link state at the
-> +			 * second tick.
-> +			 */
-> +			hp->sw_csconfig = happy_meal_tcvr_read(hp, tregs,
-> +							       DP83840_CSCONFIG);
-> +			hp->sw_csconfig &= ~(CSCONFIG_TCVDISAB);
-> +			happy_meal_tcvr_write(hp, tregs, DP83840_CSCONFIG,
-> +					      hp->sw_csconfig);
-> +		}
-> +		hp->timer_state = ltrywait;
+> +		if (is_quattro_p(pdev))
+> +			index = PCI_SLOT(pdev->devfn);
+> +
+> +		found = readb(p) == 0x55 &&
+> +			readb(p + 1) == 0xaa &&
+> +			find_eth_addr_in_vpd(p, (64 * 1024), index, dev_addr);
+> +		pci_unmap_rom(pdev, p);
+> +		if (found)
+> +			return;
 > +	}
 > +
-> +	hp->timer_ticks = 0;
-> +	hp->happy_timer.expires = jiffies + (12 * HZ)/10;  /* 1.2 sec. */
+> +	/* Sun MAC prefix then 3 random bytes. */
+> +	dev_addr[0] = 0x08;
+> +	dev_addr[1] = 0x00;
+> +	dev_addr[2] = 0x20;
+> +	get_random_bytes(&dev_addr[3], 3);
 
-nit: as a follow-up perhaps you could consider something like this.
-     (* completely untested! * )
+nit: Maybe as a follow-up using eth_hw_addr_random() could be considered here.
 
-	hp->happy_timer.expires = jiffies + msecs_to_jiffies(1200);
-
-> +	add_timer(&hp->happy_timer);
 > +}
-> +
+> +#endif /* !(CONFIG_SPARC) */
+
+...
+
+>  static int happy_meal_pci_probe(struct pci_dev *pdev,
+>  				const struct pci_device_id *ent)
+>  {
+>  	struct quattro *qp = NULL;
+> -#ifdef CONFIG_SPARC
+> -	struct device_node *dp;
+> -#endif
+> +	struct device_node *dp = NULL;
+
+nit: if dp was added above qp then then
+     things would move closer to reverse xmas tree.
+
+>  	struct happy_meal *hp;
+>  	struct net_device *dev;
+>  	void __iomem *hpreg_base;
+>  	struct resource *hpreg_res;
+> -	int i, qfe_slot = -1;
+> +	int qfe_slot = -1;
+
+nit: if qfe_slot was added below prom_name[64] then then
+     things would move closer to reverse xmas tree.
+
+>  	char prom_name[64];
+> -	u8 addr[ETH_ALEN];
+>  	int err;
+>  
+>  	/* Now make sure pci_dev cookie is there. */
 
 ...
