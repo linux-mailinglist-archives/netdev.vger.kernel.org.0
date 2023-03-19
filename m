@@ -2,60 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACCBB6C036E
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 18:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 210E46C0373
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 18:25:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229472AbjCSRVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 13:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
+        id S229508AbjCSRZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 13:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjCSRU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 13:20:59 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D539972AB
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 10:20:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1679246456; x=1710782456;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dmIafOXCTcLqwEvUFLGW3L3ZU7QaNUkhudhb4HFKYxU=;
-  b=QMdKO5ztQHdSH7iYZzJxyQNMP5r2Q8CHkkqM46wgZNqGebyTVPlAB5bW
-   l9BTkuR0jWByeW8FvykBjEURks3y0YsvO4IQLt0al4R6MS9UBUkLXnQbr
-   oX2LFD4wW1rOrRLfEivaoEasjtUOVzxCYhSm4skn0xFc+SuHZgC6IWKFq
-   88UDoDXujrBEXPPYuzwAyvvBjxI87hPyaKA5qTUL3AfO7H40kNhqQtVV6
-   x8SVZaJCUnfrfNs1ZqgMD+sNvmKcfGTA1TLP+RCWNnZgCo4hWXqo8ctvj
-   kSIHOay0B/FSPsv84uMFG3mDVXV/YHGaYECgWj6SZ2eyi5j06XOEOATJE
-   w==;
-X-IronPort-AV: E=Sophos;i="5.98,274,1673938800"; 
-   d="scan'208";a="205414549"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Mar 2023 10:20:53 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Sun, 19 Mar 2023 10:20:53 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Sun, 19 Mar 2023 10:20:53 -0700
-Date:   Sun, 19 Mar 2023 18:20:52 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     William Tu <u9012063@gmail.com>
-CC:     <netdev@vger.kernel.org>, <jsankararama@vmware.com>,
-        <gyang@vmware.com>, <doshir@vmware.com>,
-        <alexander.duyck@gmail.com>, <alexandr.lobakin@intel.com>,
-        <bang@vmware.com>, <maciej.fijalkowski@intel.com>,
-        <witu@nvidia.com>, Alexander Duyck <alexanderduyck@fb.com>
-Subject: Re: [PATCH RFC v18 net-next] vmxnet3: Add XDP support.
-Message-ID: <20230319172052.gkzu7h227ulkog6o@soft-dev3-1>
-References: <20230318214953.36834-1-u9012063@gmail.com>
+        with ESMTP id S229472AbjCSRZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 13:25:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068D2113DA
+        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 10:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679246680;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WYm22h0FZEjzDnur0SvUWRtWO3WPGs/nZ3mlQqCc8gk=;
+        b=CPKyCROQbtXfnQgKDw46LYwzOdrRVD0M0XnIIoFt4uYmN0Lukv2x+umNmetGv2v5Wfe3gs
+        x845rX8EhP6UbK0p9SrmwDhIE3WSlwl39jIog0+BL8s7ZBC8ruH9KkStQxcwoS4Fp5vZcn
+        j+KS7QnbQMWFg2g5x4areZPpfsI/E6U=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-161-Ivn7QIKbMVObQhzWgNNUWQ-1; Sun, 19 Mar 2023 13:24:38 -0400
+X-MC-Unique: Ivn7QIKbMVObQhzWgNNUWQ-1
+Received: by mail-qt1-f198.google.com with SMTP id l17-20020ac84cd1000000b003bfbae42753so5483219qtv.12
+        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 10:24:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679246678;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WYm22h0FZEjzDnur0SvUWRtWO3WPGs/nZ3mlQqCc8gk=;
+        b=5udrSD2+623YarSIFowprdg9x+QTJwyZOf3A4bu2Q5Rzj47fa+DnkEx0itRosUucOA
+         YWqz/Ylr1cXES8d+kPCxynIt8WGWpZRSJRRLTjXC3dtHDqe8VkZaEXjF6utFoJevCerD
+         zvleK69fzz+pdXsuCoe52T686hNRKDxXF2hYMCkWoZpzY8qRJGA1EjYDCyrXEZ3sKPWT
+         Z4qlqg/q8yDU7WxmL+mrXnRKPAuhvpeaLMb6j9q1GOQX1TSt9GYaGWI5vg/GEmQ5HSIy
+         yY1y8LzwXTNLexuHQLuW3fivk698f5vmEbQPbZm0aoWzKSUwi9HVbfTzF251FZmaAlQ6
+         2rxw==
+X-Gm-Message-State: AO0yUKVpq8w1hkkg4rT7JsI3BtT2tkJf9q0jYR3GyVUOyE3QDfJh5QHT
+        B9BcnWobXnqce0/lV/dNws9NEN2qujjgfsxyy+yHjoagdIq58P76q2thhWanlLoKfCYCXrcOqoF
+        MCNLt3DdkpDUNVaSA
+X-Received: by 2002:ac8:7f8c:0:b0:3bf:dc2e:ce5d with SMTP id z12-20020ac87f8c000000b003bfdc2ece5dmr22196956qtj.4.1679246678265;
+        Sun, 19 Mar 2023 10:24:38 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8Yug+NOU+/B0nf5Ys4tKHcVGq8qmgqxjRscDDR3teSxftfURGyZtdjxvhppM9zckFSgDcZLQ==
+X-Received: by 2002:ac8:7f8c:0:b0:3bf:dc2e:ce5d with SMTP id z12-20020ac87f8c000000b003bfdc2ece5dmr22196945qtj.4.1679246678019;
+        Sun, 19 Mar 2023 10:24:38 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id l5-20020ac87245000000b003d3b9f79b4asm4926103qtp.68.2023.03.19.10.24.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Mar 2023 10:24:37 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     rajur@chelsio.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: cxgb3: remove unused fl_to_qset function
+Date:   Sun, 19 Mar 2023 13:24:33 -0400
+Message-Id: <20230319172433.1708161-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20230318214953.36834-1-u9012063@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,168 +76,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/18/2023 14:49, William Tu wrote:
+clang with W=1 reports
+drivers/net/ethernet/chelsio/cxgb3/sge.c:169:32: error: unused function
+  'fl_to_qset' [-Werror,-Wunused-function]
+static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
+                               ^
+This function is not used, so remove it.
 
-Hi William,
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/chelsio/cxgb3/sge.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-...
-
-> +
-> +static int
-> +vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
-> +                      struct xdp_frame *xdpf,
-> +                      struct vmxnet3_tx_queue *tq, bool dma_map)
-> +{
-> +       struct vmxnet3_tx_buf_info *tbi = NULL;
-> +       union Vmxnet3_GenericDesc *gdesc;
-> +       struct vmxnet3_tx_ctx ctx;
-> +       int tx_num_deferred;
-> +       struct page *page;
-> +       u32 buf_size;
-> +       int ret = 0;
-
-This doesn't seem to be used anywhere, so it can be removed.
-
-> +       u32 dw2;
-> +
-> +       dw2 = (tq->tx_ring.gen ^ 0x1) << VMXNET3_TXD_GEN_SHIFT;
-> +       dw2 |= xdpf->len;
-> +       ctx.sop_txd = tq->tx_ring.base + tq->tx_ring.next2fill;
-> +       gdesc = ctx.sop_txd;
-> +
-> +       buf_size = xdpf->len;
-> +       tbi = tq->buf_info + tq->tx_ring.next2fill;
-> +
-> +       if (vmxnet3_cmd_ring_desc_avail(&tq->tx_ring) == 0) {
-> +               tq->stats.tx_ring_full++;
-> +               return -ENOSPC;
-> +       }
-> +
-> +       tbi->map_type = VMXNET3_MAP_XDP;
-> +       if (dma_map) { /* ndo_xdp_xmit */
-> +               tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
-> +                                              xdpf->data, buf_size,
-> +                                              DMA_TO_DEVICE);
-> +               if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr))
-> +                       return -EFAULT;
-> +               tbi->map_type |= VMXNET3_MAP_SINGLE;
-> +       } else { /* XDP buffer from page pool */
-> +               page = virt_to_page(xdpf->data);
-> +               tbi->dma_addr = page_pool_get_dma_addr(page) +
-> +                               XDP_PACKET_HEADROOM;
-
-Shouldn't this be VMXNET3_XDP_HEADROOM?
-
-> +               dma_sync_single_for_device(&adapter->pdev->dev,
-> +                                          tbi->dma_addr, buf_size,
-> +                                          DMA_BIDIRECTIONAL);
-
-Shouldn't this be DMA_TO_DEVICE instead of DMA_BIDERECTIONAL?
-
-> +       }
-> +       tbi->xdpf = xdpf;
-> +       tbi->len = buf_size;
-> +
-> +       gdesc = tq->tx_ring.base + tq->tx_ring.next2fill;
-> +       WARN_ON_ONCE(gdesc->txd.gen == tq->tx_ring.gen);
-> +
-> +       gdesc->txd.addr = cpu_to_le64(tbi->dma_addr);
-> +       gdesc->dword[2] = cpu_to_le32(dw2);
-> +
-> +       /* Setup the EOP desc */
-> +       gdesc->dword[3] = cpu_to_le32(VMXNET3_TXD_CQ | VMXNET3_TXD_EOP);
-> +
-> +       gdesc->txd.om = 0;
-> +       gdesc->txd.msscof = 0;
-> +       gdesc->txd.hlen = 0;
-> +       gdesc->txd.ti = 0;
-> +
-> +       tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
-> +       le32_add_cpu(&tq->shared->txNumDeferred, 1);
-> +       tx_num_deferred++;
-> +
-> +       vmxnet3_cmd_ring_adv_next2fill(&tq->tx_ring);
-> +
-> +       /* set the last buf_info for the pkt */
-> +       tbi->sop_idx = ctx.sop_txd - tq->tx_ring.base;
-> +
-> +       dma_wmb();
-> +       gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
-> +                                                 VMXNET3_TXD_GEN);
-> +
-> +       /* No need to handle the case when tx_num_deferred doesn't reach
-> +        * threshold. Backend driver at hypervisor side will poll and reset
-> +        * tq->shared->txNumDeferred to 0.
-> +        */
-> +       if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
-> +               tq->shared->txNumDeferred = 0;
-> +               VMXNET3_WRITE_BAR0_REG(adapter,
-> +                                      VMXNET3_REG_TXPROD + tq->qid * 8,
-> +                                      tq->tx_ring.next2fill);
-> +       }
-> +
-> +       return ret;
-> +}
-
-...
-
-> +static int
-> +vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, struct xdp_buff *xdp,
-> +               struct bpf_prog *prog)
-> +{
-> +       struct xdp_frame *xdpf;
-> +       struct page *page;
-> +       int err;
-> +       u32 act;
-> +
-> +       act = bpf_prog_run_xdp(prog, xdp);
-> +       rq->stats.xdp_packets++;
-> +       page = virt_to_page(xdp->data_hard_start);
-> +
-> +       switch (act) {
-> +       case XDP_PASS:
-> +               return act;
-> +       case XDP_REDIRECT:
-> +               err = xdp_do_redirect(rq->adapter->netdev, xdp, prog);
-> +               if (!err)
-> +                       rq->stats.xdp_redirects++;
-> +               else
-> +                       rq->stats.xdp_drops++;
-> +               return act;
-> +       case XDP_TX:
-> +               xdpf = xdp_convert_buff_to_frame(xdp);
-
-If you want, I think you can drop xdp_convert_buff_to_frame() and pass
-directly the page. And then inside vmxnet3_unmap_pkt() you can use
-page_pool_recycle_direct().
-Of course this requires few other changes (I think you need a new
-map_type) but in the end you might save some CPU usage.
-
-> +               if (unlikely(!xdpf ||
-> +                            vmxnet3_xdp_xmit_back(rq->adapter, xdpf))) {
-> +                       rq->stats.xdp_drops++;
-> +                       page_pool_recycle_direct(rq->page_pool, page);
-> +               } else {
-> +                       rq->stats.xdp_tx++;
-> +               }
-> +               return act;
-> +       default:
-> +               bpf_warn_invalid_xdp_action(rq->adapter->netdev, prog, act);
-> +               fallthrough;
-> +       case XDP_ABORTED:
-> +               trace_xdp_exception(rq->adapter->netdev, prog, act);
-> +               rq->stats.xdp_aborted++;
-> +               break;
-> +       case XDP_DROP:
-> +               rq->stats.xdp_drops++;
-> +               break;
-> +       }
-> +
-> +       page_pool_recycle_direct(rq->page_pool, page);
-> +
-> +       return act;
-> +}
-> +
-
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+index 62dfbdd33365..efa7f401529e 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+@@ -166,11 +166,6 @@ static u8 flit_desc_map[] = {
+ #endif
+ };
+ 
+-static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
+-{
+-	return container_of(q, struct sge_qset, fl[qidx]);
+-}
+-
+ static inline struct sge_qset *rspq_to_qset(const struct sge_rspq *q)
+ {
+ 	return container_of(q, struct sge_qset, rspq);
 -- 
-/Horatiu
+2.27.0
+
