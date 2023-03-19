@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4EC6C0286
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 16:00:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D186C0287
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 16:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbjCSPAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 11:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34840 "EHLO
+        id S230419AbjCSPAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 11:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbjCSPAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 11:00:15 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EED14EA2;
-        Sun, 19 Mar 2023 08:00:12 -0700 (PDT)
+        with ESMTP id S230040AbjCSPAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 11:00:16 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A921F5F3;
+        Sun, 19 Mar 2023 08:00:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
-        s=s31663417; t=1679237954; i=frank-w@public-files.de;
+        s=s31663417; t=1679237974; i=frank-w@public-files.de;
         bh=FaY0Xl4jfnqhSvRMHOlCX3MBxMkltd1/bLTF73k4weg=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DKFNt2WZoREtt+jN1ck1xolqt6Qiz6THIkpIfPuXTRq/Uc2Abd6AVHAGEKUFA9/89
-         mDb2dUp8omXPHSnEqsDO4Jg4+9/KA/w8LGg/x7jyHmLWKbd0MT9t6HHS6N4o+fbAIo
-         6ToGjm0KteUH2KrWCh6YAzXSwt0wgQuR1Q0KxiE9qC2oR1J6Fhz7v9C0AM7pTc8wT8
-         fdY8DslxjZSMD9zrQXZURZDOotWTQz87LR2VyIfy1ZbYU3ZydesjbWMNNQ/JFLARkE
-         Zd4Tw3q0DnX5kTQGDYh9WtCtu48YS0Zfe0oeIaIWSoLF9wiJTh0G5V42Fved085/gg
-         f28dTjnZCv1lA==
+        b=m+78KDG7Mmcwc7gj18tQBa5KlnttrpkmTbH5ILg4BO57oA/iIFDrmKTGogVyvT0At
+         3NXfJtLhYF08QYSW58FIVQilQLC6uEN860tc7QQ0HNONXFVUF/SU5ZnxudwUmctBlA
+         1dzbg+GY1aUSTqPNFbWzy4nCgEu59+hILd8JJ0XcAdK/4jOyV7G9TweEKRFrFLXxk8
+         L/0samKM+ZUHOs2piwAUOUFUlBDYV4xQjH9ZfmnZZFivYPEaukRvU5FKw8M+JUe0Qv
+         gVafW+DOXWiz/Rx5SGvuCVKjBDBNqfIMfvXaWEz7URPR6lSwOg+M0zbRHvnSYMNyXG
+         tV03zE+CicDgw==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [217.61.158.68] ([217.61.158.68]) by web-mail.gmx.net
  (3c-app-gmx-bs27.server.lan [172.19.170.79]) (via HTTP); Sun, 19 Mar 2023
- 15:59:14 +0100
+ 15:59:34 +0100
 MIME-Version: 1.0
-Message-ID: <trinity-a9f91337-a6df-4c4d-86ba-f5ff5118c3cd-1679237954332@3c-app-gmx-bs27>
+Message-ID: <trinity-0a0531c9-44c0-4171-9d5b-3607df6175d4-1679237974351@3c-app-gmx-bs27>
 From:   Frank Wunderlich <frank-w@public-files.de>
 To:     Daniel Golle <daniel@makrotopia.org>
 Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
@@ -55,35 +55,35 @@ Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
         Alexander Couzens <lynxis@fe80.eu>
-Subject: Aw: [PATCH net-next v14 7/9] net: pcs: add driver for MediaTek
- SGMII PCS
+Subject: Aw: [PATCH net-next v14 8/9] net: ethernet: mtk_eth_soc: switch to
+ external PCS driver
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 19 Mar 2023 15:59:14 +0100
+Date:   Sun, 19 Mar 2023 15:59:34 +0100
 Importance: normal
 Sensitivity: Normal
-In-Reply-To: <cf8a52216cfe4651695669936bd4bb1b9500c57b.1679230025.git.daniel@makrotopia.org>
+In-Reply-To: <3979b99300067c595a4406dbb0dec3ca9ba14952.1679230025.git.daniel@makrotopia.org>
 References: <cover.1679230025.git.daniel@makrotopia.org>
- <cf8a52216cfe4651695669936bd4bb1b9500c57b.1679230025.git.daniel@makrotopia.org>
+ <3979b99300067c595a4406dbb0dec3ca9ba14952.1679230025.git.daniel@makrotopia.org>
 X-UI-Message-Type: mail
 X-Priority: 3
-X-Provags-ID: V03:K1:QlaKsSUYzhoHNVHDU4Rq0bkFMZFnwpaPu5MLgsBtp8NUsWc9o5S8LdeCQ2xzWzeAFwRt4
- Mxc17gdJOEOGXzEsWcJo6EZGPoMqwW0V1U3GeuO4/Z3SJzOql+e3/TBcCdOl7ocqDQckGIofFMMg
- 3NFdoHc56LvqaiWj9Fh3f0NxCmZzPeIKfy5rbdVf/OC1ZYe/xa4tHtlGCYGHeD0NIj9VAJXJCXGV
- 10Q2a3270UkO09xLwG9GMB1QW5JC+XRdTnC4+GAAjp53h3eL4e+Z9Qn/Ex1nrdoRI3WEn+uj18cS
- 6s=
-UI-OutboundReport: notjunk:1;M01:P0:eznMuFIIR60=;TcBxrqYLL8IXUHWdmSvm7sSx/yF
- klFeVRm/A0/rGq75P4jMohykpfRmQu+2ALaAOa3bZwmBn2mmTg7EbnW31GiYPZKTTK/OXwmte
- i6jI3k856t7uBjZ2/Ow0CWz8kctXTcAP5pvb7nlSLpRI8gEwu7q7OLweDs6JCNdVCutHR2cK6
- BvRCjnj4nHV+8tUDVxN/9jma+ruVIfhAfq6s47UjEmF0q8txpN3kl6c7uRGuCS25GT94PoGsJ
- YJikkrCtnxWJhKbfmODBjtpb5NxPDttiCmspJOVzqEMfYHZDpBQHtoDmMMbVgLfJP8HtdnSuX
- j1MBV3b1qujWoxgn6bYcWNgggB3BQhkoNhn4JTaFGJqogbcb/UgxGuPdr3jK1bfcv7clyIsIB
- og00aDaCWKv6QPj3rYgPZFGE/rEkunnVxTmCYK1GXZiFruHEOGfZ0iKXw3tYKEK8mZ7XtDsD8
- y0I6y82h4nLMHKpd7PSA6Uxmj2JaMnm9Pbf8eFfGiFmxHirQVUp+NkkGGe5ynTGO2XbLta4YK
- oQswLwvbhxPJ7nMo8urh1zgga8HJr9d/c237oduv+CWbLbjX++y3ugeMr03dH2jtj5gYCLNCu
- nUOeEbao8xek3yAbDGG//Wd0DSJZgCAcIlRWekai9264JvYYZqnQcKc2VeD+hOHc/vqBZ+CxW
- 0vjxH/RoASEFfmiF/RgJExNW2f8TuQljfXEZFHj0seGiKiUblwKBgrUwb4nEUKinDOb3/0YDF
- i58Clg6jjcTcj/4H0oiT8GF1DWIr5nSPOzR8kV8Owol1ZEd+sWEuUAICL7DJLgk2YTqorPoNB
- qxzuVLOiT1e2eGOsRbC7JoOQ==
+X-Provags-ID: V03:K1:sU97e+lgcCfTk1IjrHuZB3vZAMLNfgAeGL8Gt84Pf1cml7G8cpK40yiE5ipilxbyng1/N
+ Mgsp56itmfUxpBaGUbCJhbnTtPcUEpk9qwGxhGvYfEwKlxip/NqrxQc8qNpqhFpQlvdIrehVd0Wl
+ J+2YTMELPeGRjBw6j/y+/EuD1GnG3BdM7DIgqFDcQLytk38JmOVNp/TTM5wc7CsbCUyBE9IsI168
+ TV0FSDv4Go74vG9Q/w6oZg9uiy568Sjd/3G2B/qvfBFS7xCBVsIXZu0Hvz9rvNrg+H1Ah1oN+jro
+ sc=
+UI-OutboundReport: notjunk:1;M01:P0:F+KgMaH38GA=;QHG/JQQ7xTXbN5KWA50Q7bm/nls
+ UmA8y9ZKTD+xKs3Zgq8yKQgg1V7m7dYVxUulOqVHyfaJ6OUWHjMo8EEt4XsmwOTHW5Vf5EuJH
+ 0wDqQrruFU+U8m7q+RvWeS8uZy9kQc+gNIGaRGyrIG4VY7CyA+Juc6NKZ7vy3N2TKBlLcvG7k
+ PDNUr1mPa0/MxCQ6GNtVeRzrmfnXf+ACOhgUaL789SROQlrGcnWtoBHY0iJ6JWxj9MlbGZlGX
+ gccYchrjZSSzDCbyTjcmPX5IQ5Hj2tQEd+EO887fFh85jcsKzjQAcRCmVcZjKGS+xVrIXdgPA
+ jc+bYaI+Hnpxz1LxAfp0JGQYIE9glaqWfZ/W0b5QY7+TNRACjEZ075+dbBQdw+clC5fQNanOC
+ m1z8W6mRIVvYCPQSE7c0CxCsplJ6QcQi6pJCMevdZOXWvXW3Oo7tLqNUiRAZjQyw1edCFw5Yk
+ BKXf4msGfffE1horaTG+mXrKgaijbtcGvg2g2vCpCPLeuyqpQoPSGsBUSYW1m55yReUTlksCe
+ pjppl/Ww/EctJFjBwTlgwN0FEfG/FFhwvSCo0O5mu/NQHcU0+ahO9HyZVWqLQ+W/ahRpF+YDr
+ BxJK3fCN9Fe9BIC66iJ8PQ8l9YQ9CMQSWuIkulftmgjaZFo0+8L48ITdC1zzTrH9COPsh/DFG
+ SXnMlVHemBigLD1E1ROzpfMqlBc8m4Oq3S0QDF3fW0UMXMOgdL64Zvgn+3FaZ+VsP62WHB+/y
+ HIcl4cVM7og24z9TuYNcLsQb0cIBg814K7nssCSl8+JlkzBbeQyYFj6uGm25/TrV3oFxK/Fnh
+ V8VqpqRHPqFA4SpyPda4wFBA==
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
