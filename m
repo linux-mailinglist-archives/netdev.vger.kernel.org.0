@@ -2,45 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FC66C03E1
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 19:51:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D99236C03EB
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 19:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbjCSSvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 14:51:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
+        id S229694AbjCSSyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 14:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjCSSu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 14:50:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5B217146;
-        Sun, 19 Mar 2023 11:50:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=o07Y1obEQh6vMiIF631MCGn7dZ81Ro+29HesnwRuPSQ=; b=hcKv/iMngGDXKK5P768aRAErg4
-        0tMvAkCQ4q11PfbYw00PsGIPQBwAQmyXIKoaLUgZKkPyBdCndz0EatyPoznyyBon6sWARKy83+1qI
-        ndgoDvbdm6viKPLMXYE/T5hTozcqws+zaQDtcYLW0DHhMZfGFx0elYZY2o5xNO76q1P8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pdy7D-007mPB-53; Sun, 19 Mar 2023 19:50:47 +0100
-Date:   Sun, 19 Mar 2023 19:50:47 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?=C1lvaro_Fern=E1ndez?= Rojas <noltari@gmail.com>
-Cc:     f.fainelli@gmail.com, jonas.gorski@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: b53: add support for BCM63xx RGMIIs
-Message-ID: <53c8eeb2-f2f3-45a6-842f-44556c1098af@lunn.ch>
-References: <20230319183330.761251-1-noltari@gmail.com>
+        with ESMTP id S229460AbjCSSyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 14:54:33 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837FB196BE;
+        Sun, 19 Mar 2023 11:54:32 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id D9CD05FD0B;
+        Sun, 19 Mar 2023 21:54:30 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1679252070;
+        bh=4xeEPECpVnpzfQf1fesctV2AnA8LeKYtLCBEiuPhocg=;
+        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
+        b=akgHfvv8AkVLHgeCDpICG7WM0q3/HjV+IbSmam+sMzpXSE0xxLodG4Y1ZxKLOWZA2
+         PBhBsJbTchNoIJfSBv45e0YwBoSNjYbrFoM+A9dw5y+dYgSHXOksoyTsSlmgJRhq0t
+         hDPPb27+rrFfkVMqQ52mBFjK/RQ0qo5VBnLqIoU+6FWkJ2aRGddlfQrpqchr895ZVi
+         Kr/Bx5/gMQx9dvMfF+u0SAXCqg7RNrJdxpUrpMuBBfg/LXFCJeGxiHMTPMLvU5FHs4
+         hRtNG3VjTcbNPqfu6ZTUjjwE8iFGWChJLo6v1Q78dlD8X1qrkniM95ca7qKB9NgV9S
+         AZl93kgvL5/zw==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Sun, 19 Mar 2023 21:54:30 +0300 (MSK)
+Message-ID: <63445f2f-a0bb-153c-0e15-74a09ea26dc1@sberdevices.ru>
+Date:   Sun, 19 Mar 2023 21:51:06 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230319183330.761251-1-noltari@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+In-Reply-To: <e141e6f1-00ae-232c-b840-b146bdb10e99@sberdevices.ru>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
+        <avkrasnov@sberdevices.ru>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Subject: [RFC PATCH v1 1/3] virtio/vsock: fix header length on skb merging
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/19 16:43:00 #20974059
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,43 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static void b53_adjust_63xx_rgmii(struct dsa_switch *ds, int port,
-> +				  phy_interface_t interface)
-> +{
-> +	struct b53_device *dev = ds->priv;
-> +	u8 rgmii_ctrl = 0, off;
-> +
-> +	if (port == dev->imp_port)
-> +		off = B53_RGMII_CTRL_IMP;
-> +	else
-> +		off = B53_RGMII_CTRL_P(port);
-> +
-> +	b53_read8(dev, B53_CTRL_PAGE, off, &rgmii_ctrl);
-> +
-> +	rgmii_ctrl &= ~(RGMII_CTRL_DLL_RXC | RGMII_CTRL_DLL_TXC);
-> +	if (interface == PHY_INTERFACE_MODE_RGMII_ID)
-> +		rgmii_ctrl |= (RGMII_CTRL_DLL_RXC | RGMII_CTRL_DLL_TXC);
-> +	else if (interface == PHY_INTERFACE_MODE_RGMII_RXID)
-> +		rgmii_ctrl |= RGMII_CTRL_DLL_RXC;
-> +	else if (interface == PHY_INTERFACE_MODE_RGMII_TXID)
-> +		rgmii_ctrl |= RGMII_CTRL_DLL_TXC;
+This fixes header length calculation of skbuff during data appending to
+it. When such skbuff is processed in dequeue callbacks, e.g. 'skb_pull()'
+is called on it, 'skb->len' is dynamic value, so it is impossible to use
+it in header, because value from header must be permanent for valid
+credit calculation ('rx_bytes'/'fwd_cnt').
 
-Please change this to a switch statement. Then i would suggest having
-a case PHY_INTERFACE_MODE_RGMII: to make it clear you are handling
-that as well, removing all delays. You do look to be handling it, so
-it is not a big problem, but in the past we have had code where one of
-the RGMII modes has been ignored resulting in some horrible problems
-later. So it is something i now always look for, and like to be obvious.
+Fixes: 077706165717 ("virtio/vsock: don't use skbuff state to account credit")
+Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+---
+ net/vmw_vsock/virtio_transport_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +
-> +	if (port != dev->imp_port)
-> +		rgmii_ctrl |= RGMII_CTRL_ENABLE_GMII;
-> +
-> +	b53_write8(dev, B53_CTRL_PAGE, off, rgmii_ctrl);
-> +
-> +	dev_info(ds->dev, "Configured port %d for %s\n", port,
-> +		 phy_modes(interface));
-
-dev_dbg().
-
-	Andrew
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 6d15cd4d090a..3c75986e16c2 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -1091,7 +1091,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+ 			memcpy(skb_put(last_skb, skb->len), skb->data, skb->len);
+ 			free_pkt = true;
+ 			last_hdr->flags |= hdr->flags;
+-			last_hdr->len = cpu_to_le32(last_skb->len);
++			le32_add_cpu(&last_hdr->len, len);
+ 			goto out;
+ 		}
+ 	}
+-- 
+2.25.1
