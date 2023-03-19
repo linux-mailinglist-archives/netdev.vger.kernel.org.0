@@ -2,175 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 202186C05F1
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 23:08:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA1C6C05F6
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 23:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbjCSWIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 18:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
+        id S230309AbjCSWKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 18:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbjCSWIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 18:08:12 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605D3E062;
-        Sun, 19 Mar 2023 15:08:10 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id h17so8695188wrt.8;
-        Sun, 19 Mar 2023 15:08:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679263689;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GmPK75Q9ZD3h3IYflWYuDwS99V2e532KgDlnNucAoJg=;
-        b=PSdrywW48P4Lq8z9wOSPXFB/ZdO/JfuyiGlw3Gz1Iriy+Smo/cBnJ0Ve9zKkX3AKTO
-         Tr7/g8xhSQX8sU5WAOEPC13uVjKpO4VZsamXHTmMKL4mmfII3K/piAsQcMQkkNpgouab
-         Ci9yr+7ASSmqEUHIbYTM6sl6a47rPwqk3b3DcTIE2CwJsPPNXnpQ/aSVbJAcEdhcZICc
-         X4rAmjrYjcsl8coFIGHHPlrMH9ShekQWxB84vEb6bO1nXOORNPizOHuY1vJ3wa3WgXsx
-         YwlvutMFVIUXfgL2ZwCmQAKWJPiAaFk+CCk3oxSeOYoAzkjcbMyapz9VnooStfvR2aV3
-         k+2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679263689;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GmPK75Q9ZD3h3IYflWYuDwS99V2e532KgDlnNucAoJg=;
-        b=NGjqrGERyaxRwINtevHaY97h9X9W+1UY62YYwotqwv5+cfvB8myjBbD3WH2WzaqMes
-         o9MMER9RE8/arW3jIVlBv4ORDUuEZ7AeGgy5UbFyQZIPHlp+hJ/sxFrGvYUwamg4Qrr9
-         ojargh8ORsEiMeqaf+5AkmEagNhrrV3ax0pUuWDzbJ3vXGoHjfCetHz5xyNL46dvXBfb
-         l/OZqjv9IYob552uUoUmCy/TbEQDqvmjkFrROFK9gtBNxgxUJkwbyiWIOVsf6RR8OarP
-         f7bbvSJYkvTvzx2u/g0Up7NW5ZyihMGBmDs377M3yW6AnSxW6jlfl30QmMU1aEigYXvy
-         v3mA==
-X-Gm-Message-State: AO0yUKUm1PYmYa4xlHuVD23mZcZm83a+xbhcbs0Xryi3yF/+UnjM4Cho
-        GAfqSh5MZ/rlOAm3Vnpn//9hOG5Lc8vLYg==
-X-Google-Smtp-Source: AK7set+5pTahGGgk1hF/mHGkGBhsMf0//oQjZd4QFHx+HaeSgP5f6q7g0bRUcTX8kRtgHH0T7l1/hQ==
-X-Received: by 2002:a5d:474f:0:b0:2d6:2ae8:70d with SMTP id o15-20020a5d474f000000b002d62ae8070dmr2382593wrs.39.1679263688549;
-        Sun, 19 Mar 2023 15:08:08 -0700 (PDT)
-Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id d6-20020a5d6dc6000000b002c53f6c7599sm7354727wrz.29.2023.03.19.15.08.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 15:08:07 -0700 (PDT)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        with ESMTP id S230306AbjCSWKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 18:10:31 -0400
+Received: from ocelot.miegl.cz (ocelot.miegl.cz [195.201.216.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ADF6E99;
+        Sun, 19 Mar 2023 15:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=miegl.cz; s=dkim;
+        t=1679263826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XTvG4gYKA+YtluD3rBPX47zu84nIB9zKoJOoRegJkSU=;
+        b=awqSNRPCO3mfVrNW8/NG4mFu3alZvoi3MpisRoNdWbKkhIKj3lB9phr1imFbWCkfCrvjnR
+        4pIs22omzhH2tDbydmp7UIdpd5ObP1tak/01T+UbJJXTiGW55LBXN0aeN8iJPjT//j/UeR
+        HnSo2lM/w8NKNmGLB97rJ6KdsNJX2jz4Q7RYuNV0RlBuDh/JiZwiJWlrxUozDMjFY8mWY+
+        Nv8xbsKCwn7dzr7Nr/YDBTap14/QvIlauyUswTgq4uL9tf+HoPMiygggeIXKKXLZKJZGIJ
+        Wp0vftxoyowiNTLWBfkCVMv7qx4hrHxj9mWqvQbGjIVKt7si0MFTHJaCPArE0w==
+From:   Josef Miegl <josef@miegl.cz>
+Cc:     Eyal Birger <eyal.birger@gmail.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Josef Miegl <josef@miegl.cz>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-Subject: [PATCH v2] net: dsa: b53: add support for BCM63xx RGMIIs
-Date:   Sun, 19 Mar 2023 23:08:05 +0100
-Message-Id: <20230319220805.124024-1-noltari@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230319183330.761251-1-noltari@gmail.com>
-References: <20230319183330.761251-1-noltari@gmail.com>
+Subject: [PATCH net-next v2] net: geneve: accept every ethertype
+Date:   Sun, 19 Mar 2023 23:09:54 +0100
+Message-Id: <20230319220954.21834-1-josef@miegl.cz>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BCM63xx RGMII ports require additional configuration in order to work.
+The Geneve encapsulation, as defined in RFC 8926, has a Protocol Type
+field, which states the Ethertype of the payload appearing after the
+Geneve header.
 
-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+Commit 435fe1c0c1f7 ("net: geneve: support IPv4/IPv6 as inner protocol")
+introduced a new IFLA_GENEVE_INNER_PROTO_INHERIT flag that allowed the
+use of other Ethertypes than Ethernet. However, it did not get rid of a
+restriction that prohibits receiving payloads other than Ethernet,
+instead the commit white-listed additional Ethertypes, IPv4 and IPv6.
+
+This patch removes this restriction, making it possible to receive any
+Ethertype as a payload, if the IFLA_GENEVE_INNER_PROTO_INHERIT flag is
+set.
+
+The restriction was set in place back in commit 0b5e8b8eeae4
+("net: Add Geneve tunneling protocol driver"), which implemented a
+protocol layer driver for Geneve to be used with Open vSwitch. The
+relevant discussion about introducing the Ethertype white-list can be
+found here:
+https://lore.kernel.org/netdev/CAEP_g=_1q3ACX5NTHxLDnysL+dTMUVzdLpgw1apLKEdDSWPztw@mail.gmail.com/
+
+<quote>
+>> +       if (unlikely(geneveh->proto_type != htons(ETH_P_TEB)))
+>
+> Why? I thought the point of geneve carrying protocol field was to
+> allow protocols other than Ethernet... is this temporary maybe?
+
+Yes, it is temporary. Currently OVS only handles Ethernet packets but
+this restriction can be lifted once we have a consumer that is capable
+of handling other protocols.
+</quote>
+
+This white-list was then ported to a generic Geneve netdevice in commit
+371bd1061d29 ("geneve: Consolidate Geneve functionality in single
+module."). Preserving the Ethertype white-list at this point made sense,
+as the Geneve device could send out only Ethernet payloads anyways.
+
+However, now that the Geneve netdevice supports encapsulating other
+payloads with IFLA_GENEVE_INNER_PROTO_INHERIT and we have a consumer
+capable of other protocols, it seems appropriate to lift the restriction
+and allow any Geneve payload to be received.
+
+Signed-off-by: Josef Miegl <josef@miegl.cz>
 ---
- v2: add changes suggested by Andrew:
-  - Use a switch statement.
-  - Use dev_dbg() instead of dev_info().
+ drivers/net/geneve.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
- drivers/net/dsa/b53/b53_common.c | 46 ++++++++++++++++++++++++++++++++
- drivers/net/dsa/b53/b53_priv.h   |  1 +
- 2 files changed, 47 insertions(+)
-
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 59cdfc51ce06..6e212f6f1cb9 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1209,6 +1209,46 @@ static void b53_force_port_config(struct b53_device *dev, int port,
- 	b53_write8(dev, B53_CTRL_PAGE, off, reg);
- }
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 89ff7f8e8c7e..32684e94eb4f 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -365,13 +365,6 @@ static int geneve_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+ 	if (unlikely(geneveh->ver != GENEVE_VER))
+ 		goto drop;
  
-+static void b53_adjust_63xx_rgmii(struct dsa_switch *ds, int port,
-+				  phy_interface_t interface)
-+{
-+	struct b53_device *dev = ds->priv;
-+	u8 rgmii_ctrl = 0, off;
-+
-+	if (port == dev->imp_port)
-+		off = B53_RGMII_CTRL_IMP;
-+	else
-+		off = B53_RGMII_CTRL_P(port);
-+
-+	b53_read8(dev, B53_CTRL_PAGE, off, &rgmii_ctrl);
-+
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		rgmii_ctrl |= (RGMII_CTRL_DLL_RXC | RGMII_CTRL_DLL_TXC);
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		rgmii_ctrl &= ~(RGMII_CTRL_DLL_TXC);
-+		rgmii_ctrl |= RGMII_CTRL_DLL_RXC;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		rgmii_ctrl &= ~(RGMII_CTRL_DLL_RXC);
-+		rgmii_ctrl |= RGMII_CTRL_DLL_TXC;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII:
-+	default:
-+		rgmii_ctrl &= ~(RGMII_CTRL_DLL_RXC | RGMII_CTRL_DLL_TXC);
-+		break;
-+	}
-+
-+	if (port != dev->imp_port)
-+		rgmii_ctrl |= RGMII_CTRL_ENABLE_GMII;
-+
-+	b53_write8(dev, B53_CTRL_PAGE, off, rgmii_ctrl);
-+
-+	dev_dbg(ds->dev, "Configured port %d for %s\n", port,
-+		phy_modes(interface));
-+}
-+
- static void b53_adjust_link(struct dsa_switch *ds, int port,
- 			    struct phy_device *phydev)
- {
-@@ -1235,6 +1275,9 @@ static void b53_adjust_link(struct dsa_switch *ds, int port,
- 			      tx_pause, rx_pause);
- 	b53_force_link(dev, port, phydev->link);
+-	inner_proto = geneveh->proto_type;
+-
+-	if (unlikely((inner_proto != htons(ETH_P_TEB) &&
+-		      inner_proto != htons(ETH_P_IP) &&
+-		      inner_proto != htons(ETH_P_IPV6))))
+-		goto drop;
+-
+ 	gs = rcu_dereference_sk_user_data(sk);
+ 	if (!gs)
+ 		goto drop;
+@@ -380,6 +373,8 @@ static int geneve_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+ 	if (!geneve)
+ 		goto drop;
  
-+	if (is63xx(dev) && port >= B53_63XX_RGMII0)
-+		b53_adjust_63xx_rgmii(ds, port, phydev->interface);
++	inner_proto = geneveh->proto_type;
 +
- 	if (is531x5(dev) && phy_interface_is_rgmii(phydev)) {
- 		if (port == dev->imp_port)
- 			off = B53_RGMII_CTRL_IMP;
-@@ -1402,6 +1445,9 @@ void b53_phylink_mac_link_up(struct dsa_switch *ds, int port,
- {
- 	struct b53_device *dev = ds->priv;
- 
-+	if (is63xx(dev) && port >= B53_63XX_RGMII0)
-+		b53_adjust_63xx_rgmii(ds, port, interface);
-+
- 	if (mode == MLO_AN_PHY)
- 		return;
- 
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 795cbffd5c2b..4cf9f540696e 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -211,6 +211,7 @@ static inline int is58xx(struct b53_device *dev)
- 		dev->chip_id == BCM7278_DEVICE_ID;
- }
- 
-+#define B53_63XX_RGMII0	4
- #define B53_CPU_PORT_25	5
- #define B53_CPU_PORT	8
- 
+ 	if (unlikely((!geneve->cfg.inner_proto_inherit &&
+ 		      inner_proto != htons(ETH_P_TEB)))) {
+ 		geneve->dev->stats.rx_dropped++;
 -- 
-2.30.2
+2.37.1
 
