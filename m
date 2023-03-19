@@ -2,72 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C241A6C0271
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 15:40:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4EC6C0286
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 16:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbjCSOko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 10:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
+        id S230368AbjCSPAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 11:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbjCSOkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 10:40:43 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4528419117
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 07:40:42 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id i5-20020a05600c354500b003edd24054e0so934940wmq.4
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 07:40:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679236840;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=IxCmM3SKdmbzm7J9LEtnkGUfFi3qL8vZjsjLD7+oUxc=;
-        b=Q2gf8Z+cPtZw62XS+cw4iZPyi00q/V3aoV6dpvDhXAOPW6Wf/rPiCn8LVP0ZwqGAXU
-         33DRkC/3oLtJMEKa1Ryevc39TWie59efmG104+1RzKYQ91PVu6C7xK1Ee+7yraz1UAWn
-         +5qY9P0HwPipa2fTw3CICT1WJw63wa8Trbewt1yoSr3iuN38ziSlT20cVuL2qlabx4t0
-         T9df5gRUclauvGHbHbFMprI0BrNqiRpBQu3/uTrNexEWTyM3SV85l/PI4rmcutzjWMQS
-         OGFz617FW6XvkmZ2qUDuqLdzVxsSM2bcvu5DRd7tBuMLnWVgMlkuWaqs7hxpep/o7poi
-         V+tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679236840;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IxCmM3SKdmbzm7J9LEtnkGUfFi3qL8vZjsjLD7+oUxc=;
-        b=zocW+LeFraelE+XpSOGCyLTpBABelD88T40EsSx6AJOov2OCUb/kOX+fxsrp3LHGDJ
-         jq4n/NDPtJkD6u6lzTQaLVNH5bo74Fc6fyD19nQais+u4ELCi3fsZF4ntZtnY+JAHyEi
-         vgMX9w1OqZnf4i9p/PfYkTv4j/nrUHkEkC7zKGgeT1AvZ7A8O+T1PPvf8J+4GTt2bAPE
-         HoHoFZ/cCAJRyN/PAJlaA+uy5kLe9D8Px+2UWgKeLz7VqgtMVFwg3VacT85U+jUUeAZR
-         TLCPIl4Kd/Or4r/Vttniv3bQIrWBiWkfBSjdhXIw302oV35gbSUUssN3AVvhIWDug8BB
-         dTtw==
-X-Gm-Message-State: AO0yUKW2KuGZUv+zYvKBTiw+rQvr6kAWosV2i26+P3V7G/ikbYR5HEWX
-        YEgRdh0a6mP0bkFbFqQO0P6JJTy/RB8=
-X-Google-Smtp-Source: AK7set/BbMenXivYXs2OiZ97X07b748SunIkNoFAgBzUYlEY3cIHAA7ud4C6HTdFW326+GbAzp4Esw==
-X-Received: by 2002:a05:600c:c2:b0:3ed:a583:192a with SMTP id u2-20020a05600c00c200b003eda583192amr4527943wmm.9.1679236840420;
-        Sun, 19 Mar 2023 07:40:40 -0700 (PDT)
-Received: from ?IPv6:2a02:168:6806:0:e11f:5bbd:927b:2a7? ([2a02:168:6806:0:e11f:5bbd:927b:2a7])
-        by smtp.gmail.com with ESMTPSA id f9-20020a05600c154900b003ede03e4369sm1615773wmg.33.2023.03.19.07.40.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 07:40:40 -0700 (PDT)
-Message-ID: <973c3eb6017c4e6f9551c70b7268cf4b4b2a0324.camel@gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: fix mdio bus' phy_mask
- member
-From:   Klaus Kudielka <klaus.kudielka@gmail.com>
-To:     Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Date:   Sun, 19 Mar 2023 15:40:39 +0100
-In-Reply-To: <20230319140238.9470-1-kabel@kernel.org>
-References: <20230319140238.9470-1-kabel@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-1 
+        with ESMTP id S229778AbjCSPAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 11:00:15 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EED14EA2;
+        Sun, 19 Mar 2023 08:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1679237954; i=frank-w@public-files.de;
+        bh=FaY0Xl4jfnqhSvRMHOlCX3MBxMkltd1/bLTF73k4weg=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=DKFNt2WZoREtt+jN1ck1xolqt6Qiz6THIkpIfPuXTRq/Uc2Abd6AVHAGEKUFA9/89
+         mDb2dUp8omXPHSnEqsDO4Jg4+9/KA/w8LGg/x7jyHmLWKbd0MT9t6HHS6N4o+fbAIo
+         6ToGjm0KteUH2KrWCh6YAzXSwt0wgQuR1Q0KxiE9qC2oR1J6Fhz7v9C0AM7pTc8wT8
+         fdY8DslxjZSMD9zrQXZURZDOotWTQz87LR2VyIfy1ZbYU3ZydesjbWMNNQ/JFLARkE
+         Zd4Tw3q0DnX5kTQGDYh9WtCtu48YS0Zfe0oeIaIWSoLF9wiJTh0G5V42Fved085/gg
+         f28dTjnZCv1lA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [217.61.158.68] ([217.61.158.68]) by web-mail.gmx.net
+ (3c-app-gmx-bs27.server.lan [172.19.170.79]) (via HTTP); Sun, 19 Mar 2023
+ 15:59:14 +0100
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Message-ID: <trinity-a9f91337-a6df-4c4d-86ba-f5ff5118c3cd-1679237954332@3c-app-gmx-bs27>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Aw: [PATCH net-next v14 7/9] net: pcs: add driver for MediaTek
+ SGMII PCS
+Content-Type: text/plain; charset=UTF-8
+Date:   Sun, 19 Mar 2023 15:59:14 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <cf8a52216cfe4651695669936bd4bb1b9500c57b.1679230025.git.daniel@makrotopia.org>
+References: <cover.1679230025.git.daniel@makrotopia.org>
+ <cf8a52216cfe4651695669936bd4bb1b9500c57b.1679230025.git.daniel@makrotopia.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:QlaKsSUYzhoHNVHDU4Rq0bkFMZFnwpaPu5MLgsBtp8NUsWc9o5S8LdeCQ2xzWzeAFwRt4
+ Mxc17gdJOEOGXzEsWcJo6EZGPoMqwW0V1U3GeuO4/Z3SJzOql+e3/TBcCdOl7ocqDQckGIofFMMg
+ 3NFdoHc56LvqaiWj9Fh3f0NxCmZzPeIKfy5rbdVf/OC1ZYe/xa4tHtlGCYGHeD0NIj9VAJXJCXGV
+ 10Q2a3270UkO09xLwG9GMB1QW5JC+XRdTnC4+GAAjp53h3eL4e+Z9Qn/Ex1nrdoRI3WEn+uj18cS
+ 6s=
+UI-OutboundReport: notjunk:1;M01:P0:eznMuFIIR60=;TcBxrqYLL8IXUHWdmSvm7sSx/yF
+ klFeVRm/A0/rGq75P4jMohykpfRmQu+2ALaAOa3bZwmBn2mmTg7EbnW31GiYPZKTTK/OXwmte
+ i6jI3k856t7uBjZ2/Ow0CWz8kctXTcAP5pvb7nlSLpRI8gEwu7q7OLweDs6JCNdVCutHR2cK6
+ BvRCjnj4nHV+8tUDVxN/9jma+ruVIfhAfq6s47UjEmF0q8txpN3kl6c7uRGuCS25GT94PoGsJ
+ YJikkrCtnxWJhKbfmODBjtpb5NxPDttiCmspJOVzqEMfYHZDpBQHtoDmMMbVgLfJP8HtdnSuX
+ j1MBV3b1qujWoxgn6bYcWNgggB3BQhkoNhn4JTaFGJqogbcb/UgxGuPdr3jK1bfcv7clyIsIB
+ og00aDaCWKv6QPj3rYgPZFGE/rEkunnVxTmCYK1GXZiFruHEOGfZ0iKXw3tYKEK8mZ7XtDsD8
+ y0I6y82h4nLMHKpd7PSA6Uxmj2JaMnm9Pbf8eFfGiFmxHirQVUp+NkkGGe5ynTGO2XbLta4YK
+ oQswLwvbhxPJ7nMo8urh1zgga8HJr9d/c237oduv+CWbLbjX++y3ugeMr03dH2jtj5gYCLNCu
+ nUOeEbao8xek3yAbDGG//Wd0DSJZgCAcIlRWekai9264JvYYZqnQcKc2VeD+hOHc/vqBZ+CxW
+ 0vjxH/RoASEFfmiF/RgJExNW2f8TuQljfXEZFHj0seGiKiUblwKBgrUwb4nEUKinDOb3/0YDF
+ i58Clg6jjcTcj/4H0oiT8GF1DWIr5nSPOzR8kV8Owol1ZEd+sWEuUAICL7DJLgk2YTqorPoNB
+ qxzuVLOiT1e2eGOsRbC7JoOQ==
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,25 +94,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2023-03-19 at 15:02 +0100, Marek Beh=C3=BAn wrote:
-> Commit 2c7e46edbd03 ("net: dsa: mv88e6xxx: mask apparently non-existing
-> phys during probing") added non-trivial bus->phy_mask in
-> mv88e6xxx_mdio_register() in order to avoid excessive mdio bus
-> transactions during probing.
->=20
-> But the mask is incorrect for switches with non-zero phy_base_addr (such
-> as 88E6341).
->=20
-> Fix this.
->=20
-> Fixes: 2c7e46edbd03 ("net: dsa: mv88e6xxx: mask apparently non-existing p=
-hys during probing")
-> Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> ---
-> I was unable to test this now, so this change needs testing.
+as Patches are the same as v13
 
-Thanks for spotting.
-I can only test this on Turris Omnia with 88E6176.
-All 5 ports Ok, phy probe time unchanged.
+Tested-By: Frank Wunderlich <frank-w@public-files.de>
 
-Tested-by: Klaus Kudielka <klaus.kudielka@gmail.com>
+regards Frank
