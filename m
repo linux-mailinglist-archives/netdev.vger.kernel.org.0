@@ -2,114 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C846C007F
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 11:06:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 577FB6C0094
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 11:50:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbjCSKGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 06:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
+        id S229799AbjCSKuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 06:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbjCSKGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 06:06:15 -0400
-Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCA019BA
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 03:06:12 -0700 (PDT)
-Received: from thinkpad (unknown [172.20.6.87])
-        by mail.nic.cz (Postfix) with ESMTPS id 8EF421C182C;
-        Sun, 19 Mar 2023 11:06:07 +0100 (CET)
-Authentication-Results: mail.nic.cz;
-        none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1679220368; bh=oleRbfcFPLhdNwKjQV2gLOZht2FchLMSwi51SD7t7tE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From:Reply-To:
-         Subject:To:Cc;
-        b=a2MTAk/+y4NweNCmQnuTC7XuTrIsJ6oWxRNH5jl86zi/IebxC/wJfHzZhrpu72P5l
-         MMqttKTIG45cc+iqckRsuNvif3x/DVl1Uaf/NYJTwCr+PJy4oRo5yda3jC6dA5znUe
-         W8SR7Q+FBLGrxpE7SpG13QWTgeX/TWx/hBrVXuSU=
-Date:   Sun, 19 Mar 2023 11:06:06 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
-To:     Klaus Kudielka <klaus.kudielka@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 4/4] net: dsa: mv88e6xxx: mask apparently
- non-existing phys during probing
-Message-ID: <20230319110606.23e30050@thinkpad>
-In-Reply-To: <20230315163846.3114-5-klaus.kudielka@gmail.com>
-References: <20230315163846.3114-1-klaus.kudielka@gmail.com>
-        <20230315163846.3114-5-klaus.kudielka@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.35; x86_64-pc-linux-gnu)
+        with ESMTP id S229561AbjCSKuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 06:50:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661A5136DA;
+        Sun, 19 Mar 2023 03:50:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B22A560F9A;
+        Sun, 19 Mar 2023 10:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A209C433A0;
+        Sun, 19 Mar 2023 10:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679223019;
+        bh=453PK2PCxTyZSXXMXs81JsNYdPM7EbZLWZB1pEswKJs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Xhdvqv2yxNVRDMjMhXQS6d2H1ba4qZr0lf7cpGNpooq4qOZxBvUHUzlxqXBB+cJ2b
+         ooIcD/dlGKWCaztXjku9VRGC7xyDdhk8Tg5Oc4nZhpjJIirXwgHVH2NtB6zllHkJAj
+         xa8LATJJPrDKjbsf3WnfYvEULo3s2tDf0sOayDrRzqHmbJQ9ZFDiAC3jCD4q/48ylK
+         3BvAvn3w6pujIZNMdVrl98GxVm9aEBQB1JCMDK7dbg0urjL/ewoYmpYqa5uBWiHy9X
+         8SW52vZrGU3/q9t+XdFOKtJueBaPNRMTwnYtav0pKoFuyiUN31ZP0427ntW8zzRDSD
+         43vHDj5CrQx0Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7BA6E21EE9;
+        Sun, 19 Mar 2023 10:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.7 at mail
-X-Virus-Status: Clean
-X-Rspamd-Action: no action
-X-Rspamd-Pre-Result: action=no action;
-        module=multimap;
-        Matched map: WHITELISTED_IP
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
-X-Rspamd-Server: mail
-X-Rspamd-Queue-Id: 8EF421C182C
-X-Spamd-Bar: /
-X-Spamd-Result: default: False [-0.10 / 20.00];
-        MIME_GOOD(-0.10)[text/plain];
-        ARC_NA(0.00)[];
-        FREEMAIL_TO(0.00)[gmail.com];
-        FROM_EQ_ENVFROM(0.00)[];
-        TAGGED_RCPT(0.00)[];
-        FROM_HAS_DN(0.00)[];
-        FREEMAIL_ENVRCPT(0.00)[gmail.com];
-        WHITELISTED_IP(0.00)[172.20.6.87];
-        MIME_TRACE(0.00)[0:+]
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: phy: Ensure state transitions are processed from
+ phy_stop()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167922301888.22899.1199680876721811339.git-patchwork-notify@kernel.org>
+Date:   Sun, 19 Mar 2023 10:50:18 +0000
+References: <20230316203325.2026217-1-f.fainelli@gmail.com>
+In-Reply-To: <20230316203325.2026217-1-f.fainelli@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Mar 2023 17:38:46 +0100
-Klaus Kudielka <klaus.kudielka@gmail.com> wrote:
+Hello:
 
-> To avoid excessive mdio bus transactions during probing, mask all phy
-> addresses that do not exist (there is a 1:1 mapping between switch port
-> number and phy address).
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> ---
-> 
-> Notes:
->     v2: Patch is new
-> 
->  drivers/net/dsa/mv88e6xxx/chip.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 29b0f3bb1c..c52798d9ce 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -3797,6 +3797,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
->  	bus->read_c45 = mv88e6xxx_mdio_read_c45;
->  	bus->write_c45 = mv88e6xxx_mdio_write_c45;
->  	bus->parent = chip->dev;
-> +	bus->phy_mask = GENMASK(31, mv88e6xxx_num_ports(chip));
+This patch was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-shouldnt this be
-  GENMASK(31, mv88e6xxx_num_ports(chip) + chip->info->phy_base_addr) |
-  GENMASK(chip->info->phy_base_addr, 0)
-?
-Or alternatively
-  ~GENMASK(chip->info->phy_base_addr + mv88e6xxx_num_ports(chip),
-           chip->info->phy_base_addr)
+On Thu, 16 Mar 2023 13:33:24 -0700 you wrote:
+> In the phy_disconnect() -> phy_stop() path, we will be forcibly setting
+> the PHY state machine to PHY_HALTED. This invalidates the old_state !=
+> phydev->state condition in phy_state_machine() such that we will neither
+> display the state change for debugging, nor will we invoke the
+> link_change_notify() callback.
+> 
+> Factor the code by introducing phy_process_state_change(), and ensure
+> that we process the state change from phy_stop() as well.
+> 
+> [...]
 
-Marek
+Here is the summary with links:
+  - [net] net: phy: Ensure state transitions are processed from phy_stop()
+    https://git.kernel.org/netdev/net/c/4203d84032e2
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
