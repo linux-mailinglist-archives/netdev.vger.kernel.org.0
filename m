@@ -2,118 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 354696BFEFB
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 03:01:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15C7A6BFF16
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 03:30:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbjCSCBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Mar 2023 22:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34318 "EHLO
+        id S229778AbjCSC05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Mar 2023 22:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbjCSCBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 22:01:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B605F18B02;
-        Sat, 18 Mar 2023 19:01:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5000CB8006F;
-        Sun, 19 Mar 2023 02:01:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A7EC433EF;
-        Sun, 19 Mar 2023 02:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679191287;
-        bh=exiHemNUX9DPCs6M0yJUnMPMY+ihjoyNwkj4aowcREE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V3V75VHSr3huRv+39rmVI3WZuzwvaCUuBzSXXgKWrmSjYyuwRK5Ct9OlkOKcvrZlS
-         DYhWeOlde75cWT2sSHd2w8Bwa7UIuWGuRVnUJUdqGZ09g3hvRRPSk2ZRLvKoZt6SQd
-         nkgwSo2m37ihUl8ewujDoNxAEs9Z9/eGRncy3AzN6dApiS0jqx13x/UE79g1gjsLlg
-         rN3MtvonOVlZE1YdVeIBS+FI6MU5lD6u2pNTNgbsFQscH2K7G1s9ThHRU+taNa3YVT
-         3LHo1zmmL3MJm5eBjMHT9pPc5Ktv15Hk5/chexBjQOA8Ump1X1Hec9G0WtSZ/8J+vp
-         Lfz2mHKDjNrZg==
-Date:   Sat, 18 Mar 2023 19:01:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jochen Henneberg <jh@henneberg-systemdesign.com>
-Cc:     netdev@vger.kernel.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S229562AbjCSC0z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Mar 2023 22:26:55 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42022231EB
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 19:26:54 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id gp15-20020a17090adf0f00b0023d1bbd9f9eso12937899pjb.0
+        for <netdev@vger.kernel.org>; Sat, 18 Mar 2023 19:26:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1679192813;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GYwkap8ATUCXuqgTA1z6qNYIEawZRaJMjfKaB+5LxK4=;
+        b=4fic8rphezRyyU0yV0NV6KAszD7vMBUu59LkO/i6fbUsezMf9ubD+LgBZXLMgaSSZ5
+         s/33af6tCU7q8RVjHdNdIuVgTiswsl+K1twEU2exhSytWw4ZCw2c5+8H4gzJ3tG2XEnr
+         nCqwpPpDXoBLfCqiwZotf2/44HD6Md5iEQxdFJpquZCT+pQAnAApB8CeJ+EfeE/gZBGE
+         4nlYg0KDcZ5svHNt48MqXK5F06O1/Rzw1/xGrC51McjSdgmy+0uK3d7K5OzWl4jumWMu
+         0JKBDyuREAI+sTAHMixzaBSkxuis8AE2/EsSlGPwq3jrL9Kowztv05+Pmi+gvXDMSpvw
+         /H7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679192813;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GYwkap8ATUCXuqgTA1z6qNYIEawZRaJMjfKaB+5LxK4=;
+        b=3jdxHgCPIFcK6ZuoN4FGfUS+fSfpmcCl6KOVlPGpdyAC1ogUCEZiozzkVZQP8J0Zi4
+         h9gNJAGq5en2mMs7Dg5oJsOQlYcmQ6jOw9tktBd7rS2Jjhynbues+crjhQ8Mhf/vNOBf
+         zsfLPL+mJBdGBsUhQ5ZwbK+Nw77PQ+R91lWu8RgEdTH5/opPaB2sDSmsmvb+KjU8F+ob
+         DK7HGc881AzffitgalJIBaWdDmLGgE4CNZtyRUXYp0C3YJ96KrikZ+0fHzEjP7cpzKRq
+         xO9O6D7JECQK/gYa9r/YZ4xeTILGh9RvCCmAVFyaXijX7F+48L44oiDulFKz3Yy2+wQa
+         7XnA==
+X-Gm-Message-State: AO0yUKXAftDlsdfA4lTB1+LgoanbrS5wdr4aDztQP+AfSfFQGrISiEow
+        yNy4NJc4fr4jJqcL0xgm3bpta4JQhWg4hMlgdyijNg==
+X-Google-Smtp-Source: AK7set9QIMOQakuwn1joHdC35AMAMixkGIKte9IuQloYPuHyK08Fm6mN4NTeoKfe6GRRpYwMiNJj5Q==
+X-Received: by 2002:a17:90b:4a8e:b0:237:c565:7bc6 with SMTP id lp14-20020a17090b4a8e00b00237c5657bc6mr14775498pjb.10.1679192813599;
+        Sat, 18 Mar 2023 19:26:53 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id nm4-20020a17090b19c400b002349fcf17f8sm7215075pjb.15.2023.03.18.19.26.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Mar 2023 19:26:53 -0700 (PDT)
+Date:   Sat, 18 Mar 2023 19:26:51 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net V2 1/2] net: stmmac: Premature loop termination
- check was ignored on rx
-Message-ID: <20230318190125.175b0fea@kernel.org>
-In-Reply-To: <87sfe2gwd2.fsf@henneberg-systemdesign.com>
-References: <20230316075940.695583-1-jh@henneberg-systemdesign.com>
-        <20230316075940.695583-2-jh@henneberg-systemdesign.com>
-        <20230317222117.3520d4cf@kernel.org>
-        <87sfe2gwd2.fsf@henneberg-systemdesign.com>
+        David Ahern <dsahern@kernel.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Pedro Tammela <pctammela@mojatatu.com>,
+        Marcelo Leitner <mleitner@redhat.com>,
+        Phil Sutter <psutter@redhat.com>,
+        Andrea Claudi <aclaudi@redhat.com>
+Subject: Re: [PATCHv2 iproute2 2/2] tc: m_action: fix parsing of
+ TCA_EXT_WARN_MSG by using different enum
+Message-ID: <20230318192651.254ecb9f@hermes.local>
+In-Reply-To: <20230316035242.2321915-3-liuhangbin@gmail.com>
+References: <20230316035242.2321915-1-liuhangbin@gmail.com>
+        <20230316035242.2321915-3-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 18 Mar 2023 09:38:12 +0100 Jochen Henneberg wrote:
-> > Are you sure? Can you provide more detailed analysis?
-> > Do you observe a problem / error in real life or is this theoretical?  
+On Thu, 16 Mar 2023 11:52:42 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
+
+> We can't use TCA_EXT_WARN_MSG directly in tc action as it's using different
+> enum with filter. Let's use a new TCA_ROOT_EXT_WARN_MSG for tc action
+> specifically.
 > 
-> This is theoretical, I was hunting another bug and just stumbled over
-> the check which is, I think you agree, pointless right now. I did not
-> try to force execute that code path.
+> Fixes: 6035995665b7 ("tc: add new attr TCA_EXT_WARN_MSG")
+> Reviewed-by: Andrea Claudi <aclaudi@redhat.com>
+> Reported-and-tested-by: Davide Caratti <dcaratti@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
 
-If you have the HW it's definitely worth doing. There is a fault
-injection infra in Linus which allows to fail memory allocations.
-Or you can just make a little patch to the driver to fake failing
-every 1000th allocation.
-
-> > As far as I can tell only path which jumps to read_again after doing
-> > count++ is via the drain_data jump, but I can't tell how it's
-> > discarding subsequent segments in that case..
-> >  
-> >> -read_again:
-> >>  		buf1_len = 0;
-> >>  		buf2_len = 0;
-> >>  		entry = next_entry;  
-> 
-> Correct. The read_again is triggered in case that the segment is not the
-> last segment of the frame:
-> 
-> 		if (likely(status & rx_not_ls))
-> 			goto read_again;
-> 
-> So in case there is no skb (queue error) it will keep increasing count
-> until the last segment has been found with released device DMA
-> ownership. So skb will not change while the goto loop is running, the
-> only thing that will change is that subsequent segments release device
-> DMA ownership. The dirty buffers are then cleaned up from
-> stmmac_rx_refill().
-
-To be clear - I'm only looking at stmmac_rx(), that ZC one is even more
-confusing.
-
-Your patch makes sense, but I think it's not enough to make this code
-work in case of memory allocation failure. AFAIU the device supports
-scatter - i.e. receiving a single frame in multiple chunks. Each time
-thru the loop we process one (or two?) chunks. But the code uses 
-skb == NULL to decide whether it's the first chunk or not. So in case
-of memory allocation error it will treat the second chunk as the first
-(since skb will be NULL) and we'll get a malformed frame with missing
-chunks sent to the stack. The driver should discard the entire frame
-on failure..
-
-> I think the driver code is really hard to read I have planned to cleanup
-> things later, however, this patch simply tries to prevent us from
-> returning a value greater than limit which could happen and would
-> definitely be wrong.
+Applied but all headers files get done separately by a script
+that uses sanitized kernel headers.
