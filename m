@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0796C0440
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 20:20:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 590836C044B
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 20:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbjCSTT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 15:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
+        id S229861AbjCSTUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 15:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbjCSTTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 15:19:07 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A21A1043A;
-        Sun, 19 Mar 2023 12:18:50 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id y14so8526268wrq.4;
-        Sun, 19 Mar 2023 12:18:50 -0700 (PDT)
+        with ESMTP id S230058AbjCSTT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 15:19:28 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A71B1421D;
+        Sun, 19 Mar 2023 12:18:54 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id i9so8531111wrp.3;
+        Sun, 19 Mar 2023 12:18:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679253530;
+        d=gmail.com; s=20210112; t=1679253531;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YxutGMPJva579mmTcYCtLi8ZBTi3DvGd1nN+fb8Tx6U=;
-        b=p3mBsuZvjZMXgwDpGGw/4MbO61frU/GyEoTAu0FDPtAGWvwoeH9eUqr8R8sG3a77nk
-         RuqhxoI6e+Z0Lp2CXWEQvV7EMs90OGkWMFAzDRax0GRDIYKhrx85GsTTZOc/xbAJpa9G
-         QPXiHx4vnsIBU/uqO57dnshQugHdTuKQf0BExYsGCFgDZqCtrNVGPUXSDxJGXXrc73mk
-         opzl52m5u8p1Qp5XC9iaFaoqAdbpQ7OuueNuZP9NTqN8y+hMytTyF2uMfvSqr6eqpWi3
-         rpJglIxoi2UhURWX8MuXmnj0SkF3hadNXLvCpYmEkQLtXTI4HXEwGodc7+U1rru7+tSA
-         /tBQ==
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=y2fNz2U3Pb1myw1nW6JzmHX3WnYBSrD+c2lY+3aHW8M=;
+        b=d1ZVZcTj1LPbhIOYtLntFoqX0VTsDE05zKvaqALog6jvGiqCywjPne8LoKvI2qrDAd
+         kCsKwPYoPCLwTHOrpCfHlNJmPYKqiNfPGS7c1bLQ/6s4lPzVL8Pw3skHVQWFXa0Pv061
+         XiYvFj90z1+4XfvFVTm1jiyPGb2npdlAR5D52cCAxpiYr75unrLycHKDzxlYC5taY+ru
+         nmHF2KoCgHsQ7cGShMge6RRhCb7/LzSpeYxzt5nDxsfTSwMLDPHMsd/aom6lhh6fHZvq
+         2dlnrYoTFFIW1VmuR4U6JwQ2sg0Zban4OA8FAQAx8H21c0hlml94GpOq34qlFoJaNXuh
+         cCFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679253530;
+        d=1e100.net; s=20210112; t=1679253531;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YxutGMPJva579mmTcYCtLi8ZBTi3DvGd1nN+fb8Tx6U=;
-        b=W+KK4bkk6xl5VZV1ijqVw+L77oXFToSp/9/gRPDVooAZx8qSa8gpO+fGg5O61J3Gma
-         iEWeUEf8AJpDT8fWo+4tS702Xmbooyo/jhWgOt7+YK9WIi5a9PFnt1rp1QPNsp8AOJzy
-         nohN3r3P2ZBgPSlcxmGziiSlDCRsLxhfvA+IhdcDDsvAGu/ERkueLa98zGkr54Atjf21
-         rtLYN2l2snbxi49gV0lYHFLDAFgwzBdrJ+xQ5uO+N4uB/cMXh/BhMj8AsJQh6n3vQsQg
-         Fl6XojOqxqfMZcFDO1HNFakpBS3JeNGAgE5JDzmkB5k0fxUJeHa0CQ/SyV59/RHkEIRE
-         O2RQ==
-X-Gm-Message-State: AO0yUKW5t0ANWnVLlFZTVRbglwDxQ6irovqSlsmVHqA6J8cqBW2P5KVW
-        3GoMeUqp2gzjKGuWoGOfmQw=
-X-Google-Smtp-Source: AK7set/4ZnF4OzN9iVPJ5qe8XpAvveOG8nFo53xUXQ8NMaEoU+3vSSErDTGBqm0xGmpE3MgweETkRA==
-X-Received: by 2002:adf:e406:0:b0:2d6:405f:8b16 with SMTP id g6-20020adfe406000000b002d6405f8b16mr2037658wrm.66.1679253530078;
-        Sun, 19 Mar 2023 12:18:50 -0700 (PDT)
+        bh=y2fNz2U3Pb1myw1nW6JzmHX3WnYBSrD+c2lY+3aHW8M=;
+        b=ZPSdi35tuSqAqhqQZuTpDB9Y3G+OTKOGbWO3NHlT0SXLB27AB6hJuW+BjFIjSheO+d
+         Cp3UGAjJ44gYWbH6DOLR8O7nkJoanC4XqzhmnYWThPXvaiWFHvFMLcQZSRkVBuXRkmIY
+         ReO+tIREQ84XPMfjHwRlwaJoMGbN7WXj/yEbOlfS/ACed8k+PMJFPk4PCoecM0IdP6mv
+         1T3fNxNMQQY//Duygu6i8KiCzbjDAeipdsfxKSFG0fruLt6G3YZ8jt8AIBdsnwj7t6fK
+         hYMdUX143nUz6OfCmOm2fLJOkc3oPs2E8Tjb/qKG0G95DZh9KKgJSuehPg3SIVvp1vC6
+         cBbA==
+X-Gm-Message-State: AO0yUKUiK0cUBzwiTrFYt4Zu36l85I287biYf1P7uBHmVngQMctZkrxU
+        BwUHbFIyLV100TmRA5/o87CA9MnnCwA=
+X-Google-Smtp-Source: AK7set/3O7C3Es1N1wEdf1ZRK3axSCJX4Dfqg2I56oADb/R8Vu/tWsJomc3xnKQ6cwcdy4GspqURZg==
+X-Received: by 2002:adf:d0cb:0:b0:2ce:aa69:c9a7 with SMTP id z11-20020adfd0cb000000b002ceaa69c9a7mr11490176wrh.8.1679253531529;
+        Sun, 19 Mar 2023 12:18:51 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id b7-20020a5d4b87000000b002cfe0ab1246sm7165167wrt.20.2023.03.19.12.18.48
+        by smtp.googlemail.com with ESMTPSA id b7-20020a5d4b87000000b002cfe0ab1246sm7165167wrt.20.2023.03.19.12.18.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 12:18:49 -0700 (PDT)
+        Sun, 19 Mar 2023 12:18:51 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -72,9 +72,10 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: [net-next PATCH v5 11/15] dt-bindings: net: dsa: qca8k: add LEDs definition example
-Date:   Sun, 19 Mar 2023 20:18:10 +0100
-Message-Id: <20230319191814.22067-12-ansuelsmth@gmail.com>
+Cc:     Jonathan McDowell <noodles@earth.li>
+Subject: [net-next PATCH v5 12/15] arm: qcom: dt: Drop unevaluated properties in switch nodes for rb3011
+Date:   Sun, 19 Mar 2023 20:18:11 +0100
+Message-Id: <20230319191814.22067-13-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230319191814.22067-1-ansuelsmth@gmail.com>
 References: <20230319191814.22067-1-ansuelsmth@gmail.com>
@@ -90,63 +91,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add LEDs definition example for qca8k Switch Family to describe how they
-should be defined for a correct usage.
+IPQ8064 MikroTik RB3011UiAS-RM DT have currently unevaluted properties
+in the 2 switch nodes. The bindings #address-cells and #size-cells are
+redundant and cause warning for 'Unevaluated properties are not
+allowed'.
 
+Drop these bindings to mute these warning as they should not be there
+from the start.
+
+Cc: Jonathan McDowell <noodles@earth.li>
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-index 389892592aac..2e9c14af0223 100644
---- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-@@ -18,6 +18,8 @@ description:
-   PHY it is connected to. In this config, an internal mdio-bus is registered and
-   the MDIO master is used for communication. Mixed external and internal
-   mdio-bus configurations are not supported by the hardware.
-+  Each phy has at least 3 LEDs connected and can be declared
-+  using the standard LEDs structure.
+diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
+index f908889c4f95..47a5d1849c72 100644
+--- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
++++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
+@@ -38,8 +38,6 @@ mdio0: mdio-0 {
  
- properties:
-   compatible:
-@@ -117,6 +119,7 @@ unevaluatedProperties: false
- examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/leds/common.h>
+ 		switch0: switch@10 {
+ 			compatible = "qca,qca8337";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
  
-     mdio {
-         #address-cells = <1>;
-@@ -226,6 +229,27 @@ examples:
-                     label = "lan1";
-                     phy-mode = "internal";
-                     phy-handle = <&internal_phy_port1>;
-+
-+                    leds {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+
-+                        led@0 {
-+                            reg = <0>;
-+                            color = <LED_COLOR_ID_WHITE>;
-+                            function = LED_FUNCTION_LAN;
-+                            function-enumerator = <1>;
-+                            default-state = "keep";
-+                        };
-+
-+                        led@1 {
-+                            reg = <1>;
-+                            color = <LED_COLOR_ID_AMBER>;
-+                            function = LED_FUNCTION_LAN;
-+                            function-enumerator = <1>;
-+                            default-state = "keep";
-+                        };
-+                    };
-                 };
+ 			dsa,member = <0 0>;
  
-                 port@2 {
+@@ -105,8 +103,6 @@ mdio1: mdio-1 {
+ 
+ 		switch1: switch@14 {
+ 			compatible = "qca,qca8337";
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+ 
+ 			dsa,member = <1 0>;
+ 
 -- 
 2.39.2
 
