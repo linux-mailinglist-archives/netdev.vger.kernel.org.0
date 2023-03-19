@@ -2,52 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 238B96C00A7
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 12:00:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 505546C00A1
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 12:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbjCSLA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 07:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
+        id S229670AbjCSLAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 07:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbjCSLAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 07:00:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5232313E;
-        Sun, 19 Mar 2023 04:00:20 -0700 (PDT)
+        with ESMTP id S229483AbjCSLAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 07:00:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCAC23136;
+        Sun, 19 Mar 2023 04:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46EE2B80B46;
-        Sun, 19 Mar 2023 11:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 01CE3C433AC;
-        Sun, 19 Mar 2023 11:00:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD1A960FA2;
+        Sun, 19 Mar 2023 11:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3426FC433EF;
+        Sun, 19 Mar 2023 11:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679223618;
-        bh=PSYCF46BxXkgL9BPR72nf4ZQoBkxYuLpMACsn8pCjfk=;
+        s=k20201202; t=1679223617;
+        bh=wAMjv+OQaBXJ0DzFRZTo13CKHGO51sndjYWxpSODoV0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ToCBoW8nhaOVTIijsucWhHgkzS3eI8dhphmD1imM4NcG7OoCNahFH93UqEx/42GgG
-         PBK1jrN0N8al07tnDAxJHcKNh532j0UquruKbW44C+oHirKUJt6FvN4al4dAkFvSeX
-         DR0nI7aovPwQ8X3dxRKBM/10ZbQwe0btJi0O8Fuyu16Q+devn6/QjgxUTbdrON43s2
-         urIfefUHw1syC/0NwurT3TPGGbyClqvj+B0gZVMGUdDt9QtnjpMTDSfJGKItfQMxa6
-         cjBbaTiydNdCroti+VNKUocmJHGuZZ9a1X4P8gzKaZcdiC59HPvfjRIbDurAndtZCl
-         dYi+TlwoEANzw==
+        b=LHLqBnDqmheJ2y5ayl1U+OEBaxWeJCSaHsKCxcS9br6z1sTZvzbH4VmxOHF2efhPC
+         NSeqAmkYrKMmwFoa3pFZQbvfwCr7NsAPt3fYswTtBHUgHJeiQBmyiyJTLNZr7GIm1H
+         XZyCGsn9WqJxO6xo/H5ytLt2h4AaRpjoosfRPlX/roOtemddgdbD3mxnghvUL+Kphl
+         q1rlB788rV+Q/etpSOmWrHVLUvoTZEMGibgsLr/3zqpfp5dp9aQBYrq7eZnLtd297V
+         idTy2XTVZODyM/OYkcO24rRyeuYyDdufu3jXJXy8eWvkceP8XbVC9TWtwSFWnURfni
+         Ci+h7NaGJAGdw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D10BBE21EE6;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 12542E21EE6;
         Sun, 19 Mar 2023 11:00:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ixgb: Remove ixgb driver
+Subject: Re: [PATCH net V3] net: stmmac: Fix for mismatched host/device DMA
+ address width
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167922361785.26931.9573620186873027791.git-patchwork-notify@kernel.org>
+Message-Id: <167922361707.26931.13628628366196424198.git-patchwork-notify@kernel.org>
 Date:   Sun, 19 Mar 2023 11:00:17 +0000
-References: <20230317200904.3796436-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20230317200904.3796436-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, jesse.brandeburg@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
+References: <20230317080817.980517-1-jh@henneberg-systemdesign.com>
+In-Reply-To: <20230317080817.980517-1-jh@henneberg-systemdesign.com>
+To:     Jochen Henneberg <jh@henneberg-systemdesign.com>
+Cc:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mcoquelin.stm32@gmail.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, matthias.bgg@gmail.com,
+        angelogioacchino.delregno@collabora.com, veekhee@apple.com,
+        kurt@linutronix.de, ruppala@nvidia.com,
+        andrey.konovalov@linaro.org, tee.min.tan@linux.intel.com,
+        weifeng.voon@intel.com, mohammad.athari.ismail@intel.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,23 +69,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (main)
+This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 17 Mar 2023 13:09:03 -0700 you wrote:
-> There are likely no users of this driver as the hardware has been
-> discontinued since 2010. Remove the driver and all references to it
-> in documentation.
+On Fri, 17 Mar 2023 09:08:17 +0100 you wrote:
+> Currently DMA address width is either read from a RO device register
+> or force set from the platform data. This breaks DMA when the host DMA
+> address width is <=32it but the device is >32bit.
 > 
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Right now the driver may decide to use a 2nd DMA descriptor for
+> another buffer (happens in case of TSO xmit) assuming that 32bit
+> addressing is used due to platform configuration but the device will
+> still use both descriptor addresses as one address.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] ixgb: Remove ixgb driver
-    https://git.kernel.org/netdev/net-next/c/e485f3a6eae0
+  - [net,V3] net: stmmac: Fix for mismatched host/device DMA address width
+    https://git.kernel.org/netdev/net/c/070246e4674b
 
 You are awesome, thank you!
 -- 
