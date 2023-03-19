@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8136C01E4
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 14:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54AA66C01E5
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 14:01:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230475AbjCSNAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 09:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56658 "EHLO
+        id S230435AbjCSNAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 09:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbjCSNA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 09:00:28 -0400
+        with ESMTP id S230484AbjCSNAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 09:00:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2260D206B6;
-        Sun, 19 Mar 2023 05:59:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298821F903;
+        Sun, 19 Mar 2023 06:00:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02C4CB80B91;
-        Sun, 19 Mar 2023 12:59:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D58D7C4339B;
-        Sun, 19 Mar 2023 12:59:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B6FDB80B92;
+        Sun, 19 Mar 2023 12:59:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5017FC433EF;
+        Sun, 19 Mar 2023 12:59:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679230785;
-        bh=6Z4VlGlzFyNwLj9RhTs5XzQAa08LX/sHycLA30928Zs=;
+        s=k20201202; t=1679230789;
+        bh=NpdR/c+XS1nAlwTk2Z9WvH6MAHJDRRHN4AvWpg/CeHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gidYDq0FpAo9/9DdgagO91HN6GyEZMxAQnHnZ5Ys7K1ArbWRvx02HQmpwqHL7c6QS
-         vWJxW/4OEEudZywsYutLLLQ4brZuIbMR0ftWl+h/6O7qB+UIYl1uU6Akhm0ylxbQkD
-         B5vculTkAiq38VcraDIL7Cv1oEYI39DLMMOnEDtoOz0qxOKUrXvYbquUwAQkrl/axV
-         RCdy86kgYMhqV/NALy69n+sIozQUvJGi1LfEHWMfkQ9rpfiuSV6BaZm6qQMJil82XC
-         q+VMNgi437JOAa1XHXDg3QLBsGzRfdeTQO9/u+5Ddv35svxlCoUwQqCp9x1l1WMvCN
-         SHTGDgylchk+w==
+        b=Vlk5w1DB38Ru0G+yMFDzmhGPjPFEoqwzI79WHkEBBz2/usSA4oyWAyao18eK+FIop
+         mws1EnyKk4noxEinnX2i5MZvYI0gB/3Ih6uMrgtI5fMF78nSVhP89JYEZBlbAkI0j1
+         uLvjSemrVHiv0D/iNeWQwLlR4yTBbzx5s7FFXIkrGir9RzP5dyojj8bfdxY+tlq8dF
+         eOCyITVpbBCU6cu5khHxOdysrg7M5c6sIOltXkWBTzyDKjSbQlTON8MEJ/yPgFhCYf
+         MPnIhsGAqUFJ9/uV/cfW+U0dHT7NqpMd7u8KyYhercJUdGEpbCu1tl/TDgGZqaGufS
+         /OtMsovlQhtsg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Or Har-Toov <ohartoov@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
         netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH mlx5-next 1/3] net/mlx5: Expose bits for enabling out-of-order by default
-Date:   Sun, 19 Mar 2023 14:59:30 +0200
-Message-Id: <75d6dfe263989a05c08c43406132b336ea12d00a.1679230449.git.leon@kernel.org>
+Subject: [PATCH rdma-next 2/3] RDMA/mlx5: Disable out-of-order in integrity enabled QPs
+Date:   Sun, 19 Mar 2023 14:59:31 +0200
+Message-Id: <362de42cdc7a541afa5b1fd0ec6ae706061764a2.1679230449.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1679230449.git.leon@kernel.org>
 References: <cover.1679230449.git.leon@kernel.org>
@@ -57,50 +58,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Or Har-Toov <ohartoov@nvidia.com>
 
-Add needed HW bits for enabling out-of-order by default and
-use go_back_n when out-of-order is not needed.
+Set retry_mode to GO_BACK_N when qp is created with INTEGRITY_EN flag
+because out-of-order is not supported when doing HW offload of signature
+operations.
 
 Signed-off-by: Or Har-Toov <ohartoov@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/infiniband/hw/mlx5/qp.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 15a850f52ef2..e4306cd87cd7 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1077,7 +1077,9 @@ struct mlx5_ifc_roce_cap_bits {
- 	u8         sw_r_roce_src_udp_port[0x1];
- 	u8         fl_rc_qp_when_roce_disabled[0x1];
- 	u8         fl_rc_qp_when_roce_enabled[0x1];
--	u8         reserved_at_7[0x17];
-+	u8         reserved_at_7[0x1];
-+	u8	   qp_ooo_transmit_default[0x1];
-+	u8         reserved_at_9[0x15];
- 	u8	   qp_ts_format[0x2];
+diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
+index f04adc18e63b..d32b644885b3 100644
+--- a/drivers/infiniband/hw/mlx5/qp.c
++++ b/drivers/infiniband/hw/mlx5/qp.c
+@@ -60,6 +60,10 @@ enum raw_qp_set_mask_map {
+ 	MLX5_RAW_QP_RATE_LIMIT			= 1UL << 1,
+ };
  
- 	u8         reserved_at_20[0x60];
-@@ -1493,7 +1495,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         reserved_at_b0[0x1];
- 	u8         uplink_follow[0x1];
- 	u8         ts_cqe_to_dest_cqn[0x1];
--	u8         reserved_at_b3[0x7];
-+	u8         reserved_at_b3[0x6];
-+	u8         go_back_n[0x1];
- 	u8         shampo[0x1];
- 	u8         reserved_at_bb[0x5];
++enum {
++	MLX5_QP_RM_GO_BACK_N			= 0x1,
++};
++
+ struct mlx5_modify_raw_qp_param {
+ 	u16 operation;
  
-@@ -3263,7 +3266,8 @@ struct mlx5_ifc_qpc_bits {
- 	u8         log_rq_stride[0x3];
- 	u8         no_sq[0x1];
- 	u8         log_sq_size[0x4];
--	u8         reserved_at_55[0x3];
-+	u8         reserved_at_55[0x1];
-+	u8	   retry_mode[0x2];
- 	u8	   ts_format[0x2];
- 	u8         reserved_at_5a[0x1];
- 	u8         rlky[0x1];
+@@ -2521,6 +2525,10 @@ static int create_kernel_qp(struct mlx5_ib_dev *dev, struct ib_pd *pd,
+ 	if (qp->flags & IB_QP_CREATE_IPOIB_UD_LSO)
+ 		MLX5_SET(qpc, qpc, ulp_stateless_offload_mode, 1);
+ 
++	if (qp->flags & IB_QP_CREATE_INTEGRITY_EN &&
++	    MLX5_CAP_GEN(mdev, go_back_n))
++		MLX5_SET(qpc, qpc, retry_mode, MLX5_QP_RM_GO_BACK_N);
++
+ 	err = mlx5_qpc_create_qp(dev, &base->mqp, in, inlen, out);
+ 	kvfree(in);
+ 	if (err)
 -- 
 2.39.2
 
