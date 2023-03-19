@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB736C0474
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 20:38:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E5206C0473
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 20:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbjCSTip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 15:38:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
+        id S229700AbjCSTin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 15:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbjCSTif (ORCPT
+        with ESMTP id S229772AbjCSTif (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 15:38:35 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9FD7DA9
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 12:38:31 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id l27so224374wrb.2
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 12:38:31 -0700 (PDT)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E896C4223
+        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 12:38:32 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id l27so224404wrb.2
+        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 12:38:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679254709;
+        d=gmail.com; s=20210112; t=1679254710;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Z5iBtY8KDPyw7Vjzd2GhmY5pBsVMT2mvsTw3P8c+LMM=;
-        b=mI4wf8jmRoFDyhkf8cXxGsR8fdIjH8vldcCNH7ZvrGzFCqw273wdRlG273IkSoW4sX
-         yO1MiLksWwjCFjMNS13HA3800m96du9dKaPiqVQqpkxjPWEFf9a76NOk9wM8R3SZzNNQ
-         1UkP76CuX3iHw2eEjY7amME56E8JESKFZc/PQrHbx++jbPVVE5AVeVKIIGt4lrFeQPFr
-         m1L+bfQ11jWix8UySl4WVnlrdQvuB+aVw0w9HCicXyh8jadeAG6Z2JzIwJLB7PH4qHkA
-         pA54AIPNsqD3ahRhFNQYEuz86S5L8of4Q0aP/woLOYnNrNEe+kQ75niqrcxJNXk0E+Km
-         wXhQ==
+        bh=3ygo9cP42ENNj3ilA9aApLzpVUDVAgd/awYBFmOYHlo=;
+        b=EYGQFcREkgSEeSA/WEFcMHanCqlK34lcrtlxo7lOqZzZnj97xB+xXZjWBCbIqOqmG0
+         SDtuQq1dNqVpJ/m9MsmhYBFEQfLXBQHwyd2hJp30nd8/VXmckrw8+05loqcG7b1yeZC9
+         uWgkubRmhyMAJ5CxO0nJkh3QjKl+E61wLtDUoaadn2+MPd4IY4csfK4BvCx2qchXgcEI
+         F3tv3U1zppF0c60dZBoAXKU3RUjjKeiLMczWlGfANe6arvlsnb+XAU9zGY/J8LzZhjTY
+         nAUI1Nu90bo8F8HAKW6Q7nDW9dIdzuwkUQSKRyji+JbJkWbSHASLIsUlhb3OYG/7xRY7
+         njjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679254709;
+        d=1e100.net; s=20210112; t=1679254710;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Z5iBtY8KDPyw7Vjzd2GhmY5pBsVMT2mvsTw3P8c+LMM=;
-        b=Qtuo6dJmYU3aJq721ZzzJGShzuRCB/GqJ7kvTx1672ql+ZisMfOXwTT06LpoD0Il+z
-         w6Trbghd0ZxJ5ef3aKTne7GvyUkVgHkAfitI38PdiUiDyql826qbgnljlwJhekHHmXE5
-         kRmIAB9fID/oXJAScnAM0xISiyNTk3AV5soNSUvRO/bHtIf9GTfVYsFxdgGZt0KbGV+Z
-         HpoqH44pRasNq/TO0SaS/kUXOk7tWVjcIOu77l0BUYNAVaF0sF483tS64lAehpxSIyR7
-         6MC/9CZmZHwN8LqqDLvaiVBEDTfo7NVWDg2SyFiJ/K5xuJjcp7ODVUplLY1i4oonGH6p
-         Aqsg==
-X-Gm-Message-State: AO0yUKWup+qHUp+SlWxBoTQYJ9Rqzb5t3A+zOug9Z4O25Sw8VJA9olsj
-        o8hBLBJtB2pucczmP4dlqDZd+CFwDCbczg==
-X-Google-Smtp-Source: AK7set/JVq4y1ylySMw/Y6xMK26KaeiL2ifRt/2yJz5P57Rw8pmtz4dQztBUxnskKWkCtJL6cNhRKw==
-X-Received: by 2002:adf:ffc5:0:b0:2ce:a8ee:173a with SMTP id x5-20020adfffc5000000b002cea8ee173amr12139886wrs.68.1679254709444;
-        Sun, 19 Mar 2023 12:38:29 -0700 (PDT)
+        bh=3ygo9cP42ENNj3ilA9aApLzpVUDVAgd/awYBFmOYHlo=;
+        b=gbKmPdzucixDNXzxvnMxQ+XdsrHlQdG32xj0Cf4Za5i8WxG4Zd2WKyjQ1AdciVd088
+         gA1JIOPufy3V+w4oJQEHaSBIAkZXUS78EZllTB3rGGiEMMPwZZObcWiarelGj4Fs4FQ8
+         k8jS2IVk0ZCdJNrQ7TZAq4sYc+qeBL6h++tBI/vhqrIiG3ytSh6CAcS7RNw/JX543/DU
+         XvnPD8gERIgwnHkXHIFKRsoz2Mm23QSHuAno9ryCZr4VfGKPUtIvVYGzg5gkgT1YbHc6
+         R1qH26eXE1Dj2+nq9CGn2ZsJyZu+YqRiCw3v7FFOcLayMcYL6It5Gq/l6isufAzgR0v4
+         wkrQ==
+X-Gm-Message-State: AO0yUKXv+gPCfNm+YMhCm6VA5uV+4G/cHk//qFq0DZUckTsaG4V0dnGl
+        aqhXUwB9Aw8XRlYOHkQ4cJUGqY5dEQ40TQ==
+X-Google-Smtp-Source: AK7set9CfWKu5ocR867bR0plro61Bkifv+N2cf9JG1mBbdWUw7+Bgor9eacBFvn9sOgd9qeginee9Q==
+X-Received: by 2002:a05:6000:100b:b0:2d5:5610:e7b4 with SMTP id a11-20020a056000100b00b002d55610e7b4mr3285698wrx.64.1679254710634;
+        Sun, 19 Mar 2023 12:38:30 -0700 (PDT)
 Received: from imac.redhat.com ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id d5-20020adfef85000000b002cfed482e9asm7204190wro.61.2023.03.19.12.38.28
+        by smtp.gmail.com with ESMTPSA id d5-20020adfef85000000b002cfed482e9asm7204190wro.61.2023.03.19.12.38.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 12:38:28 -0700 (PDT)
+        Sun, 19 Mar 2023 12:38:30 -0700 (PDT)
 From:   Donald Hunter <donald.hunter@gmail.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     donald.hunter@redhat.com, Donald Hunter <donald.hunter@gmail.com>
-Subject: [PATCH net-next v2 5/6] tools: ynl: Add fixed-header support to ynl
-Date:   Sun, 19 Mar 2023 19:38:02 +0000
-Message-Id: <20230319193803.97453-6-donald.hunter@gmail.com>
+Subject: [PATCH net-next v2 6/6] netlink: specs: add partial specification for openvswitch
+Date:   Sun, 19 Mar 2023 19:38:03 +0000
+Message-Id: <20230319193803.97453-7-donald.hunter@gmail.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230319193803.97453-1-donald.hunter@gmail.com>
 References: <20230319193803.97453-1-donald.hunter@gmail.com>
@@ -73,186 +73,381 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for netlink families that add an optional fixed header structure
-after the genetlink header and before any attributes. The fixed-header can be
-specified on a per op basis, or once for all operations.
+The openvswitch family has a fixed header, uses struct attrs and has array
+values. This partial spec demonstrates these features in the YNL CLI. These
+specs are sufficient to create, delete and dump datapaths and to dump vports:
+
+$ ./tools/net/ynl/cli.py \
+    --schema Documentation/netlink/genetlink-legacy.yaml \
+    --spec Documentation/netlink/specs/ovs_datapath.yaml \
+    --do dp-new --json '{ "dp-ifindex": 0, "name": "demo", "upcall-pid": 0}'
+None
+
+./tools/net/ynl/cli.py \
+    --schema Documentation/netlink/genetlink-legacy.yaml \
+    --spec Documentation/netlink/specs/ovs_datapath.yaml \
+    --dump dp-get --json '{ "dp-ifindex": 0 }'
+[{'dp-ifindex': 3,
+  'masks-cache-size': 256,
+  'megaflow-stats': {'cache-hits': 0,
+                     'mask-hit': 0,
+                     'masks': 0,
+                     'pad1': 0,
+                     'padding': 0},
+  'name': 'test',
+  'stats': {'flows': 0, 'hit': 0, 'lost': 0, 'missed': 0},
+  'user-features': {'dispatch-upcall-per-cpu',
+                    'tc-recirc-sharing',
+                    'unaligned'}},
+ {'dp-ifindex': 48,
+  'masks-cache-size': 256,
+  'megaflow-stats': {'cache-hits': 0,
+                     'mask-hit': 0,
+                     'masks': 0,
+                     'pad1': 0,
+                     'padding': 0},
+  'name': 'demo',
+  'stats': {'flows': 0, 'hit': 0, 'lost': 0, 'missed': 0},
+  'user-features': set()}]
+
+$ ./tools/net/ynl/cli.py \
+    --schema Documentation/netlink/genetlink-legacy.yaml \
+    --spec Documentation/netlink/specs/ovs_datapath.yaml \
+    --do dp-del --json '{ "dp-ifindex": 0, "name": "demo"}'
+None
+
+$ ./tools/net/ynl/cli.py \
+    --schema Documentation/netlink/genetlink-legacy.yaml \
+    --spec Documentation/netlink/specs/ovs_vport.yaml \
+    --dump vport-get --json '{ "dp-ifindex": 3 }'
+[{'dp-ifindex': 3,
+  'ifindex': 3,
+  'name': 'test',
+  'port-no': 0,
+  'stats': {'rx-bytes': 0,
+            'rx-dropped': 0,
+            'rx-errors': 0,
+            'rx-packets': 0,
+            'tx-bytes': 0,
+            'tx-dropped': 0,
+            'tx-errors': 0,
+            'tx-packets': 0},
+  'type': 'internal',
+  'upcall-pid': [0],
+  'upcall-stats': {'fail': 0, 'success': 0}}]
 
 Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
 ---
- Documentation/netlink/genetlink-legacy.yaml | 10 +++++++
- tools/net/ynl/lib/nlspec.py                 | 30 ++++++++++++---------
- tools/net/ynl/lib/ynl.py                    | 23 +++++++++++++---
- 3 files changed, 46 insertions(+), 17 deletions(-)
+ Documentation/netlink/specs/ovs_datapath.yaml | 153 ++++++++++++++++++
+ Documentation/netlink/specs/ovs_vport.yaml    | 139 ++++++++++++++++
+ 2 files changed, 292 insertions(+)
+ create mode 100644 Documentation/netlink/specs/ovs_datapath.yaml
+ create mode 100644 Documentation/netlink/specs/ovs_vport.yaml
 
-diff --git a/Documentation/netlink/genetlink-legacy.yaml b/Documentation/netlink/genetlink-legacy.yaml
-index 654f40b26beb..30a8051c1d8f 100644
---- a/Documentation/netlink/genetlink-legacy.yaml
-+++ b/Documentation/netlink/genetlink-legacy.yaml
-@@ -261,6 +261,13 @@ properties:
-       async-enum:
-         description: Name for the enum type with notifications/events.
-         type: string
-+      # Start genetlink-legacy
-+      fixed-header: &fixed-header
-+        description: |
-+          Name of the structure defininig the optional fixed-length protocol header. This header is
-+          placed in a message after the netlink and genetlink headers and before any attributes.
-+        type: string
-+      # End genetlink-legacy
-       list:
-         description: List of commands
-         type: array
-@@ -293,6 +300,9 @@ properties:
-               type: array
-               items:
-                 enum: [ strict, dump ]
-+            # Start genetlink-legacy
-+            fixed-header: *fixed-header
-+            # End genetlink-legacy
-             do: &subop-type
-               description: Main command handler.
-               type: object
-diff --git a/tools/net/ynl/lib/nlspec.py b/tools/net/ynl/lib/nlspec.py
-index 5ac2dfd415c5..69ee9f940e0e 100644
---- a/tools/net/ynl/lib/nlspec.py
-+++ b/tools/net/ynl/lib/nlspec.py
-@@ -257,18 +257,19 @@ class SpecOperation(SpecElement):
-     Information about a single Netlink operation.
- 
-     Attributes:
--        value       numerical ID when serialized, None if req/rsp values differ
-+        value           numerical ID when serialized, None if req/rsp values differ
- 
--        req_value   numerical ID when serialized, user -> kernel
--        rsp_value   numerical ID when serialized, user <- kernel
--        is_call     bool, whether the operation is a call
--        is_async    bool, whether the operation is a notification
--        is_resv     bool, whether the operation does not exist (it's just a reserved ID)
--        attr_set    attribute set name
-+        req_value       numerical ID when serialized, user -> kernel
-+        rsp_value       numerical ID when serialized, user <- kernel
-+        is_call         bool, whether the operation is a call
-+        is_async        bool, whether the operation is a notification
-+        is_resv         bool, whether the operation does not exist (it's just a reserved ID)
-+        attr_set        attribute set name
-+        fixed_header    string, optional fixed header structure name
- 
--        yaml        raw spec as loaded from the spec file
-+        yaml            raw spec as loaded from the spec file
-     """
--    def __init__(self, family, yaml, req_value, rsp_value):
-+    def __init__(self, family, yaml, req_value, rsp_value, default_fixed_header):
-         super().__init__(family, yaml)
- 
-         self.value = req_value if req_value == rsp_value else None
-@@ -278,6 +279,7 @@ class SpecOperation(SpecElement):
-         self.is_call = 'do' in yaml or 'dump' in yaml
-         self.is_async = 'notify' in yaml or 'event' in yaml
-         self.is_resv = not self.is_async and not self.is_call
-+        self.fixed_header = self.yaml.get('fixed-header', default_fixed_header)
- 
-         # Added by resolve:
-         self.attr_set = None
-@@ -384,24 +386,26 @@ class SpecFamily(SpecElement):
-     def new_struct(self, elem):
-         return SpecStruct(self, elem)
- 
--    def new_operation(self, elem, req_val, rsp_val):
--        return SpecOperation(self, elem, req_val, rsp_val)
-+    def new_operation(self, elem, req_val, rsp_val, default_fixed_header):
-+        return SpecOperation(self, elem, req_val, rsp_val, default_fixed_header)
- 
-     def add_unresolved(self, elem):
-         self._resolution_list.append(elem)
- 
-     def _dictify_ops_unified(self):
-+        default_fixed_header = self.yaml['operations'].get('fixed-header')
-         val = 1
-         for elem in self.yaml['operations']['list']:
-             if 'value' in elem:
-                 val = elem['value']
- 
--            op = self.new_operation(elem, val, val)
-+            op = self.new_operation(elem, val, val, default_fixed_header)
-             val += 1
- 
-             self.msgs[op.name] = op
- 
-     def _dictify_ops_directional(self):
-+        default_fixed_header = self.yaml['operations'].get('fixed-header')
-         req_val = rsp_val = 1
-         for elem in self.yaml['operations']['list']:
-             if 'notify' in elem:
-@@ -426,7 +430,7 @@ class SpecFamily(SpecElement):
-             else:
-                 raise Exception("Can't parse directional ops")
- 
--            op = self.new_operation(elem, req_val, rsp_val)
-+            op = self.new_operation(elem, req_val, rsp_val, default_fixed_header)
-             req_val = req_val_next
-             rsp_val = rsp_val_next
- 
-diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
-index 24f8af3c2b38..736a637ecb2b 100644
---- a/tools/net/ynl/lib/ynl.py
-+++ b/tools/net/ynl/lib/ynl.py
-@@ -277,14 +277,22 @@ def _genl_load_families():
- 
- 
- class GenlMsg:
--    def __init__(self, nl_msg):
-+    def __init__(self, nl_msg, fixed_header_members = []):
-         self.nl = nl_msg
- 
-         self.hdr = nl_msg.raw[0:4]
--        self.raw = nl_msg.raw[4:]
-+        offset = 4
- 
-         self.genl_cmd, self.genl_version, _ = struct.unpack("BBH", self.hdr)
- 
-+        self.fixed_header_attrs = dict()
-+        for m in fixed_header_members:
-+            format, size = NlAttr.type_formats[m.type]
-+            decoded = struct.unpack_from(format, nl_msg.raw, offset)
-+            offset += size
-+            self.fixed_header_attrs[m.name] = decoded[0]
+diff --git a/Documentation/netlink/specs/ovs_datapath.yaml b/Documentation/netlink/specs/ovs_datapath.yaml
+new file mode 100644
+index 000000000000..2eefdf9d8cd7
+--- /dev/null
++++ b/Documentation/netlink/specs/ovs_datapath.yaml
+@@ -0,0 +1,153 @@
++# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
 +
-+        self.raw = nl_msg.raw[offset:]
-         self.raw_attrs = NlAttrs(self.raw)
- 
-     def __repr__(self):
-@@ -496,6 +504,13 @@ class YnlFamily(SpecFamily):
- 
-         req_seq = random.randint(1024, 65535)
-         msg = _genl_msg(self.family.family_id, nl_flags, op.req_value, 1, req_seq)
-+        fixed_header_members = []
-+        if op.fixed_header:
-+            fixed_header_members = self.consts[op.fixed_header].members
-+            for m in fixed_header_members:
-+                value = vals.pop(m.name)
-+                format, _ = NlAttr.type_formats[m.type]
-+                msg += struct.pack(format, value)
-         for name, value in vals.items():
-             msg += self._add_attr(op.attr_set.name, name, value)
-         msg = _genl_msg_finalize(msg)
-@@ -522,7 +537,7 @@ class YnlFamily(SpecFamily):
-                     done = True
-                     break
- 
--                gm = GenlMsg(nl_msg)
-+                gm = GenlMsg(nl_msg, fixed_header_members)
-                 # Check if this is a reply to our request
-                 if nl_msg.nl_seq != req_seq or gm.genl_cmd != op.rsp_value:
-                     if gm.genl_cmd in self.async_msg_ids:
-@@ -532,7 +547,7 @@ class YnlFamily(SpecFamily):
-                         print('Unexpected message: ' + repr(gm))
-                         continue
- 
--                rsp.append(self._decode(gm.raw_attrs, op.attr_set.name))
-+                rsp.append(self._decode(gm.raw_attrs, op.attr_set.name) | gm.fixed_header_attrs)
- 
-         if not rsp:
-             return None
++name: ovs_datapath
++version: 2
++protocol: genetlink-legacy
++
++doc:
++  OVS datapath configuration over generic netlink.
++
++definitions:
++  -
++    name: ovs-header
++    type: struct
++    members:
++      -
++        name: dp-ifindex
++        type: u32
++  -
++    name: user-features
++    type: flags
++    entries:
++      -
++        name: unaligned
++        doc: Allow last Netlink attribute to be unaligned
++      -
++        name: vport-pids
++        doc: Allow datapath to associate multiple Netlink PIDs to each vport
++      -
++        name: tc-recirc-sharing
++        doc: Allow tc offload recirc sharing
++      -
++        name: dispatch-upcall-per-cpu
++        doc: Allow per-cpu dispatch of upcalls
++  -
++    name: datapath-stats
++    type: struct
++    members:
++      -
++        name: hit
++        type: u64
++      -
++        name: missed
++        type: u64
++      -
++        name: lost
++        type: u64
++      -
++        name: flows
++        type: u64
++  -
++    name: megaflow-stats
++    type: struct
++    members:
++      -
++        name: mask-hit
++        type: u64
++      -
++        name: masks
++        type: u32
++      -
++        name: padding
++        type: u32
++      -
++        name: cache-hits
++        type: u64
++      -
++        name: pad1
++        type: u64
++
++attribute-sets:
++  -
++    name: datapath
++    attributes:
++      -
++        name: name
++        type: string
++      -
++        name: upcall-pid
++        doc: upcall pid
++        type: u32
++      -
++        name: stats
++        type: struct
++        struct: datapath-stats
++      -
++        name: megaflow-stats
++        type: struct
++        struct: megaflow-stats
++      -
++        name: user-features
++        type: u32
++        enum: user-features
++        enum-as-flags: true
++      -
++        name: pad
++        type: unused
++      -
++        name: masks-cache-size
++        type: u32
++      -
++        name: per-cpu-pids
++        type: array-nest
++        sub-type: u32
++
++operations:
++  fixed-header: ovs-header
++  list:
++    -
++      name: dp-get
++      doc: Get / dump OVS data path configuration and state
++      value: 3
++      attribute-set: datapath
++      do: &dp-get-op
++        request:
++          attributes:
++            - name
++        reply:
++          attributes:
++            - name
++            - upcall-pid
++            - stats
++            - megaflow-stats
++            - user-features
++            - masks-cache-size
++            - per-cpu-pids
++      dump: *dp-get-op
++    -
++      name: dp-new
++      doc: Create new OVS data path
++      value: 1
++      attribute-set: datapath
++      do:
++        request:
++          attributes:
++            - dp-ifindex
++            - name
++            - upcall-pid
++            - user-features
++    -
++      name: dp-del
++      doc: Delete existing OVS data path
++      value: 2
++      attribute-set: datapath
++      do:
++        request:
++          attributes:
++            - dp-ifindex
++            - name
++
++mcast-groups:
++  list:
++    -
++      name: ovs_datapath
+diff --git a/Documentation/netlink/specs/ovs_vport.yaml b/Documentation/netlink/specs/ovs_vport.yaml
+new file mode 100644
+index 000000000000..a0d01adcb435
+--- /dev/null
++++ b/Documentation/netlink/specs/ovs_vport.yaml
+@@ -0,0 +1,139 @@
++# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++
++name: ovs_vport
++version: 2
++protocol: genetlink-legacy
++
++doc:
++  OVS vport configuration over generic netlink.
++
++definitions:
++  -
++    name: ovs-header
++    type: struct
++    members:
++      -
++        name: dp-ifindex
++        type: u32
++  -
++    name: vport-type
++    type: enum
++    entries: [ unspec, netdev, internal, gre, vxlan, geneve ]
++  -
++    name: vport-stats
++    type: struct
++    members:
++      -
++        name: rx-packets
++        type: u64
++      -
++        name: tx-packets
++        type: u64
++      -
++        name: rx-bytes
++        type: u64
++      -
++        name: tx-bytes
++        type: u64
++      -
++        name: rx-errors
++        type: u64
++      -
++        name: tx-errors
++        type: u64
++      -
++        name: rx-dropped
++        type: u64
++      -
++        name: tx-dropped
++        type: u64
++
++attribute-sets:
++  -
++    name: vport-options
++    attributes:
++      -
++        name: dst-port
++        type: u32
++      -
++        name: extension
++        type: u32
++  -
++    name: upcall-stats
++    attributes:
++      -
++        name: success
++        type: u64
++        value: 0
++      -
++        name: fail
++        type: u64
++  -
++    name: vport
++    attributes:
++      -
++        name: port-no
++        type: u32
++      -
++        name: type
++        type: u32
++        enum: vport-type
++      -
++        name: name
++        type: string
++      -
++        name: options
++        type: nest
++        nested-attributes: vport-options
++      -
++        name: upcall-pid
++        type: array-nest
++        sub-type: u32
++      -
++        name: stats
++        type: struct
++        struct: vport-stats
++      -
++        name: pad
++        type: unused
++      -
++        name: ifindex
++        type: u32
++      -
++        name: netnsid
++        type: u32
++      -
++        name: upcall-stats
++        type: nest
++        nested-attributes: upcall-stats
++
++operations:
++  list:
++    -
++      name: vport-get
++      doc: Get / dump OVS vport configuration and state
++      value: 3
++      attribute-set: vport
++      fixed-header: ovs-header
++      do: &vport-get-op
++        request:
++          attributes:
++            - dp-ifindex
++            - name
++        reply: &dev-all
++          attributes:
++            - dp-ifindex
++            - port-no
++            - type
++            - name
++            - upcall-pid
++            - stats
++            - ifindex
++            - netnsid
++            - upcall-stats
++      dump: *vport-get-op
++
++mcast-groups:
++  list:
++    -
++      name: ovs_vport
 -- 
 2.39.0
 
