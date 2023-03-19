@@ -2,89 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6286C02CD
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 16:30:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCBB6C036E
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 18:21:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230316AbjCSPaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 11:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38088 "EHLO
+        id S229472AbjCSRVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 13:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231128AbjCSPaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 11:30:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5A2132F2;
-        Sun, 19 Mar 2023 08:30:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B38AB80BFE;
-        Sun, 19 Mar 2023 15:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 09450C433EF;
-        Sun, 19 Mar 2023 15:30:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679239818;
-        bh=jBR4aMqv1NdR/E1JYKapG8/ecNeQTgFeDlQG9WqP/2M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZTn4wsvVeO1Y7fS5CvpYQs15fbk7jKtzy61nwRdE6NFC9LCupFHXgjCPj1aPuLf2O
-         38UAOXRG6HN4WcRChAF+509aZQUzmeMaMUDq112Z12CPJyTk5c6cluWNiHvnnZJ2DY
-         0Zm8mlqftr+8+GwzMYTsQUCeeTiHI3Ajieznu7JnwhzQY4MlJJBPq83R2L9CIjyRlf
-         nsW7wzloQhItE4TuRb5wVkYAXf2rcSx3pyLtLZQ6t6extYnE37xlORp+bo9n5ufRJp
-         rJjp21auzZ9kVGxxqLET/CRkeRn4WjYInF6dJE/aL+EvHj/upeS8obeYiVrFWKRh7d
-         YGM5PNkFTLF/w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E97ADC43161;
-        Sun, 19 Mar 2023 15:30:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229448AbjCSRU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 13:20:59 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D539972AB
+        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 10:20:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1679246456; x=1710782456;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dmIafOXCTcLqwEvUFLGW3L3ZU7QaNUkhudhb4HFKYxU=;
+  b=QMdKO5ztQHdSH7iYZzJxyQNMP5r2Q8CHkkqM46wgZNqGebyTVPlAB5bW
+   l9BTkuR0jWByeW8FvykBjEURks3y0YsvO4IQLt0al4R6MS9UBUkLXnQbr
+   oX2LFD4wW1rOrRLfEivaoEasjtUOVzxCYhSm4skn0xFc+SuHZgC6IWKFq
+   88UDoDXujrBEXPPYuzwAyvvBjxI87hPyaKA5qTUL3AfO7H40kNhqQtVV6
+   x8SVZaJCUnfrfNs1ZqgMD+sNvmKcfGTA1TLP+RCWNnZgCo4hWXqo8ctvj
+   kSIHOay0B/FSPsv84uMFG3mDVXV/YHGaYECgWj6SZ2eyi5j06XOEOATJE
+   w==;
+X-IronPort-AV: E=Sophos;i="5.98,274,1673938800"; 
+   d="scan'208";a="205414549"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Mar 2023 10:20:53 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Sun, 19 Mar 2023 10:20:53 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
+ Transport; Sun, 19 Mar 2023 10:20:53 -0700
+Date:   Sun, 19 Mar 2023 18:20:52 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     William Tu <u9012063@gmail.com>
+CC:     <netdev@vger.kernel.org>, <jsankararama@vmware.com>,
+        <gyang@vmware.com>, <doshir@vmware.com>,
+        <alexander.duyck@gmail.com>, <alexandr.lobakin@intel.com>,
+        <bang@vmware.com>, <maciej.fijalkowski@intel.com>,
+        <witu@nvidia.com>, Alexander Duyck <alexanderduyck@fb.com>
+Subject: Re: [PATCH RFC v18 net-next] vmxnet3: Add XDP support.
+Message-ID: <20230319172052.gkzu7h227ulkog6o@soft-dev3-1>
+References: <20230318214953.36834-1-u9012063@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] net: lan966x: Improve TX/RX of frames from/to
- CPU
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167923981795.9440.2717535586927944786.git-patchwork-notify@kernel.org>
-Date:   Sun, 19 Mar 2023 15:30:17 +0000
-References: <20230317152713.4141614-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20230317152713.4141614-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        UNGLinuxDriver@microchip.com, david.laight@aculab.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20230318214953.36834-1-u9012063@gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The 03/18/2023 14:49, William Tu wrote:
 
-This series was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
+Hi William,
 
-On Fri, 17 Mar 2023 16:27:11 +0100 you wrote:
-> The first patch of this series improves the RX side. As it seems to be
-> an expensive operation to read the RX timestamp for every frame, then
-> read it only if it is required. This will give an improvement of ~70mbit
-> on the RX side.
-> The second patch stops using the packing library. This improves mostly
-> the TX side as this library is used to set diffent bits in the IFH. If
-> this library is replaced with a more simple/shorter implementation,
-> this gives an improvement of more than 100mbit on TX side.
-> All the measurements were done using iperf3.
-> 
-> [...]
+...
 
-Here is the summary with links:
-  - [net-next,v2,1/2] net: lan966x: Don't read RX timestamp if not needed
-    https://git.kernel.org/netdev/net-next/c/ff89ac704e2c
-  - [net-next,v2,2/2] net: lan966x: Stop using packing library
-    https://git.kernel.org/netdev/net-next/c/fd7627833ddf
+> +
+> +static int
+> +vmxnet3_xdp_xmit_frame(struct vmxnet3_adapter *adapter,
+> +                      struct xdp_frame *xdpf,
+> +                      struct vmxnet3_tx_queue *tq, bool dma_map)
+> +{
+> +       struct vmxnet3_tx_buf_info *tbi = NULL;
+> +       union Vmxnet3_GenericDesc *gdesc;
+> +       struct vmxnet3_tx_ctx ctx;
+> +       int tx_num_deferred;
+> +       struct page *page;
+> +       u32 buf_size;
+> +       int ret = 0;
 
-You are awesome, thank you!
+This doesn't seem to be used anywhere, so it can be removed.
+
+> +       u32 dw2;
+> +
+> +       dw2 = (tq->tx_ring.gen ^ 0x1) << VMXNET3_TXD_GEN_SHIFT;
+> +       dw2 |= xdpf->len;
+> +       ctx.sop_txd = tq->tx_ring.base + tq->tx_ring.next2fill;
+> +       gdesc = ctx.sop_txd;
+> +
+> +       buf_size = xdpf->len;
+> +       tbi = tq->buf_info + tq->tx_ring.next2fill;
+> +
+> +       if (vmxnet3_cmd_ring_desc_avail(&tq->tx_ring) == 0) {
+> +               tq->stats.tx_ring_full++;
+> +               return -ENOSPC;
+> +       }
+> +
+> +       tbi->map_type = VMXNET3_MAP_XDP;
+> +       if (dma_map) { /* ndo_xdp_xmit */
+> +               tbi->dma_addr = dma_map_single(&adapter->pdev->dev,
+> +                                              xdpf->data, buf_size,
+> +                                              DMA_TO_DEVICE);
+> +               if (dma_mapping_error(&adapter->pdev->dev, tbi->dma_addr))
+> +                       return -EFAULT;
+> +               tbi->map_type |= VMXNET3_MAP_SINGLE;
+> +       } else { /* XDP buffer from page pool */
+> +               page = virt_to_page(xdpf->data);
+> +               tbi->dma_addr = page_pool_get_dma_addr(page) +
+> +                               XDP_PACKET_HEADROOM;
+
+Shouldn't this be VMXNET3_XDP_HEADROOM?
+
+> +               dma_sync_single_for_device(&adapter->pdev->dev,
+> +                                          tbi->dma_addr, buf_size,
+> +                                          DMA_BIDIRECTIONAL);
+
+Shouldn't this be DMA_TO_DEVICE instead of DMA_BIDERECTIONAL?
+
+> +       }
+> +       tbi->xdpf = xdpf;
+> +       tbi->len = buf_size;
+> +
+> +       gdesc = tq->tx_ring.base + tq->tx_ring.next2fill;
+> +       WARN_ON_ONCE(gdesc->txd.gen == tq->tx_ring.gen);
+> +
+> +       gdesc->txd.addr = cpu_to_le64(tbi->dma_addr);
+> +       gdesc->dword[2] = cpu_to_le32(dw2);
+> +
+> +       /* Setup the EOP desc */
+> +       gdesc->dword[3] = cpu_to_le32(VMXNET3_TXD_CQ | VMXNET3_TXD_EOP);
+> +
+> +       gdesc->txd.om = 0;
+> +       gdesc->txd.msscof = 0;
+> +       gdesc->txd.hlen = 0;
+> +       gdesc->txd.ti = 0;
+> +
+> +       tx_num_deferred = le32_to_cpu(tq->shared->txNumDeferred);
+> +       le32_add_cpu(&tq->shared->txNumDeferred, 1);
+> +       tx_num_deferred++;
+> +
+> +       vmxnet3_cmd_ring_adv_next2fill(&tq->tx_ring);
+> +
+> +       /* set the last buf_info for the pkt */
+> +       tbi->sop_idx = ctx.sop_txd - tq->tx_ring.base;
+> +
+> +       dma_wmb();
+> +       gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
+> +                                                 VMXNET3_TXD_GEN);
+> +
+> +       /* No need to handle the case when tx_num_deferred doesn't reach
+> +        * threshold. Backend driver at hypervisor side will poll and reset
+> +        * tq->shared->txNumDeferred to 0.
+> +        */
+> +       if (tx_num_deferred >= le32_to_cpu(tq->shared->txThreshold)) {
+> +               tq->shared->txNumDeferred = 0;
+> +               VMXNET3_WRITE_BAR0_REG(adapter,
+> +                                      VMXNET3_REG_TXPROD + tq->qid * 8,
+> +                                      tq->tx_ring.next2fill);
+> +       }
+> +
+> +       return ret;
+> +}
+
+...
+
+> +static int
+> +vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, struct xdp_buff *xdp,
+> +               struct bpf_prog *prog)
+> +{
+> +       struct xdp_frame *xdpf;
+> +       struct page *page;
+> +       int err;
+> +       u32 act;
+> +
+> +       act = bpf_prog_run_xdp(prog, xdp);
+> +       rq->stats.xdp_packets++;
+> +       page = virt_to_page(xdp->data_hard_start);
+> +
+> +       switch (act) {
+> +       case XDP_PASS:
+> +               return act;
+> +       case XDP_REDIRECT:
+> +               err = xdp_do_redirect(rq->adapter->netdev, xdp, prog);
+> +               if (!err)
+> +                       rq->stats.xdp_redirects++;
+> +               else
+> +                       rq->stats.xdp_drops++;
+> +               return act;
+> +       case XDP_TX:
+> +               xdpf = xdp_convert_buff_to_frame(xdp);
+
+If you want, I think you can drop xdp_convert_buff_to_frame() and pass
+directly the page. And then inside vmxnet3_unmap_pkt() you can use
+page_pool_recycle_direct().
+Of course this requires few other changes (I think you need a new
+map_type) but in the end you might save some CPU usage.
+
+> +               if (unlikely(!xdpf ||
+> +                            vmxnet3_xdp_xmit_back(rq->adapter, xdpf))) {
+> +                       rq->stats.xdp_drops++;
+> +                       page_pool_recycle_direct(rq->page_pool, page);
+> +               } else {
+> +                       rq->stats.xdp_tx++;
+> +               }
+> +               return act;
+> +       default:
+> +               bpf_warn_invalid_xdp_action(rq->adapter->netdev, prog, act);
+> +               fallthrough;
+> +       case XDP_ABORTED:
+> +               trace_xdp_exception(rq->adapter->netdev, prog, act);
+> +               rq->stats.xdp_aborted++;
+> +               break;
+> +       case XDP_DROP:
+> +               rq->stats.xdp_drops++;
+> +               break;
+> +       }
+> +
+> +       page_pool_recycle_direct(rq->page_pool, page);
+> +
+> +       return act;
+> +}
+> +
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+/Horatiu
