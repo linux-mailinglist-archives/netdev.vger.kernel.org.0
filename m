@@ -2,70 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E5206C0473
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 20:38:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F01B56C047F
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 20:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbjCSTin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 15:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
+        id S229779AbjCSTnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 15:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbjCSTif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 15:38:35 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E896C4223
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 12:38:32 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id l27so224404wrb.2
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 12:38:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679254710;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3ygo9cP42ENNj3ilA9aApLzpVUDVAgd/awYBFmOYHlo=;
-        b=EYGQFcREkgSEeSA/WEFcMHanCqlK34lcrtlxo7lOqZzZnj97xB+xXZjWBCbIqOqmG0
-         SDtuQq1dNqVpJ/m9MsmhYBFEQfLXBQHwyd2hJp30nd8/VXmckrw8+05loqcG7b1yeZC9
-         uWgkubRmhyMAJ5CxO0nJkh3QjKl+E61wLtDUoaadn2+MPd4IY4csfK4BvCx2qchXgcEI
-         F3tv3U1zppF0c60dZBoAXKU3RUjjKeiLMczWlGfANe6arvlsnb+XAU9zGY/J8LzZhjTY
-         nAUI1Nu90bo8F8HAKW6Q7nDW9dIdzuwkUQSKRyji+JbJkWbSHASLIsUlhb3OYG/7xRY7
-         njjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679254710;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3ygo9cP42ENNj3ilA9aApLzpVUDVAgd/awYBFmOYHlo=;
-        b=gbKmPdzucixDNXzxvnMxQ+XdsrHlQdG32xj0Cf4Za5i8WxG4Zd2WKyjQ1AdciVd088
-         gA1JIOPufy3V+w4oJQEHaSBIAkZXUS78EZllTB3rGGiEMMPwZZObcWiarelGj4Fs4FQ8
-         k8jS2IVk0ZCdJNrQ7TZAq4sYc+qeBL6h++tBI/vhqrIiG3ytSh6CAcS7RNw/JX543/DU
-         XvnPD8gERIgwnHkXHIFKRsoz2Mm23QSHuAno9ryCZr4VfGKPUtIvVYGzg5gkgT1YbHc6
-         R1qH26eXE1Dj2+nq9CGn2ZsJyZu+YqRiCw3v7FFOcLayMcYL6It5Gq/l6isufAzgR0v4
-         wkrQ==
-X-Gm-Message-State: AO0yUKXv+gPCfNm+YMhCm6VA5uV+4G/cHk//qFq0DZUckTsaG4V0dnGl
-        aqhXUwB9Aw8XRlYOHkQ4cJUGqY5dEQ40TQ==
-X-Google-Smtp-Source: AK7set9CfWKu5ocR867bR0plro61Bkifv+N2cf9JG1mBbdWUw7+Bgor9eacBFvn9sOgd9qeginee9Q==
-X-Received: by 2002:a05:6000:100b:b0:2d5:5610:e7b4 with SMTP id a11-20020a056000100b00b002d55610e7b4mr3285698wrx.64.1679254710634;
-        Sun, 19 Mar 2023 12:38:30 -0700 (PDT)
-Received: from imac.redhat.com ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id d5-20020adfef85000000b002cfed482e9asm7204190wro.61.2023.03.19.12.38.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 12:38:30 -0700 (PDT)
-From:   Donald Hunter <donald.hunter@gmail.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     donald.hunter@redhat.com, Donald Hunter <donald.hunter@gmail.com>
-Subject: [PATCH net-next v2 6/6] netlink: specs: add partial specification for openvswitch
-Date:   Sun, 19 Mar 2023 19:38:03 +0000
-Message-Id: <20230319193803.97453-7-donald.hunter@gmail.com>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230319193803.97453-1-donald.hunter@gmail.com>
-References: <20230319193803.97453-1-donald.hunter@gmail.com>
+        with ESMTP id S229764AbjCSTnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 15:43:06 -0400
+Received: from mx03lb.world4you.com (mx03lb.world4you.com [81.19.149.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72D3126C6;
+        Sun, 19 Mar 2023 12:43:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=2S3XcKrxpllatvyZR/d1hy91S8a1rPUKUx3briQkCzM=; b=QTYBQeRcCtySaMdhNnGFvZ/tdU
+        0vYVaGzFWwDuHGbpq3qJ1o/QvZOeKWzYbQvd8QPV4lYLzngwS+Ji175NuKslzeQBQ0C1y0c5oGWfI
+        twBmIa60QIyEKjxzfI0Wpk4CMVxgKqv2rRq65I6a42aC1FGZxPCDYTfJKXInaQMPieHM=;
+Received: from [88.117.56.218] (helo=[10.0.0.160])
+        by mx03lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1pdyvj-00044b-Fy; Sun, 19 Mar 2023 20:42:59 +0100
+Message-ID: <867eb8dc-0c4c-4d12-7c71-5fbd44fc348d@engleder-embedded.com>
+Date:   Sun, 19 Mar 2023 20:42:58 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [RFC PATCH net] bpf: Fix unregister memory model in BPF_PROG_RUN
+ in test runner
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, hawk@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, toke@redhat.com, song@kernel.org
+References: <20230311213709.42625-1-gerhard@engleder-embedded.com>
+Content-Language: en-US
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+In-Reply-To: <20230311213709.42625-1-gerhard@engleder-embedded.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AV-Do-Run: Yes
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,381 +56,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The openvswitch family has a fixed header, uses struct attrs and has array
-values. This partial spec demonstrates these features in the YNL CLI. These
-specs are sufficient to create, delete and dump datapaths and to dump vports:
+On 11.03.23 22:37, Gerhard Engleder wrote:
+> After executing xdp-trafficgen the following kernel output appeared:
+> [  214.564375] page_pool_release_retry() stalled pool shutdown 64 inflight 60 sec
+> 
+> xdp_test_run_batch() in combination with xdp-trafficgen uses a batch
+> size of 64. So it seems that a single batch does find its way back to
+> the page pool. I checked my tsnep driver, but the page pool entries were
+> not lost in the driver according to my analysis.
+> 
+> Executing xdp-trafficgen with n=1000 resulted in this output:
+> [  251.652376] page_pool_release_retry() stalled pool shutdown 40 inflight 60 sec
+> 
+> Executing xdp-trafficgen with n=10000 resulted in this output:
+> [  267.332374] page_pool_release_retry() stalled pool shutdown 16 inflight 60 sec
+> 
+> So interestingly in both cases the last batch with a size lower than 64
+> does not find its way back to the page pool. So what's the problem with
+> the last batch?
+> 
+> After xdp_test_run_batch() clean up is done in xdp_test_run_teardown()
+> no matter if page pool entries are still in flight. No problem for
+> page_pool_destroy() as the page pool is released later when no entries
+> are in flight.
+> 
+> With commit 425d239379db0 unregistering memory model has been added to
+> xdp_test_run_teardown(). Otherwise the page pool would not be released.
+> But xdp_unreg_mem_model() resets the memory model type immediately to 0
+> (which is actually MEM_TYPE_PAGE_SHARED). So the memory model type
+> MEM_TYPE_PAGE_POOL is lost and any inflight page pool entries have no
+> chance to find its way back to the page pool. I assume that's the reason
+> why the last batch does not find its way back to the page pool.
+> 
+> A simple sleep before xdp_unreg_mem_model() solved this problem, but
+> this is no valid fix of course. It needs to be ensured that the memory
+> model is not in use anymore. This is the case when the page pool has no
+> entries in flight.
+> 
+> How could it be ensured that a call to xdp_unreg_mem_model() is safe?
+> In my opinion drivers suffer the same problem. Is there a pattern how
+> this can be solved? Or did I misinterprete something?
+> 
+> Fixes: 425d239379db0 ("bpf: Fix release of page_pool in BPF_PROG_RUN in test runner")
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> ---
+>   net/bpf/test_run.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index b766a84c8536..eaccfdab0be3 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -202,6 +202,8 @@ static int xdp_test_run_setup(struct xdp_test_data *xdp, struct xdp_buff *orig_c
+>   
+>   static void xdp_test_run_teardown(struct xdp_test_data *xdp)
+>   {
+> +	usleep_range(10000, 11000);
+> +
+>   	xdp_unreg_mem_model(&xdp->mem);
+>   	page_pool_destroy(xdp->pp);
+>   	kfree(xdp->frames);
 
-$ ./tools/net/ynl/cli.py \
-    --schema Documentation/netlink/genetlink-legacy.yaml \
-    --spec Documentation/netlink/specs/ovs_datapath.yaml \
-    --do dp-new --json '{ "dp-ifindex": 0, "name": "demo", "upcall-pid": 0}'
-None
+I did not get any reply. Did I post it the wrong the way?
 
-./tools/net/ynl/cli.py \
-    --schema Documentation/netlink/genetlink-legacy.yaml \
-    --spec Documentation/netlink/specs/ovs_datapath.yaml \
-    --dump dp-get --json '{ "dp-ifindex": 0 }'
-[{'dp-ifindex': 3,
-  'masks-cache-size': 256,
-  'megaflow-stats': {'cache-hits': 0,
-                     'mask-hit': 0,
-                     'masks': 0,
-                     'pad1': 0,
-                     'padding': 0},
-  'name': 'test',
-  'stats': {'flows': 0, 'hit': 0, 'lost': 0, 'missed': 0},
-  'user-features': {'dispatch-upcall-per-cpu',
-                    'tc-recirc-sharing',
-                    'unaligned'}},
- {'dp-ifindex': 48,
-  'masks-cache-size': 256,
-  'megaflow-stats': {'cache-hits': 0,
-                     'mask-hit': 0,
-                     'masks': 0,
-                     'pad1': 0,
-                     'padding': 0},
-  'name': 'demo',
-  'stats': {'flows': 0, 'hit': 0, 'lost': 0, 'missed': 0},
-  'user-features': set()}]
+I did post it as RFC as I have no clear idea how to fix that. But maybe
+I'm wrong and there is no problem. Would be great to hear your opinion 
+about this issue.
 
-$ ./tools/net/ynl/cli.py \
-    --schema Documentation/netlink/genetlink-legacy.yaml \
-    --spec Documentation/netlink/specs/ovs_datapath.yaml \
-    --do dp-del --json '{ "dp-ifindex": 0, "name": "demo"}'
-None
-
-$ ./tools/net/ynl/cli.py \
-    --schema Documentation/netlink/genetlink-legacy.yaml \
-    --spec Documentation/netlink/specs/ovs_vport.yaml \
-    --dump vport-get --json '{ "dp-ifindex": 3 }'
-[{'dp-ifindex': 3,
-  'ifindex': 3,
-  'name': 'test',
-  'port-no': 0,
-  'stats': {'rx-bytes': 0,
-            'rx-dropped': 0,
-            'rx-errors': 0,
-            'rx-packets': 0,
-            'tx-bytes': 0,
-            'tx-dropped': 0,
-            'tx-errors': 0,
-            'tx-packets': 0},
-  'type': 'internal',
-  'upcall-pid': [0],
-  'upcall-stats': {'fail': 0, 'success': 0}}]
-
-Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
----
- Documentation/netlink/specs/ovs_datapath.yaml | 153 ++++++++++++++++++
- Documentation/netlink/specs/ovs_vport.yaml    | 139 ++++++++++++++++
- 2 files changed, 292 insertions(+)
- create mode 100644 Documentation/netlink/specs/ovs_datapath.yaml
- create mode 100644 Documentation/netlink/specs/ovs_vport.yaml
-
-diff --git a/Documentation/netlink/specs/ovs_datapath.yaml b/Documentation/netlink/specs/ovs_datapath.yaml
-new file mode 100644
-index 000000000000..2eefdf9d8cd7
---- /dev/null
-+++ b/Documentation/netlink/specs/ovs_datapath.yaml
-@@ -0,0 +1,153 @@
-+# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-+
-+name: ovs_datapath
-+version: 2
-+protocol: genetlink-legacy
-+
-+doc:
-+  OVS datapath configuration over generic netlink.
-+
-+definitions:
-+  -
-+    name: ovs-header
-+    type: struct
-+    members:
-+      -
-+        name: dp-ifindex
-+        type: u32
-+  -
-+    name: user-features
-+    type: flags
-+    entries:
-+      -
-+        name: unaligned
-+        doc: Allow last Netlink attribute to be unaligned
-+      -
-+        name: vport-pids
-+        doc: Allow datapath to associate multiple Netlink PIDs to each vport
-+      -
-+        name: tc-recirc-sharing
-+        doc: Allow tc offload recirc sharing
-+      -
-+        name: dispatch-upcall-per-cpu
-+        doc: Allow per-cpu dispatch of upcalls
-+  -
-+    name: datapath-stats
-+    type: struct
-+    members:
-+      -
-+        name: hit
-+        type: u64
-+      -
-+        name: missed
-+        type: u64
-+      -
-+        name: lost
-+        type: u64
-+      -
-+        name: flows
-+        type: u64
-+  -
-+    name: megaflow-stats
-+    type: struct
-+    members:
-+      -
-+        name: mask-hit
-+        type: u64
-+      -
-+        name: masks
-+        type: u32
-+      -
-+        name: padding
-+        type: u32
-+      -
-+        name: cache-hits
-+        type: u64
-+      -
-+        name: pad1
-+        type: u64
-+
-+attribute-sets:
-+  -
-+    name: datapath
-+    attributes:
-+      -
-+        name: name
-+        type: string
-+      -
-+        name: upcall-pid
-+        doc: upcall pid
-+        type: u32
-+      -
-+        name: stats
-+        type: struct
-+        struct: datapath-stats
-+      -
-+        name: megaflow-stats
-+        type: struct
-+        struct: megaflow-stats
-+      -
-+        name: user-features
-+        type: u32
-+        enum: user-features
-+        enum-as-flags: true
-+      -
-+        name: pad
-+        type: unused
-+      -
-+        name: masks-cache-size
-+        type: u32
-+      -
-+        name: per-cpu-pids
-+        type: array-nest
-+        sub-type: u32
-+
-+operations:
-+  fixed-header: ovs-header
-+  list:
-+    -
-+      name: dp-get
-+      doc: Get / dump OVS data path configuration and state
-+      value: 3
-+      attribute-set: datapath
-+      do: &dp-get-op
-+        request:
-+          attributes:
-+            - name
-+        reply:
-+          attributes:
-+            - name
-+            - upcall-pid
-+            - stats
-+            - megaflow-stats
-+            - user-features
-+            - masks-cache-size
-+            - per-cpu-pids
-+      dump: *dp-get-op
-+    -
-+      name: dp-new
-+      doc: Create new OVS data path
-+      value: 1
-+      attribute-set: datapath
-+      do:
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - name
-+            - upcall-pid
-+            - user-features
-+    -
-+      name: dp-del
-+      doc: Delete existing OVS data path
-+      value: 2
-+      attribute-set: datapath
-+      do:
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - name
-+
-+mcast-groups:
-+  list:
-+    -
-+      name: ovs_datapath
-diff --git a/Documentation/netlink/specs/ovs_vport.yaml b/Documentation/netlink/specs/ovs_vport.yaml
-new file mode 100644
-index 000000000000..a0d01adcb435
---- /dev/null
-+++ b/Documentation/netlink/specs/ovs_vport.yaml
-@@ -0,0 +1,139 @@
-+# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-+
-+name: ovs_vport
-+version: 2
-+protocol: genetlink-legacy
-+
-+doc:
-+  OVS vport configuration over generic netlink.
-+
-+definitions:
-+  -
-+    name: ovs-header
-+    type: struct
-+    members:
-+      -
-+        name: dp-ifindex
-+        type: u32
-+  -
-+    name: vport-type
-+    type: enum
-+    entries: [ unspec, netdev, internal, gre, vxlan, geneve ]
-+  -
-+    name: vport-stats
-+    type: struct
-+    members:
-+      -
-+        name: rx-packets
-+        type: u64
-+      -
-+        name: tx-packets
-+        type: u64
-+      -
-+        name: rx-bytes
-+        type: u64
-+      -
-+        name: tx-bytes
-+        type: u64
-+      -
-+        name: rx-errors
-+        type: u64
-+      -
-+        name: tx-errors
-+        type: u64
-+      -
-+        name: rx-dropped
-+        type: u64
-+      -
-+        name: tx-dropped
-+        type: u64
-+
-+attribute-sets:
-+  -
-+    name: vport-options
-+    attributes:
-+      -
-+        name: dst-port
-+        type: u32
-+      -
-+        name: extension
-+        type: u32
-+  -
-+    name: upcall-stats
-+    attributes:
-+      -
-+        name: success
-+        type: u64
-+        value: 0
-+      -
-+        name: fail
-+        type: u64
-+  -
-+    name: vport
-+    attributes:
-+      -
-+        name: port-no
-+        type: u32
-+      -
-+        name: type
-+        type: u32
-+        enum: vport-type
-+      -
-+        name: name
-+        type: string
-+      -
-+        name: options
-+        type: nest
-+        nested-attributes: vport-options
-+      -
-+        name: upcall-pid
-+        type: array-nest
-+        sub-type: u32
-+      -
-+        name: stats
-+        type: struct
-+        struct: vport-stats
-+      -
-+        name: pad
-+        type: unused
-+      -
-+        name: ifindex
-+        type: u32
-+      -
-+        name: netnsid
-+        type: u32
-+      -
-+        name: upcall-stats
-+        type: nest
-+        nested-attributes: upcall-stats
-+
-+operations:
-+  list:
-+    -
-+      name: vport-get
-+      doc: Get / dump OVS vport configuration and state
-+      value: 3
-+      attribute-set: vport
-+      fixed-header: ovs-header
-+      do: &vport-get-op
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - name
-+        reply: &dev-all
-+          attributes:
-+            - dp-ifindex
-+            - port-no
-+            - type
-+            - name
-+            - upcall-pid
-+            - stats
-+            - ifindex
-+            - netnsid
-+            - upcall-stats
-+      dump: *vport-get-op
-+
-+mcast-groups:
-+  list:
-+    -
-+      name: ovs_vport
--- 
-2.39.0
-
+Gerhard
