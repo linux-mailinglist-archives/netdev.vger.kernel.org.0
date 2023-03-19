@@ -2,139 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF456C0071
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 10:56:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C846C007F
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 11:06:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229723AbjCSJzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 05:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
+        id S229531AbjCSKGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 06:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjCSJzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 05:55:51 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BCD23A6E;
-        Sun, 19 Mar 2023 02:55:49 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id l15-20020a05600c4f0f00b003ed58a9a15eso5776403wmq.5;
-        Sun, 19 Mar 2023 02:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679219748;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yaNuTTfeHI1WnGa3QC7carZ37ibM4EyUyUnDDBSr6nM=;
-        b=bTf0pdvAUXMqrJw4A+PLFfwONMAaXL3S4GDMJH3tYgRz/0Vpy7FkmgpWveMhjrqiDM
-         O6v17DizCYtzUrLXC9z9mMD3F8tl0SETaor8aE/MtvnxVq/Yq80WT5xnEh0iJBhWnRP1
-         0ZKyuoqWZQPnQ9vXbctEu3ZPxub9szdfmxWCtutESvAIvY7Y1qt4ZGg4ZDexov88P4lN
-         pgP6KaBNSVKSsVlDL4ukHqWyrkzpPtcOmDrPC8/HUTsraFnQ4iOL8vVR2Q26qKf2JI6m
-         yKwAd88ZKSnFRAyGdXAoXqiAKkcmDW5523samaxmBI23gxG5ryD3JnZBlo5r55gnPGo9
-         C0uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679219748;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yaNuTTfeHI1WnGa3QC7carZ37ibM4EyUyUnDDBSr6nM=;
-        b=buUr8oNY3Rb4YRuvXOFLPRXT0v9e8f87X1i1bsLfYPL/CokAJIhwAaChGjvMN1l3zP
-         YCfM9Xynl3tF3k4nrb1xKGmc7LuHONe8KjOgFgFuvtepBg7uvBdwi7A3UmbznhgUpzlo
-         HE7X3S5dfDNX/LLwpOyWM34Hk+w6i6pXP2FD7CB/1TwvdZFjnPHbhDhQTnJQNFaFmXz2
-         d4WxBzxqU6k+4PC4AHRhGkn8QunICQ90MDk9NgNtuT5E1tTh5Bz4ykQ95sKKeTih3OBO
-         sx0mBrCqsTwpteTweNvnMuoOxmyKbM8Ca8cwS1QpfIWI0ASy+j7j2SiTG7nrKl2hUJTW
-         heAQ==
-X-Gm-Message-State: AO0yUKWVY0SzDxRYNSJrKpnV6m176lCPK8B2N12aX56FfpuGNCuaPAmf
-        wYaBrXYVORDSYFVtNsY7gc3xMZp1z+ba7A==
-X-Google-Smtp-Source: AK7set8q+UMyrNpNNfcRo8o3ynviTGRk1oKu2CmzwYJVZxCAYYvXmLtyXvhcnqpBROVi7Kj+1rKDuw==
-X-Received: by 2002:a05:600c:4f50:b0:3ed:4b0f:5378 with SMTP id m16-20020a05600c4f5000b003ed4b0f5378mr11519857wmq.27.1679219747816;
-        Sun, 19 Mar 2023 02:55:47 -0700 (PDT)
-Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id i26-20020a1c541a000000b003ed246f76a2sm13390609wmb.1.2023.03.19.02.55.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Mar 2023 02:55:47 -0700 (PDT)
-From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, jonas.gorski@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: [PATCH v2] net: dsa: tag_brcm: legacy: fix daisy-chained switches
-Date:   Sun, 19 Mar 2023 10:55:40 +0100
-Message-Id: <20230319095540.239064-1-noltari@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230317120815.321871-1-noltari@gmail.com>
-References: <20230317120815.321871-1-noltari@gmail.com>
+        with ESMTP id S229490AbjCSKGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 06:06:15 -0400
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCA019BA
+        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 03:06:12 -0700 (PDT)
+Received: from thinkpad (unknown [172.20.6.87])
+        by mail.nic.cz (Postfix) with ESMTPS id 8EF421C182C;
+        Sun, 19 Mar 2023 11:06:07 +0100 (CET)
+Authentication-Results: mail.nic.cz;
+        none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1679220368; bh=oleRbfcFPLhdNwKjQV2gLOZht2FchLMSwi51SD7t7tE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From:Reply-To:
+         Subject:To:Cc;
+        b=a2MTAk/+y4NweNCmQnuTC7XuTrIsJ6oWxRNH5jl86zi/IebxC/wJfHzZhrpu72P5l
+         MMqttKTIG45cc+iqckRsuNvif3x/DVl1Uaf/NYJTwCr+PJy4oRo5yda3jC6dA5znUe
+         W8SR7Q+FBLGrxpE7SpG13QWTgeX/TWx/hBrVXuSU=
+Date:   Sun, 19 Mar 2023 11:06:06 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+To:     Klaus Kudielka <klaus.kudielka@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 4/4] net: dsa: mv88e6xxx: mask apparently
+ non-existing phys during probing
+Message-ID: <20230319110606.23e30050@thinkpad>
+In-Reply-To: <20230315163846.3114-5-klaus.kudielka@gmail.com>
+References: <20230315163846.3114-1-klaus.kudielka@gmail.com>
+        <20230315163846.3114-5-klaus.kudielka@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.35; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.7 at mail
+X-Virus-Status: Clean
+X-Rspamd-Action: no action
+X-Rspamd-Pre-Result: action=no action;
+        module=multimap;
+        Matched map: WHITELISTED_IP
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Rspamd-Server: mail
+X-Rspamd-Queue-Id: 8EF421C182C
+X-Spamd-Bar: /
+X-Spamd-Result: default: False [-0.10 / 20.00];
+        MIME_GOOD(-0.10)[text/plain];
+        ARC_NA(0.00)[];
+        FREEMAIL_TO(0.00)[gmail.com];
+        FROM_EQ_ENVFROM(0.00)[];
+        TAGGED_RCPT(0.00)[];
+        FROM_HAS_DN(0.00)[];
+        FREEMAIL_ENVRCPT(0.00)[gmail.com];
+        WHITELISTED_IP(0.00)[172.20.6.87];
+        MIME_TRACE(0.00)[0:+]
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When BCM63xx internal switches are connected to switches with a 4-byte
-Broadcom tag, it does not identify the packet as VLAN tagged, so it adds one
-based on its PVID (which is likely 0).
-Right now, the packet is received by the BCM63xx internal switch and the 6-byte
-tag is properly processed. The next step would to decode the corresponding
-4-byte tag. However, the internal switch adds an invalid VLAN tag after the
-6-byte tag and the 4-byte tag handling fails.
-In order to fix this we need to remove the invalid VLAN tag after the 6-byte
-tag before passing it to the 4-byte tag decoding.
+On Wed, 15 Mar 2023 17:38:46 +0100
+Klaus Kudielka <klaus.kudielka@gmail.com> wrote:
 
-Fixes: 964dbf186eaa ("net: dsa: tag_brcm: add support for legacy tags")
-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
----
- v2: add missing fixes tag.
+> To avoid excessive mdio bus transactions during probing, mask all phy
+> addresses that do not exist (there is a 1:1 mapping between switch port
+> number and phy address).
+> 
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Klaus Kudielka <klaus.kudielka@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+> 
+> Notes:
+>     v2: Patch is new
+> 
+>  drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 29b0f3bb1c..c52798d9ce 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -3797,6 +3797,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+>  	bus->read_c45 = mv88e6xxx_mdio_read_c45;
+>  	bus->write_c45 = mv88e6xxx_mdio_write_c45;
+>  	bus->parent = chip->dev;
+> +	bus->phy_mask = GENMASK(31, mv88e6xxx_num_ports(chip));
 
- net/dsa/tag_brcm.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+shouldnt this be
+  GENMASK(31, mv88e6xxx_num_ports(chip) + chip->info->phy_base_addr) |
+  GENMASK(chip->info->phy_base_addr, 0)
+?
+Or alternatively
+  ~GENMASK(chip->info->phy_base_addr + mv88e6xxx_num_ports(chip),
+           chip->info->phy_base_addr)
 
-diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
-index 10239daa5745..cacdafb41200 100644
---- a/net/dsa/tag_brcm.c
-+++ b/net/dsa/tag_brcm.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/dsa/brcm.h>
- #include <linux/etherdevice.h>
-+#include <linux/if_vlan.h>
- #include <linux/list.h>
- #include <linux/slab.h>
- 
-@@ -252,6 +253,7 @@ static struct sk_buff *brcm_leg_tag_xmit(struct sk_buff *skb,
- static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
- 					struct net_device *dev)
- {
-+	int len = BRCM_LEG_TAG_LEN;
- 	int source_port;
- 	u8 *brcm_tag;
- 
-@@ -266,12 +268,16 @@ static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
- 	if (!skb->dev)
- 		return NULL;
- 
-+	/* VLAN tag is added by BCM63xx internal switch */
-+	if (netdev_uses_dsa(skb->dev))
-+		len += VLAN_HLEN;
-+
- 	/* Remove Broadcom tag and update checksum */
--	skb_pull_rcsum(skb, BRCM_LEG_TAG_LEN);
-+	skb_pull_rcsum(skb, len);
- 
- 	dsa_default_offload_fwd_mark(skb);
- 
--	dsa_strip_etype_header(skb, BRCM_LEG_TAG_LEN);
-+	dsa_strip_etype_header(skb, len);
- 
- 	return skb;
- }
--- 
-2.30.2
-
+Marek
