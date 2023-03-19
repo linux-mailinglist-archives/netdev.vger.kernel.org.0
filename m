@@ -2,70 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BBB16C006C
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 10:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF456C0071
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 10:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229621AbjCSJpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 05:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
+        id S229723AbjCSJzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 05:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjCSJpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 05:45:19 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1352AB76E;
-        Sun, 19 Mar 2023 02:45:17 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-5416b0ab0ecso175237167b3.6;
-        Sun, 19 Mar 2023 02:45:17 -0700 (PDT)
+        with ESMTP id S229468AbjCSJzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 05:55:51 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BCD23A6E;
+        Sun, 19 Mar 2023 02:55:49 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id l15-20020a05600c4f0f00b003ed58a9a15eso5776403wmq.5;
+        Sun, 19 Mar 2023 02:55:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679219116;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1679219748;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=l9ErGVM/hPJOD1E20KyBCgnADtZeDKXRPbZaHTW4/PE=;
-        b=CzBJDD2FSVZavpJFebtB5oF+WFA6zF/re9tl/IvuSJaPJqWeuhqu+LvP6hLmgxYxF5
-         2hygZQ7rWf0sMPqoUpfdrtUXXIJPu4FgXc1H7iYzydDNGSPu+vaKJyWYkhrECl6Bryo+
-         NkU9MMvoQInrv+nEImCNplGOyzEHfGijKSw8hRdw8wGCkpym5ybL3Hi3F2G8yhFcwSRg
-         DiAyPScNXbAgcX+1A6twm0auRdf5jXeM2cyenuUBCZf6wmn5UDdu7bnDo0XlCpk9DUxy
-         4GHq+N7u+JQ+TLhb0/oW1WLiyeLtXzEtJAe4+iU5FRBaVHd73BK4qOQ/gohmSgXvEVGQ
-         cgQg==
+        bh=yaNuTTfeHI1WnGa3QC7carZ37ibM4EyUyUnDDBSr6nM=;
+        b=bTf0pdvAUXMqrJw4A+PLFfwONMAaXL3S4GDMJH3tYgRz/0Vpy7FkmgpWveMhjrqiDM
+         O6v17DizCYtzUrLXC9z9mMD3F8tl0SETaor8aE/MtvnxVq/Yq80WT5xnEh0iJBhWnRP1
+         0ZKyuoqWZQPnQ9vXbctEu3ZPxub9szdfmxWCtutESvAIvY7Y1qt4ZGg4ZDexov88P4lN
+         pgP6KaBNSVKSsVlDL4ukHqWyrkzpPtcOmDrPC8/HUTsraFnQ4iOL8vVR2Q26qKf2JI6m
+         yKwAd88ZKSnFRAyGdXAoXqiAKkcmDW5523samaxmBI23gxG5ryD3JnZBlo5r55gnPGo9
+         C0uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679219116;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20210112; t=1679219748;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=l9ErGVM/hPJOD1E20KyBCgnADtZeDKXRPbZaHTW4/PE=;
-        b=MaN+mdIk3ozgU68xoaCaSjI8KHOKEiA1UhNaMWA0DQHcAqMLaWkTpkARHbOJxMqv+e
-         w/S/yDn9hZ0jL2Gj+IBLLMHYypTGwyj07sQGXV5RYwnDvS5IoSSRfwd+OiWYvIAx6prV
-         uvWJD2MA2J9m2Go9oIqILNpDFoyiSJkCwIbN8jD9a82ZHZYNFnk+F9mxF4eap+Hk56YA
-         lhWTGmZi/7otfVW2l5pg4VKeVKbald4T2IQzf4EbhSTf5ZIrMFHQEIHL1qqVJ7NFyArA
-         ONpFSx3lakTOnE/PAzZZWOJ8vEmOvctMl6uF4S9lBbBkunpTfBvuBi5kDH9hr07qIPXG
-         rcJw==
-X-Gm-Message-State: AO0yUKUaQ5Jh+8hB8g6HJZhPNEb9X35RaeH5AtmWfFN1kIChXHeAW8VC
-        H+4yCA298371lFqbHlAu2ZoL/uMBdkV0twHz3kE=
-X-Google-Smtp-Source: AK7set+EGp1KAUzIsksQqm3UaoiKBZEg0DwDH6V0AqzeAJpGiRwATHmXpvi5o4QqVI1RfI4EudqXqDo6RbMrOe8e11Q=
-X-Received: by 2002:a81:b617:0:b0:541:8ce6:b9ad with SMTP id
- u23-20020a81b617000000b005418ce6b9admr7866486ywh.2.1679219115994; Sun, 19 Mar
- 2023 02:45:15 -0700 (PDT)
+        bh=yaNuTTfeHI1WnGa3QC7carZ37ibM4EyUyUnDDBSr6nM=;
+        b=buUr8oNY3Rb4YRuvXOFLPRXT0v9e8f87X1i1bsLfYPL/CokAJIhwAaChGjvMN1l3zP
+         YCfM9Xynl3tF3k4nrb1xKGmc7LuHONe8KjOgFgFuvtepBg7uvBdwi7A3UmbznhgUpzlo
+         HE7X3S5dfDNX/LLwpOyWM34Hk+w6i6pXP2FD7CB/1TwvdZFjnPHbhDhQTnJQNFaFmXz2
+         d4WxBzxqU6k+4PC4AHRhGkn8QunICQ90MDk9NgNtuT5E1tTh5Bz4ykQ95sKKeTih3OBO
+         sx0mBrCqsTwpteTweNvnMuoOxmyKbM8Ca8cwS1QpfIWI0ASy+j7j2SiTG7nrKl2hUJTW
+         heAQ==
+X-Gm-Message-State: AO0yUKWVY0SzDxRYNSJrKpnV6m176lCPK8B2N12aX56FfpuGNCuaPAmf
+        wYaBrXYVORDSYFVtNsY7gc3xMZp1z+ba7A==
+X-Google-Smtp-Source: AK7set8q+UMyrNpNNfcRo8o3ynviTGRk1oKu2CmzwYJVZxCAYYvXmLtyXvhcnqpBROVi7Kj+1rKDuw==
+X-Received: by 2002:a05:600c:4f50:b0:3ed:4b0f:5378 with SMTP id m16-20020a05600c4f5000b003ed4b0f5378mr11519857wmq.27.1679219747816;
+        Sun, 19 Mar 2023 02:55:47 -0700 (PDT)
+Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
+        by smtp.gmail.com with ESMTPSA id i26-20020a1c541a000000b003ed246f76a2sm13390609wmb.1.2023.03.19.02.55.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Mar 2023 02:55:47 -0700 (PDT)
+From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, jonas.gorski@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
+        <noltari@gmail.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: [PATCH v2] net: dsa: tag_brcm: legacy: fix daisy-chained switches
+Date:   Sun, 19 Mar 2023 10:55:40 +0100
+Message-Id: <20230319095540.239064-1-noltari@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230317120815.321871-1-noltari@gmail.com>
+References: <20230317120815.321871-1-noltari@gmail.com>
 MIME-Version: 1.0
-References: <20230317113427.302162-1-noltari@gmail.com> <20230317113427.302162-3-noltari@gmail.com>
- <20230317115115.s32r52rz3svuj4ed@skbuf> <CAKR-sGe3xHkN-1+aLn0ixnskctPK4GTzfXu8O_dkFhHyY1nTeg@mail.gmail.com>
- <20230317130434.7cbzk5gxx5guarcz@skbuf> <CAKR-sGeFZLnuqH=4Gok1URJEvrQKxbk203Q8zdMd9830G_XD7A@mail.gmail.com>
- <20230317142919.hhjd64juws35j47o@skbuf> <CAKR-sGc7u346XqoihOuDse3q=d8HG6er3H6R1NCm_pQeNW7edA@mail.gmail.com>
- <4d669474-59b6-b0e9-09cb-8278734fa3a2@gmail.com>
-In-Reply-To: <4d669474-59b6-b0e9-09cb-8278734fa3a2@gmail.com>
-From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
-Date:   Sun, 19 Mar 2023 10:45:05 +0100
-Message-ID: <CAKR-sGck2hqc5CpQQS_4WHm4bPzXJRg4aokd-8EporvUJ8UtbQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] net: dsa: b53: mmap: register MDIO Mux bus controller
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        jonas.gorski@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -76,196 +77,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-El vie, 17 mar 2023 a las 17:41, Florian Fainelli
-(<f.fainelli@gmail.com>) escribi=C3=B3:
->
-> On 3/17/23 09:23, =C3=81lvaro Fern=C3=A1ndez Rojas wrote:
-> > El vie, 17 mar 2023 a las 15:29, Vladimir Oltean (<olteanv@gmail.com>) =
-escribi=C3=B3:
-> >>
-> >> On Fri, Mar 17, 2023 at 03:17:12PM +0100, =C3=81lvaro Fern=C3=A1ndez R=
-ojas wrote:
-> >>>> The proposed solution is too radical for a problem that was not prop=
-erly
-> >>>> characterized yet, so this patch set has my temporary NACK.
-> >>>
-> >>> Forgive me, but why do you consider this solution too radical?
-> >>
-> >> Because it involves changing device tree bindings (stable ABI) in an
-> >> incompatible way.
-> >>
-> >>>>
-> >>>>> But maybe Florian or Jonas can give some more details about the iss=
-ue...
-> >>>>
-> >>>> I think you also have the tools necessary to investigate this furthe=
-r.
-> >>>> We need to know what resource belonging to the switch is it that the
-> >>>> MDIO mux needs. Where is the earliest place you can add the call to
-> >>>> b53_mmap_mdiomux_init() such that your board works reliably? Note th=
-at
-> >>>> b53_switch_register() indirectly calls b53_setup(). By placing this
-> >>>> function where you have, the entirety of b53_setup() has finished
-> >>>> execution, and we don't know exactly what is it from there that is
-> >>>> needed.
-> >>>
-> >>> In the following link you will find different bootlogs related to
-> >>> different scenarios all of them with the same result: any attempt of
-> >>> calling b53_mmap_mdiomux_init() earlier than b53_switch_register()
-> >>> will either result in a kernel panic or a device hang:
-> >>> https://gist.github.com/Noltari/b0bd6d5211160ac7bf349d998d21e7f7
-> >>>
-> >>> 1. before b53_switch_register():
-> >>>
-> >>> 2. before dsa_register_switch():
-> >>>
-> >>> 3. before b53_switch_init():
-> >>
-> >> Did you read what I said?
-> >
-> > Yes, but I didn't get your point, sorry for that.
-> >
-> >>
-> >> | Note that b53_switch_register() indirectly calls b53_setup(). By pla=
-cing
-> >> | this function where you have, the entirety of b53_setup() has finish=
-ed
-> >> | execution, and we don't know exactly what is it from there that is
-> >> | needed.
-> >>
-> >> Can you place the b53_mmap_mdiomux_init() in various places within
-> >> b53_setup() to restrict the search further?
-> >
-> > I tried and these are the results:
-> > https://gist.github.com/Noltari/d5bdba66b8f2e392c9e4c2759661d862
-> >
-> > All of them hang when dsa_tree_setup() is called for DSA tree 1
-> > (external switch) without having completely setup DSA tree 0 (internal
-> > switch):
-> > [ 1.471345] b53-switch 10e00000.switch: found switch: BCM63xx, rev 0
-> > [ 1.481099] bcm6368-enetsw 1000d800.ethernet: IRQ tx not found
-> > [ 1.506752] bcm6368-enetsw 1000d800.ethernet: mtd mac 4c:60:de:86:52:12
-> > [ 1.594365] bcm7038-wdt 1000005c.watchdog: Registered BCM7038 Watchdog
-> > [ 1.612008] NET: Registered PF_INET6 protocol family
-> > [ 1.645617] Segment Routing with IPv6
-> > [ 1.649547] In-situ OAM (IOAM) with IPv6
-> > [ 1.653948] NET: Registered PF_PACKET protocol family
-> > [ 1.659984] 8021q: 802.1Q VLAN Support v1.8
-> > [ 1.699193] b53-switch 10e00000.switch: found switch: BCM63xx, rev 0
-> > [ 2.124257] bcm53xx 0.1:1e: found switch: BCM53125, rev 4
-> > *** Device hang ***
-> >
-> > I don't know if there's a way to defer the probe of DSA tree 1 (the
-> > external switch) until DSA tree 0 (the internal switch) is completely
-> > setup, because that would probably be the only alternative way of
-> > fixing this.
->
-> Could you find out which part is hanging? It looks like there is a busy
-> waiting operation that we never complete?
+When BCM63xx internal switches are connected to switches with a 4-byte
+Broadcom tag, it does not identify the packet as VLAN tagged, so it adds one
+based on its PVID (which is likely 0).
+Right now, the packet is received by the BCM63xx internal switch and the 6-byte
+tag is properly processed. The next step would to decode the corresponding
+4-byte tag. However, the internal switch adds an invalid VLAN tag after the
+6-byte tag and the 4-byte tag handling fails.
+In order to fix this we need to remove the invalid VLAN tag after the 6-byte
+tag before passing it to the 4-byte tag decoding.
 
-After many tests I was able to find the part that was hanging the device.
-It turns out that if the MDIO bus controller is registered soon
-enough, b53_phy_read16 will be called for the RGMII port on the
-internal switch:
-[ 4.042698] b53-switch 10e00000.switch: b53_phy_read16: ds=3D81fede80
-phy_read16=3D00000000 addr=3D4 reg=3D2
-It turns out that the device is hanging on the following line of
-b53_phy_read16():
-    b53_read16(priv, B53_PORT_MII_PAGE(addr), reg * 2, &value);
-Maybe it's not safe to access B53_PORT_MII_PAGE() on MMAP switches?
+Fixes: 964dbf186eaa ("net: dsa: tag_brcm: add support for legacy tags")
+Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+---
+ v2: add missing fixes tag.
 
-Only in one specific image in which I had a lot of debugging this
-access didn't hang, but it just returned 0:
-[ 5.129715] b53_mmap_write16: dev=3D83547680 page=3D0 reg=3D3c val=3D100
-[ 5.135914] b53_mmap_write16: dev=3D83547680 page=3D0 reg=3D3c val=3D100 do=
-ne!
-[ 5.143721] b53-switch 10e00000.switch: b53_phy_read16: ds=3D83547580
-phy_read16=3D00000000 addr=3D4 reg=3D2
-[ 5.153204] b53-switch 10e00000.switch: b53_phy_read16: ds=3D83547580
-phy_read16=3D00000000 addr=3D4 reg=3D2 val=3D0
-[ 5.163171] b53-switch 10e00000.switch: b53_phy_read16: ds=3D83547580
-phy_read16=3D00000000 addr=3D4 reg=3D3
-[ 5.172560] b53-switch 10e00000.switch: b53_phy_read16: ds=3D83547580
-phy_read16=3D00000000 addr=3D4 reg=3D3 val=3D0
-[ 5.218764] b53-switch 10e00000.switch: Using legacy PHYLIB callbacks.
-Please migrate to PHYLINK!
+ net/dsa/tag_brcm.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-However, if I implement b53_mmap_phy_read16() and
-b53_mmap_phy_write16() in MMAP it seems to solve the issue and the
-device doesn't hang anymore:
-[ 2.783407] b53-switch 10e00000.switch: found switch: BCM63xx, rev 0
-[ 2.951877] b53-switch 10e00000.switch: b53_phy_read16: addr=3D4 reg=3D2
-[ 2.958393] b53_mmap_phy_read16: dev=3D836f6580 phy_id=3D4 loc=3D2
-[ 2.964367] b53_mmap_phy_read16: dev=3D836f6580 phy_id=3D4 loc=3D2 val=3D36=
-2
-[ 2.970923] b53-switch 10e00000.switch: b53_phy_read16: addr=3D4 reg=3D3
-[ 2.977420] b53_mmap_phy_read16: dev=3D836f6580 phy_id=3D4 loc=3D3
-[ 2.983315] b53_mmap_phy_read16: dev=3D836f6580 phy_id=3D4 loc=3D3 val=3D5e=
-80
-[ 3.026253] b53-switch 10e00000.switch: Using legacy PHYLIB callbacks.
-Please migrate to PHYLINK!
-[ 3.072584] b53-switch 10e00000.switch: Configured port 8 for internal
-[ 3.082850] DSA: tree 0 setup
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index 10239daa5745..cacdafb41200 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/dsa/brcm.h>
+ #include <linux/etherdevice.h>
++#include <linux/if_vlan.h>
+ #include <linux/list.h>
+ #include <linux/slab.h>
+ 
+@@ -252,6 +253,7 @@ static struct sk_buff *brcm_leg_tag_xmit(struct sk_buff *skb,
+ static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
+ 					struct net_device *dev)
+ {
++	int len = BRCM_LEG_TAG_LEN;
+ 	int source_port;
+ 	u8 *brcm_tag;
+ 
+@@ -266,12 +268,16 @@ static struct sk_buff *brcm_leg_tag_rcv(struct sk_buff *skb,
+ 	if (!skb->dev)
+ 		return NULL;
+ 
++	/* VLAN tag is added by BCM63xx internal switch */
++	if (netdev_uses_dsa(skb->dev))
++		len += VLAN_HLEN;
++
+ 	/* Remove Broadcom tag and update checksum */
+-	skb_pull_rcsum(skb, BRCM_LEG_TAG_LEN);
++	skb_pull_rcsum(skb, len);
+ 
+ 	dsa_default_offload_fwd_mark(skb);
+ 
+-	dsa_strip_etype_header(skb, BRCM_LEG_TAG_LEN);
++	dsa_strip_etype_header(skb, len);
+ 
+ 	return skb;
+ }
+-- 
+2.30.2
 
-However, what I did is just replicating mdio-mux-bcm6368 source code
-in MMAP (for the internal PHY only):
-static int b53_mmap_phy_read16(struct b53_device *dev, int phy_id, int
-loc, u16 *val)
-{
-        uint32_t reg;
-
-        b53_mmap_write32(dev, 0, REG_MDIOC, 0);
-
-        reg =3D REG_MDIOC_RD_MASK |
-        (phy_id << REG_MDIOC_PHYID_SHIFT) |
-        (loc << REG_MDIOC_REG_SHIFT);
-
-        b53_mmap_write32(dev, 0, REG_MDIOC, reg);
-        udelay(50);
-        b53_mmap_read16(dev, 0, REG_MDIOD, val);
-
-        return 0;
-}
-
-static int b53_mmap_phy_write16(struct b53_device *dev, int phy_id,
-int loc, u16 val)
-{
-        uint32_t reg;
-
-        b53_mmap_write32(dev, 0, REG_MDIOC, 0);
-
-        reg =3D REG_MDIOC_WR_MASK |
-        (phy_id << REG_MDIOC_PHYID_SHIFT) |
-        (loc << REG_MDIOC_REG_SHIFT) |
-        val;
-
-        b53_mmap_write32(dev, 0, REG_MDIOC, reg);
-        udelay(50);
-
-        return 0;
-}
-
-Is it safe to add those functions in MMAP or is there a way of forcing
-the use of mdio-mux-bcm6368 for those PHY accesses?
-
->
-> DSA should be perfectly capable of dealing with disjoint trees being
-> cascaded to one another, as this is entirely within how the framework is
-> designed.
->
-> What I suspect might be happening is a "double programming" effect,
-> similar or identical to what was described in this commit:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
-/?id=3Db8c6cd1d316f3b01ae578d8e29179f6396c0eaa2
->
-> using the MDIO mux would properly isolate the pseudo PHYs of the switch
-> such that a given MDIO write does not end up programming *both* the
-> internal and external switches. It could also be a completely different
-> problem.
-> --
-> Florian
->
-
---
-=C3=81lvaro
