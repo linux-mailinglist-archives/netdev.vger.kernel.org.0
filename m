@@ -2,87 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A776C04BD
-	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 21:16:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC4E26C04CD
+	for <lists+netdev@lfdr.de>; Sun, 19 Mar 2023 21:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbjCSUQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 16:16:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
+        id S229999AbjCSUaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 16:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbjCSUQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 16:16:51 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6FF1B562;
-        Sun, 19 Mar 2023 13:16:48 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32JJKeDi017015;
-        Sun, 19 Mar 2023 20:16:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=QsNK0y+OZ5hfzlKGYoDx1EuihX8vnlV+zb8ND0pxAUE=;
- b=ookfmLgj4M4JRTennkxkwEmUbgTjW57FZzK5dl2WnefGGpYktGCroJpEEyLWMGJpD97h
- /q6jP0YAOMvbeBxQ1hc4Yz0KWjQ57DOlQuTkmiLu1JRVVhF8e/mhlEnIK5qRtgLzrZ3Y
- InLV8zFfTmT6k3p4tOacFzcLT89NNHKQksPAgfrM8TxAR8YRf/7YLjJRuZH2hIYSS9pQ
- X9lRV15N4L+uR+c3VMar5Fyo2dvoW2vwvExT3RcYBUVY6se3e3Gb21qq4AYSIZksDTXP
- R3vs4v1h8uWKCTDcHJlh33oGz3uKryVx4I4pTdDRPFzTjgMpIcflvcDAjBRSME6g6VwW Gg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pdq3t6fjb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 19 Mar 2023 20:16:39 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32JKDNnm024808;
-        Sun, 19 Mar 2023 20:16:39 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pdq3t6fj1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 19 Mar 2023 20:16:39 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32JAdZS6017248;
-        Sun, 19 Mar 2023 20:16:36 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3pd4x6a8c7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 19 Mar 2023 20:16:36 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-        by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32JKGX9P26280546
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 19 Mar 2023 20:16:33 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0131D2004B;
-        Sun, 19 Mar 2023 20:16:33 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7A69E20040;
-        Sun, 19 Mar 2023 20:16:32 +0000 (GMT)
-Received: from osiris (unknown [9.179.4.200])
-        by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-        Sun, 19 Mar 2023 20:16:32 +0000 (GMT)
-Date:   Sun, 19 Mar 2023 21:16:31 +0100
-From:   Heiko Carstens <hca@linux.ibm.com>
-To:     Lizhe <sensor1010@163.com>
-Cc:     wintera@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] net/iucv: Remove redundant driver match function
-Message-ID: <ZBdtn0wFunrkvml9@osiris>
-References: <20230319050840.377727-1-sensor1010@163.com>
+        with ESMTP id S229950AbjCSUaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 16:30:20 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD991CBC6;
+        Sun, 19 Mar 2023 13:30:19 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id lr16-20020a17090b4b9000b0023f187954acso10406683pjb.2;
+        Sun, 19 Mar 2023 13:30:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679257818;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=z6U7h+18D0pAf+5776vhLSgUetS4tsbDR4TcPakq23Y=;
+        b=ZtIH7ZyVso5irfhW2mx27LQVkDKdVklVivZ36isjuTRRIDtc8lzibbxMcmF5qPaRP6
+         oN24b0Tb/fBzA/69qep9pG+KDDej91whoaGjQOeEjcQN3z950bVVPkAdfkdZrm+uB00a
+         bjg/wtZDFTwHnFI4t7sNcoAbGAai7v7qLTjx4V2ULQHx5n87zLnaq0OlPJfaZBJoS+6D
+         MOktTg8mT6YsMLEfj2uN8yqjZPCbghZxar/zr6Vv0Du+NO74UTeC2rlkKn0gst841BsF
+         rGmu4glHWprBqmma7fOfC+mUUoUmVwU/UagToqUUNKK17Cfz8NcNNLjWDQnkbGJ3nv8J
+         FMeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679257818;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=z6U7h+18D0pAf+5776vhLSgUetS4tsbDR4TcPakq23Y=;
+        b=6sVpB59Gix3/SDq3B1gpX/hW2FCEWmBYFFRiz+15YDOH0YcTX+DeOoj95rbBxC5ndM
+         KF3dMHFpltDuXCgNRNzSsorLfo0Z2XjslNwgekWK4jlH7xzIwy3Zdp8jTStVWp4FKHKH
+         0EK/9RpaDrnBYJV2J9Wmoy11XQ3UndAAlvl0mZAp15n3MpWh6ea3Zdv1BVo2NG9CHnBU
+         JP76zqzhAsRElmddPXYSnRrRh00XX4LQs17RlolaCoezTabcolgqP6RGXzKtGczYouor
+         gkCxSUUZZOnfjDFVqAIBf63Bp2Ku0+RcLOxlNy5y/oOuZr81vKdjgJt3azSMglztT7XE
+         zWiQ==
+X-Gm-Message-State: AO0yUKU7nYRuXzK6fIezwqgJQWFKXXXD6dGaagxFkRmSobTtbEdcX8ys
+        UzflUxVdwmEIChREw/4Mn12Z2sg2FMQ=
+X-Google-Smtp-Source: AK7set/Gzaj+6e7u7rwZunWpEkZi4zyAJpL/4RPh974sc0xZe5hk17vr5uQlrNV6fQ5Xk+T0sJjcew==
+X-Received: by 2002:a05:6a20:429a:b0:c2:fb92:3029 with SMTP id o26-20020a056a20429a00b000c2fb923029mr20853968pzj.33.1679257818395;
+        Sun, 19 Mar 2023 13:30:18 -0700 (PDT)
+Received: from dhcp-172-26-102-232.DHCP.thefacebook.com ([2620:10d:c090:400::5:2bcf])
+        by smtp.gmail.com with ESMTPSA id g6-20020a62e306000000b005a8bf239f5csm4937215pfh.193.2023.03.19.13.30.16
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 19 Mar 2023 13:30:18 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
+        void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
+        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: [PATCH bpf-next 1/2] libbpf: Fix ld_imm64 copy logic for ksym in light skeleton.
+Date:   Sun, 19 Mar 2023 13:30:13 -0700
+Message-Id: <20230319203014.55866-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230319050840.377727-1-sensor1010@163.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: IZBm3U_8tAbuInu_Z0ce4ePC1SQhvhbD
-X-Proofpoint-GUID: vjYhpcrARTDgGuTF_PmVJJeUWsnh78qJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-19_10,2023-03-16_02,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 mlxscore=0 malwarescore=0 spamscore=0
- priorityscore=1501 bulkscore=0 impostorscore=0 phishscore=0 suspectscore=0
- mlxlogscore=810 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2303150002 definitions=main-2303190172
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,22 +70,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 01:08:40PM +0800, Lizhe wrote:
-> If there is no driver match function, the driver core assumes that each
-> candidate pair (driver, device) matches, see driver_match_device().
-> 
-> Drop the bus's match function that always returned 1 and so
-> implements the same behaviour as when there is no match function
-...
-> 
-> Signed-off-by: Lizhe <sensor1010@163.com>
-> ---
->  net/iucv/iucv.c | 6 ------
->  1 file changed, 6 deletions(-)
-...
-> -static int iucv_bus_match(struct device *dev, struct device_driver *drv)
-> -{
-> -	return 0;
-        ^^^^^^^^
+From: Alexei Starovoitov <ast@kernel.org>
 
-If I'm not wrong then 0 != 1.
+Unlike normal libbpf the light skeleton 'loader' program is doing
+btf_find_by_name_kind() call at run-time to find ksym in the kernel and
+populate its {btf_id, btf_obj_fd} pair in ld_imm64 insn. To avoid doing the
+search multiple times for the same ksym it remembers the first patched ld_imm64
+insn and copies {btf_id, btf_obj_fd} from it into subsequent ld_imm64 insn.
+Fix a bug in copying logic, since it may incorrectly clear BPF_PSEUDO_BTF_ID flag.
+
+Also replace always true if (btf_obj_fd >= 0) check with unconditional JMP_JA
+to clarify the code.
+
+Fixes: d995816b77eb ("libbpf: Avoid reload of imm for weak, unresolved, repeating ksym")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ tools/lib/bpf/gen_loader.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+index 23f5c46708f8..b74c82bb831e 100644
+--- a/tools/lib/bpf/gen_loader.c
++++ b/tools/lib/bpf/gen_loader.c
+@@ -804,11 +804,13 @@ static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo,
+ 		return;
+ 	/* try to copy from existing ldimm64 insn */
+ 	if (kdesc->ref > 1) {
+-		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
+-			       kdesc->insn + offsetof(struct bpf_insn, imm));
+ 		move_blob2blob(gen, insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm), 4,
+ 			       kdesc->insn + sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm));
+-		/* jump over src_reg adjustment if imm is not 0, reuse BPF_REG_0 from move_blob2blob */
++		move_blob2blob(gen, insn + offsetof(struct bpf_insn, imm), 4,
++			       kdesc->insn + offsetof(struct bpf_insn, imm));
++		/* jump over src_reg adjustment if imm (btf_id) is not 0, reuse BPF_REG_0 from move_blob2blob
++		 * If btf_id is zero, clear BPF_PSEUDO_BTF_ID flag in src_reg of ld_imm64 insn
++		 */
+ 		emit(gen, BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 3));
+ 		goto clear_src_reg;
+ 	}
+@@ -831,7 +833,7 @@ static void emit_relo_ksym_btf(struct bpf_gen *gen, struct ksym_relo_desc *relo,
+ 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_8, BPF_REG_7,
+ 			      sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm)));
+ 	/* skip src_reg adjustment */
+-	emit(gen, BPF_JMP_IMM(BPF_JSGE, BPF_REG_7, 0, 3));
++	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0, 3));
+ clear_src_reg:
+ 	/* clear bpf_object__relocate_data's src_reg assignment, otherwise we get a verifier failure */
+ 	reg_mask = src_reg_mask();
+-- 
+2.34.1
+
