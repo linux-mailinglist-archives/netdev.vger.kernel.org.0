@@ -2,93 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD4F6C0B6F
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 08:37:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9F66C0B89
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 08:42:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbjCTHhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 03:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
+        id S230185AbjCTHmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 03:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbjCTHhA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 03:37:00 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610DF12CF9
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 00:36:58 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id ek18so42931382edb.6
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 00:36:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679297817;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=1u1keNrwlSxZAkuogiDlSpUUhe7tlydyWOAQpr6eUZQ=;
-        b=i5YWulF8A13Hk2/Fuq9ts3lAKcaK4to9nIq9nroeit9Akcy3epLW2uJ5w6it25FK43
-         Z6ENW1Ns41950R96kAqJGRu4St5J2XdKp85FN92vs4n4dnh531BCajjP9pjuFyu0KAhN
-         ZVvAyIXF+P3/rjgBe3KMOzh5j9TjUG0n4a2w5czc9jafFeaX2Q9jooBYLcJBO1xVrhXY
-         HZl2hj2Gpnkj7+n41E1J1YsV+FjgEgKwHU905b0UzVAn+kl4PlECIaRMpMYrpnAKbZq6
-         SxwD9pBjPns94eiENlpOj8SXXHCMmUDBxm7EtXrDNsHNB0yzbBqJkRRsMzA+tVH1ZJiC
-         v3/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679297817;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1u1keNrwlSxZAkuogiDlSpUUhe7tlydyWOAQpr6eUZQ=;
-        b=Og+KoKdvyxVxvaAZAi2LxfFXE/8BvJoLi3UDopvs0TFiCErylKNmg+7hfXYThOy5SB
-         ti114Tkkdt+Bz6uuJIxFeep8psMYLPfKEggw9B9O5xxpsqpmOlvUdb66TtGC+MS80cJW
-         vTDhtbDviGS3qH0JBcYSQrej0104gWYZp8wKTX7/ZVccLKqfbecSgOMAyGExHjfRyEVs
-         1MFT1xwN3kiqNLPpClWM0uEL3wLpaF2gtPkXm8gTEceHW2XJZeoYaZcB78fNT50infXj
-         e8EpZb/3UMnhzqFm/U6UtwDIv1Fg3u3Im3gKEiq4an1TqhTD3IyJ2rrE9VH8vIKVHTm6
-         JQtA==
-X-Gm-Message-State: AO0yUKXVX08w6nfoXbpRifnOeljJVcGfmJ+R7jE6ge18WcYpTEOT/mHv
-        9rFUzrbMgx6C0kQp/oERw0pxcw==
-X-Google-Smtp-Source: AK7set/t+53oOOD8eIyQPbZd6RDd9nOYzNrI9c5ak3LVckOfd3cTjKFbFUi1el1Yx5F45xPvoX28uw==
-X-Received: by 2002:aa7:c858:0:b0:4fd:2a29:ceac with SMTP id g24-20020aa7c858000000b004fd2a29ceacmr11280938edt.14.1679297816830;
-        Mon, 20 Mar 2023 00:36:56 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:4428:8354:afb6:2992? ([2a02:810d:15c0:828:4428:8354:afb6:2992])
-        by smtp.gmail.com with ESMTPSA id u27-20020a50951b000000b004bf999f8e57sm4426183eda.19.2023.03.20.00.36.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 00:36:56 -0700 (PDT)
-Message-ID: <34cb347f-17cf-3da1-b484-0c793ae8c5db@linaro.org>
-Date:   Mon, 20 Mar 2023 08:36:55 +0100
+        with ESMTP id S230193AbjCTHmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 03:42:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727142367C;
+        Mon, 20 Mar 2023 00:42:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 578F6611D9;
+        Mon, 20 Mar 2023 07:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC221C433EF;
+        Mon, 20 Mar 2023 07:42:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679298127;
+        bh=WjYiW3bdBC26DMUYGurbBPSF3Li7THUYtv1H3tndCY4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RSSytet/200iwrE/lIMidXGrJh+pzH43ULVTOKfB6cKLziSBSCB/id5jVbuVDjMpH
+         eGtjeNUzYIVQ96U7U1cMrNlsE8jaxfOLrLbj20Ra5+FL9KaB4AulMJkyCGKXxmjYqF
+         v8FB6Uz50mVCuGTuXBMT744SK5kx/KkNrkvucvW1CylcSlbz2CdOUmeVJWU9xglr+E
+         ysiGXzVMqt+0OdYClaTxrnmMr6CH4lVEjBGbdWWFumpx0NeWO4PklXINtXdoOPjUYl
+         T3214e1BkukTMmxuOJ21WwUto7l77j5NNfC7FWTvKJFusZxGlWshgfyp9rYhZhczly
+         nFs1i7xEOeX6A==
+Date:   Mon, 20 Mar 2023 09:42:02 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        decui@microsoft.com, kys@microsoft.com, paulros@microsoft.com,
+        olaf@aepfle.de, vkuznets@redhat.com, davem@davemloft.net,
+        wei.liu@kernel.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, longli@microsoft.com,
+        ssengar@linux.microsoft.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: mana: Add support for jumbo frame
+Message-ID: <20230320074202.GH36557@unreal>
+References: <1679261264-26375-1-git-send-email-haiyangz@microsoft.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH] MAINTAINERS: remove file entry in NFC SUBSYSTEM after
- platform_data movement
-Content-Language: en-US
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     linux-nfc@lists.01.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230320073201.32401-1-lukas.bulwahn@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230320073201.32401-1-lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1679261264-26375-1-git-send-email-haiyangz@microsoft.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/03/2023 08:32, Lukas Bulwahn wrote:
-> Commit 053fdaa841bd ("nfc: mrvl: Move platform_data struct into driver")
-> moves the nfcmrvl.h header file from include/linux/platform_data to the
-> driver's directory, but misses to adjust MAINTAINERS.
+On Sun, Mar 19, 2023 at 02:27:44PM -0700, Haiyang Zhang wrote:
+> During probe, get the hardware allowed max MTU by querying the device
+> configuration. Users can select MTU up to the device limit. Also,
+> when XDP is in use, we currently limit the buffer size to one page.
 > 
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> broken reference.
+> Updated RX data path to allocate and use RX queue DMA buffers with
+> proper size based on the MTU setting.
+> 
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> ---
+>  .../net/ethernet/microsoft/mana/mana_bpf.c    |  22 +-
+>  drivers/net/ethernet/microsoft/mana/mana_en.c | 229 ++++++++++++------
+>  include/net/mana/gdma.h                       |   4 +
+>  include/net/mana/mana.h                       |  18 +-
+>  4 files changed, 183 insertions(+), 90 deletions(-)
 
+<...>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> +static int mana_change_mtu(struct net_device *ndev, int new_mtu)
+> +{
+> +	unsigned int old_mtu = ndev->mtu;
+> +	int err, err2;
+> +
+> +	err = mana_detach(ndev, false);
+> +	if (err) {
+> +		netdev_err(ndev, "mana_detach failed: %d\n", err);
+> +		return err;
+> +	}
+> +
+> +	ndev->mtu = new_mtu;
+> +
+> +	err = mana_attach(ndev);
+> +	if (!err)
+> +		return 0;
+> +
+> +	netdev_err(ndev, "mana_attach failed: %d\n", err);
+> +
+> +	/* Try to roll it back to the old configuration. */
+> +	ndev->mtu = old_mtu;
+> +	err2 = mana_attach(ndev);
 
-Best regards,
-Krzysztof
+I second to Francois and agree with him that it is very questionable.
+If mana_attach() failed for first try, you should bail out and not
+retry with some hope that it will pass.
 
+Thanks
+
+> +	if (err2)
+> +		netdev_err(ndev, "mana re-attach failed: %d\n", err2);
+> +
+> +	return err;
