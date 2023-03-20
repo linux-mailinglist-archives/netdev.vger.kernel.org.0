@@ -2,81 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 557106C19FF
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:41:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2CF6C1A27
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:48:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbjCTPlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 11:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        id S233060AbjCTPsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 11:48:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233303AbjCTPl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:41:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDA27EC2
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 08:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679326300;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4kPJZ32Y+l53box6ko+ne5cwDvp4Win8rdXeR0QS2JU=;
-        b=KiC1eayWKg2YeTykL514uXfV9GAqK1ADsxZOxC01/TPBCUd6REEa44h+tmlAaZUPVdXrQk
-        H1GC8d4EUQCCXONe2QVbvYXQL55RiX4D8jxDmVWM1ZlPAmPt3c80W1xor+SQqjOQb0ZYuX
-        Vg1ua08+/Liim25rQ2dJab22UEoHUek=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-244-O63fXQA0PM-SK5I0OEKMUg-1; Mon, 20 Mar 2023 11:31:39 -0400
-X-MC-Unique: O63fXQA0PM-SK5I0OEKMUg-1
-Received: by mail-wm1-f72.google.com with SMTP id iv10-20020a05600c548a00b003ee112e6df1so783574wmb.2
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 08:31:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679326298;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4kPJZ32Y+l53box6ko+ne5cwDvp4Win8rdXeR0QS2JU=;
-        b=krzM9LKXmtYkQ6UVOxnJNRvnAc3Gs0tiRPzPH7Dqhu2EEeTO3JTvIXWX0MFs5ij+ns
-         JV1Gx8gv1SC+Wl1/DSW54Kgz4UoywdHxLJcQ+LoUF4Zj3ABzleUm9Nvetmxzhx0yjjc6
-         BfEDlbFZqmhc2SCpFBXntzC6qEaE3Dw66uQVLIwp1c+A5M7XfGU+KlVg+uQqT/3c0NzC
-         g/P/Pq9WuY5PUiIp0KpmHQei0BQ40ltbJcCMLUI88+64EBPjJv5jkw+HE6/rGkGd/TqO
-         kNb2dKF3VQIFV6cSWnOsH3ANEiGbpuOSXGHj0o/Rsa//bygl24f+eeRwYdn8UwDdQ18w
-         P7Dg==
-X-Gm-Message-State: AO0yUKUCQgz6LyfZyfP7Cr+x4wybCuv2Ca4S1fzeq1QXR7FPWr5WewjT
-        qbD8NnPVFux5AhzuoqkgRbdGaguWiqfTnGvAp5ZbDmaNEkYZs1I2PnxdIoxt4hEFBrA84r2pBbh
-        O7A1Xjj74xWZiK+o9
-X-Received: by 2002:a05:600c:3aca:b0:3ed:6049:a5ae with SMTP id d10-20020a05600c3aca00b003ed6049a5aemr9662590wms.4.1679326298128;
-        Mon, 20 Mar 2023 08:31:38 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+K/iSPqBhOxqnDWry6nMA6XFyLEMJvZ5BagJzhVQg80QiS5si7gT89jIVKwdv6jvS+LcnPCg==
-X-Received: by 2002:a05:600c:3aca:b0:3ed:6049:a5ae with SMTP id d10-20020a05600c3aca00b003ed6049a5aemr9662575wms.4.1679326297864;
-        Mon, 20 Mar 2023 08:31:37 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id h11-20020a05600c314b00b003e7c89b3514sm7332828wmo.23.2023.03.20.08.31.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 08:31:37 -0700 (PDT)
-Date:   Mon, 20 Mar 2023 16:31:32 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@sberdevices.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v1 3/3] test/vsock: skbuff merging test
-Message-ID: <20230320153132.o3xvwxmn3722lin4@sgarzare-redhat>
-References: <e141e6f1-00ae-232c-b840-b146bdb10e99@sberdevices.ru>
- <14ca87d1-3e07-85e9-d11c-39789a9d17d4@sberdevices.ru>
+        with ESMTP id S229749AbjCTPrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:47:45 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BBB16316;
+        Mon, 20 Mar 2023 08:39:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679326759; x=1710862759;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AckTwTsRgSS0tF1Fo3oVzXYwW3h6OGeppI3JzCspk7c=;
+  b=CjI0dOJDTTgnYUDJc5wn/TGen7Hze9kHKAvoM+H0U+onAUYnkyWMESm4
+   V6Thdw1JSYNviGJKoRG6IrEQSn1hpnFjnhKQUC+jI06BbuU23/Be6BJNV
+   TkkMSd54tU7Jt79++Xm92YGw1dxAJUPrvMuS5Zgxwjn+IJeBAlee0COnW
+   vruE8NKDX0hoTmcNHGIq+EN4X56AH0nWO75ABQbNHXZ7CMDG1SOZ1l3ql
+   S/jWtw1Vncb/5J1KbZ/cYdXZSAiwfTI2P9u475B1TzbyzCARlcm/AtbS4
+   J/hBVR1Ja0oPCWoSSURGw+VwPyFLpzC1x5yy+Lw0y/kuE6ArQRTdmDe42
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="337413220"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="337413220"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 08:39:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="681118839"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="681118839"
+Received: from ahajda-mobl.ger.corp.intel.com (HELO [10.213.6.65]) ([10.213.6.65])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 08:39:03 -0700
+Message-ID: <81ae464f-ade8-fb3c-6bfa-11de19c21845@intel.com>
+Date:   Mon, 20 Mar 2023 16:39:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <14ca87d1-3e07-85e9-d11c-39789a9d17d4@sberdevices.ru>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.9.0
+Subject: Re: [Intel-gfx] [PATCH v4 02/10] lib/ref_tracker:
+ __ref_tracker_dir_print improve printing
+Content-Language: en-US
+To:     Andi Shyti <andi.shyti@linux.intel.com>
+Cc:     Chris Wilson <chris.p.wilson@intel.com>, netdev@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Airlie <airlied@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+References: <20230224-track_gt-v4-0-464e8ab4c9ab@intel.com>
+ <20230224-track_gt-v4-2-464e8ab4c9ab@intel.com>
+ <ZBeWnKmLiGOOMOiG@ashyti-mobl2.lan>
+From:   Andrzej Hajda <andrzej.hajda@intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
+ Gdansk - KRS 101882 - NIP 957-07-52-316
+In-Reply-To: <ZBeWnKmLiGOOMOiG@ashyti-mobl2.lan>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,153 +75,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 09:53:54PM +0300, Arseniy Krasnov wrote:
->This adds test which checks case when data of newly received skbuff is
->appended to the last skbuff in the socket's queue.
->
->This test is actual only for virtio transport.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> tools/testing/vsock/vsock_test.c | 81 ++++++++++++++++++++++++++++++++
-> 1 file changed, 81 insertions(+)
->
->diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
->index 3de10dbb50f5..00216c52d8b6 100644
->--- a/tools/testing/vsock/vsock_test.c
->+++ b/tools/testing/vsock/vsock_test.c
->@@ -968,6 +968,82 @@ static void test_seqpacket_inv_buf_server(const struct test_opts *opts)
-> 	test_inv_buf_server(opts, false);
-> }
->
->+static void test_stream_virtio_skb_merge_client(const struct test_opts *opts)
->+{
->+	ssize_t res;
->+	int fd;
->+
->+	fd = vsock_stream_connect(opts->peer_cid, 1234);
->+	if (fd < 0) {
->+		perror("connect");
->+		exit(EXIT_FAILURE);
->+	}
->+
+On 20.03.2023 00:11, Andi Shyti wrote:
+> Hi Andrzej,
+> 
+> looks good, few comments below,
+> 
+> On Mon, Mar 06, 2023 at 05:31:58PM +0100, Andrzej Hajda wrote:
+>> To improve readability of ref_tracker printing following changes
+>> have been performed:
+>> - reports are printed per stack_handle - log is more compact,
+>> - added display name for ref_tracker_dir,
+>> - stack trace is printed indented, in the same printk call,
+>> - total number of references is printed every time,
+>> - print info about dropped references.
+> 
+> nit: I think you can do better with the log :)
+> 
+>> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
+>> ---
+>>   include/linux/ref_tracker.h | 15 ++++++--
+>>   lib/ref_tracker.c           | 90 +++++++++++++++++++++++++++++++++++++++------
+>>   2 files changed, 91 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
+>> index 3e9e9df2a41f5f..a2cf1f6309adb2 100644
+>> --- a/include/linux/ref_tracker.h
+>> +++ b/include/linux/ref_tracker.h
+>> @@ -17,12 +17,19 @@ struct ref_tracker_dir {
+>>   	bool			dead;
+>>   	struct list_head	list; /* List of active trackers */
+>>   	struct list_head	quarantine; /* List of dead trackers */
+>> +	char			name[32];
+>>   #endif
+>>   };
+>>   
+>>   #ifdef CONFIG_REF_TRACKER
+>> -static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
+>> -					unsigned int quarantine_count)
+>> +
+>> +// Temporary allow two and three arguments, until consumers are converted
+> 
+> I thought only Linus was allowed to use '//' :)
+> 
+>> +#define ref_tracker_dir_init(_d, _q, args...) _ref_tracker_dir_init(_d, _q, ##args, #_d)
+>> +#define _ref_tracker_dir_init(_d, _q, _n, ...) __ref_tracker_dir_init(_d, _q, _n)
+> 
+> [...]
+> 
+>> +void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
+>> +			   unsigned int display_limit)
+>> +{
+>> +	struct ref_tracker_dir_stats *stats;
+>> +	unsigned int i = 0, skipped;
+>> +	depot_stack_handle_t stack;
+>> +	char *sbuf;
+>> +
+>> +	lockdep_assert_held(&dir->lock);
+>> +
+>> +	if (list_empty(&dir->list))
+>> +		return;
+>> +
+>> +	stats = ref_tracker_get_stats(dir, display_limit);
+>> +	if (IS_ERR(stats)) {
+>> +		pr_err("%s@%pK: couldn't get stats, error %pe\n",
+>> +		       dir->name, dir, stats);
+>> +		return;
+>>   	}
+>> +
+>> +	sbuf = kmalloc(STACK_BUF_SIZE, GFP_NOWAIT | __GFP_NOWARN);
+>> +
+>> +	for (i = 0, skipped = stats->total; i < stats->count; ++i) {
+>> +		stack = stats->stacks[i].stack_handle;
+>> +		if (sbuf && !stack_depot_snprint(stack, sbuf, STACK_BUF_SIZE, 4))
+>> +			sbuf[0] = 0;
+>> +		pr_err("%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
+>> +		       stats->stacks[i].count, stats->total, sbuf);
+> 
+> what if sbuf is NULL?
 
-Please use a macro for "HELLO" or a variabile, e.g.
+Then "(NULL)" will be printed, I suspect it will occur only on very rare 
+occasions.
 
-         char *buf;
-         ...
+> 
+>> +		skipped -= stats->stacks[i].count;
+>> +	}
+>> +
+>> +	if (skipped)
+> 
+> is skipped used to double check whether stats->count is equal to
+> all the stacks[].conunts? What are the cases when skipped is > 0?
 
-         buf = "HELLO";
-         res = send(fd, buf, strlen(buf), 0);
-         ...
+There is display_limit parameter, so the function prints up to 
+display_limit reports, and brief summary on remaining ones - the skipped 
+ones.
 
->+	res = send(fd, "HELLO", strlen("HELLO"), 0);
->+	if (res != strlen("HELLO")) {
->+		fprintf(stderr, "unexpected send(2) result %zi\n", res);
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_writeln("SEND0");
->+	/* Peer reads part of first packet. */
->+	control_expectln("REPLY0");
->+
->+	/* Send second skbuff, it will be merged. */
->+	res = send(fd, "WORLD", strlen("WORLD"), 0);
+Regards
+Andrzej
 
-Ditto.
 
->+	if (res != strlen("WORLD")) {
->+		fprintf(stderr, "unexpected send(2) result %zi\n", res);
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_writeln("SEND1");
->+	/* Peer reads merged skbuff packet. */
->+	control_expectln("REPLY1");
->+
->+	close(fd);
->+}
->+
->+static void test_stream_virtio_skb_merge_server(const struct test_opts *opts)
->+{
->+	unsigned char buf[64];
->+	ssize_t res;
->+	int fd;
->+
->+	fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
->+	if (fd < 0) {
->+		perror("accept");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_expectln("SEND0");
->+
->+	/* Read skbuff partially. */
->+	res = recv(fd, buf, 2, 0);
->+	if (res != 2) {
->+		fprintf(stderr, "expected recv(2) failure, got %zi\n", res);
-
-We don't expect a failure, so please update the error message and make
-it easy to figure out which recv() is failing. For example by saying
-how many bytes you expected and how many you received.
-
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	control_writeln("REPLY0");
->+	control_expectln("SEND1");
->+
->+
->+	res = recv(fd, buf, sizeof(buf), 0);
-
-Perhaps a comment here to explain why we expect only 8 bytes.
-
->+	if (res != 8) {
->+		fprintf(stderr, "expected recv(2) failure, got %zi\n", res);
-
-Ditto.
-
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	res = recv(fd, buf, sizeof(buf), MSG_DONTWAIT);
->+	if (res != -1) {
->+		fprintf(stderr, "expected recv(2) success, got %zi\n", res);
-
-It's the other way around, isn't it?
-Here you expect it to fail instead it is not failing.
-
->+		exit(EXIT_FAILURE);
->+	}
-
-Moving the pointer correctly, I would also check that there is
-HELLOWORLD in the buffer.
-
-Thanks for adding tests in this suite!
-Stefano
-
->+
->+	control_writeln("REPLY1");
->+
->+	close(fd);
->+}
->+
-> static struct test_case test_cases[] = {
-> 	{
-> 		.name = "SOCK_STREAM connection reset",
->@@ -1038,6 +1114,11 @@ static struct test_case test_cases[] = {
-> 		.run_client = test_seqpacket_inv_buf_client,
-> 		.run_server = test_seqpacket_inv_buf_server,
-> 	},
->+	{
->+		.name = "SOCK_STREAM virtio skb merge",
->+		.run_client = test_stream_virtio_skb_merge_client,
->+		.run_server = test_stream_virtio_skb_merge_server,
->+	},
-> 	{},
-> };
->
->-- 
->2.25.1
->
+> 
+> Andi
+> 
+>> +		pr_err("%s@%pK skipped reports about %d/%d users.\n",
+>> +		       dir->name, dir, skipped, stats->total);
+>> +
+>> +	kfree(sbuf);
+>> +
+>> +	kfree(stats);
+>>   }
+>>   EXPORT_SYMBOL(__ref_tracker_dir_print);
+>>   
+>>
+>> -- 
+>> 2.34.1
 
