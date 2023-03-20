@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94DC36C24E9
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 23:51:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A476C258A
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 00:19:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbjCTWvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 18:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S229665AbjCTXTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 19:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbjCTWvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 18:51:51 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51DC618D;
-        Mon, 20 Mar 2023 15:51:50 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32KMpcEx073323;
-        Mon, 20 Mar 2023 17:51:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1679352698;
-        bh=MbZ+XusRii1Zr2oBrUBsSXvshFMoC8qFnlsIDV2dSJk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=cbD4765Zx/NVzHop9GaDA9/qLELx8cIHqAfcS6BNwAHWa3Ifb09PwlaD9WmjBGj8q
-         IUSmd/iRV3JWqg4Ojm97+cXwtiKACYgwiZOUzdtc8nyfz07dkJfYswaWX7efQAsIz4
-         Z18Nlfb80rlV05x4I8G0B1fvMQZCrAeJh//I+f/I=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32KMpcvS085675
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 20 Mar 2023 17:51:38 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 20
- Mar 2023 17:51:38 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 20 Mar 2023 17:51:38 -0500
-Received: from localhost (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32KMpcrq105587;
-        Mon, 20 Mar 2023 17:51:38 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S230051AbjCTXSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 19:18:49 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403E931E16
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 16:18:47 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id j24so3062505wrd.0
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 16:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679354325;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VrqIlTu/0bIjVxyg2aK9thOX2j7rB6cRSfw/ei1FZ00=;
+        b=euhBgoPyeT5CcuoxbMHNCinY4XY7MHhdsZdu71IeLvmmbYIO4iDYLB2tDM1h7VKMmX
+         PMX8eoNHhw9RMJeeu/Hwgdfe/60vUo6nI0r5dQf/h35daSrnHN+1ICfbNfvXDBYCYln/
+         cbupG8lPiQdCkbY9zPXbDpO2TzHf0CsL2gYjN0EYTh2aqUBD/vVXHdniLqZWR6JNsOpF
+         11QkX0sX8zTvWbco1Ixin//Th8Kj00OIvhk/eok6L+Zl53F3d9Q+MUU81mf11KENnLOu
+         BlGE5Sx2FDsOercdFEWdiC3U1PzlrbJjNmjkT4T5zNQ1bdYVQg6rXcHM+spDFBlAbJh3
+         +OeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679354325;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VrqIlTu/0bIjVxyg2aK9thOX2j7rB6cRSfw/ei1FZ00=;
+        b=lGKte9hx/kYmN0gMVT9BqownTKUdFkxeqP+bMjarR2+mkiqlHr7k0GuTcWcat/Xd6e
+         WPDOJs2rl8PAWcJaSUpTgmAOY5th9gg6uDZoBh6JAnwzDRk3Olk+XExHRtD5nfqD4Uh9
+         XgrzJyfw84DtUE0zWiEc27dogLT/FMxp/hb0l5k0CGJWmIoZ5YjqZm8/bEMkXOtxjhW6
+         oe/GHLzWCvvDdZzVTUpP3z3j0HiFkSI049f85j7+1+B/dlSWhJjHHMBLNE3DCFmWb0bh
+         k3Bx4BTrJaUDo1lOiIHXd3Dvv6dmT0MvS7ZKmEmCkLB/nj2t+qOM1cGWlhShUzT308gd
+         yPPw==
+X-Gm-Message-State: AO0yUKUbWQEnHFEKwcD+PWRRyDz0niOjZ8BtanPO1OhlWopBeEvb+N5W
+        JNBPJkH3iJnkB+treI8CSdpwBUlF1RtE7Q==
+X-Google-Smtp-Source: AK7set8+Zsg0MHLDMVteIfhHk2IbFxEWT9sFwtOoSuIo6qw1oFuJQU14A3UoVRnWQ4Y/lOcvWN+Zyw==
+X-Received: by 2002:a5d:6387:0:b0:2ce:a250:df68 with SMTP id p7-20020a5d6387000000b002cea250df68mr693252wru.28.1679354324910;
+        Mon, 20 Mar 2023 16:18:44 -0700 (PDT)
+Received: from imac.redhat.com ([88.97.103.74])
+        by smtp.gmail.com with ESMTPSA id n17-20020a5d4c51000000b002c54c9bd71fsm9862661wrt.93.2023.03.20.16.18.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 16:18:44 -0700 (PDT)
+From:   Donald Hunter <donald.hunter@gmail.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, Nishanth Menon <nm@ti.com>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-gpio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Tero Kristo <kristo@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH V2 0/3] pinctrl/arm: dt-bindings: k3: Deprecate header with register constants
-Date:   Mon, 20 Mar 2023 17:51:37 -0500
-Message-ID: <167935265938.210951.6816039958932466588.b4-ty@ti.com>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <20230315155228.1566883-1-nm@ti.com>
-References: <20230315155228.1566883-1-nm@ti.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     donald.hunter@redhat.com, Donald Hunter <donald.hunter@gmail.com>
+Subject: [PATCH net-next v1] rtnetlink: Return error when message too short
+Date:   Mon, 20 Mar 2023 23:18:34 +0000
+Message-Id: <20230320231834.66273-1-donald.hunter@gmail.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nishanth Menon,
+rtnetlink_rcv_msg currently returns 0 when the message length is too
+short. This leads to either no response at all, or an ack response
+if NLM_F_ACK was set in the request.
 
-On Wed, 15 Mar 2023 10:52:25 -0500, Nishanth Menon wrote:
-> This is an updated series to move the pinctrl bindings over to arch as
-> the definitions are hardware definitions without driver usage.
-> 
-> This series was triggered by the discussion in [1]
-> 
-> v1: https://lore.kernel.org/linux-arm-kernel/20230311131325.9750-1-nm@ti.com/
-> 
-> [...]
+Change rtnetlink_rcv_msg to return -EINVAL which tells af_netlink to
+generate a proper error response.
 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
+---
+ net/core/rtnetlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Drop pinmux header
-      commit: c680fa2a09a9550284546d2deeb31640ec3b56c8
-[2/3] arm64: dts: ti: Use local header for pinctrl register values
-      commit: fe49f2d776f7994dc60dd04712a437fd0bdc67a0
-[3/3] dt-bindings: pinctrl: k3: Deprecate header with register constants
-      commit: f2de003e1426ccbefa281a066040da7699f6d461
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 5d8eb57867a9..04b7f184f32e 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -6086,7 +6086,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 	/* All the messages must have at least 1 byte length */
+ 	if (nlmsg_len(nlh) < sizeof(struct rtgenmsg))
+-		return 0;
++		return -EINVAL;
+ 
+ 	family = ((struct rtgenmsg *)nlmsg_data(nlh))->rtgen_family;
+ 	kind = rtnl_msgtype_kind(type);
 -- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+2.39.0
 
