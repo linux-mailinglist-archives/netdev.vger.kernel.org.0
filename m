@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B51A26C138A
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:36:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F886C138E
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:37:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbjCTNg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 09:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40086 "EHLO
+        id S231287AbjCTNhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 09:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbjCTNgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:36:23 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6E6FF1F;
-        Mon, 20 Mar 2023 06:36:16 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id f6-20020a17090ac28600b0023b9bf9eb63so12396030pjt.5;
-        Mon, 20 Mar 2023 06:36:16 -0700 (PDT)
+        with ESMTP id S229832AbjCTNg7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:36:59 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B6D231E9;
+        Mon, 20 Mar 2023 06:36:46 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id z19so2029330plo.2;
+        Mon, 20 Mar 2023 06:36:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679319375;
+        d=gmail.com; s=20210112; t=1679319406;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
         bh=F+RBm56r7Y5OPJGGXOR2z5S/kQ8hCSnX0int7hbaQUQ=;
-        b=fA8DOloy3mhU7LxaVdax/Xc32quxK5qVmUbWu7Fm8zAjjucLPfRAMCfU+mEfmtmiIv
-         75tcdd9mtiYwLBdHtlQw5zGNOSnqtXdaGIFlFI8VM/QaM/EBTiSllcv0b4xLVD86CDbJ
-         MqChSdL8ZePSBNMIKgdhZ4GrV1sq0NP5dRfltbrXYADBt3KSijLj7CJCj51oHatMFV5Y
-         xa2xFyDZII+YeTJacHAxe53zLEUIMVlxdjMQGJcn2pUVqWGOVVnbjVUgwUop/9hyIh0F
-         rFj+eQmjITvuxnsqUKPOPuY+aZ58H3KZ4sY54lYs18vY5oL/eiIUvd8C/Lnyw7Bq7V/x
-         jkzg==
+        b=KfoJkhRrznbYe4QlB2wv//uR1WJ90qiCWvxFBOQ+Nh/IL17RNW/5GeH5Rh4Kxh8xSH
+         sl4BkZq5Qr9Ys2AHZJFo3j29T59tTf7MwijFsUYgXErFFqmcTnugYviJYkdQyJ49KooV
+         GaiBa5/kZ8sE3CQo19OxQsJ1ZXDsqV8QdECzqYCh98teenaBKNb/+pFvBuGD26tkWmeu
+         qT24BRhEEVxPSdgTdnX9Qpye2FsllZW1x60axsnYTQAK7dsQCIaQcQdcDfBhda4bA1Tg
+         LMEz0PkMSTflWlKKxj/NoY6el5QG/rUn00Mu1uJHMNJNO4DBiU0JQJfW1MqJ3E7WBggs
+         6fqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679319375;
+        d=1e100.net; s=20210112; t=1679319406;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
         bh=F+RBm56r7Y5OPJGGXOR2z5S/kQ8hCSnX0int7hbaQUQ=;
-        b=AdRthPAMiFe2EVqD+R3ARm+K4in2geg+r5KOWz6AJvlQ1Z72Rgs+eTQy/sjAm+4FIb
-         pX2h7aYJac95jEIdJEKaeFqYPCjfQAf6qPuzW/mBExDyhkdaZsDlZAuPpdPbnV3dtYxJ
-         QyKqx1ddIagwXzpneBJGQO3aopcgNCYVVRv9HCE+6+wPJi7+lCjr3/z5LVgqGaKdU883
-         h4jffO1/b264l2zLc+lcGd0ccORVwfm1JrXeQ11XwqgDQJ97SjvQ2mQRiTSpFmAHwoeZ
-         8BklOIc3ph4iG6T0czLe2CkGOYKjIKbvC+2vK40fTQ3ijYR7jb2tz7lHDeuZd5JXwe1x
-         dgrQ==
-X-Gm-Message-State: AO0yUKX+U0Sdc+hlAzGQSEgt2Ps+kOJOx0ELZJws5UTj3jzK2eCddPvM
-        IebzPA1V5vGqDTsHTDRjZrs=
-X-Google-Smtp-Source: AK7set9bhUrCgAOAUQJPN01zuP80xYcZdGrBxbW1HfRjAEUbmraNxm+IZi6jdT8aCOFS6a6/2Zw2DA==
-X-Received: by 2002:a17:90a:3ec1:b0:23d:48a9:3400 with SMTP id k59-20020a17090a3ec100b0023d48a93400mr19050160pjc.31.1679319375495;
-        Mon, 20 Mar 2023 06:36:15 -0700 (PDT)
+        b=pNT3VGqUKRRHt8m8ukb467rxgo2ii8sDB7m6i2kIGXkjUlATUGtD/A7gyaQkckXk2f
+         XR7T1HUgQjgtbygkRPGLFaNq0nfowmpdWVqe4t3wwypdt2TbZj6MYFhl4+4HOJTNH0hK
+         kKciqbgTW5dKh9v+Lp8J4xUvrT3hERwEz1oyO1VOKjtbNeGU6Gp2Zpfa+xpIeoqg1D8D
+         nE0evM1oohuSQyyhcuWqd5WG6hX28CcUiQrDxP5tIapeYFEJWhMVhUTgKCIVkewlsYy/
+         vFsPijYd3lMNGkd5SC6AQEd3fgU7G2ckATagjDhJnHAG7qY88tWMqmXokDBdeUgM/kjf
+         DE9A==
+X-Gm-Message-State: AO0yUKVZuRRXzZ/Nz7DE4oVztuwiRvY90puSJCk/bXKpnTHocBZD7X2M
+        NPbgunmEIOXlAA6F5vzwfSY=
+X-Google-Smtp-Source: AK7set/c+yH2PnjG7GNjb+0At6KOC7ARNHAmwunlMFClFWJ4VuGMSdRmCZw0EjBpJK4BXQ++PHmBGQ==
+X-Received: by 2002:a05:6a20:b71c:b0:d6:d41e:87ee with SMTP id fg28-20020a056a20b71c00b000d6d41e87eemr11241392pzb.12.1679319405978;
+        Mon, 20 Mar 2023 06:36:45 -0700 (PDT)
 Received: from oslab.. ([106.39.42.159])
-        by smtp.gmail.com with ESMTPSA id j19-20020a17090a7e9300b0023d1855e1b7sm9737485pjl.0.2023.03.20.06.35.37
+        by smtp.gmail.com with ESMTPSA id n12-20020aa78a4c000000b005a8db4e3ecesm6373916pfa.69.2023.03.20.06.36.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 06:35:41 -0700 (PDT)
+        Mon, 20 Mar 2023 06:36:16 -0700 (PDT)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
 To:     johannes@sipsolutions.net, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
@@ -55,8 +55,8 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
         TOTE Robot <baijiaju@buaa.edu.cn>
 Subject: [PATCH] net: mac80211: Add NULL checks for sta->sdata
-Date:   Mon, 20 Mar 2023 21:35:33 +0800
-Message-Id: <20230320133533.2442889-1-baijiaju1990@gmail.com>
+Date:   Mon, 20 Mar 2023 21:36:01 +0800
+Message-Id: <20230320133601.2443821-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
