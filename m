@@ -2,145 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A549E6C13DE
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:45:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E9A6C1409
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:54:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231574AbjCTNp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 09:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
+        id S230496AbjCTNyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 09:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231610AbjCTNpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:45:36 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5963126C07;
-        Mon, 20 Mar 2023 06:45:18 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-5416b0ab0ecso224895737b3.6;
-        Mon, 20 Mar 2023 06:45:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679319916;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bSb4O0PeaHNe3gBc2pcRz8CtU7cfiYwV5urttGac2b0=;
-        b=bgh02FDftrt+sddaley3rGdy4OqlNDYBVbU3GNguh/cnKLFKoq81wEV9MG5iS2fnvJ
-         0sz+Ef6zmCrdUgCp7rRV3ojvassHZBkBUMx/a06oQ+E/4hCfyJCtkXTUYMOLzFNaDrUY
-         uyGD0CiOgsrZHLX3rn1OVElrPO0kN6dBDyaG6mQvp45npbaxX3y52qR8Sx+vAtOOSAdd
-         RAtfPfsiG61u+IzoHleOkrodhQcAN1nx0DSqQWb9z7vKLFQT9nhnUoc4KEXR9XOBLe9r
-         7qpKeBpaTZMH/eTVVhvP2cYJWjvNjXMxkWjJA7UQVAa49NtaWkoPiT0MUeE/fQ69gk3J
-         P31A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679319916;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bSb4O0PeaHNe3gBc2pcRz8CtU7cfiYwV5urttGac2b0=;
-        b=2jcTz9k44kDhzG5UzvOaRzssH3Ws+yRKPudtkFO6afcrGpmzVp+SxqRNHq/0tJsFFU
-         Zmlrq9AvYkRNg0v1lgsMna07eO2XtnTTeI4dvJqzVioy9fUvMMMbQzP43pNRrZMVRIVg
-         +BWYLK3tWI3d2Oxb0UALD4Q2UwmHJ+m5/1dJ+nASo4EcFMo7V8nNZMDtH4qJmChzPiNo
-         i0Z+0LVJCIRiUR30vjpZcuT1RutK9XWPYQXdSiBhuCfYf6o26JN98YwuUmGmwN5fYGu7
-         8Z7FH9csg3AbArXXYIaBwIpcII79PRtSHT9hc/+5mhMQ9Trn54KeU8cvX2dVoGGwresp
-         semg==
-X-Gm-Message-State: AO0yUKU7PORiBs3GDAl36ARd5x3cViutoa05tRHaY04nC1PSUHoUwQl2
-        Ftd6c13/g8fp/qISROM11gniBRbHeGNZ+UNK4X4Blnk4mDVjjA==
-X-Google-Smtp-Source: AK7set92By9N0r2WjB8v8U0HoFS7LbXZRgxPzy2+9DTwwYD6my7jo4lxlXnDBlrM0Sdt9kxvPfQqR6DpZOmBCdBz/js=
-X-Received: by 2002:a81:431b:0:b0:544:94fe:4244 with SMTP id
- q27-20020a81431b000000b0054494fe4244mr10343937ywa.10.1679319914612; Mon, 20
- Mar 2023 06:45:14 -0700 (PDT)
+        with ESMTP id S230316AbjCTNyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:54:15 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2070.outbound.protection.outlook.com [40.107.212.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB6B526E
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 06:54:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Swi10aGD1uUVfmc9eMIVGbRlev6Ywr+vlHkAaN8gEgFhNkA1od7dlSHbYkbvq1WUmaWBhX/HdUI/p9DKRZvwFWZU18glTShlYR4E5ShexBZkgVnjJ633Ae/U29kd63etA0ZNUN0c+09zGDehDTTV6O/lEz05GmgTviL1tXjQGeKjZR6klWQA6JXbQBBN1yZliD89cuwZthpG6MFd+g7rUYp5E93wjMMDPD6bzVEZyyOAX4cm4QBApY+81Ox+JLenD+wcmlcnOXh/14u1axg+ik+NwDSVmivNLTH1jZc9yRzbgo7Lv+oyHM6V0UQukft1CwToxmCrI6aVzdF4PUTqgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KTtdljvPbvMqwXiSNOLGgNVaZJanlZfb8T/EsmM/nHs=;
+ b=Q5NMwjpnwnFl495fKKDCHA5H+DYQAh6g1by3DxV4GCGBYiX6HXLeA8CVEbH4yfpPwaaByjx0957jVFbLHbC+fzIl+NGZQeeOAI6Fd1Xkkud39HyYnoViOpSe8jxfMa3XXgNJtggu07q8dJT6zmxondUtgxxomoY9wuaXoA2RkQdnT67lJ649pRSYY6pFSTFYWhrVIDjaylBGjCcsJ0LnMIY49yfWiBN4oMD6CfFeT8RNWMLxZjMjTLld/4Gkn2fK28AXh9kPTYb8s73PSqvIEZkb6uk3aEII/C0rsRtRbToe8hJtk8YHuqPc82TZ4EWqjyCFlvBVqYtfr1FqDBTDYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KTtdljvPbvMqwXiSNOLGgNVaZJanlZfb8T/EsmM/nHs=;
+ b=D+e96Z7eEVqGgtbubHAKT2FVREsrshalX1jNE5ljl9baJwQ63YzZMOt4wqqUOw20cXunPINpaxKXV86x1+XjCOdHTxuW3uDwM+IsXfW+4NitaP7e6OvOg30t6Pnvw62ONYzDeVl9wuH4qUPf+2YKCT4KSDxZ5vxDzhKSHWQ0ljj1oR8mUhILcz6O+Tg4QWDleX/pQaaSaLDNx6R/42pgJ8OBr783ApemDq7vxIwOHBmzzfCac71q8jBTaKI0YZWJSJt8tJmdkk6QXNV7IlhvCRT7daQNXGPkHTfHxnDgFWEZmxDaGb66DqQaMJ+kBm2TgDAJBbGftUTapwNse4nHjw==
+Received: from CY5PR15CA0195.namprd15.prod.outlook.com (2603:10b6:930:82::11)
+ by IA0PR12MB8349.namprd12.prod.outlook.com (2603:10b6:208:407::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Mon, 20 Mar
+ 2023 13:54:10 +0000
+Received: from CY4PEPF0000C965.namprd02.prod.outlook.com
+ (2603:10b6:930:82:cafe::8) by CY5PR15CA0195.outlook.office365.com
+ (2603:10b6:930:82::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
+ Transport; Mon, 20 Mar 2023 13:54:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000C965.mail.protection.outlook.com (10.167.241.69) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Mon, 20 Mar 2023 13:54:09 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Mon, 20 Mar 2023
+ 06:53:56 -0700
+Received: from yaviefel (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Mon, 20 Mar
+ 2023 06:53:54 -0700
+References: <20230210221243.228932-1-vladimir.oltean@nxp.com>
+ <873579ddv0.fsf@nvidia.com> <20230213113907.j5t5zldlwea3mh7d@skbuf>
+ <87sff8bgkm.fsf@nvidia.com> <87y1nxq7dk.fsf@nvidia.com>
+ <87ttykreky.fsf@nvidia.com> <871qlnqt7k.fsf@nvidia.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+CC:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        <netdev@vger.kernel.org>, Danielle Ratson <danieller@nvidia.com>
+Subject: Re: [RFC PATCH net-next] selftests: forwarding: add a test for MAC
+ Merge layer
+Date:   Mon, 20 Mar 2023 14:49:37 +0100
+In-Reply-To: <871qlnqt7k.fsf@nvidia.com>
+Message-ID: <87jzzbplzk.fsf@nvidia.com>
 MIME-Version: 1.0
-References: <20230320105323.187307-1-nunog@fr24.com> <20230320110314.GJ36557@unreal>
- <CAJ8uoz1kbFsttvWNTUdtYcwEa=hQvky2z0Jfn0=9b5v6m_FVXg@mail.gmail.com> <20230320134058.GM36557@unreal>
-In-Reply-To: <20230320134058.GM36557@unreal>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 20 Mar 2023 14:45:03 +0100
-Message-ID: <CAJ8uoz2ctdQzG8V+13RUQW0BjK1-L6ckP=HbxcAz2xerYhCsLQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunog@fr24.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C965:EE_|IA0PR12MB8349:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1c8da1f3-78db-47ae-b729-08db294a9482
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EdcFp3BkqNBy4sWZySVqzfe2dmeigqUrghJ74rZuqA4xKHeZtZwW8KBTJwBpzqIfPx6Nva1BfnGnCewCLEQ9sDg1OdH9OK56PW/RzjjMGB1mpFU8jM3yZvPCgYLw51AnkSePp7KYp5YhYnu99hxwBL1bXwnm1LFyZPr1hr7HE/+ssjCtiq32vmAurBWg9nMXcqzjoSZcxKNlHApVShnMoXDSePE3eOUpD5gmlimzlckd4R7E4R1nvKTPWXcBkeXFXGa8Z+hBeQJ8yNxOuOaU7au6P1Y+Q9SBHgdkE0zFMx1RytwyvIK0CtCqb5cB1wegiypIjNu+yk7760aqlCfg3qFiG96LCiaX4ktm0sAA3leCsC2bLlJrmt02I652q16eOe1CLkQa/TKjNA2SfiO40tNepySrGVi4TUlqK5nE3nnJ6eX0AcDYzrnSgknNs/4J6wIjB7hX7TmZ971DnHmHJoJvJuFQw08gTZeE+U1y+q8GrxyDk1NJSOX9Zxy5mCpWnfDg5TOAPpFarUqYfcNx/k6fyvHbmCS6CodKs7duK7ouSu3TD+xciqlc+7tIa54Boxh6cKKSlQbk9fOLMyB/4nPwRD7UtvIVh9e6YynrTyFl2MGYpcvl1UunudRm5fUv8orrlM6YCwG4IBtPK91KJO8O9puU/7oO7I/r1UmYsoXaRGFJWL1HAF4Fi5bbJ0GCon08AIdmDRWFO12kImt5/ufrEWcIsSYzqLSzt5nthJoY3QdesE0wf2Bc6+zbV9K7+izcRLFWRkmx6+nwkVN/rJvWJaqGQODTCBciUdtk7UY=
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(396003)(39860400002)(136003)(451199018)(40470700004)(46966006)(36840700001)(2616005)(966005)(426003)(47076005)(478600001)(83380400001)(107886003)(6666004)(336012)(37006003)(316002)(8676002)(70206006)(70586007)(186003)(16526019)(26005)(54906003)(66899018)(4326008)(6862004)(36860700001)(4744005)(41300700001)(5660300002)(8936002)(6200100001)(82740400003)(2906002)(7636003)(40460700003)(82310400005)(356005)(40480700001)(36756003)(86362001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 13:54:09.7407
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c8da1f3-78db-47ae-b729-08db294a9482
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000C965.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8349
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Mar 2023 at 14:41, Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Mon, Mar 20, 2023 at 01:27:18PM +0100, Magnus Karlsson wrote:
-> > On Mon, 20 Mar 2023 at 12:09, Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > On Mon, Mar 20, 2023 at 10:53:23AM +0000, Nuno Gon=C3=A7alves wrote:
-> > > > The remap of fill and completion rings was frowned upon as they
-> > > > control the usage of UMEM which does not support concurrent use.
-> > > > At the same time this would disallow the remap of this rings
-> > > > into another process.
-> > > >
-> > > > A possible use case is that the user wants to transfer the socket/
-> > > > UMEM ownerwhip to another process (via SYS_pidfd_getfd) and so
-> >
-> > nit: ownership
-> >
-> > > > would need to also remap this rings.
-> > > >
-> > > > This will have no impact on current usages and just relaxes the
-> > > > remap limitation.
-> > > >
-> > > > Signed-off-by: Nuno Gon=C3=A7alves <nunog@fr24.com>
-> > > > ---
-> > > >  net/xdp/xsk.c | 9 ++++++---
-> > > >  1 file changed, 6 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > > index 2ac58b282b5eb..2af4ff64b22bd 100644
-> > > > --- a/net/xdp/xsk.c
-> > > > +++ b/net/xdp/xsk.c
-> > > > @@ -1300,10 +1300,11 @@ static int xsk_mmap(struct file *file, stru=
-ct socket *sock,
-> > > >  {
-> > > >       loff_t offset =3D (loff_t)vma->vm_pgoff << PAGE_SHIFT;
-> > > >       unsigned long size =3D vma->vm_end - vma->vm_start;
-> > > > +     int state =3D READ_ONCE(xs->state);
-> >
-> > Reverse Christmas Tree notation here please. Move it one line down to
-> > after the *xs declaration.
-> >
-> > > >       struct xdp_sock *xs =3D xdp_sk(sock->sk);
-> > > >       struct xsk_queue *q =3D NULL;
-> > > >
-> > > > -     if (READ_ONCE(xs->state) !=3D XSK_READY)
-> > > > +     if (!(state =3D=3D XSK_READY || state =3D=3D XSK_BOUND))
-> > >
-> > > This if(..) is actually:
-> > >  if (state !=3D XSK_READY && state !=3D XSK_BOUND)
-> >
-> > Nuno had it like that to start with when he sent the patch privately
-> > to me, but I responded that I prefered the current one. It is easier
-> > to understand if read out aloud IMO.
->
-> "Not equal" is much easier to understand than "not" of whole expression.
 
-Then my brain is wired differently ;-).
+Petr Machata <petrm@nvidia.com> writes:
 
-> > Do not have any strong feelings either way since the statements are equ=
-ivalent.
-> >
-> > > Thanks
+> Petr Machata <petrm@nvidia.com> writes:
+>
+>> I added a shim as shown below. Comments welcome. Your patch then needs a
+>> bit of adaptation, plus I've dropped all the now-useless imports of
+>> qos_lib.sh. I'll pass this through our regression, and if nothing
+>> explodes, I'll point you at a branch tomorrow, and you can make the two
+>> patches a part of your larger patchset?
+>
+> (I only pushed this to our regression today. The patches are the top two
+> ones here:
+>
+>     https://github.com/pmachata/linux_mlxsw/commits/petrm_selftests_bail_on_lldpad_move
+>
+> I'll let you know on Monday whether anything exploded in regression.)
+
+Nothing _relevant_ seems to have exploded :)
+
+I've pushed a new version of the patches with Danielle's (CC'd) R-b tags
+and a fix of a typo that she noticed. Feel free to take these and
+integrate / adjust / etc.
