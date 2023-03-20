@@ -2,116 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 943B96C1054
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3617D6C10B8
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbjCTLKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 07:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53374 "EHLO
+        id S230450AbjCTLX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 07:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbjCTLKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:10:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC301ACF6;
-        Mon, 20 Mar 2023 04:06:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S230234AbjCTLXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:23:23 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4E8C67D;
+        Mon, 20 Mar 2023 04:23:05 -0700 (PDT)
+Received: from zn.tnic (p5de8e687.dip0.t-ipconnect.de [93.232.230.135])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E2C1B80DFA;
-        Mon, 20 Mar 2023 11:06:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF8EC433EF;
-        Mon, 20 Mar 2023 11:06:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679310394;
-        bh=7lVnvE+H0LwnZCwFqsBcASGQoZnp+CUIfRj+cb1hIhs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tz/Iz9YFfmM0IQVgiLRwTXb7wqQyEO2uBYER6CiPDFY/5jedne251UlD1TJSNJa/+
-         ApO+2CvcyiS+pH85bzk6JWcUkkOTPPZK6R/FnCZ617K0jmueUTN6V0RrDTunMrntMr
-         LNp9/Zwsl/ur/u+GCYDJxBC/mM+eDXr+UcKOwAIA/JwW+RgOiE251ktt9sO6rE0kSz
-         9IeqQorb2/yNdpTPf18aj3pFwmDGb60W6GmEJItWdbl0ZHKNUbPp8p91zNhc4QyioQ
-         uQH/bT6pphC9NDX4yn1KylptAUf/GcVY4F90cDRk2G1q/p6iPwytP/HY5YTUhlSYjo
-         GW2tLfCJyD1gg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1peDMp-0005yt-Hh; Mon, 20 Mar 2023 12:07:55 +0100
-Date:   Mon, 20 Mar 2023 12:07:55 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] arm64: dts: qcom: sc8280xp-crd: add wifi calibration
- variant
-Message-ID: <ZBg+ixekH+Ou7jMd@hovoldconsulting.com>
-References: <20230320104658.22186-1-johan+linaro@kernel.org>
- <20230320104658.22186-4-johan+linaro@kernel.org>
- <244a59c6-2dc0-83c7-07d2-6bae04022605@linaro.org>
- <ZBg7tA8NLDnjPp+k@hovoldconsulting.com>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D531F1EC0531;
+        Mon, 20 Mar 2023 12:23:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1679311383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=JHX6LI9jJmsbEsBfZqSHSOd2XPlLSGzi7teSPbRUpc8=;
+        b=d4AGbS54cHbrOmAlC2TeA8RAdxFydCPUxwHuWE7LG94VZK/I81tDgXPPZMWVpf4DNq8Y7P
+        2Q52sQOzeJnEVE+hMv3/j20c4Y2TKQi8M0j1bP07zCuNMpJ6+F7LmQvyK1uwJWvQtLv0p8
+        g3UvKNX3SFkQ0BWBa8xO/48ku3u2ygY=
+Date:   Mon, 20 Mar 2023 12:22:58 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+        peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
+        robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com,
+        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+        isaku.yamahata@intel.com, dan.j.williams@intel.com,
+        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+        iommu@lists.linux.dev
+Subject: Re: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Message-ID: <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
+References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
+ <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZBg7tA8NLDnjPp+k@hovoldconsulting.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 11:55:48AM +0100, Johan Hovold wrote:
-> On Mon, Mar 20, 2023 at 11:50:30AM +0100, Konrad Dybcio wrote:
-> > 
-> > 
-> > On 20.03.2023 11:46, Johan Hovold wrote:
-> > > Describe the bus topology for PCIe domain 6 and add the ath11k
-> > > calibration variant so that the board file (calibration data) can be
-> > > loaded.
-> > > 
-> > > Link: https://bugzilla.kernel.org/show_bug.cgi?id=216036
-> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> > > ---
-> > >  arch/arm64/boot/dts/qcom/sc8280xp-crd.dts | 17 +++++++++++++++++
-> > >  1 file changed, 17 insertions(+)
-> > > 
-> > > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-> > > index 90a5df9c7a24..5dfda12f669b 100644
-> > > --- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-> > 
-> > 
-> > Was mixing
-> > > +++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-> > 
-> > this /\
-> > 
-> > [...]
-> > 
-> > and this \/
-> > > +			qcom,ath11k-calibration-variant = "LE_X13S";
-> > Intentional? Especially given Kalle's comment on bugzilla?
-> 
-> Yes, it is intentional. The corresponding calibration data allows the
-> wifi to be used on the CRD. I measure 150 MBits/s which may a bit lower
-> than expected, but it's better than having no wifi at all.
+On Wed, Mar 08, 2023 at 06:40:07PM -0800, Michael Kelley wrote:
+> diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+> index 49b44f8..d1c3306 100644
+> --- a/arch/x86/coco/core.c
+> +++ b/arch/x86/coco/core.c
+> @@ -88,8 +106,6 @@ bool cc_platform_has(enum cc_attr attr)
+>  		return amd_cc_platform_has(attr);
+>  	case CC_VENDOR_INTEL:
+>  		return intel_cc_platform_has(attr);
+> -	case CC_VENDOR_HYPERV:
+> -		return hyperv_cc_platform_has(attr);
+>  	default:
+>  		return false;
+>  	}
+> @@ -103,11 +119,14 @@ u64 cc_mkenc(u64 val)
+>  	 * encryption status of the page.
+>  	 *
+>  	 * - for AMD, bit *set* means the page is encrypted
+> -	 * - for Intel *clear* means encrypted.
+> +	 * - for AMD with vTOM and for Intel, *clear* means encrypted
+>  	 */
+>  	switch (vendor) {
+>  	case CC_VENDOR_AMD:
+> -		return val | cc_mask;
+> +		if (sev_status & MSR_AMD64_SNP_VTOM)
+> +			return val & ~cc_mask;
 
-I was going back and forth about mentioning this in the commit message
-and we could off on this one until someone confirms that the
-corresponding calibration data can (or should) be used for the X13s.
+This is silly. It should simply be:
 
-Note that there is no other match for
+		if (sev_status & MSR_AMD64_SNP_VTOM)
+			return val;
 
-	'bus=pci,vendor=17cb,device=1103,subsystem-vendor=17cb,subsystem-device=0108,qmi-chip-id=2,qmi-board-id=140'
 
-in the new board-2.bin.
+> +		else
+> +			return val | cc_mask;
+>  	case CC_VENDOR_INTEL:
+>  		return val & ~cc_mask;
+>  	default:
+> @@ -120,7 +139,10 @@ u64 cc_mkdec(u64 val)
+>  	/* See comment in cc_mkenc() */
+>  	switch (vendor) {
+>  	case CC_VENDOR_AMD:
+> -		return val & ~cc_mask;
+> +		if (sev_status & MSR_AMD64_SNP_VTOM)
+> +			return val | cc_mask;
 
-Johan
+So if you set the C-bit, that doesn't make it decrypted on AMD. cc_mask
+on VTOM is 0 so why even bother?
+
+Same as the above.
+
+> +		else
+> +			return val & ~cc_mask;
+>  	case CC_VENDOR_INTEL:
+>  		return val | cc_mask;
+>  	default:
+
+...
+
+> +void __init hv_vtom_init(void)
+> +{
+> +	/*
+> +	 * By design, a VM using vTOM doesn't see the SEV setting,
+> +	 * so SEV initialization is bypassed and sev_status isn't set.
+> +	 * Set it here to indicate a vTOM VM.
+> +	 */
+
+This looks like a hack. The SEV status MSR cannot be intercepted so the
+guest should see vTOM. How are you running vTOM without setting it even up?!
+
+> +	sev_status = MSR_AMD64_SNP_VTOM;
+> +	cc_set_vendor(CC_VENDOR_AMD);
+> +	cc_set_mask(ms_hyperv.shared_gpa_boundary);
+> +	physical_mask &= ms_hyperv.shared_gpa_boundary - 1;
+> +
+> +	x86_platform.hyper.is_private_mmio = hv_is_private_mmio;
+> +	x86_platform.guest.enc_cache_flush_required = hv_vtom_cache_flush_required;
+> +	x86_platform.guest.enc_tlb_flush_required = hv_vtom_tlb_flush_required;
+> +	x86_platform.guest.enc_status_change_finish = hv_vtom_set_host_visibility;
+> +}
+> +
+> +#endif /* CONFIG_AMD_MEM_ENCRYPT */
+> +
+>  /*
+>   * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
+>   */
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
