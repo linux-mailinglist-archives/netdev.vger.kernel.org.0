@@ -2,90 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C576C1F31
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 19:12:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71A496C1F3B
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 19:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbjCTSMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 14:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
+        id S230213AbjCTSNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 14:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbjCTSMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 14:12:17 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8647A43467;
-        Mon, 20 Mar 2023 11:06:20 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id t17-20020a05600c451100b003edc906aeeaso1873999wmo.1;
-        Mon, 20 Mar 2023 11:06:20 -0700 (PDT)
+        with ESMTP id S230228AbjCTSNE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 14:13:04 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E1A3B233;
+        Mon, 20 Mar 2023 11:07:16 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id m6so8182007qvq.0;
+        Mon, 20 Mar 2023 11:07:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679335557;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=qovCtxHIhDjR5z8X/goS0zamNvJumBaq8hkkid2b0Tk=;
-        b=bj32SbhOYrf1MwTLc85rZOoVpreALwN32JNmelOm+FWPYvERh/ppvTQWhxgaVewQiy
-         sLr2uQj9GhuuC8x9FuB7/0hP2Ej3U5Al6/Ul8rujw/c4cIfcKBWfpLu1fKkoLn0Az62z
-         G6AX3JjdbbS/N6qaLGKU6UihZngo5Ch/TCZMy1S9AspInSNTltUyuSjgGq4ExKLpfMkl
-         wkBtK1RZDlXKFaGAEd2vpwzrwuYxPOnI48DZer/u3RQkol9rAZXh5VWWI5Wl86Mp7jAP
-         BgOQwP328giT0GOgtPJnTB/B0DxDDCN7Lf3BJwQ+Rd8O0IxnhRGLexh2Y1xZFfZ1/vmb
-         HmQQ==
+        d=gmail.com; s=20210112; t=1679335618;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Rw6MWePbQ5O8TKvCsfkhlgjoKZONM+KtRz7LuBO6zPg=;
+        b=G+Sk+NarnqqkLb/kJ71yFOvplIcH8Zg53t6Wa1V39yywvKLFusVVtBNB5tIIgdd0gj
+         B+7KL2eQlro0cdxYOnoWh3kPZ3PWEVmfo9iOa4V4+/ce2aRuMaq59Z039/+rwiBLZx8q
+         Nj+u2sUrX2KtMUK/Z4Gw5r7sVMDoYP14m9NYitG8pJDPozLuJqj20wl4ThtLE7uD8EJA
+         /ApETeodeDf3nXaWFAgXy5uWGnwSRIeleLipcO4oqNkLfMMeRFbzej3xmLU0YsfmG564
+         tLZVBmHXClSZsGgMogqT6qkw+4q/hzVHN6di1r/iQe7wGT0SwArjU3ID5hQzCUPg45NI
+         J85A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679335557;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qovCtxHIhDjR5z8X/goS0zamNvJumBaq8hkkid2b0Tk=;
-        b=Ej/XfRpr8uMvdYizFOBpY4qclUsbu7mObS12gj0CB9quVPg4LgD8PV6n7lVcl4XVxK
-         eGoymbfEpNPQ8G4FPKyBQEhbuiK0fzY04V3rOu6gT5hBeQTwaN7QqIfpzl6RnJ24U721
-         1bKNpIv+44G0NZoHWHRAGWoSIMyMyhtbSQ63FFxA7KYcUrh4d8V/x8FZP7BMQs2kvE/8
-         j5pL1kxH8MP9iNwwpl5qS6otBCDwwYViBDASNhYAFBIIlvH3M+JI4F+S1AXJRfNvtQZO
-         uYzQv/Bk6G/TeT0Caxa3t+p53kadcQh1cY7lu1tRz8SFg9Jl1BHXm1AE+T0UsyDnbGjf
-         3EkQ==
-X-Gm-Message-State: AO0yUKWcFal4Ah8Mpnt8LEkCCI127lHq9+JG1qn0RKyKiETICo7OzUCV
-        VjZ5c8tcf0LNncCRGQlNfiM=
-X-Google-Smtp-Source: AK7set9M7n47ivxwTUlCC32MV4CdFuRaSwXTCh6g3payQgyQeP9Rq3Azb7+JBgZfR4gy7ifkMULB0g==
-X-Received: by 2002:a7b:c454:0:b0:3ed:e447:1ed0 with SMTP id l20-20020a7bc454000000b003ede4471ed0mr374765wmi.14.1679335557239;
-        Mon, 20 Mar 2023 11:05:57 -0700 (PDT)
-Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.gmail.com with ESMTPSA id q8-20020a1cf308000000b003ed4f6c6234sm11139577wmq.23.2023.03.20.11.05.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 11:05:56 -0700 (PDT)
-Message-ID: <6418a084.1c0a0220.de9c1.53e4@mx.google.com>
-X-Google-Original-Message-ID: <ZBiggnNsWspWJ/Fh@Ansuel-xps.>
-Date:   Mon, 20 Mar 2023 19:05:54 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Michal Kubiak <michal.kubiak@intel.com>
+        d=1e100.net; s=20210112; t=1679335618;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rw6MWePbQ5O8TKvCsfkhlgjoKZONM+KtRz7LuBO6zPg=;
+        b=U6ExtExLQwVv6eZYtiY9JInOB8F/DMcv7AmbLhVBaUObPQ9Ao6X39Q7iZ4eDPzEbO+
+         sotz3bYTS6wqIZRCeXU0nxDQT77sc3u1dJf3bg3b676Xciu4QLWeU/Y+MXV+d32/BsmV
+         b3b4HEya9et1WB3ypCmbC/ksKCIz4932njgZqe1yhvWIR5lKGXv2TmchTM4BevNrt+VB
+         0XOEsS8bfQ2msmaIWNh3HuRDwGWBaViNAEuQXn65Pwb32S8iIO5LJa4f7JuH610j5AQp
+         imwTJmr79sGcRgj3JCy12NJKW/GoYT7eqbpHeJlDO6Waq4gJrlYfIg7+QpozJIc9z0wX
+         Fsow==
+X-Gm-Message-State: AO0yUKUDTskYki3T2863FouEtdLQi9lqZwpCvNohuFwvMJkqEq0oM1to
+        JTVCPrGESf8/X/K4yeIv7DU=
+X-Google-Smtp-Source: AK7set/tDmjevxk1U1SD/u0C+FIE4uDwF1Qlrq7L2T0PpRB3NmWNyfBkonWCC05D2lC3+9bPwQKrBQ==
+X-Received: by 2002:a05:6214:248e:b0:5ae:371a:ab36 with SMTP id gi14-20020a056214248e00b005ae371aab36mr32817508qvb.50.1679335618404;
+        Mon, 20 Mar 2023 11:06:58 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id r140-20020a37a892000000b007468ad71799sm2102350qke.64.2023.03.20.11.06.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Mar 2023 11:06:56 -0700 (PDT)
+Message-ID: <3b5ffccc-f1cd-b2f8-1e78-72997b43c12c@gmail.com>
+Date:   Mon, 20 Mar 2023 11:06:49 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net] net: dsa: report rx_bytes unadjusted for ETH_HLEN
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v5 02/15] net: dsa: qca8k: add LEDs basic support
-References: <20230319191814.22067-1-ansuelsmth@gmail.com>
- <20230319191814.22067-3-ansuelsmth@gmail.com>
- <ZBiKDX/WJPfJey/+@localhost.localdomain>
- <64188af6.050a0220.c5fe1.1d96@mx.google.com>
- <ZBicg28JwVLugzqz@localhost.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBicg28JwVLugzqz@localhost.localdomain>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+References: <20230317231900.3944446-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230317231900.3944446-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -94,73 +77,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 06:48:51PM +0100, Michal Kubiak wrote:
-> On Mon, Mar 20, 2023 at 05:33:56PM +0100, Christian Marangi wrote:
-> > 
-> > Btw ok for the description of the LED mapping? It's a bit complex so
-> > tried to do my best to describe them.
-> > 
+On 3/17/23 16:19, Vladimir Oltean wrote:
+> We collect the software statistics counters for RX bytes (reported to
+> /proc/net/dev and to ethtool -S $dev | grep 'rx_bytes: ") at a time when
+> skb->len has already been adjusted by the eth_type_trans() ->
+> skb_pull_inline(skb, ETH_HLEN) call to exclude the L2 header.
 > 
-> Yes, now it is much easier to understand the logic behind LED mapping.
-> Thanks for adding that! I think it will save some time for anyone who
-> will be working with that code in the future.
+> This means that when connecting 2 DSA interfaces back to back and
+> sending 1 packet with length 100, the sending interface will report
+> tx_bytes as incrementing by 100, and the receiving interface will report
+> rx_bytes as incrementing by 86.
 > 
-> The only thing I still do not understand is the initial 14 bit shift:
+> Since accounting for that in scripts is quirky and is something that
+> would be DSA-specific behavior (requiring users to know that they are
+> running on a DSA interface in the first place), the proposal is that we
+> treat it as a bug and fix it.
 > 
-> >	if (led->port_num == 0 || led->port_num == 4) {
-> >		mask = QCA8K_LED_PATTERN_EN_MASK;
-> >		val <<= QCA8K_LED_PATTERN_EN_SHIFT;
+> This design bug has always existed in DSA, according to my analysis:
+> commit 91da11f870f0 ("net: Distributed Switch Architecture protocol
+> support") also updates skb->dev->stats.rx_bytes += skb->len after the
+> eth_type_trans() call. Technically, prior to Florian's commit
+> a86d8becc3f0 ("net: dsa: Factor bottom tag receive functions"), each and
+> every vendor-specific tagging protocol driver open-coded the same bug,
+> until the buggy code was consolidated into something resembling what can
+> be seen now. So each and every driver should have its own Fixes: tag,
+> because of their different histories until the convergence point.
+> I'm not going to do that, for the sake of simplicity, but just blame the
+> oldest appearance of buggy code.
 > 
-> For example, according to the code above, for port 4:
-> 	- the value is shifted by 14 bits - to bits (15,14)
-> 	- mask is also set to bits (15,14)
-> 	- then, both mask and value are shifted again by 16 bits:
+> There are 2 ways to fix the problem. One is the obvious way, and the
+> other is how I ended up doing it. Obvious would have been to move
+> dev_sw_netstats_rx_add() one line above eth_type_trans(), and below
+> skb_push(skb, ETH_HLEN). But DSA processing is not as simple as that.
+> We count the bytes after removing everything DSA-related from the
+> packet, to emulate what the packet's length was, on the wire, when the
+> user port received it.
 > 
-> >		return regmap_update_bits(priv->regmap, reg_info.reg,
-> >					  mask << reg_info.shift,
-> >					  val << reg_info.shift);
+> When eth_type_trans() executes, dsa_untag_bridge_pvid() has not run yet,
+> so in case the switch driver requests this behavior - commit
+> 412a1526d067 ("net: dsa: untag the bridge pvid from rx skbs") has the
+> details - the obvious variant of the fix wouldn't have worked, because
+> the positioning there would have also counted the not-yet-stripped VLAN
+> header length, something which is absent from the packet as seen on the
+> wire (there it may be untagged, whereas software will see it as
+> PVID-tagged).
 > 
-> because reg_info.shift == QCA8K_LED_PHY4_CONTROL_RULE_SHIFT == 16 for
-> port_num == 4.
-> 
-> It means, in fact, for controlling port 4 we use bits (31,30) which
-> seems to be inconsistent with your comment below.
-> 
-> >	 * To control port 4:
-> >	 * - the 2 bit (17, 16) of:
-> >	 *   - QCA8K_LED_CTRL0_REG for led1
-> >	 *   - QCA8K_LED_CTRL1_REG for led2
-> >	 *   - QCA8K_LED_CTRL2_REG for led3
-> >	 *
-> 
-> Are values for ports 0 and 4 correct in your description in
-> "qca8k_led_brightness_set()"?
-> 
+> Fixes: f613ed665bb3 ("net: dsa: Add support for 64-bit statistics")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Code is correct, comment is not.
-
-QCA8K_LED_CTRL0_REG is split in 2 part.
-- first 16 bit for phy0
-- second part (31, 16) for phy4
-
-In these 16 half there are the bit that control the hw control blink
-rules AND on the last 2 part of the half, the bit that control the state
-of the LED (off, on, always-blink, hw control)
-
-So I just didn't add on top of that MASK the required shift for
-QCA8K_LED_PATTERN_EN_SHIFT.
-
-so for phy0
-
-GENMASK(1, 0) << QCA8K_LED_PATTERN_EN_SHIFT << QCA8K_LED_PHY0123_CONTROL_RULE_SHIFT
-GENMASK(1, 0) << 14 << 0 
-
-for phy4
-
-GENMASK(1, 0) << QCA8K_LED_PATTERN_EN_SHIFT << QCA8K_LED_PHY4_CONTROL_RULE_SHIFT
-GENMASK(1, 0) << 14 << 16
-
-Thanks for the other review tag, will fix the last bit in v6.
-
+Already applied, but I agree with you that this is the simplest way to 
+go about fixign this. Thanks!
 -- 
-	Ansuel
+Florian
+
