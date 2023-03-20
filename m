@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7ED6C0B4D
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 08:25:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F206C0B65
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 08:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbjCTHZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 03:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60448 "EHLO
+        id S230063AbjCTHcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 03:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbjCTHZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 03:25:07 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DE61CAE4;
-        Mon, 20 Mar 2023 00:25:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679297106; x=1710833106;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=sckrP9DIwS5nXONc32/B3DuRvwTDeY7P3PNd34uwKrc=;
-  b=J1/Q4IL1YY9vEXAgBwR34VF7uHoziVlHDatzQ2dmgUZFL5rl3FxsmlW3
-   5+z3dXA8BnxVerG9o+Wb7EQXOxTErozoAe1ThgidnaHGYgmHhoZZ87bdH
-   Ai2KYUxU5XG11x2ALijX44SFlP7bew5py5JmvfvDHrmKoOZquyxJ13P9F
-   suYiXy3OC7k5caPWEe1sT5eNIg7DlASNyNbjoJwn4AsHBecSjGYwBUmlo
-   qMyBtS0f6z792fxRsWv0VOB8tKjCFYkUontzxpmVqOZY9VSeOlwcnD69b
-   riQQCsqctllN+g7xzldt6ERYK3z5xeDVXsCHi4diem4+ZFVEJyh6ROCGI
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="403465133"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="403465133"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 00:25:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10654"; a="711221338"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="711221338"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 00:25:02 -0700
-Date:   Mon, 20 Mar 2023 08:24:58 +0100
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Peter Hong <peter_hong@fintek.com.tw>
-Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        mailhol.vincent@wanadoo.fr, frank.jungclaus@esd.eu,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
-Subject: Re: [PATCH] can: usb: f81604: add Fintek F81604 support
-Message-ID: <ZBgKSqaFiImtTThv@localhost.localdomain>
-References: <20230317093352.3979-1-peter_hong@fintek.com.tw>
- <ZBRoCVHV3S3ugEoO@localhost.localdomain>
- <186901f9-5d52-2315-f532-26471adcfb55@fintek.com.tw>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <186901f9-5d52-2315-f532-26471adcfb55@fintek.com.tw>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        with ESMTP id S229662AbjCTHcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 03:32:09 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6466A72;
+        Mon, 20 Mar 2023 00:32:08 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id h8so42869572ede.8;
+        Mon, 20 Mar 2023 00:32:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679297526;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eSP4f1i+3RtA+4+ZzZ6IcerHS6aivGE2efGzwbPIBWg=;
+        b=Lg39NmLlMe4XyfiXUH9h1cRjUHHL56vlHfrCfXo4mq8zg8/peIyUPkwZ32aIczVlbb
+         gfv9k4wiGbeMY+y2U9uFtNQqvdOqtUdT8o2DidXtLJCHA7xyiiMN/bjfbopD7YOTAfD1
+         TGfX6eL29YdYq+0cqS3ZSg8PTz95AeyNyk+1Bgr6p7SOmkMG6jGfAk5Qf+QMW8vlNa/L
+         sSRvohZRwOpy9MGaL32nCnuw/j0i0omjJblWxdPNzW74Tuiba6XnkNdh4r4qlj92UpTw
+         rKxJvMuZCIUPinPXF/+RtfXI/+KUme3yvOdKAeos3y7KryWhw8+Sg4rWH3u8bNKRJGnl
+         Ne2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679297526;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eSP4f1i+3RtA+4+ZzZ6IcerHS6aivGE2efGzwbPIBWg=;
+        b=bVB5BLRT+ulnqQFmN9FvfzZDZhVi6wT/DrVDYeO/BUhsEimx2zefHCPNW4/9SzOVkZ
+         p9vm0lAa1KeVr/ehKLSAkWEw2q31EOUmgYo1r/dftUXbE+H08mBawahr+u0aXN1zAljx
+         nT5vsQ6dYyBrH32WKRHaCgG24XEEa0coj9/IHvgEZ7fMxWf1M6b7zEpXq0ZIDSfnl+Wp
+         uHD97qPQOMePmZ/N7gzrnDUFqIAx15+skivY4WrdUB0Hs+8czsoGK32vPf9eyP/jO2Ws
+         GHqUHADNXBlaDviHewHsyX8flXVjtNb7atPKBv45XCCSBctam0DZdq8PsH17Oq60kxF5
+         TPjw==
+X-Gm-Message-State: AO0yUKVgzDGJ4iovWnMUrlI26a7CHXiUavZaw+VxUAZfqH1GR7Wh/Bf9
+        28CsyWvRVNPKCxpFZvvuJqI=
+X-Google-Smtp-Source: AK7set/sS+VFeNQbqvPWG6Y3vsg2LWvIO3a+M9NMtkh/NlYUcfwNt0h1S+1YmaCKQOHXonfm6jZYeA==
+X-Received: by 2002:a17:907:64a:b0:92b:4f8e:dde1 with SMTP id wq10-20020a170907064a00b0092b4f8edde1mr7882644ejb.20.1679297526372;
+        Mon, 20 Mar 2023 00:32:06 -0700 (PDT)
+Received: from felia.fritz.box ([2a02:810d:2a40:1104:149a:8de0:b37a:3ec9])
+        by smtp.gmail.com with ESMTPSA id qx20-20020a170906fcd400b008eaf99be56esm4118233ejb.170.2023.03.20.00.32.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 00:32:06 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Rob Herring <robh@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-nfc@lists.01.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: remove file entry in NFC SUBSYSTEM after platform_data movement
+Date:   Mon, 20 Mar 2023 08:32:01 +0100
+Message-Id: <20230320073201.32401-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,132 +69,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 10:59:33AM +0800, Peter Hong wrote:
-> Hi,
-> 
-> Michal Swiatkowski 於 2023/3/17 下午 09:15 寫道:
-> > On Fri, Mar 17, 2023 at 05:33:52PM +0800, Ji-Ze Hong (Peter Hong) wrote:
-> > 
-> > --- a/drivers/net/can/usb/Kconfig
-> > +++ b/drivers/net/can/usb/Kconfig
-> > @@ -147,4 +147,13 @@ config CAN_UCAN
-> >   	          from Theobroma Systems like the A31-ÂľQ7 and the RK3399-Q7
-> >   	          (https://www.theobroma-systems.com/rk3399-q7)
-> > Hi,
-> > 
-> > I am not familiar with CAN, so only style review :)
-> 
-> Thanks for your reviews :D
-> > +
-> > +	if (status) {
-> > +		dev_err(&dev->dev, "%s: reg: %x data: %x failed: %d\n",
-> > +			__func__, reg, data, status);
-> > +	}
-> > The { and } aren't needed as inside if is only one line.
-> 
-> Could I remove the { and } when the logical line to split multi-line ?
-> 
+Commit 053fdaa841bd ("nfc: mrvl: Move platform_data struct into driver")
+moves the nfcmrvl.h header file from include/linux/platform_data to the
+driver's directory, but misses to adjust MAINTAINERS.
 
-Yes You can, and You should :)
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+broken reference.
 
-> > > +static int f81604_set_normal_mode(struct net_device *netdev)
-> > > +{
-> > > +	struct f81604_port_priv *priv = netdev_priv(netdev);
-> > > +	int status, i;
-> > > +	u8 mod_reg_val = 0x00;
-> > RCT, mod_reg should be one line above
-> 
-> What mean about "RCT"?
-> 
-> Is this section should change to above like ??
-> 
->     u8 mod_reg_val;
->     ...
-> 
->     mod_reg_val = 0;
+Just remove the file entry in NFC SUBSYSTEM, as the new location of the
+code is already covered by another pattern in that section.
 
-reverse christmas tree, it is about how variable definition should look
-like. In Your case:
+Fixes: 053fdaa841bd ("nfc: mrvl: Move platform_data struct into driver")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Rob, Simon, please ack.
 
-struct f81604_port_priv *priv = netdev_priv(netdev);
-u8 mod_reg_val = 0x00;
-int status, i;
+David, please pick this minor cleanup patch on top of the commit above.
 
-instead of
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 216a61805c93..bdfed3cfde9b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14703,7 +14703,6 @@ S:	Maintained
+ B:	mailto:linux-nfc@lists.01.org
+ F:	Documentation/devicetree/bindings/net/nfc/
+ F:	drivers/nfc/
+-F:	include/linux/platform_data/nfcmrvl.h
+ F:	include/net/nfc/
+ F:	include/uapi/linux/nfc.h
+ F:	net/nfc/
+-- 
+2.17.1
 
-struct f81604_port_priv *priv = netdev_priv(netdev);
-int status, i;
-u8 mod_reg_val = 0x00;
-
-Cosmetic Linux style rule
-
-> > > +static int f81604_register_urbs(struct net_device *netdev)
-> > > +{
-> > > +	struct f81604_port_priv *priv = netdev_priv(netdev);
-> > > +	int status, i;
-> > > +
-> > > +	for (i = 0; i < F81604_MAX_RX_URBS; ++i) {
-> > > +		status = usb_submit_urb(priv->read_urb[i], GFP_KERNEL);
-> > > +		if (status) {
-> > > +			netdev_warn(netdev, "%s: submit rx urb failed: %d\n",
-> > > +				    __func__, status);
-> > > +			return status;
-> > Don't know usb subsytem, but shouldn't previously submitted urb be
-> > killed?
-> 
-> Yes, I had made kill operations in
->     f81604_start()
->         -> f81604_unregister_urbs()
->
-
-Ok, thanks
-
-> > > +static void f81604_process_rx_packet(struct urb *urb)
-> > > +{
-> > > +	struct net_device_stats *stats;
-> > > +	struct net_device *netdev;
-> > > +	struct can_frame *cf;
-> > > +	struct sk_buff *skb;
-> > > +	u8 *data;
-> > > +	u8 *ptr;
-> > > +	int i;
-> > > +	int count;
-> > RCT
-> > 
-> > > +
-> > > +	netdev = urb->context;
-> > > +	stats = &netdev->stats;
-> > > +	data = urb->transfer_buffer;
-> > netdev and data can be set in declaration
-> 
-> why only netdev & data ?? Could I set netdev, stats & data in declaration ?
-> 
-
-You can, but it will be hard to still have declaration as RCT (netdev
-declaration have to be before stats declaration).
-
-> 
-> > > +/* Called by the usb core when driver is unloaded or device is removed */
-> > > +static void f81604_disconnect(struct usb_interface *intf)
-> > > +{
-> > > +	struct f81604_priv *priv = usb_get_intfdata(intf);
-> > > +	int i;
-> > > +
-> > > +	for (i = 0; i < F81604_MAX_DEV; ++i) {
-> > > +		if (!priv->netdev[i])
-> > > +			continue;
-> > > +
-> > > +		unregister_netdev(priv->netdev[i]);
-> > > +		free_candev(priv->netdev[i]);
-> > > +	}
-> > What about closing USB device? It is called brefore disconnect or it
-> > should be done here?
-> 
-> When candev close in f81604_close(), It will call f81604_set_reset_mode() to
-> make candev to reset mode.
-> 
-
-Understand, thanks
-
-> Thanks
