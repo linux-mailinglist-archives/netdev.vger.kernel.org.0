@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47DCA6C07B8
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 02:01:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 851FE6C07AF
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 02:01:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbjCTBA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 21:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        id S230371AbjCTBAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 21:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbjCTA7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 20:59:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56D0FF19;
-        Sun, 19 Mar 2023 17:56:05 -0700 (PDT)
+        with ESMTP id S231276AbjCTBAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 21:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2811522A26;
+        Sun, 19 Mar 2023 17:56:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C8D661152;
-        Mon, 20 Mar 2023 00:56:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8C1C4339C;
-        Mon, 20 Mar 2023 00:56:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB5E8B80D54;
+        Mon, 20 Mar 2023 00:56:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C83C4339E;
+        Mon, 20 Mar 2023 00:56:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679273764;
-        bh=ZVYHiauuK31VrBCwqyyOkf2FQolHZ70IGoJ1qFk6Kl0=;
+        s=k20201202; t=1679273789;
+        bh=rGOylEbBdtLBRqjtOZfHT8fiSLOclytQL9tB5qiDpNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DuJ0r2JpnJ/PkdIGzy/bS6khcVBSePk7CsleVhH6Gp/OCWNodgPnIU9/sHTnwyNZe
-         MYWYKOvz+eHL6YlQ69XUdiEgnFFL2O77GT96QaS1szatUyluBDkRFBEjZfzXZGA1nI
-         O71OqLfuuNrad+ozeN5XaSxCcQ4sZSYzcmidOr7v4/7Iz+ae6DOOju2+vAB/fFmlSN
-         2boztaIqDWy1UElivI38yU+xs9Dm6DwbYAJMgUqyFDqQ2A0AP0Jle1oBQbxMat+ByJ
-         EYQHO/HHyyhNDOqpbZzESt0GgfhEmJVzBg+pU60wmBoRKHnPc0/CItp7QM+M9BlBpe
-         mBeBT/2m6s/Xw==
+        b=OjhH9yeT1C7MQNMLOyyiVEA2vdYk9JiPoo0XAg59sFIEExyc1SGEgUt41KMAooZeO
+         RGC7r53DwO79b6TA5YWZycNbyGzL1n0bI68ELiT+OH32/kDf7wlTfCMlRlTKU/QuBt
+         C9IqGPI0AHxAuxjpGSrj0Tt2mCyuZJLHrds4wtuqqE1rx3SG20ajRvERvIRezWJmg7
+         HwKTRQov98XKLmSHGCkxZMm6/u+Csa0O3QkKKjrg9y70LFbezF/mMpEtNQ5k5pWRHu
+         4Gf6ZM/0OENEKbISFKtr8QglzDnMIZtRivGrhFX1YlRTkJ53MYWC1EpnNYEAEtynZd
+         ZAQWkPZwn5FKA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Aring <aahringo@redhat.com>,
-        lianhui tang <bluetlh@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>, alex.aring@gmail.com,
-        miquel.raynal@bootlin.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 03/15] ca8210: fix mac_len negative array access
-Date:   Sun, 19 Mar 2023 20:55:47 -0400
-Message-Id: <20230320005559.1429040-3-sashal@kernel.org>
+Cc:     Enrico Sau <enrico.sau@gmail.com>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, oliver@neukum.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 13/15] net: usb: cdc_mbim: avoid altsetting toggling for Telit FE990
+Date:   Sun, 19 Mar 2023 20:55:57 -0400
+Message-Id: <20230320005559.1429040-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230320005559.1429040-1-sashal@kernel.org>
 References: <20230320005559.1429040-1-sashal@kernel.org>
@@ -50,8 +47,8 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,35 +56,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Enrico Sau <enrico.sau@gmail.com>
 
-[ Upstream commit 6c993779ea1d0cccdb3a5d7d45446dd229e610a3 ]
+[ Upstream commit 418383e6ed6b4624a54ec05c535f13d184fbf33b ]
 
-This patch fixes a buffer overflow access of skb->data if
-ieee802154_hdr_peek_addrs() fails.
+Add quirk CDC_MBIM_FLAG_AVOID_ALTSETTING_TOGGLE for Telit FE990
+0x1081 composition in order to avoid bind error.
 
-Reported-by: lianhui tang <bluetlh@gmail.com>
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20230217042504.3303396-1-aahringo@redhat.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Enrico Sau <enrico.sau@gmail.com>
+Link: https://lore.kernel.org/r/20230306115933.198259-1-enrico.sau@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ieee802154/ca8210.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/usb/cdc_mbim.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 95ef3b6f98dd3..5beb447529f9e 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1956,6 +1956,8 @@ static int ca8210_skb_tx(
- 	 * packet
- 	 */
- 	mac_len = ieee802154_hdr_peek_addrs(skb, &header);
-+	if (mac_len < 0)
-+		return mac_len;
+diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
+index 414341c9cf5ae..6ad1fb00a35cd 100644
+--- a/drivers/net/usb/cdc_mbim.c
++++ b/drivers/net/usb/cdc_mbim.c
+@@ -663,6 +663,11 @@ static const struct usb_device_id mbim_devs[] = {
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
+ 	},
  
- 	secspec.security_level = header.sec.level;
- 	secspec.key_id_mode = header.sec.key_id_mode;
++	/* Telit FE990 */
++	{ USB_DEVICE_AND_INTERFACE_INFO(0x1bc7, 0x1081, USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
++	  .driver_info = (unsigned long)&cdc_mbim_info_avoid_altsetting_toggle,
++	},
++
+ 	/* default entry */
+ 	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_MBIM, USB_CDC_PROTO_NONE),
+ 	  .driver_info = (unsigned long)&cdc_mbim_info_zlp,
 -- 
 2.39.2
 
