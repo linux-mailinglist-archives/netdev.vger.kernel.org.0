@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C93A6C111B
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:46:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6A196C110F
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:45:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231237AbjCTLqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 07:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
+        id S230435AbjCTLpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 07:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231302AbjCTLqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:46:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2B11F481
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 04:45:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679312721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CLOkaIPcbDZ2yUkkPqS/xwMRngtYg0NdpldM46xyh/w=;
-        b=hvw5TJhFfswl7dp8fnVqv6wK2iyekHqb0P57wE9Y3T64Mf/erWi6TfKJlPrYNViEWO2eAH
-        lMeAIlFlQLJ2wIjK8VyfnG++arAf+J+5PA/DKr0dlIv+fHLMBPqkHLhtKlQkEdO1f3/Ddi
-        D6F+1qaSkiJJqNNRy0Cvz6w8XkB9ByQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-49-B-8ixrIIMjuFJ7nEn2DyGA-1; Mon, 20 Mar 2023 07:45:16 -0400
-X-MC-Unique: B-8ixrIIMjuFJ7nEn2DyGA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 15F493822DE1;
-        Mon, 20 Mar 2023 11:45:16 +0000 (UTC)
-Received: from dcaratti.users.ipa.redhat.com (unknown [10.45.226.105])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 07CC7C15BA0;
-        Mon, 20 Mar 2023 11:45:14 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ilya Maximets <i.maximets@ovn.org>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net/sched: act_tunnel_key: add support for "don't fragment"
-Date:   Mon, 20 Mar 2023 12:44:55 +0100
-Message-Id: <13672bdb258d2f261ef233033437f1034995785b.1679312049.git.dcaratti@redhat.com>
-In-Reply-To: <cover.1679312049.git.dcaratti@redhat.com>
-References: <cover.1679312049.git.dcaratti@redhat.com>
+        with ESMTP id S230336AbjCTLpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:45:14 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCF8158AC;
+        Mon, 20 Mar 2023 04:45:13 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id le6so12081717plb.12;
+        Mon, 20 Mar 2023 04:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679312713;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=2EdCdWaxl6aSDm2/QNnErzsl1SoS7RrMeG7Y44iKUtc=;
+        b=C8obbCNO7LejGk5rUhOzu1LitH8G2CvYqXpW3dW3Oedqzodtr0rk41gi7CdYDAge5j
+         oVRhkfHNTWVF07feFWtcK4fjvG1Cw8xPjJ/yb+jwE9eQmxViwPZfCvWGAuSHWMEnGQyh
+         w2nkV8EndlS0GjJNT/xy16JZhB9KQE9tqA8EwY5UajOpBYbi8M6u3UCtR9BTu8sQR030
+         v48qDfGg0zjHpIl1yLuMfT44LUxd8c/BOvTMkR7myfFgdhFt1oll9MAwbyP8j1s9Wv2+
+         +ta6yfTTS9m0S57Yxsl5jpMXMUs+tzI3oQdq/xwBLpeDdbYvBcVY6KwZnC1nE9NrOi6m
+         3rew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679312713;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2EdCdWaxl6aSDm2/QNnErzsl1SoS7RrMeG7Y44iKUtc=;
+        b=U5XZxMI7NBnxk71R/2tX0UD8i8gfy7AS6csbFws6qsBHZaEGhvZaJQE4E1PTtSyqRW
+         YbEklYEIV51QwZ22dUxF5YTzTSznaweG9fsw5T2izTJ16qQl/ZvcWKh8sNBLj48Ux3Jt
+         uC0E7QS9iOl1t1kDykh0kBRlFEAcAYkwbxb1D5MFRC/L12lV2r2GYY4kbitehpLU8TwJ
+         QKDRQPwiOvSGVyiNq/c7Gr/AHg1sYbb7Vm6WADckUcbFPACqk6xOvGn1yw3PHq1UQoWA
+         MKqBdM/3toyPh8K9isalpfZOcYs3vbwuHqPvIfg6bpwxVQDRndLKJprzWIDPpTOPU4JQ
+         suDQ==
+X-Gm-Message-State: AO0yUKVhieuCSH4hli+KnDKFIlC805WJ6/fPV5AVB+m8ZZmf7RsXpEqU
+        DXk315g9bBb3dTfCEP9ApMoEV7z7kHEJwxYfHJwAhPDwLvuqBw==
+X-Google-Smtp-Source: AK7set9lsKgECwAaF4Mi4ekuWPRLfs3oBAOMq5N51WI+PAYsScCs3n44HDIOR65QZyUd8NRcpIYl4X0qyGp2Zd9869A=
+X-Received: by 2002:a17:90a:e38b:b0:23d:33e5:33ec with SMTP id
+ b11-20020a17090ae38b00b0023d33e533ecmr4781688pjz.1.1679312712605; Mon, 20 Mar
+ 2023 04:45:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+From:   Ujjal Roy <royujjal@gmail.com>
+Date:   Mon, 20 Mar 2023 17:15:00 +0530
+Message-ID: <CAE2MWkm=zvkF_Ge1MH7vn+dmMboNt+pOEEVSgSeNNPRY5VmroA@mail.gmail.com>
+Subject: Multicast: handling of STA disconnect
+To:     roopa@nvidia.com, razor@blackwall.org, nikolay@nvidia.com
+Cc:     netdev@vger.kernel.org, Kernel <linux-kernel@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,257 +63,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-extend "act_tunnel_key" to allow specifying TUNNEL_DONT_FRAGMENT; add tdc
-selftest that verifies the control plane, and a kselftest for data plane.
+Hi Nikolay,
 
-Suggested-by: Ilya Maximets <i.maximets@ovn.org>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- include/uapi/linux/tc_act/tc_tunnel_key.h     |   1 +
- net/sched/act_tunnel_key.c                    |   6 +
- .../selftests/net/forwarding/tc_tunnel_key.sh | 161 ++++++++++++++++++
- .../tc-tests/actions/tunnel_key.json          |  25 +++
- 4 files changed, 193 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
+I have some query on multicast. When streams running on an STA and STA
+disconnected due to some reason. So, until the MDB is timed out the
+stream will be forwarded to the port and in turn to the driver and
+dropps there as no such STA.
 
-diff --git a/include/uapi/linux/tc_act/tc_tunnel_key.h b/include/uapi/linux/tc_act/tc_tunnel_key.h
-index 49ad4033951b..9d533fe91fac 100644
---- a/include/uapi/linux/tc_act/tc_tunnel_key.h
-+++ b/include/uapi/linux/tc_act/tc_tunnel_key.h
-@@ -34,6 +34,7 @@ enum {
- 					 */
- 	TCA_TUNNEL_KEY_ENC_TOS,		/* u8 */
- 	TCA_TUNNEL_KEY_ENC_TTL,		/* u8 */
-+	TCA_TUNNEL_KEY_NO_FRAG,		/* u8 */
- 	__TCA_TUNNEL_KEY_MAX,
- };
- 
-diff --git a/net/sched/act_tunnel_key.c b/net/sched/act_tunnel_key.c
-index 2d12d2626415..4841b97f8fd3 100644
---- a/net/sched/act_tunnel_key.c
-+++ b/net/sched/act_tunnel_key.c
-@@ -420,6 +420,10 @@ static int tunnel_key_init(struct net *net, struct nlattr *nla,
- 		    nla_get_u8(tb[TCA_TUNNEL_KEY_NO_CSUM]))
- 			flags &= ~TUNNEL_CSUM;
- 
-+		if (tb[TCA_TUNNEL_KEY_NO_FRAG] &&
-+		    nla_get_u8(tb[TCA_TUNNEL_KEY_NO_FRAG]))
-+			flags |= TUNNEL_DONT_FRAGMENT;
-+
- 		if (tb[TCA_TUNNEL_KEY_ENC_DST_PORT])
- 			dst_port = nla_get_be16(tb[TCA_TUNNEL_KEY_ENC_DST_PORT]);
- 
-@@ -747,6 +751,8 @@ static int tunnel_key_dump(struct sk_buff *skb, struct tc_action *a,
- 				   key->tp_dst)) ||
- 		    nla_put_u8(skb, TCA_TUNNEL_KEY_NO_CSUM,
- 			       !(key->tun_flags & TUNNEL_CSUM)) ||
-+		    nla_put_u8(skb, TCA_TUNNEL_KEY_NO_FRAG,
-+			       !!(key->tun_flags & TUNNEL_DONT_FRAGMENT)) ||
- 		    tunnel_key_opts_dump(skb, info))
- 			goto nla_put_failure;
- 
-diff --git a/tools/testing/selftests/net/forwarding/tc_tunnel_key.sh b/tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
-new file mode 100755
-index 000000000000..5ac184d51809
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
-@@ -0,0 +1,161 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+ALL_TESTS="tunnel_key_nofrag_test"
-+
-+NUM_NETIFS=4
-+source tc_common.sh
-+source lib.sh
-+
-+tcflags="skip_hw"
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/24
-+	forwarding_enable
-+	mtu_set $h1 1500
-+	tunnel_create h1-et vxlan 192.0.2.1 192.0.2.2 dev $h1 dstport 0 external
-+	tc qdisc add dev h1-et clsact
-+	mtu_set h1-et 1230
-+	mtu_restore $h1
-+	mtu_set $h1 1000
-+}
-+
-+h1_destroy()
-+{
-+	tc qdisc del dev h1-et clsact
-+	tunnel_destroy h1-et
-+	forwarding_restore
-+	mtu_restore $h1
-+	simple_if_fini $h1 192.0.2.1/24
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.2.2/24
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2 192.0.2.2/24
-+}
-+
-+switch_create()
-+{
-+	simple_if_init $swp1 192.0.2.2/24
-+	tc qdisc add dev $swp1 clsact
-+	simple_if_init $swp2 192.0.2.1/24
-+}
-+
-+switch_destroy()
-+{
-+	simple_if_fini $swp2 192.0.2.1/24
-+	tc qdisc del dev $swp1 clsact
-+	simple_if_fini $swp1 192.0.2.2/24
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	swp1=${NETIFS[p2]}
-+
-+	swp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	h1mac=$(mac_get $h1)
-+	h2mac=$(mac_get $h2)
-+
-+	swp1origmac=$(mac_get $swp1)
-+	swp2origmac=$(mac_get $swp2)
-+	ip link set $swp1 address $h2mac
-+	ip link set $swp2 address $h1mac
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+	switch_create
-+
-+	if ! tc action add action tunnel_key help 2>&1 | grep -q nofrag; then
-+		log_test "SKIP: iproute doesn't support nofrag"
-+		exit $ksft_skip
-+	fi
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+
-+	ip link set $swp2 address $swp2origmac
-+	ip link set $swp1 address $swp1origmac
-+}
-+
-+tunnel_key_nofrag_test()
-+{
-+	RET=0
-+	local i
-+
-+	tc filter add dev $swp1 ingress protocol ip pref 100 handle 100 \
-+		flower ip_flags nofrag action drop
-+	tc filter add dev $swp1 ingress protocol ip pref 101 handle 101 \
-+		flower ip_flags firstfrag action drop
-+	tc filter add dev $swp1 ingress protocol ip pref 102 handle 102 \
-+		flower ip_flags nofirstfrag action drop
-+
-+	# test 'nofrag' set
-+	tc filter add dev h1-et egress protocol all pref 1 handle 1 matchall $tcflags \
-+		action tunnel_key set src_ip 192.0.2.1 dst_ip 192.0.2.2 id 42 nofrag index 10
-+	$MZ h1-et -c 1 -p 930 -a 00:aa:bb:cc:dd:ee -b 00:ee:dd:cc:bb:aa -t ip -q
-+	tc_check_packets "dev $swp1 ingress" 100 1
-+	check_err $? "packet smaller than MTU was not tunneled"
-+
-+	$MZ h1-et -c 1 -p 931 -a 00:aa:bb:cc:dd:ee -b 00:ee:dd:cc:bb:aa -t ip -q
-+	tc_check_packets "dev $swp1 ingress" 100 1
-+	check_err $? "packet bigger than MTU matched nofrag (nofrag was set)"
-+	tc_check_packets "dev $swp1 ingress" 101 0
-+	check_err $? "packet bigger than MTU matched firstfrag (nofrag was set)"
-+	tc_check_packets "dev $swp1 ingress" 102 0
-+	check_err $? "packet bigger than MTU matched nofirstfrag (nofrag was set)"
-+
-+	# test 'nofrag' cleared
-+	tc actions change action tunnel_key set src_ip 192.0.2.1 dst_ip 192.0.2.2 id 42 index 10
-+	$MZ h1-et -c 1 -p 931 -a 00:aa:bb:cc:dd:ee -b 00:ee:dd:cc:bb:aa -t ip -q
-+	tc_check_packets "dev $swp1  ingress" 100 1
-+	check_err $? "packet bigger than MTU matched nofrag (nofrag was unset)"
-+	tc_check_packets "dev $swp1  ingress" 101 1
-+	check_err $? "packet bigger than MTU didn't match firstfrag (nofrag was unset) "
-+	tc_check_packets "dev $swp1 ingress" 102 1
-+	check_err $? "packet bigger than MTU didn't match nofirstfrag (nofrag was unset) "
-+
-+	for i in 100 101 102; do
-+		tc filter del dev $swp1 ingress protocol ip pref $i handle $i flower
-+	done
-+	tc filter del dev h1-et egress pref 1 handle 1 matchall
-+
-+	log_test "tunnel_key nofrag ($tcflags)"
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+tc_offload_check
-+if [[ $? -ne 0 ]]; then
-+	log_info "Could not test offloaded functionality"
-+else
-+	tcflags="skip_sw"
-+	tests_run
-+fi
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-index b40ee602918a..1ae51eadc477 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-@@ -983,5 +983,30 @@
-         "teardown": [
-             "$TC actions flush action tunnel_key"
-         ]
-+    },
-+    {
-+        "id": "6bda",
-+        "name": "Add tunnel_key action with nofrag option",
-+        "category": [
-+            "actions",
-+            "tunnel_key"
-+        ],
-+        "skip": "$TC actions add action tunnel_key help 2>&1 | grep -q nofrag",
-+        "setup": [
-+            [
-+                "$TC action flush action tunnel_key",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 10.10.10.1 dst_ip 10.10.10.2 id 1111 nofrag index 222",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions get action tunnel_key index 222",
-+        "matchPattern": "action order [0-9]+: tunnel_key.*src_ip 10.10.10.1.*dst_ip 10.10.10.2.*key_id 1111.*csum.*nofrag pipe.*index 222",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action tunnel_key"
-+        ]
-     }
- ]
--- 
-2.39.2
+So, is the multicast_eht handling this scenario to take any action
+immediately? If not, can we do this to take quick action to reduce
+overhead of memory and driver?
 
+I have an idea on this. Can we mark this port group (MDB entry) as
+INACTIVE from the WiFi disconnect event and skip forwarding the stream
+to this port in br_multicast_flood by applying the check? I can share
+the patch on this.
+
+Thanks,
+UjjaL Roy
