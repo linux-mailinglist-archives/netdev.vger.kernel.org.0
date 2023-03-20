@@ -2,76 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C93686C23F4
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 22:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3DB76C2465
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 23:17:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbjCTVhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 17:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
+        id S229687AbjCTWRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 18:17:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbjCTVgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 17:36:53 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644D426CFC;
-        Mon, 20 Mar 2023 14:35:45 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id x3so52293313edb.10;
-        Mon, 20 Mar 2023 14:35:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112; t=1679348131;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LRUPutZwNWZYPrEdHD3f1bxNn6Sbt826jZtmdfwtuO4=;
-        b=EZaHlDkDdBUQlLo202RLsbkBx+FqP9Je3xgomDebJzgbmwZjIND/+H7gqyF4g+5SUH
-         JqdvcUWhhGCXLci2T67q6gOsAjkpKhXDihEqMe5IlUp/I/V67XF832TbnqTmG/Kb8tgq
-         53xlKqfsMTvUg9a+0k6Z/RW9NVOdwLQZ8tzuSgJRJxMDk7RUHTYU8qyo7O8e/IWP+Ltb
-         K33vf9rvW4xKB8tuhfLS/dx6n5L4J6bOyu6BnV/JbaJmZICBEUWhwY53YHbV5ns6hv4U
-         eCEnVoUm0fBddpJWFURJjtFjkP4f8UbUM3asKuDCBcFv+mb3JEwrkRR4p7qxWz7fsMek
-         /iDA==
+        with ESMTP id S229511AbjCTWRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 18:17:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FCF31E31
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 15:16:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679350594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/pYp/+TvIZEdbO864hX1ZaEe6NV95MuM6NldpNo+j88=;
+        b=F7fLCCkOEqFA3I8Te7issJ2FFrCUNwgGZXX14nkLCCAhdWlJEUPMOt1D36d/PSYU2LbYIi
+        a5PPr6/9T+Qas26pYtjBfW+QZuG3jx9rYMXWhrColLmYlhxWP9rfdLZOjp5Mb5pZAYLEFu
+        y7acaOts5tDuzbW0Og+0F2+I/cMKAHw=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-146-xIwryPIMNJGfi8qbF1BLnA-1; Mon, 20 Mar 2023 18:16:32 -0400
+X-MC-Unique: xIwryPIMNJGfi8qbF1BLnA-1
+Received: by mail-oo1-f71.google.com with SMTP id s62-20020a4a5141000000b00537d702c199so3894111ooa.15
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 15:16:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679348131;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LRUPutZwNWZYPrEdHD3f1bxNn6Sbt826jZtmdfwtuO4=;
-        b=CbuLkeQUolnCYEz9HThP5dQJZkmTfw5Gtt2kMKka/Hurm0CYQVy0VUJbZNRDarMD1k
-         le4yIofMNpcdRTJinV6DBQRpdkiKZxVBTLPxAGwLrpStZmod5/qSNC05tPHXUTn5Z4Oy
-         35efDROxWYYDdeCuIeEUGPuX4m8TVfam1h5qsNDIWjz7docW6RPVshFNd530dJf7xXdo
-         a5T8XAAH9i0YuK3+3XA+EQEFqSORmRxNJovcv8FOM+g0SRZrbpWnULyFg7O6dJOkSVQi
-         X97Sy9Y1pqN3mPGPY1uIdAx8b2BAUozwLdiU1anEmnDn69oSxCfa5suxSP8fXHCtPQp5
-         JtLQ==
-X-Gm-Message-State: AO0yUKUQ4d+uTyIQIBejOmHNbXnyZEiuTwePytrH0bpQoyJluCcCA+x0
-        VKhZE59ef9fjEUHlLeFD8fnzv9h391s=
-X-Google-Smtp-Source: AK7set/taZhkIbhZ6VFy8gpVNGzgOUL+BlWY2PH1Hl9PmB/za6a2jleDoLUChmhenKP5msWXNsyFMw==
-X-Received: by 2002:aa7:c242:0:b0:500:5627:a20b with SMTP id y2-20020aa7c242000000b005005627a20bmr1095338edo.1.1679348131208;
-        Mon, 20 Mar 2023 14:35:31 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-2a01-0c22-73dd-8200-0000-0000-0000-0e63.c22.pool.telefonica.de. [2a01:c22:73dd:8200::e63])
-        by smtp.googlemail.com with ESMTPSA id z17-20020a5096d1000000b004aee4e2a56esm5413201eda.0.2023.03.20.14.35.30
+        d=1e100.net; s=20210112; t=1679350592;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/pYp/+TvIZEdbO864hX1ZaEe6NV95MuM6NldpNo+j88=;
+        b=KqwlTNpknsVhKS/UbtHW56eOzMTuMIRcVecKkjGoNccWxiPj6KstL2RlKUeMWnSR8q
+         mrs59y6RmTxeZJt0YVVmeLZjLwmspT3PbD4iVmmW6YwwSrSYonU+Wi8A+Jo/kQCrhdKa
+         ewFCIrH7v2kpP10E+q4YbUD6cn1YEQclaQzngEJk4QY8DiCcoHBPMi/lSaSGktPqwZ2K
+         5mrBPoWyvXWIhJz5ywxmUZuQQTIH1Z7TaquNOXjXar2y4gy822GDw6wt7MFKfEQfAgjG
+         g1SjIV8GEviT8WLpj0Oti+vKj95aH8S7kmPCV6zNuWJqLbPMeyTK7r/EApTyIyEB2BDQ
+         w9Lw==
+X-Gm-Message-State: AO0yUKUEbkKqSfG1wFp/X8NY7AdbWjqUDCuY2DlXKnK8SVNgWNHDh2z8
+        pp0t3e2uhIY48a8SEL+lIqdRWwrk0xUu6D3VsfMKJjoc8OIu4fu2GftRx6qQCV3sTPHYkpizG2s
+        84rKzOAAf7g5USXp5
+X-Received: by 2002:a05:6808:10c:b0:387:117f:f7fb with SMTP id b12-20020a056808010c00b00387117ff7fbmr25025oie.20.1679350592187;
+        Mon, 20 Mar 2023 15:16:32 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+FD0dDk0+dvXSvybPdytDkBKj3L/oyZtE72xtPkWildC/DlDoAUTQxy/hAD04b7A6y0cPDLA==
+X-Received: by 2002:a05:6808:10c:b0:387:117f:f7fb with SMTP id b12-20020a056808010c00b00387117ff7fbmr24984oie.20.1679350590464;
+        Mon, 20 Mar 2023 15:16:30 -0700 (PDT)
+Received: from halaney-x13s.redhat.com (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
+        by smtp.gmail.com with ESMTPSA id q204-20020a4a33d5000000b0053853156b5csm4092465ooq.8.2023.03.20.15.16.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 14:35:30 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Chris Morgan <macroalpha82@gmail.com>,
-        Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 9/9] wifi: rtw88: Add support for the SDIO based RTL8821CS chipset
-Date:   Mon, 20 Mar 2023 22:35:08 +0100
-Message-Id: <20230320213508.2358213-10-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.40.0
-In-Reply-To: <20230320213508.2358213-1-martin.blumenstingl@googlemail.com>
-References: <20230320213508.2358213-1-martin.blumenstingl@googlemail.com>
+        Mon, 20 Mar 2023 15:16:29 -0700 (PDT)
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com,
+        Andrew Halaney <ahalaney@redhat.com>
+Subject: [PATCH net-next v2 00/12] Add EMAC3 support for sa8540p-ride
+Date:   Mon, 20 Mar 2023 17:16:05 -0500
+Message-Id: <20230320221617.236323-1-ahalaney@redhat.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,104 +91,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wire up RTL8821CS chipset support using the new rtw88 SDIO HCI code as
-well as the existing RTL8821C chipset code.
+This is a forward port / upstream refactor of code delivered
+downstream by Qualcomm over at [0] to enable the DWMAC5 based
+implementation called EMAC3 on the sa8540p-ride dev board.
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
-Changes since v2:
-- sort includes alphabetically as suggested by Ping-Ke
-- add missing #include "main.h" (after it has been removed from sdio.h
-  in patch 2 from this series)
+From what I can tell with the board schematic in hand,
+as well as the code delivered, the main changes needed are:
 
-Changes since v1:
-- use /* ... */ style for copyright comments
+    1. A new address space layout for /dwmac5/EMAC3 MTL/DMA regs
+    2. A new programming sequence required for the EMAC3 base platforms
 
+This series makes those adaptations as well as other housekeeping items
+such as converting dt-bindings to yaml, adding clock descriptions, etc.
 
- drivers/net/wireless/realtek/rtw88/Kconfig    | 11 ++++++
- drivers/net/wireless/realtek/rtw88/Makefile   |  3 ++
- .../net/wireless/realtek/rtw88/rtw8821cs.c    | 36 +++++++++++++++++++
- 3 files changed, 50 insertions(+)
- create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cs.c
+[0] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/commit/510235ad02d7f0df478146fb00d7a4ba74821b17
 
-diff --git a/drivers/net/wireless/realtek/rtw88/Kconfig b/drivers/net/wireless/realtek/rtw88/Kconfig
-index 6b65da81127f..29eb2f8e0eb7 100644
---- a/drivers/net/wireless/realtek/rtw88/Kconfig
-+++ b/drivers/net/wireless/realtek/rtw88/Kconfig
-@@ -133,6 +133,17 @@ config RTW88_8821CE
- 
- 	  802.11ac PCIe wireless network adapter
- 
-+config RTW88_8821CS
-+	tristate "Realtek 8821CS SDIO wireless network adapter"
-+	depends on MMC
-+	select RTW88_CORE
-+	select RTW88_SDIO
-+	select RTW88_8821C
-+	help
-+	  Select this option will enable support for 8821CS chipset
-+
-+	  802.11ac SDIO wireless network adapter
-+
- config RTW88_8821CU
- 	tristate "Realtek 8821CU USB wireless network adapter"
- 	depends on USB
-diff --git a/drivers/net/wireless/realtek/rtw88/Makefile b/drivers/net/wireless/realtek/rtw88/Makefile
-index 6105c2745bda..82979b30ae8d 100644
---- a/drivers/net/wireless/realtek/rtw88/Makefile
-+++ b/drivers/net/wireless/realtek/rtw88/Makefile
-@@ -59,6 +59,9 @@ rtw88_8821c-objs		:= rtw8821c.o rtw8821c_table.o
- obj-$(CONFIG_RTW88_8821CE)	+= rtw88_8821ce.o
- rtw88_8821ce-objs		:= rtw8821ce.o
- 
-+obj-$(CONFIG_RTW88_8821CS)	+= rtw88_8821cs.o
-+rtw88_8821cs-objs		:= rtw8821cs.o
-+
- obj-$(CONFIG_RTW88_8821CU)	+= rtw88_8821cu.o
- rtw88_8821cu-objs		:= rtw8821cu.o
- 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821cs.c b/drivers/net/wireless/realtek/rtw88/rtw8821cs.c
-new file mode 100644
-index 000000000000..a359413369a4
---- /dev/null
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821cs.c
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/* Copyright(c) Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-+ */
-+
-+#include <linux/mmc/sdio_func.h>
-+#include <linux/mmc/sdio_ids.h>
-+#include <linux/module.h>
-+#include "main.h"
-+#include "rtw8821c.h"
-+#include "sdio.h"
-+
-+static const struct sdio_device_id rtw_8821cs_id_table[] =  {
-+	{
-+		SDIO_DEVICE(SDIO_VENDOR_ID_REALTEK,
-+			    SDIO_DEVICE_ID_REALTEK_RTW8821CS),
-+		.driver_data = (kernel_ulong_t)&rtw8821c_hw_spec,
-+	},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(sdio, rtw_8821cs_id_table);
-+
-+static struct sdio_driver rtw_8821cs_driver = {
-+	.name = "rtw_8821cs",
-+	.probe = rtw_sdio_probe,
-+	.remove = rtw_sdio_remove,
-+	.id_table = rtw_8821cs_id_table,
-+	.drv = {
-+		.pm = &rtw_sdio_pm_ops,
-+		.shutdown = rtw_sdio_shutdown,
-+	}
-+};
-+module_sdio_driver(rtw_8821cs_driver);
-+
-+MODULE_AUTHOR("Martin Blumenstingl <martin.blumenstingl@googlemail.com>");
-+MODULE_DESCRIPTION("Realtek 802.11ac wireless 8821cs driver");
-+MODULE_LICENSE("Dual BSD/GPL");
+v1: https://lore.kernel.org/netdev/20230313165620.128463-1-ahalaney@redhat.com/
+
+Thanks,
+Andrew
+
+Andrew Halaney (8):
+  dt-bindings: net: qcom,ethqos: Add Qualcomm sc8280xp compatibles
+  clk: qcom: gcc-sc8280xp: Add EMAC GDSCs
+  arm64: dts: qcom: sc8280xp: Add ethernet nodes
+  arm64: dts: qcom: sa8540p-ride: Add ethernet nodes
+  net: stmmac: Remove unnecessary if statement brackets
+  net: stmmac: dwmac-qcom-ethqos: Respect phy-mode and TX delay
+  net: stmmac: dwmac-qcom-ethqos: Use loopback_en for all speeds
+  net: stmmac: dwmac-qcom-ethqos: Add EMAC3 support
+
+Bhupesh Sharma (3):
+  dt-bindings: net: snps,dwmac: Update interrupt-names
+  dt-bindings: net: snps,dwmac: Add Qualcomm Ethernet ETHQOS compatibles
+  dt-bindings: net: qcom,ethqos: Convert bindings to yaml
+
+Brian Masney (1):
+  net: stmmac: Add EMAC3 variant of dwmac4
+
+ .../devicetree/bindings/net/qcom,ethqos.txt   |  66 ----
+ .../devicetree/bindings/net/qcom,ethqos.yaml  | 111 ++++++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |   9 +-
+ MAINTAINERS                                   |   2 +-
+ arch/arm64/boot/dts/qcom/sa8540p-ride.dts     | 181 ++++++++++
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi        |  53 +++
+ drivers/clk/qcom/gcc-sc8280xp.c               |  18 +
+ .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 161 ++++++---
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  32 +-
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c | 235 ++++++++++--
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 334 ++++++++++++++----
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  38 ++
+ .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  | 144 ++++++--
+ drivers/net/ethernet/stmicro/stmmac/hwif.c    |  29 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h    |   2 +
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   6 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  17 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |   9 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |   4 +-
+ include/dt-bindings/clock/qcom,gcc-sc8280xp.h |   2 +
+ include/linux/stmmac.h                        |   1 +
+ 21 files changed, 1196 insertions(+), 258 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.txt
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+
 -- 
-2.40.0
+2.39.2
 
