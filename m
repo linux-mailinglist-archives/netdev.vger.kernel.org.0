@@ -2,125 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 654A96C164C
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:04:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34BD76C16CB
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:09:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232097AbjCTPEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 11:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
+        id S232292AbjCTPJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 11:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232165AbjCTPEE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:04:04 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3679229402
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 08:00:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679324400; x=1710860400;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TRbUmWHnSkE7D/lu5e7kw8nA2AMjXdu8/aiMJ3BeZxs=;
-  b=MoOMsPQ7DaKqpqc2KcHJvogAaL0zG7yweqILOiwvjvIzOGKmxpUx0AUN
-   K939Y+kJKhQOT9tri2VIlHtF+Tvv50JtGq+JGW0pofVLk8SHSAZKrKm+d
-   Ub5jg/aQ2W1tiBP5GN64KIp7Y4MdfscH0DxM0YmXTc/asZOOSYV//v+hK
-   Knnp6jNcpNp+YOqSSM0Ol5opDhXKlClo1VVC3VT06Wa8Xa56wM88tIeMa
-   YT11Na7Vo/QpxAeF/SS2C3Z+5YG9CuPE+ev7xxwB0BOAcu3sjDHPMaMw1
-   XiEfbWROSAIiMHBdTQYUQWNe3Dffq2xe0cFiqv4E/Wmwb8L868p47X1Tt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="322523378"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="322523378"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 07:59:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="770219893"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="770219893"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 07:59:22 -0700
-Date:   Mon, 20 Mar 2023 15:59:14 +0100
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        piotr.raczynski@intel.com,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>
-Subject: Re: [PATCH net v2] ice: clear number of qs when rings are free
-Message-ID: <ZBh0wpx9kOU1LTDI@localhost.localdomain>
-References: <20230320112347.117363-1-michal.swiatkowski@linux.intel.com>
- <20230320115117.GK36557@unreal>
+        with ESMTP id S232203AbjCTPIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:08:46 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8FC0158B4;
+        Mon, 20 Mar 2023 08:04:14 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id j7so13433650ybg.4;
+        Mon, 20 Mar 2023 08:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679324652;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UfQbiHyuciDYZ6wT1sRsPTIPKxB7RSLYf+crBU68Qi0=;
+        b=j8k2+/3VarZSc/NMQHcwhYtJz5zq9bSfVj0k4A+7CeW8eANT8LP5VD7BHmhgHX+BHL
+         /w9tVseKnuZ0NocKzEf01YhSTVAMiO3FKqhd82rQjPvCkzAyu/7tHP1ZOPdfdNHyGM40
+         uk6Rq1tBGejbFEcol4lOS3uDHR66VPE32/lrvBj6htFlSrzaqqE+K3Mj3wCAuCXWfe6I
+         LX2l0cClZPaHrhyh658PZjq1UA80o5B1g0nMBdxA+tPMwYynkzsGkB0MeZP77a1Kg+ca
+         q/2oL7S1R29Px19BEeUxK/l3ElXHx1oZcv4b6C3vjnHCIrZSTRuhngXfBG8ewOSUFM0x
+         ta3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679324652;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UfQbiHyuciDYZ6wT1sRsPTIPKxB7RSLYf+crBU68Qi0=;
+        b=W902NNWLW1Qck8812qwZSjMup2XbCDxLiBQGILCvp4eKH27d+a3xp2D8HCmJe27BqA
+         DlwW2Uts2I7+WLFzeS1V0rsF8EOQTF8fxWJXYlhbe7ELkuM8Dopn8QvNgKxAxLJQ2dja
+         2BA1Ca5s5W4Nzx1jUOEj9J6pJH410S8fqbRFHkyo32hfZ95fqrNoTic9QzdAVrlk4Vhe
+         VnK04y8UAdbD8JLWMfMoH9zbZBOFhOVRBKt3mbaT1gXZqpwl5gG7g4kMgP//II5ttKIQ
+         YCPhJ8/oDOTIHkMrsh59fp+DD2noDvDPfBjmIbCSz79Iys1h3dhoz8rvWSMDy7npf6bf
+         y1XQ==
+X-Gm-Message-State: AO0yUKWbQqyLDCkLTmFJqGWQIGWkvq7r6d/wksBhC4UeAKe2Z9moqpxL
+        6g9PESM3f6Jtrqz+jTbGbttEenfnyHEzimn0Lp5SUo3MqdzH/g==
+X-Google-Smtp-Source: AK7set+T4SQFGUzShpw9RAeXFNVykJfZsE+AjE5Jgx8IMziSWwoV9OuKg6TnM2XPaYHyIKLIi1W7kJ7lL2bh7xi6vxE=
+X-Received: by 2002:a5b:c47:0:b0:ac9:cb97:bd0e with SMTP id
+ d7-20020a5b0c47000000b00ac9cb97bd0emr4310434ybr.5.1679324652143; Mon, 20 Mar
+ 2023 08:04:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230320115117.GK36557@unreal>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20230320105323.187307-1-nunog@fr24.com> <20230320110314.GJ36557@unreal>
+ <CAJ8uoz1kbFsttvWNTUdtYcwEa=hQvky2z0Jfn0=9b5v6m_FVXg@mail.gmail.com>
+ <20230320134058.GM36557@unreal> <CAJ8uoz2ctdQzG8V+13RUQW0BjK1-L6ckP=HbxcAz2xerYhCsLQ@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2ctdQzG8V+13RUQW0BjK1-L6ckP=HbxcAz2xerYhCsLQ@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 20 Mar 2023 16:04:00 +0100
+Message-ID: <CAJ8uoz3XqUOmrUhP0i5GZmYhvDHMB6vd6f68zqN1WcLqSiUcJg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunog@fr24.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 01:51:17PM +0200, Leon Romanovsky wrote:
-> On Mon, Mar 20, 2023 at 12:23:47PM +0100, Michal Swiatkowski wrote:
-> > In case rebuild fails not clearing this field can lead to call trace.
-> > 
-> > [  +0.009792] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> > [  +0.000009] #PF: supervisor read access in kernel mode
-> > [  +0.000006] #PF: error_code(0x0000) - not-present page
-> > [  +0.000005] PGD 0 P4D 0
-> > [  +0.000009] Oops: 0000 [#1] PREEMPT SMP PTI
-> > [  +0.000009] CPU: 45 PID: 77867 Comm: ice-ptp-0000:60 Kdump: loaded Tainted: G S         OE      6.2.0-rc6+ #110
-> > [  +0.000010] Hardware name: Dell Inc. PowerEdge R740/0JMK61, BIOS 2.11.2 004/21/2021
-> > [  +0.000005] RIP: 0010:ice_ptp_update_cached_phctime+0xb0/0x130 [ice]
-> > [  +0.000145] Code: fa 7e 55 48 8b 93 48 01 00 00 48 8b 0c fa 48 85 c9 74 e1 8b 51 68 85 d2 75 da 66 83 b9 86 04 00 00 00 74 d0 31 d2 48 8b 71 20 <48> 8b 34 d6 48 85 f6 74 07 48 89 86 d8 00 00 00 0f b7 b1 86 04 00
-> > [  +0.000008] RSP: 0018:ffffa036cf7c7ea8 EFLAGS: 00010246
-> > [  +0.000008] RAX: 174ab1a8ab400f43 RBX: ffff937cda2c01a0 RCX: ffff937cdca9b028
-> > [  +0.000005] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> > [  +0.000005] RBP: ffffa036cf7c7eb8 R08: 0000000000000000 R09: 0000000000000000
-> > [  +0.000005] R10: 0000000000000080 R11: 0000000000000001 R12: ffff937cdc971f40
-> > [  +0.000006] R13: ffff937cdc971f44 R14: 0000000000000001 R15: ffffffffc13f3210
-> > [  +0.000005] FS:  0000000000000000(0000) GS:ffff93826f980000(0000) knlGS:0000000000000000
-> > [  +0.000006] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [  +0.000006] CR2: 0000000000000000 CR3: 00000004b7310002 CR4: 00000000007726e0
-> > [  +0.000006] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > [  +0.000004] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > [  +0.000005] PKRU: 55555554
-> > [  +0.000004] Call Trace:
-> > [  +0.000004]  <TASK>
-> > [  +0.000007]  ice_ptp_periodic_work+0x2a/0x60 [ice]
-> > [  +0.000126]  kthread_worker_fn+0xa6/0x250
-> > [  +0.000014]  ? __pfx_kthread_worker_fn+0x10/0x10
-> > [  +0.000010]  kthread+0xfc/0x130
-> > [  +0.000009]  ? __pfx_kthread+0x10/0x10
-> > [  +0.000010]  ret_from_fork+0x29/0x50
-> > 
-> > ice_ptp_update_cached_phctime() is calling ice_for_each_rxq macro, in
-> > case of rebuild fail the rx_ring is NULL and there is NULL pointer
-> > dereference.
-> > 
-> > Also for future safety it is better to clear the size values for tx and
-> > rx ring when they are cleared.
-> > 
-> > Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
-> > Reported-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-> > Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> > ---
-> > v1 --> v2:
-> >  * change subject to net and add fixes tag
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> 
-> It will be so great if all these ice_for_each_*(*, i) macros will go.
-> They do nothing except hide basic for-loop.
+On Mon, 20 Mar 2023 at 14:45, Magnus Karlsson <magnus.karlsson@gmail.com> w=
+rote:
+>
+> On Mon, 20 Mar 2023 at 14:41, Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Mon, Mar 20, 2023 at 01:27:18PM +0100, Magnus Karlsson wrote:
+> > > On Mon, 20 Mar 2023 at 12:09, Leon Romanovsky <leon@kernel.org> wrote=
+:
+> > > >
+> > > > On Mon, Mar 20, 2023 at 10:53:23AM +0000, Nuno Gon=C3=A7alves wrote=
+:
+> > > > > The remap of fill and completion rings was frowned upon as they
+> > > > > control the usage of UMEM which does not support concurrent use.
+> > > > > At the same time this would disallow the remap of this rings
 
-Good point, I spent too much time searching which field is used there.
-Will try to propose sth.
+these rings
 
-Thanks for review
+> > > > > into another process.
+> > > > >
+> > > > > A possible use case is that the user wants to transfer the socket=
+/
+> > > > > UMEM ownerwhip to another process (via SYS_pidfd_getfd) and so
+> > >
+> > > nit: ownership
+> > >
+> > > > > would need to also remap this rings.
 
-> 
-> Thanks,
-> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+these rings
+
+> > > > >
+> > > > > This will have no impact on current usages and just relaxes the
+> > > > > remap limitation.
+> > > > >
+> > > > > Signed-off-by: Nuno Gon=C3=A7alves <nunog@fr24.com>
+> > > > > ---
+> > > > >  net/xdp/xsk.c | 9 ++++++---
+> > > > >  1 file changed, 6 insertions(+), 3 deletions(-)
+> > > > >
+> > > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > > > > index 2ac58b282b5eb..2af4ff64b22bd 100644
+> > > > > --- a/net/xdp/xsk.c
+> > > > > +++ b/net/xdp/xsk.c
+> > > > > @@ -1300,10 +1300,11 @@ static int xsk_mmap(struct file *file, st=
+ruct socket *sock,
+> > > > >  {
+> > > > >       loff_t offset =3D (loff_t)vma->vm_pgoff << PAGE_SHIFT;
+> > > > >       unsigned long size =3D vma->vm_end - vma->vm_start;
+> > > > > +     int state =3D READ_ONCE(xs->state);
+> > >
+> > > Reverse Christmas Tree notation here please. Move it one line down to
+> > > after the *xs declaration.
+> > >
+> > > > >       struct xdp_sock *xs =3D xdp_sk(sock->sk);
+> > > > >       struct xsk_queue *q =3D NULL;
+> > > > >
+> > > > > -     if (READ_ONCE(xs->state) !=3D XSK_READY)
+> > > > > +     if (!(state =3D=3D XSK_READY || state =3D=3D XSK_BOUND))
+> > > >
+> > > > This if(..) is actually:
+> > > >  if (state !=3D XSK_READY && state !=3D XSK_BOUND)
+> > >
+> > > Nuno had it like that to start with when he sent the patch privately
+> > > to me, but I responded that I prefered the current one. It is easier
+> > > to understand if read out aloud IMO.
+> >
+> > "Not equal" is much easier to understand than "not" of whole expression=
+.
+>
+> Then my brain is wired differently ;-).
+
+Nuno, please prepare a v2 by fixing the now four things above and
+reverting this if-expression to what you had before. It is two against
+one, so I yield. After that, it is good to go from my point of view.
+
+Thanks!
+
+> > > Do not have any strong feelings either way since the statements are e=
+quivalent.
+> > >
+> > > > Thanks
