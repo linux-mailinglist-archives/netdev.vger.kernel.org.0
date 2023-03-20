@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F396C1101
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 995846C1119
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:46:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbjCTLkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 07:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47066 "EHLO
+        id S231276AbjCTLqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 07:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbjCTLkH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:40:07 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9325C132C9;
-        Mon, 20 Mar 2023 04:39:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=mMu5YLP/jkTdIj0tnEnlgPK0Nfp3Fpp+6udewmgirXw=; b=rQVL0WSfI6DDRuaDEwJjml822x
-        KtD2v3CIHFYriDuEcS/4jsw7sMIu29l3YxeOvPW7AQVStBSosRBnhpzGCtNJTqKhaOXH3g/Hs2VEp
-        QiBBkJ0iwG9hePCrAi4tGgO3CJcfKk5uKSTzB8faTx2U0JEueCpcj3K8D815BgfQZHivCxTqgCuQH
-        5VGpiCW36UCDPR1FAcRswaokuMIeG8Q8VH3PGLYwRJxkHKHsM4QFwa5o5SNDpdOqlhGBAx/arsTuk
-        EU9ES962mB0vkzSC1W8rXTGIO23j+FLDvlaUseE2G8SA8BQE3+mhQy82SJxgvmvxVcFBQ5EuGz89y
-        T6gVTt3w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37718)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1peDrb-0007HS-54; Mon, 20 Mar 2023 11:39:43 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1peDrP-0006UF-Dn; Mon, 20 Mar 2023 11:39:31 +0000
-Date:   Mon, 20 Mar 2023 11:39:31 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Alexander Couzens <lynxis@fe80.eu>
-Subject: Re: [PATCH net-next v14 7/9] net: pcs: add driver for MediaTek SGMII
- PCS
-Message-ID: <ZBhF88FtX7ERqrw7@shell.armlinux.org.uk>
-References: <cover.1679230025.git.daniel@makrotopia.org>
- <cf8a52216cfe4651695669936bd4bb1b9500c57b.1679230025.git.daniel@makrotopia.org>
+        with ESMTP id S231229AbjCTLp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:45:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6461557D
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 04:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679312710;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=INF4O3g/252+V0l5EH2kOmgTnmLXGTRQexWdCjqcGG4=;
+        b=f1IzgTvKJwUy591SQohNrQ+3Ce4aNfwM2KE5hqnpm78UCtLMAkTt25L/fsy4FRQdBT1b77
+        0NyAygLWHNGBvBTZ2CMx4ktI4JfIsX+814JcT999cyGTrdyoNxgsU43RGv8UKXSvlBsy1d
+        sruEG/VMWhCjfrCLofuyGWuWOOdz9zI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-82-SxijK-EAPa-sH_BlX3M5SQ-1; Mon, 20 Mar 2023 07:45:07 -0400
+X-MC-Unique: SxijK-EAPa-sH_BlX3M5SQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7816185A78F;
+        Mon, 20 Mar 2023 11:45:06 +0000 (UTC)
+Received: from dcaratti.users.ipa.redhat.com (unknown [10.45.226.105])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C77C8C15BA0;
+        Mon, 20 Mar 2023 11:45:05 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2] net/sched: act_tunnel_key: add support for TUNNEL_DONT_FRAGMENT
+Date:   Mon, 20 Mar 2023 12:44:53 +0100
+Message-Id: <cover.1679312049.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cf8a52216cfe4651695669936bd4bb1b9500c57b.1679230025.git.daniel@makrotopia.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 12:57:50PM +0000, Daniel Golle wrote:
-> The SGMII core found in several MediaTek SoCs is identical to what can
-> also be found in MediaTek's MT7531 Ethernet switch IC.
-> As this has not always been clear, both drivers developed different
-> implementations to deal with the PCS.
-> Recently Alexander Couzens pointed out this fact which lead to the
-> development of this shared driver.
-> 
-> Add a dedicated driver, mostly by copying the code now found in the
-> Ethernet driver. The now redundant code will be removed by a follow-up
-> commit.
-> 
-> Suggested-by: Alexander Couzens <lynxis@fe80.eu>
-> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+- patch 1 extends tdc to skip tests when iproute2 support is missing
+- patch 2 extends TC tunnel_key action to add support for TUNNEL_DONT_FRAGMENT 
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Davide Caratti (2):
+  selftest: tc-testing: extend the "skip" property
+  net/sched: act_tunnel_key: add support for "don't fragment"
 
-Thanks!
+ include/uapi/linux/tc_act/tc_tunnel_key.h     |   1 +
+ net/sched/act_tunnel_key.c                    |   6 +
+ .../selftests/net/forwarding/tc_tunnel_key.sh | 161 ++++++++++++++++++
+ .../creating-testcases/AddingTestCases.txt    |   4 +-
+ .../tc-tests/actions/tunnel_key.json          |  25 +++
+ tools/testing/selftests/tc-testing/tdc.py     |  21 ++-
+ 6 files changed, 211 insertions(+), 7 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.39.2
+
