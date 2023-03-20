@@ -2,187 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF496C2297
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 21:25:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9712E6C2289
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 21:24:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbjCTUZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 16:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
+        id S229772AbjCTUY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 16:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbjCTUZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 16:25:04 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409F09E;
-        Mon, 20 Mar 2023 13:25:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679343902; x=1710879902;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KIVDdjsYnIsbLZQqcW5ppQQ9NCMVMlN1ylEKQ8oyZGY=;
-  b=bEos6USIPfLZey4HmrhykyJR/CT9apRb/9eOx8BbgbFqk5bkwAL6h51b
-   nSGdvp0lqjlzqyqz6+9vnzrcTWALfk0iWr11wVDMCHP8r+YnY760nb5H4
-   sBV8s/YxWCQ3abC45CFdaGaGyBoX2HchPjFjP94xAV6bGAzIbDGwN7fWK
-   uvmSRe05EsF0CNe8S0Mka91OZ76jl+RLCrwXHyk43RmjZ/gBoYkdA6BCi
-   dyRP832eB+4IN+L2qUm5D8YHL1VbaSrUvU2m3BEs5tE9xbt47oFi5+MJr
-   BU0JfKpLGlH1qvrI8R2iTLiW8vnUzyBgac08GDp2NkTN75u49VqqLnicX
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="319170103"
-X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="319170103"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 13:25:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="674546518"
-X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="674546518"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 20 Mar 2023 13:24:56 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1peM3r-000BI6-2k;
-        Mon, 20 Mar 2023 20:24:55 +0000
-Date:   Tue, 21 Mar 2023 04:24:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nuno =?iso-8859-1?Q?Gon=E7alves?= <nunog@fr24.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        netdev@vger.kernel.org,
-        Nuno =?iso-8859-1?Q?Gon=E7alves?= <nunog@fr24.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
-Message-ID: <202303210417.mv8mDIaV-lkp@intel.com>
-References: <20230320105323.187307-1-nunog@fr24.com>
+        with ESMTP id S229529AbjCTUYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 16:24:55 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914A99EDF
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 13:24:52 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id r16so14716413qtx.9
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 13:24:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1679343891;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pydtgT+7v0cju30MJcNRWWaLuxk5ERuwNf/eKdgFBIc=;
+        b=rXjX5bwIxHdfctQ6V3TG59Oyh3QpXwfzgUiGxqpkqiSZutjp00I48TAaSex3tgun/F
+         fmirya5bpOeZU0CD+L+3ghhdRdImBObY+fWeAsg/faiQs+/YB98ILJXNKWnzx+zh6zP+
+         dWAhNVVVcsG4nSyucT1R1HN6OSxs4HTZnq3O4dc+HJT49CrJjNjZ48UNdiVm+LeUlk+Q
+         IceFMgI+l4ZOK9ZzzvY/jqxd30i2PpqvbyvZlDkiVc66yqir2rgcgr+GPvslJsyOUaGs
+         PBdv6Z2zsSuqMXhQWSDTg7MK9rBKt607QD/4XSinJOh8DXqUZ82HLnox2/xrd9tmMqF+
+         wYag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679343891;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pydtgT+7v0cju30MJcNRWWaLuxk5ERuwNf/eKdgFBIc=;
+        b=p9cy12BJZ2/B33QtaZ5cwNEIvHzHB/P61C5JUxK4lGg7I97QOGRue8HjBUMxOKbrHo
+         KLHfamhlMQP6IKrDeaMnjU2oA4wRCobXdNjpN61x9uf/Fpwdp2ZUZZBvWKpAIKQLevBm
+         CPg1htQ/y74+n7KoLpbL5joKE7u1HlEFPyhtMq6LnvmD8t7B92FgAEyW1lY7R6iGYJE4
+         4G+rYA3Eb/1c9CDAOhrTGqFi4N3s0iqKFrnDYUrNyKWumNu04znYhHQm5+ScRcKyLnjC
+         CZPOUe8iNdQ1S67E9ZvTT2XSbcKWKUyubVFkxoE3Mz0V33BSfeAh1885wa4dq2taLTNP
+         no9g==
+X-Gm-Message-State: AO0yUKURpn/B971NLb7q82U2uUD0zNZcvynW9c+q46Sz9Cl7ScPvxhzg
+        H6BxX0K73v5VmQF3Ngv74FQKUzaLcM36KTE8BrovbQ==
+X-Google-Smtp-Source: AK7set/4fs8LRafPX4/mj6DOeUTP9gQaUhdfs+2p0RLSsRilO5Ui9bXCybb4NU4NJCFH1KhLpkKIGA==
+X-Received: by 2002:ac8:5c16:0:b0:3c0:401f:9c24 with SMTP id i22-20020ac85c16000000b003c0401f9c24mr662117qti.63.1679343891675;
+        Mon, 20 Mar 2023 13:24:51 -0700 (PDT)
+Received: from localhost.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id d184-20020a3768c1000000b0074688c36facsm2568371qkc.56.2023.03.20.13.24.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 13:24:51 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/3] net: ipa: fully support IPA v5.0
+Date:   Mon, 20 Mar 2023 15:24:44 -0500
+Message-Id: <20230320202447.2048016-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230320105323.187307-1-nunog@fr24.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nuno,
+At long last, add the IPA and GSI register definitions, and the
+configuration data required to support IPA v5.0.  This enables IPA
+support for the Qualcomm SDX65 SoC.
 
-Thank you for the patch! Yet something to improve:
+					-Alex
 
-[auto build test ERROR on bpf-next/master]
+Alex Elder (3):
+  net: ipa: add IPA v5.0 register definitions
+  net: ipa: add IPA v5.0 GSI register definitions
+  net: ipa: add IPA v5.0 configuration data
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nuno-Gon-alves/xsk-allow-remap-of-fill-and-or-completion-rings/20230320-190022
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-patch link:    https://lore.kernel.org/r/20230320105323.187307-1-nunog%40fr24.com
-patch subject: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
-config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20230321/202303210417.mv8mDIaV-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/56f6a0c68dd5f4419fd7685cc83ceee2c70f3f2e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nuno-Gon-alves/xsk-allow-remap-of-fill-and-or-completion-rings/20230320-190022
-        git checkout 56f6a0c68dd5f4419fd7685cc83ceee2c70f3f2e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303210417.mv8mDIaV-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
-           int state = READ_ONCE(xs->state);
-                                 ^
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
->> net/xdp/xsk.c:1303:24: error: use of undeclared identifier 'xs'
->> net/xdp/xsk.c:1303:6: error: initializing 'int' with an expression of incompatible type 'void'
-           int state = READ_ONCE(xs->state);
-               ^       ~~~~~~~~~~~~~~~~~~~~
->> net/xdp/xsk.c:1318:8: error: cannot take the address of an rvalue of type 'struct xsk_queue *'
-                           q = READ_ONCE(state == XSK_READY ? xs->fq_tmp :
-                               ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/rwonce.h:50:2: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-           ^           ~
-   include/asm-generic/rwonce.h:44:70: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                         ^ ~
-   net/xdp/xsk.c:1321:8: error: cannot take the address of an rvalue of type 'struct xsk_queue *'
-                           q = READ_ONCE(state == XSK_READY ? xs->cq_tmp :
-                               ^         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/rwonce.h:50:2: note: expanded from macro 'READ_ONCE'
-           __READ_ONCE(x);                                                 \
-           ^           ~
-   include/asm-generic/rwonce.h:44:70: note: expanded from macro '__READ_ONCE'
-   #define __READ_ONCE(x)  (*(const volatile __unqual_scalar_typeof(x) *)&(x))
-                                                                         ^ ~
-   10 errors generated.
-
-
-vim +/xs +1303 net/xdp/xsk.c
-
-  1297	
-  1298	static int xsk_mmap(struct file *file, struct socket *sock,
-  1299			    struct vm_area_struct *vma)
-  1300	{
-  1301		loff_t offset = (loff_t)vma->vm_pgoff << PAGE_SHIFT;
-  1302		unsigned long size = vma->vm_end - vma->vm_start;
-> 1303		int state = READ_ONCE(xs->state);
-  1304		struct xdp_sock *xs = xdp_sk(sock->sk);
-  1305		struct xsk_queue *q = NULL;
-  1306	
-  1307		if (!(state == XSK_READY || state == XSK_BOUND))
-  1308			return -EBUSY;
-  1309	
-  1310		if (offset == XDP_PGOFF_RX_RING) {
-  1311			q = READ_ONCE(xs->rx);
-  1312		} else if (offset == XDP_PGOFF_TX_RING) {
-  1313			q = READ_ONCE(xs->tx);
-  1314		} else {
-  1315			/* Matches the smp_wmb() in XDP_UMEM_REG */
-  1316			smp_rmb();
-  1317			if (offset == XDP_UMEM_PGOFF_FILL_RING)
-> 1318				q = READ_ONCE(state == XSK_READY ? xs->fq_tmp :
-  1319								   xs->pool->fq);
-  1320			else if (offset == XDP_UMEM_PGOFF_COMPLETION_RING)
-  1321				q = READ_ONCE(state == XSK_READY ? xs->cq_tmp :
-  1322								   xs->pool->cq);
-  1323		}
-  1324	
-  1325		if (!q)
-  1326			return -EINVAL;
-  1327	
-  1328		/* Matches the smp_wmb() in xsk_init_queue */
-  1329		smp_rmb();
-  1330		if (size > q->ring_vmalloc_size)
-  1331			return -EINVAL;
-  1332	
-  1333		return remap_vmalloc_range(vma, q->ring, 0);
-  1334	}
-  1335	
+ drivers/net/ipa/Makefile             |   4 +-
+ drivers/net/ipa/data/ipa_data-v5.0.c | 481 +++++++++++++++++++++++
+ drivers/net/ipa/gsi.h                |   4 +-
+ drivers/net/ipa/gsi_reg.c            |   3 +
+ drivers/net/ipa/gsi_reg.h            |   1 +
+ drivers/net/ipa/ipa_data.h           |   3 +-
+ drivers/net/ipa/ipa_main.c           |   6 +-
+ drivers/net/ipa/ipa_reg.c            |   2 +
+ drivers/net/ipa/ipa_reg.h            |   1 +
+ drivers/net/ipa/reg/gsi_reg-v5.0.c   | 317 +++++++++++++++
+ drivers/net/ipa/reg/ipa_reg-v5.0.c   | 564 +++++++++++++++++++++++++++
+ 11 files changed, 1380 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/ipa/data/ipa_data-v5.0.c
+ create mode 100644 drivers/net/ipa/reg/gsi_reg-v5.0.c
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v5.0.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.34.1
+
