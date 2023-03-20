@@ -2,81 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F336C1023
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE6D6C1047
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230519AbjCTLEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 07:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
+        id S229810AbjCTLID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 07:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbjCTLDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:03:45 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D147693
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 03:59:36 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id y14so11626393ljq.4
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 03:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679309972;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=UWGmTe6cHKLXfItotDWU53tPbM2QwDIy9fraKQP6pWc=;
-        b=l8XzT4Z5L7Z1Suv/sMMykA9BhEiikHcMBNKgvX+X4pMtJsM44VOi8FyEI2Bm5mP7Xh
-         Ho1d81zfF2TZrvUnYsTjWbMwy1T6HnRqyXmmPT06c5fD5B08Cc62InEfw6giHMrMwB77
-         kAyQ1hDMpm9scWz8micYKanhoIRlmfCiYtgkEHu08tOfMJwfQwGkb7BqZ40gWHKZRgnB
-         m9Bkeer3Mz6/y3PdZZKguNjiRqdmZdsHu82+da2xqVCAdeZmUkL3ytJHtTDyu34d5Jzj
-         hoDqYzzsKI+nk7O4KRdpd6n0fPD7OtlJHF/5rFXZXr4dW8meMZCZO/DxKj/Fa26ZJqfG
-         zsaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679309972;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UWGmTe6cHKLXfItotDWU53tPbM2QwDIy9fraKQP6pWc=;
-        b=Gou6eNT4Ju/xLTMVYQ2bApF+Na9tiz7F3b6d6F9/4tFxsMvLO94JgbQDDmp/i4XjSb
-         j+u8zN4+GXxpm46+p71J9PTlVOi0hOZauvtwC7oXWRQ6SdCAI+x8mPCHeu0GvzEZohhy
-         T2AkpHmaKC6ucN1awuOl8DWHiGYyNwyMP9xmrKijsymz0AB1yl8v1BMwHn+pjZ/JUFH6
-         IxCVhgD0Ex5nwO8qpFVdft21mLpcUyjzFvhHwj96aLCHFk4S3kqj6/Ps2gFh+2wluB1u
-         GCkmazfj/rcTuPnc5qHfWIpuPT/CQDScygiAHXghnbRnJ0TkpxZS3jA0byhTY+zqcK/U
-         kCmQ==
-X-Gm-Message-State: AO0yUKU8mogOXlqLjc5yy0aW5ejDXmg8NVHr83bj3KEUFTc2vLi51yfB
-        HGrVgW9Xef1JZPzKLwHYvdr+sQ==
-X-Google-Smtp-Source: AK7set9tM5PRfDurzmymTzNE12vthtHUPQDrRxC6SHxx5x5Vhd8wk3NJ/cEreblq8XGdz7zgDBkmIw==
-X-Received: by 2002:a2e:880d:0:b0:29b:d436:5c8a with SMTP id x13-20020a2e880d000000b0029bd4365c8amr1741092ljh.3.1679309972812;
-        Mon, 20 Mar 2023 03:59:32 -0700 (PDT)
-Received: from [192.168.1.101] (abym238.neoplus.adsl.tpnet.pl. [83.9.32.238])
-        by smtp.gmail.com with ESMTPSA id d3-20020ac25443000000b004e83f1da2b4sm1643915lfn.66.2023.03.20.03.59.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 03:59:32 -0700 (PDT)
-Message-ID: <515e4533-fd98-ec96-3e00-03d27168e576@linaro.org>
-Date:   Mon, 20 Mar 2023 11:59:31 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 2/3] arm64: dts: qcom: sc8280xp-x13s: add wifi calibration
- variant
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230242AbjCTLHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:07:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D74D449C;
+        Mon, 20 Mar 2023 04:03:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CD3AB80E39;
+        Mon, 20 Mar 2023 11:03:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DA8EC433D2;
+        Mon, 20 Mar 2023 11:03:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679310198;
+        bh=FE/th3Oj5FXqMW7qvNabQKdlCzCJHk9jDGONrfYIemE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VzjcxNbvQoEFFvmZ1Ih3G6Xh0c82ftIijBX0LrZfjd7G8j7ML2+++vAVcL3Dp3EMU
+         0Ztp7TA2sNzCeAN+QInBNteV/XjG7ZlqU7V2op8kCb6X+3vVA6+hN+8LdWwGr5si3K
+         SKX3vU8LE/uJ3Hk6paZpMPsfUJ8FqYZ1uuyunlRqsTdZm2zBsHhkb3LfE1J+cl3TeK
+         goikisadNJJEW3TB2/4nrpjgO/rpTrjMPC+2NKh48giU/1JdWbXxzmOmPB/VlxiGBy
+         fszOjloouN/kRGdAa9G0g8tXUt+VK3AitjIUF23hz+gWcGyGJuh5bvk9tUmLo1xcgo
+         6uGAjA2omCX3w==
+Date:   Mon, 20 Mar 2023 13:03:14 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Nuno =?iso-8859-1?Q?Gon=E7alves?= <nunog@fr24.com>
+Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230320104658.22186-1-johan+linaro@kernel.org>
- <20230320104658.22186-3-johan+linaro@kernel.org>
-From:   Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20230320104658.22186-3-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
+Message-ID: <20230320110314.GJ36557@unreal>
+References: <20230320105323.187307-1-nunog@fr24.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230320105323.187307-1-nunog@fr24.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,47 +66,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 20.03.2023 11:46, Johan Hovold wrote:
-> Describe the bus topology for PCIe domain 6 and add the ath11k
-> calibration variant so that the board file (calibration data) can be
-> loaded.
+On Mon, Mar 20, 2023 at 10:53:23AM +0000, Nuno Gonçalves wrote:
+> The remap of fill and completion rings was frowned upon as they
+> control the usage of UMEM which does not support concurrent use.
+> At the same time this would disallow the remap of this rings
+> into another process.
 > 
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216246
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> A possible use case is that the user wants to transfer the socket/
+> UMEM ownerwhip to another process (via SYS_pidfd_getfd) and so
+> would need to also remap this rings.
+> 
+> This will have no impact on current usages and just relaxes the
+> remap limitation.
+> 
+> Signed-off-by: Nuno Gonçalves <nunog@fr24.com>
 > ---
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-
-Konrad
->  .../dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts  | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+>  net/xdp/xsk.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> index 150f51f1db37..0051025e0aa8 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> @@ -711,6 +711,23 @@ &pcie4 {
->  	pinctrl-0 = <&pcie4_default>;
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 2ac58b282b5eb..2af4ff64b22bd 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -1300,10 +1300,11 @@ static int xsk_mmap(struct file *file, struct socket *sock,
+>  {
+>  	loff_t offset = (loff_t)vma->vm_pgoff << PAGE_SHIFT;
+>  	unsigned long size = vma->vm_end - vma->vm_start;
+> +	int state = READ_ONCE(xs->state);
+>  	struct xdp_sock *xs = xdp_sk(sock->sk);
+>  	struct xsk_queue *q = NULL;
 >  
->  	status = "okay";
-> +
-> +	pcie@0 {
-> +		device_type = "pci";
-> +		reg = <0x0 0x0 0x0 0x0 0x0>;
-> +		#address-cells = <3>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		bus-range = <0x01 0xff>;
-> +
-> +		wifi@0 {
-> +			compatible = "pci17cb,1103";
-> +			reg = <0x10000 0x0 0x0 0x0 0x0>;
-> +
-> +			qcom,ath11k-calibration-variant = "LE_X13S";
-> +		};
-> +	};
->  };
->  
->  &pcie4_phy {
+> -	if (READ_ONCE(xs->state) != XSK_READY)
+> +	if (!(state == XSK_READY || state == XSK_BOUND))
+
+This if(..) is actually:
+ if (state != XSK_READY && state != XSK_BOUND)
+
+Thanks
