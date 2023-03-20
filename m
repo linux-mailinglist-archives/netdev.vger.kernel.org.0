@@ -2,89 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5386C1EC7
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:59:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F09606C1F25
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 19:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbjCTR7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 13:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
+        id S230143AbjCTSKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 14:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbjCTR7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:59:16 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800177DB9;
-        Mon, 20 Mar 2023 10:54:13 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id k37so3032384lfv.0;
-        Mon, 20 Mar 2023 10:54:13 -0700 (PDT)
+        with ESMTP id S231128AbjCTSJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 14:09:43 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3EF2ED7C
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 11:03:42 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id l14so7465507pfc.11
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 11:03:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679334771;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=gjtrDHad5ipWXlVxyz0QsRXZabwmk49CGaT/vOXTHf0=;
-        b=p3/toevd5cdAOFepc8U00wh0VujMAkg5H7hvY28RJO9BNGcXHu3xtQrR7NEQi87jVs
-         fkinGfek9kZf9uraGEp9BXsdLLKyFT2O9mHG6tZE12ujpH0ckqd2PShBcKvtgOtbg0Cl
-         S2ROq9DrNBEy4ic071UXERs0rTz0lyUdDBHyHW9Biapd/rTkmSgtlad5e9XC2kAce1xF
-         C9MyghrxNHFppuaXg5ZY1LKBioZKaTNPHJbSvG5sge9pEl0JFptIBDfpg9tqO8013rO+
-         CM3dtBJbTMG++uwx2ntapkpECg6C3vDD+GWUoGmqw/KHFK80czd8KPXiku5ofw45xiu3
-         MrKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679334771;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20210112; t=1679335414;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gjtrDHad5ipWXlVxyz0QsRXZabwmk49CGaT/vOXTHf0=;
-        b=pOPD1q1jX4cEUln4WOHVRMWj7PqIfJb0xRmfwgg1UjuaqNPUiPMRi0OvI+dOKlhnCF
-         ymEe1gOK1k7xFIdhzlARi9BYf/0gJ7ldmXfoae08+L/6y8l7YCGK2X+DNW/HyWyZHQ5+
-         B6GKVLGSp/Mi2EQlc8eq3NfIn2lZqNLDunONGeh/hhgZrXCXSK9zfzF6y13vBRDWQj/0
-         zlDYjnxPF+nG9a+fYyACB2+9UiLLC+GxilppQs9qASd9D7WlV16qJOw6u9Dyonnkhb7M
-         2SNKuAGrHQQhqrHwTPEl7Rr8+ZlVFmpFqT2u51wbnUZxbH6jtGd48ifqzN+dWkh3UX6l
-         Xsog==
-X-Gm-Message-State: AO0yUKVahky1m35DGo+Zbc+NcsJx9hDXEMb3YJ3s1GRsRAjlyNcaaP7F
-        oYpnJ8NbMHiVdMnE/QGnMSM=
-X-Google-Smtp-Source: AK7set9IgQpjLnKLnivs0dm+tDOD+Xi6seUQ4pg7hGKKZTtq+nmT30KTq7k4NiYmLFVewzs6Fr/zNw==
-X-Received: by 2002:ac2:4830:0:b0:4e9:cfd2:e2d with SMTP id 16-20020ac24830000000b004e9cfd20e2dmr192306lft.65.1679334770529;
-        Mon, 20 Mar 2023 10:52:50 -0700 (PDT)
-Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.gmail.com with ESMTPSA id t8-20020a19ad08000000b004a9b9ccfbe6sm1802168lfc.51.2023.03.20.10.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 10:52:50 -0700 (PDT)
-Message-ID: <64189d72.190a0220.8d965.4a1c@mx.google.com>
-X-Google-Original-Message-ID: <ZBidb1GWPPNegi80@Ansuel-xps.>
-Date:   Mon, 20 Mar 2023 18:52:47 +0100
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v5 04/15] leds: Provide stubs for when CLASS_LED
- is disabled
-References: <20230319191814.22067-1-ansuelsmth@gmail.com>
- <20230319191814.22067-5-ansuelsmth@gmail.com>
- <aa2d0a8b-b98b-4821-9413-158be578e8e0@lunn.ch>
+        bh=By2HrF+dM2uC+wyLVH9+FbeO86XwO9j1poAl1RCgQac=;
+        b=D9nni/ZkYdHGKJGNf51fnrAMn0LyM5XEiY1jJuMPNQ7k+8PrCpjH+aMAAyU4RTWvkH
+         6zxVVZ2NoBsPGnYCLOMkh1bXey38NtCKrFHx6NEAtHm3mVsHHmAYpBElyfmGzXVJELoB
+         eH9/V+fVhrOcmTfqH1TpjFGKrgexSMaraAf7fRj/YaRkHMHTjh+myLQ2K7mQ3k9xqn6L
+         KbERBrR+jBdcOZeTewGqrRuZV/RR/uJ1dcu5VQh7oUtPugAIlOOz847J/wI/MlA1E7/O
+         DiP20dqJEmTPQdp+Ix5EgeHHcSy6wTzZr7ikPQbKul40DLvbsRFuwOs7HyOfR22NUdeJ
+         XtDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679335414;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=By2HrF+dM2uC+wyLVH9+FbeO86XwO9j1poAl1RCgQac=;
+        b=B0uZPAaeLv6hxPsLYb3YRDyDptrdORMKrcg+Cmsyk9vbgg31jhvCNCuODMX0uuSsEH
+         sZ6qoBOEWNeeEGdQOQA5F7AGlO3bz6X8mNF3ginM3fnJNlG+6pxgwtwnLDtQfwWeJHre
+         KHcNV8EeYJ5L82MVjPDm2V7VxLlkAQignLQ6x5gwhsGqC5P6Crzt+DhVXJNJT1L9t2ar
+         cnEi96LNK9cozDYWd0p8MdZG+pPfjQaON3kg3WHp8SkD2yDX+Vipt+ceJrVAVSHkQDOp
+         pZBq6Us2rjMJobLhMrV3y1bCwX05Sl5cyLmvqjm6yaGD/Zf1dAEgcz+nd8+XVHEITOSo
+         Reug==
+X-Gm-Message-State: AO0yUKUHzhK4uiTQxj4PE456sIlFTHkloEcfqb0rNN+qXk+DHmYG5AaK
+        KSloKItSWIgVk//ae2Y0YnrEW/myUBFbEfL1cWUEYw==
+X-Google-Smtp-Source: AK7set+mx5lPPV7pBciUwZy/GuxSLHRwM9NA7uJSZz5TSEBYf7x5+OOICdGNOfxddJfzI5wHIN/pTKGOC8WO+i/Ojw4=
+X-Received: by 2002:a65:51c3:0:b0:50b:dca1:b6f9 with SMTP id
+ i3-20020a6551c3000000b0050bdca1b6f9mr2130186pgq.1.1679335414505; Mon, 20 Mar
+ 2023 11:03:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa2d0a8b-b98b-4821-9413-158be578e8e0@lunn.ch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20230318002340.1306356-1-sdf@google.com> <20230318002340.1306356-2-sdf@google.com>
+ <20230317211814.0092b714@kernel.org>
+In-Reply-To: <20230317211814.0092b714@kernel.org>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 20 Mar 2023 11:03:21 -0700
+Message-ID: <CAKH8qBshpLzi50Ps+yerbjU06JgKq8uDW7jJLLtv28Mb4Q7Avg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/4] ynl: support be16 in schemas
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,26 +70,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 11:49:02PM +0100, Andrew Lunn wrote:
-> > +#if IS_ENABLED(CONFIG_LEDS_CLASS)
-> >  enum led_default_state led_init_default_state_get(struct fwnode_handle *fwnode);
-> > +#else
-> > +static inline enum led_default_state
-> > +led_init_default_state_get(struct fwnode_handle *fwnode)
-> > +{
-> > +	return LEDS_DEFSTATE_OFF;
-> > +}
-> > +#endif
-> 
-> 0-day is telling me i have this wrong. The function is in led-core.c,
-> so this should be CONFIG_NEW_LEDS, not CONFIG_LEDS_CLASS.
-> 
+On Fri, Mar 17, 2023 at 9:18=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Fri, 17 Mar 2023 17:23:37 -0700 Stanislav Fomichev wrote:
+> > ynl: support be16 in schemas
+>
+> https://docs.kernel.org/next/userspace-api/netlink/specs.html#byte-order
+>
+> byte-order: big-endian
+>
+> Looks like it's slightly supported in ynl-gen-c but indeed the CLI
+> lib doesn't have the parsing, yet.
 
-Any idea why? NEW_LEDS just enable LEDS_CLASS selection so why we need
-to use that? Should not make a difference (in theory)
-
-Anyway hoping every other patch and Documentation patch gets some review
-tag, v6 should be last revision I hope? (so we can move to LEDs stuff)
-
--- 
-	Ansuel
+Didn't know about this, will try to convert.
