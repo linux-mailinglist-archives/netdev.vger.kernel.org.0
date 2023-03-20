@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F886C138E
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:37:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8B26C1393
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:37:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231287AbjCTNhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 09:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
+        id S231732AbjCTNhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 09:37:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbjCTNg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:36:59 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B6D231E9;
-        Mon, 20 Mar 2023 06:36:46 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id z19so2029330plo.2;
-        Mon, 20 Mar 2023 06:36:46 -0700 (PDT)
+        with ESMTP id S231443AbjCTNhY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:37:24 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15DE2470B;
+        Mon, 20 Mar 2023 06:37:18 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id fy10-20020a17090b020a00b0023b4bcf0727so12445423pjb.0;
+        Mon, 20 Mar 2023 06:37:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679319406;
+        d=gmail.com; s=20210112; t=1679319438;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=F+RBm56r7Y5OPJGGXOR2z5S/kQ8hCSnX0int7hbaQUQ=;
-        b=KfoJkhRrznbYe4QlB2wv//uR1WJ90qiCWvxFBOQ+Nh/IL17RNW/5GeH5Rh4Kxh8xSH
-         sl4BkZq5Qr9Ys2AHZJFo3j29T59tTf7MwijFsUYgXErFFqmcTnugYviJYkdQyJ49KooV
-         GaiBa5/kZ8sE3CQo19OxQsJ1ZXDsqV8QdECzqYCh98teenaBKNb/+pFvBuGD26tkWmeu
-         qT24BRhEEVxPSdgTdnX9Qpye2FsllZW1x60axsnYTQAK7dsQCIaQcQdcDfBhda4bA1Tg
-         LMEz0PkMSTflWlKKxj/NoY6el5QG/rUn00Mu1uJHMNJNO4DBiU0JQJfW1MqJ3E7WBggs
-         6fqw==
+        bh=MdCkHnCKj4WxKKgtdRV6cXLUY/SN5CblWEdzRCWbv3w=;
+        b=aCsQBItgL7rYZVVavtmZ8FLX0aD4pxV16VYWD7jGIUvCioofzSwPG7YiYhvMlpJTTS
+         K3LXrXhXlX3kpyPzmCkX364nCde0xwhP+awzvB4EHIqsMkURmxmf4NHx58xSq2bIxMum
+         ooEVR7pnA8jUjJbiQhf/R+7PBDgebXtzUiqLCZ99APu4Qd8jilD8FlPM5uKHOkD4azIH
+         bPIfcx+civh2qo/iEPQ9V1A88m1oyDBgCCyYv3t0c9QYC2IKYzqQSdF88ytx8fJgtfuw
+         yhppThyuBX/16hkIU/mnMlGBGPhefNklXtQTqP+YWtLU1obJsD/YmfkK/2EMMJ7lstRQ
+         a1mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679319406;
+        d=1e100.net; s=20210112; t=1679319438;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=F+RBm56r7Y5OPJGGXOR2z5S/kQ8hCSnX0int7hbaQUQ=;
-        b=pNT3VGqUKRRHt8m8ukb467rxgo2ii8sDB7m6i2kIGXkjUlATUGtD/A7gyaQkckXk2f
-         XR7T1HUgQjgtbygkRPGLFaNq0nfowmpdWVqe4t3wwypdt2TbZj6MYFhl4+4HOJTNH0hK
-         kKciqbgTW5dKh9v+Lp8J4xUvrT3hERwEz1oyO1VOKjtbNeGU6Gp2Zpfa+xpIeoqg1D8D
-         nE0evM1oohuSQyyhcuWqd5WG6hX28CcUiQrDxP5tIapeYFEJWhMVhUTgKCIVkewlsYy/
-         vFsPijYd3lMNGkd5SC6AQEd3fgU7G2ckATagjDhJnHAG7qY88tWMqmXokDBdeUgM/kjf
-         DE9A==
-X-Gm-Message-State: AO0yUKVZuRRXzZ/Nz7DE4oVztuwiRvY90puSJCk/bXKpnTHocBZD7X2M
-        NPbgunmEIOXlAA6F5vzwfSY=
-X-Google-Smtp-Source: AK7set/c+yH2PnjG7GNjb+0At6KOC7ARNHAmwunlMFClFWJ4VuGMSdRmCZw0EjBpJK4BXQ++PHmBGQ==
-X-Received: by 2002:a05:6a20:b71c:b0:d6:d41e:87ee with SMTP id fg28-20020a056a20b71c00b000d6d41e87eemr11241392pzb.12.1679319405978;
-        Mon, 20 Mar 2023 06:36:45 -0700 (PDT)
+        bh=MdCkHnCKj4WxKKgtdRV6cXLUY/SN5CblWEdzRCWbv3w=;
+        b=1fVBR6fy6BeuHkWGWIa+70TLSbNdBjm2HsmZ2iUQbfBkpCWh4Xf0X9KP/JqMFLnejT
+         M+V7bwSHtu/4S0SLnBYNTD7msGPUADW9cjPq7FUTJad1WsHRhIMsVljqp1New+f3gB72
+         GPUo14XxAmP1fIG53TZDfdFU913ljViSuu1I9JWllMOfkwxsmru2ENOqJ0oB4qnSHQcQ
+         3AFbzhvsAkwQ9Zbps+YDWZ/goIxNXa2iyFXL2vmRDh1PVGOVYWa8ukWJemttRACo9vnN
+         SJF/LpUshrCoE2TlMjQhVYEdjIbVt86elAMJu5QqmTwgK19Tb5XY3TGRV9c4Tpne+Vfn
+         eMTQ==
+X-Gm-Message-State: AO0yUKVLDexgm2TpJOD/i3u8vkaGnMAUsIBToWuDA0PHSmFF5bLIXiZC
+        nAyMnGccSBcsnDctr2BfJGw=
+X-Google-Smtp-Source: AK7set+SfniZ1Jc6b7s2Hh/s9rzwZ8Mj5ijFU92/DCT+En5Dw+qToJpmpnvZW7Hkc5IP2UlA6nKN9w==
+X-Received: by 2002:a17:90a:1a49:b0:23f:10ee:feef with SMTP id 9-20020a17090a1a4900b0023f10eefeefmr19528672pjl.19.1679319438369;
+        Mon, 20 Mar 2023 06:37:18 -0700 (PDT)
 Received: from oslab.. ([106.39.42.159])
-        by smtp.gmail.com with ESMTPSA id n12-20020aa78a4c000000b005a8db4e3ecesm6373916pfa.69.2023.03.20.06.36.05
+        by smtp.gmail.com with ESMTPSA id n4-20020a17090ac68400b0023d1b9e17e2sm6118592pjt.31.2023.03.20.06.36.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 06:36:16 -0700 (PDT)
+        Mon, 20 Mar 2023 06:36:54 -0700 (PDT)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
 To:     johannes@sipsolutions.net, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>,
-        TOTE Robot <baijiaju@buaa.edu.cn>
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju@buaa.edu.cn>
 Subject: [PATCH] net: mac80211: Add NULL checks for sta->sdata
-Date:   Mon, 20 Mar 2023 21:36:01 +0800
-Message-Id: <20230320133601.2443821-1-baijiaju1990@gmail.com>
+Date:   Mon, 20 Mar 2023 21:36:44 +0800
+Message-Id: <20230320133644.2445321-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -69,6 +68,8 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+
+From: Jia-Ju Bai <baijiaju@buaa.edu.cn>
 
 In a previous commit 69403bad97aa, sta->sdata can be NULL, and thus it
 should be checked before being used.
@@ -98,8 +99,7 @@ should be added.
 
 These results are reported by a static tool designed by myself.
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Reported-by: TOTE Robot <baijiaju@buaa.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju@buaa.edu.cn>
 ---
  net/mac80211/agg-rx.c | 68 ++++++++++++++++++++++++++-----------------
  net/mac80211/agg-tx.c | 16 ++++++++--
