@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A5D6C1D35
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1906C1D3E
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:07:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233318AbjCTRGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 13:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39848 "EHLO
+        id S232317AbjCTRG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 13:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232338AbjCTRF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:05:59 -0400
+        with ESMTP id S232596AbjCTRGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:06:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B548269B;
-        Mon, 20 Mar 2023 10:00:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1937C3AA9;
+        Mon, 20 Mar 2023 10:01:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 781CB61711;
-        Mon, 20 Mar 2023 16:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85043C4339B;
-        Mon, 20 Mar 2023 16:59:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EB1161706;
+        Mon, 20 Mar 2023 16:59:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AB44C433D2;
+        Mon, 20 Mar 2023 16:59:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679331553;
-        bh=RPN5GKehZn7MatCJiaJVlbKQyXSE1v+L4syKACvc6v4=;
+        s=k20201202; t=1679331557;
+        bh=4/gQUt4YWFNm/6YwT4rVQA1tyKYT3o8UQlO++zo/1OQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q7kE/g/grJp2TGih7tfNFWvm5Zt0eLUv2hxrd2188xBXqzJ6sBudotFlJKy0C/GtZ
-         pmXPtBVNjnmLmgduzdwMEeCCSEa/UssLmNYIwEmuQI4TWoUV/El7UJx/r/v7cu6n/l
-         BRORfrJnUCJXUmYLaFU/gJq4ki/gsUGDVLVOh2+BUqPtgbA7skFuMGIIuvFJDWU/gV
-         qjJaYDoqQ85yg/+h9smoXjsBVdi2+7FhwuTpKQ0UKkS8PWrW+Ph52n/Bc/vbNnX4XA
-         6nQllJRFo9bvz6kzWnJARyO+VyNIK0SjUS+JsXU8906UvEvEtNtpEjneT79ZVfdi5A
-         IWRC0XoPA0XoQ==
+        b=c085N1aFCtD3ZLC4G1Wr8tStlsKV6pZIijpWWJYjGy3QwNos3yiXvlVHdk2EcxakJ
+         jiIUavZhu2ccRhaGs1ck01pU0vRKizw6jsvX6n/fuX3jtB6t5TF7fYzz9517/TEFPX
+         bQjo5Pq2woJfNNLCzww7s+ebjulp9XqmleR37touusZAD2xsFpIx5uaCtdndBhX3Rd
+         tubf6mrBkjcKWm+1+LFypVN0Xw83NqnhXEm3XT1bPcqc/+G/2rbZQj+yDQ5xSylJ17
+         su7dQ6q84anmfWwSWQqY3Dm5vnoyA3JKkhC/xwwNhIyJiUkZphjubGqb8tuqthCj+3
+         R6zxdpF/VtLBg==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -40,9 +40,9 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH net-next 06/10] dt-bindings: soc: mediatek: move ilm in a dedicated dts node
-Date:   Mon, 20 Mar 2023 17:58:00 +0100
-Message-Id: <c9b65ef3aeb28a50cec45d1f98aec72d8016c828.1679330630.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 07/10] arm64: dts: mt7986: move ilm in a dedicated node
+Date:   Mon, 20 Mar 2023 17:58:01 +0100
+Message-Id: <5e1168bc8fd29f4871f81d8e4a9fd43a2c3be146.1679330630.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1679330630.git.lorenzo@kernel.org>
 References: <cover.1679330630.git.lorenzo@kernel.org>
@@ -57,123 +57,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the cpuboot memory region is not part of the RAM SoC, move ilm in
-a deidicated syscon node.
+Since the ilm memory region is not part of the RAM SoC, move ilm in a
+deidicated syscon node.
 This patch helps to keep backward-compatibility with older version of
 uboot codebase where we have a limit of 8 reserved-memory dts child
 nodes.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../arm/mediatek/mediatek,mt7622-wed.yaml     | 14 +++---
- .../soc/mediatek/mediatek,mt7986-wo-ilm.yaml  | 45 +++++++++++++++++++
- 2 files changed, 53 insertions(+), 6 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-ilm.yaml
+ arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 34 +++++++++++------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-index 7f6638d43854..5d2397ec5891 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
-@@ -32,14 +32,12 @@ properties:
-   memory-region:
-     items:
-       - description: firmware EMI region
--      - description: firmware ILM region
-       - description: firmware DLM region
-       - description: firmware CPU DATA region
+diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+index 668b6cfa6a3d..a0d96d232ee5 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
+@@ -89,16 +89,6 @@ wo_emi1: wo-emi@4fd40000 {
+ 			no-map;
+ 		};
  
-   memory-region-names:
-     items:
-       - const: wo-emi
--      - const: wo-ilm
-       - const: wo-dlm
-       - const: wo-data
+-		wo_ilm0: wo-ilm@151e0000 {
+-			reg = <0 0x151e0000 0 0x8000>;
+-			no-map;
+-		};
+-
+-		wo_ilm1: wo-ilm@151f0000 {
+-			reg = <0 0x151f0000 0 0x8000>;
+-			no-map;
+-		};
+-
+ 		wo_data: wo-data@4fd80000 {
+ 			reg = <0 0x4fd80000 0 0x240000>;
+ 			no-map;
+@@ -454,11 +444,10 @@ wed0: wed@15010000 {
+ 			reg = <0 0x15010000 0 0x1000>;
+ 			interrupt-parent = <&gic>;
+ 			interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
+-			memory-region = <&wo_emi0>, <&wo_ilm0>, <&wo_dlm0>,
+-					<&wo_data>;
+-			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
+-					      "wo-data";
++			memory-region = <&wo_emi0>, <&wo_dlm0>, <&wo_data>;
++			memory-region-names = "wo-emi", "wo-dlm", "wo-data";
+ 			mediatek,wo-ccif = <&wo_ccif0>;
++			mediatek,wo-ilm = <&wo_ilm0>;
+ 			mediatek,wo-cpuboot = <&wo_cpuboot>;
+ 		};
  
-@@ -51,6 +49,10 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description: mediatek wed-wo cpuboot controller interface.
+@@ -468,11 +457,10 @@ wed1: wed@15011000 {
+ 			reg = <0 0x15011000 0 0x1000>;
+ 			interrupt-parent = <&gic>;
+ 			interrupts = <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>;
+-			memory-region = <&wo_emi1>, <&wo_ilm1>, <&wo_dlm1>,
+-					<&wo_data>;
+-			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
+-					      "wo-data";
++			memory-region = <&wo_emi1>, <&wo_dlm1>, <&wo_data>;
++			memory-region-names = "wo-emi", "wo-dlm", "wo-data";
+ 			mediatek,wo-ccif = <&wo_ccif1>;
++			mediatek,wo-ilm = <&wo_ilm1>;
+ 			mediatek,wo-cpuboot = <&wo_cpuboot>;
+ 		};
  
-+  mediatek,wo-ilm:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: mediatek wed-wo ilm interface.
-+
- allOf:
-   - if:
-       properties:
-@@ -63,6 +65,7 @@ allOf:
-         memory-region: false
-         mediatek,wo-ccif: false
-         mediatek,wo-cpuboot: false
-+        mediatek,wo-ilm: false
+@@ -490,6 +478,16 @@ wo_ccif1: syscon@151ad000 {
+ 			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
+ 		};
  
- required:
-   - compatible
-@@ -97,11 +100,10 @@ examples:
-         reg = <0 0x15010000 0 0x1000>;
-         interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
- 
--        memory-region = <&wo_emi>, <&wo_ilm>, <&wo_dlm>,
--                        <&wo_data>;
--        memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
--                              "wo-data";
-+        memory-region = <&wo_emi>, <&wo_dlm>, &wo_data>;
-+        memory-region-names = "wo-emi", "wo-dlm", "wo-data";
-         mediatek,wo-ccif = <&wo_ccif0>;
-         mediatek,wo-cpuboot = <&wo_cpuboot>;
-+        mediatek,wo-ilm = <&wo_ilm>;
-       };
-     };
-diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-ilm.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-ilm.yaml
-new file mode 100644
-index 000000000000..2a3775cd941e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-ilm.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mt7986-wo-ilm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++		wo_ilm0: syscon@151e0000 {
++			compatible = "mediatek,mt7986-wo-ilm", "syscon";
++			reg = <0 0x151e0000 0 0x8000>;
++		};
 +
-+title: MediaTek Wireless Ethernet Dispatch (WED) WO ILM firmware interface for MT7986
++		wo_ilm1: syscon@151f0000 {
++			compatible = "mediatek,mt7986-wo-ilm", "syscon";
++			reg = <0 0x151f0000 0 0x8000>;
++		};
 +
-+maintainers:
-+  - Lorenzo Bianconi <lorenzo@kernel.org>
-+  - Felix Fietkau <nbd@nbd.name>
-+
-+description:
-+  The MediaTek wo-ilm (Information Lifecycle Management) provides a configuration
-+  interface for WiFi critical data used by WED WO firmware. WED WO controller is
-+  used to perform offload rx packet processing (e.g. 802.11 aggregation packet
-+  reordering or rx header translation) on MT7986 soc.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - mediatek,mt7986-wo-ilm
-+      - const: syscon
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+
-+      syscon@151e0000 {
-+        compatible = "mediatek,mt7986-wo-ilm", "syscon";
-+        reg = <0 0x151e0000 0 0x8000>;
-+      };
-+    };
+ 		wo_cpuboot: syscon@15194000 {
+ 			compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
+ 			reg = <0 0x15194000 0 0x1000>;
 -- 
 2.39.2
 
