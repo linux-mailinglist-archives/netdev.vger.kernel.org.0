@@ -2,102 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7F06C1E60
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B116C1E66
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:46:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbjCTRny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 13:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        id S229847AbjCTRqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 13:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbjCTRne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:43:34 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64284EEF
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 10:39:14 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id cu12so2203910pfb.13
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 10:39:14 -0700 (PDT)
+        with ESMTP id S229813AbjCTRpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:45:38 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2989A2A178;
+        Mon, 20 Mar 2023 10:41:33 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id h31so7085781pgl.6;
+        Mon, 20 Mar 2023 10:41:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1679333953;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:subject:cc:to:from:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Mj8BMtgaqpcJ2izjHoCa3UBL6C1oS24zpeZ0O+klY+Q=;
-        b=Z3+VpLz+lOm8RKdKSJ/nRK4OcwRzXaiergdD3dh/LHJwXIL43nZZXSZvvei1uxJrrW
-         FKrtsg2XIWSzkx7w5Hte2o0ryKqwv7ugIIeLufW35kLDiwULMkpcynmBfHqmBFbGsA6l
-         OCIpwyBBoWAbT93Gxp+UflYk914/xh5zEO180=
+        d=gmail.com; s=20210112; t=1679334091;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+jXsORzAzATpiIMon/GzfxOK7NLxGV8EwmaMIYBmS0I=;
+        b=X3mlmfkdl1WpAb/hv+kWhBJGn/eOx9nnn8RjNStTAaTfxh9zjIzpbmxCN4LkVo59LL
+         d48b7/nMnQZYfb4Xn+Fnv1AYco0fp2qMYUVGkQJCJb9u+5Q6uWGObaRQRiU7MLlKgzvI
+         keEE6vI+SjAcMNrTQj+ni0Wl9iTq0mGRZwcJgvAFnUAdwFn/cxMrdkh701Ilv2Qohsrk
+         eqIlvT5wLH0Oj0hMIfFJ8ZS1Xt0+hSPeV+5HEqhMk0VRY55rcMhEkMYpfYIlnQUto5jH
+         P3RcfgKUfEIBzJAOMYkn5eHsT6k2QzUrVf0nhZs2SGAJkWdHDtUjzAoGsH6UEA7EMSLA
+         hfxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679333953;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:subject:cc:to:from:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Mj8BMtgaqpcJ2izjHoCa3UBL6C1oS24zpeZ0O+klY+Q=;
-        b=sX16G/SZqJYY1H2nzp8Or6wAtb5VwsxhMabVtIEzq8zQ9DT9c4p8K3qK71W/GYk7Q7
-         8NaRDWwPwHkboNhZTabq0NY0cK4ZrAZ2bUFtZQEkY19MTdCUcBXoSecKdtp5fn9byCwP
-         2oiiwC1yzuaZEpncQis7bgcYYzPF2Da/bLKR6hhkHLqdP1YO3bT7R9jq1iCp4I6gTUAP
-         /Yu1aufSrBfFcDxDv96qRy6DuaU6KD/aoWhqAheBvEU2KwuG9exdDPxE4gB7xq3sicLv
-         /bbL/SnwWxgszrxAsmJPoJxHvowz5DxTLGMGC1Yiyh3KPh0jNPKi874WGO8TTYtfkmsw
-         AbBA==
-X-Gm-Message-State: AO0yUKUv1a2HFyrszO1Qz/JEGyzjNqsdjO48PPJXZwGiYv+PTpBICZkF
-        AzcswQxo1v2fkDYYpv26oq4GJeDLQIw4gpLTFAM=
-X-Google-Smtp-Source: AK7set8IIyRVLx7g0PGp9Q0H2+W3ieCdIjaAbxCxs39Qs/AxGF7FAqBfxjixUjvjyvOasatQ54Y7HQ==
-X-Received: by 2002:a62:1881:0:b0:623:dfdd:f7eb with SMTP id 123-20020a621881000000b00623dfddf7ebmr152756pfy.12.1679333952731;
-        Mon, 20 Mar 2023 10:39:12 -0700 (PDT)
-Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id b5-20020aa78105000000b005938f5b7231sm6573800pfi.201.2023.03.20.10.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 10:39:12 -0700 (PDT)
-Message-ID: <64189a40.a70a0220.70bd2.b03b@mx.google.com>
-X-Google-Original-Message-ID: <202303201039.@keescook>
-Date:   Mon, 20 Mar 2023 10:39:11 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] rxrpc: Replace fake flex-array with flexible-array
- member
-References: <ZAZT11n4q5bBttW0@work>
+        d=1e100.net; s=20210112; t=1679334091;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+jXsORzAzATpiIMon/GzfxOK7NLxGV8EwmaMIYBmS0I=;
+        b=IylAli7VfncPeEcGeaveof/IkMkagVZ/4NyH9n/xpNpInJUOeo/qISvWtAE7oFolns
+         iM95kKIsF8LiacC2ZUWedHPB6BoXUc2LmLRADGZN++HDnpOfjZwDS//1u/VTTHDtu4Tf
+         txyJnQwncgvH8JmFQpxbWbxYQ9/ZS6cijtkgFj8oMFBsMIHl2VfKJ1vbnYzUUGDVmPnq
+         PtpQ8X+SlQkJE3G0RQaeUQngu8ikhrGdvC3YZ93sOmRQnOlf1JcQj+m4L1zKYZTPxcAn
+         UXxjVWEHb5V+cYevfCz9zJKIJjeXn68Cayr27BpTKbvsuqGMLUHUQgueXctr0J46VGsb
+         xmrA==
+X-Gm-Message-State: AO0yUKXadCh0nV4Sj8iYJS6ifKD2Zt35HhSax/gYF31FwsHHkA4u0k3b
+        qJosYtnYX7o4Tkd9g83eYAFg396Vaxvagdq+Pa4=
+X-Google-Smtp-Source: AK7set//+jyxRSt0k/E22iqEqLXnguu06v5ypSdA0D50hd788gr3RF0q6o+tORTrExIVAv9LiKvEqvWsazq5AekVz1E=
+X-Received: by 2002:a65:5183:0:b0:507:8088:9e0d with SMTP id
+ h3-20020a655183000000b0050780889e0dmr2197473pgq.7.1679334090955; Mon, 20 Mar
+ 2023 10:41:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZAZT11n4q5bBttW0@work>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <CAE2MWkm=zvkF_Ge1MH7vn+dmMboNt+pOEEVSgSeNNPRY5VmroA@mail.gmail.com>
+ <a4ce2c34-eabe-a11f-682a-4cecf6c3462b@blackwall.org> <CAE2MWkkDNZuThePts_nU-LNYryYyWTYOMk5gmuoCoGPh4bf4ag@mail.gmail.com>
+In-Reply-To: <CAE2MWkkDNZuThePts_nU-LNYryYyWTYOMk5gmuoCoGPh4bf4ag@mail.gmail.com>
+From:   Ujjal Roy <royujjal@gmail.com>
+Date:   Mon, 20 Mar 2023 23:11:19 +0530
+Message-ID: <CAE2MWkn=ygeVwj=j7ggLd+10mGjPJEC8Et5MGHVzs=dGWLccYg@mail.gmail.com>
+Subject: Re: Multicast: handling of STA disconnect
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     roopa@nvidia.com, netdev@vger.kernel.org,
+        Kernel <linux-kernel@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 06, 2023 at 02:57:59PM -0600, Gustavo A. R. Silva wrote:
-> Zero-length arrays as fake flexible arrays are deprecated and we are
-> moving towards adopting C99 flexible-array members instead.
-> 
-> Transform zero-length array into flexible-array member in struct
-> rxrpc_ackpacket.
-> 
-> Address the following warnings found with GCC-13 and
-> -fstrict-flex-arrays=3 enabled:
-> net/rxrpc/call_event.c:149:38: warning: array subscript i is outside array bounds of ‘uint8_t[0]’ {aka ‘unsigned char[]’} [-Warray-bounds=]
-> 
-> This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
-> routines on memcpy() and help us make progress towards globally
-> enabling -fstrict-flex-arrays=3 [1].
-> 
-> Link: https://github.com/KSPP/linux/issues/21
-> Link: https://github.com/KSPP/linux/issues/263
-> Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Hi Nik,
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Any idea if the station connects back immediately after say 10 sec?
+How to resume the session immediately if we delete the MDB on
+disconnect? Currently, the station needs to wait until the next
+general query to come to STA.
 
--- 
-Kees Cook
+My idea is to send a general query to that specific port to resume the
+session immediately from the STA connect event. This will create the
+MDB immediately and resume the stream, as we have deleted the MDB from
+disconnect.
+
+Thanks,
+UjjaL Roy
+
+On Mon, Mar 20, 2023 at 10:55=E2=80=AFPM Ujjal Roy <royujjal@gmail.com> wro=
+te:
+>
+> Hi Nik,
+>
+> Flushing MDB can only be done when we are managing it per station not
+> per port. For that we need to have MCAST_TO_UCAST, EHT and FAST_LEAVE.
+>
+> Here one more point is - some vendors may offload MCAST_TO_UCAST
+> conversion in their own FW to reduce CPU.
+>
+> So, the best way is to have MCAST_TO_UCAST enabled and MDB will become
+> per station, so we can delete MDB on disconnect. Shall, I create one
+> patch for review?
+>
+> Thanks,
+> UjjaL Roy
+>
+> On Mon, Mar 20, 2023 at 5:38=E2=80=AFPM Nikolay Aleksandrov <razor@blackw=
+all.org> wrote:
+> >
+> > On 20/03/2023 13:45, Ujjal Roy wrote:
+> > > Hi Nikolay,
+> > >
+> > > I have some query on multicast. When streams running on an STA and ST=
+A
+> > > disconnected due to some reason. So, until the MDB is timed out the
+> > > stream will be forwarded to the port and in turn to the driver and
+> > > dropps there as no such STA.
+> > >
+> > > So, is the multicast_eht handling this scenario to take any action
+> > > immediately? If not, can we do this to take quick action to reduce
+> > > overhead of memory and driver?
+> > >
+> > > I have an idea on this. Can we mark this port group (MDB entry) as
+> > > INACTIVE from the WiFi disconnect event and skip forwarding the strea=
+m
+> > > to this port in br_multicast_flood by applying the check? I can share
+> > > the patch on this.
+> > >
+> > > Thanks,
+> > > UjjaL Roy
+> >
+> > Hi,
+> > Fast leave and EHT (as that's v3's fast leave version) are about quickl=
+y converging when
+> > a leave is received (e.g. when there are no listeners to quickly remove=
+ the mdb). They
+> > don't deal with interface states (IIUC). Why don't you just flush the p=
+ort's mdb entries
+> > on disconnect? That would stop fwding.
+> >
+> > Cheers,
+> >  Nik
+> >
+> >
