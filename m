@@ -2,209 +2,378 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C8E6C1331
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:25:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D9D56C1339
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:26:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231752AbjCTNZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 09:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53146 "EHLO
+        id S231252AbjCTN0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 09:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbjCTNZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:25:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2279F1554C;
-        Mon, 20 Mar 2023 06:25:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BAF72CE128D;
-        Mon, 20 Mar 2023 13:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E84C433EF;
-        Mon, 20 Mar 2023 13:25:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679318721;
-        bh=UeZMrJPYit2H6JQDbNqKYT/xHNGfkb0l6hG4u2sVNTQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tsUDZOPWN+/gURT53qoxbgTGzlRCItwc9ET4fXPeJWEypvPWQn/OmuGHFs3t0grIj
-         o82Z7dmBL9ynomFmKnKn++bDLIXgHuU4tBYnxkoGT1zIcHpXcq67mFMLbo2eSx/A72
-         KxI8atK1HXSI5RG+ZA7uSDEklYV0sLHjuSRyFriGcVAh3G/V7RygXeaQjqI7z/EhGr
-         VBFSWZ3hfWeS865lIb7s1zQmpRXw4YpvX4vQGcsvs5sOJNU3cnMkr0/7Kmqtn9/DGf
-         jjUPJUjWm6vS4MR3/u6AvquYNlusBnScitIOfVJjIsQQOkEtgZ1LT8Kr1I/qOsBrY2
-         80iLS9I6BkdVA==
-Date:   Mon, 20 Mar 2023 14:25:17 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Cc:     linux-next <linux-next@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [next-20230317][PPC/MLX5][bisected 4d5ab0a] Boot WARNING: CPU: 0
- PID: 9 at net/core/dev.c:1928 call_netdevice_notifiers_info
-Message-ID: <ZBheva8pJ3VJq/pO@lore-desk>
-References: <7fe9d0b0-7d77-79cc-405d-3ca38b552782@linux.vnet.ibm.com>
+        with ESMTP id S229541AbjCTN0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:26:34 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40F12700
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 06:26:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1679318792; x=1710854792;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mwIWEFQ8WfMWzTSDlPtSxY5FU5J3TdZTo2/CIyiaJuU=;
+  b=brvzIf1O3rFgv8q7vP8iSiWfidi/MUbvzdjTIfKv/PKGMA2Nc8fumFUA
+   QPhWdpyl/7eYMEyIYFZik5SjaGMcN1IL3LbK8JPToPRtfU07QkhgVqttS
+   r4qDtCzI8w+HYGU6E5WHVH6sukIed60LT4AollNXjPrsWOx0he1ry8xgl
+   8=;
+X-IronPort-AV: E=Sophos;i="5.98,274,1673913600"; 
+   d="scan'208";a="309012837"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-366646a6.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 13:26:29 +0000
+Received: from EX19D020EUA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-m6i4x-366646a6.us-east-1.amazon.com (Postfix) with ESMTPS id C58E6A2774;
+        Mon, 20 Mar 2023 13:26:25 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D020EUA002.ant.amazon.com (10.252.50.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.21; Mon, 20 Mar 2023 13:26:24 +0000
+Received: from u570694869fb251.ant.amazon.com (10.85.143.172) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Mon, 20 Mar 2023 13:26:14 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "Jie Wang" <wangjie125@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH v6 net-next 2/7] ethtool: Add support for configuring tx_push_buf_len
+Date:   Mon, 20 Mar 2023 15:25:18 +0200
+Message-ID: <20230320132523.3203254-3-shayagr@amazon.com>
+X-Mailer: git-send-email 2.30.1
+In-Reply-To: <20230320132523.3203254-1-shayagr@amazon.com>
+References: <20230320132523.3203254-1-shayagr@amazon.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VPexZZeqZEVbmK5a"
-Content-Disposition: inline
-In-Reply-To: <7fe9d0b0-7d77-79cc-405d-3ca38b552782@linux.vnet.ibm.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.85.143.172]
+X-ClientProxiedBy: EX19D038UWC003.ant.amazon.com (10.13.139.209) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-11.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This attribute, which is part of ethtool's ring param configuration
+allows the user to specify the maximum number of the packet's payload
+that can be written directly to the device.
 
---VPexZZeqZEVbmK5a
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Example usage:
+    # ethtool -G [interface] tx-push-buf-len [number of bytes]
 
-> Greeting's
->=20
-> Warning is seen while booting kernels from 6.3.0-rc3-next-20230317 on my
-> powerpc Power 10 LPAR
->=20
-> Boots fine without warnings when below patch is reverted
->=20
-> commit 4d5ab0ad964df178beba031b89429a601893ff61
-> Author: Lorenzo Bianconi <lorenzo@kernel.org>
-> Date:   Thu Mar 9 13:25:31 2023 +0100
->=20
->     net/mlx5e: take into account device reconfiguration for xdp_features
-> flag
->=20
->     Take into account LRO and GRO configuration setting device xdp_featur=
-es
->     flag. Consider channel rq_wq_type enabling rx scatter-gatter support =
-in
->     xdp_features flag and disable NETDEV_XDP_ACT_NDO_XMIT_SG since it is =
-not
->     supported yet by the driver.
->     Moreover always enable NETDEV_XDP_ACT_NDO_XMIT as the ndo_xdp_xmit
->=20
-> 4d5ab0ad got introduced in next-20230314
->=20
-> @Lorenzo Could you please look into this
+Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+---
+ Documentation/netlink/specs/ethtool.yaml     |  8 ++++
+ Documentation/networking/ethtool-netlink.rst | 47 +++++++++++++-------
+ include/linux/ethtool.h                      | 14 ++++--
+ include/uapi/linux/ethtool_netlink.h         |  2 +
+ net/ethtool/netlink.h                        |  2 +-
+ net/ethtool/rings.c                          | 34 +++++++++++++-
+ 6 files changed, 84 insertions(+), 23 deletions(-)
 
-I would say this issue has been already fixed by Jakub here:
+diff --git a/Documentation/netlink/specs/ethtool.yaml b/Documentation/netlink/specs/ethtool.yaml
+index 4727c067e2ba..6d8ae3d9a680 100644
+--- a/Documentation/netlink/specs/ethtool.yaml
++++ b/Documentation/netlink/specs/ethtool.yaml
+@@ -165,6 +165,12 @@ attribute-sets:
+       -
+         name: rx-push
+         type: u8
++      -
++        name: tx-push-buf-len
++        type: u32
++      -
++        name: tx-push-buf-len-max
++        type: u32
+ 
+   -
+     name: mm-stat
+@@ -311,6 +317,8 @@ operations:
+             - cqe-size
+             - tx-push
+             - rx-push
++            - tx-push-buf-len
++            - tx-push-buf-len-max
+       dump: *ring-get-op
+     -
+       name: rings-set
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index e1bc6186d7ea..cd0973d4ba01 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -860,22 +860,24 @@ Request contents:
+ 
+ Kernel response contents:
+ 
+-  ====================================  ======  ===========================
+-  ``ETHTOOL_A_RINGS_HEADER``            nested  reply header
+-  ``ETHTOOL_A_RINGS_RX_MAX``            u32     max size of RX ring
+-  ``ETHTOOL_A_RINGS_RX_MINI_MAX``       u32     max size of RX mini ring
+-  ``ETHTOOL_A_RINGS_RX_JUMBO_MAX``      u32     max size of RX jumbo ring
+-  ``ETHTOOL_A_RINGS_TX_MAX``            u32     max size of TX ring
+-  ``ETHTOOL_A_RINGS_RX``                u32     size of RX ring
+-  ``ETHTOOL_A_RINGS_RX_MINI``           u32     size of RX mini ring
+-  ``ETHTOOL_A_RINGS_RX_JUMBO``          u32     size of RX jumbo ring
+-  ``ETHTOOL_A_RINGS_TX``                u32     size of TX ring
+-  ``ETHTOOL_A_RINGS_RX_BUF_LEN``        u32     size of buffers on the ring
+-  ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT``    u8      TCP header / data split
+-  ``ETHTOOL_A_RINGS_CQE_SIZE``          u32     Size of TX/RX CQE
+-  ``ETHTOOL_A_RINGS_TX_PUSH``           u8      flag of TX Push mode
+-  ``ETHTOOL_A_RINGS_RX_PUSH``           u8      flag of RX Push mode
+-  ====================================  ======  ===========================
++  =======================================   ======  ===========================
++  ``ETHTOOL_A_RINGS_HEADER``                nested  reply header
++  ``ETHTOOL_A_RINGS_RX_MAX``                u32     max size of RX ring
++  ``ETHTOOL_A_RINGS_RX_MINI_MAX``           u32     max size of RX mini ring
++  ``ETHTOOL_A_RINGS_RX_JUMBO_MAX``          u32     max size of RX jumbo ring
++  ``ETHTOOL_A_RINGS_TX_MAX``                u32     max size of TX ring
++  ``ETHTOOL_A_RINGS_RX``                    u32     size of RX ring
++  ``ETHTOOL_A_RINGS_RX_MINI``               u32     size of RX mini ring
++  ``ETHTOOL_A_RINGS_RX_JUMBO``              u32     size of RX jumbo ring
++  ``ETHTOOL_A_RINGS_TX``                    u32     size of TX ring
++  ``ETHTOOL_A_RINGS_RX_BUF_LEN``            u32     size of buffers on the ring
++  ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT``        u8      TCP header / data split
++  ``ETHTOOL_A_RINGS_CQE_SIZE``              u32     Size of TX/RX CQE
++  ``ETHTOOL_A_RINGS_TX_PUSH``               u8      flag of TX Push mode
++  ``ETHTOOL_A_RINGS_RX_PUSH``               u8      flag of RX Push mode
++  ``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN``       u32     size of TX push buffer
++  ``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX``   u32     max size of TX push buffer
++  =======================================   ======  ===========================
+ 
+ ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT`` indicates whether the device is usable with
+ page-flipping TCP zero-copy receive (``getsockopt(TCP_ZEROCOPY_RECEIVE)``).
+@@ -891,6 +893,18 @@ through MMIO writes, thus reducing the latency. However, enabling this feature
+ may increase the CPU cost. Drivers may enforce additional per-packet
+ eligibility checks (e.g. on packet size).
+ 
++``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN`` specifies the maximum number of bytes of a
++transmitted packet a driver can push directly to the underlying device
++('push' mode). Pushing some of the payload bytes to the device has the
++advantages of reducing latency for small packets by avoiding DMA mapping (same
++as ``ETHTOOL_A_RINGS_TX_PUSH`` parameter) as well as allowing the underlying
++device to process packet headers ahead of fetching its payload.
++This can help the device to make fast actions based on the packet's headers.
++This is similar to the "tx-copybreak" parameter, which copies the packet to a
++preallocated DMA memory area instead of mapping new memory. However,
++tx-push-buff parameter copies the packet directly to the device to allow the
++device to take faster actions on the packet.
++
+ RINGS_SET
+ =========
+ 
+@@ -908,6 +922,7 @@ Request contents:
+   ``ETHTOOL_A_RINGS_CQE_SIZE``          u32     Size of TX/RX CQE
+   ``ETHTOOL_A_RINGS_TX_PUSH``           u8      flag of TX Push mode
+   ``ETHTOOL_A_RINGS_RX_PUSH``           u8      flag of RX Push mode
++  ``ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN``   u32     size of TX push buffer
+   ====================================  ======  ===========================
+ 
+ Kernel checks that requested ring sizes do not exceed limits reported by
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 2792185dda22..798d35890118 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -75,6 +75,8 @@ enum {
+  * @tx_push: The flag of tx push mode
+  * @rx_push: The flag of rx push mode
+  * @cqe_size: Size of TX/RX completion queue event
++ * @tx_push_buf_len: Size of TX push buffer
++ * @tx_push_buf_max_len: Maximum allowed size of TX push buffer
+  */
+ struct kernel_ethtool_ringparam {
+ 	u32	rx_buf_len;
+@@ -82,6 +84,8 @@ struct kernel_ethtool_ringparam {
+ 	u8	tx_push;
+ 	u8	rx_push;
+ 	u32	cqe_size;
++	u32	tx_push_buf_len;
++	u32	tx_push_buf_max_len;
+ };
+ 
+ /**
+@@ -90,12 +94,14 @@ struct kernel_ethtool_ringparam {
+  * @ETHTOOL_RING_USE_CQE_SIZE: capture for setting cqe_size
+  * @ETHTOOL_RING_USE_TX_PUSH: capture for setting tx_push
+  * @ETHTOOL_RING_USE_RX_PUSH: capture for setting rx_push
++ * @ETHTOOL_RING_USE_TX_PUSH_BUF_LEN: capture for setting tx_push_buf_len
+  */
+ enum ethtool_supported_ring_param {
+-	ETHTOOL_RING_USE_RX_BUF_LEN = BIT(0),
+-	ETHTOOL_RING_USE_CQE_SIZE   = BIT(1),
+-	ETHTOOL_RING_USE_TX_PUSH    = BIT(2),
+-	ETHTOOL_RING_USE_RX_PUSH    = BIT(3),
++	ETHTOOL_RING_USE_RX_BUF_LEN		= BIT(0),
++	ETHTOOL_RING_USE_CQE_SIZE		= BIT(1),
++	ETHTOOL_RING_USE_TX_PUSH		= BIT(2),
++	ETHTOOL_RING_USE_RX_PUSH		= BIT(3),
++	ETHTOOL_RING_USE_TX_PUSH_BUF_LEN	= BIT(4),
+ };
+ 
+ #define __ETH_RSS_HASH_BIT(bit)	((u32)1 << (bit))
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index d39ce21381c5..1ebf8d455f07 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -357,6 +357,8 @@ enum {
+ 	ETHTOOL_A_RINGS_CQE_SIZE,			/* u32 */
+ 	ETHTOOL_A_RINGS_TX_PUSH,			/* u8 */
+ 	ETHTOOL_A_RINGS_RX_PUSH,			/* u8 */
++	ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN,		/* u32 */
++	ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX,		/* u32 */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_RINGS_CNT,
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index f7b189ed96b2..79424b34b553 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -413,7 +413,7 @@ extern const struct nla_policy ethnl_features_set_policy[ETHTOOL_A_FEATURES_WANT
+ extern const struct nla_policy ethnl_privflags_get_policy[ETHTOOL_A_PRIVFLAGS_HEADER + 1];
+ extern const struct nla_policy ethnl_privflags_set_policy[ETHTOOL_A_PRIVFLAGS_FLAGS + 1];
+ extern const struct nla_policy ethnl_rings_get_policy[ETHTOOL_A_RINGS_HEADER + 1];
+-extern const struct nla_policy ethnl_rings_set_policy[ETHTOOL_A_RINGS_RX_PUSH + 1];
++extern const struct nla_policy ethnl_rings_set_policy[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX + 1];
+ extern const struct nla_policy ethnl_channels_get_policy[ETHTOOL_A_CHANNELS_HEADER + 1];
+ extern const struct nla_policy ethnl_channels_set_policy[ETHTOOL_A_CHANNELS_COMBINED_COUNT + 1];
+ extern const struct nla_policy ethnl_coalesce_get_policy[ETHTOOL_A_COALESCE_HEADER + 1];
+diff --git a/net/ethtool/rings.c b/net/ethtool/rings.c
+index f358cd57d094..1c4972526142 100644
+--- a/net/ethtool/rings.c
++++ b/net/ethtool/rings.c
+@@ -11,6 +11,7 @@ struct rings_reply_data {
+ 	struct ethnl_reply_data		base;
+ 	struct ethtool_ringparam	ringparam;
+ 	struct kernel_ethtool_ringparam	kernel_ringparam;
++	u32				supported_ring_params;
+ };
+ 
+ #define RINGS_REPDATA(__reply_base) \
+@@ -32,6 +33,8 @@ static int rings_prepare_data(const struct ethnl_req_info *req_base,
+ 
+ 	if (!dev->ethtool_ops->get_ringparam)
+ 		return -EOPNOTSUPP;
++
++	data->supported_ring_params = dev->ethtool_ops->supported_ring_params;
+ 	ret = ethnl_ops_begin(dev);
+ 	if (ret < 0)
+ 		return ret;
+@@ -57,7 +60,9 @@ static int rings_reply_size(const struct ethnl_req_info *req_base,
+ 	       nla_total_size(sizeof(u8))  +	/* _RINGS_TCP_DATA_SPLIT */
+ 	       nla_total_size(sizeof(u32)  +	/* _RINGS_CQE_SIZE */
+ 	       nla_total_size(sizeof(u8))  +	/* _RINGS_TX_PUSH */
+-	       nla_total_size(sizeof(u8)));	/* _RINGS_RX_PUSH */
++	       nla_total_size(sizeof(u8))) +	/* _RINGS_RX_PUSH */
++	       nla_total_size(sizeof(u32)) +	/* _RINGS_TX_PUSH_BUF_LEN */
++	       nla_total_size(sizeof(u32));	/* _RINGS_TX_PUSH_BUF_LEN_MAX */
+ }
+ 
+ static int rings_fill_reply(struct sk_buff *skb,
+@@ -67,6 +72,7 @@ static int rings_fill_reply(struct sk_buff *skb,
+ 	const struct rings_reply_data *data = RINGS_REPDATA(reply_base);
+ 	const struct kernel_ethtool_ringparam *kr = &data->kernel_ringparam;
+ 	const struct ethtool_ringparam *ringparam = &data->ringparam;
++	u32 supported_ring_params = data->supported_ring_params;
+ 
+ 	WARN_ON(kr->tcp_data_split > ETHTOOL_TCP_DATA_SPLIT_ENABLED);
+ 
+@@ -98,7 +104,12 @@ static int rings_fill_reply(struct sk_buff *skb,
+ 	    (kr->cqe_size &&
+ 	     (nla_put_u32(skb, ETHTOOL_A_RINGS_CQE_SIZE, kr->cqe_size))) ||
+ 	    nla_put_u8(skb, ETHTOOL_A_RINGS_TX_PUSH, !!kr->tx_push) ||
+-	    nla_put_u8(skb, ETHTOOL_A_RINGS_RX_PUSH, !!kr->rx_push))
++	    nla_put_u8(skb, ETHTOOL_A_RINGS_RX_PUSH, !!kr->rx_push) ||
++	    ((supported_ring_params & ETHTOOL_RING_USE_TX_PUSH_BUF_LEN) &&
++	     (nla_put_u32(skb, ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN_MAX,
++			  kr->tx_push_buf_max_len) ||
++	      nla_put_u32(skb, ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN,
++			  kr->tx_push_buf_len))))
+ 		return -EMSGSIZE;
+ 
+ 	return 0;
+@@ -117,6 +128,7 @@ const struct nla_policy ethnl_rings_set_policy[] = {
+ 	[ETHTOOL_A_RINGS_CQE_SIZE]		= NLA_POLICY_MIN(NLA_U32, 1),
+ 	[ETHTOOL_A_RINGS_TX_PUSH]		= NLA_POLICY_MAX(NLA_U8, 1),
+ 	[ETHTOOL_A_RINGS_RX_PUSH]		= NLA_POLICY_MAX(NLA_U8, 1),
++	[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN]	= { .type = NLA_U32 },
+ };
+ 
+ static int
+@@ -158,6 +170,14 @@ ethnl_set_rings_validate(struct ethnl_req_info *req_info,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	if (tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN] &&
++	    !(ops->supported_ring_params & ETHTOOL_RING_USE_TX_PUSH_BUF_LEN)) {
++		NL_SET_ERR_MSG_ATTR(info->extack,
++				    tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN],
++				    "setting tx push buf len is not supported");
++		return -EOPNOTSUPP;
++	}
++
+ 	return ops->get_ringparam && ops->set_ringparam ? 1 : -EOPNOTSUPP;
+ }
+ 
+@@ -189,6 +209,8 @@ ethnl_set_rings(struct ethnl_req_info *req_info, struct genl_info *info)
+ 			tb[ETHTOOL_A_RINGS_TX_PUSH], &mod);
+ 	ethnl_update_u8(&kernel_ringparam.rx_push,
+ 			tb[ETHTOOL_A_RINGS_RX_PUSH], &mod);
++	ethnl_update_u32(&kernel_ringparam.tx_push_buf_len,
++			 tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN], &mod);
+ 	if (!mod)
+ 		return 0;
+ 
+@@ -209,6 +231,14 @@ ethnl_set_rings(struct ethnl_req_info *req_info, struct genl_info *info)
+ 		return -EINVAL;
+ 	}
+ 
++	if (kernel_ringparam.tx_push_buf_len > kernel_ringparam.tx_push_buf_max_len) {
++		NL_SET_ERR_MSG_ATTR_FMT(info->extack, tb[ETHTOOL_A_RINGS_TX_PUSH_BUF_LEN],
++					"Requested TX push buffer exceeds the maximum of %u",
++					kernel_ringparam.tx_push_buf_max_len);
++
++		return -EINVAL;
++	}
++
+ 	ret = dev->ethtool_ops->set_ringparam(dev, &ringparam,
+ 					      &kernel_ringparam, info->extack);
+ 	return ret < 0 ? ret : 1;
+-- 
+2.25.1
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/net/c=
-ore/xdp.c?id=3D769639c1fe8a98129aa97c8ee981639db1e8955c
-
-Regards,
-Lorenzo
-
->=20
-> Boot console logs
->=20
-> sd 0:0:1:0: [sdb] Preferred minimum I/O size 32768 bytes
->  sdb: sdb1 sdb2 sdb3
-> sd 0:0:1:0: [sdb] Attached SCSI disk
-> mlx5_core 4001:01:00.0: enabling device (0000 -> 0002)
-> mlx5_core 4001:01:00.0: firmware version: 14.32.1010
-> ------------[ cut here ]------------
-> RTNL: assertion failed at net/core/dev.c (1928)
-> WARNING: CPU: 0 PID: 9 at net/core/dev.c:1928
-> call_netdevice_notifiers_info+0xd8/0xe0
-> Modules linked in: mlx5_core(+) sd_mod t10_pi crc64_rocksoft crc64 sg ibm=
-vfc
-> mlxfw scsi_transport_fc ibmveth ptp pps_core dm_multipath dm_mirror
-> dm_region_hash dm_log dm_mod fuse
-> CPU: 0 PID: 9 Comm: kworker/0:1 Not tainted 6.3.0-rc2-next-20230317-autot=
-est
-> #1
-> Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 0xf000006
-> of:IBM,FW1030.00 (NH1030_029) hv:phyp pSeries
-> Workqueue: events work_for_cpu_fn
-> NIP:  c000000000aca1f8 LR: c000000000aca1f4 CTR: 0000000000725d40
-> REGS: c0000000038230a0 TRAP: 0700   Not tainted
-> (6.3.0-rc2-next-20230317-autotest)
-> MSR:  800000000282b033 <SF,VEC,VSX,EE,FP,ME,IR,DR,RI,LE>  CR: 48228824 XE=
-R:
-> 00000010
-> CFAR: c000000000154c40 IRQMASK: 0
-> GPR00: c000000000aca1f4 c000000003823340 c0000000011ccb00 000000000000002f
-> GPR04: 00000000ffff7fff c000000003823110 c000000003823108 0000000000000027
-> GPR08: c000000c7cc07e90 0000000000000001 0000000000000027 c0000000028f7c30
-> GPR12: 0000000048228824 c000000002d10000 c000000000191b58 c0000000032f1000
-> GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> GPR20: 0000000000000000 c0000000032f9200 fffffffffffff000 0000000000000000
-> GPR24: c000000076c001a0 c00800000042c588 c000000008d06c00 c000000008d069a0
-> GPR28: c000000076c301a0 c000000002d01780 0000000000000028 c0000000038233e8
-> NIP [c000000000aca1f8] call_netdevice_notifiers_info+0xd8/0xe0
-> LR [c000000000aca1f4] call_netdevice_notifiers_info+0xd4/0xe0
-> Call Trace:
-> [c000000003823340] [c000000000aca1f4]
-> call_netdevice_notifiers_info+0xd4/0xe0 (unreliable)
-> [c0000000038233c0] [c000000000aca23c] call_netdevice_notifiers+0x3c/0x70
-> [c000000003823400] [c000000000b1f64c] xdp_set_features_flag+0x3c/0x50
-> [c000000003823420] [c008000000c56db0] mlx5e_set_xdp_feature+0x48/0x90
-> [mlx5_core]
-> [c000000003823440] [c008000000c59414] mlx5e_probe+0x3cc/0x880 [mlx5_core]
-> [c000000003823500] [c00000000088561c] auxiliary_bus_probe+0x6c/0xf0
-> [c000000003823580] [c0000000008725e8] really_probe+0x108/0x530
-> [c000000003823610] [c000000000872ac4] __driver_probe_device+0xb4/0x230
-> [c000000003823690] [c000000000872c98] driver_probe_device+0x58/0x120
-> [c0000000038236d0] [c000000000872e7c] __device_attach_driver+0x11c/0x1e0
-> [c000000003823750] [c00000000086e994] bus_for_each_drv+0xb4/0x130
-> [c0000000038237b0] [c0000000008723cc] __device_attach+0x15c/0x250
-> [c000000003823850] [c0000000008704e8] bus_probe_device+0xf8/0x100
-> [c0000000038238a0] [c00000000086c258] device_add+0x798/0x9e0
-> [c000000003823960] [c0000000008857d8] __auxiliary_device_add+0x58/0xe0
-> [c0000000038239d0] [c008000000c35350] add_adev+0xb8/0x180 [mlx5_core]
-> [c000000003823a10] [c008000000c35614]
-> mlx5_rescan_drivers_locked.part.11+0x1fc/0x260 [mlx5_core]
-> [c000000003823ad0] [c008000000c35d88] mlx5_register_device+0xb0/0x100
-> [mlx5_core]
-> [c000000003823b10] [c008000000c02aa8] mlx5_init_one+0x340/0x680 [mlx5_cor=
-e]
-> [c000000003823ba0] [c008000000c03e10] probe_one+0x258/0x540 [mlx5_core]
-> [c000000003823c30] [c00000000077c2bc] local_pci_probe+0x6c/0x110
-> [c000000003823cb0] [c00000000017f9b8] work_for_cpu_fn+0x38/0x60
-> [c000000003823ce0] [c0000000001853d4] process_one_work+0x284/0x550
-> [c000000003823d80] [c0000000001858f0] worker_thread+0x250/0x5d0
-> [c000000003823e00] [c000000000191c88] kthread+0x138/0x140
-> [c000000003823e50] [c00000000000cf5c] ret_from_kernel_thread+0x5c/0x64
-> --- interrupt: 0 at 0x0
-> NIP:  0000000000000000 LR: 0000000000000000 CTR: 0000000000000000
-> REGS: c000000003823e80 TRAP: 0000   Not tainted
-> (6.3.0-rc2-next-20230317-autotest)
-> MSR:  0000000000000000 <>  CR: 00000000  XER: 00000000
-> CFAR: 0000000000000000 IRQMASK: 0
-> GPR00: 0000000000000000 c000000003824000 0000000000000000 0000000000000000
-> GPR04: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> GPR12: 0000000000000000 0000000000000000 c000000000191b58 c0000000032f1000
-> GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> GPR24: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> GPR28: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> NIP [0000000000000000] 0x0
-> LR [0000000000000000] 0x0
-> --- interrupt: 0
-> Code: 2f890000 409eff9c 39200001 3c82fff1 3c62fff1 3d42017d 38a00788
-> 3884b3c8 3863b3d8 992a2141 4b68a969 60000000 <0fe00000> 60000000 3c4c0070
-> 38422900
->=20
-> --=20
-> Regard's
->=20
-> Abdul Haleem
-> IBM Linux Technology Center
-
---VPexZZeqZEVbmK5a
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZBhevQAKCRA6cBh0uS2t
-rHC1AP9464q9G7eiWdMYp9r0kTxoNmjn3XCE4+gZ0jAh1Dbx8QD/adB7MLFCBoEy
-H7IeCfpCjz4ZShdGWlS9uCJXUnD+kAs=
-=EuqL
------END PGP SIGNATURE-----
-
---VPexZZeqZEVbmK5a--
