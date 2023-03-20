@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E27EA6C1AC0
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 17:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 359316C1AC4
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 17:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbjCTQAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 12:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
+        id S233333AbjCTQAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 12:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233508AbjCTQAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 12:00:11 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A523E0BA;
-        Mon, 20 Mar 2023 08:50:37 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id fm20-20020a05600c0c1400b003ead37e6588so9459945wmb.5;
+        with ESMTP id S233519AbjCTQAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 12:00:12 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2C438B53;
+        Mon, 20 Mar 2023 08:50:38 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id iw17so2507691wmb.0;
         Mon, 20 Mar 2023 08:50:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679327432;
+        d=gmail.com; s=20210112; t=1679327433;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=16/AUEfT4/3aNTDuWfjKv1lfTz12+h3pg0SmLHFA5Y8=;
-        b=n+22dPTXjE1jqw2beYW8Kqab5uczPETidauati8u3xeWTbKyfCENVVcYJBQgNPM3pw
-         BeH+srFpkROFpxJ+btOlNSEZA4pIuBf2EOOU4AWrlPTWglRDxVHZ3X7kVDptJnxVGvre
-         zNQ31LP8wxHP9XSFxYbkK9ybYYC8WP3fQZwcGcAgliP2cbKQMwuUP/i2w3Hqml8t6rP1
-         5HaZgmWt9wdh8c76nCWP03IuNM9oJ9qa3YWDBrVVN2eMe0mGxZmKR+Wb/BZj3o5ezJmu
-         q41drXRwHBC6vF1K+HHeOgAcMlTKIJUAo2daNVm/UBTXj2SXsvfh4nfgrWVAexOpd/uP
-         elYw==
+        bh=WlRvHn65p7ApqB1hkWXEl334dlDtfL7sexIylSD7RF8=;
+        b=Xb9J1kzvH/7/KC9kfFPe5nfM0jOx0VqmPqlTVHQ2ICuE/eznYiDnZR2GROkiEBeSW5
+         aj8nTpjx/Zgj9GE1Ere9JmGDP4qH6Ms4GG1dcgxiwCZUubj8EmKPPzq+xRYgui52JXXZ
+         GG9yZPfp/eWkFHvSgIPzHyC1iWc88F8XSN7+xdXyC7MOoEWIbvy0y04VrbuO9p8+RjCl
+         XbF+dk2kkZAseZ7QMlgJZ2Bt8HfHx2I4D6+r4BhyVy6oIsdzkMTei+drCezAB5fFzerw
+         y3GD2qAHDRRSrMpv7wTUuM9Erg/6k7sGs+HKjLlgmmAwT7LMqxNkXvmZeU5IucnlPzyQ
+         zxGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679327432;
+        d=1e100.net; s=20210112; t=1679327433;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=16/AUEfT4/3aNTDuWfjKv1lfTz12+h3pg0SmLHFA5Y8=;
-        b=6ZfI8DXxxDA2NF5hw1Mfoc/pGgW+OfRfwgMoE4jB/ABbQg8zdQ/Ja7FGIqVPbi2hZe
-         fvd7j+dw8CZvNbkRbsYQvMTwRfDRonn8aAwJBBNkMyTcm8s3D5BRURzVpe0ScyzPYvxQ
-         0cXZASSL+EXA7Fyf51y4emSNy6Xb3nY0pjKWFUphqra9TdFQzhtnpdlN3tTwXFN9jlEu
-         3Se1FWEiQP5FRtqXIU/oefh5FMXoJEDCKq8geZ04mouAdeVxZd/FUBR754EY6uNAhMVG
-         hef4iX7HeDpTCJLCprNVFgQ80bbl/uh+QnBtEVGlDFcH4GR7csGSIp2g/3Qzj/m78rkz
-         ml1Q==
-X-Gm-Message-State: AO0yUKUPCBZQSCICZA8m4nHTp32xYgPPzQnSGO9a0aop0wLJeOUszuYx
-        hH7zNhPrx7BZWaytny88AN0=
-X-Google-Smtp-Source: AK7set9y2vPkyUF0Tln19u08/DwcR4L11U6iFXPmpi6kdzFhq0OrCiFNu8aAeCvisP/C/rvYvKH9Lw==
-X-Received: by 2002:a05:600c:310e:b0:3e9:f15b:935b with SMTP id g14-20020a05600c310e00b003e9f15b935bmr34745262wmo.32.1679327432097;
-        Mon, 20 Mar 2023 08:50:32 -0700 (PDT)
+        bh=WlRvHn65p7ApqB1hkWXEl334dlDtfL7sexIylSD7RF8=;
+        b=mx+DrcUS/RrkssaKZwtjxNb1RtQP6+pwhyW7/EaPvgWZPMBZeDHy7B+x5GRw7gA8l5
+         lIqtZ41yhnrcZ8wp6SSyG+pJJ2Xn4q0N8W3NJS8vZz5/ORmoRdLxyNY8IdlTQlmjV9YT
+         jY1LCVegFoErlMPP49XZ1fzJtRPIeFv0MZphvdw7nXk5yhg4+vpnfCPKzOJdOmpEgfut
+         GnIW/BBXCezqjF0GT9Lmp61lPf1j0PCq8lmrcrZtKwI11zyVmOPqgdWmkRh+YirD5L0P
+         ORDeuqwz5SkyDZ+Sw+dahSLeLtZ/VB+58nFWPpxF4yUw/sKPrhpkZfGzo/VN/jDL1ZfN
+         1t3w==
+X-Gm-Message-State: AO0yUKVurWpxXw8kQLLJFFk7zmIVuc+hSmpXM9lpLIB/ByDuw5z3fAds
+        TZs+QVHvNnvyK9ovwNMJwU0=
+X-Google-Smtp-Source: AK7set8fEPc92nUNA58HgNEL8eOH1DCae42kd5S11MkuO5+TV9yIVNP77n+5gS3XrTpCzsFfJmaf/A==
+X-Received: by 2002:a05:600c:470e:b0:3eb:42fc:fb30 with SMTP id v14-20020a05600c470e00b003eb42fcfb30mr34204824wmo.32.1679327433327;
+        Mon, 20 Mar 2023 08:50:33 -0700 (PDT)
 Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id 3-20020a05600c020300b003eddefd8792sm4812333wmi.14.2023.03.20.08.50.30
+        by smtp.gmail.com with ESMTPSA id 3-20020a05600c020300b003eddefd8792sm4812333wmi.14.2023.03.20.08.50.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 08:50:31 -0700 (PDT)
+        Mon, 20 Mar 2023 08:50:32 -0700 (PDT)
 From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
         <noltari@gmail.com>
 To:     f.fainelli@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
@@ -58,9 +58,9 @@ To:     f.fainelli@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
         <noltari@gmail.com>
-Subject: [PATCH 3/4] net: dsa: b53: mmap: allow passing a chip ID
-Date:   Mon, 20 Mar 2023 16:50:23 +0100
-Message-Id: <20230320155024.164523-4-noltari@gmail.com>
+Subject: [PATCH 4/4] net: dsa: b53: add BCM63268 RGMII configuration
+Date:   Mon, 20 Mar 2023 16:50:24 +0100
+Message-Id: <20230320155024.164523-5-noltari@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230320155024.164523-1-noltari@gmail.com>
 References: <20230320155024.164523-1-noltari@gmail.com>
@@ -77,92 +77,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BCM63268 SoCs require a special handling for their RGMIIs, so we should be
-able to identify them as a special BCM63xx switch.
+BCM63268 requires special RGMII configuration to work.
 
 Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
 ---
- drivers/net/dsa/b53/b53_mmap.c | 32 +++++++++++++++++++++++---------
- drivers/net/dsa/b53/b53_priv.h |  9 ++++++++-
- 2 files changed, 31 insertions(+), 10 deletions(-)
+ drivers/net/dsa/b53/b53_common.c | 6 +++++-
+ drivers/net/dsa/b53/b53_regs.h   | 1 +
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
-index 464c77e10f60..706df04b6cee 100644
---- a/drivers/net/dsa/b53/b53_mmap.c
-+++ b/drivers/net/dsa/b53/b53_mmap.c
-@@ -248,7 +248,7 @@ static int b53_mmap_probe_of(struct platform_device *pdev,
- 		return -ENOMEM;
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 6e212f6f1cb9..d0a22c8a55c9 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1240,8 +1240,12 @@ static void b53_adjust_63xx_rgmii(struct dsa_switch *ds, int port,
+ 		break;
+ 	}
  
- 	pdata->regs = mem;
--	pdata->chip_id = BCM63XX_DEVICE_ID;
-+	pdata->chip_id = (u32)device_get_match_data(dev);
- 	pdata->big_endian = of_property_read_bool(np, "big-endian");
- 
- 	of_ports = of_get_child_by_name(np, "ports");
-@@ -330,14 +330,28 @@ static void b53_mmap_shutdown(struct platform_device *pdev)
- }
- 
- static const struct of_device_id b53_mmap_of_table[] = {
--	{ .compatible = "brcm,bcm3384-switch" },
--	{ .compatible = "brcm,bcm6318-switch" },
--	{ .compatible = "brcm,bcm6328-switch" },
--	{ .compatible = "brcm,bcm6362-switch" },
--	{ .compatible = "brcm,bcm6368-switch" },
--	{ .compatible = "brcm,bcm63268-switch" },
--	{ .compatible = "brcm,bcm63xx-switch" },
--	{ /* sentinel */ },
-+	{
-+		.compatible = "brcm,bcm3384-switch",
-+		.data = (void *)BCM63XX_DEVICE_ID,
-+	}, {
-+		.compatible = "brcm,bcm6318-switch",
-+		.data = (void *)BCM63XX_DEVICE_ID,
-+	}, {
-+		.compatible = "brcm,bcm6328-switch",
-+		.data = (void *)BCM63XX_DEVICE_ID,
-+	}, {
-+		.compatible = "brcm,bcm6362-switch",
-+		.data = (void *)BCM63XX_DEVICE_ID,
-+	}, {
-+		.compatible = "brcm,bcm6368-switch",
-+		.data = (void *)BCM63XX_DEVICE_ID,
-+	}, {
-+		.compatible = "brcm,bcm63268-switch",
-+		.data = (void *)BCM63268_DEVICE_ID,
-+	}, {
-+		.compatible = "brcm,bcm63xx-switch",
-+		.data = (void *)BCM63XX_DEVICE_ID,
-+	}, { /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, b53_mmap_of_table);
- 
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 4cf9f540696e..a689a6950189 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -70,6 +70,7 @@ enum {
- 	BCM53125_DEVICE_ID = 0x53125,
- 	BCM53128_DEVICE_ID = 0x53128,
- 	BCM63XX_DEVICE_ID = 0x6300,
-+	BCM63268_DEVICE_ID = 0x63268,
- 	BCM53010_DEVICE_ID = 0x53010,
- 	BCM53011_DEVICE_ID = 0x53011,
- 	BCM53012_DEVICE_ID = 0x53012,
-@@ -191,7 +192,13 @@ static inline int is531x5(struct b53_device *dev)
- 
- static inline int is63xx(struct b53_device *dev)
- {
--	return dev->chip_id == BCM63XX_DEVICE_ID;
-+	return dev->chip_id == BCM63XX_DEVICE_ID ||
-+		dev->chip_id == BCM63268_DEVICE_ID;
-+}
+-	if (port != dev->imp_port)
++	if (port != dev->imp_port) {
++		if (is63268(dev))
++			rgmii_ctrl |= RGMII_CTRL_MII_OVERRIDE;
 +
-+static inline int is63268(struct b53_device *dev)
-+{
-+	return dev->chip_id == BCM63268_DEVICE_ID;
- }
+ 		rgmii_ctrl |= RGMII_CTRL_ENABLE_GMII;
++	}
  
- static inline int is5301x(struct b53_device *dev)
+ 	b53_write8(dev, B53_CTRL_PAGE, off, rgmii_ctrl);
+ 
+diff --git a/drivers/net/dsa/b53/b53_regs.h b/drivers/net/dsa/b53/b53_regs.h
+index b2c539a42154..bfbcb66bef66 100644
+--- a/drivers/net/dsa/b53/b53_regs.h
++++ b/drivers/net/dsa/b53/b53_regs.h
+@@ -138,6 +138,7 @@
+ 
+ #define B53_RGMII_CTRL_IMP		0x60
+ #define   RGMII_CTRL_ENABLE_GMII	BIT(7)
++#define   RGMII_CTRL_MII_OVERRIDE	BIT(6)
+ #define   RGMII_CTRL_TIMING_SEL		BIT(2)
+ #define   RGMII_CTRL_DLL_RXC		BIT(1)
+ #define   RGMII_CTRL_DLL_TXC		BIT(0)
 -- 
 2.30.2
 
