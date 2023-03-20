@@ -2,106 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D386C117D
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:08:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A90F96C11A6
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbjCTMI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 08:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        id S231310AbjCTMPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 08:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbjCTMI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:08:26 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748B523128
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:08:24 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id fm20-20020a05600c0c1400b003ead37e6588so9003976wmb.5
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:08:24 -0700 (PDT)
+        with ESMTP id S231149AbjCTMPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:15:20 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0452597C
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:15:15 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id eh3so45802278edb.11
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:15:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1679314103;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0DX4qBiGcGPtOV8eO23GpfgYZaEoud4OZh0owe5T4Xc=;
-        b=ob0cCOvHCgx+sWCZcQWup1xlVWDWoiFVDCN3lJ5IhUATuzhYyZIUey29e8g18Js2WI
-         g41ZkxBkZni+Bdb+IrhCVneXhRxHfRPkXKCCFNB0DVSs6duRKr1ngXfmHVvIfzsXBG1L
-         6VU/SrBQnPlHWS24n4AjmKzpUaky/lmrXXDkwQDJ5CT2Db8wZ/3utkVonf8uZWZofizx
-         pUNfNYcIeCZ/bwQx2NGnc/dWUqnl1sjZsTNSU3nPldjC45GW4uDUalitIiq4wK9hfS/E
-         M9XhTCFkT06Tzwi1eYzBNDe11812UszSD2W/mwlqxbJO0j8belRghMoYiAiDPCQW1wiD
-         pxUw==
+        d=kali.org; s=google; t=1679314514;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=q4rLpiklQSLUGu8en3KYDb4lZcdoMaRER+VnV6x571E=;
+        b=YKG8m+Aqdx5YPl39zn6iGSYyHWV38GeeAbZ4FOt093BNQjCN5XOysHyXUnn/sBKF/S
+         3NjqnlNtFKkOZk+F2DJXk3svD8HbUx1uIHgbNR+bWnhURgI9VUhsBqlw2026DyrHmwAs
+         sQ+QKnIn7SNz2O46PZTu67AIoBQYMg1zCDMKQnXjzbznOF9042meTj8aU0UIkbrcjD30
+         BlAQMqJBznlgMdpFtoPrqnSZAfel8UqOlQGZRbsbeH7lv1Q0RP/Il+O3kjSRj1q4e16V
+         lzaQehfi5HWsOw8e4J8Hy0BVGvfyv0vygZR+rxkI7CplCBe9oh77SNfuazQ5o3ik/uKC
+         L/fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679314103;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0DX4qBiGcGPtOV8eO23GpfgYZaEoud4OZh0owe5T4Xc=;
-        b=C+L5hPKVAJbZiBLhakXYj+qvBocXgCSLQ/drHZ0YUw1RKQ4V1Lhcybmja1HXMeR9Hp
-         pG7yzUchM36UgnGYrJbQioK7dBXfs1Y3wa+BaptGVUcXg3wVALa10yJfY4UOOW5x3b++
-         fyj+HFLn27r/8QbMqEtIBbSN+1W4ZhFpL/cm5lsyRTEFnrVsfTtwJWFyiTTkw1iJM09l
-         mCs3dH4D49FokCP0ct3a3bcnE3V7BaB8GZtmaC/yTjdNWB94NtUh/hrDJ2Fc/8VAoZzu
-         3yPMSB9zccjReduIbeqI40wfc2fCZTeJ+EBXDQzMpOwiu49E7ESnEVYi6EIk77ZgYHx0
-         n6Sw==
-X-Gm-Message-State: AO0yUKVU51shA0m1PZpa1GgMiGnV46rt0zRjxgFCIpr/iTDYkJknYHq3
-        bc45nM7xHEHIFfgJxCcITe2WyA==
-X-Google-Smtp-Source: AK7set9zj56CK4RoYFMbxlpgRSHefoSnagjvKRQ+Bu/IgqPh9O6mCqTZ5j3rbxvhvYdQvXNtJGM9mg==
-X-Received: by 2002:a05:600c:4510:b0:3dc:4fd7:31f7 with SMTP id t16-20020a05600c451000b003dc4fd731f7mr31077298wmo.41.1679314102839;
-        Mon, 20 Mar 2023 05:08:22 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id c24-20020a05600c0ad800b003e22508a343sm10251629wmr.12.2023.03.20.05.08.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 05:08:22 -0700 (PDT)
-Message-ID: <a4ce2c34-eabe-a11f-682a-4cecf6c3462b@blackwall.org>
-Date:   Mon, 20 Mar 2023 14:08:21 +0200
+        d=1e100.net; s=20210112; t=1679314514;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=q4rLpiklQSLUGu8en3KYDb4lZcdoMaRER+VnV6x571E=;
+        b=eyLjwmmHWeEBXBdi4/mR/NkYYtTjMaPX4sMcdAHUvonvjYHFtnM6W/q1b4FzMUqFty
+         SmCNwalAf9gYepHEvpr4KzKgH+CdisKv9nB/EAoxI0L/ysedvp9tXVE/aa2bZCXaSZzE
+         ZDFTh/wQQwct51pb97D6HL2chwIV01ZQm9VBwNMsqjj+0i+epZF2B+RRSQnUjg6Aass+
+         e099DIg4VzYSn05BoQtNtBAVnl7xHkD3DxL5mwchUmWdJirRWhs+BMNFWSHjJZOO1Bhb
+         AYoRX4cCsgklXDLZOgRKhxhNnE22ih/0Gh588naMwYuwPIfemkZkdiCxt0oWzHU/bBrE
+         TAyg==
+X-Gm-Message-State: AO0yUKXJV17uyeZXUaQxNNTmrTmtAmHvi8OL1NTWqQwNsDVYnrWyWLvb
+        fndyAwmHAZb9NjlcRdci6Z+RfI/oxxr7E4N+ajPctA==
+X-Google-Smtp-Source: AK7set8CdlHV303cHjYGX5Ktv/xbOxfBljEZYOn0HpF69QJIC+i8LkWfVEEgefDscUWRlJ/tuSIIQXZTfF+bGPJa4Ys=
+X-Received: by 2002:a50:d58b:0:b0:4fa:d8aa:74ad with SMTP id
+ v11-20020a50d58b000000b004fad8aa74admr6077014edi.8.1679314514201; Mon, 20 Mar
+ 2023 05:15:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: Multicast: handling of STA disconnect
-To:     Ujjal Roy <royujjal@gmail.com>, roopa@nvidia.com,
-        nikolay@nvidia.com
-Cc:     netdev@vger.kernel.org, Kernel <linux-kernel@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-References: <CAE2MWkm=zvkF_Ge1MH7vn+dmMboNt+pOEEVSgSeNNPRY5VmroA@mail.gmail.com>
-Content-Language: en-US
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <CAE2MWkm=zvkF_Ge1MH7vn+dmMboNt+pOEEVSgSeNNPRY5VmroA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+References: <20230320104658.22186-1-johan+linaro@kernel.org> <20230320104658.22186-3-johan+linaro@kernel.org>
+In-Reply-To: <20230320104658.22186-3-johan+linaro@kernel.org>
+From:   Steev Klimaszewski <steev@kali.org>
+Date:   Mon, 20 Mar 2023 07:15:04 -0500
+Message-ID: <CAKXuJqhOGcPrOROGJdbBGM47FriNjojWBvCMUs2hRYHkCG4qLg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] arm64: dts: qcom: sc8280xp-x13s: add wifi calibration variant
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/03/2023 13:45, Ujjal Roy wrote:
-> Hi Nikolay,
-> 
-> I have some query on multicast. When streams running on an STA and STA
-> disconnected due to some reason. So, until the MDB is timed out the
-> stream will be forwarded to the port and in turn to the driver and
-> dropps there as no such STA.
-> 
-> So, is the multicast_eht handling this scenario to take any action
-> immediately? If not, can we do this to take quick action to reduce
-> overhead of memory and driver?
-> 
-> I have an idea on this. Can we mark this port group (MDB entry) as
-> INACTIVE from the WiFi disconnect event and skip forwarding the stream
-> to this port in br_multicast_flood by applying the check? I can share
-> the patch on this.
-> 
-> Thanks,
-> UjjaL Roy
+On Mon, Mar 20, 2023 at 5:52=E2=80=AFAM Johan Hovold <johan+linaro@kernel.o=
+rg> wrote:
+>
+> Describe the bus topology for PCIe domain 6 and add the ath11k
+> calibration variant so that the board file (calibration data) can be
+> loaded.
+>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D216246
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  .../dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts  | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b=
+/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> index 150f51f1db37..0051025e0aa8 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> @@ -711,6 +711,23 @@ &pcie4 {
+>         pinctrl-0 =3D <&pcie4_default>;
+>
+>         status =3D "okay";
+> +
+> +       pcie@0 {
+> +               device_type =3D "pci";
+> +               reg =3D <0x0 0x0 0x0 0x0 0x0>;
+> +               #address-cells =3D <3>;
+> +               #size-cells =3D <2>;
+> +               ranges;
+> +
+> +               bus-range =3D <0x01 0xff>;
+> +
+> +               wifi@0 {
+> +                       compatible =3D "pci17cb,1103";
+> +                       reg =3D <0x10000 0x0 0x0 0x0 0x0>;
+> +
+> +                       qcom,ath11k-calibration-variant =3D "LE_X13S";
+> +               };
+> +       };
+>  };
+>
+>  &pcie4_phy {
+> --
+> 2.39.2
+>
 
-Hi,
-Fast leave and EHT (as that's v3's fast leave version) are about quickly converging when
-a leave is received (e.g. when there are no listeners to quickly remove the mdb). They
-don't deal with interface states (IIUC). Why don't you just flush the port's mdb entries
-on disconnect? That would stop fwding.
+So glad to finally see this and confirm that it works!
 
-Cheers,
- Nik
-
-
+Tested-by: Steev Klimaszewski <steev@kali.org> #Thinkpad X13s
