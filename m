@@ -2,117 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 725486C143A
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 15:00:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A549E6C13DE
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:45:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231352AbjCTOAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 10:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
+        id S231574AbjCTNp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 09:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231790AbjCTN75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:59:57 -0400
-X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Mar 2023 06:59:45 PDT
-Received: from pb-smtp1.pobox.com (pb-smtp1.pobox.com [64.147.108.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018B113505;
-        Mon, 20 Mar 2023 06:59:44 -0700 (PDT)
-Received: from pb-smtp1.pobox.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id 53A5C18C5B8;
-        Mon, 20 Mar 2023 09:43:32 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=date:from
-        :to:cc:subject:in-reply-to:message-id:references:mime-version
-        :content-type; s=sasl; bh=8WqPf8azPw1LdaVLhachWnBqIWRZmkRgYIXr7n
-        BOEVI=; b=mwAXUP+vw1gFjyfea+hAmsVYwaDZqKnmTUGqltfpOBZg23LkRPyj1E
-        NNgUz2Nm4vzaIWs1GoQPFF/Yy3qtKWPBUU0Vsp1dnExonNA71EHY01v3rq2FQ6cd
-        qnTrv0VKt5Id6O5JwaYXGcX6Mrw1qN6k/UYW48uVQJCmj4MePGFxc=
-Received: from pb-smtp1.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id 4990D18C5B7;
-        Mon, 20 Mar 2023 09:43:32 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
- h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=8WqPf8azPw1LdaVLhachWnBqIWRZmkRgYIXr7nBOEVI=; b=gtXr8MBEDJO4uccNonSi075UIrgrLbaVTCSMr2gNKrxEvd3H2jIsQ8g57SS3jeQrx59ljm/s3vj2dYa7ileHM3fKtDJYZuydKggReM9ztjAsS1EOOXPcL/I9BZ25QBPoeOf8W7rxbpNLZufNEjPYaj5Ry/w8j5R7+IfCqPk8ORo=
-Received: from yoda.home (unknown [96.21.170.108])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id AE26F18C5B6;
-        Mon, 20 Mar 2023 09:43:31 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-Received: from xanadu.home (xanadu [192.168.2.2])
-        by yoda.home (Postfix) with ESMTPSA id 94C296C31B7;
-        Mon, 20 Mar 2023 09:43:30 -0400 (EDT)
-Date:   Mon, 20 Mar 2023 09:43:30 -0400 (EDT)
-From:   Nicolas Pitre <nico@fluxnic.net>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     Richard Cochran <richardcochran@gmail.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>,
-        netdev@vger.kernel.org, linux-fpga@vger.kernel.org,
-        ilpo.jarvinen@linux.intel.com, russell.h.weight@intel.com,
-        matthew.gerlach@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, vinicius.gomes@intel.com,
-        Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
-Subject: Re: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
-In-Reply-To: <ZBhdnl1OAPcrLdHD@smile.fi.intel.com>
-Message-ID: <4752oq01-879s-0p0p-s8qq-sn48q27sp1r7@syhkavp.arg>
-References: <20230313030239.886816-1-tianfei.zhang@intel.com> <ZA9wUe33pMkhMu0e@hoboy.vegasvil.org> <ZBBQpwGhXK/YYGCB@smile.fi.intel.com> <ZBDPKA7968sWd0+P@hoboy.vegasvil.org> <ZBHPTz8yH57N1g8J@smile.fi.intel.com> <73rqs90r-nn9o-s981-9557-q70no2435176@syhkavp.arg>
- <ZBhdnl1OAPcrLdHD@smile.fi.intel.com>
+        with ESMTP id S231610AbjCTNpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:45:36 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5963126C07;
+        Mon, 20 Mar 2023 06:45:18 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-5416b0ab0ecso224895737b3.6;
+        Mon, 20 Mar 2023 06:45:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679319916;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bSb4O0PeaHNe3gBc2pcRz8CtU7cfiYwV5urttGac2b0=;
+        b=bgh02FDftrt+sddaley3rGdy4OqlNDYBVbU3GNguh/cnKLFKoq81wEV9MG5iS2fnvJ
+         0sz+Ef6zmCrdUgCp7rRV3ojvassHZBkBUMx/a06oQ+E/4hCfyJCtkXTUYMOLzFNaDrUY
+         uyGD0CiOgsrZHLX3rn1OVElrPO0kN6dBDyaG6mQvp45npbaxX3y52qR8Sx+vAtOOSAdd
+         RAtfPfsiG61u+IzoHleOkrodhQcAN1nx0DSqQWb9z7vKLFQT9nhnUoc4KEXR9XOBLe9r
+         7qpKeBpaTZMH/eTVVhvP2cYJWjvNjXMxkWjJA7UQVAa49NtaWkoPiT0MUeE/fQ69gk3J
+         P31A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679319916;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bSb4O0PeaHNe3gBc2pcRz8CtU7cfiYwV5urttGac2b0=;
+        b=2jcTz9k44kDhzG5UzvOaRzssH3Ws+yRKPudtkFO6afcrGpmzVp+SxqRNHq/0tJsFFU
+         Zmlrq9AvYkRNg0v1lgsMna07eO2XtnTTeI4dvJqzVioy9fUvMMMbQzP43pNRrZMVRIVg
+         +BWYLK3tWI3d2Oxb0UALD4Q2UwmHJ+m5/1dJ+nASo4EcFMo7V8nNZMDtH4qJmChzPiNo
+         i0Z+0LVJCIRiUR30vjpZcuT1RutK9XWPYQXdSiBhuCfYf6o26JN98YwuUmGmwN5fYGu7
+         8Z7FH9csg3AbArXXYIaBwIpcII79PRtSHT9hc/+5mhMQ9Trn54KeU8cvX2dVoGGwresp
+         semg==
+X-Gm-Message-State: AO0yUKU7PORiBs3GDAl36ARd5x3cViutoa05tRHaY04nC1PSUHoUwQl2
+        Ftd6c13/g8fp/qISROM11gniBRbHeGNZ+UNK4X4Blnk4mDVjjA==
+X-Google-Smtp-Source: AK7set92By9N0r2WjB8v8U0HoFS7LbXZRgxPzy2+9DTwwYD6my7jo4lxlXnDBlrM0Sdt9kxvPfQqR6DpZOmBCdBz/js=
+X-Received: by 2002:a81:431b:0:b0:544:94fe:4244 with SMTP id
+ q27-20020a81431b000000b0054494fe4244mr10343937ywa.10.1679319914612; Mon, 20
+ Mar 2023 06:45:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Pobox-Relay-ID: 33EE8612-C725-11ED-B5B2-B449C2D8090B-78420484!pb-smtp1.pobox.com
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230320105323.187307-1-nunog@fr24.com> <20230320110314.GJ36557@unreal>
+ <CAJ8uoz1kbFsttvWNTUdtYcwEa=hQvky2z0Jfn0=9b5v6m_FVXg@mail.gmail.com> <20230320134058.GM36557@unreal>
+In-Reply-To: <20230320134058.GM36557@unreal>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 20 Mar 2023 14:45:03 +0100
+Message-ID: <CAJ8uoz2ctdQzG8V+13RUQW0BjK1-L6ckP=HbxcAz2xerYhCsLQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunog@fr24.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Mar 2023, Andy Shevchenko wrote:
+On Mon, 20 Mar 2023 at 14:41, Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Mon, Mar 20, 2023 at 01:27:18PM +0100, Magnus Karlsson wrote:
+> > On Mon, 20 Mar 2023 at 12:09, Leon Romanovsky <leon@kernel.org> wrote:
+> > >
+> > > On Mon, Mar 20, 2023 at 10:53:23AM +0000, Nuno Gon=C3=A7alves wrote:
+> > > > The remap of fill and completion rings was frowned upon as they
+> > > > control the usage of UMEM which does not support concurrent use.
+> > > > At the same time this would disallow the remap of this rings
+> > > > into another process.
+> > > >
+> > > > A possible use case is that the user wants to transfer the socket/
+> > > > UMEM ownerwhip to another process (via SYS_pidfd_getfd) and so
+> >
+> > nit: ownership
+> >
+> > > > would need to also remap this rings.
+> > > >
+> > > > This will have no impact on current usages and just relaxes the
+> > > > remap limitation.
+> > > >
+> > > > Signed-off-by: Nuno Gon=C3=A7alves <nunog@fr24.com>
+> > > > ---
+> > > >  net/xdp/xsk.c | 9 ++++++---
+> > > >  1 file changed, 6 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > > > index 2ac58b282b5eb..2af4ff64b22bd 100644
+> > > > --- a/net/xdp/xsk.c
+> > > > +++ b/net/xdp/xsk.c
+> > > > @@ -1300,10 +1300,11 @@ static int xsk_mmap(struct file *file, stru=
+ct socket *sock,
+> > > >  {
+> > > >       loff_t offset =3D (loff_t)vma->vm_pgoff << PAGE_SHIFT;
+> > > >       unsigned long size =3D vma->vm_end - vma->vm_start;
+> > > > +     int state =3D READ_ONCE(xs->state);
+> >
+> > Reverse Christmas Tree notation here please. Move it one line down to
+> > after the *xs declaration.
+> >
+> > > >       struct xdp_sock *xs =3D xdp_sk(sock->sk);
+> > > >       struct xsk_queue *q =3D NULL;
+> > > >
+> > > > -     if (READ_ONCE(xs->state) !=3D XSK_READY)
+> > > > +     if (!(state =3D=3D XSK_READY || state =3D=3D XSK_BOUND))
+> > >
+> > > This if(..) is actually:
+> > >  if (state !=3D XSK_READY && state !=3D XSK_BOUND)
+> >
+> > Nuno had it like that to start with when he sent the patch privately
+> > to me, but I responded that I prefered the current one. It is easier
+> > to understand if read out aloud IMO.
+>
+> "Not equal" is much easier to understand than "not" of whole expression.
 
-> On Wed, Mar 15, 2023 at 10:37:58AM -0400, Nicolas Pitre wrote:
-> > On Wed, 15 Mar 2023, Andy Shevchenko wrote:
-> > > On Tue, Mar 14, 2023 at 12:46:48PM -0700, Richard Cochran wrote:
-> > > > On Tue, Mar 14, 2023 at 12:47:03PM +0200, Andy Shevchenko wrote:
-> > > > > The semantics of the above is similar to gpiod_get_optional() and since NULL
-> > > > > is a valid return in such cases, the PTP has to handle this transparently to
-> > > > > the user. Otherwise it's badly designed API which has to be fixed.
-> > > > 
-> > > > Does it now?  Whatever.
-> > > > 
-> > > > > TL;DR: If I'm mistaken, I would like to know why.
-> > > > 
-> > > > git log.  git blame.
-> > > > 
-> > > > Get to know the tools of trade.
-> > > 
-> > > So, the culprit seems the commit d1cbfd771ce8 ("ptp_clock: Allow for it
-> > > to be optional") which did it half way.
-> > > 
-> > > Now I would like to know why the good idea got bad implementation.
-> > > 
-> > > Nicolas?
-> > 
-> > I'd be happy to help but as presented I simply don't know what you're 
-> > talking about. Please give me more context.
-> 
-> When your change introduced the optionality of the above mentioned API,
-> i.e. ptp_clock_register(), the function started returning NULL, which
-> is fine. What's not in my opinion is to ask individual drivers to handle it.
-> That said, if we take a look at gpiod_*_optional() or clk_*_optional()
-> we may notice that they handle NULL as a valid parameter (object) to their
-> respective APIs and individual drivers shouldn't take care about that.
-> 
-> Why PTP is so special?
+Then my brain is wired differently ;-).
 
-To my knowledge it is not.
-
-The current arrangement has apparently worked well for more than 6 
-years. If you see a better way you're welcome to submit patches as 
-usual.
-
-Alternatively the above commit can be reverted if no one else 
-cares. I personally gave up on the idea of a slimmed down Linux kernel a 
-while ago.
-
-
-Nicolas
+> > Do not have any strong feelings either way since the statements are equ=
+ivalent.
+> >
+> > > Thanks
