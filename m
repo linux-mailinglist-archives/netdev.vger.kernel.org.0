@@ -2,282 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8B26C1393
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:37:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBFB26C1390
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 14:37:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbjCTNhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 09:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41860 "EHLO
+        id S231549AbjCTNhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 09:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbjCTNhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:37:24 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15DE2470B;
-        Mon, 20 Mar 2023 06:37:18 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id fy10-20020a17090b020a00b0023b4bcf0727so12445423pjb.0;
-        Mon, 20 Mar 2023 06:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679319438;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MdCkHnCKj4WxKKgtdRV6cXLUY/SN5CblWEdzRCWbv3w=;
-        b=aCsQBItgL7rYZVVavtmZ8FLX0aD4pxV16VYWD7jGIUvCioofzSwPG7YiYhvMlpJTTS
-         K3LXrXhXlX3kpyPzmCkX364nCde0xwhP+awzvB4EHIqsMkURmxmf4NHx58xSq2bIxMum
-         ooEVR7pnA8jUjJbiQhf/R+7PBDgebXtzUiqLCZ99APu4Qd8jilD8FlPM5uKHOkD4azIH
-         bPIfcx+civh2qo/iEPQ9V1A88m1oyDBgCCyYv3t0c9QYC2IKYzqQSdF88ytx8fJgtfuw
-         yhppThyuBX/16hkIU/mnMlGBGPhefNklXtQTqP+YWtLU1obJsD/YmfkK/2EMMJ7lstRQ
-         a1mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679319438;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MdCkHnCKj4WxKKgtdRV6cXLUY/SN5CblWEdzRCWbv3w=;
-        b=1fVBR6fy6BeuHkWGWIa+70TLSbNdBjm2HsmZ2iUQbfBkpCWh4Xf0X9KP/JqMFLnejT
-         M+V7bwSHtu/4S0SLnBYNTD7msGPUADW9cjPq7FUTJad1WsHRhIMsVljqp1New+f3gB72
-         GPUo14XxAmP1fIG53TZDfdFU913ljViSuu1I9JWllMOfkwxsmru2ENOqJ0oB4qnSHQcQ
-         3AFbzhvsAkwQ9Zbps+YDWZ/goIxNXa2iyFXL2vmRDh1PVGOVYWa8ukWJemttRACo9vnN
-         SJF/LpUshrCoE2TlMjQhVYEdjIbVt86elAMJu5QqmTwgK19Tb5XY3TGRV9c4Tpne+Vfn
-         eMTQ==
-X-Gm-Message-State: AO0yUKVLDexgm2TpJOD/i3u8vkaGnMAUsIBToWuDA0PHSmFF5bLIXiZC
-        nAyMnGccSBcsnDctr2BfJGw=
-X-Google-Smtp-Source: AK7set+SfniZ1Jc6b7s2Hh/s9rzwZ8Mj5ijFU92/DCT+En5Dw+qToJpmpnvZW7Hkc5IP2UlA6nKN9w==
-X-Received: by 2002:a17:90a:1a49:b0:23f:10ee:feef with SMTP id 9-20020a17090a1a4900b0023f10eefeefmr19528672pjl.19.1679319438369;
-        Mon, 20 Mar 2023 06:37:18 -0700 (PDT)
-Received: from oslab.. ([106.39.42.159])
-        by smtp.gmail.com with ESMTPSA id n4-20020a17090ac68400b0023d1b9e17e2sm6118592pjt.31.2023.03.20.06.36.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 06:36:54 -0700 (PDT)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju@buaa.edu.cn>
-Subject: [PATCH] net: mac80211: Add NULL checks for sta->sdata
-Date:   Mon, 20 Mar 2023 21:36:44 +0800
-Message-Id: <20230320133644.2445321-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S231598AbjCTNhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 09:37:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762E524CB9;
+        Mon, 20 Mar 2023 06:37:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD46B80E8E;
+        Mon, 20 Mar 2023 13:37:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1DA0C4339B;
+        Mon, 20 Mar 2023 13:37:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679319427;
+        bh=ES5ffLVFjdHr94CCt9GJZbyU9jQQeLU3KV2xoFt+Yvk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JNKB7JDNsM0RndtWdD/S3g+Fz2d7Byjno3GbARzOeYGh4jI+wRVsMSApHcimAFQyq
+         j1zhUv3vTDlS6yhIWSDl34cNHo6H8wDrO899JzGp4rqxSDx5A1Q5JuosvbDHRHWja+
+         iUc/sBqOmOzhWB7PVA+SPwwVFQBCWnjH5ejxs49yHEa4H59HE9/KMrPBos6xcoI6ek
+         k+Bmy820+2YLkKtDxb20iX5gyKHxjC7ulf3EURVWvhePrSX+epesWm7QQ1V1WOqTIL
+         u02Gd1Tnh5V/GjXBShGpZzDPczgZALrc3gopU7ADf2N258zMOasBAAx9InRa2c7KF7
+         OE35HKbrOiaSA==
+Date:   Mon, 20 Mar 2023 15:37:02 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Tom Rix <trix@redhat.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>, rajur@chelsio.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] net: cxgb3: remove unused fl_to_qset function
+Message-ID: <20230320133702.GL36557@unreal>
+References: <20230319172433.1708161-1-trix@redhat.com>
+ <20230319174525.kwhlxme7gh45b3un@soft-dev3-1>
+ <21aad6c8-8abe-79e0-eb47-d03e964419a2@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <21aad6c8-8abe-79e0-eb47-d03e964419a2@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju@buaa.edu.cn>
+On Mon, Mar 20, 2023 at 05:29:51AM -0700, Tom Rix wrote:
+> 
+> On 3/19/23 10:45 AM, Horatiu Vultur wrote:
+> > The 03/19/2023 13:24, Tom Rix wrote:
+> > 
+> > Hi Tom,
+> > 
+> > > clang with W=1 reports
+> > > drivers/net/ethernet/chelsio/cxgb3/sge.c:169:32: error: unused function
+> > >    'fl_to_qset' [-Werror,-Wunused-function]
+> > > static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
+> > >                                 ^
+> > > This function is not used, so remove it.
+> > Don't forget to mention in the subject which tree is targeting this
+> > patch.
+> 
+> This and all my similar fixes/cleanup are against -next.
+> 
+> What prefix would you like to see ?
 
-In a previous commit 69403bad97aa, sta->sdata can be NULL, and thus it
-should be checked before being used.
+net-next
 
-However, in the same call stack, sta->sdata is also used in the
-following functions:
+Thanks
 
-ieee80211_ba_session_work()
-  ___ieee80211_stop_rx_ba_session(sta)
-    ht_dbg(sta->sdata, ...); -> No check
-    sdata_info(sta->sdata, ...); -> No check
-    ieee80211_send_delba(sta->sdata, ...) -> No check
-  ___ieee80211_start_rx_ba_session(sta)
-    ht_dbg(sta->sdata, ...); -> No check
-    ht_dbg_ratelimited(sta->sdata, ...); -> No check
-  ieee80211_tx_ba_session_handle_start(sta)
-    sdata = sta->sdata; if (!sdata) -> Add check by previous commit
-  ___ieee80211_stop_tx_ba_session(sdata)
-    ht_dbg(sta->sdata, ...); -> No check
-  ieee80211_start_tx_ba_cb(sdata)
-    sdata = sta->sdata; local = sdata->local -> No check
-  ieee80211_stop_tx_ba_cb(sdata)
-    ht_dbg(sta->sdata, ...); -> No check
-
-Thus, to avoid possible null-pointer dereferences, the related checks
-should be added.
-
-These results are reported by a static tool designed by myself.
-
-Signed-off-by: Jia-Ju Bai <baijiaju@buaa.edu.cn>
----
- net/mac80211/agg-rx.c | 68 ++++++++++++++++++++++++++-----------------
- net/mac80211/agg-tx.c | 16 ++++++++--
- 2 files changed, 55 insertions(+), 29 deletions(-)
-
-diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
-index c6fa53230450..6616970785a2 100644
---- a/net/mac80211/agg-rx.c
-+++ b/net/mac80211/agg-rx.c
-@@ -80,19 +80,21 @@ void ___ieee80211_stop_rx_ba_session(struct sta_info *sta, u16 tid,
- 	RCU_INIT_POINTER(sta->ampdu_mlme.tid_rx[tid], NULL);
- 	__clear_bit(tid, sta->ampdu_mlme.agg_session_valid);
- 
--	ht_dbg(sta->sdata,
--	       "Rx BA session stop requested for %pM tid %u %s reason: %d\n",
--	       sta->sta.addr, tid,
--	       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
--	       (int)reason);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata,
-+		       "Rx BA session stop requested for %pM tid %u %s reason: %d\n",
-+		       sta->sta.addr, tid,
-+		       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
-+		       (int)reason);
-+	}
- 
--	if (drv_ampdu_action(local, sta->sdata, &params))
-+	if (sta->sdata && drv_ampdu_action(local, sta->sdata, &params))
- 		sdata_info(sta->sdata,
- 			   "HW problem - can not stop rx aggregation for %pM tid %d\n",
- 			   sta->sta.addr, tid);
- 
- 	/* check if this is a self generated aggregation halt */
--	if (initiator == WLAN_BACK_RECIPIENT && tx)
-+	if (initiator == WLAN_BACK_RECIPIENT && tx && sta->sdata)
- 		ieee80211_send_delba(sta->sdata, sta->sta.addr,
- 				     tid, WLAN_BACK_RECIPIENT, reason);
- 
-@@ -279,17 +281,21 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 
- 	if (!sta->sta.deflink.ht_cap.ht_supported &&
- 	    !sta->sta.deflink.he_cap.has_he) {
--		ht_dbg(sta->sdata,
--		       "STA %pM erroneously requests BA session on tid %d w/o HT\n",
--		       sta->sta.addr, tid);
-+		if (sta->sdata) {
-+			ht_dbg(sta->sdata,
-+			       "STA %pM erroneously requests BA session on tid %d w/o HT\n",
-+			       sta->sta.addr, tid);
-+		}
- 		/* send a response anyway, it's an error case if we get here */
- 		goto end;
- 	}
- 
- 	if (test_sta_flag(sta, WLAN_STA_BLOCK_BA)) {
--		ht_dbg(sta->sdata,
--		       "Suspend in progress - Denying ADDBA request (%pM tid %d)\n",
--		       sta->sta.addr, tid);
-+		if (sta->sdata) {
-+			ht_dbg(sta->sdata,
-+			       "Suspend in progress - Denying ADDBA request (%pM tid %d)\n",
-+			       sta->sta.addr, tid);
-+		}
- 		goto end;
- 	}
- 
-@@ -322,8 +328,10 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 		buf_size = sta->sta.max_rx_aggregation_subframes;
- 	params.buf_size = buf_size;
- 
--	ht_dbg(sta->sdata, "AddBA Req buf_size=%d for %pM\n",
--	       buf_size, sta->sta.addr);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata, "AddBA Req buf_size=%d for %pM\n",
-+		       buf_size, sta->sta.addr);
-+	}
- 
- 	/* examine state machine */
- 	lockdep_assert_held(&sta->ampdu_mlme.mtx);
-@@ -332,9 +340,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 		if (sta->ampdu_mlme.tid_rx_token[tid] == dialog_token) {
- 			struct tid_ampdu_rx *tid_rx;
- 
--			ht_dbg_ratelimited(sta->sdata,
--					   "updated AddBA Req from %pM on tid %u\n",
--					   sta->sta.addr, tid);
-+			if (sta->sdata) {
-+				ht_dbg_ratelimited(sta->sdata,
-+						   "updated AddBA Req from %pM on tid %u\n",
-+						   sta->sta.addr, tid);
-+			}
- 			/* We have no API to update the timeout value in the
- 			 * driver so reject the timeout update if the timeout
- 			 * changed. If it did not change, i.e., no real update,
-@@ -350,9 +360,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 			goto end;
- 		}
- 
--		ht_dbg_ratelimited(sta->sdata,
--				   "unexpected AddBA Req from %pM on tid %u\n",
--				   sta->sta.addr, tid);
-+		if (sta->sdata) {
-+			ht_dbg_ratelimited(sta->sdata,
-+					   "unexpected AddBA Req from %pM on tid %u\n",
-+					   sta->sta.addr, tid);
-+		}
- 
- 		/* delete existing Rx BA session on the same tid */
- 		___ieee80211_stop_rx_ba_session(sta, tid, WLAN_BACK_RECIPIENT,
-@@ -362,9 +374,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 
- 	if (ieee80211_hw_check(&local->hw, SUPPORTS_REORDERING_BUFFER)) {
- 		ret = drv_ampdu_action(local, sta->sdata, &params);
--		ht_dbg(sta->sdata,
--		       "Rx A-MPDU request on %pM tid %d result %d\n",
--		       sta->sta.addr, tid, ret);
-+		if (sta->sdata) {
-+			ht_dbg(sta->sdata,
-+			       "Rx A-MPDU request on %pM tid %d result %d\n",
-+			       sta->sta.addr, tid, ret);
-+		}
- 		if (!ret)
- 			status = WLAN_STATUS_SUCCESS;
- 		goto end;
-@@ -401,8 +415,10 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 		__skb_queue_head_init(&tid_agg_rx->reorder_buf[i]);
- 
- 	ret = drv_ampdu_action(local, sta->sdata, &params);
--	ht_dbg(sta->sdata, "Rx A-MPDU request on %pM tid %d result %d\n",
--	       sta->sta.addr, tid, ret);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata, "Rx A-MPDU request on %pM tid %d result %d\n",
-+		       sta->sta.addr, tid, ret);
-+	}
- 	if (ret) {
- 		kfree(tid_agg_rx->reorder_buf);
- 		kfree(tid_agg_rx->reorder_time);
-diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
-index f9514bacbd4a..03b31b6e7ac7 100644
---- a/net/mac80211/agg-tx.c
-+++ b/net/mac80211/agg-tx.c
-@@ -368,8 +368,10 @@ int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
- 
- 	spin_unlock_bh(&sta->lock);
- 
--	ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
--	       sta->sta.addr, tid);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
-+		       sta->sta.addr, tid);
-+	}
- 
- 	del_timer_sync(&tid_tx->addba_resp_timer);
- 	del_timer_sync(&tid_tx->session_timer);
-@@ -776,7 +778,12 @@ void ieee80211_start_tx_ba_cb(struct sta_info *sta, int tid,
- 			      struct tid_ampdu_tx *tid_tx)
- {
- 	struct ieee80211_sub_if_data *sdata = sta->sdata;
--	struct ieee80211_local *local = sdata->local;
-+	struct ieee80211_local *local;
-+
-+	if (!sdata)
-+		return;
-+
-+	local = sdata->local;
- 
- 	if (WARN_ON(test_and_set_bit(HT_AGG_STATE_DRV_READY, &tid_tx->state)))
- 		return;
-@@ -902,6 +909,9 @@ void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
- 	bool send_delba = false;
- 	bool start_txq = false;
- 
-+	if (!sdata)
-+		return;
-+
- 	ht_dbg(sdata, "Stopping Tx BA session for %pM tid %d\n",
- 	       sta->sta.addr, tid);
- 
--- 
-2.34.1
-
+> 
+> Tom
+> 
+> > Other than that looks OK.
+> > 
+> > Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > 
+> > > Signed-off-by: Tom Rix <trix@redhat.com>
+> > > ---
+> > >   drivers/net/ethernet/chelsio/cxgb3/sge.c | 5 -----
+> > >   1 file changed, 5 deletions(-)
+> > > 
+> > > diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+> > > index 62dfbdd33365..efa7f401529e 100644
+> > > --- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
+> > > +++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+> > > @@ -166,11 +166,6 @@ static u8 flit_desc_map[] = {
+> > >   #endif
+> > >   };
+> > > 
+> > > -static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
+> > > -{
+> > > -       return container_of(q, struct sge_qset, fl[qidx]);
+> > > -}
+> > > -
+> > >   static inline struct sge_qset *rspq_to_qset(const struct sge_rspq *q)
+> > >   {
+> > >          return container_of(q, struct sge_qset, rspq);
+> > > --
+> > > 2.27.0
+> > > 
+> 
