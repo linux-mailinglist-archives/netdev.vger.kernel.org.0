@@ -2,178 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8BDF6C1C19
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 17:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BBDC6C1C12
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 17:40:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbjCTQkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 12:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
+        id S230364AbjCTQkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 12:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232199AbjCTQjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 12:39:20 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F79DBFC
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 09:34:30 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-536d63d17dbso129032617b3.22
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 09:34:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679330069;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=WhwQb3FqbB+GNntG4m3i6zBlG0QQdRZQm0S93SY2ywY=;
-        b=ILJZoDNtUCg317SY/gpRdynZYPnVyzJXJ2+/yoRcw8b+nrOIHe32xvPhHCDbFXh4wb
-         RYq8jJLdYDvmg5YmjnwxFl+vCND2wB0BFSWbTQg0xI6SUlPkHQqfmgM74vepuooAnHlb
-         1lIptfal5Q3S54TgU+Q7LMG9qqj8aOkzlejGhbj/Rynyf+W7kHBOGXSNFP1t+ZYOiW52
-         /ITGOx/q1EXRTOP2MyN/mtsxjRlnga4UYoygautmVEoIfmfMwcP65s+ezUPOOBm1wTsB
-         Rikk1jF6FNKsMbioosaiCc2UD5nC8REo33d3jrZazlm0Tn/w/5XiW6hCPaQ3TUOm90Aj
-         XqxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679330069;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WhwQb3FqbB+GNntG4m3i6zBlG0QQdRZQm0S93SY2ywY=;
-        b=lsvlovYYuERCYreZhELbEC3cP5NfzEoIod4LyauuTKIdSZZMSz/kWKGKMjlb2dfhi7
-         Cl9xp+d5YzWqLq3983YRhHH15DzxfSStV14szal6VYKaYIccWLSBO+Dvj8BfGYrKp0PS
-         8STA2MRlGjcqtBl/zOJEHjUvxClIgEGPvxdGfTv9BQ/OqdpVz9/GbFRGBVw2HlQNpd7I
-         c2QbrhqPMfp2wHOreeqV9T6sfWzoz/TdTF3DznG7buA0ZXVGway5taOU9vYgyJvfUhmc
-         onRjsLzocVvOFCEZgMSqoCrvSao7Sn8L58VMrf6/te+nAf+CGp1QfXD/+mHX+0/Y7qoA
-         CazA==
-X-Gm-Message-State: AO0yUKXOKCeSecJ52TDPv8yIxMXQvRaD2rmb/aXzoJYf7BM2vrmuSM6m
-        SkA2+UFHe8q0mOR9X+li97OnF2OdvC3THw==
-X-Google-Smtp-Source: AK7set+8/LqTQFaGBQ+s9HN2vww+0R+XCxiymGLIUye8k/SQAnmESaXkObJM38ezV6rEFrPqivhK7v+qqmUXlw==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:1249:b0:b6c:f26c:e5ab with SMTP
- id t9-20020a056902124900b00b6cf26ce5abmr2063477ybu.3.1679330069647; Mon, 20
- Mar 2023 09:34:29 -0700 (PDT)
-Date:   Mon, 20 Mar 2023 16:34:27 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230320163427.8096-1-edumazet@google.com>
-Subject: [PATCH net] erspan: do not use skb_mac_header() in ndo_start_xmit()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        with ESMTP id S232057AbjCTQjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 12:39:43 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF5D2736;
+        Mon, 20 Mar 2023 09:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679330085; x=1710866085;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=+m+/laE82kuitrpk7ifFyXhG61Z9hnudH+XuBs/23sc=;
+  b=gyxBkUAJ1yTd2YVjer/z+3ycZj0bVkdOO79ertJtkEcjLkxGnx6ZARKS
+   djkhWTNXP0x3RuvzcSIUMVZpNY5FyFkCEUUNVsysVFjpdxx86dGcbmcLJ
+   OL65ohzBtCaCwXoz7oaAYepn1d1DKX/zxH8VVwMIYPtKHpdehevR0JUds
+   S2XaacB/aE67pJVdO5UqJMVYIQbfcckdQ80dizc+eL5l6rFFRwpMsdsto
+   wf0nDeo5LcGWZF+I4xAuQ6yNO4kJ89xF3YOgZGclStPXY2Fqlvwk1Mn5P
+   ss+Tobp1zHtFFmZnmEg6tLepKZhc/+/qIfudVlOpa+tlCYeV7e4AatUPU
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="337429557"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="337429557"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 09:34:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="855323975"
+X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
+   d="scan'208";a="855323975"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga005.jf.intel.com with ESMTP; 20 Mar 2023 09:34:43 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 20 Mar 2023 09:34:43 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 20 Mar 2023 09:34:42 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Mon, 20 Mar 2023 09:34:42 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.104)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Mon, 20 Mar 2023 09:34:42 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DEiJ3qhy1how5+gwr6HKXkpPaLkHadLJbF8kT2pmWz7nz1QrlfTfsrs0SQiaEqOpxuT1TkU+xL75rXorxfEm4GYs2ibVSo/d6aov05UxMqsIBoKzuu5FQ6JyarESbehqAEYnuhMGb7Ljcp8pJZG4Cj8Ir3yRkq0vuN2TN0qe4rOEb/TBY30SZl1GbjV5y8l6hjskMgGtJrtqBbZKUs84sd/gG08/2YO0bouuRdBlzvdm8M1ybtSft3ukIFo+7d/+eqr6Xo+x4Bloz7avzKjHDEbT8lWVyQxIvf5YXY5TgKm4TlmIRHWAr1AtF/2/+P22TnAP3xpSAqtXjA1RvwhUGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lIx2bsn8UYYktQKFzIMS/nSw7DngfJ8Pybkinb4oa6E=;
+ b=Hbg8Ky+BU4sA/WiSSNyHoyQXdalVrMEl/wzKGLuaqdU9DiVmim+dPESWz6s0pcO/VRESn6RvQ2TgfWKxIqdGbP6RqUZ4XutPUy5CmTU8UqMfx1Mb4qcgPSSyjabyA+nYJV7i4omBrG06zBtEAvxkp3OG+PxUC0Qr8j7zrnHWETBzvWLzyXZ+r2yddvriatV6UlOfEyD4YMuxtvcpLBPdMp2919xYVnF6V9hN8tSEEU94M0fU50u7gDY3pn/WVTDFumd0LQG9rxB65OeLO8l7KuQ7GtX7u38PtPEbqFg37IwmOIVEr/ZF5KPYt+goEA5eZcfKnFzfqh7nS8oOo9BDjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM6PR11MB2937.namprd11.prod.outlook.com (2603:10b6:5:62::13) by
+ DM6PR11MB4625.namprd11.prod.outlook.com (2603:10b6:5:2a8::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.37; Mon, 20 Mar 2023 16:34:40 +0000
+Received: from DM6PR11MB2937.namprd11.prod.outlook.com
+ ([fe80::cece:5e80:b74f:9448]) by DM6PR11MB2937.namprd11.prod.outlook.com
+ ([fe80::cece:5e80:b74f:9448%7]) with mapi id 15.20.6178.037; Mon, 20 Mar 2023
+ 16:34:40 +0000
+Date:   Mon, 20 Mar 2023 17:34:31 +0100
+From:   Michal Kubiak <michal.kubiak@intel.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        "Bjorn Andersson" <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        John Crispin <john@phrozen.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-leds@vger.kernel.org>
+Subject: Re: [net-next PATCH v5 05/15] net: phy: Add a binding for PHY LEDs
+Message-ID: <ZBiLF3qfnxiZlTkF@localhost.localdomain>
+References: <20230319191814.22067-1-ansuelsmth@gmail.com>
+ <20230319191814.22067-6-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230319191814.22067-6-ansuelsmth@gmail.com>
+X-ClientProxiedBy: DB8PR04CA0028.eurprd04.prod.outlook.com
+ (2603:10a6:10:110::38) To DM6PR11MB2937.namprd11.prod.outlook.com
+ (2603:10b6:5:62::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR11MB2937:EE_|DM6PR11MB4625:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2806b78c-4246-435b-28e4-08db29610080
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SIrMGRhq+Q6r/DK/RtIriBafl3NSL1HZE2ejNcAguoShxpejwnJEvh50CynNNyh0/3T55FNUXRPPw7RbtX2ZV12oLiwA1ueuBEwcIpWwK/LV5CNYK2p6SrS1fWvVqU/RXvwIL7DuHR8bJqs0w+/84LRQKT5waGTc5jQe44gDse42dUfQwfjLGGeVZIg7eot6TTJaqyySkDNDEB2GCPFPsTJrpNCiitqHvigl1OZIQ/l0lS81w3+Nnhh3dstsyex1EnuBaVFU35xbcs+D3ufq4Za5JEUhHiM07ekA05FirSoJyJ8oR5lxHZ6P9K6ONi88DJcalo1tOUDPyDdXrKZdxyYz58ROJTktpF0ANs/vv++kiGGwwypwOPaOktDK6tYrhqjjOI+Btw/8e7Aoo0wCYJOXmSyQiXphlUXimikjdyfKNXXWUkfLVsxQ0I9olJ07zblOr3kJPDUbzuTd6lF+fbzsLfZk6guShAsHVzc+FQI0083e35KSy9LWuURWsOnWOZvNwaBKmWQx5fV4O5xuBdSGMX7he8BoN7HRLEZtgSJ01esnATcAq3rDzjluhKejj8vchqRNMmY3C6Rkt66dG7V+5Sqxg8KXkyDQNroSqKmWQSyZZ4uxHo3YCTdvO+mWM3oClR7QEsr9MLmhPIRWnw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2937.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(346002)(396003)(366004)(376002)(136003)(39860400002)(451199018)(8936002)(5660300002)(44832011)(7416002)(4744005)(41300700001)(86362001)(38100700002)(82960400001)(2906002)(4326008)(6486002)(478600001)(6666004)(186003)(26005)(6506007)(6512007)(9686003)(54906003)(66476007)(316002)(8676002)(66946007)(66556008)(6916009);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EDbI2yDlQ+c9MU5SKmnqrTdQA5x5LFxymtVN0rWolr38Hd/UZTLFM9W2QDJP?=
+ =?us-ascii?Q?rS04hyMzPdi3r4Dm8pWma/ns7Fv86wUU17nrdb34MKHcyctzXbt5lAov4Gxx?=
+ =?us-ascii?Q?eidLcvF4TOR9kppvKi+gQP9OEQinS+JEQDgvybH4O3gBmXeAw+6hu1jP7G5Q?=
+ =?us-ascii?Q?IncCX/CtodVyLqZpexJPyTVJdvvIULrEqTh2IQoCdmP1mhc+bP/cLCJUz19X?=
+ =?us-ascii?Q?2/toJ40Pu8QVSwR7xR0rXjw7ewk/Ie88JbU3+hflA9gt4R2C5yLMI6FUAiN0?=
+ =?us-ascii?Q?6qM42iHkQ3EoN7+S0SzGLG9N7V6Z5IRXdxEyzDxUfEvOVf9x4MCTCq3rbP7K?=
+ =?us-ascii?Q?Dg6Vk/zmGYa5dF8gCid3LsiVSpkIPAW43ZntJrvQwmdKRkRsRrGMUmQr0axy?=
+ =?us-ascii?Q?8rkpU8UL123DMcv+g/9Uz6LX8K8+Kc9Va3OrFtKt62YnPYy1DNQBSXBBE8Fm?=
+ =?us-ascii?Q?15UvLRSazNJ2JAK2s7C7eTkmBMuzfQVP52s9hYil+jcspRlIL+45zMgGIuFI?=
+ =?us-ascii?Q?btlY+Uaq76ZwaljxIR0jO89riyTr139MGZ8KpNQl7DBqHK3Izp2xxmOnmff7?=
+ =?us-ascii?Q?b30ITw90mN0De3tJ5jgUb8AQ2+weoede/MN+ZBoi87YvQcaQH11ABh+E/nG/?=
+ =?us-ascii?Q?WygUDj52WDmIMdK3cXXbgWlnmx3vK2bWcKwGzld9lmUMYfiS07A7EovqrLzL?=
+ =?us-ascii?Q?yEMjUPV6R2ycQtNE/GEvKkwJ56uxUx0zyd9GzQEoKF307pZdJ9nacG2NjUJk?=
+ =?us-ascii?Q?9vYKiMIdLfUjCmRHz1XOX7pra3CRcjyDHMqohSda+tL60IEmF61wXlTJvGun?=
+ =?us-ascii?Q?u+45QPkqlOXRaqrzp8DjJGNmzZ3briODgugQe6wZEwYrWno5QqE+LgnEjlns?=
+ =?us-ascii?Q?L5NNnrapCcFaDN3XAJHXrmTKlQkHYa/vI9Xwj7i93631NcGpoK7i5QguTgm7?=
+ =?us-ascii?Q?bVhZ9mMnNBf3GxBexJ5WK8hQ5ei3ryj8QRpnYHx7lTXC+wkahUDtZ+XhE2Mq?=
+ =?us-ascii?Q?v8u8ucfnhx6oLpZ8Ygg14b93KDkzQFUwSp1sz/mbnFaQz7qIpH3xagrlH6be?=
+ =?us-ascii?Q?VNPJfC5q9o7hsjP8uspPk7k+/23nrjlCyAo+2ZdRMcqgzkqcZNVe4GuMjsAP?=
+ =?us-ascii?Q?vzv2/bCdcoKHeOhlekRR0ftV8sKIylSgtYKF+ZRWGx4I5YOfW+3wjOONRpFV?=
+ =?us-ascii?Q?Fez/8LoZ7hZBlpmUakHNHWRbdp9PXv/iv0/Wi4k+5PcH/Z3uxPsc6FoYZGnn?=
+ =?us-ascii?Q?ypYJ0ybRfecilOvG2Bh/+dNxfyqdcQ2jqA46hO5zaAiZbKSSkLll4oOc8LwG?=
+ =?us-ascii?Q?5FQ9PPA6nV0aNQ78MFgUwHAboiRdrGU/tFnWcHqjpLTQyjIXy2MpjH6RuUUv?=
+ =?us-ascii?Q?jxg2Ao+HVvsT6z7XKGY7OJOofYgSDFGgwgJZBMTNERyab94UuIy+unZ2tgH8?=
+ =?us-ascii?Q?JCdc3i5HIj2kwH4JRn26mYUA6FondetcKjw6Y1WhgyO6rm1l/eFpzEwapR57?=
+ =?us-ascii?Q?DIvA9hUqzuowa5CTCZVA7ME83ppQ9ZQoH8lt1Fzdfewzs0zId64sJR8x1L/v?=
+ =?us-ascii?Q?saNqFKZvlGlRPtz0+n2IjckKl70lHzvmVYuvCF//pCDt4/KcYxa+Nttz9739?=
+ =?us-ascii?Q?nA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2806b78c-4246-435b-28e4-08db29610080
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2937.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2023 16:34:40.2835
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iuhLBky4qLtHsJ7YkwYlwspoPKH5SCd99AkSoBlEq+b4119zdPibbg7SvWnRG7fH5oG4mWvDZL1/FQiitTJJ2g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4625
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers should not assume skb_mac_header(skb) == skb->data in their
-ndo_start_xmit().
+On Sun, Mar 19, 2023 at 08:18:04PM +0100, Christian Marangi wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
+> 
+> Define common binding parsing for all PHY drivers with LEDs using
+> phylib. Parse the DT as part of the phy_probe and add LEDs to the
+> linux LED class infrastructure. For the moment, provide a dummy
+> brightness function, which will later be replaced with a call into the
+> PHY driver.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 
-Use skb_network_offset() and skb_transport_offset() which
-better describe what is needed in erspan_fb_xmit() and
-ip6erspan_tunnel_xmit()
-
-syzbot reported:
-WARNING: CPU: 0 PID: 5083 at include/linux/skbuff.h:2873 skb_mac_header include/linux/skbuff.h:2873 [inline]
-WARNING: CPU: 0 PID: 5083 at include/linux/skbuff.h:2873 ip6erspan_tunnel_xmit+0x1d9c/0x2d90 net/ipv6/ip6_gre.c:962
-Modules linked in:
-CPU: 0 PID: 5083 Comm: syz-executor406 Not tainted 6.3.0-rc2-syzkaller-00866-gd4671cb96fa3 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-RIP: 0010:skb_mac_header include/linux/skbuff.h:2873 [inline]
-RIP: 0010:ip6erspan_tunnel_xmit+0x1d9c/0x2d90 net/ipv6/ip6_gre.c:962
-Code: 04 02 41 01 de 84 c0 74 08 3c 03 0f 8e 1c 0a 00 00 45 89 b4 24 c8 00 00 00 c6 85 77 fe ff ff 01 e9 33 e7 ff ff e8 b4 27 a1 f8 <0f> 0b e9 b6 e7 ff ff e8 a8 27 a1 f8 49 8d bf f0 0c 00 00 48 b8 00
-RSP: 0018:ffffc90003b2f830 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 000000000000ffff RCX: 0000000000000000
-RDX: ffff888021273a80 RSI: ffffffff88e1bd4c RDI: 0000000000000003
-RBP: ffffc90003b2f9d8 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000000 R12: ffff88802b28da00
-R13: 00000000000000d0 R14: ffff88807e25b6d0 R15: ffff888023408000
-FS: 0000555556a61300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055e5b11eb6e8 CR3: 0000000027c1b000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-__netdev_start_xmit include/linux/netdevice.h:4900 [inline]
-netdev_start_xmit include/linux/netdevice.h:4914 [inline]
-__dev_direct_xmit+0x504/0x730 net/core/dev.c:4300
-dev_direct_xmit include/linux/netdevice.h:3088 [inline]
-packet_xmit+0x20a/0x390 net/packet/af_packet.c:285
-packet_snd net/packet/af_packet.c:3075 [inline]
-packet_sendmsg+0x31a0/0x5150 net/packet/af_packet.c:3107
-sock_sendmsg_nosec net/socket.c:724 [inline]
-sock_sendmsg+0xde/0x190 net/socket.c:747
-__sys_sendto+0x23a/0x340 net/socket.c:2142
-__do_sys_sendto net/socket.c:2154 [inline]
-__se_sys_sendto net/socket.c:2150 [inline]
-__x64_sys_sendto+0xe1/0x1b0 net/socket.c:2150
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f123aaa1039
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc15d12058 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f123aaa1039
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000020000040 R09: 0000000000000014
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f123aa648c0
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
-
-Fixes: 1baf5ebf8954 ("erspan: auto detect truncated packets.")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/ip_gre.c  | 4 ++--
- net/ipv6/ip6_gre.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index ffff46cdcb58f9b5b4c210a548d685d8f0c7716a..e55a202649608f6f3c814e143581d631ce0467e6 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -552,7 +552,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 		truncate = true;
- 	}
- 
--	nhoff = skb_network_header(skb) - skb_mac_header(skb);
-+	nhoff = skb_network_offset(skb);
- 	if (skb->protocol == htons(ETH_P_IP) &&
- 	    (ntohs(ip_hdr(skb)->tot_len) > skb->len - nhoff))
- 		truncate = true;
-@@ -561,7 +561,7 @@ static void erspan_fb_xmit(struct sk_buff *skb, struct net_device *dev)
- 		int thoff;
- 
- 		if (skb_transport_header_was_set(skb))
--			thoff = skb_transport_header(skb) - skb_mac_header(skb);
-+			thoff = skb_transport_offset(skb);
- 		else
- 			thoff = nhoff + sizeof(struct ipv6hdr);
- 		if (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff)
-diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
-index 89f5f0f3f5d65b6aac0dae2302d8a5607a492155..a4ecfc9d25930967a6af7bd9de9aa52bfd08730d 100644
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -959,7 +959,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 		truncate = true;
- 	}
- 
--	nhoff = skb_network_header(skb) - skb_mac_header(skb);
-+	nhoff = skb_network_offset(skb);
- 	if (skb->protocol == htons(ETH_P_IP) &&
- 	    (ntohs(ip_hdr(skb)->tot_len) > skb->len - nhoff))
- 		truncate = true;
-@@ -968,7 +968,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit(struct sk_buff *skb,
- 		int thoff;
- 
- 		if (skb_transport_header_was_set(skb))
--			thoff = skb_transport_header(skb) - skb_mac_header(skb);
-+			thoff = skb_transport_offset(skb);
- 		else
- 			thoff = nhoff + sizeof(struct ipv6hdr);
- 		if (ntohs(ipv6_hdr(skb)->payload_len) > skb->len - thoff)
--- 
-2.40.0.rc2.332.ga46443480c-goog
-
+Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
