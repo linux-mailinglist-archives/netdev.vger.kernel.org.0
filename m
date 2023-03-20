@@ -2,83 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E2DA6C090A
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 03:55:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 322FC6C0921
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 04:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbjCTCzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 22:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
+        id S229735AbjCTDBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 23:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbjCTCzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 22:55:09 -0400
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C603B767;
-        Sun, 19 Mar 2023 19:55:05 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-        by APP-05 (Coremail) with SMTP id zQCowACXn8_1yhdkQAdvBg--.527S2;
-        Mon, 20 Mar 2023 10:54:47 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     simon.horman@corigine.com
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH v2] Bluetooth: 6LoWPAN: Add missing check for skb_clone
-Date:   Mon, 20 Mar 2023 10:54:44 +0800
-Message-Id: <20230320025444.18428-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229622AbjCTDBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 23:01:02 -0400
+Received: from mail.fintek.com.tw (mail.fintek.com.tw [59.120.186.242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E904EB79;
+        Sun, 19 Mar 2023 20:00:59 -0700 (PDT)
+Received: from vmMailSRV.fintek.com.tw ([192.168.1.1])
+        by mail.fintek.com.tw with ESMTP id 32K2xZ3J060873;
+        Mon, 20 Mar 2023 10:59:35 +0800 (+08)
+        (envelope-from peter_hong@fintek.com.tw)
+Received: from [192.168.1.111] (192.168.1.111) by vmMailSRV.fintek.com.tw
+ (192.168.1.1) with Microsoft SMTP Server id 14.3.498.0; Mon, 20 Mar 2023
+ 10:59:33 +0800
+Message-ID: <186901f9-5d52-2315-f532-26471adcfb55@fintek.com.tw>
+Date:   Mon, 20 Mar 2023 10:59:33 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH] can: usb: f81604: add Fintek F81604 support
+Content-Language: en-US
+To:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+CC:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <mailhol.vincent@wanadoo.fr>, <frank.jungclaus@esd.eu>,
+        <linux-kernel@vger.kernel.org>, <linux-can@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <hpeter+linux_kernel@gmail.com>
+References: <20230317093352.3979-1-peter_hong@fintek.com.tw>
+ <ZBRoCVHV3S3ugEoO@localhost.localdomain>
+From:   Peter Hong <peter_hong@fintek.com.tw>
+In-Reply-To: <ZBRoCVHV3S3ugEoO@localhost.localdomain>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowACXn8_1yhdkQAdvBg--.527S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw4xCr13uw4rJFyrJw4Dtwb_yoWfWwc_Wr
-        n5Z3s2k3yFkr4xu3ZFyrW2yFs5K3sxGF9agwn0van8A3s5ArZ7KrWkKryftr1xGay0vFnI
-        9FW2yFZ5Xr9rujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbx8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
-        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
-        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
-        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j
-        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
-        DUUUUU=
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [192.168.1.111]
+X-TM-AS-Product-Ver: SMEX-12.5.0.2055-9.0.1002-27514.001
+X-TM-AS-Result: No-19.988400-8.000000-10
+X-TMASE-MatchedRID: UuaOI1zLN1j/9O/B1c/QyzjNGpWCIvfTlmG/61+LLCeqvcIF1TcLYANw
+        091XoRE6sLe9OFkv+Id3TaF7+lCZvoToZqUCO9J5UgKYbZFF6GjcAmu1xqeets+WYjg3WzyKByy
+        VimjmJJMPHd/OW2VyD6ve1RQ6Ydsa4EtSNBzFpGASEYfcJF0pRdhQO8CvZj/XK36BWK75QOTVr0
+        bDpfV8iIw9rt9E8A4oWo0SBooXS7Tm30AqBxefhDiEPRj9j9rvTJDl9FKHbrmhBPc4ZBrNkb6YV
+        RYkPkYC+JitU/PMe9hkCRQbR4V/6j1I7Q1NCxg0+GYt8f/VhTvGYnoF/CTeZQAheUymmndfsMBr
+        Nxxo1t/wOGawsB401V5974JFP0LmXHEPHmpuRH2DGx/OQ1GV8rHlqZYrZqdI+gtHj7OwNO0CpgE
+        TeT0ynA==
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--19.988400-8.000000
+X-TMASE-Version: SMEX-12.5.0.2055-9.0.1002-27514.001
+X-TM-SNTS-SMTP: E9B5BD1048C40DCF5A422C23447762A0AFA39FCD6982378C40C5FF645BFD0AAA2000:8
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL: mail.fintek.com.tw 32K2xZ3J060873
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 18, 2023 at 05:03:21AM +0800, Simon Horman wrote:
-> On Wed, Mar 15, 2023 at 03:06:21PM +0800, Jiasheng Jiang wrote:
->> Add the check for the return value of skb_clone since it may return NULL
->> pointer and cause NULL pointer dereference in send_pkt.
->> 
->> Fixes: 18722c247023 ("Bluetooth: Enable 6LoWPAN support for BT LE devices")
->> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
->> ---
->> Changelog:
->> 
->> v1 -> v2:
->> 
->> 1. Modify the error handling in the loop.
-> 
-> I think that at a minimum this needs to be included in the patch description.
-> Or better, in it's own patch with it's own fixes tag.
-> It seems like a fundamental change to the error handling to me.
+Hi,
 
-I will submit a separate patch to modify the error handling in the loop.
-You can directly review the v1.
-Link:https://lore.kernel.org/all/20230313090346.48778-1-jiasheng@iscas.ac.cn/
+Michal Swiatkowski 於 2023/3/17 下午 09:15 寫道:
+> On Fri, Mar 17, 2023 at 05:33:52PM +0800, Ji-Ze Hong (Peter Hong) wrote:
+>
+> --- a/drivers/net/can/usb/Kconfig
+> +++ b/drivers/net/can/usb/Kconfig
+> @@ -147,4 +147,13 @@ config CAN_UCAN
+>   	          from Theobroma Systems like the A31-ÂľQ7 and the RK3399-Q7
+>   	          (https://www.theobroma-systems.com/rk3399-q7)
+>   
+> Hi,
+>
+> I am not familiar with CAN, so only style review :)
 
-Thanks,
-Jiang
+Thanks for your reviews :D
+> +
+> +	if (status) {
+> +		dev_err(&dev->dev, "%s: reg: %x data: %x failed: %d\n",
+> +			__func__, reg, data, status);
+> +	}
+> The { and } aren't needed as inside if is only one line.
 
+Could I remove the { and } when the logical line to split multi-line ?
+
+>> +static int f81604_set_normal_mode(struct net_device *netdev)
+>> +{
+>> +	struct f81604_port_priv *priv = netdev_priv(netdev);
+>> +	int status, i;
+>> +	u8 mod_reg_val = 0x00;
+> RCT, mod_reg should be one line above
+
+What mean about "RCT"?
+
+Is this section should change to above like ??
+
+     u8 mod_reg_val;
+     ...
+
+     mod_reg_val = 0;
+>> +static int f81604_register_urbs(struct net_device *netdev)
+>> +{
+>> +	struct f81604_port_priv *priv = netdev_priv(netdev);
+>> +	int status, i;
+>> +
+>> +	for (i = 0; i < F81604_MAX_RX_URBS; ++i) {
+>> +		status = usb_submit_urb(priv->read_urb[i], GFP_KERNEL);
+>> +		if (status) {
+>> +			netdev_warn(netdev, "%s: submit rx urb failed: %d\n",
+>> +				    __func__, status);
+>> +			return status;
+> Don't know usb subsytem, but shouldn't previously submitted urb be
+> killed?
+
+Yes, I had made kill operations in
+     f81604_start()
+         -> f81604_unregister_urbs()
+
+>> +static void f81604_process_rx_packet(struct urb *urb)
+>> +{
+>> +	struct net_device_stats *stats;
+>> +	struct net_device *netdev;
+>> +	struct can_frame *cf;
+>> +	struct sk_buff *skb;
+>> +	u8 *data;
+>> +	u8 *ptr;
+>> +	int i;
+>> +	int count;
+> RCT
+>
+>> +
+>> +	netdev = urb->context;
+>> +	stats = &netdev->stats;
+>> +	data = urb->transfer_buffer;
+> netdev and data can be set in declaration
+
+why only netdev & data ?? Could I set netdev, stats & data in declaration ?
+
+
+>> +/* Called by the usb core when driver is unloaded or device is removed */
+>> +static void f81604_disconnect(struct usb_interface *intf)
+>> +{
+>> +	struct f81604_priv *priv = usb_get_intfdata(intf);
+>> +	int i;
+>> +
+>> +	for (i = 0; i < F81604_MAX_DEV; ++i) {
+>> +		if (!priv->netdev[i])
+>> +			continue;
+>> +
+>> +		unregister_netdev(priv->netdev[i]);
+>> +		free_candev(priv->netdev[i]);
+>> +	}
+> What about closing USB device? It is called brefore disconnect or it
+> should be done here?
+
+When candev close in f81604_close(), It will call f81604_set_reset_mode() to
+make candev to reset mode.
+
+Thanks
