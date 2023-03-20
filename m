@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1ABB6C120D
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8186C1221
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:44:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbjCTMk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 08:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
+        id S231481AbjCTMoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 08:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbjCTMk5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:40:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48887D53A;
-        Mon, 20 Mar 2023 05:40:53 -0700 (PDT)
+        with ESMTP id S231502AbjCTMoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:44:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B6028D00;
+        Mon, 20 Mar 2023 05:43:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1AE7B80D5B;
-        Mon, 20 Mar 2023 12:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97EEBC433D2;
-        Mon, 20 Mar 2023 12:40:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F2AA614D0;
+        Mon, 20 Mar 2023 12:43:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DD09C433EF;
+        Mon, 20 Mar 2023 12:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679316050;
-        bh=ygtqlan6gmapNgIcCgqJ3TjvKfvjZ61I2WRWKTEMJxo=;
+        s=k20201202; t=1679316230;
+        bh=3L9RSVyHVKcmoJzAucUoH9eNRK6jXEQQXLoDnI6KoZE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UwNNBTfSSGciqjoxIuA483/4GSZisGmO74L5rjgFf1VrMRKXk1DESUqtixBnJyHV4
-         vaNneXW5W9EkzqDs3If7nSW9Xe+jLtNyRz76G/leyj/EoYObEgx8cHqxqOe93imq4c
-         2sKBT3jxhceJgjrSEX8oOQqHfUQ7BTAQrgA1CDqYIpUTHdHvucyoVBnrpZ5JpPmd+D
-         6ceJUhvOKyxE5XoY+NIxKNEljshhvKP9/G+CD3i/qjZxkc+sRRkEvlltj1F+KdC9wk
-         p98AKHdOjQnRk3Sfx54YLlK6odc0yxfw+oxJDXm+aGO7YsaElDG/kFTUll++RShD6d
-         4SCdYZ2LponHA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1peEq3-0006a9-Cj; Mon, 20 Mar 2023 13:42:11 +0100
-Date:   Mon, 20 Mar 2023 13:42:11 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        b=U9HZSvj2T4jrnVdkZevOpl5TsEhVpNw5vvGGvE8p70PPY6Z1PdNDNoIR/vWwwmK+t
+         1a32z68S/H45gRK/f/yB5EuHyrstF3Uee2QZ1/rxWF3QVPClhviTUDxXjONK6xWvJ7
+         rz1J3UlgNQSZmNsPebL78BPfsyO7/svIEy/kqZWh8IbnyRKydPJEqBdZARljAFCV4m
+         6SvV2xxXQE/DRdVEjJLkZDOyjOs9jGg6vZbE0vsESj1Ii2+ncsYEqAMX9Sy4LC6nWc
+         M5WugU2WRItgpPM2JAOOW/yFkESzpVhpIKGj85navKXKNxFkszovhx86ZZ893aVyGa
+         CaM2JusOo5PnQ==
+Date:   Mon, 20 Mar 2023 18:13:46 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kishon Vijay Abraham I <kishon@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: wireless: add ath11k pcie bindings
-Message-ID: <ZBhUo1C08U5mp9zP@hovoldconsulting.com>
-References: <20230320104658.22186-1-johan+linaro@kernel.org>
- <20230320104658.22186-2-johan+linaro@kernel.org>
- <87ttyfhatn.fsf@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee@kernel.org>
+Subject: Re: [PATCH v2 net-next 1/9] phy: phy-ocelot-serdes: add ability to
+ be used in a non-syscon configuration
+Message-ID: <ZBhVAg4hkLu56fsi@matsya>
+References: <20230317185415.2000564-1-colin.foster@in-advantage.com>
+ <20230317185415.2000564-2-colin.foster@in-advantage.com>
+ <ZBgeKM50e1vt+ho1@matsya>
+ <ZBgmXplfA/Q3/1dC@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87ttyfhatn.fsf@kernel.org>
+In-Reply-To: <ZBgmXplfA/Q3/1dC@shell.armlinux.org.uk>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -68,25 +68,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 02:22:12PM +0200, Kalle Valo wrote:
-> Johan Hovold <johan+linaro@kernel.org> writes:
+On 20-03-23, 09:24, Russell King (Oracle) wrote:
+> On Mon, Mar 20, 2023 at 02:19:44PM +0530, Vinod Koul wrote:
+> > On 17-03-23, 11:54, Colin Foster wrote:
+> > > The phy-ocelot-serdes module has exclusively been used in a syscon setup,
+> > > from an internal CPU. The addition of external control of ocelot switches
+> > > via an existing MFD implementation means that syscon is no longer the only
+> > > interface that phy-ocelot-serdes will see.
+> > > 
+> > > In the MFD configuration, an IORESOURCE_REG resource will exist for the
+> > > device. Utilize this resource to be able to function in both syscon and
+> > > non-syscon configurations.
+> > 
+> > Applied to phy/next, thanks
 > 
-> > Add devicetree bindings for Qualcomm ath11k PCIe devices such as WCN6856
-> > for which the calibration data variant may need to be described.
-> >
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> > ---
-> >  .../bindings/net/wireless/pci17cb,1103.yaml   | 56 +++++++++++++++++++
-> >  1 file changed, 56 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/wireless/pci17cb,1103.yaml
+> Please read the netdev FAQ. Patches sent to netdev contain the tree that
+> the submitter wishes the patches to be applied to.
 > 
-> I'm confused (as usual), how does this differ from
-> bindings/net/wireless/qcom,ath11k.yaml? Why we need two .yaml files?
+> As a result, I see davem has just picked up the *entire* series which
+> means that all patches are in net-next now. net-next is immutable.
+> 
+> In any case, IMHO if this kind of fly-by cherry-picking from patch
+> series is intended, it should be mentioned during review to give a
+> chance for other maintainers to respond and give feedback. Not all
+> submitters will know how individual maintainers work. Not all
+> maintainers know how other maintainers work.
 
-Almost none of bindings/net/wireless/qcom,ath11k.yaml applies to WCN6856
-when using PCIe (e.g. as most properties are then discoverable).
+:-(
 
-We could try to encode everything in one file, but that would likely
-just result in a big mess of a schema with conditionals all over.
+Just saw the email at similar time around mine! I can skip anything
+which is tagged net-dev in future, saves me time from useless endeavours!
 
-Johan
+-- 
+~Vinod
