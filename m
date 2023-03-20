@@ -2,117 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7419F6C08C5
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 03:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E2DA6C090A
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 03:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbjCTB76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Mar 2023 21:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
+        id S229765AbjCTCzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Mar 2023 22:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbjCTB7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 21:59:53 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E141EF91
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 18:59:48 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id k37so126931lfv.0
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 18:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1679277586;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=veHR4OeBVdmMM7ZoMMD2LEaF+ZQb01kUcsthEQZ+G8o=;
-        b=OIegsQzNjWN8D3O7HJ7cFh3uaO5rdGzzoZGl5blV4F6m920xg8pUoFP1HwrRH1pFjl
-         L7uDibYF43PgkoFJ8dS4utdgy1t46/TqB6rwVyMbdQPVOvWiBZPKHIUeTohlPVPF2EAi
-         8z6AD8gr9VXgmQysG+Ossen5DIfmnfE9T9V7M=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679277586;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=veHR4OeBVdmMM7ZoMMD2LEaF+ZQb01kUcsthEQZ+G8o=;
-        b=DZgh2LK41Fl8CoCN9cxJUJZdj/WG89oX99ztqnPAVuNbm7otrqwGzhNlUpKzHDljE0
-         uPggYkSs0BQbHHDJ+fgHOanrJbAzs+CD1Z0HCqrt2v6DCPriurICUC+hj/ztupDDo+Wn
-         tXJfcjH+hnf2yrirHb8vgIywtzGMEqsXPaSwsX7vmEEtOboPO8ZrrI58bQaBkBf++FQv
-         ZMlzbwAAMGynLAibXVy1KVmZ5Zur1Ck3aYyhiW9lmT77eX8EIooCrIPBjBuVWt2MKS/f
-         J8hZE02YMNqRtUVNK3rA5tOJ034e1yUbL+jBLw/iaircMthOpOSouQQx7AWcNMEhppxB
-         DJwA==
-X-Gm-Message-State: AO0yUKV4Mjtu3Ca9gYHZ5v1srZWwC8unTsEK55uxCkR9Uauz1I1H11vk
-        uFQfBEWRL9GH0sz1QhttUoxcvx0XSLhz7t/lQUPy9w==
-X-Google-Smtp-Source: AK7set9Ua9RQ9kXY7VmRU+/zx6QqamQ+y+ObraibmtJUsOf9J6Wt9TeAg4pjgYw7A/EwZLY3rtPOIQ==
-X-Received: by 2002:ac2:5509:0:b0:4db:ee9:7684 with SMTP id j9-20020ac25509000000b004db0ee97684mr6367327lfk.56.1679277585810;
-        Sun, 19 Mar 2023 18:59:45 -0700 (PDT)
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
-        by smtp.gmail.com with ESMTPSA id f21-20020ac25335000000b004d86808fd33sm1494667lfh.15.2023.03.19.18.59.45
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Mar 2023 18:59:45 -0700 (PDT)
-Received: by mail-lf1-f46.google.com with SMTP id h25so1404742lfv.6
-        for <netdev@vger.kernel.org>; Sun, 19 Mar 2023 18:59:45 -0700 (PDT)
-X-Received: by 2002:a17:906:2294:b0:927:912:6baf with SMTP id
- p20-20020a170906229400b0092709126bafmr2817236eja.15.1679277564111; Sun, 19
- Mar 2023 18:59:24 -0700 (PDT)
+        with ESMTP id S229665AbjCTCzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Mar 2023 22:55:09 -0400
+Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C603B767;
+        Sun, 19 Mar 2023 19:55:05 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.125])
+        by APP-05 (Coremail) with SMTP id zQCowACXn8_1yhdkQAdvBg--.527S2;
+        Mon, 20 Mar 2023 10:54:47 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     simon.horman@corigine.com
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: Re: [PATCH v2] Bluetooth: 6LoWPAN: Add missing check for skb_clone
+Date:   Mon, 20 Mar 2023 10:54:44 +0800
+Message-Id: <20230320025444.18428-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20230320005258.1428043-1-sashal@kernel.org> <20230320005258.1428043-9-sashal@kernel.org>
-In-Reply-To: <20230320005258.1428043-9-sashal@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 19 Mar 2023 18:59:07 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgpK-Gm-nOybRKs1LTD5yb7rPHQ4+=PCDvq61mUpBskYw@mail.gmail.com>
-Message-ID: <CAHk-=wgpK-Gm-nOybRKs1LTD5yb7rPHQ4+=PCDvq61mUpBskYw@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 6.2 09/30] cpumask: fix incorrect cpumask scanning
- result checks
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Vernon Yang <vernon2gm@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>, mpe@ellerman.id.au,
-        tytso@mit.edu, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, christophe.leroy@csgroup.eu,
-        npiggin@gmail.com, dmitry.osipenko@collabora.com, joel@jms.id.au,
-        nathanl@linux.ibm.com, gustavoars@kernel.org,
-        naveen.n.rao@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org,
-        wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowACXn8_1yhdkQAdvBg--.527S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Gw4xCr13uw4rJFyrJw4Dtwb_yoWfWwc_Wr
+        n5Z3s2k3yFkr4xu3ZFyrW2yFs5K3sxGF9agwn0van8A3s5ArZ7KrWkKryftr1xGay0vFnI
+        9FW2yFZ5Xr9rujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbx8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
+        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j
+        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
+        DUUUUU=
+X-Originating-IP: [124.16.138.125]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 5:53=E2=80=AFPM Sasha Levin <sashal@kernel.org> wro=
-te:
->
-> [ Upstream commit 8ca09d5fa3549d142c2080a72a4c70ce389163cd ]
+On Sat, Mar 18, 2023 at 05:03:21AM +0800, Simon Horman wrote:
+> On Wed, Mar 15, 2023 at 03:06:21PM +0800, Jiasheng Jiang wrote:
+>> Add the check for the return value of skb_clone since it may return NULL
+>> pointer and cause NULL pointer dereference in send_pkt.
+>> 
+>> Fixes: 18722c247023 ("Bluetooth: Enable 6LoWPAN support for BT LE devices")
+>> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+>> ---
+>> Changelog:
+>> 
+>> v1 -> v2:
+>> 
+>> 1. Modify the error handling in the loop.
+> 
+> I think that at a minimum this needs to be included in the patch description.
+> Or better, in it's own patch with it's own fixes tag.
+> It seems like a fundamental change to the error handling to me.
 
-These are technically real fixes, but they are really just "documented
-behavior" fixes, and don't actually matter unless you also have
-596ff4a09b89 ("cpumask: re-introduce constant-sized cpumask
-optimizations"), which doesn't look like stable material.
+I will submit a separate patch to modify the error handling in the loop.
+You can directly review the v1.
+Link:https://lore.kernel.org/all/20230313090346.48778-1-jiasheng@iscas.ac.cn/
 
-And if somebody *does* decide to backport commit 596ff4a09b89, you
-should then backport all of
+Thanks,
+Jiang
 
-  6015b1aca1a2 sched_getaffinity: don't assume 'cpumask_size()' is
-fully initialized
-  e7304080e0e5 cpumask: relax sanity checking constraints
-  63355b9884b3 cpumask: be more careful with 'cpumask_setall()'
-  8ca09d5fa354 cpumask: fix incorrect cpumask scanning result checks
-
-but again, none of these matter as long as the constant-sized cpumask
-optimized case doesn't exist.
-
-(Technically, FORCE_NR_CPUS also does the constant-size optimizations
-even before, but that will complain loudly if that constant size then
-doesn't match nr_cpu_ids, so ..).
-
-                   Linus
