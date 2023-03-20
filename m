@@ -2,126 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39CFA6C1629
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654A96C164C
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbjCTPCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 11:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
+        id S232097AbjCTPEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 11:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232024AbjCTPCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:02:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDC0222FA
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 07:58:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679324246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OQtFmm4KZTwh3zjk0Ct7Wnh43xep01cq4SPytfY48TY=;
-        b=EeL6ij6N0TObiZ9G+j16TtpgIdYV2KHi3MEVsCyhARlpVNvUW4as1U0dtbiluNB8c9SiYO
-        T72UohG+LiQe2tp7GTQBE+hIY3C1vXgVXFJUubAT4r7Mfad7IpyFOa3FNwtG8Y2SnL4RiP
-        G/kxUuJ7rFwMckuqUwZKSRtmK595080=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-503-qtjm_Aw3OSGGpFJKeYoFaA-1; Mon, 20 Mar 2023 10:57:25 -0400
-X-MC-Unique: qtjm_Aw3OSGGpFJKeYoFaA-1
-Received: by mail-wm1-f70.google.com with SMTP id v8-20020a05600c470800b003ed3b575374so5648882wmo.7
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 07:57:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679324244;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OQtFmm4KZTwh3zjk0Ct7Wnh43xep01cq4SPytfY48TY=;
-        b=DmPEDqw8/KZDWVKDfMRX7CyhYWI634li/x2ZlH0/+qdekYCHyxSs3lgMsBO5+a5yQr
-         pYkV9/IHx9Lz3L265G5TNl2SqIC0RP7AVKRyrhghCQtycAc+Qelhxd58QkNN9mvx6v1j
-         o1CC5sLgmerVrkr2LXvsuq6S59u6rhweSPHwm5ghXqKAVxSF5m8dbtflhdUthcOnSI5O
-         rQmPLPBIZbuo79bZwFTjyQCtDD6cpB4cc8VU32TFaNgCgkRYY1VpSLcZ5mwsKrbUkJZq
-         h4N/3kqGHIfko/DXBxIcVYt2LccS9OjQ49pZRRVZIMBq1fkXHaYrulKrfVi9Eb03VvIt
-         UAzA==
-X-Gm-Message-State: AO0yUKVTFgNxVH3+CZYh+LQZ6vscKakJ2VmU8FNbShai1TBwYjlX9vth
-        rVqs184moO/CsRZdGw6sc5qZE4+0gRSM2NZXzY2CvREPngew/Hb9Dt5WI8/e9VVfv9/R5aYZCsg
-        SGE5RVqx8VncxZcUC
-X-Received: by 2002:a05:600c:350f:b0:3eb:3843:9f31 with SMTP id h15-20020a05600c350f00b003eb38439f31mr32779753wmq.10.1679324244393;
-        Mon, 20 Mar 2023 07:57:24 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+H3q9948VZ11zwy3FuyhsaXEplz4rpzcboLvqOLEhb7JocoduN7nI4hrj2vQBstLG8pNpEyw==
-X-Received: by 2002:a05:600c:350f:b0:3eb:3843:9f31 with SMTP id h15-20020a05600c350f00b003eb38439f31mr32779734wmq.10.1679324244157;
-        Mon, 20 Mar 2023 07:57:24 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
-        by smtp.gmail.com with ESMTPSA id bg5-20020a05600c3c8500b003e7f1086660sm16977466wmb.15.2023.03.20.07.57.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 07:57:23 -0700 (PDT)
-Date:   Mon, 20 Mar 2023 15:57:18 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@sberdevices.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v1 1/3] virtio/vsock: fix header length on skb merging
-Message-ID: <20230320145718.5gytg6t5pcz5rpnm@sgarzare-redhat>
-References: <e141e6f1-00ae-232c-b840-b146bdb10e99@sberdevices.ru>
- <63445f2f-a0bb-153c-0e15-74a09ea26dc1@sberdevices.ru>
+        with ESMTP id S232165AbjCTPEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:04:04 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3679229402
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 08:00:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679324400; x=1710860400;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TRbUmWHnSkE7D/lu5e7kw8nA2AMjXdu8/aiMJ3BeZxs=;
+  b=MoOMsPQ7DaKqpqc2KcHJvogAaL0zG7yweqILOiwvjvIzOGKmxpUx0AUN
+   K939Y+kJKhQOT9tri2VIlHtF+Tvv50JtGq+JGW0pofVLk8SHSAZKrKm+d
+   Ub5jg/aQ2W1tiBP5GN64KIp7Y4MdfscH0DxM0YmXTc/asZOOSYV//v+hK
+   Knnp6jNcpNp+YOqSSM0Ol5opDhXKlClo1VVC3VT06Wa8Xa56wM88tIeMa
+   YT11Na7Vo/QpxAeF/SS2C3Z+5YG9CuPE+ev7xxwB0BOAcu3sjDHPMaMw1
+   XiEfbWROSAIiMHBdTQYUQWNe3Dffq2xe0cFiqv4E/Wmwb8L868p47X1Tt
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="322523378"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="322523378"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 07:59:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="770219893"
+X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
+   d="scan'208";a="770219893"
+Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 07:59:22 -0700
+Date:   Mon, 20 Mar 2023 15:59:14 +0100
+From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        piotr.raczynski@intel.com,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>
+Subject: Re: [PATCH net v2] ice: clear number of qs when rings are free
+Message-ID: <ZBh0wpx9kOU1LTDI@localhost.localdomain>
+References: <20230320112347.117363-1-michal.swiatkowski@linux.intel.com>
+ <20230320115117.GK36557@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <63445f2f-a0bb-153c-0e15-74a09ea26dc1@sberdevices.ru>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230320115117.GK36557@unreal>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 09:51:06PM +0300, Arseniy Krasnov wrote:
->This fixes header length calculation of skbuff during data appending to
->it. When such skbuff is processed in dequeue callbacks, e.g. 'skb_pull()'
->is called on it, 'skb->len' is dynamic value, so it is impossible to use
->it in header, because value from header must be permanent for valid
->credit calculation ('rx_bytes'/'fwd_cnt').
->
->Fixes: 077706165717 ("virtio/vsock: don't use skbuff state to account credit")
+On Mon, Mar 20, 2023 at 01:51:17PM +0200, Leon Romanovsky wrote:
+> On Mon, Mar 20, 2023 at 12:23:47PM +0100, Michal Swiatkowski wrote:
+> > In case rebuild fails not clearing this field can lead to call trace.
+> > 
+> > [  +0.009792] BUG: kernel NULL pointer dereference, address: 0000000000000000
+> > [  +0.000009] #PF: supervisor read access in kernel mode
+> > [  +0.000006] #PF: error_code(0x0000) - not-present page
+> > [  +0.000005] PGD 0 P4D 0
+> > [  +0.000009] Oops: 0000 [#1] PREEMPT SMP PTI
+> > [  +0.000009] CPU: 45 PID: 77867 Comm: ice-ptp-0000:60 Kdump: loaded Tainted: G S         OE      6.2.0-rc6+ #110
+> > [  +0.000010] Hardware name: Dell Inc. PowerEdge R740/0JMK61, BIOS 2.11.2 004/21/2021
+> > [  +0.000005] RIP: 0010:ice_ptp_update_cached_phctime+0xb0/0x130 [ice]
+> > [  +0.000145] Code: fa 7e 55 48 8b 93 48 01 00 00 48 8b 0c fa 48 85 c9 74 e1 8b 51 68 85 d2 75 da 66 83 b9 86 04 00 00 00 74 d0 31 d2 48 8b 71 20 <48> 8b 34 d6 48 85 f6 74 07 48 89 86 d8 00 00 00 0f b7 b1 86 04 00
+> > [  +0.000008] RSP: 0018:ffffa036cf7c7ea8 EFLAGS: 00010246
+> > [  +0.000008] RAX: 174ab1a8ab400f43 RBX: ffff937cda2c01a0 RCX: ffff937cdca9b028
+> > [  +0.000005] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+> > [  +0.000005] RBP: ffffa036cf7c7eb8 R08: 0000000000000000 R09: 0000000000000000
+> > [  +0.000005] R10: 0000000000000080 R11: 0000000000000001 R12: ffff937cdc971f40
+> > [  +0.000006] R13: ffff937cdc971f44 R14: 0000000000000001 R15: ffffffffc13f3210
+> > [  +0.000005] FS:  0000000000000000(0000) GS:ffff93826f980000(0000) knlGS:0000000000000000
+> > [  +0.000006] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  +0.000006] CR2: 0000000000000000 CR3: 00000004b7310002 CR4: 00000000007726e0
+> > [  +0.000006] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > [  +0.000004] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > [  +0.000005] PKRU: 55555554
+> > [  +0.000004] Call Trace:
+> > [  +0.000004]  <TASK>
+> > [  +0.000007]  ice_ptp_periodic_work+0x2a/0x60 [ice]
+> > [  +0.000126]  kthread_worker_fn+0xa6/0x250
+> > [  +0.000014]  ? __pfx_kthread_worker_fn+0x10/0x10
+> > [  +0.000010]  kthread+0xfc/0x130
+> > [  +0.000009]  ? __pfx_kthread+0x10/0x10
+> > [  +0.000010]  ret_from_fork+0x29/0x50
+> > 
+> > ice_ptp_update_cached_phctime() is calling ice_for_each_rxq macro, in
+> > case of rebuild fail the rx_ring is NULL and there is NULL pointer
+> > dereference.
+> > 
+> > Also for future safety it is better to clear the size values for tx and
+> > rx ring when they are cleared.
+> > 
+> > Fixes: 6624e780a577 ("ice: split ice_vsi_setup into smaller functions")
+> > Reported-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+> > Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > ---
+> > v1 --> v2:
+> >  * change subject to net and add fixes tag
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> 
+> It will be so great if all these ice_for_each_*(*, i) macros will go.
+> They do nothing except hide basic for-loop.
 
-I don't understand how this commit introduced this problem, can you
-explain it better?
+Good point, I spent too much time searching which field is used there.
+Will try to propose sth.
 
-Is it related more to the credit than to the size in the header itself?
+Thanks for review
 
-Anyway, the patch LGTM, but we should explain better the issue.
-
-Thanks,
-Stefano
-
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> net/vmw_vsock/virtio_transport_common.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index 6d15cd4d090a..3c75986e16c2 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -1091,7 +1091,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
-> 			memcpy(skb_put(last_skb, skb->len), skb->data, skb->len);
-> 			free_pkt = true;
-> 			last_hdr->flags |= hdr->flags;
->-			last_hdr->len = cpu_to_le32(last_skb->len);
->+			le32_add_cpu(&last_hdr->len, len);
-> 			goto out;
-> 		}
-> 	}
->-- 
->2.25.1
->
-
+> 
+> Thanks,
+> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
