@@ -2,77 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBCDD6C2452
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 23:16:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C8B6C247E
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 23:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbjCTWQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 18:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41098 "EHLO
+        id S229953AbjCTWSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 18:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbjCTWQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 18:16:13 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9BE17CC2
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 15:16:12 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id r29so11854523wra.13
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 15:16:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679350571;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=H2UptfLwjKiEotTRfFpb5ttJ1VC+lt0QAQv00XO7FzU=;
-        b=CkQwLMbhE+FUWa03xpfP4nOL9nUv+BwFRKZwwACod0aM7irzKRlYh17ogeF583L7o+
-         6VI/06JxgkNSLT6T1cWWiHtXTj962PUEq/FQf4i8KlnUq6PtfrXvFfSyvFROGM4QFw72
-         dThGeSv6ll97M4JivH0HcJZW9uNFRBQHKtVDfmPsDtzqBDhuOSdUD2AYijKuH6djLYfo
-         LwII/DDsDgwe+rK+tN0Y69xBmrtsr/fO7w3hmxR1X70ZHT2t6sXBpycM+f0rkDMdLR1A
-         v1O2wGQvIKrPncB2xePhTDIy1sXTI1I1juHZgyjyHb+G/rTSGuhhWRj9xU5LmERZPZQT
-         H8FA==
+        with ESMTP id S229844AbjCTWSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 18:18:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9912132512
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 15:16:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679350615;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UcZ24ZaYybRtPqLVIgPQFtW7rz0akj/SPyjHKg9YcJc=;
+        b=cyy6B9fFgU03L1k2J/lRCld9vqTYcek+uPhIpCGueMkGF9FpKDbvFEWdh50q7R7goDbYda
+        Li+C14/gR3vmkfDgVedFNyUSEshcNIm9PY3Tb6iq4U9i5kPOV/85cX8Ze4/a4yFz3w+w/v
+        gyLjVahnTsKp9mmRJL1ZPFtciFzJR98=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-564-FqC9JXF4MK67JBh_mRkKkw-1; Mon, 20 Mar 2023 18:16:54 -0400
+X-MC-Unique: FqC9JXF4MK67JBh_mRkKkw-1
+Received: by mail-oi1-f198.google.com with SMTP id d12-20020a05680813cc00b00383b76f4171so5712403oiw.20
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 15:16:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679350571;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=H2UptfLwjKiEotTRfFpb5ttJ1VC+lt0QAQv00XO7FzU=;
-        b=1+mKF/Bmm9dCbmeuOCxjZ8FImKqdHkcnKLl+WoG8t29i/Vf0eRUVprp4K7OT5Tb4w/
-         y4LD4+EiEfTAO2MHoXuVIurH7ohNrnmDTzX3OE6UjGyaAYsw6p6vaTnGcylUHlTillcS
-         EPDNw346hbzqf6CwfQOAPK5zbvZaqgktp1d8URonbWUka+e0oU8FoAa3JYvy47ixO3+5
-         EAe8JKUOav7k0jfSeuombudntRw9qY+RGA4m/e9VetY7nTOCHCuZdInOcyyiazjyiuQl
-         6yfL2wnwI/TEugMRIxpXbTlPFTSkCT6kdTa5lpIy8sg6Mnfagb4nBPzyhSuK1HFpJVx/
-         8mKQ==
-X-Gm-Message-State: AO0yUKWlVHljEJqTorKc8U5y/IJxsUWhu2SvBMyTrwEe48D1EKI3Tvsh
-        rDMj+RhFh1/JbdC5gRFYDa8=
-X-Google-Smtp-Source: AK7set/gffFtTPHKC/G0zfopRP1us39GV+KIwWtflu4sQBhuE89KayWg2YiIdLY4gCe8C+Bgl00xQQ==
-X-Received: by 2002:adf:e24d:0:b0:2c7:17a5:8687 with SMTP id bl13-20020adfe24d000000b002c717a58687mr708934wrb.0.1679350570899;
-        Mon, 20 Mar 2023 15:16:10 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id p5-20020adfce05000000b002d64fcb362dsm4566460wrn.111.2023.03.20.15.16.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 15:16:10 -0700 (PDT)
-Subject: Re: [PATCH net] tools: ynl: add the Python requirements.txt file
-To:     "Michalik, Michal" <michal.michalik@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-References: <20230314160758.23719-1-michal.michalik@intel.com>
- <20230315214008.2536a1b4@kernel.org>
- <BN6PR11MB41772BEF5321C0ECEE4B0A2BE3809@BN6PR11MB4177.namprd11.prod.outlook.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <560bd227-e0a9-5c01-29d8-1b71dc42f155@gmail.com>
-Date:   Mon, 20 Mar 2023 22:16:09 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        d=1e100.net; s=20210112; t=1679350614;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UcZ24ZaYybRtPqLVIgPQFtW7rz0akj/SPyjHKg9YcJc=;
+        b=ztiwmpj3Ks/O/fNLJifJFiqAdly4h04WyxslnIUD4PU1pD/LENgyJKXYeDF9i4xo8d
+         2kIzLDQWnUeijuMw9aH9iWXZna4ZWbUjWPhfjEZTNTEQbjx7sQgIMXZh6aNwU8lWEoRE
+         vgfeM5JrWx43I767SRiN8847gVmaVThcx7iJuKiAS2stLC/ciorFzDcxFoWRMk6ymka5
+         0OF+g6U5LBe5gSxVDv+3i4hRRgyto1E0tLlT6GJCJM/sSECpOcE9uyikkg8yPfRMLMRo
+         Q1G2nepBu/U8p0WIF7YmrXCzNGF80RYcw3Bkkwn5JcMtnwhHtcDJtRrPm+fNacQI7I6I
+         tVww==
+X-Gm-Message-State: AO0yUKXUvHQ31stZptohPFvbnJxC/1Cqf0MD5lVKXDLXVf144HkBVoEE
+        QG9y4hUwddwDuAtpccpA95cQd8BW2iMRrM7COWNOe6sXAyypfY86WSM6YxGs+xpAmzznZU/z9aB
+        D9wIsPSFj7bmwIXii
+X-Received: by 2002:a05:6830:1d67:b0:69f:7f2e:9474 with SMTP id l7-20020a0568301d6700b0069f7f2e9474mr152757oti.16.1679350613813;
+        Mon, 20 Mar 2023 15:16:53 -0700 (PDT)
+X-Google-Smtp-Source: AK7set88qtZ4v8k1HOBLwE7ZvoHS8oAzo1vuNep16/9zREb9pfCiFyhvnnD5S69+nn+LVuujapH8tw==
+X-Received: by 2002:a05:6830:1d67:b0:69f:7f2e:9474 with SMTP id l7-20020a0568301d6700b0069f7f2e9474mr152732oti.16.1679350613600;
+        Mon, 20 Mar 2023 15:16:53 -0700 (PDT)
+Received: from halaney-x13s.redhat.com (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
+        by smtp.gmail.com with ESMTPSA id q204-20020a4a33d5000000b0053853156b5csm4092465ooq.8.2023.03.20.15.16.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 15:16:53 -0700 (PDT)
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com,
+        Andrew Halaney <ahalaney@redhat.com>
+Subject: [PATCH net-next v2 05/12] clk: qcom: gcc-sc8280xp: Add EMAC GDSCs
+Date:   Mon, 20 Mar 2023 17:16:10 -0500
+Message-Id: <20230320221617.236323-6-ahalaney@redhat.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230320221617.236323-1-ahalaney@redhat.com>
+References: <20230320221617.236323-1-ahalaney@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <BN6PR11MB41772BEF5321C0ECEE4B0A2BE3809@BN6PR11MB4177.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,34 +94,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/03/2023 19:03, Michalik, Michal wrote:
-> From: Jakub Kicinski <kuba@kernel.org> 
->> Why the == signs? Do we care about the version of any of these?
-> 
-> I cannot (you probably also not) guarantee the consistency of the API of
-> particular libraries.
+Add the EMAC GDSCs to allow the EMAC hardware to be enabled.
 
-Assuming the libraries are following best practice for their version
- numbering (e.g. semver), you should be able to use ~= ('compatible
- version' [1]).
-For example, `jsonschema ~= 4.0` will allow any 4.x.y release, but
- not 5.0.0 since that could have breaking API changes.
-I would recommend against pinning to a specific version of a
- dependency; this is a development tree, not a deployment script.
+Acked-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+---
 
-> No, you did not forget about anything (besides the PyYAML that you didn't
-> mention above). There is more than you expect because `PyYAML` and
-> `jsonschema` have their own dependencies.
+I'm still unsure if Bjorn wants to take this patch or net-dev, and how I am
+supposed to indicate such other than commenting here (per Stephen's
+comment on v1): https://lore.kernel.org/netdev/e5cb46e8874b12dbe438be12ee0cf949.sboyd@kernel.org/#t
 
-Again I'd've thought it's better to let those packages declare their
- own dependencies and rely on pip to recursively resolve and install
- them.  Both on separation-of-concerns grounds and also in case a
- newer version of a package changes its dependencies.
-(Probably in the past pinning all dependencies at the top level was
- needed to work around pip's lack of conflict resolution, but this
- was fixed in pip 20.3 [2].)
+Changes since v1:
+	* Add Stephen's Acked-by
+	* Explicitly tested on x13s laptop with no noticeable side effect (Konrad)
 
--ed
+ drivers/clk/qcom/gcc-sc8280xp.c               | 18 ++++++++++++++++++
+ include/dt-bindings/clock/qcom,gcc-sc8280xp.h |  2 ++
+ 2 files changed, 20 insertions(+)
 
-[1]: https://peps.python.org/pep-0440/#compatible-release
-[2]: https://pip.pypa.io/en/latest/user_guide/#changes-to-the-pip-dependency-resolver-in-20-3-2020
+diff --git a/drivers/clk/qcom/gcc-sc8280xp.c b/drivers/clk/qcom/gcc-sc8280xp.c
+index b3198784e1c3..04a99dbaa57e 100644
+--- a/drivers/clk/qcom/gcc-sc8280xp.c
++++ b/drivers/clk/qcom/gcc-sc8280xp.c
+@@ -6873,6 +6873,22 @@ static struct gdsc usb30_sec_gdsc = {
+ 	.pwrsts = PWRSTS_RET_ON,
+ };
+ 
++static struct gdsc emac_0_gdsc = {
++	.gdscr = 0xaa004,
++	.pd = {
++		.name = "emac_0_gdsc",
++	},
++	.pwrsts = PWRSTS_OFF_ON,
++};
++
++static struct gdsc emac_1_gdsc = {
++	.gdscr = 0xba004,
++	.pd = {
++		.name = "emac_1_gdsc",
++	},
++	.pwrsts = PWRSTS_OFF_ON,
++};
++
+ static struct clk_regmap *gcc_sc8280xp_clocks[] = {
+ 	[GCC_AGGRE_NOC_PCIE0_TUNNEL_AXI_CLK] = &gcc_aggre_noc_pcie0_tunnel_axi_clk.clkr,
+ 	[GCC_AGGRE_NOC_PCIE1_TUNNEL_AXI_CLK] = &gcc_aggre_noc_pcie1_tunnel_axi_clk.clkr,
+@@ -7351,6 +7367,8 @@ static struct gdsc *gcc_sc8280xp_gdscs[] = {
+ 	[USB30_MP_GDSC] = &usb30_mp_gdsc,
+ 	[USB30_PRIM_GDSC] = &usb30_prim_gdsc,
+ 	[USB30_SEC_GDSC] = &usb30_sec_gdsc,
++	[EMAC_0_GDSC] = &emac_0_gdsc,
++	[EMAC_1_GDSC] = &emac_1_gdsc,
+ };
+ 
+ static const struct clk_rcg_dfs_data gcc_dfs_clocks[] = {
+diff --git a/include/dt-bindings/clock/qcom,gcc-sc8280xp.h b/include/dt-bindings/clock/qcom,gcc-sc8280xp.h
+index cb2fb638825c..721105ea4fad 100644
+--- a/include/dt-bindings/clock/qcom,gcc-sc8280xp.h
++++ b/include/dt-bindings/clock/qcom,gcc-sc8280xp.h
+@@ -492,5 +492,7 @@
+ #define USB30_MP_GDSC					9
+ #define USB30_PRIM_GDSC					10
+ #define USB30_SEC_GDSC					11
++#define EMAC_0_GDSC					12
++#define EMAC_1_GDSC					13
+ 
+ #endif
+-- 
+2.39.2
+
