@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB706C0ED6
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 11:31:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFCA6C0ED3
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 11:31:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbjCTKbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 06:31:25 -0400
+        id S230035AbjCTKbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 06:31:19 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbjCTKbS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 06:31:18 -0400
+        with ESMTP id S229738AbjCTKbQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 06:31:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CC815CBF
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 03:30:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2C423D83
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 03:30:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF52EB80DF6
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 10:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A330DC4339B;
-        Mon, 20 Mar 2023 10:30:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE732B80DF4
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 10:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 73F86C433A1;
+        Mon, 20 Mar 2023 10:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679308218;
-        bh=9RaXCfVzXMa2dO6crrVcELfQaLVsYQJxH9Rn+3/PmsQ=;
+        s=k20201202; t=1679308219;
+        bh=E1UbJSzmyJWB+Ip+7lA/E2uYFpHu21Mx2BIPf6mT92Y=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EbCMgTCOa2SB13eDzGj9LRQwch26DC8QGqo4rXeyRAzSk3UXNAnYhE9f8A2u17/wD
-         MJlnkHPrulHWyEvygn4bdkDX3E4lL1FHx3Z54LmGuSdzidEAYVjdq/SiixIm6srWWC
-         pLLphSl/76o1hKKPpqI6ouPw77+Zo7gyp0sU7qgWfQJdiE5UYF5NB/PqD74zAuoIUV
-         KUchwPqlRKjEuydidgh4pCsieVqEfZ8LONIwEcyJpbsHo+Hx8bSqFcjfKtrJ2gVzx/
-         654u04SI6HpLKPvP+RSmGHveRQs0DZkumLOgWG64CN6bPlZvUeom/ih9mJvC1I+ikx
-         qzmu4UYkb4E6A==
+        b=mqXKB4Imyk63KdPxT57euJgjTbftGzdomQqkhM5L9oVW38rlzsL62FqIAYg9hGkl+
+         6RwZKWB0D4JTTckm4SCSB1s7danUVVxlPMjeOFxPAE8xJtVRkHgBwFhxB/bYY97eJ3
+         lDnCm32mnPhjp8TD1f1cHm358O8B8fk6q5QeJyvNLaqql8LQ+Iv5HHiqWPikIsGqSj
+         mzlkbdpex7WglEifPPN/FBRNQI96cWFUMMkxaVrDqdUP3rIe3WiYuy3OOY/PTrQBl0
+         COP7wnEpSDqBXDS6kq5+RX+ketWYkoKKmbl3QS8rPdZusW/F7RjhqNudFR9nlkHdxT
+         1y3p5hg6OPYUQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 86C9FC395F4;
-        Mon, 20 Mar 2023 10:30:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 565B5E2A047;
+        Mon, 20 Mar 2023 10:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v9 0/2] net/ps3_gelic_net: DMA related fixes
+Subject: Re: [PATCH net-next] r8169: consolidate disabling ASPM before EPHY access
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167930821854.19842.2337685653320772957.git-patchwork-notify@kernel.org>
-Date:   Mon, 20 Mar 2023 10:30:18 +0000
-References: <cover.1679160765.git.geoff@infradead.org>
-In-Reply-To: <cover.1679160765.git.geoff@infradead.org>
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        alexandr.lobakin@intel.com, alexander.duyck@gmail.com,
-        pabeni@redhat.com
+Message-Id: <167930821934.19842.17052352181983861721.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Mar 2023 10:30:19 +0000
+References: <d9aebd88-6cbb-259e-f9bc-008071f0ad5e@gmail.com>
+In-Reply-To: <d9aebd88-6cbb-259e-f9bc-008071f0ad5e@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     nic_swsd@realtek.com, kuba@kernel.org, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,25 +57,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Sat, 18 Mar 2023 17:39:15 +0000 you wrote:
-> v9: Make rx_skb_size local to gelic_descr_prepare_rx.
-> v8: Add more cpu_to_be32 calls.
-> v7: Remove all cleanups, sync to spider net.
-> v6: Reworked and cleaned up patches.
-> v5: Some additional patch cleanups.
-> v4: More patch cleanups.
-> v3: Cleaned up patches as requested.
+On Sat, 18 Mar 2023 22:50:10 +0100 you wrote:
+> Now that rtl_hw_aspm_clkreq_enable() is a no-op for chip versions < 32,
+> we can consolidate disabling ASPM before EPHY access in rtl_hw_start().
 > 
-> [...]
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 42 ++---------------------
+>  1 file changed, 3 insertions(+), 39 deletions(-)
 
 Here is the summary with links:
-  - [net,v9,1/2] net/ps3_gelic_net: Fix RX sk_buff length
-    https://git.kernel.org/netdev/net/c/19b3bb51c3bc
-  - [net,v9,2/2] net/ps3_gelic_net: Use dma_mapping_error
-    https://git.kernel.org/netdev/net/c/bebe933d35a6
+  - [net-next] r8169: consolidate disabling ASPM before EPHY access
+    https://git.kernel.org/netdev/net-next/c/5fc3f6c90cca
 
 You are awesome, thank you!
 -- 
