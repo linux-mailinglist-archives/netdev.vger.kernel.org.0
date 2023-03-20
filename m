@@ -2,93 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 255B26C0CCD
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 10:10:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACFF26C0CE2
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 10:14:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbjCTJKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 05:10:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
+        id S231168AbjCTJN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 05:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230210AbjCTJJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 05:09:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACFA1715
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 02:09:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S231216AbjCTJNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 05:13:33 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CD22367D
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 02:13:26 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 20101200BC;
+        Mon, 20 Mar 2023 10:13:25 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 5JosELDh7nCp; Mon, 20 Mar 2023 10:13:24 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB17D612AC
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 09:09:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 491F9C433EF;
-        Mon, 20 Mar 2023 09:09:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679303397;
-        bh=PWy+LVwJwbDP5KdPV6/L6iehpwnYDKSn3mB9fp+gw38=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ItebexXJRmNBtIc5DpaZfxG3snAPcpztaCgdqAiMuLKZe66jti9Wm0wgYM1TyOSmA
-         uolFpiHRhx+EQ3YL/ZZIBg4L9fz4UmqK0Pdk66MxUB+coCo8bw8j/e+7Z4cd70aGYi
-         U+YdAAxjyJbkinibwr2F06opyxj0CxpGWIMSEYy19qw+q9MqbmBS5oXXP4xJjMy3z4
-         Ree00PPBD20X+optM5WUQkHipqUlPE+ocm6W2qrW0NIqy3uqPnp7MThADt+8PNpk09
-         2AHgn8QpbB9p/+fOph9ekS+0DcnPdezKcrvXp879FrxRFG0BOZWid7Sxa6IXtP7Zl/
-         caE+cVs1jHMbw==
-Date:   Mon, 20 Mar 2023 11:09:52 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        by a.mx.secunet.com (Postfix) with ESMTPS id 9AEA920080;
+        Mon, 20 Mar 2023 10:13:24 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 8BEC680004A;
+        Mon, 20 Mar 2023 10:13:24 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Mon, 20 Mar 2023 10:13:24 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Mon, 20 Mar
+ 2023 10:13:24 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id B0BD03182CBC; Mon, 20 Mar 2023 10:13:23 +0100 (CET)
+Date:   Mon, 20 Mar 2023 10:13:23 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Raed Salem <raeds@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Paul Blakey <paulb@nvidia.com>, Raed Salem <raeds@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH xfrm-next 0/9] Extend packet offload to fully support
- libreswan
-Message-ID: <20230320090952.GI36557@unreal>
+Subject: Re: [PATCH xfrm-next 4/9] xfrm: add new device offload acquire flag
+Message-ID: <ZBgjsw8exj1c46lW@gauss3.secunet.de>
 References: <cover.1678714336.git.leon@kernel.org>
- <ZBgfyumyJL10F4g6@gauss3.secunet.de>
+ <f5da0834d8c6b82ab9ba38bd4a0c55e71f0e3dab.1678714336.git.leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <ZBgfyumyJL10F4g6@gauss3.secunet.de>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <f5da0834d8c6b82ab9ba38bd4a0c55e71f0e3dab.1678714336.git.leon@kernel.org>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 09:56:42AM +0100, Steffen Klassert wrote:
-> On Tue, Mar 14, 2023 at 10:58:35AM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Hi Steffen,
-> > 
-> > The following patches are an outcome of Raed's work to add packet
-> > offload support to libreswan [1].
-> > 
-> > The series includes:
-> >  * Priority support to IPsec policies
-> >  * Statistics per-SA (visible through "ip -s xfrm state ..." command)
-> >  * Support to IKE policy holes
-> >  * Fine tuning to acquire logic.
-> > 
-> > --------------------------
-> > Future submission roadmap, which can be seen here [2]:
-> >  * Support packet offload in IPsec tunnel mode
-> >  * Rework lifetime counters support to avoid HW bugs/limitations
-> >  * Some general cleanup.
-> > 
-> > So how do you want me to route the patches, as they have a dependency between them?
-> > xfrm-next/net-next/mlx5-next?
+On Tue, Mar 14, 2023 at 10:58:39AM +0200, Leon Romanovsky wrote:
+> From: Raed Salem <raeds@nvidia.com>
 > 
-> As the changes to the xfrm core are just minor compared to the rest
-> of the patchset, I'd not absolutely require to route it through
-> ipsec-next. Do it as you prefer, but let me know how you plan
-> to do it.
+> During XFRM acquire flow, a default SA is created to be updated later,
+> once acquire netlink message is handled in user space. When the relevant
+> policy is offloaded this default SA is also offloaded to IPsec offload
+> supporting driver, however this SA does not have context suitable for
+> offloading in HW, nor is interesting to offload to HW, consequently needs
+> a special driver handling apart from other offloaded SA(s).
+> Add a special flag that marks such SA so driver can handle it correctly.
+> 
+> Signed-off-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-I prefer to prepare and send PR directly to netdev, but I need your
-Acked-by on xfrm patches first, before doing it.
-
-Thanks
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
