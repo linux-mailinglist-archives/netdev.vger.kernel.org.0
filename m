@@ -2,73 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 387766C11AB
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:17:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC856C11AF
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:18:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbjCTMRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 08:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41072 "EHLO
+        id S229940AbjCTMSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 08:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbjCTMRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:17:18 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E131FDA
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8Gz4Uv6z3q+ekod9JwARBIf9Iowdc9Bs9NrdKjb7Bx4=; b=eb03rcgs3q3sfoeOfoGj3B9lJR
-        Rpg96DF+hhPb9zMiKnFkEIzLi6/wenX5Cj+/uIBL0hgDCT9DxcrJHIQDsf/Nwf2sOCSEG5G7HfyGI
-        d/6Wcis6E+/L6AnlOapN2TRLD4KtQaOYpyoTf8LV/SflN/IYYcBmh3p6kSvWOxrKiFO0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1peERl-007qDz-93; Mon, 20 Mar 2023 13:17:05 +0100
-Date:   Mon, 20 Mar 2023 13:17:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S229866AbjCTMSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:18:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A653AA2;
+        Mon, 20 Mar 2023 05:18:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC156614C8;
+        Mon, 20 Mar 2023 12:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CA6C433D2;
+        Mon, 20 Mar 2023 12:18:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679314719;
+        bh=MjBrE9+FJKHdNZ3P0Yho1VvqqJ1X0wOX2gCGIRtBXA0=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=gDUH8P8c+pvL9wDZJwW6m1OST0dbkrr8wqeZctun95ReUcGkpNC7+XlGoWX7WhGkE
+         OfNXmUQ9S3/IwlQ6sIXmHzLHrffe/h7l5seHTI+AgMUHLIUw/B3D1x90mh4pkyd8Ig
+         YuSMXyJAKHmsgIn8tUl23gelD+NghIIb/pOkiEfTcWmb49O0OU9FZPxfvVhNvUiP3K
+         N7aBLP+6L95oBJHz0v8KbxS0WHPAwQpQVYKgrGJ50/tSr/jfdzLfYTFmpe+phxe2Rn
+         BHLOHKiN7/bt69WyL9IsS8A/fU75DAph6OUNZPdL2YIcUdq3tJ1/HGtkZGNDL4kG1g
+         m9r3Jvmendf6g==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next 1/2] net: phy: smsc: export functions for use by
- meson-gxl PHY driver
-Message-ID: <bee01edc-b49a-427a-9ea2-cc194488a0f8@lunn.ch>
-References: <683422c6-c1e1-90b9-59ed-75d0f264f354@gmail.com>
- <192db694-5bda-513c-31c5-96ec3b2425d9@gmail.com>
- <CAFXsbZo-pdP+b3iWyQwPe4FA4Pdxr-HO5-4rHB-ZLJApZyJ3DQ@mail.gmail.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] arm64: dts: qcom: sc8280xp-crd: add wifi calibration variant
+References: <20230320104658.22186-1-johan+linaro@kernel.org>
+        <20230320104658.22186-4-johan+linaro@kernel.org>
+        <244a59c6-2dc0-83c7-07d2-6bae04022605@linaro.org>
+        <ZBg7tA8NLDnjPp+k@hovoldconsulting.com>
+        <ZBg+ixekH+Ou7jMd@hovoldconsulting.com>
+Date:   Mon, 20 Mar 2023 14:18:31 +0200
+In-Reply-To: <ZBg+ixekH+Ou7jMd@hovoldconsulting.com> (Johan Hovold's message
+        of "Mon, 20 Mar 2023 12:07:55 +0100")
+Message-ID: <87y1nrhazs.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFXsbZo-pdP+b3iWyQwPe4FA4Pdxr-HO5-4rHB-ZLJApZyJ3DQ@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 05:39:51PM -0700, Chris Healy wrote:
-> On a dev board with SMSC LAN8720, this change was tested and confirmed
-> to still operate normally.
-> 
-> Signed-off-by: Chris Healy <healych@amazon.com>
+Johan Hovold <johan@kernel.org> writes:
 
-Hi Chris
+> On Mon, Mar 20, 2023 at 11:55:48AM +0100, Johan Hovold wrote:
+>
+>> On Mon, Mar 20, 2023 at 11:50:30AM +0100, Konrad Dybcio wrote:
+>> > 
+>> > 
+>> > On 20.03.2023 11:46, Johan Hovold wrote:
+>> > > Describe the bus topology for PCIe domain 6 and add the ath11k
+>> > > calibration variant so that the board file (calibration data) can be
+>> > > loaded.
+>> > > 
+>> > > Link: https://bugzilla.kernel.org/show_bug.cgi?id=216036
+>> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+>> > > ---
+>> > >  arch/arm64/boot/dts/qcom/sc8280xp-crd.dts | 17 +++++++++++++++++
+>> > >  1 file changed, 17 insertions(+)
+>> > > 
+>> > > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+>> > > b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+>> > > index 90a5df9c7a24..5dfda12f669b 100644
+>> > > --- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+>> > 
+>> > 
+>> > Was mixing
+>> > > +++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+>> > 
+>> > this /\
+>> > 
+>> > [...]
+>> > 
+>> > and this \/
+>> > > +			qcom,ath11k-calibration-variant = "LE_X13S";
+>> > Intentional? Especially given Kalle's comment on bugzilla?
+>> 
+>> Yes, it is intentional. The corresponding calibration data allows the
+>> wifi to be used on the CRD. I measure 150 MBits/s which may a bit lower
+>> than expected, but it's better than having no wifi at all.
+>
+> I was going back and forth about mentioning this in the commit message
+> and we could off on this one until someone confirms that the
+> corresponding calibration data can (or should) be used for the X13s.
+>
+> Note that there is no other match for
+>
+> 	'bus=pci,vendor=17cb,device=1103,subsystem-vendor=17cb,subsystem-device=0108,qmi-chip-id=2,qmi-board-id=140'
+>
+> in the new board-2.bin.
 
-That should be Tested-By:
+If the device in question is something else than Lenovo X13s, I would
+prefer that the variant is not set. Just in case we need different board
+files for different models. It's easy to add aliases to board-2.bin.
 
-     Andrew
+I need to check internally what board file should be used for this CRD.
+If the speed is only 150 Mbit/s I suspect it needs a different board
+file.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
