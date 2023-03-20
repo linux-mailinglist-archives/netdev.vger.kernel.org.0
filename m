@@ -2,66 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 005526C2212
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 20:58:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4BD66C221B
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 21:00:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbjCTT6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 15:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33564 "EHLO
+        id S230321AbjCTUAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 16:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbjCTT6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 15:58:53 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C367234C8;
-        Mon, 20 Mar 2023 12:58:45 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id l16so5048425ybe.6;
-        Mon, 20 Mar 2023 12:58:45 -0700 (PDT)
+        with ESMTP id S229538AbjCTUAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 16:00:44 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F4FBDD5;
+        Mon, 20 Mar 2023 13:00:23 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id q88so2100400qvq.13;
+        Mon, 20 Mar 2023 13:00:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679342324;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zBybbIP1ZIep/Xag1gH0yWaOUYHUoiApZF58mzTvpoQ=;
-        b=jfDYGuEJ7Sk9BUlWQQWsY8a84vHVcuqzZ/wlxPbrtzCkpdp//LzrXSSBMG0n/5k8g4
-         zs4RYJByuhulZPyGdb2mRZ0+iEBo95Af/XiDPTN9j2g7FtYqKp+11g0gKx7lyzf8hRvo
-         dGFIM8cCxSfqOiLmkJ+5q6mxFti+V5oV3Q67Eo5M3USLcQW6/gKyy7Zde/nwjwRynXSC
-         xNQIskhvLEMIMssFsL2w+AfxXQwuoogFfHBh0yjIkek8g0WZ9vaGrsMSHPYAKpJJp8c3
-         YAdY2em6Seuj83l/xz/o8uSrJ+7WVRYgEDn6ZiRkmJogBnZ7Wfoq6ROpPiSNEOB3OL0Z
-         QB4w==
+        d=gmail.com; s=20210112; t=1679342422;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uK4an5IRfEdpcLHvzRWsxmJ6vlYV0PkLamta65Wo9WM=;
+        b=BiZjGvdnJU2MQaQfHwoFOFhNRFz3PtJqwdiLljGre/M1uxpBCXW11o1bAAK04SkOj0
+         2EJcwCcD4JiGRZKX4H3KqWvlzBA0ZWLSrYOxfvBfKKXaBSAAN4B9Z7p6wQzwizOS0PQU
+         ycnu/dESAn3f6psN8fLxGRkYRUNCUfiPrg+JQREbO9fzXaR53fKv9qjS1jMCuN8eMVna
+         ck+eYNtADgnscR1+UCdaC0oRs48VtmKA6N/R6FT7nVa0Pz5Aw7Ly9FGt0NLDOruSlto8
+         lEGyeKLoXGc3nDvZm+PhKSztdJYzWuPbEtawBB5DHvRR/77+bHCMqe1RY1myVRxVUJXm
+         lxIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679342324;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zBybbIP1ZIep/Xag1gH0yWaOUYHUoiApZF58mzTvpoQ=;
-        b=jfXTI6l6R7kWgpvslwmjcXPGfdvIrTZzNZcIY+mWvGk+hZDSQC+PFPm6uy1ozFvFIL
-         h4L8VGiaRLxywgXDpIlEj7qedK4VX71flMsvSbP0z5VSSV7q3pchkReUfGi6Csv0KWcH
-         ovO0dV/b6xEcBH16QXECbuxc8kpUJswal4933Hm/qj8pWg4RbtC1OFT5f7xcp504qOZu
-         O4SGHYv8XZJDTkFA20EX0L3+GHH8qHzgMQ1lmYI5uKcSDw8g3/T0VR0bJ8cOK4T18kRa
-         lsd18CrAN4j0qIy6eJlMXHTO+e8fcKA7mpaKhkDPd3dpEnooMUCIqPrwCGp5MGErXFfS
-         Iehw==
-X-Gm-Message-State: AAQBX9cpcggKJFkHYFgYuxKytxoT7vq+vITP5H6MH8SldColtIphn7f8
-        Q/3mUVYgeS/sBi1MBwQFGKptgcsuk4FbCPFkCKA=
-X-Google-Smtp-Source: AKy350bYqvlm/IXOASpeOVYsJca1qwOldz8palom9n2LnTNgYKmcjLXMqDj48xAeHMF9G4aNt20aEcLBQj5rGEo8Csc=
-X-Received: by 2002:a25:ab11:0:b0:b6b:79a2:8cff with SMTP id
- u17-20020a25ab11000000b00b6b79a28cffmr290575ybi.9.1679342324028; Mon, 20 Mar
- 2023 12:58:44 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679342422;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uK4an5IRfEdpcLHvzRWsxmJ6vlYV0PkLamta65Wo9WM=;
+        b=AA9Q6wkMVLcOnh9O94qgs2iupzkliPZGdqZzKAz+U6YgJpJac7ya3A2lX8cU1nRMW/
+         b9mtbWHrnqKXqUwy4TCdiKsitCj2w1VIJgRrmIam+6Fq/kFQ2kterM0Q5miFXzgIkR5l
+         INoAb/c8ihGf7qHZr49Vi2kIoPjaYPzmS5EAUyEMpwY40NH8RGA59s+l/Y1yKk3IEUdU
+         X0wOAbIh/2Aa2bZYSQk/QadqWPT6CCR42DONd6Ty+TGfqUA+romV1z77u0eIu3QmhFJx
+         Nds47GJXNum2D92ysI6KJJS3kTROJYExEcmHptwmABapafmjVWOYiHzhCCZuhLBF3ApW
+         zdYw==
+X-Gm-Message-State: AO0yUKVr12PsQFM1fKaFaxbR1/Ly3+JutwVjTFcXP31UbceT3icQFjIR
+        LFiegeCgQ5sx69T7XER5EjQ=
+X-Google-Smtp-Source: AK7set8am0n0iqcCczejb+M4mjKbMTpHk7CLBVNcxZJA3LDgnUvfmg6PZvWWWiRzrEo0DCsbzv2F7A==
+X-Received: by 2002:a05:6214:19ed:b0:5c8:ad0d:3b7e with SMTP id q13-20020a05621419ed00b005c8ad0d3b7emr205412qvc.35.1679342422543;
+        Mon, 20 Mar 2023 13:00:22 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id s127-20020a37a985000000b007469b5bc2c4sm104393qke.13.2023.03.20.13.00.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Mar 2023 13:00:21 -0700 (PDT)
+Message-ID: <6f7e9b8c-6256-e7dd-b130-8e1429610faa@gmail.com>
+Date:   Mon, 20 Mar 2023 13:00:15 -0700
 MIME-Version: 1.0
-References: <20230320182813.963508-1-noltari@gmail.com> <95e106fd-d1ce-b9d4-a4f7-03fb69bd4aaa@gmail.com>
-In-Reply-To: <95e106fd-d1ce-b9d4-a4f7-03fb69bd4aaa@gmail.com>
-From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
-Date:   Mon, 20 Mar 2023 20:58:32 +0100
-Message-ID: <CAKR-sGcxa06mJbcN4jRyVEO6sGQpvCA6BHjBmzu4fehSpFrfwQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] drivers: net: dsa: b53: mmap: add phy ops
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     jonas.gorski@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH 4/4] net: dsa: b53: add BCM63268 RGMII configuration
+Content-Language: en-US
+To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
+        andrew@lunn.ch, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+References: <20230320155024.164523-1-noltari@gmail.com>
+ <20230320155024.164523-5-noltari@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230320155024.164523-5-noltari@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,142 +78,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-El lun, 20 mar 2023 a las 20:06, Florian Fainelli
-(<f.fainelli@gmail.com>) escribi=C3=B3:
->
-> On 3/20/23 11:28, =C3=81lvaro Fern=C3=A1ndez Rojas wrote:
-> > Currently, B53 MMAP BCM63xx devices with an external switch hang when
-> > performing PHY read and write operations due to invalid registers acces=
-s.
-> > This adds support for PHY ops by using the internal bus from mdio-mux-b=
-cm6368
-> > when probed by device tree and also falls back to direct MDIO registers=
- if not.
-> >
-> > This is an alternative to:
-> > - https://patchwork.kernel.org/project/netdevbpf/cover/20230317113427.3=
-02162-1-noltari@gmail.com/
-> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
-02162-2-noltari@gmail.com/
-> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
-02162-3-noltari@gmail.com/
-> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
-02162-4-noltari@gmail.com/
-> > As discussed, it was an ABI break and not the correct way of fixing the=
- issue.
->
-> Looks good for the most part, just a few questions below.
->
-> >
-> > Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
-> > ---
-> >   drivers/net/dsa/b53/b53_mmap.c    | 86 ++++++++++++++++++++++++++++++=
-+
-> >   include/linux/platform_data/b53.h |  1 +
-> >   2 files changed, 87 insertions(+)
-> >
-> > diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_m=
-map.c
-> > index 706df04b6cee..7deca1c557c5 100644
-> > --- a/drivers/net/dsa/b53/b53_mmap.c
-> > +++ b/drivers/net/dsa/b53/b53_mmap.c
-> > @@ -19,14 +19,25 @@
-> >   #include <linux/bits.h>
-> >   #include <linux/kernel.h>
-> >   #include <linux/module.h>
-> > +#include <linux/of_mdio.h>
-> >   #include <linux/io.h>
-> >   #include <linux/platform_device.h>
-> >   #include <linux/platform_data/b53.h>
-> >
-> >   #include "b53_priv.h"
-> >
-> > +#define REG_MDIOC            0xb0
-> > +#define  REG_MDIOC_EXT_MASK  BIT(16)
-> > +#define  REG_MDIOC_REG_SHIFT 20
-> > +#define  REG_MDIOC_PHYID_SHIFT       25
-> > +#define  REG_MDIOC_RD_MASK   BIT(30)
-> > +#define  REG_MDIOC_WR_MASK   BIT(31)
->
-> For some reason, there was no bit introduced to tell us when a
-> transaction has finished, so we have to poll after a certain delay has
-> elapsed...
+On 3/20/23 08:50, Álvaro Fernández Rojas wrote:
+> BCM63268 requires special RGMII configuration to work.
+> 
+> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+> ---
+>   drivers/net/dsa/b53/b53_common.c | 6 +++++-
+>   drivers/net/dsa/b53/b53_regs.h   | 1 +
+>   2 files changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+> index 6e212f6f1cb9..d0a22c8a55c9 100644
+> --- a/drivers/net/dsa/b53/b53_common.c
+> +++ b/drivers/net/dsa/b53/b53_common.c
+> @@ -1240,8 +1240,12 @@ static void b53_adjust_63xx_rgmii(struct dsa_switch *ds, int port,
+>   		break;
+>   	}
+>   
+> -	if (port != dev->imp_port)
+> +	if (port != dev->imp_port) {
+> +		if (is63268(dev))
+> +			rgmii_ctrl |= RGMII_CTRL_MII_OVERRIDE;
 
-Yeah... :(
+AFAICT the override bit is defined and valid for both 63268 and 6318, 
+essentially whenever more than one RGMII control register for port 4, 
+but also for other ports, it seems like the bit becomes valid. The 
+comment I have says that the override bit ensures that what is populated 
+in bits 5:4 which is the actual RGMII interface mode is applied. That 
+mode can be one of:
 
->
-> > +
-> > +#define REG_MDIOD            0xb4
-> > +
-> >   struct b53_mmap_priv {
-> >       void __iomem *regs;
-> > +     struct mii_bus *bus;
-> >   };
-> >
-> >   static int b53_mmap_read8(struct b53_device *dev, u8 page, u8 reg, u8=
- *val)
-> > @@ -216,6 +227,69 @@ static int b53_mmap_write64(struct b53_device *dev=
-, u8 page, u8 reg,
-> >       return 0;
-> >   }
-> >
-> > +static inline void b53_mmap_mdio_read(struct b53_device *dev, int phy_=
-id,
-> > +                                   int loc, u16 *val)
-> > +{
-> > +     uint32_t reg;
-> > +
-> > +     b53_mmap_write32(dev, 0, REG_MDIOC, 0);
-> > +
-> > +     reg =3D REG_MDIOC_RD_MASK |
-> > +           (phy_id << REG_MDIOC_PHYID_SHIFT) |
-> > +           (loc << REG_MDIOC_REG_SHIFT);
-> > +
-> > +     b53_mmap_write32(dev, 0, REG_MDIOC, reg);
-> > +     udelay(50);
-> > +     b53_mmap_read16(dev, 0, REG_MDIOD, val);
-> > +}
-> > +
-> > +static inline int b53_mmap_mdio_write(struct b53_device *dev, int phy_=
-id,
-> > +                                   int loc, u16 val)
-> > +{
-> > +     uint32_t reg;
-> > +
-> > +     b53_mmap_write32(dev, 0, REG_MDIOC, 0);
-> > +
-> > +     reg =3D REG_MDIOC_WR_MASK |
-> > +           (phy_id << REG_MDIOC_PHYID_SHIFT) |
-> > +           (loc << REG_MDIOC_REG_SHIFT) |
-> > +           val;
-> > +
-> > +     b53_mmap_write32(dev, 0, REG_MDIOC, reg);
-> > +     udelay(50);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int b53_mmap_phy_read16(struct b53_device *dev, int addr, int r=
-eg,
-> > +                            u16 *value)
-> > +{
-> > +     struct b53_mmap_priv *priv =3D dev->priv;
-> > +     struct mii_bus *bus =3D priv->bus;
-> > +
-> > +     if (bus)
-> > +             *value =3D mdiobus_read_nested(bus, addr, reg);
->
-> Since you make the 'mii-bus' property and 'priv->bus' necessary
-> prerequisites for the driver to finish probing successfully, when shall
-> we not have valid priv->bus reference to work with? Do we end-up taking
-> the other path at all?
+0b00: RGMII mode
+0b01: MII mode
+0b10: RVMII mode
+0b11: GMII mode
 
-Yes, but only if the driver is probed from platform data and not from
-device tree.
+even though this is not documented as such, I suspect that the override 
+bit does not only set the mode, but also ensures that the delays are 
+also applied.
 
-> --
-> Florian
->
+Once you update patch 3, this LGTM and you may add:
 
---
-=C3=81lvaro.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+For your v2. Thanks!
+-- 
+Florian
+
