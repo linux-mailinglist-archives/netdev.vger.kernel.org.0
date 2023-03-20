@@ -2,190 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2CF6C1A27
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:48:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 796626C1A3F
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 16:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233060AbjCTPsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 11:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49710 "EHLO
+        id S231737AbjCTPuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 11:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbjCTPrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:47:45 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BBB16316;
-        Mon, 20 Mar 2023 08:39:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679326759; x=1710862759;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AckTwTsRgSS0tF1Fo3oVzXYwW3h6OGeppI3JzCspk7c=;
-  b=CjI0dOJDTTgnYUDJc5wn/TGen7Hze9kHKAvoM+H0U+onAUYnkyWMESm4
-   V6Thdw1JSYNviGJKoRG6IrEQSn1hpnFjnhKQUC+jI06BbuU23/Be6BJNV
-   TkkMSd54tU7Jt79++Xm92YGw1dxAJUPrvMuS5Zgxwjn+IJeBAlee0COnW
-   vruE8NKDX0hoTmcNHGIq+EN4X56AH0nWO75ABQbNHXZ7CMDG1SOZ1l3ql
-   S/jWtw1Vncb/5J1KbZ/cYdXZSAiwfTI2P9u475B1TzbyzCARlcm/AtbS4
-   J/hBVR1Ja0oPCWoSSURGw+VwPyFLpzC1x5yy+Lw0y/kuE6ArQRTdmDe42
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="337413220"
-X-IronPort-AV: E=Sophos;i="5.98,276,1673942400"; 
-   d="scan'208";a="337413220"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 08:39:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="681118839"
-X-IronPort-AV: E=Sophos;i="5.98,274,1673942400"; 
-   d="scan'208";a="681118839"
-Received: from ahajda-mobl.ger.corp.intel.com (HELO [10.213.6.65]) ([10.213.6.65])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 08:39:03 -0700
-Message-ID: <81ae464f-ade8-fb3c-6bfa-11de19c21845@intel.com>
-Date:   Mon, 20 Mar 2023 16:39:01 +0100
+        with ESMTP id S230138AbjCTPtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 11:49:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4551E1588E
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 08:41:16 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1peHd3-0003kL-Nu; Mon, 20 Mar 2023 16:40:57 +0100
+Received: from pengutronix.de (unknown [IPv6:2a00:20:c01f:3d56:6ab1:6a2f:e979:45b0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 193DD197A1C;
+        Mon, 20 Mar 2023 15:40:55 +0000 (UTC)
+Date:   Mon, 20 Mar 2023 16:40:53 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Ivan Orlov <ivan.orlov0322@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, himadrispandya@gmail.com,
+        skhan@linuxfoundation.org,
+        syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
+Subject: Re: [PATCH] FS, NET: Fix KMSAN uninit-value in vfs_write
+Message-ID: <20230320154053.x3h54b2s3r7iclby@pengutronix.de>
+References: <20230314120445.12407-1-ivan.orlov0322@gmail.com>
+ <0e7090c4-ca9b-156f-5922-fd7ddb55fee4@hartkopp.net>
+ <ff0a4ed4-9fde-7a9f-da39-d799dfb946f1@gmail.com>
+ <b4abefa2-16d0-a18c-4614-1786eb94ffab@hartkopp.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.9.0
-Subject: Re: [Intel-gfx] [PATCH v4 02/10] lib/ref_tracker:
- __ref_tracker_dir_print improve printing
-Content-Language: en-US
-To:     Andi Shyti <andi.shyti@linux.intel.com>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Airlie <airlied@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-References: <20230224-track_gt-v4-0-464e8ab4c9ab@intel.com>
- <20230224-track_gt-v4-2-464e8ab4c9ab@intel.com>
- <ZBeWnKmLiGOOMOiG@ashyti-mobl2.lan>
-From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
- Gdansk - KRS 101882 - NIP 957-07-52-316
-In-Reply-To: <ZBeWnKmLiGOOMOiG@ashyti-mobl2.lan>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="p67maiohpxc2m32e"
+Content-Disposition: inline
+In-Reply-To: <b4abefa2-16d0-a18c-4614-1786eb94ffab@hartkopp.net>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.03.2023 00:11, Andi Shyti wrote:
-> Hi Andrzej,
-> 
-> looks good, few comments below,
-> 
-> On Mon, Mar 06, 2023 at 05:31:58PM +0100, Andrzej Hajda wrote:
->> To improve readability of ref_tracker printing following changes
->> have been performed:
->> - reports are printed per stack_handle - log is more compact,
->> - added display name for ref_tracker_dir,
->> - stack trace is printed indented, in the same printk call,
->> - total number of references is printed every time,
->> - print info about dropped references.
-> 
-> nit: I think you can do better with the log :)
-> 
->> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
->> ---
->>   include/linux/ref_tracker.h | 15 ++++++--
->>   lib/ref_tracker.c           | 90 +++++++++++++++++++++++++++++++++++++++------
->>   2 files changed, 91 insertions(+), 14 deletions(-)
->>
->> diff --git a/include/linux/ref_tracker.h b/include/linux/ref_tracker.h
->> index 3e9e9df2a41f5f..a2cf1f6309adb2 100644
->> --- a/include/linux/ref_tracker.h
->> +++ b/include/linux/ref_tracker.h
->> @@ -17,12 +17,19 @@ struct ref_tracker_dir {
->>   	bool			dead;
->>   	struct list_head	list; /* List of active trackers */
->>   	struct list_head	quarantine; /* List of dead trackers */
->> +	char			name[32];
->>   #endif
->>   };
->>   
->>   #ifdef CONFIG_REF_TRACKER
->> -static inline void ref_tracker_dir_init(struct ref_tracker_dir *dir,
->> -					unsigned int quarantine_count)
->> +
->> +// Temporary allow two and three arguments, until consumers are converted
-> 
-> I thought only Linus was allowed to use '//' :)
-> 
->> +#define ref_tracker_dir_init(_d, _q, args...) _ref_tracker_dir_init(_d, _q, ##args, #_d)
->> +#define _ref_tracker_dir_init(_d, _q, _n, ...) __ref_tracker_dir_init(_d, _q, _n)
-> 
-> [...]
-> 
->> +void __ref_tracker_dir_print(struct ref_tracker_dir *dir,
->> +			   unsigned int display_limit)
->> +{
->> +	struct ref_tracker_dir_stats *stats;
->> +	unsigned int i = 0, skipped;
->> +	depot_stack_handle_t stack;
->> +	char *sbuf;
->> +
->> +	lockdep_assert_held(&dir->lock);
->> +
->> +	if (list_empty(&dir->list))
->> +		return;
->> +
->> +	stats = ref_tracker_get_stats(dir, display_limit);
->> +	if (IS_ERR(stats)) {
->> +		pr_err("%s@%pK: couldn't get stats, error %pe\n",
->> +		       dir->name, dir, stats);
->> +		return;
->>   	}
->> +
->> +	sbuf = kmalloc(STACK_BUF_SIZE, GFP_NOWAIT | __GFP_NOWARN);
->> +
->> +	for (i = 0, skipped = stats->total; i < stats->count; ++i) {
->> +		stack = stats->stacks[i].stack_handle;
->> +		if (sbuf && !stack_depot_snprint(stack, sbuf, STACK_BUF_SIZE, 4))
->> +			sbuf[0] = 0;
->> +		pr_err("%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
->> +		       stats->stacks[i].count, stats->total, sbuf);
-> 
-> what if sbuf is NULL?
 
-Then "(NULL)" will be printed, I suspect it will occur only on very rare 
-occasions.
+--p67maiohpxc2m32e
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
->> +		skipped -= stats->stacks[i].count;
->> +	}
->> +
->> +	if (skipped)
-> 
-> is skipped used to double check whether stats->count is equal to
-> all the stacks[].conunts? What are the cases when skipped is > 0?
+On 14.03.2023 20:23:47, Oliver Hartkopp wrote:
+>=20
+>=20
+> On 14.03.23 16:37, Ivan Orlov wrote:
+> > On 3/14/23 18:38, Oliver Hartkopp wrote:
+> > > Hello Ivan,
+> > >=20
+> > > besides the fact that we would read some uninitialized value the
+> > > outcome of the original implementation would have been an error and
+> > > a termination of the copy process too. Maybe throwing a different
+> > > error number.
+> > >=20
+> > > But it is really interesting to see what KMSAN is able to detect
+> > > these days! Many thanks for the finding and your effort to
+> > > contribute this fix!
+> > >=20
+> > > Best regards,
+> > > Oliver
+> > >=20
+> > >=20
+> > > On 14.03.23 13:04, Ivan Orlov wrote:
+> > > > Syzkaller reported the following issue:
+> > >=20
+> > > (..)
+> > >=20
+> > > >=20
+> > > > Reported-by: syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
+> > > > Link: https://syzkaller.appspot.com/bug?id=3D47f897f8ad958bbde5790e=
+bf389b5e7e0a345089
+> > > > Signed-off-by: Ivan Orlov <ivan.orlov0322@gmail.com>
+> > >=20
+> > > Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> > >=20
+> > >=20
+> > > > ---
+> > > > =C2=A0 net/can/bcm.c | 16 ++++++++++------
+> > > > =C2=A0 1 file changed, 10 insertions(+), 6 deletions(-)
+> > > >=20
+> > > > diff --git a/net/can/bcm.c b/net/can/bcm.c
+> > > > index 27706f6ace34..a962ec2b8ba5 100644
+> > > > --- a/net/can/bcm.c
+> > > > +++ b/net/can/bcm.c
+> > > > @@ -941,6 +941,8 @@ static int bcm_tx_setup(struct bcm_msg_head
+> > > > *msg_head, struct msghdr *msg,
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 cf =3D op->frames + op->cfsiz * i;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 err =3D memcpy_from_msg((u8 *)cf, msg, op->cfsiz);
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ if (err < 0)
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 goto free_op;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 if (op->flags & CAN_FD_FRAME) {
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (cf->len > 64)
+> > > > @@ -950,12 +952,8 @@ static int bcm_tx_setup(struct bcm_msg_head
+> > > > *msg_head, struct msghdr *msg,
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D -EINVA=
+L;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 }
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ if (err < 0) {
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 if (op->frames !=3D &op->sframe)
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(op->frames);
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 kfree(op);
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 return err;
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ }
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ if (err < 0)
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 goto free_op;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 if (msg_head->flags & TX_CP_CAN_ID) {
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* copy can_id into frame */
+> > > > @@ -1026,6 +1024,12 @@ static int bcm_tx_setup(struct
+> > > > bcm_msg_head *msg_head, struct msghdr *msg,
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bcm_tx_start=
+_timer(op);
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return msg_head->nframes * op->cfsiz=
+ + MHSIZ;
+> > > > +
+> > > > +free_op:
+> > > > +=C2=A0=C2=A0=C2=A0 if (op->frames !=3D &op->sframe)
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(op->frames);
+> > > > +=C2=A0=C2=A0=C2=A0 kfree(op);
+> > > > +=C2=A0=C2=A0=C2=A0 return err;
+> > > > =C2=A0 }
+> > > > =C2=A0 /*
+> >=20
+> > Thank you for the quick answer! I totally agree that this patch will not
+> > change the behavior a lot. However, I think a little bit more error
+> > processing will not be bad (considering this will not bring any
+> > performance overhead). If someone in the future tries to use the "cf"
+> > object right after "memcpy_from_msg" call without proper error
+> > processing it will lead to a bug (which will be hard to trigger). Maybe
+> > fixing it now to avoid possible future mistakes in the future makes
+> > sense?
+>=20
+> Yes! Definitely!
+>=20
+> Therefore I added my Acked-by: tag. Marc will likely pick this patch for
+> upstream.
 
-There is display_limit parameter, so the function prints up to 
-display_limit reports, and brief summary on remaining ones - the skipped 
-ones.
+Can you create a proper Fixes tag?
 
-Regards
-Andrzej
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-> 
-> Andi
-> 
->> +		pr_err("%s@%pK skipped reports about %d/%d users.\n",
->> +		       dir->name, dir, skipped, stats->total);
->> +
->> +	kfree(sbuf);
->> +
->> +	kfree(stats);
->>   }
->>   EXPORT_SYMBOL(__ref_tracker_dir_print);
->>   
->>
->> -- 
->> 2.34.1
+--p67maiohpxc2m32e
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQYfnoACgkQvlAcSiqK
+BOgJHggAs4kxDY/WxmiaOlQ4jg5qtMM36yenwMmqwGTbSHRs6ShzX/B8pK7R9XQA
+Z3VLNf9gc8MqivXTSF9tbSfPQPOadGoCVAjUc4UNN9AacC9gcYA30wM3m7REYX3Q
+qsud6oe/nyrnAOens7bprqUJnRX1W/qKPhJZ6hs/IlIuuRFCxvuzMqj8X0JvEPIm
+51d7WPCfcVQsUrEaad7W0QLxdjreX61mtRWyDY9p1HS9kBt7n0wHToMizWMOtPjQ
+lu3outarT8zLrAHaV6CPJ8v3lgtrhC4JPzcXhh5AsPtp0wAUjxedYqaxV+d/2Z4h
+mR8ip99WHeYPrbWhxXB9xGfM3hIV+A==
+=sdPM
+-----END PGP SIGNATURE-----
+
+--p67maiohpxc2m32e--
