@@ -2,122 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5586C1DF5
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDFF36C1E10
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:33:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232607AbjCTRaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 13:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
+        id S233557AbjCTRds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 13:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233594AbjCTR3w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:29:52 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E7A33CE4;
-        Mon, 20 Mar 2023 10:25:33 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id a16so8556176pjs.4;
-        Mon, 20 Mar 2023 10:25:33 -0700 (PDT)
+        with ESMTP id S233230AbjCTRd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:33:27 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8A62CC5E
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 10:29:03 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id gp15-20020a17090adf0f00b0023d1bbd9f9eso17358989pjb.0
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 10:29:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679333129;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TFjbf1hqGKTeNG29GCna0olkfNIXH80B4W/+/wvwthc=;
-        b=Jk98EvIs3B0BqU2BquE5gMDbTQB25Jebzbw0h43Pu2Si3wDTISCQ4agjC+8N4iUURS
-         5yw8yeqwYdg4l44DJr09Q1YC43CVGhARn2dFQKKnTVr1x2e88UpHOZTfN9KrRqtQM0pW
-         4SbAzUj7gt/0OxewlcWqBVhYihaxfIcqABO1tEP7yldeCSQgWyt7gumrVPw/8mBN2hft
-         I4ixCRnCK5BWBbAwKYCtcc6X5CMvMehQSPOr1YncIwUvQ5RkullWQjXoT63q5jAIU3ZF
-         2DXOhk163onSWhAaVaozEQZvwUZWzaoagCrJXCpWypa+vpC/VktyVyEt7fg/hO1bEoW8
-         pp2A==
+        d=chromium.org; s=google; t=1679333310;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=HGGv9i5SqQhPeVLQl7XFwMBB4Y//OxKsNM+BHuTlas8=;
+        b=ZBEawW1wSpHzkK8/HS+Ri6QL65omkw6EFPifZrsWKp5WXg92lnowD26XisLziOhwVZ
+         2nEdzI2mGrGQQwM7ELifU6FvVl6g1xVYtgfF/WvXKD6ZxdtzyCiGqWQpbRJG1FgdKH4D
+         /3yms1mYL70RTGYRWZDBqjX+9WFMl/GoOmpjc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679333129;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TFjbf1hqGKTeNG29GCna0olkfNIXH80B4W/+/wvwthc=;
-        b=ubRsTsqDDYgfXGG2SMwKasyMwVVe38ODzJb1WE8aq3Te+qw/3bxabv1kZ1tqYh5iHj
-         l+DssM+Jcgl6vj7z0W5sWFYk8V6TgzvZwuTfBu3waPP4prQ0ZIsojR3Tfxj1hggTPqhn
-         Sz90NUaLmAn8G50WdcelqxPXgI3dmvpRBgOK6ho+DtRmgj/N9/MFJA5qe1aD+QYLFcKy
-         gPTpuazx6K6yUGQqWKwQIXxGMjgir6u2gcqU4V6MrCJyuKCZv0fmQyqW/tMzNJDv1ZT1
-         l1T/jYmyW1G1ZRroZ6EH4ong6sJGYsk+M+3vBOitLjBiOTuH5uFh1LbGsXTzKi/oKRXv
-         GXuQ==
-X-Gm-Message-State: AO0yUKWxBfeUI/vG1RLYiPgJF+eg7nqptLkZur90x2mldGjWMkePQ+sk
-        Zfc/R0V9efwAPp0U9FhiZft/Djo1LYMGYiOz/r+glZxgxJ3M3bsc
-X-Google-Smtp-Source: AK7set8A2ig0P7/M3s+VqagZD5H2PiVLLygkBloHuagQwx4lJ2s+gPrNpnecfaoTyt+bkIr5Xtjm/pxKnNjU/qynDCo=
-X-Received: by 2002:a17:902:c40c:b0:19f:22aa:692e with SMTP id
- k12-20020a170902c40c00b0019f22aa692emr7406162plk.4.1679333128910; Mon, 20 Mar
- 2023 10:25:28 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679333310;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HGGv9i5SqQhPeVLQl7XFwMBB4Y//OxKsNM+BHuTlas8=;
+        b=YYV9CekV9l1uOLDAjM/vXRbiUWFQTuKIdD0Rn9lAgyCw7w1ztLCwl7xClBtfdwiqiQ
+         gj+I9OgvXCj1l4pa+KT0C4KFM+JEDTuww6BNOBJMNTihjL/zgkT0EOBCLuJsSrTL7BOq
+         6gdthLUWo/wFXjvJjK0BO9I/fzZmMYLk8i6Iw4YL5IuebtsNs6/NjIplwqXITzHajYLB
+         /dw3V7GiQyuMkc5IDUPO+1Ajw3rFl8cpgkJ50RvL2XxGAbrZspJtcxV7KiS+W/48Ik0l
+         W7Aj2E6RJUMza6mNI3ykGyzW6MfQM3XKhlmtoh5v0ordOmc1SLwVnMpTX5tdN9mhRioc
+         C3rg==
+X-Gm-Message-State: AO0yUKUoTM/atJm9HzUMdVrSu59iIfjKvdwCJv4Z1xNuZlxj+Vnrecrk
+        1QYamlzW77m6XjteaY7cUM69lA==
+X-Google-Smtp-Source: AK7set/ayPZk2u7OUUu1P2u2+Ohp9OuSPCNnu536DGSZrZvrFnAYMWMrktDkKv+SC9Ao+lvASsuOhA==
+X-Received: by 2002:a05:6a20:3b86:b0:d9:5c2f:99cb with SMTP id b6-20020a056a203b8600b000d95c2f99cbmr5279833pzh.33.1679333310589;
+        Mon, 20 Mar 2023 10:28:30 -0700 (PDT)
+Received: from www.outflux.net (198-0-35-241-static.hfc.comcastbusiness.net. [198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id j10-20020a63fc0a000000b00503000f0492sm6305291pgi.14.2023.03.20.10.28.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Mar 2023 10:28:29 -0700 (PDT)
+Message-ID: <641897bd.630a0220.174d9.9d11@mx.google.com>
+X-Google-Original-Message-ID: <202303201024.@keescook>
+Date:   Mon, 20 Mar 2023 10:28:29 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Gregory Greenman <gregory.greenman@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Benjamin Berg <benjamin.berg@intel.com>,
+        Sriram R <quic_srirrama@quicinc.com>,
+        lukasz.wojnilowicz@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] wifi: iwlwifi: dvm: Add struct_group for struct
+ iwl_keyinfo keys
+References: <20230218191056.never.374-kees@kernel.org>
+ <3181a89b49e571883525172a7773b12f046e8b09.camel@sipsolutions.net>
 MIME-Version: 1.0
-References: <CAE2MWkm=zvkF_Ge1MH7vn+dmMboNt+pOEEVSgSeNNPRY5VmroA@mail.gmail.com>
- <a4ce2c34-eabe-a11f-682a-4cecf6c3462b@blackwall.org>
-In-Reply-To: <a4ce2c34-eabe-a11f-682a-4cecf6c3462b@blackwall.org>
-From:   Ujjal Roy <royujjal@gmail.com>
-Date:   Mon, 20 Mar 2023 22:55:17 +0530
-Message-ID: <CAE2MWkkDNZuThePts_nU-LNYryYyWTYOMk5gmuoCoGPh4bf4ag@mail.gmail.com>
-Subject: Re: Multicast: handling of STA disconnect
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     roopa@nvidia.com, nikolay@nvidia.com, netdev@vger.kernel.org,
-        Kernel <linux-kernel@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3181a89b49e571883525172a7773b12f046e8b09.camel@sipsolutions.net>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nik,
+On Sun, Feb 19, 2023 at 04:12:05PM +0100, Johannes Berg wrote:
+> On Sat, 2023-02-18 at 11:11 -0800, Kees Cook wrote:
+> > 
+> >  	case WLAN_CIPHER_SUITE_CCMP:
+> >  		key_flags |= STA_KEY_FLG_CCMP;
+> > -		memcpy(sta_cmd.key.key, keyconf->key, keyconf->keylen);
+> > +		memcpy(&sta_cmd.key.keys, keyconf->key, keyconf->keylen);
+> 
+> This should be fine though, only up to 16 bytes for CCMP.
+> 
+> >  	case WLAN_CIPHER_SUITE_TKIP:
+> >  		key_flags |= STA_KEY_FLG_TKIP;
+> >  		sta_cmd.key.tkip_rx_tsc_byte2 = tkip_iv32;
+> >  		for (i = 0; i < 5; i++)
+> >  			sta_cmd.key.tkip_rx_ttak[i] = cpu_to_le16(tkip_p1k[i]);
+> > -		memcpy(sta_cmd.key.key, keyconf->key, keyconf->keylen);
+> > +		memcpy(&sta_cmd.key.keys, keyconf->key, keyconf->keylen);
+> 
+> And that's actually a bug, we should've copied only 16 bytes, I guess.
+> DVM didn't support MIC offload anyway (at least the way Linux uses the
+> firmware, though I thought it doesn't at all), so we don't need the MIC
+> RX/TX keys in there, but anyway the sequence counter values are not part
+> of the key material on the host.
+> 
+> I don't think I have a machine now to test this with (nor a TKIP AP, of
+> course, but that could be changed) - but I suspect that since we
+> actually calculate the TTAK above, we might not even need this memcpy()
+> at all?
 
-Flushing MDB can only be done when we are managing it per station not
-per port. For that we need to have MCAST_TO_UCAST, EHT and FAST_LEAVE.
+It's the latter that is triggered in the real world, though. See the
+referenced URL and also now on bugzilla:
+https://bugzilla.kernel.org/show_bug.cgi?id=217214
+i.e.: drivers/net/wireless/intel/iwlwifi/dvm/sta.c:1103
 
-Here one more point is - some vendors may offload MCAST_TO_UCAST
-conversion in their own FW to reduce CPU.
+So keyconf->keylen is coming in as 32. If this is a bug, I'm not sure
+where/how to fix it.
 
-So, the best way is to have MCAST_TO_UCAST enabled and MDB will become
-per station, so we can delete MDB on disconnect. Shall, I create one
-patch for review?
+Perhaps this patch can be taken as-is, and a WARN_ON added for the >16
+case to be tracked down separately?
 
-Thanks,
-UjjaL Roy
-
-On Mon, Mar 20, 2023 at 5:38=E2=80=AFPM Nikolay Aleksandrov <razor@blackwal=
-l.org> wrote:
->
-> On 20/03/2023 13:45, Ujjal Roy wrote:
-> > Hi Nikolay,
-> >
-> > I have some query on multicast. When streams running on an STA and STA
-> > disconnected due to some reason. So, until the MDB is timed out the
-> > stream will be forwarded to the port and in turn to the driver and
-> > dropps there as no such STA.
-> >
-> > So, is the multicast_eht handling this scenario to take any action
-> > immediately? If not, can we do this to take quick action to reduce
-> > overhead of memory and driver?
-> >
-> > I have an idea on this. Can we mark this port group (MDB entry) as
-> > INACTIVE from the WiFi disconnect event and skip forwarding the stream
-> > to this port in br_multicast_flood by applying the check? I can share
-> > the patch on this.
-> >
-> > Thanks,
-> > UjjaL Roy
->
-> Hi,
-> Fast leave and EHT (as that's v3's fast leave version) are about quickly =
-converging when
-> a leave is received (e.g. when there are no listeners to quickly remove t=
-he mdb). They
-> don't deal with interface states (IIUC). Why don't you just flush the por=
-t's mdb entries
-> on disconnect? That would stop fwding.
->
-> Cheers,
->  Nik
->
->
+-- 
+Kees Cook
