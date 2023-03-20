@@ -2,135 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8175C6C11DE
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 796CE6C11EB
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 13:31:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbjCTM1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 08:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
+        id S230435AbjCTMbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 08:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbjCTM1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:27:31 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C9A136CD;
-        Mon, 20 Mar 2023 05:27:30 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id p203so12744586ybb.13;
-        Mon, 20 Mar 2023 05:27:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679315249;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jEWbXljd1LYRG11sK5UVV91jB+l41ceppJXLBhPyZxQ=;
-        b=FTPKdoiLdpUQsq2vQl5IKRAVgwMNUI1flmBqN7gYqic7JA2v/Np4j7zs2SI6P7MbRW
-         p6cttJLoS09/tKkccZmaOF94ngoeK33UeOpNiuh1Lq++BqZFUOBnU7XTi/VcWH563Vcy
-         tU3nTkq9RvFFJnMxJIlgZN50OjZRYYtH3B87Drch88wRxE5X4KTOio9kKXdq4kwlT9BE
-         frkC0SBb9oqdQgn5qHqzxbubdyOqSMyF5rP++1zQtY+XWsPgCXLxNMri2ngHA8Qk1ZvQ
-         e/Dds216cAcgv9YTFhy5biev081VNaFDG+dSWGIRRZPog/B6Uvh/RQqtS92E3EBm5uwH
-         CG4g==
+        with ESMTP id S231287AbjCTMay (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 08:30:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553CB3AAD
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:29:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679315396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AfqpIgX4fLbKXurM7Kf6KLvRPea8XVgc4JZHuTZ7PDI=;
+        b=N5gKHtCt/YCBS5s9k5DAhzYPOSwlJTVRdfV+N+AIFRDJ3vPuj/Ya+nQDLS90d0EXm97QAf
+        Eut8MNxst79XBxjZ+WsYysCa/KX7xQCZ+/GGq5tE+Bb8rPM/yY30Y/fxG/zjV8kcOHdHDo
+        BXkhbuk6bh5h4QsOd+2nIjoXGXunWvQ=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-310-AEDi8CNVMd2AjvO7ZiII-A-1; Mon, 20 Mar 2023 08:29:55 -0400
+X-MC-Unique: AEDi8CNVMd2AjvO7ZiII-A-1
+Received: by mail-qv1-f71.google.com with SMTP id a15-20020a0562140c2f00b005ad28a23cffso5898593qvd.6
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 05:29:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679315249;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jEWbXljd1LYRG11sK5UVV91jB+l41ceppJXLBhPyZxQ=;
-        b=KrKhhKj1gHlWJPUUImtTZzYxBzCNUEkFEyHZJv5o6qfJswzj6ctc28D/dDQ6pUGGT6
-         BMCSBZu2DTXHYpR9SveWQJQCfvPLiYTfX2+vG+JtiYgGRk8qhDa5uIEbtPe8dLt5cHBS
-         LmVcrIELENJLtBzc/ViJfSEx8TaNeG77jc9OVRIiaZsCl4gKBtMJZukem/fEoRN/MJg+
-         YY/tZlO8po0u2J1Pd46EdGnCRdYSB7QwRt8PKZ0F6oPwMvd5GGRwTQwmBtDE86XB3aNK
-         K3mvN+C7Dht4iP/TKAntThnknOaca5z8E8yKCQdZDL6w4BRIE38s+ZETA3Y+ArvvxzUR
-         kQ4A==
-X-Gm-Message-State: AO0yUKXYguMsJ8KXKmWhajX79flB1vV4HcAsqQ20q+i+oURt0kAu++69
-        3qhTM3Kdz3NiRNWL0/126bQZ3vfYje2Igjs2/jpe4ty/89W6iw==
-X-Google-Smtp-Source: AK7set9pZovo83jqHjzR1vy8u86GSRGshQ8PDPcM0IIgYtzkdqssKUj9bv4LrnAXJJI7c+BA2rlyBUwwEojj487jmQw=
-X-Received: by 2002:a05:6902:723:b0:b6a:2590:6c63 with SMTP id
- l3-20020a056902072300b00b6a25906c63mr4953728ybt.2.1679315249522; Mon, 20 Mar
- 2023 05:27:29 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679315394;
+        h=content-language:content-transfer-encoding:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AfqpIgX4fLbKXurM7Kf6KLvRPea8XVgc4JZHuTZ7PDI=;
+        b=wY/rrssTRRIrxm/7WbGWI+cRDtWu/faDNBfF2RuAshvDiweZAB/Jxc+/9hYm9tOoqu
+         isQKOEQQg56ClXGB11CRmyBkhO0l/5J6p51Z882Czkn0V6is/NXYcQH8sASMOEOgY0Jo
+         kXLULckWPtQBHbSQmLwv1WqrWw9ZtTHE0hPwPclFlWkmTrewTQOQXTtkgN6MKnOKe2Z4
+         PSEyB0wxhEHOais1Gei6KFDjMPDzNRHKv+gK1mintPKlphtoZUMcfFJgyylM1WlZfRfP
+         mDOwK5Mdxx98RgQF3oDU2RY+HpPOqG6ETlqd07xavNQ5uzCpmBX4+sJwYkJ6M28cTLon
+         jX0A==
+X-Gm-Message-State: AO0yUKVxinEKsdykNzSLp7fDhDPj+xGXrgvBVHKgWn8yiN3W/V9yf7Ie
+        7M94xF2ARlVUEOi5aCxTfuIYpPXTdK5xzmRKv6reqm+nAovItwicqJvXlso/4tWL0QtfKeugbCA
+        +zKMwTWkSwLMkEJLX
+X-Received: by 2002:ac8:578e:0:b0:3bf:d0b1:433d with SMTP id v14-20020ac8578e000000b003bfd0b1433dmr27832940qta.60.1679315394718;
+        Mon, 20 Mar 2023 05:29:54 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8Xkg5GXCW1nwGbZIqz+rPOxATrxz/ugD6phHqlEFjOnuUqwxEdyf/hjO4XymAepfNWlKckOA==
+X-Received: by 2002:ac8:578e:0:b0:3bf:d0b1:433d with SMTP id v14-20020ac8578e000000b003bfd0b1433dmr27832914qta.60.1679315394487;
+        Mon, 20 Mar 2023 05:29:54 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id r19-20020ac85213000000b003b643951117sm6511664qtn.38.2023.03.20.05.29.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Mar 2023 05:29:54 -0700 (PDT)
+Subject: Re: [PATCH] net: cxgb3: remove unused fl_to_qset function
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     rajur@chelsio.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20230319172433.1708161-1-trix@redhat.com>
+ <20230319174525.kwhlxme7gh45b3un@soft-dev3-1>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <21aad6c8-8abe-79e0-eb47-d03e964419a2@redhat.com>
+Date:   Mon, 20 Mar 2023 05:29:51 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20230320105323.187307-1-nunog@fr24.com> <20230320110314.GJ36557@unreal>
-In-Reply-To: <20230320110314.GJ36557@unreal>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 20 Mar 2023 13:27:18 +0100
-Message-ID: <CAJ8uoz1kbFsttvWNTUdtYcwEa=hQvky2z0Jfn0=9b5v6m_FVXg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] xsk: allow remap of fill and/or completion rings
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunog@fr24.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230319174525.kwhlxme7gh45b3un@soft-dev3-1>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Mar 2023 at 12:09, Leon Romanovsky <leon@kernel.org> wrote:
+
+On 3/19/23 10:45 AM, Horatiu Vultur wrote:
+> The 03/19/2023 13:24, Tom Rix wrote:
 >
-> On Mon, Mar 20, 2023 at 10:53:23AM +0000, Nuno Gon=C3=A7alves wrote:
-> > The remap of fill and completion rings was frowned upon as they
-> > control the usage of UMEM which does not support concurrent use.
-> > At the same time this would disallow the remap of this rings
-> > into another process.
-> >
-> > A possible use case is that the user wants to transfer the socket/
-> > UMEM ownerwhip to another process (via SYS_pidfd_getfd) and so
-
-nit: ownership
-
-> > would need to also remap this rings.
-> >
-> > This will have no impact on current usages and just relaxes the
-> > remap limitation.
-> >
-> > Signed-off-by: Nuno Gon=C3=A7alves <nunog@fr24.com>
-> > ---
-> >  net/xdp/xsk.c | 9 ++++++---
-> >  1 file changed, 6 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 2ac58b282b5eb..2af4ff64b22bd 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -1300,10 +1300,11 @@ static int xsk_mmap(struct file *file, struct s=
-ocket *sock,
-> >  {
-> >       loff_t offset =3D (loff_t)vma->vm_pgoff << PAGE_SHIFT;
-> >       unsigned long size =3D vma->vm_end - vma->vm_start;
-> > +     int state =3D READ_ONCE(xs->state);
-
-Reverse Christmas Tree notation here please. Move it one line down to
-after the *xs declaration.
-
-> >       struct xdp_sock *xs =3D xdp_sk(sock->sk);
-> >       struct xsk_queue *q =3D NULL;
-> >
-> > -     if (READ_ONCE(xs->state) !=3D XSK_READY)
-> > +     if (!(state =3D=3D XSK_READY || state =3D=3D XSK_BOUND))
+> Hi Tom,
 >
-> This if(..) is actually:
->  if (state !=3D XSK_READY && state !=3D XSK_BOUND)
+>> clang with W=1 reports
+>> drivers/net/ethernet/chelsio/cxgb3/sge.c:169:32: error: unused function
+>>    'fl_to_qset' [-Werror,-Wunused-function]
+>> static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
+>>                                 ^
+>> This function is not used, so remove it.
+> Don't forget to mention in the subject which tree is targeting this
+> patch.
 
-Nuno had it like that to start with when he sent the patch privately
-to me, but I responded that I prefered the current one. It is easier
-to understand if read out aloud IMO. Do not have any strong feelings
-either way since the statements are equivalent.
+This and all my similar fixes/cleanup are against -next.
 
-> Thanks
+What prefix would you like to see ?
+
+Tom
+
+> Other than that looks OK.
+>
+> Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>>   drivers/net/ethernet/chelsio/cxgb3/sge.c | 5 -----
+>>   1 file changed, 5 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+>> index 62dfbdd33365..efa7f401529e 100644
+>> --- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
+>> +++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+>> @@ -166,11 +166,6 @@ static u8 flit_desc_map[] = {
+>>   #endif
+>>   };
+>>
+>> -static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
+>> -{
+>> -       return container_of(q, struct sge_qset, fl[qidx]);
+>> -}
+>> -
+>>   static inline struct sge_qset *rspq_to_qset(const struct sge_rspq *q)
+>>   {
+>>          return container_of(q, struct sge_qset, rspq);
+>> --
+>> 2.27.0
+>>
+
