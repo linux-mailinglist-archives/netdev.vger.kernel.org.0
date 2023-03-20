@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 170D16C1D77
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:13:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C546C1DC0
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 18:23:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233435AbjCTRNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 13:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S232706AbjCTRXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 13:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232165AbjCTRMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:12:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCAE83C3;
-        Mon, 20 Mar 2023 10:08:43 -0700 (PDT)
+        with ESMTP id S232691AbjCTRXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 13:23:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CD4BBB0;
+        Mon, 20 Mar 2023 10:19:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE92561701;
-        Mon, 20 Mar 2023 16:59:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE26DC433EF;
-        Mon, 20 Mar 2023 16:59:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4457EB80FA6;
+        Mon, 20 Mar 2023 16:59:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD177C433EF;
+        Mon, 20 Mar 2023 16:59:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679331546;
-        bh=Pe3VP2wxZ1LgzDKFV9zDltQiMh3cGeAqwPGq68FDOlg=;
+        s=k20201202; t=1679331550;
+        bh=zBR/CZyJ28kqYG49+d/k9o/82Jp0pG3tobqqcDf2lo0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkGr472jOTqkgltHePWWiSJxD3ZM6RmRsglUXYf4dBC59FaFr72iibUPBtSLSIzIE
-         SLUoXipwmHSrFKeH3gQcSoYIw+5/ljBSWw01GIO6JkA9/TGH+9ZoxJXFJWbvDu0V7E
-         IiKZ/vB7zUETiSoBcC7N5boYCmVBxJQ/+vgpsaH8/H59tYsNoOzzEU10L1ma1g54JV
-         RzGTV0LalvNkOBa/AYYO+a6uvBFLrk0722COR4g8fNVH/QDhuVAFaX4zNB3Ss2ZkFg
-         j5fKOLqB0Y8oQkwv3uG2g+woQ+PnYE23w9nBgAVWHRJTt7PW4QgoZ6KDecE+uGaL/O
-         GhG2uVEJEYujg==
+        b=rUr/2Xbs9M66djwtqMYR+hNW+hPSW8Y+pWI8x5o51unJK6ZGPSiXxgpeddswGs3FY
+         tOxQq/jR+qXdTrfxHjH645JPz3H69hU14TdSX/9AQhqJ7ZsC4ZiYtBlFk6ECzUcgw7
+         jQj/p9c+wDqa4fmBCINe8uRS51Q6VO0oNZgUUe6qVbFTW56IDb+8nPNqGWCKwn2/fW
+         BWjVtDLOmoqmVocpEjmVVLHZsHpQu/q/d4K/Qj7aOAGcfCkZlJwsrD1QVmKOHSTnvN
+         +t6K512qbV7P45bRmBgJqmZpcRlEUXImaMNj33vmHvkIljqVlRAQ4d1KDC5Nyoie6J
+         cutm8Dmq5leoA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -40,9 +40,9 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH net-next 04/10] arm64: dts: mt7986: move cpuboot in a dedicated node
-Date:   Mon, 20 Mar 2023 17:57:58 +0100
-Message-Id: <61e2445f79d8642e7749dac409e2b93b96667610.1679330630.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 05/10] net: ethernet: mtk_wed: move ilm a dedicated dts node
+Date:   Mon, 20 Mar 2023 17:57:59 +0100
+Message-Id: <93f309bafc6f3f9ddeeba81eea04b3769e70febf.1679330630.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1679330630.git.lorenzo@kernel.org>
 References: <cover.1679330630.git.lorenzo@kernel.org>
@@ -57,74 +57,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the cpuboot memory region is not part of the RAM SoC, move cpuboot
-in a deidicated syscon node.
+Since the ilm memory region is not part of the RAM SoC, move ilm in a
+deidicated syscon node.
 This patch helps to keep backward-compatibility with older version of
 uboot codebase where we have a limit of 8 reserved-memory dts child
 nodes.
+Keep backward-compatibility with older dts version where ilm was defined
+as reserved-memory child node.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 55 ++++++++++++++++++---
+ 1 file changed, 49 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index 51944690e790..668b6cfa6a3d 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -113,12 +113,6 @@ wo_dlm1: wo-dlm@151f8000 {
- 			reg = <0 0x151f8000 0 0x2000>;
- 			no-map;
- 		};
--
--		wo_boot: wo-boot@15194000 {
--			reg = <0 0x15194000 0 0x1000>;
--			no-map;
--		};
--
- 	};
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+index 797c3b412ab6..a19db914ebd2 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
+@@ -299,6 +299,52 @@ mtk_wed_mcu_run_firmware(struct mtk_wed_wo *wo, const struct firmware *fw,
+ 	return -EINVAL;
+ }
  
- 	timer {
-@@ -461,10 +455,11 @@ wed0: wed@15010000 {
- 			interrupt-parent = <&gic>;
- 			interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
- 			memory-region = <&wo_emi0>, <&wo_ilm0>, <&wo_dlm0>,
--					<&wo_data>, <&wo_boot>;
-+					<&wo_data>;
- 			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
--					      "wo-data", "wo-boot";
-+					      "wo-data";
- 			mediatek,wo-ccif = <&wo_ccif0>;
-+			mediatek,wo-cpuboot = <&wo_cpuboot>;
- 		};
- 
- 		wed1: wed@15011000 {
-@@ -474,10 +469,11 @@ wed1: wed@15011000 {
- 			interrupt-parent = <&gic>;
- 			interrupts = <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>;
- 			memory-region = <&wo_emi1>, <&wo_ilm1>, <&wo_dlm1>,
--					<&wo_data>, <&wo_boot>;
-+					<&wo_data>;
- 			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
--					      "wo-data", "wo-boot";
-+					      "wo-data";
- 			mediatek,wo-ccif = <&wo_ccif1>;
-+			mediatek,wo-cpuboot = <&wo_cpuboot>;
- 		};
- 
- 		wo_ccif0: syscon@151a5000 {
-@@ -494,6 +490,11 @@ wo_ccif1: syscon@151ad000 {
- 			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
-+		wo_cpuboot: syscon@15194000 {
-+			compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
-+			reg = <0 0x15194000 0 0x1000>;
-+		};
++static int
++mtk_wed_mcu_load_memory_regions(struct mtk_wed_wo *wo,
++				struct mtk_wed_wo_memory_region *region)
++{
++	struct device_node *np;
++	int ret;
 +
- 		eth: ethernet@15100000 {
- 			compatible = "mediatek,mt7986-eth";
- 			reg = <0 0x15100000 0 0x80000>;
++	/* firmware EMI memory region */
++	ret = mtk_wed_get_reserved_memory_region(wo,
++			&region[MTK_WED_WO_REGION_EMI]);
++	if (ret)
++		return ret;
++
++	/* firmware DATA memory region */
++	ret = mtk_wed_get_reserved_memory_region(wo,
++			&region[MTK_WED_WO_REGION_DATA]);
++	if (ret)
++		return ret;
++
++	np = of_parse_phandle(wo->hw->node, "mediatek,wo-ilm", 0);
++	if (np) {
++		struct mtk_wed_wo_memory_region *ilm_region;
++		struct resource res;
++
++		ret = of_address_to_resource(np, 0, &res);
++		of_node_put(np);
++
++		if (ret < 0)
++			return ret;
++
++		ilm_region = &region[MTK_WED_WO_REGION_ILM];
++		ilm_region->phy_addr = res.start;
++		ilm_region->size = resource_size(&res);
++		ilm_region->addr = devm_ioremap(wo->hw->dev, ilm_region->phy_addr,
++						ilm_region->size);
++
++		return ilm_region->addr ? 0 : -ENOMEM;
++	}
++
++	/* For backward compatibility, we need to check if ILM
++	 * node is defined through reserved memory property.
++	 */
++	return mtk_wed_get_reserved_memory_region(wo,
++			&region[MTK_WED_WO_REGION_ILM]);
++}
++
+ static int
+ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
+ {
+@@ -320,12 +366,9 @@ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
+ 	u32 val, boot_cr;
+ 	int ret, i;
+ 
+-	/* load firmware region metadata */
+-	for (i = 0; i < ARRAY_SIZE(mem_region); i++) {
+-		ret = mtk_wed_get_reserved_memory_region(wo, &mem_region[i]);
+-		if (ret)
+-			return ret;
+-	}
++	ret = mtk_wed_mcu_load_memory_regions(wo, mem_region);
++	if (ret)
++		return ret;
+ 
+ 	wo->boot_regmap = syscon_regmap_lookup_by_phandle(wo->hw->node,
+ 							  "mediatek,wo-cpuboot");
 -- 
 2.39.2
 
