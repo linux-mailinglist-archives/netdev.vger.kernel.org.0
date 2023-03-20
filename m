@@ -2,121 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 592AA6C2125
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 20:19:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B713C6C20E7
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 20:08:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231532AbjCTTTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 15:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
+        id S231431AbjCTTIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 15:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbjCTTTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 15:19:21 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EBDEC53;
-        Mon, 20 Mar 2023 12:11:16 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 3EB1C5FD24;
-        Mon, 20 Mar 2023 21:14:05 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1679336045;
-        bh=YB66nolKkjoVJU5evh+1HebsOHaQzQKU6oDfFomMopo=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=SuBDWnSq/ExcHfGMvBol5cflBae0kgkygILrfeU5AF3LapTEuqNog18ajLEmITCzD
-         +p1DeLidfqsVOexq6/24svD+4HjrRjBGUPehzCQfznvbSR7sW4Mcxve+hnVxJjOSnJ
-         RyxCMbt1IxUSr+vCbt20d+jUH+Fpw/XOCW7Mh9t5mqjvt7KdUTezv9P87sEnnRWoQe
-         TZtaLoVCjLh+CGO/wmkSfiaCyWRYw+27RuGnwTDPQSkayjTLOIlx2W0LjY94bxCTXl
-         oiMOWXhSajyhEco7E9YCmmlXKQF9egDDYlHczz4HHJ3PxD6tuqaQbBSy7AadXf5yIT
-         qWOFecjroSqhw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 20 Mar 2023 21:14:05 +0300 (MSK)
-Message-ID: <37bef564-8f3e-aab3-a7d7-24e6c4caa318@sberdevices.ru>
-Date:   Mon, 20 Mar 2023 21:10:34 +0300
+        with ESMTP id S230451AbjCTTIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 15:08:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180D24AFF4
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 12:00:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62AA1B80E64
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 18:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0D74C433EF;
+        Mon, 20 Mar 2023 18:59:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679338752;
+        bh=WbO+w6YvDfc8wCgChg8bFHLaX3xQ97m48IEY76moR7U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tNSkq3uA04UiMnUm6bwu/+NcqzaO3a74ietJb6rRXaHqBtve4ZKj3YPw/d9FBi5cr
+         39vyXEAbXn85ltkuJyoX8Pe9/6/mvej+hjJ46zMGK6NiqHTrZKO8RC090je+ApjfJ2
+         xkWL/paswDzkuQCDYxo7GpcZ1h7bxTY2jx3G6a/ILS27LQwH+QMJbnz+JKor+fhoLH
+         7xSwQ80QQ9cNgUto3oIfjZd07kej39gCTZ1AlpX2OMZDJjDXLO/56CyYCk8V6zJhpT
+         y6j1Xqwmco2FVNsd56OERGrH0fgnTe7MmqH4tSVj1ftycc6/Jz8QEXW9sOVPBcDD9r
+         5SN1IdnhrNsaA==
+Date:   Mon, 20 Mar 2023 11:59:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com
+Subject: Re: [PATCH net-next 2/4] ynl: populate most of the ethtool spec
+Message-ID: <20230320115910.50374a67@kernel.org>
+In-Reply-To: <CAKH8qBvkFvyyPwah7uDiJP2tm7k4NZ10Kgw2ykDs8jqOs4gXtg@mail.gmail.com>
+References: <20230318002340.1306356-1-sdf@google.com>
+        <20230318002340.1306356-3-sdf@google.com>
+        <20230317213304.2010ed71@kernel.org>
+        <CAKH8qBvkFvyyPwah7uDiJP2tm7k4NZ10Kgw2ykDs8jqOs4gXtg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [RFC PATCH v1 2/3] virtio/vsock: add WARN() for invalid state of
- socket
-Content-Language: en-US
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
-References: <e141e6f1-00ae-232c-b840-b146bdb10e99@sberdevices.ru>
- <da93402d-920e-c248-a5a1-baf24b70ebee@sberdevices.ru>
- <20230320150715.twapgesp2gj6egua@sgarzare-redhat>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-In-Reply-To: <20230320150715.twapgesp2gj6egua@sgarzare-redhat>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/20 09:56:00 #20977321
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 20 Mar 2023 11:03:33 -0700 Stanislav Fomichev wrote:
+> On Fri, Mar 17, 2023 at 9:33=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> =
+wrote:
+> > On Fri, 17 Mar 2023 17:23:38 -0700 Stanislav Fomichev wrote: =20
+> > > Things that are not implemented:
+> > > - cable tests
+> > > - bitmaks in the requests don't work (needs multi-attr support in ynl=
+.py)
+> > > - stats-get seems to return nonsense =20
+> >
+> > Hm. What kind of nonsense? =20
+>=20
+> {'grp': {'id': 1, 'ss-id': 18}}
+>=20
+> But I guess that's because I'm not passing the group bitmask correctly?
 
+Hm, or the driver you're trying does not have any _structured_ stats?
+Does
 
-On 20.03.2023 18:07, Stefano Garzarella wrote:
-> On Sun, Mar 19, 2023 at 09:52:19PM +0300, Arseniy Krasnov wrote:
->> This prints WARN() and returns from stream dequeue callback when socket's
->> queue is empty, but 'rx_bytes' still non-zero.
->>
->> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->> ---
->> net/vmw_vsock/virtio_transport_common.c | 7 +++++++
->> 1 file changed, 7 insertions(+)
->>
->> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->> index 3c75986e16c2..c35b03adad8d 100644
->> --- a/net/vmw_vsock/virtio_transport_common.c
->> +++ b/net/vmw_vsock/virtio_transport_common.c
->> @@ -388,6 +388,13 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
->>     u32 free_space;
->>
->>     spin_lock_bh(&vvs->rx_lock);
->> +
->> +    if (skb_queue_empty(&vvs->rx_queue) && vvs->rx_bytes) {
->> +        WARN(1, "No skbuffs with non-zero 'rx_bytes'\n");
-> 
-> I would use WARN_ONCE, since we can't recover so we will flood the log.
-> 
-> And you can put the condition in the first argument, I mean something
-> like this:
->         if (WARN_ONCE(skb_queue_empty(&vvs->rx_queue) && vvs->rx_bytes,
->                       "rx_queue is empty, but rx_bytes is non-zero\n")) {
-I see, ok.
-> 
-> Thanks,
-> Stefano
-> 
->> +        spin_unlock_bh(&vvs->rx_lock);
->> +        return err;
->> +    }
->> +
->>     while (total < len && !skb_queue_empty(&vvs->rx_queue)) {
->>         skb = skb_peek(&vvs->rx_queue);
->>
->> -- 
->> 2.25.1
->>
-> 
+  ethtool -S \* --all-groups
+
+show anything? Note that these are not all the old ethtool -S stats.
+
+> > > - notifications are not tested
+> > > - features-nft has hard-coded value:13, not sure why it skews =20
+> >
+> > ETHTOOL_MSG_FEATURES_SET_REPLY exists but there is no reply:
+> > section in the spec. =20
+>=20
+> Ah, good catch, I guess something like this would do? It doesn't have
+> to be a new empty msg?
+> reply:
+>   attributes: *feature
+
+Oh right, there's an actual reply to features. I thought it was just
+reserved but we need to return to the user space what we managed to
+set and what we didn't. Makes sense.
