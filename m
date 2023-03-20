@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D9B6C2210
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 20:58:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 005526C2212
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 20:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbjCTT6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 15:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
+        id S230321AbjCTT6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 15:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbjCTT6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 15:58:13 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A422211F;
-        Mon, 20 Mar 2023 12:58:05 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id r5so14640233qtp.4;
-        Mon, 20 Mar 2023 12:58:05 -0700 (PDT)
+        with ESMTP id S230129AbjCTT6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 15:58:53 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C367234C8;
+        Mon, 20 Mar 2023 12:58:45 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id l16so5048425ybe.6;
+        Mon, 20 Mar 2023 12:58:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679342284;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=TGnI0RGnU2ls6PagCH9hokSMfn9Gk7J24Ud+r6p+d30=;
-        b=ODwC5TdTRL/j2RFGh8/aYdJYTbh9WuHfyLxFn772z6p7g+TaS5CwCRgPSn25XgepUd
-         yjKy0XhPBwI5x3Djl3Py/rQOMJEwiTYVk9cmXdadk49sr/7AXrov8b46cZfJ1j6z29oY
-         fEG+HSK1xxGqg/pazIq4OPk+mGarEsupfKh+YW8HweVL+3DJSCVLcVWgllCvocfDMpZz
-         qm7zLijcXCpcQIMGwMjG3Knh2tRRRnL9OVSlA1P/3cUxoFTj5OTeuN6YK16ZIdcm087r
-         1Ud2fhojqRUsqispFo2K23yHzsUIluzVCUsGwhBtvA2XKrtS6UA51rt2S8rut2NrWvVi
-         g0Wg==
+        d=gmail.com; s=20210112; t=1679342324;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zBybbIP1ZIep/Xag1gH0yWaOUYHUoiApZF58mzTvpoQ=;
+        b=jfDYGuEJ7Sk9BUlWQQWsY8a84vHVcuqzZ/wlxPbrtzCkpdp//LzrXSSBMG0n/5k8g4
+         zs4RYJByuhulZPyGdb2mRZ0+iEBo95Af/XiDPTN9j2g7FtYqKp+11g0gKx7lyzf8hRvo
+         dGFIM8cCxSfqOiLmkJ+5q6mxFti+V5oV3Q67Eo5M3USLcQW6/gKyy7Zde/nwjwRynXSC
+         xNQIskhvLEMIMssFsL2w+AfxXQwuoogFfHBh0yjIkek8g0WZ9vaGrsMSHPYAKpJJp8c3
+         YAdY2em6Seuj83l/xz/o8uSrJ+7WVRYgEDn6ZiRkmJogBnZ7Wfoq6ROpPiSNEOB3OL0Z
+         QB4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679342284;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TGnI0RGnU2ls6PagCH9hokSMfn9Gk7J24Ud+r6p+d30=;
-        b=0+95c1WYrWTIN24AvsTakquA34ETCimJGbKPYkDS5aJkAFcB0Fu8l/R5QEDX4cAYM+
-         XycjvEILcrtk82BFPsDVK67IV42SbcsOk8ZoDd2Ok1od3FIPibxI1+3UjLpRay4ksrr1
-         EXcdIo0JumEO7RYAh/q9amHNb8W2qHDdo0rRbWuDvilvyuaJvkmN+5EDv4oDCPybsgau
-         +F3drUFeTLt0JS/Qs27l3Z0Siqd9dn+ZO3bqHZayFAC4r1BfyoZUheF4J/W+RSplehpT
-         6qI3xdmFLTnASHwlRHSP6qWnd6UZ/0xKddHjnOZIMFqWe91scKxhulCCQD4FfofzaeBN
-         jB3g==
-X-Gm-Message-State: AO0yUKWlk1PAQxAuGqLvAq9/ySOP+ajvIM54aZuUU0+gXcpLyF71VAyG
-        cJJVuIPb5LcyYvjidMxRGAo=
-X-Google-Smtp-Source: AK7set/+aZthoyWWOP55PKwaHSoV0LjqI0oDcTGY38QA46K7O7fFjD+m8G/9oxV7atM2jFXlY7sb9g==
-X-Received: by 2002:ac8:4e4e:0:b0:3bf:d0d2:142d with SMTP id e14-20020ac84e4e000000b003bfd0d2142dmr623958qtw.24.1679342284454;
-        Mon, 20 Mar 2023 12:58:04 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id r14-20020ac867ce000000b003c034837d8fsm6918286qtp.33.2023.03.20.12.57.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Mar 2023 12:57:59 -0700 (PDT)
-Message-ID: <f2bdb314-b795-9ea3-4c1c-62b52aac031b@gmail.com>
-Date:   Mon, 20 Mar 2023 12:57:52 -0700
+        d=1e100.net; s=20210112; t=1679342324;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zBybbIP1ZIep/Xag1gH0yWaOUYHUoiApZF58mzTvpoQ=;
+        b=jfXTI6l6R7kWgpvslwmjcXPGfdvIrTZzNZcIY+mWvGk+hZDSQC+PFPm6uy1ozFvFIL
+         h4L8VGiaRLxywgXDpIlEj7qedK4VX71flMsvSbP0z5VSSV7q3pchkReUfGi6Csv0KWcH
+         ovO0dV/b6xEcBH16QXECbuxc8kpUJswal4933Hm/qj8pWg4RbtC1OFT5f7xcp504qOZu
+         O4SGHYv8XZJDTkFA20EX0L3+GHH8qHzgMQ1lmYI5uKcSDw8g3/T0VR0bJ8cOK4T18kRa
+         lsd18CrAN4j0qIy6eJlMXHTO+e8fcKA7mpaKhkDPd3dpEnooMUCIqPrwCGp5MGErXFfS
+         Iehw==
+X-Gm-Message-State: AAQBX9cpcggKJFkHYFgYuxKytxoT7vq+vITP5H6MH8SldColtIphn7f8
+        Q/3mUVYgeS/sBi1MBwQFGKptgcsuk4FbCPFkCKA=
+X-Google-Smtp-Source: AKy350bYqvlm/IXOASpeOVYsJca1qwOldz8palom9n2LnTNgYKmcjLXMqDj48xAeHMF9G4aNt20aEcLBQj5rGEo8Csc=
+X-Received: by 2002:a25:ab11:0:b0:b6b:79a2:8cff with SMTP id
+ u17-20020a25ab11000000b00b6b79a28cffmr290575ybi.9.1679342324028; Mon, 20 Mar
+ 2023 12:58:44 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH 3/4] net: dsa: b53: mmap: allow passing a chip ID
-Content-Language: en-US
-To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
-        andrew@lunn.ch, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+References: <20230320182813.963508-1-noltari@gmail.com> <95e106fd-d1ce-b9d4-a4f7-03fb69bd4aaa@gmail.com>
+In-Reply-To: <95e106fd-d1ce-b9d4-a4f7-03fb69bd4aaa@gmail.com>
+From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Date:   Mon, 20 Mar 2023 20:58:32 +0100
+Message-ID: <CAKR-sGcxa06mJbcN4jRyVEO6sGQpvCA6BHjBmzu4fehSpFrfwQ@mail.gmail.com>
+Subject: Re: [RFC PATCH] drivers: net: dsa: b53: mmap: add phy ops
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     jonas.gorski@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20230320155024.164523-1-noltari@gmail.com>
- <20230320155024.164523-4-noltari@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230320155024.164523-4-noltari@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -78,50 +70,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/20/23 08:50, Álvaro Fernández Rojas wrote:
-> BCM63268 SoCs require a special handling for their RGMIIs, so we should be
-> able to identify them as a special BCM63xx switch.
-> 
-> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-> ---
->   drivers/net/dsa/b53/b53_mmap.c | 32 +++++++++++++++++++++++---------
->   drivers/net/dsa/b53/b53_priv.h |  9 ++++++++-
->   2 files changed, 31 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
-> index 464c77e10f60..706df04b6cee 100644
-> --- a/drivers/net/dsa/b53/b53_mmap.c
-> +++ b/drivers/net/dsa/b53/b53_mmap.c
-> @@ -248,7 +248,7 @@ static int b53_mmap_probe_of(struct platform_device *pdev,
->   		return -ENOMEM;
->   
->   	pdata->regs = mem;
-> -	pdata->chip_id = BCM63XX_DEVICE_ID;
-> +	pdata->chip_id = (u32)device_get_match_data(dev);
->   	pdata->big_endian = of_property_read_bool(np, "big-endian");
->   
->   	of_ports = of_get_child_by_name(np, "ports");
-> @@ -330,14 +330,28 @@ static void b53_mmap_shutdown(struct platform_device *pdev)
->   }
->   
->   static const struct of_device_id b53_mmap_of_table[] = {
-> -	{ .compatible = "brcm,bcm3384-switch" },
-> -	{ .compatible = "brcm,bcm6318-switch" },
-> -	{ .compatible = "brcm,bcm6328-switch" },
-> -	{ .compatible = "brcm,bcm6362-switch" },
-> -	{ .compatible = "brcm,bcm6368-switch" },
-> -	{ .compatible = "brcm,bcm63268-switch" },
-> -	{ .compatible = "brcm,bcm63xx-switch" },
-> -	{ /* sentinel */ },
-> +	{
-> +		.compatible = "brcm,bcm3384-switch",
-> +		.data = (void *)BCM63XX_DEVICE_ID,
-> +	}, {
-> +		.compatible = "brcm,bcm6318-switch",
-> +		.data = (void *)BCM63XX_DEVICE_ID,
+El lun, 20 mar 2023 a las 20:06, Florian Fainelli
+(<f.fainelli@gmail.com>) escribi=C3=B3:
+>
+> On 3/20/23 11:28, =C3=81lvaro Fern=C3=A1ndez Rojas wrote:
+> > Currently, B53 MMAP BCM63xx devices with an external switch hang when
+> > performing PHY read and write operations due to invalid registers acces=
+s.
+> > This adds support for PHY ops by using the internal bus from mdio-mux-b=
+cm6368
+> > when probed by device tree and also falls back to direct MDIO registers=
+ if not.
+> >
+> > This is an alternative to:
+> > - https://patchwork.kernel.org/project/netdevbpf/cover/20230317113427.3=
+02162-1-noltari@gmail.com/
+> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
+02162-2-noltari@gmail.com/
+> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
+02162-3-noltari@gmail.com/
+> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
+02162-4-noltari@gmail.com/
+> > As discussed, it was an ABI break and not the correct way of fixing the=
+ issue.
+>
+> Looks good for the most part, just a few questions below.
+>
+> >
+> > Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
+> > ---
+> >   drivers/net/dsa/b53/b53_mmap.c    | 86 ++++++++++++++++++++++++++++++=
++
+> >   include/linux/platform_data/b53.h |  1 +
+> >   2 files changed, 87 insertions(+)
+> >
+> > diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_m=
+map.c
+> > index 706df04b6cee..7deca1c557c5 100644
+> > --- a/drivers/net/dsa/b53/b53_mmap.c
+> > +++ b/drivers/net/dsa/b53/b53_mmap.c
+> > @@ -19,14 +19,25 @@
+> >   #include <linux/bits.h>
+> >   #include <linux/kernel.h>
+> >   #include <linux/module.h>
+> > +#include <linux/of_mdio.h>
+> >   #include <linux/io.h>
+> >   #include <linux/platform_device.h>
+> >   #include <linux/platform_data/b53.h>
+> >
+> >   #include "b53_priv.h"
+> >
+> > +#define REG_MDIOC            0xb0
+> > +#define  REG_MDIOC_EXT_MASK  BIT(16)
+> > +#define  REG_MDIOC_REG_SHIFT 20
+> > +#define  REG_MDIOC_PHYID_SHIFT       25
+> > +#define  REG_MDIOC_RD_MASK   BIT(30)
+> > +#define  REG_MDIOC_WR_MASK   BIT(31)
+>
+> For some reason, there was no bit introduced to tell us when a
+> transaction has finished, so we have to poll after a certain delay has
+> elapsed...
 
-You will want to also pass BCM63268_DEVICE_ID here, see my comment in 
-patch 4.
--- 
-Florian
+Yeah... :(
 
+>
+> > +
+> > +#define REG_MDIOD            0xb4
+> > +
+> >   struct b53_mmap_priv {
+> >       void __iomem *regs;
+> > +     struct mii_bus *bus;
+> >   };
+> >
+> >   static int b53_mmap_read8(struct b53_device *dev, u8 page, u8 reg, u8=
+ *val)
+> > @@ -216,6 +227,69 @@ static int b53_mmap_write64(struct b53_device *dev=
+, u8 page, u8 reg,
+> >       return 0;
+> >   }
+> >
+> > +static inline void b53_mmap_mdio_read(struct b53_device *dev, int phy_=
+id,
+> > +                                   int loc, u16 *val)
+> > +{
+> > +     uint32_t reg;
+> > +
+> > +     b53_mmap_write32(dev, 0, REG_MDIOC, 0);
+> > +
+> > +     reg =3D REG_MDIOC_RD_MASK |
+> > +           (phy_id << REG_MDIOC_PHYID_SHIFT) |
+> > +           (loc << REG_MDIOC_REG_SHIFT);
+> > +
+> > +     b53_mmap_write32(dev, 0, REG_MDIOC, reg);
+> > +     udelay(50);
+> > +     b53_mmap_read16(dev, 0, REG_MDIOD, val);
+> > +}
+> > +
+> > +static inline int b53_mmap_mdio_write(struct b53_device *dev, int phy_=
+id,
+> > +                                   int loc, u16 val)
+> > +{
+> > +     uint32_t reg;
+> > +
+> > +     b53_mmap_write32(dev, 0, REG_MDIOC, 0);
+> > +
+> > +     reg =3D REG_MDIOC_WR_MASK |
+> > +           (phy_id << REG_MDIOC_PHYID_SHIFT) |
+> > +           (loc << REG_MDIOC_REG_SHIFT) |
+> > +           val;
+> > +
+> > +     b53_mmap_write32(dev, 0, REG_MDIOC, reg);
+> > +     udelay(50);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int b53_mmap_phy_read16(struct b53_device *dev, int addr, int r=
+eg,
+> > +                            u16 *value)
+> > +{
+> > +     struct b53_mmap_priv *priv =3D dev->priv;
+> > +     struct mii_bus *bus =3D priv->bus;
+> > +
+> > +     if (bus)
+> > +             *value =3D mdiobus_read_nested(bus, addr, reg);
+>
+> Since you make the 'mii-bus' property and 'priv->bus' necessary
+> prerequisites for the driver to finish probing successfully, when shall
+> we not have valid priv->bus reference to work with? Do we end-up taking
+> the other path at all?
+
+Yes, but only if the driver is probed from platform data and not from
+device tree.
+
+> --
+> Florian
+>
+
+--
+=C3=81lvaro.
