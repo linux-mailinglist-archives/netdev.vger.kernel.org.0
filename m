@@ -2,82 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6A196C110F
-	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:45:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FCB96C112C
+	for <lists+netdev@lfdr.de>; Mon, 20 Mar 2023 12:51:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230435AbjCTLpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 07:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
+        id S230435AbjCTLvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 07:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230336AbjCTLpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:45:14 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCF8158AC;
-        Mon, 20 Mar 2023 04:45:13 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id le6so12081717plb.12;
-        Mon, 20 Mar 2023 04:45:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679312713;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=2EdCdWaxl6aSDm2/QNnErzsl1SoS7RrMeG7Y44iKUtc=;
-        b=C8obbCNO7LejGk5rUhOzu1LitH8G2CvYqXpW3dW3Oedqzodtr0rk41gi7CdYDAge5j
-         oVRhkfHNTWVF07feFWtcK4fjvG1Cw8xPjJ/yb+jwE9eQmxViwPZfCvWGAuSHWMEnGQyh
-         w2nkV8EndlS0GjJNT/xy16JZhB9KQE9tqA8EwY5UajOpBYbi8M6u3UCtR9BTu8sQR030
-         v48qDfGg0zjHpIl1yLuMfT44LUxd8c/BOvTMkR7myfFgdhFt1oll9MAwbyP8j1s9Wv2+
-         +ta6yfTTS9m0S57Yxsl5jpMXMUs+tzI3oQdq/xwBLpeDdbYvBcVY6KwZnC1nE9NrOi6m
-         3rew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679312713;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2EdCdWaxl6aSDm2/QNnErzsl1SoS7RrMeG7Y44iKUtc=;
-        b=U5XZxMI7NBnxk71R/2tX0UD8i8gfy7AS6csbFws6qsBHZaEGhvZaJQE4E1PTtSyqRW
-         YbEklYEIV51QwZ22dUxF5YTzTSznaweG9fsw5T2izTJ16qQl/ZvcWKh8sNBLj48Ux3Jt
-         uC0E7QS9iOl1t1kDykh0kBRlFEAcAYkwbxb1D5MFRC/L12lV2r2GYY4kbitehpLU8TwJ
-         QKDRQPwiOvSGVyiNq/c7Gr/AHg1sYbb7Vm6WADckUcbFPACqk6xOvGn1yw3PHq1UQoWA
-         MKqBdM/3toyPh8K9isalpfZOcYs3vbwuHqPvIfg6bpwxVQDRndLKJprzWIDPpTOPU4JQ
-         suDQ==
-X-Gm-Message-State: AO0yUKVhieuCSH4hli+KnDKFIlC805WJ6/fPV5AVB+m8ZZmf7RsXpEqU
-        DXk315g9bBb3dTfCEP9ApMoEV7z7kHEJwxYfHJwAhPDwLvuqBw==
-X-Google-Smtp-Source: AK7set9lsKgECwAaF4Mi4ekuWPRLfs3oBAOMq5N51WI+PAYsScCs3n44HDIOR65QZyUd8NRcpIYl4X0qyGp2Zd9869A=
-X-Received: by 2002:a17:90a:e38b:b0:23d:33e5:33ec with SMTP id
- b11-20020a17090ae38b00b0023d33e533ecmr4781688pjz.1.1679312712605; Mon, 20 Mar
- 2023 04:45:12 -0700 (PDT)
+        with ESMTP id S230161AbjCTLvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 07:51:17 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC2822A0C;
+        Mon, 20 Mar 2023 04:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=FJlpzoab4V3efnlveAXiGT/zYLEMCWClUmJ6USJrBks=; b=AiKk+CCZoeqXtUVeGGfPur16pS
+        VSw4ZbhBH36KlOgOzt6yxe8vkKyKrb3JRVRYM3K7W7jUcpG6jUrZAD6XjU1s5cXWf8qdmmweIOrEX
+        4zsvoFNsfWS7Kn7bHT+tgPQGfs62L986/dysqTbFUqLp1tiQ0BMDT0me6PSnH2X6f0PGd5LlRWL1x
+        8W65vRPnUBVM4AkrdssyepeWUTPibNim5IsJ28PhPhCbu335wIwVz+uI+vXt0Yoae113Ako6kLOsN
+        D2zo+yywBl0lcaARXFeZVbxt1tVonUx04QtkvulXiIm5FCje0hio2RtpZMDSUHqaQkAXKQ6IK5BAX
+        VdrVTltw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42226)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1peE2j-0007J6-6o; Mon, 20 Mar 2023 11:51:13 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1peE2f-0006UV-0m; Mon, 20 Mar 2023 11:51:09 +0000
+Date:   Mon, 20 Mar 2023 11:51:08 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH net-next v14 8/9] net: ethernet: mtk_eth_soc: switch to
+ external PCS driver
+Message-ID: <ZBhIrFlOG/B5rfDB@shell.armlinux.org.uk>
+References: <cover.1679230025.git.daniel@makrotopia.org>
+ <3979b99300067c595a4406dbb0dec3ca9ba14952.1679230025.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-From:   Ujjal Roy <royujjal@gmail.com>
-Date:   Mon, 20 Mar 2023 17:15:00 +0530
-Message-ID: <CAE2MWkm=zvkF_Ge1MH7vn+dmMboNt+pOEEVSgSeNNPRY5VmroA@mail.gmail.com>
-Subject: Multicast: handling of STA disconnect
-To:     roopa@nvidia.com, razor@blackwall.org, nikolay@nvidia.com
-Cc:     netdev@vger.kernel.org, Kernel <linux-kernel@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3979b99300067c595a4406dbb0dec3ca9ba14952.1679230025.git.daniel@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
+On Sun, Mar 19, 2023 at 12:58:02PM +0000, Daniel Golle wrote:
+> Now that we got a PCS driver, use it and remove the now redundant
+> PCS code and it's header macros from the Ethernet driver.
+> 
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 
-I have some query on multicast. When streams running on an STA and STA
-disconnected due to some reason. So, until the MDB is timed out the
-stream will be forwarded to the port and in turn to the driver and
-dropps there as no such STA.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-So, is the multicast_eht handling this scenario to take any action
-immediately? If not, can we do this to take quick action to reduce
-overhead of memory and driver?
+Thanks!
 
-I have an idea on this. Can we mark this port group (MDB entry) as
-INACTIVE from the WiFi disconnect event and skip forwarding the stream
-to this port in br_multicast_flood by applying the check? I can share
-the patch on this.
-
-Thanks,
-UjjaL Roy
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
