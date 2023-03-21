@@ -2,114 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5CF76C3785
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 17:59:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36FA76C3787
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 17:59:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbjCUQ7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 12:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
+        id S230176AbjCUQ7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 12:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbjCUQ65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 12:58:57 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A0E29E2D
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QMQAHEdXtPGdD8ReCxGqpglaylXFVcfOIh8ovrgV3dQ=; b=LqYvwAcOCld+GcGHZnmceFhN6x
-        UFvEw0ZdlOaldG1cnzvXRToFbrqM0ZyXfUd5uJeFOB1M1DJGs5wLyKLAxomr5Zpao+6BDjVrz/gqL
-        g3Us2uyi8wEgEjKU2gCtH67Kr0T8EY8LT7N/LTZBabnSFFrNh5uGdsNqi02qhV2tnGMXv1bCAKipQ
-        rggH/CdttrUp6xZPF0Ptroswt4WR8eAM8eHi8FLlt5MXYEJkCCwQRW2qbQfZTrXmaqj1OPIM5U/Lq
-        jpMaeWU8hxlEeLuEbNnuoCH8irq3qHfzcOSlM50BB6CcHw58pCyvEz3oUPsmo8CMvBupQ0XJMRlEI
-        Y1GTcDkw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:55156 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1pefK0-0001aT-Dt; Tue, 21 Mar 2023 16:58:52 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1pefJz-00Dn4V-Oc; Tue, 21 Mar 2023 16:58:51 +0000
-In-Reply-To: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
-References: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 2/2] net: sfp: add quirk for 2.5G copper SFP
+        with ESMTP id S229782AbjCUQ7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 12:59:40 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746482822B;
+        Tue, 21 Mar 2023 09:59:26 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id s12so18636560qtq.11;
+        Tue, 21 Mar 2023 09:59:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679417965;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=I06jlVpuoS7hc1UUHlUuFgOX+xLS2i4QEhtCoSjNuGU=;
+        b=PaEkV8snYe0mqpd6Mdw7rkKGqLTcCaUFkXrnLEdzvEPkLs6ynf3N/Rv5IHHi/sFof6
+         r36WO1vhjv7JrQrqSxgB3oF1fAVfO6YQ0ARgeDVvgd7ZOpX9MV+8YdZBl+BQXnqKhpP1
+         gKLTp6eXB5/yLjvA1f8go0Rh/peVXrVIquD+3BrEIwifnYc+zimt+kabWDiGqGiQfG9T
+         w5YZJTbjQPJ/aal7qZFLqcZMo26MJ2yct4tb8BtG+TCdjDvTGqAJ+tDKJLipooifJ+Zl
+         HAIcPqmmNS9BvEUjuu5JgDMp8BlAckZkcZ7OBFJVIC9OTACodiC1MVIsos5/sG6dDce8
+         lIMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679417965;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=I06jlVpuoS7hc1UUHlUuFgOX+xLS2i4QEhtCoSjNuGU=;
+        b=Qfvv0MutiFuFgTuykMk5eJAPJdia5kHq9mHxggUPRvN91l1A2FZpUZM2sXQ5BBJHxP
+         d4ZDZL6obYcQyi2hBcj37YoXTvh/A+lrXCFRi7hqIeFW6n+8R59Oguwa8YWzYvg0Dycz
+         XWgplWa+wLBxHwC1AFCY04f9A9QrOkj+9UTnoAuMKjduCCh7/GPPsRLUEYJZO5phDmqK
+         6c71dEqX+j9DmMk02JcYQtfBS/9EF66Ey+yMq7Ta0mh+icf5Oyh7iGtivrpjJKdzkPiu
+         PmDh376mFolNV+/sm2hiyFX6aVuotrVdC4i39pyE5cULUj3jhAR6JCCm1l9Zne3jEC9W
+         ezMQ==
+X-Gm-Message-State: AO0yUKXbPpyEwtejEQexTOaHBtQ4SsXMfVTG9lOgfvIAakRDnCXYbOaA
+        x809AhQne6rirfkePje03g0=
+X-Google-Smtp-Source: AK7set+Nzp2zR/Mi25MRlxx3AJVgTI4FLqPCsMLSPn79OKDkCWjRNuHKvG9+PCujNwNo3W+km9D99Q==
+X-Received: by 2002:a05:622a:e:b0:3bf:d71e:5af4 with SMTP id x14-20020a05622a000e00b003bfd71e5af4mr980852qtw.26.1679417965607;
+        Tue, 21 Mar 2023 09:59:25 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y5-20020ac85245000000b003de68caf5b7sm5783159qtn.35.2023.03.21.09.59.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Mar 2023 09:59:24 -0700 (PDT)
+Message-ID: <355dc00f-8ccf-ef75-c511-3864b4f6c448@gmail.com>
+Date:   Tue, 21 Mar 2023 09:59:17 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 21 Mar 2023 16:58:51 +0000
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net v2 1/2] smsc911x: only update stats when interface is
+ up
+Content-Language: en-US
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        netdev@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+References: <20230320092041.1656-1-wsa+renesas@sang-engineering.com>
+ <20230320092041.1656-2-wsa+renesas@sang-engineering.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230320092041.1656-2-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a quirk for a copper SFP that identifies itself as "OEM"
-"SFP-2.5G-T". This module's PHY is inaccessible, and can only run
-at 2500base-X with the host without negotiation. Add a quirk to
-enable the 2500base-X interface mode with 2500base-T support, and
-disable autonegotiation.
+On 3/20/23 02:20, Wolfram Sang wrote:
+> Otherwise the clocks are not enabled and reading registers will BUG.
+> 
+> Fixes: 1e30b8d755b8 ("net: smsc911x: Make Runtime PM handling more fine-grained")
+> Suggested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 39e3095796d0..9c1fa0b1737f 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -360,6 +360,23 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
- 	__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
- }
- 
-+static void sfp_quirk_disable_autoneg(const struct sfp_eeprom_id *id,
-+				      unsigned long *modes,
-+				      unsigned long *interfaces)
-+{
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, modes);
-+}
-+
-+static void sfp_quirk_oem_2_5g(const struct sfp_eeprom_id *id,
-+			       unsigned long *modes,
-+			       unsigned long *interfaces)
-+{
-+	/* Copper 2.5G SFP */
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, modes);
-+	__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
-+	sfp_quirk_disable_autoneg(id, modes, interfaces);
-+}
-+
- static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
- 				      unsigned long *modes,
- 				      unsigned long *interfaces)
-@@ -401,6 +418,7 @@ static const struct sfp_quirk sfp_quirks[] = {
- 	SFP_QUIRK_M("UBNT", "UF-INSTANT", sfp_quirk_ubnt_uf_instant),
- 
- 	SFP_QUIRK_F("OEM", "SFP-10G-T", sfp_fixup_rollball_cc),
-+	SFP_QUIRK_M("OEM", "SFP-2.5G-T", sfp_quirk_oem_2_5g),
- 	SFP_QUIRK_F("OEM", "RTSFP-10", sfp_fixup_rollball_cc),
- 	SFP_QUIRK_F("OEM", "RTSFP-10G", sfp_fixup_rollball_cc),
- 	SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.30.2
+Florian
 
