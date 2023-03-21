@@ -2,144 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD346C30E2
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:51:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C69236C30E7
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:53:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbjCULvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 07:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        id S230492AbjCULxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 07:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbjCULvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:51:43 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2118.outbound.protection.outlook.com [40.107.93.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370DF1B2CE;
-        Tue, 21 Mar 2023 04:51:28 -0700 (PDT)
+        with ESMTP id S230341AbjCULxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:53:12 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2054.outbound.protection.outlook.com [40.107.95.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F248910AAD
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:53:08 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d9XMd9HgrRFHDaEcQfmU+tpxb/bt2tl4xkA7IR4hMWZ/5qRZKz0ujxDYYE1mYEVcGt3Z4odU9iqG4gr4rmKtkEsELJO925s44Rcbhb9SlNeXHP51R/s8TSH6ohg0t5KSDqOmWyLQvB6MqOSUtsBbxNy53lR5b0Kj63HgFXidZxj2o1APeTp6pRdxvJiI08KrJV600rqNnL+FCEZi8q6IcWHGprvzgnKc5IveLdYn+ie3MZvfvXNVTH24Lpe+XQcU9bpRmPCMvcE3pKwYYmnPkd4Lkz/6jaPLtgLDIMikx2t1SJx5zopiWeIjMbHQb69uA71WX3FowsrnsdCqoSw7wA==
+ b=E6dunNIGLuFEsojcG8C9SpnRZ9A3ctlI6U5HzdVXz0vWs4o2p/g7ZSddHYh74+FS9mIvdoZhKhh2Zsf4yG5e1vEzCl0elpSi/9gOnkI+CUa3t0OTA2ptq866MrhFEfx6g3qucF1Gk60ojTmduwf0ZbRG2VPLcO64xGxQgaMDUxtG4o6Pkghjq266rNJ9MXqIC9SO9XQzoMagv9x/4u1+fXeSzFg7u7hHi5DqRXZyIKxKficd+e21blfhwN/FCVck1sYioWhNOw6LofEs5m3T97PohriDF4qI4d0Umtv+ZHiwQ1vKvslgE0FCH5jZNQVKR/m1rMg426TzeW79g+9quQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5L3DAzC7uTcAynBCUfX2Qfclg47irXt0treJ3B6wbPI=;
- b=Yua893LkKcNo3WkgOnyZLhIxEiKuQlcB42FknQkPPmRZrUfAWqvexGsnktVoRg0o/jZy5KEub9b3vrxT9F3BeLOEFhQVIy7Ib6J5VS/RbjrVP/gQhZ6+LSl+MYCfcmM0pPyRoTMnLXHT7q7CJeCXID7FpmrwmN7N/9/taFo+67mVGVVX5lVaDKggOE348jwqFV/vEkmWXj5zuul1UEl8nlTEVmEpYfegOfCvg+aQ7A6h3QwWpVL+j1PxC76ibNFNzoegnsL4d3lEDyzIsHvZGU9rjzr5msBv9l8EV+N5UwMG+zpFWcczbmBYJ2PXUbG+QSXUKedmcHgSFe1hCt8x3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ bh=IjSmCf5p1ojbdlYmCt6uCkqWhzlb8GqNif4nJ7kSfWs=;
+ b=S9aJEpeMXxfuE5VL2fa8I1EkT7sGuxJr9rZPsRa9Trppn/lMO1RbuXIl+eKBDx8v76gGDz2AW3EO18WRQnJfY+SYWd3nih7o7IPqUeqZMFiTyH8Z8h05dcPP4TcarDtmDsGoS3AMmlf99g5gnQ7oVT0Q+fdBjCfu8USEtWGZzmCPnxuXNkGKiWORcAxbs0Cw0P6sRPjevbAveQVs+zLWoTIYz8GlGNpoqKHeffpOeBSOcc8n1nKaY6SCQyLh4IStrvOmyjHCjVWRgRwuWk2EVq6ljsA8s1A6M50a/lDwJoevUnNXZfDxo1uNX8zufywZvaziDmIZWucxrmhkRVc4Tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5L3DAzC7uTcAynBCUfX2Qfclg47irXt0treJ3B6wbPI=;
- b=DtYf1ymwbOMMsiiVhdwVjtigFMxDuUuQQPtr4//CbwnLrAjTg0gQvoRdN7dfRMfTRrV138ppmELw3VKFOLZh6ekKqyqD6JAYlJOqitODESouZ1UH4SaCi47ZnhwAjxTHUn0ycrxAumgGubij4kfAp+FdetNMam+qA50bC4VOOQg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL3PR13MB5075.namprd13.prod.outlook.com (2603:10b6:208:33e::6) with
+ bh=IjSmCf5p1ojbdlYmCt6uCkqWhzlb8GqNif4nJ7kSfWs=;
+ b=dBlGyJhM2DTDctiZFj+Vr11XHS9QfxbxDdGLL66sn/+YC0xm1RCB0/6ls2QfJo5fnUxW6fTFkPyvVY6ViqKMIWEIq4xNaFpNoYFNM67YEW7OCmTx7RBL9jcjx1QTh+liCHXrGShWCM7Na02jrAFz386QD8fpUTVTVvATQKKJRJogRRyyC6TaCUuQFKTl8fvz34Lgfke6QOpmNux3kO9D8zHQQsl7FHff+a40WEHPNNxxfi742fsM4s+TBWHyKOLHdP/gY7RYOfe6Wr8t7oEomMdI2gip95zcodeX8Iqg+01HbeWbi0mMxlm+7CHNXIViBRyVLvtJWmOjhLl4IpISCA==
+Received: from MW3PR06CA0020.namprd06.prod.outlook.com (2603:10b6:303:2a::25)
+ by CY8PR12MB7659.namprd12.prod.outlook.com (2603:10b6:930:9f::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
- 2023 11:51:25 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 11:51:24 +0000
-Date:   Tue, 21 Mar 2023 12:51:16 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sungwoo Kim <iam@sung-woo.kim>
-Cc:     wuruoyu@me.com, benquike@gmail.com, daveti@purdue.edu,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+ 2023 11:53:06 +0000
+Received: from CO1NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:2a:cafe::1a) by MW3PR06CA0020.outlook.office365.com
+ (2603:10b6:303:2a::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
+ Transport; Tue, 21 Mar 2023 11:53:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1NAM11FT044.mail.protection.outlook.com (10.13.175.188) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6222.16 via Frontend Transport; Tue, 21 Mar 2023 11:53:05 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 21 Mar 2023
+ 04:52:53 -0700
+Received: from localhost.localdomain (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 21 Mar
+ 2023 04:52:50 -0700
+From:   Petr Machata <petrm@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Bluetooth: HCI: Fix global-out-of-bounds
-Message-ID: <ZBmaNIij3IRXRwaT@corigine.com>
-References: <20230321015018.1759683-1-iam@sung-woo.kim>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230321015018.1759683-1-iam@sung-woo.kim>
-X-ClientProxiedBy: AS4P192CA0011.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:5da::8) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     David Ahern <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "Ido Schimmel" <idosch@nvidia.com>,
+        Jacques de Laval <Jacques.De.Laval@westermo.com>,
+        Petr Machata <petrm@nvidia.com>
+Subject: [PATCH net-next 0/3] net: Allow changing IPv4 address protocol
+Date:   Tue, 21 Mar 2023 12:51:58 +0100
+Message-ID: <cover.1679399108.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5075:EE_
-X-MS-Office365-Filtering-Correlation-Id: c45d5a5a-1d1d-4f96-4521-08db2a0298c5
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT044:EE_|CY8PR12MB7659:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e02950d-5d52-44bc-ba33-08db2a02d54c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5+EXyYcAjqK4xTumpRm+XTxWbdpM+Ti+xzFl3tqsF3c+0hLOjUafB/BgtQROTZPG+09m7L7rPu1NptsISRmP5nkZIhBfqLAOOG4obDb8JHkgcmJiPiCQrV2q0kxdl1kKuQ7/wC7YtO6zSazVUlwNRfT76p9O3r0ngizhMe28zuTfQoyqWUiJ813mGxFiBf03anFQ7LMBN3ya2pyIQQS0PCW4vRY4kDQWQtoSBbuyDR6GevwBEZmzYwcc+60bmyKvn5luAFWP7g6koTUB2b5LQNzB5wQ4cK7lGbzGDtEZRMz8Zi+TtJlyQwlzMuvoW2Q4Q/rzMnpo5i3SVESxGxchxO0vqO5a38fRjs/9s7hcvtgO2SGgOmxW8adVJZA4JHxRpA08lFY67p0kEI/dBCu2ThFwApGj1Q/UF5oJPIlcvGUPL3QBN5zAdYYBUI1RePMZp4mUqemNPWfGzgn3WZlughTq7UHljt2WId5uI0MKTYGMXEHrb2fyDYF8AlBEqkGwcCSIclK/+751vJq2fU/k1BKsrCKXc1h0VJzRPhVD0ezXJmxiciaKX/EgH5+A8MHteg6DU7RxTdk+K9tNmyMtgXvFsZi+281UvEZDCF1HZWK8CABmUQ+txz8NJTyYJMUpax+AYdB0Yi1iKCqSyoFynw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39840400004)(136003)(396003)(376002)(366004)(451199018)(4744005)(8936002)(5660300002)(7416002)(2906002)(86362001)(6486002)(83380400001)(36756003)(6512007)(6506007)(2616005)(186003)(6666004)(44832011)(66476007)(8676002)(4326008)(6916009)(316002)(41300700001)(66556008)(38100700002)(66946007)(478600001)(54906003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nZse2Cug09xZUAnVCSwRc7MIeyFCK2JOoJtZZoduGsD83oHBQh6DlkzzRfA+?=
- =?us-ascii?Q?gCjRPLpma3C2yWgcRTRvM0lBqUzayGHWnQ+IRQje1CI0OzSAOdLob4h6E3RH?=
- =?us-ascii?Q?vgrMSUJtN6Vi98GMn32TeEsGBBNLs353bWMQQ7Vhy+9nCxQt8MzP/D9MQMHy?=
- =?us-ascii?Q?FuRZ7+muic8iJdWiWd3LzSzll11IqUtTCQWtOwavb+jXTWzN/2ERqwR9EgJ0?=
- =?us-ascii?Q?UdswnW3Fr/fEyT+NC/VHlXktI0/qy4fEnCtl6rZASYwcuhgRbcwD6qtT9GVj?=
- =?us-ascii?Q?JGnewuunildIcO5zNCZ88/hc0pnp+UN9J1E+OZ8V9J98s9on/L2MNvWh/8p+?=
- =?us-ascii?Q?e0LB4wVPPhli/z0WHmfbMMSSdhAJS64PztKURy5lopeNTRxVj3O20hSUOaAo?=
- =?us-ascii?Q?kgzd38k9xnrtBWGPjG8KvIXCwZgrNx8xj6n5rQiBUrHrtkBtuFbnLiqvPUlT?=
- =?us-ascii?Q?ZH99G6wqHnsfBVqGwEoWwk16DzaCrqh5KgSi9Afr1m24yUiZDLt+JIH7sw3U?=
- =?us-ascii?Q?19QKPiP/nxqJdgWZhwDrm2sgkGJTsz7oqweDAyJ9QDRvxDQ8XrrMd9+HnGke?=
- =?us-ascii?Q?9HfJmMSugJQflf81dEPcZn7QsrbW9/3nCyeWrZ/0EBwZerEHF9CIJNLDC8Qv?=
- =?us-ascii?Q?pswOiEXr8Ue4t/DIKY1DRWINBmUpSiKcQ4u5867FY4/j2zQ3mVcphKNZOZUd?=
- =?us-ascii?Q?SYXD+tHUZ4RzKij64Xwl/GW9vknnmgYHd2qAHeLZTl6XrWiESkfQN12Wl4zd?=
- =?us-ascii?Q?9jmzECDKw/3a0i5O4XzIuuzEB9fmIpnNKv5d2iCPakDgjVkt86zpZw9xGU8g?=
- =?us-ascii?Q?mLJg/0hDTSWEbfuhPNeD4qmhWSc4XB3D3y2Ih/Dve2ZcvsKycw8zzAbGgRrs?=
- =?us-ascii?Q?gFLRkpItdKuIwbDb7kzEzXBMdUN9GEAQTlNW3XNsAzK/O/MIbCIj0UB7log1?=
- =?us-ascii?Q?1FgkujFfelPnQ8xlv/5u1OVB2uOFZ5lgz30RGGCXWPrtgXwGXQSs6q+2v+s3?=
- =?us-ascii?Q?ULIc+oO/IGIf+MURNPu+0m3eL/MUKPh6XVr8lESd9WvqFJttK8XSWWHVGZV+?=
- =?us-ascii?Q?vyqVgvix9UKi/p2oHiOiggmgWw2JBS4xUWnqGfu2IIVs1dXqusoSQl/iMRFT?=
- =?us-ascii?Q?juIurXq9kYB+yl5ok7Ib2EpS6zKkwdoZAZbV56aQ0Q2u+6Y4x1sWasyzlxBC?=
- =?us-ascii?Q?Ldkb7ceJL5czbtEMlU++n38/9z6RX/tsoWIZC1E87IrqAnv+Ch6lEtgVk95V?=
- =?us-ascii?Q?LWjLuV6bGFmHkIIk0rUQ4UJ2HN+YgSKbTkLSjOvd78cH5CTlf8dDO2JAt9Kh?=
- =?us-ascii?Q?t2wVJZfC2TIGmQwHm/O9Q/Q81vX0d23/4SQDAWo0+osJHPu3STBAGzZnuCHQ?=
- =?us-ascii?Q?rY+DrriFrWAmpMk4lwQIQ8ES2tuHgedgYciXfF7os6uOrIIxqJ6wnTDUMUbe?=
- =?us-ascii?Q?NAN+00D/Y7+stYLuh3Ds1ahnusT/IUGVGYfouXvvmbA36OP/XQ3RxdNxNIvL?=
- =?us-ascii?Q?+pA/jrfuVrhY50xRS9wQ/SBO8SaopzU4jO5jrS4B+LWEK5iJoCh38GAg/hOk?=
- =?us-ascii?Q?ll5/n1e0ufa0/ot2UlNBLLtbmuykLsxpR2u1O6BfgePFUEhbSn75CHqcCd/h?=
- =?us-ascii?Q?P2sbsAr1M/r1Jh4pL0bhlcgLTcrMiTFjBv42lAYVU0bnLePRmCEtyzUmFU2F?=
- =?us-ascii?Q?o1C9rw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c45d5a5a-1d1d-4f96-4521-08db2a0298c5
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 11:51:24.8016
+X-Microsoft-Antispam-Message-Info: IY1exSogBrqfCRd+plyCEjZxqXpPimhMO57135xvJgntCpxHKrXT0BJla4SreWM/hjmQn/FoBMiPXaYP6TCnLdU3MLg8QMyRPUYrFHB6vrfQ1exa6pvl2/uesFcq4Mn/N8J3rP5Z5eUpxgPJ2zc3FqwgLG51Rvb4EcrPWVFp/NoMX6FXgTBNZD8Sjco4F8knyqYSrMuUadWiHVbV4JWRgyiSxcFCAothlcE3uPczvF39LF/tnnDAK3kg+Ce2OlXoSJimELTUotWQHNFTggtOzpIEFtCCyxPEtFWgx5hFCMlrOmQBIo14jIqhL9r0Sp0AZiGpct21GZpffYB8NOggsMQQ1SmNmhreGNnJM5P6dW1MAuDh4pYMkQQ3hIxbj1dO3dzoqPAnc81hMiT6/kfkMjbI9D10i1mjsYgfU8TdrA0UaZoijxv2EWD649XtA636GcVBJtNzgBZ9v57vXWsZBCMz15in1IZpiOmwDyh2T2iP8HqRxZXb1uf7sY9faSqbQmDZ0+AmmAWLZncz40AhvlpaxVPS9a/ilDDSz5i01WP4c5V+eh0h9bGPTNtHpWZNB+TUJWGLV8ZX5sZ+0ShJsUGbfMlEvnukOeMfvTFZwanIUFWRnAwszKRcblyTQ2hebKhjVKPkJmzBpi7D5+MrENruQSQARr8+uClyiLefcfJLG0qI/5lt0cyqSA2DFuECN87Sv2GOk3Flt5LGEsmZmx3uXeCKyZWb/12S+wC5qBqzf5gtTzH2ocEdagHc06xt
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(346002)(396003)(136003)(451199018)(36840700001)(40470700004)(46966006)(2616005)(107886003)(16526019)(426003)(4326008)(47076005)(83380400001)(478600001)(336012)(316002)(110136005)(70206006)(70586007)(8676002)(186003)(54906003)(26005)(36860700001)(8936002)(5660300002)(41300700001)(7636003)(82740400003)(40460700003)(36756003)(2906002)(356005)(82310400005)(86362001)(40480700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 11:53:05.8371
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LCKW2FYDBM900juqJU3edj/8ZdvmfNTsTCWFZz9mROxqq0wTDs50+KJl8y6EOKrImcnVmAAh9s6D1b14K6hJrZOqEoJWq33FXOT3ydIRs6s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5075
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e02950d-5d52-44bc-ba33-08db2a02d54c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT044.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7659
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 09:50:18PM -0400, Sungwoo Kim wrote:
-> To loop a variable-length array, hci_init_stage_sync(stage) considers
-> that stage[i] is valid as long as stage[i-1].func is valid.
-> Thus, the last element of stage[].func should be intentionally invalid
-> as hci_init0[], le_init2[], and others did.
-> However, amp_init1[] and amp_init2[] have no invalid element, letting
-> hci_init_stage_sync() keep accessing amp_init1[] over its valid range.
-> This patch fixes this by adding {} in the last of amp_init1[] and
-> amp_init2[].
+IPv4 and IPv6 addresses can be assigned a protocol value that indicates the
+provenance of the IP address. The attribute is modeled after ip route
+protocols, and essentially allows the administrator or userspace stack to
+tag addresses in some way that makes sense to the actor in question.
 
-...
+When IP address protocol field was added in commit 47f0bd503210 ("net: Add
+new protocol attribute to IP addresses"), the semantics included the
+ability to change the protocol for IPv6 addresses, but not for IPv4
+addresses. It seems this was not deliberate, but rather by accident.
 
-> This bug is found by FuzzBT, a modified version of Syzkaller.
-> Other contributors for this bug are Ruoyu Wu and Peng Hui.
-> 
-> Fixes: d0b137062b2d ("Bluetooth: hci_sync: Rework init stages")
-> Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
+One particular use case is tagging the addresses differently depending on
+whether the routing stack should advertise them or not. Without support for
+protocol replacement, this can not be done.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+In this patchset, extend IPv4 to allow changing the protocol defined at an
+address (in patch #1). Then in patches #2 and #3 add selftest coverage for
+ip address protocols.
 
+Currently the kernel simply ignores the new value. Thus allowing the
+replacement changes the observable behavior. However, since IPv6 already
+behaves like this anyway, and since the feature as such is relatively new,
+it seems like the change is safe to make.
 
-...
+An example session with the feature in action:
+
+	bash-5.2# ip address add dev d 192.0.2.1/28 proto 0xab
+	bash-5.2# ip address show dev d
+	4: d: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+	    link/ether 06:29:74:fd:1f:eb brd ff:ff:ff:ff:ff:ff
+	    inet 192.0.2.1/28 scope global proto 0xab d
+	       valid_lft forever preferred_lft forever
+
+	bash-5.2# ip address replace dev d 192.0.2.1/28 proto 0x11
+	bash-5.2# ip address show dev d
+	4: d: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+	    link/ether 06:29:74:fd:1f:eb brd ff:ff:ff:ff:ff:ff
+	    inet 192.0.2.1/28 scope global proto 0x11 d
+	       valid_lft forever preferred_lft forever
+
+Petr Machata (3):
+  net: ipv4: Allow changing IPv4 address protocol
+  selftests: rtnetlink: Make the set of tests to run configurable
+  selftests: rtnetlink: Add an address proto test
+
+ net/ipv4/devinet.c                       |   3 +
+ tools/testing/selftests/net/rtnetlink.sh | 181 +++++++++++++++++------
+ 2 files changed, 142 insertions(+), 42 deletions(-)
+
+-- 
+2.39.0
+
