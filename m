@@ -2,227 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A6E16C3668
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6A76C3664
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:59:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbjCUP7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 11:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
+        id S231326AbjCUP7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 11:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231386AbjCUP7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:59:19 -0400
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2084.outbound.protection.outlook.com [40.107.247.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBBE521FD;
-        Tue, 21 Mar 2023 08:59:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P6VK+wEuST+nfCSTeoOjG02G2ndWzZI4TGTgFfPTiyaE6DE2qW3MHoht+ctyt/XCf8Fm1btnvTELQi9iNtCzJEyGcpAME0/Prb220uBKG0xrVlURklce88/cBVIZ4wBVNTKbdJj7+AgelWfX7g1/huB/7IwB2GYd+tA6hU5rr01lvh1FH8M1bMs7AZqFU0iBx47vlRbWqSo1l6an+oBGXYyz6vl0IkVpQzDNQGVdbsvhf7xJycjTygz/P620+x7fGOFcLLRXQcwvO1OLFti1QoykDrNc8mRL+f2llQxiSW74WT8oPNRTl1SAGG8bKZ5ErXeHy7Pic69oW+0eUnGd1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qw0vIxf1nCFao5Ygn3La51BBTNBP7RDLqOdJg0VK+YQ=;
- b=KkC9QSwtK0Hjchm4MG+sReNED/448TweErL5ltM1T/vcCOfXwBFo5Qtu4QHxQnSewb2qdpT3v+edkbbP9a8eWD3g00BdDB5ww0IqKDq2E/0snNAVBDSRK6Aar8lbDP2ke7Ug6IMdszOJ2nK1WJnAiPsBEUcZlIBaRguHLEQwAi783FtT6y5HEeUBs1Lnu/UIbslX7PQmyIH5ucAQaQTa+h5j7xi6txBu1n+ZWKCmILKOqdldE2Vm7U7BcniwpH17xTuvs1jiM+99mNWGf6sBNlr+tXhvx1IH0NP5/e2vlfKs0AcFIRv29ZhzqAzFAkVMTGN1pZOofCez32+4mh6Dmw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qw0vIxf1nCFao5Ygn3La51BBTNBP7RDLqOdJg0VK+YQ=;
- b=nlIvRLCE8b22SF9ZasOfyxj6dhSUr7/p/JB9u9IG3iGQjG7GhhIvTe47V9nAr63iIOnskqrRNLWzpij7Z4i+SoiYgXf2Cq5C54ZlnOwv8NNL0t3vB1x5TKiT1Pp1jFsjeOmxlMxWjX5e5Kv0FGdqgTAHEQplXux9bEj9FQxDYRM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB9648.eurprd04.prod.outlook.com (2603:10a6:10:30c::10)
- by DB9PR04MB9989.eurprd04.prod.outlook.com (2603:10a6:10:4ec::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.29; Tue, 21 Mar
- 2023 15:59:00 +0000
-Received: from DB9PR04MB9648.eurprd04.prod.outlook.com
- ([fe80::c1c1:4646:4635:547d]) by DB9PR04MB9648.eurprd04.prod.outlook.com
- ([fe80::c1c1:4646:4635:547d%9]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 15:59:00 +0000
-From:   Madhu Koriginja <madhu.koriginja@nxp.com>
-To:     netfilter-devel@vger.kernel.org
-Cc:     netdev@vger.kernel.org, vani.namala@nxp.com,
-        Madhu Koriginja <madhu.koriginja@nxp.com>
-Subject: [PATCH] net : netfilter: Keep conntrack reference until IPsecv6 policy checks are done
-Date:   Tue, 21 Mar 2023 21:28:44 +0530
-Message-Id: <20230321155844.3904344-1-madhu.koriginja@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0230.apcprd06.prod.outlook.com
- (2603:1096:4:ac::14) To DB9PR04MB9648.eurprd04.prod.outlook.com
- (2603:10a6:10:30c::10)
+        with ESMTP id S231390AbjCUP66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:58:58 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866CA521C4
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 08:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qHwoipjztaXM51vKYoUbUcFgYImz3aYNMMiw+Utf4NA=; b=1f1RpSePGbhPTFZMxnDMqDHuAR
+        VwhpC04DbR2HPTr5J0B7AFJ7MiOjCbqrrS2Xc8Q5KHQV5PonYjuMuIxljytqKjWZIQc69FcxCwbRL
+        tc34HBjEMJT+TzD2WSvn6uq7ci2o3SGZvZ9TAHsk29k6eiWS2P6SenbuDXO7Hghj5iJ7jge/IfaTc
+        OT7L1MoI9T2dCzwBI4io6tHOM7qapM2kSIFFDN9wmOvRMN2AQ4FZBb5etk48wnf2G6v71yHC9MSWq
+        Lduo2JFhvLvZwo7/hGo3MXT6mDZMFfGUkBvpaXvpJ/9+uLQc7Ew973wvJs9XHuIRDCXPNle+GGB44
+        Kfr4d/Yg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:58118 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1peeNt-0001U9-Ul; Tue, 21 Mar 2023 15:58:49 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
+        id 1peeNt-00DmhP-8i; Tue, 21 Mar 2023 15:58:49 +0000
+In-Reply-To: <ZBnT6yW9UY1sAsiy@shell.armlinux.org.uk>
+References: <ZBnT6yW9UY1sAsiy@shell.armlinux.org.uk>
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jose Abreu <Jose.Abreu@synopsys.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next 2/3] net: pcs: xpcs: use Autoneg bit rather than
+ an_enabled
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR04MB9648:EE_|DB9PR04MB9989:EE_
-X-MS-Office365-Filtering-Correlation-Id: c293e06e-8ab0-43d3-7539-08db2a252f5b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0XcRryL/WIc2G1YrtF/J49Dagz5YnR511YN416gUgM1qU69sKt66RtrhyxJiMku1rnDk/bVp5lLxm+TVCG1cfbloht0njbLjl16TJ6Tv+ObERd4URD6O7nIWF3Kl2wOmdldFx7+UvEvHgUCbDxaPcPdWRyPQLZ5h5JoVr/57IfdKEY7tBtI34RbhQkVTFd7qTgp0/2kwa2Lz1cfZys9Wxo0arQdNXk1hEFCpZmYRYEiv98A7HJfWUQrkDs+97rA2rVC6zOHM61UIGR0PyOKntaCS9FT/8lsaMmGwIf5kjfto3bY4vxoYLAilzmY02BTP9U2SGRWXjM9jkE2UIglx/9KUZWR2HVGCGOp0+Vjg2ZOUh8MT1SDiHFygPod52PcaAYgks5vgQVek8HYQQPF0uQPOer4tHBTZss7z5rcJeMGvHn8GxJH+InEg8ELB/3j5KsqiPO2fjzW4NChF1TZaYRPn08Romb5l+Ik7q8HSh7FNjO/6LQ0KKgoIaSKSw3LK/XOyC8qxEGr7yqERqVFhcNt6mWHtZfUqXS/j9ttNagnBuzDe13YmI6haOGv9dG4lTCk4hl66cVg8up+dwO0/uOhIF7B7bWbDYfQWa4RVUyaD8QBHw7zoNE86ceB+V/xxTWPoFVC825cdmOXBrrozHD1KMzP9c3Mjk9xsqsYD6mL6ukuGgQcB+duhnpWf+1nBW8+QXu4eE2ikdHQoHyeZ5A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB9648.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(396003)(376002)(136003)(451199018)(66556008)(38350700002)(36756003)(66476007)(66946007)(4326008)(38100700002)(8936002)(86362001)(316002)(6916009)(41300700001)(450100002)(8676002)(83380400001)(2616005)(478600001)(5660300002)(44832011)(6512007)(1076003)(2906002)(6506007)(26005)(6666004)(52116002)(186003)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZhBFb6Fa/BglZWoLJ1gHsOmyOIZfuUaYg4JGl1p6Qpsw6Lhn6dQlV2AaAgMw?=
- =?us-ascii?Q?Q/ky8jvqIHl6kbNhJrGjHwOwuAImxaOg6L5j6xqGfjNdfpJHw3QhN0LBOb6A?=
- =?us-ascii?Q?F+cDfHUENO6WP88N56bC+k36oETz+GQ5/0sa0uD4T1aRHKUI2DitMBBusxGW?=
- =?us-ascii?Q?9ZhsH8y2NjbWp5bxeB0yqGZAWuuG2ULZA+AtkAuvHaIpnM740/ePTUX1JSl7?=
- =?us-ascii?Q?y0Nu6gNiGtOfs73xMCMqOLBPV8g/h592ZzedteSlG7rPgNcFp9eRgN3e1+wg?=
- =?us-ascii?Q?O46Z6xYj9RE774txOYoBiiHZi33xTZxGMeIRXtB42J2J28xNMaJDEFkqMd2Q?=
- =?us-ascii?Q?HuQJw6cjBz+kP6Tul1JMfmRcI6JbPG3gUD/z0ZgT32LxFJPd24vpRCkivTQK?=
- =?us-ascii?Q?XpLl5h9JfYN14xNIS0jPMJvq3GVp+ZuaHRgf5mKr8nzaqzeMCJQiIJzu05Wz?=
- =?us-ascii?Q?1HCcnlgfEdIDvwsf+8pu/IUF1Kcm+lV994WhlfDCSRCULCYKYLAkrWlTwD+0?=
- =?us-ascii?Q?JLQwd4YBt2FiZOb3Pg5nLDwn0GRsfwJqFCe7NOsj31Xp40c5FA2mSIsNujMB?=
- =?us-ascii?Q?4KeGNE97geMzRIGlMFq5kL3jMksSiYj37E1Z5H13VnbLKiyYqubBYCGCaJ61?=
- =?us-ascii?Q?k2XxnghCpOqGuMXQ48pkLOi/izTaChr/mqrvkk1yOeTqZVevJ5mqzXBixFhX?=
- =?us-ascii?Q?fquePyhP2FKgGqpQlnZNrFDDfxD9HIuZhXePl2KFMDhEQhp+2euZ4j7f6p5y?=
- =?us-ascii?Q?yExuqIqlv97P2fSAfd++JsaF7YA7cgl331gPXPhM0r0NJB01HTuYcwWG9tay?=
- =?us-ascii?Q?JYqYszB/Srn8QNaJ7M+7WWQUUhksz356K8jzCyZjmn03QOdUoZZf1Wqiihfq?=
- =?us-ascii?Q?Ejicod3L1VJGiruimoTH2uUUYudCGof90nnw7Au9okK3D+THZuZp/BPp0eIB?=
- =?us-ascii?Q?hq4vaxIUoJ2TgcYEDlVV3dvooeKCNwvUDXPhlxIdBJi+vGYMcnqz3BZHjMUe?=
- =?us-ascii?Q?umH1V9G0luZOv+cWpoqScc0T+RNNR/kXtPT2kYI8pYPcvrHJdZzypXo9d8is?=
- =?us-ascii?Q?8T01psy9JEV2IMI0H/sIxX/gDPlziv+NTZV6wqVht0f0LBBIepPgH7N0cqXg?=
- =?us-ascii?Q?9+XgGdblcQ+/AIKsalcj0hX4cke7t4jnaiH13g/5P6wBqzO47n0PCcSeUC4l?=
- =?us-ascii?Q?m2y7mj2jF+GBMBO6mDIoAYPz1tBPcm4yPxzz/VgRTGed4/g8saI8/ZyXue+I?=
- =?us-ascii?Q?akWBYGzZLtvPQybM3Ntw/J7CBDQT7UpnllMB/34CEBVi55+cw9OVL6E8pS6e?=
- =?us-ascii?Q?Gn1A7AckU3qhAwVsqsVA5Hh5oUNzaUobkFLh5nz+Vyg3hQYfPA08Heo0tFoc?=
- =?us-ascii?Q?11RgOQqLXGzD/XYT6OLBSuyaHhSaWEJonnIfIu9K2LwidnzjS5YszQR/W33P?=
- =?us-ascii?Q?Y4bki8Xix3hnTBq2PUlryBxd08k7oqi3gBlt7L2QOR8iFwK3RTAZe/nY9Q4P?=
- =?us-ascii?Q?5kAon4V0onuhGBirgjEHjzF3ZmpFU5gJuHcd7GAdkOdoRJiMb5beDSG38KTu?=
- =?us-ascii?Q?vsX/CfQYjJIQXVxL48n3YOnESAzI4BaRWTF7QgDNpPsDW2NvXJAFT6Qgst9y?=
- =?us-ascii?Q?Ag=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c293e06e-8ab0-43d3-7539-08db2a252f5b
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB9648.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 15:59:00.1298
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WVRHf9n19djt+7qqxETSjlhqOLvmzQpxDzmeSpviXpBO1dKnqxfi8dKqk/ub7O9ZS5agXIinKw3g9R86U+9UpA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9989
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1peeNt-00DmhP-8i@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Tue, 21 Mar 2023 15:58:49 +0000
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Keep the conntrack reference until policy checks have been performed for
-IPsec V6 NAT support. The reference needs to be dropped before a packet is
-queued to avoid having the conntrack module unloadable.
+The Autoneg bit in the advertising bitmap and state->an_enabled are
+always identical. Thus, we will be removing state->an_enabled.
 
-Signed-off-by: Madhu Koriginja <madhu.koriginja@nxp.com>
+Use the Autoneg bit in the advertising bitmap to indicate whether
+autonegotiation should be used, rather than using the an_enabled
+member which will be going away.
+
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- net/dccp/ipv6.c      |  1 +
- net/ipv6/ip6_input.c | 15 ++++++---------
- net/ipv6/raw.c       |  2 +-
- net/ipv6/tcp_ipv6.c  |  2 ++
- net/ipv6/udp.c       |  2 ++
- 5 files changed, 12 insertions(+), 10 deletions(-)
+ drivers/net/pcs/pcs-xpcs.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index b9d7c3dd1cb3..c0fd8f5f3b94 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -783,6 +783,7 @@ static int dccp_v6_rcv(struct sk_buff *skb)
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index 04a685353041..539cd43eae8d 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -923,6 +923,7 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+ 			      struct phylink_link_state *state,
+ 			      const struct xpcs_compat *compat)
+ {
++	bool an_enabled;
+ 	int ret;
  
- 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
- 		goto discard_and_relse;
-+	nf_reset_ct(skb);
- 
- 	return __sk_receive_skb(sk, skb, 1, dh->dccph_doff * 4,
- 				refcounted) ? -1 : 0;
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index e1ebf5e42ebe..25249cd3b639 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -404,10 +404,6 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
- 			/* Only do this once for first final protocol */
- 			have_final = true;
- 
--			/* Free reference early: we don't need it any more,
--			   and it may hold ip_conntrack module loaded
--			   indefinitely. */
--			nf_reset_ct(skb);
- 
- 			skb_postpull_rcsum(skb, skb_network_header(skb),
- 					   skb_network_header_len(skb));
-@@ -430,12 +426,13 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
- 				goto discard;
- 			}
- 		}
--		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
--		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
--			SKB_DR_SET(reason, XFRM_POLICY);
--			goto discard;
-+		if (!(ipprot->flags & INET6_PROTO_NOPOLICY)) {
-+			if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
-+				SKB_DR_SET(reason, XFRM_POLICY);
-+				goto discard;
-+			}
-+			nf_reset_ct(skb);
- 		}
--
- 		ret = INDIRECT_CALL_2(ipprot->handler, tcp_v6_rcv, udpv6_rcv,
- 				      skb);
- 		if (ret > 0) {
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index bac9ba747bde..b035e049fb65 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -195,7 +195,6 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
- 
- 			/* Not releasing hash table! */
- 			if (clone) {
--				nf_reset_ct(clone);
- 				rawv6_rcv(sk, clone);
- 			}
- 		}
-@@ -391,6 +390,7 @@ int rawv6_rcv(struct sock *sk, struct sk_buff *skb)
- 		kfree_skb_reason(skb, SKB_DROP_REASON_XFRM_POLICY);
- 		return NET_RX_DROP;
+ 	/* Link needs to be read first ... */
+@@ -940,11 +941,13 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+ 		return xpcs_do_config(xpcs, state->interface, MLO_AN_INBAND, NULL);
  	}
-+	nf_reset_ct(skb);
  
- 	if (!rp->checksum)
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 1bf93b61aa06..1e747241c771 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1722,6 +1722,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	if (drop_reason)
- 		goto discard_and_relse;
+-	if (state->an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
++	an_enabled = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++				       state->advertising);
++	if (an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
+ 		state->an_complete = true;
+ 		xpcs_read_lpa_c73(xpcs, state);
+ 		xpcs_resolve_lpa_c73(xpcs, state);
+-	} else if (state->an_enabled) {
++	} else if (an_enabled) {
+ 		state->link = 0;
+ 	} else if (state->link) {
+ 		xpcs_resolve_pma(xpcs, state);
+@@ -999,7 +1002,8 @@ static int xpcs_get_state_c37_1000basex(struct dw_xpcs *xpcs,
+ {
+ 	int lpa, bmsr;
  
-+	nf_reset_ct(skb);
-+
- 	if (tcp_filter(sk, skb)) {
- 		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
- 		goto discard_and_relse;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 9fb2f33ee3a7..75900564f42a 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -704,6 +704,7 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
- 		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
- 		goto drop;
- 	}
-+	nf_reset_ct(skb);
+-	if (state->an_enabled) {
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++			      state->advertising)) {
+ 		/* Reset link state */
+ 		state->link = false;
  
- 	if (static_branch_unlikely(&udpv6_encap_needed_key) && up->encap_type) {
- 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
-@@ -1027,6 +1028,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 
- 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
- 		goto discard;
-+	nf_reset_ct(skb);
- 
- 	if (udp_lib_checksum_complete(skb))
- 		goto csum_error;
 -- 
-2.25.1
+2.30.2
 
