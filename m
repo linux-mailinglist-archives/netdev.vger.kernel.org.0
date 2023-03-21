@@ -2,206 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 308FA6C34A3
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 15:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C096C34CB
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 15:52:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbjCUOpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 10:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
+        id S231472AbjCUOw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 10:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbjCUOpL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 10:45:11 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8233CE25
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 07:45:10 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id o6-20020a17090a9f8600b0023f32869993so16560518pjp.1
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 07:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1679409909;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DxB04KYZGQx/08ExC4uV9acrJ8LVbxFIkazAkJlZ9bA=;
-        b=XjoCXWkUZHSTWEtqh7m/lbjDImpRDXkpiBgPJ2h/2ciQc86mQwoBwOCUBX/3V0nXho
-         IcZIBoyizsc1mLhyyVzWrIqBaqbWXZLe6DJ9iFMb52mX5PdFgrP3yqatWFyn8RwSgFNI
-         5+O/TCxZZgSJjIMH1ms9QLnrNvvW8MWBkOjrk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679409909;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DxB04KYZGQx/08ExC4uV9acrJ8LVbxFIkazAkJlZ9bA=;
-        b=ifMDO/ZGvfzogHATW3pfIpV5yXJvcV9QOLdLqIe+OljlC9YFWbLcsoHxTJ5GeoS3Kv
-         Tg5S9LZPwe4YG+6neUgkW8VIhaB9YXh7JL3GxjXCgcv/UhQnYRQeVwkkKNBedgzTF7Q3
-         hXpOsUvrQZ0z3u+ljtPxFc0mFSpH5jvc4uBJPkrzZiDGIEcqopUyB2v0cb04YgjgpeL0
-         bNokCMU0d0sxzME9BnLKIohT99HCuJDLSAzzDHRn+8GmuiPKbqU/jFtwUG55qpyaiauL
-         sjoRWcAlIRegrAq33Vhh1FejByMtwVkjczn71sITST12+2D4oKV25m5/2ovAGhPJ+/g5
-         r2Rw==
-X-Gm-Message-State: AO0yUKWxUf2zImo4AON5O9RkZ/I9qvL5+jXNkZ9NI+Xm1/tka6JZ4nZ/
-        JcSHm7ICgTe0mvQGmiiklk7sFQ==
-X-Google-Smtp-Source: AK7set/y5mDWnFEoSwn+ujCZ5jkRyBCCy8FDHQcGcC7cHJL7cI7zZmqU+mwYIMP38loxWoq7NNZHUg==
-X-Received: by 2002:a17:903:234f:b0:1a1:dd3a:7509 with SMTP id c15-20020a170903234f00b001a1dd3a7509mr3036585plh.48.1679409909562;
-        Tue, 21 Mar 2023 07:45:09 -0700 (PDT)
-Received: from PC-MID-R740.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id h13-20020a170902f7cd00b0019d1f42b00csm8834243plw.17.2023.03.21.07.45.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 07:45:09 -0700 (PDT)
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-To:     michael.chan@broadcom.com, kuba@kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, gospo@broadcom.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        richardcochran@gmail.com, Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net-next v2 3/3] bnxt: Enforce PTP software freq adjustments only when in non-RTC mode
-Date:   Tue, 21 Mar 2023 07:44:49 -0700
-Message-Id: <20230321144449.15289-4-pavan.chebbi@broadcom.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230321144449.15289-1-pavan.chebbi@broadcom.com>
-References: <20230321144449.15289-1-pavan.chebbi@broadcom.com>
+        with ESMTP id S230219AbjCUOw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 10:52:56 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01C63C1D;
+        Tue, 21 Mar 2023 07:52:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679410374; x=1710946374;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=VGrZI69F+7R55vw38BSxyQTiTAoaoYWDCfSRv5JeZBU=;
+  b=NX+b37etvrX2UFk0R93xmVt5nBFlTDSrOgqNX0vIKuLbDetlKx/l84Z2
+   IWvhueK1ZFheaTkKTtl4HZHLmYy103sUQDQrkZqOOug+ivhH7nNiNfoAl
+   3u9YzELa7HL1EexQDcGlvJWd4Sb/Gj+fMpMQGHfBSXiBMZusUxnXyVfwm
+   CGfDbi5d5+pe2RbC7ZSuRb9oTxy5ZpQB1WL7BNOU+Ov03LOYvmRYTj86L
+   Pn29F9JwD1hRLojNmNcM7YdWahTWRqFmV50Suc2FqV8+MwjxgmnXwfEXf
+   ntS2st3cPBaYawFo1C6tk3VQHttBGUHzcErDAVfor72wfjIL8ldU3HRPW
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10656"; a="403841203"
+X-IronPort-AV: E=Sophos;i="5.98,279,1673942400"; 
+   d="scan'208";a="403841203"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2023 07:52:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10656"; a="805405459"
+X-IronPort-AV: E=Sophos;i="5.98,279,1673942400"; 
+   d="scan'208";a="805405459"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2023 07:52:41 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 21 Mar 2023 07:52:37 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Tue, 21 Mar 2023 07:52:37 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Tue, 21 Mar 2023 07:52:36 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aytgw9hYJLfMmEi5s7oWCC9wTNmp5tJXceaRBc77lhOvk1I4os+EqAXpR9FUegm3vncp4Fw3OZ6ga25BB9rRoPmPBLsAYTCMzdsgMRLOkPpo7QsrJKxNTvZP5tZobdEzSDiRG+xCTi4XjHDfvyhcVsuaghk/F4NdJxXruQ6bpq+CjRGyOkba35tgGSEyCw52o6M7oTpzzrLT4/fI/oEOSEJ1B2kmcu6qfWV/PenzrBB6KBVmwUSYotr208wrorgtGTKdUVb8TGRnvfZYWuZcGtf+YoWzg7wTqZeFoiL423ztyoCufoHH2dvXrhsEoiwj614MyML/n3HX6QCKCa3CXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=N3XOSvoMzfXoISJjmprk+IN/YcxOi+C1yeU0FN/Jqag=;
+ b=KPKZe1pFKreS2cGvgCGmrVhxUPloBZJwH2Z2WbDh54LfWVBWjbec4et+80h/EN65TzvYmjfvzT4fyjPBrQ6AReoMVr0vehYp4+VtyG01Ofbt3AILEb5E1xWB+fgoCxPmq4NyQzzUsyYtcekDoUDjbMuOniEVaBihWhMppWS/cjdimbFamiM3bGIFnPQVSDIMrgVs6whJ/mGjSgo5KOeuMaQgARVAyL4YtoKtrsSxerRjJ51wjbYtL6FcIOGFKFzEUF63fjg4pzMt/m9o2E+oKq11xJAySwdx5Z4BZo2UABVUnnXh3IZPsls3LTPMxO4mk1/t8/RwihWZbQiNSlPNuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5483.namprd11.prod.outlook.com (2603:10b6:408:104::10)
+ by MN0PR11MB6059.namprd11.prod.outlook.com (2603:10b6:208:377::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
+ 2023 14:52:34 +0000
+Received: from BN9PR11MB5483.namprd11.prod.outlook.com
+ ([fe80::af70:de56:4a6f:b2cc]) by BN9PR11MB5483.namprd11.prod.outlook.com
+ ([fe80::af70:de56:4a6f:b2cc%7]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
+ 14:52:34 +0000
+From:   "Zhang, Tianfei" <tianfei.zhang@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC:     Nicolas Pitre <nico@fluxnic.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "Weight, Russell H" <russell.h.weight@intel.com>,
+        "matthew.gerlach@linux.intel.com" <matthew.gerlach@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Khadatare, RaghavendraX Anand" 
+        <raghavendrax.anand.khadatare@intel.com>
+Subject: RE: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
+Thread-Topic: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
+Thread-Index: AQHZVVb9Plq7k2o7S0K9BdoAv1tvk675DoOAgAELboCAAJbOAIABMVyAgAAKrwCAB8YEAIAABm0AgABj+4CAABQNgIABDuWAgAAWIRCAAAURgIAAAgVw
+Date:   Tue, 21 Mar 2023 14:52:34 +0000
+Message-ID: <BN9PR11MB5483DA8ED31B3294C60FC827E3819@BN9PR11MB5483.namprd11.prod.outlook.com>
+References: <ZBBQpwGhXK/YYGCB@smile.fi.intel.com>
+ <ZBDPKA7968sWd0+P@hoboy.vegasvil.org> <ZBHPTz8yH57N1g8J@smile.fi.intel.com>
+ <73rqs90r-nn9o-s981-9557-q70no2435176@syhkavp.arg>
+ <ZBhdnl1OAPcrLdHD@smile.fi.intel.com>
+ <4752oq01-879s-0p0p-s8qq-sn48q27sp1r7@syhkavp.arg>
+ <ZBi24erCdWSy1Rtz@hoboy.vegasvil.org>
+ <40o4o5s6-5oo6-nn03-r257-24po258nq0nq@syhkavp.arg>
+ <ZBmq8cW36e8pRZ+s@smile.fi.intel.com>
+ <BN9PR11MB548394F8DCE5AEC4DA553EB6E3819@BN9PR11MB5483.namprd11.prod.outlook.com>
+ <ZBnBwa/MLdH0ep3g@smile.fi.intel.com>
+In-Reply-To: <ZBnBwa/MLdH0ep3g@smile.fi.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5483:EE_|MN0PR11MB6059:EE_
+x-ms-office365-filtering-correlation-id: 9f7cc54a-c0bd-4218-61cb-08db2a1be7dd
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YXrMuBlD5ah5dTg7REjsn8fwl4DZLXBL7/Wf5eO6nSphB150RcwoHUmbgcSrAI6ec14/wbWTYs0EFSMdPKewbjdLmU0lhutQsEOfyGn5Ya+pie3fXVLX+cbC86QlmsHVTI257DnVT4qTEpQE1axns/yLGNIKrEbMSwjL9VTOwwPIL+rxvS3mx7GyzMF1rlWiIsEj94wBuYdwOasg44Bjii1WJTltSTe0SqVggzpDJpQsWHMk7HBGOEiZZcYpFLixofZLEYhllvARYCCx0t87ff+zi31d/kqNn7RJ9oHOxXo8HfluduWeAuJOexPYwrMb4gmZ2/SFIrjwA1urPFCbivgvpDm1GsEnsyr3Y/qQ6IveJDe3KoLFMaeyORY12MfM/ENLTqy5BymbcgG5UqMsy0tRYg7MnUw3sRHNDruaRSlKMPv3Wb/wQGMW3ml1YZ+BHm6nG1eh/f1aJxRLDBvHse+CKlVVTiqJmtb/CosRf/uPEJIIqhofYhhjGjYH2NMQIk28fN0ulz3DxiJhOSjbMZTlvCiKvbkHDdr1JCbwEA6LvztEJY1LYRSHHp1dhmHVdEu2sRXyhoXiOIhADBFQLmDXX3lopqTJu+bkH0rW6Y0J1z4aj7FCia9b3Hi5+0IWR32b6tR8R7S5MpJ0VKcB7KKNC2H0vwGJFy99pgPJfCrSiPxVCW3L+iB+B9/UF1RkCAVwY5Q1M13GV3vY3KUwzA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5483.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(376002)(136003)(396003)(39860400002)(346002)(451199018)(6506007)(186003)(53546011)(9686003)(71200400001)(7696005)(83380400001)(316002)(478600001)(54906003)(8676002)(66946007)(6916009)(64756008)(4326008)(66446008)(66556008)(66476007)(76116006)(8936002)(41300700001)(52536014)(38070700005)(5660300002)(82960400001)(2906002)(38100700002)(122000001)(86362001)(55016003)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Y0jG4fVDRPPVvp1zgqYuSo2+Hyr5k2YM1o3J3XIxotizSQBGvd2rMYWYDy27?=
+ =?us-ascii?Q?fj9xK3y2Xu8nfvHBD7GgwmKjfpxM2MFbYLRAxh8MyooiG23AXFcgwqqcpTb0?=
+ =?us-ascii?Q?OvyF3c4eB1dWA+QUV/BzdUPRV66C5IDtMF1f1+rosJS0pQaCyV0yjeynkLyP?=
+ =?us-ascii?Q?E6O1wk+TFatjPvUmkKfvSbFUJsEPN/Ggvcwpx2s4rBguU8y2XdCtL92Ulch+?=
+ =?us-ascii?Q?lzA3mD7CltqmUbc0ZMLJetPdzkOA7QeUaP4OadXaMVJjv6kEh/CpWRPxJuAn?=
+ =?us-ascii?Q?zWn+a0dxDCCLJ4HAt03cu6ZpOya0sy1drWDPOkiOL6NFKTKvPz3t06HkBy4b?=
+ =?us-ascii?Q?jKKq6ZwOWs9bq5YqPiW0RKX/WIeRVQh3kbviNb47PgdRQ6iYqxdF6TCaBvbj?=
+ =?us-ascii?Q?iGUv/BMF5rZ1liNFNLPXV8ERM855XTHFcv19BvsqQCVOVZjamk990za+HryB?=
+ =?us-ascii?Q?6h+1VrPHkc8wp1m8WJguCDu4OdnYsSLuk7cDBMfVrCphjRurQNSiiPRa42oQ?=
+ =?us-ascii?Q?LxrPRUl3jNgMSp9qJbtoiGDKvTZ1P8onVBcXu1UmyidlO9bxkO6F1Y3ZlqMi?=
+ =?us-ascii?Q?ry7BR8VWTvXBbzDq5uPwDvcMi02QsrsT2ZVgiCP7zexx1f358X7u1VDg+X1O?=
+ =?us-ascii?Q?PERzt/GXMJ8RWse5W6xYqTMDMIaRCLBOQVXriD5KSNBphudOXogfJMMnD8tr?=
+ =?us-ascii?Q?LY4zcRspQH83zW0UrgG7GAKp2OIAMTQoob0cO0jocyLPd3DX9CHqTV7WSGBx?=
+ =?us-ascii?Q?Yt2qicD+atvJ+N0pS/8GT0+yuQlOefD/pcSwIcWY9H0g9kN9sBZuqoaWvj7P?=
+ =?us-ascii?Q?Q1+wm2kPDGsQb0CCcdswKgzpWYKvqK90kmeqil3YAHwyBLEEUq4p4RSlcFLE?=
+ =?us-ascii?Q?79F7cNnZFMBrVYGGq0qjwmbo5c0m9NnTeW5UbVX5EUxlm8PMXWDSjNMWSmsa?=
+ =?us-ascii?Q?W9P1zgwnJLVTicKtT5MsmakxW1vnPvdj8cIUAYm8j6kfhobxc/Cs72SSowlJ?=
+ =?us-ascii?Q?7hDMfpWxpI2efi87LrjWW8Xz4yqZnhl4Yby6o2UQZ0owKc6uBbvkC+wPst52?=
+ =?us-ascii?Q?QkRH5Fj7srvQnNJagYeK0QhpklHEGxTcM1SLk27CyGWjjJy1UHBrKtwhfbw/?=
+ =?us-ascii?Q?Gt35jZBnq/0pYNqXtITnhIEs+Pz5Zh9xKr27wOdfAEpr1umIHDbm3oXqac40?=
+ =?us-ascii?Q?ZDZV5HONiU+PS55FADKyUh2A4k1QRDLGgjA07URsWY+OtwlFgvzJasUXFCDr?=
+ =?us-ascii?Q?2v96uu7bdBObuNusha5IvN0RbjBYeYwzQMPV/Y4nyEYrFWSqUNTUH3lzMlaG?=
+ =?us-ascii?Q?f3zI3KvlPDHdMkjxSDAoJ/agxeolaWz5944vSSnEy0ptZj0JuwWREaw8JnMo?=
+ =?us-ascii?Q?qCmkCNUl6eOT6Gmlzk7bmlmAkREq1ef60Ui0AFqRrQ5XzWGb17YqKnFly283?=
+ =?us-ascii?Q?wZYZkulR0vWp7HpBQ3Zsqv0crxQ98DDWZWrjemrG2IDEP46RH2mV7RpbZiZc?=
+ =?us-ascii?Q?IUIA8MmATJIks4lWHLp80Roa21yCeSEOI/AndWeekXuQW+sWGvsyiPKxk9c1?=
+ =?us-ascii?Q?EZQGKnRsNT6HcyFIYgvq5iN/hAEWIFCUdk2COXV+5Wnb+gXvb1TJREnc07CT?=
+ =?us-ascii?Q?98ww9gl8JfS24vzkGwk4Z5TR2lv1d8YIoUJT/fCRGLhp?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001c238c05f76a1789"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5483.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f7cc54a-c0bd-4218-61cb-08db2a1be7dd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2023 14:52:34.5429
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pvVr2jOi2A2nrzcVeVIV9lPtu3yoyuMzyY3uhj774ntZs1p3rLmv4Zv4YSOWF6faYpeBPYnCT9YQ/lN5m0tHBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6059
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001c238c05f76a1789
-Content-Transfer-Encoding: 8bit
-
-Currently driver performs software based frequency adjustments
-when RTC capability is not discovered or when in shared PHC mode.
-But there may be some old firmware versions that still support
-hardware freq adjustments without RTC capability being exposed.
-In this situation driver will use non-realtime mode even on single
-host NICs.
-
-Hence enforce software frequency adjustments only when running in
-shared PHC mode. Make suitable changes for cyclecounter for the
-same.
-
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index a3a3978a4d1c..e46689128e32 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -230,7 +230,7 @@ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
- 						ptp_info);
- 	struct bnxt *bp = ptp->bp;
- 
--	if (BNXT_PTP_USE_RTC(bp))
-+	if (!BNXT_MH(bp))
- 		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
- 
- 	spin_lock_bh(&ptp->ptp_lock);
-@@ -861,9 +861,15 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
- 		memset(&ptp->cc, 0, sizeof(ptp->cc));
- 		ptp->cc.read = bnxt_cc_read;
- 		ptp->cc.mask = CYCLECOUNTER_MASK(48);
--		ptp->cc.shift = BNXT_CYCLES_SHIFT;
--		ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
--		ptp->cmult = ptp->cc.mult;
-+		if (BNXT_MH(bp)) {
-+			/* Use timecounter based non-real time mode */
-+			ptp->cc.shift = BNXT_CYCLES_SHIFT;
-+			ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
-+			ptp->cmult = ptp->cc.mult;
-+		} else {
-+			ptp->cc.shift = 0;
-+			ptp->cc.mult = 1;
-+		}
- 		ptp->next_overflow_check = jiffies + BNXT_PHC_OVERFLOW_PERIOD;
- 	}
- 	if (init_tc)
--- 
-2.39.1
 
 
---0000000000001c238c05f76a1789
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+> -----Original Message-----
+> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Sent: Tuesday, March 21, 2023 10:40 PM
+> To: Zhang, Tianfei <tianfei.zhang@intel.com>
+> Cc: Nicolas Pitre <nico@fluxnic.net>; Richard Cochran
+> <richardcochran@gmail.com>; netdev@vger.kernel.org; linux-
+> fpga@vger.kernel.org; ilpo.jarvinen@linux.intel.com; Weight, Russell H
+> <russell.h.weight@intel.com>; matthew.gerlach@linux.intel.com; pierre-
+> louis.bossart@linux.intel.com; Gomes, Vinicius <vinicius.gomes@intel.com>=
+;
+> Khadatare, RaghavendraX Anand <raghavendrax.anand.khadatare@intel.com>
+> Subject: Re: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
+>=20
+> On Tue, Mar 21, 2023 at 02:28:15PM +0000, Zhang, Tianfei wrote:
+> > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > Sent: Tuesday, March 21, 2023 9:03 PM
+> > > To: Nicolas Pitre <nico@fluxnic.net> On Mon, Mar 20, 2023 at
+> > > 04:53:07PM -0400, Nicolas Pitre wrote:
+> > > > On Mon, 20 Mar 2023, Richard Cochran wrote:
+> > > > > On Mon, Mar 20, 2023 at 09:43:30AM -0400, Nicolas Pitre wrote:
+> > > > >
+> > > > > > Alternatively the above commit can be reverted if no one else
+> > > > > > cares. I personally gave up on the idea of a slimmed down
+> > > > > > Linux kernel a while ago.
+> > > > >
+> > > > > Does this mean I can restore the posix clocks back into the core
+> > > > > unconditionally?
+> > > >
+> > > > This only means _I_ no longer care. I'm not speaking for others (e.=
+g.
+> > > > OpenWRT or the like) who might still rely on splitting it out.
+> > > > Maybe Andy wants to "fix" it?
+> > >
+> > > I would be a good choice, if I have an access to the hardware at hand=
+ to test.
+> > > That said, I think Richard himself can try to finish that feature
+> > > (optional PTP) and on my side I can help with reviewing the code (jus=
+t Cc me
+> when needed).
+> >
+> > Handle NULL as a valid parameter (object) to their respective APIs
+> > looks a good idea, but this will be a big change and need fully test
+> > for all devices,
+>=20
+> Since it's core change, so a few devices that cover 100% APIs that should=
+ handle
+> optional PTP. I don't think it requires enormous work.
+>=20
+> > we can add it on the TODO list.
+>=20
+> It would be a good idea.
+>=20
+> > So for this patch, are you agree we continue use the existing
+> > ptp_clock_register() API, for example, change my driver like below:
+>=20
+> The problem is that it will increase the technical debt.
+> What about sending with NULL handled variant together with an RFC/RFT tha=
+t
+> finishes the optional PTP support?
 
-MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
-MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
-rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
-aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
-e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
-cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
-MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
-KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
-/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
-TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
-YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
-b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
-c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
-CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
-BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
-jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
-9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
-/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
-jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
-AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
-dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
-MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
-IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
-XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
-J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
-nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBUwwggQ0oAMCAQICDBX9eQgKNWxyfhI1kzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODE3NDZaFw0yNTA5MTAwODE3NDZaMIGO
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDFBhdmFuIENoZWJiaTEoMCYGCSqGSIb3DQEJ
-ARYZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBAK3X+BRR67FR5+Spki/E25HnHoYhm/cC6VA6qHwC3QqBNhCT13zsi1FLLERdKXPRrtVBM6d0
-mfg/0rQJJ8Ez4C3CcKiO1XHcmESeW6lBKxOo83ZwWhVhyhNbGSwcrytDCKUVYBwwxR3PAyXtIlWn
-kDqifgqn3R9r2vJM7ckge8dtVPS0j9t3CNfDBjGw1DhK91fnoH1s7tLdj3vx9ZnKTmSl7F1psK2P
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPP9SLhn1bYpY7nDL+oUzWjo0jsr6pfA
-0aHhTeruJXLhMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-MTE0NDUwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQARBYJkx6evR3zlDicOEp23WSsubTo4zunKZKfezZ7Alfgo2OGD
-GC3fIGC3whvfQdpRevlmFEI9XOB1nesqjHR3NAZVcQ7IobikHxGuxgU7UsFXxD+DDnkVvxVxrPtU
-FHUjaKN5hU5UUfnhWygij05Ihyh9qisse+NBfxJyuCdiW1m6MCradoE002fpvnvXMVaosaNSqxeg
-JALvNs6kD2urp6p/j6Ayqk6L8D+TBOMVJhjLsScODsvww+hw/NMN68oAeat/99jXP2Tr7zNzCuhC
-NBMyPz3p7dO6lyUQiMJgM3WOLFqhaIwWOUmrF2YTBuO7DV2CCecsqEbdKV9uc+1U
---0000000000001c238c05f76a1789--
+I think sending the other patchset to fix this NULL handled issue of PTP co=
+re will be better?
+
+>=20
+> >       dt->ptp_clock =3D ptp_clock_register(&dt->ptp_clock_ops, dev);
+>=20
+> 	ret =3D PTR_ERR_OR_ZERO(...);
+> 	if (ret)
+> 		return ...
+>=20
+> ?
+>=20
+> >       if (IS_ERR_OR_NULL(dt->ptp_clock))
+> >               return dev_err_probe(dt->dev, IS_ERR_OR_NULL(dt->ptp_cloc=
+k),
+> >                                    "Unable to register PTP clock\n");
+
+
+Would you like below:
+
+        dt->ptp_clock =3D ptp_clock_register(&dt->ptp_clock_ops, dev);
+       ret =3D PTR_ERR_OR_ZERO(dt->ptp_clock);
+        return dev_err_probe(dt->dev, ret, "Unable to register PTP clock\n"=
+);
+
