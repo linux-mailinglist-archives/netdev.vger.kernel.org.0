@@ -2,717 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00DBD6C31E6
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:42:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0E26C31F5
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:43:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbjCUMmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 08:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
+        id S229606AbjCUMna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 08:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbjCUMmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:42:22 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A21147828
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 05:41:43 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id o12so6831226iow.6
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 05:41:43 -0700 (PDT)
+        with ESMTP id S230287AbjCUMn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:43:27 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06594D629;
+        Tue, 21 Mar 2023 05:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1679402547; x=1710938547;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=r24CXNKCdr9m4gkQgUOS/h0N+9rxCaBDarCmrs35cPk=;
+  b=f1LQiFivkdrOOvohWGLEpJFNeaVWOYHx6NwHuNe5lPI/MwYdPGLRct49
+   TiJdQ+80BpMMEUjozJ++zIXRelBTJaSs9jXwB+x+S8mr55GdQkrhbcnK1
+   /NvvHL6lggrslHnVLEJsdi3Zc9TdV6l2evPP7NOJLaDML2hRx/RvTN5ko
+   gLB8ApHA/DMcAadnqFwhJwTrD5W+R7M6Gb3naMBLGjdklmQVuAsppsdO6
+   2f5VaQ2Puzt63z8nZyyicwf0Uc7Zxa3LfEQvylmf39ynz/sQOlMlEOAam
+   oaeFexZ+MyyUXX+9TBFb+ehnaQmosXpH0ydxrRLkPXmMW3UYyozdEVw8F
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.98,278,1673938800"; 
+   d="scan'208";a="217287345"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2023 05:42:23 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Tue, 21 Mar 2023 05:42:23 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21 via Frontend
+ Transport; Tue, 21 Mar 2023 05:42:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FuUzQuKbmKOObSEK4oOf8Sdk/agBZUXNqalUAInPNALdq3jqGCcbP1ICF+IquNKRrkSxiDUM57O2OV1P+BL+s32D80SvJvrnrlqGy3bvUyo468dD9qbUIEm2YS+Snq2GZWWwt/fCsi/BixAgRdsCsqVKWRdsyAakk6Bf2KR5AESSsGdP/sMNSqdcSKpqDOzJ7+uZY/xxka66nPbx+HAu97w6DYtlgyPnV5c1kvZa5oCsjCxZbARPd9H1UjTwN8nArOrQIUR+ajv3xY9c7uxWiP0yuY68uMjNMeGEd5D85vHqCrBGqFFPhM3x2lupmQ81hpYvxNhcOxNl9Q8DVQzTdg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r24CXNKCdr9m4gkQgUOS/h0N+9rxCaBDarCmrs35cPk=;
+ b=BoWkiC5zokABnSdYedd1O/+XOHxmoUMmP9FbCiIDSiYQZec+5T6YUd4Q9FGXGvKMvGQdtcpPAjCgKNpH1bVKoxGaiFckf6QqUg+7RGgE4V9js8VPs3Gnb3qbDTyCEKA2f6CqGznDXd6D1GjBiGC3RaLwYZuWrVhj8aN0e0iNRPgo6aTZCETi+49yxZuVU0JvkU//OqC0gHc1IRn/EiMVuCvgUYX7L54yQVcOqm/NLOAgDi7sS7saqUtSmgIVVYvETMg8q2U9xny8+ZLeoonTBw3isYfgWU5vL1kjHH95s4e9M3MoUiqAS5dQoCpRI+mi/3iZuOQw+iLBgb3zY+9Ikg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679402501;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cpeVHAk/0+ubGXXpIpPZTy+eVyrt0xS4u89ZcgG0Elw=;
-        b=RB1WEL1N2JXbPKs0bu0nsitjN4zX57YydwScdRBvGHu5jjuDI08ZPEbu9Za7O2EDDJ
-         6wd1jN/Ly4+hsPQNYpKcNYeaxmU5J7aVmu6/O9DvgWxgZcjJbesnS//eXqwoyWEirz0w
-         WNrCKS7FlqqSp4I0VgB2kZLV6syfj4njOF5Wa9lugOi6aQte+i5wCJ8FEZaMxTrMDojd
-         JGv7lI1w3iARc2HS7NKVjJ/8UdPIAxtA0WxupfYTgAw8bjDftyXY4SmqrR445g+x2Ue2
-         0ukm1YvIiARhfhyu5BIZwOn9nkk5oLGKGz9j9sver6+iEzUtIniq73pvvBWxj2zM3okh
-         ZtlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679402501;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cpeVHAk/0+ubGXXpIpPZTy+eVyrt0xS4u89ZcgG0Elw=;
-        b=Wo6Ep/6CGaqKuwA7aPkOJxpC6shAnqKub0PcFcGODnnvcksznzV+/N81evEAHr4IU7
-         0jn38kiOeGBar9BLaBuRIW1VM5tQMfTxJbEqRu6RI06nf5COo9vNuVyyGxBevGyAH6lV
-         EspA7aTceJStR88IEYeByfoQZsVPouCbQS/juJY69QgVc/ZyNj3qVTYSiX8a8mBL2gIT
-         7vc3U+ML/IXp6kf443uZqRXRVfwNV9D4v7YxzQUF+MlcDrE4YsCXgPwFKl1/FIiglkQ7
-         BaZ4C2xDsR1Fy5qB57YDHbk9rR2KbD0heiDB0UeY7+Ne9N/edVU/EeDK9jEqDyhRXaV0
-         J+yA==
-X-Gm-Message-State: AO0yUKWDLgNbGc4G9daMS/VBJzp3buJnZRAwSNsj9Lr+Omzwo32iMEqF
-        liI8l2eVjc7DPpHiPX5L1jt+4Q==
-X-Google-Smtp-Source: AK7set/wWHTFhdX5fOreCZNqpOULdoUabfuG0lODYMObiFYexRQFoZ73iyKp0tQ4pIMpT0pz/EESnQ==
-X-Received: by 2002:a6b:7204:0:b0:755:7b0c:6042 with SMTP id n4-20020a6b7204000000b007557b0c6042mr1841138ioc.2.1679402501404;
-        Tue, 21 Mar 2023 05:41:41 -0700 (PDT)
-Received: from [172.22.22.4] ([98.61.227.136])
-        by smtp.googlemail.com with ESMTPSA id k12-20020a6bef0c000000b0074555814e73sm3676231ioh.32.2023.03.21.05.41.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Mar 2023 05:41:40 -0700 (PDT)
-Message-ID: <17a72f1d-0232-c215-d551-0770ed4da21e@linaro.org>
-Date:   Tue, 21 Mar 2023 07:41:39 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [PATCH net-next 1/3] net: ipa: add IPA v5.0 register definitions
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r24CXNKCdr9m4gkQgUOS/h0N+9rxCaBDarCmrs35cPk=;
+ b=JUKSZrLB5jp1sQc3+WJ36dIlKUhUzB1TN35cJp5ZpZsm4nE800+/9kzOTeyHfytxiNQEBVUZ0Ibxg0A24Fa422Du4cCYvDu2y0a03WKr1GrVMMrs7vWXaR+gLPwYedu1PUtyDQaFwjEtKO1xdYE59mhWGhCQoP5uTdp1ya3jKX4=
+Received: from DM4PR11MB5358.namprd11.prod.outlook.com (2603:10b6:5:395::7) by
+ SN7PR11MB7020.namprd11.prod.outlook.com (2603:10b6:806:2af::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
+ 2023 12:42:21 +0000
+Received: from DM4PR11MB5358.namprd11.prod.outlook.com
+ ([fe80::6c5d:5b92:1599:ce9]) by DM4PR11MB5358.namprd11.prod.outlook.com
+ ([fe80::6c5d:5b92:1599:ce9%4]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
+ 12:42:21 +0000
+From:   <Steen.Hegelund@microchip.com>
+To:     <peter_hong@fintek.com.tw>, <wg@grandegger.com>,
+        <mkl@pengutronix.de>, <michal.swiatkowski@linux.intel.com>,
+        <Steen.Hegelund@microchip.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <mailhol.vincent@wanadoo.fr>,
+        <frank.jungclaus@esd.eu>, <linux-kernel@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <hpeter+linux_kernel@gmail.com>
+Subject: Re: [PATCH V2] can: usb: f81604: add Fintek F81604 support
+Thread-Topic: [PATCH V2] can: usb: f81604: add Fintek F81604 support
+Thread-Index: AQHZW80AFpUiYGnh70m7tZFsKmc+4K8FLY0A
+Date:   Tue, 21 Mar 2023 12:42:21 +0000
+Message-ID: <CRC2IKF799EU.ZGF4PZAJ1RP7@den-dk-m31857>
+References: <20230321081152.26510-1-peter_hong@fintek.com.tw>
+In-Reply-To: <20230321081152.26510-1-peter_hong@fintek.com.tw>
+Accept-Language: en-US
 Content-Language: en-US
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230320202447.2048016-1-elder@linaro.org>
- <20230320202447.2048016-2-elder@linaro.org>
-In-Reply-To: <20230320202447.2048016-2-elder@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: aerc 0.14.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM4PR11MB5358:EE_|SN7PR11MB7020:EE_
+x-ms-office365-filtering-correlation-id: b3afd908-6550-4798-4581-08db2a09b6cc
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: tCl7TdMs798rTcfB3WU5kPXCcT+tXxKiERoPNGhfwRZEm+JZL0SBpY218J+KToXzeCmAeNKp4ZdwWTxU0XVNIhkwUhxDWcPQdQSnTV6bhfdfjvVuNo99kA5KXkgw4/DU70Lg+mClC95XCBW2XYvJ/hnMf22fgPu9rDvRdplr6DK/wJgo4yQ+rIkN1goHcxs5t+FA6yujdheS9NkvbNNgl38N1YkIrZ1h2BFYi+NuE/SwuHjgx6S724MUlZVC4NK6yUqkqZuPO4uhqN0+KKusM1/vBteYTe4wrOeYnTDvAXfeJM4snx4ZdMo1o/egDvkg7Gr95V6SeFUwJ8IY7YeCkEzBqGG3yteGctl5zuYWdzQieSwq25j3JVeejTTaFYsbs37wgweP6VvYTnXHpAFd5V313hbjgwvTFB/RTygbd6tL0cKAs9I71WkABgRh7M23/Rw4e+6bFoW15mqz9bYn3mXu6z84NpZu6ZwKzQNh5y325jfw13KYFWyWjrOr1OFmrkN7b0ILDsaZhMyt4Y3ZoQlQTU3NXIBqwPhTRuPHNNVYjFDi+ZPooAXjePW15hLywbz4wAHD1A6J1MpayPTL8Qy1jfl3vft72NABss9w4FcJej41rf5iEQRLFKd17I86IGDRijyTWCvlnnbd77N/SPmQx8vhh3zYSrgQ8Hutq1GCGpqawrfSAxG5MQoPbGbMvISvf4Rp98sH+lj3jGeRdQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5358.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(366004)(346002)(39860400002)(376002)(396003)(136003)(451199018)(83380400001)(6506007)(26005)(66476007)(6512007)(186003)(478600001)(71200400001)(9686003)(64756008)(66446008)(76116006)(8676002)(66556008)(316002)(91956017)(66946007)(54906003)(4326008)(110136005)(966005)(6486002)(5660300002)(41300700001)(8936002)(7416002)(122000001)(38100700002)(2906002)(38070700005)(86362001)(33656002)(33716001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aXlvYUJZSzk5czg2dzZXL3lnZktNK0dCcGh4VWJPNng1NXM3clR2eG00eXQr?=
+ =?utf-8?B?S2dBc1ROU1kyVkRGdDdsbWUvOVdRdVdSOEVMcXJyeXhkNzdycXVKZEZxOTlG?=
+ =?utf-8?B?UThOaUxtUVJlNTFpT29OaXhMcTdMVUlBaE9GTDd5d3FhVG9mU1JtRFJGN0Vk?=
+ =?utf-8?B?RjlyaE9yTTJnM3JjSzRTRFJua2hnMmMvQkc4ZFYvMmUwMllNMzZWZkhKbHN0?=
+ =?utf-8?B?UE85ZGU1UVVTcW1ZZ2NyTmtTWmx3VlBpZ2lIcFM3MW5aa2UrdEkzRXpYMEto?=
+ =?utf-8?B?Vk9tWjd4RjQ1ODZyRHl3aG11cDh1Y1Yya2lTMDNFMWp0N21oRzNCL3FUMm9U?=
+ =?utf-8?B?cmRBMnE4anFjRGtjQ3pxTFRFak5sL2V2QlNSTi90Sk9UajUvc2lNMEMreHd4?=
+ =?utf-8?B?MlNFK05jbWJtTDdKSjJFaVNURmZQRVFlTUtOdGJ3N1A2Lzk4QVlxSmhzVkhk?=
+ =?utf-8?B?b1ZzckZLdG9obWFtVS9GRVJpZ3NaSSs1VkNiWEEyOW1UZEIzU1hxVjlYcGY0?=
+ =?utf-8?B?MExibG5xUFNyZ2tlYnE4ejdCaWQ5Ui9jaDFaM2dIYVZydjEyUklYZDVXTlBL?=
+ =?utf-8?B?WnV6bUpPRkxIU0grejNONkZmaFErQnZ5Qzk0QzlMcm1mdGJScDJyaGtsd3hX?=
+ =?utf-8?B?K0p4SU5RSEJKUkJyQ2h2UmE1VmEyVm9lVHFJK0dnRTVpVW05MEpONHFoNmxv?=
+ =?utf-8?B?M1BQR2lETStRYlpITks1OS8zbExhS3pERFlrSVpwNHhQQUQ2NWdyQWlqVU5J?=
+ =?utf-8?B?UWNQVW9qNXArbnZXUVNqelBPLzJSdEsvYWdpN05tbkNIbU4va2NWcXJQT1Jr?=
+ =?utf-8?B?UFo4R3FsQUM5RGgyNWFveWN2dUZ4aG5kaWxhQUNiWTA5aWRka1FLalpKVU9v?=
+ =?utf-8?B?d05VQlVYMk9uUXlWcWYzNEkrbDZTY1c1RmF3TXJjSnl6djhQbG95MUI4aXBx?=
+ =?utf-8?B?Y1owMThLZWlWZy94Q0FqajRpYjl1MjgrWjZsclVRWUtpU0I4ZHdSMUVMeGpF?=
+ =?utf-8?B?bzE5Ny9veXhXQnlrVUFTU1RnK2dFRy9NZ3g5cTJhWnNBUk5JalIyVUxwdERv?=
+ =?utf-8?B?a0gyVU9PQjZTYzBJSnd5MkY4bno4WG54NlkweC9lK3JOWHM2eTNlOWdlZXJy?=
+ =?utf-8?B?cDZHaUhiVmJHVUo4WXNnOGFJTEFxYXorMU9pcXFVQ0dndFphLzhUaDBXSjZv?=
+ =?utf-8?B?UlQ3ZjJ2MXFMSmxhTmp1Mk9MK1Q0MXo4UFVjK044MEZhT0FpSW92dW5aMk5B?=
+ =?utf-8?B?UmsxZEhqK1B3YzJDMmI0cW5LbnJrTFBGNDJnb3F2UkttdzNlUGhORTlvZDBN?=
+ =?utf-8?B?M3kwWXBQYldvb1BhbWJKM1lzaUd5aUpZOU5pMXJEOGl6UVA5cmhmb3RIelNi?=
+ =?utf-8?B?c3haRnVoUHRaNUp1UDc0RERVSVp3T2R1U2NUVXFSemVhMk41M2oyUjA3V1Av?=
+ =?utf-8?B?TFNMY3VmcllZblZpWUpsakFMQXJBaEpYUHMwSGdWTHd3aGZZZTlSWmVFalFS?=
+ =?utf-8?B?Yk1xOXZMUkgyMy9vd2hrVWFkRUxzWEtYeXpRWEZxSUw3TzNjYWdDNDR4R1Nv?=
+ =?utf-8?B?akdPcUNqT25mNkRuTVROWEpNeHdmbjVYWVI0dFZLK01qSlJzTEtXbDhtcWNI?=
+ =?utf-8?B?NmFIYkVrS2Q1SEg5QkVoWE5LL0xyWmRrN3NpVUt2K3h6QW9LZmRadFg5Yk1E?=
+ =?utf-8?B?SThWbmRoY2trSDlnR0JHd0luWHpaWWI0ZkVjV0JUSm9pWk1CUk5Qb3pSVE8v?=
+ =?utf-8?B?cDg2K3N5TnA1ZnFuOXE0ZmNuWEx4c3pIRWhORVRtTVhmMlB4UzZ1S21oa0VU?=
+ =?utf-8?B?cFlyQWR4Z1pkeXducW9GNTdXWE1aSXozRk04MklGekRTMjQ2a3hQaUY1eno3?=
+ =?utf-8?B?UnVXbEp5NW4zZmNYTnhJQlBlYUttT0NXb05QU3ZpM1VUc2ZPUldYREFNSXB0?=
+ =?utf-8?B?UXNEZ3JCNDFQckpmblNNdTI5VjkwSTZYOEZQLzlIdnAwaTZWWXRvL3IrU21m?=
+ =?utf-8?B?OGRIdHpZZU9QUjdXSmttbzVieU9UaldtZkFqL1ZDVVBHZzFUa0VIV2F1MzRo?=
+ =?utf-8?B?YU9LSE9zUVZVQ08xWGp3OTYydGZlOGtQYUtJSlB5M2VYdlFVbzk2NzRVSXpZ?=
+ =?utf-8?B?TmMyd29ucFNFQTR5ajRZRmFweEdwdlI0WjJFMFBKQm5Wam0xVUVYSTloTWJY?=
+ =?utf-8?Q?UvhGFZa8GK/32l2LjmYBeDk=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FABB380464E9974CA6C1F7761E300022@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5358.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3afd908-6550-4798-4581-08db2a09b6cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2023 12:42:21.2344
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tJiP4EIg2JN9QiNeiwcUhqVl1/mBWuUxPKpDsOcd7iMFST8dp8c+hid1qY5f6BR2WYXCLgbQfL4FhcuYD08T3tSWr5+PboO2y+8U8Ew3bEo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7020
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/20/23 3:24 PM, Alex Elder wrote:
-> Add the definitions of IPA register offsets and fields for IPA v5.0.
-> These are used for the SDX65 SoC.
-> 
-> Signed-off-by: Alex Elder <elder@linaro.org>
-
-This causes build errors, because the Makefile states
-that "ipa_data-v5.0.o" is needed even though it has
-not yet been defined in this series.  I didn't catch
-it because I didn't clean my tree before test-building
-the patches in the series.
-
-I will re-send, and will move the hunk in the Makefile
-that adds "5.0" to the IPA_VERSIONS variable into the
-last patch in the series, when all needed source files
-will be present.
-
-					-Alex
-
-> ---
->   drivers/net/ipa/Makefile           |   2 +-
->   drivers/net/ipa/ipa_reg.c          |   2 +
->   drivers/net/ipa/ipa_reg.h          |   1 +
->   drivers/net/ipa/reg/ipa_reg-v5.0.c | 564 +++++++++++++++++++++++++++++
->   4 files changed, 568 insertions(+), 1 deletion(-)
->   create mode 100644 drivers/net/ipa/reg/ipa_reg-v5.0.c
-> 
-> diff --git a/drivers/net/ipa/Makefile b/drivers/net/ipa/Makefile
-> index cba199422f471..1458f9129e4b1 100644
-> --- a/drivers/net/ipa/Makefile
-> +++ b/drivers/net/ipa/Makefile
-> @@ -2,7 +2,7 @@
->   #
->   # Makefile for the Qualcomm IPA driver.
->   
-> -IPA_VERSIONS		:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11
-> +IPA_VERSIONS		:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11 5.0
->   
->   # Some IPA versions can reuse another set of GSI register definitions.
->   GSI_IPA_VERSIONS	:=	3.1 3.5.1 4.0 4.5 4.9 4.11
-> diff --git a/drivers/net/ipa/ipa_reg.c b/drivers/net/ipa/ipa_reg.c
-> index 3f475428ddddb..818a84f7c42d6 100644
-> --- a/drivers/net/ipa/ipa_reg.c
-> +++ b/drivers/net/ipa/ipa_reg.c
-> @@ -123,6 +123,8 @@ static const struct regs *ipa_regs(enum ipa_version version)
->   		return &ipa_regs_v4_9;
->   	case IPA_VERSION_4_11:
->   		return &ipa_regs_v4_11;
-> +	case IPA_VERSION_5_0:
-> +		return &ipa_regs_v5_0;
->   	default:
->   		return NULL;
->   	}
-> diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-> index 7dd65d39333dd..3ac48dea865b2 100644
-> --- a/drivers/net/ipa/ipa_reg.h
-> +++ b/drivers/net/ipa/ipa_reg.h
-> @@ -636,6 +636,7 @@ extern const struct regs ipa_regs_v4_5;
->   extern const struct regs ipa_regs_v4_7;
->   extern const struct regs ipa_regs_v4_9;
->   extern const struct regs ipa_regs_v4_11;
-> +extern const struct regs ipa_regs_v5_0;
->   
->   const struct reg *ipa_reg(struct ipa *ipa, enum ipa_reg_id reg_id);
->   
-> diff --git a/drivers/net/ipa/reg/ipa_reg-v5.0.c b/drivers/net/ipa/reg/ipa_reg-v5.0.c
-> new file mode 100644
-> index 0000000000000..95e0edff41709
-> --- /dev/null
-> +++ b/drivers/net/ipa/reg/ipa_reg-v5.0.c
-> @@ -0,0 +1,564 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +/* Copyright (C) 2023 Linaro Ltd. */
-> +
-> +#include <linux/types.h>
-> +
-> +#include "../ipa.h"
-> +#include "../ipa_reg.h"
-> +
-> +static const u32 reg_flavor_0_fmask[] = {
-> +	[MAX_PIPES]					= GENMASK(7, 0),
-> +	[MAX_CONS_PIPES]				= GENMASK(15, 8),
-> +	[MAX_PROD_PIPES]				= GENMASK(23, 16),
-> +	[PROD_LOWEST]					= GENMASK(31, 24),
-> +};
-> +
-> +REG_FIELDS(FLAVOR_0, flavor_0, 0x00000000);
-> +
-> +static const u32 reg_comp_cfg_fmask[] = {
-> +	[RAM_ARB_PRI_CLIENT_SAMP_FIX_DIS]		= BIT(0),
-> +	[GSI_SNOC_BYPASS_DIS]				= BIT(1),
-> +	[GEN_QMB_0_SNOC_BYPASS_DIS]			= BIT(2),
-> +	[GEN_QMB_1_SNOC_BYPASS_DIS]			= BIT(3),
-> +						/* Bit 4 reserved */
-> +	[IPA_QMB_SELECT_CONS_EN]			= BIT(5),
-> +	[IPA_QMB_SELECT_PROD_EN]			= BIT(6),
-> +	[GSI_MULTI_INORDER_RD_DIS]			= BIT(7),
-> +	[GSI_MULTI_INORDER_WR_DIS]			= BIT(8),
-> +	[GEN_QMB_0_MULTI_INORDER_RD_DIS]		= BIT(9),
-> +	[GEN_QMB_1_MULTI_INORDER_RD_DIS]		= BIT(10),
-> +	[GEN_QMB_0_MULTI_INORDER_WR_DIS]		= BIT(11),
-> +	[GEN_QMB_1_MULTI_INORDER_WR_DIS]		= BIT(12),
-> +	[GEN_QMB_0_SNOC_CNOC_LOOP_PROT_DIS]		= BIT(13),
-> +	[GSI_SNOC_CNOC_LOOP_PROT_DISABLE]		= BIT(14),
-> +	[GSI_MULTI_AXI_MASTERS_DIS]			= BIT(15),
-> +	[IPA_QMB_SELECT_GLOBAL_EN]			= BIT(16),
-> +	[FULL_FLUSH_WAIT_RS_CLOSURE_EN]			= BIT(17),
-> +						/* Bit 18 reserved */
-> +	[QMB_RAM_RD_CACHE_DISABLE]			= BIT(19),
-> +	[GENQMB_AOOOWR]					= BIT(20),
-> +	[IF_OUT_OF_BUF_STOP_RESET_MASK_EN]		= BIT(21),
-> +	[ATOMIC_FETCHER_ARB_LOCK_DIS]			= GENMASK(27, 22),
-> +						/* Bits 28-29 reserved */
-> +	[GEN_QMB_1_DYNAMIC_ASIZE]			= BIT(30),
-> +	[GEN_QMB_0_DYNAMIC_ASIZE]			= BIT(31),
-> +};
-> +
-> +REG_FIELDS(COMP_CFG, comp_cfg, 0x0000002c);
-> +
-> +static const u32 reg_clkon_cfg_fmask[] = {
-> +	[CLKON_RX]					= BIT(0),
-> +	[CLKON_PROC]					= BIT(1),
-> +	[TX_WRAPPER]					= BIT(2),
-> +	[CLKON_MISC]					= BIT(3),
-> +	[RAM_ARB]					= BIT(4),
-> +	[FTCH_HPS]					= BIT(5),
-> +	[FTCH_DPS]					= BIT(6),
-> +	[CLKON_HPS]					= BIT(7),
-> +	[CLKON_DPS]					= BIT(8),
-> +	[RX_HPS_CMDQS]					= BIT(9),
-> +	[HPS_DPS_CMDQS]					= BIT(10),
-> +	[DPS_TX_CMDQS]					= BIT(11),
-> +	[RSRC_MNGR]					= BIT(12),
-> +	[CTX_HANDLER]					= BIT(13),
-> +	[ACK_MNGR]					= BIT(14),
-> +	[D_DCPH]					= BIT(15),
-> +	[H_DCPH]					= BIT(16),
-> +						/* Bit 17 reserved */
-> +	[NTF_TX_CMDQS]					= BIT(18),
-> +	[CLKON_TX_0]					= BIT(19),
-> +	[CLKON_TX_1]					= BIT(20),
-> +	[CLKON_FNR]					= BIT(21),
-> +	[QSB2AXI_CMDQ_L]				= BIT(22),
-> +	[AGGR_WRAPPER]					= BIT(23),
-> +	[RAM_SLAVEWAY]					= BIT(24),
-> +	[CLKON_QMB]					= BIT(25),
-> +	[WEIGHT_ARB]					= BIT(26),
-> +	[GSI_IF]					= BIT(27),
-> +	[CLKON_GLOBAL]					= BIT(28),
-> +	[GLOBAL_2X_CLK]					= BIT(29),
-> +	[DPL_FIFO]					= BIT(30),
-> +	[DRBIP]						= BIT(31),
-> +};
-> +
-> +REG_FIELDS(CLKON_CFG, clkon_cfg, 0x00000034);
-> +
-> +static const u32 reg_route_fmask[] = {
-> +	[ROUTE_DEF_PIPE]				= GENMASK(7, 0),
-> +	[ROUTE_FRAG_DEF_PIPE]				= GENMASK(15, 8),
-> +	[ROUTE_DEF_HDR_OFST]				= GENMASK(25, 16),
-> +	[ROUTE_DEF_HDR_TABLE]				= BIT(26),
-> +	[ROUTE_DEF_RETAIN_HDR]				= BIT(27),
-> +	[ROUTE_DIS]					= BIT(28),
-> +						/* Bits 29-31 reserved */
-> +};
-> +
-> +REG_FIELDS(ROUTE, route, 0x00000038);
-> +
-> +static const u32 reg_shared_mem_size_fmask[] = {
-> +	[MEM_SIZE]					= GENMASK(15, 0),
-> +	[MEM_BADDR]					= GENMASK(31, 16),
-> +};
-> +
-> +REG_FIELDS(SHARED_MEM_SIZE, shared_mem_size, 0x00000040);
-> +
-> +static const u32 reg_qsb_max_writes_fmask[] = {
-> +	[GEN_QMB_0_MAX_WRITES]				= GENMASK(3, 0),
-> +	[GEN_QMB_1_MAX_WRITES]				= GENMASK(7, 4),
-> +						/* Bits 8-31 reserved */
-> +};
-> +
-> +REG_FIELDS(QSB_MAX_WRITES, qsb_max_writes, 0x00000054);
-> +
-> +static const u32 reg_qsb_max_reads_fmask[] = {
-> +	[GEN_QMB_0_MAX_READS]				= GENMASK(3, 0),
-> +	[GEN_QMB_1_MAX_READS]				= GENMASK(7, 4),
-> +						/* Bits 8-15 reserved */
-> +	[GEN_QMB_0_MAX_READS_BEATS]			= GENMASK(23, 16),
-> +	[GEN_QMB_1_MAX_READS_BEATS]			= GENMASK(31, 24),
-> +};
-> +
-> +REG_FIELDS(QSB_MAX_READS, qsb_max_reads, 0x00000058);
-> +
-> +/* Valid bits defined by ipa->available */
-> +
-> +REG_STRIDE(STATE_AGGR_ACTIVE, state_aggr_active, 0x00000100, 0x0004);
-> +
-> +static const u32 reg_filt_rout_cache_flush_fmask[] = {
-> +	[ROUTER_CACHE]					= BIT(0),
-> +						/* Bits 1-3 reserved */
-> +	[FILTER_CACHE]					= BIT(4),
-> +						/* Bits 5-31 reserved */
-> +};
-> +
-> +REG_FIELDS(FILT_ROUT_CACHE_FLUSH, filt_rout_cache_flush, 0x0000404);
-> +
-> +static const u32 reg_local_pkt_proc_cntxt_fmask[] = {
-> +	[IPA_BASE_ADDR]					= GENMASK(17, 0),
-> +						/* Bits 18-31 reserved */
-> +};
-> +
-> +/* Offset must be a multiple of 8 */
-> +REG_FIELDS(LOCAL_PKT_PROC_CNTXT, local_pkt_proc_cntxt, 0x00000478);
-> +
-> +static const u32 reg_ipa_tx_cfg_fmask[] = {
-> +						/* Bits 0-1 reserved */
-> +	[PREFETCH_ALMOST_EMPTY_SIZE_TX0]		= GENMASK(5, 2),
-> +	[DMAW_SCND_OUTSD_PRED_THRESHOLD]		= GENMASK(9, 6),
-> +	[DMAW_SCND_OUTSD_PRED_EN]			= BIT(10),
-> +	[DMAW_MAX_BEATS_256_DIS]			= BIT(11),
-> +	[PA_MASK_EN]					= BIT(12),
-> +	[PREFETCH_ALMOST_EMPTY_SIZE_TX1]		= GENMASK(16, 13),
-> +	[DUAL_TX_ENABLE]				= BIT(17),
-> +	[SSPND_PA_NO_START_STATE]			= BIT(18),
-> +						/* Bit 19 reserved */
-> +	[HOLB_STICKY_DROP_EN]				= BIT(20),
-> +						/* Bits 21-31 reserved */
-> +};
-> +
-> +REG_FIELDS(IPA_TX_CFG, ipa_tx_cfg, 0x00000488);
-> +
-> +static const u32 reg_idle_indication_cfg_fmask[] = {
-> +	[ENTER_IDLE_DEBOUNCE_THRESH]			= GENMASK(15, 0),
-> +	[CONST_NON_IDLE_ENABLE]				= BIT(16),
-> +						/* Bits 17-31 reserved */
-> +};
-> +
-> +REG_FIELDS(IDLE_INDICATION_CFG, idle_indication_cfg, 0x000004a8);
-> +
-> +static const u32 reg_qtime_timestamp_cfg_fmask[] = {
-> +	[DPL_TIMESTAMP_LSB]				= GENMASK(4, 0),
-> +						/* Bits 5-6 reserved */
-> +	[DPL_TIMESTAMP_SEL]				= BIT(7),
-> +	[TAG_TIMESTAMP_LSB]				= GENMASK(12, 8),
-> +						/* Bits 13-15 reserved */
-> +	[NAT_TIMESTAMP_LSB]				= GENMASK(20, 16),
-> +						/* Bits 21-31 reserved */
-> +};
-> +
-> +REG_FIELDS(QTIME_TIMESTAMP_CFG, qtime_timestamp_cfg, 0x000004ac);
-> +
-> +static const u32 reg_timers_xo_clk_div_cfg_fmask[] = {
-> +	[DIV_VALUE]					= GENMASK(8, 0),
-> +						/* Bits 9-30 reserved */
-> +	[DIV_ENABLE]					= BIT(31),
-> +};
-> +
-> +REG_FIELDS(TIMERS_XO_CLK_DIV_CFG, timers_xo_clk_div_cfg, 0x000004b0);
-> +
-> +static const u32 reg_timers_pulse_gran_cfg_fmask[] = {
-> +	[PULSE_GRAN_0]					= GENMASK(2, 0),
-> +	[PULSE_GRAN_1]					= GENMASK(5, 3),
-> +	[PULSE_GRAN_2]					= GENMASK(8, 6),
-> +	[PULSE_GRAN_3]					= GENMASK(11, 9),
-> +						/* Bits 12-31 reserved */
-> +};
-> +
-> +REG_FIELDS(TIMERS_PULSE_GRAN_CFG, timers_pulse_gran_cfg, 0x000004b4);
-> +
-> +static const u32 reg_src_rsrc_grp_01_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(SRC_RSRC_GRP_01_RSRC_TYPE, src_rsrc_grp_01_rsrc_type,
-> +		  0x00000500, 0x0020);
-> +
-> +static const u32 reg_src_rsrc_grp_23_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(SRC_RSRC_GRP_23_RSRC_TYPE, src_rsrc_grp_23_rsrc_type,
-> +		  0x00000504, 0x0020);
-> +
-> +static const u32 reg_src_rsrc_grp_45_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(SRC_RSRC_GRP_45_RSRC_TYPE, src_rsrc_grp_45_rsrc_type,
-> +		  0x00000508, 0x0020);
-> +
-> +static const u32 reg_src_rsrc_grp_67_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(SRC_RSRC_GRP_67_RSRC_TYPE, src_rsrc_grp_67_rsrc_type,
-> +		  0x0000050c, 0x0020);
-> +
-> +static const u32 reg_dst_rsrc_grp_01_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(DST_RSRC_GRP_01_RSRC_TYPE, dst_rsrc_grp_01_rsrc_type,
-> +		  0x00000600, 0x0020);
-> +
-> +static const u32 reg_dst_rsrc_grp_23_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(DST_RSRC_GRP_23_RSRC_TYPE, dst_rsrc_grp_23_rsrc_type,
-> +		  0x00000604, 0x0020);
-> +
-> +static const u32 reg_dst_rsrc_grp_45_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(DST_RSRC_GRP_45_RSRC_TYPE, dst_rsrc_grp_45_rsrc_type,
-> +		  0x00000608, 0x0020);
-> +
-> +static const u32 reg_dst_rsrc_grp_67_rsrc_type_fmask[] = {
-> +	[X_MIN_LIM]					= GENMASK(5, 0),
-> +						/* Bits 6-7 reserved */
-> +	[X_MAX_LIM]					= GENMASK(13, 8),
-> +						/* Bits 14-15 reserved */
-> +	[Y_MIN_LIM]					= GENMASK(21, 16),
-> +						/* Bits 22-23 reserved */
-> +	[Y_MAX_LIM]					= GENMASK(29, 24),
-> +						/* Bits 30-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(DST_RSRC_GRP_67_RSRC_TYPE, dst_rsrc_grp_67_rsrc_type,
-> +		  0x0000060c, 0x0020);
-> +
-> +/* Valid bits defined by ipa->available */
-> +
-> +REG_STRIDE(AGGR_FORCE_CLOSE, aggr_force_close, 0x000006b0, 0x0004);
-> +
-> +static const u32 reg_endp_init_cfg_fmask[] = {
-> +	[FRAG_OFFLOAD_EN]				= BIT(0),
-> +	[CS_OFFLOAD_EN]					= GENMASK(2, 1),
-> +	[CS_METADATA_HDR_OFFSET]			= GENMASK(6, 3),
-> +						/* Bit 7 reserved */
-> +	[CS_GEN_QMB_MASTER_SEL]				= BIT(8),
-> +						/* Bits 9-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_CFG, endp_init_cfg, 0x00001008, 0x0080);
-> +
-> +static const u32 reg_endp_init_nat_fmask[] = {
-> +	[NAT_EN]					= GENMASK(1, 0),
-> +						/* Bits 2-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_NAT, endp_init_nat, 0x0000100c, 0x0080);
-> +
-> +static const u32 reg_endp_init_hdr_fmask[] = {
-> +	[HDR_LEN]					= GENMASK(5, 0),
-> +	[HDR_OFST_METADATA_VALID]			= BIT(6),
-> +	[HDR_OFST_METADATA]				= GENMASK(12, 7),
-> +	[HDR_ADDITIONAL_CONST_LEN]			= GENMASK(18, 13),
-> +	[HDR_OFST_PKT_SIZE_VALID]			= BIT(19),
-> +	[HDR_OFST_PKT_SIZE]				= GENMASK(25, 20),
-> +						/* Bit 26 reserved */
-> +	[HDR_LEN_INC_DEAGG_HDR]				= BIT(27),
-> +	[HDR_LEN_MSB]					= GENMASK(29, 28),
-> +	[HDR_OFST_METADATA_MSB]				= GENMASK(31, 30),
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_HDR, endp_init_hdr, 0x00001010, 0x0080);
-> +
-> +static const u32 reg_endp_init_hdr_ext_fmask[] = {
-> +	[HDR_ENDIANNESS]				= BIT(0),
-> +	[HDR_TOTAL_LEN_OR_PAD_VALID]			= BIT(1),
-> +	[HDR_TOTAL_LEN_OR_PAD]				= BIT(2),
-> +	[HDR_PAYLOAD_LEN_INC_PADDING]			= BIT(3),
-> +	[HDR_TOTAL_LEN_OR_PAD_OFFSET]			= GENMASK(9, 4),
-> +	[HDR_PAD_TO_ALIGNMENT]				= GENMASK(13, 10),
-> +						/* Bits 14-15 reserved */
-> +	[HDR_TOTAL_LEN_OR_PAD_OFFSET_MSB]		= GENMASK(17, 16),
-> +	[HDR_OFST_PKT_SIZE_MSB]				= GENMASK(19, 18),
-> +	[HDR_ADDITIONAL_CONST_LEN_MSB]			= GENMASK(21, 20),
-> +	[HDR_BYTES_TO_REMOVE_VALID]			= BIT(22),
-> +						/* Bit 23 reserved */
-> +	[HDR_BYTES_TO_REMOVE]				= GENMASK(31, 24),
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_HDR_EXT, endp_init_hdr_ext, 0x00001014, 0x0080);
-> +
-> +REG_STRIDE(ENDP_INIT_HDR_METADATA_MASK, endp_init_hdr_metadata_mask,
-> +	   0x00001018, 0x0080);
-> +
-> +static const u32 reg_endp_init_mode_fmask[] = {
-> +	[ENDP_MODE]					= GENMASK(2, 0),
-> +	[DCPH_ENABLE]					= BIT(3),
-> +	[DEST_PIPE_INDEX]				= GENMASK(11, 4),
-> +	[BYTE_THRESHOLD]				= GENMASK(27, 12),
-> +	[PIPE_REPLICATION_EN]				= BIT(28),
-> +	[PAD_EN]					= BIT(29),
-> +	[DRBIP_ACL_ENABLE]				= BIT(30),
-> +						/* Bit 31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_MODE, endp_init_mode, 0x00001020, 0x0080);
-> +
-> +static const u32 reg_endp_init_aggr_fmask[] = {
-> +	[AGGR_EN]					= GENMASK(1, 0),
-> +	[AGGR_TYPE]					= GENMASK(4, 2),
-> +	[BYTE_LIMIT]					= GENMASK(10, 5),
-> +						/* Bit 11 reserved */
-> +	[TIME_LIMIT]					= GENMASK(16, 12),
-> +	[PKT_LIMIT]					= GENMASK(22, 17),
-> +	[SW_EOF_ACTIVE]					= BIT(23),
-> +	[FORCE_CLOSE]					= BIT(24),
-> +						/* Bit 25 reserved */
-> +	[HARD_BYTE_LIMIT_EN]				= BIT(26),
-> +	[AGGR_GRAN_SEL]					= BIT(27),
-> +						/* Bits 28-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_AGGR, endp_init_aggr, 0x00001024, 0x0080);
-> +
-> +static const u32 reg_endp_init_hol_block_en_fmask[] = {
-> +	[HOL_BLOCK_EN]					= BIT(0),
-> +						/* Bits 1-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_HOL_BLOCK_EN, endp_init_hol_block_en,
-> +		  0x0000102c, 0x0080);
-> +
-> +static const u32 reg_endp_init_hol_block_timer_fmask[] = {
-> +	[TIMER_LIMIT]					= GENMASK(4, 0),
-> +						/* Bits 5-7 reserved */
-> +	[TIMER_GRAN_SEL]				= GENMASK(9, 8),
-> +						/* Bits 10-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_HOL_BLOCK_TIMER, endp_init_hol_block_timer,
-> +		  0x00001030, 0x0080);
-> +
-> +static const u32 reg_endp_init_deaggr_fmask[] = {
-> +	[DEAGGR_HDR_LEN]				= GENMASK(5, 0),
-> +	[SYSPIPE_ERR_DETECTION]				= BIT(6),
-> +	[PACKET_OFFSET_VALID]				= BIT(7),
-> +	[PACKET_OFFSET_LOCATION]			= GENMASK(13, 8),
-> +	[IGNORE_MIN_PKT_ERR]				= BIT(14),
-> +						/* Bit 15 reserved */
-> +	[MAX_PACKET_LEN]				= GENMASK(31, 16),
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_DEAGGR, endp_init_deaggr, 0x00001034, 0x0080);
-> +
-> +static const u32 reg_endp_init_rsrc_grp_fmask[] = {
-> +	[ENDP_RSRC_GRP]					= GENMASK(2, 0),
-> +						/* Bits 3-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_RSRC_GRP, endp_init_rsrc_grp, 0x00001038, 0x0080);
-> +
-> +static const u32 reg_endp_init_seq_fmask[] = {
-> +	[SEQ_TYPE]					= GENMASK(7, 0),
-> +						/* Bits 8-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_INIT_SEQ, endp_init_seq, 0x0000103c, 0x0080);
-> +
-> +static const u32 reg_endp_status_fmask[] = {
-> +	[STATUS_EN]					= BIT(0),
-> +	[STATUS_ENDP]					= GENMASK(8, 1),
-> +	[STATUS_PKT_SUPPRESS]				= BIT(9),
-> +						/* Bits 10-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_STATUS, endp_status, 0x00001040, 0x0080);
-> +
-> +static const u32 reg_endp_filter_cache_cfg_fmask[] = {
-> +	[CACHE_MSK_SRC_ID]				= BIT(0),
-> +	[CACHE_MSK_SRC_IP]				= BIT(1),
-> +	[CACHE_MSK_DST_IP]				= BIT(2),
-> +	[CACHE_MSK_SRC_PORT]				= BIT(3),
-> +	[CACHE_MSK_DST_PORT]				= BIT(4),
-> +	[CACHE_MSK_PROTOCOL]				= BIT(5),
-> +	[CACHE_MSK_METADATA]				= BIT(6),
-> +						/* Bits 7-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_FILTER_CACHE_CFG, endp_filter_cache_cfg,
-> +		  0x0000105c, 0x0080);
-> +
-> +static const u32 reg_endp_router_cache_cfg_fmask[] = {
-> +	[CACHE_MSK_SRC_ID]				= BIT(0),
-> +	[CACHE_MSK_SRC_IP]				= BIT(1),
-> +	[CACHE_MSK_DST_IP]				= BIT(2),
-> +	[CACHE_MSK_SRC_PORT]				= BIT(3),
-> +	[CACHE_MSK_DST_PORT]				= BIT(4),
-> +	[CACHE_MSK_PROTOCOL]				= BIT(5),
-> +	[CACHE_MSK_METADATA]				= BIT(6),
-> +						/* Bits 7-31 reserved */
-> +};
-> +
-> +REG_STRIDE_FIELDS(ENDP_ROUTER_CACHE_CFG, endp_router_cache_cfg,
-> +		  0x00001070, 0x0080);
-> +
-> +/* Valid bits defined by enum ipa_irq_id; only used for GSI_EE_AP */
-> +REG(IPA_IRQ_STTS, ipa_irq_stts, 0x0000c008 + 0x1000 * GSI_EE_AP);
-> +
-> +/* Valid bits defined by enum ipa_irq_id; only used for GSI_EE_AP */
-> +REG(IPA_IRQ_EN, ipa_irq_en, 0x0000c00c + 0x1000 * GSI_EE_AP);
-> +
-> +/* Valid bits defined by enum ipa_irq_id; only used for GSI_EE_AP */
-> +REG(IPA_IRQ_CLR, ipa_irq_clr, 0x0000c010 + 0x1000 * GSI_EE_AP);
-> +
-> +static const u32 reg_ipa_irq_uc_fmask[] = {
-> +	[UC_INTR]					= BIT(0),
-> +						/* Bits 1-31 reserved */
-> +};
-> +
-> +REG_FIELDS(IPA_IRQ_UC, ipa_irq_uc, 0x0000c01c + 0x1000 * GSI_EE_AP);
-> +
-> +/* Valid bits defined by ipa->available */
-> +
-> +REG_STRIDE(IRQ_SUSPEND_INFO, irq_suspend_info,
-> +	   0x0000c030 + 0x1000 * GSI_EE_AP, 0x0004);
-> +
-> +/* Valid bits defined by ipa->available */
-> +
-> +REG_STRIDE(IRQ_SUSPEND_EN, irq_suspend_en,
-> +	   0x0000c050 + 0x1000 * GSI_EE_AP, 0x0004);
-> +
-> +/* Valid bits defined by ipa->available */
-> +
-> +REG_STRIDE(IRQ_SUSPEND_CLR, irq_suspend_clr,
-> +	   0x0000c070 + 0x1000 * GSI_EE_AP, 0x0004);
-> +
-> +static const struct reg *reg_array[] = {
-> +	[COMP_CFG]			= &reg_comp_cfg,
-> +	[CLKON_CFG]			= &reg_clkon_cfg,
-> +	[ROUTE]				= &reg_route,
-> +	[SHARED_MEM_SIZE]		= &reg_shared_mem_size,
-> +	[QSB_MAX_WRITES]		= &reg_qsb_max_writes,
-> +	[QSB_MAX_READS]			= &reg_qsb_max_reads,
-> +	[FILT_ROUT_CACHE_FLUSH]		= &reg_filt_rout_cache_flush,
-> +	[STATE_AGGR_ACTIVE]		= &reg_state_aggr_active,
-> +	[LOCAL_PKT_PROC_CNTXT]		= &reg_local_pkt_proc_cntxt,
-> +	[AGGR_FORCE_CLOSE]		= &reg_aggr_force_close,
-> +	[IPA_TX_CFG]			= &reg_ipa_tx_cfg,
-> +	[FLAVOR_0]			= &reg_flavor_0,
-> +	[IDLE_INDICATION_CFG]		= &reg_idle_indication_cfg,
-> +	[QTIME_TIMESTAMP_CFG]		= &reg_qtime_timestamp_cfg,
-> +	[TIMERS_XO_CLK_DIV_CFG]		= &reg_timers_xo_clk_div_cfg,
-> +	[TIMERS_PULSE_GRAN_CFG]		= &reg_timers_pulse_gran_cfg,
-> +	[SRC_RSRC_GRP_01_RSRC_TYPE]	= &reg_src_rsrc_grp_01_rsrc_type,
-> +	[SRC_RSRC_GRP_23_RSRC_TYPE]	= &reg_src_rsrc_grp_23_rsrc_type,
-> +	[SRC_RSRC_GRP_45_RSRC_TYPE]	= &reg_src_rsrc_grp_45_rsrc_type,
-> +	[SRC_RSRC_GRP_67_RSRC_TYPE]	= &reg_src_rsrc_grp_67_rsrc_type,
-> +	[DST_RSRC_GRP_01_RSRC_TYPE]	= &reg_dst_rsrc_grp_01_rsrc_type,
-> +	[DST_RSRC_GRP_23_RSRC_TYPE]	= &reg_dst_rsrc_grp_23_rsrc_type,
-> +	[DST_RSRC_GRP_45_RSRC_TYPE]	= &reg_dst_rsrc_grp_45_rsrc_type,
-> +	[DST_RSRC_GRP_67_RSRC_TYPE]	= &reg_dst_rsrc_grp_67_rsrc_type,
-> +	[ENDP_INIT_CFG]			= &reg_endp_init_cfg,
-> +	[ENDP_INIT_NAT]			= &reg_endp_init_nat,
-> +	[ENDP_INIT_HDR]			= &reg_endp_init_hdr,
-> +	[ENDP_INIT_HDR_EXT]		= &reg_endp_init_hdr_ext,
-> +	[ENDP_INIT_HDR_METADATA_MASK]	= &reg_endp_init_hdr_metadata_mask,
-> +	[ENDP_INIT_MODE]		= &reg_endp_init_mode,
-> +	[ENDP_INIT_AGGR]		= &reg_endp_init_aggr,
-> +	[ENDP_INIT_HOL_BLOCK_EN]	= &reg_endp_init_hol_block_en,
-> +	[ENDP_INIT_HOL_BLOCK_TIMER]	= &reg_endp_init_hol_block_timer,
-> +	[ENDP_INIT_DEAGGR]		= &reg_endp_init_deaggr,
-> +	[ENDP_INIT_RSRC_GRP]		= &reg_endp_init_rsrc_grp,
-> +	[ENDP_INIT_SEQ]			= &reg_endp_init_seq,
-> +	[ENDP_STATUS]			= &reg_endp_status,
-> +	[ENDP_FILTER_CACHE_CFG]		= &reg_endp_filter_cache_cfg,
-> +	[ENDP_ROUTER_CACHE_CFG]		= &reg_endp_router_cache_cfg,
-> +	[IPA_IRQ_STTS]			= &reg_ipa_irq_stts,
-> +	[IPA_IRQ_EN]			= &reg_ipa_irq_en,
-> +	[IPA_IRQ_CLR]			= &reg_ipa_irq_clr,
-> +	[IPA_IRQ_UC]			= &reg_ipa_irq_uc,
-> +	[IRQ_SUSPEND_INFO]		= &reg_irq_suspend_info,
-> +	[IRQ_SUSPEND_EN]		= &reg_irq_suspend_en,
-> +	[IRQ_SUSPEND_CLR]		= &reg_irq_suspend_clr,
-> +};
-> +
-> +const struct regs ipa_regs_v5_0 = {
-> +	.reg_count	= ARRAY_SIZE(reg_array),
-> +	.reg		= reg_array,
-> +};
-
+SGkgUGV0ZXIsDQoNCkEgZmV3IGNvbW1lbnRzIGJlbG93Og0KDQpPbiBUdWUgTWFyIDIxLCAyMDIz
+IGF0IDk6MTEgQU0gQ0VULCBKaS1aZSBIb25nIChQZXRlciBIb25nKSB3cm90ZToNCj4gW1lvdSBk
+b24ndCBvZnRlbiBnZXQgZW1haWwgZnJvbSBwZXRlcl9ob25nQGZpbnRlay5jb20udHcuIExlYXJu
+IHdoeSB0aGlzIGlzIGltcG9ydGFudCBhdCBodHRwczovL2FrYS5tcy9MZWFybkFib3V0U2VuZGVy
+SWRlbnRpZmljYXRpb24gXQ0KPg0KPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtz
+IG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUN
+Cj4NCj4gVGhpcyBwYXRjaCBhZGQgc3VwcG9ydCBmb3IgRmludGVrIFVTQiB0byAyQ0FOIGNvbnRy
+b2xsZXIgc3VwcG9ydC4NCj4NCj4gU2lnbmVkLW9mZi1ieTogSmktWmUgSG9uZyAoUGV0ZXIgSG9u
+ZykgPHBldGVyX2hvbmdAZmludGVrLmNvbS50dz4NCj4gLS0tDQo+IENoYW5nZWxvZzoNCj4gdjI6
+DQo+ICAgICAgICAgMS4gY29kaW5nIHN0eWxlIHJlZmFjdG9yaW5nLg0KPiAgICAgICAgIDIuIHNv
+bWUgY29uc3QgbnVtYmVyIGFyZSBkZWZpbmVkIHRvIGRlc2NyaWJlIGl0c2VsZi4NCj4gICAgICAg
+ICAzLiBmaXggd3JvbmcgdXNhZ2UgZm9yIGNhbl9nZXRfZWNob19za2IoKSBpbiBmODE2MDRfd3Jp
+dGVfYnVsa19jYWxsYmFjaygpLg0KPg0KPiAgZHJpdmVycy9uZXQvY2FuL3VzYi9LY29uZmlnICB8
+ICAgIDkgKw0KPiAgZHJpdmVycy9uZXQvY2FuL3VzYi9NYWtlZmlsZSB8ICAgIDEgKw0KPiAgZHJp
+dmVycy9uZXQvY2FuL3VzYi9mODE2MDQuYyB8IDExNzkgKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKw0KPiAgMyBmaWxlcyBjaGFuZ2VkLCAxMTg5IGluc2VydGlvbnMoKykNCj4gIGNy
+ZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC9jYW4vdXNiL2Y4MTYwNC5jDQo+DQoNCi4uLnNu
+aXAuLi4NCg0KPiArc3RhdGljIGludCBmODE2MDRfc2V0X2JpdHRpbWluZyhzdHJ1Y3QgbmV0X2Rl
+dmljZSAqZGV2KQ0KPiArew0KPiArICAgICAgIHN0cnVjdCBmODE2MDRfcG9ydF9wcml2ICpwcml2
+ID0gbmV0ZGV2X3ByaXYoZGV2KTsNCj4gKyAgICAgICBzdHJ1Y3QgY2FuX2JpdHRpbWluZyAqYnQg
+PSAmcHJpdi0+Y2FuLmJpdHRpbWluZzsNCj4gKyAgICAgICBpbnQgc3RhdHVzID0gMDsNCj4gKyAg
+ICAgICB1OCBidHIwLCBidHIxOw0KPiArDQo+ICsgICAgICAgYnRyMCA9ICgoYnQtPmJycCAtIDEp
+ICYgMHgzZikgfCAoKChidC0+c2p3IC0gMSkgJiAweDMpIDw8IDYpOw0KPiArICAgICAgIGJ0cjEg
+PSAoKGJ0LT5wcm9wX3NlZyArIGJ0LT5waGFzZV9zZWcxIC0gMSkgJiAweGYpIHwNCj4gKyAgICAg
+ICAgICAgICAgKCgoYnQtPnBoYXNlX3NlZzIgLSAxKSAmIDB4NykgPDwgNCk7DQoNClVzZSB0aGUg
+RklFTERfR0VUIGFuZCBHRU5NQVNLIG9wZXJhdG9ycyB0byBtYWtlIHRoaXMgbW9yZSByZWFkYWJs
+ZS4NCg0KPiArDQo+ICsgICAgICAgaWYgKHByaXYtPmNhbi5jdHJsbW9kZSAmIENBTl9DVFJMTU9E
+RV8zX1NBTVBMRVMpDQo+ICsgICAgICAgICAgICAgICBidHIxIHw9IDB4ODA7DQo+ICsNCj4gKyAg
+ICAgICBuZXRkZXZfaW5mbyhkZXYsICJCVFIwPTB4JTAyeCBCVFIxPTB4JTAyeFxuIiwgYnRyMCwg
+YnRyMSk7DQo+ICsNCj4gKyAgICAgICBzdGF0dXMgPSBmODE2MDRfc2V0X3NqYTEwMDBfcmVnaXN0
+ZXIocHJpdi0+ZGV2LCBkZXYtPmRldl9pZCwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgU0pBMTAwMF9CVFIwLCBidHIwKTsNCj4gKyAgICAgICBpZiAoc3Rh
+dHVzKSB7DQo+ICsgICAgICAgICAgICAgICBuZXRkZXZfd2FybihkZXYsICIlczogU2V0IEJUUjAg
+ZmFpbGVkOiAlZFxuIiwgX19mdW5jX18sDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICBz
+dGF0dXMpOw0KPiArICAgICAgICAgICAgICAgcmV0dXJuIHN0YXR1czsNCj4gKyAgICAgICB9DQo+
+ICsNCj4gKyAgICAgICBzdGF0dXMgPSBmODE2MDRfc2V0X3NqYTEwMDBfcmVnaXN0ZXIocHJpdi0+
+ZGV2LCBkZXYtPmRldl9pZCwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgU0pBMTAwMF9CVFIxLCBidHIxKTsNCj4gKyAgICAgICBpZiAoc3RhdHVzKSB7DQo+
+ICsgICAgICAgICAgICAgICBuZXRkZXZfd2FybihkZXYsICIlczogU2V0IEJUUjEgZmFpbGVkOiAl
+ZFxuIiwgX19mdW5jX18sDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICBzdGF0dXMpOw0K
+PiArICAgICAgICAgICAgICAgcmV0dXJuIHN0YXR1czsNCj4gKyAgICAgICB9DQo+ICsNCj4gKyAg
+ICAgICByZXR1cm4gMDsNCj4gK30NCj4gKw0KPiArc3RhdGljIGludCBmODE2MDRfc2V0X21vZGUo
+c3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiwgZW51bSBjYW5fbW9kZSBtb2RlKQ0KPiArew0KPiAr
+ICAgICAgIGludCBlcnI7DQo+ICsNCj4gKyAgICAgICBzd2l0Y2ggKG1vZGUpIHsNCj4gKyAgICAg
+ICBjYXNlIENBTl9NT0RFX1NUQVJUOg0KPiArICAgICAgICAgICAgICAgZXJyID0gZjgxNjA0X3N0
+YXJ0KG5ldGRldik7DQo+ICsgICAgICAgICAgICAgICBpZiAoIWVyciAmJiBuZXRpZl9xdWV1ZV9z
+dG9wcGVkKG5ldGRldikpDQo+ICsgICAgICAgICAgICAgICAgICAgICAgIG5ldGlmX3dha2VfcXVl
+dWUobmV0ZGV2KTsNCj4gKyAgICAgICAgICAgICAgIGJyZWFrOw0KPiArDQo+ICsgICAgICAgZGVm
+YXVsdDoNCj4gKyAgICAgICAgICAgICAgIGVyciA9IC1FT1BOT1RTVVBQOw0KPiArICAgICAgIH0N
+Cj4gKw0KPiArICAgICAgIHJldHVybiBlcnI7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyB2b2lkIGY4
+MTYwNF9wcm9jZXNzX3J4X3BhY2tldChzdHJ1Y3QgdXJiICp1cmIpDQo+ICt7DQo+ICsgICAgICAg
+c3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldiA9IHVyYi0+Y29udGV4dDsNCj4gKyAgICAgICBzdHJ1
+Y3QgbmV0X2RldmljZV9zdGF0cyAqc3RhdHM7DQo+ICsgICAgICAgc3RydWN0IGNhbl9mcmFtZSAq
+Y2Y7DQo+ICsgICAgICAgc3RydWN0IHNrX2J1ZmYgKnNrYjsNCj4gKyAgICAgICBpbnQgaSwgY291
+bnQ7DQo+ICsgICAgICAgdTggKmRhdGE7DQo+ICsgICAgICAgdTggKnB0cjsNCj4gKw0KPiArICAg
+ICAgIGRhdGEgPSB1cmItPnRyYW5zZmVyX2J1ZmZlcjsNCj4gKyAgICAgICBzdGF0cyA9ICZuZXRk
+ZXYtPnN0YXRzOw0KPiArDQo+ICsgICAgICAgaWYgKHVyYi0+YWN0dWFsX2xlbmd0aCAlIDE0KQ0K
+DQpZb3UgbmVlZCBhIHN5bWJvbCBmb3IgdGhpcyB2YWx1ZTogMTQNCg0KPiArICAgICAgICAgICAg
+ICAgbmV0ZGV2X3dhcm4obmV0ZGV2LCAiYWN0dWFsX2xlbmd0aCAlJSAxNCAhPSAwICglZClcbiIs
+DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICB1cmItPmFjdHVhbF9sZW5ndGgpOw0KPiAr
+ICAgICAgIGVsc2UgaWYgKCF1cmItPmFjdHVhbF9sZW5ndGgpDQo+ICsgICAgICAgICAgICAgICBu
+ZXRkZXZfd2FybihuZXRkZXYsICJhY3R1YWxfbGVuZ3RoID0gMCAoJWQpXG4iLA0KPiArICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgdXJiLT5hY3R1YWxfbGVuZ3RoKTsNCj4gKw0KPiArICAgICAg
+IGNvdW50ID0gdXJiLT5hY3R1YWxfbGVuZ3RoIC8gRjgxNjA0X0RBVEFfU0laRTsNCj4gKw0KPiAr
+ICAgICAgIGZvciAoaSA9IDA7IGkgPCBjb3VudDsgKytpKSB7DQo+ICsgICAgICAgICAgICAgICBw
+dHIgPSAmZGF0YVtpICogRjgxNjA0X0RBVEFfU0laRV07DQo+ICsNCj4gKyAgICAgICAgICAgICAg
+IGlmIChwdHJbRjgxNjA0X0NNRF9PRkZTRVRdICE9IEY4MTYwNF9DTURfREFUQSkNCj4gKyAgICAg
+ICAgICAgICAgICAgICAgICAgY29udGludWU7DQo+ICsNCj4gKyAgICAgICAgICAgICAgIHNrYiA9
+IGFsbG9jX2Nhbl9za2IobmV0ZGV2LCAmY2YpOw0KPiArICAgICAgICAgICAgICAgaWYgKCFza2Ip
+IHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgbmV0ZGV2X3dhcm4obmV0ZGV2LCAiJXM6IG5v
+dCBlbm91Z2ggbWVtb3J5IiwgX19mdW5jX18pOw0KPiArICAgICAgICAgICAgICAgICAgICAgICBj
+b250aW51ZTsNCj4gKyAgICAgICAgICAgICAgIH0NCj4gKw0KPiArICAgICAgICAgICAgICAgY2Yt
+PmNhbl9kbGMgPSBjYW5fY2NfZGxjMmxlbihwdHJbRjgxNjA0X0RMQ19PRkZTRVRdICYgMHhGKTsN
+Cj4gKw0KPiArICAgICAgICAgICAgICAgaWYgKHB0cltGODE2MDRfRExDX09GRlNFVF0gJiBGODE2
+MDRfRUZGX0JJVCkgew0KPiArICAgICAgICAgICAgICAgICAgICAgICBjZi0+Y2FuX2lkID0gKHB0
+cltGODE2MDRfSUQxX09GRlNFVF0gPDwgMjEpIHwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIChwdHJbRjgxNjA0X0lEMl9PRkZTRVRdIDw8IDEzKSB8DQo+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAocHRyW0Y4MTYwNF9JRDNfT0ZGU0VUXSA8PCA1
+KSB8DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAocHRyW0Y4MTYwNF9J
+RDRfT0ZGU0VUXSA+PiAzKTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgY2YtPmNhbl9pZCB8
+PSBDQU5fRUZGX0ZMQUc7DQo+ICsgICAgICAgICAgICAgICB9IGVsc2Ugew0KPiArICAgICAgICAg
+ICAgICAgICAgICAgICBjZi0+Y2FuX2lkID0gKHB0cltGODE2MDRfSUQxX09GRlNFVF0gPDwgMykg
+fA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKHB0cltGODE2MDRfSUQy
+X09GRlNFVF0gPj4gNSk7DQo+ICsgICAgICAgICAgICAgICB9DQoNCkFnYWluLCB1c2UgdGhlIGZp
+ZWxkIG9wZXJhdG9ycy4NCg0KPiArDQo+ICsgICAgICAgICAgICAgICBpZiAocHRyW0Y4MTYwNF9E
+TENfT0ZGU0VUXSAmIEY4MTYwNF9SVFJfQklUKSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAg
+IGNmLT5jYW5faWQgfD0gQ0FOX1JUUl9GTEFHOw0KPiArICAgICAgICAgICAgICAgfSBlbHNlIGlm
+IChwdHJbRjgxNjA0X0RMQ19PRkZTRVRdICYgRjgxNjA0X0VGRl9CSVQpIHsNCj4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgbWVtY3B5KGNmLT5kYXRhLCAmcHRyW0Y4MTYwNF9FRkZfREFUQV9PRkZT
+RVRdLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2YtPmNhbl9kbGMpOw0KPiAr
+ICAgICAgICAgICAgICAgfSBlbHNlIHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgbWVtY3B5
+KGNmLT5kYXRhLCAmcHRyW0Y4MTYwNF9TRkZfREFUQV9PRkZTRVRdLA0KPiArICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgY2YtPmNhbl9kbGMpOw0KPiArICAgICAgICAgICAgICAgfQ0KPiAr
+DQo+ICsgICAgICAgICAgICAgICBzdGF0cy0+cnhfcGFja2V0cysrOw0KPiArICAgICAgICAgICAg
+ICAgc3RhdHMtPnJ4X2J5dGVzICs9IGNmLT5jYW5fZGxjOw0KPiArICAgICAgICAgICAgICAgbmV0
+aWZfcngoc2tiKTsNCj4gKyAgICAgICB9DQo+ICt9DQo+ICsNCg0KLi4uc25pcC4uLg0KDQo+ICtz
+dGF0aWMgaW50IGY4MTYwNF9wcm9iZShzdHJ1Y3QgdXNiX2ludGVyZmFjZSAqaW50ZiwNCj4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgY29uc3Qgc3RydWN0IHVzYl9kZXZpY2VfaWQgKmlkKQ0KPiAr
+ew0KPiArICAgICAgIHN0cnVjdCB1c2JfZGV2aWNlICpkZXYgPSBpbnRlcmZhY2VfdG9fdXNiZGV2
+KGludGYpOw0KPiArICAgICAgIHN0cnVjdCBmODE2MDRfcG9ydF9wcml2ICpwb3J0X3ByaXY7DQo+
+ICsgICAgICAgc3RydWN0IG5ldF9kZXZpY2UgKm5ldGRldjsNCj4gKyAgICAgICBzdHJ1Y3QgZjgx
+NjA0X3ByaXYgKnByaXY7DQo+ICsgICAgICAgaW50IGksIGVycjsNCj4gKw0KPiArICAgICAgIGRl
+dl9pbmZvKCZpbnRmLT5kZXYsICJEZXRlY3RlZCBGaW50ZWsgRjgxNjA0IGRldmljZS5cbiIpOw0K
+PiArICAgICAgIGRldl9pbmZvKCZpbnRmLT5kZXYsDQo+ICsgICAgICAgICAgICAgICAgIlBsZWFz
+ZSBkb3dubG9hZCBuZXdlc3QgZHJpdmVyIGZyb20gRmludGVrIHdlYnNpdGVcbiIpOw0KPiArICAg
+ICAgIGRldl9pbmZvKCZpbnRmLT5kZXYsICJpZiB5b3Ugd2FudCB0byB1c2UgY3VzdG9taXplZCBm
+dW5jdGlvbnMuXG4iKTsNCj4gKw0KPiArICAgICAgIHByaXYgPSBkZXZtX2t6YWxsb2MoJmludGYt
+PmRldiwgc2l6ZW9mKCpwcml2KSwgR0ZQX0tFUk5FTCk7DQo+ICsgICAgICAgaWYgKCFwcml2KQ0K
+PiArICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9NRU07DQo+ICsNCj4gKyAgICAgICB1c2Jfc2V0
+X2ludGZkYXRhKGludGYsIHByaXYpOw0KPiArDQo+ICsgICAgICAgZm9yIChpID0gMDsgaSA8IEY4
+MTYwNF9NQVhfREVWOyArK2kpIHsNCj4gKyAgICAgICAgICAgICAgIG5ldGRldiA9IGFsbG9jX2Nh
+bmRldihzaXplb2YoKnBvcnRfcHJpdiksIDEpOw0KPiArICAgICAgICAgICAgICAgaWYgKCFuZXRk
+ZXYpIHsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgZGV2X2VycigmaW50Zi0+ZGV2LCAiQ291
+bGRuJ3QgYWxsb2MgY2FuZGV2OiAlZFxuIiwgaSk7DQo+ICsgICAgICAgICAgICAgICAgICAgICAg
+IGVyciA9IC1FTk9NRU07DQo+ICsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgZ290byBmYWls
+dXJlX2NsZWFudXA7DQo+ICsgICAgICAgICAgICAgICB9DQo+ICsNCj4gKyAgICAgICAgICAgICAg
+IHBvcnRfcHJpdiA9IG5ldGRldl9wcml2KG5ldGRldik7DQo+ICsgICAgICAgICAgICAgICBuZXRk
+ZXYtPmRldl9pZCA9IGk7DQo+ICsNCj4gKyAgICAgICAgICAgICAgIHNwaW5fbG9ja19pbml0KCZw
+b3J0X3ByaXYtPmxvY2spOw0KPiArICAgICAgICAgICAgICAgSU5JVF9XT1JLKCZwb3J0X3ByaXYt
+PmhhbmRsZV9jbGVhcl9vdmVycnVuX3dvcmssDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ZjgxNjA0X2hhbmRsZV9jbGVhcl9vdmVycnVuX3dvcmspOw0KPiArICAgICAgICAgICAgICAgSU5J
+VF9XT1JLKCZwb3J0X3ByaXYtPmhhbmRsZV9jbGVhcl9yZWdfd29yaywNCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICBmODE2MDRfaGFuZGxlX2NsZWFyX3JlZ193b3JrKTsNCj4gKw0KPiArICAg
+ICAgICAgICAgICAgcG9ydF9wcml2LT5pbnRmID0gaW50ZjsNCj4gKyAgICAgICAgICAgICAgIHBv
+cnRfcHJpdi0+ZGV2ID0gZGV2Ow0KPiArICAgICAgICAgICAgICAgcG9ydF9wcml2LT5vY3IgPSBP
+Q1JfVFgwX1BVU0hQVUxMIHwgT0NSX1RYMV9QVVNIUFVMTDsNCj4gKyAgICAgICAgICAgICAgIHBv
+cnRfcHJpdi0+Y2RyID0gQ0RSX0NCUDsNCj4gKyAgICAgICAgICAgICAgIHBvcnRfcHJpdi0+Y2Fu
+LnN0YXRlID0gQ0FOX1NUQVRFX1NUT1BQRUQ7DQo+ICsgICAgICAgICAgICAgICBwb3J0X3ByaXYt
+PmNhbi5jbG9jay5mcmVxID0gMjQwMDAwMDAgLyAyOw0KDQpDYW4geW91IGdldCB0aGlzIGZyZXF1
+ZW5jeSBmcm9tIGEgY2xvY2sgZHJpdmVyPw0KT3RoZXJ3aXNlIGFkZCBhIHN5bWJvbCBmb3IgaXQu
+Li4NCg0KPiArDQo+ICsgICAgICAgICAgICAgICBwb3J0X3ByaXYtPmNhbi5iaXR0aW1pbmdfY29u
+c3QgPSAmZjgxNjA0X2JpdHRpbWluZ19jb25zdDsNCj4gKyAgICAgICAgICAgICAgIHBvcnRfcHJp
+di0+Y2FuLmRvX3NldF9iaXR0aW1pbmcgPSBmODE2MDRfc2V0X2JpdHRpbWluZzsNCj4gKyAgICAg
+ICAgICAgICAgIHBvcnRfcHJpdi0+Y2FuLmRvX3NldF9tb2RlID0gZjgxNjA0X3NldF9tb2RlOw0K
+PiArICAgICAgICAgICAgICAgcG9ydF9wcml2LT5jYW4uZG9fZ2V0X2JlcnJfY291bnRlciA9IGY4
+MTYwNF9nZXRfYmVycl9jb3VudGVyOw0KPiArICAgICAgICAgICAgICAgcG9ydF9wcml2LT5jYW4u
+Y3RybG1vZGVfc3VwcG9ydGVkID0NCj4gKyAgICAgICAgICAgICAgICAgICAgICAgQ0FOX0NUUkxN
+T0RFX0xJU1RFTk9OTFkgfCBDQU5fQ1RSTE1PREVfM19TQU1QTEVTIHwNCj4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgQ0FOX0NUUkxNT0RFX09ORV9TSE9UIHwgQ0FOX0NUUkxNT0RFX0JFUlJfUkVQ
+T1JUSU5HOw0KPiArDQo+ICsgICAgICAgICAgICAgICBwb3J0X3ByaXYtPmNhbi5jdHJsbW9kZV9z
+dXBwb3J0ZWQgfD0gQ0FOX0NUUkxNT0RFX1BSRVNVTUVfQUNLOw0KPiArICAgICAgICAgICAgICAg
+bmV0ZGV2LT5uZXRkZXZfb3BzID0gJmY4MTYwNF9uZXRkZXZfb3BzOw0KPiArICAgICAgICAgICAg
+ICAgbmV0ZGV2LT5mbGFncyB8PSBJRkZfRUNITzsNCj4gKw0KPiArICAgICAgICAgICAgICAgU0VU
+X05FVERFVl9ERVYobmV0ZGV2LCAmaW50Zi0+ZGV2KTsNCj4gKw0KPiArICAgICAgICAgICAgICAg
+ZXJyID0gcmVnaXN0ZXJfY2FuZGV2KG5ldGRldik7DQo+ICsgICAgICAgICAgICAgICBpZiAoZXJy
+KSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgIG5ldGRldl9lcnIobmV0ZGV2LA0KPiArICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJjb3VsZG4ndCByZWdpc3RlciBDQU4gZGV2
+aWNlOiAlZFxuIiwgZXJyKTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgZnJlZV9jYW5kZXYo
+bmV0ZGV2KTsNCj4gKw0KPiArICAgICAgICAgICAgICAgICAgICAgICBnb3RvIGZhaWx1cmVfY2xl
+YW51cDsNCj4gKyAgICAgICAgICAgICAgIH0NCj4gKw0KPiArICAgICAgICAgICAgICAgcG9ydF9w
+cml2LT5uZXRkZXYgPSBuZXRkZXY7DQo+ICsgICAgICAgICAgICAgICBwcml2LT5uZXRkZXZbaV0g
+PSBuZXRkZXY7DQo+ICsNCj4gKyAgICAgICAgICAgICAgIGRldl9pbmZvKCZpbnRmLT5kZXYsICJD
+aGFubmVsICMlZCByZWdpc3RlcmVkIGFzICVzXG4iLCBpLA0KPiArICAgICAgICAgICAgICAgICAg
+ICAgICAgbmV0ZGV2LT5uYW1lKTsNCj4gKyAgICAgICB9DQo+ICsNCj4gKyAgICAgICByZXR1cm4g
+MDsNCj4gKw0KPiArZmFpbHVyZV9jbGVhbnVwOg0KPiArICAgICAgIGY4MTYwNF9kaXNjb25uZWN0
+KGludGYpOw0KPiArICAgICAgIHJldHVybiBlcnI7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzdHJ1
+Y3QgdXNiX2RyaXZlciBmODE2MDRfZHJpdmVyID0gew0KPiArICAgICAgIC5uYW1lID0gImY4MTYw
+NCIsDQo+ICsgICAgICAgLnByb2JlID0gZjgxNjA0X3Byb2JlLA0KPiArICAgICAgIC5kaXNjb25u
+ZWN0ID0gZjgxNjA0X2Rpc2Nvbm5lY3QsDQo+ICsgICAgICAgLmlkX3RhYmxlID0gZjgxNjA0X3Rh
+YmxlLA0KPiArfTsNCj4gKw0KPiArbW9kdWxlX3VzYl9kcml2ZXIoZjgxNjA0X2RyaXZlcik7DQo+
+ICsNCj4gK01PRFVMRV9BVVRIT1IoIkppLVplIEhvbmcgKFBldGVyIEhvbmcpIDxwZXRlcl9ob25n
+QGZpbnRlay5jb20udHc+Iik7DQo+ICtNT0RVTEVfREVTQ1JJUFRJT04oIkZpbnRlayBGODE2MDQg
+VVNCIHRvIDJ4Q0FOQlVTIik7DQo+ICtNT0RVTEVfTElDRU5TRSgiR1BMIik7DQo+IC0tDQo+IDIu
+MTcuMQ0KDQoNCkJSDQpTdGVlbg==
