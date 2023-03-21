@@ -2,139 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2464D6C2FCE
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:09:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A376C2FEE
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:14:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbjCULJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 07:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46208 "EHLO
+        id S229939AbjCULN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 07:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbjCULJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:09:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABA1113F5;
-        Tue, 21 Mar 2023 04:08:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D64AA61AFB;
-        Tue, 21 Mar 2023 11:08:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E578C4339B;
-        Tue, 21 Mar 2023 11:08:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679396938;
-        bh=eAh4O5TJC7P39EsTl/gsgUoov6t1KcRALqt3RF1g6Ro=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q8iqoqHDe4CbT58GaOHoJS7wv4QqC9fPzYmHyVFvBrf8ZvNWii/fg2x05VeRflFCS
-         heShQjzgGKdnddXMJM0f3dOuniTUasMLaVpARSygoDoFLgLpOTcUU9+8enxiR6Qb77
-         s4ZsOARP1OqFUFsayzm1wUDb8DfCpDv7U94fxY0k4y4nwQg7IpsWXQ56uKXgC7SQ1v
-         ui1kWqf7HZ2mDUxy8wPj5oD1TialWuzvJlH0u1oixz1Wp7aWKfbBlLu0FEG4MgT+GT
-         qnjZNXo0BhBdc0Tnw4zexO3O69OXMpbgz+cCec9EFwCS62xevAHjnBZpZ2/9ima07Y
-         6SdX62MKLTtTg==
-Date:   Tue, 21 Mar 2023 11:08:51 +0000
-From:   Lee Jones <lee@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net-next 1/9] phy: phy-ocelot-serdes: add ability to
- be used in a non-syscon configuration
-Message-ID: <20230321110851.GE2673958@google.com>
-References: <20230317185415.2000564-1-colin.foster@in-advantage.com>
- <20230317185415.2000564-2-colin.foster@in-advantage.com>
- <ZBgeKM50e1vt+ho1@matsya>
- <ZBgmXplfA/Q3/1dC@shell.armlinux.org.uk>
- <20230320133431.GB2673958@google.com>
- <ZBhtOw4Ftj3Sa3JU@shell.armlinux.org.uk>
- <20230320164136.GC2673958@google.com>
- <ZBiRFNAqd94tbEJ9@shell.armlinux.org.uk>
- <20230321082658.GD2673958@google.com>
- <ZBmD+7pinpTzayep@shell.armlinux.org.uk>
+        with ESMTP id S230194AbjCULNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:13:55 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E633FBB2;
+        Tue, 21 Mar 2023 04:13:36 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id e71so16625627ybc.0;
+        Tue, 21 Mar 2023 04:13:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679397215;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FU5JVJ+9D5IKP+4Ix/nQDFSU6B0sdw04+DWifxCdsMU=;
+        b=PHEQpiV0E4XYsgrwB0FGPU9lV8PpO9eSiNfWV4urD6aDzx3BgEoCkndrGlBmm4YEF+
+         +Xib0Bbb/hBPouzZZvznMkO4Ks0L/XR5leeQxiblC4wePl0x/SHQy3umlx7Ob6h7Vchy
+         hPjflxfMzaZpy/X99xAWAG8fkJ+TCjqP55WP3ekNGbxUFW0m52hR52/sbQM55qumYVYW
+         LqCQcMAfnZTeZxBjqnt5UIvcqCG9kSW6+GXXF+nyaccMxd7+wf+mABwkJ55gi4fWHb6v
+         G+TuR0wxmBb58dAVyM/TtCBlj7k/TDkj40EhVf3k3K6ot3bqTBieoXWWRENvCK7cKmtz
+         SKUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679397215;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=FU5JVJ+9D5IKP+4Ix/nQDFSU6B0sdw04+DWifxCdsMU=;
+        b=jozeUbpebNJHwWXfCCZsvkChMd6atrDkrG9hZanxrZWBW3Ff1aZxHk/Oul/xCGiNqF
+         GUEP2kAi915DKnR/QxMvDd3qB5pPQ30Fve7qgBKV3rUKomfc4Sh7EtC1Fh6CN1z5ECCw
+         kgLlFaBXyubCTQZh8nURdqGLb39SttpOW7LwesPerbRfhGeehP18ytjGm4+N7tZxydHo
+         CyqUtaS0YFSNLv5UGvyHdKbRnWYgi64gpHwYYN4BgVROKbDqwfp2s2/7fC9qUdLkWxQj
+         s8oTSP/NTTbWTXMvoYDUkj0I3ZTlVOzroDdag1T912gso/sL7iIDCzPMNs5IHZu18W+L
+         60QA==
+X-Gm-Message-State: AAQBX9fEQpCh529LeXALir666oMkOEZB7FQGDqideNce339kNl6gQf0p
+        ZNuBbWdvKtkJ26cIVyBtYh4KoLvqnGrhg4uUPVc=
+X-Google-Smtp-Source: AKy350aKCZlqYxRZWHzB38oGRFyPr1QVUoR1aWiJN45RzcZMA9VAUaFhT37UxudYTrOAQrmVMuUNffs3CjNFZOY4JKA=
+X-Received: by 2002:a05:6902:1104:b0:b6a:5594:5936 with SMTP id
+ o4-20020a056902110400b00b6a55945936mr1154445ybu.5.1679397215365; Tue, 21 Mar
+ 2023 04:13:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZBmD+7pinpTzayep@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230320203732.222345-1-nunog@fr24.com>
+In-Reply-To: <20230320203732.222345-1-nunog@fr24.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 21 Mar 2023 12:13:24 +0100
+Message-ID: <CAJ8uoz2N4M+FB-ijzTrVm+91yhtqfKKwmPkxjefJrmSeJOocbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V2] xsk: allow remap of fill and/or completion rings
+To:     =?UTF-8?Q?Nuno_Gon=C3=A7alves?= <nunog@fr24.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Mar 2023, Russell King (Oracle) wrote:
-
-> On Tue, Mar 21, 2023 at 08:26:58AM +0000, Lee Jones wrote:
-> > On Mon, 20 Mar 2023, Russell King (Oracle) wrote:
-> >
-> > > On Mon, Mar 20, 2023 at 04:41:36PM +0000, Lee Jones wrote:
-> > > > On Mon, 20 Mar 2023, Russell King (Oracle) wrote:
-> > > >
-> > > > > On Mon, Mar 20, 2023 at 01:34:31PM +0000, Lee Jones wrote:
-> > > > > > Once again netdev seems to have applied patches from other subsystems
-> > > > > > without review/ack.  What makes netdev different to any other kernel
-> > > > > > subsystem?  What would happen if other random maintainers started
-> > > > > > applying netdev patches without appropriate review?  I suspect someone
-> > > > > > would become understandably grumpy.
-> > > > >
-> > > > > Why again are you addressing your whinge to me? I'm not one of the
-> > > > > netdev maintainers, but I've pointed out what happens in netdev
-> > > > > land. However, you seem to *not* want to discuss it directly with
-> > > > > DaveM/Jakub/Paolo - as illustrated again with yet another response
-> > > > > to *me* rather than addressing your concerns *to* the people who
-> > > > > you have an issue with.
-> > > > >
-> > > > > This is not communication. Effectively, this is sniping, because
-> > > > > rather than discussing it with the individuals concerned, you are
-> > > > > instead preferring to discuss it with others.
-> > > > >
-> > > > > Please stop this.
-> > > >
-> > > > Read the above paragraph again.
-> > >
-> > > You sent your email _TO_ me, that means you addressed your comments
-> > > primarily _to_ me. RFC2822:
-> > >
-> > >    The "To:" field contains the address(es) of the primary recipient(s)
-> > >    of the message.
-> > >
-> > >    The "Cc:" field (where the "Cc" means "Carbon Copy" in the sense of
-> > >    making a copy on a typewriter using carbon paper) contains the
-> > >    addresses of others who are to receive the message, though the
-> > >    content of the message may not be directed at them.
-> >
-> > You're over-thinking it.  I replied to all.
+On Mon, 20 Mar 2023 at 21:54, Nuno Gon=C3=A7alves <nunog@fr24.com> wrote:
 >
-> I've been thinking about this entire situation and there's something
-> that summarises it. Kettle. Pot. Black.
+> The remap of fill and completion rings was frowned upon as they
+> control the usage of UMEM which does not support concurrent use.
+> At the same time this would disallow the remap of these rings
+> into another process.
 >
-> You complain about how netdev is run, but you also complain about how
-> people interpret your emails.
+> A possible use case is that the user wants to transfer the socket/
+> UMEM ownership to another process (via SYS_pidfd_getfd) and so
+> would need to also remap these rings.
 >
-> Sorry, but no. I think you need to be more accomodating towards how
-> others perceive your emails, especially when there are widespread
-> accepted conventions. The fact that you are seemingly not even willing
-> to entertain that someone _might_ interpret your emails according to
-> standard normals is frankly a problem for you.
+> This will have no impact on current usages and just relaxes the
+> remap limitation.
 
-This conversion has gone completely off-track.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-If you wish to continue talking about email headers offline (instead of
-filling people's inboxes with unrelated ramblings), you know where to
-find me.
-
---
-Lee Jones [李琼斯]
+> Signed-off-by: Nuno Gon=C3=A7alves <nunog@fr24.com>
+> ---
+>  net/xdp/xsk.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 2ac58b282b5eb..e2571ec067526 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -1301,9 +1301,10 @@ static int xsk_mmap(struct file *file, struct sock=
+et *sock,
+>         loff_t offset =3D (loff_t)vma->vm_pgoff << PAGE_SHIFT;
+>         unsigned long size =3D vma->vm_end - vma->vm_start;
+>         struct xdp_sock *xs =3D xdp_sk(sock->sk);
+> +       int state =3D READ_ONCE(xs->state);
+>         struct xsk_queue *q =3D NULL;
+>
+> -       if (READ_ONCE(xs->state) !=3D XSK_READY)
+> +       if (state !=3D XSK_READY && state !=3D XSK_BOUND)
+>                 return -EBUSY;
+>
+>         if (offset =3D=3D XDP_PGOFF_RX_RING) {
+> @@ -1314,9 +1315,11 @@ static int xsk_mmap(struct file *file, struct sock=
+et *sock,
+>                 /* Matches the smp_wmb() in XDP_UMEM_REG */
+>                 smp_rmb();
+>                 if (offset =3D=3D XDP_UMEM_PGOFF_FILL_RING)
+> -                       q =3D READ_ONCE(xs->fq_tmp);
+> +                       q =3D READ_ONCE(state =3D=3D XSK_READY ? xs->fq_t=
+mp :
+> +                                                          xs->pool->fq);
+>                 else if (offset =3D=3D XDP_UMEM_PGOFF_COMPLETION_RING)
+> -                       q =3D READ_ONCE(xs->cq_tmp);
+> +                       q =3D READ_ONCE(state =3D=3D XSK_READY ? xs->cq_t=
+mp :
+> +                                                          xs->pool->cq);
+>         }
+>
+>         if (!q)
+> --
+> 2.40.0
+>
