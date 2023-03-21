@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49EB56C374B
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 17:46:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A24E86C374A
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 17:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbjCUQp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 12:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
+        id S229971AbjCUQp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 12:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbjCUQpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 12:45:53 -0400
+        with ESMTP id S229751AbjCUQpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 12:45:50 -0400
 Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AB22F793
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:45:27 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-54463468d06so159090797b3.7
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:45:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5FA53709
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:45:28 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5425c04765dso158491847b3.0
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:45:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679417124;
+        d=google.com; s=20210112; t=1679417126;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=540Q56UhNvjk+0udYRYTG39KVr8iIa8sVlLdy/wWOlU=;
-        b=ju506B6Ah6KsQnnNRjR+/MgHW5YjnVFk2jeLUlCB5qxt4GLie63GbgniQQJ+Pozc6h
-         MNrhLpOFFMAcSZ+fpgZdwO95NHdt+ukU2J9VngQ35yIn/5pf1BfAsol/EAVHcThSjVHx
-         caTSgFPhNxR66Ak7bSdQQ+gtE2v2sEX5noo1ORdaRPFka4HG9/S3gZWly4XyVw0+Ka+I
-         21f2OiHT9qQeq6KsdgEqaDoxrAW7BjktKhahoOC79R9Y7cPtI53rt0bluglqWPsFxjcI
-         ZctsovrAvV5wzzqg38HQIEU93Dl+Xu2I1GkJ8Sc78apZ5wtPzVzGMH1Mx9dqDbcUe6qQ
-         Wvgg==
+        bh=115j3bJcmuziYs6iUe8ShA65hkJxp6AEADM5VO7Zi40=;
+        b=WHYvvOZeHqAoRDuw8b2qxyL7t1lxCvYKfvM8pn+JEHmeqvTDlZqaEGdBrfbvzfnBGE
+         djov6JNo8S6waxyV4+kpSGZdyPFA5sNTa/EyoXUQdexqOodoVfugnolrf8wjb0FJQhIU
+         NaSJCpYPStd1lcYTOSWTmhBZ0+MFlfXTCl2RqiMmL/t5hcqH2zeFB5VpG4b4RHz+IMIq
+         MheS5VlFjesT2RwtlTRX+d58k3cGiqZP4Dkmx7NAqwEbq9yWjakZ9jgFAzM2d4m0huH7
+         O8JyMqGftxTWj6SYCArlcK/YbWby4d8G9ARfRYSvVBw7gdN2e1JnjaIh87C9WGSH96e0
+         IdWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679417124;
+        d=1e100.net; s=20210112; t=1679417126;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=540Q56UhNvjk+0udYRYTG39KVr8iIa8sVlLdy/wWOlU=;
-        b=5d3uUMLevoaXzPJfnxld+Rdlcp+jpWsvRmOUQRBOIzh6V2B2UpO6ZclXui6WrQ81fJ
-         6OcDFETz1Nrgno3QXEOWKv6cCDtGjrlGnhiQC1G81Mjzg+LoRpUbCe6BAWEqsIsF8NUd
-         fy4P+o0xMJ4JBp81l7asZjDP1nnzJAB8nEB0n6XMmlVSx6wDSYYfXC0giFKTQKXvR6Jf
-         tuj7NeNcP7JKY4pZRxkXvAi5lpacTXgXDRT7PXEqlfeflFGM2WyoqSmhwA7hx++RvMCZ
-         W8SD62A5CszcDf+GdxgW3k3zjf4O5FAyYPuIuVIJfizFSD2zehhiFh+5oJ8qVScvblvP
-         eeHg==
-X-Gm-Message-State: AAQBX9dTV+I1YIFPyK/6RJpU/dR5O9EBaXEWEF6r9KAxJDnQXescUwal
-        vLXP57b2FboyjVL+Y39h1Zv8XyUpizObWg==
-X-Google-Smtp-Source: AKy350aXxJYSrbZqa2OxoitUCx0M5ny6qe/JlQqkyzmqhu1WDydaWe5T5KcR9xavKaHsPv2lCWDxK/HMrxwzmw==
+        bh=115j3bJcmuziYs6iUe8ShA65hkJxp6AEADM5VO7Zi40=;
+        b=vEQvL+8Kkdn5xfI8D9447QlaQEnq/fFjnmkAYXEF0WKSCOzM30KHwsztgzvTNVJXFQ
+         Y3pW5TI4tGkG9F7d8KBidCpwEKo8SE7rgH5wmmAV5bqY7dZ4YMSEMbw+viBUyQyKuMT8
+         uxCzLbRCS/kW1PPhbHC1A322i0tRkDs3cDGCfwCVHTjjHcYsdtJxPKSKX/deg9i0GuSU
+         D7iFL6ZE8AvSErzpIs7oYkqhLJmwQ84KSlbp7GCWZvL9P3BGsDmn+ANtHjb6B2ayvNB4
+         XYicZrWw7PpxJlAItxUaWYScYGXAznlSoo1NZjzQQmyZwjmJ9p9KpHlgI1pHGK6yxKXp
+         VJDw==
+X-Gm-Message-State: AAQBX9cNO3sRhKGMIty30CLYDLbNX+uzf5u65er9cDohUA9eelwsskRi
+        oEba5C64LGHcrH2EbuuZFKd3+spe5i05ng==
+X-Google-Smtp-Source: AKy350b22CuOpJnzLY15OLp8ghFCztxdX0GRsQFQkj3/VAy8RTAByB0ORatOyQxTcxMMoZ+9kFEbNTs6+DAizw==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:154a:b0:b4c:9333:2a1 with SMTP
- id r10-20020a056902154a00b00b4c933302a1mr1882277ybu.10.1679417124714; Tue, 21
- Mar 2023 09:45:24 -0700 (PDT)
-Date:   Tue, 21 Mar 2023 16:45:18 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:eb02:0:b0:52e:ee55:a81e with SMTP id
+ n2-20020a81eb02000000b0052eee55a81emr1543621ywm.7.1679417126515; Tue, 21 Mar
+ 2023 09:45:26 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 16:45:19 +0000
 In-Reply-To: <20230321164519.1286357-1-edumazet@google.com>
 Mime-Version: 1.0
 References: <20230321164519.1286357-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.rc2.332.ga46443480c-goog
-Message-ID: <20230321164519.1286357-3-edumazet@google.com>
-Subject: [PATCH net-next 2/3] sch_cake: do not use skb_mac_header() in cake_overhead()
+Message-ID: <20230321164519.1286357-4-edumazet@google.com>
+Subject: [PATCH net-next 3/3] net/sched: remove two skb_mac_header() uses
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,47 +69,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We want to remove our use of skb_mac_header() in tx paths,
-eg remove skb_reset_mac_header() from __dev_queue_xmit().
-
-Idea is that ndo_start_xmit() can get the mac header
-simply looking at skb->data.
+tcf_mirred_act() and tcf_mpls_act() can use skb_network_offset()
+instead of relying on skb_mac_header().
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/sched/sch_cake.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/sched/act_mirred.c | 2 +-
+ net/sched/act_mpls.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index 7970217b565a4ebbee3797ec0e5fb5667c5be795..891e007d5c0bf972a686b892c13d647e46b3274b 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -1360,7 +1360,7 @@ static u32 cake_overhead(struct cake_sched_data *q, const struct sk_buff *skb)
- 		return cake_calc_overhead(q, len, off);
- 
- 	/* borrowed from qdisc_pkt_len_init() */
--	hdr_len = skb_transport_header(skb) - skb_mac_header(skb);
-+	hdr_len = skb_transport_offset(skb);
- 
- 	/* + transport layer */
- 	if (likely(shinfo->gso_type & (SKB_GSO_TCPV4 |
-@@ -1368,14 +1368,14 @@ static u32 cake_overhead(struct cake_sched_data *q, const struct sk_buff *skb)
- 		const struct tcphdr *th;
- 		struct tcphdr _tcphdr;
- 
--		th = skb_header_pointer(skb, skb_transport_offset(skb),
-+		th = skb_header_pointer(skb, hdr_len,
- 					sizeof(_tcphdr), &_tcphdr);
- 		if (likely(th))
- 			hdr_len += __tcp_hdrlen(th);
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index 8037ec9b1d311486d803159b3f2f77eedf6b31d3..ec43764e92e7ba66586310628d78a6b184957fd2 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -295,7 +295,7 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
+ 	at_nh = skb->data == skb_network_header(skb);
+ 	if (at_nh != expects_nh) {
+ 		mac_len = skb_at_tc_ingress(skb) ? skb->mac_len :
+-			  skb_network_header(skb) - skb_mac_header(skb);
++			  skb_network_offset(skb);
+ 		if (expects_nh) {
+ 			/* target device/action expect data at nh */
+ 			skb_pull_rcsum(skb2, mac_len);
+diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+index 809f7928a1be622671e47b8bdf384a8a10349926..1010dc632874ec5f4f0517f0512ab3ed30f14e24 100644
+--- a/net/sched/act_mpls.c
++++ b/net/sched/act_mpls.c
+@@ -69,7 +69,7 @@ TC_INDIRECT_SCOPE int tcf_mpls_act(struct sk_buff *skb,
+ 		skb_push_rcsum(skb, skb->mac_len);
+ 		mac_len = skb->mac_len;
  	} else {
- 		struct udphdr _udphdr;
- 
--		if (skb_header_pointer(skb, skb_transport_offset(skb),
-+		if (skb_header_pointer(skb, hdr_len,
- 				       sizeof(_udphdr), &_udphdr))
- 			hdr_len += sizeof(struct udphdr);
+-		mac_len = skb_network_header(skb) - skb_mac_header(skb);
++		mac_len = skb_network_offset(skb);
  	}
+ 
+ 	ret = READ_ONCE(m->tcf_action);
 -- 
 2.40.0.rc2.332.ga46443480c-goog
 
