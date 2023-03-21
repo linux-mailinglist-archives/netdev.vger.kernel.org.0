@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 475AF6C3851
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BCF56C3853
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:35:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbjCURfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 13:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        id S230490AbjCURfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 13:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbjCURev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:34:51 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7843853DA6;
-        Tue, 21 Mar 2023 10:34:25 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id v1so8441200wrv.1;
-        Tue, 21 Mar 2023 10:34:24 -0700 (PDT)
+        with ESMTP id S230357AbjCURex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:34:53 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A45559D8;
+        Tue, 21 Mar 2023 10:34:26 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id m2so14547588wrh.6;
+        Tue, 21 Mar 2023 10:34:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679420061;
+        d=gmail.com; s=20210112; t=1679420063;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=e5vmC+EEyycxrgZNummq179GgUhM4r8ZAr7cKYD7Z2E=;
-        b=ZDYPBmIzA7ipL8Y6TLfI0FVN2waK6eXQTb9Y9gbyiLyfZ68Vc2tLAtOGtJFSk3uZ82
-         saQGvYjkO2OK5s+aB+uRdUFDNBPPWT6ZBVEcM2tcs4uAr84Y4CAXo6ouEaVR45VXcp62
-         XRjQ4bn15CwaclzaEg3cvsPKsaqPpw4+SWi83bhiUfO2KkW+ixFx+baR9tCbjNghuBm5
-         hceRfYnXezJBqdKYaVxTq0XmjPA7FoEXRRATgIrpkKWH17Ap+tt72VnuRukWzea+RrIu
-         8cu8/7G2mXy+dsyjir2AnY9w5tPvTPqBvEWXU9XqtguqUu4OtkU+lkDCdq0w0Ht+Cp+4
-         +14A==
+        bh=cUvnluVaZPzfEQB9fMRuYo+4/361t/7po7nyUBBJfxc=;
+        b=F0pa8JmQZ1FeXVtdpCygur8UmLrgKwxCcjaMn312u5zNvsXsEPeCAIDqP2tvNNTwv/
+         UYjaNaoZ77HSvv/gSqeG808AXGyNs1PvLuHZYuUTJRNuLaMixKtkNFi4ypheCdk0WCiE
+         IWz0DIm6ojmdwMqafDUKQ6Qwkv5R0vo8Wh5vpjimEmCelOyMvfuLZNqubsiGqpnCguBp
+         uWlmKh95/VubCGgiGG2xK1IXQayL14ENuWseDds7nVpVK50NycrFgJbL17Bd6qJKYkbo
+         m70IC+9jM0hjwKXpyi6ipCBNcW+1E6JIwILVC04Xi+BTpOGhbUAQ59Yn2hyq7tQM7dzs
+         4PLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679420061;
+        d=1e100.net; s=20210112; t=1679420063;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=e5vmC+EEyycxrgZNummq179GgUhM4r8ZAr7cKYD7Z2E=;
-        b=TloKpvlPPKgw3s1pk6WLNNO2LXFt5jVro4oOQB18Nu3cYLqrNy8PyDnKBpus7orcJ0
-         vCYUnwUUtRkZjPILBEijsqIehMUJ8tpLmHqfWNQxfrsgysvMyc/gIeHY0emPskeo/wlZ
-         OVh6eykkOY+0Dk5KetDubO63Aa7x1IJYQWtQE6FyTxfJYpwQKh4MFy2eZgv+GghDmNio
-         iro8jKskuPR8C5CtpL8MLpvTKxHAXa76BsRXQJPcLCcu1UZA62m+1v1XPlXgkqD/XpSa
-         C1+0a5l6KK7Wde/5dEDMAcb3GGPzlcAimIwwVyNnfx9S55SQNSkzRdxrLtxvEj+CdDHO
-         bsow==
-X-Gm-Message-State: AO0yUKWXRfUGHDqnsbZ6A09ZX1HvxhX8fglhD6Cakwi9ttcK9EH3Fq9o
-        AkMvKIrv5Ly0zgDwWWDjxfQ=
-X-Google-Smtp-Source: AK7set8RbKIGVaZ1Xy2DSHNTpAaldPx+B5drOYEB97FkjgzzzFUQTwTzA4gY056QhPu/dGAN9uTLKg==
-X-Received: by 2002:a5d:440b:0:b0:2ce:ae4c:c429 with SMTP id z11-20020a5d440b000000b002ceae4cc429mr3501801wrq.4.1679420060860;
-        Tue, 21 Mar 2023 10:34:20 -0700 (PDT)
+        bh=cUvnluVaZPzfEQB9fMRuYo+4/361t/7po7nyUBBJfxc=;
+        b=SCX78yTuGjdnE5nuL0p7+kxGnOzsCExsigLdaV+x/JswmwxSpZvxn223i1yM95klj9
+         Rk0RnXqATLF1wZA7L1YmbeZ66zxUwW/osnCjJHPeEF8AGgjK/qawtLl/HJQHN67NaRNQ
+         bDsRn2nWQ2GRTRFpvD+iGRy4uyQCDu9HFxLbn43fBsBmRnXWGPQP5cEb90tL83/Onp4D
+         Lx/XcyZOh9QRfJNhj+G1BAeRCLRA/sdA0W3Ecu5SCFs+LtS6uvLVGWDKEDfnZhYY8Xqf
+         Mx9evWzdW2OorEN2FI6+xTglvnEBcVhHIJ7XEGAhCG6ocgMZeck++774S8RWumWl8xpy
+         /K9Q==
+X-Gm-Message-State: AO0yUKUORAlGfbkNwnYmQnTWcGPqW6sp4g9WfgQmRZGCV+9tCB0OebSP
+        ICq6v4YPmUPNRl/WNnVCbps=
+X-Google-Smtp-Source: AK7set8pFDl8fHRwGPhAguqxIfqnQ4PY+b57IHEsybIaQ/HPNwdJ1cs1+IPBGHe3TL14dTS4aVNpHA==
+X-Received: by 2002:a5d:6991:0:b0:2ce:aab5:f96b with SMTP id g17-20020a5d6991000000b002ceaab5f96bmr2965175wru.67.1679420062764;
+        Tue, 21 Mar 2023 10:34:22 -0700 (PDT)
 Received: from atlantis.lan (255.red-79-146-124.dynamicip.rima-tde.net. [79.146.124.255])
-        by smtp.gmail.com with ESMTPSA id b13-20020a056000054d00b002da1261aa44sm184775wrf.48.2023.03.21.10.34.16
+        by smtp.gmail.com with ESMTPSA id b13-20020a056000054d00b002da1261aa44sm184775wrf.48.2023.03.21.10.34.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 10:34:17 -0700 (PDT)
+        Tue, 21 Mar 2023 10:34:21 -0700 (PDT)
 From:   =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
         <noltari@gmail.com>
 To:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
@@ -57,11 +57,10 @@ To:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
         krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?=C3=81lvaro=20Fern=C3=A1ndez=20Rojas?= 
-        <noltari@gmail.com>, Simon Horman <simon.horman@corigine.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 1/4] dt-bindings: net: dsa: b53: add more 63xx SoCs
-Date:   Tue, 21 Mar 2023 18:33:56 +0100
-Message-Id: <20230321173359.251778-2-noltari@gmail.com>
+        <noltari@gmail.com>
+Subject: [PATCH v2 2/4] net: dsa: b53: mmap: add more 63xx SoCs
+Date:   Tue, 21 Mar 2023 18:33:57 +0100
+Message-Id: <20230321173359.251778-3-noltari@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230321173359.251778-1-noltari@gmail.com>
 References: <20230320155024.164523-1-noltari@gmail.com>
@@ -82,31 +81,29 @@ X-Mailing-List: netdev@vger.kernel.org
 BCM6318, BCM6362 and BCM63268 are SoCs with a B53 MMAP switch.
 
 Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
  v2: no changes.
 
- Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml | 3 +++
+ drivers/net/dsa/b53/b53_mmap.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-index 5bef4128d175..57e0ef93b134 100644
---- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
-@@ -57,8 +57,11 @@ properties:
-       - items:
-           - enum:
-               - brcm,bcm3384-switch
-+              - brcm,bcm6318-switch
-               - brcm,bcm6328-switch
-+              - brcm,bcm6362-switch
-               - brcm,bcm6368-switch
-+              - brcm,bcm63268-switch
-           - const: brcm,bcm63xx-switch
+diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
+index e968322dfbf0..f63aebd445e8 100644
+--- a/drivers/net/dsa/b53/b53_mmap.c
++++ b/drivers/net/dsa/b53/b53_mmap.c
+@@ -331,8 +331,11 @@ static void b53_mmap_shutdown(struct platform_device *pdev)
  
- required:
+ static const struct of_device_id b53_mmap_of_table[] = {
+ 	{ .compatible = "brcm,bcm3384-switch" },
++	{ .compatible = "brcm,bcm6318-switch" },
+ 	{ .compatible = "brcm,bcm6328-switch" },
++	{ .compatible = "brcm,bcm6362-switch" },
+ 	{ .compatible = "brcm,bcm6368-switch" },
++	{ .compatible = "brcm,bcm63268-switch" },
+ 	{ .compatible = "brcm,bcm63xx-switch" },
+ 	{ /* sentinel */ },
+ };
 -- 
 2.30.2
 
