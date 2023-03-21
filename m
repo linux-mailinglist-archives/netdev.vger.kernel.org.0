@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA136C34A2
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 15:45:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 308FA6C34A3
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 15:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbjCUOpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 10:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        id S231497AbjCUOpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 10:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbjCUOpI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 10:45:08 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206016EB3
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 07:45:07 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id ja10so16256839plb.5
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 07:45:07 -0700 (PDT)
+        with ESMTP id S231488AbjCUOpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 10:45:11 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8233CE25
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 07:45:10 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id o6-20020a17090a9f8600b0023f32869993so16560518pjp.1
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 07:45:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1679409906;
+        d=broadcom.com; s=google; t=1679409909;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=eWQ0HPYNYteMO93/M4Zikz+Lj/SeghpUU79WHXcvQPE=;
-        b=B4z7UvEFX9AqUWEUGTvJvKiHURv3lWMhNrEjmJRFYq8qI8c1JR/4n5lNlaCRukxc3m
-         2T9DCyZFq9gCnsTGjnbZADvTizH86kLU08wmEY4BVOhx5tcC8OipiXdx22P6tELgLiNY
-         cFLCfNpY40HISMkmW5P7JxBY0ncVpAsDq/ziE=
+        bh=DxB04KYZGQx/08ExC4uV9acrJ8LVbxFIkazAkJlZ9bA=;
+        b=XjoCXWkUZHSTWEtqh7m/lbjDImpRDXkpiBgPJ2h/2ciQc86mQwoBwOCUBX/3V0nXho
+         IcZIBoyizsc1mLhyyVzWrIqBaqbWXZLe6DJ9iFMb52mX5PdFgrP3yqatWFyn8RwSgFNI
+         5+O/TCxZZgSJjIMH1ms9QLnrNvvW8MWBkOjrk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679409906;
+        d=1e100.net; s=20210112; t=1679409909;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=eWQ0HPYNYteMO93/M4Zikz+Lj/SeghpUU79WHXcvQPE=;
-        b=R/2yaj2yDS7YyTC9d6DANwrbayfu1c3JLILlXQMKl3zlEckxVXoxl0UxCv+8Tos4nG
-         2Tnr4eF+r4K5Gf+5XXDayQzePs86ms/t7LwsPFfAJQE8kmtBNZxhKSgvDGuVLhIozfNw
-         9m8X4YQ04ainUqaX/G4v0cqKdMjoMJp6MZciDXE+DKK4aOfvXvipDGsyZ77meTtmk/yj
-         xWZNwK7txwgrYQbfa3RtPYV55vXijKh7ky/e11F9xQc5rV2w/Q5EFb/cbwpmyW3uyUax
-         tfqywt3Yz8M+QiI6DDEB9SrIt1YLS0KbZvZqSSosW/z+/woD7DLeEmZUPfxXFyziuiYY
-         3NjA==
-X-Gm-Message-State: AO0yUKXNQNJJuorpT3nv8ny9GLXEhoBte+pQGiD6Ocq2k11UxM2YcD1n
-        lWfrlLhLzZBFWlToD3an/vyICQ==
-X-Google-Smtp-Source: AK7set+Y4/SxyEKd6+XadxAA4zPtXcnSBk3OXF7PHoQ4QdJvtcGnFYIu/ZSseTBE9w+a0xxrBWLqiQ==
-X-Received: by 2002:a17:90b:224d:b0:23e:fc9c:930 with SMTP id hk13-20020a17090b224d00b0023efc9c0930mr3081363pjb.36.1679409906509;
-        Tue, 21 Mar 2023 07:45:06 -0700 (PDT)
+        bh=DxB04KYZGQx/08ExC4uV9acrJ8LVbxFIkazAkJlZ9bA=;
+        b=ifMDO/ZGvfzogHATW3pfIpV5yXJvcV9QOLdLqIe+OljlC9YFWbLcsoHxTJ5GeoS3Kv
+         Tg5S9LZPwe4YG+6neUgkW8VIhaB9YXh7JL3GxjXCgcv/UhQnYRQeVwkkKNBedgzTF7Q3
+         hXpOsUvrQZ0z3u+ljtPxFc0mFSpH5jvc4uBJPkrzZiDGIEcqopUyB2v0cb04YgjgpeL0
+         bNokCMU0d0sxzME9BnLKIohT99HCuJDLSAzzDHRn+8GmuiPKbqU/jFtwUG55qpyaiauL
+         sjoRWcAlIRegrAq33Vhh1FejByMtwVkjczn71sITST12+2D4oKV25m5/2ovAGhPJ+/g5
+         r2Rw==
+X-Gm-Message-State: AO0yUKWxUf2zImo4AON5O9RkZ/I9qvL5+jXNkZ9NI+Xm1/tka6JZ4nZ/
+        JcSHm7ICgTe0mvQGmiiklk7sFQ==
+X-Google-Smtp-Source: AK7set/y5mDWnFEoSwn+ujCZ5jkRyBCCy8FDHQcGcC7cHJL7cI7zZmqU+mwYIMP38loxWoq7NNZHUg==
+X-Received: by 2002:a17:903:234f:b0:1a1:dd3a:7509 with SMTP id c15-20020a170903234f00b001a1dd3a7509mr3036585plh.48.1679409909562;
+        Tue, 21 Mar 2023 07:45:09 -0700 (PDT)
 Received: from PC-MID-R740.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id h13-20020a170902f7cd00b0019d1f42b00csm8834243plw.17.2023.03.21.07.45.03
+        by smtp.gmail.com with ESMTPSA id h13-20020a170902f7cd00b0019d1f42b00csm8834243plw.17.2023.03.21.07.45.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 07:45:05 -0700 (PDT)
+        Tue, 21 Mar 2023 07:45:09 -0700 (PDT)
 From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
 To:     michael.chan@broadcom.com, kuba@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, gospo@broadcom.com,
         netdev@vger.kernel.org, pabeni@redhat.com,
         richardcochran@gmail.com, Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net-next v2 2/3] bnxt: Defer PTP initialization to after querying function caps
-Date:   Tue, 21 Mar 2023 07:44:48 -0700
-Message-Id: <20230321144449.15289-3-pavan.chebbi@broadcom.com>
+Subject: [PATCH net-next v2 3/3] bnxt: Enforce PTP software freq adjustments only when in non-RTC mode
+Date:   Tue, 21 Mar 2023 07:44:49 -0700
+Message-Id: <20230321144449.15289-4-pavan.chebbi@broadcom.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230321144449.15289-1-pavan.chebbi@broadcom.com>
 References: <20230321144449.15289-1-pavan.chebbi@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000ee8ff305f76a16c6"
+        boundary="0000000000001c238c05f76a1789"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -68,65 +68,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000ee8ff305f76a16c6
+--0000000000001c238c05f76a1789
 Content-Transfer-Encoding: 8bit
 
-Driver uses the flag BNXT_FLAG_MULTI_HOST to determine whether
-to use non-realtime mode PHC when running on a multi host NIC.
-However when ptp initializes on a NIC with shared PHC, we still
-don't have this flag set yet because HWRM_FUNC_QCFG is issued
-much later.
+Currently driver performs software based frequency adjustments
+when RTC capability is not discovered or when in shared PHC mode.
+But there may be some old firmware versions that still support
+hardware freq adjustments without RTC capability being exposed.
+In this situation driver will use non-realtime mode even on single
+host NICs.
 
-Move the ptp initialization code after we have issued func_qcfg.
-The next patch will use the BNXT_FLAG_MULTI_HOST flag during PTP
-initialization.
+Hence enforce software frequency adjustments only when running in
+shared PHC mode. Make suitable changes for cyclecounter for the
+same.
 
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 +++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 1 +
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f533a8f46217..656a28ac2ff0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7769,7 +7769,7 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 		if (flags & FUNC_QCAPS_RESP_FLAGS_WOL_MAGICPKT_SUPPORTED)
- 			bp->flags |= BNXT_FLAG_WOL_CAP;
- 		if (flags & FUNC_QCAPS_RESP_FLAGS_PTP_SUPPORTED) {
--			__bnxt_hwrm_ptp_qcfg(bp);
-+			bp->fw_cap |= BNXT_FW_CAP_PTP;
- 		} else {
- 			bnxt_ptp_clear(bp);
- 			kfree(bp->ptp_cfg);
-@@ -12298,6 +12298,8 @@ static int bnxt_fw_init_one_p2(struct bnxt *bp)
- 	bnxt_hwrm_vnic_qcaps(bp);
- 	bnxt_hwrm_port_led_qcaps(bp);
- 	bnxt_ethtool_init(bp);
-+	if (bp->fw_cap & BNXT_FW_CAP_PTP)
-+		__bnxt_hwrm_ptp_qcfg(bp);
- 	bnxt_dcb_init(bp);
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index d7eb0d244f42..0eeaed95a4ac 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1996,6 +1996,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_HOT_RESET_IF		BIT_ULL(29)
- 	#define BNXT_FW_CAP_RING_MONITOR		BIT_ULL(30)
- 	#define BNXT_FW_CAP_DBG_QCAPS			BIT_ULL(31)
-+	#define BNXT_FW_CAP_PTP				BIT_ULL(32)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index a3a3978a4d1c..e46689128e32 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -230,7 +230,7 @@ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+ 						ptp_info);
+ 	struct bnxt *bp = ptp->bp;
  
- 	u32			fw_dbg_cap;
+-	if (BNXT_PTP_USE_RTC(bp))
++	if (!BNXT_MH(bp))
+ 		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
  
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -861,9 +861,15 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
+ 		memset(&ptp->cc, 0, sizeof(ptp->cc));
+ 		ptp->cc.read = bnxt_cc_read;
+ 		ptp->cc.mask = CYCLECOUNTER_MASK(48);
+-		ptp->cc.shift = BNXT_CYCLES_SHIFT;
+-		ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
+-		ptp->cmult = ptp->cc.mult;
++		if (BNXT_MH(bp)) {
++			/* Use timecounter based non-real time mode */
++			ptp->cc.shift = BNXT_CYCLES_SHIFT;
++			ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
++			ptp->cmult = ptp->cc.mult;
++		} else {
++			ptp->cc.shift = 0;
++			ptp->cc.mult = 1;
++		}
+ 		ptp->next_overflow_check = jiffies + BNXT_PHC_OVERFLOW_PERIOD;
+ 	}
+ 	if (init_tc)
 -- 
 2.39.1
 
 
---000000000000ee8ff305f76a16c6
+--0000000000001c238c05f76a1789
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -197,13 +195,13 @@ pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
 Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILYpGhWZrWx2bRw4dcnczaf6+bUXPTTn
-YDUGvAODMh1lMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-MTE0NDUwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPP9SLhn1bYpY7nDL+oUzWjo0jsr6pfA
+0aHhTeruJXLhMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
+MTE0NDUwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAqqEkymdD9/kLRfT0+xN5wzsyiyuFUMqWLbZWRlX7vPB2X+/nK
-3CMtb6KwDZdibWaYbtggqP23v79d8ml5d/4dI7ZfotURPkqjBUpKD8IA8SBvdpicbnyssloeF8uS
-GHHtUebd9XoVYsOw7n5lvViKIIla4kfl6d2ng69Y16j/JSecwoQS6cGM+bGsCR9R1yLax8+D51mm
-gpasDG5JYnaVDuFvHD/WeuVUvRFVmC1fghjynkZXHhK+JcWHAPSMuAkG/GkLj3KuCygMu0M6ft/8
-kf55DpLsBPJZcySQdHq0axW3zeps5C5EZWygfmr7y97qONhVhBDfMIms59hSfTGt
---000000000000ee8ff305f76a16c6--
+ATANBgkqhkiG9w0BAQEFAASCAQARBYJkx6evR3zlDicOEp23WSsubTo4zunKZKfezZ7Alfgo2OGD
+GC3fIGC3whvfQdpRevlmFEI9XOB1nesqjHR3NAZVcQ7IobikHxGuxgU7UsFXxD+DDnkVvxVxrPtU
+FHUjaKN5hU5UUfnhWygij05Ihyh9qisse+NBfxJyuCdiW1m6MCradoE002fpvnvXMVaosaNSqxeg
+JALvNs6kD2urp6p/j6Ayqk6L8D+TBOMVJhjLsScODsvww+hw/NMN68oAeat/99jXP2Tr7zNzCuhC
+NBMyPz3p7dO6lyUQiMJgM3WOLFqhaIwWOUmrF2YTBuO7DV2CCecsqEbdKV9uc+1U
+--0000000000001c238c05f76a1789--
