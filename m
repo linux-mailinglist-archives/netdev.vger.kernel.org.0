@@ -2,53 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B41FD6C379F
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:04:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFCB16C37AD
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:05:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbjCURED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 13:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+        id S230384AbjCURFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 13:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbjCUREA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:04:00 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DA82069F
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:03:56 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id b3-20020a056e02048300b003230de63373so8085357ils.10
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:03:56 -0700 (PDT)
+        with ESMTP id S230381AbjCURFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:05:36 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C471C28EA0
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:05:25 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id mp3-20020a17090b190300b0023fcc8ce113so6010641pjb.4
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:05:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112; t=1679418325;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ICDfoO/IL51uzq7ZcGszRyxZ/UXjMum/IqrrVVdXBUI=;
+        b=YCDYO2HrdqP2cgF7uSwrqoI4wPS/mr1hsf+gv+iGEH27/jQDSBVmsCDnJ28+uXP38L
+         RcdEbeTzOzvBmly/jY+nXm4RuPmUwJc66xEjswkrzUK+ioDNrpX7KwRhbhYzQh0gSdfT
+         G/yN91rqQWhQNidWoF1/cklkcrJpmajWQS3E23DhbjvzIie2qwCmZr50oiiZftgUrPz5
+         vZX+UfEsW0rKFib2DF5pJ8LGi7DXQRgT1iIDUsTYbGBRXqiGuiefGKPwDAnIOE5LLJCI
+         xU1KjpUbSLN2MD49o5SR7AN27AWVN8X3uENz0IUTM+sxcZjPXftcL5Exyg7QVxAX9mCh
+         nt0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679418235;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JYvhqV9O/knwdmN3F4rsQ5x14ox3G/btg2GPgntvNw0=;
-        b=wNNr22uOxbBQ5S9odTNsroAD0yhA0f1HSLobR0ZHgVoeGGsxBDNTPE4vPll5KYLXF6
-         cBsTB0MbXlTwPCO0Za2W6QHj2gbwS2HoYFEX/DeNrnq4rEEOXc9kT1hXA3DJxOzkNwea
-         9DA8Q2RqvutwafPXOjZgMnqKlu5f0Ttffad5CB+MdPOFt6T+ZxiIe2UYfumgLyTVJwXG
-         KgfQNS8YhAik3c/RZLpjC52o9AP70hX8vE1AfbvCrvZ2InggbF/7u9uLlTjp02K5BjZs
-         Hqn7XubtAqSuqQ21OXUd2Y3ZpNcwA0g/HhTwCdq5Vr2Drbod0xS0gHha4C7RM1qBANA9
-         bvvg==
-X-Gm-Message-State: AO0yUKWRXQt8SiMqqppLGODmyVmO8RrzrEbw/jS4Jv7+VqCU/SttFfAA
-        2AH59Ku6Rx7Nyulj0UoH8TLItPBPFX1fkkZ1XFEZDH+/pBLD
-X-Google-Smtp-Source: AK7set91M/CtD5CQHh7Ui2XMJWVYWleaSVsU47FcFP7C7NQO0m8T1524jNkeANeIxPNaYwu4UO93Lu4JgZ+r7/K4ZyI2VAyg8PA4
+        d=1e100.net; s=20210112; t=1679418325;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ICDfoO/IL51uzq7ZcGszRyxZ/UXjMum/IqrrVVdXBUI=;
+        b=YrGJWo+CE5UHXcUEW+mdKe4ioIb/oCnosPcMc0UmjbLlNfoYn6hD8njd3zDC2/x0U7
+         4UoZtRzII6ZQXLXPYRVfPmPeipA/fbW/cN2AUkGBV74BduVU4m3P5iUwH95flIct9lE9
+         Y/bl3mONtDF8/Xg13Hsd/edNVq9Sr2NG9nML013U5je+Gw9Y3GJ+0Kcwex57ux+MOnr0
+         CeYWPGTF0ERfGKNgXQIvA3dDNIVs/ecCYxUHNC/H3grCEcgSR+L6E0Tizwvct3QBksQp
+         utCPHp7D9OxXyhYSIZROYJduBogpTwCzpalM1BxvWZ2VTvKJsVZS4N6p067/9KynfJD/
+         Dpyw==
+X-Gm-Message-State: AO0yUKUx84DOmAHz3ou0YbPmYic5ZH0nQSvj1MCGEZsk/xLdBkapqV6t
+        VUy1hdMKsbzDKjraQAEAeU5kFQ==
+X-Google-Smtp-Source: AK7set/qT26XyElnHoZHdvs1Lur7jH1fwGbisRfiH1xvN2Gd552UHMDXqVAFWK/L7TZCPRiqtJ7I7g==
+X-Received: by 2002:a17:903:2312:b0:1a1:a6e5:764b with SMTP id d18-20020a170903231200b001a1a6e5764bmr3583105plh.60.1679418325125;
+        Tue, 21 Mar 2023 10:05:25 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id jl17-20020a170903135100b001a1d41d1b8asm3983961plb.194.2023.03.21.10.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 10:05:24 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 10:05:22 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Bagas Sanjaya <bagasdotme@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        corbet@lwn.net, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, pisa@cmp.felk.cvut.cz,
+        mkl@pengutronix.de, linux-doc@vger.kernel.org, f.fainelli@gmail.com
+Subject: Re: [PATCH net-next v2] docs: networking: document NAPI
+Message-ID: <20230321100522.474c3763@hermes.local>
+In-Reply-To: <20230321050334.1036870-1-kuba@kernel.org>
+References: <20230321050334.1036870-1-kuba@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a92:2612:0:b0:313:cc98:7eee with SMTP id
- n18-20020a922612000000b00313cc987eeemr1318039ile.1.1679418235443; Tue, 21 Mar
- 2023 10:03:55 -0700 (PDT)
-Date:   Tue, 21 Mar 2023 10:03:55 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005a60a305f76c07dc@google.com>
-Subject: [syzbot] [kernel?] general protection fault in vhost_task_start
-From:   syzbot <syzbot+6b27b2d2aba1c80cc13b@syzkaller.appspotmail.com>
-To:     brauner@kernel.org, jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, michael.christie@oracle.com,
-        mst@redhat.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,128 +74,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, 20 Mar 2023 22:03:34 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-syzbot found the following issue on:
+> Add basic documentation about NAPI. We can stop linking to the ancient
+> doc on the LF wiki.
+>=20
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Link: https://lore.kernel.org/all/20230315223044.471002-1-kuba@kernel.org/
+> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-HEAD commit:    6f08c1de13a9 Add linux-next specific files for 20230317
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=13d954f6c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b8cdb12af294ab55
-dashboard link: https://syzkaller.appspot.com/bug?extid=6b27b2d2aba1c80cc13b
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=137b6b11c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16358a16c80000
+Looks good overall. I used a grammar scanner to look for issues and
+it found lots of little things.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/300a30f8157b/disk-6f08c1de.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/7cad5b8b07a2/vmlinux-6f08c1de.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/eded56f08b63/bzImage-6f08c1de.xz
+Here are my suggested changes:
 
-The issue was bisected to:
+diff --git a/Documentation/networking/napi.rst b/Documentation/networking/n=
+api.rst
+index e9833f2b777a..822d0bf399af 100644
+--- a/Documentation/networking/napi.rst
++++ b/Documentation/networking/napi.rst
+@@ -5,19 +5,20 @@ NAPI
+ =3D=3D=3D=3D
+=20
+ NAPI is the event handling mechanism used by the Linux networking stack.
+-The name NAPI does not stand for anything in particular [#]_.
++The name NAPI no longer stands for anything in particular [#]_.
+=20
+-In basic operation device notifies the host about new events via an interr=
+upt.
+-The host then schedules a NAPI instance to process the events.
+-Device may also be polled for events via NAPI without receiving
++The basic concept of NAPI is that the device notifies
++the kernel about new events via interrupts; then
++the kernel then schedules a NAPI instance to process the events.
++The device may also be polled for events via NAPI without receiving
+ interrupts first (:ref:`busy polling<poll>`).
+=20
+ NAPI processing usually happens in the software interrupt context,
+-but user may choose to use :ref:`separate kernel threads<threaded>`
++but there is an option to use :ref:`separate kernel threads<threaded>`
+ for NAPI processing.
+=20
+-All in all NAPI abstracts away from the drivers the context and configurat=
+ion
+-of event (packet Rx and Tx) processing.
++The goal of NAPI is to abstract the context and configuration of
++event handling.
+=20
+ Driver API
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+@@ -25,7 +26,7 @@ Driver API
+ The two most important elements of NAPI are the struct napi_struct
+ and the associated poll method. struct napi_struct holds the state
+ of the NAPI instance while the method is the driver-specific event
+-handler. The method will typically free Tx packets which had been
++handler. The method will typically free Tx packets that have been
+ transmitted and process newly received packets.
+=20
+ .. _drv_ctrl:
+@@ -44,8 +45,8 @@ to not be invoked. napi_disable() waits for ownership of =
+the NAPI
+ instance to be released.
+=20
+ The control APIs are not idempotent. Control API calls are safe against
+-concurrent use of datapath APIs but incorrect sequence of control API
+-calls may result in crashes, deadlocks, or race conditions. For example
++concurrent use of datapath APIs but an incorrect sequence of control API
++calls may result in crashes, deadlocks, or race conditions. For example,
+ calling napi_disable() multiple times in a row will deadlock.
+=20
+ Datapath API
+@@ -53,28 +54,30 @@ Datapath API
+=20
+ napi_schedule() is the basic method of scheduling a NAPI poll.
+ Drivers should call this function in their interrupt handler
+-(see :ref:`drv_sched` for more info). Successful call to napi_schedule()
++(see :ref:`drv_sched` for more info). A successful call to napi_schedule()
+ will take ownership of the NAPI instance.
+=20
+-Some time after NAPI is scheduled driver's poll method will be
++Later, after NAPI is scheduled, the driver's poll method will be
+ called to process the events/packets. The method takes a ``budget``
+ argument - drivers can process completions for any number of Tx
+-packets but should only process up to ``budget`` number of
+-Rx packets. Rx processing is usually much more expensive.
++packets but should only process up to the ``budget`` number of
++Rx packets. This is ``budget`` argument is used to limit the
++time spent in the poll method when a server is under heavy network
++load.
+=20
+-In other words, it is recommended to ignore the budget argument when
++For most drivers, it is recommended to ignore the budget argument when
+ performing TX buffer reclamation to ensure that the reclamation is not
+-arbitrarily bounded, however, it is required to honor the budget argument
++arbitrarily bounded; the budget should be honored
+ for RX processing.
+=20
+-.. warning::
++.. note::
+=20
+-   ``budget`` may be 0 if core tries to only process Tx completions
++   The ``budget`` argument may be 0 if core tries to only process Tx compl=
+etions
+    and no Rx packets.
+=20
+-The poll method returns amount of work done. If the driver still
++The poll method returns the amount of work done. If the driver still
+ has outstanding work to do (e.g. ``budget`` was exhausted)
+-the poll method should return exactly ``budget``. In that case
++the poll method should return exactly ``budget``. In that case,
+ the NAPI instance will be serviced/polled again (without the
+ need to be scheduled).
+=20
+@@ -83,22 +86,21 @@ processed) the poll method should call napi_complete_do=
+ne()
+ before returning. napi_complete_done() releases the ownership
+ of the instance.
+=20
+-.. warning::
++.. note::
+=20
+-   The case of finishing all events and using exactly ``budget``
+-   must be handled carefully. There is no way to report this
+-   (rare) condition to the stack, so the driver must either
+-   not call napi_complete_done() and wait to be called again,
++   The case of finishing all events and processing the full ``budget``
++   of packets requires special consideration. The driver must
++   either call napi_complete_done() (and wait to be called again)
+    or return ``budget - 1``.
+=20
+-   If ``budget`` is 0 napi_complete_done() should never be called.
++   If the ``budget`` is 0 napi_complete_done() should never be called.
+=20
+ Call sequence
+ -------------
+=20
+ Drivers should not make assumptions about the exact sequencing
+-of calls. The poll method may be called without driver scheduling
+-the instance (unless the instance is disabled). Similarly
++of calls. The poll method may be called without the driver scheduling
++the instance (unless the instance is disabled). Similarly,
+ it's not guaranteed that the poll method will be called, even
+ if napi_schedule() succeeded (e.g. if the instance gets disabled).
+=20
+@@ -129,7 +131,7 @@ and __napi_schedule() calls:
+       __napi_schedule(&v->napi);
+   }
+=20
+-IRQ should only be unmasked after successful call to napi_complete_done():
++IRQ should only be unmasked after a successful call to napi_complete_done(=
+):
+=20
+ .. code-block:: c
+=20
+@@ -150,7 +152,7 @@ Instance to queue mapping
+ Modern devices have multiple NAPI instances (struct napi_struct) per
+ interface. There is no strong requirement on how the instances are
+ mapped to queues and interrupts. NAPI is primarily a polling/processing
+-abstraction without many user-facing semantics. That said, most networking
++abstraction without specific user-facing semantics. That said, most networ=
+king
+ devices end up using NAPI in fairly similar ways.
+=20
+ NAPI instances most often correspond 1:1:1 to interrupts and queue pairs
+@@ -164,7 +166,7 @@ a 1:1 mapping between NAPI instances and interrupts.
+ It's worth noting that the ethtool API uses a "channel" terminology where
+ each channel can be either ``rx``, ``tx`` or ``combined``. It's not clear
+ what constitutes a channel, the recommended interpretation is to understand
+-a channel as an IRQ/NAPI which services queues of a given type. For example
++a channel as an IRQ/NAPI which services queues of a given type. For exampl=
+e,
+ a configuration of 1 ``rx``, 1 ``tx`` and 1 ``combined`` channel is expect=
+ed
+ to utilize 3 interrupts, 2 Rx and 2 Tx queues.
+=20
+@@ -194,12 +196,12 @@ before NAPI gives up and goes back to using hardware =
+IRQs.
+ Busy polling
+ ------------
+=20
+-Busy polling allows user process to check for incoming packets before
+-the device interrupt fires. As is the case with any busy polling it trades
+-off CPU cycles for lower latency (in fact production uses of NAPI busy
++Busy polling allows a user process to check for incoming packets before
++the device interrupt fires. This mode trades off CPU cycles
++for lower latency (in fact production uses of NAPI busy
+ polling are not well known).
+=20
+-User can enable busy polling by either setting ``SO_BUSY_POLL`` on
++Busy polling is enabled by either setting ``SO_BUSY_POLL`` on
+ selected sockets or using the global ``net.core.busy_poll`` and
+ ``net.core.busy_read`` sysctls. An io_uring API for NAPI busy polling
+ also exists.
+@@ -218,7 +220,7 @@ of packets.
+ Such applications can pledge to the kernel that they will perform a busy
+ polling operation periodically, and the driver should keep the device IRQs
+ permanently masked. This mode is enabled by using the ``SO_PREFER_BUSY_POL=
+L``
+-socket option. To avoid the system misbehavior the pledge is revoked
++socket option. To avoid system misbehavior the pledge is revoked
+ if ``gro_flush_timeout`` passes without any busy poll call.
+=20
+ The NAPI budget for busy polling is lower than the default (which makes
+@@ -231,7 +233,7 @@ with the ``SO_BUSY_POLL_BUDGET`` socket option.
+ Threaded NAPI
+ -------------
+=20
+-Threaded NAPI is an operating mode which uses dedicated kernel
++Threaded NAPI is an operating mode that uses dedicated kernel
+ threads rather than software IRQ context for NAPI processing.
+ The configuration is per netdevice and will affect all
+ NAPI instances of that device. Each NAPI instance will spawn a separate
 
-commit 5ab18f4b061ef24a71eea9ffafebd1a82ae2f514
-Author: Mike Christie <michael.christie@oracle.com>
-Date:   Fri Mar 10 22:03:32 2023 +0000
 
-    vhost: use vhost_tasks for worker threads
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11d88e9ac80000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13d88e9ac80000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15d88e9ac80000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6b27b2d2aba1c80cc13b@syzkaller.appspotmail.com
-Fixes: 5ab18f4b061e ("vhost: use vhost_tasks for worker threads")
-
-RBP: 00007ffe3d8e6050 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-general protection fault, probably for non-canonical address 0xdffffc000000000c: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000060-0x0000000000000067]
-CPU: 0 PID: 5103 Comm: syz-executor280 Not tainted 6.3.0-rc2-next-20230317-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-RIP: 0010:vhost_task_start+0x22/0x40 kernel/vhost_task.c:115
-Code: 00 00 00 00 00 0f 1f 00 f3 0f 1e fa 53 48 89 fb e8 c3 67 2c 00 48 8d 7b 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 0a 48 8b 7b 70 5b e9 fe bd 02 00 e8 79 ec 7e 00 eb
-RSP: 0018:ffffc90003a9fc38 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: fffffffffffffff4 RCX: 0000000000000000
-RDX: 000000000000000c RSI: ffffffff81564c8d RDI: 0000000000000064
-RBP: ffff88802b21dd40 R08: 0000000000000100 R09: ffffffff8c917cf3
-R10: 00000000fffffff4 R11: 0000000000000000 R12: fffffffffffffff4
-R13: ffff888075d000b0 R14: ffff888075d00000 R15: ffff888075d00008
-FS:  0000555556247300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffe3d8e5ff8 CR3: 00000000215d4000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- vhost_worker_create drivers/vhost/vhost.c:580 [inline]
- vhost_dev_set_owner+0x338/0xa90 drivers/vhost/vhost.c:603
- vhost_dev_ioctl+0xb4b/0xe70 drivers/vhost/vhost.c:1764
- vhost_vsock_dev_ioctl+0x389/0xb30 drivers/vhost/vsock.c:862
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f82c4252049
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe3d8e6038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f82c4252049
-RDX: 0000000000000000 RSI: 000000000000af01 RDI: 0000000000000003
-RBP: 00007ffe3d8e6050 R08: 0000000000000001 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:vhost_task_start+0x22/0x40 kernel/vhost_task.c:115
-Code: 00 00 00 00 00 0f 1f 00 f3 0f 1e fa 53 48 89 fb e8 c3 67 2c 00 48 8d 7b 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 0a 48 8b 7b 70 5b e9 fe bd 02 00 e8 79 ec 7e 00 eb
-RSP: 0018:ffffc90003a9fc38 EFLAGS: 00010207
-RAX: dffffc0000000000 RBX: fffffffffffffff4 RCX: 0000000000000000
-RDX: 000000000000000c RSI: ffffffff81564c8d RDI: 0000000000000064
-RBP: ffff88802b21dd40 R08: 0000000000000100 R09: ffffffff8c917cf3
-R10: 00000000fffffff4 R11: 0000000000000000 R12: fffffffffffffff4
-R13: ffff888075d000b0 R14: ffff888075d00000 R15: ffff888075d00008
-FS:  0000555556247300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffe3d8e5ff8 CR3: 00000000215d4000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	00 00                	add    %al,(%rax)
-   2:	00 00                	add    %al,(%rax)
-   4:	0f 1f 00             	nopl   (%rax)
-   7:	f3 0f 1e fa          	endbr64
-   b:	53                   	push   %rbx
-   c:	48 89 fb             	mov    %rdi,%rbx
-   f:	e8 c3 67 2c 00       	callq  0x2c67d7
-  14:	48 8d 7b 70          	lea    0x70(%rbx),%rdi
-  18:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  1f:	fc ff df
-  22:	48 89 fa             	mov    %rdi,%rdx
-  25:	48 c1 ea 03          	shr    $0x3,%rdx
-* 29:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2d:	75 0a                	jne    0x39
-  2f:	48 8b 7b 70          	mov    0x70(%rbx),%rdi
-  33:	5b                   	pop    %rbx
-  34:	e9 fe bd 02 00       	jmpq   0x2be37
-  39:	e8 79 ec 7e 00       	callq  0x7eecb7
-  3e:	eb                   	.byte 0xeb
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
