@@ -2,93 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34BF46C293B
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 05:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 280A46C293D
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 05:44:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbjCUEmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 00:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48838 "EHLO
+        id S229651AbjCUEoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 00:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCUEmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 00:42:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E588D30181
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 21:42:10 -0700 (PDT)
+        with ESMTP id S229483AbjCUEoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 00:44:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BBC430181;
+        Mon, 20 Mar 2023 21:43:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 948F5B80CA0
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:42:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A743CC433D2;
-        Tue, 21 Mar 2023 04:42:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C45306195D;
+        Tue, 21 Mar 2023 04:43:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CAAEC433D2;
+        Tue, 21 Mar 2023 04:43:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679373728;
-        bh=996goaCyWTUhF7iaI5iHtEeigGPkASBDWBYfXXitPIk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DFcRJaxL0QKg6I0CT1HdQ1iAXDojSUSkYfH757gfE6y3LG9/G9WQ3eHODjbNrevxj
-         2vL6seZUOuRgYMAgNcZdTq9bryM2Tx77KwTc2eWfKbnjbhGyuXzvXYs+rUwYgdopG3
-         r6dqCk7QVb0WGGZnsqVlXlTFOjtIS1i94z//390JY7KPMpqZQ2S/YmJjfjoi8r+LD5
-         pqkZcTKjTw8C2pseqUBx5UPu/8JAfrJkkozebFhdD/fsnQVKNHEBu23Pm1LK8yz92O
-         wqnUidl6BgArsgawvjAekTz4HINk0TZvz/DEq0pV5S5gwWupwJb4KHsa7EKa3dOOHZ
-         0LTBA7mUX/+6Q==
+        s=k20201202; t=1679373838;
+        bh=2s4jY8/zJcEM72Oy6GTSv34oh2hGJUAKFp8HfH4OOZ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HzGSCHWrSKytehdFqo0TzC0qNk1vSMtVNv9tb0WkdoWdbzigl7Yn7Mle23nE18FE1
+         yFyD8z+Fgy45V9qx6wC1L2VzmOhnvTzPHJLLQA+srNArtMxtUXbe7g83uwIZ1zaAyr
+         tc3tUi+wolZUgLWia2et61DnX3PWIyGuUfMu7moE7CROqFe6z0Mhim2UTGN1f6mogx
+         EP/9gKTruA9lwYh1Kskv68B619fXygjROx8izkuY81m96oihpPxDncfVYFnn6xZ9Gp
+         OanjG/3ViUdqsCMCeAguokh5kjxaeLq83urjGmCUji8y8EBeP/YlpTwJ1BF3VPsucr
+         ToKPWiVpj5wFw==
+Date:   Mon, 20 Mar 2023 21:43:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        jiri@resnulli.us, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] tools: ynl: skip the explicit op array size when no needed
-Date:   Mon, 20 Mar 2023 21:41:59 -0700
-Message-Id: <20230321044159.1031040-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 00/10] mtk: wed: move cpuboot, ilm and dlm in
+ dedicated dts nodes
+Message-ID: <20230320214356.27c62f9f@kernel.org>
+In-Reply-To: <cover.1679330630.git.lorenzo@kernel.org>
+References: <cover.1679330630.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri suggests it reads more naturally to skip the explicit
-array size when possible. When we export the symbol we want
-to make sure that the size is right.
+On Mon, 20 Mar 2023 17:57:54 +0100 Lorenzo Bianconi wrote:
+>  arch/arm64/boot/dts/mediatek/mt7986a.dtsi     | 69 +++++++-------
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/core/netdev-genl-gen.c | 2 +-
- tools/net/ynl/ynl-gen-c.py | 4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/netdev-genl-gen.c b/net/core/netdev-genl-gen.c
-index 3abab70d66dd..de17ca2f7dbf 100644
---- a/net/core/netdev-genl-gen.c
-+++ b/net/core/netdev-genl-gen.c
-@@ -16,7 +16,7 @@ static const struct nla_policy netdev_dev_get_nl_policy[NETDEV_A_DEV_IFINDEX + 1
- };
- 
- /* Ops table for netdev */
--static const struct genl_split_ops netdev_nl_ops[2] = {
-+static const struct genl_split_ops netdev_nl_ops[] = {
- 	{
- 		.cmd		= NETDEV_CMD_DEV_GET,
- 		.doit		= netdev_nl_dev_get_doit,
-diff --git a/tools/net/ynl/ynl-gen-c.py b/tools/net/ynl/ynl-gen-c.py
-index c16671a02621..972b87c7aaaf 100755
---- a/tools/net/ynl/ynl-gen-c.py
-+++ b/tools/net/ynl/ynl-gen-c.py
-@@ -1696,7 +1696,9 @@ _C_KW = {
-                          'split': 'genl_split_ops'}
-         struct_type = pol_to_struct[family.kernel_policy]
- 
--        if family.kernel_policy == 'split':
-+        if not exported:
-+            cnt = ""
-+        elif family.kernel_policy == 'split':
-             cnt = 0
-             for op in family.ops.values():
-                 if 'do' in op:
--- 
-2.39.2
-
+Do you know if this can go via our tree, or via arm/MediaTek ?
