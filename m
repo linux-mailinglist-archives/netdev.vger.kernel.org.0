@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB6B6C2F11
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:33:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA9EF6C2F12
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:34:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230301AbjCUKdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 06:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
+        id S230297AbjCUKeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 06:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbjCUKdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:33:50 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B886937739
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:19 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id k2so15505844pll.8
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:19 -0700 (PDT)
+        with ESMTP id S230220AbjCUKeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:34:00 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03ECF1557D
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:26 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id j3-20020a17090adc8300b0023d09aea4a6so19698649pjv.5
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1679394799;
+        d=broadcom.com; s=google; t=1679394801;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=FEj2BBbk4m7LfrBwoZM0xHy0yDmRcR0kWmS+Xqd6aOA=;
-        b=KMhVWJMD6LtHunb+3KvlyTFYOqsxIRXvYeN4Xkiyn0MTGA2SMZAkNMoQNmKWBdWEST
-         GUtfIzOcE+FK6DvxhFXSLGKAD9vv3P4Y+0VwRugg+J2ow2hUmqRBmcKqutYGBx5ODLHW
-         SOxWBP1qOMT5nFVBQ+uh9vPTEoPlvZayg/waU=
+        bh=4Ic3WM3REAXpT3zzCyF2Yvp86sf3ncEAH9eyMYMxGQg=;
+        b=SDBFEmdZ/VnoeU7yXSA6inBz+vAdscUvt7rQtGy4pXIIwhdDBWfGn4IYEfeVSF24O3
+         eTEvzRpdyWlfDwLof/XFGsf59Rrv+AKB9RD0yTbGHoKo11xkgH1MDwFSXgn3ObG8Vcl3
+         g6heHAT1E8BtKk5UmiYXtsuRrsGmSFHJdnILc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679394799;
+        d=1e100.net; s=20210112; t=1679394801;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FEj2BBbk4m7LfrBwoZM0xHy0yDmRcR0kWmS+Xqd6aOA=;
-        b=09sE1n2XfD9YVFP9k64XwTJ48JnuDYIkG5GTZuE4fNczGu7R8UqFn3cwoqA1+W+Y34
-         5bkEyla/fG45GFfLvkfz296xu3ipdJlpI7+AcfthZ50Wt0QF6ZqDHwgpMKbXeSZAk+X4
-         k+fRptQfGKbPzOCLwpUxoUAFpojBnROdiu+FeJj4WbC9DdFoyXq28fjDutK3B1gOGm0y
-         XPaCQaVZdArHwGSi8sWttyWyMSP3CV1YCbSPiVuldWW/9T2Gzf7ZywlbF1B/hH4a0n65
-         Gftv0G5/v1NkFQxJ3IX+9DkAYVKD8nn/6JiN9Z4HpIaOP8hKOiz08FuRkDR93SpUKtT6
-         j4RA==
-X-Gm-Message-State: AO0yUKW3h0fnFgnbFWOJ3ak9TglgIzPF+V5hGpLg9TMDumLSPI6b9AxR
-        EvJ2AhUT7M2nonDcIcdT62wBzg==
-X-Google-Smtp-Source: AK7set9Sq+91lyzrXF3Ke8zbeZ/Rzeqebywt4qqP56RfnX5MgEBAa8TxTHkz5cOkhmLQPLKxV9qJ6Q==
-X-Received: by 2002:a05:6a20:ca49:b0:cc:cc27:9185 with SMTP id hg9-20020a056a20ca4900b000cccc279185mr1392186pzb.50.1679394798734;
-        Tue, 21 Mar 2023 03:33:18 -0700 (PDT)
+        bh=4Ic3WM3REAXpT3zzCyF2Yvp86sf3ncEAH9eyMYMxGQg=;
+        b=4PwR61DEJyAzNJvKGPthCfRcUSDZ1FGgnuC5fUIJbngkM+ggNkTwiNQPItdT1yfqp4
+         sx2gbVxuC7B4h0DsAfefO8aoHnSTAbgMsCniZqr5ne3Dq6OVV3MmRjThCqjymstJ3x+i
+         pvoNP30UWzyXiVYuTuea8iys/pFjwo92yWCIQ6eRgbRoVXnlk8LAvb3Y4CqwFGRcEzYy
+         x527Ga0CnJee+6DbWQRixIJ4Jj9REggRGLX2LjrHKB2DrJl+VSkqJq3i7IMIgKIGIIAk
+         NQ6ErFbks+jMuOhMveHTzOZnhJOQy2McTKVHOzdBBZQl16ylhdEK9K45HWybKBQb3Ics
+         KEiQ==
+X-Gm-Message-State: AO0yUKXoXw+kdFQYXSMuScO4zABUKb6or35GQRwVK5gDg4KkctI+5Wzq
+        5bfEjkQlUJbqjbbJElji+hnXuw==
+X-Google-Smtp-Source: AK7set+MaIDb5K8gZ8a2kUaZzqka8Ti3440ZLUBruD6VtmCsMo0aAZuFAOw54e8dCnJwjJPExewFZg==
+X-Received: by 2002:a05:6a20:2a06:b0:d9:fb5c:e0de with SMTP id e6-20020a056a202a0600b000d9fb5ce0demr1685763pzh.38.1679394801576;
+        Tue, 21 Mar 2023 03:33:21 -0700 (PDT)
 Received: from PC-MID-R740.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id t13-20020a62ea0d000000b005a87d636c70sm7888416pfh.130.2023.03.21.03.33.16
+        by smtp.gmail.com with ESMTPSA id t13-20020a62ea0d000000b005a87d636c70sm7888416pfh.130.2023.03.21.03.33.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 03:33:18 -0700 (PDT)
+        Tue, 21 Mar 2023 03:33:21 -0700 (PDT)
 From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
 To:     michael.chan@broadcom.com, kuba@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, gospo@broadcom.com,
         netdev@vger.kernel.org, pabeni@redhat.com,
         richardcochran@gmail.com, Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net-next 2/3] bnxt: Defer PTP initialization to after querying function caps
-Date:   Tue, 21 Mar 2023 03:32:26 -0700
-Message-Id: <20230321103227.12020-3-pavan.chebbi@broadcom.com>
+Subject: [PATCH net-next 3/3] bnxt: Enforce PTP software freq adjustments only when in non-RTC mode
+Date:   Tue, 21 Mar 2023 03:32:27 -0700
+Message-Id: <20230321103227.12020-4-pavan.chebbi@broadcom.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
 References: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000007078af05f7669286"
+        boundary="0000000000009bb0db05f7669237"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -68,65 +68,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000007078af05f7669286
+--0000000000009bb0db05f7669237
 Content-Transfer-Encoding: 8bit
 
-Driver uses the flag BNXT_FLAG_MULTI_HOST to determine whether
-to use non-realtime mode PHC when running on a multi host NIC.
-However when ptp initializes on a NIC with shared PHC, we still
-don't have this flag set yet because HWRM_FUNC_QCFG is issued
-much later.
+Currently driver performs software based frequency adjustments
+when RTC capability is not discovered or when in shared PHC mode.
+But there may be some old firmware versions that still support
+hardware freq adjustments without RTC capability being exposed.
+In this situation driver will use non-realtime mode even on single
+host NICs.
 
-Move the ptp initialization code after we have issued func_qcfg.
-The next patch will use the BNXT_FLAG_MULTI_HOST flag during PTP
-initialization.
+Hence enforce software frequency adjustments only when running in
+shared PHC mode. Make suitable changes for cyclecounter for the
+same.
 
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 +++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 1 +
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f533a8f46217..656a28ac2ff0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7769,7 +7769,7 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 		if (flags & FUNC_QCAPS_RESP_FLAGS_WOL_MAGICPKT_SUPPORTED)
- 			bp->flags |= BNXT_FLAG_WOL_CAP;
- 		if (flags & FUNC_QCAPS_RESP_FLAGS_PTP_SUPPORTED) {
--			__bnxt_hwrm_ptp_qcfg(bp);
-+			bp->fw_cap |= BNXT_FW_CAP_PTP;
- 		} else {
- 			bnxt_ptp_clear(bp);
- 			kfree(bp->ptp_cfg);
-@@ -12298,6 +12298,8 @@ static int bnxt_fw_init_one_p2(struct bnxt *bp)
- 	bnxt_hwrm_vnic_qcaps(bp);
- 	bnxt_hwrm_port_led_qcaps(bp);
- 	bnxt_ethtool_init(bp);
-+	if (bp->fw_cap & BNXT_FW_CAP_PTP)
-+		__bnxt_hwrm_ptp_qcfg(bp);
- 	bnxt_dcb_init(bp);
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index d7eb0d244f42..0eeaed95a4ac 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1996,6 +1996,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_HOT_RESET_IF		BIT_ULL(29)
- 	#define BNXT_FW_CAP_RING_MONITOR		BIT_ULL(30)
- 	#define BNXT_FW_CAP_DBG_QCAPS			BIT_ULL(31)
-+	#define BNXT_FW_CAP_PTP				BIT_ULL(32)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index a3a3978a4d1c..b79a186f864c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -230,7 +230,7 @@ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+ 						ptp_info);
+ 	struct bnxt *bp = ptp->bp;
  
- 	u32			fw_dbg_cap;
+-	if (BNXT_PTP_USE_RTC(bp))
++	if (!BNXT_MH(ptp->bp))
+ 		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
  
+ 	spin_lock_bh(&ptp->ptp_lock);
+@@ -861,9 +861,15 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
+ 		memset(&ptp->cc, 0, sizeof(ptp->cc));
+ 		ptp->cc.read = bnxt_cc_read;
+ 		ptp->cc.mask = CYCLECOUNTER_MASK(48);
+-		ptp->cc.shift = BNXT_CYCLES_SHIFT;
+-		ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
+-		ptp->cmult = ptp->cc.mult;
++		if (BNXT_MH(ptp->bp)) {
++			/* Use timecounter based non-real time mode */
++			ptp->cc.shift = BNXT_CYCLES_SHIFT;
++			ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
++			ptp->cmult = ptp->cc.mult;
++		} else {
++			ptp->cc.shift = 0;
++			ptp->cc.mult = 1;
++		}
+ 		ptp->next_overflow_check = jiffies + BNXT_PHC_OVERFLOW_PERIOD;
+ 	}
+ 	if (init_tc)
 -- 
 2.39.1
 
 
---0000000000007078af05f7669286
+--0000000000009bb0db05f7669237
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -197,13 +195,13 @@ pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
 Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILYpGhWZrWx2bRw4dcnczaf6+bUXPTTn
-YDUGvAODMh1lMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-MTEwMzMxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEhRidgIUu+vo0/jJvtMw124TGKnFrhD
+g83mHulBPRhJMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
+MTEwMzMyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBkFcsMJk3lyAGqnMVnV34kuZvRDK287o3M67oV+wD+BZp54gdo
-JW8CHsWYORPvXblDo4WwVWqxEOMx9QsVg4tiPhW5xFmWymXAkrFjdJgJW+nUaaQECN2jgHp5O0cg
-pfkU9IPccSHayfD27kfIZHQx6a4iMYz/8+KaZmbS8fnY7/3WJ4hm33/tLsWeFOwTq5y2Ol1IhIIm
-NKfg11W8XNnavuEVs2FsMnCmVRavtpq2weU+Ygzh1qDBrNeidXm7EnWPvTEn9YpKtvwYAvgx4F2n
-PrjWHgh7smY3vK2Bldny9eD5KqDrVUBJGuF1Zav2f+hQ6wVardukuYuPy3JjWYZ0
---0000000000007078af05f7669286--
+ATANBgkqhkiG9w0BAQEFAASCAQB78x1DbQ9Sih9B3cbneYEFEuDYuhPI8Hv4VHc8f7bsAbkX9D3q
+jdFYbiCVU+Gh1Gf+ts/8WGGAuvvfd/LJkn5AbahGIQWmf4BWrX5ZzIZ2ErtJyUIUUMNu4h1BhbtE
+mkyiohepwsGCNt+KXBwqp5GjPXjMjCXYqcUYGMtz0aW89lPeLDx5ahylsSx3rBxNTlusuA1ozjtq
+AF/jhKvKoDLs4hXhB95J41/vulphINqZX+wpwzNxa5Hz/fgRWFZUnAkEyGcQTsdeUlDQpb4c5GMw
+AFiP3fTQ2ZHY7vBQskpeAsOcUAXf3w9IiZo6vyTsMPdFF3umAzRki9pmhV3wi1u1
+--0000000000009bb0db05f7669237--
