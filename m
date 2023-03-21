@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 615696C2F0F
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DFC56C2F10
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbjCUKdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 06:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57896 "EHLO
+        id S230298AbjCUKdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 06:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbjCUKdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:33:45 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAC748E26
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:14 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso15446202pjb.3
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:14 -0700 (PDT)
+        with ESMTP id S229828AbjCUKds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:33:48 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7806B38452
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:17 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id u20so8193707pfk.12
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1679394793;
-        h=mime-version:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=s6+CWemLSsxGrj9ST2wQyks+aWcRYLwPx7y0USooJs4=;
-        b=ERIY2rPiY2id0nRy/7yCNsg4jZnqG1gjSwmQ+p6UakNw1zzm7aN0vJIWJkroEvqIVr
-         yqZyBsZdyS6/b4xYCcgDdFrJEum86dhlh+Gl6n3Mzlfy7wAHOEMKJddwMQjitMEj0GvT
-         VcGe13gYu7VmHLzrt4knrJA4MFbEcg5TVutOU=
+        d=broadcom.com; s=google; t=1679394796;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5PVJ17ZfO9DmLoPlC4GtV8JRbkUU3lGXjw5h144d/QY=;
+        b=GDxxONMJGRQGYc3YjsTVr6HSgeh+dPB6JlSEkWvddldcmo5uv40LGPdWzrmZbyniN/
+         0mHUR/vTY7MR1M1eHPYgeqSdaeQTH0Ovs4r/Ez1KWKeNlqbO3w2rbaweqO9rKhWuJvij
+         O6uE1/ALotD6oK1sSYpfK6ExLGwAolowWl7P8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679394793;
-        h=mime-version:message-id:date:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=s6+CWemLSsxGrj9ST2wQyks+aWcRYLwPx7y0USooJs4=;
-        b=lmmmOe1W3uS37WZc9ht0ILzUdvAkFK4XcLp3mNThu/9fToUBS3ClQ7wK5HSO32bmJn
-         DqQiHygqBvYBN2S9iIMbVhnM3VhhdgceKClJllI7762/wWYOWdQgL95BaVR+JX36e9RC
-         bhIqQAKNDRuON6dIuBcEqPbZVWFy3Og3m4bxY2ri7hbYDqw7GE0/QEBrt61iShKkUinv
-         kZdIuyCEQi164+hdUI5euuxM6UwPo456KqnFdXvHEcqR9tKbffDu045PI8ssvSVxrL9k
-         k71rzulR4MxUhsyMELPZ1pBzh+0I0nCkV29YDeH+n2iL5VNddLljDcj4kyctCBmhygXv
-         qlAg==
-X-Gm-Message-State: AO0yUKUUM3u10fEEsxX/OZ2wCq82eHh3moCAPphAspGONf5EpxLV7GKr
-        wFBy9jozetgzwkae0DnbSdckcw==
-X-Google-Smtp-Source: AK7set92kGjvLb3kWShwQkcUkocu/UzNea9zlZOLTFMgSJgZZavy4xZGOMDuSASMapMWatIhY1PEPA==
-X-Received: by 2002:a05:6a20:66b0:b0:cc:a5d4:c31e with SMTP id o48-20020a056a2066b000b000cca5d4c31emr1616286pzh.10.1679394792847;
-        Tue, 21 Mar 2023 03:33:12 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679394796;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5PVJ17ZfO9DmLoPlC4GtV8JRbkUU3lGXjw5h144d/QY=;
+        b=0UTUrs9nezOGtHdL80r/aGPrVJz9R2Op2DyG039VzYLTgHrXR+wsmsnLX6ObssKX4u
+         5hpLhTd7xJtjGknVowVkSpr2hoWPbIrHEOwiUBnorrgpTx8HL4VNhZfCcPSiB47wJbFp
+         jyP9oy3ye1jyMnuBa4MpM/xnzlAi6rrdiYyysd7IArpJEMv7RqwRiDS/PvYoGmw01u+5
+         c/wFhoesnPkoAIG0U6C0vKiGv1jo/XpPxV2LcXVZU30MOZlX8Jt1TkWibIhuYbcmFUoS
+         pNpIxU8/HsIKr2mjGfMJzyDRGlII++/rwJmMkH1ghAJKGTuN22doRfq0ep2RN6PYUMic
+         rl1w==
+X-Gm-Message-State: AO0yUKWZOLefBViN/5yn9tEthibK0hKKy/F9KoCqmbbTw0q0xHe5MMsJ
+        OJFJgFXqxBUN3pLGhnnTAVh1og==
+X-Google-Smtp-Source: AK7set8q5bAaThzIJnT/5YsDjKJuWL3768Wk8luCDIyOnY8zeZ+bh4PLORDZfupCU3sooRJjj5DpLQ==
+X-Received: by 2002:aa7:9496:0:b0:627:df8d:350f with SMTP id z22-20020aa79496000000b00627df8d350fmr1765056pfk.4.1679394795943;
+        Tue, 21 Mar 2023 03:33:15 -0700 (PDT)
 Received: from PC-MID-R740.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id t13-20020a62ea0d000000b005a87d636c70sm7888416pfh.130.2023.03.21.03.33.10
+        by smtp.gmail.com with ESMTPSA id t13-20020a62ea0d000000b005a87d636c70sm7888416pfh.130.2023.03.21.03.33.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 03:33:12 -0700 (PDT)
+        Tue, 21 Mar 2023 03:33:15 -0700 (PDT)
 From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
 To:     michael.chan@broadcom.com, kuba@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, gospo@broadcom.com,
         netdev@vger.kernel.org, pabeni@redhat.com,
-        richardcochran@gmail.com, Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net-next 0/3] bnxt PTP optimizations
-Date:   Tue, 21 Mar 2023 03:32:24 -0700
-Message-Id: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
+        richardcochran@gmail.com, Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Edwin Peer <edwin.peer@broadcom.com>
+Subject: [PATCH net-next 1/3] bnxt: Change fw_cap to u64 to accommodate more capability bits
+Date:   Tue, 21 Mar 2023 03:32:25 -0700
+Message-Id: <20230321103227.12020-2-pavan.chebbi@broadcom.com>
 X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
+References: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000167d1c05f7669218"
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=no
+        boundary="00000000000045964c05f766925f"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,UPPERCASE_50_75,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,30 +69,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000167d1c05f7669218
+--00000000000045964c05f766925f
 Content-Transfer-Encoding: 8bit
 
-Patches to
-1. Enforce software based freq adjustments only on shared PHC NIC
+The current fw_cap field (u32) has run out of bits to save any
+new capability.
 
-2. A prerequisite change to expand capability storage field to
-accommodate more Firmware reported capabilities
+Change the field to u64.
 
-Pavan Chebbi (3):
-  bnxt: Change fw_cap to u64 to accommodate more capability bits
-  bnxt: Defer PTP initialization to after querying function caps
-  bnxt: Enforce PTP software freq adjustments only when in non-RTC mode
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h | 56 +++++++++++------------
+ 1 file changed, 28 insertions(+), 28 deletions(-)
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  4 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 57 ++++++++++---------
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 14 +++--
- 3 files changed, 42 insertions(+), 33 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index c0628ac1b798..d7eb0d244f42 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1968,34 +1968,34 @@ struct bnxt {
+ 
+ 	u32			msg_enable;
+ 
+-	u32			fw_cap;
+-	#define BNXT_FW_CAP_SHORT_CMD			0x00000001
+-	#define BNXT_FW_CAP_LLDP_AGENT			0x00000002
+-	#define BNXT_FW_CAP_DCBX_AGENT			0x00000004
+-	#define BNXT_FW_CAP_NEW_RM			0x00000008
+-	#define BNXT_FW_CAP_IF_CHANGE			0x00000010
+-	#define BNXT_FW_CAP_KONG_MB_CHNL		0x00000080
+-	#define BNXT_FW_CAP_OVS_64BIT_HANDLE		0x00000400
+-	#define BNXT_FW_CAP_TRUSTED_VF			0x00000800
+-	#define BNXT_FW_CAP_ERROR_RECOVERY		0x00002000
+-	#define BNXT_FW_CAP_PKG_VER			0x00004000
+-	#define BNXT_FW_CAP_CFA_ADV_FLOW		0x00008000
+-	#define BNXT_FW_CAP_CFA_RFS_RING_TBL_IDX_V2	0x00010000
+-	#define BNXT_FW_CAP_PCIE_STATS_SUPPORTED	0x00020000
+-	#define BNXT_FW_CAP_EXT_STATS_SUPPORTED		0x00040000
+-	#define BNXT_FW_CAP_RSS_HASH_TYPE_DELTA		0x00080000
+-	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		0x00100000
+-	#define BNXT_FW_CAP_HOT_RESET			0x00200000
+-	#define BNXT_FW_CAP_PTP_RTC			0x00400000
+-	#define BNXT_FW_CAP_RX_ALL_PKT_TS		0x00800000
+-	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
+-	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
+-	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
+-	#define BNXT_FW_CAP_LIVEPATCH			0x08000000
+-	#define BNXT_FW_CAP_PTP_PPS			0x10000000
+-	#define BNXT_FW_CAP_HOT_RESET_IF		0x20000000
+-	#define BNXT_FW_CAP_RING_MONITOR		0x40000000
+-	#define BNXT_FW_CAP_DBG_QCAPS			0x80000000
++	u64			fw_cap;
++	#define BNXT_FW_CAP_SHORT_CMD			BIT_ULL(0)
++	#define BNXT_FW_CAP_LLDP_AGENT			BIT_ULL(1)
++	#define BNXT_FW_CAP_DCBX_AGENT			BIT_ULL(2)
++	#define BNXT_FW_CAP_NEW_RM			BIT_ULL(3)
++	#define BNXT_FW_CAP_IF_CHANGE			BIT_ULL(4)
++	#define BNXT_FW_CAP_KONG_MB_CHNL		BIT_ULL(7)
++	#define BNXT_FW_CAP_OVS_64BIT_HANDLE		BIT_ULL(10)
++	#define BNXT_FW_CAP_TRUSTED_VF			BIT_ULL(11)
++	#define BNXT_FW_CAP_ERROR_RECOVERY		BIT_ULL(13)
++	#define BNXT_FW_CAP_PKG_VER			BIT_ULL(14)
++	#define BNXT_FW_CAP_CFA_ADV_FLOW		BIT_ULL(15)
++	#define BNXT_FW_CAP_CFA_RFS_RING_TBL_IDX_V2	BIT_ULL(16)
++	#define BNXT_FW_CAP_PCIE_STATS_SUPPORTED	BIT_ULL(17)
++	#define BNXT_FW_CAP_EXT_STATS_SUPPORTED		BIT_ULL(18)
++	#define BNXT_FW_CAP_RSS_HASH_TYPE_DELTA		BIT_ULL(19)
++	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		BIT_ULL(20)
++	#define BNXT_FW_CAP_HOT_RESET			BIT_ULL(21)
++	#define BNXT_FW_CAP_PTP_RTC			BIT_ULL(22)
++	#define BNXT_FW_CAP_RX_ALL_PKT_TS		BIT_ULL(23)
++	#define BNXT_FW_CAP_VLAN_RX_STRIP		BIT_ULL(24)
++	#define BNXT_FW_CAP_VLAN_TX_INSERT		BIT_ULL(25)
++	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	BIT_ULL(26)
++	#define BNXT_FW_CAP_LIVEPATCH			BIT_ULL(27)
++	#define BNXT_FW_CAP_PTP_PPS			BIT_ULL(28)
++	#define BNXT_FW_CAP_HOT_RESET_IF		BIT_ULL(29)
++	#define BNXT_FW_CAP_RING_MONITOR		BIT_ULL(30)
++	#define BNXT_FW_CAP_DBG_QCAPS			BIT_ULL(31)
+ 
+ 	u32			fw_dbg_cap;
+ 
 -- 
 2.39.1
 
 
---000000000000167d1c05f7669218
+--00000000000045964c05f766925f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -160,13 +226,13 @@ pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
 Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBEyxfsQtq0p6GcoZU9C71nlVdgPw/oL
-YjQoNM+s2cVUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-MTEwMzMxM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIClJH4OVJg0iwdKguDpU65MzG0UxqUN3
+YL/K/c16oDbxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
+MTEwMzMxNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBGL3Aj8RP4p73K8h0vRuiw+dj9GRyUdjdWkBvnmD468m8TbL2I
-v71JZNGrflBxdJOOJACeGyBbp28SPCcQ7eANeVjLxjXs0t3xC2cpUvlpoGuhZwUmhysgNwlI49Ll
-8zcsiC1a+tK3zeSnJPuO6vNNYVeGa6jvgZ7ikYgPvLcSmu4AD5iNH8gdO55wxZZVswIJl2B8VY2d
-tJsiqaw1qomCCbSkiKBBDsl+11xHcF/1oPOxuBh/o/wP6HaP/IwZT6TMKQllFkYBSWW/5b+ujfw5
-6oGfbT9NhOG0ZT8EjTiHgBov260GdF/cZrfYkzmDBUZhCPPqGdJkj06WKIPhMkEy
---000000000000167d1c05f7669218--
+ATANBgkqhkiG9w0BAQEFAASCAQA78h3/mjMOzCwkDK1FK2TCl+EhLJ43z6ldydo7Yri2MwMFBpUu
+iAmE5h3pWPAKB+68K8jEHVIDTjVBTAY0Rv+tJT8UNQMlknzGWIWwMHynjCDVGi9kHng6lOgA/A5d
+c16Hcq/7G43YL2hxH4uQgwpp8PzooHh5AmCWEKTtw6gur6pUqNlRtDbRG9FzRYaPdpLWa5H1RJcc
+5sIfE13uo80SgpiBuuobclkbMhJgO3XExr5s0GU8g2dZDkupxRzOdD3lioCA1A9u8O9HS2x09EXD
+FWFjLqtXUrp6QzS/CUaWcsGTt3tvjMo9/RVfQakfNfGCi3wbprza6+kokq15ZAMA
+--00000000000045964c05f766925f--
