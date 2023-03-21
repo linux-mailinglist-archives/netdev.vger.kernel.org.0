@@ -2,196 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4B496C37BA
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:06:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 556F06C37FB
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:14:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230345AbjCURGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 13:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
+        id S229508AbjCURON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 13:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbjCURGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:06:00 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E3F28D33
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:05:47 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id c19so18690411qtn.13
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:05:47 -0700 (PDT)
+        with ESMTP id S230416AbjCUROK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:14:10 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F295CB77D
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:13:39 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b20so29583184edd.1
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:13:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1679418346;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+Zhl7YUcca1NVbtlRSga+lU7bAqc7c76H70XXEPRnbU=;
-        b=chwoNplY+Lr2ajiL3sTdBDyDX/Po6Ek6B1JQtyN7SqN09JLwLR2oDS4h9oBAtGSJvv
-         RP+JB2v/1kD1FqAEafOwkUYPAwWaQ8z2YGhxyw1ZvRpQHairGvd/siC/UK3zNWxMaGB3
-         Hr4rUl5lSipXDyEwbG/Md/9lrJpZgOEuQOxiE=
+        d=gmail.com; s=20210112; t=1679418816;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qwHz4/9dnMV7mjKwGWCSSDfzoyGzlVzCiSmSZNtj3Gs=;
+        b=Ko1+TzlJ0AwPpAfHMXTcJVbvWgHTUTWE/GpawM6+QZT6X+aZ/fAkCLaGpNTWvcqc8o
+         4ATHHTx59AIuf17Sj1OHkoP+0WxzQcRqp+rc5h7FzVE+xyyihRIMqDG4dqBPoAypQAQG
+         rExhHVEhjpOgJSNZiO5E12k03JUfzy2tXjrgitx18mLUOcfRaCTfNeUfY/TbH8Qu/ax9
+         wKz9uqPd8q1pYJKemBak8ThBAv06fJqGMMJU9ViIox0w8XsJBTJzy74tkoCJs137zQWj
+         QoDEtmOSv5cPXj6FSesie1E5/aoZl3Npj8VmZvjQi1GVX9PKlzL20sTKfSikTzZOIQLi
+         E7Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679418346;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+Zhl7YUcca1NVbtlRSga+lU7bAqc7c76H70XXEPRnbU=;
-        b=g60YwVNGrU8AFyLDoF8+Tvv5DhsNWYbl8Ikb7Kx9F1NYqtj13JmkqUSbkhevYvdORu
-         JARdRwtRL21B99XIn/PotnhSi9fQ2AXZQsoNH/4o8ZeI+yXXQM8S/F40cQKq89wA978n
-         /z3etej1iADK9qcAs0yLxxNtcAYJiSf1UIR5qDvO9l76uHS3PZICALG1U8jdj1f9yZH9
-         r8WYLaVpHtR0zijrntNhfWZkSTjxnTNzWHmA8+NRbmAuuMrSqs35w9Jkb1EiaLbJCfoN
-         xp5q8OkPyBAvWtZYdIcG9OVKcZsZJPnTyWAkyJOBH9vrddnRQHJXspNh9awmrepXDwwc
-         n0og==
-X-Gm-Message-State: AO0yUKVo5M/5t6QsuFrHxDodHgvJoE3ykR2L47s+uYGAmqeMIEiOj69s
-        jQoTJZtuBqHkoJyDM7BgXw/tEg==
-X-Google-Smtp-Source: AK7set9MzesAz4F9rjjs2B5q05pOEHkeCcO8Ep63SbsTh720zcLHcpOip9Nwio38dNtT+lgKNmg8JQ==
-X-Received: by 2002:ac8:5d93:0:b0:3d6:d055:72af with SMTP id d19-20020ac85d93000000b003d6d05572afmr802928qtx.53.1679418345599;
-        Tue, 21 Mar 2023 10:05:45 -0700 (PDT)
-Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id l18-20020ac84a92000000b003e3860f12f7sm824726qtq.56.2023.03.21.10.05.44
+        d=1e100.net; s=20210112; t=1679418816;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qwHz4/9dnMV7mjKwGWCSSDfzoyGzlVzCiSmSZNtj3Gs=;
+        b=MGhaLO33Bo9+S9SqqlPYFgd4W+Xo0kVBU5b5IRx2mA+hYxHinu1B1f2xJHf8iES4rQ
+         7gHSVpWYCSK+jep8RggBRh6q2r/zZOtNuKZzfOFto2usm4CJref08WBVAF0DPLsm7gfF
+         lZrOsvdaUD7mu5DtUCsBXBaLdpJOrHnizCwk8CrJQLp4rP6FREV/Id2cCIe4nXLIWX2u
+         d4PoMtE3Qzs4FLIEdEJa1G/LoJ/ambGUD6hscj7ZmYBUp+eAlsck5UUeBzfE7QSunLrr
+         8NgSR+vhYWTFHSFJmVtK4hH5SqiK/Z3082QZPEUr3mR5izLnwgO5BOg1bUeboTsE/5PA
+         m4PQ==
+X-Gm-Message-State: AO0yUKWhCuCyHCoIGzGRRFwwXuEQnTyBYiBRz0nNWnE2tV2UrnmNS2SS
+        atojSsW8pfKWiIF32zq9q8U=
+X-Google-Smtp-Source: AK7set8jpyhjlBFf3U3xYvAcdeafC0CoWzdQPzjTC/iChaNedNTcvLxmle87JV5/cj0Ftco3T6tlvQ==
+X-Received: by 2002:a17:906:344f:b0:8b1:75a0:e5c6 with SMTP id d15-20020a170906344f00b008b175a0e5c6mr3773925ejb.18.1679418816238;
+        Tue, 21 Mar 2023 10:13:36 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id o11-20020a17090608cb00b008d0dbf15b8bsm6110222eje.212.2023.03.21.10.13.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 10:05:45 -0700 (PDT)
-From:   Grant Grundler <grundler@chromium.org>
-To:     Oleksij Rempel <linux@rempel-privat.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>
-Cc:     Eizan Miyamoto <eizan@chromium.org>,
+        Tue, 21 Mar 2023 10:13:35 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 19:13:33 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Grant Grundler <grundler@chromium.org>,
-        Anton Lundin <glance@acc.umu.se>
-Subject: [PATCHv6 net] net: asix: fix modprobe "sysfs: cannot create duplicate filename"
-Date:   Tue, 21 Mar 2023 10:05:39 -0700
-Message-Id: <20230321170539.732147-1-grundler@chromium.org>
-X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        netdev@vger.kernel.org, eric.dumazet@gmail.com
+Subject: Re: [PATCH net-next 0/3] net: remove some skb_mac_header assumptions
+Message-ID: <20230321171333.t4u6z2n5ex76h3ot@skbuf>
+References: <20230321164519.1286357-1-edumazet@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230321164519.1286357-1-edumazet@google.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"modprobe asix ; rmmod asix ; modprobe asix" fails with:
-   sysfs: cannot create duplicate filename \
-   	'/devices/virtual/mdio_bus/usb-003:004'
+Hi Eric,
 
-Issue was originally reported by Anton Lundin on 2022-06-22 (link below).
+On Tue, Mar 21, 2023 at 04:45:16PM +0000, Eric Dumazet wrote:
+> Historically, we tried o maintain skb_mac_header available in most of
+> networking paths.
+> 
+> When reaching ndo_start_xmit() handlers, skb_mac_header() should always
+> be skb->data.
+> 
+> With recent additions of skb_mac_header_was_set() and 
+> DEBUG_NET_WARN_ON_ONCE() in skb_mac_header(), we can attempt
+> to remove our reliance on skb_mac_header in TX paths.
+> 
+> When this effort completes we will remove skb_reset_mac_header()
+> from __dev_queue_xmit() and replace it by
+> skb_unset_mac_header() on DEBUG_NET builds.
+> 
+> Eric Dumazet (3):
+>   net: do not use skb_mac_header() in qdisc_pkt_len_init()
+>   sch_cake: do not use skb_mac_header() in cake_overhead()
+>   net/sched: remove two skb_mac_header() uses
+> 
+>  net/core/dev.c         | 8 ++++----
+>  net/sched/act_mirred.c | 2 +-
+>  net/sched/act_mpls.c   | 2 +-
+>  net/sched/sch_cake.c   | 6 +++---
+>  4 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> -- 
+> 2.40.0.rc2.332.ga46443480c-goog
+> 
 
-Chrome OS team hit the same issue in Feb, 2023 when trying to find
-work arounds for other issues with AX88172 devices.
-
-The use of devm_mdiobus_register() with usbnet devices results in the
-MDIO data being associated with the USB device. When the asix driver
-is unloaded, the USB device continues to exist and the corresponding
-"mdiobus_unregister()" is NOT called until the USB device is unplugged
-or unauthorized. So the next "modprobe asix" will fail because the MDIO
-phy sysfs attributes still exist.
-
-The 'easy' (from a design PoV) fix is to use the non-devm variants of
-mdiobus_* functions and explicitly manage this use in the asix_bind
-and asix_unbind function calls. I've not explored trying to fix usbnet
-initialization so devm_* stuff will work.
-
-Fixes: e532a096be0e5 ("net: usb: asix: ax88772: add phylib support")
-Reported-by: Anton Lundin <glance@acc.umu.se>
-Link: https://lore.kernel.org/netdev/20220623063649.GD23685@pengutronix.de/T/
-Tested-by: Eizan Miyamoto <eizan@chromium.org>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
----
- drivers/net/usb/asix_devices.c | 32 +++++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
-
-V6: overlooked format-path "1/2" when generating this patch.
-
-V5: remove ax88772_mdio_unregister() call from error path in ax88772_init_phy()
-    Jakub pointed out ax88772_mdio_unregister() will get called twice.
-    (note: putting mdio handling in one function helps avoid this kind of bug.)
-
-V4: add mdio_unregister to ax88172_bind() error handling paths
-
-V3: rebase against netdev/net.git
-    remove "TEST" prefix in subject line
-    added Link: tag for Reported-by tag
-
-V2: moved mdiobus_get_phy() call back into ax88772_init_phy()
-   (Lukas Wunner is entirely correct this patch is much easier
-   to backport without this patch hunk.)
-   Added "Fixes:" tag per request from Florian Fainelli
-
-
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 743cbf5d662c..f7cff58fe044 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -666,8 +666,9 @@ static int asix_resume(struct usb_interface *intf)
- static int ax88772_init_mdio(struct usbnet *dev)
- {
- 	struct asix_common_private *priv = dev->driver_priv;
-+	int ret;
- 
--	priv->mdio = devm_mdiobus_alloc(&dev->udev->dev);
-+	priv->mdio = mdiobus_alloc();
- 	if (!priv->mdio)
- 		return -ENOMEM;
- 
-@@ -679,7 +680,20 @@ static int ax88772_init_mdio(struct usbnet *dev)
- 	snprintf(priv->mdio->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
- 		 dev->udev->bus->busnum, dev->udev->devnum);
- 
--	return devm_mdiobus_register(&dev->udev->dev, priv->mdio);
-+	ret = mdiobus_register(priv->mdio);
-+	if (ret) {
-+		netdev_err(dev->net, "Could not register MDIO bus (err %d)\n", ret);
-+		mdiobus_free(priv->mdio);
-+		priv->mdio = NULL;
-+	}
-+
-+	return ret;
-+}
-+
-+static void ax88772_mdio_unregister(struct asix_common_private *priv)
-+{
-+	mdiobus_unregister(priv->mdio);
-+	mdiobus_free(priv->mdio);
- }
- 
- static int ax88772_init_phy(struct usbnet *dev)
-@@ -896,16 +910,23 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 
- 	ret = ax88772_init_mdio(dev);
- 	if (ret)
--		return ret;
-+		goto mdio_err;
- 
- 	ret = ax88772_phylink_setup(dev);
- 	if (ret)
--		return ret;
-+		goto phylink_err;
- 
- 	ret = ax88772_init_phy(dev);
- 	if (ret)
--		phylink_destroy(priv->phylink);
-+		goto initphy_err;
- 
-+	return 0;
-+
-+initphy_err:
-+	phylink_destroy(priv->phylink);
-+phylink_err:
-+	ax88772_mdio_unregister(priv);
-+mdio_err:
- 	return ret;
- }
- 
-@@ -926,6 +947,7 @@ static void ax88772_unbind(struct usbnet *dev, struct usb_interface *intf)
- 	phylink_disconnect_phy(priv->phylink);
- 	rtnl_unlock();
- 	phylink_destroy(priv->phylink);
-+	ax88772_mdio_unregister(priv);
- 	asix_rx_fixup_common_free(dev->driver_priv);
- }
- 
--- 
-2.40.0.rc1.284.g88254d51c5-goog
-
+skb_mac_header() shows quite a few hits in net/dsa/ as well, in functions
+that contain "xmit" in the name. Should those be changed as well?
