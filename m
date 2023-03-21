@@ -2,58 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A406C3103
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:56:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B336C3121
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229866AbjCUL4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 07:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
+        id S231178AbjCUMBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 08:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbjCUL4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:56:24 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCC44AFFA;
-        Tue, 21 Mar 2023 04:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1679399754; x=1710935754;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BTWIrZbaCdKLLOKW7OpNpd63UiURx6az9bhFqRHf6VQ=;
-  b=NXNeGtcFiCvIExfVz5OjzGglRdUPJDl6jB30NVPP5OnyqsqfWXB8HC4A
-   s4pJjPb6x/pSt/epw1qCamjwBpOzNgtQ1IOxNnvSJwase2eRFVBQsUMet
-   PAtwevRmvdECqQ1hDkNHBBlAFIpAa6cLQ4b2a6UDm04PCDhrzoGT4aJdh
-   CZ94nonN2BVTT/N+GdSBDy6g0IdMyjWub5vEBT99W06KcX42fPCCPl628
-   CAFDp7uHrVwlmdZYfdDB6g6XwUp+HUs3VCiBggpHCUaJ6SlqoSmskdC0F
-   Qb6ekq3Y0ifT7G+3vjdQNhWzX5NdC1Ym3oVCERDVzoMCgeKwHGCTe+4gN
-   w==;
-X-IronPort-AV: E=Sophos;i="5.98,278,1673938800"; 
-   d="scan'208";a="202669415"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2023 04:55:52 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 21 Mar 2023 04:55:45 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.21 via Frontend Transport; Tue, 21 Mar 2023 04:55:43 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <richardcochran@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: phy: micrel: Add support for PTP_PF_EXTTS for lan8841
-Date:   Tue, 21 Mar 2023 12:55:41 +0100
-Message-ID: <20230321115541.4187912-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.38.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        with ESMTP id S229822AbjCUMBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:01:02 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A68193F3;
+        Tue, 21 Mar 2023 05:01:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VeN9LJQ_1679400056;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VeN9LJQ_1679400056)
+          by smtp.aliyun-inc.com;
+          Tue, 21 Mar 2023 20:00:57 +0800
+Message-ID: <1679399929.1424522-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [RFC net-next 0/8] virtio_net: refactor xdp codes
+Date:   Tue, 21 Mar 2023 19:58:49 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Jesper Dangaard Brouer <hawk@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20230315041042.88138-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230315041042.88138-1-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,244 +45,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the PTP programmable gpios to implement also PTP_PF_EXTTS
-function. The pins can be configured to capture both of rising
-and falling edge. Once the event is seen, then an interrupt is
-generated and the LTC is saved in the registers.
+On Wed, 15 Mar 2023 12:10:34 +0800, Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> Due to historical reasons, the implementation of XDP in virtio-net is relatively
+> chaotic. For example, the processing of XDP actions has two copies of similar
+> code. Such as page, xdp_page processing, etc.
+>
+> The purpose of this patch set is to refactor these code. Reduce the difficulty
+> of subsequent maintenance. Subsequent developers will not introduce new bugs
+> because of some complex logical relationships.
+>
+> In addition, the supporting to AF_XDP that I want to submit later will also need
+> to reuse the logic of XDP, such as the processing of actions, I don't want to
+> introduce a new similar code. In this way, I can reuse these codes in the
+> future.
+>
+> This patches are developed on the top of another patch set[1]. I may have to
+> wait to merge this. So this patch set is a RFC.
 
-This was tested using:
-ts2phc -m -l 7 -s generic -f ts2phc.cfg
 
-Where the configuration was the following:
-[global]
-ts2phc.pin_index  6
+Hi, Jason:
 
-[eth2]
+Now, the patch set[1] has been in net-next. So this patch set can been merge
+into net-next.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/phy/micrel.c | 163 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 163 insertions(+)
+Please review.
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index e26c6723caa4d..c7ac55aad8f21 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -3437,6 +3437,7 @@ static void lan8841_ptp_process_rx_ts(struct kszphy_ptp_priv *ptp_priv)
- #define LAN8841_PTP_INT_STS_PTP_TX_TS_INT	BIT(12)
- #define LAN8841_PTP_INT_STS_PTP_RX_TS_OVRFL_INT	BIT(9)
- #define LAN8841_PTP_INT_STS_PTP_RX_TS_INT	BIT(8)
-+#define LAN8841_PTP_INT_STS_PTP_GPIO_CAP_INT	BIT(2)
- 
- static void lan8841_ptp_flush_fifo(struct kszphy_ptp_priv *ptp_priv, bool egress)
- {
-@@ -3451,6 +3452,68 @@ static void lan8841_ptp_flush_fifo(struct kszphy_ptp_priv *ptp_priv, bool egress
- 	phy_read_mmd(phydev, 2, LAN8841_PTP_INT_STS);
- }
- 
-+#define LAN8841_PTP_GPIO_CAP_STS			506
-+#define LAN8841_PTP_GPIO_SEL				327
-+#define LAN8841_PTP_GPIO_SEL_GPIO_SEL(gpio)		((gpio) << 8)
-+#define LAN8841_PTP_GPIO_RE_LTC_SEC_HI_CAP		498
-+#define LAN8841_PTP_GPIO_RE_LTC_SEC_LO_CAP		499
-+#define LAN8841_PTP_GPIO_RE_LTC_NS_HI_CAP		500
-+#define LAN8841_PTP_GPIO_RE_LTC_NS_LO_CAP		501
-+#define LAN8841_PTP_GPIO_FE_LTC_SEC_HI_CAP		502
-+#define LAN8841_PTP_GPIO_FE_LTC_SEC_LO_CAP		503
-+#define LAN8841_PTP_GPIO_FE_LTC_NS_HI_CAP		504
-+#define LAN8841_PTP_GPIO_FE_LTC_NS_LO_CAP		505
-+
-+static void lan8841_gpio_process_cap(struct kszphy_ptp_priv *ptp_priv)
-+{
-+	struct phy_device *phydev = ptp_priv->phydev;
-+	struct ptp_clock_event ptp_event = {0};
-+	s32 sec, nsec;
-+	int pin, ret;
-+	u16 tmp;
-+
-+	pin = ptp_find_pin_unlocked(ptp_priv->ptp_clock, PTP_PF_EXTTS, 0);
-+	if (pin == -1)
-+		return;
-+
-+	tmp = phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_CAP_STS);
-+	if (tmp < 0)
-+		return;
-+
-+	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_GPIO_SEL,
-+			    LAN8841_PTP_GPIO_SEL_GPIO_SEL(pin));
-+	if (ret)
-+		return;
-+
-+	mutex_lock(&ptp_priv->ptp_lock);
-+	if (tmp & BIT(pin)) {
-+		sec = phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_RE_LTC_SEC_HI_CAP);
-+		sec <<= 16;
-+		sec |= phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_RE_LTC_SEC_LO_CAP);
-+
-+		nsec = phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_RE_LTC_NS_HI_CAP) & 0x3fff;
-+		nsec <<= 16;
-+		nsec |= phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_RE_LTC_NS_LO_CAP);
-+	} else {
-+		sec = phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_FE_LTC_SEC_HI_CAP);
-+		sec <<= 16;
-+		sec |= phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_FE_LTC_SEC_LO_CAP);
-+
-+		nsec = phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_FE_LTC_NS_HI_CAP) & 0x3fff;
-+		nsec <<= 16;
-+		nsec |= phy_read_mmd(phydev, 2, LAN8841_PTP_GPIO_FE_LTC_NS_LO_CAP);
-+	}
-+	mutex_unlock(&ptp_priv->ptp_lock);
-+	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_GPIO_SEL, 0);
-+	if (ret)
-+		return;
-+
-+	ptp_event.index = 0;
-+	ptp_event.timestamp = ktime_set(sec, nsec);
-+	ptp_event.type = PTP_CLOCK_EXTTS;
-+	ptp_clock_event(ptp_priv->ptp_clock, &ptp_event);
-+}
-+
- static void lan8841_handle_ptp_interrupt(struct phy_device *phydev)
- {
- 	struct kszphy_priv *priv = phydev->priv;
-@@ -3459,12 +3522,16 @@ static void lan8841_handle_ptp_interrupt(struct phy_device *phydev)
- 
- 	do {
- 		status = phy_read_mmd(phydev, 2, LAN8841_PTP_INT_STS);
-+
- 		if (status & LAN8841_PTP_INT_STS_PTP_TX_TS_INT)
- 			lan8841_ptp_process_tx_ts(ptp_priv);
- 
- 		if (status & LAN8841_PTP_INT_STS_PTP_RX_TS_INT)
- 			lan8841_ptp_process_rx_ts(ptp_priv);
- 
-+		if (status & LAN8841_PTP_INT_STS_PTP_GPIO_CAP_INT)
-+			lan8841_gpio_process_cap(ptp_priv);
-+
- 		if (status & LAN8841_PTP_INT_STS_PTP_TX_TS_OVRFL_INT) {
- 			lan8841_ptp_flush_fifo(ptp_priv, true);
- 			skb_queue_purge(&ptp_priv->tx_queue);
-@@ -3924,6 +3991,7 @@ static int lan8841_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
- 	switch (func) {
- 	case PTP_PF_NONE:
- 	case PTP_PF_PEROUT:
-+	case PTP_PF_EXTTS:
- 		break;
- 	default:
- 		return -1;
-@@ -4191,10 +4259,104 @@ static int lan8841_ptp_perout(struct ptp_clock_info *ptp,
- 	return ret;
- }
- 
-+#define LAN8841_PTP_GPIO_CAP_EN			496
-+#define LAN8841_PTP_GPIO_CAP_EN_GPIO_RE_CAPTURE_ENABLE(gpio)	(BIT(gpio))
-+#define LAN8841_PTP_GPIO_CAP_EN_GPIO_FE_CAPTURE_ENABLE(gpio)	(BIT(gpio) << 8)
-+#define LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN	BIT(2)
-+
-+static int lan8841_ptp_extts_on(struct kszphy_ptp_priv *ptp_priv, int pin,
-+				u32 flags)
-+{
-+	struct phy_device *phydev = ptp_priv->phydev;
-+	u16 tmp = 0;
-+	int ret;
-+
-+	/* Set GPIO to be intput */
-+	ret = phy_set_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_BUF, BIT(pin));
-+	if (ret)
-+		return ret;
-+
-+	/* Enable capture on the edges of the pin */
-+	if (flags & PTP_RISING_EDGE)
-+		tmp |= LAN8841_PTP_GPIO_CAP_EN_GPIO_RE_CAPTURE_ENABLE(pin);
-+	if (flags & PTP_FALLING_EDGE)
-+		tmp |= LAN8841_PTP_GPIO_CAP_EN_GPIO_FE_CAPTURE_ENABLE(pin);
-+	ret = phy_write_mmd(phydev, 2, LAN8841_PTP_GPIO_CAP_EN, tmp);
-+	if (ret)
-+		return ret;
-+
-+	/* Enable interrupt */
-+	return phy_modify_mmd(phydev, 2, LAN8841_PTP_INT_EN,
-+			      LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN,
-+			      LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN);
-+}
-+
-+static int lan8841_ptp_extts_off(struct kszphy_ptp_priv *ptp_priv, int pin)
-+{
-+	struct phy_device *phydev = ptp_priv->phydev;
-+	int ret;
-+
-+	/* Set GPIO to be output */
-+	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_EN, BIT(pin));
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_clear_bits_mmd(phydev, 2, LAN8841_GPIO_BUF, BIT(pin));
-+	if (ret)
-+		return ret;
-+
-+	/* Disable capture on both of the edges */
-+	ret = phy_modify_mmd(phydev, 2, LAN8841_PTP_GPIO_CAP_EN,
-+			     LAN8841_PTP_GPIO_CAP_EN_GPIO_RE_CAPTURE_ENABLE(pin) |
-+			     LAN8841_PTP_GPIO_CAP_EN_GPIO_FE_CAPTURE_ENABLE(pin),
-+			     0);
-+	if (ret)
-+		return ret;
-+
-+	/* Disable interrupt */
-+	return phy_modify_mmd(phydev, 2, LAN8841_PTP_INT_EN,
-+			      LAN8841_PTP_INT_EN_PTP_GPIO_CAP_EN,
-+			      0);
-+}
-+
-+static int lan8841_ptp_extts(struct ptp_clock_info *ptp,
-+			     struct ptp_clock_request *rq, int on)
-+{
-+	struct kszphy_ptp_priv *ptp_priv = container_of(ptp, struct kszphy_ptp_priv,
-+							ptp_clock_info);
-+	int pin;
-+	int ret;
-+
-+	/* Reject requests with unsupported flags */
-+	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
-+				PTP_EXTTS_EDGES |
-+				PTP_STRICT_FLAGS))
-+		return -EOPNOTSUPP;
-+
-+	pin = ptp_find_pin(ptp_priv->ptp_clock, PTP_PF_EXTTS, rq->extts.index);
-+	if (pin == -1 || pin >= LAN8841_PTP_GPIO_NUM)
-+		return -EINVAL;
-+
-+	mutex_lock(&ptp_priv->ptp_lock);
-+	if (on)
-+		ret = lan8841_ptp_extts_on(ptp_priv, pin, rq->extts.flags);
-+	else
-+		ret = lan8841_ptp_extts_off(ptp_priv, pin);
-+	mutex_unlock(&ptp_priv->ptp_lock);
-+
-+	return ret;
-+}
-+
- static int lan8841_ptp_enable(struct ptp_clock_info *ptp,
- 			      struct ptp_clock_request *rq, int on)
- {
- 	switch (rq->type) {
-+	case PTP_CLK_REQ_EXTTS:
-+		return lan8841_ptp_extts(ptp, rq, on);
- 	case PTP_CLK_REQ_PEROUT:
- 		return lan8841_ptp_perout(ptp, rq, on);
- 	default:
-@@ -4215,6 +4377,7 @@ static struct ptp_clock_info lan8841_ptp_clock_info = {
- 	.verify         = lan8841_ptp_verify,
- 	.enable         = lan8841_ptp_enable,
- 	.n_per_out      = LAN8841_PTP_GPIO_NUM,
-+	.n_ext_ts       = LAN8841_PTP_GPIO_NUM,
- 	.n_pins         = LAN8841_PTP_GPIO_NUM,
- };
- 
--- 
-2.38.0
+Thanks.
 
+
+>
+> Please review.
+>
+> Thanks.
+>
+> [1]. https://lore.kernel.org/netdev/20230315015223.89137-1-xuanzhuo@linux.alibaba.com/
+>
+>
+> Xuan Zhuo (8):
+>   virtio_net: mergeable xdp: put old page immediately
+>   virtio_net: mergeable xdp: introduce mergeable_xdp_prepare
+>   virtio_net: introduce virtnet_xdp_handler() to seprate the logic of
+>     run xdp
+>   virtio_net: separate the logic of freeing xdp shinfo
+>   virtio_net: separate the logic of freeing the rest mergeable buf
+>   virtio_net: auto release xdp shinfo
+>   virtio_net: introduce receive_mergeable_xdp()
+>   virtio_net: introduce receive_small_xdp()
+>
+>  drivers/net/virtio_net.c | 615 +++++++++++++++++++++++----------------
+>  1 file changed, 357 insertions(+), 258 deletions(-)
+>
+> --
+> 2.32.0.3.g01195cf9f
+>
+> _______________________________________________
+> Virtualization mailing list
+> Virtualization@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
