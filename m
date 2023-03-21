@@ -2,104 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8AD46C3237
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:03:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8D616C34E7
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 15:58:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbjCUNC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 09:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
+        id S231522AbjCUO62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 10:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbjCUNC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:02:58 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784954C6D0;
-        Tue, 21 Mar 2023 06:02:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679403767; x=1710939767;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mU0w+6vPoa9VqcdZNUiRI7ygCVjLzagiuS87ndt2sjQ=;
-  b=EP3J2ZDAwdw7UmuRbTbDrUXOkLoF7Mwc+ZNYi2UWvAehQ7p3QgzF3no3
-   qE673+XPORh/ifOpUY+UWsKoNalNxWEyA4jJ7FCcoPsdkhO1yxIVF0eCw
-   hWeU2fUWwqWjmOApR5aRWEaCX3T9o/IaBjtEpfT4357PdhjFG0IMus0rb
-   b41zjRgFadCGb6r1y5kcJEjdw4PWDNlIxdTILEeMCL7ps7EXOdSx2LoDy
-   MwIRz30MocbT/6BbwTbs/N6ypYN8kabyyuOGfF4eYowJGLEMdW8QCMKKB
-   aZrIchTkdhdDO46XWwI2C6QnsArn5eiBoS8IxugbXs/xkhobF0zGN26Xk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10656"; a="338967430"
-X-IronPort-AV: E=Sophos;i="5.98,279,1673942400"; 
-   d="scan'208";a="338967430"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2023 06:02:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10656"; a="658761799"
-X-IronPort-AV: E=Sophos;i="5.98,279,1673942400"; 
-   d="scan'208";a="658761799"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006.jf.intel.com with ESMTP; 21 Mar 2023 06:02:43 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pebdR-006idl-2M;
-        Tue, 21 Mar 2023 15:02:41 +0200
-Date:   Tue, 21 Mar 2023 15:02:41 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Nicolas Pitre <nico@fluxnic.net>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>,
-        netdev@vger.kernel.org, linux-fpga@vger.kernel.org,
-        ilpo.jarvinen@linux.intel.com, russell.h.weight@intel.com,
-        matthew.gerlach@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, vinicius.gomes@intel.com,
-        Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
-Subject: Re: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
-Message-ID: <ZBmq8cW36e8pRZ+s@smile.fi.intel.com>
-References: <20230313030239.886816-1-tianfei.zhang@intel.com>
- <ZA9wUe33pMkhMu0e@hoboy.vegasvil.org>
- <ZBBQpwGhXK/YYGCB@smile.fi.intel.com>
- <ZBDPKA7968sWd0+P@hoboy.vegasvil.org>
- <ZBHPTz8yH57N1g8J@smile.fi.intel.com>
- <73rqs90r-nn9o-s981-9557-q70no2435176@syhkavp.arg>
- <ZBhdnl1OAPcrLdHD@smile.fi.intel.com>
- <4752oq01-879s-0p0p-s8qq-sn48q27sp1r7@syhkavp.arg>
- <ZBi24erCdWSy1Rtz@hoboy.vegasvil.org>
- <40o4o5s6-5oo6-nn03-r257-24po258nq0nq@syhkavp.arg>
+        with ESMTP id S230219AbjCUO61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 10:58:27 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF45231CD;
+        Tue, 21 Mar 2023 07:58:24 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id l27so5687298wrb.2;
+        Tue, 21 Mar 2023 07:58:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679410703;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=bgXEnYwzn/S6BlOb++Eaqru+i6YXyzKGwwPJBmaxtD4=;
+        b=ga4YMD0irqHN4ilQrJ2QMVEbWHArwcWv2PG1FGLGI3et3uRUC94zk6BZpYLXtYwFfq
+         Ww9fw7+pA7jFvc7QMMl9umhdWEA/kXceI4gCT4ZS+u6cf5+k8wZDH1mBjOQF2IZwG0eP
+         BbF2RgvFUaLtqL8bqcA2Zc3372cO+99MGl3tVQ4B1oDiwwkK2/0cyJ9S8MYkfaLa2oaM
+         7HxJWl67A3Jb7WSMyAi9EIoCBfiTwvWCOacUirjCW8pP1pNszz6QJU7mkI3miHldqUgt
+         Enrh0ZOQr8wcVepDFsJOkm3WoNuy9MeBo+P0WBP6DG/Eu1lLdMhF71YyTtIOzp8Xc7lc
+         HGpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679410703;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bgXEnYwzn/S6BlOb++Eaqru+i6YXyzKGwwPJBmaxtD4=;
+        b=a9+x/9qzfIRngLeOzY0OOHw89nWNN+4oMrkdQvKAF5yUi7l1bg19op5s0SYepETJje
+         WjHnneGUlA8BmvxJJe8wqu2ieCTcT4vIAltxMS/ltRpPiV4aaaBSSJ1JJGGTvCGNLRoZ
+         VayF6L6FRRHAn9UKu53tpC5Ah48XHQZsZhGjTNuRaOHFVYnogAbTgQeZEhYXnl9osOMC
+         uMcNCgHHyeM1fMrkv2OU/GQzSXF+B1ML31ODcf9L3/Vb1/NBecwYoYl3G4iLber+i7Ns
+         TMlM9lGg2OLx5kEjfYvI+B0rOw8iAE5N84xI3bFNhgyFy6kvo2QcszpVol6YWDwoiFD9
+         ylDw==
+X-Gm-Message-State: AO0yUKXtikfmCn0WNPInC3gW7PD0+wszW8t7AYz7KrNxzyxvU3o+IJBA
+        ieZ6m2SVz+bOw18eECYPDZ8=
+X-Google-Smtp-Source: AK7set+K7ppr5kVHCtHkrUaYjB+7uxp7G1eEctUkA+c9/tYtmX8WRNtLlnpL/VsrO7ZBl1mm/ABfEA==
+X-Received: by 2002:adf:f2c8:0:b0:2d2:22eb:824a with SMTP id d8-20020adff2c8000000b002d222eb824amr2419295wrp.34.1679410702538;
+        Tue, 21 Mar 2023 07:58:22 -0700 (PDT)
+Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
+        by smtp.gmail.com with ESMTPSA id d5-20020adfef85000000b002cfed482e9asm11556989wro.61.2023.03.21.07.58.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 07:58:22 -0700 (PDT)
+Message-ID: <6419c60e.df0a0220.1949a.c432@mx.google.com>
+X-Google-Original-Message-ID: <ZBli4hn6oPZzQZk0@Ansuel-xps.>
+Date:   Tue, 21 Mar 2023 08:55:14 +0100
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v5 04/15] leds: Provide stubs for when CLASS_LED
+ is disabled
+References: <20230319191814.22067-1-ansuelsmth@gmail.com>
+ <20230319191814.22067-5-ansuelsmth@gmail.com>
+ <aa2d0a8b-b98b-4821-9413-158be578e8e0@lunn.ch>
+ <64189d72.190a0220.8d965.4a1c@mx.google.com>
+ <5ee3c2cf-8100-4f35-a2df-b379846a8736@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <40o4o5s6-5oo6-nn03-r257-24po258nq0nq@syhkavp.arg>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <5ee3c2cf-8100-4f35-a2df-b379846a8736@lunn.ch>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 04:53:07PM -0400, Nicolas Pitre wrote:
-> On Mon, 20 Mar 2023, Richard Cochran wrote:
-> 
-> > On Mon, Mar 20, 2023 at 09:43:30AM -0400, Nicolas Pitre wrote:
+On Mon, Mar 20, 2023 at 08:31:36PM +0100, Andrew Lunn wrote:
+> On Mon, Mar 20, 2023 at 06:52:47PM +0100, Christian Marangi wrote:
+> > On Sun, Mar 19, 2023 at 11:49:02PM +0100, Andrew Lunn wrote:
+> > > > +#if IS_ENABLED(CONFIG_LEDS_CLASS)
+> > > >  enum led_default_state led_init_default_state_get(struct fwnode_handle *fwnode);
+> > > > +#else
+> > > > +static inline enum led_default_state
+> > > > +led_init_default_state_get(struct fwnode_handle *fwnode)
+> > > > +{
+> > > > +	return LEDS_DEFSTATE_OFF;
+> > > > +}
+> > > > +#endif
+> > > 
+> > > 0-day is telling me i have this wrong. The function is in led-core.c,
+> > > so this should be CONFIG_NEW_LEDS, not CONFIG_LEDS_CLASS.
+> > > 
 > > 
-> > > Alternatively the above commit can be reverted if no one else 
-> > > cares. I personally gave up on the idea of a slimmed down Linux kernel a 
-> > > while ago.
-> > 
-> > Does this mean I can restore the posix clocks back into the core
-> > unconditionally?
+> > Any idea why? NEW_LEDS just enable LEDS_CLASS selection so why we need
+> > to use that? Should not make a difference (in theory)
 > 
-> This only means _I_ no longer care. I'm not speaking for others (e.g. 
-> OpenWRT or the like) who might still rely on splitting it out.
-> Maybe Andy wants to "fix" it?
+> 0-day came up with a configuration which resulted in NEW_LEDS enabled
+> but LEDS_CLASS disabled. That then resulted in multiple definitions of 
+> led_init_default_state_get() when linking.
+> 
+> I _guess_ this is because select is used, which is not mandatory. So
+> randconfig can turn off something which is enabled by select.
+> 
+> I updated my tree, and so far 0-day has not complained, but it can
+> take a few days when it is busy.
+> 
 
-I would be a good choice, if I have an access to the hardware at hand to test.
-That said, I think Richard himself can try to finish that feature (optional PTP)
-and on my side I can help with reviewing the code (just Cc me when needed).
+BTW yes I repro the problem.
+
+Checked the makefile and led-core.c is compiled with NEW_LEDS and
+led-class is compiled with LEDS_CLASS.
+
+led_init_default_state_get is in led-core.c and this is the problem with
+using LEDS_CLASS instead of NEW_LEDS...
+
+But actually why we are putting led_init_default_state_get behind a
+config? IMHO we should compile it anyway.
+
+So my suggestion is to keep the LEDS_CLASS and just remove the part for 
+led_init_default_state_get.
+
+Also why IS_ENABLED instead of a simple ifdef? (in leds.h there is a mix
+of both so I wonder if we should use one or the other)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+	Ansuel
