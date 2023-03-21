@@ -2,137 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA1BA6C3961
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB9536C3976
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:46:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229610AbjCUSpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 14:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59906 "EHLO
+        id S230487AbjCUSql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbjCUSpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:45:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B87C559F3
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679424283;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fuPq/q/n2UQFDBdFIY9AeffBgLt18anlB8x0yQm2Zg0=;
-        b=BZgE2B46G9Gxs4lLcjOXpV+YQbsuZkzjSfAEJa2IDrrZbAakfWCHK/+Iyf5Rd9tOYHoILJ
-        LhM3xxyGErrT6tMxbCo2J5caXCoMJrGGo1f7hXUUdajy98aX3Q7mAfr9byCksue/hcDLOa
-        IqEbUumWZIfELC5GdW+t6CwMsHUO7Ss=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-140-AxXG_24rM7S-4RxXbx9x5A-1; Tue, 21 Mar 2023 14:44:39 -0400
-X-MC-Unique: AxXG_24rM7S-4RxXbx9x5A-1
-Received: by mail-qv1-f69.google.com with SMTP id r4-20020ad44044000000b005ad0ce58902so8057340qvp.5
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:44:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679424279;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        with ESMTP id S231129AbjCUSqa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:46:30 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C027D5617E
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:45:50 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id h14so8957764pgj.7
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:45:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679424348;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fuPq/q/n2UQFDBdFIY9AeffBgLt18anlB8x0yQm2Zg0=;
-        b=LKEfovp8BzgRKUr6pyhSrFEFbBaoq3XDaAN0TxuARecIwERm+i1rYAwkSXIwXOkhGZ
-         0FapDAUAlMQeT7vOW8dkecrhjKOBV7KXt9SHgIeAFLCO060m6CjVTKL9qO/3BXRr0cph
-         kZ94YzcNIRf/5IZsIlMSUQWuppmDtcjmUYwPBlCwQQ6tWrqsoY3XvuB6mct6o1L9WC+E
-         Zfwk8bEDRo28GLQbKvqdPN/U7XqkE0nDTW4ZFjKoCdNAK6EZqP0RkUza/zjrFv3+k+Hi
-         J8aFKGLCk4ko9Ic9PCBKzT+KgRB8g0kLhFX/pGfHGvpResqKMRibK5M055XNqw/xXUDU
-         7Fgw==
-X-Gm-Message-State: AO0yUKXNcyOkgzGkTDg4oB5mzPzutSkylwIh5AAt82B4g8wI5g+5xIYt
-        ft/CSLZmeMRyx8StI0d7/psvSih0kpIDfs1qikxmoHsvGjvM9a6mx9YDg8ILxVrmvRTiGtwFrcL
-        Vgy6wQIX62GmqGIj0
-X-Received: by 2002:a05:622a:314:b0:3db:9289:6946 with SMTP id q20-20020a05622a031400b003db92896946mr1944754qtw.0.1679424279517;
-        Tue, 21 Mar 2023 11:44:39 -0700 (PDT)
-X-Google-Smtp-Source: AK7set90RizWeWzAQuOQOBvfTCwkzx+74B8QQPTScDsieskr674HwVX05tKIvLoFJq5kExR+Z/9F5w==
-X-Received: by 2002:a05:622a:314:b0:3db:9289:6946 with SMTP id q20-20020a05622a031400b003db92896946mr1944696qtw.0.1679424279210;
-        Tue, 21 Mar 2023 11:44:39 -0700 (PDT)
-Received: from halaney-x13s (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
-        by smtp.gmail.com with ESMTPSA id 2-20020a05620a040200b006f9f3c0c63csm9793316qkp.32.2023.03.21.11.44.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 11:44:38 -0700 (PDT)
-Date:   Tue, 21 Mar 2023 13:44:35 -0500
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
-        andersson@kernel.org, konrad.dybcio@linaro.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        vkoul@kernel.org, bhupesh.sharma@linaro.org,
-        mturquette@baylibre.com, sboyd@kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
-        linux@armlinux.org.uk, veekhee@apple.com,
-        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
-        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
-        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
-        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
-Subject: Re: [PATCH net-next v2 00/12] Add EMAC3 support for sa8540p-ride
-Message-ID: <20230321184435.5pqkjp4adgn6cpxy@halaney-x13s>
-References: <20230320221617.236323-1-ahalaney@redhat.com>
- <20230320202802.4e7dc54c@kernel.org>
+        bh=9M8M7IInQVU+iyBpHPhc67fDUT5XDtEvAxluXmaN7aQ=;
+        b=Hy3+bYbnBhFqAArV10Ykd5BRd70Z48mpTI27X42Ai9+2R8wXW5u/rimqgLJp+Ibswf
+         YR44x0GVQ7gT8rdBjWMAKwimQS6CYxYUG8sc3gK1q5acCeanOiIGw2PAWOqHlI7/TFnj
+         Dzq/LY5lgObm2IQd5rH8iigv4Q2ragNKBSV2DU7c+E5VbmBWaQLEgy6+X9WpUccLUorO
+         +ES7ld+oCEaHs1V95DAaP8nBwKGFjBRqWWqYJfXnKkVfT/NB92UqP0U2/kC8GomIewkg
+         j8NqSFiFWvg57K2eeu6dDa5z0jU+ogCbrGBWJyqmHWdeiTmhSpm/+qkJKJ1zVRfX5w9P
+         KymQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679424348;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9M8M7IInQVU+iyBpHPhc67fDUT5XDtEvAxluXmaN7aQ=;
+        b=0gk7ghwf9xhpTE2Ruhhdx0waeVM5eVofrIBawoD5nD/kfTuKqT35ddrREeVbKORVdZ
+         ZDIZu7b8jpoOKjk9Bnkh74wvmt6HW1KqNw2CLvgI4fIgeSmOykad9oQfSws1wDBio4eT
+         pb/hrgieTNB++EzhB3grqWI+NkQ2j4ckEEww45hGf9FVqnotzaXdt/6G4YqSvoob9a1f
+         mRAZgFldxm2kCY+xg3xF7YxJhlln0kO/QAE7O5YrkGESAQVRo137yxFzY+ZgICF6Is+Q
+         uDMzEpS9snRTMBXfr9sAqRJrPPwFPb4c5wm4XmZxeBbpgLvpQ5vjT3LY91sKePnnzqS3
+         Z0tg==
+X-Gm-Message-State: AO0yUKUooIt5puM4v9EV7pvgh9A3U9dYAOFzv5pWCVV9aEoMp8LH/H2M
+        uRC1endkPUVcEes5WZh5juD+LHpIuViT7AHcI4dop+lR0jWuxnOzSNDfXw==
+X-Google-Smtp-Source: AK7set8eWSOB+hY/s8FgnYAtG+oz9cOr6kNpMapkGLpcaiVk96EuV7hKGhrQ0/ZHT1qqMbVxbR/O/73ddcAj/GAwDUY=
+X-Received: by 2002:a05:6a00:851:b0:628:30d:2d2f with SMTP id
+ q17-20020a056a00085100b00628030d2d2fmr459685pfk.5.1679424348068; Tue, 21 Mar
+ 2023 11:45:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230320202802.4e7dc54c@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <167906343576.2706833.17489167761084071890.stgit@firesoul>
+ <167906361094.2706833.8381428662566265476.stgit@firesoul> <ZBTX7CBzNk9SaWgx@google.com>
+ <8edd0206-0f2a-d5e7-27de-a0a9cc92526e@redhat.com>
+In-Reply-To: <8edd0206-0f2a-d5e7-27de-a0a9cc92526e@redhat.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 21 Mar 2023 11:45:35 -0700
+Message-ID: <CAKH8qBvm24VJS4RMNUjHi24LqpYJnOYs_Md-J3FCEvp2vm7rcg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V1 4/7] selftests/bpf: xdp_hw_metadata RX hash
+ return code info
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
+        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
+        yoong.siang.song@intel.com, boon.leong.ong@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 08:28:02PM -0700, Jakub Kicinski wrote:
-> On Mon, 20 Mar 2023 17:16:05 -0500 Andrew Halaney wrote:
-> > This is a forward port / upstream refactor of code delivered
-> > downstream by Qualcomm over at [0] to enable the DWMAC5 based
-> > implementation called EMAC3 on the sa8540p-ride dev board.
-> > 
-> > From what I can tell with the board schematic in hand,
-> > as well as the code delivered, the main changes needed are:
-> > 
-> >     1. A new address space layout for /dwmac5/EMAC3 MTL/DMA regs
-> >     2. A new programming sequence required for the EMAC3 base platforms
-> > 
-> > This series makes those adaptations as well as other housekeeping items
-> > such as converting dt-bindings to yaml, adding clock descriptions, etc.
-> > 
-> > [0] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/commit/510235ad02d7f0df478146fb00d7a4ba74821b17
-> > 
-> > v1: https://lore.kernel.org/netdev/20230313165620.128463-1-ahalaney@redhat.com/
-> 
-> At a glance 1-4,8-12 need to go via networking, 5 via clock tree,
-> and 6,7 via ARM/Qualcomm.
-> 
-> AFAICT there are no strong (compile) dependencies so we can each merge
-> our chunk and they will meet in Linus's tree? If so please repost just
-> the networking stuff for net-next, and the other bits to respective
-> trees, as separate series.
-> 
+On Tue, Mar 21, 2023 at 6:32=E2=80=AFAM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+>
+> On 17/03/2023 22.13, Stanislav Fomichev wrote:
+> > On 03/17, Jesper Dangaard Brouer wrote:
+> >> When driver developers add XDP-hints kfuncs for RX hash it is
+> >> practical to print the return code in bpf_printk trace pipe log.
+> >
+> >> Print hash value as a hex value, both AF_XDP userspace and bpf_prog,
+> >> as this makes it easier to spot poor quality hashes.
+> >
+> >> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> >
+> > Acked-by: Stanislav Fomichev <sdf@google.com>
+> >
+> > (with a small suggestion below, maybe can do separately?)
+> >
+> >> ---
+> >>   .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++---
+> >>   tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
+> >>   2 files changed, 10 insertions(+), 4 deletions(-)
+> [...]
+> >> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> >> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> >> index 400bfe19abfe..f3ec07ccdc95 100644
+> >> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> >> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> >> @@ -3,6 +3,9 @@
+> >>   /* Reference program for verifying XDP metadata on real HW.
+> >> Functional test
+> >>    * only, doesn't test the performance.
+> >>    *
+> >
+> > [..]
+> >
+> >> + * BPF-prog bpf_printk info outout can be access via
+> >> + * /sys/kernel/debug/tracing/trace_pipe
+> >
+> > Maybe we should just dump the contents of
+> > /sys/kernel/debug/tracing/trace for every poll cycle?
+> >
+>
+> I think this belongs to a separate patch.
 
-That makes sense to me, thanks for the advice.
+SG. If you prefer to keep the comment let's also s/outout/outPut/.
 
-The only note is that 5 (the clk patch) is depended on by 6/7 to
-compile (they use the header value in 5)... So I'll keep those together!
+> > We can also maybe enable tracing in this program transparently?
+> > I usually forget 'echo 1 >
+> > /sys/kernel/debug/tracing/events/bpf_trace/bpf_trace_printk/enable'
+> > myself :-)
+> >
+> What is this trick?
 
-So all in all it will be the dt-binding changes + stmmac changes in one
-series for networking, and the clock + devicetree changes via
-ARM/Qualcomm if I am following properly.
+On the recent kernels I think this event has to be explicitly enabled
+for bpf_prink() to work? Not sure.
+That's why having something like enable_tracing() and dump_trace()
+here might be helpful for whoever is running the prog.
 
-I'll go that route for v3 and link here (just to make finding the split
-easier) unless someone objects (got some time as I need to refactor
-based on series feedback)!
-
-Thanks,
-Andrew
-
+> --Jesper
+>
