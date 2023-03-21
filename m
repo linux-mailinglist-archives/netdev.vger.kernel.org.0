@@ -2,162 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 619AD6C3343
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:49:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7456C334C
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:50:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbjCUNtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 09:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
+        id S230306AbjCUNuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 09:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231262AbjCUNs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:48:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC5E34320
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679406489;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bnzw40W4FEb0L33e1Mp4fLzGvHbT4d6YAsRF5znlBGI=;
-        b=TLwflMwkld7+P/CKTDZA/PJb9dgwwHaeEZ04GuWIeIYCI14R5QDC4rDrRGzoR6Jt84pRI0
-        3NuyqrPsmBJT4lRd+isNk24Us+3eKDpqTc/uLZQ0AqF7/MMtE7mDZCI0Oj0EmbkY5WWbjz
-        Ktm/RyflsACtq+vAHj8hLv3w396VMtc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-266-EcLY5gSRND-USyzK5psL5A-1; Tue, 21 Mar 2023 09:48:06 -0400
-X-MC-Unique: EcLY5gSRND-USyzK5psL5A-1
-Received: by mail-ed1-f72.google.com with SMTP id b1-20020aa7dc01000000b004ad062fee5eso21896891edu.17
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:48:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679406485;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bnzw40W4FEb0L33e1Mp4fLzGvHbT4d6YAsRF5znlBGI=;
-        b=SuSMFIhEBKdr17FbfC+MQMOMTYobacGywVDqBOdWZ5dOtbKoIGN24OyqcrHV+UdHjC
-         fR9ytbhZAQx8Iws6Kp1a0bggaGrT/G/27zcE6uvMvNcqC89mebSqkcww/+5VUlbSEq9x
-         1cfDC78TIWIQ4VDNwzQ+X6dFPV+EBz3o2pMowsyG5pOAQBB54jZNXj3mHxifiaTGGya5
-         JkXdibV8zH8rJxN297tYB6ZugWL8AFrwzqN7w/1L27t54RTOSLgqNkWqUQtsrDdM2hzs
-         AxTw07f3BNsqdeCsXstei3eBybnw9uJlOvyoP5nDsaUCwD73ZZ/AOzx1Bo9WpieVuOEv
-         I77Q==
-X-Gm-Message-State: AO0yUKWKIdVV8f1VlnLPRk6lMVMSt1vEB+4avhmNPThLtfU2UZjMTlBt
-        B/ei1gpz0/bp6Apzpju2+ug2m05ZOwPKyHxLjWx6/n9S+WFM6/LVql37SNgEkoUGRc0U+iZ5k4Z
-        4jtmfHstNKdL8c73b
-X-Received: by 2002:a17:906:a219:b0:931:c7fd:10b1 with SMTP id r25-20020a170906a21900b00931c7fd10b1mr3051146ejy.19.1679406485417;
-        Tue, 21 Mar 2023 06:48:05 -0700 (PDT)
-X-Google-Smtp-Source: AK7set+569YcCQkBJfLUuFvWudGUBTxjUXWfsTiV3jSvd8/LLOnVaaorSzvRy1+EfecXtbKBu0X6qA==
-X-Received: by 2002:a17:906:a219:b0:931:c7fd:10b1 with SMTP id r25-20020a170906a21900b00931c7fd10b1mr3051122ejy.19.1679406485145;
-        Tue, 21 Mar 2023 06:48:05 -0700 (PDT)
-Received: from [192.168.42.100] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id l19-20020a170906079300b00932ed432475sm4657809ejc.124.2023.03.21.06.48.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Mar 2023 06:48:04 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <985e1576-7191-9f65-d96f-3f51cf01044b@redhat.com>
-Date:   Tue, 21 Mar 2023 14:48:03 +0100
+        with ESMTP id S229819AbjCUNuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:50:39 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68A37577;
+        Tue, 21 Mar 2023 06:50:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VtCi26BuqyPJrE1CXCK+csn9x2kqW1v80ItdMtuV0AHEzUsEqreIFwTAR3VDRDp5BXLpULoqngYUOZ8pygFU35Uk8eQxHFC9j4jVEO3TnPaSu4wQaVNB1+Ay1nwGPcH+iax0dZd6GlN7Dp0c0+OSmMl6xGy65prwmHxfriM9FMDA7GXUH7nAG3E1eCaIJbAW7uZrfD56N72iH/gf1qlP6GJe/L5gu6O62ZsLh+9aI6AH9y2LOTznfZZhzH9Mr2H+qYUOvBlOy/noJifksE1vi0rbowFCRgtlPtBLhB4gqR/qkdLbCkob898Lq0b3DPQ+7A7GYZc/GCt57LS2kSRuLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=F2snrFClXrxEYMywJIQ4YJxrvd/RLdw+MmG5M5Iz+1M=;
+ b=dWDzMj51xzOFGW2w1h6im1R0KgdSTAL7vlMqDhXz6TcN+AWR8O3hou86K1H2oEUbD1vO81C7rKhdATxcHQYJ3xzUGnni4c/lhePNSUbSrqLR9gtXAlbWdiqDV2JrmCoN88J+qYqR2+v1FHAqsyv9RTfT48rJJjJvOgADOUn7BRDc0+siqZD6eZ5okkk/jYooKHya26MBGAUq1rOySgel0efAEMMhEIxmxr4ZLUXz15iKH+RT6ZvhVLhF8bDtNx7yBr2YQbyRwmmBYpT7aQHBQjKgdLA3RZBEXJNk8fe7KAixBqqs10Ok+nZ0r5QJFSNuvd2Ypn7OuY3mkXjSzBLl9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F2snrFClXrxEYMywJIQ4YJxrvd/RLdw+MmG5M5Iz+1M=;
+ b=nzPcB5dlTwdKXkxkJXoJIstsJuWkexZOGksvEaXojiU5l2C/wzwD+MqDgYtxWVM3NKsIIpz2H8ZOH5BveJuv/H479UPs8yjJ+i/SMuGikGD21Gbl1tk30Imp/f9JYKOtVP3DO0pA8I7AeyoE8znfLGah7b2DVjyGn7S3wyiNFzvPQUgN0vwbLhRlrIZau+KxT/jG6qyk/IZ/xXLQJA0IGqN8Cu8vzWFhI21CbKdxgtKIVBOi3Ilaf9TPy+ccd70waGUjWLESfQsevwiwGtJ/b5DLLpDhvdOhlNhw3M5Hra2HEvGB/2hl/GNRuQHs7jNeiaY2hJfTY5qZkRVFb3s1yA==
+Received: from DM6PR07CA0082.namprd07.prod.outlook.com (2603:10b6:5:337::15)
+ by SA1PR12MB7271.namprd12.prod.outlook.com (2603:10b6:806:2b8::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
+ 2023 13:50:30 +0000
+Received: from DS1PEPF0000E639.namprd02.prod.outlook.com
+ (2603:10b6:5:337:cafe::86) by DM6PR07CA0082.outlook.office365.com
+ (2603:10b6:5:337::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
+ Transport; Tue, 21 Mar 2023 13:50:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS1PEPF0000E639.mail.protection.outlook.com (10.167.17.71) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Tue, 21 Mar 2023 13:50:30 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 21 Mar 2023
+ 06:50:20 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 21 Mar
+ 2023 06:50:19 -0700
+Received: from c-237-173-140-141.mtl.labs.mlnx (10.127.8.12) by
+ mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.5 via
+ Frontend Transport; Tue, 21 Mar 2023 06:50:15 -0700
+From:   Paul Blakey <paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        "Jozsef Kadlecsik" <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net-next 1/1] netfilter: ctnetlink: Support offloaded conntrack entry deletion
+Date:   Tue, 21 Mar 2023 15:50:04 +0200
+Message-ID: <1679406604-133128-1-git-send-email-paulb@nvidia.com>
+X-Mailer: git-send-email 1.8.4.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
-        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
-        yoong.siang.song@intel.com, boon.leong.ong@intel.com
-Subject: Re: [xdp-hints] Re: [PATCH bpf-next V1 1/7] xdp: bpf_xdp_metadata use
- EOPNOTSUPP for no driver support
-Content-Language: en-US
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>
-References: <167906343576.2706833.17489167761084071890.stgit@firesoul>
- <167906359575.2706833.545256364239637451.stgit@firesoul>
- <ZBTZ7J9B6yXNJO1m@google.com>
- <f42ff647-11b2-4f09-7652-ad85d35b5617@redhat.com> <87bkkm8f6y.fsf@toke.dk>
-In-Reply-To: <87bkkm8f6y.fsf@toke.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E639:EE_|SA1PR12MB7271:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6d33b647-e18e-4246-c037-08db2a133c0c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2zUNAqkhFiEIWxtRZYcT3RZTa+2DnxSMWoZuvORQbFqxNLp5IQJi4J0n0kteFQ0kwdBe1pknBtzDI46TtWKgtj89LTZdlAMoNbmmXVAkUMpYXkmWl2bPtBSPfpdJw1ObGIw9FGTPBqAu3CXDzL7MxyFgQarVlCUKMGkwrwokrXL2Kvu7Y98n3orFIxaCtZo/N/aVnROW3uRMkjYQ7lcXEngiyYqfV/hI10R1w6ZkjM6UcS2Iq9DaT1Drms4GmM1QsXLz5T/cjnWwHI7UkLVsidaDmpdClw2/O+v2bytMIZz3Hwuznkok5LXqwvIeoYZjLiSZCaBwiaDODgwBh173f+Q688n/Zxv2zJmMqLDFjQwPApVrTnXghLcWkhg9YvuqpJ0kQFXYfoXolm4ysC+ycvIXfN+OqZjNNand6oAFxwM0FB5G9xzAIF4C5cGOiV8cspUz1KQdz6FW4sJhLlY3g3Qslp9BD30ssg4ERLb2TwQ+WX11vwMuxFdDs05zokyc5rE9+1xMQk8y3PkJ4Tj1kkwahIz8YkBraQVYAN6ub6SrbbyaDEb7CO43Y56M+Y+8MzTiX0cJJEYHX2KSTl0IqAzZuvDthknPRph4gVaoAIkirx4tPHvxKIOG+fPRCmMhNXX3GPJ+FWTGtfudPkcewwnE43bgk2K30cEK95b+UMbs/pysNXHbRLZcX1QIN0y9ckCaajVBYi5/3jMSazto4oSh4bgzowUkGD/EOtR0K1VoIkzizjWF/KmX/YhyxKUhaE5EtJzIfdCHDpF3D1q6Pg==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(39860400002)(136003)(346002)(451199018)(40470700004)(36840700001)(46966006)(86362001)(82310400005)(40460700003)(36756003)(40480700001)(70206006)(83380400001)(316002)(4326008)(478600001)(70586007)(8676002)(186003)(54906003)(26005)(336012)(110136005)(2616005)(107886003)(6666004)(426003)(47076005)(921005)(356005)(8936002)(5660300002)(7416002)(36860700001)(41300700001)(2906002)(82740400003)(7636003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 13:50:30.1864
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d33b647-e18e-4246-c037-08db2a133c0c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E639.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7271
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently, offloaded conntrack entries (flows) can only be deleted
+after they are removed from offload, which is either by timeout,
+tcp state change or tc ct rule deletion. This can cause issues for
+users wishing to manually delete or flush existing entries.
 
+Support deletion of offloaded conntrack entries.
 
-On 21/03/2023 13.24, Toke Høiland-Jørgensen wrote:
-> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
-> 
->> On 17/03/2023 22.21, Stanislav Fomichev wrote:
->>> On 03/17, Jesper Dangaard Brouer wrote:
->>>> When driver doesn't implement a bpf_xdp_metadata kfunc the fallback
->>>> implementation returns EOPNOTSUPP, which indicate device driver doesn't
->>>> implement this kfunc.
->>>
->>>> Currently many drivers also return EOPNOTSUPP when the hint isn't
->>>> available, which is inconsistent from an API point of view. Instead
->>>> change drivers to return ENODATA in these cases.
->>>
->>>> There can be natural cases why a driver doesn't provide any hardware
->>>> info for a specific hint, even on a frame to frame basis (e.g. PTP).
->>>> Lets keep these cases as separate return codes.
->>>
->>>> When describing the return values, adjust the function kernel-doc layout
->>>> to get proper rendering for the return values.
->>>
->>>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->>>
->>> I don't remember whether the previous discussion ended in something?
->>> IIRC Martin was preferring to use xdp-features for this instead?
->>>
->>
->> IIRC Martin asked for a second vote/opinion to settle the vote.
->> The xdp-features use is orthogonal and this patch does not prohibit the
->> later implementation of xdp-features, to detect if driver doesn't
->> implement kfuncs via using global vars.  Not applying this patch leaves
->> the API in an strange inconsistent state, because of an argument that in
->> the *future* we can use xdp-features to solve *one* of the discussed
->> use-cases for another return code.
->> I argued for a practical PTP use-case where not all frames contain the
->> PTP timestamp.  This patch solve this use-case *now*, so I don't see why
->> we should stall solving this, because of a "future" feature we might
->> never get around to implement, which require the user to use global vars.
->>
->>
->>> Personally I'm fine with having this convention, but I'm not sure how well
->>> we'll be able to enforce them. (In general, I'm not a fan of userspace
->>> changing it's behavior based on errno. If it's mostly for
->>> debugging/development - seems ok)
->>>
->>
->> We enforce the API by documenting the return behavior, like below.  If a
->> driver violate this, then we will fix the driver code with a fixes tag.
->>
->> My ask is simply let not have ambiguous return codes.
-> 
-> FWIW I don't get the opposition to this patch: having distinct return
-> codes strictly increases the amount of information that is available to
-> the caller. Even if some driver happens to use the "wrong" return code,
-> it's still an improvement for all the drivers that do the right thing
-> (and, well, we can fix broken drivers). And if a BPF program doesn't
-> care about the type of failure they can just ignore treat all error
-> codes the same; realistically, that is what most programs will do, but
-> that doesn't mean we can't provide the more-granular error codes to the
-> programs that do care.
-> 
-> My only concern with this patch is that it targets bpf-next and carries
-> no Fixes tag, so we'll end up with a kernel release that doesn't have
-> this change...
-> 
+Example usage:
+ # Delete all offloaded (and non offloaded) conntrack entries
+ # whose source address is 1.2.3.4
+ $ conntrack -D -s 1.2.3.4
+ # Delete all entries
+ $ conntrack -F
 
-Good point, I'll send this patch against 'bpf' tree instead.
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+---
+ net/netfilter/nf_conntrack_netlink.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
---Jesper
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index bfc3aaa2c872..fbc47e4b7bc3 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -1554,9 +1554,6 @@ static const struct nla_policy ct_nla_policy[CTA_MAX+1] = {
+ 
+ static int ctnetlink_flush_iterate(struct nf_conn *ct, void *data)
+ {
+-	if (test_bit(IPS_OFFLOAD_BIT, &ct->status))
+-		return 0;
+-
+ 	return ctnetlink_filter_match(ct, data);
+ }
+ 
+@@ -1626,11 +1623,6 @@ static int ctnetlink_del_conntrack(struct sk_buff *skb,
+ 
+ 	ct = nf_ct_tuplehash_to_ctrack(h);
+ 
+-	if (test_bit(IPS_OFFLOAD_BIT, &ct->status)) {
+-		nf_ct_put(ct);
+-		return -EBUSY;
+-	}
+-
+ 	if (cda[CTA_ID]) {
+ 		__be32 id = nla_get_be32(cda[CTA_ID]);
+ 
+-- 
+2.26.3
 
