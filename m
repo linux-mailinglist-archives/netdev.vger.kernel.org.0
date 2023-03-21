@@ -2,116 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50CC46C3517
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 688FA6C35D9
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbjCUPH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 11:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
+        id S231741AbjCUPiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 11:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbjCUPH4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:07:56 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC136509AE
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 08:07:33 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32LEhJoK030431
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 15:07:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-transfer-encoding
- : mime-version; s=pp1; bh=qkKNDP+Er/pK+Hl/KcmMIAOm35Mulo/z+wug/iPcEm4=;
- b=qx7ttqMTBGtG6l4sRO3+zzY8V2Wc2CuFle1OWjBRK/x6/Hss6Y4bZYdOnqWulL38nLHS
- OYC3/FLIQvmphAjL61l9KNWyj43SiqyMuChZL4I1Uk+WfUV9JONgwxFZbypHis3jzoV7
- ZCiRf47+v05UdfaVYK5T4/aqw1s4ee+4ixOJ79IPtC/QqDyqTvcGsKHa37bGdMNovMV5
- kOR2YFDl8C/IX0Ukg1CQlE4qe/klG6kILRP4PJWa2jdS0NAiARiU7/U+mMoApIVMff7x
- ZLxY2LtG4oZPqiT8T7HdfgpSbd43Tdqi002sgG2ykMlohVILDrkVo/cA2HFCfoZLYsIK dA== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3pfc52n9p5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 15:07:32 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32LCSYMm031919
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 15:07:32 GMT
-Received: from smtprelay05.wdc07v.mail.ibm.com ([9.208.129.117])
-        by ppma01wdc.us.ibm.com (PPS) with ESMTPS id 3pd4x6u6e3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 15:07:32 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-        by smtprelay05.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32LF7UdS42140052
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Mar 2023 15:07:30 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8549F5805B;
-        Tue, 21 Mar 2023 15:07:30 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CB6D35804B;
-        Tue, 21 Mar 2023 15:07:29 +0000 (GMT)
-Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com.com (unknown [9.77.147.181])
-        by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Tue, 21 Mar 2023 15:07:29 +0000 (GMT)
-From:   Nick Child <nnac123@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Nick Child <nnac123@linux.ibm.com>
-Subject: [PATCH net-next v2 2/2] netdev: Enforce index cap in netdev_get_tx_queue
-Date:   Tue, 21 Mar 2023 10:07:25 -0500
-Message-Id: <20230321150725.127229-2-nnac123@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20230321150725.127229-1-nnac123@linux.ibm.com>
-References: <20230321150725.127229-1-nnac123@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: a6eFMBTaou-J-9CTfENp54fGbwqtkgSM
-X-Proofpoint-ORIG-GUID: a6eFMBTaou-J-9CTfENp54fGbwqtkgSM
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S230351AbjCUPit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:38:49 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C671FF2B;
+        Tue, 21 Mar 2023 08:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=wqHE/HmFnAipyC15YC6kC4z9qeOa5pYSIMhsUmlBcnA=; b=cvRImtCFf+1tr5TBScdJO6JydN
+        ilS/AfrFAwSiENYVw8xmUupqouZwJGMhMscvrgZJjo8YPiSXT16Ur6uSDZlBQUGhb+u3u8CNoltIT
+        iDlh1W4Zrm6JPt9H2da1BgMVIv0FmoMn20BzHteqD3UBlrCDRblFrnUJlwn2drXLnBZQa6utu/fWP
+        Wr4SPROlrhBWhLjsBO0DrfxDObVnfbdQhkkwtQwMUpZJ5UqrtxgHSw5Ni17n2BdP811DLwIw3QxLS
+        fui3k4rZy5Zj65i0CKI0LTge8AoOllWu1SCpiuIMuVxiIjJPnW+pOokL1BooWUswiM+LJy82T+ah1
+        KzBkkLYg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52814)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pee4G-0001R7-Ty; Tue, 21 Mar 2023 15:38:32 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pee4E-0007qF-T0; Tue, 21 Mar 2023 15:38:30 +0000
+Date:   Tue, 21 Mar 2023 15:38:30 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srk@ti.com
+Subject: Re: [PATCH net-next 2/4] net: ethernet: ti: am65-cpsw: Add support
+ for SGMII mode
+Message-ID: <ZBnPdlFS2P3Iie5k@shell.armlinux.org.uk>
+References: <20230321111958.2800005-1-s-vadapalli@ti.com>
+ <20230321111958.2800005-3-s-vadapalli@ti.com>
+ <ZBmVGu2vf1ADmEuN@shell.armlinux.org.uk>
+ <9b9ba199-8379-0840-b99a-d729f8ad33e1@ti.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-21_11,2023-03-21_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- adultscore=0 phishscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0
- spamscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303150002
- definitions=main-2303210118
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9b9ba199-8379-0840-b99a-d729f8ad33e1@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When requesting a TX queue at a given index, warn on out-of-bounds
-referencing if the index is greater than the allocated number of
-queues.
+On Tue, Mar 21, 2023 at 07:04:50PM +0530, Siddharth Vadapalli wrote:
+> Hello Russell,
+> 
+> On 21-03-2023 16:59, Russell King (Oracle) wrote:
+> > On Tue, Mar 21, 2023 at 04:49:56PM +0530, Siddharth Vadapalli wrote:
+> >> Add support for configuring the CPSW Ethernet Switch in SGMII mode.
+> >>
+> >> Depending on the SoC, allow selecting SGMII mode as a supported interface,
+> >> based on the compatible used.
+> >>
+> >> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+> >> ---
+> >>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 11 ++++++++++-
+> >>  1 file changed, 10 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >> index cba8db14e160..d2ca1f2035f4 100644
+> >> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >> @@ -76,6 +76,7 @@
+> >>  #define AM65_CPSW_PORTN_REG_TS_CTL_LTYPE2       0x31C
+> >>  
+> >>  #define AM65_CPSW_SGMII_CONTROL_REG		0x010
+> >> +#define AM65_CPSW_SGMII_MR_ADV_ABILITY_REG	0x018
+> >>  #define AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE	BIT(0)
+> > 
+> > Isn't this misplaced? Shouldn't AM65_CPSW_SGMII_MR_ADV_ABILITY_REG come
+> > after AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE, rather than splitting that
+> > from its register offset definition?
+> 
+> Thank you for reviewing the patch. The registers are as follows:
+> CONTROL_REG offset 0x10
+> STATUS_REG offset  0x14
+> MR_ADV_REG offset  0x18
+> 
+> Since the STATUS_REG is not used in the driver, its offset is omitted.
+> The next register is the MR_ADV_REG, which I placed after the
+> CONTROL_REG. I grouped the register offsets together, to represent the
+> order in which the registers are placed. Due to this, the
+> MR_ADV_ABILITY_REG offset is placed after the CONTROL_REG offset define.
+> 
+> Please let me know if I should move it after the CONTROL_MR_AN_ENABLE
+> define instead.
 
-Specifically, since this function is used heavily in the networking
-stack use DEBUG_NET_WARN_ON_ONCE to avoid executing a new branch on
-every packet.
+Well, it's up to you - whether you wish to group the register offsets
+separately from the bit definitions for those registers, or whether
+you wish to describe the register offset and its associated bit
+definitions in one group before moving on to the next register.
 
-Signed-off-by: Nick Child <nnac123@linux.ibm.com>
----
-Changes since v1 (respond to Jakubs review):
- - send to net-next instead of net
- - use DEBUG_NET_WARN_ON_ONCE instead of a conditonal returning 1st queue
+> > If the advertisement register is at 0x18, and the lower 16 bits is the
+> > advertisement, are the link partner advertisement found in the upper
+> > 16 bits?
+> 
+> The MR_LP_ADV_ABILITY_REG is at offset 0x020, which is the the register
+> corresponding to the Link Partner advertised value. Also, the
+> AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE Bit is in the CONTROL_REG. The CPSW
+> Hardware specification describes the process of configuring the CPSW MAC
+> for SGMII mode as follows:
+> 1. Write 0x1 (ADVERTISE_SGMII) to the MR_ADV_ABILITY_REG register.
+> 2. Enable auto-negotiation in the CONTROL_REG by setting the
+> AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE bit.
 
-v1 - https://lore.kernel.org/netdev/20230320214942.38395e6e@kicinski-fedora-PC1C0HJN/
+Good to hear that there is a link partner register.
 
- include/linux/netdevice.h | 1 +
- 1 file changed, 1 insertion(+)
+> >>  #define AM65_CPSW_CTL_VLAN_AWARE		BIT(1)
+> >> @@ -1496,9 +1497,14 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
+> >>  	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
+> >>  	struct am65_cpsw_common *common = port->common;
+> >>  
+> >> -	if (common->pdata.extra_modes & BIT(state->interface))
+> >> +	if (common->pdata.extra_modes & BIT(state->interface)) {
+> >> +		if (state->interface == PHY_INTERFACE_MODE_SGMII)
+> >> +			writel(ADVERTISE_SGMII,
+> >> +			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
+> >> +
+> > 
+> > I think we can do better with this, by implementing proper PCS support.
+> > 
+> > It seems manufacturers tend to use bought-in IP for this, so have a
+> > look at drivers/net/pcs/ to see whether any of those (or the one in
+> > the Mediatek patch set on netdev that has recently been applied) will
+> > idrive your hardware.
+> > 
+> > However, given the definition of AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
+> > I suspect you won't find a compatible implementation.
+> 
+> I have tested with an SGMII Ethernet PHY in the standard SGMII MAC2PHY
+> configuration. I am not sure if PCS support will be required or not. I
+> hope that the information shared above by me regarding the CPSW
+> Hardware's specification for configuring it in SGMII mode will help
+> determine what the right approach might be. Please let me know whether
+> the current implementation is acceptable or PCS support is necessary.
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 23b0d7eaaadd..838b7310a80b 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2482,6 +2482,7 @@ static inline
- struct netdev_queue *netdev_get_tx_queue(const struct net_device *dev,
- 					 unsigned int index)
- {
-+	DEBUG_NET_WARN_ON_ONCE(index >= dev->num_tx_queues);
- 	return &dev->_tx[index];
- }
- 
+Nevertheless, this SGMII block is a PCS, and if you're going to want to
+support inband mode (e.g. to read the SGMII word from the PHY), or if
+someone ever wants to use 1000base-X, you're going to need to implement
+this properly as a PCS.
+
+That said, it can be converted later, so isn't a blocking sisue.
+
 -- 
-2.31.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
