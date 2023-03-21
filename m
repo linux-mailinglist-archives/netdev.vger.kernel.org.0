@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A38CF6C3923
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:27:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FAC26C3928
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbjCUS04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 14:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        id S230047AbjCUS1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbjCUS0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:26:54 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323B221A36
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:26:51 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id m22so7354269ioy.4
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:26:51 -0700 (PDT)
+        with ESMTP id S230469AbjCUS05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:26:57 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6059651FAA
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:26:52 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id i19so8572324ila.10
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:26:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679423210;
+        d=linaro.org; s=google; t=1679423211;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zD7P7DGIpjKZwpUBDIK1agafPqaOq2pv3p1G5OUYGzA=;
-        b=GFaIn7m3hylnTrBjlXHZ3Apd2B0k3fYkg2V4qfn73262uxC+O8G5e1w8ZxiRh7PyfR
-         CsoiDmhzTf4L4Q580hAFpfueCaxv6+PFvwa0FEaEZsvxKCKFZ5V9KWe3sSXu7LqenNqG
-         aQyPrC3yHTya1PynRLpquh8Kx7qn6Z7pvoPJWnYioHO4ZqLWDuuwJbM6cTxZz3hmPa6A
-         UtgYY9FyMf5fqtDtN7O8mj46KoIzhMZwS19ihW+B42BNtmq2qYNSu7ioSMQZNuC0Yvu0
-         JiaeHkX5NFrR1OLMHRneoyfsEw490Uz38mfDnCIvZHkIWE0pJYdSiGrH63yJVLHMq7o/
-         I5NQ==
+        bh=jlTFANVhQrSFhHrzr3b0Xml4f/roBlY85dQdBma11nc=;
+        b=gMR5i65qvTBW71E//IE485A+pUv1j+WSvDnzB9jHoCnkz2Ng/Z8yeEwmmDWJkYDPED
+         APMeig1ztxBomBKhvtEuh0SRNjlspIMbp/E4xSWFabHG567Wp4DvKIsUgTes++Sx7zbr
+         5VsT7IR1TxqqcNmyeVtTKb431/Gkw9WEgYPMkKSgj//x5JMfSzIR/Ca28INjXvX5DusF
+         7fc/d09ieQrZTceFUr0inYsZSZYMnorBUKQ3ZjTQ8hAzS0BtsLWJRHeYdh8w4pjycrsH
+         IJpG9oP9mNXUDKDhlwJbc0dMRTqm/voeSu3MKeGx7xRE1OSJJgnP4mz6wxRZh6AxnaiE
+         +PZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679423210;
+        d=1e100.net; s=20210112; t=1679423211;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zD7P7DGIpjKZwpUBDIK1agafPqaOq2pv3p1G5OUYGzA=;
-        b=47z5yzo4d/p4dGNcYP870QIIk8mP8UUlhppaw0hsDrQ1eRk5dB+68UE7D8dbCXqY/U
-         n6dROqGcHSCuSstpKHhUIpysQGpgbOWrJwgXPLOX6DcDODKU7RI7aslxjkKnPrFMMfuU
-         MdnhlUQptwImPPM1gFqv43vn1QiOOsN6wMPhIl0nk5LCWDtJcAxjo1xfjxH9L2zUvB6D
-         2LPUKM/5ERr+hrIxAsQolEGvtBkxomqXs9fH/nqxLUjtpbLi3tiO0A+juNGZ4ttiMqJd
-         4luIfmRwbtPvW/2jwdqwwTskSh8cn/PFG2N+9AN8wz4sy1xDUnmVb0RfDAzad5atLiVu
-         GOmg==
-X-Gm-Message-State: AO0yUKVYLGLKyoh2mjcZKwXRpqBaCghYjtEDhrnlquEqB5vToG4V8YvB
-        RCb2aHR9wPZFeM0SF7FtPl6qZg==
-X-Google-Smtp-Source: AK7set9nejofO7zB3gKGHMEN6iLfWZbayU9NwHrOo0QDihMdbIHbeLGWOLjTo+w2CHfVejIVjxYgvA==
-X-Received: by 2002:a5e:df01:0:b0:74c:87b5:a083 with SMTP id f1-20020a5edf01000000b0074c87b5a083mr2368365ioq.17.1679423210445;
-        Tue, 21 Mar 2023 11:26:50 -0700 (PDT)
+        bh=jlTFANVhQrSFhHrzr3b0Xml4f/roBlY85dQdBma11nc=;
+        b=SG3+PECpcSPFzKvfNk4BcFaXJq4I2+vYF703Rk+l1CgD3omne2jhu1PQOiuBwdJENQ
+         0twaShDif39dyp8VADhWmp7Ltsf4/JfLBJhC9SRdnVNID6ptlOCoDkrmt3w01BgtmLZ/
+         89maeJ5pBPdDyt9g1YbKytMzJ7WSKgJ8GGZ0EHWXWL9kIj68bos59M5ny6iiLAF0YdJZ
+         SHrBXJ/qcAfzsRk0S6xF/MJ4RnyRm8gCq4WvXq3DBy6KOOWiVrBXebIC6EXOy/izGhnq
+         AWrGxc9F+p5KEfSy1ao9sVwWsq0PjLCRSBN7Po+tXX9mhF67qQtnV04hWRHvyBM9A9/4
+         q4Gw==
+X-Gm-Message-State: AO0yUKUUoxrRX/VwCTJ9TKvg1KkRbRn/0u07mC3QppXdCpVHk+59ApbX
+        bM7hXvud2hCLTkysOHP7GkQR7Q==
+X-Google-Smtp-Source: AK7set9l/Y5vHsfvSRyhvdqNgNPM3gpNSGu0jq/BXivOVJdN6+agKN1lRD4I9nM+3gxKH1OAgS3Tmw==
+X-Received: by 2002:a92:cf51:0:b0:322:fcb1:878a with SMTP id c17-20020a92cf51000000b00322fcb1878amr2310721ilr.29.1679423211562;
+        Tue, 21 Mar 2023 11:26:51 -0700 (PDT)
 Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id m1-20020a0566380dc100b004064207454bsm3405858jaj.30.2023.03.21.11.26.49
+        by smtp.gmail.com with ESMTPSA id m1-20020a0566380dc100b004064207454bsm3405858jaj.30.2023.03.21.11.26.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 11:26:50 -0700 (PDT)
+        Tue, 21 Mar 2023 11:26:51 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -58,9 +58,9 @@ Cc:     caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
         quic_subashab@quicinc.com, elder@kernel.org,
         netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/3] net: ipa: add IPA v5.0 GSI register definitions
-Date:   Tue, 21 Mar 2023 13:26:43 -0500
-Message-Id: <20230321182644.2143990-3-elder@linaro.org>
+Subject: [PATCH net-next v2 3/3] net: ipa: add IPA v5.0 configuration data
+Date:   Tue, 21 Mar 2023 13:26:44 -0500
+Message-Id: <20230321182644.2143990-4-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230321182644.2143990-1-elder@linaro.org>
 References: <20230321182644.2143990-1-elder@linaro.org>
@@ -68,406 +68,570 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the definitions of GSI register offsets and fields for IPA v5.0.
-These are used for the SDX65 SoC.  Increase the maximum channel and
-event ring counts supported by the driver, so those implemented by
-the SDX65 are supported.
+Add the configuration data required for IPA v5.0, which is used in
+the SDX65 SoC.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/Makefile           |   2 +-
- drivers/net/ipa/gsi.h              |   4 +-
- drivers/net/ipa/gsi_reg.c          |   3 +
- drivers/net/ipa/gsi_reg.h          |   1 +
- drivers/net/ipa/reg/gsi_reg-v5.0.c | 317 +++++++++++++++++++++++++++++
- 5 files changed, 324 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ipa/reg/gsi_reg-v5.0.c
+ drivers/net/ipa/Makefile             |   2 +-
+ drivers/net/ipa/data/ipa_data-v5.0.c | 481 +++++++++++++++++++++++++++
+ drivers/net/ipa/ipa_data.h           |   3 +-
+ drivers/net/ipa/ipa_main.c           |   6 +-
+ 4 files changed, 489 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ipa/data/ipa_data-v5.0.c
 
 diff --git a/drivers/net/ipa/Makefile b/drivers/net/ipa/Makefile
-index 377e2c0fb89b2..514b7b6cd0737 100644
+index 514b7b6cd0737..7293d5cc2b2b7 100644
 --- a/drivers/net/ipa/Makefile
 +++ b/drivers/net/ipa/Makefile
-@@ -5,7 +5,7 @@
- IPA_REG_VERSIONS	:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11 5.0
- 
+@@ -7,7 +7,7 @@ IPA_REG_VERSIONS	:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11 5.0
  # Some IPA versions can reuse another set of GSI register definitions.
--GSI_REG_VERSIONS	:=	3.1 3.5.1 4.0 4.5 4.9 4.11
-+GSI_REG_VERSIONS	:=	3.1 3.5.1 4.0 4.5 4.9 4.11 5.0
+ GSI_REG_VERSIONS	:=	3.1 3.5.1 4.0 4.5 4.9 4.11 5.0
  
- IPA_DATA_VERSIONS	:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11
+-IPA_DATA_VERSIONS	:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11
++IPA_DATA_VERSIONS	:=	3.1 3.5.1 4.2 4.5 4.7 4.9 4.11 5.0
  
-diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
-index 50bc80cb167c3..42063b227c185 100644
---- a/drivers/net/ipa/gsi.h
-+++ b/drivers/net/ipa/gsi.h
-@@ -16,8 +16,8 @@
- #include "ipa_version.h"
+ obj-$(CONFIG_QCOM_IPA)	+=	ipa.o
  
- /* Maximum number of channels and event rings supported by the driver */
--#define GSI_CHANNEL_COUNT_MAX	23
--#define GSI_EVT_RING_COUNT_MAX	24
-+#define GSI_CHANNEL_COUNT_MAX	28
-+#define GSI_EVT_RING_COUNT_MAX	28
- 
- /* Maximum TLV FIFO size for a channel; 64 here is arbitrary (and high) */
- #define GSI_TLV_MAX		64
-diff --git a/drivers/net/ipa/gsi_reg.c b/drivers/net/ipa/gsi_reg.c
-index 1651fbad4bd54..c5458e28b12f2 100644
---- a/drivers/net/ipa/gsi_reg.c
-+++ b/drivers/net/ipa/gsi_reg.c
-@@ -109,6 +109,9 @@ static const struct regs *gsi_regs(struct gsi *gsi)
- 	case IPA_VERSION_4_11:
- 		return &gsi_regs_v4_11;
- 
-+	case IPA_VERSION_5_0:
-+		return &gsi_regs_v5_0;
-+
- 	default:
- 		return NULL;
- 	}
-diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
-index 48fde65fa2e8a..cf046567f3fe6 100644
---- a/drivers/net/ipa/gsi_reg.h
-+++ b/drivers/net/ipa/gsi_reg.h
-@@ -355,6 +355,7 @@ extern const struct regs gsi_regs_v4_0;
- extern const struct regs gsi_regs_v4_5;
- extern const struct regs gsi_regs_v4_9;
- extern const struct regs gsi_regs_v4_11;
-+extern const struct regs gsi_regs_v5_0;
- 
- /**
-  * gsi_reg() - Return the structure describing a GSI register
-diff --git a/drivers/net/ipa/reg/gsi_reg-v5.0.c b/drivers/net/ipa/reg/gsi_reg-v5.0.c
+diff --git a/drivers/net/ipa/data/ipa_data-v5.0.c b/drivers/net/ipa/data/ipa_data-v5.0.c
 new file mode 100644
-index 0000000000000..d7b81a36d673b
+index 0000000000000..4d8171dae4cd7
 --- /dev/null
-+++ b/drivers/net/ipa/reg/gsi_reg-v5.0.c
-@@ -0,0 +1,317 @@
++++ b/drivers/net/ipa/data/ipa_data-v5.0.c
+@@ -0,0 +1,481 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +/* Copyright (C) 2023 Linaro Ltd. */
 +
-+#include <linux/types.h>
++#include <linux/log2.h>
 +
 +#include "../gsi.h"
-+#include "../reg.h"
-+#include "../gsi_reg.h"
++#include "../ipa_data.h"
++#include "../ipa_endpoint.h"
++#include "../ipa_mem.h"
 +
-+REG(INTER_EE_SRC_CH_IRQ_MSK, inter_ee_src_ch_irq_msk,
-+    0x0000c01c + 0x1000 * GSI_EE_AP);
++/** enum ipa_resource_type - IPA resource types for an SoC having IPA v5.0 */
++enum ipa_resource_type {
++	/* Source resource types; first must have value 0 */
++	IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS		= 0,
++	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS,
++	IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF,
++	IPA_RESOURCE_TYPE_SRC_HPS_DMARS,
++	IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES,
 +
-+REG(INTER_EE_SRC_EV_CH_IRQ_MSK, inter_ee_src_ev_ch_irq_msk,
-+    0x0000c028 + 0x1000 * GSI_EE_AP);
-+
-+static const u32 reg_ch_c_cntxt_0_fmask[] = {
-+	[CHTYPE_PROTOCOL]				= GENMASK(6, 0),
-+	[CHTYPE_DIR]					= BIT(7),
-+	[CH_EE]						= GENMASK(11, 8),
-+	[CHID]						= GENMASK(19, 12),
-+	[CHSTATE]					= GENMASK(23, 20),
-+	[ELEMENT_SIZE]					= GENMASK(31, 24),
++	/* Destination resource types; first must have value 0 */
++	IPA_RESOURCE_TYPE_DST_DATA_SECTORS		= 0,
++	IPA_RESOURCE_TYPE_DST_DPS_DMARS,
++	IPA_RESOURCE_TYPE_DST_ULSO_SEGMENTS,
 +};
 +
-+REG_STRIDE_FIELDS(CH_C_CNTXT_0, ch_c_cntxt_0,
-+		  0x00014000 + 0x12000 * GSI_EE_AP, 0x80);
++/* Resource groups used for an SoC having IPA v5.0 */
++enum ipa_rsrc_group_id {
++	/* Source resource group identifiers */
++	IPA_RSRC_GROUP_SRC_UL				= 0,
++	IPA_RSRC_GROUP_SRC_DL,
++	IPA_RSRC_GROUP_SRC_UNUSED_2,
++	IPA_RSRC_GROUP_SRC_UNUSED_3,
++	IPA_RSRC_GROUP_SRC_URLLC,
++	IPA_RSRC_GROUP_SRC_U_RX_QC,
++	IPA_RSRC_GROUP_SRC_COUNT,	/* Last in set; not a source group */
 +
-+static const u32 reg_ch_c_cntxt_1_fmask[] = {
-+	[CH_R_LENGTH]					= GENMASK(23, 0),
-+	[ERINDEX]					= GENMASK(31, 24),
++	/* Destination resource group identifiers */
++	IPA_RSRC_GROUP_DST_UL				= 0,
++	IPA_RSRC_GROUP_DST_DL,
++	IPA_RSRC_GROUP_DST_DMA,
++	IPA_RSRC_GROUP_DST_QDSS,
++	IPA_RSRC_GROUP_DST_CV2X,
++	IPA_RSRC_GROUP_DST_UC,
++	IPA_RSRC_GROUP_DST_DRB_IP,
++	IPA_RSRC_GROUP_DST_COUNT,	/* Last; not a destination group */
 +};
 +
-+REG_STRIDE_FIELDS(CH_C_CNTXT_1, ch_c_cntxt_1,
-+		  0x00014004 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_CNTXT_2, ch_c_cntxt_2, 0x00014008 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_CNTXT_3, ch_c_cntxt_3, 0x0001400c + 0x12000 * GSI_EE_AP, 0x80);
-+
-+static const u32 reg_ch_c_qos_fmask[] = {
-+	[WRR_WEIGHT]					= GENMASK(3, 0),
-+						/* Bits 4-7 reserved */
-+	[MAX_PREFETCH]					= BIT(8),
-+	[USE_DB_ENG]					= BIT(9),
-+	[PREFETCH_MODE]					= GENMASK(13, 10),
-+						/* Bits 14-15 reserved */
-+	[EMPTY_LVL_THRSHOLD]				= GENMASK(23, 16),
-+	[DB_IN_BYTES]					= BIT(24),
-+	[LOW_LATENCY_EN]				= BIT(25),
-+						/* Bits 26-31 reserved */
++/* QSB configuration data for an SoC having IPA v5.0 */
++static const struct ipa_qsb_data ipa_qsb_data[] = {
++	[IPA_QSB_MASTER_DDR] = {
++		.max_writes		= 0,
++		.max_reads		= 0,	/* no limit (hardware max) */
++		.max_reads_beats	= 0,
++	},
++	[IPA_QSB_MASTER_PCIE] = {
++		.max_writes		= 0,
++		.max_reads		= 0,	/* no limit (hardware max) */
++		.max_reads_beats	= 0,
++	},
 +};
 +
-+REG_STRIDE_FIELDS(CH_C_QOS, ch_c_qos, 0x00014048 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_SCRATCH_0, ch_c_scratch_0,
-+	   0x0001404c + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_SCRATCH_1, ch_c_scratch_1,
-+	   0x00014050 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_SCRATCH_2, ch_c_scratch_2,
-+	   0x00014054 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_SCRATCH_3, ch_c_scratch_3,
-+	   0x00014058 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+static const u32 reg_ev_ch_e_cntxt_0_fmask[] = {
-+	[EV_CHTYPE]					= GENMASK(6, 0),
-+	[EV_INTYPE]					= BIT(7),
-+	[EV_EVCHID]					= GENMASK(15, 8),
-+	[EV_EE]						= GENMASK(19, 16),
-+	[EV_CHSTATE]					= GENMASK(23, 20),
-+	[EV_ELEMENT_SIZE]				= GENMASK(31, 24),
++/* Endpoint configuration data for an SoC having IPA v5.0 */
++static const struct ipa_gsi_endpoint_data ipa_gsi_endpoint_data[] = {
++	[IPA_ENDPOINT_AP_COMMAND_TX] = {
++		.ee_id		= GSI_EE_AP,
++		.channel_id	= 12,
++		.endpoint_id	= 14,
++		.toward_ipa	= true,
++		.channel = {
++			.tre_count	= 256,
++			.event_count	= 256,
++			.tlv_count	= 20,
++		},
++		.endpoint = {
++			.config = {
++				.resource_group	= IPA_RSRC_GROUP_SRC_UL,
++				.dma_mode	= true,
++				.dma_endpoint	= IPA_ENDPOINT_AP_LAN_RX,
++				.tx = {
++					.seq_type = IPA_SEQ_DMA,
++				},
++			},
++		},
++	},
++	[IPA_ENDPOINT_AP_LAN_RX] = {
++		.ee_id		= GSI_EE_AP,
++		.channel_id	= 13,
++		.endpoint_id	= 16,
++		.toward_ipa	= false,
++		.channel = {
++			.tre_count	= 256,
++			.event_count	= 256,
++			.tlv_count	= 9,
++		},
++		.endpoint = {
++			.config = {
++				.resource_group	= IPA_RSRC_GROUP_DST_UL,
++				.aggregation	= true,
++				.status_enable	= true,
++				.rx = {
++					.buffer_size	= 8192,
++					.pad_align	= ilog2(sizeof(u32)),
++					.aggr_time_limit = 500,
++				},
++			},
++		},
++	},
++	[IPA_ENDPOINT_AP_MODEM_TX] = {
++		.ee_id		= GSI_EE_AP,
++		.channel_id	= 11,
++		.endpoint_id	= 2,
++		.toward_ipa	= true,
++		.channel = {
++			.tre_count	= 512,
++			.event_count	= 512,
++			.tlv_count	= 25,
++		},
++		.endpoint = {
++			.filter_support	= true,
++			.config = {
++				.resource_group	= IPA_RSRC_GROUP_SRC_UL,
++				.checksum       = true,
++				.qmap		= true,
++				.status_enable	= true,
++				.tx = {
++					.seq_type = IPA_SEQ_2_PASS_SKIP_LAST_UC,
++					.status_endpoint =
++						IPA_ENDPOINT_MODEM_AP_RX,
++				},
++			},
++		},
++	},
++	[IPA_ENDPOINT_AP_MODEM_RX] = {
++		.ee_id		= GSI_EE_AP,
++		.channel_id	= 1,
++		.endpoint_id	= 23,
++		.toward_ipa	= false,
++		.channel = {
++			.tre_count	= 256,
++			.event_count	= 256,
++			.tlv_count	= 9,
++		},
++		.endpoint = {
++			.config = {
++				.resource_group	= IPA_RSRC_GROUP_DST_DL,
++				.checksum       = true,
++				.qmap		= true,
++				.aggregation	= true,
++				.rx = {
++					.buffer_size	= 8192,
++					.aggr_time_limit = 500,
++					.aggr_close_eof	= true,
++				},
++			},
++		},
++	},
++	[IPA_ENDPOINT_MODEM_AP_TX] = {
++		.ee_id		= GSI_EE_MODEM,
++		.channel_id	= 0,
++		.endpoint_id	= 12,
++		.toward_ipa	= true,
++		.endpoint = {
++			.filter_support	= true,
++		},
++	},
++	[IPA_ENDPOINT_MODEM_AP_RX] = {
++		.ee_id		= GSI_EE_MODEM,
++		.channel_id	= 7,
++		.endpoint_id	= 21,
++		.toward_ipa	= false,
++	},
++	[IPA_ENDPOINT_MODEM_DL_NLO_TX] = {
++		.ee_id		= GSI_EE_MODEM,
++		.channel_id	= 2,
++		.endpoint_id	= 15,
++		.toward_ipa	= true,
++		.endpoint = {
++			.filter_support	= true,
++		},
++	},
 +};
 +
-+REG_STRIDE_FIELDS(EV_CH_E_CNTXT_0, ev_ch_e_cntxt_0,
-+		  0x0001c000 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+static const u32 reg_ev_ch_e_cntxt_1_fmask[] = {
-+	[R_LENGTH]					= GENMASK(19, 0),
++/* Source resource configuration data for an SoC having IPA v5.0 */
++static const struct ipa_resource ipa_resource_src[] = {
++	[IPA_RESOURCE_TYPE_SRC_PKT_CONTEXTS] = {
++		.limits[IPA_RSRC_GROUP_SRC_UL] = {
++			.min = 3,	.max = 9,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_DL] = {
++			.min = 4,	.max = 10,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_URLLC] = {
++			.min = 1,	.max = 63,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_U_RX_QC] = {
++			.min = 0,	.max = 63,
++		},
++	},
++	[IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_LISTS] = {
++		.limits[IPA_RSRC_GROUP_SRC_UL] = {
++			.min = 9,	.max = 9,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_DL] = {
++			.min = 12,	.max = 12,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_URLLC] = {
++			.min = 10,	.max = 10,
++		},
++	},
++	[IPA_RESOURCE_TYPE_SRC_DESCRIPTOR_BUFF] = {
++		.limits[IPA_RSRC_GROUP_SRC_UL] = {
++			.min = 9,	.max = 9,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_DL] = {
++			.min = 24,	.max = 24,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_URLLC] = {
++			.min = 20,	.max = 20,
++		},
++	},
++	[IPA_RESOURCE_TYPE_SRC_HPS_DMARS] = {
++		.limits[IPA_RSRC_GROUP_SRC_UL] = {
++			.min = 0,	.max = 63,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_DL] = {
++			.min = 0,	.max = 63,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_URLLC] = {
++			.min = 1,	.max = 63,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_U_RX_QC] = {
++			.min = 0,	.max = 63,
++		},
++	},
++	[IPA_RESOURCE_TYPE_SRC_ACK_ENTRIES] = {
++		.limits[IPA_RSRC_GROUP_SRC_UL] = {
++			.min = 22,	.max = 22,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_DL] = {
++			.min = 16,	.max = 16,
++		},
++		.limits[IPA_RSRC_GROUP_SRC_URLLC] = {
++			.min = 16,	.max = 16,
++		},
++	},
 +};
 +
-+REG_STRIDE_FIELDS(EV_CH_E_CNTXT_1, ev_ch_e_cntxt_1,
-+		  0x0001c004 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_2, ev_ch_e_cntxt_2,
-+	   0x0001c008 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_3, ev_ch_e_cntxt_3,
-+	   0x0001c00c + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_4, ev_ch_e_cntxt_4,
-+	   0x0001c010 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+static const u32 reg_ev_ch_e_cntxt_8_fmask[] = {
-+	[EV_MODT]					= GENMASK(15, 0),
-+	[EV_MODC]					= GENMASK(23, 16),
-+	[EV_MOD_CNT]					= GENMASK(31, 24),
++/* Destination resource configuration data for an SoC having IPA v5.0 */
++static const struct ipa_resource ipa_resource_dst[] = {
++	[IPA_RESOURCE_TYPE_DST_DATA_SECTORS] = {
++		.limits[IPA_RSRC_GROUP_DST_UL] = {
++			.min = 6,	.max = 6,
++		},
++		.limits[IPA_RSRC_GROUP_DST_DL] = {
++			.min = 5,	.max = 5,
++		},
++		.limits[IPA_RSRC_GROUP_DST_DRB_IP] = {
++			.min = 39,	.max = 39,
++		},
++	},
++	[IPA_RESOURCE_TYPE_DST_DPS_DMARS] = {
++		.limits[IPA_RSRC_GROUP_DST_UL] = {
++			.min = 0,	.max = 3,
++		},
++		.limits[IPA_RSRC_GROUP_DST_DL] = {
++			.min = 0,	.max = 3,
++		},
++	},
++	[IPA_RESOURCE_TYPE_DST_ULSO_SEGMENTS] = {
++		.limits[IPA_RSRC_GROUP_DST_UL] = {
++			.min = 0,	.max = 63,
++		},
++		.limits[IPA_RSRC_GROUP_DST_DL] = {
++			.min = 0,	.max = 63,
++		},
++	},
 +};
 +
-+REG_STRIDE_FIELDS(EV_CH_E_CNTXT_8, ev_ch_e_cntxt_8,
-+		  0x0001c020 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_9, ev_ch_e_cntxt_9,
-+	   0x0001c024 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_10, ev_ch_e_cntxt_10,
-+	   0x0001c028 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_11, ev_ch_e_cntxt_11,
-+	   0x0001c02c + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_12, ev_ch_e_cntxt_12,
-+	   0x0001c030 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_CNTXT_13, ev_ch_e_cntxt_13,
-+	   0x0001c034 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_SCRATCH_0, ev_ch_e_scratch_0,
-+	   0x0001c048 + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(EV_CH_E_SCRATCH_1, ev_ch_e_scratch_1,
-+	   0x0001c04c + 0x12000 * GSI_EE_AP, 0x80);
-+
-+REG_STRIDE(CH_C_DOORBELL_0, ch_c_doorbell_0,
-+	   0x00024000 + 0x12000 * GSI_EE_AP, 0x08);
-+
-+REG_STRIDE(EV_CH_E_DOORBELL_0, ev_ch_e_doorbell_0,
-+	   0x00024800 + 0x12000 * GSI_EE_AP, 0x08);
-+
-+static const u32 reg_gsi_status_fmask[] = {
-+	[ENABLED]					= BIT(0),
-+						/* Bits 1-31 reserved */
++/* Resource configuration data for an SoC having IPA v5.0 */
++static const struct ipa_resource_data ipa_resource_data = {
++	.rsrc_group_dst_count	= IPA_RSRC_GROUP_DST_COUNT,
++	.rsrc_group_src_count	= IPA_RSRC_GROUP_SRC_COUNT,
++	.resource_src_count	= ARRAY_SIZE(ipa_resource_src),
++	.resource_src		= ipa_resource_src,
++	.resource_dst_count	= ARRAY_SIZE(ipa_resource_dst),
++	.resource_dst		= ipa_resource_dst,
 +};
 +
-+REG_FIELDS(GSI_STATUS, gsi_status, 0x00025000 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_ch_cmd_fmask[] = {
-+	[CH_CHID]					= GENMASK(7, 0),
-+						/* Bits 8-23 reserved */
-+	[CH_OPCODE]					= GENMASK(31, 24),
++/* IPA-resident memory region data for an SoC having IPA v5.0 */
++static const struct ipa_mem ipa_mem_local_data[] = {
++	{
++		.id		= IPA_MEM_UC_EVENT_RING,
++		.offset		= 0x0000,
++		.size		= 0x1000,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_UC_SHARED,
++		.offset		= 0x1000,
++		.size		= 0x0080,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_UC_INFO,
++		.offset		= 0x1080,
++		.size		= 0x0200,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_V4_FILTER_HASHED,
++		.offset		= 0x1288,
++		.size		= 0x0078,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V4_FILTER,
++		.offset		= 0x1308,
++		.size		= 0x0078,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V6_FILTER_HASHED,
++		.offset		= 0x1388,
++		.size		= 0x0078,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V6_FILTER,
++		.offset		= 0x1408,
++		.size		= 0x0078,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V4_ROUTE_HASHED,
++		.offset		= 0x1488,
++		.size		= 0x0098,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V4_ROUTE,
++		.offset		= 0x1528,
++		.size		= 0x0098,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V6_ROUTE_HASHED,
++		.offset		= 0x15c8,
++		.size		= 0x0098,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_V6_ROUTE,
++		.offset		= 0x1668,
++		.size		= 0x0098,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_MODEM_HEADER,
++		.offset		= 0x1708,
++		.size		= 0x0240,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_AP_HEADER,
++		.offset		= 0x1948,
++		.size		= 0x01e0,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_MODEM_PROC_CTX,
++		.offset		= 0x1b40,
++		.size		= 0x0b20,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_AP_PROC_CTX,
++		.offset		= 0x2660,
++		.size		= 0x0200,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_STATS_QUOTA_MODEM,
++		.offset		= 0x2868,
++		.size		= 0x0060,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_STATS_QUOTA_AP,
++		.offset		= 0x28c8,
++		.size		= 0x0048,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_AP_V4_FILTER,
++		.offset		= 0x2918,
++		.size		= 0x0118,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_AP_V6_FILTER,
++		.offset		= 0x2aa0,
++		.size		= 0x0228,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_STATS_FILTER_ROUTE,
++		.offset		= 0x2cd0,
++		.size		= 0x0ba0,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_STATS_DROP,
++		.offset		= 0x3870,
++		.size		= 0x0020,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_MODEM,
++		.offset		= 0x3898,
++		.size		= 0x0d48,
++		.canary_count	= 2,
++	},
++	{
++		.id		= IPA_MEM_NAT_TABLE,
++		.offset		= 0x45e0,
++		.size		= 0x0900,
++		.canary_count	= 0,
++	},
++	{
++		.id		= IPA_MEM_PDN_CONFIG,
++		.offset		= 0x4ee8,
++		.size		= 0x0100,
++		.canary_count	= 2,
++	},
 +};
 +
-+REG_FIELDS(CH_CMD, ch_cmd, 0x00025008 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_ev_ch_cmd_fmask[] = {
-+	[EV_CHID]					= GENMASK(7, 0),
-+						/* Bits 8-23 reserved */
-+	[EV_OPCODE]					= GENMASK(31, 24),
++/* Memory configuration data for an SoC having IPA v5.0 */
++static const struct ipa_mem_data ipa_mem_data = {
++	.local_count	= ARRAY_SIZE(ipa_mem_local_data),
++	.local		= ipa_mem_local_data,
++	.imem_addr	= 0x14688000,
++	.imem_size	= 0x00003000,
++	.smem_id	= 497,
++	.smem_size	= 0x00009000,
 +};
 +
-+REG_FIELDS(EV_CH_CMD, ev_ch_cmd, 0x00025010 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_generic_cmd_fmask[] = {
-+	[GENERIC_OPCODE]				= GENMASK(4, 0),
-+	[GENERIC_CHID]					= GENMASK(9, 5),
-+	[GENERIC_EE]					= GENMASK(13, 10),
-+						/* Bits 14-31 reserved */
++/* Interconnect rates are in 1000 byte/second units */
++static const struct ipa_interconnect_data ipa_interconnect_data[] = {
++	{
++		.name			= "memory",
++		.peak_bandwidth		= 1900000,	/* 1.9 GBps */
++		.average_bandwidth	= 600000,	/* 600 MBps */
++	},
++	/* Average rate is unused for the next interconnect */
++	{
++		.name			= "config",
++		.peak_bandwidth		= 76800,	/* 76.8 MBps */
++		.average_bandwidth	= 0,		/* unused */
++	},
 +};
 +
-+REG_FIELDS(GENERIC_CMD, generic_cmd, 0x00025018 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_hw_param_2_fmask[] = {
-+	[NUM_CH_PER_EE]					= GENMASK(7, 0),
-+	[IRAM_SIZE]					= GENMASK(12, 8),
-+	[GSI_CH_PEND_TRANSLATE]				= BIT(13),
-+	[GSI_CH_FULL_LOGIC]				= BIT(14),
-+	[GSI_USE_SDMA]					= BIT(15),
-+	[GSI_SDMA_N_INT]				= GENMASK(18, 16),
-+	[GSI_SDMA_MAX_BURST]				= GENMASK(26, 19),
-+	[GSI_SDMA_N_IOVEC]				= GENMASK(29, 27),
-+	[GSI_USE_RD_WR_ENG]				= BIT(30),
-+	[GSI_USE_INTER_EE]				= BIT(31),
++/* Clock and interconnect configuration data for an SoC having IPA v5.0 */
++static const struct ipa_power_data ipa_power_data = {
++	.core_clock_rate	= 120 * 1000 * 1000,	/* Hz */
++	.interconnect_count	= ARRAY_SIZE(ipa_interconnect_data),
++	.interconnect_data	= ipa_interconnect_data,
 +};
 +
-+REG_FIELDS(HW_PARAM_2, hw_param_2, 0x00025040 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_hw_param_4_fmask[] = {
-+	[EV_PER_EE]					= GENMASK(7, 0),
-+	[IRAM_PROTOCOL_COUNT]				= GENMASK(15, 8),
-+						/* Bits 16-31 reserved */
++/* Configuration data for an SoC having IPA v5.0. */
++const struct ipa_data ipa_data_v5_0 = {
++	.version		= IPA_VERSION_5_0,
++	.qsb_count		= ARRAY_SIZE(ipa_qsb_data),
++	.qsb_data		= ipa_qsb_data,
++	.modem_route_count	= 11,
++	.endpoint_count		= ARRAY_SIZE(ipa_gsi_endpoint_data),
++	.endpoint_data		= ipa_gsi_endpoint_data,
++	.resource_data		= &ipa_resource_data,
++	.mem_data		= &ipa_mem_data,
++	.power_data		= &ipa_power_data,
 +};
-+
-+REG_FIELDS(HW_PARAM_4, hw_param_4, 0x00025050 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_TYPE_IRQ, cntxt_type_irq, 0x00025080 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_TYPE_IRQ_MSK, cntxt_type_irq_msk, 0x00025088 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_CH_IRQ, cntxt_src_ch_irq, 0x00025090 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_CH_IRQ_MSK, cntxt_src_ch_irq_msk,
-+    0x00025094 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_CH_IRQ_CLR, cntxt_src_ch_irq_clr,
-+    0x00025098 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_EV_CH_IRQ, cntxt_src_ev_ch_irq, 0x0002509c + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_EV_CH_IRQ_MSK, cntxt_src_ev_ch_irq_msk,
-+    0x000250a0 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_EV_CH_IRQ_CLR, cntxt_src_ev_ch_irq_clr,
-+    0x000250a4 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_IEOB_IRQ, cntxt_src_ieob_irq, 0x000250a8 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_IEOB_IRQ_MSK, cntxt_src_ieob_irq_msk,
-+    0x000250ac + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_SRC_IEOB_IRQ_CLR, cntxt_src_ieob_irq_clr,
-+    0x000250b0 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_GLOB_IRQ_STTS, cntxt_glob_irq_stts, 0x00025200 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_GLOB_IRQ_EN, cntxt_glob_irq_en, 0x00025204 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_GLOB_IRQ_CLR, cntxt_glob_irq_clr, 0x00025208 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_GSI_IRQ_STTS, cntxt_gsi_irq_stts, 0x0002520c + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_GSI_IRQ_EN, cntxt_gsi_irq_en, 0x00025210 + 0x12000 * GSI_EE_AP);
-+
-+REG(CNTXT_GSI_IRQ_CLR, cntxt_gsi_irq_clr, 0x00025214 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_cntxt_intset_fmask[] = {
-+	[INTYPE]					= BIT(0)
-+						/* Bits 1-31 reserved */
-+};
-+
-+REG_FIELDS(CNTXT_INTSET, cntxt_intset, 0x00025220 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_error_log_fmask[] = {
-+	[ERR_ARG3]					= GENMASK(3, 0),
-+	[ERR_ARG2]					= GENMASK(7, 4),
-+	[ERR_ARG1]					= GENMASK(11, 8),
-+	[ERR_CODE]					= GENMASK(15, 12),
-+						/* Bits 16-18 reserved */
-+	[ERR_VIRT_IDX]					= GENMASK(23, 19),
-+	[ERR_TYPE]					= GENMASK(27, 24),
-+	[ERR_EE]					= GENMASK(31, 28),
-+};
-+
-+REG_FIELDS(ERROR_LOG, error_log, 0x00025240 + 0x12000 * GSI_EE_AP);
-+
-+REG(ERROR_LOG_CLR, error_log_clr, 0x00025244 + 0x12000 * GSI_EE_AP);
-+
-+static const u32 reg_cntxt_scratch_0_fmask[] = {
-+	[INTER_EE_RESULT]				= GENMASK(2, 0),
-+						/* Bits 3-4 reserved */
-+	[GENERIC_EE_RESULT]				= GENMASK(7, 5),
-+						/* Bits 8-31 reserved */
-+};
-+
-+REG_FIELDS(CNTXT_SCRATCH_0, cntxt_scratch_0, 0x00025400 + 0x12000 * GSI_EE_AP);
-+
-+static const struct reg *reg_array[] = {
-+	[INTER_EE_SRC_CH_IRQ_MSK]	= &reg_inter_ee_src_ch_irq_msk,
-+	[INTER_EE_SRC_EV_CH_IRQ_MSK]	= &reg_inter_ee_src_ev_ch_irq_msk,
-+	[CH_C_CNTXT_0]			= &reg_ch_c_cntxt_0,
-+	[CH_C_CNTXT_1]			= &reg_ch_c_cntxt_1,
-+	[CH_C_CNTXT_2]			= &reg_ch_c_cntxt_2,
-+	[CH_C_CNTXT_3]			= &reg_ch_c_cntxt_3,
-+	[CH_C_QOS]			= &reg_ch_c_qos,
-+	[CH_C_SCRATCH_0]		= &reg_ch_c_scratch_0,
-+	[CH_C_SCRATCH_1]		= &reg_ch_c_scratch_1,
-+	[CH_C_SCRATCH_2]		= &reg_ch_c_scratch_2,
-+	[CH_C_SCRATCH_3]		= &reg_ch_c_scratch_3,
-+	[EV_CH_E_CNTXT_0]		= &reg_ev_ch_e_cntxt_0,
-+	[EV_CH_E_CNTXT_1]		= &reg_ev_ch_e_cntxt_1,
-+	[EV_CH_E_CNTXT_2]		= &reg_ev_ch_e_cntxt_2,
-+	[EV_CH_E_CNTXT_3]		= &reg_ev_ch_e_cntxt_3,
-+	[EV_CH_E_CNTXT_4]		= &reg_ev_ch_e_cntxt_4,
-+	[EV_CH_E_CNTXT_8]		= &reg_ev_ch_e_cntxt_8,
-+	[EV_CH_E_CNTXT_9]		= &reg_ev_ch_e_cntxt_9,
-+	[EV_CH_E_CNTXT_10]		= &reg_ev_ch_e_cntxt_10,
-+	[EV_CH_E_CNTXT_11]		= &reg_ev_ch_e_cntxt_11,
-+	[EV_CH_E_CNTXT_12]		= &reg_ev_ch_e_cntxt_12,
-+	[EV_CH_E_CNTXT_13]		= &reg_ev_ch_e_cntxt_13,
-+	[EV_CH_E_SCRATCH_0]		= &reg_ev_ch_e_scratch_0,
-+	[EV_CH_E_SCRATCH_1]		= &reg_ev_ch_e_scratch_1,
-+	[CH_C_DOORBELL_0]		= &reg_ch_c_doorbell_0,
-+	[EV_CH_E_DOORBELL_0]		= &reg_ev_ch_e_doorbell_0,
-+	[GSI_STATUS]			= &reg_gsi_status,
-+	[CH_CMD]			= &reg_ch_cmd,
-+	[EV_CH_CMD]			= &reg_ev_ch_cmd,
-+	[GENERIC_CMD]			= &reg_generic_cmd,
-+	[HW_PARAM_2]			= &reg_hw_param_2,
-+	[HW_PARAM_4]			= &reg_hw_param_4,
-+	[CNTXT_TYPE_IRQ]		= &reg_cntxt_type_irq,
-+	[CNTXT_TYPE_IRQ_MSK]		= &reg_cntxt_type_irq_msk,
-+	[CNTXT_SRC_CH_IRQ]		= &reg_cntxt_src_ch_irq,
-+	[CNTXT_SRC_CH_IRQ_MSK]		= &reg_cntxt_src_ch_irq_msk,
-+	[CNTXT_SRC_CH_IRQ_CLR]		= &reg_cntxt_src_ch_irq_clr,
-+	[CNTXT_SRC_EV_CH_IRQ]		= &reg_cntxt_src_ev_ch_irq,
-+	[CNTXT_SRC_EV_CH_IRQ_MSK]	= &reg_cntxt_src_ev_ch_irq_msk,
-+	[CNTXT_SRC_EV_CH_IRQ_CLR]	= &reg_cntxt_src_ev_ch_irq_clr,
-+	[CNTXT_SRC_IEOB_IRQ]		= &reg_cntxt_src_ieob_irq,
-+	[CNTXT_SRC_IEOB_IRQ_MSK]	= &reg_cntxt_src_ieob_irq_msk,
-+	[CNTXT_SRC_IEOB_IRQ_CLR]	= &reg_cntxt_src_ieob_irq_clr,
-+	[CNTXT_GLOB_IRQ_STTS]		= &reg_cntxt_glob_irq_stts,
-+	[CNTXT_GLOB_IRQ_EN]		= &reg_cntxt_glob_irq_en,
-+	[CNTXT_GLOB_IRQ_CLR]		= &reg_cntxt_glob_irq_clr,
-+	[CNTXT_GSI_IRQ_STTS]		= &reg_cntxt_gsi_irq_stts,
-+	[CNTXT_GSI_IRQ_EN]		= &reg_cntxt_gsi_irq_en,
-+	[CNTXT_GSI_IRQ_CLR]		= &reg_cntxt_gsi_irq_clr,
-+	[CNTXT_INTSET]			= &reg_cntxt_intset,
-+	[ERROR_LOG]			= &reg_error_log,
-+	[ERROR_LOG_CLR]			= &reg_error_log_clr,
-+	[CNTXT_SCRATCH_0]		= &reg_cntxt_scratch_0,
-+};
-+
-+const struct regs gsi_regs_v5_0 = {
-+	.reg_count	= ARRAY_SIZE(reg_array),
-+	.reg		= reg_array,
-+};
+diff --git a/drivers/net/ipa/ipa_data.h b/drivers/net/ipa/ipa_data.h
+index 818e64114ed50..ce82b00fdc498 100644
+--- a/drivers/net/ipa/ipa_data.h
++++ b/drivers/net/ipa/ipa_data.h
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 
+ /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+- * Copyright (C) 2019-2022 Linaro Ltd.
++ * Copyright (C) 2019-2023 Linaro Ltd.
+  */
+ #ifndef _IPA_DATA_H_
+ #define _IPA_DATA_H_
+@@ -249,5 +249,6 @@ extern const struct ipa_data ipa_data_v4_5;
+ extern const struct ipa_data ipa_data_v4_7;
+ extern const struct ipa_data ipa_data_v4_9;
+ extern const struct ipa_data ipa_data_v4_11;
++extern const struct ipa_data ipa_data_v5_0;
+ 
+ #endif /* _IPA_DATA_H_ */
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 4cc8d8d6bc9b7..6a2f2fc2f501e 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -285,7 +285,7 @@ static void ipa_hardware_config_comp(struct ipa *ipa)
+ 	} else if (ipa->version < IPA_VERSION_4_5) {
+ 		val |= reg_bit(reg, GSI_MULTI_AXI_MASTERS_DIS);
+ 	} else {
+-		/* For IPA v4.5 FULL_FLUSH_WAIT_RS_CLOSURE_EN is 0 */
++		/* For IPA v4.5+ FULL_FLUSH_WAIT_RS_CLOSURE_EN is 0 */
+ 	}
+ 
+ 	val |= reg_bit(reg, GSI_MULTI_INORDER_RD_DIS);
+@@ -684,6 +684,10 @@ static const struct of_device_id ipa_match[] = {
+ 		.compatible	= "qcom,sc7280-ipa",
+ 		.data		= &ipa_data_v4_11,
+ 	},
++	{
++		.compatible	= "qcom,sdx65-ipa",
++		.data		= &ipa_data_v5_0,
++	},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, ipa_match);
 -- 
 2.34.1
 
