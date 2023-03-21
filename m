@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 786D66C26C4
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 02:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9DB6C26C7
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 02:06:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229670AbjCUBFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 21:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
+        id S229847AbjCUBGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 21:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbjCUBFk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 21:05:40 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on0626.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0e::626])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DC93C2B;
-        Mon, 20 Mar 2023 18:04:50 -0700 (PDT)
+        with ESMTP id S229886AbjCUBGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 21:06:11 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2049.outbound.protection.outlook.com [40.107.8.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EC919C4D;
+        Mon, 20 Mar 2023 18:05:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TPU0E9MRctG3Ixm10rEeUE9Di4Acqom6Lnc95NIOCQdp2TBOG87TMLlaVrN/XQWv07dkCuYC6GrVtA5bDYFbtut4cNt8pX5kD5MmUWjU+5aZt1+5MjmAaDmx/uUGJvfo6W2HsN+iQkw12uS+U8x8Ax8vw0AlzxL5jTy+rgTW/KTp6TGt8eUxsvxYAhVCDoqaDz9ya7DFc2KC9WD/43jYfDnZII+nexipKskjTJK4tsq2TSgE2u0sKzueuIiqjSuOyEfJ359Dbo95/7MGdrWYPEkPnoOJxGG6WeUCaLj5CB90qtwSn+xaxvDurgqZs6l1J/JBUq1jA5yuZjEb2p+iyw==
+ b=MmdTCPc/CiDXGPPr+cskAUlGE2+cVTlBVzW/SLx6WtN9ClUPTVyDblP+lwRf1bYE/IxORAa2ZpvO3ftCHCQH/FX2YjMVeHur9VuZOyhUhEuX4b8pzY4pV9bic8p80/OeBFHABTSMHUMwe4f9gk+fl70/hw8/DBlc/GzdakqfCst5bebm306VnmSIIy9/guI9f7Dzzqio/mkOr3kRPs4xL30sTLIAXoXiYVR/r7qgJOb/YJ9Za6DKPYOeBi8hHwilXNteLP6Tt3eaQ0rhyGPVJ7qxHC/DfUt9H8HmwusPF6yrbHQEddBeuZOnewdSqBZI/cFZ4dIBEFInt5aBUJumEQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IcEL3GL2BMQBCPaP9oG2Togwh6+JpaKxBwCtn2r4xxE=;
- b=aBiqxVdQTYXl6NAYB2EZ72RcNs/e4BNJIUMoaEdAELnBl9en615nud04F7TYiub2MkntYW4z+asdf1IAG9C8JVnpGmv6i/Bk476aGZb1dK0vsflNC7jj1WGLk18hVZ/2gSeBpBn2UITihPdbFkE6zNiU/Sj5HpZdp718WVdTSMn/r2jxW4eFFT7YN7Z/AMyx9L0K1CrUVWtgC55qRwQkMA1Gbf6VXpNsxScOOFmDicSy5qmXas22ovHZzgsmA5QnAxl2ubmgjg0/z5JM9gczbx3GuUHj4U1OER3k2aSVL5sVBbpQF7CbkYfPAsn3/7aJaR9wdBKXNEzOd45MBLvsnw==
+ bh=J5bfq+wIcvIpTyW+F8g/QUhnwvDZmXfg5dOU7wW7IDM=;
+ b=UVvUlG9jsMXE1X72GaIn9/40dYfUjBH9O9xQnIFnmu9DMQ5YMjM971P3V4joHEeCWDKiZaEYBZQvs+damaQwkLW8QYnr3nFACw6+YvQzBkBfutfTmkuINkzxfsY8GJSpIRXtwT1abiShk0fLmCPT9Ybiti/1AOmY1Yc9U516h+CadkQQwtwK8p+6Cak7spJBqP+Q4rSSsOjtH5vUZ35XDyIvE7BDq1q/FUCUrVnnjDp3WdkQcx6p+NuCnPGsD5GsGnq24Uv2XOKyjmSjfxzAF8HG66OGo6aYMsboisZVTaI6Lugq3MyW4n3GUT9C2/lS0IrHOH1UWH5muuBmJ0Pfag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IcEL3GL2BMQBCPaP9oG2Togwh6+JpaKxBwCtn2r4xxE=;
- b=RZGPKscdl+TmTuGjkpSkvXp4zKwDzeYJEtFvqWl7jSvgHYz6hSSWhCk8xJ+D2DW6fNgoBxkggvN6JAXW47g7yyKR0juJmljLlZR3pMiQBOO4bD331la4HKtcFtE/3brJrIAUXGeCV7CjMn6tYR/59q2mBH5ssP+TzSjYzaCXK2k=
+ bh=J5bfq+wIcvIpTyW+F8g/QUhnwvDZmXfg5dOU7wW7IDM=;
+ b=gyT/bUj4b25oVIKcocw1xPZuBAoDPZQjW5/025a2CsRhyxfYHLQdMPzJzA9Ubv9FsEAUS25MQE9+oORYWpa2iuHDpXFqrij6GEQ4m4nzrtDOcP0nG6gPJabLyxqaggQmB9clykp97hCF3pNEfpTMTiCZOezhXRAmOmNA7khi6pw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
  by AS8PR04MB7911.eurprd04.prod.outlook.com (2603:10a6:20b:28b::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
- 2023 01:03:39 +0000
+ 2023 01:03:40 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 01:03:39 +0000
+ 01:03:40 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -52,9 +52,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         UNGLinuxDriver@microchip.com,
         Colin Foster <colin.foster@in-advantage.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/3] net: mscc: ocelot: fix stats region batching
-Date:   Tue, 21 Mar 2023 03:03:23 +0200
-Message-Id: <20230321010325.897817-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net 2/3] net: mscc: ocelot: fix transfer from region->buf to ocelot->stats
+Date:   Tue, 21 Mar 2023 03:03:24 +0200
+Message-Id: <20230321010325.897817-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230321010325.897817-1-vladimir.oltean@nxp.com>
 References: <20230321010325.897817-1-vladimir.oltean@nxp.com>
@@ -66,132 +66,183 @@ X-ClientProxiedBy: AS4P195CA0046.EURP195.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB7911:EE_
-X-MS-Office365-Filtering-Correlation-Id: e9765d7b-5e18-43c3-1927-08db29a81b68
+X-MS-Office365-Filtering-Correlation-Id: c19406ab-ead8-4a8c-d4c6-08db29a81c07
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: d2qih/IWI9WDO8x5XxiAxYwMSY6DMDFDr1a8ELNQqoRlYjRMcFAUCGhTOpBKlP1Fr+L1Muo+HoAGLr3nrXLUxr50keIg75P8Tq9PLU5t7C7iTKen5vZ6UxP7Hno2ogUxFJpyQqgxMIyRXyTj9X4KiJ8Fb+OL7j427uXcpqmvu3Zp1ILzltJ2cU9G6k2SLBe8ndef131vMCHF0MGHPgnBsYBum3es7ypMud40SqGnCuMdo5Qaz/88NeKKjQFys3N3Yde3t13tWOHxP/DmiXg60rYpBXLZPdWgEcmOGCRItGnyh5HLTs2XBymrSmayp7/uGzGNn9EwzwM8T9a6jbSW/yNvt5gr/KzNC7TB27QXjeD10L0L4/G4q2e1qQ6egl+CgzhdSnNL6lKdtHFgkFWv6ip2aMQhJr7EVT1AL9wg4Hd2V6Q08/YofylJetrn02BlxKcDghRLn7fKCGY+X/cpbwkNuSPb3xzTGJ9V6Z6iLxrZKVRNZYs4c6M6gWgmJg1mrHxHoCldKJUPeblxYCPCK3Mgy1VUyRDr5kZIhBOfjBZrt2Un3QbcTyT76r0RGBhN6rWDrufu7N0VA6hBKagavDMtnvm3jG0uSzFkrdctQAVA8vkXcQwUFZaNExx4RlOUAsK21DIaNPaHubXIlVWWymu3DOgciDO8EmTZIbF5xD4+X6Dd4i0WcjtYNoXgT0EvIoHzgSlt2U8FXCmCnxWRLg==
+X-Microsoft-Antispam-Message-Info: Z2opAa69PikGDzvVMa4z6IbdpJBYOwMyGzHKq16I6zTyIrvlkpd9AdGauKhi5VnSkYxS1fx0T6Kg9qo6Q1eENo5R15kSPx/7vdZuJB9ajUhJM9qFLAJZpV/8m3JVcSG4YE0lPEV/xx2mw3QhoQKyNod0sLcAwAUs9AzrrblkuHZzfgRektyQZTZ9m92FU367zscegEsfxEy50o8tp0e8KVQTT2Zg29D0SlHVPp9IH5wTPXfNFfBxTCZZW2Bn35RIzrO1dtOFGD8usEy0u+RITyf40oKk9NVVblIy+pw9e4khjQHFYgislIRjA8AeoRgETnExCoo0JoDq8yFg86p9GOezKiKqj12dpyHcWutw5FjJIFRqbE21nO6fgMtNwB5jHtgRKx5POkB5uHEJ7N3zzuh1YJWds3mMF24lxeVzJOlDsrPqIsKfGZtO3KFfj4rgLW2ydUKWk3JwfivzOXUlrxZTtQ3SOgn/fj7UlbS8YdEUwx+f48HP2c3Ets+XEAhts/bP5+SmKnzIwe7EcPoMREis70xmL88CllYbRCvrvMkGXc8Q7YjsnHcM+ogXUEb4gBSzUOBu2V9Bm4/2Ugj+Es9hxMJ/dVbgPrQVGMfNaaY1JsOqN7HDf0/YCOPBC5skQ5zfq7dXHIvOjD/jNpz8Nd0/z0JNNX6zCW6eVg0/3lFg/GJ6Erun3l9M2O39T2DzI4hHdT6o1vHwl91pgnZ5yw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(136003)(39860400002)(396003)(376002)(451199018)(2616005)(83380400001)(54906003)(86362001)(38100700002)(38350700002)(8936002)(4326008)(8676002)(66476007)(66556008)(36756003)(6916009)(66946007)(2906002)(44832011)(41300700001)(5660300002)(186003)(1076003)(26005)(52116002)(6486002)(6506007)(478600001)(6512007)(316002)(7416002)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MzhNYJ8B+37rwF62F0ehJZouSujbuNK3Iq5INRtOWMQBIU86wfT6pX9v4hdY?=
- =?us-ascii?Q?zCViCPmhEo4YuAFfclgndfApTt49v8oBz23AhVtVlpCf4mSV4+R94rZgg6Cf?=
- =?us-ascii?Q?d0oa6AyLx021qqBt8lsuh7kajjvDSQbXuvJbarQu8mMke3B4+D2YiHFbCmXV?=
- =?us-ascii?Q?D5xdu2AQ/TCyTv6DzWiIjyvOyfPrYL/0OjGa2vZNHFKtAtVQqKbHjNvyeOuR?=
- =?us-ascii?Q?XcLYvqMvIyG7wlV3OLdT4r/RNzNJoVe/RDUi5rh0SNs7NseqkhurucbhmRlj?=
- =?us-ascii?Q?syz1wlfPz2rLsbMPlVRQsgKzeydH3QZaPjC7KciTKmdUFngrWqIAeutt9MzJ?=
- =?us-ascii?Q?Jt3s+Hp1WmloZyzkGHYmS5Yt0B8DvIUwqsOFpEqDHeQmjo0XEAFe9HmOpCQq?=
- =?us-ascii?Q?+RABvkoFGj3tzh+gAc5tBs77Qo0A50dfq/LjFRwT85aou4cvA2mZJirBU8Px?=
- =?us-ascii?Q?g2t+igx9uniNxl6GnZfDzUuCBsCqnHw9jz3WNFHy59iEM1Q+nfcDoEzVXBKt?=
- =?us-ascii?Q?sNb19ndVu5oEjj5fu/ReaJU4uFPgLafamUvYvLZhroEkFo/6tp/0BkmpWubh?=
- =?us-ascii?Q?4DkVb7LazPOSehkR+JQspvOH2JgBj9jfLTy+D70PTkIHJlPcHNYwkV8iJXT7?=
- =?us-ascii?Q?uzypKEQf3oFfV90qJNta+kudbqv4ZvaiiKPVFOlKH1FdzRQ31+/p6WVD6lVC?=
- =?us-ascii?Q?IuBzDThnHImrnGiycOOfBr3XJ5EmfrYzGWtvAchNJkPgmaKnwUgVFlvu71CN?=
- =?us-ascii?Q?EdNuOHpZTVdMruOlxvJMZkIYpo2z4N+afHvdsFG2dblgsynvL8UPu7fwvJdh?=
- =?us-ascii?Q?gpdVigcEc3qNt0Zy+Zz1TyhfEi7FOTFzB+vAoGCMaqBJmpQ3NA2Ow6Mt3Xr2?=
- =?us-ascii?Q?uWdWUd2il8JJcT5tBqMKhOzn0e1EInou9ORbRdUMfeSRehNguU13ALuFm/GD?=
- =?us-ascii?Q?QHNNfQbkzkdIUBPS/fD253K/wz55CJ08ChROJt89MF6VqTH2YxTJ4u7aTeKT?=
- =?us-ascii?Q?0MRCE/wDg8ewWcbNwd/XdqOmksrdajblWx3GK34qnNGuU+2B4fR8GtBHAO+G?=
- =?us-ascii?Q?PsVsCeD8Atw84gVbxYlLBH4SUBjxXi59X1fDF8KX30MuI9bXVXFfDmewbAJD?=
- =?us-ascii?Q?aopk3tlbxMyj+VTs6hbkMGP+5LEkJWnGLCnBAc8BaC/n+1KPz3x71y517NCp?=
- =?us-ascii?Q?KNpcB+E0NomQtD3ywdymiMn6nG1qVQ9UjIJUebojv2UThqcH7uTT17P3q9Lq?=
- =?us-ascii?Q?H9L1kZovF+axVKzYJsxGtxQ/JE9QIQGyUyerR4RYMoDO34zEp7+LKuWn6BB4?=
- =?us-ascii?Q?7ZQLsOGACOkJMuW+dJgSEfl9qe9haqF0O8Zr6FFBiePTtfutl1yN4wo4uJQ/?=
- =?us-ascii?Q?cXYYDozFIVxKs9ehj9p+at3EPSDRrj2fKTOtilwRmrX68Iu8IDOmFpBhmjCX?=
- =?us-ascii?Q?cvw+joy+ZRBbzSb3WrL8KTbaTbbKqkvUN25GHVuweQizRsqP7Tx1GVZDNKxl?=
- =?us-ascii?Q?VgkJfndlZCfsZ5+aVJhX1da9t/zTRx22SHGAYwAQbTm/N+xReFKguxVl/79a?=
- =?us-ascii?Q?z4V2pQwlFMz660Z9BoXUkiKbulla117bRsnkgqwSx2i/2LgpykxglvtJKmr9?=
- =?us-ascii?Q?IA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JilcWyzTd1WwrH/fiqPreDdl+IcpHJRC5mfZy+Ce8XEyvRuaY70hmSDENWV6?=
+ =?us-ascii?Q?7ryDIp1K4Jbf2ASaW9S8NlqnlMP18vN2leF5x+NCKeZHD3taxnNaHQ8eOIKv?=
+ =?us-ascii?Q?bVi1M0OfEOeU3WXXr0DravvkHpa/nojtAlpfVZ5Zxq1P36IAs4NDEl3R/hnD?=
+ =?us-ascii?Q?po9MRrIXx0xcRNIxhYVE+HCD0JwI8Km+4gpubMaoBB1cSGkWW82zEMQw+vug?=
+ =?us-ascii?Q?hsEuus/jbsewL2Tp2oE79+yEbIan3k+Yl6MumDop1cGs4cyvHGWAMZ3g7U8M?=
+ =?us-ascii?Q?WabFte2NNZUlmKDXhHxaVzATfhaqCz0BrjCsFqpmKuLyCJ6riRgyohnufmXw?=
+ =?us-ascii?Q?jefn94NeGthHKChwDdn95K3MfEpPKH0tKLKGdSzsScojoxhd6shcK3ApT8SN?=
+ =?us-ascii?Q?QtEwjaRNkYm/QYaE6SlPoz/iviJk4+poGLOvD9CbrY+tw4IuQzT4DX6HfIUZ?=
+ =?us-ascii?Q?DRXm87Qa2sJ4H8ORIUki0hWDx13eueS+SIX5Nlt9TmJGROvl0U82s3ql94Ea?=
+ =?us-ascii?Q?UnHxZDpkQ9Nj8YHNorvS7+hsvsBKeCFFD1blRi662IiiLUfZjfph+kihfJrY?=
+ =?us-ascii?Q?wZWKa7k1HONfme2+KMIQxrfF/bRHh9H3BLNgffSNho1R2dpNJqhW8Yzir5Fh?=
+ =?us-ascii?Q?5dddczuqhAmbAs2ZwFx+beTPkETLLxQiV9LbibNmQzdspA4ZRIWYJ0RXMhVk?=
+ =?us-ascii?Q?pKbBiiVddhR4Q53AbVfD1X94w3sK/4hJ9qT0F4R+Y25acC/OVN9GjHZiuzjZ?=
+ =?us-ascii?Q?xqmoYaDRqMtmgQe/juX7jyC5Z6B6KQ72g/WfLC4hdTX/RlrPGc+UzHYCj1B1?=
+ =?us-ascii?Q?PykYLp7ej4mIimM42ITSTu7WQcd2L3kr7NipWnyAIW0E+oR8El9OWCdjVaRJ?=
+ =?us-ascii?Q?J0d+hSDkaDjdvZkl7Ln7CsE3ZQoAWFeh2N/KfX5P8U/clmkUTWKrHJg63J0L?=
+ =?us-ascii?Q?RZoT2kteghISWiqm2zwVsQJ5k3dYPn1y9Q6SqjiZwMxCGOSb1y5dhXqQcAPG?=
+ =?us-ascii?Q?p+1+yqZQgEimgBinxILBc0W16PQZZIl0RWyv3tf86kX0wPvfO3+LtrIyo9qD?=
+ =?us-ascii?Q?H8Mfp0atxzBUVOMdit3C9OiiWToT9jdcXFAA6Fbw8RIF3+YlxC8RLxSIMSCU?=
+ =?us-ascii?Q?ADp+WvT6kk3V6yY6zi19H1mJKEiUWHyujWx64MEjwhjd8PYZVmje5VxEY1yY?=
+ =?us-ascii?Q?8hmn4xkA38iyL2Bi1P9jbPbPSvYK7LVkAbPwkzWoiAznh2s7ARjIfQ+IoHO5?=
+ =?us-ascii?Q?NwQ3OvWPfAnDqGloXEq97DtUxfW4pqspYXf8Bn1HB15hinkB3lyGw7lwUskS?=
+ =?us-ascii?Q?HdQ5/DdUDW2WWRnp1MpLXobMBSqUf1Z8xSRzp5HMda8h9mukPQnMc2RJrTkE?=
+ =?us-ascii?Q?LDJe7pKTT9/gVVhZ33y83w8WHYs5dSvUidhjwThhjeD78zcBr8aXTxO8n8aW?=
+ =?us-ascii?Q?kALUOlmTd33ChYiR6xbbGMonJQrM5QzkbeTQBuaJB/somzWnEs8U8EBsabTo?=
+ =?us-ascii?Q?e7ljYQ8j4AmBkZoNsJ6gOlr8U5SdbDXFm1Hz6Q8ID5DU+dATFqNaH66bsuf8?=
+ =?us-ascii?Q?Sjfu688Fu+16J3zwI9lGY64KZxPyM9W2vVnxTVPlMuPj0iI040+p4R65W52d?=
+ =?us-ascii?Q?XQ=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9765d7b-5e18-43c3-1927-08db29a81b68
+X-MS-Exchange-CrossTenant-Network-Message-Id: c19406ab-ead8-4a8c-d4c6-08db29a81c07
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 01:03:39.6296
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 01:03:40.6139
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cfWLYgNm/KSxP+v7RNJeSuKedCCT+NPwWesSJUAV4EbTui+oa/eqG+1MtJPX3AGZdMZUSwXVfFU1RTItuXAuTA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: gMSk9jqA+9dxQ2lrvNUfbLCrJfymqVezeUh8ybG0d1FdUbKQ9CpMBqR0UkTDLA5vRzwEF6L/hch4nfjrUwuWIw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7911
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-        T_SPF_PERMERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The blamed commit changed struct ocelot_stat_layout :: "u32 offset" to
-"u32 reg".
+To understand the problem, we need some definitions.
 
-However, "u32 reg" is not quite a register address, but an enum
-ocelot_reg, which in itself encodes an enum ocelot_target target in the
-upper bits, and an index into the ocelot->map[target][] array in the
-lower bits.
+The driver is aware of multiple counters (enum ocelot_stat), yet not all
+switches supported by the driver implement all counters. There are 2
+statistics layouts: ocelot_stats_layout and ocelot_mm_stats_layout, the
+latter having 36 counters more than the former.
 
-So, whereas the previous code comparison between stats_layout[i].offset
-and last + 1 was correct (because those "offsets" at the time were
-32-bit relative addresses), the new code, comparing layout[i].reg to
-last + 4 is not correct, because the "reg" here is an enum/index, not an
-actual register address.
+ocelot->stats[] is not a compact array, i.e. there are elements within
+it which are not going to be populated for ocelot_stats_layout. On the
+other hand, ocelot->stats[] is easily indexable, for example "tx_octets"
+for port 3 can be found at ocelot->stats[3 * OCELOT_NUM_STATS +
+OCELOT_STAT_TX_OCTETS], and that is why we keep it sparse.
 
-What we want to compare are indeed register addresses, but to do that,
-we need to actually go through the same motions as
-__ocelot_bulk_read_ix() itself.
+Regions, as created by ocelot_prepare_stats_regions(), are compact
+(every element from region->buf will correspond to a counter that is
+present in this switch's layout) but are not easily indexable.
 
-With this bug, all statistics counters are deemed by
-ocelot_prepare_stats_regions() as constituting their own region.
-(Truncated) log on VSC9959 (Felix) below (prints added by me):
+Let's define holes as the ranges of values of enum ocelot_stat for which
+ocelot_stats_layout doesn't have a "reg" defined. For example, there is
+a hole between OCELOT_STAT_RX_GREEN_PRIO_7 and OCELOT_STAT_TX_OCTETS
+which is of 23 elements that are only present on ocelot_mm_stats_layout,
+and as such, they are also present in enum ocelot_stat. Let's define the
+left extremity of the hole - the last enum ocelot_stat still defined -
+as A (in this case OCELOT_STAT_RX_GREEN_PRIO_7) and the right extremity -
+the first enum ocelot_stat that is defined after a series of undefined
+ones - as B (in this case OCELOT_STAT_TX_OCTETS).
 
-Before:
+There is a bug in the procedure which transfers stats from region->buf[]
+to ocelot->stats[].
 
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x000]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x001]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x002]
-...
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x041]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x042]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x080]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x081]
-...
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x0ac]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x100]
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x101]
-...
-region of 1 contiguous counters starting with SYS:STAT:CNT[0x111]
+For each hole in the ocelot_stats_layout, the logic transfers the stats
+starting with enum ocelot_stat B to ocelot->stats[] index A + 1. So all
+stats after a hole are saved to a position which is off by B - A + 1
+elements.
 
-After:
+This causes 2 kinds of issues:
+(a) counters which shouldn't increment increment
+(b) counters which should increment don't
 
-region of 67 contiguous counters starting with SYS:STAT:CNT[0x000]
-region of 45 contiguous counters starting with SYS:STAT:CNT[0x080]
-region of 18 contiguous counters starting with SYS:STAT:CNT[0x100]
+Holes in the ocelot_stat_layout automatically imply the end of a region
+and the beginning of a new one; however the reverse is not necessarily
+true. For example, for ocelot_mm_stat_layout, there could be multiple
+regions (which indicate discontinuities in register addresses) while
+there is no hole (which indicates discontinuities in enum ocelot_stat
+values).
 
-Since commit d87b1c08f38a ("net: mscc: ocelot: use bulk reads for
-stats") intended bulking as a performance improvement, and since now,
-with trivial-sized regions, performance is even worse than without
-bulking at all, this could easily qualify as a performance regression.
+In the example above, the stats from the second region->buf[] are not
+transferred to ocelot->stats starting with index
+"port * OCELOT_NUM_STATS + OCELOT_STAT_TX_OCTETS" as they should, but
+rather, starting with element
+"port * OCELOT_NUM_STATS + OCELOT_STAT_RX_GREEN_PRIO_7 + 1".
 
-Fixes: d4c367650704 ("net: mscc: ocelot: keep ocelot_stat_layout by reg address, not offset")
+That stats[] array element is not reported to user space for switches
+that use ocelot_stat_layout, and that is how issue (b) occurs.
+
+However, if the length of the second region is larger than the hole,
+then some stats will start to be transferred to the ocelot->stats[]
+indices which *are* reported to user space, but those indices contain
+wrong values (corresponding to unexpected counters). This is how issue
+(a) occurs.
+
+The procedure, as it was introduced in commit d87b1c08f38a ("net: mscc:
+ocelot: use bulk reads for stats"), was not buggy, because there were no
+holes in the struct ocelot_stat_layout instances at that time. The
+problem is that when those holes were introduced, the function was not
+updated to take them into consideration.
+
+To update the procedure, we need to know, for each region, which enum
+ocelot_stat corresponds to its region->base. We have no way of deducing
+that based on the contents of struct ocelot_stats_region, so we need to
+add this information.
+
+Fixes: ab3f97a9610a ("net: mscc: ocelot: export ethtool MAC Merge stats for Felix VSC9959")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot_stats.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot_stats.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot_stats.c b/drivers/net/ethernet/mscc/ocelot_stats.c
-index bdb893476832..096c81ec9dd6 100644
+index 096c81ec9dd6..f18371154475 100644
 --- a/drivers/net/ethernet/mscc/ocelot_stats.c
 +++ b/drivers/net/ethernet/mscc/ocelot_stats.c
-@@ -899,7 +899,8 @@ static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
- 		if (!layout[i].reg)
- 			continue;
+@@ -258,6 +258,7 @@ struct ocelot_stat_layout {
+ struct ocelot_stats_region {
+ 	struct list_head node;
+ 	u32 base;
++	enum ocelot_stat first_stat;
+ 	int count;
+ 	u32 *buf;
+ };
+@@ -341,11 +342,12 @@ static int ocelot_port_update_stats(struct ocelot *ocelot, int port)
+  */
+ static void ocelot_port_transfer_stats(struct ocelot *ocelot, int port)
+ {
+-	unsigned int idx = port * OCELOT_NUM_STATS;
+ 	struct ocelot_stats_region *region;
+ 	int j;
  
--		if (region && layout[i].reg == last + 4) {
-+		if (region && ocelot->map[SYS][layout[i].reg & REG_MASK] ==
-+		    ocelot->map[SYS][last & REG_MASK] + 4) {
- 			region->count++;
- 		} else {
- 			region = devm_kzalloc(ocelot->dev, sizeof(*region),
+ 	list_for_each_entry(region, &ocelot->stats_regions, node) {
++		unsigned int idx = port * OCELOT_NUM_STATS + region->first_stat;
++
+ 		for (j = 0; j < region->count; j++) {
+ 			u64 *stat = &ocelot->stats[idx + j];
+ 			u64 val = region->buf[j];
+@@ -355,8 +357,6 @@ static void ocelot_port_transfer_stats(struct ocelot *ocelot, int port)
+ 
+ 			*stat = (*stat & ~(u64)U32_MAX) + val;
+ 		}
+-
+-		idx += region->count;
+ 	}
+ }
+ 
+@@ -915,6 +915,7 @@ static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
+ 			WARN_ON(last >= layout[i].reg);
+ 
+ 			region->base = layout[i].reg;
++			region->first_stat = i;
+ 			region->count = 1;
+ 			list_add_tail(&region->node, &ocelot->stats_regions);
+ 		}
 -- 
 2.34.1
 
