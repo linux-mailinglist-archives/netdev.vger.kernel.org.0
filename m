@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB9536C3976
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB346C397F
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:48:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbjCUSql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 14:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S230075AbjCUSsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231129AbjCUSqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:46:30 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C027D5617E
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:45:50 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id h14so8957764pgj.7
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:45:50 -0700 (PDT)
+        with ESMTP id S229854AbjCUSsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:48:21 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4358D53DA8
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:47:43 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id n20so5041269pfa.3
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:47:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679424348;
+        d=google.com; s=20210112; t=1679424461;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9M8M7IInQVU+iyBpHPhc67fDUT5XDtEvAxluXmaN7aQ=;
-        b=Hy3+bYbnBhFqAArV10Ykd5BRd70Z48mpTI27X42Ai9+2R8wXW5u/rimqgLJp+Ibswf
-         YR44x0GVQ7gT8rdBjWMAKwimQS6CYxYUG8sc3gK1q5acCeanOiIGw2PAWOqHlI7/TFnj
-         Dzq/LY5lgObm2IQd5rH8iigv4Q2ragNKBSV2DU7c+E5VbmBWaQLEgy6+X9WpUccLUorO
-         +ES7ld+oCEaHs1V95DAaP8nBwKGFjBRqWWqYJfXnKkVfT/NB92UqP0U2/kC8GomIewkg
-         j8NqSFiFWvg57K2eeu6dDa5z0jU+ogCbrGBWJyqmHWdeiTmhSpm/+qkJKJ1zVRfX5w9P
-         KymQ==
+        bh=nMXuzSvBcY6wo6gmjxQswt5Hcr72mV9P0nbNbA0RBpw=;
+        b=ZVKAN6kZNKLbFLMXMn11gxilOycK7pM2JzP5L2Vi9pFmOYeGSh16g6d/UjSJnlB+NC
+         v1AVILgWnUG9M8V4H/5NTtBbGP4AA31HYsqWTFeFrtv5iYFy9BqYK7yi/ePOcFRo3rDz
+         N4OOdtB7HhCoAI6ndLZ7jsYyxK9ZfhYl5zF+N78jlOwJJuX+EkoD6HYOMP1XIg4Q/2Ke
+         jZ6qAtRbbZ3psYk1aZCfuFAbjnnkQmq1lfpkKWpUMaRnWzi9Wx47EYcfu3r7ZiWuBJ21
+         zj9WDnDPqdlgk83oEBRac/zye3mYkoQpm97HsC6cYn8Ppo10uX+1frxyupPPgt7Wg/Mk
+         oCBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679424348;
+        d=1e100.net; s=20210112; t=1679424461;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9M8M7IInQVU+iyBpHPhc67fDUT5XDtEvAxluXmaN7aQ=;
-        b=0gk7ghwf9xhpTE2Ruhhdx0waeVM5eVofrIBawoD5nD/kfTuKqT35ddrREeVbKORVdZ
-         ZDIZu7b8jpoOKjk9Bnkh74wvmt6HW1KqNw2CLvgI4fIgeSmOykad9oQfSws1wDBio4eT
-         pb/hrgieTNB++EzhB3grqWI+NkQ2j4ckEEww45hGf9FVqnotzaXdt/6G4YqSvoob9a1f
-         mRAZgFldxm2kCY+xg3xF7YxJhlln0kO/QAE7O5YrkGESAQVRo137yxFzY+ZgICF6Is+Q
-         uDMzEpS9snRTMBXfr9sAqRJrPPwFPb4c5wm4XmZxeBbpgLvpQ5vjT3LY91sKePnnzqS3
-         Z0tg==
-X-Gm-Message-State: AO0yUKUooIt5puM4v9EV7pvgh9A3U9dYAOFzv5pWCVV9aEoMp8LH/H2M
-        uRC1endkPUVcEes5WZh5juD+LHpIuViT7AHcI4dop+lR0jWuxnOzSNDfXw==
-X-Google-Smtp-Source: AK7set8eWSOB+hY/s8FgnYAtG+oz9cOr6kNpMapkGLpcaiVk96EuV7hKGhrQ0/ZHT1qqMbVxbR/O/73ddcAj/GAwDUY=
-X-Received: by 2002:a05:6a00:851:b0:628:30d:2d2f with SMTP id
- q17-20020a056a00085100b00628030d2d2fmr459685pfk.5.1679424348068; Tue, 21 Mar
- 2023 11:45:48 -0700 (PDT)
+        bh=nMXuzSvBcY6wo6gmjxQswt5Hcr72mV9P0nbNbA0RBpw=;
+        b=dlPMDgqU0pIRxXN8sbU2+voVpRmkV6WI3L/Z7t0u/hN7ybKgQJv/8Mw1K2ICfEYkGy
+         MJE/Wc48eXVYOzASsSWDnIZM6DRchtldgzqsxsFAzlCBCikqvsQSiXddmFkaX+cah98B
+         94BiKeDKbPKdcg4jKs4V+mzVCcTbKl9i+yrWt1rGXQOSCN8r/oNCy79zHIcH8CW3B/vf
+         VjM+5HPv2mkTUb06MPHYt0YA9U0hWPpeZ3/cCj2MQ4el6TuXFoNsRg2RYpCqXNsWtwKw
+         Gc6lmltWNFsD2moPLrGNfs21bGEtrxz8p055CEawOIiI6243300Mj1Vf/yYL9ftdwBDq
+         7K4g==
+X-Gm-Message-State: AO0yUKWPaArrXxwZle7pwTj6bXAdWWMpVtA8dn/NPSL3erobX+xko+ur
+        wrnx5iScXvzYeUhM3T7syfzCmH7Y7J9TIqzaI7A3lg==
+X-Google-Smtp-Source: AK7set/dRzPdTcuUTfjVGXOOTTi/AD0/54Cm5YH/fj/MLar3MvUn+tnk4s1XttRr3kjfRHV/EbKh+QlG18P9jNVp840=
+X-Received: by 2002:a65:4247:0:b0:503:7bcd:89e9 with SMTP id
+ d7-20020a654247000000b005037bcd89e9mr18351pgq.1.1679424460710; Tue, 21 Mar
+ 2023 11:47:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <167906343576.2706833.17489167761084071890.stgit@firesoul>
- <167906361094.2706833.8381428662566265476.stgit@firesoul> <ZBTX7CBzNk9SaWgx@google.com>
- <8edd0206-0f2a-d5e7-27de-a0a9cc92526e@redhat.com>
-In-Reply-To: <8edd0206-0f2a-d5e7-27de-a0a9cc92526e@redhat.com>
+References: <167940634187.2718137.10209374282891218398.stgit@firesoul> <167940643669.2718137.4624187727245854475.stgit@firesoul>
+In-Reply-To: <167940643669.2718137.4624187727245854475.stgit@firesoul>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 21 Mar 2023 11:45:35 -0700
-Message-ID: <CAKH8qBvm24VJS4RMNUjHi24LqpYJnOYs_Md-J3FCEvp2vm7rcg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V1 4/7] selftests/bpf: xdp_hw_metadata RX hash
+Date:   Tue, 21 Mar 2023 11:47:28 -0700
+Message-ID: <CAKH8qBuv-9TXAmi0oTbB0atC4f6jzFcFhAgQ3D89VX45vUU9hw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V2 3/6] selftests/bpf: xdp_hw_metadata RX hash
  return code info
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
-        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
-        yoong.siang.song@intel.com, boon.leong.ong@intel.com
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
@@ -75,65 +76,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 6:32=E2=80=AFAM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
+On Tue, Mar 21, 2023 at 6:47=E2=80=AFAM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
 >
+> When driver developers add XDP-hints kfuncs for RX hash it is
+> practical to print the return code in bpf_printk trace pipe log.
 >
+> Print hash value as a hex value, both AF_XDP userspace and bpf_prog,
+> as this makes it easier to spot poor quality hashes.
 >
-> On 17/03/2023 22.13, Stanislav Fomichev wrote:
-> > On 03/17, Jesper Dangaard Brouer wrote:
-> >> When driver developers add XDP-hints kfuncs for RX hash it is
-> >> practical to print the return code in bpf_printk trace pipe log.
-> >
-> >> Print hash value as a hex value, both AF_XDP userspace and bpf_prog,
-> >> as this makes it easier to spot poor quality hashes.
-> >
-> >> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> >
-> > Acked-by: Stanislav Fomichev <sdf@google.com>
-> >
-> > (with a small suggestion below, maybe can do separately?)
-> >
-> >> ---
-> >>   .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++---
-> >>   tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
-> >>   2 files changed, 10 insertions(+), 4 deletions(-)
-> [...]
-> >> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> >> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> >> index 400bfe19abfe..f3ec07ccdc95 100644
-> >> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> >> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> >> @@ -3,6 +3,9 @@
-> >>   /* Reference program for verifying XDP metadata on real HW.
-> >> Functional test
-> >>    * only, doesn't test the performance.
-> >>    *
-> >
-> > [..]
-> >
-> >> + * BPF-prog bpf_printk info outout can be access via
-> >> + * /sys/kernel/debug/tracing/trace_pipe
-> >
-> > Maybe we should just dump the contents of
-> > /sys/kernel/debug/tracing/trace for every poll cycle?
-> >
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++---
+>  tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
+>  2 files changed, 10 insertions(+), 4 deletions(-)
 >
-> I think this belongs to a separate patch.
+> diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c b/tools/=
+testing/selftests/bpf/progs/xdp_hw_metadata.c
+> index 40c17adbf483..ce07010e4d48 100644
+> --- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> +++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> @@ -77,10 +77,13 @@ int rx(struct xdp_md *ctx)
+>                 meta->rx_timestamp =3D 0; /* Used by AF_XDP as not avail =
+signal */
+>         }
+>
+> -       if (!bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash))
+> -               bpf_printk("populated rx_hash with %u", meta->rx_hash);
+> -       else
+> +       ret =3D bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash);
+> +       if (ret >=3D 0) {
+> +               bpf_printk("populated rx_hash with 0x%08X", meta->rx_hash=
+);
+> +       } else {
+> +               bpf_printk("rx_hash not-avail errno:%d", ret);
+>                 meta->rx_hash =3D 0; /* Used by AF_XDP as not avail signa=
+l */
+> +       }
+>
+>         return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
+>  }
+> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools/testin=
+g/selftests/bpf/xdp_hw_metadata.c
+> index 400bfe19abfe..f3ec07ccdc95 100644
+> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> @@ -3,6 +3,9 @@
+>  /* Reference program for verifying XDP metadata on real HW. Functional t=
+est
+>   * only, doesn't test the performance.
+>   *
+> + * BPF-prog bpf_printk info outout can be access via
+> + * /sys/kernel/debug/tracing/trace_pipe
 
-SG. If you prefer to keep the comment let's also s/outout/outPut/.
+s/outout/output/
 
-> > We can also maybe enable tracing in this program transparently?
-> > I usually forget 'echo 1 >
-> > /sys/kernel/debug/tracing/events/bpf_trace/bpf_trace_printk/enable'
-> > myself :-)
-> >
-> What is this trick?
+But let's maybe drop it? If you want to make it more usable, let's
+have a separate patch to enable tracing and periodically dump it to
+the console instead (as previously discussed).
 
-On the recent kernels I think this event has to be explicitly enabled
-for bpf_prink() to work? Not sure.
-That's why having something like enable_tracing() and dump_trace()
-here might be helpful for whoever is running the prog.
+With this addressed:
+Acked-by: Stanislav Fomichev <sdf@google.com>
 
-> --Jesper
+> + *
+>   * RX:
+>   * - UDP 9091 packets are diverted into AF_XDP
+>   * - Metadata verified:
+> @@ -156,7 +159,7 @@ static void verify_xdp_metadata(void *data, clockid_t=
+ clock_id)
+>
+>         meta =3D data - sizeof(*meta);
+>
+> -       printf("rx_hash: %u\n", meta->rx_hash);
+> +       printf("rx_hash: 0x%08X\n", meta->rx_hash);
+>         printf("rx_timestamp:  %llu (sec:%0.4f)\n", meta->rx_timestamp,
+>                (double)meta->rx_timestamp / NANOSEC_PER_SEC);
+>         if (meta->rx_timestamp) {
+>
 >
