@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB346C397F
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72ABF6C398A
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbjCUSsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 14:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35746 "EHLO
+        id S230361AbjCUSt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229854AbjCUSsV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:48:21 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4358D53DA8
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:47:43 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id n20so5041269pfa.3
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:47:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679424461;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nMXuzSvBcY6wo6gmjxQswt5Hcr72mV9P0nbNbA0RBpw=;
-        b=ZVKAN6kZNKLbFLMXMn11gxilOycK7pM2JzP5L2Vi9pFmOYeGSh16g6d/UjSJnlB+NC
-         v1AVILgWnUG9M8V4H/5NTtBbGP4AA31HYsqWTFeFrtv5iYFy9BqYK7yi/ePOcFRo3rDz
-         N4OOdtB7HhCoAI6ndLZ7jsYyxK9ZfhYl5zF+N78jlOwJJuX+EkoD6HYOMP1XIg4Q/2Ke
-         jZ6qAtRbbZ3psYk1aZCfuFAbjnnkQmq1lfpkKWpUMaRnWzi9Wx47EYcfu3r7ZiWuBJ21
-         zj9WDnDPqdlgk83oEBRac/zye3mYkoQpm97HsC6cYn8Ppo10uX+1frxyupPPgt7Wg/Mk
-         oCBw==
+        with ESMTP id S230514AbjCUStx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:49:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706C45653B
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:48:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679424498;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=m16LG5qfJ+bTUG6Spw+RzSoYpGmgfuoZ6sJRsgb/iNs=;
+        b=XsSSwi/nqbkFz16wOrUMWiSrWxdTWKaBEdSm91p0PnhLR+5FTbunRDg4uYNTOuH0oEXFE5
+        72wWF2DLlOrZQFCjDLU3TSz4xg1yBcGEi/y4rtttToqeToNRWfcQwrn4eJgTQXA0GQ3986
+        5Fjd7BUFZVoSsYqdH/VEYFOKsAY/2VQ=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-54-3IlF6XWnMPWgOhTPa6jR9A-1; Tue, 21 Mar 2023 14:48:17 -0400
+X-MC-Unique: 3IlF6XWnMPWgOhTPa6jR9A-1
+Received: by mail-qk1-f198.google.com with SMTP id 198-20020a370bcf000000b007468cffa4e2so2896078qkl.10
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:48:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679424461;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nMXuzSvBcY6wo6gmjxQswt5Hcr72mV9P0nbNbA0RBpw=;
-        b=dlPMDgqU0pIRxXN8sbU2+voVpRmkV6WI3L/Z7t0u/hN7ybKgQJv/8Mw1K2ICfEYkGy
-         MJE/Wc48eXVYOzASsSWDnIZM6DRchtldgzqsxsFAzlCBCikqvsQSiXddmFkaX+cah98B
-         94BiKeDKbPKdcg4jKs4V+mzVCcTbKl9i+yrWt1rGXQOSCN8r/oNCy79zHIcH8CW3B/vf
-         VjM+5HPv2mkTUb06MPHYt0YA9U0hWPpeZ3/cCj2MQ4el6TuXFoNsRg2RYpCqXNsWtwKw
-         Gc6lmltWNFsD2moPLrGNfs21bGEtrxz8p055CEawOIiI6243300Mj1Vf/yYL9ftdwBDq
-         7K4g==
-X-Gm-Message-State: AO0yUKWPaArrXxwZle7pwTj6bXAdWWMpVtA8dn/NPSL3erobX+xko+ur
-        wrnx5iScXvzYeUhM3T7syfzCmH7Y7J9TIqzaI7A3lg==
-X-Google-Smtp-Source: AK7set/dRzPdTcuUTfjVGXOOTTi/AD0/54Cm5YH/fj/MLar3MvUn+tnk4s1XttRr3kjfRHV/EbKh+QlG18P9jNVp840=
-X-Received: by 2002:a65:4247:0:b0:503:7bcd:89e9 with SMTP id
- d7-20020a654247000000b005037bcd89e9mr18351pgq.1.1679424460710; Tue, 21 Mar
- 2023 11:47:40 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679424497;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m16LG5qfJ+bTUG6Spw+RzSoYpGmgfuoZ6sJRsgb/iNs=;
+        b=kQRydRCHt1cns2aa5rwrvWbhGRb88BK/ZRf0kGzAvBDkswvHMj1XmFq+DCcOK5eePa
+         vW+IYpmf1Cq9CuYbHuch5BGiipSMPg6IHEOjpMJEidajnTE6/+f4MDaK2K3TEFuVb7Qj
+         zFupej2jOXWJI00h8ZIxXjF2fN0OLutPNtGFyrcrmACX6vOR2i1ZcQCn1y3M+BakHPRA
+         YWvlPj7Mvks+GhPrjUXf4oxmQ2TZMDbZRNAh8LHHaRVmJr18VMb6b/IAWy4szT2LQjaH
+         fiTUnIGcmrVkd8cUekWO2N5/oqt0hmunqWH514cMVk8wElZMtYrynoJ65RZWQjpO9j7t
+         EPkg==
+X-Gm-Message-State: AO0yUKWhS39SYIThl5ay29TO5Da9gHDRkNdcwIpkVwbQn6No9t2MIlg0
+        sqMDEe4FiCrUeQb9IzmDIzcnIlD5/f8WuPIQHB0vmuLRp3JpBe4gQ9PDIE/owK3YIvjAYITLxsq
+        6/DBV8zvejqZwwsF7
+X-Received: by 2002:a05:6214:e4c:b0:5a3:44a1:788d with SMTP id o12-20020a0562140e4c00b005a344a1788dmr1318801qvc.29.1679424496990;
+        Tue, 21 Mar 2023 11:48:16 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/uiKZ9Rf3XmfwDfIlgK1+2Ku5dlt08hCszlwq6yiw64bq4vrpan11278XtwOhJWytpr/YkPw==
+X-Received: by 2002:a05:6214:e4c:b0:5a3:44a1:788d with SMTP id o12-20020a0562140e4c00b005a344a1788dmr1318782qvc.29.1679424496733;
+        Tue, 21 Mar 2023 11:48:16 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 66-20020a370b45000000b0071eddd3bebbsm1525699qkl.81.2023.03.21.11.48.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 11:48:16 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] liquidio: remove unused IQ_INSTR_MODE_64B function
+Date:   Tue, 21 Mar 2023 14:48:11 -0400
+Message-Id: <20230321184811.1827306-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <167940634187.2718137.10209374282891218398.stgit@firesoul> <167940643669.2718137.4624187727245854475.stgit@firesoul>
-In-Reply-To: <167940643669.2718137.4624187727245854475.stgit@firesoul>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 21 Mar 2023 11:47:28 -0700
-Message-ID: <CAKH8qBuv-9TXAmi0oTbB0atC4f6jzFcFhAgQ3D89VX45vUU9hw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V2 3/6] selftests/bpf: xdp_hw_metadata RX hash
- return code info
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,81 +76,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 6:47=E2=80=AFAM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> When driver developers add XDP-hints kfuncs for RX hash it is
-> practical to print the return code in bpf_printk trace pipe log.
->
-> Print hash value as a hex value, both AF_XDP userspace and bpf_prog,
-> as this makes it easier to spot poor quality hashes.
->
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->  .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++---
->  tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
->  2 files changed, 10 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c b/tools/=
-testing/selftests/bpf/progs/xdp_hw_metadata.c
-> index 40c17adbf483..ce07010e4d48 100644
-> --- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> +++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
-> @@ -77,10 +77,13 @@ int rx(struct xdp_md *ctx)
->                 meta->rx_timestamp =3D 0; /* Used by AF_XDP as not avail =
-signal */
->         }
->
-> -       if (!bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash))
-> -               bpf_printk("populated rx_hash with %u", meta->rx_hash);
-> -       else
-> +       ret =3D bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash);
-> +       if (ret >=3D 0) {
-> +               bpf_printk("populated rx_hash with 0x%08X", meta->rx_hash=
-);
-> +       } else {
-> +               bpf_printk("rx_hash not-avail errno:%d", ret);
->                 meta->rx_hash =3D 0; /* Used by AF_XDP as not avail signa=
-l */
-> +       }
->
->         return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);
->  }
-> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools/testin=
-g/selftests/bpf/xdp_hw_metadata.c
-> index 400bfe19abfe..f3ec07ccdc95 100644
-> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
-> @@ -3,6 +3,9 @@
->  /* Reference program for verifying XDP metadata on real HW. Functional t=
-est
->   * only, doesn't test the performance.
->   *
-> + * BPF-prog bpf_printk info outout can be access via
-> + * /sys/kernel/debug/tracing/trace_pipe
+clang with W=1 reports
+drivers/net/ethernet/cavium/liquidio/request_manager.c:43:19: error:
+  unused function 'IQ_INSTR_MODE_64B' [-Werror,-Wunused-function]
+static inline int IQ_INSTR_MODE_64B(struct octeon_device *oct, int iq_no)
+                  ^
+This function and its macro wrapper are not used, so remove them.
 
-s/outout/output/
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/cavium/liquidio/request_manager.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-But let's maybe drop it? If you want to make it more usable, let's
-have a separate patch to enable tracing and periodically dump it to
-the console instead (as previously discussed).
+diff --git a/drivers/net/ethernet/cavium/liquidio/request_manager.c b/drivers/net/ethernet/cavium/liquidio/request_manager.c
+index 8e59c2825533..32f854c0cd79 100644
+--- a/drivers/net/ethernet/cavium/liquidio/request_manager.c
++++ b/drivers/net/ethernet/cavium/liquidio/request_manager.c
+@@ -40,15 +40,6 @@ static void  __check_db_timeout(struct octeon_device *oct, u64 iq_no);
+ 
+ static void (*reqtype_free_fn[MAX_OCTEON_DEVICES][REQTYPE_LAST + 1]) (void *);
+ 
+-static inline int IQ_INSTR_MODE_64B(struct octeon_device *oct, int iq_no)
+-{
+-	struct octeon_instr_queue *iq =
+-	    (struct octeon_instr_queue *)oct->instr_queue[iq_no];
+-	return iq->iqcmd_64B;
+-}
+-
+-#define IQ_INSTR_MODE_32B(oct, iq_no)  (!IQ_INSTR_MODE_64B(oct, iq_no))
+-
+ /* Define this to return the request status comaptible to old code */
+ /*#define OCTEON_USE_OLD_REQ_STATUS*/
+ 
+-- 
+2.27.0
 
-With this addressed:
-Acked-by: Stanislav Fomichev <sdf@google.com>
-
-> + *
->   * RX:
->   * - UDP 9091 packets are diverted into AF_XDP
->   * - Metadata verified:
-> @@ -156,7 +159,7 @@ static void verify_xdp_metadata(void *data, clockid_t=
- clock_id)
->
->         meta =3D data - sizeof(*meta);
->
-> -       printf("rx_hash: %u\n", meta->rx_hash);
-> +       printf("rx_hash: 0x%08X\n", meta->rx_hash);
->         printf("rx_timestamp:  %llu (sec:%0.4f)\n", meta->rx_timestamp,
->                (double)meta->rx_timestamp / NANOSEC_PER_SEC);
->         if (meta->rx_timestamp) {
->
->
