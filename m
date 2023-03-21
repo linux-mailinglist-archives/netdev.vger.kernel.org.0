@@ -2,63 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2B26C3B96
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 21:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE596C3BEF
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 21:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbjCUUTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 16:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S229757AbjCUUjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 16:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbjCUUTS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 16:19:18 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEAF58B45;
-        Tue, 21 Mar 2023 13:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Rh4gwT5YGKfnyPNnTk2F9VVTBeb0vhyIN5nbolSy1to=; b=sEvbmNqYFPIvdDgInI/41nbJZF
-        jZnADGI29B7259KFkvxNBoYyjwyxGYjR6l6Y5SRpjezFcuY+/iMEYdpa0jlwZRP9L4oq9TPm4nv+/
-        Io2I5Kh+KOTntzsXX6JzYKfVAJl/4483lm7sObGK11gsBl27DlFZBUU/moT6E9yjap6E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1peiQC-0080CU-EX; Tue, 21 Mar 2023 21:17:28 +0100
-Date:   Tue, 21 Mar 2023 21:17:28 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Wells Lu <wellslutw@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ethernet: remove superfluous clearing of phydev
-Message-ID: <f657b9c5-961d-4b2f-a7e2-47a2a66de9dd@lunn.ch>
-References: <20230321131745.27688-1-wsa+renesas@sang-engineering.com>
+        with ESMTP id S229885AbjCUUi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 16:38:59 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21D93A864;
+        Tue, 21 Mar 2023 13:38:57 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id z10so9355050pgr.8;
+        Tue, 21 Mar 2023 13:38:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679431137;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=SiZ2q8feRrZogsSXuy10V1SXAnZtQZnnaFP+X15KKCg=;
+        b=VenZd4XDd7XaidXlU5XdG8CN+9fkYShGFFfYqxWY/XwfAAkHOzoyxEc3MQhsHodAHG
+         LSKKMcF8wX4hi5mNIbQ5tRK+E9QLn3oXlzjB48VQvgs+m3SPpxNmySANo0UNltCbl03D
+         kTqa/VrYKcSfjgfcyqCdyG6Kx5kKhNGWuM0AluHahQ6H3MLOcbn5QUf+MMI7pHPvFkBi
+         gL2qnnHUmUgkl7GSguHOFO/kTXCp2w/KRiSvBKBHNu+4XY7TOqjLxawW4YijxVH/0aL4
+         ikOAKIhgjBnooptAO4hDocDQwWU/efRcdJNH1NwzZkBFd6ZF3DFxPdosLs3mLSVuyOCa
+         38EA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679431137;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SiZ2q8feRrZogsSXuy10V1SXAnZtQZnnaFP+X15KKCg=;
+        b=HvK6GOlxJGDOvJvsMavYNfHlzO8dbMQlvrZ5xCPFFJfJ3XN/4ZCMqYLuw1obqNkRzQ
+         /dreYM5qXYxSQO5NJH6BY9URtsZLkOV0Ew+ZwSsA1viZ4iA5Xr5lMruVuo8iOxpj2mfL
+         ShgPEcqwXBDFgS4FyDanfoN6Y1UIlZUTrMxVZ1Y3ausuY6TUqNGjMpZKWr8U1KniROzq
+         7gN8JIX5m5kQNSbWKA6zsiMv1xdOIJ9+QbfGg6zfRrWuujqIzgYMANRRM26pSZ+GWbwo
+         Uvv8KdPMeyFA2TYVms1b+XRBtBy3l5B0rVm4vNKfQPXiqhxIJhOlZKPq2HZSWxMm9XRb
+         coOw==
+X-Gm-Message-State: AO0yUKWnM7tqW1yNWC1G465kwG4afmFJyl0Fux/lEFLv+CYIbhSSCFOl
+        hz4HXs3gLslQn3LZQxRZrs8=
+X-Google-Smtp-Source: AK7set+R/RyV9D6h+vuc87KbbjrulqiSyxgfa7EmcXfXGmlTw9GRpreCNlNoCp/Hk15ZmeB7uBo0bQ==
+X-Received: by 2002:a62:1955:0:b0:623:77f5:eeed with SMTP id 82-20020a621955000000b0062377f5eeedmr971045pfz.25.1679431137337;
+        Tue, 21 Mar 2023 13:38:57 -0700 (PDT)
+Received: from macbook-pro-6.dhcp.thefacebook.com ([2620:10d:c090:500::5:34cf])
+        by smtp.gmail.com with ESMTPSA id a21-20020a62bd15000000b005895f9657ebsm8628819pff.70.2023.03.21.13.38.55
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 21 Mar 2023 13:38:56 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
+        void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
+        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: [PATCH v2 bpf-next 0/4] bpf: Support ksym detection in light skeleton.
+Date:   Tue, 21 Mar 2023 13:38:50 -0700
+Message-Id: <20230321203854.3035-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230321131745.27688-1-wsa+renesas@sang-engineering.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 02:17:45PM +0100, Wolfram Sang wrote:
-> phy_disconnect() calls phy_detach() which already clears 'phydev' if it
-> is attached to a struct net_device.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+v1->v2: update denylist on s390
 
-    Andrew
+Patch 1: Cleanup internal libbpf names.
+Patch 2: Teach the verifier that rdonly_mem != NULL.
+Patch 3: Fix gen_loader to support ksym detection.
+Patch 4: Selftest and update denylist.
+
+Alexei Starovoitov (4):
+  libbpf: Rename RELO_EXTERN_VAR/FUNC.
+  bpf: Teach the verifier to recognize rdonly_mem as not null.
+  libbpf: Support kfunc detection in light skeleton.
+  selftests/bpf: Add light skeleton test for kfunc detection.
+
+ kernel/bpf/verifier.c                         | 14 ++++---
+ tools/lib/bpf/bpf_gen_internal.h              |  4 +-
+ tools/lib/bpf/gen_loader.c                    | 38 +++++++++----------
+ tools/lib/bpf/libbpf.c                        | 25 ++++++------
+ tools/testing/selftests/bpf/DENYLIST.s390x    |  1 +
+ .../selftests/bpf/progs/test_ksyms_weak.c     | 15 ++++++++
+ 6 files changed, 61 insertions(+), 36 deletions(-)
+
+-- 
+2.34.1
+
