@@ -2,256 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D18BE6C2C96
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 09:36:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 838536C2C99
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 09:37:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbjCUIgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 04:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
+        id S229635AbjCUIhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 04:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230398AbjCUIf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 04:35:58 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5212512BE5;
-        Tue, 21 Mar 2023 01:35:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679387725; x=1710923725;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=DLsTiccPyH7bx55bHU/zTg3xNa8snfWDn/Y76x4NHcQ=;
-  b=ib04BcI1pBqpTjpT42ehmkUCr7AkhB2AzcEQ/pkXq2mNSguBMJa9e1K5
-   Imm9XEY/DbTtnaXb/Hj9TbEPM4QCGRM2VT5YxN05q6naecn7WOkhj3ssi
-   BgD/CHvRZfeBJAH0GjUGFYBuY8Fg+3HXcq7ELW8kE+IOUH5b2z5cQPYlG
-   baDs7mQgA5Jl5m7y6W+bgCcaLSqkmk9MD18DXxYxAMa/gl5Lu+BP0wPHk
-   agOp4UczVErIUNIQym9EfiHHu2Ile/MFZXvylmWpfReUoseUFfvfKvlUK
-   k+YbHegLHMEPqdOANAr00dfl+KmIVjtxw+yFT1/VEayQTo0sCDBo7VLcU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="322723186"
-X-IronPort-AV: E=Sophos;i="5.98,278,1673942400"; 
-   d="scan'208";a="322723186"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2023 01:34:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="805249460"
-X-IronPort-AV: E=Sophos;i="5.98,278,1673942400"; 
-   d="scan'208";a="805249460"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga004.jf.intel.com with ESMTP; 21 Mar 2023 01:34:57 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 21 Mar 2023 01:34:57 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Tue, 21 Mar 2023 01:34:57 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Tue, 21 Mar 2023 01:34:56 -0700
+        with ESMTP id S229784AbjCUIhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 04:37:17 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2096.outbound.protection.outlook.com [40.107.102.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BEE1CBDF;
+        Tue, 21 Mar 2023 01:36:55 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DDhohsXYG7j5x0WtXmsx13MgoyncsbOTckEWVKSifJQgr/Sv+4X8s0roc/0Bgv3EljDA1r5cBxxwCBC4pPfEEiTKEdsHdcTV07e0hwXEroodr25wxymoD3BYBb56qBoPgdQ0ee1tFrb+TVFR05207N6E/fRRNC7UvxwuChjOveDsubdFh2hKLCdOrYt+f+GH0tke6x8lKwmJLIk+Jd601y0+XzZ7R0pdSa/zlf6XWi4eVQBurrHxa3BcZaJLtIho9V4uOQvsHFkAzR1zCLAJz6OY2gb+XrtcFW5r+Ys8o4QXKbC+QEQLVqeq/ezy8mbQsJCWSEk/ZifsUvTnE5OFrQ==
+ b=igxHvUekYn38rBFcVTyZ6/LVGY7r6tPKrervHRYVeEuXS3SnXtzQvM3DGNrjjgSkje/Un3wqfVgK/GueY//FP2VEq+16WZoNFmtRENtK1qb8WyQURUl1QW4quXq+Kl9Mx6/o30STZRovgOZZ+CjYHnUN4ww/n8PavqoF8fx8qwVqjnQvHXCew22qDvJPsoruRxT7vKda+CCih+ouDNgRwJdBq7N9gczmq+lO/1h/PYk+EaAjzQLali3EK6SXvcCzkVQyR/G7EIFf4ljqyehZVOxHQp/Deol/H8d5lFqW0OG+WeB9o+8+L/Hj1l5QMGE8mPBkPWKXwag7AsZ+KNwdVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NyJtowKQyybi1L44fxn1rTqOV3L6DQzqD1MZ9bspH5A=;
- b=QNByR25HHR6Y04/Wmmw7UOTWrLoop72DBm55drYo1MC8k2XT2zHD1tQfbnqgdLKh58AsJSSCvp21wgjzqSjGBKP43NVcLiHDdOJj/MPRUaHhToaEmHpXw4BWLHkLTpqf/K4j7p4JNz8CYJTZWEZ+jZUsIoe4jwfZ8ysU55hK3XWHtmxzEPHhb006j80rj32MjjctPm66wm+DbI3/ZbRAZCA9xwXlR6zLXxTC4VnhLBssficTbYqwyrWmaQ2+aB0DTeovB/J/9VlF7bT6+TFPc6Ye1oul7+2xhD2PPuGsoIw8QxS2HqKHhdg3/MQFkAsDYwV26EitB28vl+6uvr7Bsw==
+ bh=LjcqlEi3IPTeRea2A3PrK5ebQVqQeXo3W2+tp4UQYgU=;
+ b=BBaok625yXLPJmfJEUKHg5UhmSGKZGCLSI0t4bvLG8IzD3P+ufYi6B0cndqjKo9tV6mGgJ21X4JdBtOtSB9iWe5zCKyetHl9COP6q1+N5t01e2YDZro5PR8ClVt9tRyi5V5giyBBV5FvY8EGI8km7/Mu0+5BhDmmmn8DlZ4MbJSUeadn4RGLASVCoqbwUuU/WVWafpwS+kNUPR2lqBmOtrCI9cDwPbnJIjqXNNHFtGAqmERlT6SrtHZfVBhLlLTMDxX35ECc1oipgzNVopptDiFTiZe8aXR/X+6ZHadQUEdIzFk6F0VW4rsm1wwUaw7aSefwx6ODLWovx5/NW6hbbQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB7587.namprd11.prod.outlook.com (2603:10b6:510:26d::17)
- by PH8PR11MB8259.namprd11.prod.outlook.com (2603:10b6:510:1c2::19) with
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LjcqlEi3IPTeRea2A3PrK5ebQVqQeXo3W2+tp4UQYgU=;
+ b=aB385sNEmkUl9fIx0yIgvuNWIpto6RRTHegyWlQF8eCiggo/Zzr1o9ThgZPU6cXLTsfs1ejl4F3cxdB1UBXxHXYIwhaT7OsRTLL/FWeIR7nU+I9KP7lWeJaQfdV7RsoFwjpGDos40Il160TWjMO5K4IxuNLNDFnD5Dl+EQaqtdI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH7PR13MB6116.namprd13.prod.outlook.com (2603:10b6:510:2b7::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
- 2023 08:34:50 +0000
-Received: from PH0PR11MB7587.namprd11.prod.outlook.com
- ([fe80::a9d7:2083:ea9f:7b0c]) by PH0PR11MB7587.namprd11.prod.outlook.com
- ([fe80::a9d7:2083:ea9f:7b0c%8]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 08:34:50 +0000
-From:   "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Looi, Hong Aun" <hong.aun.looi@intel.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "Lai, Peter Jun Ann" <peter.jun.ann.lai@intel.com>
-Subject: RE: [PATCH net v2 1/2] net: stmmac: fix PHY handle parsing
-Thread-Topic: [PATCH net v2 1/2] net: stmmac: fix PHY handle parsing
-Thread-Index: AQHZWQqKiptgMBBkxEe3QmwqS1rIqK7/dC0AgAV1bFA=
-Date:   Tue, 21 Mar 2023 08:34:49 +0000
-Message-ID: <PH0PR11MB7587DC1E7B2947BDB0126F979D819@PH0PR11MB7587.namprd11.prod.outlook.com>
-References: <20230314070208.3703963-1-michael.wei.hong.sit@intel.com>
- <20230314070208.3703963-2-michael.wei.hong.sit@intel.com>
- <10aff941-e18a-4d77-974b-1760529988a6@lunn.ch>
- <ZBTUTD6RL22pdlmq@shell.armlinux.org.uk>
-In-Reply-To: <ZBTUTD6RL22pdlmq@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR11MB7587:EE_|PH8PR11MB8259:EE_
-x-ms-office365-filtering-correlation-id: 8fae234b-0786-475b-c061-08db29e7227e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4TDWPLQfnfd1owJ/gErIdSMNsg3Iyz1SR8F+aMNA2hWZQ5ekXJKbrHXeXO1yVRbZUtEEne3gTk8YsxaiT12jScPrhhTZHcQHCEwShD32Jqej8Rp0ywx/PIVssZVmshwYl908OB/c9gr5gsr3AQfbTh+VcaUiqu/tPZGe9u4nE3/zlDGMRjhVULPTDbn1mtXUCjTawsuXWXzKZ/Gcg8gK8p8kYSRPK+PqnFFHXVu9zFlW3fr3zKqT0XGulOn4jMy8pbdqHfgVywCAgKWKY1guSvaMzN8D+BIz1ecDpV9U0LPUiRlnVM00195xU95cOS71NvGIrpCR6dWuINSOtx/eX2EW7loAnzMjiX/beLTFaf7Y3l4cP9w7x2s3655LjIDBffOpQn7sI3JWQ9hCsgd9AaH0xiWS/HI87DmXU0Gw/J2TQmDIC3ZOBrJ3CoqJm6jUxv8QwrwMme2L2JpwZxOPVehy3PFQkp0Celkq9KzFvqP+QQYZdKDJ2ps09El0M46jbVfxl3x4Znyy0GDeHsFOpFxKyoriZN+QbDkd0Ni/Ww+vYBhX9ZjhjfsbCNPhUbKCfSiKqvVUHHJckxDVEG1xo8yj55VGZz4SrzrNHqURmmvJbcsqcKD9BephN8JIXTpbXL9va8t7YvWjVuPMMBJS1t2gweRBsg8i8P/JtN1Zc3uFWcbP3P3AktwGZOBGtaxM
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB7587.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(376002)(396003)(136003)(39860400002)(346002)(451199018)(8936002)(41300700001)(2906002)(8676002)(66556008)(66476007)(66446008)(4326008)(76116006)(64756008)(66946007)(7416002)(52536014)(5660300002)(316002)(54906003)(86362001)(110136005)(478600001)(55016003)(71200400001)(7696005)(966005)(6506007)(107886003)(33656002)(186003)(26005)(53546011)(38100700002)(83380400001)(9686003)(82960400001)(38070700005)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?djaemcAHhFirhKj5q5IGB0qhHpwflvQE4TSrqNBRtTnVBiXHaZ4U3uivv6dc?=
- =?us-ascii?Q?Avv1hetbdfw09I8xzXLzzPffW3avjnd+072ZsrdjUoJQ21HoUKMuLDfiIW2+?=
- =?us-ascii?Q?D5eDG+avLPzCsXD9glhGmR/DKP57zJ0jj3ZT2fLammGFNV1XUmkCIQ8poe+H?=
- =?us-ascii?Q?WqFf9khs4DP3PzNxI9qVaHiGOt8TOm+wPSbhbzAxL0U9VaXEGp030g89FS9F?=
- =?us-ascii?Q?piEwm7KpElbzhFCRbCjzXssuiF7u8BOq9+wVpa/hB/+G1xRIdx5oLxw0Dm75?=
- =?us-ascii?Q?3PeuAURFBZexuttibdWhMDdzjGstqOj1kDtUMMl7BF0eR2M2x7u+WAoVA2aG?=
- =?us-ascii?Q?vk5o7jS1I6U1aOjHJojP7UDF2Ro2gTsaRw11QY6zCuGHx9OmjeTmIT1alEL5?=
- =?us-ascii?Q?u86iLK3Dav+eMtHE+OlOCSZn5OTxRlpFjTUnA/ZiKsanHebacHz527OeP2LM?=
- =?us-ascii?Q?RWzeC7HGS1E3q1mDVsfhqhUqenhd3iRZWFj6SfMMKz6QDyOiBj6LkEw8Hevs?=
- =?us-ascii?Q?LIHkJMQLJbWVPn0zz91o5S9ASfEwcD6IbCSYmEFualXigw5AjBzK50rbLOTk?=
- =?us-ascii?Q?rfrBpuTIF80UDGX6w4kIQUeSkipCKGxzmmedlvHW0f9qSPU2GhdZWjRBSvSw?=
- =?us-ascii?Q?G94zmrkCN1J+YMrrAn0p+8pUWaB29Xn8+ro78eIRLdu43MgvLyR9MhLMocNa?=
- =?us-ascii?Q?rxJTlhKvalEAnW+af+hLlvTQ3htLpe/ww+kKcJwsBdh4Zfkqe4iPXnhJeT94?=
- =?us-ascii?Q?8RL5C/qrCD4I8dJSiT7F7AKy26B/ofIAixAYzYvVJLFLZwhSvi2cp0mjRozv?=
- =?us-ascii?Q?ALA7c7yNl5HMOjyN6oYryaV/Zw42liFXHsR1C2jojWraejFQwc1zCTTgtjbk?=
- =?us-ascii?Q?09OQTi2l5tCNaQizQQ8N0KffvAbTdDImqQ/WaZXNHylPABI9M/cPt+MUXijM?=
- =?us-ascii?Q?pv/Qlb5DEID+OHm3ZR1sScSTwNaobc43i1GLi/uhnwO27Ip19QogW34Nj4Qx?=
- =?us-ascii?Q?mQs4K6d1qJkqn3FymHYPHkntgvVTq90/8bMAuN26joj56j9uTl7Ka7vW3Znw?=
- =?us-ascii?Q?Pk/3tkVFENQLMCUh7gjrk/OK18c00AxAnDolBUtLHMNknf5JSiVbjjV/n5Jy?=
- =?us-ascii?Q?sVjlppcNytR2GrDb7r+kQgIVrKUV0XYKBWEzjQ5Pu27YZ1blLgnK3YexO5Tg?=
- =?us-ascii?Q?0DXhijGbKwLEyCQg2MmWSouVd/6tmwdX5n/HlhgJtlZkGmWaYZXmRHIAa83c?=
- =?us-ascii?Q?TUsg1w1XaWfXGLAGP3uOzylYg8S20y1gXQOyXFDb50YlfmrHhTG3LWgdAYo/?=
- =?us-ascii?Q?cXvqJ3pG30J+2+h2q/PhIVXJgEI6wfBbZ+7jHtwTcWZ8prV2DNsP1dUBDSl9?=
- =?us-ascii?Q?htTD3WepeGRXzzFq+6eI1GZKdGCLLLY98TAzVWFbwdUxlLo2EebicUupMltK?=
- =?us-ascii?Q?SkRuErxfrKYfk8BMxKmFtibndNf6hqCTYu787Iupw5T0zcYFnyYa4iN6NZHC?=
- =?us-ascii?Q?rl3C7o6JApCt9rVTKQPZ1wP834CtT/JSz6FCM2sM7WL9/Ms2S7PmGCv23ooF?=
- =?us-ascii?Q?isoyX6qHJUeZ2OI8ZCpIgchxPTk8Lkrtl/+ttcpC+Ast2R27YIJx8j7tsSOq?=
- =?us-ascii?Q?2g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 2023 08:36:29 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
+ 08:36:29 +0000
+Date:   Tue, 21 Mar 2023 09:36:23 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jia-Ju Bai <baijiaju@buaa.edu.cn>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mac80211: Add NULL checks for sta->sdata
+Message-ID: <ZBlsh0JFBagmPNCA@corigine.com>
+References: <ZBiOhAJswYcAo8kv@corigine.com>
+ <9b213efb-8c7a-497d-2e08-f404d174a6ae@buaa.edu.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9b213efb-8c7a-497d-2e08-f404d174a6ae@buaa.edu.cn>
+X-ClientProxiedBy: AS4P190CA0067.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:656::8) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6116:EE_
+X-MS-Office365-Filtering-Correlation-Id: 77fc3513-ad48-4795-2f06-08db29e75e06
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LteDi4Mmu8H7SICrGWFm6Urh+zBQMrnzE8Ay92gf0eEXH9xbVqtoDkvDHenwCzd89HC+HsMmzgCejtDP7Fdhb9uDvgtDGfs51dhCuxyEDd5timsde6EIiMRS6qTx63iCVnk9lFW//XMu+zj/W3UFFs/Yn1f3C3VMUX3wgkyDd+iqarBTz3ZkwtkdpGVzw7OGF/W+KrbFOyAWsF4m2EIKHAfbX9mpwnGtnX46S/GQOt6pEj8uFvIYeOT6ytDcyxVYO/oofJnaKxyiEH/IBKJQkz81eCJ3Wk2zzQUc4+6SKVdg/bDEma+rrZ1zaOTozMin4G+DUl7FekBinVLKmn+TKiQC5Ycdbr4jLTifc9lwk3TBuHxFeopLUIm61tmvn39pIzlFZQJpwiZoQsCR3ZvkItPhqXkL2buFRjeEuK98sxVTdOi5DPILgwaKLmKsJKup+iJJZerHYslsvwUU6phh9MXjwQwe5cmy2LBt9gtwF0VRGpo59nrvzUH8OcMlJqBzbQVk7UhFWdmON6P/pyQJj3fYzXGGt80fWgnzA7ZrRyZfOcgxbHQaSbo/j8jItKa9XN4idYpySplf6Zqfs9BHyaBwVw5thtZyH6JZ6Ag8yn8h8gRyhY8vS5FKauiGqIsb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(396003)(39840400004)(136003)(366004)(451199018)(86362001)(36756003)(66476007)(478600001)(66556008)(66946007)(8676002)(4326008)(316002)(8936002)(44832011)(41300700001)(5660300002)(6916009)(966005)(6512007)(6486002)(53546011)(6666004)(2616005)(186003)(2906002)(6506007)(83380400001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rz4LPGDwkRdBax+cwkoGHRGzaSlBiVve116Esr8kEEHTuegtMA8z3/CQ8u3M?=
+ =?us-ascii?Q?/RjSxsTPNTv5VGBjZfStA68YUZVw66s5K4mKPpdBA9DQ/+3H4Xx4Ohyi5Smh?=
+ =?us-ascii?Q?OtMZngQEHMct68K7gVKs2K1XzMRqbWZhYUyG+pKrpibjajJJTB6c9lHWUP03?=
+ =?us-ascii?Q?CK/WTYWHkw7USxDaJVE2pzx+E1Qo5cppvuWsIOaazTI6kIUrmAyIrOsJFnVz?=
+ =?us-ascii?Q?Md/qeOsmj+XDyYikn6ovg78b3WdAiC1+jIwZuCtpL0s5QOXNsKzEp+htJ6dB?=
+ =?us-ascii?Q?wDld6KTUbbegNdDQUJCUDLhLfIUOLaWNHUOVEH89xnDMCAQzatKnTA5bECE4?=
+ =?us-ascii?Q?w06NGsuIdh0Rt8Y3wC8Kh/SS4iyTj7xhv+iVhjd2KZKmen4IyFMm9Ejl3kgV?=
+ =?us-ascii?Q?knqycakWHUbsM/6NiTQyncr3oyXWOUvpv/pPeNFYnqvHYDGwjIFV69uFpLD2?=
+ =?us-ascii?Q?wEHAg1Uf/8EFcoBcYe7ystR4Ij2VvS+xrXktSbhWHrcoIwtgx0sCtpziRu4A?=
+ =?us-ascii?Q?Ps+B01c0z/s0tV6dxrjd2dwh2PKkZu22C5KAB64mZI9Q+gL0uAPwF6JMzRsv?=
+ =?us-ascii?Q?PsoxMzdMzOVAoVHGoaJPgXM0DjRIhawHwe0CKRQlfUMOAcVzx2uNccDk6kg9?=
+ =?us-ascii?Q?FsvAe2kq/bYBIOaUN2kGkj/nLMcQMnxW1siBiV7Pb7PPQTw+bM56vfQgAvqq?=
+ =?us-ascii?Q?3cGPvPw8L3eoDzh/o2ewnsNR0sg69YC1FWGPog5DieN0jY2SEkMSKIARjnOD?=
+ =?us-ascii?Q?dG5YfhNPSfpGXuQjrpdouYX4IaKUjz1u9cmI5v1WLdXtUeondYnpzIwuQ+8X?=
+ =?us-ascii?Q?zys78Aa/o06NB4I+LReEVsxOw1IJoF5aQ0ujYQg7Om8BPEVXKBevoMBIfsPD?=
+ =?us-ascii?Q?UYFlQjM9lg/3mCpRhi2NB2TLSdo8pmf3bFgQi9Y2ewvc0y99UJR1KPE0fTdD?=
+ =?us-ascii?Q?fXTSohMinLS5ntTppVpISLlCAeojQz/M56pILvDAwBJHO9K38PzOzaTU1Adn?=
+ =?us-ascii?Q?qdUx+UfhPsx3CQ3pGxEKm8jFx/cthsxF0WIWp+EvMOoS/dBGvwfSGZwPKrgM?=
+ =?us-ascii?Q?d9efEKGuLXyJMbPrNrXgatoE7kGt2H2spSpzHHsBra6GxQmbxSsjDAEqZmms?=
+ =?us-ascii?Q?L1uOB8Smy9BMx5gPDVDYbeMf80eYKIyaf4MFZ91t7WrohGCLC0RgERDxXaoo?=
+ =?us-ascii?Q?F7xY7V+m7KeW18yLCtTmwwH1zpxpsNJA5vna4uhbN4sQsear9WDmq04LDJ+Z?=
+ =?us-ascii?Q?8x5n3e8YazVBa2evlMlwVMCHNw02R62AXXztEw1Qybtd9MZBlGwilhb+pR5W?=
+ =?us-ascii?Q?cx4XHWpSP2ty+wHOGp7jhb7tOW+xJ4aeaWNikohwzVNobdB58+xi6JF7H7mR?=
+ =?us-ascii?Q?2hQkbtLudb2a17LLsfoMi/nYAfhHDdubeqKaWcFXFjRjhbz+FYPu/ro9z9CW?=
+ =?us-ascii?Q?9GcxHYo44vDheB96PrNTiZmZ9VQTi35eFlp+ddiUZlg+Y6UKRUPAl48cLGMt?=
+ =?us-ascii?Q?ZO76lksHOpIoWxPrq5gTXk6SFiSubjpMAo9SgR9z/QtQqwNTV03/9/PIsKq2?=
+ =?us-ascii?Q?yAIUcH/CMy5G4uo9ZjQfOiDRuArH2QiLmtxUp0htXo9MSHZZD4kPxWPM0kOT?=
+ =?us-ascii?Q?n1I+adRUGINBjMaw0NHE+0CMLIW6ajMJy8om1oFkieJOUUAntzUlXaj+jFu7?=
+ =?us-ascii?Q?5x1RTA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77fc3513-ad48-4795-2f06-08db29e75e06
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB7587.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8fae234b-0786-475b-c061-08db29e7227e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2023 08:34:49.5661
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 08:36:29.6110
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1ItbaCklIH4rCd4Y7G35Xlhv54educ4AhWfM8Qnsc1GdzRw9XN/eI5cbVbYp63F247tijRyFhGAsztE2m3m/uUEfnMNQo365GPimtt9/tqc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB8259
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gheicHfwVaQG2fIjM0qrSZSZrmp11D57swc/6u+1l4W42mTfpyA68EAagjGBSx8nE4x52ST2HK38BBSyQNY2uxs8rQykAk7JNC+NWje4gCo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6116
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 21, 2023 at 03:40:40PM +0800, Jia-Ju Bai wrote:
+> Hello Simon,
+> 
+> Thanks for the reply!
+> 
+> 
+> On 2023/3/21 0:49, Simon Horman wrote:
+> > On Mon, Mar 20, 2023 at 09:35:33PM +0800, Jia-Ju Bai wrote:
+> > > In a previous commit 69403bad97aa, sta->sdata can be NULL, and thus it
+> > > should be checked before being used.
+> > Please run checkpatch on this patch, and correct the commit description
+> > style.
+> > 
+> > ./scripts/checkpatch.pl -g HEAD
+> > ERROR: Please use git commit description style 'commit <12+ chars of sha1> ("<title line>")' - ie: 'commit 69403bad97aa ("wifi: mac80211: sdata can be NULL during AMPDU start")'
+> > #6:
+> > In a previous commit 69403bad97aa, sta->sdata can be NULL, and thus it
+> 
+> Okay, I will revise it and run checkpatch.
 
+Thanks.
 
-> -----Original Message-----
-> From: Russell King <linux@armlinux.org.uk>
-> Sent: Saturday, March 18, 2023 4:58 AM
-> To: Andrew Lunn <andrew@lunn.ch>
-> Cc: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>;
-> Giuseppe Cavallaro <peppe.cavallaro@st.com>; Alexandre
-> Torgue <alexandre.torgue@foss.st.com>; Jose Abreu
-> <joabreu@synopsys.com>; David S . Miller
-> <davem@davemloft.net>; Eric Dumazet
-> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>;
-> Paolo Abeni <pabeni@redhat.com>; Maxime Coquelin
-> <mcoquelin.stm32@gmail.com>; Ong, Boon Leong
-> <boon.leong.ong@intel.com>; netdev@vger.kernel.org; linux-
-> stm32@st-md-mailman.stormreply.com; linux-arm-
-> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Looi,
-> Hong Aun <hong.aun.looi@intel.com>; Voon, Weifeng
-> <weifeng.voon@intel.com>; Lai, Peter Jun Ann
-> <peter.jun.ann.lai@intel.com>
-> Subject: Re: [PATCH net v2 1/2] net: stmmac: fix PHY handle
-> parsing
->=20
-> On Fri, Mar 17, 2023 at 08:56:19PM +0100, Andrew Lunn wrote:
-> > On Tue, Mar 14, 2023 at 03:02:07PM +0800, Michael Sit Wei
-> Hong wrote:
-> > > phylink_fwnode_phy_connect returns 0 when set to
-> MLO_AN_INBAND.
-> > > This causes the PHY handle parsing to skip and the PHY will not
-> be
-> > > attached to the MAC.
-> >
-> > Please could you expand the commit message because i'm
-> having trouble
-> > following this.
-> >
-> > phylink_fwnode_phy_connect() says:
-> >
-> > 	/* Fixed links and 802.3z are handled without needing a
-> PHY */
-> > 	if (pl->cfg_link_an_mode =3D=3D MLO_AN_FIXED ||
-> > 	    (pl->cfg_link_an_mode =3D=3D MLO_AN_INBAND &&
-> > 	     phy_interface_mode_is_8023z(pl->link_interface)))
-> > 		return 0;
-> >
-> > So your first statement is not true. It should be
-> MLO_AN_INBAND and
-> > phy_interface_mode_is_8023z.
-> >
-> > > Add additional check for PHY handle parsing when set to
-> MLO_AN_INBAND.
-> >
-> > Looking at the patch, there is no reference to
-> MLO_AN_INBAND, or
-> > managed =3D "in-band-status";
->=20
-> That's the pesky "xpcs_an_inband" which ends up as phylink's
-> "ovr_an_inband"... I'm sure these are random renames of stuff
-> to make sure that people struggle to follow the code.
->=20
-It is as mentioned above, the "xpcs_an_inband" will end up as
-"ovr_an_inband" which will then
-set pl->cfg_link_an_mode =3D MLO_AN_INBAND in the
-phylink_parse_mode() in phylink.c
+> > > However, in the same call stack, sta->sdata is also used in the
+> > > following functions:
+> > > 
+> > > ieee80211_ba_session_work()
+> > >    ___ieee80211_stop_rx_ba_session(sta)
+> > >      ht_dbg(sta->sdata, ...); -> No check
+> > >      sdata_info(sta->sdata, ...); -> No check
+> > >      ieee80211_send_delba(sta->sdata, ...) -> No check
+> > >    ___ieee80211_start_rx_ba_session(sta)
+> > >      ht_dbg(sta->sdata, ...); -> No check
+> > >      ht_dbg_ratelimited(sta->sdata, ...); -> No check
+> > >    ieee80211_tx_ba_session_handle_start(sta)
+> > >      sdata = sta->sdata; if (!sdata) -> Add check by previous commit
+> > >    ___ieee80211_stop_tx_ba_session(sdata)
+> > >      ht_dbg(sta->sdata, ...); -> No check
+> > >    ieee80211_start_tx_ba_cb(sdata)
+> > >      sdata = sta->sdata; local = sdata->local -> No check
+> > >    ieee80211_stop_tx_ba_cb(sdata)
+> > >      ht_dbg(sta->sdata, ...); -> No check
+> > I wonder if it would be better to teach ht_* do do nothing
+> > if the first argument is NULL.
+> 
+> Okay, I will use this way in patch v2.
 
-The phylink_fwnode_phy_connect() checks if both
-MLO_AN_INBAND && phy_interface_mode_is_8023z() true
-before returning 0.
+Maybe it is not a good idea.
+But I think it is worth trying, at least locally, to see how it goes.
 
-But in our case, we only have MLO_AN_INBAND is true, which
-then goes to the next part of the code.
+> > Also, are these theoretical bugs?
+> > Or something that has been observed?
+> > And has a reproducer?
+> 
+> These bugs are found by my static analysis tool, by extending a known bug
+> fixed in a previous commit 69403bad97aa.
+> Thus, they could be theoretical bugs.
 
-	phy_fwnode =3D fwnode_get_phy_node(fwnode);
-	if (IS_ERR(phy_fwnode)) {
-		if (pl->cfg_link_an_mode =3D=3D MLO_AN_PHY)
-			return -ENODEV;
-		return 0;
-	}
+Thanks, understood.
+I think it would be worth making that a bit clearer in the
+patch description (commit message).
 
-Where here the IS_ERR(phy_fwnode) returns true, then it
-Checks for MLO_AN_PHY, which in our case is not, so it returns
-a 0.
+> > > Thus, to avoid possible null-pointer dereferences, the related checks
+> > > should be added.
+> > > 
+> > > These results are reported by a static tool designed by myself.
+> > > 
+> > > Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> > > Reported-by: TOTE Robot <baijiaju@buaa.edu.cn>
+> > I see 4 copies of this patch in a few minutes.
+> > As per the FAQ [1], please leave at least 24h between posts of a patch.
+> > 
+> > [1] https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
+> 
+> I am quite sorry for this, because my script of git send email was buggy.
+> I noticed this problem after sending the e-mail, and now I have fixed it :)
 
-When returned 0, our driver will then skip the manual phy parsing
-due to if (!fwnode || ret)
-> --
-> RMK's Patch system:
-> https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at
-> last!
+Thanks, I realised after I sent my previous email that something like that
+might have happened. Thanks for fixing it.
