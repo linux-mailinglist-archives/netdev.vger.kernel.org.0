@@ -2,64 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9A56C3ACC
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 20:39:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 463766C3B13
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 20:57:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbjCUTjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 15:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58220 "EHLO
+        id S229927AbjCUT5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 15:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230184AbjCUTiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 15:38:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C39CC08
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 12:38:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50606B818CC
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9855AC4339C;
-        Tue, 21 Mar 2023 19:37:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679427437;
-        bh=qOQ//ah51ATfM5M30XQXaDUgv/BJjWGeWgYN1E8z+ys=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EnRyywbn31sMEDIov0f2249hW8QCwh8IkEci0VlZUk6pNKmN5lLPXE/74lcOOB63O
-         fPEBd+TQcyqGPsr4LdjuSu5N80IcVhZgFHVolZ7F3rMxCvezD2atFl2sbl3rt/V9fk
-         2mHCG5KR9W36WPdr8/G9MAyLypoFZIZr7AB3kdav3d/XHZcX+JrebWbWCnB63jYKjP
-         FIIag3E5dTeLF0Kun6j3Yf0pJwDxFXDH/mooApVEc30bJJ31qTqltdnEku/+PZ8izB
-         8SZF978OpYTSKgop6TneupXRH3QdaN7R4dbtCgRDTLbISs0R1g1f/tqE/aRfqLXhqp
-         84SytX1OCTMsA==
-Date:   Tue, 21 Mar 2023 12:37:15 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>
-Subject: Re: [GIT PULL] Extend packet offload to fully support libreswan
-Message-ID: <20230321123715.3aaca214@kernel.org>
-In-Reply-To: <20230321071830.GN36557@unreal>
-References: <20230320094722.1009304-1-leon@kernel.org>
-        <20230321071830.GN36557@unreal>
+        with ESMTP id S229906AbjCUT5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 15:57:17 -0400
+Received: from domac.alu.hr (domac.alu.unizg.hr [IPv6:2001:b68:2:2800::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A021C5B6;
+        Tue, 21 Mar 2023 12:57:14 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by domac.alu.hr (Postfix) with ESMTP id 9C58B60500;
+        Tue, 21 Mar 2023 20:57:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1679428631; bh=wiKwer93E0RP/tpRTJyQig+I11C43ciBFzwge/FvRrk=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=1hFiUQ+6z53cIAi7XaBMymS6JhhIGXi8Az7p95+Bh0/L6VH8ULIT4WHBa6sQ/E9Sp
+         TdVk1TYCzHxufGFNJa3J8UILe0yy/+XEb1YiL5murMMm7SEuAPXKJoCy82gZIWR4Ip
+         +ty+RDIA4AN4BTwXBvkfXa2wQ6DyTQ7oLR02Mekdrp21ZVa8+mDGBzA6dSjP6tcqgS
+         c8XHHqTi45r206MXCGwSwMFjAO6pj5RXfK8we++M7ifDdVTEkpCOWw0H3b7CkgLkeB
+         Whh+ZmgyNyivmb4bL6ukfyE32fstTz59NU14NWg0TsKJB2mrTIDBFZLx011YNf9zq2
+         MoyYaV+KVnn+Q==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+        by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id UQWPy4JILc4r; Tue, 21 Mar 2023 20:57:09 +0100 (CET)
+Received: from [192.168.1.4] (unknown [109.227.34.15])
+        by domac.alu.hr (Postfix) with ESMTPSA id A4205604F7;
+        Tue, 21 Mar 2023 20:57:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+        t=1679428629; bh=wiKwer93E0RP/tpRTJyQig+I11C43ciBFzwge/FvRrk=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=Q8hMX5kqosZpRSKzBxPYmm8HZQaKwYv61WTi2NiFDlZtqSr7jQ0E+doyVtmxGrU5R
+         YeAeAkz5ljkCjsns57MTxWwfhZ6Y4ssVLgDvS8j3kBLTA97RDZdLK+SU4uSx9rl4mV
+         jtdQZYpHLiHk3obuKDK/qgqjV+qe+iyEGvM3kDeXZSdwcytJKSoA+JmtANbpGu3AA7
+         XwQoDsbjrknWkiwVTOtC0zEkX8BWz6DRzrQT4mHnIqKMceOBDQTazCJhzPBulihJRp
+         BqK2euS8BukOQl0EwpYrONyIJ00vvpJ2oSY+Ht9x9smdDEwa3xuRoVK5ifOzp25B2j
+         uB5shvt1xMc/g==
+Message-ID: <4ee8307a-7512-b8ad-0218-6fab071440dc@alu.unizg.hr>
+Date:   Tue, 21 Mar 2023 20:57:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+References: <ad89d824-6fa4-990d-42ed-f768db92cfb1@alu.unizg.hr>
+ <20230320195903.314dcb21@kernel.org>
+From:   Mirsad Goran Todorovac <mirsad.todorovac@alu.unizg.hr>
+Organization: Academy of Fine Arts, University of Zagreb
+Subject: Re: BUG: selftests/net/tls: FAIL in sm4_ccm tests
+In-Reply-To: <20230320195903.314dcb21@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Mar 2023 09:18:30 +0200 Leon Romanovsky wrote:
-> So who should extra ack on this series?
+On 3/21/2023 3:59 AM, Jakub Kicinski wrote:
+> On Mon, 20 Mar 2023 17:07:36 +0100 Mirsad Todorovac wrote:
+>> The environment is AlmaLinux 8.7 running 6.3-rc3 vanilla kernel with
+>> MGLRU, KMEMLEAK and CONFIG_DEBUG_KOBJECT=y enabled.
+> 
+> Do you have SM4 and CCM enabled in you kernel .config ?
+> It's not a popular cipher.
+> Make sure your config has all the options listed in
+> tools/testing/selftests/net/config
 
-Me or I, hard to tell because of the missing verb.
+Done that. Thanks, now all tools/testing/selftest/net/tls tests passed:
+
+# PASSED: 554 / 554 tests passed.
+# Totals: pass:554 fail:0 xfail:0 xpass:0 skip:0 error:0
+
+Should I then probably rebuild the kernel for the tests with 
+tools/testing/selftest/*/config merged?
+
+Thanks,
+Mirsad
+
+-- 
+Mirsad Todorovac
+Sistem inženjer
+Grafički fakultet | Akademija likovnih umjetnosti
+Sveučilište u Zagrebu
+
+System engineer
+Faculty of Graphic Arts | Academy of Fine Arts
+University of Zagreb, Republic of Croatia
+tel. +385 (0)1 3711 451
+mob. +385 91 57 88 355
