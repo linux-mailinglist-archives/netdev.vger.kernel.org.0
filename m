@@ -2,83 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A63576C287B
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 04:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F40B6C2880
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 04:17:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbjCUDKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 23:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
+        id S229674AbjCUDRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 23:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbjCUDKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 23:10:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29F324CAC;
-        Mon, 20 Mar 2023 20:10:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EA79B811CF;
-        Tue, 21 Mar 2023 03:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D932AC433EF;
-        Tue, 21 Mar 2023 03:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679368217;
-        bh=5II7b+BkVoa4QOA60BgChtOdWYA0PzzTAZsvlZtgtLw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GdrpCZCIC8A4OKRXMMTtaTDf3wHFP8iv4In0FTOpLiX8avN+ToWtsJxMLxhF87Y4V
-         QEB2xOeZQlenGJ97WqeaSvioVLljgnMI03y0Jj0ORJDER1mWLGMNpRpxSpPMNfjrT4
-         2TynwHJbpEX/AKMozC/d2kDAiZ1YNIdY+/ZlgfqEOOC0XJZmMpbV+pmTLk2P904jfp
-         szSo6CEJbTXmFifsO/JIQWFgtLJGrJRijiLcD7VWYgOC/ghZQWxm2BgZilmccD+DdA
-         66dsoFaIdyQRdjofw2vUSQVwi2ElUPRanYXfHs3SlmoNDXpRsCfgC1+w7o18YqXmx4
-         sIyTTr7F1e7Kg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BC675E68D22;
-        Tue, 21 Mar 2023 03:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229497AbjCUDRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 23:17:32 -0400
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023FA1554D
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 20:17:29 -0700 (PDT)
+Received: by mail-ua1-x92a.google.com with SMTP id v48so9347678uad.6
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 20:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679368649;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TJLTgHq4GE0ByOIY897y2f3H2ESZcFPxMIOdoATKc8o=;
+        b=DYJvxp6AUVzE/KYLNrEmqmH2DiqEHRN3ruRg4g8g9bDCiWGxRwd8AmyifrOoW91XpR
+         HKR/CmHhxuvAgpe82DRi6Nm3MI7TFxif1BlApE4O8m1P+Pcg5i3KrepqGYCBUkI8F9EP
+         UcOTkLUeRs+gWIA0dLA6U/T4xmY/GI0SqAwrnNS4gySpOuRHCinu3N9kqL2l4v9rDCB8
+         qSD2vSFKblcPMSkJtMYIwsFQn/Y0tjZ3tKDMezHNxXyUphfqm3qzECFwk5Qs7+pWLFBo
+         hiPKhzrXvohyf7vk/qu0eSLW4Xrrt+VS8WGfJa2sMJFweO2uXmYezMwNgsnjDJhmh/CJ
+         +L0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679368649;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TJLTgHq4GE0ByOIY897y2f3H2ESZcFPxMIOdoATKc8o=;
+        b=cJta6+fAmiWeiHnzPTzq/goWpAv22dNVRdgaxn8h9++LgydDiU6jmTL4kxRKH2nyLz
+         qwg0lY23nLCjOUTNNbWmdMtSBWdbVpi3f6wIFLh2HPmIkHX9VE7vAC3OG6wDWh8pPwMu
+         eB5Sfq54NlYULvt/aQ0Y6Wp4EdDwqFGNZO4xhVIDXSuK5rgPiVJCdAqH2tP34EzWEr2U
+         cCBFb1AedgzqFuc286afORd8i5TLmb4D1pL2+2i9FVco6mk9riPT+q6RQoagjRy/LrDC
+         DvrG42kXX0yJZxMVWtzpyxj1Z4hDrh9MUt9Y+RIr+YOnDYZbEAa2ufgqMFb6WLzx65oI
+         ohAA==
+X-Gm-Message-State: AAQBX9e+OJpaAUyD7BMDNUwFG5lHjypkwlTH6w515f8ukhmQvunYCf0p
+        moWL6uz1Q7XwOXisBq8NInTxEfw1egHN9mJ9WkNrMw==
+X-Google-Smtp-Source: AKy350bBrfpoLkjUN/+qsGQGKiJfXU4K4GTt6aJO6puaKzgbINKDI4LULLYCI62O0lCRFxFATq3rkVekMUHywiQPwVI=
+X-Received: by 2002:ab0:3890:0:b0:68a:6c1e:1aab with SMTP id
+ z16-20020ab03890000000b0068a6c1e1aabmr311920uav.2.1679368648950; Mon, 20 Mar
+ 2023 20:17:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: cxgb3: remove unused fl_to_qset function
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167936821776.24814.6478937204704825271.git-patchwork-notify@kernel.org>
-Date:   Tue, 21 Mar 2023 03:10:17 +0000
-References: <20230319172433.1708161-1-trix@redhat.com>
-In-Reply-To: <20230319172433.1708161-1-trix@redhat.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     rajur@chelsio.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20230321024946.GA21870@ubuntu>
+In-Reply-To: <20230321024946.GA21870@ubuntu>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 20 Mar 2023 20:17:15 -0700
+Message-ID: <CANn89i+=-BTZyhg9f=Vyz0rws1Z-1O-F5TkESBjkZnKmHeKz1g@mail.gmail.com>
+Subject: Re: [PATCH] net: Fix invalid ip_route_output_ports() call
+To:     Hyunwoo Kim <v4bel@theori.io>
+Cc:     Taehee Yoo <ap420073@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Dmitry Kozlov <xeb@mail.ru>,
+        David Ahern <dsahern@kernel.org>, tudordana@google.com,
+        netdev@vger.kernel.org, imv4bel@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Mar 20, 2023 at 7:49=E2=80=AFPM Hyunwoo Kim <v4bel@theori.io> wrote=
+:
+>
+> If you pass the address of the struct flowi4 you declared as a
+> local variable as the fl4 argument to ip_route_output_ports(),
+> the subsequent call to xfrm_state_find() will read the local
+> variable by AF_INET6 rather than AF_INET as per policy,
+> which could cause it to go out of scope on the kernel stack.
+>
+> Reported-by: syzbot+ada7c035554bcee65580@syzkaller.appspotmail.com
 
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+I could not find this syzbot issue, can you provide a link, and a stack tra=
+ce ?
 
-On Sun, 19 Mar 2023 13:24:33 -0400 you wrote:
-> clang with W=1 reports
-> drivers/net/ethernet/chelsio/cxgb3/sge.c:169:32: error: unused function
->   'fl_to_qset' [-Werror,-Wunused-function]
-> static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
->                                ^
-> This function is not used, so remove it.
-> 
-> [...]
+> Signed-off-by: Hyunwoo Kim <v4bel@theori.io>
+> ---
 
-Here is the summary with links:
-  - net: cxgb3: remove unused fl_to_qset function
-    https://git.kernel.org/netdev/net-next/c/a08df15eab0c
+I find this patch quite strange, to be honest.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+It looks like some xfrm bug to me.
 
+A stack trace would be helpful.
 
+Thanks.
