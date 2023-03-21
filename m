@@ -2,56 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B70276C2DC9
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 10:25:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA0AB6C2DE4
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 10:31:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbjCUJZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 05:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54758 "EHLO
+        id S230165AbjCUJb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 05:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbjCUJZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 05:25:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E4A20073;
-        Tue, 21 Mar 2023 02:25:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89A97B81339;
-        Tue, 21 Mar 2023 09:25:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDC7C433D2;
-        Tue, 21 Mar 2023 09:25:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679390737;
-        bh=pMkkEwPQA0K6orVCJyEnzOASLLBZRpBk6jxTRKnPr3I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=q2OlRIfj8ROG8RUg8o82dpuLwUl8rwuZqsRDKV0ElpfzgR0wRuaTafN04rtJHmun2
-         A4cqk6NEdfEPWuVarW8xxDJaRL61GPk95XilHxAJEmILiQWO1eBtC2unR69nOuoMje
-         5PrQAEkZUNOu9eVS2UNNN1B0d5Sup+mtZmpEik8DRxIDUvz09gEoAZmWeLyqCusPLa
-         s1UMD8sBGDsT6KKdKBUP/olBgDDlnQYaF2+iHVNOD30IgTO55c9fLRlD+1v+dMS1sk
-         d3Gu2pR79Egi3CiTsWJ97KDcbCj2PjutoZaQEfxQ76EDNvkSIX1ro+o6vrjNkpKZnx
-         2esMlW0tfyMGQ==
-Message-ID: <1dddf2d3-ea82-732b-ffaa-7e59f8617a7b@kernel.org>
-Date:   Tue, 21 Mar 2023 11:25:32 +0200
+        with ESMTP id S229786AbjCUJbZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 05:31:25 -0400
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD6FDBEB;
+        Tue, 21 Mar 2023 02:31:22 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 09:31:03 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1679391078; x=1679650278;
+        bh=QgoRYW5BI5JeW2NPiEMwKAciyoBFm3U02q6YbW1yxIc=;
+        h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+         Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID:BIMI-Selector;
+        b=JKzkaUcCBTp/yk5zXk9iPMq45aKBdTi0mgH+ZXbs7Sq+5hNws3851AisB1TzoD9mW
+         VsF622j5LEyJwSPPVw3h25MWTbITnnXRcSx6tljLMdbLilablf0jIDQV9c0/ILCK1O
+         Cr1BEVDUu2S9Zg3+fcqoEdf2INzRS3WZK/ezvM0uwxMBw+DoUR7DtkOOzL3nW/O9Us
+         v5xGA/a7h35CgeqZeLIwsbfTuhKVN14kkY2m+A1ej4saIjXH9XCAmRLmaZiw2hUXqo
+         WwOC6mmMsHNiWs196yuAGA3VzeAHBhcoWBAUi5ufGtzKcFGbaNpucXe14JmZHctipq
+         +AS50LI3pdcNg==
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+From:   Turritopsis Dohrnii Teo En Ming <teo.en.ming@protonmail.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ceo@teo-en-ming-corp.com" <ceo@teo-en-ming-corp.com>,
+        Linux Networking <netdev@vger.kernel.org>
+Subject: Re: My TP-Link EX510 AX3000 Dual-Band Gigabit Wi-Fi 6 Router has a paper notice on GNU General Public License
+Message-ID: <lUgi660lymiMAtgctBw6-8963Cz3PC68rsTgFMYpOVtxIiffk3F7ixUpNUW_h4Eo_FP1lJMer3_HMCaMT5Ob82nMnlTvBsRjE1in9DI3X6w=@protonmail.com>
+In-Reply-To: <ZBlq0/DbBIPwZK9s@debian.me>
+References: <1D-_qNweCAFnkwL_AEoQeM4SEahOqRb9pOD9W5kE3tFzosEIgcNt8qCC8c48lirfo-J3BGXu7QcnZJOtxY8QFPY3RjYLSWwcAEEZedYot7Y=@protonmail.com> <ZBlq0/DbBIPwZK9s@debian.me>
+Feedback-ID: 39510961:user:proton
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpts: adjust estf
- following ptp changes
-Content-Language: en-US
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        jacob.e.keller@intel.com, richardcochran@gmail.com, leon@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, srk@ti.com
-References: <20230321062600.2539544-1-s-vadapalli@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20230321062600.2539544-1-s-vadapalli@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,48 +51,66 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+------- Original Message -------
+On Tuesday, March 21st, 2023 at 4:29 PM, Bagas Sanjaya <bagasdotme@gmail.co=
+m> wrote:
 
-On 21/03/2023 08:26, Siddharth Vadapalli wrote:
-> From: Grygorii Strashko <grygorii.strashko@ti.com>
-> 
-> When the CPTS clock is synced/adjusted by running linuxptp (ptp4l/phc2sys),
-> it will cause the TSN EST schedule to drift away over time. This is because
-> the schedule is driven by the EstF periodic counter whose pulse length is
-> defined in ref_clk cycles and it does not automatically sync to CPTS clock.
->    _______
->  _|
->   ^
->   expected cycle start time boundary
->    _______________
->  _|_|___|_|
->   ^
->   EstF drifted away -> direction
-> 
-> To fix it, the same PPM adjustment has to be applied to EstF as done to the
-> PHC CPTS clock, in order to correct the TSN EST cycle length and keep them
-> in sync.
-> 
-> Drifted cycle:
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230373377017
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230373877017
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230374377017
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230374877017
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230375377017
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230375877023
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230376377018
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230376877018
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230377377018
-> 
-> Stable cycle:
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863193375473
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863193875473
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863194375473
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863194875473
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863195375473
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863195875473
-> AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863196375473
-> 
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
 
-Reviewed-by: Roger Quadros <rogerq@kernel.org>
+> On Sun, Mar 19, 2023 at 02:43:14PM +0000, Turritopsis Dohrnii Teo En Ming=
+ wrote:
+>=20
+> > Good day from Singapore,
+> >=20
+> > I have terminated my M1 ISP fiber home broadband with effect from 11 Ma=
+r 2023 Saturday because I need to pay about SGD$42 per month. My M1 fiber b=
+roadband contract ends on 11 Mar 2023.
+> >=20
+> > Instead I have subscribed to Infocomm Media Development Authority (IMDA=
+) Home Access program. This program is for EXTREMELY POOR FAMILIES in Singa=
+pore who are living in HDB PUBLIC RENTAL HOUSING PROGRAM. People who live i=
+n HDB Public Rental Flats (like myself) have very little money in their ban=
+k accounts and cannot afford to buy even the smallest HDB BTO 2-room apartm=
+ent in Singapore. Because even the monies in our Central Provident Fund (CP=
+F) accounts are mediocre/super low.
+> >=20
+> > The participating ISP in the IMDA Home Access Program is MyRepublic. Un=
+der the IMDA Home Access program, I only need to pay SGD$14 per month for m=
+y fiber home broadband.
+> >=20
+> > MyRepublic ISP has also given me a FREE TP-Link EX510 AX3000 Dual-Band =
+Gigabit Wi-Fi 6 Router on 10 Mar 2023 Friday. MyRepublic fiber broadband li=
+ne was also activated on the same day. Inside the packaging box there is a =
+paper notice on GNU General Public License.
+> >=20
+> > I believe my tp-link Wi-Fi 6 wireless router is most likely running on =
+an open source Linux operating system.
+> >=20
+> > How can I find out what version of the Linux Kernel it is running on? I=
+ think only Linux kernel 6.x support Wi-Fi 6. Am I right?
+> >=20
+> > By the way, I live in a HDB 2-room RENTAL apartment in Ang Mo Kio Singa=
+pore.
+>=20
+>=20
+> Hi and welcome to LKML!
+>=20
+> Looks like this is general Linux support, so you need to refer to support
+> channels for whatever the distro you're using. LKML, on the other hand,
+> is highly technical mailing list about Linux kernel development.
+>=20
+> If you have kernel problems (like buggy driver), see Documentation/admin-=
+guide/reporting-issues.rst in the kernel sources for how to properly report=
+ the issue.
+>=20
+> Thanks.
+>=20
+> --
+> An old man doll... just what I always wanted! - Clara
+
+Noted with thanks.
+
+Regards,
+
+Mr. Turritopsis Dohrnii Teo En Ming
+Targeted Individual in Singapore
+GIMP also stands for Government-Induced Medical Problems
