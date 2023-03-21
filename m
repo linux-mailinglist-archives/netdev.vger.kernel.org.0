@@ -2,159 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7456C334C
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:50:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 353756C3361
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbjCUNuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 09:50:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
+        id S231302AbjCUNx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 09:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbjCUNuj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:50:39 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68A37577;
-        Tue, 21 Mar 2023 06:50:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VtCi26BuqyPJrE1CXCK+csn9x2kqW1v80ItdMtuV0AHEzUsEqreIFwTAR3VDRDp5BXLpULoqngYUOZ8pygFU35Uk8eQxHFC9j4jVEO3TnPaSu4wQaVNB1+Ay1nwGPcH+iax0dZd6GlN7Dp0c0+OSmMl6xGy65prwmHxfriM9FMDA7GXUH7nAG3E1eCaIJbAW7uZrfD56N72iH/gf1qlP6GJe/L5gu6O62ZsLh+9aI6AH9y2LOTznfZZhzH9Mr2H+qYUOvBlOy/noJifksE1vi0rbowFCRgtlPtBLhB4gqR/qkdLbCkob898Lq0b3DPQ+7A7GYZc/GCt57LS2kSRuLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F2snrFClXrxEYMywJIQ4YJxrvd/RLdw+MmG5M5Iz+1M=;
- b=dWDzMj51xzOFGW2w1h6im1R0KgdSTAL7vlMqDhXz6TcN+AWR8O3hou86K1H2oEUbD1vO81C7rKhdATxcHQYJ3xzUGnni4c/lhePNSUbSrqLR9gtXAlbWdiqDV2JrmCoN88J+qYqR2+v1FHAqsyv9RTfT48rJJjJvOgADOUn7BRDc0+siqZD6eZ5okkk/jYooKHya26MBGAUq1rOySgel0efAEMMhEIxmxr4ZLUXz15iKH+RT6ZvhVLhF8bDtNx7yBr2YQbyRwmmBYpT7aQHBQjKgdLA3RZBEXJNk8fe7KAixBqqs10Ok+nZ0r5QJFSNuvd2Ypn7OuY3mkXjSzBLl9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F2snrFClXrxEYMywJIQ4YJxrvd/RLdw+MmG5M5Iz+1M=;
- b=nzPcB5dlTwdKXkxkJXoJIstsJuWkexZOGksvEaXojiU5l2C/wzwD+MqDgYtxWVM3NKsIIpz2H8ZOH5BveJuv/H479UPs8yjJ+i/SMuGikGD21Gbl1tk30Imp/f9JYKOtVP3DO0pA8I7AeyoE8znfLGah7b2DVjyGn7S3wyiNFzvPQUgN0vwbLhRlrIZau+KxT/jG6qyk/IZ/xXLQJA0IGqN8Cu8vzWFhI21CbKdxgtKIVBOi3Ilaf9TPy+ccd70waGUjWLESfQsevwiwGtJ/b5DLLpDhvdOhlNhw3M5Hra2HEvGB/2hl/GNRuQHs7jNeiaY2hJfTY5qZkRVFb3s1yA==
-Received: from DM6PR07CA0082.namprd07.prod.outlook.com (2603:10b6:5:337::15)
- by SA1PR12MB7271.namprd12.prod.outlook.com (2603:10b6:806:2b8::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
- 2023 13:50:30 +0000
-Received: from DS1PEPF0000E639.namprd02.prod.outlook.com
- (2603:10b6:5:337:cafe::86) by DM6PR07CA0082.outlook.office365.com
- (2603:10b6:5:337::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
- Transport; Tue, 21 Mar 2023 13:50:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DS1PEPF0000E639.mail.protection.outlook.com (10.167.17.71) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.30 via Frontend Transport; Tue, 21 Mar 2023 13:50:30 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 21 Mar 2023
- 06:50:20 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 21 Mar
- 2023 06:50:19 -0700
-Received: from c-237-173-140-141.mtl.labs.mlnx (10.127.8.12) by
- mail.nvidia.com (10.129.68.9) with Microsoft SMTP Server id 15.2.986.5 via
- Frontend Transport; Tue, 21 Mar 2023 06:50:15 -0700
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        "Jozsef Kadlecsik" <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        <netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next 1/1] netfilter: ctnetlink: Support offloaded conntrack entry deletion
-Date:   Tue, 21 Mar 2023 15:50:04 +0200
-Message-ID: <1679406604-133128-1-git-send-email-paulb@nvidia.com>
-X-Mailer: git-send-email 1.8.4.3
+        with ESMTP id S229992AbjCUNxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:53:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E73E367CA
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679406757;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NKGCgFqY7ArwF0AL3MK2xFVBlJMuZ/y6sH3A7OQOvkM=;
+        b=O/L3EMoVAVsWx4QCTPcm5YWFC/JepK1ZjYmQKznSJn1knw+ayd9Mn3XJzQjB+L1O3mHRuA
+        bOk2YChV8j9eaNSF3A7LaTpda/xCgnCf2wWdYLowPztQ3KU8ARVxbksS5ax1DFE9C3ug2E
+        xndUsII7p77jRGklA4XZn3kvFaOJ+Kc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-178-N1pSd_bSOQaw3mdF8Y3H-g-1; Tue, 21 Mar 2023 09:52:33 -0400
+X-MC-Unique: N1pSd_bSOQaw3mdF8Y3H-g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AAAAA101A531;
+        Tue, 21 Mar 2023 13:52:32 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B7C185768;
+        Tue, 21 Mar 2023 13:52:32 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 4C5D330721A6C;
+        Tue, 21 Mar 2023 14:52:31 +0100 (CET)
+Subject: [PATCH bpf V2] xdp: bpf_xdp_metadata use EOPNOTSUPP for no driver
+ support
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net
+Date:   Tue, 21 Mar 2023 14:52:31 +0100
+Message-ID: <167940675120.2718408.8176058626864184420.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E639:EE_|SA1PR12MB7271:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d33b647-e18e-4246-c037-08db2a133c0c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2zUNAqkhFiEIWxtRZYcT3RZTa+2DnxSMWoZuvORQbFqxNLp5IQJi4J0n0kteFQ0kwdBe1pknBtzDI46TtWKgtj89LTZdlAMoNbmmXVAkUMpYXkmWl2bPtBSPfpdJw1ObGIw9FGTPBqAu3CXDzL7MxyFgQarVlCUKMGkwrwokrXL2Kvu7Y98n3orFIxaCtZo/N/aVnROW3uRMkjYQ7lcXEngiyYqfV/hI10R1w6ZkjM6UcS2Iq9DaT1Drms4GmM1QsXLz5T/cjnWwHI7UkLVsidaDmpdClw2/O+v2bytMIZz3Hwuznkok5LXqwvIeoYZjLiSZCaBwiaDODgwBh173f+Q688n/Zxv2zJmMqLDFjQwPApVrTnXghLcWkhg9YvuqpJ0kQFXYfoXolm4ysC+ycvIXfN+OqZjNNand6oAFxwM0FB5G9xzAIF4C5cGOiV8cspUz1KQdz6FW4sJhLlY3g3Qslp9BD30ssg4ERLb2TwQ+WX11vwMuxFdDs05zokyc5rE9+1xMQk8y3PkJ4Tj1kkwahIz8YkBraQVYAN6ub6SrbbyaDEb7CO43Y56M+Y+8MzTiX0cJJEYHX2KSTl0IqAzZuvDthknPRph4gVaoAIkirx4tPHvxKIOG+fPRCmMhNXX3GPJ+FWTGtfudPkcewwnE43bgk2K30cEK95b+UMbs/pysNXHbRLZcX1QIN0y9ckCaajVBYi5/3jMSazto4oSh4bgzowUkGD/EOtR0K1VoIkzizjWF/KmX/YhyxKUhaE5EtJzIfdCHDpF3D1q6Pg==
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(396003)(39860400002)(136003)(346002)(451199018)(40470700004)(36840700001)(46966006)(86362001)(82310400005)(40460700003)(36756003)(40480700001)(70206006)(83380400001)(316002)(4326008)(478600001)(70586007)(8676002)(186003)(54906003)(26005)(336012)(110136005)(2616005)(107886003)(6666004)(426003)(47076005)(921005)(356005)(8936002)(5660300002)(7416002)(36860700001)(41300700001)(2906002)(82740400003)(7636003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 13:50:30.1864
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d33b647-e18e-4246-c037-08db2a133c0c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E639.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7271
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, offloaded conntrack entries (flows) can only be deleted
-after they are removed from offload, which is either by timeout,
-tcp state change or tc ct rule deletion. This can cause issues for
-users wishing to manually delete or flush existing entries.
+When driver doesn't implement a bpf_xdp_metadata kfunc the fallback
+implementation returns EOPNOTSUPP, which indicate device driver doesn't
+implement this kfunc.
 
-Support deletion of offloaded conntrack entries.
+Currently many drivers also return EOPNOTSUPP when the hint isn't
+available, which is ambiguous from an API point of view. Instead
+change drivers to return ENODATA in these cases.
 
-Example usage:
- # Delete all offloaded (and non offloaded) conntrack entries
- # whose source address is 1.2.3.4
- $ conntrack -D -s 1.2.3.4
- # Delete all entries
- $ conntrack -F
+There can be natural cases why a driver doesn't provide any hardware
+info for a specific hint, even on a frame to frame basis (e.g. PTP).
+Lets keep these cases as separate return codes.
 
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
+When describing the return values, adjust the function kernel-doc layout
+to get proper rendering for the return values.
+
+Fixes: ab46182d0dcb ("net/mlx4_en: Support RX XDP metadata")
+Fixes: bc8d405b1ba9 ("net/mlx5e: Support RX XDP metadata")
+Fixes: 306531f0249f ("veth: Support RX XDP metadata")
+Fixes: 3d76a4d3d4e5 ("bpf: XDP metadata RX kfuncs")
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- net/netfilter/nf_conntrack_netlink.c | 8 --------
- 1 file changed, 8 deletions(-)
+ Documentation/networking/xdp-rx-metadata.rst     |    7 +++++--
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c       |    4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c |    4 ++--
+ drivers/net/veth.c                               |    4 ++--
+ net/core/xdp.c                                   |   10 ++++++++--
+ 5 files changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index bfc3aaa2c872..fbc47e4b7bc3 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -1554,9 +1554,6 @@ static const struct nla_policy ct_nla_policy[CTA_MAX+1] = {
+diff --git a/Documentation/networking/xdp-rx-metadata.rst b/Documentation/networking/xdp-rx-metadata.rst
+index aac63fc2d08b..25ce72af81c2 100644
+--- a/Documentation/networking/xdp-rx-metadata.rst
++++ b/Documentation/networking/xdp-rx-metadata.rst
+@@ -23,10 +23,13 @@ metadata is supported, this set will grow:
+ An XDP program can use these kfuncs to read the metadata into stack
+ variables for its own consumption. Or, to pass the metadata on to other
+ consumers, an XDP program can store it into the metadata area carried
+-ahead of the packet.
++ahead of the packet. Not all packets will necessary have the requested
++metadata available in which case the driver returns ``-ENODATA``.
  
- static int ctnetlink_flush_iterate(struct nf_conn *ct, void *data)
+ Not all kfuncs have to be implemented by the device driver; when not
+-implemented, the default ones that return ``-EOPNOTSUPP`` will be used.
++implemented, the default ones that return ``-EOPNOTSUPP`` will be used
++to indicate the device driver have not implemented this kfunc.
++
+ 
+ Within an XDP frame, the metadata layout (accessed via ``xdp_buff``) is
+ as follows::
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index 0869d4fff17b..4b5e459b6d49 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -674,7 +674,7 @@ int mlx4_en_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+ 	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
+ 
+ 	if (unlikely(_ctx->ring->hwtstamp_rx_filter != HWTSTAMP_FILTER_ALL))
+-		return -EOPNOTSUPP;
++		return -ENODATA;
+ 
+ 	*timestamp = mlx4_en_get_hwtstamp(_ctx->mdev,
+ 					  mlx4_en_get_cqe_ts(_ctx->cqe));
+@@ -686,7 +686,7 @@ int mlx4_en_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
+ 	struct mlx4_en_xdp_buff *_ctx = (void *)ctx;
+ 
+ 	if (unlikely(!(_ctx->dev->features & NETIF_F_RXHASH)))
+-		return -EOPNOTSUPP;
++		return -ENODATA;
+ 
+ 	*hash = be32_to_cpu(_ctx->cqe->immed_rss_invalid);
+ 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index bcd6370de440..c5dae48b7932 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -162,7 +162,7 @@ static int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+ 	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
+ 
+ 	if (unlikely(!mlx5e_rx_hw_stamp(_ctx->rq->tstamp)))
+-		return -EOPNOTSUPP;
++		return -ENODATA;
+ 
+ 	*timestamp =  mlx5e_cqe_ts_to_ns(_ctx->rq->ptp_cyc2time,
+ 					 _ctx->rq->clock, get_cqe_ts(_ctx->cqe));
+@@ -174,7 +174,7 @@ static int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
+ 	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
+ 
+ 	if (unlikely(!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH)))
+-		return -EOPNOTSUPP;
++		return -ENODATA;
+ 
+ 	*hash = be32_to_cpu(_ctx->cqe->rss_hash_result);
+ 	return 0;
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 1bb54de7124d..046461ee42ea 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1610,7 +1610,7 @@ static int veth_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+ 	struct veth_xdp_buff *_ctx = (void *)ctx;
+ 
+ 	if (!_ctx->skb)
+-		return -EOPNOTSUPP;
++		return -ENODATA;
+ 
+ 	*timestamp = skb_hwtstamps(_ctx->skb)->hwtstamp;
+ 	return 0;
+@@ -1621,7 +1621,7 @@ static int veth_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
+ 	struct veth_xdp_buff *_ctx = (void *)ctx;
+ 
+ 	if (!_ctx->skb)
+-		return -EOPNOTSUPP;
++		return -ENODATA;
+ 
+ 	*hash = skb_get_hash(_ctx->skb);
+ 	return 0;
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 8d3ad315f18d..7133017bcd74 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -705,7 +705,10 @@ __diag_ignore_all("-Wmissing-prototypes",
+  * @ctx: XDP context pointer.
+  * @timestamp: Return value pointer.
+  *
+- * Returns 0 on success or ``-errno`` on error.
++ * Return:
++ * * Returns 0 on success or ``-errno`` on error.
++ * * ``-EOPNOTSUPP`` : means device driver does not implement kfunc
++ * * ``-ENODATA``    : means no RX-timestamp available for this frame
+  */
+ __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
  {
--	if (test_bit(IPS_OFFLOAD_BIT, &ct->status))
--		return 0;
--
- 	return ctnetlink_filter_match(ct, data);
- }
- 
-@@ -1626,11 +1623,6 @@ static int ctnetlink_del_conntrack(struct sk_buff *skb,
- 
- 	ct = nf_ct_tuplehash_to_ctrack(h);
- 
--	if (test_bit(IPS_OFFLOAD_BIT, &ct->status)) {
--		nf_ct_put(ct);
--		return -EBUSY;
--	}
--
- 	if (cda[CTA_ID]) {
- 		__be32 id = nla_get_be32(cda[CTA_ID]);
- 
--- 
-2.26.3
+@@ -717,7 +720,10 @@ __bpf_kfunc int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *tim
+  * @ctx: XDP context pointer.
+  * @hash: Return value pointer.
+  *
+- * Returns 0 on success or ``-errno`` on error.
++ * Return:
++ * * Returns 0 on success or ``-errno`` on error.
++ * * ``-EOPNOTSUPP`` : means device driver doesn't implement kfunc
++ * * ``-ENODATA``    : means no RX-hash available for this frame
+  */
+ __bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, u32 *hash)
+ {
+
 
