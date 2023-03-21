@@ -2,237 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C94B06C388C
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:46:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B826C389E
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:50:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbjCURqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 13:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36840 "EHLO
+        id S229998AbjCURus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 13:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbjCURqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:46:17 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A649C4C2D;
-        Tue, 21 Mar 2023 10:46:16 -0700 (PDT)
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32LGn2TK010202;
-        Tue, 21 Mar 2023 17:46:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=fEo44Q3U65rCYG6DoRUXWRerqFFBRTI7mR1OnnSmFkk=;
- b=t1OaGDtDoHDTD+2R3xXynwnRO65zer0WqaditEIvgA/t/IIPxz3f5obQb5YrDbM8uQsH
- o3Yb68kuxLL874JiwUNSDpJM8VJbxl/o6q/coGObIcNb3jXFkyT7V+DEKDALTOClyl+z
- jPVBUtvURg8WAozhvrra+gMbYBMuHx77WiZwjGH4MqYRYcl+LtN3qtzh+TIX8dtbn3vg
- QH7pGfS3mpnNDYSIYUIHgGyYb99FU/Xb2daoooXrA2gDWfaQoY9Zr0nrye5B28I6TBmZ
- DGUNyv3Hs2dPCH0124J8JvPQiI/se04dveaRZNWq+2I5s+5tXYBnjNFwA0jJA90923EY sg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pd5bcf2yn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Mar 2023 17:46:08 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32LGIpkB038669;
-        Tue, 21 Mar 2023 17:46:07 GMT
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2046.outbound.protection.outlook.com [104.47.56.46])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pd3rdkm40-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Mar 2023 17:46:07 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nHMOnMqStTV5abn2KZyyDsWydTfK6mX821Haco3UWnrqZVLF2uSxlZ+HhbugKo3ANW6L06NdCjbZXd0FdKouSuZEJ8nnHymODEZLx4wjR4HgcD6eOiMapbTIWv/atQFfLpACT+h26dpk7X8MoZgRe/o74r97jD3MXBtXz3zQl8HZ8/7BVVpsE5ntAeGPJJBJuRbPIgHNB/l9d3moBo/SByRFNCilQWU/rmdnG4LyduUV51wi0sq0isckaVF8Wu/8NpjBy1CtSTK+RsLFrJAp+8x0ve4Vnx8sn9fJOyYRJziJjtGz5Kt+O3vCpNYVAda48AkrnCn3CP5X6UHy9JW6aw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fEo44Q3U65rCYG6DoRUXWRerqFFBRTI7mR1OnnSmFkk=;
- b=XJTTQqqbET7305bbt/A4z5cdebG9LHBKlWNWCrChDS4xI5W7WeNstESZ5Me9/Iqy2WRpNcSCEYAv17CCT9Jo2/pGeTV1QmNA3I4pElJ5HseEIBw7eEJE9lR9GdxBqGRCpvsM4rE5ZGxDJJo2HE46si+UlN8r2bxA7E4gzTuxC9s4TuWWmm7x4cV/OYHqLdkq5RmKPp0BVveYyQHXGxSSN9cGMDqrBnjqaEcUUQGZh7wnXR5/9iJuPMN0C2e5mTn9fY/umj6b3PPCr0FIcgnrvvgEXsRK/GqUu/Hg1fBeltBzV0ze0H/IX6bJsFk3v4jp5wsNlQv515YvQtQZx60Egg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fEo44Q3U65rCYG6DoRUXWRerqFFBRTI7mR1OnnSmFkk=;
- b=KaW5WiqiDhcffVKFL6JPBi2u38xUo1+Ax79mJfPYIyJHbBHhCODazIDYfLfsXJXcnpF+XIUeKxLrHT0rVTw01xXjSIYYqLQazUaslm32EvEqEMmmcRd5u+B3qYWmu1V+aobNFmtLPZfWIC1zph7VPPoyy1bv1ozCkLGPHwU4kU0=
-Received: from DM5PR10MB1466.namprd10.prod.outlook.com (2603:10b6:3:b::7) by
- DS0PR10MB7065.namprd10.prod.outlook.com (2603:10b6:8:143::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.37; Tue, 21 Mar 2023 17:46:05 +0000
-Received: from DM5PR10MB1466.namprd10.prod.outlook.com
- ([fe80::7dd7:8d22:104:8d64]) by DM5PR10MB1466.namprd10.prod.outlook.com
- ([fe80::7dd7:8d22:104:8d64%7]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 17:46:05 +0000
-Message-ID: <2d976892-9914-5de0-62e0-c75f1c148259@oracle.com>
-Date:   Tue, 21 Mar 2023 12:46:04 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [syzbot] [kernel?] general protection fault in vhost_task_start
-Content-Language: en-US
-To:     syzbot <syzbot+6b27b2d2aba1c80cc13b@syzkaller.appspotmail.com>,
-        brauner@kernel.org, jasowang@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mst@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-References: <0000000000005a60a305f76c07dc@google.com>
-From:   Mike Christie <michael.christie@oracle.com>
-In-Reply-To: <0000000000005a60a305f76c07dc@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: DM6PR02CA0116.namprd02.prod.outlook.com
- (2603:10b6:5:1b4::18) To DM5PR10MB1466.namprd10.prod.outlook.com
- (2603:10b6:3:b::7)
+        with ESMTP id S229513AbjCURuq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:50:46 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EED515D6;
+        Tue, 21 Mar 2023 10:50:44 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32LFCjkB011925;
+        Tue, 21 Mar 2023 18:50:18 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=y0KlYJt6rx8ndn2XMFbV20udYR6+jSpQILTQmqixjj0=;
+ b=S4Kt+hmBPcC+fMY/0pngwOonkxa5Pu/evww+5KfD+YZKMuV7eG82Xi5Pk8YuCZkBM1C6
+ uaBXpB1rt8IGKkstX9uIMxdUuvbCqiAmfx4VXERxix8wvbAUVJ5ed0CBf0kb0icpOtUS
+ CTAqFWbrtZIWlDj5rSYlIdED2FQVVEpPjJ/OpYIqah2ltXkqR2Rq3qnzxgO4TmzxThYd
+ YvY4ZfjBLaZn39QRzu+1Qd5g3gfzs2xmcQD6sI5+NV7gVqSLnMrnsQv/IdiHHUvK0zxP
+ jyA4SQTLDAjkyjFCKfclHKvOW8JqsjuaQ/A5i1BNIfWjWx8ocsFXCvSF59wmSpnY9OUr ew== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3pfb67agfm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Mar 2023 18:50:18 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9A40010002A;
+        Tue, 21 Mar 2023 18:50:16 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8DABE21B529;
+        Tue, 21 Mar 2023 18:50:16 +0100 (CET)
+Received: from [10.201.21.93] (10.201.21.93) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Tue, 21 Mar
+ 2023 18:50:15 +0100
+Message-ID: <d1f31c4f-d752-4702-7888-06bd7a6080d9@foss.st.com>
+Date:   Tue, 21 Mar 2023 18:50:15 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM5PR10MB1466:EE_|DS0PR10MB7065:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ad4db3e-423d-49c5-3088-08db2a34252e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n86IlMf0OsHSziMmjeYhsVJC0fisi1sEI2fHIziypHG1M7IRUntcI9mvpv9ZA67cH4F2W4DN6EkTYKjqjfOXdtKUrfDYWVfNdqxNEWl/lj6r3VT9enYKAxzuQwDpNfW7a2Xjh6oj4zWl3ETdBuJTo8ygUEdt0Dj1N3NRp5+dUKXSb8pgVaOgoHXfDTcxqVuEsyuA3P/GsfiGmpD8I7s/hLcpZ0cV7+J2ZenjKHzC6S5XTlH9P0zWD32YnOjj3RaEyPCejhTgP/CS9pTZhXqU7F01eT8pCPJNCvEMo1lI11OA13dcJfjUxH/zALBzSZmLIc9oMC0FxSsRwCFovi0nl/yZmM0o9cpcjRdZbZbxptfOZP2NZQMRUA2vVgvU8/SUaDwRIWxuSFkKLPSaKxxHNoeGolN+T7bc5NG/XiK9avqh7uQaUaxxZO0v4MgRwfHTwEJrabCTrtilMCUNpFQw2AazcKLFarIL6FwkYKGE9hn5Ys7kJ57FJoWCmOoWTAt3ytknO3IIlGEpfsrn/yamCDFS7P30VvIcYMJQjRdgjCJhnb4Yd6qYUJ9ypwGghIju0UoRLAL/NzItFRjiL13sG153Y5XlIaAl6lBQPj2Nis2JnN5mSBfWS6lsLeFMcIMBBkLhQ6JiMgLLzrvH+DmmzjNs2dU+gXiDVODTNx61f14IhT7dbrgVmdsPvTSsGy9tjpdX+Q5sxpxDuOlVkn0L4lo78oC06x/fSiZ8zCWKwp0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR10MB1466.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(39860400002)(136003)(376002)(346002)(366004)(451199018)(83380400001)(2616005)(86362001)(38100700002)(66556008)(31696002)(8676002)(36756003)(41300700001)(8936002)(66476007)(2906002)(66946007)(186003)(53546011)(5660300002)(6512007)(316002)(478600001)(26005)(6486002)(6506007)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Qkx3QXhWU2pHSmk0M244dzYwamhEelkwSTFpUlg3eVdwT1RxMTc5cUdvK3hu?=
- =?utf-8?B?Qld4eFpOdnV1SjRpTDRNQzYrSnlNSzhFUXB6T1crdDM2ajdCNXlwdDZsNFg0?=
- =?utf-8?B?Rkk3SmRvNnpQc3p0MmRlQzBJVDBGbFE2azZyU3h0ekRQdHliMktxV1c3VWxZ?=
- =?utf-8?B?b2VKVzBqUjRzNW1lT2QxMkdnV2RvM3pEdW1ja255bGthZmI0dWovdG9Ya2xL?=
- =?utf-8?B?L29jZ2Q5Q3FndFZURmVvNUNaS1ZGY2Npc0wzaU9hM3BSSFpRYlpxQW1WUW1a?=
- =?utf-8?B?Z0xWSWhjZjRTNU1RSE9Qc0E4R3VIS1JWMmpFM3FiWHRNZjRXSGxWT3VhYmw2?=
- =?utf-8?B?bkJSaFNDb1hkN0NxWVlZUWJGZU16ZG5rOVA1QzYrZTRZamZxU0MvR0duSWF2?=
- =?utf-8?B?OHNmTTN3YVF6QnRxa0NkcWJSK2VRbWdtOXdWNTkxQXV6WkZta1Q1T1Y2NTFl?=
- =?utf-8?B?MGIwKzVFTEp4Q1p3N2F3N2ZaVUNlS2RYek1FeGxraFVjVmRyT3hNWG54ZDE3?=
- =?utf-8?B?U21UVzJ6NjFSbjdTdFFTa0sxZTN1ZjRBNzRqUEg1R1U0TjFmaDc2WHgyMWFy?=
- =?utf-8?B?MlZoNzhxSlRFZHpnM0V5M3ZwVUJ6RHdZUUEreHcwZ2ZaVVNJL1Jva09yNmpt?=
- =?utf-8?B?Qm1ZNHlhUm5mR2NFeEkyQm1RRGtkSXU2NGNpeFF0dy9pTlNmc3FiTEZUTzB1?=
- =?utf-8?B?WTdraDRlSXlZWFNtOE9Hdk9VNDJ4TzQ4ZEliZ1hHeEx0K25KRndhdSs1bGIr?=
- =?utf-8?B?Z3EwQ1JEQmpyam9zZmpMMG10K3BRVCtLUlpNSlJvUmVGdjFVeEdCVDNQYUtk?=
- =?utf-8?B?NmcycERPaHFTY2Z2VjNLVWdVVzEzNmpCZy8vNXNERGJFREpLNEhBU0xHdkRE?=
- =?utf-8?B?RitPb1ludDFaSzlxN0JkRzlsb1BJWGg2OUtpWmQ1WWJWRzFveE1BTTZRRTVZ?=
- =?utf-8?B?MVQ0MytsUWJacXJocU0ydEE4d2hVOXFaUm91dlZyMDBJbmtNQUZ1dFNkSXlR?=
- =?utf-8?B?OVcrRE5ZNE41aUtURlVZc3EwYlhOaG5ycHM0NUJFdzVpR096dTF0SXNXQ083?=
- =?utf-8?B?TzQ3SXduOVhLSWNia2hUL0dHNzZmZlhrblNZbnBINXF2bWVWcjhPeVNKdzBw?=
- =?utf-8?B?R1pSZmFwbkRGR3BSaFdQa1JyN0ZhZ3lLc0V2YnVMZUtyQjNUaHBzM3NTakwv?=
- =?utf-8?B?YkZ2L29CeTlNTW5oT1lOS2hjRTVCRHFXSDJMVFhRQ2hRMFNZKzAxcytoUDB4?=
- =?utf-8?B?aHlFVjVBS1FObDlEL2g2TmcvNUFYZGpORjNnV3hlemFqWG5xMHBUNHMxOXVM?=
- =?utf-8?B?R0Z2SlRnR05Nb2pxYjVLN292NUYyKzlrVHdCT0xFMVArQS9LUXFsT3hpc1pL?=
- =?utf-8?B?NFZuSTJQVHlDb3B1M09rR1FwVWxRd214eXp6OFhFd1pyeG5VOXVEcjU5amV4?=
- =?utf-8?B?cFpSUCtPNkVoRjRPUS9sOTYvYUVra0lENjh2WEdhMTI4bFRRQysvdEJlQ1h3?=
- =?utf-8?B?bzJaS1o1NUd1c3ZBQ1dKV0ppc3hXY2VXb285SUxraTR3Y1RkcG1LSVZvWndv?=
- =?utf-8?B?WCtiNm9vTytsWVhaVm1pZGtpc05OQUljTERpdjAzL0M5bko3aWlzVWZLV000?=
- =?utf-8?B?c2JJMDZISkFyQkxqOEhka2U0aW1tZERkMTZXTnhSdW5jZy9wVytLbzFxT0hC?=
- =?utf-8?B?dlhoZE5DZ2ExQUkwYzI3Yk5JM0c5QTFMT1VxQ2R3VXhvMjZXUTdscnZ3bVFu?=
- =?utf-8?B?OFBCOXVtS2RFWnluSHArM3NrZDVJdkRwSEF2RGdUaXpVWlhVOHB4M1gybmVH?=
- =?utf-8?B?RVlWUmNlSGxaSXFCMGdkZXBQbXFQM3JHRXJkc3FSaElTUzZBZUZZK3BoN0Uz?=
- =?utf-8?B?MkNNNHNseGIyeDBMNHV0bmRuQUhnVEhObWNIZEoxNGcva09GWHlVazMxcE9T?=
- =?utf-8?B?RUgxNEwvenNxalU1Z0l2bHo1VG5neExBczBRRmV5MUdDeDZnNEROYXAxUWlF?=
- =?utf-8?B?Z0JQVERnazluVmZxVG5UM2x4RGRtTHlrSW55RWFoVkhFMTVIdVdTZjh1YStt?=
- =?utf-8?B?akNLanloKzZxbW11MzI5cmdrR3pucEhPRU9rNTBRU3o4TWxBVXUvNjU2QmtY?=
- =?utf-8?B?N01sbnI0ZDREcERiOFN1cDg2UVplTlRMbjhHMEhXL29XMXRKNWpFejlkMkxq?=
- =?utf-8?B?b2c9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?utf-8?B?R0ZidkQ0V055czRjMHlMR1gvUjd0Q2ZySjlwRyt2RlA0MXhVNXhlMGIwbGNl?=
- =?utf-8?B?dFFlTE55Rm5hMXdYYzdsYVA1OHBxUzJ5bGlWcVJ3NFJ1bjVqYXZmZFVETEkr?=
- =?utf-8?B?RzdUellqU0hOaFJqRm02QXZKOFord2VFTkRVSExqdFNCQVk1M0lPNi9BL1FQ?=
- =?utf-8?B?L1VOMWRCUXNaS0s3RmVxRzZnN0dpcnNGRmorSThmNDRFVjFRUlRUeERMcnlN?=
- =?utf-8?B?VFZqdExSeVhuNElXeDV2d1BoaEJjVDNRdFY5QmpjRlY4bDN0NTY0M25LUGJs?=
- =?utf-8?B?MkVzT3VUNjRxOTc4VW80eHlmNHlHLzFjRTdDYWJTcXArNWJLWDJ4Q0xyQzRk?=
- =?utf-8?B?Uy9aQllFeWxqU3g1Y3RkWno1TjZKODhNVDNMOEF1bWZ0dDNKNUh6bFpIOE5S?=
- =?utf-8?B?SGk1bSs0WTR0V2VxM1dSSDlOSERwWXhwYmFHdlNpNkF2bE5JbUNkREZuL2lj?=
- =?utf-8?B?UUEzRlRML2NpeW93dHBJcnExNkdYdHFyM1BlZFV5WEM5dU12OG9OaXJsSmlX?=
- =?utf-8?B?ejZCV0NjdkN5UTlVOUtoU1dKZDhGSCtvU0t0R25rd0QzVnZYOWZQWVFnYi9k?=
- =?utf-8?B?VUdacGZncjVLamZTKytqUWhidEhteW5YNjhkWWhXYjNsa2hUaFZGZXU4NFlT?=
- =?utf-8?B?NXFMcjlsT2IyMEd2MVpXbzFYZW9La0JQVlRLU1psR2lURi83MTR1eW4zb2VN?=
- =?utf-8?B?MkVUMEN5S3UrY1RkdG4rNk1XaGhVOVJibmhCaW82Q2RKYTUxMmdCak43T3NS?=
- =?utf-8?B?bjhYbi8xdm5yYVh1emN0dURWSS9OSVBiSXFFeGJiSkVsNFIxRXZJMTI1OVZV?=
- =?utf-8?B?cGRveVlha09RanVLcXFxcXY5S3l5UVRENzhSc1hZTWgrTFIvcmNyUUtOdG5t?=
- =?utf-8?B?Q3g1VDRQbk5taEtBSSs2UDEvMUhDZi9uaE5MelhwcHpnb0diTjQrZkVXQ2NO?=
- =?utf-8?B?eXIrOWlmb0svWm5Bc3UrbHE5WEtOZ2FZRVZldHFpNEFyeC90aWJkckZ3Uk82?=
- =?utf-8?B?R2JvVU93L0VJWk9jRFNlQmYvL1J3N1AwcG9FdFpRaW96UTZ2WkpYZmZuTWUz?=
- =?utf-8?B?VXlpejYycmJHbnZzQll6bm5FeXRUS0JGZkVoSjhyZ1RkRVQzMEppQk4waEhQ?=
- =?utf-8?B?MzcwZlF4V211SnlUNkxZYkk3djQzOE42UENEQUNRSlZDUFZjUmEreVVUQ25N?=
- =?utf-8?B?UFpxdVR5ZjZWU2Qwa3d2U2poTzZjWWx3ZkpxUTBoZ2l6ZHV3Y00wUXRVWVk5?=
- =?utf-8?B?RisvcDExUDdNWkZMS1dwYlJQbnJ4WHJ3Ylh6aml5WGkzZ0R1SE9BNTdueEpD?=
- =?utf-8?Q?ANGL5Oc2uyWOU0YHN4YFT2UzWzFN8YQXlL?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ad4db3e-423d-49c5-3088-08db2a34252e
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR10MB1466.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 17:46:05.5225
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SFxEYq0DyGnQJncUgqokCI7EE39L4wO7MfTxlW+JZy8E1hywdS7AUaLdY8M+ySn4fsaEdUeV9wAT2YpNNWE4BEcIaOSzZVGMKbDrcWne6vA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR10MB7065
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RESEND PATCH v7 0/5] can: bxcan: add support for ST bxCAN
+ controller
+Content-Language: en-US
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Rob Herring <robh@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        <michael@amarulasolutions.com>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-can@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <netdev@vger.kernel.org>
+References: <20230315211040.2455855-1-dario.binacchi@amarulasolutions.com>
+ <CABGWkvpHHLNzZHDMzWveoHtApmR3czVvoCOnuWBZt-UoLVU-6g@mail.gmail.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <CABGWkvpHHLNzZHDMzWveoHtApmR3czVvoCOnuWBZt-UoLVU-6g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.201.21.93]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-03-21_11,2023-03-21_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 adultscore=0
- mlxlogscore=999 mlxscore=0 bulkscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303150002
- definitions=main-2303210140
-X-Proofpoint-ORIG-GUID: v3IxDMIzbBvd4McceXA5jUo1Zh73v9sm
-X-Proofpoint-GUID: v3IxDMIzbBvd4McceXA5jUo1Zh73v9sm
-X-Spam-Status: No, score=-0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/21/23 12:03 PM, syzbot wrote:
-> RIP: 0010:vhost_task_start+0x22/0x40 kernel/vhost_task.c:115
-> Code: 00 00 00 00 00 0f 1f 00 f3 0f 1e fa 53 48 89 fb e8 c3 67 2c 00 48 8d 7b 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 0a 48 8b 7b 70 5b e9 fe bd 02 00 e8 79 ec 7e 00 eb
-> RSP: 0018:ffffc90003a9fc38 EFLAGS: 00010207
-> RAX: dffffc0000000000 RBX: fffffffffffffff4 RCX: 0000000000000000
-> RDX: 000000000000000c RSI: ffffffff81564c8d RDI: 0000000000000064
-> RBP: ffff88802b21dd40 R08: 0000000000000100 R09: ffffffff8c917cf3
-> R10: 00000000fffffff4 R11: 0000000000000000 R12: fffffffffffffff4
-> R13: ffff888075d000b0 R14: ffff888075d00000 R15: ffff888075d00008
-> FS:  0000555556247300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007ffe3d8e5ff8 CR3: 00000000215d4000 CR4: 00000000003506f0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  vhost_worker_create drivers/vhost/vhost.c:580 [inline]
+Hi Dario,
 
-The return value from vhost_task_create is incorrect if the kzalloc fails.
 
-Christian, here is a fix for what's in your tree. Do you want me to submit
-a follow up patch like this or a replacement patch for:
+On 3/21/23 12:25, Dario Binacchi wrote:
+> A gentle ping to remind you of this series.
+> I have no idea why it hasn't deserved any response for quite some
+> time.
+> Is there anything I am still missing?
+> 
+> Please let me know.
 
-commit 77feab3c4156 ("vhost_task: Allow vhost layer to use copy_process")
+I'm just waiting driver (+dt-binding) merge. I prefer that dt-bindings 
+and driver patches are merged first (to avoid yaml issue with DT 
+pacthes). To be honest, I have not checked the status about those patches.
 
-with the fix rolled into it?
+
+Cheers
+Alex
 
 
 
-From 0677ad6d77722f301ca35e8e0f8fd0cbd5ed8484 Mon Sep 17 00:00:00 2001
-From: Mike Christie <michael.christie@oracle.com>
-Date: Tue, 21 Mar 2023 12:39:39 -0500
-Subject: [PATCH] vhost_task: Fix vhost_task_create return value
-
-vhost_task_create is supposed to return the vhost_task or NULL on
-failure. This fixes it to return the correct value when the allocation
-of the struct fails.
----
- kernel/vhost_task.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/vhost_task.c b/kernel/vhost_task.c
-index 4b8aff160640..b7cbd66f889e 100644
---- a/kernel/vhost_task.c
-+++ b/kernel/vhost_task.c
-@@ -88,7 +88,7 @@ struct vhost_task *vhost_task_create(int (*fn)(void *), void *arg,
- 
- 	vtsk = kzalloc(sizeof(*vtsk), GFP_KERNEL);
- 	if (!vtsk)
--		return ERR_PTR(-ENOMEM);
-+		return NULL;
- 	init_completion(&vtsk->exited);
- 	vtsk->data = arg;
- 	vtsk->fn = fn;
-
+> Thanks and regards,
+> 
+> Dario
+> 
+> 
+> On Wed, Mar 15, 2023 at 10:10 PM Dario Binacchi
+> <dario.binacchi@amarulasolutions.com> wrote:
+>>
+>> The series adds support for the basic extended CAN controller (bxCAN)
+>> found in many low- to middle-end STM32 SoCs.
+>>
+>> The driver design (one core module and one driver module) was inspired
+>> by other ST drivers (e. g. drivers/iio/adc/stm32-adc.c,
+>> drivers/iio/adc/stm32-adc-core.c) where device instances share resources.
+>> The shared resources functions are implemented in the core module, the
+>> device driver in a separate module.
+>>
+>> The driver has been tested on the stm32f469i-discovery board with a
+>> kernel version 5.19.0-rc2 in loopback + silent mode:
+>>
+>> ip link set can0 type can bitrate 125000 loopback on listen-only on
+>> ip link set up can0
+>> candump can0 -L &
+>> cansend can0 300#AC.AB.AD.AE.75.49.AD.D1
+>>
+>> For uboot and kernel compilation, as well as for rootfs creation I used
+>> buildroot:
+>>
+>> make stm32f469_disco_sd_defconfig
+>> make
+>>
+>> but I had to patch can-utils and busybox as can-utils and iproute are
+>> not compiled for MMU-less microcotrollers. In the case of can-utils,
+>> replacing the calls to fork() with vfork(), I was able to compile the
+>> package with working candump and cansend applications, while in the
+>> case of iproute, I ran into more than one problem and finally I decided
+>> to extend busybox's ip link command for CAN-type devices. I'm still
+>> wondering if it was really necessary, but this way I was able to test
+>> the driver.
+>>
+>> Changes in v7:
+>> - Add Vincent Mailhol's Reviewed-by tag.
+>> - Remove all unused macros for reading/writing the controller registers.
+>> - Add CAN_ERR_CNT flag to notify availability of error counter.
+>> - Move the "break" before the newline in the switch/case statements.
+>> - Print the mnemotechnic instead of the error value in each netdev_err().
+>> - Remove the debug print for timings parameter.
+>> - Do not copy the data if CAN_RTR_FLAG is set in bxcan_start_xmit().
+>> - Populate ndev->ethtool_ops with the default timestamp info.
+>>
+>> Changes in v6:
+>> - move can1 node before gcan to keep ordering by address.
+>>
+>> Changes in v5:
+>> - Add Rob Herring's Acked-by tag.
+>> - Add Rob Herring's Reviewed-by tag.
+>> - Put static in front of bxcan_enable_filters() definition.
+>>
+>> Changes in v4:
+>> - Remove "st,stm32f4-bxcan-core" compatible. In this way the can nodes
+>>   (compatible "st,stm32f4-bxcan") are no longer children of a parent
+>>    node with compatible "st,stm32f4-bxcan-core".
+>> - Add the "st,gcan" property (global can memory) to can nodes which
+>>    references a "syscon" node containing the shared clock and memory
+>>    addresses.
+>> - Replace the node can@40006400 (compatible "st,stm32f4-bxcan-core")
+>>    with the gcan@40006600 node ("sysnode" compatible). The gcan node
+>>    contains clocks and memory addresses shared by the two can nodes
+>>    of which it's no longer the parent.
+>> - Add to can nodes the "st,gcan" property (global can memory) which
+>>    references the gcan@40006600 node ("sysnode compatibble).
+>> - Add "dt-bindings: arm: stm32: add compatible for syscon gcan node" patch.
+>> - Drop the core driver. Thus bxcan-drv.c has been renamed to bxcan.c and
+>>    moved to the drivers/net/can folder. The drivers/net/can/bxcan directory
+>>    has therefore been removed.
+>> - Use the regmap_*() functions to access the shared memory registers.
+>> - Use spinlock to protect bxcan_rmw().
+>> - Use 1 space, instead of tabs, in the macros definition.
+>> - Drop clock ref-counting.
+>> - Drop unused code.
+>> - Drop the _SHIFT macros and use FIELD_GET()/FIELD_PREP() directly.
+>> - Add BXCAN_ prefix to lec error codes.
+>> - Add the macro BXCAN_RX_MB_NUM.
+>> - Enable time triggered mode and use can_rx_offload().
+>> - Use readx_poll_timeout() in function with timeouts.
+>> - Loop from tail to head in bxcan_tx_isr().
+>> - Check bits of tsr register instead of pkts variable in bxcan_tx_isr().
+>> - Don't return from bxcan_handle_state_change() if skb/cf are NULL.
+>> - Enable/disable the generation of the bus error interrupt depending
+>>    on can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING.
+>> - Don't return from bxcan_handle_bus_err() if skb is NULL.
+>> - Drop statistics updating from bxcan_handle_bus_err().
+>> - Add an empty line in front of 'return IRQ_HANDLED;'
+>> - Rename bxcan_start() to bxcan_chip_start().
+>> - Rename bxcan_stop() to bxcan_chip_stop().
+>> - Disable all IRQs in bxcan_chip_stop().
+>> - Rename bxcan_close() to bxcan_ndo_stop().
+>> - Use writel instead of bxcan_rmw() to update the dlc register.
+>>
+>> Changes in v3:
+>> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+>> - Add description to the parent of the two child nodes.
+>> - Move "patterProperties:" after "properties: in top level before "required".
+>> - Add "clocks" to the "required:" list of the child nodes.
+>> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+>> - Add "clocks" to can@0 node.
+>> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+>> - Remove a blank line.
+>> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+>> - Fix the documentation file path in the MAINTAINERS entry.
+>> - Do not increment the "stats->rx_bytes" if the frame is remote.
+>> - Remove pr_debug() call from bxcan_rmw().
+>>
+>> Changes in v2:
+>> - Change the file name into 'st,stm32-bxcan-core.yaml'.
+>> - Rename compatibles:
+>>    - st,stm32-bxcan-core -> st,stm32f4-bxcan-core
+>>    - st,stm32-bxcan -> st,stm32f4-bxcan
+>> - Rename master property to st,can-master.
+>> - Remove the status property from the example.
+>> - Put the node child properties as required.
+>> - Remove a blank line.
+>> - Fix sparse errors.
+>> - Create a MAINTAINERS entry.
+>> - Remove the print of the registers address.
+>> - Remove the volatile keyword from bxcan_rmw().
+>> - Use tx ring algorithm to manage tx mailboxes.
+>> - Use can_{get|put}_echo_skb().
+>> - Update DT properties.
+>>
+>> Dario Binacchi (5):
+>>    dt-bindings: arm: stm32: add compatible for syscon gcan node
+>>    dt-bindings: net: can: add STM32 bxcan DT bindings
+>>    ARM: dts: stm32: add CAN support on stm32f429
+>>    ARM: dts: stm32: add pin map for CAN controller on stm32f4
+>>    can: bxcan: add support for ST bxCAN controller
+>>
+>>   .../bindings/arm/stm32/st,stm32-syscon.yaml   |    2 +
+>>   .../bindings/net/can/st,stm32-bxcan.yaml      |   83 ++
+>>   MAINTAINERS                                   |    7 +
+>>   arch/arm/boot/dts/stm32f4-pinctrl.dtsi        |   30 +
+>>   arch/arm/boot/dts/stm32f429.dtsi              |   29 +
+>>   drivers/net/can/Kconfig                       |   12 +
+>>   drivers/net/can/Makefile                      |    1 +
+>>   drivers/net/can/bxcan.c                       | 1088 +++++++++++++++++
+>>   8 files changed, 1252 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/net/can/st,stm32-bxcan.yaml
+>>   create mode 100644 drivers/net/can/bxcan.c
+>>
+>> --
+>> 2.32.0
+>>
+> 
+> 
 
