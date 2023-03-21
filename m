@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95EC86C2858
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 03:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D816C2865
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 03:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbjCUCyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 22:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
+        id S229942AbjCUC7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 22:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbjCUCyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 22:54:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9798A77
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 19:54:09 -0700 (PDT)
+        with ESMTP id S229511AbjCUC7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 22:59:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7A72CFDF;
+        Mon, 20 Mar 2023 19:59:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 160AE618EB
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 02:54:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C2E8C433D2;
-        Tue, 21 Mar 2023 02:54:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D48A5B8122D;
+        Tue, 21 Mar 2023 02:59:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1CCC433EF;
+        Tue, 21 Mar 2023 02:59:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679367248;
-        bh=+e8NPxp91HzoORgKcFaDNZq+OCICLaEsyOkrdkmV858=;
+        s=k20201202; t=1679367545;
+        bh=eGZ12823VjR8FESNPxbdNPJs2pRSqBnSdBM4rZllz9k=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cvtpVte1Bq2O1H51wJAr0TJC1lncntArPTEldYI7YO/nh5cLlHouyeZanN2wUYxcN
-         h+TGoXtfiJX2kG3+7sGiIfM0vWGCD+m3XxdQpC52oJNYwupkn0KFbuDM7jCxkps2QU
-         H10i5R7UqDSltrdzWvaRlC/LLo2DQOta5YIbIewBPK9I4fApI1u0Bbp1+/32+qX7eN
-         tTBGmKGUcp4J1E+VlNRmXVdfElgM1cBd7jRRCKzQcnjhBOt8i9YbUwY+LLw8hsBCrG
-         xwxnooXJvZdK67s2vN5JldtcJ/KNaoh02X48tPUQ+N7IshE6FPKDE6HPuNUfoSdAzh
-         qYtNX5z/7Qikg==
-Date:   Mon, 20 Mar 2023 19:54:07 -0700
+        b=eTfOIVrTzMIupl5JsKTcTbXxjSvOFYihLyKQRgbNQJmkBISNBYW/4zTmrUopoFotq
+         GxWq+mtKXg9VjRbzCyWQNvcMrMs8KNXWaomOnT/8f2tUeM+YBZbXJEDKsMUUy7xbNC
+         HIBV0EYl1BgQV5X6AJfNdxf0xsOqZ0qHqjvqRWRC3kdtmWwByAPYtSKd32nPB/oykv
+         UAELWWBWgyCSaCtfFkT8lhuA/HN2kr93OcGFLEZutekhFUBsQhcfuvF/kMqznwyvun
+         edrn5UmPqphWkzX74xUdVHVwWJP7QJjbuFPvBxCWBuI9p6iSorEYDkFsfByly9B7iS
+         VIaWykDUFqKCg==
+Date:   Mon, 20 Mar 2023 19:59:03 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ilya Maximets <i.maximets@ovn.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net/sched: act_tunnel_key: add support for
- "don't fragment"
-Message-ID: <20230320195407.69ac5e2c@kernel.org>
-In-Reply-To: <13672bdb258d2f261ef233033437f1034995785b.1679312049.git.dcaratti@redhat.com>
-References: <cover.1679312049.git.dcaratti@redhat.com>
-        <13672bdb258d2f261ef233033437f1034995785b.1679312049.git.dcaratti@redhat.com>
+To:     Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
+Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Subject: Re: BUG: selftests/net/tls: FAIL in sm4_ccm tests
+Message-ID: <20230320195903.314dcb21@kernel.org>
+In-Reply-To: <ad89d824-6fa4-990d-42ed-f768db92cfb1@alu.unizg.hr>
+References: <ad89d824-6fa4-990d-42ed-f768db92cfb1@alu.unizg.hr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,8 +55,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Mar 2023 12:44:55 +0100 Davide Caratti wrote:
->  .../selftests/net/forwarding/tc_tunnel_key.sh | 161 ++++++++++++++++++
+On Mon, 20 Mar 2023 17:07:36 +0100 Mirsad Todorovac wrote:
+> The environment is AlmaLinux 8.7 running 6.3-rc3 vanilla kernel with
+> MGLRU, KMEMLEAK and CONFIG_DEBUG_KOBJECT=y enabled.
 
-Ah, and make sure to include the script in the Makefile so it's
-actually run.
+Do you have SM4 and CCM enabled in you kernel .config ?
+It's not a popular cipher. 
+Make sure your config has all the options listed in
+tools/testing/selftests/net/config
