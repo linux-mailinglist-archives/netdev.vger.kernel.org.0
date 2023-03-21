@@ -2,118 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F566C38C1
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 18:57:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DBA76C38DE
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbjCUR52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 13:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
+        id S230080AbjCUSEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230395AbjCUR4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 13:56:52 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2816855507
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 10:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=X/XHGzweNcGnZj7J+RpSBa5nq+wT
-        r0BLkAkcv70wsdM=; b=D+nVXfa0FkyurAG1/7M4V0Z5UKvwx0AkpfK84DU1Cz1j
-        fRaH19mATwg5Ru7VOD01wnpi7ixQ4UzWzH4sGAQtN5NLTaDU9i3DBiNd25x/c7OY
-        OXYQoEyAS0v3UmDsdvhS+ZChMb0cdBJJRjT3M9JBqXWRir7R9vLc1HhXUOfvv3s=
-Received: (qmail 1364990 invoked from network); 21 Mar 2023 18:56:28 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2023 18:56:28 +0100
-X-UD-Smtp-Session: l3s3148p1@bhIcw2z34N4ujnv6
-Date:   Tue, 21 Mar 2023 18:56:25 +0100
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 2/2] smsc911x: avoid PHY being resumed when
- interface is not up
-Message-ID: <ZBnvya7Q/brY+MEt@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <20230320092041.1656-1-wsa+renesas@sang-engineering.com>
- <20230320092041.1656-3-wsa+renesas@sang-engineering.com>
- <7589589f340f1ecb49bc8ed852e1e2dddb384700.camel@redhat.com>
+        with ESMTP id S230368AbjCUSEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:04:31 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECAE2A999;
+        Tue, 21 Mar 2023 11:04:21 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id l16so8673978ybe.6;
+        Tue, 21 Mar 2023 11:04:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679421861;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sBdvXh/c3I/U5M/2ybbvcKctKEFyFqgkWliPpnVIxQk=;
+        b=SipYV3YA0zrzvmEAe30qwziS5hscxDJcXBtvyGPKiDeS/a5/78Y7ULbxZFIuUEPGOX
+         o7P1hkar9PNEHRl5tBd9K+osE590hpor8PAiD7JrbmkJE9n1mWxdIwI+Wwd8VN3DF5Vp
+         WAGj21Yr2UbQbY8WMWxHMbrPA8dc7tWU5QK6IBJ8lnIsqa4b+aIdNjot3/h9Igoe/KzE
+         ZEv9jkmTrVhgzLBw4Sop/BEf/FQBKiIGXJiNiJgsL/yWnculcNGigGaHFcTb0EdyGmBY
+         rUj/5gqadi4kmXFa+AseUOgBrta/UoyqMmo29rn8uePcc730y+0kwNDMYzlYC0P79Zri
+         9tBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679421861;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sBdvXh/c3I/U5M/2ybbvcKctKEFyFqgkWliPpnVIxQk=;
+        b=cjaQzcf8DHUUQ50zfpMTEsImGEXz5GhHFE9wtaqrZ22aRc5I2rEa3TfWoOhJp2P227
+         qSH0eC2iZFxJpE0ybLjy7+ev7iG2Be4wE1K9QPw2l0ZmSE75GtUh0ChR/dAyFg5PStjA
+         NRaehLM5XYmr6VeH8AvFoudA49ynev28neqHucZoaucst3cmQW6+4L9vO5yJrPVr1D2G
+         AdhYe+tPdoOTOe/nEJTuuN0PZLhpI7JVJ/yK6hIqQ1ZSazRwmUpdEqbVsCXtdnYwY4xG
+         z1olXUsc1Je4kS8wtzGsQ159vU848OFGMJdC7XtqdPyrHYVtqFhh6aUkFaxKAi0sJuyw
+         I/1A==
+X-Gm-Message-State: AAQBX9fkovDlsZY611WaLvd9W132xI68opCh7w6J8/nvuR3IZE4pfbRp
+        9EqFuwVnwuFWBqF7AvC9UGkVqE7011m0W+5Ynhc=
+X-Google-Smtp-Source: AKy350aqIu+5LqJWWDRZJb8jTAYnVYgUsIoJ1tMqb9Gfunl4Czz5IhEZHTP2GhG3bVR36wQJXrhdapaVcqBc+g7x62Q=
+X-Received: by 2002:a05:6902:1109:b0:b6d:fc53:c5c0 with SMTP id
+ o9-20020a056902110900b00b6dfc53c5c0mr2338157ybu.1.1679421860715; Tue, 21 Mar
+ 2023 11:04:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dSX357otSPN9QRZc"
-Content-Disposition: inline
-In-Reply-To: <7589589f340f1ecb49bc8ed852e1e2dddb384700.camel@redhat.com>
+References: <20230320182813.963508-1-noltari@gmail.com> <CAOiHx=nKVWfa1-_VAf3bz+6PPz0uWMHyEtoVVOysFf0srZorBA@mail.gmail.com>
+In-Reply-To: <CAOiHx=nKVWfa1-_VAf3bz+6PPz0uWMHyEtoVVOysFf0srZorBA@mail.gmail.com>
+From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Date:   Tue, 21 Mar 2023 19:04:09 +0100
+Message-ID: <CAKR-sGdpck1GPMpqM3M-H6Bz_mp+xiV-o6ZuR6QZATNA_=Xa0A@mail.gmail.com>
+Subject: Re: [RFC PATCH] drivers: net: dsa: b53: mmap: add phy ops
+To:     Jonas Gorski <jonas.gorski@gmail.com>
+Cc:     f.fainelli@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jonas,
 
---dSX357otSPN9QRZc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+El mar, 21 mar 2023 a las 11:36, Jonas Gorski
+(<jonas.gorski@gmail.com>) escribi=C3=B3:
+>
+> On Mon, 20 Mar 2023 at 19:28, =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@g=
+mail.com> wrote:
+> >
+> > Currently, B53 MMAP BCM63xx devices with an external switch hang when
+> > performing PHY read and write operations due to invalid registers acces=
+s.
+> > This adds support for PHY ops by using the internal bus from mdio-mux-b=
+cm6368
+> > when probed by device tree and also falls back to direct MDIO registers=
+ if not.
+> >
+> > This is an alternative to:
+> > - https://patchwork.kernel.org/project/netdevbpf/cover/20230317113427.3=
+02162-1-noltari@gmail.com/
+> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
+02162-2-noltari@gmail.com/
+> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
+02162-3-noltari@gmail.com/
+> > - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.3=
+02162-4-noltari@gmail.com/
+> > As discussed, it was an ABI break and not the correct way of fixing the=
+ issue.
+> >
+> > Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
+> > ---
+> >  drivers/net/dsa/b53/b53_mmap.c    | 86 +++++++++++++++++++++++++++++++
+> >  include/linux/platform_data/b53.h |  1 +
+> >  2 files changed, 87 insertions(+)
+> >
+> > diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_m=
+map.c
+> > index 706df04b6cee..7deca1c557c5 100644
+> > --- a/drivers/net/dsa/b53/b53_mmap.c
+> > +++ b/drivers/net/dsa/b53/b53_mmap.c
+> > @@ -19,14 +19,25 @@
+> >  #include <linux/bits.h>
+> >  #include <linux/kernel.h>
+> >  #include <linux/module.h>
+> > +#include <linux/of_mdio.h>
+> >  #include <linux/io.h>
+> >  #include <linux/platform_device.h>
+> >  #include <linux/platform_data/b53.h>
+> >
+> >  #include "b53_priv.h"
+> >
+> > +#define REG_MDIOC              0xb0
+> > +#define  REG_MDIOC_EXT_MASK    BIT(16)
+> > +#define  REG_MDIOC_REG_SHIFT   20
+> > +#define  REG_MDIOC_PHYID_SHIFT 25
+> > +#define  REG_MDIOC_RD_MASK     BIT(30)
+> > +#define  REG_MDIOC_WR_MASK     BIT(31)
+> > +
+> > +#define REG_MDIOD              0xb4
+> > +
+> >  struct b53_mmap_priv {
+> >         void __iomem *regs;
+> > +       struct mii_bus *bus;
+> >  };
+> >
+> >  static int b53_mmap_read8(struct b53_device *dev, u8 page, u8 reg, u8 =
+*val)
+> > @@ -216,6 +227,69 @@ static int b53_mmap_write64(struct b53_device *dev=
+, u8 page, u8 reg,
+> >         return 0;
+> >  }
+> >
+> > +static inline void b53_mmap_mdio_read(struct b53_device *dev, int phy_=
+id,
+> > +                                     int loc, u16 *val)
+> > +{
+> > +       uint32_t reg;
+> > +
+> > +       b53_mmap_write32(dev, 0, REG_MDIOC, 0);
+> > +
+> > +       reg =3D REG_MDIOC_RD_MASK |
+> > +             (phy_id << REG_MDIOC_PHYID_SHIFT) |
+> > +             (loc << REG_MDIOC_REG_SHIFT);
+> > +
+> > +       b53_mmap_write32(dev, 0, REG_MDIOC, reg);
+> > +       udelay(50);
+> > +       b53_mmap_read16(dev, 0, REG_MDIOD, val);
+> > +}
+> > +
+> > +static inline int b53_mmap_mdio_write(struct b53_device *dev, int phy_=
+id,
+> > +                                     int loc, u16 val)
+>
+> On nitpick here: AFACT, what you are actually getting there as phy_id
+> isn't the phy_id but the port_id, it just happens to be identical for
+> internal ports.
+>
+> So in theory you would first need to convert this to the appropriate
+> phy_id (+ which bus) first, else you risk reading from the wrong
+> device (and/or bus).
 
-Hi Paolo,
+I agree with you and your suggestion gave me an idea, what if
+phy_read/phy_write wasn't set in b53 dsa_switch_ops for mmap?
 
-> > In smsc911x_mii_probe(), I remove the sanity check for 'phydev' because
-> > it was already done in smsc911x_mii_init(). Let me know if this is
-> > acceptable or if a more defensive approach is favoured.
->=20
-> Since this is a fix, I would keep the old check, too.
+So I implemented the following patch:
+https://gist.github.com/Noltari/cfecb29d6401d06b9cb5dd199607918b#file-net-d=
+sa-b53-mmap-disable-phy-read-write-patch
 
-Yes, makes sense.
+And this is the result:
+https://gist.github.com/Noltari/cfecb29d6401d06b9cb5dd199607918b#file-net-d=
+sa-b53-mmap-disable-phy-read-write-log
 
-> > +	phydev =3D phy_find_first(pdata->mii_bus);
-> > +	if (!phydev) {
-> > +		netdev_err(dev, "no PHY found\n");
-> > +		err =3D -ENOENT;
-> > +		goto err_out_free_bus_2;
->=20
-> Why don't you call mdiobus_unregister() in this error path?
+As you can see, bcm6368-mdio-mux is now used for every mii access as
+it should have been from the beginning...
+So I guess that the correct way of fixing the issue would be to
+disable phy read/write from b53 mmap. However, I don't know if the
+patch that I provided is correct, or if I should remove those from
+dsa_switch_ops in any other way (I'm open to suggestions).
 
-Oversight. I will fix it.
+>
+> See how the phys_mii_mask is based on the indexes of the user ports,
+> not their actual phy_ids. [1] [2]
+>
+> [1] https://elixir.bootlin.com/linux/latest/source/net/dsa/dsa.c#L660
+> [2] https://elixir.bootlin.com/linux/latest/source/include/net/dsa.h#L596
+>
+> Regards
+> Jonas
 
-Thank you for the review!
-
-
---dSX357otSPN9QRZc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQZ78UACgkQFA3kzBSg
-KbalWQ//QzAaCeqp5I/wIJj9fW3lDht8cVRIiUEco0sruEdxcE0uAKwVZ3FTtG69
-lobHyWzyxzJA/EtbYFPB3CWoFTRs9yVb7Dl36fBtmXz6UrUZTiiZxD661Kj6I47t
-CEcmNoMhVr+XBdNxE34vjKKe6lzFWzjOxJJEUmJ5heUbQPqpeHGH4ZDeBXb8s/8n
-fGOKOgREQ3kyk9bVYFpwPO84tWVsY+07SbQ77/zgCqaGtkh/O8doQ2Rz+LQgZub1
-Re8c/1ldwloHhQXj9p1RL/uIQCb3cR0zQD4TBDYy8M95Ip1y2PJg6islO2WGvNQJ
-z1bp57CvFiNCxdT7ZfF6uc2ysr06leJGPhBlAiXxUNCiYhJ0pWvyDi+aoohtcMsP
-rVYBikF4cASU8xxGLF6W3MUHy8W+zVubz+1Kz539L22Erb5Ca4rWpAN2n3WKYoZW
-uFyG0gD/JD88UO31aeNwgXXrpIxyEZO0UAoWMBKyopWOP+exxQ5O/Q0mM/pYqlAa
-aBf1t8ziO+3MJOoSgwOwU5UxAHUaRzc75GU4B//fg2SQipDzW4gwQU53bq2pnGQY
-M2fXFbX1RdVkGcoSJud3Jf21El4lCUfakbnvclMKWyDzpC3Z/MDjJyJm5prFCTAw
-04QYsJxmHhfbHH2Wn1nXOm+XZIW02S/K+P+o9vfD+etY+oix9KY=
-=ptv0
------END PGP SIGNATURE-----
-
---dSX357otSPN9QRZc--
+--
+Best regards,
+=C3=81lvaro
