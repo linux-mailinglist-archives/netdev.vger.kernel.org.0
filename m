@@ -2,384 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DB646C2B47
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 08:20:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A75D6C2B50
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 08:25:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbjCUHUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 03:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45628 "EHLO
+        id S229865AbjCUHZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 03:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbjCUHUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 03:20:07 -0400
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0788459EC;
-        Tue, 21 Mar 2023 00:20:03 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R721e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VeMASoW_1679383200;
-Received: from localhost(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VeMASoW_1679383200)
-          by smtp.aliyun-inc.com;
-          Tue, 21 Mar 2023 15:20:01 +0800
-From:   Kai Shen <KaiShen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        kuba@kernel.org, davem@davemloft.net, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH net-next] net/smc: introduce shadow sockets for fallback connections
-Date:   Tue, 21 Mar 2023 07:19:59 +0000
-Message-Id: <20230321071959.87786-1-KaiShen@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229832AbjCUHZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 03:25:28 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34DFE195
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 00:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679383526; x=1710919526;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tiqBbCtdZWSDGBrFauYtNNRFuabN5SnCzI7+Y8VNfec=;
+  b=gF/xZgXhlcsw4UyuVlniVfPchp0TUvsfMnfo59abchAntL1MsmSimF3i
+   V7Rox8RjGmlBz038OSPmA5q7quSPmyIcAM/9wLCzy8u5qQv77OrZQZbj7
+   JaYoiBFEck9y4MJOrqAeiOUtTKwH6tzEhlS7Cf0c7zqjcn4fhZrRHTyKp
+   82y5XS4U2AZSP+/fBm7/nYNAO41rzgDWZB1255PogT/pOmqg+ISoeX7Mh
+   uJw7BR/8hGOrcboCpbiJpwxK2aZdILsTzaSSKzFymgxTCrJ6H5PcozTFm
+   M1MDi8OmW+3IA0l6dCuh5JGMGjqm2jNr80O7wDucb17cQAAnoU6THa2Ee
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="322711890"
+X-IronPort-AV: E=Sophos;i="5.98,278,1673942400"; 
+   d="scan'208";a="322711890"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2023 00:25:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="683748123"
+X-IronPort-AV: E=Sophos;i="5.98,278,1673942400"; 
+   d="scan'208";a="683748123"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 21 Mar 2023 00:25:18 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1peWMv-000BiW-34;
+        Tue, 21 Mar 2023 07:25:17 +0000
+Date:   Tue, 21 Mar 2023 15:24:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] net: introduce a config option to tweak
+ MAX_SKB_FRAGS
+Message-ID: <202303211550.hxkdeVey-lkp@intel.com>
+References: <20230321033704.936685-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230321033704.936685-1-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMC-R performs not so well on fallback situations right now,
-especially on short link server fallback occasions. We are planning
-to make SMC-R widely used and handling this fallback performance
-issue is really crucial to us. Here we introduce a shadow socket
-method to try to relief this problem.
+Hi Eric,
 
-Basicly, we use two more accept queues to hold incoming connections,
-one for fallback connections and the other for smc-r connections.
-We implement this method by using two more 'shadow' sockets and
-make the connection path of fallback connections almost the same as
-normal tcp connections.
+I love your patch! Yet something to improve:
 
-Now the SMC-R accept path is like:
-  1. incoming connection
-  2. schedule work to smc sock alloc, tcp accept and push to smc
-     acceptq
-  3. wake up user to accept
+[auto build test ERROR on net-next/main]
 
-When fallback happens on servers, the accepting path is the same
-which costs more than normal tcp accept path. In fallback
-situations, the step 2 above is not necessary and the smc sock is
-also not needed. So we use two more shadow sockets when one smc
-socket start listening. When new connection comes, we pop the req
-to the fallback socket acceptq or the non-fallback socket acceptq
-according to its syn_smc flag. As a result, when fallback happen we
-can graft the user socket with a normal tcp sock instead of a smc
-sock and get rid of the cost generated by step 2 and smc sock
-releasing.
+url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-introduce-a-config-option-to-tweak-MAX_SKB_FRAGS/20230321-113826
+patch link:    https://lore.kernel.org/r/20230321033704.936685-1-eric.dumazet%40gmail.com
+patch subject: [PATCH net-next] net: introduce a config option to tweak MAX_SKB_FRAGS
+config: riscv-randconfig-r016-20230319 (https://download.01.org/0day-ci/archive/20230321/202303211550.hxkdeVey-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/d0eaa3eabce1c80d067a739749e4253546417722
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-introduce-a-config-option-to-tweak-MAX_SKB_FRAGS/20230321-113826
+        git checkout d0eaa3eabce1c80d067a739749e4253546417722
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/bus/mhi/host/ kernel/bpf/
 
-               +-----> non-fallback socket acceptq
-               |
-incoming req --+
-               |
-               +-----> fallback socket acceptq
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303211550.hxkdeVey-lkp@intel.com/
 
-With the help of shadow socket, we gain similar performance as tcp
-connections on short link nginx server fallback occasions as what
-is illustrated below.
+All errors (new ones prefixed by >>):
 
-Cases are like "./wrk http://x.x.x.x:x/
-	-H 'Connection: Close' -c 1600 -t 32 -d 20 --latency"
+   In file included from drivers/bus/mhi/host/init.c:15:
+   In file included from include/linux/mhi.h:12:
+>> include/linux/skbuff.h:593:19: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           skb_frag_t      frags[MAX_SKB_FRAGS];
+                                 ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   1 error generated.
+--
+   In file included from drivers/bus/mhi/host/main.c:13:
+   In file included from include/linux/mhi.h:12:
+>> include/linux/skbuff.h:593:19: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           skb_frag_t      frags[MAX_SKB_FRAGS];
+                                 ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   drivers/bus/mhi/host/main.c:803:13: warning: parameter 'event_quota' set but not used [-Wunused-but-set-parameter]
+                                u32 event_quota)
+                                    ^
+   1 warning and 1 error generated.
+--
+   In file included from kernel/bpf/core.c:21:
+   In file included from include/linux/filter.h:12:
+>> include/linux/skbuff.h:593:19: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           skb_frag_t      frags[MAX_SKB_FRAGS];
+                                 ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   kernel/bpf/core.c:1632:12: warning: no previous prototype for function 'bpf_probe_read_kernel' [-Wmissing-prototypes]
+   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+              ^
+   kernel/bpf/core.c:1632:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
+   ^
+   static 
+   1 warning and 1 error generated.
+--
+   In file included from kernel/bpf/btf.c:19:
+   In file included from include/linux/bpf_verifier.h:9:
+   In file included from include/linux/filter.h:12:
+>> include/linux/skbuff.h:593:19: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           skb_frag_t      frags[MAX_SKB_FRAGS];
+                                 ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+>> include/linux/skmsg.h:32:23: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           DECLARE_BITMAP(copy, MAX_MSG_FRAGS + 2);
+                                ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:39:27: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           struct scatterlist              data[MAX_MSG_FRAGS + 2];
+                                                ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:151:45: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           return end >= start ? end - start : end + (NR_MSG_FRAG_IDS - start);
+                                                      ^
+   include/linux/skmsg.h:17:28: note: expanded from macro 'NR_MSG_FRAG_IDS'
+   #define NR_MSG_FRAG_IDS                 (MAX_MSG_FRAGS + 1)
+                                            ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:177:47: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           BUILD_BUG_ON(ARRAY_SIZE(msg->sg.data) - 1 != NR_MSG_FRAG_IDS);
+                                                        ^
+   include/linux/skmsg.h:17:28: note: expanded from macro 'NR_MSG_FRAG_IDS'
+   #define NR_MSG_FRAG_IDS                 (MAX_MSG_FRAGS + 1)
+                                            ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:179:31: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           sg_init_marker(msg->sg.data, NR_MSG_FRAG_IDS);
+                                        ^
+   include/linux/skmsg.h:17:28: note: expanded from macro 'NR_MSG_FRAG_IDS'
+   #define NR_MSG_FRAG_IDS                 (MAX_MSG_FRAGS + 1)
+                                            ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:201:57: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           return sk_msg_iter_dist(msg->sg.start, msg->sg.end) == MAX_MSG_FRAGS;
+                                                                  ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:254:2: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+           sk_msg_iter_next(msg, end);
+           ^
+   include/linux/skmsg.h:173:2: note: expanded from macro 'sk_msg_iter_next'
+           sk_msg_iter_var_next(msg->sg.which)
+           ^
+   include/linux/skmsg.h:165:14: note: expanded from macro 'sk_msg_iter_var_next'
+                   if (var == NR_MSG_FRAG_IDS)             \
+                              ^
+   include/linux/skmsg.h:17:28: note: expanded from macro 'NR_MSG_FRAG_IDS'
+   #define NR_MSG_FRAG_IDS                 (MAX_MSG_FRAGS + 1)
+                                            ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^
+   In file included from kernel/bpf/btf.c:23:
+   include/linux/skmsg.h:264:3: error: use of undeclared identifier 'CONFIG_MAX_SKB_FRAGS'
+                   sk_msg_iter_var_next(i);
+                   ^
+   include/linux/skmsg.h:165:14: note: expanded from macro 'sk_msg_iter_var_next'
+                   if (var == NR_MSG_FRAG_IDS)             \
+                              ^
+   include/linux/skmsg.h:17:28: note: expanded from macro 'NR_MSG_FRAG_IDS'
+   #define NR_MSG_FRAG_IDS                 (MAX_MSG_FRAGS + 1)
+                                            ^
+   include/linux/skmsg.h:16:25: note: expanded from macro 'MAX_MSG_FRAGS'
+   #define MAX_MSG_FRAGS                   MAX_SKB_FRAGS
+                                           ^
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
 
-TCP:
-    Requests/sec: 145438.65
-    Transfer/sec:     21.64MB
 
-Server fallback occasions on original SMC-R:
-    Requests/sec: 114192.82
-    Transfer/sec:     16.99MB
+vim +/CONFIG_MAX_SKB_FRAGS +593 include/linux/skbuff.h
 
-Server fallback occasions on SMC-R with shadow sockets:
-    Requests/sec: 143528.11
-    Transfer/sec:     21.35MB
+6f89dbce8e11344 Sowmini Varadhan 2018-02-15  565  
+^1da177e4c3f415 Linus Torvalds   2005-04-16  566  /* This data is invariant across clones and lives at
+^1da177e4c3f415 Linus Torvalds   2005-04-16  567   * the end of the header data, ie. at skb->end.
+^1da177e4c3f415 Linus Torvalds   2005-04-16  568   */
+^1da177e4c3f415 Linus Torvalds   2005-04-16  569  struct skb_shared_info {
+06b4feb37e64e54 Jonathan Lemon   2021-01-06  570  	__u8		flags;
+de8f3a83b0a0fdd Daniel Borkmann  2017-09-25  571  	__u8		meta_len;
+de8f3a83b0a0fdd Daniel Borkmann  2017-09-25  572  	__u8		nr_frags;
+9f42f126154786e Ian Campbell     2012-01-05  573  	__u8		tx_flags;
+7967168cefdbc63 Herbert Xu       2006-06-22  574  	unsigned short	gso_size;
+7967168cefdbc63 Herbert Xu       2006-06-22  575  	/* Warning: this field is not always filled in (UFO)! */
+7967168cefdbc63 Herbert Xu       2006-06-22  576  	unsigned short	gso_segs;
+^1da177e4c3f415 Linus Torvalds   2005-04-16  577  	struct sk_buff	*frag_list;
+ac45f602ee3d1b6 Patrick Ohly     2009-02-12  578  	struct skb_shared_hwtstamps hwtstamps;
+7f564528a480084 Steffen Klassert 2017-04-08  579  	unsigned int	gso_type;
+09c2d251b707236 Willem de Bruijn 2014-08-04  580  	u32		tskey;
+ec7d2f2cf3a1b76 Eric Dumazet     2010-05-05  581  
+ec7d2f2cf3a1b76 Eric Dumazet     2010-05-05  582  	/*
+ec7d2f2cf3a1b76 Eric Dumazet     2010-05-05  583  	 * Warning : all fields before dataref are cleared in __alloc_skb()
+ec7d2f2cf3a1b76 Eric Dumazet     2010-05-05  584  	 */
+ec7d2f2cf3a1b76 Eric Dumazet     2010-05-05  585  	atomic_t	dataref;
+d16697cb6261d4c Lorenzo Bianconi 2022-01-21  586  	unsigned int	xdp_frags_size;
+ec7d2f2cf3a1b76 Eric Dumazet     2010-05-05  587  
+69e3c75f4d541a6 Johann Baudy     2009-05-18  588  	/* Intermediate layers must ensure that destructor_arg
+69e3c75f4d541a6 Johann Baudy     2009-05-18  589  	 * remains valid until skb destructor */
+69e3c75f4d541a6 Johann Baudy     2009-05-18  590  	void *		destructor_arg;
+a6686f2f382b13f Shirley Ma       2011-07-06  591  
+fed66381d65a351 Eric Dumazet     2010-07-22  592  	/* must be last field, see pskb_expand_head() */
+fed66381d65a351 Eric Dumazet     2010-07-22 @593  	skb_frag_t	frags[MAX_SKB_FRAGS];
+^1da177e4c3f415 Linus Torvalds   2005-04-16  594  };
+^1da177e4c3f415 Linus Torvalds   2005-04-16  595  
 
-On the other hand, as a result of using another accept queue, the
-fastopenq lock is not the right lock to access when accepting. So
-we need to find the right fastopenq lock in inet_csk_accept.
-
-Signed-off-by: Kai Shen <KaiShen@linux.alibaba.com>
----
- net/ipv4/inet_connection_sock.c |  13 ++-
- net/smc/af_smc.c                | 143 ++++++++++++++++++++++++++++++--
- net/smc/smc.h                   |   2 +
- 3 files changed, 150 insertions(+), 8 deletions(-)
-
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 65ad4251f6fd..ba2ec5ad4c04 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -658,6 +658,7 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
-+	spinlock_t *fastopenq_lock = &queue->fastopenq.lock;
- 	struct request_sock *req;
- 	struct sock *newsk;
- 	int error;
-@@ -689,7 +690,15 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
- 
- 	if (sk->sk_protocol == IPPROTO_TCP &&
- 	    tcp_rsk(req)->tfo_listener) {
--		spin_lock_bh(&queue->fastopenq.lock);
-+#if IS_ENABLED(CONFIG_SMC)
-+		if (tcp_sk(sk)->syn_smc) {
-+			struct request_sock_queue *orig_queue;
-+
-+			orig_queue = &inet_csk(req->rsk_listener)->icsk_accept_queue;
-+			fastopenq_lock = &orig_queue->fastopenq.lock;
-+		}
-+#endif
-+		spin_lock_bh(fastopenq_lock);
- 		if (tcp_rsk(req)->tfo_listener) {
- 			/* We are still waiting for the final ACK from 3WHS
- 			 * so can't free req now. Instead, we set req->sk to
-@@ -700,7 +709,7 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
- 			req->sk = NULL;
- 			req = NULL;
- 		}
--		spin_unlock_bh(&queue->fastopenq.lock);
-+		spin_unlock_bh(fastopenq_lock);
- 	}
- 
- out:
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index a4cccdfdc00a..ad6c3b9ec9a6 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -126,7 +126,9 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk,
- 
- 	smc = smc_clcsock_user_data(sk);
- 
--	if (READ_ONCE(sk->sk_ack_backlog) + atomic_read(&smc->queued_smc_hs) >
-+	if (READ_ONCE(sk->sk_ack_backlog) + atomic_read(&smc->queued_smc_hs)
-+			+ READ_ONCE(smc->actsock->sk->sk_ack_backlog)
-+			+ READ_ONCE(smc->fbsock->sk->sk_ack_backlog) >
- 				sk->sk_max_ack_backlog)
- 		goto drop;
- 
-@@ -286,6 +288,10 @@ static int __smc_release(struct smc_sock *smc)
- 				/* wake up clcsock accept */
- 				rc = kernel_sock_shutdown(smc->clcsock,
- 							  SHUT_RDWR);
-+				if (smc->fbsock)
-+					sock_release(smc->fbsock);
-+				if (smc->actsock)
-+					sock_release(smc->actsock);
- 			}
- 			sk->sk_state = SMC_CLOSED;
- 			sk->sk_state_change(sk);
-@@ -1681,7 +1687,7 @@ static int smc_clcsock_accept(struct smc_sock *lsmc, struct smc_sock **new_smc)
- 
- 	mutex_lock(&lsmc->clcsock_release_lock);
- 	if (lsmc->clcsock)
--		rc = kernel_accept(lsmc->clcsock, &new_clcsock, SOCK_NONBLOCK);
-+		rc = kernel_accept(lsmc->actsock, &new_clcsock, SOCK_NONBLOCK);
- 	mutex_unlock(&lsmc->clcsock_release_lock);
- 	lock_sock(lsk);
- 	if  (rc < 0 && rc != -EAGAIN)
-@@ -2486,9 +2492,46 @@ static void smc_tcp_listen_work(struct work_struct *work)
- 	sock_put(&lsmc->sk); /* sock_hold in smc_clcsock_data_ready() */
- }
- 
-+#define SMC_LINK 1
-+#define FALLBACK_LINK 2
-+static inline int smc_sock_pop_to_another_acceptq(struct smc_sock *lsmc)
-+{
-+	struct sock *lsk = lsmc->clcsock->sk;
-+	struct inet_connection_sock *icsk = inet_csk(lsk);
-+	struct inet_connection_sock *dest_icsk;
-+	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
-+	struct request_sock_queue *dest_queue;
-+	struct request_sock *req;
-+	struct sock *dst_sock;
-+	int ret;
-+
-+	req = reqsk_queue_remove(queue, lsk);
-+	if (!req)
-+		return -EINVAL;
-+
-+	if (tcp_sk(req->sk)->syn_smc || lsmc->sockopt_defer_accept) {
-+		dst_sock = lsmc->actsock->sk;
-+		ret = SMC_LINK;
-+	} else {
-+		dst_sock = lsmc->fbsock->sk;
-+		ret = FALLBACK_LINK;
-+	}
-+
-+	dest_icsk = inet_csk(dst_sock);
-+	dest_queue = &dest_icsk->icsk_accept_queue;
-+
-+	spin_lock_bh(&dest_queue->rskq_lock);
-+	WRITE_ONCE(req->dl_next, dest_queue->rskq_accept_head);
-+	sk_acceptq_added(dst_sock);
-+	dest_queue->rskq_accept_head = req;
-+	spin_unlock_bh(&dest_queue->rskq_lock);
-+	return ret;
-+}
-+
- static void smc_clcsock_data_ready(struct sock *listen_clcsock)
- {
- 	struct smc_sock *lsmc;
-+	int ret;
- 
- 	read_lock_bh(&listen_clcsock->sk_callback_lock);
- 	lsmc = smc_clcsock_user_data(listen_clcsock);
-@@ -2496,14 +2539,41 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
- 		goto out;
- 	lsmc->clcsk_data_ready(listen_clcsock);
- 	if (lsmc->sk.sk_state == SMC_LISTEN) {
--		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
--		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
--			sock_put(&lsmc->sk);
-+		ret = smc_sock_pop_to_another_acceptq(lsmc);
-+		if (ret == SMC_LINK) {
-+			sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
-+			if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
-+				sock_put(&lsmc->sk);
-+		} else if (ret == FALLBACK_LINK) {
-+			lsmc->sk.sk_data_ready(&lsmc->sk);
-+		}
- 	}
- out:
- 	read_unlock_bh(&listen_clcsock->sk_callback_lock);
- }
- 
-+static void smc_shadow_socket_init(struct socket *sock)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sock->sk);
-+	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
-+
-+	tcp_set_state(sock->sk, TCP_LISTEN);
-+	sock->sk->sk_ack_backlog = 0;
-+
-+	inet_csk_delack_init(sock->sk);
-+
-+	spin_lock_init(&queue->rskq_lock);
-+
-+	spin_lock_init(&queue->fastopenq.lock);
-+	queue->fastopenq.rskq_rst_head = NULL;
-+	queue->fastopenq.rskq_rst_tail = NULL;
-+	queue->fastopenq.qlen = 0;
-+
-+	queue->rskq_accept_head = NULL;
-+
-+	tcp_sk(sock->sk)->syn_smc = 1;
-+}
-+
- static int smc_listen(struct socket *sock, int backlog)
- {
- 	struct sock *sk = sock->sk;
-@@ -2551,6 +2621,18 @@ static int smc_listen(struct socket *sock, int backlog)
- 	if (smc->limit_smc_hs)
- 		tcp_sk(smc->clcsock->sk)->smc_hs_congested = smc_hs_congested;
- 
-+	rc = sock_create_kern(sock_net(sk), PF_INET, SOCK_STREAM, IPPROTO_TCP,
-+			      &smc->fbsock);
-+	if (rc)
-+		goto out;
-+	smc_shadow_socket_init(smc->fbsock);
-+
-+	rc = sock_create_kern(sock_net(sk), PF_INET, SOCK_STREAM, IPPROTO_TCP,
-+			      &smc->actsock);
-+	if (rc)
-+		goto out;
-+	smc_shadow_socket_init(smc->actsock);
-+
- 	rc = kernel_listen(smc->clcsock, backlog);
- 	if (rc) {
- 		write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
-@@ -2569,6 +2651,30 @@ static int smc_listen(struct socket *sock, int backlog)
- 	return rc;
- }
- 
-+static inline bool tcp_reqsk_queue_empty(struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
-+
-+	return reqsk_queue_empty(queue);
-+}
-+
-+static inline void
-+smc_restore_fbsock_protocol_family(struct socket *new_sock, struct socket *sock)
-+{
-+	struct smc_sock *lsmc = smc_sk(sock->sk);
-+
-+	new_sock->sk->sk_data_ready = lsmc->fbsock->sk->sk_data_ready;
-+	new_sock->ops = lsmc->fbsock->ops;
-+	new_sock->type = lsmc->fbsock->type;
-+
-+	module_put(sock->ops->owner);
-+	__module_get(new_sock->ops->owner);
-+
-+	if (tcp_sk(new_sock->sk)->syn_smc)
-+		pr_err("new sock is not fallback.\n");
-+}
-+
- static int smc_accept(struct socket *sock, struct socket *new_sock,
- 		      int flags, bool kern)
- {
-@@ -2579,6 +2685,18 @@ static int smc_accept(struct socket *sock, struct socket *new_sock,
- 	int rc = 0;
- 
- 	lsmc = smc_sk(sk);
-+	/* There is a lock in inet_csk_accept, so to make a fast path we do not lock_sock here */
-+	if (lsmc->sk.sk_state == SMC_LISTEN && !tcp_reqsk_queue_empty(lsmc->fbsock->sk)) {
-+		rc = lsmc->clcsock->ops->accept(lsmc->fbsock, new_sock, O_NONBLOCK, true);
-+		if (rc == -EAGAIN)
-+			goto normal_path;
-+		if (rc < 0)
-+			return rc;
-+		smc_restore_fbsock_protocol_family(new_sock, sock);
-+		return rc;
-+	}
-+
-+normal_path:
- 	sock_hold(sk); /* sock_put below */
- 	lock_sock(sk);
- 
-@@ -2593,6 +2711,18 @@ static int smc_accept(struct socket *sock, struct socket *new_sock,
- 	add_wait_queue_exclusive(sk_sleep(sk), &wait);
- 	while (!(nsk = smc_accept_dequeue(sk, new_sock))) {
- 		set_current_state(TASK_INTERRUPTIBLE);
-+		if (!tcp_reqsk_queue_empty(lsmc->fbsock->sk)) {
-+			rc = lsmc->clcsock->ops->accept(lsmc->fbsock, new_sock, O_NONBLOCK, true);
-+			if (rc == -EAGAIN)
-+				goto next_round;
-+			if (rc < 0)
-+				break;
-+
-+			smc_restore_fbsock_protocol_family(new_sock, sock);
-+			nsk = new_sock->sk;
-+			break;
-+		}
-+next_round:
- 		if (!timeo) {
- 			rc = -EAGAIN;
- 			break;
-@@ -2731,7 +2861,8 @@ static __poll_t smc_accept_poll(struct sock *parent)
- 	__poll_t mask = 0;
- 
- 	spin_lock(&isk->accept_q_lock);
--	if (!list_empty(&isk->accept_q))
-+	if (!list_empty(&isk->accept_q) ||
-+	    !reqsk_queue_empty(&inet_csk(isk->fbsock->sk)->icsk_accept_queue))
- 		mask = EPOLLIN | EPOLLRDNORM;
- 	spin_unlock(&isk->accept_q_lock);
- 
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index 5ed765ea0c73..9a62c8f37e26 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -241,6 +241,8 @@ struct smc_connection {
- struct smc_sock {				/* smc sock container */
- 	struct sock		sk;
- 	struct socket		*clcsock;	/* internal tcp socket */
-+	struct socket		*fbsock;	/* socket for fallback connection */
-+	struct socket		*actsock;	/* socket for non-fallback conneciotn */
- 	void			(*clcsk_state_change)(struct sock *sk);
- 						/* original stat_change fct. */
- 	void			(*clcsk_data_ready)(struct sock *sk);
 -- 
-2.31.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
