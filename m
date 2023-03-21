@@ -2,173 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D1046C2F28
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DB76C2F37
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbjCUKgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 06:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
+        id S230325AbjCUKkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 06:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbjCUKgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:36:47 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D632658C;
-        Tue, 21 Mar 2023 03:36:14 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id c4so8685632pfl.0;
-        Tue, 21 Mar 2023 03:36:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679394968;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=19wMmvfNWQyO4plWiUVaSYLzZEvvz2rrcCtkkcHymrA=;
-        b=XA2Or4IIUOT0w8WumqdaJjkHZ8CnX5ppAwonPbP4+Lky47xrJthUuf9oZjNW5Q5BYk
-         1QcvQJGo27FQnytWA//NmhvgEIGFYFtLPjD92qSWJpZeZK/QtH6P9NE3DekkkRGWSIjD
-         8UExGk4+RwfIgGSdhEcP8Qa27AI8qZJaq8JrkuHZGMkOJJNnzrve9X8OEHozsqtc5hep
-         T0P5U/CU5MG6pPLM9aQ6Y/ZzyV1MTMNhE5h7cFaGnzqqjW1dsKRfjHh4E4qnuQNj3jQv
-         unSGzxE2Bmdw2b6XR7x2VK6IDiEMwOtVD1pa7aNkaXPm+BGZjrwH5RXRFwsU7gt++8wP
-         ejnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679394968;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=19wMmvfNWQyO4plWiUVaSYLzZEvvz2rrcCtkkcHymrA=;
-        b=0UI68w/PdOqAjFIqaJfssqWc6rTwSmIqUD2gf+ZOISK2jWCKH4QfKzzjRzXk2QyP73
-         ucCI0p1ljPU8lUsZkRrZ0Ux3jhCraNUUHZRJXopH7ljCWhT7mnlby+aRxxk0aWnIBPA1
-         m23V+HIt/aMKIkelmNci8b/IWfdHmS2x5wTQhvf8ug7Ac3M3MfoUCV3LTXnxKDOjZXGh
-         A4OKcg1741WFvfHsIaWFkwohMo7DRuAn9llxgeaoFvGzEu9hcInqU/dpXwKIsfpYMF53
-         tR7JrSg1QYU5gcno0eLqntsjeKOBiIW4CYhA1uRCO/HaK9OFmDyvbIKp/2L11XdX/VCi
-         H4XQ==
-X-Gm-Message-State: AO0yUKV/9BQFs1779twB5oGVne1wUqVZeC1xgB1rdj0cBg+7liyAFgq+
-        RsB3GPwbdR9SGgTRTvo9w0oxzoqV5pEyoXDsKwE=
-X-Google-Smtp-Source: AK7set9Ai3aUCQzsCnSs67dxCqfbDdyWFvnULvCzjfwd10kfeVpg4uoBXfmJUhY664JgGow0KWFsS/aeRCpc953/MNs=
-X-Received: by 2002:a63:a442:0:b0:503:77cd:b7b4 with SMTP id
- c2-20020a63a442000000b0050377cdb7b4mr472055pgp.12.1679394967834; Tue, 21 Mar
- 2023 03:36:07 -0700 (PDT)
+        with ESMTP id S229527AbjCUKkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:40:33 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9163112CC0;
+        Tue, 21 Mar 2023 03:40:27 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 568605FD2D;
+        Tue, 21 Mar 2023 13:40:23 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1679395223;
+        bh=DD+yQxyiPVwCtYeMRrkjbgY0b9PL/Zx/D/E977JmgQw=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=mFS8Fy5nLw0tJQrnyVhfv9jfa23TLPKaDFRZdfqw58O0+Ui3QBJKWO3EMs90SQYvC
+         RYHkSj3fv9kL4VDQmfpz+rdeVwjJh1VlAWH4cPLfTr23J9xT0WTKWrUkSpUxR7DZ93
+         9hsZ4UbzujGm/eufC+/4pBiwXIJhRTlhe2zJwbQ8cVhJlCyDE0qlcZOGT2C+Hdi1/h
+         cT6iha9T3RdYT41bfypQXdEkvbfaGJchwp/GNFaDZBCN8W/EKf7iUaF1moJ/7Nn9Z4
+         ZHDFNHs1YX0ldBeeCz1u6YL+9SEY/ukqyIw/WopjFCq5i2WpFNM3WW7EYHBlnipXB/
+         djdz5xehenCeQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Tue, 21 Mar 2023 13:40:18 +0300 (MSK)
+Message-ID: <aedf06ce-15c1-b06a-daa0-507e288e4e29@sberdevices.ru>
+Date:   Tue, 21 Mar 2023 13:36:55 +0300
 MIME-Version: 1.0
-References: <20230320182813.963508-1-noltari@gmail.com>
-In-Reply-To: <20230320182813.963508-1-noltari@gmail.com>
-From:   Jonas Gorski <jonas.gorski@gmail.com>
-Date:   Tue, 21 Mar 2023 11:35:56 +0100
-Message-ID: <CAOiHx=nKVWfa1-_VAf3bz+6PPz0uWMHyEtoVVOysFf0srZorBA@mail.gmail.com>
-Subject: Re: [RFC PATCH] drivers: net: dsa: b53: mmap: add phy ops
-To:     =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
-Cc:     f.fainelli@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v3] virtio/vsock: allocate multiple skbuffs on tx
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <f33ef593-982e-2b3f-0986-6d537a3aaf08@sberdevices.ru>
+ <20230321084002.5anjcr3ikw3ynbse@sgarzare-redhat>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <20230321084002.5anjcr3ikw3ynbse@sgarzare-redhat>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/21 07:59:00 #20981652
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Mar 2023 at 19:28, =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gma=
-il.com> wrote:
->
-> Currently, B53 MMAP BCM63xx devices with an external switch hang when
-> performing PHY read and write operations due to invalid registers access.
-> This adds support for PHY ops by using the internal bus from mdio-mux-bcm=
-6368
-> when probed by device tree and also falls back to direct MDIO registers i=
-f not.
->
-> This is an alternative to:
-> - https://patchwork.kernel.org/project/netdevbpf/cover/20230317113427.302=
-162-1-noltari@gmail.com/
-> - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.302=
-162-2-noltari@gmail.com/
-> - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.302=
-162-3-noltari@gmail.com/
-> - https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.302=
-162-4-noltari@gmail.com/
-> As discussed, it was an ABI break and not the correct way of fixing the i=
-ssue.
->
-> Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
-> ---
->  drivers/net/dsa/b53/b53_mmap.c    | 86 +++++++++++++++++++++++++++++++
->  include/linux/platform_data/b53.h |  1 +
->  2 files changed, 87 insertions(+)
->
-> diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mma=
-p.c
-> index 706df04b6cee..7deca1c557c5 100644
-> --- a/drivers/net/dsa/b53/b53_mmap.c
-> +++ b/drivers/net/dsa/b53/b53_mmap.c
-> @@ -19,14 +19,25 @@
->  #include <linux/bits.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/of_mdio.h>
->  #include <linux/io.h>
->  #include <linux/platform_device.h>
->  #include <linux/platform_data/b53.h>
->
->  #include "b53_priv.h"
->
-> +#define REG_MDIOC              0xb0
-> +#define  REG_MDIOC_EXT_MASK    BIT(16)
-> +#define  REG_MDIOC_REG_SHIFT   20
-> +#define  REG_MDIOC_PHYID_SHIFT 25
-> +#define  REG_MDIOC_RD_MASK     BIT(30)
-> +#define  REG_MDIOC_WR_MASK     BIT(31)
-> +
-> +#define REG_MDIOD              0xb4
-> +
->  struct b53_mmap_priv {
->         void __iomem *regs;
-> +       struct mii_bus *bus;
->  };
->
->  static int b53_mmap_read8(struct b53_device *dev, u8 page, u8 reg, u8 *v=
-al)
-> @@ -216,6 +227,69 @@ static int b53_mmap_write64(struct b53_device *dev, =
-u8 page, u8 reg,
->         return 0;
->  }
->
-> +static inline void b53_mmap_mdio_read(struct b53_device *dev, int phy_id=
-,
-> +                                     int loc, u16 *val)
-> +{
-> +       uint32_t reg;
-> +
-> +       b53_mmap_write32(dev, 0, REG_MDIOC, 0);
-> +
-> +       reg =3D REG_MDIOC_RD_MASK |
-> +             (phy_id << REG_MDIOC_PHYID_SHIFT) |
-> +             (loc << REG_MDIOC_REG_SHIFT);
-> +
-> +       b53_mmap_write32(dev, 0, REG_MDIOC, reg);
-> +       udelay(50);
-> +       b53_mmap_read16(dev, 0, REG_MDIOD, val);
-> +}
-> +
-> +static inline int b53_mmap_mdio_write(struct b53_device *dev, int phy_id=
-,
-> +                                     int loc, u16 val)
 
-On nitpick here: AFACT, what you are actually getting there as phy_id
-isn't the phy_id but the port_id, it just happens to be identical for
-internal ports.
 
-So in theory you would first need to convert this to the appropriate
-phy_id (+ which bus) first, else you risk reading from the wrong
-device (and/or bus).
+On 21.03.2023 11:40, Stefano Garzarella wrote:
+> On Tue, Mar 21, 2023 at 12:31:48AM +0300, Arseniy Krasnov wrote:
+>> This adds small optimization for tx path: instead of allocating single
+>> skbuff on every call to transport, allocate multiple skbuff's until
+>> credit space allows, thus trying to send as much as possible data without
+>> return to af_vsock.c.
+>>
+>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>> ---
+>> Link to v1:
+>> https://lore.kernel.org/netdev/2c52aa26-8181-d37a-bccd-a86bd3cbc6e1@sberdevices.ru/
+>> Link to v2:
+>> https://lore.kernel.org/netdev/ea5725eb-6cb5-cf15-2938-34e335a442fa@sberdevices.ru/
+>>
+>> Changelog:
+>> v1 -> v2:
+>> - If sent something, return number of bytes sent (even in
+>>   case of error). Return error only if failed to sent first
+>>   skbuff.
+>>
+>> v2 -> v3:
+>> - Handle case when transport callback returns unexpected value which
+>>   is not equal to 'skb->len'. Break loop.
+>> - Don't check for zero value of 'rest_len' before calling
+>>   'virtio_transport_put_credit()'. Decided to add this check directly
+>>   to 'virtio_transport_put_credit()' in separate patch.
+>>
+>> net/vmw_vsock/virtio_transport_common.c | 59 +++++++++++++++++++------
+>> 1 file changed, 45 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>> index 6564192e7f20..e0b2c6ecbe22 100644
+>> --- a/net/vmw_vsock/virtio_transport_common.c
+>> +++ b/net/vmw_vsock/virtio_transport_common.c
+>> @@ -196,7 +196,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>>     const struct virtio_transport *t_ops;
+>>     struct virtio_vsock_sock *vvs;
+>>     u32 pkt_len = info->pkt_len;
+>> -    struct sk_buff *skb;
+>> +    u32 rest_len;
+>> +    int ret;
+>>
+>>     info->type = virtio_transport_get_type(sk_vsock(vsk));
+>>
+>> @@ -216,10 +217,6 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>>
+>>     vvs = vsk->trans;
+>>
+>> -    /* we can send less than pkt_len bytes */
+>> -    if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
+>> -        pkt_len = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
+>> -
+>>     /* virtio_transport_get_credit might return less than pkt_len credit */
+>>     pkt_len = virtio_transport_get_credit(vvs, pkt_len);
+>>
+>> @@ -227,17 +224,51 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
+>>     if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
+>>         return pkt_len;
+>>
+>> -    skb = virtio_transport_alloc_skb(info, pkt_len,
+>> -                     src_cid, src_port,
+>> -                     dst_cid, dst_port);
+>> -    if (!skb) {
+>> -        virtio_transport_put_credit(vvs, pkt_len);
+>> -        return -ENOMEM;
+>> -    }
+>> +    ret = 0;
+>> +    rest_len = pkt_len;
+>> +
+>> +    do {
+>> +        struct sk_buff *skb;
+>> +        size_t skb_len;
+>> +
+>> +        skb_len = min_t(u32, VIRTIO_VSOCK_MAX_PKT_BUF_SIZE, rest_len);
+>> +
+>> +        skb = virtio_transport_alloc_skb(info, skb_len,
+>> +                         src_cid, src_port,
+>> +                         dst_cid, dst_port);
+>> +        if (!skb) {
+>> +            ret = -ENOMEM;
+>> +            break;
+>> +        }
+>> +
+>> +        virtio_transport_inc_tx_pkt(vvs, skb);
+>>
+>> -    virtio_transport_inc_tx_pkt(vvs, skb);
+>> +        ret = t_ops->send_pkt(skb);
+>>
+>> -    return t_ops->send_pkt(skb);
+>> +        if (ret < 0)
+>> +            break;
+>> +
+>> +        /* Both virtio and vhost 'send_pkt()' returns 'skb_len',
+>> +         * but for reliability use 'ret' instead of 'skb_len'.
+>> +         * Also if partial send happens (e.g. 'ret' != 'skb_len')
+>> +         * somehow, we break this loop, but account such returned
+>> +         * value in 'virtio_transport_put_credit()'.
+>> +         */
+>> +        rest_len -= ret;
+>> +
+>> +        if (ret != skb_len) {
+>> +            ret = -EFAULT;
+> 
+> Okay, but `ret` will be overwritten by the check we have before the
+> return ...
+> 
+Yes, you're right, this assignment has no effect, since 'rest_len' is already
+changed and ret will be changed. I'll fix it.
 
-See how the phys_mii_mask is based on the indexes of the user ports,
-not their actual phy_ids. [1] [2]
-
-[1] https://elixir.bootlin.com/linux/latest/source/net/dsa/dsa.c#L660
-[2] https://elixir.bootlin.com/linux/latest/source/include/net/dsa.h#L596
-
-Regards
-Jonas
+Thanks, Arseniy
+>> +            break;
+>> +        }
+>> +    } while (rest_len);
+>> +
+>> +    virtio_transport_put_credit(vvs, rest_len);
+>> +
+>> +    /* Return number of bytes, if any data has been sent. */
+>> +    if (rest_len != pkt_len)
+>> +        ret = pkt_len - rest_len;
+> 
+> ... here.
+> 
+> Since we don't expect this condition for now, perhaps we can avoid
+> setting ret with -EFAULT, but we can add a WARN_ONCE (interrupting the
+> loop as you did here).
+> 
+> This way we return the partial length as we did before.
+> 
+> Thanks,
+> Stefano
+> 
+>> +
+>> +    return ret;
+>> }
+>>
+>> static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+>> -- 
+>> 2.25.1
+>>
+> 
