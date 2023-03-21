@@ -2,194 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D92196C3511
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:06:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E9B6C3518
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbjCUPGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 11:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        id S231443AbjCUPH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 11:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbjCUPGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:06:46 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD89A5073E;
-        Tue, 21 Mar 2023 08:06:42 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 2F9395FD37;
-        Tue, 21 Mar 2023 18:06:40 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1679411200;
-        bh=5mxajRLaq47uFRg0ulM6APCp7QX+4bPe7NJQcwr4Nyw=;
-        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=T4XVFv0AP7+WUcnHZbSm5woSKZQzeLA3zeL8jBNuql+m18Ega28cRg4X35RZouW+H
-         knq1wyvcfK1ToUU88jzDTvA1EgK9YGNs+XQ/X0seSSxn+HuFuaeslL8Rg5XT4XpKpW
-         caMgeqjbzCF3mPhhxTZzhHBaN6GFBQovtaptyWv+6R27liBRI+ctu5cBppW18QOGsy
-         fDPeHp5k2OYPOK7h4QDbhgh5QyQ9Y175hcfYTNXGv5G+iv6HX14CR4H8om3zxDmNfn
-         /nMM4JmJUWO0m/Xp+qqtN3SLDU21XW9vpLdzHvRhI3C84b53z95KnIcLlfEquE6XV9
-         OUuvyELGbccng==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 21 Mar 2023 18:06:36 +0300 (MSK)
-Message-ID: <0e0c1421-7cdc-2582-b120-cad6f42824bb@sberdevices.ru>
-Date:   Tue, 21 Mar 2023 18:03:14 +0300
+        with ESMTP id S230395AbjCUPH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:07:58 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF26509BD
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 08:07:41 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32LEfKpa003883;
+        Tue, 21 Mar 2023 15:07:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=ffF23+WiHLiUqptO9gsH1+0QQJSdSLaPNPLpini8e6M=;
+ b=nPBi2DTUsMDHgE8ME1jEYLsRKVYmoO2ZtSVKxwMtObyuwkbzH8tqVt69IE/LNRCoBrwH
+ tl/F9pr7Y9/UzLhxFNIs56AgoY7SOwKcHfq01kNa8VLIbAI4/wbi7Yv0JsgC8/YwxAnZ
+ 7WzIIiSPzoHRWVTjK4fPAD32K4is/swBKGfIrAQLXFUnTHX699PYcLp5JgphnUmyHE1B
+ PiBbNN+4ypdTVt6DKFQNPjO7PQL4UNuJGhKTiui6VmUdMK/prz93rAuX0xkssIFPIFjM
+ lWVKVOI9yj5H2z+S/Vsm1z6Jb6nqg3wgMk7M2N3R3vOYGG/YDnjVzfyMXOEAT+txxzA+ xQ== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pfbpmdtsm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Mar 2023 15:07:32 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32LEZrVN020656;
+        Tue, 21 Mar 2023 15:07:31 GMT
+Received: from smtprelay04.wdc07v.mail.ibm.com ([9.208.129.114])
+        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3pd4x7fwh7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Mar 2023 15:07:31 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
+        by smtprelay04.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32LF7Tx829033050
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Mar 2023 15:07:29 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7FF535805B;
+        Tue, 21 Mar 2023 15:07:29 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9342058055;
+        Tue, 21 Mar 2023 15:07:28 +0000 (GMT)
+Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com.com (unknown [9.77.147.181])
+        by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Tue, 21 Mar 2023 15:07:28 +0000 (GMT)
+From:   Nick Child <nnac123@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Nick Child <nnac123@linux.ibm.com>,
+        Piotr Raczynski <piotr.raczynski@intel.com>
+Subject: [PATCH net-next v2 1/2] net: Catch invalid index in XPS mapping
+Date:   Tue, 21 Mar 2023 10:07:24 -0500
+Message-Id: <20230321150725.127229-1-nnac123@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 7k9PJvKSEJFfkGLgauQvsGGjonLmdkkM
+X-Proofpoint-GUID: 7k9PJvKSEJFfkGLgauQvsGGjonLmdkkM
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
-        <avkrasnov@sberdevices.ru>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v4] virtio/vsock: allocate multiple skbuffs on tx
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/21 07:59:00 #20981652
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-21_11,2023-03-21_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 clxscore=1015 spamscore=0 bulkscore=0 suspectscore=0
+ mlxscore=0 phishscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303150002 definitions=main-2303210118
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds small optimization for tx path: instead of allocating single
-skbuff on every call to transport, allocate multiple skbuff's until
-credit space allows, thus trying to send as much as possible data without
-return to af_vsock.c.
+When setting the XPS value of a TX queue, warn the user once if the
+index of the queue is greater than the number of allocated TX queues.
 
-Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Previously, this scenario went uncaught. In the best case, it resulted
+in unnecessary allocations. In the worst case, it resulted in
+out-of-bounds memory references through calls to `netdev_get_tx_queue(
+dev, index)`. Therefore, it is important to inform the user but not
+worth returning an error and risk downing the netdevice.
+
+Signed-off-by: Nick Child <nnac123@linux.ibm.com>
+Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
 ---
- Link to v1:
- https://lore.kernel.org/netdev/2c52aa26-8181-d37a-bccd-a86bd3cbc6e1@sberdevices.ru/
- Link to v2:
- https://lore.kernel.org/netdev/ea5725eb-6cb5-cf15-2938-34e335a442fa@sberdevices.ru/
- Link to v3:
- https://lore.kernel.org/netdev/f33ef593-982e-2b3f-0986-6d537a3aaf08@sberdevices.ru/
+Changes since v1 (respond to Jakubs review):
+ - send to net-next instead of net
+ - use WARN_ON_ONCE instead of a conditonal returning error
 
- Changelog:
- v1 -> v2:
- - If sent something, return number of bytes sent (even in
-   case of error). Return error only if failed to sent first
-   skbuff.
+v1 - https://lore.kernel.org/netdev/20230320215229.53b7dfa7@kernel.org/
 
- v2 -> v3:
- - Handle case when transport callback returns unexpected value which
-   is not equal to 'skb->len'. Break loop.
- - Don't check for zero value of 'rest_len' before calling
-   'virtio_transport_put_credit()'. Decided to add this check directly
-   to 'virtio_transport_put_credit()' in separate patch.
+ net/core/dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- v3 -> v4:
- - Use WARN_ONCE() to handle case when transport callback returns
-   unexpected value.
- - Remove useless 'ret = -EFAULT;' assignment for case above.
-
- net/vmw_vsock/virtio_transport_common.c | 59 +++++++++++++++++++------
- 1 file changed, 45 insertions(+), 14 deletions(-)
-
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 6564192e7f20..a300f25749ea 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -196,7 +196,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	const struct virtio_transport *t_ops;
- 	struct virtio_vsock_sock *vvs;
- 	u32 pkt_len = info->pkt_len;
--	struct sk_buff *skb;
-+	u32 rest_len;
-+	int ret;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c7853192563d..c278beee6792 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2535,6 +2535,8 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+ 	struct xps_map *map, *new_map;
+ 	unsigned int nr_ids;
  
- 	info->type = virtio_transport_get_type(sk_vsock(vsk));
- 
-@@ -216,10 +217,6 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 
- 	vvs = vsk->trans;
- 
--	/* we can send less than pkt_len bytes */
--	if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
--		pkt_len = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
--
- 	/* virtio_transport_get_credit might return less than pkt_len credit */
- 	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
- 
-@@ -227,17 +224,51 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
- 		return pkt_len;
- 
--	skb = virtio_transport_alloc_skb(info, pkt_len,
--					 src_cid, src_port,
--					 dst_cid, dst_port);
--	if (!skb) {
--		virtio_transport_put_credit(vvs, pkt_len);
--		return -ENOMEM;
--	}
-+	ret = 0;
-+	rest_len = pkt_len;
++	WARN_ON_ONCE(index >= dev->num_tx_queues);
 +
-+	do {
-+		struct sk_buff *skb;
-+		size_t skb_len;
-+
-+		skb_len = min_t(u32, VIRTIO_VSOCK_MAX_PKT_BUF_SIZE, rest_len);
-+
-+		skb = virtio_transport_alloc_skb(info, skb_len,
-+						 src_cid, src_port,
-+						 dst_cid, dst_port);
-+		if (!skb) {
-+			ret = -ENOMEM;
-+			break;
-+		}
- 
--	virtio_transport_inc_tx_pkt(vvs, skb);
-+		virtio_transport_inc_tx_pkt(vvs, skb);
- 
--	return t_ops->send_pkt(skb);
-+		ret = t_ops->send_pkt(skb);
-+
-+		if (ret < 0)
-+			break;
-+
-+		/* Both virtio and vhost 'send_pkt()' returns 'skb_len',
-+		 * but for reliability use 'ret' instead of 'skb_len'.
-+		 * Also if partial send happens (e.g. 'ret' != 'skb_len')
-+		 * somehow, we break this loop, but account such returned
-+		 * value in 'virtio_transport_put_credit()'.
-+		 */
-+		rest_len -= ret;
-+
-+		if (WARN_ONCE(ret != skb_len,
-+			      "'send_pkt()' returns %i, but %zu expected\n",
-+			      ret, skb_len))
-+			break;
-+	} while (rest_len);
-+
-+	virtio_transport_put_credit(vvs, rest_len);
-+
-+	/* Return number of bytes, if any data has been sent. */
-+	if (rest_len != pkt_len)
-+		ret = pkt_len - rest_len;
-+
-+	return ret;
- }
- 
- static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+ 	if (dev->num_tc) {
+ 		/* Do not allow XPS on subordinate device directly */
+ 		num_tc = dev->num_tc;
 -- 
-2.25.1
+2.31.1
+
