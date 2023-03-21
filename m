@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D9E6C2A5C
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 07:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3938E6C2A73
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 07:33:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbjCUG0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 02:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55490 "EHLO
+        id S229743AbjCUGdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 02:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbjCUG0e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 02:26:34 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97883608D;
-        Mon, 20 Mar 2023 23:26:30 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32L6Q5sG096475;
-        Tue, 21 Mar 2023 01:26:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1679379965;
-        bh=a+MTT5Qkyz1YaOgv8XKSB4NSt7MeDdfso+0H1pTzxGE=;
-        h=From:To:CC:Subject:Date;
-        b=M3bmLqI7iJgnzrYioqv1bVKfJHY/M5e7cIkO1PIvpZFKi7OXSrLeS9/ZzRe3Xu3hm
-         Jmt/9jy3j92ReCcg0LWHukVryQkHrkhcOErld8UQsJJqPlD9CwzzTL4S/yDRRDQJb8
-         ghIz1jCcW7d2oyRCBROFvrgwtOn3YNmVd2TNvkZc=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32L6Q5RF104597
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 21 Mar 2023 01:26:05 -0500
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 21
- Mar 2023 01:26:05 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 21 Mar 2023 01:26:05 -0500
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32L6Q1tY089872;
-        Tue, 21 Mar 2023 01:26:01 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <rogerq@kernel.org>,
-        <jacob.e.keller@intel.com>, <richardcochran@gmail.com>,
-        <leon@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: [PATCH net-next] net: ethernet: ti: am65-cpts: adjust estf following ptp changes
-Date:   Tue, 21 Mar 2023 11:56:00 +0530
-Message-ID: <20230321062600.2539544-1-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230249AbjCUGdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 02:33:42 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49720E3B6
+        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 23:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679380400; x=1710916400;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BUXePkyHTHETXtAuHMxH7I69e4gnxoz4jfjC52U5cF0=;
+  b=IiDzEk3n0V79luUoQ5JSYBJdIPjOy0lb9I5q0KCFkRHUq/6ulHx3RI5e
+   G1ver8bYu+4OJ/wE7LyCCaA+lB9nXNfvbCifrcZQu6gK6B+aMJ4cvJBT8
+   BoJMdClAB41NnP5BIIUUIFMnYOFnhpMM6Ax5YaxzvFfrf6CUOIt93pOaO
+   29zxOTtHMg0x7YseC18gh62yPToq9DqsvqR62r3Fzgh5gMzt11Sd807ji
+   BFJJK1qXo8av5+aHd6O2AtUPHzZtfZ8i5wk0sNgVxmHhf9OPcHwmcr9TG
+   TQK3dBl03OXTvZMNTOwLUdl+TVqEr9Pwap4VcK6OjFU+AmmbeeS43dW4J
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="401433586"
+X-IronPort-AV: E=Sophos;i="5.98,278,1673942400"; 
+   d="scan'208";a="401433586"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2023 23:33:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10655"; a="713861523"
+X-IronPort-AV: E=Sophos;i="5.98,278,1673942400"; 
+   d="scan'208";a="713861523"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 20 Mar 2023 23:33:17 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1peVYa-000Bfu-1L;
+        Tue, 21 Mar 2023 06:33:16 +0000
+Date:   Tue, 21 Mar 2023 14:33:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] net: introduce a config option to tweak
+ MAX_SKB_FRAGS
+Message-ID: <202303211426.xE59ciyg-lkp@intel.com>
+References: <20230321033704.936685-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230321033704.936685-1-eric.dumazet@gmail.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,146 +69,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grygorii Strashko <grygorii.strashko@ti.com>
+Hi Eric,
 
-When the CPTS clock is synced/adjusted by running linuxptp (ptp4l/phc2sys),
-it will cause the TSN EST schedule to drift away over time. This is because
-the schedule is driven by the EstF periodic counter whose pulse length is
-defined in ref_clk cycles and it does not automatically sync to CPTS clock.
-   _______
- _|
-  ^
-  expected cycle start time boundary
-   _______________
- _|_|___|_|
-  ^
-  EstF drifted away -> direction
+I love your patch! Perhaps something to improve:
 
-To fix it, the same PPM adjustment has to be applied to EstF as done to the
-PHC CPTS clock, in order to correct the TSN EST cycle length and keep them
-in sync.
+[auto build test WARNING on net-next/main]
 
-Drifted cycle:
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230373377017
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230373877017
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230374377017
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230374877017
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230375377017
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230375877023
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230376377018
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230376877018
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635968230377377018
+url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-introduce-a-config-option-to-tweak-MAX_SKB_FRAGS/20230321-113826
+patch link:    https://lore.kernel.org/r/20230321033704.936685-1-eric.dumazet%40gmail.com
+patch subject: [PATCH net-next] net: introduce a config option to tweak MAX_SKB_FRAGS
+config: i386-randconfig-a004-20230320 (https://download.01.org/0day-ci/archive/20230321/202303211426.xE59ciyg-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d0eaa3eabce1c80d067a739749e4253546417722
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-introduce-a-config-option-to-tweak-MAX_SKB_FRAGS/20230321-113826
+        git checkout d0eaa3eabce1c80d067a739749e4253546417722
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/packet/
 
-Stable cycle:
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863193375473
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863193875473
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863194375473
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863194875473
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863195375473
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863195875473
-AM65_CPTS_EVT: 7 e1:01770001 e2:000000ff t:1635966863196375473
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303211426.xE59ciyg-lkp@intel.com/
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
- drivers/net/ethernet/ti/am65-cpts.c | 34 ++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/drivers/net/ethernet/ti/am65-cpts.c b/drivers/net/ethernet/ti/am65-cpts.c
-index 16ee9c29cb35..1d9a399c9661 100644
---- a/drivers/net/ethernet/ti/am65-cpts.c
-+++ b/drivers/net/ethernet/ti/am65-cpts.c
-@@ -175,6 +175,7 @@ struct am65_cpts {
- 	u64 timestamp;
- 	u32 genf_enable;
- 	u32 hw_ts_enable;
-+	u32 estf_enable;
- 	struct sk_buff_head txq;
- 	bool pps_enabled;
- 	bool pps_present;
-@@ -405,13 +406,13 @@ static irqreturn_t am65_cpts_interrupt(int irq, void *dev_id)
- static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct am65_cpts *cpts = container_of(ptp, struct am65_cpts, ptp_info);
--	u32 pps_ctrl_val = 0, pps_ppm_hi = 0, pps_ppm_low = 0;
-+	u32 estf_ctrl_val = 0, estf_ppm_hi = 0, estf_ppm_low = 0;
- 	s32 ppb = scaled_ppm_to_ppb(scaled_ppm);
- 	int pps_index = cpts->pps_genf_idx;
- 	u64 adj_period, pps_adj_period;
- 	u32 ctrl_val, ppm_hi, ppm_low;
- 	unsigned long flags;
--	int neg_adj = 0;
-+	int neg_adj = 0, i;
- 
- 	if (ppb < 0) {
- 		neg_adj = 1;
-@@ -441,19 +442,19 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 	ppm_low = lower_32_bits(adj_period);
- 
- 	if (cpts->pps_enabled) {
--		pps_ctrl_val = am65_cpts_read32(cpts, genf[pps_index].control);
-+		estf_ctrl_val = am65_cpts_read32(cpts, genf[pps_index].control);
- 		if (neg_adj)
--			pps_ctrl_val &= ~BIT(1);
-+			estf_ctrl_val &= ~BIT(1);
- 		else
--			pps_ctrl_val |= BIT(1);
-+			estf_ctrl_val |= BIT(1);
- 
- 		/* GenF PPM will do correction using cpts refclk tick which is
- 		 * (cpts->ts_add_val + 1) ns, so GenF length PPM adj period
- 		 * need to be corrected.
- 		 */
- 		pps_adj_period = adj_period * (cpts->ts_add_val + 1);
--		pps_ppm_hi = upper_32_bits(pps_adj_period) & 0x3FF;
--		pps_ppm_low = lower_32_bits(pps_adj_period);
-+		estf_ppm_hi = upper_32_bits(pps_adj_period) & 0x3FF;
-+		estf_ppm_low = lower_32_bits(pps_adj_period);
- 	}
- 
- 	spin_lock_irqsave(&cpts->lock, flags);
-@@ -471,11 +472,18 @@ static int am65_cpts_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 	am65_cpts_write32(cpts, ppm_low, ts_ppm_low);
- 
- 	if (cpts->pps_enabled) {
--		am65_cpts_write32(cpts, pps_ctrl_val, genf[pps_index].control);
--		am65_cpts_write32(cpts, pps_ppm_hi, genf[pps_index].ppm_hi);
--		am65_cpts_write32(cpts, pps_ppm_low, genf[pps_index].ppm_low);
-+		am65_cpts_write32(cpts, estf_ctrl_val, genf[pps_index].control);
-+		am65_cpts_write32(cpts, estf_ppm_hi, genf[pps_index].ppm_hi);
-+		am65_cpts_write32(cpts, estf_ppm_low, genf[pps_index].ppm_low);
- 	}
- 
-+	for (i = 0; i < AM65_CPTS_ESTF_MAX_NUM; i++) {
-+		if (cpts->estf_enable & BIT(i)) {
-+			am65_cpts_write32(cpts, estf_ctrl_val, estf[i].control);
-+			am65_cpts_write32(cpts, estf_ppm_hi, estf[i].ppm_hi);
-+			am65_cpts_write32(cpts, estf_ppm_low, estf[i].ppm_low);
-+		}
-+	}
- 	/* All GenF/EstF can be updated here the same way */
- 	spin_unlock_irqrestore(&cpts->lock, flags);
- 
-@@ -596,6 +604,11 @@ int am65_cpts_estf_enable(struct am65_cpts *cpts, int idx,
- 	am65_cpts_write32(cpts, val, estf[idx].comp_lo);
- 	val = lower_32_bits(cycles);
- 	am65_cpts_write32(cpts, val, estf[idx].length);
-+	am65_cpts_write32(cpts, 0, estf[idx].control);
-+	am65_cpts_write32(cpts, 0, estf[idx].ppm_hi);
-+	am65_cpts_write32(cpts, 0, estf[idx].ppm_low);
-+
-+	cpts->estf_enable |= BIT(idx);
- 
- 	dev_dbg(cpts->dev, "%s: ESTF:%u enabled\n", __func__, idx);
- 
-@@ -606,6 +619,7 @@ EXPORT_SYMBOL_GPL(am65_cpts_estf_enable);
- void am65_cpts_estf_disable(struct am65_cpts *cpts, int idx)
- {
- 	am65_cpts_write32(cpts, 0, estf[idx].length);
-+	cpts->estf_enable &= ~BIT(idx);
- 
- 	dev_dbg(cpts->dev, "%s: ESTF:%u disabled\n", __func__, idx);
- }
+>> net/packet/af_packet.c:2626:11: warning: format specifies type 'unsigned long' but the argument has type 'int' [-Wformat]
+                                  MAX_SKB_FRAGS);
+                                  ^~~~~~~~~~~~~
+   include/linux/printk.h:498:33: note: expanded from macro 'pr_err'
+           printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+                                  ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:455:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:427:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   include/linux/skbuff.h:348:23: note: expanded from macro 'MAX_SKB_FRAGS'
+   #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                         ^~~~~~~~~~~~~~~~~~~~
+   ./include/generated/autoconf.h:2539:30: note: expanded from macro 'CONFIG_MAX_SKB_FRAGS'
+   #define CONFIG_MAX_SKB_FRAGS 17
+                                ^~
+   1 warning generated.
+
+
+vim +2626 net/packet/af_packet.c
+
+16cc1400456a4d Willem de Bruijn      2016-02-03  2565  
+69e3c75f4d541a Johann Baudy          2009-05-18  2566  static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
+8d39b4a6b83c14 Willem de Bruijn      2016-02-03  2567  		void *frame, struct net_device *dev, void *data, int tp_len,
+c14ac9451c3483 Soheil Hassas Yeganeh 2016-04-02  2568  		__be16 proto, unsigned char *addr, int hlen, int copylen,
+c14ac9451c3483 Soheil Hassas Yeganeh 2016-04-02  2569  		const struct sockcm_cookie *sockc)
+69e3c75f4d541a Johann Baudy          2009-05-18  2570  {
+184f489e9b8c40 Daniel Borkmann       2013-04-16  2571  	union tpacket_uhdr ph;
+8d39b4a6b83c14 Willem de Bruijn      2016-02-03  2572  	int to_write, offset, len, nr_frags, len_max;
+69e3c75f4d541a Johann Baudy          2009-05-18  2573  	struct socket *sock = po->sk.sk_socket;
+69e3c75f4d541a Johann Baudy          2009-05-18  2574  	struct page *page;
+69e3c75f4d541a Johann Baudy          2009-05-18  2575  	int err;
+69e3c75f4d541a Johann Baudy          2009-05-18  2576  
+69e3c75f4d541a Johann Baudy          2009-05-18  2577  	ph.raw = frame;
+69e3c75f4d541a Johann Baudy          2009-05-18  2578  
+69e3c75f4d541a Johann Baudy          2009-05-18  2579  	skb->protocol = proto;
+69e3c75f4d541a Johann Baudy          2009-05-18  2580  	skb->dev = dev;
+69e3c75f4d541a Johann Baudy          2009-05-18  2581  	skb->priority = po->sk.sk_priority;
+2d37a186cedc51 Eric Dumazet          2009-10-01  2582  	skb->mark = po->sk.sk_mark;
+3d0ba8c03ca9c4 Richard Cochran       2018-07-03  2583  	skb->tstamp = sockc->transmit_time;
+8f932f762e7928 Willem de Bruijn      2018-12-17  2584  	skb_setup_tx_timestamp(skb, sockc->tsflags);
+5cd8d46ea1562b Willem de Bruijn      2018-11-20  2585  	skb_zcopy_set_nouarg(skb, ph.raw);
+69e3c75f4d541a Johann Baudy          2009-05-18  2586  
+ae641949df01b8 Herbert Xu            2011-11-18  2587  	skb_reserve(skb, hlen);
+69e3c75f4d541a Johann Baudy          2009-05-18  2588  	skb_reset_network_header(skb);
+c1aad275b0293d Jason Wang            2013-03-25  2589  
+69e3c75f4d541a Johann Baudy          2009-05-18  2590  	to_write = tp_len;
+69e3c75f4d541a Johann Baudy          2009-05-18  2591  
+69e3c75f4d541a Johann Baudy          2009-05-18  2592  	if (sock->type == SOCK_DGRAM) {
+69e3c75f4d541a Johann Baudy          2009-05-18  2593  		err = dev_hard_header(skb, dev, ntohs(proto), addr,
+69e3c75f4d541a Johann Baudy          2009-05-18  2594  				NULL, tp_len);
+69e3c75f4d541a Johann Baudy          2009-05-18  2595  		if (unlikely(err < 0))
+69e3c75f4d541a Johann Baudy          2009-05-18  2596  			return -EINVAL;
+1d036d25e5609b Willem de Bruijn      2016-02-03  2597  	} else if (copylen) {
+9ed988cd591500 Willem de Bruijn      2016-03-09  2598  		int hdrlen = min_t(int, copylen, tp_len);
+9ed988cd591500 Willem de Bruijn      2016-03-09  2599  
+69e3c75f4d541a Johann Baudy          2009-05-18  2600  		skb_push(skb, dev->hard_header_len);
+1d036d25e5609b Willem de Bruijn      2016-02-03  2601  		skb_put(skb, copylen - dev->hard_header_len);
+9ed988cd591500 Willem de Bruijn      2016-03-09  2602  		err = skb_store_bits(skb, 0, data, hdrlen);
+69e3c75f4d541a Johann Baudy          2009-05-18  2603  		if (unlikely(err))
+69e3c75f4d541a Johann Baudy          2009-05-18  2604  			return err;
+9ed988cd591500 Willem de Bruijn      2016-03-09  2605  		if (!dev_validate_header(dev, skb->data, hdrlen))
+9ed988cd591500 Willem de Bruijn      2016-03-09  2606  			return -EINVAL;
+69e3c75f4d541a Johann Baudy          2009-05-18  2607  
+9ed988cd591500 Willem de Bruijn      2016-03-09  2608  		data += hdrlen;
+9ed988cd591500 Willem de Bruijn      2016-03-09  2609  		to_write -= hdrlen;
+69e3c75f4d541a Johann Baudy          2009-05-18  2610  	}
+69e3c75f4d541a Johann Baudy          2009-05-18  2611  
+69e3c75f4d541a Johann Baudy          2009-05-18  2612  	offset = offset_in_page(data);
+69e3c75f4d541a Johann Baudy          2009-05-18  2613  	len_max = PAGE_SIZE - offset;
+69e3c75f4d541a Johann Baudy          2009-05-18  2614  	len = ((to_write > len_max) ? len_max : to_write);
+69e3c75f4d541a Johann Baudy          2009-05-18  2615  
+69e3c75f4d541a Johann Baudy          2009-05-18  2616  	skb->data_len = to_write;
+69e3c75f4d541a Johann Baudy          2009-05-18  2617  	skb->len += to_write;
+69e3c75f4d541a Johann Baudy          2009-05-18  2618  	skb->truesize += to_write;
+14afee4b6092fd Reshetova, Elena      2017-06-30  2619  	refcount_add(to_write, &po->sk.sk_wmem_alloc);
+69e3c75f4d541a Johann Baudy          2009-05-18  2620  
+69e3c75f4d541a Johann Baudy          2009-05-18  2621  	while (likely(to_write)) {
+69e3c75f4d541a Johann Baudy          2009-05-18  2622  		nr_frags = skb_shinfo(skb)->nr_frags;
+69e3c75f4d541a Johann Baudy          2009-05-18  2623  
+69e3c75f4d541a Johann Baudy          2009-05-18  2624  		if (unlikely(nr_frags >= MAX_SKB_FRAGS)) {
+40d4e3dfc2f56a Eric Dumazet          2009-07-21  2625  			pr_err("Packet exceed the number of skb frags(%lu)\n",
+69e3c75f4d541a Johann Baudy          2009-05-18 @2626  			       MAX_SKB_FRAGS);
+69e3c75f4d541a Johann Baudy          2009-05-18  2627  			return -EFAULT;
+69e3c75f4d541a Johann Baudy          2009-05-18  2628  		}
+69e3c75f4d541a Johann Baudy          2009-05-18  2629  
+0af55bb58f8fa7 Changli Gao           2010-12-01  2630  		page = pgv_to_page(data);
+0af55bb58f8fa7 Changli Gao           2010-12-01  2631  		data += len;
+69e3c75f4d541a Johann Baudy          2009-05-18  2632  		flush_dcache_page(page);
+69e3c75f4d541a Johann Baudy          2009-05-18  2633  		get_page(page);
+0af55bb58f8fa7 Changli Gao           2010-12-01  2634  		skb_fill_page_desc(skb, nr_frags, page, offset, len);
+69e3c75f4d541a Johann Baudy          2009-05-18  2635  		to_write -= len;
+69e3c75f4d541a Johann Baudy          2009-05-18  2636  		offset = 0;
+69e3c75f4d541a Johann Baudy          2009-05-18  2637  		len_max = PAGE_SIZE;
+69e3c75f4d541a Johann Baudy          2009-05-18  2638  		len = ((to_write > len_max) ? len_max : to_write);
+69e3c75f4d541a Johann Baudy          2009-05-18  2639  	}
+69e3c75f4d541a Johann Baudy          2009-05-18  2640  
+75c65772c3d184 Maxim Mikityanskiy    2019-02-21  2641  	packet_parse_headers(skb, sock);
+efdfa2f7848f64 Daniel Borkmann       2015-11-11  2642  
+69e3c75f4d541a Johann Baudy          2009-05-18  2643  	return tp_len;
+69e3c75f4d541a Johann Baudy          2009-05-18  2644  }
+69e3c75f4d541a Johann Baudy          2009-05-18  2645  
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
