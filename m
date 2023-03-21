@@ -2,75 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C578E6C3008
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:15:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E12BE6C301C
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:18:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbjCULPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 07:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
+        id S230391AbjCULSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 07:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbjCULPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:15:01 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298FBEB5E;
-        Tue, 21 Mar 2023 04:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=h7qXc+1aUFElkMSM91nEtKXu81XN+Wf79m4It5ZDBKw=; b=CyDe9t+sVOvK634r9Puu4qv7Tr
-        Ovj0TAOGTUpoKFToWqG4+NPCKSvoEhRDyP69OUfOz0VzdqjnrOiyHZCrz3aQrySDxCqb/1a228oEq
-        nZXa1tj0tcBupnyAq5zoAPqrUcqdVRxC75ISxNKA8Ggm05IjXYSuFnn1pRhMu971AiRNMPlTTAR7J
-        xFGXcziwSsMUnBKXRQ7bVHBnEchFcfmUoqaD4KFX4It3vH1JWHEiByTrpn4YKJ/0W3HqGGGc6x0Id
-        vT+U8Qa7tA83tkCiQBDFvvOdRN/69noCxit8ddctZnzokmhZQ3dZwvFfMSS0uOSwIMvVuLh6J3wyf
-        kI1GDoIA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41428)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1peZwm-0000xL-KC; Tue, 21 Mar 2023 11:14:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1peZwk-0007gb-5R; Tue, 21 Mar 2023 11:14:30 +0000
-Date:   Tue, 21 Mar 2023 11:14:30 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Lee Jones <lee@kernel.org>
-Cc:     Vinod Koul <vkoul@kernel.org>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kishon Vijay Abraham I <kishon@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v2 net-next 1/9] phy: phy-ocelot-serdes: add ability to
- be used in a non-syscon configuration
-Message-ID: <ZBmRlnCKt7oJ/w9J@shell.armlinux.org.uk>
-References: <20230317185415.2000564-2-colin.foster@in-advantage.com>
- <ZBgeKM50e1vt+ho1@matsya>
- <ZBgmXplfA/Q3/1dC@shell.armlinux.org.uk>
- <20230320133431.GB2673958@google.com>
- <ZBhtOw4Ftj3Sa3JU@shell.armlinux.org.uk>
- <20230320164136.GC2673958@google.com>
- <ZBiRFNAqd94tbEJ9@shell.armlinux.org.uk>
- <20230321082658.GD2673958@google.com>
- <ZBmD+7pinpTzayep@shell.armlinux.org.uk>
- <20230321110851.GE2673958@google.com>
+        with ESMTP id S229923AbjCULSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:18:20 -0400
+Received: from out-5.mta1.migadu.com (out-5.mta1.migadu.com [IPv6:2001:41d0:203:375::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1653F23A5C
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:18:17 -0700 (PDT)
+Message-ID: <10a31caf-9ceb-8d13-4cf5-b0e2ffef948d@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1679397493;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZyhMHy39HGuEPKSTzv5x2uvFnDEx9B7nM+K4R6uC/Ek=;
+        b=T4A8OosGIB1QW2yAqJL4j2hF9OA/+ZerLdbM4CKUqZhyHtYufxEwI3ht6Yqi6lvrmL9MzS
+        hZawv10xGKn68SAijRkQHS32fRGhVgK10lvaVCDIdMxC/Wg1UijrYZAvLXj43olmkKSduu
+        VnyIlT32f534JQP9Pr0huYeGd50tn3A=
+Date:   Tue, 21 Mar 2023 11:18:09 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230321110851.GE2673958@google.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 3/3] bnxt: Enforce PTP software freq adjustments
+ only when in non-RTC mode
+Content-Language: en-US
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        michael.chan@broadcom.com, kuba@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, gospo@broadcom.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, richardcochran@gmail.com
+References: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
+ <20230321103227.12020-4-pavan.chebbi@broadcom.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <20230321103227.12020-4-pavan.chebbi@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,76 +51,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 11:08:51AM +0000, Lee Jones wrote:
-> On Tue, 21 Mar 2023, Russell King (Oracle) wrote:
+On 21/03/2023 10:32, Pavan Chebbi wrote:
+> Currently driver performs software based frequency adjustments
+> when RTC capability is not discovered or when in shared PHC mode.
+> But there may be some old firmware versions that still support
+> hardware freq adjustments without RTC capability being exposed.
+> In this situation driver will use non-realtime mode even on single
+> host NICs.
 > 
-> > On Tue, Mar 21, 2023 at 08:26:58AM +0000, Lee Jones wrote:
-> > > On Mon, 20 Mar 2023, Russell King (Oracle) wrote:
-> > >
-> > > > On Mon, Mar 20, 2023 at 04:41:36PM +0000, Lee Jones wrote:
-> > > > > On Mon, 20 Mar 2023, Russell King (Oracle) wrote:
-> > > > >
-> > > > > > On Mon, Mar 20, 2023 at 01:34:31PM +0000, Lee Jones wrote:
-> > > > > > > Once again netdev seems to have applied patches from other subsystems
-> > > > > > > without review/ack.  What makes netdev different to any other kernel
-> > > > > > > subsystem?  What would happen if other random maintainers started
-> > > > > > > applying netdev patches without appropriate review?  I suspect someone
-> > > > > > > would become understandably grumpy.
-> > > > > >
-> > > > > > Why again are you addressing your whinge to me? I'm not one of the
-> > > > > > netdev maintainers, but I've pointed out what happens in netdev
-> > > > > > land. However, you seem to *not* want to discuss it directly with
-> > > > > > DaveM/Jakub/Paolo - as illustrated again with yet another response
-> > > > > > to *me* rather than addressing your concerns *to* the people who
-> > > > > > you have an issue with.
-> > > > > >
-> > > > > > This is not communication. Effectively, this is sniping, because
-> > > > > > rather than discussing it with the individuals concerned, you are
-> > > > > > instead preferring to discuss it with others.
-> > > > > >
-> > > > > > Please stop this.
-> > > > >
-> > > > > Read the above paragraph again.
-> > > >
-> > > > You sent your email _TO_ me, that means you addressed your comments
-> > > > primarily _to_ me. RFC2822:
-> > > >
-> > > >    The "To:" field contains the address(es) of the primary recipient(s)
-> > > >    of the message.
-> > > >
-> > > >    The "Cc:" field (where the "Cc" means "Carbon Copy" in the sense of
-> > > >    making a copy on a typewriter using carbon paper) contains the
-> > > >    addresses of others who are to receive the message, though the
-> > > >    content of the message may not be directed at them.
-> > >
-> > > You're over-thinking it.  I replied to all.
-> >
-> > I've been thinking about this entire situation and there's something
-> > that summarises it. Kettle. Pot. Black.
-> >
-> > You complain about how netdev is run, but you also complain about how
-> > people interpret your emails.
-> >
-> > Sorry, but no. I think you need to be more accomodating towards how
-> > others perceive your emails, especially when there are widespread
-> > accepted conventions. The fact that you are seemingly not even willing
-> > to entertain that someone _might_ interpret your emails according to
-> > standard normals is frankly a problem for you.
+> Hence enforce software frequency adjustments only when running in
+> shared PHC mode. Make suitable changes for cyclecounter for the
+> same.
 > 
-> This conversion has gone completely off-track.
+> Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+> ---
+>   drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 14 ++++++++++----
+>   1 file changed, 10 insertions(+), 4 deletions(-)
 > 
-> If you wish to continue talking about email headers offline (instead of
-> filling people's inboxes with unrelated ramblings), you know where to
-> find me.
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+> index a3a3978a4d1c..b79a186f864c 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+> @@ -230,7 +230,7 @@ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
+>   						ptp_info);
+>   	struct bnxt *bp = ptp->bp;
+>   
+> -	if (BNXT_PTP_USE_RTC(bp))
+> +	if (!BNXT_MH(ptp->bp))
 
-I would prefer not to. I would much prefer it that if _you_ have a
-problem with how netdev operates, that _you_ talk directly _to_ the
-netdev maintainers, rather than latching on to one of my emails and
-replying to it. That is a reasonable request that _you_ appear to be
-completely immune to comprehending, instead wishing to effectively
-tell me that I'm wrong to request that - and start this idiotic
-thread to debate it.
+bp is already resolved and stored in variable, it's better to use it
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>   		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
+>   
+>   	spin_lock_bh(&ptp->ptp_lock);
+> @@ -861,9 +861,15 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
+>   		memset(&ptp->cc, 0, sizeof(ptp->cc));
+>   		ptp->cc.read = bnxt_cc_read;
+>   		ptp->cc.mask = CYCLECOUNTER_MASK(48);
+> -		ptp->cc.shift = BNXT_CYCLES_SHIFT;
+> -		ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
+> -		ptp->cmult = ptp->cc.mult;
+> +		if (BNXT_MH(ptp->bp)) {
+
+and here, bp is the first argument to the function, why you do resolve 
+again?
+
+> +			/* Use timecounter based non-real time mode */
+> +			ptp->cc.shift = BNXT_CYCLES_SHIFT;
+> +			ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
+> +			ptp->cmult = ptp->cc.mult;
+> +		} else {
+> +			ptp->cc.shift = 0;
+> +			ptp->cc.mult = 1;
+> +		}
+>   		ptp->next_overflow_check = jiffies + BNXT_PHC_OVERFLOW_PERIOD;
+>   	}
+>   	if (init_tc)
+
+Otherwise looks good!
+
+Acked-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
