@@ -2,116 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3490A6C3CB0
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 22:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E25F46C3CCF
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 22:37:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbjCUV3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 17:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        id S229852AbjCUVhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 17:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbjCUV3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 17:29:53 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5618F58C1D;
-        Tue, 21 Mar 2023 14:29:29 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-17ab3a48158so17654123fac.1;
-        Tue, 21 Mar 2023 14:29:29 -0700 (PDT)
+        with ESMTP id S229584AbjCUVhQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 17:37:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F10256173
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 14:36:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679434589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2/+8rQXESx0y7iJ/lWjYGgkO51bDoW36uXQ0ZIfOfDY=;
+        b=C8ogjC+BR/ODi5ZE1nvS9+NiIcNstPvCS10S1FSmBNZCJdX1QPUGke8IjRx16yNwuNVP0u
+        L4/6n4kkpTLp4c5SKI7D7Ko9QJB1uFXS0SlZzMEspZsTicGO/JxEMBzo2nPqfzPgiAEsIs
+        j75Qno+nZbUcnVBZzkh3/8DmI2vGL4w=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-177-TJxOIWcnO_OSELqErUGh-Q-1; Tue, 21 Mar 2023 17:36:28 -0400
+X-MC-Unique: TJxOIWcnO_OSELqErUGh-Q-1
+Received: by mail-wm1-f69.google.com with SMTP id m10-20020a05600c4f4a00b003ed74161838so6830013wmq.6
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 14:36:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679434156;
+        d=1e100.net; s=20210112; t=1679434587;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mbvd4MiQ0n3ACh48MQO9r1tkLfqb32ZNN6Ei0TVQKuw=;
-        b=L9r1i3nP+1kvNq2srHTRGtcfhkgYmPk6bDiVskmyjCnkl+y8d3SmW5f588dLYBFnPM
-         Si2iQZ/1OisIStL5hMrkEEBXaYw3LopvVTVKgQpix10hzjCYCJ1KM1C1Nvpw++e92xek
-         XHd0ILZK++31lqP50PMcvGL0xbw7096j073F4sAmChCLOPiRnxQZFWBws/9/gVl+tPcx
-         Fr1OYMsKq28pXWxYsO+RtOe/TRyX6hey43ytY0JsLKME5HExK/If9SiyyDjDxhsthTjy
-         Nj3diSQ3s4rTyFSQ7MPajAq6Zsi+SKEw9RVloIZbqGUQHdm7y069qfbJIsI84aTC9GOC
-         L0pQ==
-X-Gm-Message-State: AO0yUKUmceRvLuTRmSKYQiwxhgNOyTSCvo2M+6hNApPVYV8/YWTZVpsb
-        mwBPGmfKhampM1yOvOes/w==
-X-Google-Smtp-Source: AK7set/cV9nJfnT/jPDxwqQ4IPuH0ACvO2AqQ3rqNFYXe8V5KcrSmIpHMlh6/MlcBjbGmGOoWQpXKg==
-X-Received: by 2002:a05:6870:3313:b0:177:956c:36d5 with SMTP id x19-20020a056870331300b00177956c36d5mr281386oae.29.1679434154637;
-        Tue, 21 Mar 2023 14:29:14 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id ta10-20020a056871868a00b0017197629658sm4595013oab.56.2023.03.21.14.29.13
+        bh=2/+8rQXESx0y7iJ/lWjYGgkO51bDoW36uXQ0ZIfOfDY=;
+        b=jaFnVDfyxeK4hy57SWycsQVjjiuBdTI4LX179gQcMXi1AG4q7gSiM/zqsTqnJCHmeg
+         ZloxCbEyggYU0gbpqnkNGmMSOQRnzvSPFXrsbnVNc1QfCxXlMmMSZ0GtlYvuGPkAcsT9
+         7oeIwzpiZz9GyZBsW1NpJ+h4jHZRa6WnQvo/7SDCXkgVneuLWjRZTwlpMlwW9IqpU5h4
+         W/1VemfqBp/jcEtTRX/HIGc7MIo0y9QzmNQIoDfHv6LBHxHFy04t1Ml0d9SXBy2pAWWk
+         RkiLw5gyqv/HVSHjQr9VJL4UU/sTV01oA/DAaOw7G1EJOo0S4mIdpJoeVgBZzYfhg85J
+         1vsA==
+X-Gm-Message-State: AO0yUKVdFgZK94ZBR5oQKlFTVRNgk3Dya+NVDBNsqTftME6iC13MfVuF
+        aGQKFuvbPb56yWX364a6bHaxM+3Xcr2XXvpcjzema3wTT2ujVWRawxEg6MSjNF1JhIdSpuxb94L
+        Yqm+Vd8BacUXAEP08
+X-Received: by 2002:a5d:684a:0:b0:2c7:bb13:e23f with SMTP id o10-20020a5d684a000000b002c7bb13e23fmr3211668wrw.24.1679434587572;
+        Tue, 21 Mar 2023 14:36:27 -0700 (PDT)
+X-Google-Smtp-Source: AK7set84zvIxrLLTxMQYBkIMEBIwYe7FjxFCYBJQbGyp4XPILZvKxcuzUUAQAoPz/sC15CbsIQ9FYw==
+X-Received: by 2002:a5d:684a:0:b0:2c7:bb13:e23f with SMTP id o10-20020a5d684a000000b002c7bb13e23fmr3211658wrw.24.1679434587237;
+        Tue, 21 Mar 2023 14:36:27 -0700 (PDT)
+Received: from redhat.com ([2.52.1.105])
+        by smtp.gmail.com with ESMTPSA id k16-20020a5d6d50000000b002cff0e213ddsm12180342wri.14.2023.03.21.14.36.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 14:29:14 -0700 (PDT)
-Received: (nullmailer pid 1645135 invoked by uid 1000);
-        Tue, 21 Mar 2023 21:29:13 -0000
-Date:   Tue, 21 Mar 2023 16:29:13 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v5 14/15] dt-bindings: net: phy: Document
- support for LEDs node
-Message-ID: <20230321212913.GA1643897-robh@kernel.org>
-References: <20230319191814.22067-1-ansuelsmth@gmail.com>
- <20230319191814.22067-15-ansuelsmth@gmail.com>
+        Tue, 21 Mar 2023 14:36:26 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 17:36:22 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Mike Christie <michael.christie@oracle.com>
+Cc:     syzbot <syzbot+6b27b2d2aba1c80cc13b@syzkaller.appspotmail.com>,
+        brauner@kernel.org, jasowang@redhat.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [syzbot] [kernel?] general protection fault in vhost_task_start
+Message-ID: <20230321173602-mutt-send-email-mst@kernel.org>
+References: <0000000000005a60a305f76c07dc@google.com>
+ <2d976892-9914-5de0-62e0-c75f1c148259@oracle.com>
+ <20230321135427-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230319191814.22067-15-ansuelsmth@gmail.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230321135427-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 08:18:13PM +0100, Christian Marangi wrote:
-> Document support for LEDs node in phy and add an example for it.
-> PHY LED will have to match led pattern and should be treated as a
-> generic led.
+On Tue, Mar 21, 2023 at 01:55:00PM -0400, Michael S. Tsirkin wrote:
+> On Tue, Mar 21, 2023 at 12:46:04PM -0500, Mike Christie wrote:
+> > On 3/21/23 12:03 PM, syzbot wrote:
+> > > RIP: 0010:vhost_task_start+0x22/0x40 kernel/vhost_task.c:115
+> > > Code: 00 00 00 00 00 0f 1f 00 f3 0f 1e fa 53 48 89 fb e8 c3 67 2c 00 48 8d 7b 70 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 0a 48 8b 7b 70 5b e9 fe bd 02 00 e8 79 ec 7e 00 eb
+> > > RSP: 0018:ffffc90003a9fc38 EFLAGS: 00010207
+> > > RAX: dffffc0000000000 RBX: fffffffffffffff4 RCX: 0000000000000000
+> > > RDX: 000000000000000c RSI: ffffffff81564c8d RDI: 0000000000000064
+> > > RBP: ffff88802b21dd40 R08: 0000000000000100 R09: ffffffff8c917cf3
+> > > R10: 00000000fffffff4 R11: 0000000000000000 R12: fffffffffffffff4
+> > > R13: ffff888075d000b0 R14: ffff888075d00000 R15: ffff888075d00008
+> > > FS:  0000555556247300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
+> > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > CR2: 00007ffe3d8e5ff8 CR3: 00000000215d4000 CR4: 00000000003506f0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  <TASK>
+> > >  vhost_worker_create drivers/vhost/vhost.c:580 [inline]
+> > 
+> > The return value from vhost_task_create is incorrect if the kzalloc fails.
+> > 
+> > Christian, here is a fix for what's in your tree. Do you want me to submit
+> > a follow up patch like this or a replacement patch for:
+> > 
+> > commit 77feab3c4156 ("vhost_task: Allow vhost layer to use copy_process")
+> > 
+> > with the fix rolled into it?
+> > 
 > 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  .../devicetree/bindings/net/ethernet-phy.yaml | 31 +++++++++++++++++++
->  1 file changed, 31 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> index 1327b81f15a2..84e15cee27c7 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> @@ -197,6 +197,22 @@ properties:
->        PHY's that have configurable TX internal delays. If this property is
->        present then the PHY applies the TX delay.
->  
-> +  leds:
-> +    type: object
-> +
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
-> +
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      '^led(@[a-f0-9]+)?$':
-> +        $ref: /schemas/leds/common.yaml#
+> 
+> > 
+> > >From 0677ad6d77722f301ca35e8e0f8fd0cbd5ed8484 Mon Sep 17 00:00:00 2001
+> > From: Mike Christie <michael.christie@oracle.com>
+> > Date: Tue, 21 Mar 2023 12:39:39 -0500
+> > Subject: [PATCH] vhost_task: Fix vhost_task_create return value
+> > 
+> > vhost_task_create is supposed to return the vhost_task or NULL on
+> > failure. This fixes it to return the correct value when the allocation
+> > of the struct fails.
+> > ---
+> >  kernel/vhost_task.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/vhost_task.c b/kernel/vhost_task.c
+> > index 4b8aff160640..b7cbd66f889e 100644
+> > --- a/kernel/vhost_task.c
+> > +++ b/kernel/vhost_task.c
+> > @@ -88,7 +88,7 @@ struct vhost_task *vhost_task_create(int (*fn)(void *), void *arg,
+> >  
+> >  	vtsk = kzalloc(sizeof(*vtsk), GFP_KERNEL);
+> >  	if (!vtsk)
+> > -		return ERR_PTR(-ENOMEM);
+> > +		return NULL;
+> >  	init_completion(&vtsk->exited);
+> >  	vtsk->data = arg;
+> >  	vtsk->fn = fn;
+> > 
 
-Same questions/issues in this one.
+Sorry I had nothing to add here. Sent by mistake.
+
