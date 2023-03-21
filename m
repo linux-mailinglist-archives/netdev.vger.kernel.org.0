@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E2016C3BF6
+	by mail.lfdr.de (Postfix) with ESMTP id E54F16C3BF8
 	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 21:39:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbjCUUjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 16:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56848 "EHLO
+        id S230228AbjCUUjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 16:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbjCUUjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 16:39:10 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1E23B862;
-        Tue, 21 Mar 2023 13:39:09 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id kq3so4945166plb.13;
-        Tue, 21 Mar 2023 13:39:09 -0700 (PDT)
+        with ESMTP id S230314AbjCUUjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 16:39:14 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088813B862;
+        Tue, 21 Mar 2023 13:39:13 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id j13so16678645pjd.1;
+        Tue, 21 Mar 2023 13:39:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679431149;
+        d=gmail.com; s=20210112; t=1679431152;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hlp+Ui1dMfarlEBa998LNtp9z3tMlr+TDoifOg7iOB0=;
-        b=ZKA+LjZP7Qd0izBYnfaud7ZiAZAxTuO07Cbi8bLClSyVmrffdKJRpQYh8kTydZzZ+z
-         qyLXMP17NmKMUcJY9+ISRULrYJIaLzBnRGS9Vd4oLw1qpVfhHSc2NLzBpNV/4EqmobM7
-         BT4jlCMdpTItjhZshpiPmKSeqdwmk+qpo0otRmG5U45RdBSgp6svpY4Do+QyaiHER4mI
-         Sw7byk4QLK1IRSCrCdmDGad+BVJQSkzbLVT5f9Nb4Dq8WDMeCmadtjLqQcMP3/BpBnL+
-         v25T+e69crpXrI42iortoQ0mZCcWbI3Zp5RztmfWHmbtgocTBww7lXdJ0ZegTM0m+cs0
-         ZWiA==
+        bh=k1UEIRhnXHb5g1AwuHId/YJ7osLPnIlxJC7wYc0DN78=;
+        b=SqvILDyJMaoeQZMtIUL+M1zZ4+UaJ6VmtycUIW9HrrFmmWiwcME6LMIrgx6WnUmcbG
+         wYB6Ddl0mXexPUPFbDfouKg3sHPW7yZpnNRTupUiGV74hwTJvhrIYtnQS8xnwpab3M0q
+         k0esZv4FRUZ4zok8u6879a0ik+6weLBvLs0ie8hhsh50roALisldRT3vNjW29wCBWbPH
+         Zn3oyQliMgFQtDfuCM7LWr3qtrTukiicohdyDwWPygt9HH4UEcSXNWm7iKT3Xc/2W9jj
+         NnsLuIRo3SduGSkAn8XcelQ/6pRtRm3JGelFn62cF22gt4ymN/fgoZfv3Cb9fNKtCQgY
+         vh7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679431149;
+        d=1e100.net; s=20210112; t=1679431152;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Hlp+Ui1dMfarlEBa998LNtp9z3tMlr+TDoifOg7iOB0=;
-        b=NnYWZ8Hj02xYcsIpZxXe+uINgmhbNEygSD8nrhBUbIeg3PHQfBZG3vWN0Vn7d3Rqm3
-         7QSYQvIrlxpHKsLSlBgaIJG7mmbXTbUCN7H9gLWd0oWifEDXfUV28zDSctXf0hNdE28J
-         JS93+FxlHtFaBtgWi47hGHhP2QGjx6d6u3MhsgCTac+HSe5TVo/DQO2lvhj1tTI+hqV6
-         l0woPTG36cbQGFdKVCoB5YOChMCP9q3lDqJ+9AyE6B70qUlGifZMs9iLdzWw8LMB5ykY
-         iCPe9su/V5YxoMv9c4ClZcPDw7GZEIoZBgcJUd9Drg5DdUsqtsqAKDCLl0KABzRqtWrY
-         uj/A==
-X-Gm-Message-State: AO0yUKVxNObpj/u6txjdxYOF1U1T14K7gVvfSpHi9OcWNIW+IQdiVGog
-        rFEpVmDGXZAeM4vWE7xeyrI=
-X-Google-Smtp-Source: AK7set87Le+EgWstCpX+zsRd8jFVB2e2cCpMhTRgS+zPB+fhpz3WDCgi6i+g3u65B7puybVv5292fA==
-X-Received: by 2002:a17:90b:3b46:b0:23b:50ff:59ba with SMTP id ot6-20020a17090b3b4600b0023b50ff59bamr1018463pjb.21.1679431148654;
-        Tue, 21 Mar 2023 13:39:08 -0700 (PDT)
+        bh=k1UEIRhnXHb5g1AwuHId/YJ7osLPnIlxJC7wYc0DN78=;
+        b=FTiMOnNwNeCnWmGBnufDYjHeMKmwz9rr0xf7LTahaLn8tVWiintvrnprgF9Gx/1TGU
+         WsAmGRweg7XuJDaZqvEOe18W8Qm8UgQ3YNvjQPOGh17dE5rbnpLiMvnASurBiziYxZH8
+         WYJF+0T/5WZDdEitsDggbLpY1UAbC4ObPTeEIT6sCMsMzsJM0omC8GLeKI+SWXpFcrUc
+         wFYr2BR2TxzOPCD54b66fOhT39W+CRpig2JKak9HMcssjxhcyUIzAW/M/fXZMooKgzer
+         xJUv25vUv0y01S91Y24B3KYl1aFWQme9koemdDfcghvxF4nzSUS7rJd04XmcLIQ8n5r+
+         as5A==
+X-Gm-Message-State: AO0yUKVmlnIHoTYwTnBrV61gu+g+tlHNpgvJWB1FbtyMJ4m464kmi8m7
+        PhPJS59bhH+lqrTH98GR6bE=
+X-Google-Smtp-Source: AK7set9y+yJop18BlaFCOuiU0uYJQfTZiK4zvMp80+kXaYDccneTX1VjW/r34M4KP+V8aWM/1ybSww==
+X-Received: by 2002:a17:902:fb87:b0:1a1:ee8c:eef8 with SMTP id lg7-20020a170902fb8700b001a1ee8ceef8mr352674plb.2.1679431152426;
+        Tue, 21 Mar 2023 13:39:12 -0700 (PDT)
 Received: from macbook-pro-6.dhcp.thefacebook.com ([2620:10d:c090:500::5:34cf])
-        by smtp.gmail.com with ESMTPSA id i5-20020a17090aa90500b002311c4596f6sm10549938pjq.54.2023.03.21.13.39.07
+        by smtp.gmail.com with ESMTPSA id n20-20020a170902d0d400b0019e8915b1b5sm9163786pln.105.2023.03.21.13.39.10
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 21 Mar 2023 13:39:08 -0700 (PDT)
+        Tue, 21 Mar 2023 13:39:12 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
         void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
         memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 3/4] libbpf: Support kfunc detection in light skeleton.
-Date:   Tue, 21 Mar 2023 13:38:53 -0700
-Message-Id: <20230321203854.3035-4-alexei.starovoitov@gmail.com>
+Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: Add light skeleton test for kfunc detection.
+Date:   Tue, 21 Mar 2023 13:38:54 -0700
+Message-Id: <20230321203854.3035-5-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 In-Reply-To: <20230321203854.3035-1-alexei.starovoitov@gmail.com>
 References: <20230321203854.3035-1-alexei.starovoitov@gmail.com>
@@ -75,171 +75,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Teach gen_loader to find {btf_id, btf_obj_fd} of kernel variables and kfuncs
-and populate corresponding ld_imm64 and bpf_call insns.
+Add light skeleton test for kfunc detection and denylist it for s390.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- tools/lib/bpf/bpf_gen_internal.h |  4 +++-
- tools/lib/bpf/gen_loader.c       | 38 ++++++++++++++++----------------
- tools/lib/bpf/libbpf.c           |  7 ++++--
- 3 files changed, 27 insertions(+), 22 deletions(-)
+ tools/testing/selftests/bpf/DENYLIST.s390x        |  1 +
+ .../testing/selftests/bpf/progs/test_ksyms_weak.c | 15 +++++++++++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/tools/lib/bpf/bpf_gen_internal.h b/tools/lib/bpf/bpf_gen_internal.h
-index 223308931d55..fdf44403ff36 100644
---- a/tools/lib/bpf/bpf_gen_internal.h
-+++ b/tools/lib/bpf/bpf_gen_internal.h
-@@ -11,6 +11,7 @@ struct ksym_relo_desc {
- 	int insn_idx;
- 	bool is_weak;
- 	bool is_typeless;
-+	bool is_ld64;
- };
+diff --git a/tools/testing/selftests/bpf/DENYLIST.s390x b/tools/testing/selftests/bpf/DENYLIST.s390x
+index 34cb8b2de8ca..c7463f3ec3c0 100644
+--- a/tools/testing/selftests/bpf/DENYLIST.s390x
++++ b/tools/testing/selftests/bpf/DENYLIST.s390x
+@@ -11,6 +11,7 @@ get_stack_raw_tp                         # user_stack corrupted user stack
+ iters/testmod_seq*                       # s390x doesn't support kfuncs in modules yet
+ kprobe_multi_bench_attach                # bpf_program__attach_kprobe_multi_opts unexpected error: -95
+ kprobe_multi_test                        # relies on fentry
++ksyms_btf/weak_ksyms*                    # test_ksyms_weak__open_and_load unexpected error: -22                        (kfunc)
+ ksyms_module                             # test_ksyms_module__open_and_load unexpected error: -9                       (?)
+ ksyms_module_libbpf                      # JIT does not support calling kernel function                                (kfunc)
+ ksyms_module_lskel                       # test_ksyms_module_lskel__open_and_load unexpected error: -9                 (?)
+diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+index 7003eef0c192..d00268c91e19 100644
+--- a/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
++++ b/tools/testing/selftests/bpf/progs/test_ksyms_weak.c
+@@ -20,6 +20,8 @@ __u64 out__non_existent_typed = -1;
+ /* test existing weak symbols can be resolved. */
+ extern const struct rq runqueues __ksym __weak; /* typed */
+ extern const void bpf_prog_active __ksym __weak; /* typeless */
++struct task_struct *bpf_task_acquire(struct task_struct *p) __ksym __weak;
++void bpf_testmod_test_mod_kfunc(int i) __ksym __weak;
  
- struct ksym_desc {
-@@ -24,6 +25,7 @@ struct ksym_desc {
- 		bool typeless;
- 	};
- 	int insn;
-+	bool is_ld64;
- };
  
- struct bpf_gen {
-@@ -65,7 +67,7 @@ void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *value, __u
- void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx);
- void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *name, enum bpf_attach_type type);
- void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
--			    bool is_typeless, int kind, int insn_idx);
-+			    bool is_typeless, bool is_ld64, int kind, int insn_idx);
- void bpf_gen__record_relo_core(struct bpf_gen *gen, const struct bpf_core_relo *core_relo);
- void bpf_gen__populate_outer_map(struct bpf_gen *gen, int outer_map_idx, int key, int inner_map_idx);
+ /* non-existent weak symbols. */
+@@ -29,6 +31,7 @@ extern const void bpf_link_fops1 __ksym __weak;
  
-diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-index b74c82bb831e..83e8e3bfd8ff 100644
---- a/tools/lib/bpf/gen_loader.c
-+++ b/tools/lib/bpf/gen_loader.c
-@@ -560,7 +560,7 @@ static void emit_find_attach_target(struct bpf_gen *gen)
+ /* typed symbols, default to zero. */
+ extern const int bpf_link_fops2 __ksym __weak;
++void invalid_kfunc(void) __ksym __weak;
+ 
+ SEC("raw_tp/sys_enter")
+ int pass_handler(const void *ctx)
+@@ -50,6 +53,18 @@ int pass_handler(const void *ctx)
+ 	if (&bpf_link_fops2) /* can't happen */
+ 		out__non_existent_typed = (__u64)bpf_per_cpu_ptr(&bpf_link_fops2, 0);
+ 
++	if (!bpf_ksym_exists(bpf_task_acquire))
++		/* dead code won't be seen by the verifier */
++		bpf_task_acquire(0);
++
++	if (!bpf_ksym_exists(bpf_testmod_test_mod_kfunc))
++		/* dead code won't be seen by the verifier */
++		bpf_testmod_test_mod_kfunc(0);
++
++	if (bpf_ksym_exists(invalid_kfunc))
++		/* dead code won't be seen by the verifier */
++		invalid_kfunc();
++
+ 	return 0;
  }
  
- void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
--			    bool is_typeless, int kind, int insn_idx)
-+			    bool is_typeless, bool is_ld64, int kind, int insn_idx)
- {
- 	struct ksym_relo_desc *relo;
- 
-@@ -574,6 +574,7 @@ void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
- 	relo->name = name;
- 	relo->is_weak = is_weak;
- 	relo->is_typeless = is_typeless;
-+	relo->is_ld64 = is_ld64;
- 	relo->kind = kind;
- 	relo->insn_idx = insn_idx;
- 	gen->relo_cnt++;
-@@ -586,9 +587,11 @@ static struct ksym_desc *get_ksym_desc(struct bpf_gen *gen, struct ksym_relo_des
- 	int i;
- 
- 	for (i = 0; i < gen->nr_ksyms; i++) {
--		if (!strcmp(gen->ksyms[i].name, relo->name)) {
--			gen->ksyms[i].ref++;
--			return &gen->ksyms[i];
-+		kdesc = &gen->ksyms[i];
-+		if (kdesc->kind == relo->kind && kdesc->is_ld64 == relo->is_ld64 &&
-+		    !strcmp(kdesc->name, relo->name)) {
-+			kdesc->ref++;
-+			return kdesc;
- 		}
- 	}
- 	kdesc = libbpf_reallocarray(gen->ksyms, gen->nr_ksyms + 1, sizeof(*kdesc));
-@@ -603,6 +606,7 @@ static struct ksym_desc *get_ksym_desc(struct bpf_gen *gen, struct ksym_relo_des
- 	kdesc->ref = 1;
- 	kdesc->off = 0;
- 	kdesc->insn = 0;
-+	kdesc->is_ld64 = relo->is_ld64;
- 	return kdesc;
- }
- 
-@@ -864,23 +868,17 @@ static void emit_relo(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insn
- {
- 	int insn;
- 
--	pr_debug("gen: emit_relo (%d): %s at %d\n", relo->kind, relo->name, relo->insn_idx);
-+	pr_debug("gen: emit_relo (%d): %s at %d %s\n",
-+		 relo->kind, relo->name, relo->insn_idx, relo->is_ld64 ? "ld64" : "call");
- 	insn = insns + sizeof(struct bpf_insn) * relo->insn_idx;
- 	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_8, BPF_PSEUDO_MAP_IDX_VALUE, 0, 0, 0, insn));
--	switch (relo->kind) {
--	case BTF_KIND_VAR:
-+	if (relo->is_ld64) {
- 		if (relo->is_typeless)
- 			emit_relo_ksym_typeless(gen, relo, insn);
- 		else
- 			emit_relo_ksym_btf(gen, relo, insn);
--		break;
--	case BTF_KIND_FUNC:
-+	} else {
- 		emit_relo_kfunc_btf(gen, relo, insn);
--		break;
--	default:
--		pr_warn("Unknown relocation kind '%d'\n", relo->kind);
--		gen->error = -EDOM;
--		return;
- 	}
- }
- 
-@@ -903,18 +901,20 @@ static void cleanup_core_relo(struct bpf_gen *gen)
- 
- static void cleanup_relos(struct bpf_gen *gen, int insns)
- {
-+	struct ksym_desc *kdesc;
- 	int i, insn;
- 
- 	for (i = 0; i < gen->nr_ksyms; i++) {
-+		kdesc = &gen->ksyms[i];
- 		/* only close fds for typed ksyms and kfuncs */
--		if (gen->ksyms[i].kind == BTF_KIND_VAR && !gen->ksyms[i].typeless) {
-+		if (kdesc->is_ld64 && !kdesc->typeless) {
- 			/* close fd recorded in insn[insn_idx + 1].imm */
--			insn = gen->ksyms[i].insn;
-+			insn = kdesc->insn;
- 			insn += sizeof(struct bpf_insn) + offsetof(struct bpf_insn, imm);
- 			emit_sys_close_blob(gen, insn);
--		} else if (gen->ksyms[i].kind == BTF_KIND_FUNC) {
--			emit_sys_close_blob(gen, blob_fd_array_off(gen, gen->ksyms[i].off));
--			if (gen->ksyms[i].off < MAX_FD_ARRAY_SZ)
-+		} else if (!kdesc->is_ld64) {
-+			emit_sys_close_blob(gen, blob_fd_array_off(gen, kdesc->off));
-+			if (kdesc->off < MAX_FD_ARRAY_SZ)
- 				gen->nr_fd_array--;
- 		}
- 	}
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index f8131f963803..5d32aa8ea38a 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -7070,18 +7070,21 @@ static int bpf_program_record_relos(struct bpf_program *prog)
- 	for (i = 0; i < prog->nr_reloc; i++) {
- 		struct reloc_desc *relo = &prog->reloc_desc[i];
- 		struct extern_desc *ext = &obj->externs[relo->sym_off];
-+		int kind;
- 
- 		switch (relo->type) {
- 		case RELO_EXTERN_LD64:
- 			if (ext->type != EXT_KSYM)
- 				continue;
-+			kind = btf_is_var(btf__type_by_id(obj->btf, ext->btf_id)) ?
-+				BTF_KIND_VAR : BTF_KIND_FUNC;
- 			bpf_gen__record_extern(obj->gen_loader, ext->name,
- 					       ext->is_weak, !ext->ksym.type_id,
--					       BTF_KIND_VAR, relo->insn_idx);
-+					       true, kind, relo->insn_idx);
- 			break;
- 		case RELO_EXTERN_CALL:
- 			bpf_gen__record_extern(obj->gen_loader, ext->name,
--					       ext->is_weak, false, BTF_KIND_FUNC,
-+					       ext->is_weak, false, false, BTF_KIND_FUNC,
- 					       relo->insn_idx);
- 			break;
- 		case RELO_CORE: {
 -- 
 2.34.1
 
