@@ -2,166 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 688FA6C35D9
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CF26C3604
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 16:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbjCUPiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 11:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43342 "EHLO
+        id S231768AbjCUPn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 11:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbjCUPit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:38:49 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C671FF2B;
-        Tue, 21 Mar 2023 08:38:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wqHE/HmFnAipyC15YC6kC4z9qeOa5pYSIMhsUmlBcnA=; b=cvRImtCFf+1tr5TBScdJO6JydN
-        ilS/AfrFAwSiENYVw8xmUupqouZwJGMhMscvrgZJjo8YPiSXT16Ur6uSDZlBQUGhb+u3u8CNoltIT
-        iDlh1W4Zrm6JPt9H2da1BgMVIv0FmoMn20BzHteqD3UBlrCDRblFrnUJlwn2drXLnBZQa6utu/fWP
-        Wr4SPROlrhBWhLjsBO0DrfxDObVnfbdQhkkwtQwMUpZJ5UqrtxgHSw5Ni17n2BdP811DLwIw3QxLS
-        fui3k4rZy5Zj65i0CKI0LTge8AoOllWu1SCpiuIMuVxiIjJPnW+pOokL1BooWUswiM+LJy82T+ah1
-        KzBkkLYg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52814)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pee4G-0001R7-Ty; Tue, 21 Mar 2023 15:38:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pee4E-0007qF-T0; Tue, 21 Mar 2023 15:38:30 +0000
-Date:   Tue, 21 Mar 2023 15:38:30 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srk@ti.com
-Subject: Re: [PATCH net-next 2/4] net: ethernet: ti: am65-cpsw: Add support
- for SGMII mode
-Message-ID: <ZBnPdlFS2P3Iie5k@shell.armlinux.org.uk>
-References: <20230321111958.2800005-1-s-vadapalli@ti.com>
- <20230321111958.2800005-3-s-vadapalli@ti.com>
- <ZBmVGu2vf1ADmEuN@shell.armlinux.org.uk>
- <9b9ba199-8379-0840-b99a-d729f8ad33e1@ti.com>
+        with ESMTP id S229829AbjCUPnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 11:43:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F05CDF5
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 08:42:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679413353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+21M6FOpDI3Nr+X7KYn7VxKMZfev1okJOfwsG6shoDo=;
+        b=NhYvEp2Z0O+DsKzLmf8iVaWjDI8PEtrg6CxZtghm2aQFKuSrKVqOesmsyRpkwYOjQ6ZXaL
+        q1dJp6Sy2fYFsdqsFV2rDEknhagnCcnNG7nM7PDmtwtrJgfmOQr5NrvBYaDxKqBe4hbH93
+        /0uejU5Rbes3xNCV0G1dyISDnHIDDos=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-47-BfDlAbQ2MDy3KjSamOeaMw-1; Tue, 21 Mar 2023 11:42:32 -0400
+X-MC-Unique: BfDlAbQ2MDy3KjSamOeaMw-1
+Received: by mail-wm1-f70.google.com with SMTP id m27-20020a05600c3b1b00b003ee502f1b16so66589wms.9
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 08:42:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679413351;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+21M6FOpDI3Nr+X7KYn7VxKMZfev1okJOfwsG6shoDo=;
+        b=WmMXUMA+kMXBErRrARkSss+C/1zoTaIv99VyoDe5wrf2bm9QV+DzDbBx3uTjsvXTU2
+         JATMMlgWSEVqdC75sGMAH2fq5oaLUCZ1XdTlj6D3/V7ayWXiSfrsZkbKtPxr35qSAQ5Z
+         thz73n40V/bxytGchkcDlxStxliFZ8zMUQly0VbJIO2ixr6aPNqJBBVVLajRtMbw2MTh
+         AA1akoN+2/KdFicP+6UpKINr7Wq1nZ9Hqrodp8HbPMvEGSla36tBeXTEVh4DCl77QeGs
+         djkuZJ06K1qLj52R6TcYnY3EWvdNZkYWMHeSr4XWQdow49mN56DFRlS/A9wXyb3djci5
+         uvjg==
+X-Gm-Message-State: AO0yUKWvK6hcfpsreHuNh6GsS0mqGOVzdenh8FIPFACMyHBK6gVLETG4
+        eFR/fMHAcaeCwQngV29nkPZE+wwC/M2zB2V0Hm6DhHVcbxfHfCfrnl+psXPkL3fcZvbyR7+iDzn
+        /HLY1tOp8xT9oxi+I
+X-Received: by 2002:a5d:6b50:0:b0:2cf:ee6b:36aa with SMTP id x16-20020a5d6b50000000b002cfee6b36aamr2562221wrw.64.1679413351351;
+        Tue, 21 Mar 2023 08:42:31 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+jl15tAxH9/4PthYuff9mKcJ9PlapXD8hbv/rRlufjrczN3T38t3QWIyMzX15FRRs1sZibOQ==
+X-Received: by 2002:a5d:6b50:0:b0:2cf:ee6b:36aa with SMTP id x16-20020a5d6b50000000b002cfee6b36aamr2562203wrw.64.1679413351047;
+        Tue, 21 Mar 2023 08:42:31 -0700 (PDT)
+Received: from step1.redhat.com (host-82-57-51-170.retail.telecomitalia.it. [82.57.51.170])
+        by smtp.gmail.com with ESMTPSA id n2-20020adffe02000000b002cfeffb442bsm11582490wrr.57.2023.03.21.08.42.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 08:42:30 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     stefanha@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        eperezma@redhat.com, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v3 0/8] vdpa_sim: add support for user VA
+Date:   Tue, 21 Mar 2023 16:42:20 +0100
+Message-Id: <20230321154228.182769-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9b9ba199-8379-0840-b99a-d729f8ad33e1@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 07:04:50PM +0530, Siddharth Vadapalli wrote:
-> Hello Russell,
-> 
-> On 21-03-2023 16:59, Russell King (Oracle) wrote:
-> > On Tue, Mar 21, 2023 at 04:49:56PM +0530, Siddharth Vadapalli wrote:
-> >> Add support for configuring the CPSW Ethernet Switch in SGMII mode.
-> >>
-> >> Depending on the SoC, allow selecting SGMII mode as a supported interface,
-> >> based on the compatible used.
-> >>
-> >> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> >> ---
-> >>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 11 ++++++++++-
-> >>  1 file changed, 10 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> >> index cba8db14e160..d2ca1f2035f4 100644
-> >> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> >> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> >> @@ -76,6 +76,7 @@
-> >>  #define AM65_CPSW_PORTN_REG_TS_CTL_LTYPE2       0x31C
-> >>  
-> >>  #define AM65_CPSW_SGMII_CONTROL_REG		0x010
-> >> +#define AM65_CPSW_SGMII_MR_ADV_ABILITY_REG	0x018
-> >>  #define AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE	BIT(0)
-> > 
-> > Isn't this misplaced? Shouldn't AM65_CPSW_SGMII_MR_ADV_ABILITY_REG come
-> > after AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE, rather than splitting that
-> > from its register offset definition?
-> 
-> Thank you for reviewing the patch. The registers are as follows:
-> CONTROL_REG offset 0x10
-> STATUS_REG offset  0x14
-> MR_ADV_REG offset  0x18
-> 
-> Since the STATUS_REG is not used in the driver, its offset is omitted.
-> The next register is the MR_ADV_REG, which I placed after the
-> CONTROL_REG. I grouped the register offsets together, to represent the
-> order in which the registers are placed. Due to this, the
-> MR_ADV_ABILITY_REG offset is placed after the CONTROL_REG offset define.
-> 
-> Please let me know if I should move it after the CONTROL_MR_AN_ENABLE
-> define instead.
+This series adds support for the use of user virtual addresses in the
+vDPA simulator devices.
 
-Well, it's up to you - whether you wish to group the register offsets
-separately from the bit definitions for those registers, or whether
-you wish to describe the register offset and its associated bit
-definitions in one group before moving on to the next register.
+The main reason for this change is to lift the pinning of all guest memory.
+Especially with virtio devices implemented in software.
 
-> > If the advertisement register is at 0x18, and the lower 16 bits is the
-> > advertisement, are the link partner advertisement found in the upper
-> > 16 bits?
-> 
-> The MR_LP_ADV_ABILITY_REG is at offset 0x020, which is the the register
-> corresponding to the Link Partner advertised value. Also, the
-> AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE Bit is in the CONTROL_REG. The CPSW
-> Hardware specification describes the process of configuring the CPSW MAC
-> for SGMII mode as follows:
-> 1. Write 0x1 (ADVERTISE_SGMII) to the MR_ADV_ABILITY_REG register.
-> 2. Enable auto-negotiation in the CONTROL_REG by setting the
-> AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE bit.
+The next step would be to generalize the code in vdpa-sim to allow the
+implementation of in-kernel software devices. Similar to vhost, but using vDPA
+so we can reuse the same software stack (e.g. in QEMU) for both HW and SW
+devices.
 
-Good to hear that there is a link partner register.
+For example, we have never merged vhost-blk, and lately there has been interest.
+So it would be nice to do it directly with vDPA to reuse the same code in the
+VMM for both HW and SW vDPA block devices.
 
-> >>  #define AM65_CPSW_CTL_VLAN_AWARE		BIT(1)
-> >> @@ -1496,9 +1497,14 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
-> >>  	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
-> >>  	struct am65_cpsw_common *common = port->common;
-> >>  
-> >> -	if (common->pdata.extra_modes & BIT(state->interface))
-> >> +	if (common->pdata.extra_modes & BIT(state->interface)) {
-> >> +		if (state->interface == PHY_INTERFACE_MODE_SGMII)
-> >> +			writel(ADVERTISE_SGMII,
-> >> +			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
-> >> +
-> > 
-> > I think we can do better with this, by implementing proper PCS support.
-> > 
-> > It seems manufacturers tend to use bought-in IP for this, so have a
-> > look at drivers/net/pcs/ to see whether any of those (or the one in
-> > the Mediatek patch set on netdev that has recently been applied) will
-> > idrive your hardware.
-> > 
-> > However, given the definition of AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
-> > I suspect you won't find a compatible implementation.
-> 
-> I have tested with an SGMII Ethernet PHY in the standard SGMII MAC2PHY
-> configuration. I am not sure if PCS support will be required or not. I
-> hope that the information shared above by me regarding the CPSW
-> Hardware's specification for configuring it in SGMII mode will help
-> determine what the right approach might be. Please let me know whether
-> the current implementation is acceptable or PCS support is necessary.
+The main problem (addressed by this series) was due to the pinning of all
+guest memory, which thus prevented the overcommit of guest memory.
 
-Nevertheless, this SGMII block is a PCS, and if you're going to want to
-support inband mode (e.g. to read the SGMII word from the PHY), or if
-someone ever wants to use 1000base-X, you're going to need to implement
-this properly as a PCS.
+Thanks,
+Stefano
 
-That said, it can be converted later, so isn't a blocking sisue.
+Changelog listed in each patch.
+v2: https://lore.kernel.org/lkml/20230302113421.174582-1-sgarzare@redhat.com/
+RFC v1: https://lore.kernel.org/lkml/20221214163025.103075-1-sgarzare@redhat.com/
+
+Stefano Garzarella (8):
+  vdpa: add bind_mm/unbind_mm callbacks
+  vhost-vdpa: use bind_mm/unbind_mm device callbacks
+  vringh: replace kmap_atomic() with kmap_local_page()
+  vringh: support VA with iotlb
+  vdpa_sim: make devices agnostic for work management
+  vdpa_sim: use kthread worker
+  vdpa_sim: replace the spinlock with a mutex to protect the state
+  vdpa_sim: add support for user VA
+
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |  11 +-
+ include/linux/vdpa.h                 |  10 ++
+ include/linux/vringh.h               |   5 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c    |   2 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     | 144 ++++++++++++++++++++-----
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  10 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  10 +-
+ drivers/vhost/vdpa.c                 |  31 ++++++
+ drivers/vhost/vringh.c               | 153 +++++++++++++++++++++------
+ 9 files changed, 301 insertions(+), 75 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.39.2
+
