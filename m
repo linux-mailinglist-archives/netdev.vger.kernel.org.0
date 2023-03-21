@@ -2,143 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5466C2C21
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 09:17:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85B0D6C2C23
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 09:19:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbjCUIRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 04:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35474 "EHLO
+        id S229754AbjCUITO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 04:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231220AbjCUIQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 04:16:43 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083F328E44
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 01:16:29 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id o12so56363455edb.9
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 01:16:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679386588;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tBxCksv4+AUPTCqkuOrtfjmwuvWpCvtIaxZde9QVqzY=;
-        b=pXZtkMEqXzy0+xoqJLrZHYn0grjE1FgS1loxdgHeqZeGobhsZRyzNycuDfCxznPX0g
-         LmtQbSEXhx7RRNabeE43+TLfPdnj0v/uADhnftBE8R6c9RjygcjtZ6kAr7BAAlIgWHTz
-         CpTojZqkED840eapTpL6oncMLUKBtl4cK5ioVvg4Gs9lrjW5fhOg0jc10Rt/9hEu5isa
-         t/Hu6nTuaHfPn7qNphkydJOkT6GbuwagDUn7c30s4NIlba0fzZPbWga/+bTi3p+FJwUQ
-         FPDhHj24MlwWLEzLGtghug6hs7L2FK2Ih2c3rY7pw/kz6L9J2H2syAmLA4zbRYOnVffg
-         xajg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679386588;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tBxCksv4+AUPTCqkuOrtfjmwuvWpCvtIaxZde9QVqzY=;
-        b=LaNrWKV9Xq/ho4a8QiS/ZOhRDFk4i5aRnZ2ZDwdz4vJaj/styxcKhLCWCRWylsGbha
-         v3RB7WRQ/LNjmWSQUUIxQOqlQuI5rtTQIAeD7IA7/mI1qNvOB9ePfGTdjgvydviYH8+1
-         wYuG85R/3yJcsFWX+ToRdYg5O2NohFem8Fj5Dp1VQD5Q6qxt5DNFXVXJeyjPIh1v9Ad5
-         zD5KKSOGeZcCY4po4A540ru8xR1e7Z/J5iiKEMS6nvzarZ39Fj8F6hj/GufplwyPN477
-         YOey1IrmhulJztP+D+6O9jf+kRvo6azDJsn4nWdxa+LW1Noh8FLXQNJ+Ao1DarD+kiN0
-         3avg==
-X-Gm-Message-State: AO0yUKULZ/vPqhhYCs9fsIFjGCaqyRU9V2uO9ns34qmy6s+x8Wietjg/
-        KuqIyy5iR/z5YoVd4Gki89DnBw==
-X-Google-Smtp-Source: AK7set9DFIlXBqYvUREvhQe/bGFPfuG9JsCCS2yRE6Ey5jvk6WdvPtAZWoSQxRPdwK+vRjhIsrAZCA==
-X-Received: by 2002:a05:6402:114d:b0:4fe:9374:30d0 with SMTP id g13-20020a056402114d00b004fe937430d0mr2038401edw.39.1679386588525;
-        Tue, 21 Mar 2023 01:16:28 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:2142:d8da:5ae4:d817? ([2a02:810d:15c0:828:2142:d8da:5ae4:d817])
-        by smtp.gmail.com with ESMTPSA id r3-20020a50d683000000b004c0239e41d8sm5847287edi.81.2023.03.21.01.16.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Mar 2023 01:16:28 -0700 (PDT)
-Message-ID: <09463d3e-0b80-f8d8-d358-cddae75484bf@linaro.org>
-Date:   Tue, 21 Mar 2023 09:16:27 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 1/3] dt-bindings: wireless: add ath11k pcie bindings
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229640AbjCUITN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 04:19:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9AD1E5DD;
+        Tue, 21 Mar 2023 01:19:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B3B9B80AAE;
+        Tue, 21 Mar 2023 08:19:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DA0C433D2;
+        Tue, 21 Mar 2023 08:19:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679386749;
+        bh=Ks5ViESurktGKgBd2uFB5R4vHEq34LZRHghYCYKAMSE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=po4Tb2EEoW2ifbcoLkCUcwd5AtZWf/qaa+6x3bbIYiiKJjXh5455CF05mKyYUERIJ
+         8bWwH/P4XoIgm+cLobUUOkoKAi1iREKNfsozXcuVyXz9T2oy6va809LRdF4dqqJXak
+         DlX0KMmMOvlUNLQr9xwUAaHnDsZ5NXuLhLC2Ivhrvwnlm4Vn4DzaBcYTi8ViB1QaGC
+         XiljPqSl5CMfimJCNFqc6qBobdLyPEWbZP/LySJu3sRGPAOmzqCDQB9k9hWFQt3h+v
+         NMRzd0QPwmihZd9JMelo3jPM1gg1ZynIzt2sT5BI4jDw4QxXY2kAyuo13OT0Kd399m
+         6j0FOTougtPhA==
+Date:   Tue, 21 Mar 2023 10:19:04 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Finn Thain <fthain@linux-m68k.org>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230320104658.22186-1-johan+linaro@kernel.org>
- <20230320104658.22186-2-johan+linaro@kernel.org>
- <a8356f76-189d-928b-1a1c-f4171de1e2d0@linaro.org>
-In-Reply-To: <a8356f76-189d-928b-1a1c-f4171de1e2d0@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+Subject: Re: [PATCH v2 net] net/sonic: use dma_mapping_error() for error check
+Message-ID: <20230321081904.GR36557@unreal>
+References: <6645a4b5c1e364312103f48b7b36783b94e197a2.1679370343.git.fthain@linux-m68k.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6645a4b5c1e364312103f48b7b36783b94e197a2.1679370343.git.fthain@linux-m68k.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/03/2023 09:14, Krzysztof Kozlowski wrote:
-> On 20/03/2023 11:46, Johan Hovold wrote:
->> Add devicetree bindings for Qualcomm ath11k PCIe devices such as WCN6856
->> for which the calibration data variant may need to be described.
->>
->> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
->> ---
->>  .../bindings/net/wireless/pci17cb,1103.yaml   | 56 +++++++++++++++++++
->>  1 file changed, 56 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/net/wireless/pci17cb,1103.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/net/wireless/pci17cb,1103.yaml b/Documentation/devicetree/bindings/net/wireless/pci17cb,1103.yaml
->> new file mode 100644
->> index 000000000000..df67013822c6
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/net/wireless/pci17cb,1103.yaml
+On Tue, Mar 21, 2023 at 02:45:43PM +1100, Finn Thain wrote:
+> From: Zhang Changzhong <zhangchangzhong@huawei.com>
 > 
-> PCI devices are kind of exception in the naming, so this should be
-> qcom,ath11k-pci.yaml or qcom,wcn6856.yaml (or something similar)
+> The DMA address returned by dma_map_single() should be checked with
+> dma_mapping_error(). Fix it accordingly.
 > 
+> Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> Tested-by: Stan Johnson <userm57@yahoo.com>
+> Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+> ---
+> This was originally Zhang Changzhong's patch. I've just added the missing
+> curly bracket which caused a build failure when the patch was first posted.
+> ---
+>  drivers/net/ethernet/natsemi/sonic.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
->> @@ -0,0 +1,56 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +# Copyright (c) 2023 Linaro Limited
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/net/wireless/pci17cb,1103.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Technologies ath11k wireless devices (PCIe)
->> +
->> +maintainers:
->> +  - Kalle Valo <kvalo@kernel.org>
->> +
->> +description: |
->> +  Qualcomm Technologies IEEE 802.11ax PCIe devices.
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - pci17cb,1103  # WCN6856
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  qcom,ath11k-calibration-variant:
-> 
-> qcom,calibration-variant
 
-Ah, so there is already property with ath11k, then let's go with
-existing name.
-
-Best regards,
-Krzysztof
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
