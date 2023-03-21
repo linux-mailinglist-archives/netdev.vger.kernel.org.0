@@ -2,139 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2BCE6C307E
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:36:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 746566C3094
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbjCULgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 07:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33802 "EHLO
+        id S230053AbjCULnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 07:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbjCULgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:36:13 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EC2B46166
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:36:11 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 4632D201D5;
-        Tue, 21 Mar 2023 12:36:10 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id KFX5zFOTeMLo; Tue, 21 Mar 2023 12:36:09 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id A7822201AE;
-        Tue, 21 Mar 2023 12:36:09 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 97F8980004A;
-        Tue, 21 Mar 2023 12:36:09 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Tue, 21 Mar 2023 12:36:09 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Tue, 21 Mar
- 2023 12:36:08 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id B706A3181AD7; Tue, 21 Mar 2023 12:36:08 +0100 (CET)
-Date:   Tue, 21 Mar 2023 12:36:08 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Hyunwoo Kim <v4bel@theori.io>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229583AbjCULnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:43:21 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2051.outbound.protection.outlook.com [40.107.243.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64998A72
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:43:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VrJxNQll5B1tyt3HVHdZfHOp6gup22yveXfpwSknNw4bhZiNJSCGgWuuNGwl9NsiNPQe+pTWuLTasdHiKvlKXhkpoHzrh++1EH3VJI3601lFxcn57NKJrOIK6fe6CeioVGZfy20SzB73loaljX8+0VcfNJvXONBbJBpu3XJye7VYHcpDRWaO+qtPCwqOvh1YgpB393iyjRwJjGYyCheBtyzwvP7YyvkZ1QCTpPAok8jP2IgqQ71l+jwIXKu16W6lST0olinkdopoSFnM4kTIzWEbo+oE1pv4JGZ6MhT6vXkRL323lOLvE7znbAmmwevAnvx5ddYTH0sb0XxnomMuaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c+PjbVXJhv51xt9oog0RcXoke7b0YNj/d5yVINa4fZg=;
+ b=XEQxHXWRXOa0FrGypbfJsW8t1+iQ/4XPK+iEzniY2+q6egyGphMeElzG95fpDBf7VcrUN3ZzjcVEOCdaGvnGi3mRreR8VQc3qYfnvvHuwQGZYwv/a3vcU0QcRDeC/0sFpznwycaMVune113I3jhnDcqW0nU245bIx1CzYAUjwwc7JTlW+p6e7MKaVbgIUwzdM85AaoduWbm4bHYnPLdrDR9SXKtF6PC1+jeTCluHPw5dsVpWLkzkg9n0bVj9MzPBF0+EGXw2ZnSC8yYFa8Ya+E5zOgOVYM+r+3M7uGNx5y6VUgZRV+HwBQsDelP+ZyWinWS9pvWBVCvWFPdi7ZEsZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c+PjbVXJhv51xt9oog0RcXoke7b0YNj/d5yVINa4fZg=;
+ b=VqaWzt0hT5xMXHhlKS1jQwTYU5PJxcIo3k4IpVWvQDj4MueXITw4cG6A/TSw+oMfyPhAX4BqcYTyDsajwG1k+pjZvDXDSghyw3vgKJ0oCqu6Uohydy+AwdpjdKwjkGO7625EuVYEp2zRJsl4YMNiuAfazSFz2GrTEH9kfF5Qd67nedJFnXz5l1XoN5i4Q/Z9CVLBTTcCOlN/tl+J805kxelHUsJ3owuroP71lI43HuansnSyOVtl/iY0aMdKcheYnjfUVBxbfljPSFB17UO8bLcbq3HGqDQJ+oEgFjt6vHkGSyRGRnqe2LqLgMXbGf779E1trCsVE2LIvIUpWpkhrg==
+Received: from DS7PR03CA0334.namprd03.prod.outlook.com (2603:10b6:8:55::11) by
+ IA1PR12MB6283.namprd12.prod.outlook.com (2603:10b6:208:3e5::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.37; Tue, 21 Mar 2023 11:43:18 +0000
+Received: from DS1PEPF0000B07A.namprd05.prod.outlook.com
+ (2603:10b6:8:55:cafe::2a) by DS7PR03CA0334.outlook.office365.com
+ (2603:10b6:8:55::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
+ Transport; Tue, 21 Mar 2023 11:43:17 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS1PEPF0000B07A.mail.protection.outlook.com (10.167.17.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Tue, 21 Mar 2023 11:43:17 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Tue, 21 Mar 2023
+ 04:43:05 -0700
+Received: from localhost.localdomain (10.126.230.37) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Tue, 21 Mar
+ 2023 04:43:02 -0700
+From:   Petr Machata <petrm@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Dmitry Kozlov <xeb@mail.ru>,
-        David Ahern <dsahern@kernel.org>, <tudordana@google.com>,
-        <netdev@vger.kernel.org>, <imv4bel@gmail.com>
-Subject: Re: [PATCH] net: Fix invalid ip_route_output_ports() call
-Message-ID: <ZBmWqBC8yKp3doYs@gauss3.secunet.de>
-References: <20230321024946.GA21870@ubuntu>
- <CANn89i+=-BTZyhg9f=Vyz0rws1Z-1O-F5TkESBjkZnKmHeKz1g@mail.gmail.com>
- <20230321050803.GA22060@ubuntu>
- <ZBmMUjSXPzFBWeTv@gauss3.secunet.de>
- <20230321111430.GA22737@ubuntu>
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>,
+        "Amit Cohen" <amcohen@nvidia.com>, <mlxsw@nvidia.com>,
+        Danielle Ratson <danieller@nvidia.com>
+Subject: [PATCH net] mlxsw: spectrum_fid: Fix incorrect local port type
+Date:   Tue, 21 Mar 2023 12:42:00 +0100
+Message-ID: <eace1f9d96545ab8a2775db857cb7e291a9b166b.1679398549.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230321111430.GA22737@ubuntu>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.37]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000B07A:EE_|IA1PR12MB6283:EE_
+X-MS-Office365-Filtering-Correlation-Id: b88fb53e-6e99-4850-49b6-08db2a017691
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AY59oW65vZ6j09UwyAZ7BOH3wac7QlSVaRU/gV3R5FX2ze0Rsgm/7eEy2vEFxKqiqW4+SHDGH5d7GebvgrdQpQWo2t9cHW+6wGEgRDeOB4yVRRgha93iQzHWMWGRsAfPeMJ7Ho4ui0tIMMUUCGb+ge5sDeBGojBizXR7ALOaVjsr8e6xhiLXTs2vNukcUN9lgYO6mDyrJnW76EtMBNIImvpuRo7Ga5EZRDAXSDHeWzyb1meMz0Eg2hLKcDFXVnElVti+XfD5b6c0uXjtrJsqgJ/Qqs0Zf6U+ZmoXfeTKOOVhcjTRzhQIPx8D4qhc8ztrPQ65oWUdwp/Kh6t7yB9zf7TonggWpR/QcPrcJKh5JexKLAFo+WIdEtccCmSu1jOpNbOrYblQKX4dpd/2LYzRecXhOY2sFwhfEKmRTPL1xLV8O06rnyOPxZd3JaP0OTbUR2DVujKfwO0eERkLMUE/9XL9/H/EYe/GariT3Fyw0MSg1NlHSFTAyAiG9kFuSjoS6QN1aMDoUrRj+XtEDFcHJSyR4nQ+21Xn5TXA/fNE316NvbqcaVx00ao4IwX6C1QWBwsIXsqPJ6Y3NJbGJF6ReSnfaumuyAi+91d1G/ceLdt3TzUIs1DellzsNyXbJATHx6SmJsuafDMZvb4CZOUIA85AP+5Lwi45cj09NotnZ3WmpZT4iM1vucRvQljoK1B82DXBSGAGhqJj3sFcuXl7JDf8dhWMwvC0q4zy23D+zWjuq8ao1Xve92krhc4CPDip
+X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(346002)(39860400002)(376002)(451199018)(36840700001)(40470700004)(46966006)(478600001)(40480700001)(41300700001)(36860700001)(83380400001)(40460700003)(316002)(8676002)(70206006)(4326008)(70586007)(54906003)(110136005)(186003)(16526019)(26005)(2616005)(336012)(86362001)(82310400005)(82740400003)(107886003)(36756003)(2906002)(8936002)(5660300002)(7636003)(426003)(47076005)(356005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 11:43:17.4218
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b88fb53e-6e99-4850-49b6-08db2a017691
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000B07A.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6283
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 04:14:30AM -0700, Hyunwoo Kim wrote:
-> On Tue, Mar 21, 2023 at 11:52:02AM +0100, Steffen Klassert wrote:
-> > On Mon, Mar 20, 2023 at 10:08:03PM -0700, Hyunwoo Kim wrote:
-> > > On Mon, Mar 20, 2023 at 08:17:15PM -0700, Eric Dumazet wrote:
-> > > > On Mon, Mar 20, 2023 at 7:49 PM Hyunwoo Kim <v4bel@theori.io> wrote:
-> > > 
-> > > struct rtable *ip_route_output_flow(struct net *net, struct flowi4 *flp4,
-> > > 				    const struct sock *sk)
-> > > {
-> > > 	struct rtable *rt = __ip_route_output_key(net, flp4);
-> > > 
-> > > 	if (IS_ERR(rt))
-> > > 		return rt;
-> > > 
-> > > 	if (flp4->flowi4_proto) {
-> > > 		flp4->flowi4_oif = rt->dst.dev->ifindex;
-> > > 		rt = (struct rtable *)xfrm_lookup_route(net, &rt->dst,
-> > > 							flowi4_to_flowi(flp4),  // <===[4]
-> > > 							sk, 0);
-> > > 	}
-> > > 
-> > > 	return rt;
-> > > }
-> > > EXPORT_SYMBOL_GPL(ip_route_output_flow);
-> > > ```
-> > > This is the cause of the stack OOB. Because we calculated the struct flowi pointer address based on struct flowi4 declared as a stack variable, 
-> > > if we accessed a member of flowi that exceeds the size of flowi4, we would get an OOB.
-> > > 
-> > > 
-> > > Finally, xfrm_state_find()[5] uses daddr, which is a pointer to `&fl->u.ip4.saddr`.
-> > > Here, the encap_family variable can be entered by the user using the netlink socket. 
-> > > If the user chose AF_INET6 instead of AF_INET, the xfrm_dst_hash() function would be called on an AF_INET6 basis[6], 
-> > > which could cause an OOB in the `struct flowi4 fl4` variable of igmpv3_newpack()[2].
-> > 
-> > Thanks for the great analysis!
-> > 
-> > Looks like a missing sanity check when the policy gets inserted.
-> > Can you send the output of 'ip x p' for that policy?
-> 
-> I'm not sure what 'ip x p' means, as my understanding of XFRM is limited, sorry.
-> 
-> Instead, here is the (dirty) code I used to trigger this:
+From: Ido Schimmel <idosch@nvidia.com>
 
-Thanks, you code created a policy with IPv4 selectors and
-IPv6 transport mode templates:
+Local port is a 10-bit number, but it was mistakenly stored in a u8,
+resulting in firmware errors when using a netdev corresponding to a
+local port higher than 255.
 
-src 255.1.0.0/0 dst 0.0.0.0/0
-        dir out priority 0 ptype main
-        mark 0/0x6
-        tmpl src 0.0.0.0 dst 0.0.0.0
-                proto comp reqid 0 mode beet
-                level 16
-        tmpl src fc00:: dst e000:2::
-                proto ah reqid 0 mode tunnel
-                level 32
-        tmpl src ac14:14bb:: dst ac14:14fa::
-                proto route2 reqid 0 mode transport
-                level 3
-        tmpl src :: dst 2001::1
-                proto ah reqid 0 mode in_trigger
-        tmpl src ff01::1 dst 7f00:1::
-                proto comp reqid 0 mode transport
+Fix by storing the local port in u16, as is done in the rest of the
+code.
 
-This is an invalid configuration. I'm working on a fix.
+Fixes: bf73904f5fba ("mlxsw: Add support for 802.1Q FID family")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks again!
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+index 045a24cacfa5..b6ee2d658b0c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c
+@@ -1354,7 +1354,7 @@ static int mlxsw_sp_fid_8021q_port_vid_map(struct mlxsw_sp_fid *fid,
+ 					   u16 vid)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+-	u8 local_port = mlxsw_sp_port->local_port;
++	u16 local_port = mlxsw_sp_port->local_port;
+ 	int err;
+ 
+ 	/* In case there are no {Port, VID} => FID mappings on the port,
+@@ -1391,7 +1391,7 @@ mlxsw_sp_fid_8021q_port_vid_unmap(struct mlxsw_sp_fid *fid,
+ 				  struct mlxsw_sp_port *mlxsw_sp_port, u16 vid)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
+-	u8 local_port = mlxsw_sp_port->local_port;
++	u16 local_port = mlxsw_sp_port->local_port;
+ 
+ 	mlxsw_sp_fid_port_vid_list_del(fid, mlxsw_sp_port->local_port, vid);
+ 	mlxsw_sp_fid_evid_map(fid, local_port, vid, false);
+-- 
+2.39.0
+
