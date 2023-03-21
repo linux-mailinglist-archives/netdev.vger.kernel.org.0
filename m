@@ -2,60 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E2D06C31FB
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:45:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96E286C320C
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:50:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230324AbjCUMo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 08:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45286 "EHLO
+        id S230160AbjCUMuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 08:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbjCUMo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:44:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430BD1B2C0;
-        Tue, 21 Mar 2023 05:44:19 -0700 (PDT)
+        with ESMTP id S229709AbjCUMuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:50:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16664460A7;
+        Tue, 21 Mar 2023 05:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60F1C61B83;
-        Tue, 21 Mar 2023 12:44:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41148C4339B;
-        Tue, 21 Mar 2023 12:44:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7A7361B8E;
+        Tue, 21 Mar 2023 12:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 00D67C4339B;
+        Tue, 21 Mar 2023 12:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679402641;
-        bh=7mceBm6LMrnW5nYoXzDNAkCTBe1aLdJzo5tYjOHYqmI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W665S77hFEof3yRycQ7ixjcOJCfxI1c0Wp3RoN1We1iDBSQOvUfDpAEsTtgFZDZJY
-         nxYciLmN1QFVdEWYJgjTVhgTsSpSqTt++gWnKvvaRFUqeABF11B//+bxjz/MxqWPRn
-         LF7BOWhQy3A66mNUCmPLDbMplsXs/U74GpEshuTbVM24cvSYSXYvb1wm6XClD5BHTq
-         XNj0MD5uCbC69rYNogRbTux0ROhX0U2hNPt1mgwEF11CrBfPSYCMiirAcGP6+X0Fgn
-         8rMtSVP+9oLDDaBtiAreNigoxcWaIvyW+YgczG5E0Pl+SPlxyodoDHf2VRqRXK/ZzH
-         Vklo4XCDb3ArQ==
-Date:   Tue, 21 Mar 2023 14:43:57 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Patrisious Haddad <phaddad@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH rdma-next v1 2/3] RDMA/mlx5: Handling dct common resource
- destruction upon firmware failure
-Message-ID: <20230321124357.GU36557@unreal>
-References: <cover.1678973858.git.leon@kernel.org>
- <1a064e9d1b372a73860faf053b3ac12c3315e2cd.1678973858.git.leon@kernel.org>
- <ZBixdlVsR5dl3J7Y@nvidia.com>
- <20230321075458.GP36557@unreal>
- <ZBmav4CF1yqRvyzZ@nvidia.com>
- <20230321120259.GT36557@unreal>
- <ZBmlBEldcG6rMcM1@nvidia.com>
+        s=k20201202; t=1679403017;
+        bh=7Skp9QCN26Hhox6jLfXK+RsgIj49Xpohq6Wn0JqFfWw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=L2RUWaThbbZcGr5EPPxghcsAIRd8hD2TuDTaCDSTzxhrUq0ZTNRiBT/f+Bqyvk2hD
+         E+KMbvAbAus0UQeUJ5b4ollO8DMowX4e+Fxlwl8GDAASQsNCDeVBbS9UJ4dbdeINod
+         NMyTYrwuPQxH0ciNh2ZHTag4jq5PPTRzcDgRFoMXOwrcvf0RG9QU4IbEIHlyz/QHFq
+         4IkUt6AILC/EfnQ+8clmc+HB7q84KNsQ1ujqMJpeM6/U0PDaBZcnpBTdON4ge3LGWN
+         16ANZBNbf4zS7wjdusXNLAxzc1H6o7jxwLrW8w0hC5pOOeSaTUNfD3dGXgUv2iQfDj
+         rqJuHHgrD9FEA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7950E66C98;
+        Tue, 21 Mar 2023 12:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBmlBEldcG6rMcM1@nvidia.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] net: geneve: accept every ethertype
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167940301687.28985.7534980662162087325.git-patchwork-notify@kernel.org>
+Date:   Tue, 21 Mar 2023 12:50:16 +0000
+References: <20230319220954.21834-1-josef@miegl.cz>
+In-Reply-To: <20230319220954.21834-1-josef@miegl.cz>
+To:     Josef Miegl <josef@miegl.cz>
+Cc:     eyal.birger@gmail.com, pshelar@ovn.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,69 +56,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 09:37:24AM -0300, Jason Gunthorpe wrote:
-> On Tue, Mar 21, 2023 at 02:02:59PM +0200, Leon Romanovsky wrote:
-> > On Tue, Mar 21, 2023 at 08:53:35AM -0300, Jason Gunthorpe wrote:
-> > > On Tue, Mar 21, 2023 at 09:54:58AM +0200, Leon Romanovsky wrote:
-> > > > On Mon, Mar 20, 2023 at 04:18:14PM -0300, Jason Gunthorpe wrote:
-> > > > > On Thu, Mar 16, 2023 at 03:39:27PM +0200, Leon Romanovsky wrote:
-> > > > > > From: Patrisious Haddad <phaddad@nvidia.com>
-> > > > > > 
-> > > > > > Previously when destroying a DCT, if the firmware function for the
-> > > > > > destruction failed, the common resource would have been destroyed
-> > > > > > either way, since it was destroyed before the firmware object.
-> > > > > > Which leads to kernel warning "refcount_t: underflow" which indicates
-> > > > > > possible use-after-free.
-> > > > > > Which is triggered when we try to destroy the common resource for the
-> > > > > > second time and execute refcount_dec_and_test(&common->refcount).
-> > > > > > 
-> > > > > > So, currently before destroying the common resource we check its
-> > > > > > refcount and continue with the destruction only if it isn't zero.
-> > > > > 
-> > > > > This seems super sketchy
-> > > > > 
-> > > > > If the destruction fails why not set the refcount back to 1?
-> > > > 
-> > > > Because destruction will fail in destroy_rq_tracked() which is after
-> > > > destroy_resource_common().
-> > > > 
-> > > > In first destruction attempt, we delete qp from radix tree and wait for all
-> > > > reference to drop. In order do not undo all this logic (setting 1 alone is
-> > > > not enough), it is much safer simply skip destroy_resource_common() in reentry
-> > > > case.
-> > > 
-> > > This is the bug I pointed a long time ago, it is ordered wrong to
-> > > remove restrack before destruction is assured
-> > 
-> > It is not restrack, but internal to mlx5_core structure.
-> > 
-> >   176 static void destroy_resource_common(struct mlx5_ib_dev *dev,
-> >   177                                     struct mlx5_core_qp *qp)
-> >   178 {
-> >   179         struct mlx5_qp_table *table = &dev->qp_table;
-> >   180         unsigned long flags;
-> >   181
-> > 
-> > ....
-> > 
-> >   185         spin_lock_irqsave(&table->lock, flags);
-> >   186         radix_tree_delete(&table->tree,
-> >   187                           qp->qpn | (qp->common.res << MLX5_USER_INDEX_LEN));
-> >   188         spin_unlock_irqrestore(&table->lock, flags);
-> >   189         mlx5_core_put_rsc((struct mlx5_core_rsc_common *)qp);
-> >   190         wait_for_completion(&qp->common.free);
-> >   191 }
-> 
-> Same basic issue.
-> 
-> "RSC"'s refcount stuff is really only for ODP to use, and the silly
-> pseudo locking should really just be rwsem not a refcount.
-> 
-> Get DCT out of that particular mess and the scheme is quite simple and
-> doesn't nee hacky stuff.
-> 
-> Please make a patch to remove radix tree from this code too...
+Hello:
 
-ok, I'll take a look.
+This patch was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Thanks
+On Sun, 19 Mar 2023 23:09:54 +0100 you wrote:
+> The Geneve encapsulation, as defined in RFC 8926, has a Protocol Type
+> field, which states the Ethertype of the payload appearing after the
+> Geneve header.
+> 
+> Commit 435fe1c0c1f7 ("net: geneve: support IPv4/IPv6 as inner protocol")
+> introduced a new IFLA_GENEVE_INNER_PROTO_INHERIT flag that allowed the
+> use of other Ethertypes than Ethernet. However, it did not get rid of a
+> restriction that prohibits receiving payloads other than Ethernet,
+> instead the commit white-listed additional Ethertypes, IPv4 and IPv6.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2] net: geneve: accept every ethertype
+    https://git.kernel.org/netdev/net-next/c/251d5a2813f9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
