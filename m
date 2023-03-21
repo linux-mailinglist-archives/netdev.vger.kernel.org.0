@@ -2,206 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA9EF6C2F12
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F2BC6C2F1D
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 11:35:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbjCUKeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 06:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S230347AbjCUKfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 06:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbjCUKeA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:34:00 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03ECF1557D
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:26 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id j3-20020a17090adc8300b0023d09aea4a6so19698649pjv.5
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:33:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1679394801;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Ic3WM3REAXpT3zzCyF2Yvp86sf3ncEAH9eyMYMxGQg=;
-        b=SDBFEmdZ/VnoeU7yXSA6inBz+vAdscUvt7rQtGy4pXIIwhdDBWfGn4IYEfeVSF24O3
-         eTEvzRpdyWlfDwLof/XFGsf59Rrv+AKB9RD0yTbGHoKo11xkgH1MDwFSXgn3ObG8Vcl3
-         g6heHAT1E8BtKk5UmiYXtsuRrsGmSFHJdnILc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679394801;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Ic3WM3REAXpT3zzCyF2Yvp86sf3ncEAH9eyMYMxGQg=;
-        b=4PwR61DEJyAzNJvKGPthCfRcUSDZ1FGgnuC5fUIJbngkM+ggNkTwiNQPItdT1yfqp4
-         sx2gbVxuC7B4h0DsAfefO8aoHnSTAbgMsCniZqr5ne3Dq6OVV3MmRjThCqjymstJ3x+i
-         pvoNP30UWzyXiVYuTuea8iys/pFjwo92yWCIQ6eRgbRoVXnlk8LAvb3Y4CqwFGRcEzYy
-         x527Ga0CnJee+6DbWQRixIJ4Jj9REggRGLX2LjrHKB2DrJl+VSkqJq3i7IMIgKIGIIAk
-         NQ6ErFbks+jMuOhMveHTzOZnhJOQy2McTKVHOzdBBZQl16ylhdEK9K45HWybKBQb3Ics
-         KEiQ==
-X-Gm-Message-State: AO0yUKXoXw+kdFQYXSMuScO4zABUKb6or35GQRwVK5gDg4KkctI+5Wzq
-        5bfEjkQlUJbqjbbJElji+hnXuw==
-X-Google-Smtp-Source: AK7set+MaIDb5K8gZ8a2kUaZzqka8Ti3440ZLUBruD6VtmCsMo0aAZuFAOw54e8dCnJwjJPExewFZg==
-X-Received: by 2002:a05:6a20:2a06:b0:d9:fb5c:e0de with SMTP id e6-20020a056a202a0600b000d9fb5ce0demr1685763pzh.38.1679394801576;
-        Tue, 21 Mar 2023 03:33:21 -0700 (PDT)
-Received: from PC-MID-R740.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id t13-20020a62ea0d000000b005a87d636c70sm7888416pfh.130.2023.03.21.03.33.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 03:33:21 -0700 (PDT)
-From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
-To:     michael.chan@broadcom.com, kuba@kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, gospo@broadcom.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        richardcochran@gmail.com, Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net-next 3/3] bnxt: Enforce PTP software freq adjustments only when in non-RTC mode
-Date:   Tue, 21 Mar 2023 03:32:27 -0700
-Message-Id: <20230321103227.12020-4-pavan.chebbi@broadcom.com>
-X-Mailer: git-send-email 2.39.1
-In-Reply-To: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
-References: <20230321103227.12020-1-pavan.chebbi@broadcom.com>
+        with ESMTP id S230502AbjCUKfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 06:35:05 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A221B460A6
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 03:34:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=6Xbm1i+ZctTp969vSxK1Mnvjcih
+        OsRb3M30FMrJKIng=; b=Lm6282Oh3FSc3beYOp09NZn5ZN1iwq/pkKACOnCnr2s
+        jxo3sbEZOWM/tc0Fot+OHm8mt5rcVoeczcqMT3btZithWV8c+521cxX3AZMiwEve
+        h0Pd3WHje+4xz6+0hHIHi36plt/yKnkoZqSLHozEFj3dKEP46PJEyV3Eoyq3GVKQ
+        =
+Received: (qmail 1242564 invoked from network); 21 Mar 2023 11:34:00 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Mar 2023 11:34:00 +0100
+X-UD-Smtp-Session: l3s3148p1@Y/LmlGb3aMcujnv6
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH] ravb: assert PHY reset during probe
+Date:   Tue, 21 Mar 2023 11:33:57 +0100
+Message-Id: <20230321103357.18940-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009bb0db05f7669237"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009bb0db05f7669237
-Content-Transfer-Encoding: 8bit
+The problem: Kernel+initramfs got loaded via TFTP by the bootloader,
+thus the PHY reset is deasserted during boot. When suspend is entered
+without bringing the interface up before, PHY reset is still deasserted.
+Our KSZ9031 PHY doesn't like being suspended with reset deasserted, at
+all. When resuming and trying to bring the interface up, we get MDIO bus
+timeouts or stalled PHYs, depending on the board.
 
-Currently driver performs software based frequency adjustments
-when RTC capability is not discovered or when in shared PHC mode.
-But there may be some old firmware versions that still support
-hardware freq adjustments without RTC capability being exposed.
-In this situation driver will use non-realtime mode even on single
-host NICs.
+Once the interface was up once, reset handling is correct. PHY reset is
+asserted before suspending. But if it wasn't up, there is this problem.
 
-Hence enforce software frequency adjustments only when running in
-shared PHC mode. Make suitable changes for cyclecounter for the
-same.
+First, I tried to have a full reset cycle in phy_hw_init() like [1]. But
+as expressed there, I had also worries about regressions for other PHYs.
 
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+This patch here assumes that the MAC should take care of it after it
+claimed responsibility for the PHY PM by setting 'mac_managed_pm'. I am
+not sure this is the right layer, though? But I am not sure where to put
+it otherwise. Maybe we need something like phy_reset_after_power_on() as
+proposed in [2] after all? I'd like to avoid pushing the responsibility
+to the firmware but rather let Linux be more robust.
+
+This patch depends on v6.3-rc3 or 7f5ebf5dae42 ("ravb: avoid PHY being
+resumed when interface is not up").
+
+Really looking forward to comments or pointers!
+
+Thanks in advance and happy hacking,
+
+   Wolfram
+
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20211211130146.357794-1-francesco.dolcini@toradex.com/
+[2] https://patchwork.kernel.org/project/netdevbpf/list/?series=595347&state=*
+
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/renesas/ravb_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index a3a3978a4d1c..b79a186f864c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -230,7 +230,7 @@ static int bnxt_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
- 						ptp_info);
- 	struct bnxt *bp = ptp->bp;
- 
--	if (BNXT_PTP_USE_RTC(bp))
-+	if (!BNXT_MH(ptp->bp))
- 		return bnxt_ptp_adjfine_rtc(bp, scaled_ppm);
- 
- 	spin_lock_bh(&ptp->ptp_lock);
-@@ -861,9 +861,15 @@ static void bnxt_ptp_timecounter_init(struct bnxt *bp, bool init_tc)
- 		memset(&ptp->cc, 0, sizeof(ptp->cc));
- 		ptp->cc.read = bnxt_cc_read;
- 		ptp->cc.mask = CYCLECOUNTER_MASK(48);
--		ptp->cc.shift = BNXT_CYCLES_SHIFT;
--		ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
--		ptp->cmult = ptp->cc.mult;
-+		if (BNXT_MH(ptp->bp)) {
-+			/* Use timecounter based non-real time mode */
-+			ptp->cc.shift = BNXT_CYCLES_SHIFT;
-+			ptp->cc.mult = clocksource_khz2mult(BNXT_DEVCLK_FREQ, ptp->cc.shift);
-+			ptp->cmult = ptp->cc.mult;
-+		} else {
-+			ptp->cc.shift = 0;
-+			ptp->cc.mult = 1;
-+		}
- 		ptp->next_overflow_check = jiffies + BNXT_PHC_OVERFLOW_PERIOD;
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 894e2690c643..d26944c0d4c8 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -2404,6 +2404,7 @@ static int ravb_mdio_init(struct ravb_private *priv)
+ 	phydev = of_phy_find_device(pn);
+ 	if (phydev) {
+ 		phydev->mac_managed_pm = true;
++		phy_device_reset(phydev, 1);
+ 		put_device(&phydev->mdio.dev);
  	}
- 	if (init_tc)
+ 	of_node_put(pn);
 -- 
-2.39.1
+2.30.2
 
-
---0000000000009bb0db05f7669237
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OltyqaGBuzv+bJTUL+bmV7E4QBLIqGt4jVr1R9hJdH6KxXwJdyfHZ9C6qXmoe2NQhiFUyBOJ0wgk
-dB9Z1IU7nCwvNKYg2JMoJs93tIgbhPJg/D7pqW8gabkCAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUEV6y/89alKPoFbKUaJXsvWu5
-fdowDQYJKoZIhvcNAQELBQADggEBAEHSIB6g652wVb+r2YCmfHW47Jo+5TuCBD99Hla8PYhaWGkd
-9HIyD3NPhb6Vb6vtMWJW4MFGQF42xYRrAS4LZj072DuMotr79rI09pbOiWg0FlRRFt6R9vgUgebu
-pWSH7kmwVXcPtY94XSMMak4b7RSKig2mKbHDpD4bC7eGlwl5RxzYkgrHtMNRmHmQor5Nvqe52cFJ
-25Azqtwvjt5nbrEd81iBmboNTEnLaKuxbbCtLaMEP8xKeDjAKnNOqHUMps0AsQT8c0EGq39YHpjp
-Wn1l67VU0rMShbEFsiUf9WYgE677oinpdm0t2mdCjxr35tryxptoTZXKHDxr/Yy6l6ExggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwV/XkICjVscn4SNZMw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIEhRidgIUu+vo0/jJvtMw124TGKnFrhD
-g83mHulBPRhJMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-MTEwMzMyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQB78x1DbQ9Sih9B3cbneYEFEuDYuhPI8Hv4VHc8f7bsAbkX9D3q
-jdFYbiCVU+Gh1Gf+ts/8WGGAuvvfd/LJkn5AbahGIQWmf4BWrX5ZzIZ2ErtJyUIUUMNu4h1BhbtE
-mkyiohepwsGCNt+KXBwqp5GjPXjMjCXYqcUYGMtz0aW89lPeLDx5ahylsSx3rBxNTlusuA1ozjtq
-AF/jhKvKoDLs4hXhB95J41/vulphINqZX+wpwzNxa5Hz/fgRWFZUnAkEyGcQTsdeUlDQpb4c5GMw
-AFiP3fTQ2ZHY7vBQskpeAsOcUAXf3w9IiZo6vyTsMPdFF3umAzRki9pmhV3wi1u1
---0000000000009bb0db05f7669237--
