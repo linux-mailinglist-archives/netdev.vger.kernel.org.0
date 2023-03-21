@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EFC66C3054
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:25:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE1C46C3068
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 12:28:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbjCULZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 07:25:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        id S229619AbjCUL2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 07:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbjCULZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:25:33 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD73DD1
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:25:28 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id r11so58258529edd.5
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:25:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1679397927;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=phIyHpsboecY5RF5OBRqLn8uD/J3lWi4Rc69PpJL5Bc=;
-        b=GOcT/9E5+QYltXqEh/dnICjtYW7yCmPKBm2EtWGJ2KkivTzQb5X6RHoulXGWOGS8Cl
-         zb0ZZbJ7k2XxfnFr0mQGPxIyxzjGZJ0c4IDGNR2S6awnGK47ng8cLMHtGLNstbimNG2d
-         I0eb2jOUlD0vu01fKd9E3IerqNuQjHFW1taOc=
+        with ESMTP id S229617AbjCUL2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 07:28:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0E44A1D2
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:28:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679398081;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+B4rMqiSRrSDakxwNYnZA7cpTxZeGPnc7W9SoaJsONg=;
+        b=QNd+3ne9c3aN1eYGFOt5sAZ4hDXP7cAcE8p+JVtsvlcBnyRWxEhFa7f4oBjxILT0TqeohY
+        2A1S5C2XY+LD69G/0JaY7PkmN6K+joCo4mxNZWxxOK2Z2pf5am2Svi+SoSFmnyscfZI5SM
+        a/Dik5fBGgyiw+CGCEpFTk7SuKdromE=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-321-tFqMlMUmPEqqLmYu3Fh4iQ-1; Tue, 21 Mar 2023 07:27:59 -0400
+X-MC-Unique: tFqMlMUmPEqqLmYu3Fh4iQ-1
+Received: by mail-qk1-f200.google.com with SMTP id az31-20020a05620a171f00b00745746178e2so6735409qkb.6
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 04:27:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679397927;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=phIyHpsboecY5RF5OBRqLn8uD/J3lWi4Rc69PpJL5Bc=;
-        b=t0UwkSyj2C9L4zq+2K2GTe5tGauCFYxqa5pZNlLsbhXsB0qh3FhRCoFPkaHpxMxFZy
-         He8QMm+k7LQdwulkREZBzFp9xFTSmNuK34rNN0PWJbcuACaAC4uKYN1K1zTOZG9WQiFi
-         SsSaUwUMs2PnoPZHVQ2b3+HnUa0G/N29UNayNNAhdM50GC6OGFWjjKJCzjft8bT1vBHz
-         gpw2JvK+XQ5MpvNPDO6hheesgHborztNuMgpcTmfbVfAgwjhPa9gNYEl7k+I8GzWoufR
-         RbiXMgzznHHCnhIA1NLHOcBkum4zVZiHAHUkgPGPq2NDJ7kMs4C/VZsMkV5hujGGo2jJ
-         kyTw==
-X-Gm-Message-State: AO0yUKUihSGn7tcrAxNdnhRgBh2bcNpxhczN9NBrXcfiH8sH1Q+ftEZI
-        mzuGNBbrkbh/UR9gLdBMRSteP0Wo4+1HjeyovpIsjQ==
-X-Google-Smtp-Source: AK7set91VuwaUepd7Vt3K1fy1d/n7st/TOfB6tvcTnmo2f/H/2B2br/upz782ZAOuj+JinSHfZMAFAZjLIw4q7lDiHQ=
-X-Received: by 2002:a05:6402:2550:b0:4af:62ad:6099 with SMTP id
- l16-20020a056402255000b004af62ad6099mr10473403edb.2.1679397927156; Tue, 21
- Mar 2023 04:25:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230315211040.2455855-1-dario.binacchi@amarulasolutions.com>
-In-Reply-To: <20230315211040.2455855-1-dario.binacchi@amarulasolutions.com>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Tue, 21 Mar 2023 12:25:15 +0100
-Message-ID: <CABGWkvpHHLNzZHDMzWveoHtApmR3czVvoCOnuWBZt-UoLVU-6g@mail.gmail.com>
-Subject: Re: [RESEND PATCH v7 0/5] can: bxcan: add support for ST bxCAN controller
-To:     linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        michael@amarulasolutions.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
+        d=1e100.net; s=20210112; t=1679398079; x=1681990079;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+B4rMqiSRrSDakxwNYnZA7cpTxZeGPnc7W9SoaJsONg=;
+        b=o9nup2yMqKwzF7x/wV1vaFzO/owq/PfwdYwQOjKZNU98QvUnRRw3nTXYXgs63TWCod
+         dAr8dcRo+el7cU/xFHq6hiqkbf/BhitwsigtoUY0ww7mkOgmPBkTAjlmt7JgYGFo0QYY
+         +OIx/1Gtbi+IoiZY0KfqDZVLQoazszsgYCYMmqRs1TDcgv3c7rAybPRwH4GRMxIFGm0O
+         Nf4sKrX3CptU5jNNnK18DbclaanX6uLRgBwuhffzh/qg5rgT98+1bdosfzZbBWLkwrTf
+         GBhCIE+ARvzknUn8TvMqrts/Qrf3R/bFDOpQSa125sKeIGCLrK9IQABpOpv3zoFjE9F6
+         zSVA==
+X-Gm-Message-State: AO0yUKUAM2fL6vCEAMIPIqPRqSi2jrPEXl97mOoS3oVU5dAq/EboZJ5C
+        ixI1nYYzwcasoJmTjDZoqNH3vt5NU7MtAHMCNgg4dtEkBoLiL9giUizYBHxW+d5mJeynwqV7iIG
+        lew28PDTEmVSpC07Ev3aquw+K
+X-Received: by 2002:ac8:5a8a:0:b0:3d9:56ce:a8cd with SMTP id c10-20020ac85a8a000000b003d956cea8cdmr3872072qtc.6.1679398078725;
+        Tue, 21 Mar 2023 04:27:58 -0700 (PDT)
+X-Google-Smtp-Source: AK7set/qs44tf9EmPAUX6k4hyFZGMAHX3228WcE9qb8ip9x81q0WUSqW89xNIieWZL36v22I69+lvQ==
+X-Received: by 2002:ac8:5a8a:0:b0:3d9:56ce:a8cd with SMTP id c10-20020ac85a8a000000b003d956cea8cdmr3872042qtc.6.1679398078330;
+        Tue, 21 Mar 2023 04:27:58 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-244-19.dyn.eolo.it. [146.241.244.19])
+        by smtp.gmail.com with ESMTPSA id b17-20020ac86791000000b003b9bb59543fsm7868795qtp.61.2023.03.21.04.27.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 04:27:57 -0700 (PDT)
+Message-ID: <3dc6b9290984bc07ae5ac9c5a9fba01742b64f84.camel@redhat.com>
+Subject: Re: [PATCH v7 1/2] net/handshake: Create a NETLINK service for
+ handling handshake requests
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Chuck Lever <cel@kernel.org>, kuba@kernel.org, edumazet@google.com
+Cc:     netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev,
+        john.haxby@oracle.com
+Date:   Tue, 21 Mar 2023 12:27:54 +0100
+In-Reply-To: <167915629953.91792.17220269709156129944.stgit@manet.1015granger.net>
+References: <167915594811.91792.15722842400657376706.stgit@manet.1015granger.net>
+         <167915629953.91792.17220269709156129944.stgit@manet.1015granger.net>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,187 +80,244 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A gentle ping to remind you of this series.
-I have no idea why it hasn't deserved any response for quite some
-time.
-Is there anything I am still missing?
+On Sat, 2023-03-18 at 12:18 -0400, Chuck Lever wrote:
+> +/**
+> + * handshake_req_alloc - consumer API to allocate a request
+> + * @sock: open socket on which to perform a handshake
+> + * @proto: security protocol
+> + * @flags: memory allocation flags
+> + *
+> + * Returns an initialized handshake_req or NULL.
+> + */
+> +struct handshake_req *handshake_req_alloc(struct socket *sock,
+> +					  const struct handshake_proto *proto,
+> +					  gfp_t flags)
+> +{
+> +	struct sock *sk =3D sock->sk;
+> +	struct net *net =3D sock_net(sk);
+> +	struct handshake_net *hn =3D handshake_pernet(net);
+> +	struct handshake_req *req;
+> +
+> +	if (!hn)
+> +		return NULL;
+> +
+> +	req =3D kzalloc(struct_size(req, hr_priv, proto->hp_privsize), flags);
+> +	if (!req)
+> +		return NULL;
+> +
+> +	sock_hold(sk);
 
-Please let me know.
+The hr_sk reference counting is unclear to me. It looks like
+handshake_req retain a reference to such socket, but
+handshake_req_destroy()/handshake_sk_destruct() do not release it.
 
-Thanks and regards,
+Perhaps is better moving such sock_hold() into handshake_req_submit(),
+once that the request is successful?
 
-Dario
+> +
+> +	INIT_LIST_HEAD(&req->hr_list);
+> +	req->hr_sk =3D sk;
+> +	req->hr_proto =3D proto;
+> +	return req;
+> +}
+> +EXPORT_SYMBOL(handshake_req_alloc);
+> +
+> +/**
+> + * handshake_req_private - consumer API to return per-handshake private =
+data
+> + * @req: handshake arguments
+> + *
+> + */
+> +void *handshake_req_private(struct handshake_req *req)
+> +{
+> +	return (void *)&req->hr_priv;
+> +}
+> +EXPORT_SYMBOL(handshake_req_private);
+> +
+> +static bool __add_pending_locked(struct handshake_net *hn,
+> +				 struct handshake_req *req)
+> +{
+> +	if (!list_empty(&req->hr_list))
+> +		return false;
+> +	hn->hn_pending++;
+> +	list_add_tail(&req->hr_list, &hn->hn_requests);
+> +	return true;
+> +}
+> +
+> +void __remove_pending_locked(struct handshake_net *hn,
+> +			     struct handshake_req *req)
+> +{
+> +	hn->hn_pending--;
+> +	list_del_init(&req->hr_list);
+> +}
+> +
+> +/*
+> + * Returns %true if the request was found on @net's pending list,
+> + * otherwise %false.
+> + *
+> + * If @req was on a pending list, it has not yet been accepted.
+> + */
+> +static bool remove_pending(struct handshake_net *hn, struct handshake_re=
+q *req)
+> +{
+> +	bool ret;
+> +
+> +	ret =3D false;
 
+Nit: merge the initialization and the declaration
 
-On Wed, Mar 15, 2023 at 10:10=E2=80=AFPM Dario Binacchi
-<dario.binacchi@amarulasolutions.com> wrote:
->
-> The series adds support for the basic extended CAN controller (bxCAN)
-> found in many low- to middle-end STM32 SoCs.
->
-> The driver design (one core module and one driver module) was inspired
-> by other ST drivers (e. g. drivers/iio/adc/stm32-adc.c,
-> drivers/iio/adc/stm32-adc-core.c) where device instances share resources.
-> The shared resources functions are implemented in the core module, the
-> device driver in a separate module.
->
-> The driver has been tested on the stm32f469i-discovery board with a
-> kernel version 5.19.0-rc2 in loopback + silent mode:
->
-> ip link set can0 type can bitrate 125000 loopback on listen-only on
-> ip link set up can0
-> candump can0 -L &
-> cansend can0 300#AC.AB.AD.AE.75.49.AD.D1
->
-> For uboot and kernel compilation, as well as for rootfs creation I used
-> buildroot:
->
-> make stm32f469_disco_sd_defconfig
-> make
->
-> but I had to patch can-utils and busybox as can-utils and iproute are
-> not compiled for MMU-less microcotrollers. In the case of can-utils,
-> replacing the calls to fork() with vfork(), I was able to compile the
-> package with working candump and cansend applications, while in the
-> case of iproute, I ran into more than one problem and finally I decided
-> to extend busybox's ip link command for CAN-type devices. I'm still
-> wondering if it was really necessary, but this way I was able to test
-> the driver.
->
-> Changes in v7:
-> - Add Vincent Mailhol's Reviewed-by tag.
-> - Remove all unused macros for reading/writing the controller registers.
-> - Add CAN_ERR_CNT flag to notify availability of error counter.
-> - Move the "break" before the newline in the switch/case statements.
-> - Print the mnemotechnic instead of the error value in each netdev_err().
-> - Remove the debug print for timings parameter.
-> - Do not copy the data if CAN_RTR_FLAG is set in bxcan_start_xmit().
-> - Populate ndev->ethtool_ops with the default timestamp info.
->
-> Changes in v6:
-> - move can1 node before gcan to keep ordering by address.
->
-> Changes in v5:
-> - Add Rob Herring's Acked-by tag.
-> - Add Rob Herring's Reviewed-by tag.
-> - Put static in front of bxcan_enable_filters() definition.
->
-> Changes in v4:
-> - Remove "st,stm32f4-bxcan-core" compatible. In this way the can nodes
->  (compatible "st,stm32f4-bxcan") are no longer children of a parent
->   node with compatible "st,stm32f4-bxcan-core".
-> - Add the "st,gcan" property (global can memory) to can nodes which
->   references a "syscon" node containing the shared clock and memory
->   addresses.
-> - Replace the node can@40006400 (compatible "st,stm32f4-bxcan-core")
->   with the gcan@40006600 node ("sysnode" compatible). The gcan node
->   contains clocks and memory addresses shared by the two can nodes
->   of which it's no longer the parent.
-> - Add to can nodes the "st,gcan" property (global can memory) which
->   references the gcan@40006600 node ("sysnode compatibble).
-> - Add "dt-bindings: arm: stm32: add compatible for syscon gcan node" patc=
-h.
-> - Drop the core driver. Thus bxcan-drv.c has been renamed to bxcan.c and
->   moved to the drivers/net/can folder. The drivers/net/can/bxcan director=
-y
->   has therefore been removed.
-> - Use the regmap_*() functions to access the shared memory registers.
-> - Use spinlock to protect bxcan_rmw().
-> - Use 1 space, instead of tabs, in the macros definition.
-> - Drop clock ref-counting.
-> - Drop unused code.
-> - Drop the _SHIFT macros and use FIELD_GET()/FIELD_PREP() directly.
-> - Add BXCAN_ prefix to lec error codes.
-> - Add the macro BXCAN_RX_MB_NUM.
-> - Enable time triggered mode and use can_rx_offload().
-> - Use readx_poll_timeout() in function with timeouts.
-> - Loop from tail to head in bxcan_tx_isr().
-> - Check bits of tsr register instead of pkts variable in bxcan_tx_isr().
-> - Don't return from bxcan_handle_state_change() if skb/cf are NULL.
-> - Enable/disable the generation of the bus error interrupt depending
->   on can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING.
-> - Don't return from bxcan_handle_bus_err() if skb is NULL.
-> - Drop statistics updating from bxcan_handle_bus_err().
-> - Add an empty line in front of 'return IRQ_HANDLED;'
-> - Rename bxcan_start() to bxcan_chip_start().
-> - Rename bxcan_stop() to bxcan_chip_stop().
-> - Disable all IRQs in bxcan_chip_stop().
-> - Rename bxcan_close() to bxcan_ndo_stop().
-> - Use writel instead of bxcan_rmw() to update the dlc register.
->
-> Changes in v3:
-> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
-> - Add description to the parent of the two child nodes.
-> - Move "patterProperties:" after "properties: in top level before "requir=
-ed".
-> - Add "clocks" to the "required:" list of the child nodes.
-> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
-> - Add "clocks" to can@0 node.
-> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
-> - Remove a blank line.
-> - Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
-> - Fix the documentation file path in the MAINTAINERS entry.
-> - Do not increment the "stats->rx_bytes" if the frame is remote.
-> - Remove pr_debug() call from bxcan_rmw().
->
-> Changes in v2:
-> - Change the file name into 'st,stm32-bxcan-core.yaml'.
-> - Rename compatibles:
->   - st,stm32-bxcan-core -> st,stm32f4-bxcan-core
->   - st,stm32-bxcan -> st,stm32f4-bxcan
-> - Rename master property to st,can-master.
-> - Remove the status property from the example.
-> - Put the node child properties as required.
-> - Remove a blank line.
-> - Fix sparse errors.
-> - Create a MAINTAINERS entry.
-> - Remove the print of the registers address.
-> - Remove the volatile keyword from bxcan_rmw().
-> - Use tx ring algorithm to manage tx mailboxes.
-> - Use can_{get|put}_echo_skb().
-> - Update DT properties.
->
-> Dario Binacchi (5):
->   dt-bindings: arm: stm32: add compatible for syscon gcan node
->   dt-bindings: net: can: add STM32 bxcan DT bindings
->   ARM: dts: stm32: add CAN support on stm32f429
->   ARM: dts: stm32: add pin map for CAN controller on stm32f4
->   can: bxcan: add support for ST bxCAN controller
->
->  .../bindings/arm/stm32/st,stm32-syscon.yaml   |    2 +
->  .../bindings/net/can/st,stm32-bxcan.yaml      |   83 ++
->  MAINTAINERS                                   |    7 +
->  arch/arm/boot/dts/stm32f4-pinctrl.dtsi        |   30 +
->  arch/arm/boot/dts/stm32f429.dtsi              |   29 +
->  drivers/net/can/Kconfig                       |   12 +
->  drivers/net/can/Makefile                      |    1 +
->  drivers/net/can/bxcan.c                       | 1088 +++++++++++++++++
->  8 files changed, 1252 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/can/st,stm32-bx=
-can.yaml
->  create mode 100644 drivers/net/can/bxcan.c
->
-> --
-> 2.32.0
->
+> +
+> +	spin_lock(&hn->hn_lock);
+> +	if (!list_empty(&req->hr_list)) {
+> +		__remove_pending_locked(hn, req);
+> +		ret =3D true;
+> +	}
+> +	spin_unlock(&hn->hn_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * handshake_req_submit - consumer API to submit a handshake request
+> + * @req: handshake arguments
+> + * @flags: memory allocation flags
+> + *
+> + * Return values:
+> + *   %0: Request queued
+> + *   %-EBUSY: A handshake is already under way for this socket
+> + *   %-ESRCH: No handshake agent is available
+> + *   %-EAGAIN: Too many pending handshake requests
+> + *   %-ENOMEM: Failed to allocate memory
+> + *   %-EMSGSIZE: Failed to construct notification message
+> + *   %-EOPNOTSUPP: Handshake module not initialized
+> + *
+> + * A zero return value from handshake_request() means that
+> + * exactly one subsequent completion callback is guaranteed.
+> + *
+> + * A negative return value from handshake_request() means that
+> + * no completion callback will be done and that @req has been
+> + * destroyed.
+> + */
+> +int handshake_req_submit(struct handshake_req *req, gfp_t flags)
+> +{
+> +	struct sock *sk =3D req->hr_sk;
+> +	struct net *net =3D sock_net(sk);
+> +	struct handshake_net *hn =3D handshake_pernet(net);
+> +	int ret;
 
+Nit: reverse xmas tree. In this case you have to split declaration and
+initialization ;)
 
---=20
+> +
+> +	if (!hn)
+> +		return -EOPNOTSUPP;
+> +
+> +	ret =3D -EAGAIN;
+> +	if (READ_ONCE(hn->hn_pending) >=3D hn->hn_pending_max)
+> +		goto out_err;
+> +
+> +	req->hr_odestruct =3D sk->sk_destruct;
+> +	sk->sk_destruct =3D handshake_sk_destruct;
+> +	spin_lock(&hn->hn_lock);
+> +	ret =3D -EOPNOTSUPP;
+> +	if (test_bit(HANDSHAKE_F_NET_DRAINING, &hn->hn_flags))
+> +		goto out_unlock;
+> +	ret =3D -EBUSY;
+> +	if (!handshake_req_hash_add(req))
+> +		goto out_unlock;
+> +	if (!__add_pending_locked(hn, req))
+> +		goto out_unlock;
+> +	spin_unlock(&hn->hn_lock);
+> +
+> +	ret =3D handshake_genl_notify(net, req->hr_proto->hp_handler_class,
+> +				    flags);
+> +	if (ret) {
+> +		trace_handshake_notify_err(net, req, sk, ret);
+> +		if (remove_pending(hn, req))
+> +			goto out_err;
+> +	}
+> +
+> +	trace_handshake_submit(net, req, sk);
+> +	return 0;
+> +
+> +out_unlock:
+> +	spin_unlock(&hn->hn_lock);
+> +out_err:
+> +	trace_handshake_submit_err(net, req, sk, ret);
+> +	handshake_req_destroy(req);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(handshake_req_submit);
+> +
+> +void handshake_complete(struct handshake_req *req, unsigned int status,
+> +			struct genl_info *info)
+> +{
+> +	struct sock *sk =3D req->hr_sk;
+> +	struct net *net =3D sock_net(sk);
+> +
+> +	if (!test_and_set_bit(HANDSHAKE_F_REQ_COMPLETED, &req->hr_flags)) {
+> +		trace_handshake_complete(net, req, sk, status);
+> +		req->hr_proto->hp_done(req, status, info);
+> +		__sock_put(sk);
 
-Dario Binacchi
+Is unclear to me who acquired the reference released above?!? If that
+is the reference acquire by handshake_req_alloc(), I think it's cleaner
+moving the sock_put() in handshake_req_destroy() or
+handshake_req_destroy()
 
-Senior Embedded Linux Developer
+> +	}
+> +}
+> +
+> +/**
+> + * handshake_req_cancel - consumer API to cancel an in-progress handshak=
+e
+> + * @sock: socket on which there is an ongoing handshake
+> + *
+> + * XXX: Perhaps killing the user space agent might also be necessary?
+> + *
+> + * Request cancellation races with request completion. To determine
+> + * who won, callers examine the return value from this function.
+> + *
+> + * Return values:
+> + *   %true - Uncompleted handshake request was canceled or not found
+> + *   %false - Handshake request already completed
+> + */
+> +bool handshake_req_cancel(struct socket *sock)
+> +{
+> +	struct handshake_req *req;
+> +	struct handshake_net *hn;
+> +	struct sock *sk;
+> +	struct net *net;
+> +
+> +	sk =3D sock->sk;
+> +	net =3D sock_net(sk);
+> +	req =3D handshake_req_hash_lookup(sk);
+> +	if (!req) {
+> +		trace_handshake_cancel_none(net, req, sk);
+> +		return true;
+> +	}
+> +
+> +	hn =3D handshake_pernet(net);
+> +	if (hn && remove_pending(hn, req)) {
+> +		/* Request hadn't been accepted */
+> +		trace_handshake_cancel(net, req, sk);
+> +		return true;
+> +	}
+> +	if (test_and_set_bit(HANDSHAKE_F_REQ_COMPLETED, &req->hr_flags)) {
+> +		/* Request already completed */
+> +		trace_handshake_cancel_busy(net, req, sk);
+> +		return false;
+> +	}
+> +
+> +	__sock_put(sk);
 
-dario.binacchi@amarulasolutions.com
+Same here.
 
-__________________________________
+Side note, I think at this point some tests could surface here? If
+user-space-based self-tests are too cumbersome and/or do not offer
+adequate coverage perhaps you could consider using kunit?
 
+Cheers,
 
-Amarula Solutions SRL
+Paolo
 
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
