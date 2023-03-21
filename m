@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0A96C3C8E
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 22:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE8FC6C3CA1
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 22:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbjCUVT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 17:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
+        id S230009AbjCUV2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 17:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbjCUVT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 17:19:56 -0400
+        with ESMTP id S229694AbjCUV2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 17:28:02 -0400
 Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD8E15CA1;
-        Tue, 21 Mar 2023 14:19:55 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id s8so2293530ois.2;
-        Tue, 21 Mar 2023 14:19:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE86D3C3E;
+        Tue, 21 Mar 2023 14:28:00 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id bm2so3327346oib.4;
+        Tue, 21 Mar 2023 14:28:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679433595;
+        d=1e100.net; s=20210112; t=1679434080;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rxrm14m3oOQq155kNi7UN+pIky0d6E6e5S3ZZURwtHI=;
-        b=dWYMj952ENsHTcFOvTsaDHzTeiMxmh244VuLITViqN/XsO8VXTbScAg5DBOAOTn2bN
-         S/gbF+/X4NvH8Tb+U/m9N3h3KaZ7yGRr+j7tmUsZyfFpwLBr5Veu1j8p+SLkz6yF5dKD
-         YSfjjlcDb13Q/rAsmOlbKZPbmrDzJwh/RMtCKghb4iLNBuPxeryyo3IymI43Tq8bkXXP
-         wP9X1Swpa2Oj5XZm3liitQiE8yly2hGxKJw7cNXv+/Txw1l+9LW/INsIVI/UVltYASAb
-         /QSlMW4HQwahgMOMHK+bnZigdjoOrgHUL6cn0yBP138R5V93kGKnCb9knFceFvjEh6Lz
-         2kiw==
-X-Gm-Message-State: AO0yUKX/LhDaX+9aestZxqrzYegh1os1QqYCyjhfsa1kM4r55DxpwozF
-        qPtoAIn6le+ddd95UqVpboo/sj89wA==
-X-Google-Smtp-Source: AK7set+DQD+hptyUlvhbR1ibNJoT1JdCD96NXfu6tMZkCuead4Bp4COOgVeDLZXLAO1gyQwMEitUBw==
-X-Received: by 2002:aca:a90f:0:b0:386:9e54:aac3 with SMTP id s15-20020acaa90f000000b003869e54aac3mr271068oie.32.1679433594715;
-        Tue, 21 Mar 2023 14:19:54 -0700 (PDT)
+        bh=xuIPF2p5MBOAhgvZYwGUOCveU0K59ld+o3H/BrUHIXc=;
+        b=jPn5XrnZWSZ3qzPbDmA5Evutc6kGyystnWLH4wUthWtN3tea0ssvOdPe24K1eTP50K
+         TTjJuf6vaX0MHqGsG1edGzX4qLijYcEZLmmz2J0Jz4a9lXwwOsYUo9SWYcLwtzOXBxMW
+         cNmB9s2V/kiVYSK9qObNB0g9Y+xH9NwviEcJjbAHugzDcN88rNLA5eMIIfL1CjI3OW9U
+         nbel0+ijmSJRqhXw+eYyJST/yBcaffqhdI+4PoNyQvMV2PxOi+p/yh/Rbo0yN7q5Eeny
+         UpqHV1117ENv+Lmo5Wzd25i4/VKAjctKq+zOzpZA/cePOicEdV+A/pfbrLOLEiCCkTpU
+         mD0g==
+X-Gm-Message-State: AO0yUKVzeMnQ2zu73FOcrfKmRxf6buDiRn9wMEVqPxLWiqA0HfbGIcmf
+        cyZF0O18YKPaHIXpWhcwNA==
+X-Google-Smtp-Source: AK7set/faoMGqVJ+QTJCoH7na00DNWHkcm9XMi+/7B7CQTvY9i7F6tP/AT297tYCXkj3ApwrgJrMzg==
+X-Received: by 2002:a05:6808:8c6:b0:384:356a:a26f with SMTP id k6-20020a05680808c600b00384356aa26fmr256794oij.51.1679434078727;
+        Tue, 21 Mar 2023 14:27:58 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q204-20020a4a33d5000000b0053853156b5csm5117406ooq.8.2023.03.21.14.19.53
+        by smtp.gmail.com with ESMTPSA id v184-20020acadec1000000b003871471f894sm1753856oig.27.2023.03.21.14.27.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 14:19:54 -0700 (PDT)
-Received: (nullmailer pid 1635108 invoked by uid 1000);
-        Tue, 21 Mar 2023 21:19:53 -0000
-Date:   Tue, 21 Mar 2023 16:19:53 -0500
+        Tue, 21 Mar 2023 14:27:57 -0700 (PDT)
+Received: (nullmailer pid 1643739 invoked by uid 1000);
+        Tue, 21 Mar 2023 21:27:56 -0000
+Date:   Tue, 21 Mar 2023 16:27:56 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Christian Marangi <ansuelsmth@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -62,15 +62,15 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v5 10/15] dt-bindings: net: ethernet-controller:
- Document support for LEDs node
-Message-ID: <20230321211953.GA1544549-robh@kernel.org>
+Subject: Re: [net-next PATCH v5 11/15] dt-bindings: net: dsa: qca8k: add LEDs
+ definition example
+Message-ID: <20230321212756.GA1635435-robh@kernel.org>
 References: <20230319191814.22067-1-ansuelsmth@gmail.com>
- <20230319191814.22067-11-ansuelsmth@gmail.com>
+ <20230319191814.22067-12-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230319191814.22067-11-ansuelsmth@gmail.com>
+In-Reply-To: <20230319191814.22067-12-ansuelsmth@gmail.com>
 X-Spam-Status: No, score=0.8 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
@@ -81,67 +81,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 19, 2023 at 08:18:09PM +0100, Christian Marangi wrote:
-> Document support for LEDs node in ethernet-controller.
-> Ethernet Controller may support different LEDs that can be configured
-> for different operation like blinking on traffic event or port link.
-> 
-> Also add some Documentation to describe the difference of these nodes
-> compared to PHY LEDs, since ethernet-controller LEDs are controllable
-> by the ethernet controller regs and the possible intergated PHY doesn't
-> have control on them.
+On Sun, Mar 19, 2023 at 08:18:10PM +0100, Christian Marangi wrote:
+> Add LEDs definition example for qca8k Switch Family to describe how they
+> should be defined for a correct usage.
 > 
 > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > ---
->  .../bindings/net/ethernet-controller.yaml     | 21 +++++++++++++++++++
->  1 file changed, 21 insertions(+)
+>  .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> index 00be387984ac..a93673592314 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> @@ -222,6 +222,27 @@ properties:
->          required:
->            - speed
+> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> index 389892592aac..2e9c14af0223 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+> @@ -18,6 +18,8 @@ description:
+>    PHY it is connected to. In this config, an internal mdio-bus is registered and
+>    the MDIO master is used for communication. Mixed external and internal
+>    mdio-bus configurations are not supported by the hardware.
+> +  Each phy has at least 3 LEDs connected and can be declared
+> +  using the standard LEDs structure.
 >  
-> +  leds:
-> +    type: object
-> +    description:
-> +      Describes the LEDs associated by Ethernet Controller.
-> +      These LEDs are not integrated in the PHY and PHY doesn't have any
-> +      control on them. Ethernet Controller regs are used to control
-> +      these defined LEDs.
+>  properties:
+>    compatible:
+> @@ -117,6 +119,7 @@ unevaluatedProperties: false
+>  examples:
+>    - |
+>      #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/leds/common.h>
+>  
+>      mdio {
+>          #address-cells = <1>;
+> @@ -226,6 +229,27 @@ examples:
+>                      label = "lan1";
+>                      phy-mode = "internal";
+>                      phy-handle = <&internal_phy_port1>;
 > +
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
+> +                    leds {
+> +                        #address-cells = <1>;
+> +                        #size-cells = <0>;
 > +
-> +      '#size-cells':
-> +        const: 0
+> +                        led@0 {
+> +                            reg = <0>;
+
+Once 'unevaluatedProperties' is properly implemented in the schema, this 
+will be a warning. You didn't define 'reg' in the schema.
+
+> +                            color = <LED_COLOR_ID_WHITE>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+> +                            default-state = "keep";
+> +                        };
 > +
-> +    patternProperties:
-> +      '^led(@[a-f0-9]+)?$':
-> +        $ref: /schemas/leds/common.yaml#
-
-Are specific ethernet controllers allowed to add their own properties in 
-led nodes? If so, this doesn't work. As-is, this allows any other 
-properties. You need 'unevaluatedProperties: false' here to prevent 
-that. But then no one can add properties. If you want to support that, 
-then you need this to be a separate schema that devices can optionally 
-include if they don't extend the properties, and then devices that 
-extend the binding would essentially have the above with:
-
-$ref: /schemas/leds/common.yaml#
-unevaluatedProperties: false
-properties:
-  a-custom-device-prop: ...
-
-
-If you wanted to define both common ethernet LED properties and 
-device specific properties, then you'd need to replace leds/common.yaml 
-above  with the ethernet one.
-
-This is all the same reasons the DSA/switch stuff and graph bindings are 
-structured the way they are.
-
-Rob
+> +                        led@1 {
+> +                            reg = <1>;
+> +                            color = <LED_COLOR_ID_AMBER>;
+> +                            function = LED_FUNCTION_LAN;
+> +                            function-enumerator = <1>;
+> +                            default-state = "keep";
+> +                        };
+> +                    };
+>                  };
+>  
+>                  port@2 {
+> -- 
+> 2.39.2
+> 
