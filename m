@@ -2,109 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC72C6C3309
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 618AE6C3331
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230526AbjCUNhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 09:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
+        id S230221AbjCUNrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 09:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbjCUNhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:37:22 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DE24609F
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:37:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=dcK+DIC9lBG+O5y1XUTnsuNUmycbRZ3prnEr4vC/mMI=; b=Pw1qyz3U5MW/ypHE29Ka8I3LF3
-        Ow8vVyElLZWl9m2Aj15OhKLkWHPFOrJXh0tINpq0JdB9jFoUdLxuaSJ/lW0GwNNHaqugwGwrgkgGo
-        rxXI7VMRqycwqr33HTzLb4Oh0N0uYhihoFaJh2JcvDXZntlcxXqJuWxLcx9KFt+tA6fA=;
-Received: from [217.114.218.22] (helo=localhost.localdomain)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pecAy-005Lkw-0C
-        for netdev@vger.kernel.org; Tue, 21 Mar 2023 14:37:20 +0100
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Subject: [PATCH net 2/2] net: ethernet: mtk_eth_soc: fix L2 offloading with DSA untag offload enabled
-Date:   Tue, 21 Mar 2023 14:37:19 +0100
-Message-Id: <20230321133719.49652-2-nbd@nbd.name>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230321133719.49652-1-nbd@nbd.name>
-References: <20230321133719.49652-1-nbd@nbd.name>
+        with ESMTP id S229475AbjCUNry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:47:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E1237B40
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:47:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679406427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=u0vcj8yQCVSq1K7a3xv3DSDoQVn1iGPLpiir1Gw25As=;
+        b=WuFs+6ttkbrHFSU0/BH1lngFzyVF6qOk45BL6PG20zsaidsaPxs2wSKej1G5dQq0mpLPXT
+        7+Ho3RFQ1OHehXnf3hliGu77V8NO6cb09NSt4iDFqhoSWuLZYr3tWeJOge6b+rGvgDqEXT
+        Z9/1SkvSUYRGxjWGhW8HZLEX2t9u3vs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-354-RJS224pMPayh0XBeCSSY6Q-1; Tue, 21 Mar 2023 09:47:04 -0400
+X-MC-Unique: RJS224pMPayh0XBeCSSY6Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C0C1F3815F79;
+        Tue, 21 Mar 2023 13:47:02 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 62BA040C6E68;
+        Tue, 21 Mar 2023 13:47:02 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 809E8300000D0;
+        Tue, 21 Mar 2023 14:47:01 +0100 (CET)
+Subject: [PATCH bpf-next V2 0/6] XDP-hints kfuncs for Intel driver igc
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net
+Date:   Tue, 21 Mar 2023 14:47:01 +0100
+Message-ID: <167940634187.2718137.10209374282891218398.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check for skb metadata in order to detect the case where the DSA header is not
-present.
+Implemented XDP-hints metadata kfuncs for Intel driver igc.
 
-Fixes: 2d7605a72906 ("net: ethernet: mtk_eth_soc: enable hardware DSA untagging")
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Primarily used the tool in tools/testing/selftests/bpf/ xdp_hw_metadata,
+when doing driver development of these features. Recommend other driver
+developers to do the same. In the process xdp_hw_metadata was updated to
+help assist development. I've documented my practical experience with igc
+and tool here[1].
+
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/hints/xdp_hints_kfuncs02_driver_igc.org
+
+This patchset implement RX-hash as a simple u32 value (as this is the
+current kfunc API), but my experience with RX-hash is that we will also
+need to provide the Hash-type for this raw value to be useful to
+BPF-developers. This will be addressed in followup work once this patchset
+lands.
+
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 6 +++---
- drivers/net/ethernet/mediatek/mtk_ppe.c     | 5 ++++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 3cb43623d3db..a94aa08515af 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2059,9 +2059,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			skb_checksum_none_assert(skb);
- 		skb->protocol = eth_type_trans(skb, netdev);
- 
--		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
--			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
--
- 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
- 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
- 				if (trxd.rxd3 & RX_DMA_VTAG_V2) {
-@@ -2089,6 +2086,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			__vlan_hwaccel_put_tag(skb, htons(vlan_proto), vlan_tci);
- 		}
- 
-+		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
-+			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
-+
- 		skb_record_rx_queue(skb, 0);
- 		napi_gro_receive(napi, skb);
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 6883eb34cd8b..a038b99ecbda 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -8,6 +8,7 @@
- #include <linux/platform_device.h>
- #include <linux/if_ether.h>
- #include <linux/if_vlan.h>
-+#include <net/dst_metadata.h>
- #include <net/dsa.h>
- #include "mtk_eth_soc.h"
- #include "mtk_ppe.h"
-@@ -699,7 +700,9 @@ void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
- 		    skb->dev->dsa_ptr->tag_ops->proto != DSA_TAG_PROTO_MTK)
- 			goto out;
- 
--		tag += 4;
-+		if (!skb_metadata_dst(skb))
-+			tag += 4;
-+
- 		if (get_unaligned_be16(tag) != ETH_P_8021Q)
- 			break;
- 
--- 
-2.39.0
+Jesper Dangaard Brouer (6):
+      igc: enable and fix RX hash usage by netstack
+      selftests/bpf: xdp_hw_metadata track more timestamps
+      selftests/bpf: xdp_hw_metadata RX hash return code info
+      igc: add igc_xdp_buff wrapper for xdp_buff in driver
+      igc: add XDP hints kfuncs for RX timestamp
+      igc: add XDP hints kfuncs for RX hash
+
+
+ drivers/net/ethernet/intel/igc/igc.h          | 35 +++++++
+ drivers/net/ethernet/intel/igc/igc_main.c     | 94 ++++++++++++++++---
+ .../selftests/bpf/progs/xdp_hw_metadata.c     | 18 ++--
+ tools/testing/selftests/bpf/xdp_hw_metadata.c | 51 ++++++++--
+ tools/testing/selftests/bpf/xdp_metadata.h    |  1 +
+ 5 files changed, 176 insertions(+), 23 deletions(-)
+
+--
+
 
