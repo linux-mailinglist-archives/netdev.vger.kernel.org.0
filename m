@@ -2,282 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 196F76C2E03
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 10:37:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 747C06C2DE6
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 10:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230014AbjCUJhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 05:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41136 "EHLO
+        id S229786AbjCUJcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 05:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbjCUJhk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 05:37:40 -0400
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3713F2FCCF;
-        Tue, 21 Mar 2023 02:37:35 -0700 (PDT)
+        with ESMTP id S229731AbjCUJcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 05:32:09 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F962DBEB;
+        Tue, 21 Mar 2023 02:32:08 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id x198so6552898ybe.9;
+        Tue, 21 Mar 2023 02:32:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=buaa.edu.cn; s=buaa; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=VxlKtmtI4M
-        Yzuv9XChprrpz83EpEpy3HSQHqnASaJn4=; b=qzVvjmsDwzkpb3d4pcXWljl8Mh
-        0AskS7s6LnUZN5Vbt1ncVINyXDAEUBw8OOL3s4m+XlroFNPilAAJrhHQ5fmIXOFm
-        /CSe5eWIOWrdh78SvklgpuHTE5bLYHpKLPoaw3GImuvAG9vrSF/37663HwAWvPUa
-        dUxV/cNaq/3646qrw=
-Received: from oslab.. (unknown [10.130.159.144])
-        by coremail-app1 (Coremail) with SMTP id OCz+CgBXCJXBehlk1WW4Ag--.39745S4;
-        Tue, 21 Mar 2023 17:37:05 +0800 (CST)
-From:   Jia-Ju Bai <baijiaju@buaa.edu.cn>
-To:     johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        simon.horman@corigine.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju@buaa.edu.cn>
-Subject: [PATCH v2] net: mac80211: Add NULL checks for sta->sdata
-Date:   Tue, 21 Mar 2023 17:31:22 +0800
-Message-Id: <20230321093122.2652111-1-baijiaju@buaa.edu.cn>
-X-Mailer: git-send-email 2.34.1
+        d=gmail.com; s=20210112; t=1679391127;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :references:in-reply-to:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vxAl6P7LjZGLPUad9YiYxQw9UvNeqA2k882/4TQj+2M=;
+        b=TXTyuHsSWLPU3uGxMKSvr7NBzqPO7uz9Nm2FA3aXycmFTskKCBjke+XzO61KdoOgXb
+         GTescvK25EYx1ZSysLmMR4C6eG/hbdudKVIv55z4/qMj00roH+Sb9aerDhukKXKhCqrG
+         0qVkPQmNQKtTZhhAzWp555JYD9GXoaGfjvJL0t//4hxmHUOQz30knoK+Ih/LB6NDzSNE
+         8ysWgl0nesyasI7v6vo+Gb176PRrBDdktysL51W1GxUV6f7CcXjfueAl/pUC5M7ANEcZ
+         MMUipYbV+GQwBCebZ0bWVpUPla4+dDtLwdD9siEDO5HtBXsa0xFrxsU8LynvIpb9/2go
+         91mQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679391127;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :references:in-reply-to:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vxAl6P7LjZGLPUad9YiYxQw9UvNeqA2k882/4TQj+2M=;
+        b=JThyUsK2kr6ZMm/nO1s1WdLoVAHMOV9XqqarnquLYGmI9ZfxLXpK4VyHMI1FDZ5zek
+         7Ddw2wqF5gPu1sSbMZHC8baXn+SpZ9rEn+25prQ7RqqrDh79GDRZEEgykNdLfwep2yCw
+         UYBNxh0MgIM8jWxZj/zazJSmZyZF+68F5yw/F1J5Se/cAQ1gjcUZ0JQfd9flkb+bL/xG
+         8fAf/M7oNxas468112rXCtmltWvvZmgJxYt46PFfnzbx9iOr2Ejx/XOVIV0y/crtHf30
+         zbw3CIvp5utYocF193nKttrltUTW8lj5oMc1fsUJRMsz/RlW1OGv3ZvZOzZ48LH1kpUv
+         iNKA==
+X-Gm-Message-State: AAQBX9cwKYy11ZNK03YJUkTQIzMMjDR3SMyc/n1EdApr1BjvakX+OPlp
+        HFwBJbWFQiQBhMQ/ytqkboF/BLUOi/KwiszjwsA=
+X-Google-Smtp-Source: AKy350ZjNwIja6llqyKuUDIfDv5nwr0Kha9siW3n5D9MjKRke6UPZymetQDMELjmyiZBverIvmpGJgMnWKOuHJj7TUM=
+X-Received: by 2002:a05:6902:242:b0:94a:ebba:cba6 with SMTP id
+ k2-20020a056902024200b0094aebbacba6mr792174ybs.9.1679391126946; Tue, 21 Mar
+ 2023 02:32:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: OCz+CgBXCJXBehlk1WW4Ag--.39745S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxtF4fZw4rZry7KFWrur1Dtrb_yoW3GFyxpr
-        WrGw1jqF4UJa4xZrn3Jr1F93yF9r10gF48Cr1fC3W8u3ZY9wnYkr1v9ry8ZF9YyryxJw1Y
-        qF4Du398Ca1DC37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU921xkIjI8I6I8E6xAIw20EY4v20xvaj40_JFC_Wr1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y
-        6r17McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxE
-        wVCm-wCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26F1DJr1UJwCFx2IqxVCFs4
-        IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1r
-        MI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJV
-        WUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j
-        6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYx
-        BIdaVFxhVjvjDU0xZFpf9x0JUp6wZUUUUU=
-X-CM-SenderInfo: yrruji46exttoohg3hdfq/
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Received: by 2002:a05:7000:199d:b0:490:be1c:c35a with HTTP; Tue, 21 Mar 2023
+ 02:32:06 -0700 (PDT)
+In-Reply-To: <20230320182813.963508-1-noltari@gmail.com>
+References: <20230320182813.963508-1-noltari@gmail.com>
+From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Date:   Tue, 21 Mar 2023 10:32:06 +0100
+Message-ID: <CAKR-sGfWkqumiPD3Ni_F5PzTW3Eb_GvFY9=h0iP0tYujwtFL3Q@mail.gmail.com>
+Subject: Re: [RFC PATCH] drivers: net: dsa: b53: mmap: add phy ops
+To:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a previous commit 69403bad97aa ("wifi: mac80211: sdata can be NULL
-during AMPDU start"), sta->sdata can be NULL, and thus it should be 
-checked before being used.
+2023-03-20 19:28 GMT+01:00, =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail=
+.com>:
+> Currently, B53 MMAP BCM63xx devices with an external switch hang when
+> performing PHY read and write operations due to invalid registers access.
+> This adds support for PHY ops by using the internal bus from
+> mdio-mux-bcm6368
+> when probed by device tree and also falls back to direct MDIO registers i=
+f
+> not.
+>
+> This is an alternative to:
+> -
+> https://patchwork.kernel.org/project/netdevbpf/cover/20230317113427.30216=
+2-1-noltari@gmail.com/
+> -
+> https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.30216=
+2-2-noltari@gmail.com/
+> -
+> https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.30216=
+2-3-noltari@gmail.com/
+> -
+> https://patchwork.kernel.org/project/netdevbpf/patch/20230317113427.30216=
+2-4-noltari@gmail.com/
+> As discussed, it was an ABI break and not the correct way of fixing the
+> issue.
+>
+> Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
+> ---
+>  drivers/net/dsa/b53/b53_mmap.c    | 86 +++++++++++++++++++++++++++++++
+>  include/linux/platform_data/b53.h |  1 +
+>  2 files changed, 87 insertions(+)
+>
+> diff --git a/drivers/net/dsa/b53/b53_mmap.c
+> b/drivers/net/dsa/b53/b53_mmap.c
+> index 706df04b6cee..7deca1c557c5 100644
+> --- a/drivers/net/dsa/b53/b53_mmap.c
+> +++ b/drivers/net/dsa/b53/b53_mmap.c
+> @@ -19,14 +19,25 @@
+>  #include <linux/bits.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> +#include <linux/of_mdio.h>
+>  #include <linux/io.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/platform_data/b53.h>
+>
+>  #include "b53_priv.h"
+>
+> +#define REG_MDIOC		0xb0
+> +#define  REG_MDIOC_EXT_MASK	BIT(16)
+> +#define  REG_MDIOC_REG_SHIFT	20
+> +#define  REG_MDIOC_PHYID_SHIFT	25
+> +#define  REG_MDIOC_RD_MASK	BIT(30)
+> +#define  REG_MDIOC_WR_MASK	BIT(31)
+> +
+> +#define REG_MDIOD		0xb4
+> +
+>  struct b53_mmap_priv {
+>  	void __iomem *regs;
+> +	struct mii_bus *bus;
 
-However, in the same call stack, sta->sdata is also used in the
-following functions:
+Can we reuse "bus" from b53_device instead of adding a new one for
+b53_mmap_priv?
 
-ieee80211_ba_session_work()
-  ___ieee80211_stop_rx_ba_session(sta)
-    ht_dbg(sta->sdata, ...); -> No check
-    sdata_info(sta->sdata, ...); -> No check
-    ieee80211_send_delba(sta->sdata, ...) -> No check
-  ___ieee80211_start_rx_ba_session(sta)
-    ht_dbg(sta->sdata, ...); -> No check
-    ht_dbg_ratelimited(sta->sdata, ...); -> No check
-  ieee80211_tx_ba_session_handle_start(sta)
-    sdata = sta->sdata; if (!sdata) -> Add check by previous commit
-  ___ieee80211_stop_tx_ba_session(sdata)
-    ht_dbg(sta->sdata, ...); -> No check
-  ieee80211_start_tx_ba_cb(sdata)
-    sdata = sta->sdata; local = sdata->local -> No check
-  ieee80211_stop_tx_ba_cb(sdata)
-    ht_dbg(sta->sdata, ...); -> No check
+>  };
+>
+>  static int b53_mmap_read8(struct b53_device *dev, u8 page, u8 reg, u8
+> *val)
+> @@ -216,6 +227,69 @@ static int b53_mmap_write64(struct b53_device *dev, =
+u8
+> page, u8 reg,
+>  	return 0;
+>  }
+>
+> +static inline void b53_mmap_mdio_read(struct b53_device *dev, int phy_id=
+,
+> +				      int loc, u16 *val)
+> +{
+> +	uint32_t reg;
+> +
+> +	b53_mmap_write32(dev, 0, REG_MDIOC, 0);
+> +
+> +	reg =3D REG_MDIOC_RD_MASK |
+> +	      (phy_id << REG_MDIOC_PHYID_SHIFT) |
+> +	      (loc << REG_MDIOC_REG_SHIFT);
+> +
+> +	b53_mmap_write32(dev, 0, REG_MDIOC, reg);
+> +	udelay(50);
+> +	b53_mmap_read16(dev, 0, REG_MDIOD, val);
+> +}
+> +
+> +static inline int b53_mmap_mdio_write(struct b53_device *dev, int phy_id=
+,
+> +				      int loc, u16 val)
+> +{
+> +	uint32_t reg;
+> +
+> +	b53_mmap_write32(dev, 0, REG_MDIOC, 0);
+> +
+> +	reg =3D REG_MDIOC_WR_MASK |
+> +	      (phy_id << REG_MDIOC_PHYID_SHIFT) |
+> +	      (loc << REG_MDIOC_REG_SHIFT) |
+> +	      val;
+> +
+> +	b53_mmap_write32(dev, 0, REG_MDIOC, reg);
+> +	udelay(50);
+> +
+> +	return 0;
+> +}
+> +
+> +static int b53_mmap_phy_read16(struct b53_device *dev, int addr, int reg=
+,
+> +			       u16 *value)
+> +{
+> +	struct b53_mmap_priv *priv =3D dev->priv;
+> +	struct mii_bus *bus =3D priv->bus;
+> +
+> +	if (bus)
+> +		*value =3D mdiobus_read_nested(bus, addr, reg);
+> +	else
+> +		b53_mmap_mdio_read(dev, addr, reg, value);
+> +
+> +	return 0;
+> +}
+> +
+> +static int b53_mmap_phy_write16(struct b53_device *dev, int addr, int re=
+g,
+> +				u16 value)
+> +{
+> +	struct b53_mmap_priv *priv =3D dev->priv;
+> +	struct mii_bus *bus =3D priv->bus;
+> +	int ret;
+> +
+> +	if (bus)
+> +		ret =3D mdiobus_write_nested(bus, addr, reg, value);
+> +	else
+> +		ret =3D b53_mmap_mdio_write(dev, addr, reg, value);
+> +
+> +	return ret;
+> +}
+> +
+>  static const struct b53_io_ops b53_mmap_ops =3D {
+>  	.read8 =3D b53_mmap_read8,
+>  	.read16 =3D b53_mmap_read16,
+> @@ -227,6 +301,8 @@ static const struct b53_io_ops b53_mmap_ops =3D {
+>  	.write32 =3D b53_mmap_write32,
+>  	.write48 =3D b53_mmap_write48,
+>  	.write64 =3D b53_mmap_write64,
+> +	.phy_read16 =3D b53_mmap_phy_read16,
+> +	.phy_write16 =3D b53_mmap_phy_write16,
+>  };
+>
+>  static int b53_mmap_probe_of(struct platform_device *pdev,
+> @@ -234,6 +310,7 @@ static int b53_mmap_probe_of(struct platform_device
+> *pdev,
+>  {
+>  	struct device_node *np =3D pdev->dev.of_node;
+>  	struct device_node *of_ports, *of_port;
+> +	struct device_node *mdio;
+>  	struct device *dev =3D &pdev->dev;
+>  	struct b53_platform_data *pdata;
+>  	void __iomem *mem;
+> @@ -251,6 +328,14 @@ static int b53_mmap_probe_of(struct platform_device
+> *pdev,
+>  	pdata->chip_id =3D (u32)device_get_match_data(dev);
+>  	pdata->big_endian =3D of_property_read_bool(np, "big-endian");
+>
+> +	mdio =3D of_parse_phandle(np, "mii-bus", 0);
 
-Thus, to avoid possible null-pointer dereferences, the related checks
-should be added.
+Is "mii-bus" OK or shall we use something like "brcm,mii-bus"?
 
-These bugs are reported by a static analysis tool implemented by myself, 
-and they are found by extending a known bug fixed in the previous commit. 
-Thus, they could be theoretical bugs.
-
-Signed-off-by: Jia-Ju Bai <baijiaju@buaa.edu.cn>
----
-v2:
-* Fix an error reported by checkpatch.pl, and make the bug finding
-  process more clear in the description. Thanks for Simon's advice.
----
- net/mac80211/agg-rx.c | 68 ++++++++++++++++++++++++++-----------------
- net/mac80211/agg-tx.c | 16 ++++++++--
- 2 files changed, 55 insertions(+), 29 deletions(-)
-
-diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
-index c6fa53230450..6616970785a2 100644
---- a/net/mac80211/agg-rx.c
-+++ b/net/mac80211/agg-rx.c
-@@ -80,19 +80,21 @@ void ___ieee80211_stop_rx_ba_session(struct sta_info *sta, u16 tid,
- 	RCU_INIT_POINTER(sta->ampdu_mlme.tid_rx[tid], NULL);
- 	__clear_bit(tid, sta->ampdu_mlme.agg_session_valid);
- 
--	ht_dbg(sta->sdata,
--	       "Rx BA session stop requested for %pM tid %u %s reason: %d\n",
--	       sta->sta.addr, tid,
--	       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
--	       (int)reason);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata,
-+		       "Rx BA session stop requested for %pM tid %u %s reason: %d\n",
-+		       sta->sta.addr, tid,
-+		       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
-+		       (int)reason);
-+	}
- 
--	if (drv_ampdu_action(local, sta->sdata, &params))
-+	if (sta->sdata && drv_ampdu_action(local, sta->sdata, &params))
- 		sdata_info(sta->sdata,
- 			   "HW problem - can not stop rx aggregation for %pM tid %d\n",
- 			   sta->sta.addr, tid);
- 
- 	/* check if this is a self generated aggregation halt */
--	if (initiator == WLAN_BACK_RECIPIENT && tx)
-+	if (initiator == WLAN_BACK_RECIPIENT && tx && sta->sdata)
- 		ieee80211_send_delba(sta->sdata, sta->sta.addr,
- 				     tid, WLAN_BACK_RECIPIENT, reason);
- 
-@@ -279,17 +281,21 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 
- 	if (!sta->sta.deflink.ht_cap.ht_supported &&
- 	    !sta->sta.deflink.he_cap.has_he) {
--		ht_dbg(sta->sdata,
--		       "STA %pM erroneously requests BA session on tid %d w/o HT\n",
--		       sta->sta.addr, tid);
-+		if (sta->sdata) {
-+			ht_dbg(sta->sdata,
-+			       "STA %pM erroneously requests BA session on tid %d w/o HT\n",
-+			       sta->sta.addr, tid);
-+		}
- 		/* send a response anyway, it's an error case if we get here */
- 		goto end;
- 	}
- 
- 	if (test_sta_flag(sta, WLAN_STA_BLOCK_BA)) {
--		ht_dbg(sta->sdata,
--		       "Suspend in progress - Denying ADDBA request (%pM tid %d)\n",
--		       sta->sta.addr, tid);
-+		if (sta->sdata) {
-+			ht_dbg(sta->sdata,
-+			       "Suspend in progress - Denying ADDBA request (%pM tid %d)\n",
-+			       sta->sta.addr, tid);
-+		}
- 		goto end;
- 	}
- 
-@@ -322,8 +328,10 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 		buf_size = sta->sta.max_rx_aggregation_subframes;
- 	params.buf_size = buf_size;
- 
--	ht_dbg(sta->sdata, "AddBA Req buf_size=%d for %pM\n",
--	       buf_size, sta->sta.addr);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata, "AddBA Req buf_size=%d for %pM\n",
-+		       buf_size, sta->sta.addr);
-+	}
- 
- 	/* examine state machine */
- 	lockdep_assert_held(&sta->ampdu_mlme.mtx);
-@@ -332,9 +340,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 		if (sta->ampdu_mlme.tid_rx_token[tid] == dialog_token) {
- 			struct tid_ampdu_rx *tid_rx;
- 
--			ht_dbg_ratelimited(sta->sdata,
--					   "updated AddBA Req from %pM on tid %u\n",
--					   sta->sta.addr, tid);
-+			if (sta->sdata) {
-+				ht_dbg_ratelimited(sta->sdata,
-+						   "updated AddBA Req from %pM on tid %u\n",
-+						   sta->sta.addr, tid);
-+			}
- 			/* We have no API to update the timeout value in the
- 			 * driver so reject the timeout update if the timeout
- 			 * changed. If it did not change, i.e., no real update,
-@@ -350,9 +360,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 			goto end;
- 		}
- 
--		ht_dbg_ratelimited(sta->sdata,
--				   "unexpected AddBA Req from %pM on tid %u\n",
--				   sta->sta.addr, tid);
-+		if (sta->sdata) {
-+			ht_dbg_ratelimited(sta->sdata,
-+					   "unexpected AddBA Req from %pM on tid %u\n",
-+					   sta->sta.addr, tid);
-+		}
- 
- 		/* delete existing Rx BA session on the same tid */
- 		___ieee80211_stop_rx_ba_session(sta, tid, WLAN_BACK_RECIPIENT,
-@@ -362,9 +374,11 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 
- 	if (ieee80211_hw_check(&local->hw, SUPPORTS_REORDERING_BUFFER)) {
- 		ret = drv_ampdu_action(local, sta->sdata, &params);
--		ht_dbg(sta->sdata,
--		       "Rx A-MPDU request on %pM tid %d result %d\n",
--		       sta->sta.addr, tid, ret);
-+		if (sta->sdata) {
-+			ht_dbg(sta->sdata,
-+			       "Rx A-MPDU request on %pM tid %d result %d\n",
-+			       sta->sta.addr, tid, ret);
-+		}
- 		if (!ret)
- 			status = WLAN_STATUS_SUCCESS;
- 		goto end;
-@@ -401,8 +415,10 @@ void ___ieee80211_start_rx_ba_session(struct sta_info *sta,
- 		__skb_queue_head_init(&tid_agg_rx->reorder_buf[i]);
- 
- 	ret = drv_ampdu_action(local, sta->sdata, &params);
--	ht_dbg(sta->sdata, "Rx A-MPDU request on %pM tid %d result %d\n",
--	       sta->sta.addr, tid, ret);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata, "Rx A-MPDU request on %pM tid %d result %d\n",
-+		       sta->sta.addr, tid, ret);
-+	}
- 	if (ret) {
- 		kfree(tid_agg_rx->reorder_buf);
- 		kfree(tid_agg_rx->reorder_time);
-diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
-index f9514bacbd4a..03b31b6e7ac7 100644
---- a/net/mac80211/agg-tx.c
-+++ b/net/mac80211/agg-tx.c
-@@ -368,8 +368,10 @@ int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
- 
- 	spin_unlock_bh(&sta->lock);
- 
--	ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
--	       sta->sta.addr, tid);
-+	if (sta->sdata) {
-+		ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
-+		       sta->sta.addr, tid);
-+	}
- 
- 	del_timer_sync(&tid_tx->addba_resp_timer);
- 	del_timer_sync(&tid_tx->session_timer);
-@@ -776,7 +778,12 @@ void ieee80211_start_tx_ba_cb(struct sta_info *sta, int tid,
- 			      struct tid_ampdu_tx *tid_tx)
- {
- 	struct ieee80211_sub_if_data *sdata = sta->sdata;
--	struct ieee80211_local *local = sdata->local;
-+	struct ieee80211_local *local;
-+
-+	if (!sdata)
-+		return;
-+
-+	local = sdata->local;
- 
- 	if (WARN_ON(test_and_set_bit(HT_AGG_STATE_DRV_READY, &tid_tx->state)))
- 		return;
-@@ -902,6 +909,9 @@ void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
- 	bool send_delba = false;
- 	bool start_txq = false;
- 
-+	if (!sdata)
-+		return;
-+
- 	ht_dbg(sdata, "Stopping Tx BA session for %pM tid %d\n",
- 	       sta->sta.addr, tid);
- 
--- 
-2.34.1
-
+> +	if (!mdio)
+> +		return -EINVAL;
+> +
+> +	pdata->bus =3D of_mdio_find_bus(mdio);
+> +	if (!pdata->bus)
+> +		return -EPROBE_DEFER;
+> +
+>  	of_ports =3D of_get_child_by_name(np, "ports");
+>  	if (!of_ports) {
+>  		dev_err(dev, "no ports child node found\n");
+> @@ -297,6 +382,7 @@ static int b53_mmap_probe(struct platform_device *pde=
+v)
+>  		return -ENOMEM;
+>
+>  	priv->regs =3D pdata->regs;
+> +	priv->bus =3D pdata->bus;
+>
+>  	dev =3D b53_switch_alloc(&pdev->dev, &b53_mmap_ops, priv);
+>  	if (!dev)
+> diff --git a/include/linux/platform_data/b53.h
+> b/include/linux/platform_data/b53.h
+> index 6f6fed2b171d..be0c5bfdedad 100644
+> --- a/include/linux/platform_data/b53.h
+> +++ b/include/linux/platform_data/b53.h
+> @@ -32,6 +32,7 @@ struct b53_platform_data {
+>  	/* only used by MMAP'd driver */
+>  	unsigned big_endian:1;
+>  	void __iomem *regs;
+> +	struct mii_bus *bus;
+>  };
+>
+>  #endif
+> --
+> 2.30.2
+>
+>
