@@ -2,116 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 508506C312A
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B356C3134
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 13:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbjCUMCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 08:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
+        id S231184AbjCUMDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 08:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbjCUMCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:02:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FE4AD3B
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 05:01:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679400093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZUORpevlKQiU73IYOa4/Bo2bFBpxSB0mQvJe2zWG4uk=;
-        b=hD59h++Z1XUDa2nri5jA5aOYdQsDtGg98PKHBKtRNUnwrYYTF6xQcHiOwSCMf6X7i33wfe
-        ySQSrSAIB3SZ9kXgSIS8PJW30dCIsPnMntiVe6x0wSenmY+c3RfsocCGVpLQ5bIXXuatXh
-        C/DfocrOh+29rjgHvfkPmK3lQCnuHMQ=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-604-wQLEzDZ7OTWLV-lFdm7IDw-1; Tue, 21 Mar 2023 08:01:31 -0400
-X-MC-Unique: wQLEzDZ7OTWLV-lFdm7IDw-1
-Received: by mail-oo1-f72.google.com with SMTP id d2-20020a4a5202000000b0053b5874f94aso397908oob.3
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 05:01:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679400091;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZUORpevlKQiU73IYOa4/Bo2bFBpxSB0mQvJe2zWG4uk=;
-        b=7EGEiUCGCVVDEhw1BqCs+lG8yz01f07kiM7aC5npFsR9DmNJCclaeWalJUEa/b2RA8
-         mLVkSvWb4bclCm458+iusDdLWYbabW7m74qOQ8MumIid2j6YecrT5YJRZOJn8FG7lUEH
-         X86wmy7pS2qyQQrl8PJbzJDpKGLg99RAoD90U1fqiqZO5uEm8q5yD2bHbtKJcPEIWeBc
-         D6IPVqCBsLtzl2HwUYZNTvcTrSQa9pKWmBK/Po06srkmVRVrWkojD1ny9IZssXXnRBe/
-         pQZj+cYqjugilZLfYBofXRnvkFwr2sR0JSAe3xFcISm/pJls/t58vlc+Se55bd08bbP0
-         /cJw==
-X-Gm-Message-State: AO0yUKWfgYVFU7X3AXZRfyrxRt3G0r3Yn3eMTPzeBj57+RqzIBIEaGQc
-        si9yjoXdgPv9mc50JPsAloj5srIpoLuS74dZ51+2YeRLK9YvGtRMLtJ8sBHiRTCEsXMMY3wAOzI
-        UZx8o9H1h4dWgskA/
-X-Received: by 2002:a05:6870:8289:b0:176:263e:9965 with SMTP id q9-20020a056870828900b00176263e9965mr871706oae.44.1679400091080;
-        Tue, 21 Mar 2023 05:01:31 -0700 (PDT)
-X-Google-Smtp-Source: AK7set899kmqLmAPg7MyUnAjH/WqMmEGz8KcW68wrb4VDOu+woQ52tQV+an0Qn8sOt6JqzR5VPkhdw==
-X-Received: by 2002:a05:6870:8289:b0:176:263e:9965 with SMTP id q9-20020a056870828900b00176263e9965mr871660oae.44.1679400090393;
-        Tue, 21 Mar 2023 05:01:30 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id t72-20020a37464b000000b00725d8d6983asm9163201qka.61.2023.03.21.05.01.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 05:01:30 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     isdn@linux-pingi.de, nathan@kernel.org, ndesaulniers@google.com,
-        kuba@kernel.org, alexanderduyck@fb.com, yangyingliang@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH] mISDN: remove unused vpm_read_address function
-Date:   Tue, 21 Mar 2023 08:01:27 -0400
-Message-Id: <20230321120127.1782548-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229754AbjCUMDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 08:03:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FAA4BEB1;
+        Tue, 21 Mar 2023 05:03:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01DDAB8163C;
+        Tue, 21 Mar 2023 12:03:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63E9C433D2;
+        Tue, 21 Mar 2023 12:03:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679400184;
+        bh=DKgnq/M13pVNuOOzlN17KcsCEqglAFkiJvFXeQc14tY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZTUDQ+Z8AoG9dETJAMaRUyYvcscd8EKkf2P1rQCDGhVhJ2XfPpC+k+xuN5oT87hAS
+         8krEakNiwmZH1Pw7mdfDPj5pfDrTOU0zmOBIH2z+nPHtmUG8FV7tuZkf6QPPuL6+5S
+         xw/lkQ7PMK9fgFoP0ezlQlaI8ZHU7HALtiCT5kfomuSeKRzgv/H6n7jRgyADaKKSrc
+         4sjYMSGREOgM2njuAsg75YwOyadqJo4kZ2FcMjnE10kfLF3Q/sR8iLpxGh5Zuk6DR7
+         QOB+cIAreSjQVe70+k4JXgl9rV0rJI5e1m/M0vf9aY7jkHtJzk8Farp7qg7FnfKKth
+         DVF7SxS8OiZ2g==
+Date:   Tue, 21 Mar 2023 14:02:59 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Patrisious Haddad <phaddad@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH rdma-next v1 2/3] RDMA/mlx5: Handling dct common resource
+ destruction upon firmware failure
+Message-ID: <20230321120259.GT36557@unreal>
+References: <cover.1678973858.git.leon@kernel.org>
+ <1a064e9d1b372a73860faf053b3ac12c3315e2cd.1678973858.git.leon@kernel.org>
+ <ZBixdlVsR5dl3J7Y@nvidia.com>
+ <20230321075458.GP36557@unreal>
+ <ZBmav4CF1yqRvyzZ@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBmav4CF1yqRvyzZ@nvidia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang with W=1 reports
-drivers/isdn/hardware/mISDN/hfcmulti.c:667:1: error: unused function
-  'vpm_read_address' [-Werror,-Wunused-function]
-vpm_read_address(struct hfc_multi *c)
-^
-This function is not used, so remove it.
+On Tue, Mar 21, 2023 at 08:53:35AM -0300, Jason Gunthorpe wrote:
+> On Tue, Mar 21, 2023 at 09:54:58AM +0200, Leon Romanovsky wrote:
+> > On Mon, Mar 20, 2023 at 04:18:14PM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Mar 16, 2023 at 03:39:27PM +0200, Leon Romanovsky wrote:
+> > > > From: Patrisious Haddad <phaddad@nvidia.com>
+> > > > 
+> > > > Previously when destroying a DCT, if the firmware function for the
+> > > > destruction failed, the common resource would have been destroyed
+> > > > either way, since it was destroyed before the firmware object.
+> > > > Which leads to kernel warning "refcount_t: underflow" which indicates
+> > > > possible use-after-free.
+> > > > Which is triggered when we try to destroy the common resource for the
+> > > > second time and execute refcount_dec_and_test(&common->refcount).
+> > > > 
+> > > > So, currently before destroying the common resource we check its
+> > > > refcount and continue with the destruction only if it isn't zero.
+> > > 
+> > > This seems super sketchy
+> > > 
+> > > If the destruction fails why not set the refcount back to 1?
+> > 
+> > Because destruction will fail in destroy_rq_tracked() which is after
+> > destroy_resource_common().
+> > 
+> > In first destruction attempt, we delete qp from radix tree and wait for all
+> > reference to drop. In order do not undo all this logic (setting 1 alone is
+> > not enough), it is much safer simply skip destroy_resource_common() in reentry
+> > case.
+> 
+> This is the bug I pointed a long time ago, it is ordered wrong to
+> remove restrack before destruction is assured
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/isdn/hardware/mISDN/hfcmulti.c | 14 --------------
- 1 file changed, 14 deletions(-)
+It is not restrack, but internal to mlx5_core structure.
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardware/mISDN/hfcmulti.c
-index e840609c50eb..ac665cf64f8c 100644
---- a/drivers/isdn/hardware/mISDN/hfcmulti.c
-+++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
-@@ -663,20 +663,6 @@ vpm_write_address(struct hfc_multi *hc, unsigned short addr)
- 	cpld_write_reg(hc, 1, 0x01 & (addr >> 8));
- }
- 
--static inline unsigned short
--vpm_read_address(struct hfc_multi *c)
--{
--	unsigned short addr;
--	unsigned short highbit;
--
--	addr = cpld_read_reg(c, 0);
--	highbit = cpld_read_reg(c, 1);
--
--	addr = addr | (highbit << 8);
--
--	return addr & 0x1ff;
--}
--
- static inline unsigned char
- vpm_in(struct hfc_multi *c, int which, unsigned short addr)
- {
--- 
-2.27.0
+  176 static void destroy_resource_common(struct mlx5_ib_dev *dev,
+  177                                     struct mlx5_core_qp *qp)
+  178 {
+  179         struct mlx5_qp_table *table = &dev->qp_table;
+  180         unsigned long flags;
+  181
 
+....
+
+  185         spin_lock_irqsave(&table->lock, flags);
+  186         radix_tree_delete(&table->tree,
+  187                           qp->qpn | (qp->common.res << MLX5_USER_INDEX_LEN));
+  188         spin_unlock_irqrestore(&table->lock, flags);
+  189         mlx5_core_put_rsc((struct mlx5_core_rsc_common *)qp);
+  190         wait_for_completion(&qp->common.free);
+  191 }
+
+
+> 
+> Jason
