@@ -2,73 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72ABF6C398A
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E55BA6C3991
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:52:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbjCUSt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 14:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37882 "EHLO
+        id S229705AbjCUSwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:52:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230514AbjCUStx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:49:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706C45653B
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:48:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679424498;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=m16LG5qfJ+bTUG6Spw+RzSoYpGmgfuoZ6sJRsgb/iNs=;
-        b=XsSSwi/nqbkFz16wOrUMWiSrWxdTWKaBEdSm91p0PnhLR+5FTbunRDg4uYNTOuH0oEXFE5
-        72wWF2DLlOrZQFCjDLU3TSz4xg1yBcGEi/y4rtttToqeToNRWfcQwrn4eJgTQXA0GQ3986
-        5Fjd7BUFZVoSsYqdH/VEYFOKsAY/2VQ=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-54-3IlF6XWnMPWgOhTPa6jR9A-1; Tue, 21 Mar 2023 14:48:17 -0400
-X-MC-Unique: 3IlF6XWnMPWgOhTPa6jR9A-1
-Received: by mail-qk1-f198.google.com with SMTP id 198-20020a370bcf000000b007468cffa4e2so2896078qkl.10
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:48:17 -0700 (PDT)
+        with ESMTP id S229905AbjCUSw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:52:28 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC3744A9
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:52:26 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id p34so5168066wms.3
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:52:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679424745;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1W/swI8vNKaqL4yMLjBXJiDdesolsjKtD0jUAl/Fsiw=;
+        b=Yty0l4iEMQDLDVScT+7cqStjZuhiaLjtqyJ4pNshY1Yl+7wFI7RprlZVipVMxpIYsJ
+         kQhrijqSC99ajAPFn8Om/hFqBsneumYc8aWXttVatXtZ0jx5DEbH0/FqdkFjr6R3friP
+         9yelnqqdkwGizmawv8sK+JqjG3a/i+/2HQ/BHVfzsWwwF/4hy+K1NeaCB3zbxnCmxsPi
+         IRy6x31mVOP757FA4GW1oeloSWHC6eOc+WCCDR2MweAY/I6Z2UQgIvcqvnfpIswhJYZC
+         LiU5H1X9fwgKMcZuwX5SwhR+F2NGfzp9HjM4njkbVdn3T4R2NthzA+eJEfkNCiVpgsmG
+         axwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679424497;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=m16LG5qfJ+bTUG6Spw+RzSoYpGmgfuoZ6sJRsgb/iNs=;
-        b=kQRydRCHt1cns2aa5rwrvWbhGRb88BK/ZRf0kGzAvBDkswvHMj1XmFq+DCcOK5eePa
-         vW+IYpmf1Cq9CuYbHuch5BGiipSMPg6IHEOjpMJEidajnTE6/+f4MDaK2K3TEFuVb7Qj
-         zFupej2jOXWJI00h8ZIxXjF2fN0OLutPNtGFyrcrmACX6vOR2i1ZcQCn1y3M+BakHPRA
-         YWvlPj7Mvks+GhPrjUXf4oxmQ2TZMDbZRNAh8LHHaRVmJr18VMb6b/IAWy4szT2LQjaH
-         fiTUnIGcmrVkd8cUekWO2N5/oqt0hmunqWH514cMVk8wElZMtYrynoJ65RZWQjpO9j7t
-         EPkg==
-X-Gm-Message-State: AO0yUKWhS39SYIThl5ay29TO5Da9gHDRkNdcwIpkVwbQn6No9t2MIlg0
-        sqMDEe4FiCrUeQb9IzmDIzcnIlD5/f8WuPIQHB0vmuLRp3JpBe4gQ9PDIE/owK3YIvjAYITLxsq
-        6/DBV8zvejqZwwsF7
-X-Received: by 2002:a05:6214:e4c:b0:5a3:44a1:788d with SMTP id o12-20020a0562140e4c00b005a344a1788dmr1318801qvc.29.1679424496990;
-        Tue, 21 Mar 2023 11:48:16 -0700 (PDT)
-X-Google-Smtp-Source: AK7set/uiKZ9Rf3XmfwDfIlgK1+2Ku5dlt08hCszlwq6yiw64bq4vrpan11278XtwOhJWytpr/YkPw==
-X-Received: by 2002:a05:6214:e4c:b0:5a3:44a1:788d with SMTP id o12-20020a0562140e4c00b005a344a1788dmr1318782qvc.29.1679424496733;
-        Tue, 21 Mar 2023 11:48:16 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 66-20020a370b45000000b0071eddd3bebbsm1525699qkl.81.2023.03.21.11.48.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 11:48:16 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH] liquidio: remove unused IQ_INSTR_MODE_64B function
-Date:   Tue, 21 Mar 2023 14:48:11 -0400
-Message-Id: <20230321184811.1827306-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        d=1e100.net; s=20210112; t=1679424745;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1W/swI8vNKaqL4yMLjBXJiDdesolsjKtD0jUAl/Fsiw=;
+        b=UfVspJtDeFg62xVCxjB02reDfTIR1jk64T+WERsbBLVI4QW1bYkUQh8JAmDL8PVT+B
+         TJRS4ofG3Q5JOrLjkl+IABTEQNjy+ZKGeK2XyyLgBy0I/GJG9Fj7iTGVpK6DF6nml+O0
+         XoiEMzcEFbgfADYt+C+25kSt5cTW8c1+/cjwMe3JhzSo/oPVWLaxk0DrPcslUbvmX/gs
+         OffsENfM8UFI/HdmTEQPLBrfXIds9f4KOr374Hqrmhkx5z/ydJdUd9PZzhUhSIjTlzW8
+         OMm4N+E6y51/ueRTgeRHivMUrz673TBGocn0WGCZttCZ0AJCzmzhWLy5rZpuMXtkQ5Ka
+         ROMA==
+X-Gm-Message-State: AO0yUKXhnbFnu0xJtL9xcNsXuKa66OwWe2X5+0ub9lvBNDkHH/qLVQTU
+        7nAH8H/VyO8moha3S5v0AYU=
+X-Google-Smtp-Source: AK7set/tRiG3nKIem8+o61Chg5EBKBttmApT+wxKKZLJBAUPUtPEV4eaT+7jHGOOrCUtB0GBzrwnKQ==
+X-Received: by 2002:a05:600c:218f:b0:3e9:f15b:935b with SMTP id e15-20020a05600c218f00b003e9f15b935bmr3003580wme.32.1679424745135;
+        Tue, 21 Mar 2023 11:52:25 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id bi6-20020a05600c3d8600b003ede178dc52sm8207895wmb.40.2023.03.21.11.52.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Mar 2023 11:52:24 -0700 (PDT)
+Subject: Re: [PATCH net] tools: ynl: add the Python requirements.txt file
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Michalik, Michal" <michal.michalik@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
+References: <20230314160758.23719-1-michal.michalik@intel.com>
+ <20230315214008.2536a1b4@kernel.org>
+ <BN6PR11MB41772BEF5321C0ECEE4B0A2BE3809@BN6PR11MB4177.namprd11.prod.outlook.com>
+ <560bd227-e0a9-5c01-29d8-1b71dc42f155@gmail.com>
+ <BN6PR11MB41770D6527882D26403EF628E3819@BN6PR11MB4177.namprd11.prod.outlook.com>
+ <20230321105203.0dfc7a00@kernel.org>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <46b182e9-bff5-2e5d-e3d6-27eb466657ef@gmail.com>
+Date:   Tue, 21 Mar 2023 18:52:24 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+In-Reply-To: <20230321105203.0dfc7a00@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,38 +83,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang with W=1 reports
-drivers/net/ethernet/cavium/liquidio/request_manager.c:43:19: error:
-  unused function 'IQ_INSTR_MODE_64B' [-Werror,-Wunused-function]
-static inline int IQ_INSTR_MODE_64B(struct octeon_device *oct, int iq_no)
-                  ^
-This function and its macro wrapper are not used, so remove them.
+On 21/03/2023 17:52, Jakub Kicinski wrote:
+> Given the "system script" nature of the project (vs "full application")
+> I don't find the requirements to be necessary right now.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/cavium/liquidio/request_manager.c | 9 ---------
- 1 file changed, 9 deletions(-)
+I'd say it's good to document the dependencies, because otherwise
+ getting it to run could be a PITA for the user; poking around I
+ don't see a convenient readme that could have a note added like
+ "This tool requires the PyYAML and jsonschema libraries".
+And if you're going to add a document just for this then it *may
+ as well* be in the machine-readable format that pip install can
+ consume.
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/request_manager.c b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-index 8e59c2825533..32f854c0cd79 100644
---- a/drivers/net/ethernet/cavium/liquidio/request_manager.c
-+++ b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-@@ -40,15 +40,6 @@ static void  __check_db_timeout(struct octeon_device *oct, u64 iq_no);
- 
- static void (*reqtype_free_fn[MAX_OCTEON_DEVICES][REQTYPE_LAST + 1]) (void *);
- 
--static inline int IQ_INSTR_MODE_64B(struct octeon_device *oct, int iq_no)
--{
--	struct octeon_instr_queue *iq =
--	    (struct octeon_instr_queue *)oct->instr_queue[iq_no];
--	return iq->iqcmd_64B;
--}
--
--#define IQ_INSTR_MODE_32B(oct, iq_no)  (!IQ_INSTR_MODE_64B(oct, iq_no))
--
- /* Define this to return the request status comaptible to old code */
- /*#define OCTEON_USE_OLD_REQ_STATUS*/
- 
--- 
-2.27.0
+> But I don't know much about Python, so maybe Ed can make a call? :D
 
+I'm not exactly an expert either :D
