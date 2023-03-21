@@ -2,74 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF006C2D16
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 09:55:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 051BA6C2DA7
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 10:10:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbjCUIzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 04:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37620 "EHLO
+        id S229989AbjCUJKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 05:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbjCUIyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 04:54:47 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECE336462;
-        Tue, 21 Mar 2023 01:53:42 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id m20-20020a9d6094000000b0069caf591747so8131808otj.2;
-        Tue, 21 Mar 2023 01:53:41 -0700 (PDT)
+        with ESMTP id S229754AbjCUJKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 05:10:40 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FFB33A85;
+        Tue, 21 Mar 2023 02:10:34 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id y5so16210373ybu.3;
+        Tue, 21 Mar 2023 02:10:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679388692;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=6g8ZCOL0qBfroGI6HKL/AHMClePzWoKtlB2eOg/vjPU=;
-        b=SK3ZTDtVa1I2xB60js5elRDZCZErqnbS9tkXiU4atY22XLjFVkPDCiaIQ4qS9fb/SE
-         mtq355JcyNHSq9VAyCvUA8x/vwJBMMqdh6P6UGNR2+UyGaXMX9NtYI5H/NJjuWz8R1c7
-         +SB1lYKyPAmZCUkcz7lb9XOLn2YJPdDkGfN3eLjUWxGK3qnPn/Ppnl/qI22fNkbx3fDM
-         BYazCH/4xNL2JS/KqHdjSbkxHCZNrTOLtVU4sGeZ7c8xZLgVwoe5/2g24Yb9K6xXoqmB
-         Kw++jUsEX/Ew8sUbwIB6zNxdT7+XujkqtKye8dmKASmW4vuLJfnmXj4eU6qOlSf++eUq
-         O6lg==
+        d=gmail.com; s=20210112; t=1679389833;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :references:in-reply-to:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1naR9VgFK/CRVn0pFs+TG3gFfORX42gFmCzJOm4FT5s=;
+        b=V2Hsq91CBcj4Sq2XpdLP0d+BTsMhf+dNqrqpprgcBXsX0it8vNwpXGu7UNT6VsEuTI
+         sP67h+uE9ZU+u0xoG3jSFqKnVitOvgV2hdp3SW2n1dAGMgnojlwsYnwoSy+gUPuXe+Dk
+         csvSg+SUgnQk0Ke74bSJQem1BJ5rfHnElRTHxfn4CtNMw8yJgRHqsClNRPsc5+Rq+Ctz
+         FVd7uQceqsWlMWkbHoyOLIKBZGgZojBfZD8lyqAjRD60pf5BHQkev6uSA8SHXbIBOGs6
+         68ee7fGEZRGpKtgthPFXNuzjv4RooTIpObj3ubzuLDdCH5NduRkinqDvkOJovssx3pqU
+         +6Aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679388692;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6g8ZCOL0qBfroGI6HKL/AHMClePzWoKtlB2eOg/vjPU=;
-        b=eZNgh7qVPHBm/zqemAJrC9FbQNC73T/xJpas4PJJUMuqXWCYWMrGjBpmhPsTLNn4Ms
-         73DHt5z0ZCrrwEJyb298tQ2mZmt2ofW+1SgrVjMaN7MWViClF2kNY821MVzYVd88goic
-         Ss6XA8Jf2sIpAZrojVGCRC+4iTspsXscIztQywyoKeaW02uWt4oFa/huiWdkZxmuheBs
-         VtK9EJlNajgKn8wv8/8IeCaUFmaUpfEkTA0LIPu1JFoQn3YJgra+qJttxPWHT/x6Wx0r
-         lymNoA9+jQAigwA+8UC+e08gyCPVRBHOuyp/GuHUlR+sN4UMBpCd4lj47dY5HAD7gNm8
-         Trsg==
-X-Gm-Message-State: AO0yUKU6Nb8lqtHrF+S49qrr0RshBw37nwqMZQZb6H4qEGlN+KTtPtVw
-        0HC2AL/BWNDB+iHH16cBKnicmpGtL7SarW5Brc4=
-X-Google-Smtp-Source: AK7set/RyVoEm6XZHT+AY5WK5cUy/4W39dJmufwy7VTHqkL30rYPhO5GpZX0GnBy2VFri+fYxEHvdokgkTWbioUoKmY=
-X-Received: by 2002:a9d:6510:0:b0:699:7883:940d with SMTP id
- i16-20020a9d6510000000b006997883940dmr543887otl.7.1679388692321; Tue, 21 Mar
- 2023 01:51:32 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679389833;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :references:in-reply-to:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1naR9VgFK/CRVn0pFs+TG3gFfORX42gFmCzJOm4FT5s=;
+        b=xtg8f2V672rWYcNq3Qp03rErUx3/cYS0FGV6j9gZc2nHe/q1PiVUt9x+34SdoebtVr
+         4t6UgNcrgIKj38p8DoYLe6+qub79pBz1uQ8nK9sU5SJTapYN1GDvVHetPpzflCz8kqSI
+         5vn7jBjLmy4v36d3StIWegdYW03BCOzC3OTtjgtdIHTC0NQ31C7PoinE120aZmjVFPKt
+         oyijK89kjIngr0EWuynCe5f79enaltnOaGGHg5K2HzKc2MUKQd2w9hfmesamne+8eRum
+         ey0b5X22NNaWeT/q/MyRzdRrIdQ7yYvLCaz5nrXHGkK3SxW5rRru89uhheDQ7aEAxaO8
+         j3lQ==
+X-Gm-Message-State: AAQBX9c4O/QwZAY0qUhE9Y3y7aCrnCiAfMHoSyH0avs9BQD2Cfn0o6cl
+        hkXmFughugu6ZrwKOmA/5pM8PK5R7j3QR7ga+Ew=
+X-Google-Smtp-Source: AKy350bOGXAX9HSyWlXVprdERaGHVsqXcSIgyEknmRaBkIwQ672kz9f6VJHLNkM+gCa0jBu6dbTnqzx8D9FgrAh9cZU=
+X-Received: by 2002:a25:8c89:0:b0:b6c:2d28:b3e7 with SMTP id
+ m9-20020a258c89000000b00b6c2d28b3e7mr886226ybl.9.1679389833380; Tue, 21 Mar
+ 2023 02:10:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230210114957.2667963-1-danishanwar@ti.com>
-In-Reply-To: <20230210114957.2667963-1-danishanwar@ti.com>
-From:   Christian Gmeiner <christian.gmeiner@gmail.com>
-Date:   Tue, 21 Mar 2023 09:51:21 +0100
-Message-ID: <CAH9NwWdiWtGsbyQRWCPros7iuSZTm_9fzJFPtuyiMoDg3TubuA@mail.gmail.com>
-Subject: Re: [PATCH v5 0/2] Introduce ICSSG based ethernet Driver
-To:     MD Danish Anwar <danishanwar@ti.com>
-Cc:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, andrew@lunn.ch, nm@ti.com,
-        ssantosh@kernel.org, srk@ti.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Received: by 2002:a05:7000:199d:b0:490:be1c:c35a with HTTP; Tue, 21 Mar 2023
+ 02:10:33 -0700 (PDT)
+In-Reply-To: <6f7e9b8c-6256-e7dd-b130-8e1429610faa@gmail.com>
+References: <20230320155024.164523-1-noltari@gmail.com> <20230320155024.164523-5-noltari@gmail.com>
+ <6f7e9b8c-6256-e7dd-b130-8e1429610faa@gmail.com>
+From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Date:   Tue, 21 Mar 2023 10:10:33 +0100
+Message-ID: <CAKR-sGcB-GgeRe=7_WYffQmppmzZTweRrxL848MG=_LMUuMedw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] net: dsa: b53: add BCM63268 RGMII configuration
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     andrew@lunn.ch, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,37 +74,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+(Excuse me for my previous email in HTML, but I forgot Android Gmail
+app uses HTML)
 
-Am Fr., 10. Feb. 2023 um 13:02 Uhr schrieb MD Danish Anwar <danishanwar@ti.com>:
+2023-03-20 21:00 GMT+01:00, Florian Fainelli <f.fainelli@gmail.com>:
+> On 3/20/23 08:50, =C3=81lvaro Fern=C3=A1ndez Rojas wrote:
+>> BCM63268 requires special RGMII configuration to work.
+>>
+>> Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
+>> ---
+>>   drivers/net/dsa/b53/b53_common.c | 6 +++++-
+>>   drivers/net/dsa/b53/b53_regs.h   | 1 +
+>>   2 files changed, 6 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/dsa/b53/b53_common.c
+>> b/drivers/net/dsa/b53/b53_common.c
+>> index 6e212f6f1cb9..d0a22c8a55c9 100644
+>> --- a/drivers/net/dsa/b53/b53_common.c
+>> +++ b/drivers/net/dsa/b53/b53_common.c
+>> @@ -1240,8 +1240,12 @@ static void b53_adjust_63xx_rgmii(struct dsa_swit=
+ch
+>> *ds, int port,
+>>   		break;
+>>   	}
+>>
+>> -	if (port !=3D dev->imp_port)
+>> +	if (port !=3D dev->imp_port) {
+>> +		if (is63268(dev))
+>> +			rgmii_ctrl |=3D RGMII_CTRL_MII_OVERRIDE;
 >
-> The Programmable Real-time Unit and Industrial Communication Subsystem
-> Gigabit (PRU_ICSSG) is a low-latency microcontroller subsystem in the TI
-> SoCs. This subsystem is provided for the use cases like the implementation
-> of custom peripheral interfaces, offloading of tasks from the other
-> processor cores of the SoC, etc.
->
-> The subsystem includes many accelerators for data processing like
-> multiplier and multiplier-accumulator. It also has peripherals like
-> UART, MII/RGMII, MDIO, etc. Every ICSSG core includes two 32-bit
-> load/store RISC CPU cores called PRUs.
->
-> The above features allow it to be used for implementing custom firmware
-> based peripherals like ethernet.
->
-> This series adds the YAML documentation and the driver with basic EMAC
-> support for TI AM654 Silicon Rev 2 SoC with the PRU_ICSSG Sub-system.
-> running dual-EMAC firmware.
-> This currently supports basic EMAC with 1Gbps and 100Mbps link. 10M and
-> half-duplex modes are not yet supported because they require the support
-> of an IEP, which will be added later.
-> Advanced features like switch-dev and timestamping will be added later.
+> AFAICT the override bit is defined and valid for both 63268 and 6318,
 
-What are TI plans to support TI AM642 Silicon Rev 2?
+Should we add a specific ID for the 6318?
+I don't know if it's different enough from the 63268 to need a special
+treatment such as is6318()...
 
--- 
-greets
+> essentially whenever more than one RGMII control register for port 4,
+> but also for other ports, it seems like the bit becomes valid. The
+> comment I have says that the override bit ensures that what is populated
+> in bits 5:4 which is the actual RGMII interface mode is applied. That
+> mode can be one of:
+>
+> 0b00: RGMII mode
+> 0b01: MII mode
+> 0b10: RVMII mode
+> 0b11: GMII mode
+
+This is interesting since we never set those bits in the bcm63xx
+enetsw controller...
+Should we add configuration for those bits in future patches?
+Which SoCs hace those bits? Only 6318 and 63268 or every 63xx has them?
+
+>
+> even though this is not documented as such, I suspect that the override
+> bit does not only set the mode, but also ensures that the delays are
+> also applied.
+>
+> Once you update patch 3, this LGTM and you may add:
+>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+>
+> For your v2. Thanks!
+> --
+> Florian
+>
+>
+
 --
-Christian Gmeiner, MSc
-
-https://christian-gmeiner.info/privacypolicy
+=C3=81lvaro
