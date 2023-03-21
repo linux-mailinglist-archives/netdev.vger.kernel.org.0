@@ -2,199 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC3066C2608
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 00:48:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB83D6C262C
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 01:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbjCTXsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Mar 2023 19:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        id S229696AbjCUAC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Mar 2023 20:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbjCTXsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 19:48:05 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA8C3928F
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 16:47:25 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id d13so13882497pjh.0
-        for <netdev@vger.kernel.org>; Mon, 20 Mar 2023 16:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112; t=1679355989;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CVD5kdtXy54YH3zU4G6cezFVCE0kWaOWnyh3a3H/fVw=;
-        b=gqS4hwId4OLnZEQgJI+kyIQkdjmZZrN+nyj53I24mqFbKwumRa3syzV+0mkcoQUlbp
-         I3AgRwMOV5tpdFgxUwMOdyobSn6YGJLq5ce4Okpmp1xF8WMyk+AYS/fECsmmnrjwBbvh
-         m416ye8JJBLiaMGKdPSU4vq6gcd8bwzfYtt4uBxxudYPXhLppUa4BnHpOAHtMLbQfY1m
-         MgvnWpRfkoiw5QiNdjNC8e97mTNXbNTRxWG+QQNHRgAgPLzHdXjluPpcHMXjwu63j5tq
-         +AkQmONBFJpyV0p6OQzwTmHpFlFVOZSZARJD9iWGVFgf52pT57vGrjmsDw1ywIryYuNH
-         Cqbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679355989;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CVD5kdtXy54YH3zU4G6cezFVCE0kWaOWnyh3a3H/fVw=;
-        b=lAWW9swZ+SE8edHSarGgUO9VGUEEUhOmql1p6SeeTDS/DLLQrhicwfb/G7qrmAhz1u
-         fJuTzeqGRVVjiqZ3+DznDyaHef9CbtDL8+jY/oIG62uCGnnjPusdvJiqamp2ChSZz1Vg
-         E9D0FyngM4aHU5vM4+uPhMddYJFDW6V1Tig0ejaYRlab4W1hirIyXN8xLkdIIwebBkYb
-         41gXI692UAzjFPd76uMlNLJGdjnnGh2A/+KQKMGUvvb+v7Virv6sfPsmMmH0y7VijIjG
-         yrSYxACu6APq73+ar8cR1B5as9Tt+C27mpAsgeEA7rJ0DvKYTI81r525Rym0N6pwKeIZ
-         EGrA==
-X-Gm-Message-State: AO0yUKXVzp2exn5Ak8Qps7hbGvX6gcFT4oSt9xpEXJ27Q9OP9IRcNNKe
-        0qqMInGBOZE9C4ns/rAk+3kVrw==
-X-Google-Smtp-Source: AK7set+Eo6dVqOrcG8rwMRvHa6vfuVju4SycRcGmgII+64sM2O1goAy6bcstJI4WTVXmjXHmb/WVRA==
-X-Received: by 2002:a17:90b:1e43:b0:23f:9fac:6b31 with SMTP id pi3-20020a17090b1e4300b0023f9fac6b31mr367842pjb.25.1679355989349;
-        Mon, 20 Mar 2023 16:46:29 -0700 (PDT)
-Received: from localhost ([50.221.140.188])
-        by smtp.gmail.com with ESMTPSA id 30-20020a630c5e000000b00502fd141ffbsm6756689pgm.49.2023.03.20.16.46.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Mar 2023 16:46:28 -0700 (PDT)
-Date:   Mon, 20 Mar 2023 16:46:28 -0700 (PDT)
-X-Google-Original-Date: Mon, 20 Mar 2023 16:45:32 PDT (-0700)
-Subject:     Re: [PATCH 01/12] dt-bindings: riscv: sifive-ccache: Add compatible for StarFive JH7100 SoC
-In-Reply-To: <Y+vxw28NWPfaW7ql@spud>
-CC:     cristian.ciocaltea@collabora.com, lee@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, kernel@esmil.dk,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
-        sagar.kadam@sifive.com, yanhong.wang@starfivetech.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     Conor Dooley <conor@kernel.org>
-Message-ID: <mhng-49aaa4a3-0280-4401-ba33-7fe2f3b79534@palmer-ri-x1c9a>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229455AbjCUAC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Mar 2023 20:02:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06352E815;
+        Mon, 20 Mar 2023 17:02:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C8FFB810A6;
+        Tue, 21 Mar 2023 00:02:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDA57C4339B;
+        Tue, 21 Mar 2023 00:02:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679356943;
+        bh=VTTL1SGQRHR4W3FcEM1a2BDY6fXH3kN8C7dJcNttyao=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Wf2/AZnQvN8q16tcSJ0Wx3v9zxL98C65iTOBlFF0DxhC1bXKvogcnGonCnia86I/o
+         4rBDt7Lhp6G5HxLQd8gE9RYhw9idzQM9WF3Zb0KRUocp7XQ68/cijw87BNyv5tM5x3
+         50roNDQVYTziOSMYvi3jWYnUdWjhFj/C0svP7t2LUO4wkb8AHM1rMwWW92a96yI5I6
+         SHG6F+ntTuFkGZAVCnGYPbKmYeZjMZYY7Ot1JtXNigEsRONUKfYVmRYntwLAyLMhHT
+         CZ53MxzD80ff8WhRKpti0kkAiZSz1PimbHy+4MZSWu7QmCYLSDIO0e/OUwT5Yxa/R/
+         d3YWmzKGzGx3g==
+Date:   Mon, 20 Mar 2023 17:02:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, corbet@lwn.net,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next] docs: networking: document NAPI
+Message-ID: <20230320170221.27896adb@kernel.org>
+In-Reply-To: <8da9b24b-966a-0334-d322-269b103f7550@gmail.com>
+References: <20230315223044.471002-1-kuba@kernel.org>
+        <8da9b24b-966a-0334-d322-269b103f7550@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Feb 2023 12:40:35 PST (-0800), Conor Dooley wrote:
-> Hey all,
->
-> On Sat, Feb 11, 2023 at 05:18:10AM +0200, Cristian Ciocaltea wrote:
->> Document the compatible for the SiFive Composable Cache Controller found
->> on the StarFive JH7100 SoC.
->> 
->> This also requires extending the 'reg' property to handle distinct
->> ranges, as specified via 'reg-names'.
->> 
->> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
->> ---
->>  .../bindings/riscv/sifive,ccache0.yaml        | 28 ++++++++++++++++++-
->>  1 file changed, 27 insertions(+), 1 deletion(-)
->> 
->> diff --git a/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml b/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml
->> index 31d20efaa6d3..2b864b2f12c9 100644
->> --- a/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml
->> +++ b/Documentation/devicetree/bindings/riscv/sifive,ccache0.yaml
->> @@ -25,6 +25,7 @@ select:
->>            - sifive,ccache0
->>            - sifive,fu540-c000-ccache
->>            - sifive,fu740-c000-ccache
->> +          - starfive,jh7100-ccache
->>  
->>    required:
->>      - compatible
->> @@ -37,6 +38,7 @@ properties:
->>                - sifive,ccache0
->>                - sifive,fu540-c000-ccache
->>                - sifive,fu740-c000-ccache
->> +              - starfive,jh7100-ccache
->>            - const: cache
->>        - items:
->>            - const: starfive,jh7110-ccache
->> @@ -70,7 +72,13 @@ properties:
->>        - description: DirFail interrupt
->>  
->>    reg:
->> -    maxItems: 1
->> +    minItems: 1
->> +    maxItems: 2
->> +
->> +  reg-names:
->> +    items:
->> +      - const: control
->> +      - const: sideband
->
-> So why is this called "sideband"?
-> In the docs for the JH7100 it is called LIM & it's called LIM in our
-> docs for the PolarFire SoC (at the same address btw) and we run the HSS
+On Thu, 16 Mar 2023 16:16:39 -0700 Florian Fainelli wrote:
+> Did it not stand for New API?
 
-IIRC it's both: "LIM" is the memory, "sideband" is the port.  I can't 
-find any proper documentation of "sideband" outside of DT and errata, 
-but there's a hanful of references to it in the bootloader for the 
-fu540: 
-<https://github.com/sifive/freedom-u540-c000-bootloader/search?q=sideband>.
+I think it did. But we had extra 20 years of software development
+experience and now agree that naming things "new" or "next" is
+a bad idea? So let's pretend it stands for nothing. Or NAPI API ;)
 
-It's not really clear which is more correct here: sideband accesses are 
-only useful when the cache is configured as an LIM, at least for general 
-software.  IIRC the accesses to the LIM only go through the sideband 
-port for the E core, but I might be wrong about that.
+> > +NAPI processing usually happens in the software interrupt context,
+> > +but user may choose to use separate kernel threads for NAPI processing=
+. =20
+>=20
+> (called threaded NAPI)
 
-> out of it! LIM being "loosely integrated memory", which by the limit
-> hits on Google may be a SiFive-ism?
+I added a cross link:
 
-Yep: TIM is the SiFive version of Arm's TCM (tightly coupled memory), 
-and LIM is the flavor that's farther away (L2 instead of L1).
+but user may choose to use :ref:`separate kernel threads<threaded>`
 
-> I'm not really sure if adding it as a "reg" section is the right thing
-> to do as it's not "just" a register bank.
-> Perhaps Rob/Krzysztof have a take on that one?
->
->>  
->>    next-level-cache: true
->>  
->> @@ -89,6 +97,7 @@ allOf:
->>            contains:
->>              enum:
->>                - sifive,fu740-c000-ccache
->> +              - starfive,jh7100-ccache
->>                - starfive,jh7110-ccache
->>                - microchip,mpfs-ccache
->>  
->> @@ -106,12 +115,29 @@ allOf:
->>              Must contain entries for DirError, DataError and DataFail signals.
->>            maxItems: 3
->>  
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            const: starfive,jh7100-ccache
->> +
->> +    then:
->> +      properties:
->> +        reg:
->> +          maxItems: 2
->> +
->> +    else:
->> +      properties:
->> +        reg:
->> +          maxItems: 1
->> +
->>    - if:
->>        properties:
->>          compatible:
->>            contains:
->>              enum:
->>                - sifive,fu740-c000-ccache
->> +              - starfive,jh7100-ccache
->>                - starfive,jh7110-ccache
->>  
->>      then:
->> -- 
->> 2.39.1
->> 
+(and same for the busy poll sentence).
+
+> > +Control API
+> > +-----------
+> > +
+> > +netif_napi_add() and netif_napi_del() add/remove a NAPI instance
+> > +from the system. The instances are attached to the netdevice passed
+> > +as argument (and will be deleted automatically when netdevice is
+> > +unregistered). Instances are added in a disabled state.
+> > +
+> > +napi_enable() and napi_disable() manage the disabled state.
+> > +A disabled NAPI can't be scheduled and its poll method is guaranteed
+> > +to not be invoked. napi_disable() waits for ownership of the NAPI
+> > +instance to be released. =20
+>=20
+> Might add a word that calling napi_disable() twice will deadlock? This=20
+> seems to be a frequent trap driver authors fall into.
+
+Good point. I'll say that the APIs are not idempotent:
+
+The control APIs are not idempotent. Control API calls are safe against
+concurrent use of datapath APIs but incorrect sequence of control API
+calls may result in crashes, deadlocks, or race conditions. For example
+calling napi_disable() multiple times in a row will deadlock.
+
+> > +Datapath API
+> > +------------
+> > +
+> > +napi_schedule() is the basic method of scheduling a NAPI poll.
+> > +Drivers should call this function in their interrupt handler
+> > +(see :ref:`drv_sched` for more info). Successful call to napi_schedule=
+()
+> > +will take ownership of the NAPI instance.
+> > +
+> > +Some time after NAPI is scheduled driver's poll method will be
+> > +called to process the events/packets. The method takes a ``budget``
+> > +argument - drivers can process completions for any number of Tx
+> > +packets but should only process up to ``budget`` number of
+> > +Rx packets. Rx processing is usually much more expensive. =20
+>=20
+> In other words, it is recommended to ignore the budget argument when=20
+> performing TX buffer reclamation to ensure that the reclamation is not=20
+> arbitrarily bounded, however it is required to honor the budget argument=
+=20
+> for RX processing.
+
+Added verbatim.
+
+> > +.. warning::
+> > +
+> > +   ``budget`` may be 0 if core tries to only process Tx completions
+> > +   and no Rx packets.
+> > +
+> > +The poll method returns amount of work performed. =20
+>=20
+> returns the amount of work.
+
+Hm. Reads to me like we need an attributive(?) in this sentence.
+"amount of work done" maybe? No?
+
+> > +has outstanding work to do (e.g. ``budget`` was exhausted)
+> > +the poll method should return exactly ``budget``. In that case
+> > +the NAPI instance will be serviced/polled again (without the
+> > +need to be scheduled).
+> > +
+> > +If event processing has been completed (all outstanding packets
+> > +processed) the poll method should call napi_complete_done()
+> > +before returning. napi_complete_done() releases the ownership
+> > +of the instance.
+> > +
+> > +.. warning::
+> > +
+> > +   The case of finishing all events and using exactly ``budget``
+> > +   must be handled carefully. There is no way to report this
+> > +   (rare) condition to the stack, so the driver must either
+> > +   not call napi_complete_done() and wait to be called again,
+> > +   or return ``budget - 1``.
+> > +
+> > +   If ``budget`` is 0 napi_complete_done() should never be called. =20
+>=20
+> Can we detail when budget may be 0?
+
+I was trying to avoid enshrining implementation details.
+budget =3D=3D 0 -> don't process Rx, don't ask why.
+In practice AFAIK it's only done by netpoll. I don't think AF_XDP=20
+does it.
+
+> > +Call sequence
+> > +-------------
+> > +
+> > +Drivers should not make assumptions about the exact sequencing
+> > +of calls. The poll method may be called without driver scheduling
+> > +the instance (unless the instance is disabled). Similarly if
+
+s/if//
+
+> > +it's not guaranteed that the poll method will be called, even
+> > +if napi_schedule() succeeded (e.g. if the instance gets disabled). =20
+>=20
+> You lost me there, it seems to me that what you mean to say is that:
+>=20
+> - drivers should ensure that past the point where they call=20
+> netif_napi_add(), any software context referenced by the NAPI poll=20
+> function should be fully set-up
+>=20
+> - it is not guaranteed that the NAPI poll function will not be called=20
+> once netif_napi_disable() returns
+
+That is guaranteed. What's not guaranteed is 1:1 relationship between
+napi_schedule() and napi->poll(). For busy polling we'll see
+napi->poll() without there ever being an interrupt. And inverse may
+also be true, where napi_schedule() is done but the polling never
+happens.
+
+I'm trying to make sure nobody tries to split the logic between the IRQ
+handler and napi->poll(), expecting 1:1.
+
+> > +NAPI instances most often correspond 1:1:1 to interrupts and queue pai=
+rs
+> > +(queue pair is a set of a single Rx and single Tx queue). =20
+>=20
+> correspond to.
+
+1:1:1 is meant as an attributive(?), describing the relationship
+as 3-way 1:1.
+
+> > As is the case with any busy polling it trades
+> > +off CPU cycles for lower latency (in fact production uses of NAPI busy
+> > +polling are not well known). =20
+>=20
+> Did not this originate via Intel at the request of financial companies=20
+> doing high speed trading? Have they moved entirely away from busy=20
+> polling nowadays?
+
+No idea. If someone knows of prod use please speak up? =F0=9F=A4=B7=EF=B8=8F
+I feel like the theoretical excitement about this feature does=20
+not match its impact :S
+
+> > The configuration is per netdevice and will affect all
+> > +NAPI instances of that device. Each NAPI instance will spawn a separate
+> > +thread (called ``napi/${ifc-name}-${napi-id}``).
+> > +
+> > +It is recommended to pin each kernel thread to a single CPU, the same
+> > +CPU as services the interrupt. Note that the mapping between IRQs and
+> > +NAPI instances may not be trivial (and is driver dependent).
+> > +The NAPI instance IDs will be assigned in the opposite order
+> > +than the process IDs of the kernel threads. =20
+>=20
+> Device drivers may opt for threaded NAPI behavior by default by calling=20
+> dev_set_threaded(.., true)
+
+Let's not advertise it too widely... We'd need to describe under what
+conditions it's okay to opt-in by default.
+
+Fixed all the points which I'm not quoting. Thanks!!
