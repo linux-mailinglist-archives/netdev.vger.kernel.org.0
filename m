@@ -2,209 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A586C3703
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 17:36:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7846C373D
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 17:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbjCUQgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 12:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        id S230030AbjCUQog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 12:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbjCUQf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 12:35:58 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9BB50FB3
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:35:56 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id h12-20020a17090aea8c00b0023d1311fab3so16506966pjz.1
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:35:55 -0700 (PDT)
+        with ESMTP id S229527AbjCUQoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 12:44:34 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2109.outbound.protection.outlook.com [40.107.92.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE29052F7C
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 09:44:09 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=egaqznXSW4IHg4mZP/eFX+2p2fPwUfyALK02ohg6oV0LzZcFzt4v3OWQcCtyaQvOLXiYmFgjyut2AqOhtP91RlZ/K+hVdX6l744gor5lZ4W993ViZQszwvk4OQvU+yxjulkC/2ZTp17gbrys3UhTYDAnrkOFDhf6k2Tgr479UyEmE69au2KWeg6u4e/A6Rc/S/iczyuwInFoZR+dm1QnhPA6h18EM0cX6YJGRoryA5V3M1qIdqviO23/RbZvrD+Pjd1PVyQZm9pyZeEll7QWTCL+TMjN03LkExjw1mdY0McTCTnQcqmWl4M7IozsqLb7iGeY6anoT0xoUAjZAdwF2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vvcxnl7lwoDrDxgsvGqIaGA/trimND6LIHYoiuUQeB4=;
+ b=mWJ2+27xSemUWltsNVQUMQvw5An9Oe+WfjX5nDAcodUqwGptV1Tg7j3U0aMEV0owIHUPrVWyuohGcw7CCu8QglWu3MEtcM+31eFtZl5xOsHOdYVAqWfuRBQm2NCW9qsmy9AlMQ91v9rRPh4S3UT4BrdBU+X/P/ya3k+uflCmJQjTr3ER1RqmqxG+XWwrWftfA0cPC27evy7h55xbGfCQbTZIcS73Gkk6V09jtCV9ZwTIsverwSm8nlwneODjwkZj2vdS1jmCjBoItIvF1+otMfECSldN/kibmooviGyDPuGqy54LLHD0jGIEDGO5M406Uz3MyYVsTudK9rOkJP7I4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679416554; x=1682008554;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=F8BXBDVmR3m5xz8nITC9628BUvccl2vzUqg+HN10v24=;
-        b=AohiAqe5f64V1oU2Hr3RWgT+N2wBmSWENGNZm+yGar0GC6MNJMr1bLLju1yFqFw+0j
-         I3RsVyJg4wPjQjQNrXqQSOXDWtZz7xute+w9qtRERBCKw0OXPepdAYjVH/ixNS0NpnhW
-         uPQKPZteH3Bl73d2JeKums8DM0HdTqaAITOiCyZoRZ4YRYVdTL3T8r59mTSoiFXeEN1Z
-         e6RYloB84qKFSwXBz9QH2vOBacmAdx4TmSv5LPgYX9IeFgfhb7p+MnM+Fg+AcabF6iqw
-         yFnmI99ClauBt9u+mP7fyzr6VskcG9CLVe/WdFl1i1M0+HLW2ZC4p0oFtSxsXOUihyZV
-         U9zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679416554; x=1682008554;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=F8BXBDVmR3m5xz8nITC9628BUvccl2vzUqg+HN10v24=;
-        b=CyYK/wQL6L2xZy9Jih4XSdYWsg43AlcIiDZYQ6Mckl38jGM6Y/7LOGuvuR4ZR+tILF
-         Z2yShYbIEe7BKzc5+jCJb4P2IdiWYVIvFZPydxVajbt1vup+VU2r2UeJIoBmloIBkpFX
-         FWaJssGHt/ONZVqEkYuPMKmFPIebCoGZWmmlXugOXr2VkZUaSYIaYdAdOa29UmyUO4WW
-         450W1UUncdgzaK7BMhIvbEUdVJmJKOjb1ZJ/w6ZBmbx2ix8WMab6MmNXfYQY6tQdE+BL
-         +qIeAtN9r41jnKHecjhYcpu+LTsrdUi9tXBXinodaAX9Y7VC/WJ3O+5DSEpaiHVxG0dz
-         7uoA==
-X-Gm-Message-State: AO0yUKVTuYbHq6v7u7Juf96G8weP2zvdaRJz4BC3/2Ms2pkMYxF8GtXH
-        HGjICVyNYjlfIMozVIAtOi8=
-X-Google-Smtp-Source: AK7set9FNp1+g+SU0W/9wvuknb/VL0uB57WmIfKO2/Vb5GYqphVJEGeP/kCFU3OZoJ8BcqUUAi6ESQ==
-X-Received: by 2002:a05:6a20:6914:b0:cd:345e:5b10 with SMTP id q20-20020a056a20691400b000cd345e5b10mr2432764pzj.5.1679416553889;
-        Tue, 21 Mar 2023 09:35:53 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:64a5:7098:dfcc:5633])
-        by smtp.gmail.com with ESMTPSA id v22-20020a62a516000000b0058bc7453285sm8398662pfm.217.2023.03.21.09.35.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Mar 2023 09:35:53 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vvcxnl7lwoDrDxgsvGqIaGA/trimND6LIHYoiuUQeB4=;
+ b=rGKXdh61E422abq7Q7GwKaqNqjirbdo7v9eXE/fCJTxLXpLkb7qDqqsQl91rCm5HnYNHF7lBhmQhKVXMEh506NSflMnHpdKLwM07r8p5mBpDkAP4C96JhsQzWmTxUvw0PlF/5v6VaWc1JDjmEClSn34FYfSMH5l0Jv6lcLEl6i8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5316.namprd13.prod.outlook.com (2603:10b6:510:fa::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
+ 2023 16:44:06 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
+ 16:44:05 +0000
+Date:   Tue, 21 Mar 2023 17:43:58 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next] net: introduce a config option to tweak MAX_SKB_FRAGS
-Date:   Tue, 21 Mar 2023 09:35:50 -0700
-Message-Id: <20230321163550.1574254-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>, mlxsw@nvidia.com,
+        Danielle Ratson <danieller@nvidia.com>
+Subject: Re: [PATCH net] mlxsw: spectrum_fid: Fix incorrect local port type
+Message-ID: <ZBneztl7Q2srQzYT@corigine.com>
+References: <eace1f9d96545ab8a2775db857cb7e291a9b166b.1679398549.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eace1f9d96545ab8a2775db857cb7e291a9b166b.1679398549.git.petrm@nvidia.com>
+X-ClientProxiedBy: AM3PR05CA0101.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::27) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5316:EE_
+X-MS-Office365-Filtering-Correlation-Id: 94fa917a-46d3-4d09-924e-08db2a2b7c05
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zBw6hmlX4sHEdbjAZJbSLKtwXWpCaH0CWmmr7HzWSQ9L2MAaM8RFgmcIksj4JgKc0bENFRvMi02KOc6BIrJO/O4qnyGI0EgobAb/x/RbG0X5MiHE3MgdgaULOwQqYfB80MXW0H6iE+xVBSesKlgFk9qvTBA8BnYzoxjtqHDlIMrqeclmqHabpOnclaTASNvRdDE8ZAB0v9VDbt4kKbr7DjHHtuEak+Y7Uz0JDp7MA4dLbqOffZgpg8aVQV2hAG4sdGVkfBll6Xf1iOlPKsNzLpIJrf+DvJ2AsMBtgy4Ehb+PDBPIFJvGT8fiu6QAMJnwx1ZtwCLAnVQSqSnNKAcWH9ZXs3BmbsI3fzIBjX63qHqNHbLcwQGbbKE5ij+ibbR3O7pqXrGAXk6780TKc0TPd6pxHPoSs+In6nkMpxN1F4wgc1/FgMpPLLIFMRL1HCnAvrjsQchUlFGQyoa66t3YrWP4SqJVOTsT+stfVnn0/VdZMJaVW4nq6+E0IK4p/askwMErWhDXKRINEGlZq+KgyESabktXK0Z2zH91BSZyMH81JamfGu+uSGTtdTjDupExZc0qJniW9VWx7G4R/QmPwt5ei9BYlYApkEGt789v6RU2E5qDsuStbGmaf79z/XdO
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(136003)(39840400004)(366004)(396003)(451199018)(66946007)(66556008)(4744005)(8676002)(66476007)(4326008)(6916009)(44832011)(6486002)(8936002)(7416002)(2616005)(5660300002)(186003)(2906002)(6512007)(41300700001)(86362001)(316002)(54906003)(6506007)(38100700002)(36756003)(6666004)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ag/0UKOyC0PmFv43fMUif6h1jJjVZ3YgmZtD8uGFkE0qnolAeuQyZXTdRp8I?=
+ =?us-ascii?Q?T3DWU1T9/mUrlKX4tWny5L383kIE2oqtmwZj+ahZlumrI6O43N+z+lG7malu?=
+ =?us-ascii?Q?89fFU0ajGPbqdhZwj1OISww4hKoT4fxUtdDf7G50wR3Ov62OdlCW0OpnkCAk?=
+ =?us-ascii?Q?NBwJpvzOGKW0QUQTmJq9aFni8Twcm1ZQ1RmF45attlIUU4DVL4zJ52p2QjgJ?=
+ =?us-ascii?Q?w7BxwHDUvOkqU/VJh3ec3KvOJXGSsxuJdf8Eg2c20T/BqoL6IqxypAtVUBc2?=
+ =?us-ascii?Q?4ONE9vGtPzcFV8Tyz6AAyC0POmozKr+v4oev4lcb0W/QD2ZaXRB9bfsIsP4Q?=
+ =?us-ascii?Q?i//e6RLRInO2g8n7G60HpxBEUySP8PTB+1NGXEy2NpJ1BP+bCbpbgNvPFijj?=
+ =?us-ascii?Q?molF4CMNSSeItR5Cj8KNo3MuY+Cupf1HhqwtmPOdRuhrLB+VCR6w49X+82+2?=
+ =?us-ascii?Q?OoUFjDYZw+tlrJd5mZofzdnu8tlOr4rwH/7rYZ7yukDfu2PS3qVvLg3yKxUI?=
+ =?us-ascii?Q?id2dd9n/MMspQESDNlaU05iMTYz32OeC03nbSJvOzphXcakHVrLYIzf2NLFz?=
+ =?us-ascii?Q?Eqmf2dUmEREiU+Mt/jSpKA72vGEnihNDJXAMjl1V7sPshudNEOvCeAg7AnE6?=
+ =?us-ascii?Q?KoIaiE6MsNYgWPDaKdmXL5ojb4jZvG6COBLCoRdL8iUb3itcURwSsCdeQtn4?=
+ =?us-ascii?Q?WRC9UTBjdgQfBUZAlx2D5TJ90/QHnaNsltUn/LIQhtjhGX0pHk8t3saPRyLP?=
+ =?us-ascii?Q?moApQ0/EmRAV+mNjMgoOE5ccLiqkch2r5DNvVycyPUCSMoK4dfwzB1nRS+Fs?=
+ =?us-ascii?Q?rriHyO8SryyoJjbMv+6fhhIGZP4qavK8260L8M1TpKoEuwWa3pf9CLFz+V19?=
+ =?us-ascii?Q?B/w4j7kL4Xp/NymKPqgw07cSg8ZdRobFRK4Wr9/UAhN9PaSoEawisf7AH4q7?=
+ =?us-ascii?Q?VQ4n57HXlyHn+ufKEvrGX3JrAl6ql9DSYtzVpi0oEpb62AKK5cdFERjnBzJS?=
+ =?us-ascii?Q?fo7myVn7IYrWrUlqhRmB6TLBktQXqlgCN1TtP2fbo5ZfXn1Rj8WiXl9DOTDc?=
+ =?us-ascii?Q?QnnaiOdlFRqqAtNoVXWoFHGQ2OlYWFMqCiY6oHbk2nkj6EJkyx9K7v0YhR1A?=
+ =?us-ascii?Q?f3BvAeEIVoqaZ0W4porCPuBKU7VE6v4DHYu1aYO9mkQpa9Ot2SrbZGc5WmD2?=
+ =?us-ascii?Q?f/dJWqMY+2C3awfU8cshOZyZLfIhqX27Vg07P5RHAbsSk2ylnbI4cfy7HmH3?=
+ =?us-ascii?Q?7bjIH+ByU1qMqpZRez3RlDTMySdabOTL3ozyPGXsy8wJGmzVd1cOuQ89sESo?=
+ =?us-ascii?Q?rdyUbwKhlQFU5uBO7MSnI6FHQCcjtUPeXPV+zQDUrR7fHYb3/Nf7A3Di8EgS?=
+ =?us-ascii?Q?dF7ZmmgPLXUAFD/xFtaWTQd3Nzx2Er++d0bPd8A7osK+Wl6RexbkrU02Vbi+?=
+ =?us-ascii?Q?V17LC76TCIVX/8pg1NVaTwxTX1QGI2BiJpEjuu1zJskRdR3t4Qu4saSvTixP?=
+ =?us-ascii?Q?JYLRb1BMeKmhCHPup/Wj88Y808ESTSwPxhrrYrhG0QpEgv5aPs7Ppnm+PUSQ?=
+ =?us-ascii?Q?3z6nR2yxen9UxNalobhtLg8HpD1mxC2gSCYKoZso4N+ovpX/1VdF2yznA5oT?=
+ =?us-ascii?Q?N/xgFVconoj1/Z/bUPwzi4LMt2cZ2aF9EVmL5Jl7bCSX9TEekJBxSRsIxtUK?=
+ =?us-ascii?Q?XjEUUw=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94fa917a-46d3-4d09-924e-08db2a2b7c05
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 16:44:05.8256
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KhUgglFPkT2J5zwkG+4zoUQAx3+rlgnidjUPg8rW7CMNES/U8wa9fR9/DHLndMRU7FScsPFLYgfnGr+6/R7N2niWyrI1hAfDIWpWBdhl5m0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5316
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, Mar 21, 2023 at 12:42:00PM +0100, Petr Machata wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> Local port is a 10-bit number, but it was mistakenly stored in a u8,
+> resulting in firmware errors when using a netdev corresponding to a
+> local port higher than 255.
+> 
+> Fix by storing the local port in u16, as is done in the rest of the
+> code.
+> 
+> Fixes: bf73904f5fba ("mlxsw: Add support for 802.1Q FID family")
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Danielle Ratson <danieller@nvidia.com>
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 
-Currently, MAX_SKB_FRAGS value is 17.
-
-For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
-attempts order-3 allocations, stuffing 32768 bytes per frag.
-
-But with zero copy, we use order-0 pages.
-
-For BIG TCP to show its full potential, we add a config option
-to be able to fit up to 45 segments per skb.
-
-This is also needed for BIG TCP rx zerocopy, as zerocopy currently
-does not support skbs with frag list.
-
-We have used MAX_SKB_FRAGS=45 value for years at Google before
-we deployed 4K MTU, with no adverse effect, other than
-a recent issue in mlx4, fixed in commit 26782aad00cc
-("net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends on MAX_SKB_FRAGS")
-
-Back then, goal was to be able to receive full size (64KB) GRO
-packets without the frag_list overhead.
-
-Note that /proc/sys/net/core/max_skb_frags can also be used to limit
-the number of fragments TCP can use in tx packets.
-
-By default we keep the old/legacy value of 17 until we get
-more coverage for the updated values.
-
-Sizes of struct skb_shared_info on 64bit arches
-
-MAX_SKB_FRAGS | sizeof(struct skb_shared_info):
-==============================================
-         17     320
-         21     320+64  = 384
-         25     320+128 = 448
-         29     320+192 = 512
-         33     320+256 = 576
-         37     320+320 = 640
-         41     320+384 = 704
-         45     320+448 = 768
-
-This inflation might cause problems for drivers assuming they could pack
-both the incoming packet and skb_shared_info in half a page, using build_skb().
-
-v2: fix two build errors assuming MAX_SKB_FRAGS was "unsigned long"
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- drivers/scsi/cxgbi/libcxgbi.c |  4 ++--
- include/linux/skbuff.h        | 14 ++------------
- net/Kconfig                   | 12 ++++++++++++
- net/packet/af_packet.c        |  4 ++--
- 4 files changed, 18 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/scsi/cxgbi/libcxgbi.c b/drivers/scsi/cxgbi/libcxgbi.c
-index af281e271f886041b397ea881e2ce7be00eff625..3e1de4c842cc6102e25a5972d6b11e05c3e4c060 100644
---- a/drivers/scsi/cxgbi/libcxgbi.c
-+++ b/drivers/scsi/cxgbi/libcxgbi.c
-@@ -2314,9 +2314,9 @@ static int cxgbi_sock_tx_queue_up(struct cxgbi_sock *csk, struct sk_buff *skb)
- 		frags++;
- 
- 	if (frags >= SKB_WR_LIST_SIZE) {
--		pr_err("csk 0x%p, frags %u, %u,%u >%lu.\n",
-+		pr_err("csk 0x%p, frags %u, %u,%u >%u.\n",
- 		       csk, skb_shinfo(skb)->nr_frags, skb->len,
--		       skb->data_len, SKB_WR_LIST_SIZE);
-+		       skb->data_len, (unsigned int)SKB_WR_LIST_SIZE);
- 		return -EINVAL;
- 	}
- 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index fe661011644b8f468ff5e92075a6624f0557584c..43726ca7d20f232461a4d2e5b984032806e9c13e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -345,18 +345,8 @@ struct sk_buff_head {
- 
- struct sk_buff;
- 
--/* To allow 64K frame to be packed as single skb without frag_list we
-- * require 64K/PAGE_SIZE pages plus 1 additional page to allow for
-- * buffers which do not start on a page boundary.
-- *
-- * Since GRO uses frags we allocate at least 16 regardless of page
-- * size.
-- */
--#if (65536/PAGE_SIZE + 1) < 16
--#define MAX_SKB_FRAGS 16UL
--#else
--#define MAX_SKB_FRAGS (65536/PAGE_SIZE + 1)
--#endif
-+#define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
-+
- extern int sysctl_max_skb_frags;
- 
- /* Set skb_shinfo(skb)->gso_size to this in case you want skb_segment to
-diff --git a/net/Kconfig b/net/Kconfig
-index 48c33c2221999e575c83a409ab773b9cc3656eab..f806722bccf450c62e07bfdb245e5195ac4a156d 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -251,6 +251,18 @@ config PCPU_DEV_REFCNT
- 	  network device refcount are using per cpu variables if this option is set.
- 	  This can be forced to N to detect underflows (with a performance drop).
- 
-+config MAX_SKB_FRAGS
-+	int "Maximum number of fragments per skb_shared_info"
-+	range 17 45
-+	default 17
-+	help
-+	  Having more fragments per skb_shared_info can help GRO efficiency.
-+	  This helps BIG TCP workloads, but might expose bugs in some
-+	  legacy drivers.
-+	  This also increases memory overhead of small packets,
-+	  and in drivers using build_skb().
-+	  If unsure, say 17.
-+
- config RPS
- 	bool
- 	depends on SMP && SYSFS
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 497193f73030c385a2d33b71dfbc299fbf9b763d..568f8d76e3c124f3b322a8d88dc3dcfbc45e7c0e 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2622,8 +2622,8 @@ static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
- 		nr_frags = skb_shinfo(skb)->nr_frags;
- 
- 		if (unlikely(nr_frags >= MAX_SKB_FRAGS)) {
--			pr_err("Packet exceed the number of skb frags(%lu)\n",
--			       MAX_SKB_FRAGS);
-+			pr_err("Packet exceed the number of skb frags(%u)\n",
-+			       (unsigned int)MAX_SKB_FRAGS);
- 			return -EFAULT;
- 		}
- 
--- 
-2.40.0.rc1.284.g88254d51c5-goog
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
