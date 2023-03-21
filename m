@@ -2,111 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF296C323A
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA5056C3265
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 14:15:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbjCUNDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 09:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
+        id S230183AbjCUNPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 09:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbjCUNDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:03:40 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2044.outbound.protection.outlook.com [40.107.212.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D83A4D607
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:03:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fL1xXVt09Psp8ZlTh9f1MYWdbS8syNPAEsaftFxlrxOFxo8Xmq2AFgKJuVhy1QhvsWMnItEv666jmtuf8InWm/KUWqyMcDEXmNAX4UaFfi/m3IkfBj2JcyA4wcMtR8cEiPl4VwydxhnW6abeSyYPighBq3bVZoYriep2G1wPdVqGzxu1V1Uz+xHx2nwnY7v43w/R2t56HRbwYbIkF4qdZVh0Z9JgmK7GWuBtM93Wyr4aCrTAdTCgVs02+SDdP64qGcawKryMSiU5JylEl9q8SA18QcH/k5WEnbDZEBGU6otgxhfrurpEKctpEiuGFmQQlh605qMV/S1sQsiq2H4IRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7Z+Qv+tMrx5vgPNjFWzabUosmZXDsDz0BGr6CmtpHu4=;
- b=DsNSZFD/ULkYxTsUTErk5sDyIrWZT8WDgJNZRuQoKrvGo448jmuiLF4QC9VpotD3Xzb9Hc8X8yaIo0YxpqOVs61z2bZfgTXpF0EkKr5ZCGQQ327lazcONIKrgbn1QnOe3XJ4XdGidfg0hXmRQCxj9HqRsKpH5eJjx3T08qPkFmgac/QCuhm9gB8gWr+8qp1jBq/E3C/Pc31Rss75Uelb9dhC9zwJDPNZhEdD6Urn/OrJKBb3jP3ZcIvOg1f7gRGiLlUA9HSFuN0MAzKTLOzvHd7YJ1vkri5ktTlxP9Rz/eTWAby/HDsi2uwITJlHRvAbkON6hcJTa/6bJQXm3ypgKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7Z+Qv+tMrx5vgPNjFWzabUosmZXDsDz0BGr6CmtpHu4=;
- b=pQJgNV8JV/Zj0cS5R9SnqnIF3nntxZYAHegWsLa8HRUWNH+q2XgvJ0/gbCoBuT7Mnbzr5R8J1mUAAHQBqGYb1Z0PfIIKwnMwlDTG1+Cm36uF/yxg3Y3fLp0WabVtL4Ws7sTlEOwrZ9k/Wi9mC73vnGw+qbxMcZjLgicTENJIHBxjPsi9t/lsLd1nmuC2Yam8Jd+JymC7r+d6sOGgijmgslap/ad9FLA9EdpZOtLIpS086gMS02Cd8qX5Zyl1JGDmZbb70zm7Jpyo7L5J5R/2D9NZv94VpJTcPi6S67KYi34plgmAWMYP5iKaV5whYzaKm3JXIEWK/I4BSBe4TkO0pg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by DM8PR12MB5478.namprd12.prod.outlook.com (2603:10b6:8:29::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
- 2023 13:02:58 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::d228:dfe5:a8a8:28b3]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::d228:dfe5:a8a8:28b3%5]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 13:02:58 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, razor@blackwall.org,
-        petrm@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2-next 7/7] bridge: mdb: Document the catchall MDB entries
-Date:   Tue, 21 Mar 2023 15:01:27 +0200
-Message-Id: <20230321130127.264822-8-idosch@nvidia.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20230321130127.264822-1-idosch@nvidia.com>
-References: <20230321130127.264822-1-idosch@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0202CA0028.eurprd02.prod.outlook.com
- (2603:10a6:803:14::41) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S230332AbjCUNPN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 09:15:13 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0E74BEA1
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 06:15:07 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 6925230B297D;
+        Tue, 21 Mar 2023 14:14:35 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=Z3KDv
+        o1vtl3aWdCV5OZRHZJT+mxwFWTbwRzKJ9hV6Zk=; b=Dcp4WJJ/M0iBDnt3AVDrO
+        Yxd2BWd7M/fftXf/Cvy6t3sKgoYtvXIyXbIAQqiJvwoQYukqJNuCkuv0DwRYvWaa
+        f+nFsJgzhJSSwIi+FqKcCZRUetsFeYQk45CmOqkiUwqGzqmz4IwSRdWlkbnGMqx3
+        js4u8SNufLM+XIWxxIL2/JA5xxydLeGQ3+98cgW+cQHCccWogv/0ANvHpC5sv3N/
+        nMQFVLaMUMUcrYgaMSn0+xJpBCgivpaDkXxCwgAYCrREQ0VLu/pZWw+rLdPeIwAl
+        3IB5DozzvgI0PzBzyIYL/nbnDnCdGcAiW3+M9bfvyNcewsfo6iOSTpc8c9lsAcam
+        w==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 955FA30B2979;
+        Tue, 21 Mar 2023 14:14:32 +0100 (CET)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 32LDEWl3027777;
+        Tue, 21 Mar 2023 14:14:32 +0100
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 32LDEVRM027776;
+        Tue, 21 Mar 2023 14:14:31 +0100
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2] docs: networking: document NAPI
+Date:   Tue, 21 Mar 2023 14:14:11 +0100
+User-Agent: KMail/1.9.10
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Bagas Sanjaya <bagasdotme@gmail.com>,
+        "Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?=" <toke@redhat.com>,
+        corbet@lwn.net, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, mkl@pengutronix.de,
+        linux-doc@vger.kernel.org, f.fainelli@gmail.com,
+        stephen@networkplumber.org
+References: <20230321050334.1036870-1-kuba@kernel.org>
+In-Reply-To: <20230321050334.1036870-1-kuba@kernel.org>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|DM8PR12MB5478:EE_
-X-MS-Office365-Filtering-Correlation-Id: da05d515-8f20-4074-8858-08db2a0c9814
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qFkfDIn3hRZzlG7mutIMv4EsLFvMIYRLmpkAIaru+RHmOn4TXhAcmMXGd+7jPKf2wgPBY6Y8OL+RZFjJle61sig5rJteNjDAC3OgBmXT80JQGDuB6NrId4oj+HC4uYYtMl3lgBimtty5gsEQoRGSY7glVtDgB8x78SZfgBcrKgF5P7hoF1t78pHaz/Moiwz3H1NJHjEAVcloD7Ax525ns2LI0OJYn3HSsI+oclF/2N6racxlQRoLt/D5s0Swg2Upc0a8/Gi1QTJZxSTw5X7oqJ7MWCUO0P/NkWTLz7QzIrMhZ/34KdmM9awi+S8AMlWFdzRtpe+v5SDs//HsUnJtK4ETMXl0qHiEUGOyI2IPaTzpZzTP1fswuiWQp7w6ZlBd98d8Fd4WnCvZCyAR0+oxO/OJPGQa0rP2zElcHi8/un6FvSjOABnWP4/n0zGQKH8GxgJwaD+TENVZCw9k2037s9Av7H2GHEbBaLlYqE6mCLzf4e8ZTylU6T4bSFLxRtew4DxalGHwNSXVpwE29Uv+Ha51KmmRXo3xvQbT0RdQ4okU7w+YGfkvlO802CtIzvZH3SBP03MexF9Pga6PfDVty+qmZFASfu+LHG+LmTyHJhnpBUxgrN+jleF1qwt+voWEuJhY57DGV2lwsMOa8kJDchTD2ROQtaMuXebE+qnukRhAnQu74oALVviihj/4nrb0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(376002)(346002)(366004)(39860400002)(396003)(136003)(451199018)(8936002)(41300700001)(5660300002)(36756003)(86362001)(38100700002)(4326008)(2906002)(83380400001)(6506007)(1076003)(6512007)(478600001)(107886003)(6666004)(186003)(6486002)(26005)(966005)(8676002)(66476007)(66556008)(66946007)(6916009)(2616005)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/Jzk3n7W9/5z3Ghb3KAJE8JVPaQjyGqw0y8kpu1N0fLY0raqGuO/12fzDa4M?=
- =?us-ascii?Q?635ETJse/9GcvNXLS5sqfjPxuayJhFj0CbogMxlBcHyD2x2u5tsXOOFffgUV?=
- =?us-ascii?Q?Y9A2ovSWREA69D4kDWXgBLUYcZ+tPaQ6Ow0uNV9kvc6mkHtPd+siluteOBNO?=
- =?us-ascii?Q?VxeOW6wz0O53K5D5ozrLzjd7tWMYyYg+9hJ+Qx+bD3Xy8f84xi/kKrZoSQ62?=
- =?us-ascii?Q?baVOsGrGAAxxA/mOd597TyXQkripdnvUjRokOzrxiGiCClN1EI0qgUMIXWGu?=
- =?us-ascii?Q?4SR4CSVBK1SKb3FQ/Oh+L/OdVl1TnHfrytk3ehX025oUntb5njJIWfeg3y2u?=
- =?us-ascii?Q?IhF8pyJyogkmWYyxZshNIV3eirQLrmjWealJvO3vtljahwucnb57qMByGlJ4?=
- =?us-ascii?Q?SBX9qOIfYdX/90NymxyRcbINDGMFlQ4eoSMErUdofAtD76hw5I/O02m8DRo1?=
- =?us-ascii?Q?TM4MkpbBgEmK+yxH9y8CvfzEnLzQhuA1FYZjS3fp34Ld0Rmx10ZHZ47tDQwW?=
- =?us-ascii?Q?b/ZNO7u2kOSpVngPBn7H2UjrD4jxPbkUhztYOMdpXdFi9btVzexxsivTNNRr?=
- =?us-ascii?Q?t2vDSUQ62ZcJwKB3i6/p2irDKWjZL/+uQtU6rposRNwuMfAuDxZ5Z0do5v3h?=
- =?us-ascii?Q?ltYT6euII9s5ewwjGyi9Q0dyML4eX8YPEUNuVLg8+1nUi+7uC2ssZaciNvCF?=
- =?us-ascii?Q?qs1R94jm4Wr40aOQb3MQ0iIpqfm+3+/VAXZrsV/boX9YyY6RH2NFyTcI+bMk?=
- =?us-ascii?Q?qV0KsS9pk5MGmGAInHHFI+HYyw8LvUWsJQLwm1V4Yv/Y6F6rOrOPzI6Ezhxm?=
- =?us-ascii?Q?vjcqPU8sPpx3qe3FRqsgoBY9zAYJzid0S/TxGVBQYOpdzlg8MxyNiABcAJ6v?=
- =?us-ascii?Q?a09vFC7K8uwOqXYXBWwtVqWlImkr22nDoon+lpmQKTvMrYyKMkjVO45QOSR5?=
- =?us-ascii?Q?4UmvbOVFUb31nJ8NXIolgp8nRc0srwZy1GSb9DLDLmJ3yuLIefriAYJ3+e5r?=
- =?us-ascii?Q?Em2NOWF548nMpwnCEDvGjaedOfuTv0BiD+GhhmAouX6jKw+3T+/35ULzyS57?=
- =?us-ascii?Q?RKaPLkoaI8ma1wJaqkXIfnS1Sf5RHIIXgLtjR5CsDzYoeH/EqFJ0b7MtMY3c?=
- =?us-ascii?Q?Qjdb9QFz54gfguDH47bIVwd7ePDn77qQu/SECXZ8wviCNV2HsI5I9Oi9NjRx?=
- =?us-ascii?Q?Vj3wSjjjtptG5mYx8p19IjdhsxzaiRLadDM4qlY6a+ZwMBizpG9lNuILGY2g?=
- =?us-ascii?Q?0uVc9ZFyV+H+ZFtvsrprw7Gw2JCUBjeMQI42E9dS4+Z0y4NqoGDjWnYnVhJy?=
- =?us-ascii?Q?CdYAKjnFqPM62qrejIBHTbMqoaSKp0sV2oo0UIfkIpUpNV1GEHVa0Wf7chtL?=
- =?us-ascii?Q?D1irbTnRlAPMVhSBjNz3B5guFeQCmCScpEru0vrva+7SzmJssg4A4DmwBpsC?=
- =?us-ascii?Q?Yjwr87weNR78h/KQ00+U16csorhoW+JCA5b7BFcCeA7V2XtPf3MqsSmpEgdt?=
- =?us-ascii?Q?QDxAbg0QqabFOtSPHDp6ZPR9LDWlLW6l5LaZzohdV7RD9oSBhQ55gogxuPxB?=
- =?us-ascii?Q?xr/mOgkz/6XNbhCMYDu3dP0Mrhtmft9l4/FD6sp4?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da05d515-8f20-4074-8858-08db2a0c9814
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 13:02:58.7669
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3uqG5a60qbAdxhErbO4tGjfR+g9bHSu4kz2yCpwGccEvue/xS91Iob578YSXEKJUR2m/ZBGEJqUavebalEOAHA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5478
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <202303211414.11544.pisa@cmp.felk.cvut.cz>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -114,42 +68,440 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the catchall MDB entries used to transmit IPv4 and IPv6
-unregistered multicast packets.
+Hello Jakub,
 
-In deployments where inter-subnet multicast forwarding is used, not all
-the VTEPs in a tenant domain are members in all the broadcast domains.
-It is therefore advantageous to transmit BULL (broadcast, unknown
-unicast and link-local multicast) and unregistered IP multicast traffic
-on different tunnels. If the same tunnel was used, a VTEP only
-interested in IP multicast traffic would also pull all the BULL traffic
-and drop it as it is not a member in the originating broadcast domain
-[1].
+On Tuesday 21 of March 2023 06:03:34 Jakub Kicinski wrote:
+> Add basic documentation about NAPI. We can stop linking to the ancient
+> doc on the LF wiki.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Link: https://lore.kernel.org/all/20230315223044.471002-1-kuba@kernel.org/
+> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> Reviewed-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-[1] https://datatracker.ietf.org/doc/html/draft-ietf-bess-evpn-irb-mcast#section-2.6
+Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz> # for ctucanfd-driver.rst
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- man/man8/bridge.8 | 6 ++++++
- 1 file changed, 6 insertions(+)
+> ---
+> v2: remove the links in CAN and in ICE as well
+>     improve the start of the threaded NAPI section
+>     name footnote
+>     internal links from the intro to sections
+>     various clarifications from Florian and Stephen
+>
+> CC: corbet@lwn.net
+> CC: jesse.brandeburg@intel.com
+> CC: anthony.l.nguyen@intel.com
+> CC: pisa@cmp.felk.cvut.cz
+> CC: mkl@pengutronix.de
+> CC: linux-doc@vger.kernel.org
+> CC: f.fainelli@gmail.com
+> CC: stephen@networkplumber.org
+> ---
+>  .../can/ctu/ctucanfd-driver.rst               |   3 +-
+>  .../device_drivers/ethernet/intel/e100.rst    |   3 +-
+>  .../device_drivers/ethernet/intel/i40e.rst    |   4 +-
+>  .../device_drivers/ethernet/intel/ice.rst     |   4 +-
+>  .../device_drivers/ethernet/intel/ixgb.rst    |   4 +-
+>  Documentation/networking/index.rst            |   1 +
+>  Documentation/networking/napi.rst             | 251 ++++++++++++++++++
+>  include/linux/netdevice.h                     |  13 +-
+>  8 files changed, 267 insertions(+), 16 deletions(-)
+>  create mode 100644 Documentation/networking/napi.rst
+>
+> diff --git
+> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst ind=
+ex
+> 1a4fc6607582..1661d13174d5 100644
+> --- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> +++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> @@ -229,8 +229,7 @@ frames for a while. This has a potential to avoid the
+> costly round of enabling interrupts, handling an incoming IRQ in ISR,
+> re-enabling the softirq and switching context back to softirq.
+>
+> -More detailed documentation of NAPI may be found on the pages of Linux
+> -Foundation `<https://wiki.linuxfoundation.org/networking/napi>`_.
+> +See :ref:`Documentation/networking/napi.rst <napi>` for more information.
+>
+>  Integrating the core to Xilinx Zynq
+>  -----------------------------------
+> diff --git
+> a/Documentation/networking/device_drivers/ethernet/intel/e100.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/e100.rst index
+> 3d4a9ba21946..371b7e5c3293 100644
+> --- a/Documentation/networking/device_drivers/ethernet/intel/e100.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/intel/e100.rst
+> @@ -151,8 +151,7 @@ NAPI
+>
+>  NAPI (Rx polling mode) is supported in the e100 driver.
+>
+> -See https://wiki.linuxfoundation.org/networking/napi for more
+> -information on NAPI.
+> +See :ref:`Documentation/networking/napi.rst <napi>` for more information.
+>
+>  Multiple Interfaces on Same Ethernet Broadcast Network
+>  ------------------------------------------------------
+> diff --git
+> a/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst index
+> ac35bd472bdc..c495c4e16b3b 100644
+> --- a/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/intel/i40e.rst
+> @@ -399,8 +399,8 @@ operate only in full duplex and only at their native
+> speed. NAPI
+>  ----
+>  NAPI (Rx polling mode) is supported in the i40e driver.
+> -For more information on NAPI, see
+> -https://wiki.linuxfoundation.org/networking/napi
+> +
+> +See :ref:`Documentation/networking/napi.rst <napi>` for more information.
+>
+>  Flow Control
+>  ------------
+> diff --git a/Documentation/networking/device_drivers/ethernet/intel/ice.r=
+st
+> b/Documentation/networking/device_drivers/ethernet/intel/ice.rst index
+> 5efea4dd1251..2b6dc7880d7b 100644
+> --- a/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/intel/ice.rst
+> @@ -817,10 +817,10 @@ on your device, you may not be able to change the
+> auto-negotiation setting.
+>
+>  NAPI
+>  ----
+> +
+>  This driver supports NAPI (Rx polling mode).
+> -For more information on NAPI, see
+> -https://wiki.linuxfoundation.org/networking/napi
+>
+> +See :ref:`Documentation/networking/napi.rst <napi>` for more information.
+>
+>  MACVLAN
+>  -------
+> diff --git
+> a/Documentation/networking/device_drivers/ethernet/intel/ixgb.rst
+> b/Documentation/networking/device_drivers/ethernet/intel/ixgb.rst index
+> c6a233e68ad6..90ddbc912d8d 100644
+> --- a/Documentation/networking/device_drivers/ethernet/intel/ixgb.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/intel/ixgb.rst
+> @@ -367,9 +367,7 @@ NAPI
+>  ----
+>  NAPI (Rx polling mode) is supported in the ixgb driver.
+>
+> -See https://wiki.linuxfoundation.org/networking/napi for more information
+> on -NAPI.
+> -
+> +See :ref:`Documentation/networking/napi.rst <napi>` for more information.
+>
+>  Known Issues/Troubleshooting
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+> diff --git a/Documentation/networking/index.rst
+> b/Documentation/networking/index.rst index 4ddcae33c336..24bb256d6d53
+> 100644
+> --- a/Documentation/networking/index.rst
+> +++ b/Documentation/networking/index.rst
+> @@ -73,6 +73,7 @@ Refer to :ref:`netdev-FAQ` for a guide on netdev
+> development process specifics. mpls-sysctl
+>     mptcp-sysctl
+>     multiqueue
+> +   napi
+>     netconsole
+>     netdev-features
+>     netdevices
+> diff --git a/Documentation/networking/napi.rst
+> b/Documentation/networking/napi.rst new file mode 100644
+> index 000000000000..e9833f2b777a
+> --- /dev/null
+> +++ b/Documentation/networking/napi.rst
+> @@ -0,0 +1,251 @@
+> +.. _napi:
+> +
+> +=3D=3D=3D=3D
+> +NAPI
+> +=3D=3D=3D=3D
+> +
+> +NAPI is the event handling mechanism used by the Linux networking stack.
+> +The name NAPI does not stand for anything in particular [#]_.
+> +
+> +In basic operation device notifies the host about new events via an
+> interrupt. +The host then schedules a NAPI instance to process the events.
+> +Device may also be polled for events via NAPI without receiving
+> +interrupts first (:ref:`busy polling<poll>`).
+> +
+> +NAPI processing usually happens in the software interrupt context,
+> +but user may choose to use :ref:`separate kernel threads<threaded>`
+> +for NAPI processing.
+> +
+> +All in all NAPI abstracts away from the drivers the context and
+> configuration +of event (packet Rx and Tx) processing.
+> +
+> +Driver API
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +The two most important elements of NAPI are the struct napi_struct
+> +and the associated poll method. struct napi_struct holds the state
+> +of the NAPI instance while the method is the driver-specific event
+> +handler. The method will typically free Tx packets which had been
+> +transmitted and process newly received packets.
+> +
+> +.. _drv_ctrl:
+> +
+> +Control API
+> +-----------
+> +
+> +netif_napi_add() and netif_napi_del() add/remove a NAPI instance
+> +from the system. The instances are attached to the netdevice passed
+> +as argument (and will be deleted automatically when netdevice is
+> +unregistered). Instances are added in a disabled state.
+> +
+> +napi_enable() and napi_disable() manage the disabled state.
+> +A disabled NAPI can't be scheduled and its poll method is guaranteed
+> +to not be invoked. napi_disable() waits for ownership of the NAPI
+> +instance to be released.
+> +
+> +The control APIs are not idempotent. Control API calls are safe against
+> +concurrent use of datapath APIs but incorrect sequence of control API
+> +calls may result in crashes, deadlocks, or race conditions. For example
+> +calling napi_disable() multiple times in a row will deadlock.
+> +
+> +Datapath API
+> +------------
+> +
+> +napi_schedule() is the basic method of scheduling a NAPI poll.
+> +Drivers should call this function in their interrupt handler
+> +(see :ref:`drv_sched` for more info). Successful call to napi_schedule()
+> +will take ownership of the NAPI instance.
+> +
+> +Some time after NAPI is scheduled driver's poll method will be
+> +called to process the events/packets. The method takes a ``budget``
+> +argument - drivers can process completions for any number of Tx
+> +packets but should only process up to ``budget`` number of
+> +Rx packets. Rx processing is usually much more expensive.
+> +
+> +In other words, it is recommended to ignore the budget argument when
+> +performing TX buffer reclamation to ensure that the reclamation is not
+> +arbitrarily bounded, however, it is required to honor the budget argument
+> +for RX processing.
+> +
+> +.. warning::
+> +
+> +   ``budget`` may be 0 if core tries to only process Tx completions
+> +   and no Rx packets.
+> +
+> +The poll method returns amount of work done. If the driver still
+> +has outstanding work to do (e.g. ``budget`` was exhausted)
+> +the poll method should return exactly ``budget``. In that case
+> +the NAPI instance will be serviced/polled again (without the
+> +need to be scheduled).
+> +
+> +If event processing has been completed (all outstanding packets
+> +processed) the poll method should call napi_complete_done()
+> +before returning. napi_complete_done() releases the ownership
+> +of the instance.
+> +
+> +.. warning::
+> +
+> +   The case of finishing all events and using exactly ``budget``
+> +   must be handled carefully. There is no way to report this
+> +   (rare) condition to the stack, so the driver must either
+> +   not call napi_complete_done() and wait to be called again,
+> +   or return ``budget - 1``.
+> +
+> +   If ``budget`` is 0 napi_complete_done() should never be called.
+> +
+> +Call sequence
+> +-------------
+> +
+> +Drivers should not make assumptions about the exact sequencing
+> +of calls. The poll method may be called without driver scheduling
+> +the instance (unless the instance is disabled). Similarly
+> +it's not guaranteed that the poll method will be called, even
+> +if napi_schedule() succeeded (e.g. if the instance gets disabled).
+> +
+> +As mentioned in the :ref:`drv_ctrl` section - napi_disable() and
+> subsequent +calls to the poll method only wait for the ownership of the
+> instance +to be released, not for the poll method to exit. This means that
+> +drivers should avoid accessing any data structures after calling
+> +napi_complete_done().
+> +
+> +.. _drv_sched:
+> +
+> +Scheduling and IRQ masking
+> +--------------------------
+> +
+> +Drivers should keep the interrupts masked after scheduling
+> +the NAPI instance - until NAPI polling finishes any further
+> +interrupts are unnecessary.
+> +
+> +Drivers which have to mask the interrupts explicitly (as opposed
+> +to IRQ being auto-masked by the device) should use the
+> napi_schedule_prep() +and __napi_schedule() calls:
+> +
+> +.. code-block:: c
+> +
+> +  if (napi_schedule_prep(&v->napi)) {
+> +      mydrv_mask_rxtx_irq(v->idx);
+> +      /* schedule after masking to avoid races */
+> +      __napi_schedule(&v->napi);
+> +  }
+> +
+> +IRQ should only be unmasked after successful call to napi_complete_done(=
+):
+> +
+> +.. code-block:: c
+> +
+> +  if (budget && napi_complete_done(&v->napi, work_done)) {
+> +    mydrv_unmask_rxtx_irq(v->idx);
+> +    return min(work_done, budget - 1);
+> +  }
+> +
+> +napi_schedule_irqoff() is a variant of napi_schedule() which takes
+> advantage +of guarantees given by being invoked in IRQ context (no need to
+> +mask interrupts). Note that PREEMPT_RT forces all interrupts
+> +to be threaded so the interrupt may need to be marked ``IRQF_NO_THREAD``
+> +to avoid issues on real-time kernel configurations.
+> +
+> +Instance to queue mapping
+> +-------------------------
+> +
+> +Modern devices have multiple NAPI instances (struct napi_struct) per
+> +interface. There is no strong requirement on how the instances are
+> +mapped to queues and interrupts. NAPI is primarily a polling/processing
+> +abstraction without many user-facing semantics. That said, most networki=
+ng
+> +devices end up using NAPI in fairly similar ways.
+> +
+> +NAPI instances most often correspond 1:1:1 to interrupts and queue pairs
+> +(queue pair is a set of a single Rx and single Tx queue).
+> +
+> +In less common cases a NAPI instance may be used for multiple queues
+> +or Rx and Tx queues can be serviced by separate NAPI instances on a sing=
+le
+> +core. Regardless of the queue assignment, however, there is usually still
+> +a 1:1 mapping between NAPI instances and interrupts.
+> +
+> +It's worth noting that the ethtool API uses a "channel" terminology where
+> +each channel can be either ``rx``, ``tx`` or ``combined``. It's not clear
+> +what constitutes a channel, the recommended interpretation is to
+> understand +a channel as an IRQ/NAPI which services queues of a given typ=
+e.
+> For example +a configuration of 1 ``rx``, 1 ``tx`` and 1 ``combined``
+> channel is expected +to utilize 3 interrupts, 2 Rx and 2 Tx queues.
+> +
+> +User API
+> +=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +User interactions with NAPI depend on NAPI instance ID. The instance IDs
+> +are only visible to the user thru the ``SO_INCOMING_NAPI_ID`` socket
+> option. +It's not currently possible to query IDs used by a given device.
+> +
+> +Software IRQ coalescing
+> +-----------------------
+> +
+> +NAPI does not perform any explicit event coalescing by default.
+> +In most scenarios batching happens due to IRQ coalescing which is done
+> +by the device. There are cases where software coalescing is helpful.
+> +
+> +NAPI can be configured to arm a repoll timer instead of unmasking
+> +the hardware interrupts as soon as all packets are processed.
+> +The ``gro_flush_timeout`` sysfs configuration of the netdevice
+> +is reused to control the delay of the timer, while
+> +``napi_defer_hard_irqs`` controls the number of consecutive empty polls
+> +before NAPI gives up and goes back to using hardware IRQs.
+> +
+> +.. _poll:
+> +
+> +Busy polling
+> +------------
+> +
+> +Busy polling allows user process to check for incoming packets before
+> +the device interrupt fires. As is the case with any busy polling it trad=
+es
+> +off CPU cycles for lower latency (in fact production uses of NAPI busy
+> +polling are not well known).
+> +
+> +User can enable busy polling by either setting ``SO_BUSY_POLL`` on
+> +selected sockets or using the global ``net.core.busy_poll`` and
+> +``net.core.busy_read`` sysctls. An io_uring API for NAPI busy polling
+> +also exists.
+> +
+> +IRQ mitigation
+> +---------------
+> +
+> +While busy polling is supposed to be used by low latency applications,
+> +a similar mechanism can be used for IRQ mitigation.
+> +
+> +Very high request-per-second applications (especially routing/forwarding
+> +applications and especially applications using AF_XDP sockets) may not
+> +want to be interrupted until they finish processing a request or a batch
+> +of packets.
+> +
+> +Such applications can pledge to the kernel that they will perform a busy
+> +polling operation periodically, and the driver should keep the device IR=
+Qs
+> +permanently masked. This mode is enabled by using the
+> ``SO_PREFER_BUSY_POLL`` +socket option. To avoid the system misbehavior t=
+he
+> pledge is revoked +if ``gro_flush_timeout`` passes without any busy poll
+> call.
+> +
+> +The NAPI budget for busy polling is lower than the default (which makes
+> +sense given the low latency intention of normal busy polling). This is
+> +not the case with IRQ mitigation, however, so the budget can be adjusted
+> +with the ``SO_BUSY_POLL_BUDGET`` socket option.
+> +
+> +.. _threaded:
+> +
+> +Threaded NAPI
+> +-------------
+> +
+> +Threaded NAPI is an operating mode which uses dedicated kernel
+> +threads rather than software IRQ context for NAPI processing.
+> +The configuration is per netdevice and will affect all
+> +NAPI instances of that device. Each NAPI instance will spawn a separate
+> +thread (called ``napi/${ifc-name}-${napi-id}``).
+> +
+> +It is recommended to pin each kernel thread to a single CPU, the same
+> +CPU as services the interrupt. Note that the mapping between IRQs and
+> +NAPI instances may not be trivial (and is driver dependent).
+> +The NAPI instance IDs will be assigned in the opposite order
+> +than the process IDs of the kernel threads.
+> +
+> +Threaded NAPI is controlled by writing 0/1 to the ``threaded`` file in
+> +netdev's sysfs directory.
+> +
+> +.. rubric:: Footnotes
+> +
+> +.. [#] NAPI was originally referred to as New API in 2.4 Linux.
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 470085b121d3..b439f877bc3a 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -508,15 +508,18 @@ static inline bool napi_reschedule(struct napi_stru=
+ct
+> *napi) return false;
+>  }
+>
+> -bool napi_complete_done(struct napi_struct *n, int work_done);
+>  /**
+> - *	napi_complete - NAPI processing complete
+> - *	@n: NAPI context
+> + * napi_complete_done - NAPI processing complete
+> + * @n: NAPI context
+> + * @work_done: number of packets processed
+>   *
+> - * Mark NAPI processing as complete.
+> - * Consider using napi_complete_done() instead.
+> + * Mark NAPI processing as complete. Should only be called if poll budget
+> + * has not been completely consumed.
+> + * Prefer over napi_complete().
+>   * Return false if device should avoid rearming interrupts.
+>   */
+> +bool napi_complete_done(struct napi_struct *n, int work_done);
+> +
+>  static inline bool napi_complete(struct napi_struct *n)
+>  {
+>  	return napi_complete_done(n, 0);
 
-diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index 9753ce9e92b4..4006ad23ea74 100644
---- a/man/man8/bridge.8
-+++ b/man/man8/bridge.8
-@@ -1013,6 +1013,12 @@ device creation will be used.
- device name of the outgoing interface for the VXLAN device to reach the remote
- VXLAN tunnel endpoint.
- 
-+.in -8
-+The 0.0.0.0 and :: MDB entries are special catchall entries used to flood IPv4
-+and IPv6 unregistered multicast packets, respectively. Therefore, when these
-+entries are programmed, the catchall 00:00:00:00:00:00 FDB entry will only
-+flood broadcast, unknown unicast and link-local multicast.
-+
- .in -8
- .SS bridge mdb delete - delete a multicast group database entry
- This command removes an existing mdb entry.
--- 
-2.37.3
 
