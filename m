@@ -2,177 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F0B6C3E82
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 00:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6D06C3EAF
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 00:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbjCUX26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 19:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
+        id S229967AbjCUXj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 19:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbjCUX24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 19:28:56 -0400
-Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2056.outbound.protection.outlook.com [40.107.105.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEF813538;
-        Tue, 21 Mar 2023 16:28:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MPfU05B0rGXJiCkq7lwgkdkCMOdyr07qbLBxDtsNMjYYglMjY8Szw7im7Z1kuPRQtGAVtKcbFBUm8CgKzws2tNj8vkG3A//6EqDGH+KySZCPxuA5qCbCkJ7i9G41HvDotcySQlx79Eo0hQ+A3sfZRDVptY9mDTcVQeILFiQFwm9APkoDqZVaaWr/7A4enBvGw5NjsodAY9dEmfwx2OS91HyeCRsrq27ZnLk8U8DgWTuZhpNtTgRsErAdYhf8YKzulBCy1wO4+vZnkAtjoqh+PVv4eafRRBU0X9fYkGAGnX0iOcNpRObtlos5NZg73fHIHQGp8h1CwQh0FKRFeLggjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JIq4o8WHLJHCTRDENDV9BYqFa4sIGoiQxsWS4hucH4A=;
- b=ZKa21tD5WcqyDedefu7+IjZBnS/OvLEMswiVG7FkMi4lGG2cB3O3f8H3Fk/Je3mcodCpftKky06HIPbuShr8tQ923yYOW49fpoEKW11etu2BszD2rd59Mikkqjh5rb3/T7+x+x4RQpLv3THtW40KNQzhsmc9VC6rUbbhuamMoz9kMmu6bvqZYTqZTmb7/wXWEzJGfKl6+xQTOE1G1wh5TdBvbIre2qEtONxdLwbZKonBp/0pKVGTGuSzHk/ZqxZTpHnAyc5juOSy9fPs4EvDGf9QwdBjsU5mWdHGQ80YX0DXm/RsdcKtg+jGSPY7VjGdn2Ca+T083q/YHlYzc0KMhQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JIq4o8WHLJHCTRDENDV9BYqFa4sIGoiQxsWS4hucH4A=;
- b=h6XI/jk2HsE92inem8yGqZ401AbyS5Cj1ONZUoRuJJISA4+QpG4JdwQ+42ZosRHVRi2+S95CbDoFedq4BVLkCYz0a+L7JqckVGKjes7LySCSdM/vrMv1BoQShlEDvm7KZQEG0us8UJa+Q/qxCUtxIA4nHieoApDRY1Y13D3Xx1w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by DU2PR04MB9052.eurprd04.prod.outlook.com (2603:10a6:10:2e7::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Tue, 21 Mar
- 2023 23:28:48 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.037; Tue, 21 Mar 2023
- 23:28:48 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229764AbjCUXjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 19:39:54 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E65C15577;
+        Tue, 21 Mar 2023 16:39:53 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id az3-20020a05600c600300b003ed2920d585so12010583wmb.2;
+        Tue, 21 Mar 2023 16:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679441991;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=jwfMZ6FsDD8+QlFgG9YSGQ+zSUs+XYTprVxYaYY4xCs=;
+        b=bkBHelgXJwSgw9NZ5DcQ/rAeODyT2QbCZQWqLR3yhQe7qk2WtbX3WlX//JoMlB0gX0
+         lfalGUbwfgFGT4ELFVIjA759O+kKuqGQtJS87Vk0JPkszPWrW7TnHebl6ei2+oorMVhd
+         Lc98meTC4oaHoutzsVkMwR95MIwhSE9MwDhFyknkqQPJcwG7O5IR8GeQyHr9MTD/9SGU
+         pxFGpcTlofPElg4Phc7kkGzdUqKwVaBFHVxGp3tGJeLa84o6nDOEeypP1oikHYn+q7wR
+         Jrtu2GEePEQfegjd54V3W5o2sm98uxNpYUTvOBLoOV3Ny09R0J74nwQSogF+VMIzc3FY
+         26XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679441991;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jwfMZ6FsDD8+QlFgG9YSGQ+zSUs+XYTprVxYaYY4xCs=;
+        b=xdDlQYoYZbOFfBaeXuHW4Q0P7xijQqOvRMo5wz+k2uewxT6rAUnWVSqDJjjhFIZEQv
+         Ug3VLLvPYGFFQPZFcyvCmg9By9CGFMDlknDjbG8t5vqQcTft5VbzPaf5CF9W9tygQwH5
+         SNpZHKl/gowqMKYyX4hUB6+nxqgMKqIEUMDOVDFuzxGzgcj8tzJ3kwy65th4BuuEBTcS
+         Bcv351atxgu+vbsg+7SGMjGEeT78bGlL7dxO6rIyASz0RBruguR7b1iZxMTPDBXEfVbs
+         pdzmwdMn2R3VgWax83dZJfUAUD3JQmoHcna9HFmv5VEMxWN+4e4pTOLv+yU+6/EeHOlN
+         NIQQ==
+X-Gm-Message-State: AO0yUKVDH14GiAixz7VZU5qKeYcvef3a9rfx0Qp/3aYWgJ/0C5JN4GoO
+        KSJJi0MLA37z5VBHoawey74=
+X-Google-Smtp-Source: AK7set/s45oboY6J1DqDB/0FL+87KkEyElGWJ9yuDvg1P5AEXq8dYBcKJ3L/B1aVpUVe1ob2ikoHEg==
+X-Received: by 2002:a7b:c7c4:0:b0:3ea:ed4d:38f6 with SMTP id z4-20020a7bc7c4000000b003eaed4d38f6mr3681988wmk.4.1679441991057;
+        Tue, 21 Mar 2023 16:39:51 -0700 (PDT)
+Received: from Ansuel-xps. (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
+        by smtp.gmail.com with ESMTPSA id l15-20020a7bc44f000000b003edef091b17sm7840916wmi.37.2023.03.21.16.39.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 16:39:50 -0700 (PDT)
+Message-ID: <641a4046.7b0a0220.44d4e.95d4@mx.google.com>
+X-Google-Original-Message-ID: <ZBpARKRa7Hcg0crS@Ansuel-xps.>
+Date:   Wed, 22 Mar 2023 00:39:48 +0100
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: enetc: fix aggregate RMON counters not showing the ranges
-Date:   Wed, 22 Mar 2023 01:28:31 +0200
-Message-Id: <20230321232831.1200905-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0168.eurprd08.prod.outlook.com
- (2603:10a6:800:d1::22) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v5 10/15] dt-bindings: net: ethernet-controller:
+ Document support for LEDs node
+References: <20230319191814.22067-1-ansuelsmth@gmail.com>
+ <20230319191814.22067-11-ansuelsmth@gmail.com>
+ <20230321211953.GA1544549-robh@kernel.org>
+ <641a35b8.1c0a0220.25419.2b4d@mx.google.com>
+ <38534a25-4bb3-4371-b80b-abfc259de781@lunn.ch>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|DU2PR04MB9052:EE_
-X-MS-Office365-Filtering-Correlation-Id: ed56d3a5-28a5-4827-ba6a-08db2a640557
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x6nZIxNGE6mHcmheNBny4k11RAnl7MZ4eckHiNPh/MUgIm5RWe4zGqOHjeUiQ0GUcbgRg9rD/t/9iKrCNfblO9K34YAyNjo8iy/sHpjdbtm/lVsSDlnlQDafFNq/2SY59PjhUpBab8Ab9F7OjhaZ+jlePF62WT+7J8s1NqG48uCimtX3yitCH/W/8Z2EcGRhmJoebHLJs/CaOGPt4rZrV5HA45iMgnCbSjrrdm5ffr37eaMvTeHshesLzifj18+uxt6s9dzLhYIi2nqUXSP2bDxwRGDiej64SiSUSI5TG5EbdYaAs0rz/IW/ba6D3J0XX8LJ+7wg69ycgLgu5afZjNprzH08HeuoWdQlw8yqDSTzNS9FhufHN12hCOQ1iU2aHYIxY7wJAQW1zQU6yyoY2Hyg3ifjwgR31KSdtDD34EsgImwq1XGzJoN2j7TMiBM/Y2flRjkyGrJUBKnD36vbTgIO0ung3LoY5j/EiJYsflETok+dnsM2SCZNmIn2ipahX5oKuhiaXd3FcVp811pDpMacu/7VWsR3Md76SpVRTqFu6AGMqmNZIy6h2y1AldmW/F1QcBSUhee2RNg6pj+dmoWQOyIhABUbpf/MLo1QfledBYhyMzAf4UWLyAV6zK/cLAxCIkWbWE3gp/itOUX/SchUu2EP/1UoOVYccFxyyh0WbHw5tLAyxcjdyp1XZ8ddtFhaUs/6O5zOGwLG/9mWFg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(39860400002)(376002)(136003)(366004)(451199018)(26005)(6506007)(6512007)(2616005)(1076003)(6666004)(6486002)(316002)(6916009)(83380400001)(4326008)(52116002)(66476007)(66946007)(478600001)(66556008)(8676002)(54906003)(186003)(8936002)(5660300002)(44832011)(41300700001)(2906002)(38350700002)(38100700002)(86362001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PRVZMlmBKBQtPbknas8ysfbBc+WUzoYV5+HCB0rhbLx4887Hd48ar30IHVUv?=
- =?us-ascii?Q?O97bbAiLookatNGjWsuxqYparoEYhXb/6ZxtDsgzNsilLvL6wzq77fyeLfKa?=
- =?us-ascii?Q?X+hptUOnN8imfAxoBWsZkY3sS+F4VsAd0kcT8MMJmg7hqMbZVDNzs0wh1DOS?=
- =?us-ascii?Q?Zji1lNfFZlZc8Ali+OZIxivqNwQQ3PgB5hZD+kczbXFoahRiqEfxckEl3o77?=
- =?us-ascii?Q?K/DHzq1uhbLzkNyQ9lrS2uYV6YzXsRZGW6RETCThNfc6uz3jxE4P80Nfn5sF?=
- =?us-ascii?Q?Lw+YpYOPIv5xDZFXlgRM9yPKlv6tgODkaCNF9fdsT2ZuiXzzhZzkhseo1aTN?=
- =?us-ascii?Q?w994B9M2wkYdohIwapX3WxXInjqyO+6rZ5bNjIDSqLAVdsfqRskC0iKqyD1e?=
- =?us-ascii?Q?Ea+JRiYwQr0qhMfCAWd0PTXCiY7msYgPfE9Z9lz8m+xbBd2JGSb0zq1I8uVq?=
- =?us-ascii?Q?YFFg1QlbwQk8Vx3ZQ+TYkhqGYMpmkTLB0A+ComhMp7y/BatBD3kI7sNxB7/P?=
- =?us-ascii?Q?ACbFyRnJ2bwU0y1JjgY6ekUb+Z60Bzs0+3TrPF6a0mRIvwWuk/so85N//lXq?=
- =?us-ascii?Q?b9G13+xcekOwreQF9VDCSzrjd2fl0nCYk+UQdV5ksj29ZAHwaNb6enCQu2BD?=
- =?us-ascii?Q?XvNuOh2LIim2XmTROVWa2O5r3ovW8JGiau5S7obPX4lDu1DYIaACewWxJMvt?=
- =?us-ascii?Q?FS29OUgqWV6zbYSOy1+GO+6rgMWJeI0DKd3HDzZCzgurdDzKdaAesRh+MXc7?=
- =?us-ascii?Q?1REMe1GYopP1Y7deDoZPLOecd8OtdpjleVBEn3GmdoJUpm2477rSxdIrsW/R?=
- =?us-ascii?Q?B9R/Ip5mZVfcykPGZKx0FRUqe3BYgmg32YqeTJ9vrNQqF7kYRoJJoAOX9y/h?=
- =?us-ascii?Q?EQciGbXpi+2zgSFCNmOh924cbS/MfxXjVd6/WtWkEgjyYVS1bij1NQ99oEhR?=
- =?us-ascii?Q?SFMywi9Q4NE3sOymAjwW2XWwke4nZYzpFw+YxyYDhf3LvUNYtJr5MoWuHXMo?=
- =?us-ascii?Q?y5Ct2BcifOPt0VCjekfgwIjiNxkakE/rAsk5C52m36SqPNRgpBtCsmtilJu+?=
- =?us-ascii?Q?S6lB8nIylE/FdfZiQT37/tcDEQhPRld4qsvJ+qJ7hWyawghLT20y2l+2LOti?=
- =?us-ascii?Q?8fPqUBkXDA/rg8B/cHL+ckzAK7T6cJbSx1HzPCvgaLg995YfBDywDAuI26ow?=
- =?us-ascii?Q?OXWQeYrn/GGj4RzMmdffOnYEgp/ZaEBgFhjDXv7g6hTKz90KshdBLJBh4DRC?=
- =?us-ascii?Q?gbohjr6FltpF2bMZVXS+RdyHCEIzVDe/lCPyXp1UOLk28sOHCHEW+JJvQ80Y?=
- =?us-ascii?Q?s64ILRz/B7Tl8GanC6F1twacqq5C+z5p9nTeuKQB46eZtfhK9yTw0u28bxKv?=
- =?us-ascii?Q?MVpKj2eRDSZHYyfWHMIYfPLvbD35SLUmJbvl78bdoX0Mc7Qzfc8arw+VHf+1?=
- =?us-ascii?Q?6aBRkxmPY8bUFYsjFS0jpQovsCZujzFXt+9/Qs5ES8iluSx3LdgbV04QQYVY?=
- =?us-ascii?Q?Qw6Zk4PWk7aZFKPJX8/KYdgrhOFQ+l35ZHVbYmMzl8xmrrYaCphgo+hKaB8C?=
- =?us-ascii?Q?5FPOJhwDXIQNo5toSFlgAJPUYggZ6HwY+u7mvvvsQ8hAvyOgJCJqr01zcJYU?=
- =?us-ascii?Q?tw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed56d3a5-28a5-4827-ba6a-08db2a640557
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2023 23:28:48.1226
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oSOQnuAAIzITe5pgjtKReI8e8lJedcovQhYR4u0UX7mrm/oz1zqX/z+atoO3KTd34D1Tin/p8Edeo2olEJQ6uA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB9052
-X-Spam-Status: No, score=1.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <38534a25-4bb3-4371-b80b-abfc259de781@lunn.ch>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When running "ethtool -S eno0 --groups rmon" without an explicit "--src
-emac|pmac" argument, the kernel will not report
-rx-rmon-etherStatsPkts64to64Octets, rx-rmon-etherStatsPkts65to127Octets,
-etc. This is because on ETHTOOL_MAC_STATS_SRC_AGGREGATE, we do not
-populate the "ranges" argument.
+On Wed, Mar 22, 2023 at 12:23:59AM +0100, Andrew Lunn wrote:
+> > > Are specific ethernet controllers allowed to add their own properties in 
+> > > led nodes? If so, this doesn't work. As-is, this allows any other 
+> > > properties. You need 'unevaluatedProperties: false' here to prevent 
+> > > that. But then no one can add properties. If you want to support that, 
+> > > then you need this to be a separate schema that devices can optionally 
+> > > include if they don't extend the properties, and then devices that 
+> > > extend the binding would essentially have the above with:
+> > > 
+> > > $ref: /schemas/leds/common.yaml#
+> > > unevaluatedProperties: false
+> > > properties:
+> > >   a-custom-device-prop: ...
+> > > 
+> > > 
+> > > If you wanted to define both common ethernet LED properties and 
+> > > device specific properties, then you'd need to replace leds/common.yaml 
+> > > above  with the ethernet one.
+> > > 
+> > > This is all the same reasons the DSA/switch stuff and graph bindings are 
+> > > structured the way they are.
+> > > 
+> > 
+> > Hi Rob, thanks for the review/questions.
+> > 
+> > The idea of all of this is to keep leds node as standard as possible.
+> > It was asked to add unevaluatedProperties: False but I didn't understood
+> > it was needed also for the led nodes.
+> > 
+> > leds/common.yaml have additionalProperties set to true but I guess that
+> > is not OK for the final schema and we need something more specific.
+> > 
+> > Looking at the common.yaml schema reg binding is missing so an
+> > additional schema is needed.
+> > 
+> > Reg is needed for ethernet LEDs and PHY but I think we should also permit
+> > to skip that if the device actually have just one LED. (if this wouldn't
+> > complicate the implementation. Maybe some hints from Andrew about this
+> > decision?)
+> 
+> I would make reg mandatory.
+>
 
-ocelot_port_get_rmon_stats() does things differently and things work
-there. I had forgotten to make sure that the code is structured the same
-way in both drivers, so do that now.
+Ok will add a new schema and change the regex.
 
-Fixes: cf52bd238b75 ("net: enetc: add support for MAC Merge statistics counters")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+> We should not encourage additional properties, but i also think we
+> cannot block it.
+> 
+> The problem we have is that there is absolutely no standardisation
+> here. Vendors are free to do whatever they want, and they do. So i
+> would not be too surprised if some vendor properties are needed
+> eventually.
+>
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index bca68edfbe9c..da9d4b310fcd 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -370,8 +370,7 @@ static const struct ethtool_rmon_hist_range enetc_rmon_ranges[] = {
- };
- 
- static void enetc_rmon_stats(struct enetc_hw *hw, int mac,
--			     struct ethtool_rmon_stats *s,
--			     const struct ethtool_rmon_hist_range **ranges)
-+			     struct ethtool_rmon_stats *s)
- {
- 	s->undersize_pkts = enetc_port_rd(hw, ENETC_PM_RUND(mac));
- 	s->oversize_pkts = enetc_port_rd(hw, ENETC_PM_ROVR(mac));
-@@ -393,8 +392,6 @@ static void enetc_rmon_stats(struct enetc_hw *hw, int mac,
- 	s->hist_tx[4] = enetc_port_rd(hw, ENETC_PM_T1023(mac));
- 	s->hist_tx[5] = enetc_port_rd(hw, ENETC_PM_T1522(mac));
- 	s->hist_tx[6] = enetc_port_rd(hw, ENETC_PM_T1523X(mac));
--
--	*ranges = enetc_rmon_ranges;
- }
- 
- static void enetc_get_eth_mac_stats(struct net_device *ndev,
-@@ -447,13 +444,15 @@ static void enetc_get_rmon_stats(struct net_device *ndev,
- 	struct enetc_hw *hw = &priv->si->hw;
- 	struct enetc_si *si = priv->si;
- 
-+	*ranges = enetc_rmon_ranges;
-+
- 	switch (rmon_stats->src) {
- 	case ETHTOOL_MAC_STATS_SRC_EMAC:
--		enetc_rmon_stats(hw, 0, rmon_stats, ranges);
-+		enetc_rmon_stats(hw, 0, rmon_stats);
- 		break;
- 	case ETHTOOL_MAC_STATS_SRC_PMAC:
- 		if (si->hw_features & ENETC_SI_F_QBU)
--			enetc_rmon_stats(hw, 1, rmon_stats, ranges);
-+			enetc_rmon_stats(hw, 1, rmon_stats);
- 		break;
- 	case ETHTOOL_MAC_STATS_SRC_AGGREGATE:
- 		ethtool_aggregate_rmon_stats(ndev, rmon_stats);
+Think that will come later with defining a more specific schema. But I
+honestly think most of the special implementation will be handled to the
+driver internally and not with special binding in DT.
+
 -- 
-2.34.1
-
+	Ansuel
