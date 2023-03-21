@@ -2,88 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E7996C3951
-	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA1BA6C3961
+	for <lists+netdev@lfdr.de>; Tue, 21 Mar 2023 19:45:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbjCUSl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 14:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
+        id S229610AbjCUSpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 14:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbjCUSl6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:41:58 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590FC136D9
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:41:57 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id c10so7088094vsh.12
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:41:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679424116;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wwwt5gENAoNCgRuBuq/sm3Iy2cfNMn+vrg8lSHE5VLg=;
-        b=noavD+zvF1ufMTfu2dfT1ysFEuiaAxDk1m5xlCUAADQiCuEOMZCZzJwoOTl12XBixq
-         CluzqVND1zq+8oeTsP0J3UfE8LYovdLVe3NQbAY1q0UGI2j/bxfukgMbn6dwT/gKJC0N
-         sLplATxZ8TLoTJ2VR3d+fkxCip8D6iS/CvM1tG/kVt8lV9TH3OptHJ8+Pfve2GpwmAZ0
-         518m34HF7bGQLXMBdkjgq8OCFIsoPOiX8ALC9d5NncBdCJkAskQzMNHbkPLCW2aW1fne
-         DK1lwzXI2p9RKhqSvw7Zkd8lsU7uKhBFQfcHM2CyfjVxjOKjk0OOLh1hh36AmS74svwU
-         435Q==
+        with ESMTP id S230220AbjCUSpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 14:45:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B87C559F3
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679424283;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fuPq/q/n2UQFDBdFIY9AeffBgLt18anlB8x0yQm2Zg0=;
+        b=BZgE2B46G9Gxs4lLcjOXpV+YQbsuZkzjSfAEJa2IDrrZbAakfWCHK/+Iyf5Rd9tOYHoILJ
+        LhM3xxyGErrT6tMxbCo2J5caXCoMJrGGo1f7hXUUdajy98aX3Q7mAfr9byCksue/hcDLOa
+        IqEbUumWZIfELC5GdW+t6CwMsHUO7Ss=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-140-AxXG_24rM7S-4RxXbx9x5A-1; Tue, 21 Mar 2023 14:44:39 -0400
+X-MC-Unique: AxXG_24rM7S-4RxXbx9x5A-1
+Received: by mail-qv1-f69.google.com with SMTP id r4-20020ad44044000000b005ad0ce58902so8057340qvp.5
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 11:44:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679424116;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wwwt5gENAoNCgRuBuq/sm3Iy2cfNMn+vrg8lSHE5VLg=;
-        b=iL4zLCFRL6CBproAC9De5ZFFmaalMgOwnLh5yloU+DzaBFJoNEG4K2UX8NZtup9IPt
-         cELgkK4Yb9AzYMrl6+EGubPU8WC798U4ki/eZ8I/hCex6k6iKceqK3TLpcSaNROaFpdd
-         /ca0geoDtjRXxm0ZOS8ka0yCFuYTuEMbBqxPb4mVwiuKnHsrgv+mqfGGEEkGA1FcZ2v2
-         bl2TiyvLMblxz2BDWW8a+LVH2G5pFr3784OsZuhi6uXTCugMPwvlqXjXbx6dvB89kfXx
-         nYZLZKrOz68aVk8AbFpszHToaPqFLTmLGM8YlyvPIXJKZodfLHCPklMd0aK7necplc87
-         YsPA==
-X-Gm-Message-State: AO0yUKUlnkAiUCk225ZGrvb/0UPxrlWyF7VoQle39oIA1bceCAsYf+xV
-        DlZtSERw66eRvTcmjh6AtPqMVr7Fb5ycBDib0pqpCg==
-X-Google-Smtp-Source: AKy350YRy3I46Q2W8U4iPHYFkOv+ZUFWLpZrfX2R7sytgDMN6T0efc6E5Y3b0KFMyZSqZyhKWIi8xkEWe981nC6GS7k=
-X-Received: by 2002:a67:d581:0:b0:425:dd21:acc8 with SMTP id
- m1-20020a67d581000000b00425dd21acc8mr2272684vsj.7.1679424116291; Tue, 21 Mar
- 2023 11:41:56 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679424279;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fuPq/q/n2UQFDBdFIY9AeffBgLt18anlB8x0yQm2Zg0=;
+        b=LKEfovp8BzgRKUr6pyhSrFEFbBaoq3XDaAN0TxuARecIwERm+i1rYAwkSXIwXOkhGZ
+         0FapDAUAlMQeT7vOW8dkecrhjKOBV7KXt9SHgIeAFLCO060m6CjVTKL9qO/3BXRr0cph
+         kZ94YzcNIRf/5IZsIlMSUQWuppmDtcjmUYwPBlCwQQ6tWrqsoY3XvuB6mct6o1L9WC+E
+         Zfwk8bEDRo28GLQbKvqdPN/U7XqkE0nDTW4ZFjKoCdNAK6EZqP0RkUza/zjrFv3+k+Hi
+         J8aFKGLCk4ko9Ic9PCBKzT+KgRB8g0kLhFX/pGfHGvpResqKMRibK5M055XNqw/xXUDU
+         7Fgw==
+X-Gm-Message-State: AO0yUKXNcyOkgzGkTDg4oB5mzPzutSkylwIh5AAt82B4g8wI5g+5xIYt
+        ft/CSLZmeMRyx8StI0d7/psvSih0kpIDfs1qikxmoHsvGjvM9a6mx9YDg8ILxVrmvRTiGtwFrcL
+        Vgy6wQIX62GmqGIj0
+X-Received: by 2002:a05:622a:314:b0:3db:9289:6946 with SMTP id q20-20020a05622a031400b003db92896946mr1944754qtw.0.1679424279517;
+        Tue, 21 Mar 2023 11:44:39 -0700 (PDT)
+X-Google-Smtp-Source: AK7set90RizWeWzAQuOQOBvfTCwkzx+74B8QQPTScDsieskr674HwVX05tKIvLoFJq5kExR+Z/9F5w==
+X-Received: by 2002:a05:622a:314:b0:3db:9289:6946 with SMTP id q20-20020a05622a031400b003db92896946mr1944696qtw.0.1679424279210;
+        Tue, 21 Mar 2023 11:44:39 -0700 (PDT)
+Received: from halaney-x13s (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
+        by smtp.gmail.com with ESMTPSA id 2-20020a05620a040200b006f9f3c0c63csm9793316qkp.32.2023.03.21.11.44.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 11:44:38 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 13:44:35 -0500
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        vkoul@kernel.org, bhupesh.sharma@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, richardcochran@gmail.com,
+        linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
+Subject: Re: [PATCH net-next v2 00/12] Add EMAC3 support for sa8540p-ride
+Message-ID: <20230321184435.5pqkjp4adgn6cpxy@halaney-x13s>
+References: <20230320221617.236323-1-ahalaney@redhat.com>
+ <20230320202802.4e7dc54c@kernel.org>
 MIME-Version: 1.0
-References: <20230321164519.1286357-1-edumazet@google.com> <20230321171333.t4u6z2n5ex76h3ot@skbuf>
-In-Reply-To: <20230321171333.t4u6z2n5ex76h3ot@skbuf>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 21 Mar 2023 11:41:44 -0700
-Message-ID: <CANn89iLo158gsAJkTo73V81k9zjgf-YZewXFRW0KQn3QzfnqPA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/3] net: remove some skb_mac_header assumptions
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230320202802.4e7dc54c@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 10:13=E2=80=AFAM Vladimir Oltean <olteanv@gmail.com=
-> wrote:
->
-> Hi Eric,
->
+On Mon, Mar 20, 2023 at 08:28:02PM -0700, Jakub Kicinski wrote:
+> On Mon, 20 Mar 2023 17:16:05 -0500 Andrew Halaney wrote:
+> > This is a forward port / upstream refactor of code delivered
+> > downstream by Qualcomm over at [0] to enable the DWMAC5 based
+> > implementation called EMAC3 on the sa8540p-ride dev board.
+> > 
+> > From what I can tell with the board schematic in hand,
+> > as well as the code delivered, the main changes needed are:
+> > 
+> >     1. A new address space layout for /dwmac5/EMAC3 MTL/DMA regs
+> >     2. A new programming sequence required for the EMAC3 base platforms
+> > 
+> > This series makes those adaptations as well as other housekeeping items
+> > such as converting dt-bindings to yaml, adding clock descriptions, etc.
+> > 
+> > [0] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/commit/510235ad02d7f0df478146fb00d7a4ba74821b17
+> > 
+> > v1: https://lore.kernel.org/netdev/20230313165620.128463-1-ahalaney@redhat.com/
+> 
+> At a glance 1-4,8-12 need to go via networking, 5 via clock tree,
+> and 6,7 via ARM/Qualcomm.
+> 
+> AFAICT there are no strong (compile) dependencies so we can each merge
+> our chunk and they will meet in Linus's tree? If so please repost just
+> the networking stuff for net-next, and the other bits to respective
+> trees, as separate series.
+> 
 
-> skb_mac_header() shows quite a few hits in net/dsa/ as well, in functions
-> that contain "xmit" in the name. Should those be changed as well?
+That makes sense to me, thanks for the advice.
 
-Hi Vladimir.
+The only note is that 5 (the clk patch) is depended on by 6/7 to
+compile (they use the header value in 5)... So I'll keep those together!
 
-Yes, any help that you can provide (especially if you can test
-patches) will be much welcomed.
+So all in all it will be the dt-binding changes + stmmac changes in one
+series for networking, and the clock + devicetree changes via
+ARM/Qualcomm if I am following properly.
 
-Thanks !
+I'll go that route for v3 and link here (just to make finding the split
+easier) unless someone objects (got some time as I need to refactor
+based on series feedback)!
+
+Thanks,
+Andrew
+
