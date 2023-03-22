@@ -2,95 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E9F6C3F42
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 01:45:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 524C06C3F40
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 01:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbjCVApB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 20:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42154 "EHLO
+        id S229668AbjCVAo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 20:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbjCVApA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 20:45:00 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F3624CAC;
-        Tue, 21 Mar 2023 17:44:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1679445900; x=1710981900;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NaEatF8PFZLTAIcY7ar4289wAKI7ZdUnFTLmm7EYvYg=;
-  b=JouO3ln6S/mxxvhbxUSJKf2OjHGtwduJqNgifdv5KE5+lRSL4Bmeo0wl
-   to7c93g0Nx8xdVhQGCe53H450wK55c2+N07e0YjQcVtbnDF9i7WXY/3ZK
-   GMijRU9OHcUOLAJDgxaIiSkLVjAnPCKOejINC2OM7IqfoCAzGaAIDr57v
-   E=;
-X-IronPort-AV: E=Sophos;i="5.98,280,1673913600"; 
-   d="scan'208";a="321131486"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-m6i4x-fa5fe5fb.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 00:44:54 +0000
-Received: from EX19MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-m6i4x-fa5fe5fb.us-west-2.amazon.com (Postfix) with ESMTPS id 8C1C740D66;
-        Wed, 22 Mar 2023 00:44:52 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Wed, 22 Mar 2023 00:44:51 +0000
-Received: from 88665a182662.ant.amazon.com (10.94.217.231) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.24;
- Wed, 22 Mar 2023 00:44:45 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <aleksandr.mikhalitsyn@canonical.com>
-CC:     <arnd@arndb.de>, <brauner@kernel.org>, <davem@davemloft.net>,
-        <dsahern@kernel.org>, <edumazet@google.com>,
-        <keescook@chromium.org>, <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <leon@kernel.org>, <linux-arch@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <mzxreary@0pointer.de>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v2 2/3] net: core: add getsockopt SO_PEERPIDFD
-Date:   Tue, 21 Mar 2023 17:44:36 -0700
-Message-ID: <20230322004436.29982-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230321183342.617114-3-aleksandr.mikhalitsyn@canonical.com>
-References: <20230321183342.617114-3-aleksandr.mikhalitsyn@canonical.com>
+        with ESMTP id S229798AbjCVAo4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 20:44:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E26B2365F;
+        Tue, 21 Mar 2023 17:44:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF395B81A3A;
+        Wed, 22 Mar 2023 00:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6BE7C433EF;
+        Wed, 22 Mar 2023 00:44:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679445892;
+        bh=dmONf9oAJL7CG+fsOh3ODEZ9B+5Qk0gXu4GNSV23oJM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iz1DHUUDbFJGo3EVrEQb64uT/3TZMjrryUOUlBPN8jWPPpiQ4IBquttrOJOmv4nKt
+         JbMvciWVhS8KtHhhSihLr4n6niJUeM2qIPStuSMwM624F48MqSvRkujUtie/UGsDbS
+         VY4q+fADCRW33L3q+qfuBXnVdr+5NYtmBZswmA5lCZB+qEB1jxBVKd+8L1WvNeM0yd
+         gkr5wBrlKfCXvCS8SPqZwv0ulZawk3ddtylzxmD9Ggn2y0Xz/vx/CGGbCPqU+p1Cc+
+         0ZHhqN1aruz0QU9orEK66xOGh9lg7L/Ax+hLdrsrM+Um+qdY0A/HS3miYBoPBSmiXR
+         f53Apmx5X83Kw==
+Date:   Tue, 21 Mar 2023 17:44:50 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Bagas Sanjaya <bagasdotme@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        corbet@lwn.net, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, pisa@cmp.felk.cvut.cz,
+        mkl@pengutronix.de, linux-doc@vger.kernel.org, f.fainelli@gmail.com
+Subject: Re: [PATCH net-next v2] docs: networking: document NAPI
+Message-ID: <20230321174450.0bd8114f@kernel.org>
+In-Reply-To: <20230321100522.474c3763@hermes.local>
+References: <20230321050334.1036870-1-kuba@kernel.org>
+        <20230321100522.474c3763@hermes.local>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.94.217.231]
-X-ClientProxiedBy: EX19D037UWB003.ant.amazon.com (10.13.138.115) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=0.3 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
-Date:   Tue, 21 Mar 2023 19:33:41 +0100
-> Add SO_PEERPIDFD which allows to get pidfd of peer socket holder pidfd.
-> This thing is direct analog of SO_PEERCRED which allows to get plain PID.
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: Kuniyuki Iwashima <kuniyu@amazon.com>
-> Cc: Lennart Poettering <mzxreary@0pointer.de>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arch@vger.kernel.org
-> Signed-off-by: Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>
+On Tue, 21 Mar 2023 10:05:22 -0700 Stephen Hemminger wrote:
+> Looks good overall. I used a grammar scanner to look for issues and
+> it found lots of little things.
 
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-
-Thanks,
-Kuniyuki
+Thanks for that, I folded in all the grammar improvements.
+I did not take the larger changes, they lose context / relations,
+I prefer the current wording.
