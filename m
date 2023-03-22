@@ -2,143 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE016C551B
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 20:43:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28ADF6C5534
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 20:52:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbjCVTnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 15:43:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
+        id S229604AbjCVTwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 15:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbjCVTnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 15:43:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF8B6A60;
-        Wed, 22 Mar 2023 12:43:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07EB4622AC;
-        Wed, 22 Mar 2023 19:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DA44C433EF;
-        Wed, 22 Mar 2023 19:43:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679514197;
-        bh=0eJ2wDPpolg0zMqmBJUTxiE/iCB4f1LEy3GHs5WagXA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XTA7LVqUnLiV1V0ZjkTJHyeM0+HmxziRcvpmW294zoiErgPkcFpbwAmMwEmSEc+6Y
-         +yUoLdBiZUOiCJwr5qzT4lSwL+HEPYS9XbZjhHaORsfpouXEWfKloUz6q0xO1Xx9Qp
-         dh5o54W9Dy3Slm50HKKtHaZRGHt0hK2am+bnFssu0EpM4cdmNqQVVwv/6A8ajkTpE8
-         FXq6pQgsIN6Pnxrl3QaAQrpmS5vRmKFcDT7mGj13A6MI3H1El9AJ8BZ1AhcvqORS0m
-         HpsjvxBN4q8oKQDpTBwGmW3MxHmkorTG0fjAA+Vztu+7Y8YWK/p7nWY0sIDZeQDSCd
-         ZX5D9aD3dFImg==
-Date:   Wed, 22 Mar 2023 12:43:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     netdev@vger.kernel.org, Vadim Fedorenko <vfedorenko@novek.ru>,
-        Frantisek Krenzelok <fkrenzel@redhat.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Apoorv Kothari <apoorvko@amazon.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: Re: [PATCH net-next v2 0/5] tls: implement key updates for TLS1.3
-Message-ID: <20230322124316.7a174e3d@kernel.org>
-In-Reply-To: <ZBsocdkUBlEuAU+I@hog>
-References: <Y+0Wjrc9shLkH+Gg@hog>
-        <20230215111020.0c843384@kernel.org>
-        <Y+1pX/vL8t2nU00c@hog>
-        <20230215195748.23a6da87@kernel.org>
-        <Y+5Yd/8tjCQNOF31@hog>
-        <20230221191944.4d162ec7@kernel.org>
-        <Y/eT/M+b6jUtTdng@hog>
-        <20230223092945.435b10ea@kernel.org>
-        <ZA9EMJgoNsxfOhwV@hog>
-        <20230313113510.02c107b3@kernel.org>
-        <ZBsocdkUBlEuAU+I@hog>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        with ESMTP id S229682AbjCVTwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 15:52:44 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2045.outbound.protection.outlook.com [40.107.8.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613D862843;
+        Wed, 22 Mar 2023 12:52:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/q5e8NKMjlTtL0D+n/yvOpbvNl+BzKt1vnZDtCuPyRM=;
+ b=p0GhG6cAKrmpRMUcQgoaDoMs7iifq8vLIzG3iPDttr3HIWcbLkKyUOCCJRX7t4Tn7GpbhxVDWP9Xmgar2cwMgCCxdLa78C7NI2ItHPPGezYK8SGYZmli5Z6noVTNwyH+hUll8nKYxW3UfwNs2WaKPYkgQLSIgmqm9nXJw/oGgXKsoRdRqs5+kEh+WEBktYUAzXmSb+y5ocTgFmteuLHR9C2T/9nIJyzd5ap6PA4BHXbwLArxumc1/CCrzgY992BCr/e2lI1aK84kQU/YiX2ZHLG0V6SN+DSt2wplSNf856h2eSARQygVGcaaTnDMiLfnHIpX65ddpCfW7p5nNKnpzw==
+Received: from DB6PR07CA0094.eurprd07.prod.outlook.com (2603:10a6:6:2b::32) by
+ PAVPR03MB9359.eurprd03.prod.outlook.com (2603:10a6:102:30b::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
+ 2023 19:52:38 +0000
+Received: from DB8EUR05FT060.eop-eur05.prod.protection.outlook.com
+ (2603:10a6:6:2b:cafe::a1) by DB6PR07CA0094.outlook.office365.com
+ (2603:10a6:6:2b::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.17 via Frontend
+ Transport; Wed, 22 Mar 2023 19:52:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.160.56.86)
+ smtp.mailfrom=seco.com; dkim=pass (signature was verified)
+ header.d=seco.com;dmarc=pass action=none header.from=seco.com;
+Received-SPF: Pass (protection.outlook.com: domain of seco.com designates
+ 20.160.56.86 as permitted sender) receiver=protection.outlook.com;
+ client-ip=20.160.56.86; helo=inpost-eu.tmcas.trendmicro.com; pr=C
+Received: from inpost-eu.tmcas.trendmicro.com (20.160.56.86) by
+ DB8EUR05FT060.mail.protection.outlook.com (10.233.238.218) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6222.17 via Frontend Transport; Wed, 22 Mar 2023 19:52:37 +0000
+Received: from outmta (unknown [192.168.82.132])
+        by inpost-eu.tmcas.trendmicro.com (Trend Micro CAS) with ESMTP id 9992D2008026E;
+        Wed, 22 Mar 2023 19:52:37 +0000 (UTC)
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (unknown [104.47.17.172])
+        by repre.tmcas.trendmicro.com (Trend Micro CAS) with ESMTPS id 8435D20080075;
+        Wed, 22 Mar 2023 19:42:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bOhW4ENlk37ZQQvxW9+CbYnwZ0deeneYnRsMBFUwme8t1x4dXiy2RU1nyu4ENA6d+9LCBhXdvR+EH8O+rexs4rWakvuiJE/p9T6DsVr+XU0vQ9Rv4zjncHqdk6SwPMjNg4WRAEtbq+GS4eh5R++UXBUa3Qf4KLSZ8QLE9AdL42m6ntj10miS2B61v2tHzmOAKmU+wewQ/BAOF5cdDevNZy4LZtVJfheRaelk0/WUjpMTlW6OwU7LY8a9a4eGBqLWDP4u5R48snPya5Je2Jm8YLGcfcrJVlQQWG6Ux2cuB98NM99Fx1Xse/GgskEqapzgPvKALqJCflxgGPxmRvY6OA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/q5e8NKMjlTtL0D+n/yvOpbvNl+BzKt1vnZDtCuPyRM=;
+ b=VQ2ylNS1sElwHE1kD/bymbAqbW027t1zwI/dODOe0roIqYNGVAocIuaTm977O3wuuhPD2bof/PjXlrxZTHCXhPrBDt4dQfBi9F2nA0CznBIaegMJvIbd7E0XVnd6WZ9P8dNVq1uSh/O71Ndgkzy0ZZvrZ+VBxHqQ5F4I2Ve5YK8r9ZmENbHA5hy8Bv1bYSGtIzcaVap3A7pLCRm9r0aM6lCmfXFeJoHgnZ5hwXGUcIwUwIZpkvVW64NakbgBdZzfJpBgyABZGnuWB++Arw3AHkff9U7RdRQuX9HXEMLqYFI//pRkjEtm6meY+HerGifvKs327bMrIv/KMbMOtyXPsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/q5e8NKMjlTtL0D+n/yvOpbvNl+BzKt1vnZDtCuPyRM=;
+ b=p0GhG6cAKrmpRMUcQgoaDoMs7iifq8vLIzG3iPDttr3HIWcbLkKyUOCCJRX7t4Tn7GpbhxVDWP9Xmgar2cwMgCCxdLa78C7NI2ItHPPGezYK8SGYZmli5Z6noVTNwyH+hUll8nKYxW3UfwNs2WaKPYkgQLSIgmqm9nXJw/oGgXKsoRdRqs5+kEh+WEBktYUAzXmSb+y5ocTgFmteuLHR9C2T/9nIJyzd5ap6PA4BHXbwLArxumc1/CCrzgY992BCr/e2lI1aK84kQU/YiX2ZHLG0V6SN+DSt2wplSNf856h2eSARQygVGcaaTnDMiLfnHIpX65ddpCfW7p5nNKnpzw==
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
+ by DU0PR03MB8137.eurprd03.prod.outlook.com (2603:10a6:10:32d::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
+ 2023 19:52:28 +0000
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::dbcf:1089:3242:614e]) by DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::dbcf:1089:3242:614e%6]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
+ 19:52:28 +0000
+Message-ID: <e17fd247-181f-ab33-d1d7-aafd18e87684@seco.com>
+Date:   Wed, 22 Mar 2023 15:52:23 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH net v2] net: dpaa2-mac: Get serdes only for backplane
+ links
+Content-Language: en-US
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20230304003159.1389573-1-sean.anderson@seco.com>
+ <20230306080953.3wbprojol4gs5bel@LXL00007.wbi.nxp.com>
+ <4cf5fd5b-cf89-4968-d2ff-f828ca51dd31@seco.com>
+In-Reply-To: <4cf5fd5b-cf89-4968-d2ff-f828ca51dd31@seco.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-ClientProxiedBy: MN2PR15CA0058.namprd15.prod.outlook.com
+ (2603:10b6:208:237::27) To DB9PR03MB8847.eurprd03.prod.outlook.com
+ (2603:10a6:10:3dd::13)
+MIME-Version: 1.0
+X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|DU0PR03MB8137:EE_|DB8EUR05FT060:EE_|PAVPR03MB9359:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3d8ce1da-1f8d-4f14-ba0e-08db2b0efd23
+X-TrendMicro-CAS-OUT-LOOP-IDENTIFIER: 656f966764b7fb185830381c646b41a1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: kTHKhRR8EJRo+drE1xx5OPQToMNq5moS5RnFCVkZkWm/DqFhjtNZOCrKpuRoja/hnxROxfhFfvljycLcAYFzYPDM/FhgsODY6Pf8vUnoNUInvOOwtBK/a/WIkqX1/x1CprosJRCbYOQjpTPX5q2yPSjPC1vU8qyx9Ek4e9gb/ywVl8gafIOMwlPlSfXygP8c2ZWuxkKQ+rYBsebcnxhO7kMnrnuIZkir3mKw9F433Qb3bsiO44Hz68ahGZZ2GXrnBV+4l1iLL0azByteF/uhXFc+tDCLe70Id2TN0chZt4mrW2U3kjbbw+oO9WlvfrGr9bIXomryJikN505Tc2l55dVutTwltgF6KrlCh8pTsClwTlxANR6h9ON7XXvda6KvpT8TQZ1mA+O9HuylM7gxrrGksx9c5DvofYPPBDRVZEDomh06gyVjkSJbICpIoBqN1tGtU5Hi+v4zGLmUfhT26PGPfJGhjda/xbJ3bdV8j4c7EvVVmoiKMd3ykNavOIWZjJ1zwdvFc3tD9ZddQ6JHoadu0Sn2J8RSESJHSG/mQAqZiKtKVj79i4p2XGVdtYPBTDeHmT3uNG7dASHOrT6bjczrrm1oJLIvIV3DCHdO1hGSE9o3oeGjuornwqGhHiVmcO81Z/XlineeY3KLD/peRuWGGSuLWNyS0yNKuuGDDb5/PEk55LDd9hwkVHfB+9oGv/b6MRWcNJjKvrZyd7qUpwvxC+fU8L8YLgQZRMLfPM962xBXHM0Bt42uZgPCH+pUSd2M6Qw0b+6TApDDmkGaqA==
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(396003)(136003)(376002)(346002)(39850400004)(366004)(451199018)(31696002)(86362001)(36756003)(52116002)(316002)(4326008)(186003)(66476007)(6916009)(66946007)(478600001)(8676002)(66556008)(53546011)(2616005)(6512007)(31686004)(6486002)(6666004)(26005)(54906003)(83380400001)(6506007)(38350700002)(38100700002)(5660300002)(44832011)(2906002)(8936002)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB8137
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB8EUR05FT060.eop-eur05.prod.protection.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs: bce182a9-2f0a-40e0-b4b4-08db2b0ef71e
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6wtvR17Xxe3QJ3c/JS4QOrVeiFj7rBw5oUCeOpte464Jk0szq++M3flq6UIONRqehMeXJgJRKaWRhubE/nci/nPda/Y3Bt3nrfI0hSjU9beQwuAdnkGTnrrI74efX7xPblOIVI9oqXcPoSe30XD8FozzOXnq5S5gzxfarvvbcgoPT3tsZl2Zw/3w/RBSNVxc83ejNEd7FAiOAtXA6toW4xutHRzulhyaBwJI/xd3gvag9TDpCtOhtKkVnPkI/GkDXQOA6VL2rEYfR9tLfnc9/BPhT2WobHuu0uS9qfKHZXwtb2kyuxJ5MHmMhvmzQTZYS/aqL1kmzTekQILQg7/rT02J4ftAOJDafnxRQeQ6G9Iacu7p49rFI+qRkRvTgG/utbJmtWh9tYuSJCYsHifb1zSsWv5FZiORspp0wIdKqkLBS8n4ttbEFQcK8nBUjDkqmP9Ru6nA0gXPx+OHzTvL0Z/+ZoHwlZxfgsqYsqqgwQ+U8xKYyDvCjLA/oWMNWMNk5/Cr9xKJUGZxCzvLTIgCdhBOlAYE2n/84bynZr/SUw7n60O9j4/0d7HEXdaH8dceo0dxnFXy3eJ0Vii5PfRlFWGVAfyqvSXiKa0keTtdGXj9hxm2ro4ZjcyE3HoMxUNVlS3yu3UuSjxWQtQPS91XgwjMjotg5hGcG4XT5frgZWZaniaOrgMFVgxb9yMR+oR2IlCq4kM/T5T8dMej66lRjSnBvYdbL20LibAai4EMg7wLqBs/sBC+bQ5FCQpohUPnRhLXtcjkNNQ5wGYeqvdkrg==
+X-Forefront-Antispam-Report: CIP:20.160.56.86;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:inpost-eu.tmcas.trendmicro.com;PTR:inpost-eu.tmcas.trendmicro.com;CAT:NONE;SFS:(13230025)(396003)(39850400004)(136003)(376002)(346002)(451199018)(36840700001)(46966006)(40470700004)(36860700001)(356005)(7596003)(86362001)(31696002)(36756003)(82740400003)(4326008)(26005)(44832011)(2906002)(70586007)(7636003)(70206006)(5660300002)(8676002)(8936002)(82310400005)(47076005)(40480700001)(186003)(40460700003)(336012)(2616005)(83380400001)(41300700001)(6486002)(6666004)(478600001)(6506007)(316002)(6512007)(6916009)(54906003)(53546011)(34070700002)(31686004)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 19:52:37.8633
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d8ce1da-1f8d-4f14-ba0e-08db2b0efd23
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=bebe97c3-6438-442e-ade3-ff17aa50e733;Ip=[20.160.56.86];Helo=[inpost-eu.tmcas.trendmicro.com]
+X-MS-Exchange-CrossTenant-AuthSource: DB8EUR05FT060.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR03MB9359
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Mar 2023 17:10:25 +0100 Sabrina Dubroca wrote:
-> > Theoretically a rekey op is nicer and cleaner. Practically the quality
-> > of the driver implementations will vary wildly*, and it's a significant
-> > time investment to review all of them. So for non-technical reasons my
-> > intuition is that we'd deliver a better overall user experience if we
-> > handled the rekey entirely in the core.
-> > 
-> > Wait for old key to no longer be needed, _del + _add, start using the
-> > offload again.
-> > 
-> > * One vendor submitted a driver claiming support for TLS 1.3, when 
-> >   TLS 1.3 offload was rejected by the core. So this is the level of
-> >   testing and diligence we're working with :(  
-> 
-> :(
-> 
-> Ok, _del + _add then.
-> 
-> 
-> I went over the thread to summarize what we've come up with so far:
-> 
-> RX
->  - The existing SW path will handle all records between the KeyUpdate
->    message signaling the change of key and the new key becoming known
->    to the kernel -- those will be queued encrypted, and decrypted in
->    SW as they are read by userspace (once the key is provided, ie same
->    as this patchset)
->  - Call ->tls_dev_del + ->tls_dev_add immediately during
->    setsockopt(TLS_RX)
-> 
-> TX
->  - After setsockopt(TLS_TX), switch to the existing SW path (not the
->    current device_fallback) until we're able to re-enable HW offload
->    - tls_device_{sendmsg,sendpage} will call into
->      tls_sw_{sendmsg,sendpage} under lock_sock to avoid changing
->      socket ops during the rekey while another thread might be waiting
->      on the lock
->  - We only re-enable HW offload (call ->tls_dev_add to install the new
->    key in HW) once all records sent with the old key have been
->    ACKed. At this point, all unacked records are SW-encrypted with the
->    new key, and the old key is unused by both HW and retransmissions.
->    - If there are no unacked records when userspace does
->      setsockopt(TLS_TX), we can (try to) install the new key in HW
->      immediately.
->    - If yet another key has been provided via setsockopt(TLS_TX), we
->      don't install intermediate keys, only the latest.
->    - TCP notifies ktls of ACKs via the icsk_clean_acked callback. In
->      case of a rekey, tls_icsk_clean_acked will record when all data
->      sent with the most recent past key has been sent. The next call
->      to sendmsg/sendpage will install the new key in HW.
->    - We close and push the current SW record before reenabling
->      offload.
-> 
-> If ->tls_dev_add fails to install the new key in HW, we stay in SW
-> mode. We can add a counter to keep track of this.
+Hi all,
 
-SG!
-
-> In addition:
+On 3/6/23 11:13, Sean Anderson wrote:
+> On 3/6/23 03:09, Ioana Ciornei wrote:
+>> On Fri, Mar 03, 2023 at 07:31:59PM -0500, Sean Anderson wrote:
+>>> When commenting on what would become commit 085f1776fa03 ("net: dpaa2-mac:
+>>> add backplane link mode support"), Ioana Ciornei said [1]:
+>>> 
+>>> > ...DPMACs in TYPE_BACKPLANE can have both their PCS and SerDes managed
+>>> > by Linux (since the firmware is not touching these). That being said,
+>>> > DPMACs in TYPE_PHY (the type that is already supported in dpaa2-mac) can
+>>> > also have their PCS managed by Linux (no interraction from the
+>>> > firmware's part with the PCS, just the SerDes).
+>>> 
+>>> This implies that Linux only manages the SerDes when the link type is
+>>> backplane. Modify the condition in dpaa2_mac_connect to reflect this,
+>>> moving the existing conditions to more appropriate places.
+>> 
+>> I am not sure I understand why are you moving the conditions to
+>> different places. Could you please explain?
 > 
-> Because we can't change socket ops during a rekey, we'll also have to
-> modify do_tls_setsockopt_conf to check ctx->tx_conf and only call
-> either tls_set_device_offload or tls_set_sw_offload. RX already uses
-> the same ops for both TLS_HW and TLS_SW, so we could switch between HW
-> and SW mode on rekey.
+> This is not (just) a movement of conditions, but a changing of what they
+> apply to.
 > 
-> An alternative would be to have a common sendmsg/sendpage which locks
-> the socket and then calls the correct implementation. We'll need that
-> anyway for the offload under rekey case, so that would only add a test
-> to the SW path's ops (compared to the current code). That should allow
-> us to make build_protos a lot simpler.
+> There are two things which this patch changes: whether we manage the phy
+> and whether we say we support alternate interfaces. According to your
+> comment above (and roughly in-line with my testing), Linux manages the
+> phy *exactly* when the link type is BACKPLANE. In all other cases, the
+> firmware manages the phy. Similarly, alternate interfaces are supported
+> *exactly* when the firmware supports PROTOCOL_CHANGE. However, currently
+> the conditions do not match this.
+> 
+>> Why not just append the existing condition from dpaa2_mac_connect() with
+>> "mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE"?
+>> 
+>> This way, the serdes_phy is populated only if all the conditions pass
+>> and you don't have to scatter them all around the driver.
+> 
+> If we have link type BACKPLANE, Linux manages the phy, even if the
+> firmware doesn't support changing the interface. Therefore, we need to
+> grab the phy, but not fill in alternate interfaces.
+> 
+> This does not scatter the conditions, but instead moves them to exactly
+> where they are needed. Currently, they are in the wrong places.
+> 
+> --Sean
 
-No preference assuming perf is the same.
+I see this is marked as "changes requested" on patchwork. However, as explained
+above, I do not think that the requested changes are necessary. Please review the
+patch status.
+
+--Sean
