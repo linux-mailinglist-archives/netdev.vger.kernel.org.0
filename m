@@ -2,110 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 060B16C54B3
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 20:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0A286C54BB
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 20:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbjCVTQb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Mar 2023 15:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        id S230454AbjCVTRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 15:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbjCVTQ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 15:16:27 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601215DC95;
-        Wed, 22 Mar 2023 12:16:25 -0700 (PDT)
-Received: from p5b12767e.dip0.t-ipconnect.de ([91.18.118.126] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1pf3w2-0003vB-AH; Wed, 22 Mar 2023 20:15:46 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andreas =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Daniel Machon <daniel.machon@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-amlogic@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-can@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2] dt-bindings: net: Drop unneeded quotes
-Date:   Wed, 22 Mar 2023 20:15:44 +0100
-Message-ID: <3745510.ElGaqSPkdT@phil>
-In-Reply-To: <20230320233758.2918972-1-robh@kernel.org>
-References: <20230320233758.2918972-1-robh@kernel.org>
+        with ESMTP id S230075AbjCVTRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 15:17:19 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859D060A9D;
+        Wed, 22 Mar 2023 12:17:18 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id ew6so14260653edb.7;
+        Wed, 22 Mar 2023 12:17:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679512637;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zq7Jl3TGbJwfMRCJgFwbgsM8JVMZ+vr7U3sGfe6jsB8=;
+        b=IwEJFjUWISTejU0FVnsTrdJHJe6HwK372fdhRbbSA9UYXwB1Bgz77aw/8yVgn2DQ5A
+         F6rXGGxKi86YjpcmMYtnebKufUdSIaIVUyZnxArAh6CHPOADa+yUlffw++XpSAxd4E9E
+         GVFlY677GTCphhkdyh+uvKjffRznl21AJRM66o5tJprFyzO97+F2/V//Cxd6laqEM7+k
+         cFEK/GUJiyE56D6rZXx5wU9FDGyfN4S2mYri3eGl+FIH/Zk7g6J+bu7IyiEQ+NhFNqpY
+         TuKUzhtcY6Rbq7f2ym1cuHMu9A2WrMOyAT767LCavF7x9ryAAWlWvPJrF9pwlyAmwrHz
+         0ekQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679512637;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zq7Jl3TGbJwfMRCJgFwbgsM8JVMZ+vr7U3sGfe6jsB8=;
+        b=lGNt1a1FGB4Lg6zcK/6KZUoNv0SmzFYU6u7AC/AaMlEqXubPOoY/HkIstxEzLG58vk
+         MPXlkutyja6jzeXsyvJrlHdxFKKhJuQUioAPTG/xzr7UIEcYlZ4gBxhnRjL2Ts3gFsKi
+         pu+jg8f2k8hlxYhHp8dbB1hXwjjQYq7JZ1wppuJaL8P5a7I6hdHvwWE/dmb6Dbm1P4P4
+         TchKtDv+ygQscONdVid1BaV7VJ1zTsXZSa9+V5fPCFHvksZJtvcDehlH2+gc5BzDsO7L
+         81JDzFoZMoTzNIaQSfTwOB4EZNMxNuXMSCGeGcEjKhoeCbt95khNcaH9lVYSdsxywDck
+         KaBg==
+X-Gm-Message-State: AO0yUKXgQNNncqH4L9vp33jpOua8zuUFKkBeNEqDtqP4KA/YSvLQ0SLU
+        gAuRq0U9WhUMIn3ai0d50PAK6f17hM9kaVeNVDk=
+X-Google-Smtp-Source: AK7set9552GdKOTmZ+tiPEVlGLee/ERxdsxUe3D7HddBqrBIhldF7UjpKsvlmjxDOFDXG2JkBtFdTg1eCUR1gkUJ0ys=
+X-Received: by 2002:a50:9995:0:b0:4fa:3c0b:74b with SMTP id
+ m21-20020a509995000000b004fa3c0b074bmr4126749edb.3.1679512636925; Wed, 22 Mar
+ 2023 12:17:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_PASS,T_SPF_HELO_TEMPERROR
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <167940634187.2718137.10209374282891218398.stgit@firesoul>
+ <167940643669.2718137.4624187727245854475.stgit@firesoul> <CAKH8qBuv-9TXAmi0oTbB0atC4f6jzFcFhAgQ3D89VX45vUU9hw@mail.gmail.com>
+ <080640fc-5835-26f1-2b20-ff079bd59182@redhat.com> <CAADnVQKsxzLTZ2XoLbmKKLAeaSyvf3P+w8V143iZ4cEWWTEUfw@mail.gmail.com>
+ <CAKH8qBuHaaqnV-_mb1Roao9ZDrEHm+1Cj77hPZSRgwxoqphvxQ@mail.gmail.com>
+In-Reply-To: <CAKH8qBuHaaqnV-_mb1Roao9ZDrEHm+1Cj77hPZSRgwxoqphvxQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 22 Mar 2023 12:17:05 -0700
+Message-ID: <CAADnVQ+6FeQ97DZLco3OtbtXQvGUAY4nr5tM++6NEDr+u8m7GQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V2 3/6] selftests/bpf: xdp_hw_metadata RX hash
+ return code info
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Martin KaFai Lau <martin.lau@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
+        "Song, Yoong Siang" <yoong.siang.song@intel.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Dienstag, 21. März 2023, 00:37:54 CET schrieb Rob Herring:
-> Cleanup bindings dropping unneeded quotes. Once all these are fixed,
-> checking for this can be enabled in yamllint.
-> 
-> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for bindings/net/can
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-> v2:
->  - Also drop quotes on URLs
+On Wed, Mar 22, 2023 at 12:00=E2=80=AFPM Stanislav Fomichev <sdf@google.com=
+> wrote:
+>
+> On Wed, Mar 22, 2023 at 9:07=E2=80=AFAM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Wed, Mar 22, 2023 at 9:05=E2=80=AFAM Jesper Dangaard Brouer
+> > <jbrouer@redhat.com> wrote:
+> > >
+> > >
+> > >
+> > > On 21/03/2023 19.47, Stanislav Fomichev wrote:
+> > > > On Tue, Mar 21, 2023 at 6:47=E2=80=AFAM Jesper Dangaard Brouer
+> > > > <brouer@redhat.com> wrote:
+> > > >>
+> > > >> When driver developers add XDP-hints kfuncs for RX hash it is
+> > > >> practical to print the return code in bpf_printk trace pipe log.
+> > > >>
+> > > >> Print hash value as a hex value, both AF_XDP userspace and bpf_pro=
+g,
+> > > >> as this makes it easier to spot poor quality hashes.
+> > > >>
+> > > >> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > > >> ---
+> > > >>   .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++=
+---
+> > > >>   tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
+> > > >>   2 files changed, 10 insertions(+), 4 deletions(-)
+> > > >>
+> > > >> diff --git a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c b=
+/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> > > >> index 40c17adbf483..ce07010e4d48 100644
+> > > >> --- a/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> > > >> +++ b/tools/testing/selftests/bpf/progs/xdp_hw_metadata.c
+> > > >> @@ -77,10 +77,13 @@ int rx(struct xdp_md *ctx)
+> > > >>                  meta->rx_timestamp =3D 0; /* Used by AF_XDP as no=
+t avail signal */
+> > > >>          }
+> > > >>
+> > > >> -       if (!bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash))
+> > > >> -               bpf_printk("populated rx_hash with %u", meta->rx_h=
+ash);
+> > > >> -       else
+> > > >> +       ret =3D bpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash);
+> > > >> +       if (ret >=3D 0) {
+> > > >> +               bpf_printk("populated rx_hash with 0x%08X", meta->=
+rx_hash);
+> > > >> +       } else {
+> > > >> +               bpf_printk("rx_hash not-avail errno:%d", ret);
+> > > >>                  meta->rx_hash =3D 0; /* Used by AF_XDP as not ava=
+il signal */
+> > > >> +       }
+> > > >>
+> > > >>          return bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PA=
+SS);
+> > > >>   }
+> > > >> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c b/tools=
+/testing/selftests/bpf/xdp_hw_metadata.c
+> > > >> index 400bfe19abfe..f3ec07ccdc95 100644
+> > > >> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> > > >> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
+> > > >> @@ -3,6 +3,9 @@
+> > > >>   /* Reference program for verifying XDP metadata on real HW. Func=
+tional test
+> > > >>    * only, doesn't test the performance.
+> > > >>    *
+> > > >> + * BPF-prog bpf_printk info outout can be access via
+> > > >> + * /sys/kernel/debug/tracing/trace_pipe
+> > > >
+> > > > s/outout/output/
+> > > >
+> > >
+> > > Fixed in V3
+> > >
+> > > > But let's maybe drop it? If you want to make it more usable, let's
+> > > > have a separate patch to enable tracing and periodically dump it to
+> > > > the console instead (as previously discussed).
+> > >
+> > > Cat'ing /sys/kernel/debug/tracing/trace_pipe work for me regardless o=
+f
+> > > setting in
+> > > /sys/kernel/debug/tracing/events/bpf_trace/bpf_trace_printk/enable
+> > >
+> > > We likely need a followup patch that adds a BPF config switch that ca=
+n
+> > > disable bpf_printk calls, because this adds overhead and thus affects
+> > > the timestamps.
+> >
+> > No. This is by design.
+> > Do not use bpf_printk* in production.
+>
+> But that's not for the production? xdp_hw_metadata is a small tool to
+> verify that the metadata being dumped is correct (during the
+> development).
+> We have a proper (less verbose) selftest in
+> {progs,prog_tests}/xdp_metadata.c (over veth).
+> This xdp_hw_metadata was supposed to be used for running it against
+> the real hardware, so having as much debugging at hand as possible
+> seems helpful? (at least it was helpful to me when playing with mlx4)
 
->  .../devicetree/bindings/net/rockchip,emac.yaml |  2 +-
->  .../bindings/net/rockchip-dwmac.yaml           |  4 ++--
-
-Reviewed-by: Heiko Stuebner <heiko@sntech.de> #rockchip
-
-
+The only use of bpf_printk is for debugging of bpf progs themselves.
+It should not be used in any tool.
