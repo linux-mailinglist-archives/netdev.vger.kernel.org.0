@@ -2,111 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04BBA6C4A7D
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:29:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3646C4A8A
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbjCVM3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 08:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S230316AbjCVMac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 08:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229797AbjCVM3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:29:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E517EAF0B
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:29:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679488140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/RmaCdFiflknr5F/EzALZWl8EQAEMlohlo+Bq/6n784=;
-        b=IGRiaXY47/CqfQ0HhrV9YXycAt4KYHUdiaYitJlJoN7/+XZUvAlCO1iMkYBinss56kGpGa
-        I4VfKnY1V4KbvSmUIJIRMYVBqB1s6p2S0mASlZ/PXfsonM0pQGzWH+3UHIak4lL0kzT2Ui
-        AQa5juRrC8KEnTtunlpOkaxNBguWy6c=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-284-kh-epCaHPEe8Iw-kBu4cgA-1; Wed, 22 Mar 2023 08:28:59 -0400
-X-MC-Unique: kh-epCaHPEe8Iw-kBu4cgA-1
-Received: by mail-qk1-f198.google.com with SMTP id 198-20020a370bcf000000b007468cffa4e2so3956669qkl.10
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:28:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679488138;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=/RmaCdFiflknr5F/EzALZWl8EQAEMlohlo+Bq/6n784=;
-        b=GMFRUn9AkFkYJo6Wq8cMu1ToZUPM4t8Sjbe3OSg9vie/H/2h3NRc4i/hl15QL1dTAb
-         uFLXNXZaFbiDhCQ07kQSOv0gGN7F4ZPBvGspZcvEEaA9qoTqsTDJ04mnQDqVdpPbi5uN
-         T+fDvteYTdTuFWFIiQVCrKBnQl0uZHY/56d+tMr9Kl2zXfaikY6QZakVNXWr2fvDfk8C
-         WTDR0EaIKHicTvj3ucTGAPw3rXO1LaGNyuAqg6Z9fijn4nX6ZgdlTgvAmkPEjMj3cQbR
-         9Knu5cRFbUxSxo8/ITApg5dX5+xNzF8kNJn6w1rnzmrXO1wvweieaGR9E3X7Edjm4WGo
-         3Yeg==
-X-Gm-Message-State: AO0yUKXumxAuBtYYRm3vVYzVQcL4xtFLTeGSrU+kZtp2uAQ0q1oZOAyB
-        EDxKbfjrh44HyeHQ4h6beKYDlAbIxoEexygIyP82MCZgY/aTBMiqSQEpgJYbF9fBkyInH3U3c/R
-        XIOrxgxy7f0hmsKKOm31N75WiUyc=
-X-Received: by 2002:ac8:7f8e:0:b0:3bf:d9d2:484f with SMTP id z14-20020ac87f8e000000b003bfd9d2484fmr5698838qtj.11.1679488138427;
-        Wed, 22 Mar 2023 05:28:58 -0700 (PDT)
-X-Google-Smtp-Source: AK7set8Gcxx8GdV/OeVtTOhHQR7MlyYiQ1UjJcEDEFgxn3029wWSBoOMbr8ofWD/oxpFcUXsweisow==
-X-Received: by 2002:ac8:7f8e:0:b0:3bf:d9d2:484f with SMTP id z14-20020ac87f8e000000b003bfd9d2484fmr5698812qtj.11.1679488138211;
-        Wed, 22 Mar 2023 05:28:58 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id j13-20020a37ef0d000000b00729b7d71ac7sm11174245qkk.33.2023.03.22.05.28.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Mar 2023 05:28:57 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH] ath10k: remove unused ath10k_get_ring_byte function
-Date:   Wed, 22 Mar 2023 08:28:55 -0400
-Message-Id: <20230322122855.2570417-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S230303AbjCVMaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C28532BC;
+        Wed, 22 Mar 2023 05:30:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D368C62084;
+        Wed, 22 Mar 2023 12:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 28C7AC4339C;
+        Wed, 22 Mar 2023 12:30:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679488219;
+        bh=TDHq3cL0tnq/ChUUIXoye4vsdq/UVoKm4rtu4+CyqIo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MZQHuIj/PB7DeqTXC2U/FLn2UvmGiK/t2Fv1L77qJruBW7p254Dk2ZKOeViluM0rI
+         phhrzGLS2BPXH2Wo15TKMfhYC4CEZGqpq+9MjDRhmCLCc3O05dxAkZJlfkkyRnQeuj
+         PX3+C8WMtV3l/fywxGfwe/R0sTs5lPMyO7Ws+uweKop20Ujjo5M5wpWjt5PtvWxx6E
+         oSwgSYV4r7FdmmO7kmeu/hPYcVRTWmXO0CJ2vz07ZjET8+8GB95B/hBT/IXTlqUVjP
+         vfN3wk0N0YZqP7ejBzZHpnlbV7Hcyb6GfcNnTz7X6WVdXm52MpfCR3763FrIwn+WaP
+         gcPHdbshPBQ3Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0D254E4F0DA;
+        Wed, 22 Mar 2023 12:30:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpts: adjust estf following
+ ptp changes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167948821905.6670.11403271818303294452.git-patchwork-notify@kernel.org>
+Date:   Wed, 22 Mar 2023 12:30:19 +0000
+References: <20230321062600.2539544-1-s-vadapalli@ti.com>
+In-Reply-To: <20230321062600.2539544-1-s-vadapalli@ti.com>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, rogerq@kernel.org, jacob.e.keller@intel.com,
+        richardcochran@gmail.com, leon@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srk@ti.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang with W=1 reports
-drivers/net/wireless/ath/ath10k/ce.c:88:1: error:
-  unused function 'ath10k_get_ring_byte' [-Werror,-Wunused-function]
-ath10k_get_ring_byte(unsigned int offset,
-^
-This function is not used so remove it.
+Hello:
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/wireless/ath/ath10k/ce.c | 7 -------
- 1 file changed, 7 deletions(-)
+This patch was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
-index b656cfc03648..c27b8204718a 100644
---- a/drivers/net/wireless/ath/ath10k/ce.c
-+++ b/drivers/net/wireless/ath/ath10k/ce.c
-@@ -84,13 +84,6 @@ ath10k_set_ring_byte(unsigned int offset,
- 	return ((offset << addr_map->lsb) & addr_map->mask);
- }
- 
--static inline unsigned int
--ath10k_get_ring_byte(unsigned int offset,
--		     struct ath10k_hw_ce_regs_addr_map *addr_map)
--{
--	return ((offset & addr_map->mask) >> (addr_map->lsb));
--}
--
- static inline u32 ath10k_ce_read32(struct ath10k *ar, u32 offset)
- {
- 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
+On Tue, 21 Mar 2023 11:56:00 +0530 you wrote:
+> From: Grygorii Strashko <grygorii.strashko@ti.com>
+> 
+> When the CPTS clock is synced/adjusted by running linuxptp (ptp4l/phc2sys),
+> it will cause the TSN EST schedule to drift away over time. This is because
+> the schedule is driven by the EstF periodic counter whose pulse length is
+> defined in ref_clk cycles and it does not automatically sync to CPTS clock.
+>    _______
+>  _|
+>   ^
+>   expected cycle start time boundary
+>    _______________
+>  _|_|___|_|
+>   ^
+>   EstF drifted away -> direction
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: ethernet: ti: am65-cpts: adjust estf following ptp changes
+    https://git.kernel.org/netdev/net-next/c/7849c42da2ca
+
+You are awesome, thank you!
 -- 
-2.27.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
