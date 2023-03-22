@@ -2,56 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EAD66C404C
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:23:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C386C4051
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:23:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbjCVCXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 22:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        id S230250AbjCVCXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 22:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbjCVCW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:22:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084C5126
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:22:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59A9DB816ED
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:22:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8539C433D2;
-        Wed, 22 Mar 2023 02:22:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679451774;
-        bh=1if7DUbGyPDpCVZKeJHyrgnUuRA2KO1WpcSUFZ8uqZU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=FsRCkMSWwD9+YYU3ggUZHCisjy0D/71RpkWX+cPSqeGSFh38VLQC7Ik+1K1FV75e2
-         SQxQ3/ogZjdZk9JiroSk++kuezkw/rcOkbLBqFlGrZ3l6ovaTxJnaF7nxaCZhPoFF7
-         TRbHUhyh8wIn+rce/f9l7330IuDMSWlM1Z6Fk2YY6vNICZOkl7fAz4K19Q3blD0n5z
-         CWoJpJR29womytS+yteYgxTpq8ZNBF+VeiOSLbtnzjMeor6nQ5s3m42/GAio2j5KXT
-         ICqmHPDAt8Xk1UUqnulojbeBpNhb2ww2wxNid0OKnjH1hID7EcpCZr1VQ7MTWcMV49
-         C2BAoUZY7R8yQ==
-Message-ID: <1d6392a2-ae42-ef7f-30b1-bd5d28b1a586@kernel.org>
-Date:   Tue, 21 Mar 2023 20:22:53 -0600
+        with ESMTP id S229459AbjCVCXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:23:44 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FF9A24E;
+        Tue, 21 Mar 2023 19:23:34 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id eg48so67138754edb.13;
+        Tue, 21 Mar 2023 19:23:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679451813;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Hqh1G6spMySCJmEihCoSjRChZOJKV6vGK7xpTVI//4w=;
+        b=HS2sxe7M69Aab1brdxz3YpCtpkwDeWkH/O9FIIkGTuD2gzyAVhsV0Do3C62qtuk24x
+         h3lC+6pwuE/ROsMqAs5ikZQ7kbvu/g0MqEbRcURDG9w9z+9lG2igyFKPgCZL3G5Loa2c
+         e7LGH3mu9CmUmQEvTYB8eQuJzEZDCvJKY1bTgi0RXvP9R+hSmCBgGAHWC0g/6nOGkNou
+         Y1NeeKJyOeRMA+EL99J3DBduH30ks9iRypQlMSBGxeN6kR1WjpwKQy7d7x5EyyWlaYPx
+         pKs5Mba1DgHCsVvkK4oj5LiJQpVRafFBEPZa4jMjMmkM4Kd/8WOirZ0KWDFPGCwbWb6z
+         ysdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679451813;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Hqh1G6spMySCJmEihCoSjRChZOJKV6vGK7xpTVI//4w=;
+        b=gmgnDxJF44S26mP/iEx/eY6t1BtjE6Bs+Lo9U7SPXu/c18j3zDr4wIkUM26cAFKUva
+         H1h51thPGblcikZqK2CLtW1T8coIMmzu0JVB5r2quWk/ViIYd/u0CaySFbdO2HR2x76V
+         8c5ZGGNMJxCXpsHrzJ9VlhGRVg3rkFMAmU+XG6xXwdQlCi6Byk9VnRSktojB7+4L1ZTg
+         xbwA+cEa349aUle/UbLXeKW7jzTty4ReoD8zeAhOjyl/oy8uxHhAEm1RC+kit8FMr2bf
+         7BFcyzfb4u6dA/ej4B+yl4hnMp1TpysCKBTLN82VUJ5DKTcI8p1ceB4z+4IgZ3eaNMar
+         CK8A==
+X-Gm-Message-State: AO0yUKUsWDIsfvUY5/2vnqtIc5w+8rlwFf8vmhHVYWejW1X/kPQPwUL1
+        zYwPmdky/DNqRdrb8ymR8GbsmBUO0JsYpc7qU/k=
+X-Google-Smtp-Source: AK7set8wvkY1K1BZY67D7iN6R0hS9GWfzPTLzFimfFPV3COKDH6mWc4O019qVgeAAi+sUtjUi1sGpr/g/SsK/DEnapk=
+X-Received: by 2002:a50:8d04:0:b0:4fc:ebe2:2fc9 with SMTP id
+ s4-20020a508d04000000b004fcebe22fc9mr2707603eds.3.1679451812654; Tue, 21 Mar
+ 2023 19:23:32 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH v1 net-next 1/2] ipv6: Remove in6addr_any alternatives.
-Content-Language: en-US
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
+In-Reply-To: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 21 Mar 2023 19:23:21 -0700
+Message-ID: <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com>
+Subject: Re: [PATCH 0/5] usermode_driver: Add management library and API
+To:     Roberto Sassu <roberto.sassu@huaweicloud.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-References: <20230322012204.33157-1-kuniyu@amazon.com>
- <20230322012204.33157-2-kuniyu@amazon.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20230322012204.33157-2-kuniyu@amazon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,106 +91,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/21/23 7:22 PM, Kuniyuki Iwashima wrote:
-> Some code defines the IPv6 wildcard address as a local variable.
-> Let's use in6addr_any instead.
-> 
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  .../net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c |  5 ++---
->  include/net/ip6_fib.h                                 |  9 +++------
->  include/trace/events/fib.h                            |  5 ++---
->  include/trace/events/fib6.h                           |  5 +----
->  net/ethtool/ioctl.c                                   |  9 ++++-----
->  net/ipv4/inet_hashtables.c                            | 11 ++++-------
->  6 files changed, 16 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-> index a108e73c9f66..6a88f6b02678 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-> @@ -98,7 +98,6 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
->  #if IS_ENABLED(CONFIG_INET) && IS_ENABLED(CONFIG_IPV6)
->  	else if (ip_version == 6) {
->  		int ipv6_size = MLX5_FLD_SZ_BYTES(ipv6_layout, ipv6);
-> -		struct in6_addr zerov6 = {};
->  
->  		daddr = MLX5_ADDR_OF(fte_match_param, spec->match_value,
->  				     outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6);
-> @@ -106,8 +105,8 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
->  				     outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6);
->  		memcpy(&tun_attr->dst_ip.v6, daddr, ipv6_size);
->  		memcpy(&tun_attr->src_ip.v6, saddr, ipv6_size);
-> -		if (!memcmp(&tun_attr->dst_ip.v6, &zerov6, sizeof(zerov6)) ||
-> -		    !memcmp(&tun_attr->src_ip.v6, &zerov6, sizeof(zerov6)))
-> +		if (!memcmp(&tun_attr->dst_ip.v6, &in6addr_any, sizeof(in6addr_any)) ||
-> +		    !memcmp(&tun_attr->src_ip.v6, &in6addr_any, sizeof(in6addr_any)))
-
-I think ipv6_addr_any can be used here.
-
->  			return 0;
->  	}
->  #endif
+On Fri, Mar 17, 2023 at 7:53=E2=80=AFAM Roberto Sassu
+<roberto.sassu@huaweicloud.com> wrote:
 >
+> From: Roberto Sassu <roberto.sassu@huawei.com>
+>
+> A User Mode Driver (UMD) is a specialization of a User Mode Helper (UMH),
+> which runs a user space process from a binary blob, and creates a
+> bidirectional pipe, so that the kernel can make a request to that process=
+,
+> and the latter provides its response. It is currently used by bpfilter,
+> although it does not seem to do any useful work.
 
+FYI the new home for bpfilter is here:
+https://github.com/facebook/bpfilter
 
-> @@ -3233,20 +3232,20 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
->  
->  		v6_spec = &fs->h_u.tcp_ip6_spec;
->  		v6_m_spec = &fs->m_u.tcp_ip6_spec;
-> -		if (memcmp(v6_m_spec->ip6src, &zero_addr, sizeof(zero_addr))) {
-> +		if (memcmp(v6_m_spec->ip6src, &in6addr_any, sizeof(in6addr_any))) {
->  			memcpy(&match->key.ipv6.src, v6_spec->ip6src,
->  			       sizeof(match->key.ipv6.src));
->  			memcpy(&match->mask.ipv6.src, v6_m_spec->ip6src,
->  			       sizeof(match->mask.ipv6.src));
->  		}
-> -		if (memcmp(v6_m_spec->ip6dst, &zero_addr, sizeof(zero_addr))) {
-> +		if (memcmp(v6_m_spec->ip6dst, &in6addr_any, sizeof(in6addr_any))) {
->  			memcpy(&match->key.ipv6.dst, v6_spec->ip6dst,
->  			       sizeof(match->key.ipv6.dst));
->  			memcpy(&match->mask.ipv6.dst, v6_m_spec->ip6dst,
->  			       sizeof(match->mask.ipv6.dst));
->  		}
-> -		if (memcmp(v6_m_spec->ip6src, &zero_addr, sizeof(zero_addr)) ||
-> -		    memcmp(v6_m_spec->ip6dst, &zero_addr, sizeof(zero_addr))) {
-> +		if (memcmp(v6_m_spec->ip6src, &in6addr_any, sizeof(in6addr_any)) ||
-> +		    memcmp(v6_m_spec->ip6dst, &in6addr_any, sizeof(in6addr_any))) {
+> The problem is, if other users would like to implement a UMD similar to
+> bpfilter, they would have to duplicate the code. Instead, make an UMD
+> management library and API from the existing bpfilter and sockopt code,
+> and move it to common kernel code.
+>
+> Also, define the software architecture and the main components of the
+> library: the UMD Manager, running in the kernel, acting as the frontend
+> interface to any user or kernel-originated request; the UMD Loader, also
+> running in the kernel, responsible to load the UMD Handler; the UMD
+> Handler, running in user space, responsible to handle requests from the U=
+MD
+> Manager and to send to it the response.
 
-and this group as well.
+That doesn't look like a generic interface for UMD.
+It was a quick hack to get bpfilter off the ground, but certainly
+not a generic one.
 
->  			match->dissector.used_keys |=
->  				BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS);
->  			match->dissector.offset[FLOW_DISSECTOR_KEY_IPV6_ADDRS] =
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index 6edae3886885..74caaa0c148b 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -826,13 +826,11 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
->  				      unsigned short port, int l3mdev, const struct sock *sk)
->  {
->  #if IS_ENABLED(CONFIG_IPV6)
-> -	struct in6_addr addr_any = {};
-> -
->  	if (sk->sk_family != tb->family) {
->  		if (sk->sk_family == AF_INET)
->  			return net_eq(ib2_net(tb), net) && tb->port == port &&
->  				tb->l3mdev == l3mdev &&
-> -				ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
-> +				ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
->  
->  		return false;
->  	}
-> @@ -840,7 +838,7 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
->  	if (sk->sk_family == AF_INET6)
->  		return net_eq(ib2_net(tb), net) && tb->port == port &&
->  			tb->l3mdev == l3mdev &&
-> -			ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
-> +			ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
->  	else
->  #endif
->  		return net_eq(ib2_net(tb), net) && tb->port == port &&
+> I have two use cases, but for sake of brevity I will propose one.
+>
+> I would like to add support for PGP keys and signatures in the kernel, so
+> that I can extend secure boot to applications, and allow/deny code
+> execution based on the signed file digests included in RPM headers.
+>
+> While I proposed a patch set a while ago (based on a previous work of Dav=
+id
+> Howells), the main objection was that the PGP packet parser should not ru=
+n
+> in the kernel.
+>
+> That makes a perfect example for using a UMD. If the PGP parser is moved =
+to
+> user space (UMD Handler), and the kernel (UMD Manager) just instantiates
+> the key and verifies the signature on already parsed data, this would
+> address the concern.
 
-and these 2.
-
-
+I don't think PGP parser belongs to UMD either.
+Please do it as a normal user space process and define a proper
+protocol for communication between kernel and user space.
