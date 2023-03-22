@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DF06C44C7
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 09:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A22E46C44CC
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 09:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbjCVIVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 04:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
+        id S229789AbjCVIW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 04:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbjCVIVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 04:21:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58D659437
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 01:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1679473270; x=1711009270;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=kx0uMnW1MWbAqHgBXc/liK3ZEugHy6O5T0ZauGmp8C0=;
-  b=GRwQzyy6deyqkCU32CLjUqdM3R9L66bJbmaB/ya+KPtWn5jxpQoyu2zb
-   V3r8+HwTxQT9zp3sH7PXEjNwzMku/u9vhSIo5nEwJPyyw6fzWDzD332Q3
-   Hxwc2AaFU/ckjoV/D2ZW0oOmd4kjxrp3nl/zT8wxYjWuFfbRyxw8LDFCO
-   HEWtlRm1LVhkfxPtX5LgSNKjVuk2JfVuLNsCNxJInDlTPzbX3hSgsQoZ9
-   Fqj1K595WG72GUIA1OhxGLAx+fPxRPBEXJ803kfi6hfe4W0iOa29tq97e
-   NAUX6d2lc5XqGPWUvO6iAkoVJvDeWWTKoDnUARIDrmS/UTLHtjAMQJSW8
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.98,281,1673938800"; 
-   d="scan'208";a="202837268"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Mar 2023 01:21:09 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 22 Mar 2023 01:21:05 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.21 via Frontend
- Transport; Wed, 22 Mar 2023 01:21:05 -0700
-Date:   Wed, 22 Mar 2023 09:21:04 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     ChunHao Lin <hau@realtek.com>
-CC:     <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
-        <nic_swsd@realtek.com>
-Subject: Re: [PATCH net] r8169: fix rtl8168h rx crc error
-Message-ID: <20230322082104.y6pz7ewu3ojd3esh@soft-dev3-1>
-References: <20230322064550.2378-1-hau@realtek.com>
+        with ESMTP id S230074AbjCVIWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 04:22:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDFE5941D;
+        Wed, 22 Mar 2023 01:22:21 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PhLz20wz8zrW78;
+        Wed, 22 Mar 2023 16:21:18 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 22 Mar
+ 2023 16:22:19 +0800
+Subject: Re: [PATCH net-next 1/8] virtio_net: mergeable xdp: put old page
+ immediately
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, <netdev@vger.kernel.org>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>
+References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
+ <20230322030308.16046-2-xuanzhuo@linux.alibaba.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <4bd07874-b1ad-336b-b15e-ba56a10182e9@huawei.com>
+Date:   Wed, 22 Mar 2023 16:22:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
+In-Reply-To: <20230322030308.16046-2-xuanzhuo@linux.alibaba.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230322064550.2378-1-hau@realtek.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,41 +60,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/22/2023 14:45, ChunHao Lin wrote:
+On 2023/3/22 11:03, Xuan Zhuo wrote:
+> In the xdp implementation of virtio-net mergeable, it always checks
+> whether two page is used and a page is selected to release. This is
+> complicated for the processing of action, and be careful.
 > 
-> When link speed is 10 Mbps and temperature is under -20°C, rtl8168h may
-> have rx crc error. Disable phy 10 Mbps pll off to fix this issue.
-
-Don't forget to add the fixes tag.
-Another comment that I usually get is to replace hardcoded values with
-defines, but on the other side I can see that this file already has
-plently of hardcoded values.
-
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-
+> In the entire process, we have such principles:
+> * If xdp_page is used (PASS, TX, Redirect), then we release the old
+>   page.
+> * If it is a drop case, we will release two. The old page obtained from
+>   buf is release inside err_xdp, and xdp_page needs be relased by us.
 > 
-> Signed-off-by: ChunHao Lin <hau@realtek.com>
+> But in fact, when we allocate a new page, we can release the old page
+> immediately. Then just one is using, we just need to release the new
+> page for drop case. On the drop path, err_xdp will release the variable
+> "page", so we only need to let "page" point to the new xdp_page in
+> advance.
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > ---
->  drivers/net/ethernet/realtek/r8169_phy_config.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  drivers/net/virtio_net.c | 15 ++++++---------
+>  1 file changed, 6 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-> index 930496cd34ed..b50f16786c24 100644
-> --- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-> +++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-> @@ -826,6 +826,9 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp,
->         /* disable phy pfm mode */
->         phy_modify_paged(phydev, 0x0a44, 0x11, BIT(7), 0);
-> 
-> +       /* disable 10m pll off */
-> +       phy_modify_paged(phydev, 0x0a43, 0x10, BIT(0), 0);
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index e2560b6f7980..4d2bf1ce0730 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1245,6 +1245,9 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  			if (!xdp_page)
+>  				goto err_xdp;
+>  			offset = VIRTIO_XDP_HEADROOM;
 > +
->         rtl8168g_disable_aldps(phydev);
->         rtl8168g_config_eee_phy(phydev);
->  }
-> --
-> 2.37.2
-> 
+> +			put_page(page);
 
--- 
-/Horatiu
+the error handling of xdp_linearize_page() does not seems self contained.
+Does it not seem better：
+1. if xdp_linearize_page() succesed, call put_page() for first buffer just
+   as put_page() is call for other buffer
+2. or call virtqueue_get_buf() and put_page() for all the buffer of the packet
+   so the error handling is not needed outside the virtqueue_get_buf().
+
+In that case, it seems we can just do below without xdp_page:
+page = xdp_linearize_page(rq, num_buf, page, ...);
+
+
+> +			page = xdp_page;
+>  		} else if (unlikely(headroom < virtnet_get_headroom(vi))) {
+>  			xdp_room = SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
+>  						  sizeof(struct skb_shared_info));
+> @@ -1259,6 +1262,9 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  			       page_address(page) + offset, len);
+>  			frame_sz = PAGE_SIZE;
+>  			offset = VIRTIO_XDP_HEADROOM;
+> +
+> +			put_page(page);
+> +			page = xdp_page;
+
+It seems we can limit the scope of xdp_page in this "else if" block.
+
+>  		} else {
+>  			xdp_page = page;
+>  		}
+
+It seems the above else block is not needed anymore.
+
+> @@ -1278,8 +1284,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  			if (unlikely(!head_skb))
+>  				goto err_xdp_frags;
+>  
+> -			if (unlikely(xdp_page != page))
+> -				put_page(page);
+>  			rcu_read_unlock();
+>  			return head_skb;
+>  		case XDP_TX:
+> @@ -1297,8 +1301,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  				goto err_xdp_frags;
+>  			}
+>  			*xdp_xmit |= VIRTIO_XDP_TX;
+> -			if (unlikely(xdp_page != page))
+> -				put_page(page);
+>  			rcu_read_unlock();
+>  			goto xdp_xmit;
+>  		case XDP_REDIRECT:
+> @@ -1307,8 +1309,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  			if (err)
+>  				goto err_xdp_frags;
+>  			*xdp_xmit |= VIRTIO_XDP_REDIR;
+> -			if (unlikely(xdp_page != page))
+> -				put_page(page);
+>  			rcu_read_unlock();
+>  			goto xdp_xmit;
+>  		default:
+> @@ -1321,9 +1321,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  			goto err_xdp_frags;
+>  		}
+>  err_xdp_frags:
+> -		if (unlikely(xdp_page != page))
+> -			__free_pages(xdp_page, 0);
+
+It seems __free_pages() and put_page() is used interchangeably here.
+Perhaps using __free_pages() have performance reason? As the comment below:
+
+https://elixir.bootlin.com/linux/v6.3-rc3/source/net/core/page_pool.c#L500
+
+> -
+>  		if (xdp_buff_has_frags(&xdp)) {
+>  			shinfo = xdp_get_shared_info_from_buff(&xdp);
+>  			for (i = 0; i < shinfo->nr_frags; i++) {
+> 
