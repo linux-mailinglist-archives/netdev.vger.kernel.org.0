@@ -2,117 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D96E46C4FEF
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:02:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7C806C4FE1
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbjCVQCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 12:02:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
+        id S230475AbjCVQBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 12:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbjCVQCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:02:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6D966D37
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 09:01:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679500911;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SNzfne+ehiwMF7uvGVh6OwjGKWcTNK9/K/phIg4/2Ik=;
-        b=Aw8/mMZZ+TazQlvre2qT6hA4GE/db3FzlOiLzMWiSiht5zPKwng/8IY7HzpFHAI0ebBp1d
-        E1O/Sv2vVA9q+00wm+JR2CzasKw0NEQeIp1fbxC/AKy7FaEJpsvde7c6D2RDO+atnp5ooX
-        yklI5yTEsI3uU+t7foBHdKJ22tEWOgM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-349-NzuDCQ_WOh65JIZpGjR3LA-1; Wed, 22 Mar 2023 12:01:47 -0400
-X-MC-Unique: NzuDCQ_WOh65JIZpGjR3LA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S230302AbjCVQBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:01:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEBC65C5A;
+        Wed, 22 Mar 2023 09:01:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C877A80348E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEBC2B81D43;
         Wed, 22 Mar 2023 16:01:43 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.45.242.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E4004021B1;
-        Wed, 22 Mar 2023 16:01:43 +0000 (UTC)
-Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id B8A6030736C72;
-        Wed, 22 Mar 2023 17:01:42 +0100 (CET)
-Subject: [PATCH bpf-next V3 6/6] igc: add XDP hints kfuncs for RX hash
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net
-Date:   Wed, 22 Mar 2023 17:01:42 +0100
-Message-ID: <167950090270.2796265.5629516764329442733.stgit@firesoul>
-In-Reply-To: <167950085059.2796265.16405349421776056766.stgit@firesoul>
-References: <167950085059.2796265.16405349421776056766.stgit@firesoul>
-User-Agent: StGit/1.4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D1EC4339B;
+        Wed, 22 Mar 2023 16:01:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679500902;
+        bh=K3bCYBTQOn4c0hzSgPQwLYUkrJbrk5PNnqW5DdmlM+g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DJLiyvN9dxs4Y03eDaOYkXHdoCshS9bKS4kXrhlIFgHn0lOsuHs3JOMAXEndJ8vms
+         JyqJ/rqsVm/7Yq/4bUYC+Wpysn7+9i1aUCoybxa/4m3hVLtE6UI2N58vfT1YL7Dhhp
+         5IrBQb7JURYwt1dS8EE6U3eEG5g4QY8yWg4VZY75vL0DUKrAVoe0E18kCVugfpdTCN
+         nEgvn25PmJ7/zmXmTJ0TYTqrE9CSWfjkRULcaL4Qttd+g9+qk3fxJgP7c480u4xqGS
+         bCQjFChhTk+4tb1hAujPOov9P883sI8SsIE1H6tRuUKIMYPkwf/NsT/qTy0P9cW2jJ
+         tda1usOk15KoQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1pf0vc-000687-Re; Wed, 22 Mar 2023 17:03:08 +0100
+Date:   Wed, 22 Mar 2023 17:03:08 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Steev Klimaszewski <steev@kali.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Mark Pearson <markpearson@lenovo.com>
+Subject: Re: [PATCH v7 4/4] arm64: dts: qcom: sc8280xp-x13s: Add bluetooth
+Message-ID: <ZBsmvGylo+yghiFG@hovoldconsulting.com>
+References: <20230322011442.34475-1-steev@kali.org>
+ <20230322011442.34475-5-steev@kali.org>
+ <ZBrpyXrkHDTQ6Z+l@hovoldconsulting.com>
+ <CAKXuJqiirOEuvhHUtqeGvFjxkTR21SxKXe8Hysayx5UXFpukUQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKXuJqiirOEuvhHUtqeGvFjxkTR21SxKXe8Hysayx5UXFpukUQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implements XDP hints kfunc for RX-hash (xmo_rx_hash) straightforward
-by returning the u32 hash value.
+On Wed, Mar 22, 2023 at 10:35:03AM -0500, Steev Klimaszewski wrote:
+> On Wed, Mar 22, 2023 at 6:41 AM Johan Hovold <johan@kernel.org> wrote:
 
-The associated RSS-type for the hash value isn't available to the BPF-prog
-caller. This is problematic if BPF-prog tries to do L4 load-balancing with
-the hardware hash, but the RSS hash type is L3 based.
+> > I went through the schematics to check for further problems with
+> > consumers that are not yet described and found a few more bugs:
+> >
+> >         https://lore.kernel.org/lkml/20230322113318.17908-1-johan+linaro@kernel.org
+> >
+> > Note that that series is now adding the s1c supply as it also used by
+> > some of the pmics.
+> >
+> > I'm assuming those fixes may get merged before this patch is, in which
+> > case the above hunk should be dropped.
+> >
+> 
+> I can spin up v8 dropping this hunk and mention the dependency on that
+> series.
 
-For this driver this issue occurs for UDP packets, as driver (default
-config) does L3 hashing for UDP packets (excludes UDP src/dest ports in
-hash calc). Tested that the igc_rss_type_num for UDP is either
-IGC_RSS_TYPE_HASH_IPV4 or IGC_RSS_TYPE_HASH_IPV6.
+Sounds good. Bjorn has even merged the above series now.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- drivers/net/ethernet/intel/igc/igc_main.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index f66285c85444..846041119fd4 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -6496,8 +6496,21 @@ static int igc_xdp_rx_timestamp(const struct xdp_md *_ctx, u64 *timestamp)
- 	return -ENODATA;
- }
- 
-+static int igc_xdp_rx_hash(const struct xdp_md *_ctx, u32 *hash)
-+{
-+	const struct igc_xdp_buff *ctx = (void *)_ctx;
-+
-+	if (!(ctx->xdp.rxq->dev->features & NETIF_F_RXHASH))
-+		return -ENODATA;
-+
-+	*hash = le32_to_cpu(ctx->rx_desc->wb.lower.hi_dword.rss);
-+
-+	return 0;
-+}
-+
- const struct xdp_metadata_ops igc_xdp_metadata_ops = {
- 	.xmo_rx_timestamp		= igc_xdp_rx_timestamp,
-+	.xmo_rx_hash			= igc_xdp_rx_hash,
- };
- 
- /**
-
-
+Johan
