@@ -2,167 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 154076C5964
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 23:24:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C3A6C596B
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 23:27:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229833AbjCVWX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 18:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47576 "EHLO
+        id S229896AbjCVW1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 18:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbjCVWX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 18:23:58 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6EB234ED
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 15:23:57 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id fb38so7137764pfb.7
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 15:23:57 -0700 (PDT)
+        with ESMTP id S229487AbjCVW1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 18:27:48 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAFC23A50;
+        Wed, 22 Mar 2023 15:27:46 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b20so46137863edd.1;
+        Wed, 22 Mar 2023 15:27:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1679523837;
+        d=gmail.com; s=20210112; t=1679524065;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=K5UyVUsLWeB9KXhLCSROkmyQxaPg1vMo5DxptegTbXA=;
-        b=VfIU6ecdNMnySfR0LqWvhUbl+F/H/WeKX6lIL68MRGgRFiIsqlQjw0MUkJXBx4aM3P
-         TY5BooNEbYOmtNopxCKzhD0uwQTlGtVK29DGUdCpBjegIJyY2tFTS0npYTKwEYpoL9Vp
-         DjNcX0mYBY5DtXVrCg2jJRBxRq5MRPwUlk918=
+        bh=e/Wjm0b8Ik7+X2MQf3m3hky1zdDJvNFJ4agRqoB9mA0=;
+        b=JQUJQb9gDALwd6Y7wgUsxJSfzD42gRcFCBl+E45QH5FnfzpRHlivPXbtU6vl/Go/yc
+         z/o6VwbUuEs2rsAmGDsfIRwoKU+G5hvXOOKpjvk8mm9iCZFfAHNkwtfyM+9CuOZ8ZYV1
+         z2ef2J+von7Wvbkr+dMh4qaRJmRq6pXhDiFs/Dyol8PVYRTOR86kWd1gtPPFAfo/JkPd
+         2ug/1DAdmXCXrcsot3W+oG9URJn506AB14fh6d557cKSfBI2lrpeL1CcmC2fuNKhbBcO
+         xkcCKNHzFsfSFqsudAw2cKVs5sNkhqp+gLSQhsmdQXfA7NnfZCPXZ+DZeia6spYkSrFV
+         OKUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679523837;
+        d=1e100.net; s=20210112; t=1679524065;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=K5UyVUsLWeB9KXhLCSROkmyQxaPg1vMo5DxptegTbXA=;
-        b=uivmmFCJKSg922bPO8MOghtPjAVyzgZMOslD5i5u6G8B1u6tczf9smGt8u9F1CqKnu
-         fz5XnV/xrkIWtxVIhenaQcKv+xpmi7uoYPzTie6gqZLMdrbVc3UsYiCIP5t+GE9fQoLK
-         rh+3FoV7qpxuT25d1ytS//FWBKp0meZMceKeCg76AVHa4zqajdipw8pP+JsyuPGijQhF
-         +Hk4GCClcuVP1dxrboVW/8xrAqDxyrQBHQ7JeLUILe+OqjdLN2Oppsad/KVPhzmQ3/UJ
-         H/lsuX3s62EYb3AmuwQ/VhXebseufy5SuaXXWWoa5SF+aGrwfiMz6EmKFyX1aLDunKIe
-         0ZuQ==
-X-Gm-Message-State: AO0yUKVIWD14q6lserA8HqR7YKp/FCud7IHBi16z9RgtGCg0Bv6fBCBa
-        ahOHFOCxhNzwzfl9oKjLBtjLFxefrYy3nNx9HoN1PQ==
-X-Google-Smtp-Source: AK7set9YHsREOpzJCxa7JgGIGEndJcZXYmbd4TWdQneHFTm+SqkSZ8k37l7ZfhSR6/yyIPNgegBz0p9W9PZ8bts2nHQ=
-X-Received: by 2002:a65:5ccc:0:b0:502:f20a:6e0a with SMTP id
- b12-20020a655ccc000000b00502f20a6e0amr1201886pgt.0.1679523836699; Wed, 22 Mar
- 2023 15:23:56 -0700 (PDT)
+        bh=e/Wjm0b8Ik7+X2MQf3m3hky1zdDJvNFJ4agRqoB9mA0=;
+        b=aBNdNFfRGByk9hTTMREUP1rj0JCdMvFjiJ77nwlv+VhpNxG7zk0nTtwAtq5lUMnkI3
+         Oyh6o3gj58CPpDJtm27C4NAdWRSRgzqCHbKc1GsE3CpN37MpLrs2uhYqjo2vX7xGdeT0
+         Fi6ZzEpeVlhb/wUt7vTYonnZs0V++GQQ0GeEW8rUxryBLeNlje7zbBQHA+eL7Rggt0Uw
+         ldKaXxtsW++f20lzAfe77kU2z2hHcWIEkRiJGrH6Q3sHYmFdQ6vMmokpR1PnmGcfGbOo
+         k+E3/q0KrbVFLByubSzuVoUbaOFOsHiU2uoVpcXR9cmsT1JdrJlqiKPWS2DKhwkjEcwp
+         PPQw==
+X-Gm-Message-State: AO0yUKVcHMeYqM9Z2WcB3KsJIjrIt//U1jAv7TZQ8luZm/ckRRAT6QmB
+        Plc7fHxZYz/7BUBTuS/OplYvII7MIzM/GP9kzS4=
+X-Google-Smtp-Source: AK7set8gUyy1sCqRru6eNQSGWAYy+Eqil0jvDXyYXA+sgAPfrL/BhDbBOzzjpcL26JACm1NBn4cQczKuSSkzdJN/AzA=
+X-Received: by 2002:a50:c3cf:0:b0:4fb:2593:846 with SMTP id
+ i15-20020a50c3cf000000b004fb25930846mr4193269edf.3.1679524064488; Wed, 22 Mar
+ 2023 15:27:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <CALrw=nHWdZA=nGizO4hd1xineoNuhN7hh5nGrHFiint1m72afQ@mail.gmail.com>
- <CANn89iLU+OJR4pvFxM0akOLLSV2yCbR9Kb8ap3u3UOxh2Xy1Bw@mail.gmail.com>
-In-Reply-To: <CANn89iLU+OJR4pvFxM0akOLLSV2yCbR9Kb8ap3u3UOxh2Xy1Bw@mail.gmail.com>
-From:   Ignat Korchagin <ignat@cloudflare.com>
-Date:   Wed, 22 Mar 2023 22:23:45 +0000
-Message-ID: <CALrw=nGt88SnOaQ-7fHWfwEaVaaYxK6on98vSY2vrv2zErcLCw@mail.gmail.com>
-Subject: Re: Increased UDP socket memory on Linux 6.1
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
+References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
+ <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com> <b5c80613c696818ce89b92dac54e98878ec3ccd0.camel@huaweicloud.com>
+In-Reply-To: <b5c80613c696818ce89b92dac54e98878ec3ccd0.camel@huaweicloud.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 22 Mar 2023 15:27:33 -0700
+Message-ID: <CAADnVQJC0h7rtuntt0tqS5BbxWsmyWs3ZSbboZMmUKetMG2VhA@mail.gmail.com>
+Subject: Re: [PATCH 0/5] usermode_driver: Add management library and API
+To:     Roberto Sassu <roberto.sassu@huaweicloud.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 10:09=E2=80=AFPM Eric Dumazet <edumazet@google.com>=
- wrote:
+On Wed, Mar 22, 2023 at 5:08=E2=80=AFAM Roberto Sassu
+<roberto.sassu@huaweicloud.com> wrote:
 >
-> On Wed, Mar 22, 2023 at 2:57=E2=80=AFPM Ignat Korchagin <ignat@cloudflare=
-.com> wrote:
+> On Tue, 2023-03-21 at 19:23 -0700, Alexei Starovoitov wrote:
+> > On Fri, Mar 17, 2023 at 7:53=E2=80=AFAM Roberto Sassu
+> > <roberto.sassu@huaweicloud.com> wrote:
+> > > From: Roberto Sassu <roberto.sassu@huawei.com>
+> > >
+> > > A User Mode Driver (UMD) is a specialization of a User Mode Helper (U=
+MH),
+> > > which runs a user space process from a binary blob, and creates a
+> > > bidirectional pipe, so that the kernel can make a request to that pro=
+cess,
+> > > and the latter provides its response. It is currently used by bpfilte=
+r,
+> > > although it does not seem to do any useful work.
 > >
-> > Hello,
-> >
-> > We were investigating unusual packet drops on our systems potentially
-> > related to our recent migration to the 6.1 kernel. We have noticed a
-> > substantial increase in UDP socket memory for the same workload. Below
-> > are two servers in the same datacentre doing the same workload.
-> >
-> > On 5.15.90 (our previous kernel):
-> > $ cat /proc/net/sockstat
-> > sockets: used 174831
-> > TCP: inuse 112301 orphan 145 tw 23829 alloc 135086 mem 313582
-> > UDP: inuse 7613 mem 1667
-> > UDPLITE: inuse 0
-> > RAW: inuse 7
-> > FRAG: inuse 0 memory 0
-> >
-> > But on 6.1.20:
-> > $ cat /proc/net/sockstat
-> > sockets: used 168911
-> > TCP: inuse 108857 orphan 124 tw 23674 alloc 130096 mem 235530
-> > UDP: inuse 7555 mem 10514
+> > FYI the new home for bpfilter is here:
+> > https://github.com/facebook/bpfilter
 >
-> 10514 pages 'forward allocated' for 7555 UDP sockets seems ok to me.
+> Thanks. I just ensured that it worked, by doing:
 >
-> UDP sockets have their own notion of 'forward_deficit'  and
-> forward_threshold based on SO_RCVBUF values.
+> getsockopt(fd, SOL_IP, IPT_SO_GET_INFO, &info, &optlen);
 >
-> Do you have the following commit yet in your kernel ?
-> commit 8a3854c7b8e4532063b14bed34115079b7d0cb36
+> and accepting IPT_SO_GET_INFO in main.c.
+>
+> > > The problem is, if other users would like to implement a UMD similar =
+to
+> > > bpfilter, they would have to duplicate the code. Instead, make an UMD
+> > > management library and API from the existing bpfilter and sockopt cod=
+e,
+> > > and move it to common kernel code.
+> > >
+> > > Also, define the software architecture and the main components of the
+> > > library: the UMD Manager, running in the kernel, acting as the fronte=
+nd
+> > > interface to any user or kernel-originated request; the UMD Loader, a=
+lso
+> > > running in the kernel, responsible to load the UMD Handler; the UMD
+> > > Handler, running in user space, responsible to handle requests from t=
+he UMD
+> > > Manager and to send to it the response.
+> >
+> > That doesn't look like a generic interface for UMD.
+>
+> What would make it more generic? I made the API message format-
+> independent. It has the capability of starting the user space process
+> as required, when there is a communication.
+>
+> > It was a quick hack to get bpfilter off the ground, but certainly
+> > not a generic one.
+>
+> True, it is not generic in the sense that it can accomodate any
+> possible use case. The main goal is to move something that was running
+> in the kernel to user space, with the same isolation guarantees as if
+> the code was executed in the kernel.
 
-No (because we're on 6.1.20 and this seems to went into 6.2), but we
-can probably backport it if it helps.
+They are not the same guarantees.
+UMD is exactly equivalent to root process running in user space.
+Meaning it can be killed, ptraced, priority inverted, etc
 
-> Author: Paolo Abeni <pabeni@redhat.com>
-> Date:   Thu Oct 20 19:48:52 2022 +0200
->
->     udp: track the forward memory release threshold in an hot cacheline
->
->     When the receiver process and the BH runs on different cores,
->     udp_rmem_release() experience a cache miss while accessing sk_rcvbuf,
->     as the latter shares the same cacheline with sk_forward_alloc, writte=
-n
->     by the BH.
->
->     With this patch, UDP tracks the rcvbuf value and its update via custo=
-m
->     SOL_SOCKET socket options, and copies the forward memory threshold va=
-lue
->     used by udp_rmem_release() in a different cacheline, already accessed=
- by
->     the above function and uncontended.
->
->     Since the UDP socket init operation grown a bit, factor out the commo=
-n
->     code between v4 and v6 in a shared helper.
->
->     Overall the above give a 10% peek throughput increase under UDP flood=
-.
->
->     Signed-off-by: Paolo Abeni <pabeni@redhat.com>
->     Reviewed-by: Eric Dumazet <edumazet@google.com>
->     Acked-by: Kuniyuki Iwashima <kuniyu@amazon.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->
->
-> > UDPLITE: inuse 0
-> > RAW: inuse 7
-> > FRAG: inuse 0 memory 0
+> > > I have two use cases, but for sake of brevity I will propose one.
+> > >
+> > > I would like to add support for PGP keys and signatures in the kernel=
+, so
+> > > that I can extend secure boot to applications, and allow/deny code
+> > > execution based on the signed file digests included in RPM headers.
+> > >
+> > > While I proposed a patch set a while ago (based on a previous work of=
+ David
+> > > Howells), the main objection was that the PGP packet parser should no=
+t run
+> > > in the kernel.
+> > >
+> > > That makes a perfect example for using a UMD. If the PGP parser is mo=
+ved to
+> > > user space (UMD Handler), and the kernel (UMD Manager) just instantia=
+tes
+> > > the key and verifies the signature on already parsed data, this would
+> > > address the concern.
 > >
-> > For roughly the same amount of UDP sockets the UDP memory is much
-> > higher. TCP memory looks different above as well, but according to our
-> > longer-term metrics overall it is the same, but UDP is substantially
-> > bigger.
-> >
-> > Here's the snapshot of the same metric from the same servers in
-> > graphical form [1]. The server indicated by a blue line was rebooted
-> > into 6.1.20 and you can see the UDP memory jumped compared to the
-> > green server (on 5.15.90). We're not sure yet, but perhaps it is an
-> > artifact of [2], namely commit 4890b686f4088c90 ("net: keep
-> > sk->sk_forward_alloc as small as possible") and commit
-> > 3cd3399dd7a84ada ("net: implement per-cpu reserves for
-> > memory_allocated")
-> >
-> > We don't know at this point if it is related to our unusual rate of
-> > packet drops, but just wanted to point this out and see if the UDP
-> > memory increase is expected.
+> > I don't think PGP parser belongs to UMD either.
+> > Please do it as a normal user space process and define a proper
+> > protocol for communication between kernel and user space.
 >
-> >
-> > Thanks,
-> > Ignat
-> >
-> > [1]: https://pub-ddb0f42c43e74ce4a1424bc33f965f9a.r2.dev/udp-mem.jpg
-> > [2]: https://lore.kernel.org/netdev/20220609063412.2205738-1-eric.dumaz=
-et@gmail.com/
+> UMD is better in the sense that it establishes a bidirectional pipe
+> between the kernel and the user space process. With that, there is no
+> need to further restrict the access to a sysfs file, for example.
+
+If a simple pipe is good enough then you can have a kernel module
+that creates it and interacts with the user space process.
+Out-of-tree bpftiler can do that, so can you.
+PGP is not suitable for kernel git repo either as kernel code or as UMD.
