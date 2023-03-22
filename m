@@ -2,106 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DD006C44E6
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 09:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E4CD6C4512
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 09:35:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbjCVI1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 04:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52982 "EHLO
+        id S230207AbjCVIey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 04:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbjCVI1A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 04:27:00 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB065CC24
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 01:26:58 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5A50D5C021A;
-        Wed, 22 Mar 2023 04:26:56 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 22 Mar 2023 04:26:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1679473616; x=1679560016; bh=SzIhX6GvHnizN
-        psaYaRgqmqGdVjvBEuASOUEmJvFwKI=; b=oJ1cds8zmncI2b5sz5/+Ff5SGWHo0
-        xodjtVd+1yMESZI4xXtiVhkRkBy6IHTQgWdihkSrSlNhc4duYfn/VCSTU/4ZTWMc
-        Rs4xvjiGgc+r3A551+KncyrtDG7t9vMYIhuIkU4Ke9N+N5SxnSGl08ohpgH7C2Ty
-        KoyKfBO3Wl3CyJjKEtdgiI7VcST7s3bGeVdzwg+/JWl8h5c4r0DYiVlvnRjrceU5
-        e6Eu8+Y+HrxPXFBSW9m9KQ0kfY55b5k7wPbtroGVevGp4js6uRfq49FCn7k0xQiP
-        QPskt6QRHw7EJEnRjVSZDSbEf9GuzYPKrg+mNjTXeY8AF2w8S6/8fVUIg==
-X-ME-Sender: <xms:z7saZAmp66t5Fv4GRpQPALkhWruFMVpVTVyWs2Nw9f_Dp2jCeQDV-Q>
-    <xme:z7saZP0qd9fkhE8iQBpvfosbqUvKUNJ6zBS6_xtx2F5fpEvcV62-Y1-ok9RvhvZm7
-    -2oJ-nfBXfKVf8>
-X-ME-Received: <xmr:z7saZOrz-MxYJ6lt09_x0thQ9Gm8nZfFJOcHVItVDaJI8u4suDEM8rUPZ07OAMhc2junQ3hyhDYrqyhqP4alsFwSXOw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeguddguddvvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
-    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:z7saZMmCv_2N4ql5QFvNCkGR2bZpkiAohUfifcU9h5BEoqXZvl7cjA>
-    <xmx:z7saZO0JmzVqpxT3ZCxk8EOgkrtnKOESwRi4pCuBCk4DPdEQmB9QcQ>
-    <xmx:z7saZDvEUEvsXURyycEolfdkua08rH2EwDNMyyJWqU_nLt4IpBfXPQ>
-    <xmx:0LsaZIpiqSE5w_5tD9E1_BYxzRjBXjdk2pgLDQxGUi1gc68JQ1U7Jg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Mar 2023 04:26:55 -0400 (EDT)
-Date:   Wed, 22 Mar 2023 10:26:50 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Nikishkin <vladimir@nikishkin.pw>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
-        razor@blackwall.org
-Subject: Re: [PATCH net-next v4] vxlan: try to send a packet normally if
- local bypass fails
-Message-ID: <ZBq7yv0W5MqhqYnm@shredder>
-References: <20230322070414.21257-1-vladimir@nikishkin.pw>
+        with ESMTP id S230251AbjCVIet (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 04:34:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D9432CC8
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 01:34:49 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1petvT-0001pr-0z; Wed, 22 Mar 2023 09:34:31 +0100
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E5A0E19952C;
+        Wed, 22 Mar 2023 08:34:28 +0000 (UTC)
+Date:   Wed, 22 Mar 2023 09:34:27 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH v4 0/2] can: rcar_canfd: Add transceiver support
+Message-ID: <20230322083427.gpctjxsbli4jwymg@pengutronix.de>
+References: <cover.1679414936.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="d7myp4lk3xjjti3m"
 Content-Disposition: inline
-In-Reply-To: <20230322070414.21257-1-vladimir@nikishkin.pw>
-X-Spam-Status: No, score=-0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <cover.1679414936.git.geert+renesas@glider.be>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 03:04:14PM +0800, Vladimir Nikishkin wrote:
-> --- a/Documentation/networking/vxlan.rst
-> +++ b/Documentation/networking/vxlan.rst
-> @@ -86,3 +86,16 @@ offloaded ports can be interrogated with `ethtool`::
->        Types: geneve, vxlan-gpe
->        Entries (1):
->            port 1230, vxlan-gpe
-> +
-> +=================
-> +Sysctls
-> +=================
-> +
-> +One sysctl influences the behaviour of the vxlan driver.
-> +
-> + - `vxlan.disable_local_bypass`
-> +
-> +If set to 1, and if there is a packet destined to the local address, for which the
-> +driver cannot find a corresponding vni, it is forwarded to the userspace networking
-> +stack. This is useful if there is some userspace UDP tunnel waiting for such
-> +packets.
 
-Hi,
+--d7myp4lk3xjjti3m
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I don't believe sysctl is the right interface for this. VXLAN options
-are usually / always added as netlink attributes. See ip-link man page
-under "VXLAN Type Support".
+On 21.03.2023 17:14:59, Geert Uytterhoeven wrote:
+> 	Hi all,
+>=20
+> This patch series adds transceiver support to the Renesas R-Car CAN-FD
+> driver, and improves the printing of error messages, as requested by
+> Vincent.
+>=20
+> Originally, both patches were submitted separately, but as the latter
+> depends on the former, I absorbed it within this series for the resend.
 
-Also, please add a selftest under tools/testing/selftests/net/. We
-already have a bunch of VXLAN tests that you can use as a reference.
+Applied to linux-can-next. I've squashed the improved error message for
+the phy_power_on() into patch 1.
 
-Thanks
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--d7myp4lk3xjjti3m
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQavZAACgkQvlAcSiqK
+BOiOhgf9HPvv0c966rIStZyowDe97ypON9Wk1ZnAiDd89nMPZelPkSe/+pT8YwKn
+ZbG+dmUfArhJryAEfQXY02aFBiEO0wiB9PiG1Sf85pyHvWCd8x+81UiVxXYqo6c/
+m9TKwjO2h4As6nJZLRySkSMsEaD94CbFEJqBa/NMah2pse9dVqTxDUrlLv8xni1A
+G37oWxkxYmMD29fm1iF6DBR/G6Zlwo/ZctvmDRKm81bE2gXh+TYmLJVU7O3Khwmy
+qnkIrlgtwE54rtteyeu7g/IHmkLQFNtPxUlWVZnn6CvvgFbglfkZ0v1r9rG6BtYx
+ufoy809tMXJncwrRoEh8TDSSBbKCtA==
+=O164
+-----END PGP SIGNATURE-----
+
+--d7myp4lk3xjjti3m--
