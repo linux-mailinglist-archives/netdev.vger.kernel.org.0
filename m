@@ -2,87 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95C386C4051
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:23:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5816C4063
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:28:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbjCVCXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 22:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S230250AbjCVC2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 22:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjCVCXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:23:44 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FF9A24E;
-        Tue, 21 Mar 2023 19:23:34 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id eg48so67138754edb.13;
-        Tue, 21 Mar 2023 19:23:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679451813;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Hqh1G6spMySCJmEihCoSjRChZOJKV6vGK7xpTVI//4w=;
-        b=HS2sxe7M69Aab1brdxz3YpCtpkwDeWkH/O9FIIkGTuD2gzyAVhsV0Do3C62qtuk24x
-         h3lC+6pwuE/ROsMqAs5ikZQ7kbvu/g0MqEbRcURDG9w9z+9lG2igyFKPgCZL3G5Loa2c
-         e7LGH3mu9CmUmQEvTYB8eQuJzEZDCvJKY1bTgi0RXvP9R+hSmCBgGAHWC0g/6nOGkNou
-         Y1NeeKJyOeRMA+EL99J3DBduH30ks9iRypQlMSBGxeN6kR1WjpwKQy7d7x5EyyWlaYPx
-         pKs5Mba1DgHCsVvkK4oj5LiJQpVRafFBEPZa4jMjMmkM4Kd/8WOirZ0KWDFPGCwbWb6z
-         ysdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679451813;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Hqh1G6spMySCJmEihCoSjRChZOJKV6vGK7xpTVI//4w=;
-        b=gmgnDxJF44S26mP/iEx/eY6t1BtjE6Bs+Lo9U7SPXu/c18j3zDr4wIkUM26cAFKUva
-         H1h51thPGblcikZqK2CLtW1T8coIMmzu0JVB5r2quWk/ViIYd/u0CaySFbdO2HR2x76V
-         8c5ZGGNMJxCXpsHrzJ9VlhGRVg3rkFMAmU+XG6xXwdQlCi6Byk9VnRSktojB7+4L1ZTg
-         xbwA+cEa349aUle/UbLXeKW7jzTty4ReoD8zeAhOjyl/oy8uxHhAEm1RC+kit8FMr2bf
-         7BFcyzfb4u6dA/ej4B+yl4hnMp1TpysCKBTLN82VUJ5DKTcI8p1ceB4z+4IgZ3eaNMar
-         CK8A==
-X-Gm-Message-State: AO0yUKUsWDIsfvUY5/2vnqtIc5w+8rlwFf8vmhHVYWejW1X/kPQPwUL1
-        zYwPmdky/DNqRdrb8ymR8GbsmBUO0JsYpc7qU/k=
-X-Google-Smtp-Source: AK7set8wvkY1K1BZY67D7iN6R0hS9GWfzPTLzFimfFPV3COKDH6mWc4O019qVgeAAi+sUtjUi1sGpr/g/SsK/DEnapk=
-X-Received: by 2002:a50:8d04:0:b0:4fc:ebe2:2fc9 with SMTP id
- s4-20020a508d04000000b004fcebe22fc9mr2707603eds.3.1679451812654; Tue, 21 Mar
- 2023 19:23:32 -0700 (PDT)
+        with ESMTP id S230257AbjCVC2k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:28:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F7720058
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:28:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8A9961F19
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC6B0C433EF;
+        Wed, 22 Mar 2023 02:28:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679452114;
+        bh=HovZ2sXmU8iM02tE4arDfrKzjV08qXfZqz+CpXmKK2U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=MXAfie6uVLPKK/gOmAXRMtvBDDvIVYAxrMtrVfgqAWiLPq8NoHepPUOMNkHUmHqVU
+         rBqy0p/N+Z3SA3+DwczieQ4bjSa3M/yQnVZcKmGUTu1+jFNWjx5XckhFMiT3pj3zRV
+         4siWV85at3hm0sAzwjDONY49/ODuR/LzrYtv8/kKwxDlk6MgilVal+xgLQ4tJ07y9f
+         hNQzvYTnAyueMdFzM5HFsu3SRXo96DfcsySewfvXBkk51Zbmd+E3mYCXhqMF15N43O
+         69BWneSE1A9nWH94O41urMbfUY7Zvu8bM3RucN0nWf/vlLETixNpNLAVPylEh8Q6uF
+         My7VaRN263+2A==
+Message-ID: <43d833dd-2e1f-d225-bb56-6eed43243cb2@kernel.org>
+Date:   Tue, 21 Mar 2023 20:28:33 -0600
 MIME-Version: 1.0
-References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
-In-Reply-To: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 21 Mar 2023 19:23:21 -0700
-Message-ID: <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com>
-Subject: Re: [PATCH 0/5] usermode_driver: Add management library and API
-To:     Roberto Sassu <roberto.sassu@huaweicloud.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH net-next 1/3] net: ipv4: Allow changing IPv4 address
+ protocol
+Content-Language: en-US
+To:     Petr Machata <petrm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Shuah Khan <shuah@kernel.org>, Ido Schimmel <idosch@nvidia.com>,
+        Jacques de Laval <Jacques.De.Laval@westermo.com>
+References: <cover.1679399108.git.petrm@nvidia.com>
+ <6ffecb0f77dc6e444e3a130a09b4fd5d717e6504.1679399108.git.petrm@nvidia.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <6ffecb0f77dc6e444e3a130a09b4fd5d717e6504.1679399108.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -91,56 +62,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 17, 2023 at 7:53=E2=80=AFAM Roberto Sassu
-<roberto.sassu@huaweicloud.com> wrote:
->
-> From: Roberto Sassu <roberto.sassu@huawei.com>
->
-> A User Mode Driver (UMD) is a specialization of a User Mode Helper (UMH),
-> which runs a user space process from a binary blob, and creates a
-> bidirectional pipe, so that the kernel can make a request to that process=
-,
-> and the latter provides its response. It is currently used by bpfilter,
-> although it does not seem to do any useful work.
+On 3/21/23 5:51 AM, Petr Machata wrote:
+> When IP address protocol field was added in commit 47f0bd503210 ("net: Add
+> new protocol attribute to IP addresses"), the semantics included the
+> ability to change the protocol for IPv6 addresses, but not for IPv4
+> addresses. It seems this was not deliberate, but rather by accident.
+> 
+> A userspace that wants to change the protocol of an address might drop and
+> recreate the address, but that disrupts routing and is just impractical.
+> 
+> So in this patch, when an IPv4 address is replaced (through RTM_NEWADDR
+> request with NLM_F_REPLACE flag), update the proto at the address to the
+> one given in the request, or zero if none is given. This matches the
+> behavior of IPv6. Previously, any new value given was simply ignored.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/devinet.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
 
-FYI the new home for bpfilter is here:
-https://github.com/facebook/bpfilter
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-> The problem is, if other users would like to implement a UMD similar to
-> bpfilter, they would have to duplicate the code. Instead, make an UMD
-> management library and API from the existing bpfilter and sockopt code,
-> and move it to common kernel code.
->
-> Also, define the software architecture and the main components of the
-> library: the UMD Manager, running in the kernel, acting as the frontend
-> interface to any user or kernel-originated request; the UMD Loader, also
-> running in the kernel, responsible to load the UMD Handler; the UMD
-> Handler, running in user space, responsible to handle requests from the U=
-MD
-> Manager and to send to it the response.
 
-That doesn't look like a generic interface for UMD.
-It was a quick hack to get bpfilter off the ground, but certainly
-not a generic one.
-
-> I have two use cases, but for sake of brevity I will propose one.
->
-> I would like to add support for PGP keys and signatures in the kernel, so
-> that I can extend secure boot to applications, and allow/deny code
-> execution based on the signed file digests included in RPM headers.
->
-> While I proposed a patch set a while ago (based on a previous work of Dav=
-id
-> Howells), the main objection was that the PGP packet parser should not ru=
-n
-> in the kernel.
->
-> That makes a perfect example for using a UMD. If the PGP parser is moved =
-to
-> user space (UMD Handler), and the kernel (UMD Manager) just instantiates
-> the key and verifies the signature on already parsed data, this would
-> address the concern.
-
-I don't think PGP parser belongs to UMD either.
-Please do it as a normal user space process and define a proper
-protocol for communication between kernel and user space.
