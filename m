@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C389B6C553D
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 20:56:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B77BE6C5614
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229998AbjCVT4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 15:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
+        id S230252AbjCVUDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 16:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbjCVT4d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 15:56:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC5F5F210;
-        Wed, 22 Mar 2023 12:56:23 -0700 (PDT)
+        with ESMTP id S230503AbjCVUC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:02:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E986C18D;
+        Wed, 22 Mar 2023 12:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F67CB81DC8;
-        Wed, 22 Mar 2023 19:56:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD89C433EF;
-        Wed, 22 Mar 2023 19:56:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4EF4622B0;
+        Wed, 22 Mar 2023 19:58:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 145C8C4339B;
+        Wed, 22 Mar 2023 19:58:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679514981;
-        bh=qhgRNOt8Yok2ZXUiPTNUwcAQwbu3UguOEej6KNc66iI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WtCkrXrgQRPaTqEJML0D/SZhatuSNV6YVDfoaqni2eYlJDCzsxDjzf78uLzBG7Kcf
-         JMdYhHGBKgOPuok23rO46aeYhUr7CGgV7NWy3uzMF37FblyWsujxKt6IlHYxu2JR5e
-         DYVw7HHIMRPhgG/WP3KbvZyzSZNc5Uboy1p5GpYKyKDgUg9cvZMQ0zXdm4ZbyXopCX
-         nkKSgnoFnTMbf+ZddsjPr2Qn8BnGHC612Prr0vXmq1Pj5TxdPNyg3yJVQA04IroHHY
-         xy92xXKQXZuyMe+wXU745Em8KlSBSa5EmN8/dX8HdmecUMU9ceTAnFPNoE/YMTyzZe
-         MI8VSc38cdJuQ==
-Date:   Wed, 22 Mar 2023 12:56:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Min Li <lnimi@hotmail.com>
-Cc:     richardcochran@gmail.com, lee@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Min Li <min.li.xe@renesas.com>
-Subject: Re: [PATCH mfd 1/1] mfd/ptp: clockmatrix: support 32-bit address
- space
-Message-ID: <20230322125619.731912cf@kernel.org>
-In-Reply-To: <MW5PR03MB69323E281F1360A4F6C92838A0819@MW5PR03MB6932.namprd03.prod.outlook.com>
-References: <MW5PR03MB69323E281F1360A4F6C92838A0819@MW5PR03MB6932.namprd03.prod.outlook.com>
+        s=k20201202; t=1679515134;
+        bh=owSwlma77mkOCIyn2UW6eaOPLBHPastApHjuYD7u7cI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U25O5FlT+olGyIIi1H4dNik5NUFnM6QoNUJJqK5DaQNeLpfLFAtJ+aRFZTheIzl7c
+         mFZ+xoxFHaBYImoR0MQdPn9U/NA4H5zwEFz9ShaSPjUfgeGCf377mcFkb2mLGSwjYR
+         Oj7l0yrooJVKchIwxb1SB70yPcNJGAZn+FaMyJT/rAzknvPzCtJZCuI3mOwNV5RLXJ
+         PY7SHZ5/tCACeysrK9afXK8Nb8+kvHMe+gzWPvGBjYgux7bJWFhwyOW11eFeW2oNnk
+         2/d4i/l1q85Ieg4MArPFcFAVFnHS38/qLCf204Soof29X0Hk9CKQu8KfEzt4aop3mo
+         vIKggsyZPAR5w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kristian Overskeid <koverskeid@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, bigeasy@linutronix.de,
+        kurt@linutronix.de, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 29/45] net: hsr: Don't log netdev_err message on unknown prp dst node
+Date:   Wed, 22 Mar 2023 15:56:23 -0400
+Message-Id: <20230322195639.1995821-29-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230322195639.1995821-1-sashal@kernel.org>
+References: <20230322195639.1995821-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -54,62 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Mar 2023 15:10:06 -0400 Min Li wrote:
-> -		buf[0] = (u8)(page & 0xff);
-> -		buf[1] = (u8)((page >> 8) & 0xff);
-> +		buf[0] = (u8)(page & 0xFF);
-> +		buf[1] = (u8)((page >> 8) & 0xFF);
+From: Kristian Overskeid <koverskeid@gmail.com>
 
-why did you decide to change from 0xff to 0xFF as part of this big
-change? It's unnecessary churn.
+[ Upstream commit 28e8cabe80f3e6e3c98121576eda898eeb20f1b1 ]
 
-> +		buf[2] = (u8)((page >> 16) & 0xFF);
-> +		buf[3] = (u8)((page >> 24) & 0xFF);
-> +		bytes = 4;
->  		break;
+If no frames has been exchanged with a node for HSR_NODE_FORGET_TIME, the
+node will be deleted from the node_db list. If a frame is sent to the node
+after it is deleted, a netdev_err message for each slave interface is
+produced. This should not happen with dan nodes because of supervision
+frames, but can happen often with san nodes, which clutters the kernel
+log. Since the hsr protocol does not support sans, this is only relevant
+for the prp protocol.
 
->  static inline int idtcm_read(struct idtcm *idtcm,
-> -			     u16 module,
-> +			     u32 module,
->  			     u16 regaddr,
->  			     u8 *buf,
->  			     u16 count)
-> @@ -50,7 +50,7 @@ static inline int idtcm_read(struct idtcm *idtcm,
->  }
->  
->  static inline int idtcm_write(struct idtcm *idtcm,
-> -			      u16 module,
-> +			      u32 module,
->  			      u16 regaddr,
->  			      u8 *buf,
->  			      u16 count)
+Signed-off-by: Kristian Overskeid <koverskeid@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/hsr/hsr_framereg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  	/* PLL5 can have OUT8 as second additional output. */
->  	if (pll == 5 && qn_plus_1 != 0) {
-> -		err = idtcm_read(idtcm, 0, HW_Q8_CTRL_SPARE,
-> +		err = idtcm_read(idtcm, HW_Q8_CTRL_SPARE, 0,
->  				 &temp, sizeof(temp));
->  		if (err)
->  			return err;
->  
->  		temp &= ~(Q9_TO_Q8_SYNC_TRIG);
->  
-> -		err = idtcm_write(idtcm, 0, HW_Q8_CTRL_SPARE,
-> +		err = idtcm_write(idtcm, HW_Q8_CTRL_SPARE, 0,
->  				  &temp, sizeof(temp));
->  		if (err)
->  			return err;
->  
->  		temp |= Q9_TO_Q8_SYNC_TRIG;
->  
-> -		err = idtcm_write(idtcm, 0, HW_Q8_CTRL_SPARE,
-> +		err = idtcm_write(idtcm, HW_Q8_CTRL_SPARE, 0,
->  				  &temp, sizeof(temp));
->  		if (err)
->  			return err;
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 00db74d96583d..865eda39d6014 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -415,7 +415,7 @@ void hsr_addr_subst_dest(struct hsr_node *node_src, struct sk_buff *skb,
+ 	node_dst = find_node_by_addr_A(&port->hsr->node_db,
+ 				       eth_hdr(skb)->h_dest);
+ 	if (!node_dst) {
+-		if (net_ratelimit())
++		if (net_ratelimit() && port->hsr->prot_version != PRP_V1)
+ 			netdev_err(skb->dev, "%s: Unknown node\n", __func__);
+ 		return;
+ 	}
+-- 
+2.39.2
 
-Why are you flipping all these arguments?
-Isn't HW_Q8_CTRL_SPARE regaddr?
-
-Could you to split your patches into multiple steps to make them easier
-to reivew?
