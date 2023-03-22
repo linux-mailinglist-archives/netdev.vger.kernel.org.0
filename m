@@ -2,123 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3984E6C4017
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A7F6C4036
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbjCVCCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 22:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
+        id S229595AbjCVCNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 22:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjCVCCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:02:35 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE27D59E46;
-        Tue, 21 Mar 2023 19:02:33 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PhBWM0XSrzKrSJ;
-        Wed, 22 Mar 2023 10:00:15 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 22 Mar
- 2023 10:02:31 +0800
-Subject: Re: [PATCH] rps: process the skb directly if rps cpu not changed
-To:     <yang.yang29@zte.com.cn>, <edumazet@google.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xu.xin16@zte.com.cn>,
-        <jiang.xuexin@zte.com.cn>, <zhang.yunkai@zte.com.cn>
-References: <202303212012296834902@zte.com.cn>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <aadae1c0-9d50-d89d-d0ea-a300fa09682c@huawei.com>
-Date:   Wed, 22 Mar 2023 10:02:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S230106AbjCVCNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:13:08 -0400
+Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42D05A90B
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:12:44 -0700 (PDT)
+Received: by mail-ua1-x943.google.com with SMTP id v48so11662821uad.6
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:12:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679451164;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dQlu0Oc2Q0nPMBCNq5iTPUZpwrRZlsMdPt2zjra8+VI=;
+        b=qNbw/c75cbzn9+niSm00wyE0YIAvUXY8wPEA/T7OdOwzYsGw+VP25yFjjNj4qb+l2B
+         nek6L+BhIe3UVjpN2sJ1Gfb/Vybmc3zdb0wSPznQ7L2mPjZoKkm91h9GbQrU8ntzBRHI
+         zaeKKWCSrXQxlf5VrzsXFEOK8x9m9GbNxBykCd1IEryMrZCF0Th0patc5Qpg7tWWoGfE
+         QWGg4LYN2/lI22wcEhebgGN/RNnAerV+PzrgGWdFjJErUyfSKQBxr6bzrUkQIaDUykoV
+         NIJwLjsuQQpXZajUwxCYQULNJmVBYHRjpcfdKL7E5yuz3SKiKdfFptdp2uZd/lk8BP9U
+         7fvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679451164;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dQlu0Oc2Q0nPMBCNq5iTPUZpwrRZlsMdPt2zjra8+VI=;
+        b=fKSCfoN36EUEIsD+5deBIqFbrF6uw3FdLk+zgt3miSrvdB0bX7rixoLo3bkUFRQ/YG
+         pzfbTBY+2hWLJk9KX5CpoYc0aPEIACY+pdEz+7y4PQBW7e69I+Stswm+LECkJBiVfGWV
+         ysSJ0cwc6RFnd8ek2GmaFuQqkccg5dJtosXPr2op1LM4CvAOHdIlUJzjZsOSAuyp1F82
+         780J/WDbF3pNVk/84joLBoAzkaUPH0cm/8d41drcz+T/R13Puvqx8H8tYEhgWj7KWsTy
+         urj//1+WTFd0gSeyHbZIWiY/u9NYx4dmEGb3z0nJEPR4yhm2Xuh+O6sL9wZy7YsPjYhL
+         t0nA==
+X-Gm-Message-State: AO0yUKU8NxY1K1iY2Z1Fk44a+28r9a/hvtEgYncS0OVnLHFgcWRv5K8H
+        84/EC3sX+Vf5lw1EoPjkpUzCYgZVLe7atsVGN90=
+X-Google-Smtp-Source: AK7set/h3FYX5LR3/BPmzMSLo/lpotMgwHBP1sjKqtKOidWNWJolR0WW8ZObsEyBG0JHyFSkc5ZvI1DJ2FIIzWboq9s=
+X-Received: by 2002:a1f:1c53:0:b0:439:d35c:892b with SMTP id
+ c80-20020a1f1c53000000b00439d35c892bmr1522667vkc.1.1679451163702; Tue, 21 Mar
+ 2023 19:12:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <202303212012296834902@zte.com.cn>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Received: by 2002:a59:b325:0:b0:3aa:7148:e1ba with HTTP; Tue, 21 Mar 2023
+ 19:12:42 -0700 (PDT)
+Reply-To: mariamkouame01@hotmail.com
+From:   Mariam Kouame <mariamkouame1991@gmail.com>
+Date:   Tue, 21 Mar 2023 19:12:42 -0700
+Message-ID: <CAGjw6zAy0+L8VcYO6Pn7RN=HrZUU_5Fh7z3B0njFroCUm--5FQ@mail.gmail.com>
+Subject: from mariam kouame
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/3/21 20:12, yang.yang29@zte.com.cn wrote:
-> From: xu xin <xu.xin16@zte.com.cn>
-> 
-> In the RPS procedure of NAPI receiving, regardless of whether the
-> rps-calculated CPU of the skb equals to the currently processing CPU, RPS
-> will always use enqueue_to_backlog to enqueue the skb to per-cpu backlog,
-> which will trigger a new NET_RX softirq.
+Dear,
 
-Does bypassing the backlog cause out of order problem for packet handling?
-It seems currently the RPS/RFS will ensure order delivery,such as:
-https://elixir.bootlin.com/linux/v6.3-rc3/source/net/core/dev.c#L4485
+Please grant me permission to share a very crucial discussion with
+you. I am looking forward to hearing from you at your earliest
+convenience.
 
-Also, this is an optimization, it should target the net-next branch:
-[PATCH net-next] rps: process the skb directly if rps cpu not changed
-
-> 
-> Actually, it's not necessary to enqueue it to backlog when rps-calculated
-> CPU id equals to the current processing CPU, and we can call
-> __netif_receive_skb or __netif_receive_skb_list to process the skb directly.
-> The benefit is that it can reduce the number of softirqs of NET_RX and reduce
-> the processing delay of skb.
-> 
-> The measured result shows the patch brings 50% reduction of NET_RX softirqs.
-> The test was done on the QEMU environment with two-core CPU by iperf3.
-> taskset 01 iperf3 -c 192.168.2.250 -t 3 -u -R;
-> taskset 02 iperf3 -c 192.168.2.250 -t 3 -u -R;
-> 
-> Previous RPS:
-> 		    	CPU0       CPU1
-> NET_RX:         45          0    (before iperf3 testing)
-> NET_RX:        1095         241   (after iperf3 testing)
-> 
-> Patched RPS:
->                 CPU0       CPU1
-> NET_RX:         28          4    (before iperf3 testing)
-> NET_RX:         573         32   (after iperf3 testing)
-> 
-> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
-> Reviewed-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
-> Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
-> Cc: Xuexin Jiang <jiang.xuexin@zte.com.cn>
-> ---
->  net/core/dev.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index c7853192563d..c33ddac3c012 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5666,8 +5666,9 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
->  	if (static_branch_unlikely(&rps_needed)) {
->  		struct rps_dev_flow voidflow, *rflow = &voidflow;
->  		int cpu = get_rps_cpu(skb->dev, skb, &rflow);
-> +		int current_cpu = smp_processor_id();
-> 
-> -		if (cpu >= 0) {
-> +		if (cpu >= 0 && cpu != current_cpu) {
->  			ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
->  			rcu_read_unlock();
->  			return ret;
-> @@ -5699,8 +5700,9 @@ void netif_receive_skb_list_internal(struct list_head *head)
->  		list_for_each_entry_safe(skb, next, head, list) {
->  			struct rps_dev_flow voidflow, *rflow = &voidflow;
->  			int cpu = get_rps_cpu(skb->dev, skb, &rflow);
-> +			int current_cpu = smp_processor_id();
-> 
-> -			if (cpu >= 0) {
-> +			if (cpu >= 0 && cpu != current_cpu) {
->  				/* Will be handled, remove from list */
->  				skb_list_del_init(skb);
->  				enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-> 
+Mrs. Mariam Kouame
