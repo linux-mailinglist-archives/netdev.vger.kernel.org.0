@@ -2,76 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D476C4B58
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:11:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33DF26C4B86
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:19:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbjCVNLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 09:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
+        id S230523AbjCVNT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 09:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbjCVNLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:11:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B4661A90
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:10:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679490614;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OgqnJyMoSlwpApjnjq5FXvCo3gtvaNVn/rTRRodDgl4=;
-        b=Q8k3OA2oOru21+s3zAJPwysnoxTOnm51eqH37ZnMPDak2uRQ7fHGYFSy/g6JD6tmX8vrO4
-        xMlezEdhwgxQr/0FblMzClHJ7suD+oYEjYFwwAQS0arpc0u0zrrT0Ky426MMY9nOiDBKnq
-        KWa/DyVAfA9XRU7GsWJVZaNC0kZ/UrQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-369-x_WLiTFRNCqXFBDIY2WLhQ-1; Wed, 22 Mar 2023 09:10:10 -0400
-X-MC-Unique: x_WLiTFRNCqXFBDIY2WLhQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8E1D2886467;
-        Wed, 22 Mar 2023 13:10:09 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5195642C827;
-        Wed, 22 Mar 2023 13:10:07 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <9C741BDB-31B0-460C-8FE7-F1C9B49002D5@hammerspace.com>
-References: <9C741BDB-31B0-460C-8FE7-F1C9B49002D5@hammerspace.com> <8F8B62FD-0F16-4383-BB34-97E850DAA7AF@hammerspace.com> <3DFBF27C-A62B-4AFE-87FD-3DF53FC39E8E@hammerspace.com> <20230316152618.711970-1-dhowells@redhat.com> <20230316152618.711970-28-dhowells@redhat.com> <754534.1678983891@warthog.procyon.org.uk> <809995.1678990010@warthog.procyon.org.uk>
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Jeffrey Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Anna Schumaker <anna@kernel.org>,
-        Charles Edward Lever <chuck.lever@oracle.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>
-Subject: Re: [RFC PATCH 27/28] sunrpc: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3243439.1679490606.1@warthog.procyon.org.uk>
-Date:   Wed, 22 Mar 2023 13:10:06 +0000
-Message-ID: <3243440.1679490606@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        with ESMTP id S230476AbjCVNTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:19:17 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531AB5BD86
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:13 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id x15-20020a25accf000000b00b3b4535c48dso19412539ybd.7
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679491152;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Yb81hp7ZlCpX7Yr6wz12GTlDZ40WK1rINM0mAGZ5OpM=;
+        b=KBNKtldMVauP0c3qFAYy0easJJXbtNYVy4U/IesleLkFYfKKbALxTxCH7Inv4oVyLT
+         qYLwRhvBHmwfG+4YVOXvTFnS/DbxB69WjXLSPA2NmYGFKEvAIDDTZMiZ2j37eBYEK15+
+         ltVmLrHobkqo8LIrLNlH/L65MWb2X/Dy/y1b3yPNotkUunTUt3TFOg6FvXQhTk11u/j7
+         ZyXr5rj/vDOccu30NhJZvxCXpjNDvMXNzN0znRYYT6l7SjuEkk6a7TKsb919eu38Q5sz
+         vM1VWaIRLvTMldqJj8vlRptxFLqN1mT4bYK/JvBXxJc9NGbYQwNY0tQ8R/8DM2/qri6u
+         DXww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679491152;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Yb81hp7ZlCpX7Yr6wz12GTlDZ40WK1rINM0mAGZ5OpM=;
+        b=V2+5rxKKx6B3CNquFEmBLSvf1nvoTHTF1FaKfQ5c+n/AXNHxIRiIp+1tdiCZ7LhSoY
+         nW+JrKa+Z+NSJAwFxmuEufKQ73MEXq+t18+MGO6hhH9sPcD95Az59nziQKaiSEt2BWDr
+         OawXGCiFC1Ab33+i7xIdb0LVrfib+c9Lk6pICMOoHXww7yIILYz4ewaFrhgHYlXSJauv
+         8pr6rHAhDgt8TsLixCJlnazlASzOALqzUULBqcwVXuC7Me+nMAXSqYXP3F2ywbSPL90M
+         vDZ3NBQMPPFpwhgnZDrwAit6DS9yi34LyZrOUIPt3P77LPl3vwwyLi0r3qG83kqSxkhz
+         9G2w==
+X-Gm-Message-State: AAQBX9d6M8WAKeayK32ScptyiIkO5SexPazP9lZIv8/5bWKXvsRI8psh
+        5YHBg3DL/06xb6YgMp/BWaG8SAr2R84=
+X-Google-Smtp-Source: AKy350aspfgHB1gDVWJthbqNoLqeIswB1rcjtYlr4D89NRndFfZREPvg7ka5TcVt7NpUkmh1ZsQMUOU9HBI=
+X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
+ (user=jaewan job=sendgmr) by 2002:a05:6902:1003:b0:b3c:637f:ad00 with SMTP id
+ w3-20020a056902100300b00b3c637fad00mr4107795ybt.5.1679491152591; Wed, 22 Mar
+ 2023 06:19:12 -0700 (PDT)
+Date:   Wed, 22 Mar 2023 13:16:32 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
+Message-ID: <20230322131637.2633968-1-jaewan@google.com>
+Subject: [PATCH v10 0/5] mac80211_hwsim: Add PMSR support
+From:   Jaewan Kim <jaewan@google.com>
+To:     michal.kubiak@intel.com, gregkh@linuxfoundation.org,
+        johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-team@android.com, adelva@google.com,
+        Jaewan Kim <jaewan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,17 +67,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Trond Myklebust <trondmy@hammerspace.com> wrote:
+Dear Kernel maintainers,
 
-> Add an enum iter_type for ITER_ITER ? :-)
+First of all, thank you for spending your precious time for reviewing
+my changes.
 
-Actually, that might not be such a bad idea, now that I've pondered on it some
-more.  Give it an array of iterators and add a flag to each iterator to say if
-it can be spliced from or not.
+Let me propose series of patches for adding PMSR support in the
+mac80211_hwsim.
 
-Once ITER_PIPE is killed off, advancing and reverting over it should be pretty
-straightforward - though each iterator would also need to keep track of how
-big it started off as in order that it can be reverted over.
+PMSR (peer measurement) is generalized measurement between STAs,
+and currently FTM (fine time measurement or flight time measurement)
+is the one and only measurement.
 
-David
+FTM measures the RTT (round trip time) and FTM can be used to measure
+distances between two STAs. RTT is often referred as 'measuring distance'
+as well.
+
+Kernel had already defined protocols for PMSR in the
+include/uapi/linux/nl80211.h and relevant parsing/sending code are in the
+net/wireless/pmsr.c, but they are only used in intel's iwlwifi driver.
+
+Patchset is tested with iw tool on Virtual Android device (a.k.a.
+Cuttlefish). Hope this explains my changes.
+
+Many Thanks,
+--
+V9 -> V10: Applied reverse xmas tree style (a.k.a. RCS).
+V8 -> V9: Removed any wrong words for patch. Changed to reject unknown
+          PMSR types.
+V7 -> V8: Separated patch for exporting nl80211_send_chandef
+V6 -> V7: Split 'mac80211_hwsim: handle FTM requests with virtio'
+          with three pieces
+V5 -> V6: Added per patch change history.
+V4 -> V5: Fixed style
+V3 -> V4: Added detailed explanation to cover letter and per patch commit
+          messages, includes explanation of PMSR and FTM.
+          Also fixed memory leak.
+V1 -> V3: Initial commits (include resends)
+
+Jaewan Kim (5):
+  mac80211_hwsim: add PMSR capability support
+  wifi: nl80211: make nl80211_send_chandef non-static
+  mac80211_hwsim: add PMSR request support via virtio
+  mac80211_hwsim: add PMSR abort support via virtio
+  mac80211_hwsim: add PMSR report support via virtio
+
+ drivers/net/wireless/mac80211_hwsim.c | 785 +++++++++++++++++++++++++-
+ drivers/net/wireless/mac80211_hwsim.h |  58 ++
+ include/net/cfg80211.h                |   9 +
+ net/wireless/nl80211.c                |   4 +-
+ 4 files changed, 845 insertions(+), 11 deletions(-)
+
+-- 
+2.40.0.rc1.284.g88254d51c5-goog
 
