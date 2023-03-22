@@ -2,96 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11ED86C4A08
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:13:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A06736C4A56
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:23:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbjCVMN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 08:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S230080AbjCVMXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 08:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbjCVMN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:13:28 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52C22449D
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:13:27 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32MCCxt06003070, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32MCCxt06003070
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Wed, 22 Mar 2023 20:12:59 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Wed, 22 Mar 2023 20:13:13 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 22 Mar 2023 20:13:12 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Wed, 22 Mar 2023 20:13:12 +0800
-From:   Hau <hau@realtek.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [PATCH net] r8169: fix rtl8168h rx crc error
-Thread-Topic: [PATCH net] r8169: fix rtl8168h rx crc error
-Thread-Index: AQHZXIn13gnxa8cqaECWm4Ww3lcREq8F70wAgADCfmA=
-Date:   Wed, 22 Mar 2023 12:13:12 +0000
-Message-ID: <3892d440f0194b30aa32ccd93f661dd2@realtek.com>
-References: <20230322064550.2378-1-hau@realtek.com>
- <20230322082104.y6pz7ewu3ojd3esh@soft-dev3-1>
-In-Reply-To: <20230322082104.y6pz7ewu3ojd3esh@soft-dev3-1>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.228.56]
-x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIzLzMvMjIg5LiK5Y2IIDExOjIwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229872AbjCVMXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:23:51 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E661E1D8
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:23:50 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id eg48so72025867edb.13
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:23:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679487829;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qKO3ohsBWGUhAlloy+4N6XU+uE9FlkRAAJDovVxUKqw=;
+        b=KRb5CkW2sk227RRhQ0EHOQNYCVH0Ht6nV7MJP//EHS8OnxUSA6+XWy0ZEQkFGt+U1V
+         n0gY8ZEgcAReYrNEoi45mq9SKSFl3vfljc+BHObGInrg7IhBLM86NRqQRXP9kCNCKVeQ
+         5Mg2Mo71pg2pvugoqqCk7+6xDzpW+UqdYuqGa5MGkOgivFrOskIJrDdihEYOQ8+4BxmT
+         Mma+OLObjz0p4eQSTmbL5U/ijYtyxMd9voUcOQ9dxpQsz4S2IhkJ949syMd1waVF2GXJ
+         8jT4PAAibMPbHme1uXB/zkG5ZDcpX9aFSpZWxAPHp2wEqu46HtzPYtgxnSnceaZpUk94
+         1T8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679487829;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=qKO3ohsBWGUhAlloy+4N6XU+uE9FlkRAAJDovVxUKqw=;
+        b=qsKgFtstXGbvir48u4x5LsrgzIJlx7fvPqjS0WHL98O+wt/aoL4c48Hh24Z/1ESKji
+         tr7rdUkgpZG3Hgx43QWKJ2y1Zl7lKkPndnm5vCiW9Izehi48NC4m0Gd5hhOT1b67lJvc
+         0YY+QwNYWu/OXKCiHkbLvDQ29H8ctWfuroRbSD/yS/p3LgUOq5adz5a7fwK9qg7+GWvE
+         Wg3vUYxL9ADc4javoZrrOEnkM1di2LiEoBDwxYdSLu10h+dFOdF2LNlED31ISeY+vyLm
+         4TyJajxNq4/7/0vQvr9Pb0i3+hhgeGFuSIInWHnJFkfKSq76QyDM2aG5faco4q4JHShN
+         mvVg==
+X-Gm-Message-State: AO0yUKUPRu5ZduXF5RKEgIRVaQhpf19NfJYoSUjOGD0QAi0wrO4ZyGqJ
+        noUaBztqgqOx/eyCs7jhi7yCMQcDd8gvSaTOi0kpaNp97Ns=
+X-Google-Smtp-Source: AK7set9CcH94GwONMyMAUmycT3dNEn698ggRHPLY2n+otcIPJ9GSpTWu7gxsR9llgkDGLqUH+2KVk4SVsEsKWijc/FI=
+X-Received: by 2002:a50:9990:0:b0:4fb:7e7a:ebf1 with SMTP id
+ m16-20020a509990000000b004fb7e7aebf1mr3294795edb.6.1679487828659; Wed, 22 Mar
+ 2023 05:23:48 -0700 (PDT)
 MIME-Version: 1.0
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Received: by 2002:a17:907:7253:b0:86c:9916:d904 with HTTP; Wed, 22 Mar 2023
+ 05:23:48 -0700 (PDT)
+Reply-To: fionahill.usa@outlook.com
+From:   Fiona Hill <tonyelumelu67@gmail.com>
+Date:   Wed, 22 Mar 2023 05:23:48 -0700
+Message-ID: <CAAVnhxLUAHL2ZyW2k8LfK1JasfC9K6+YhNqmY8CtFAHznBmuSA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBUaGUgMDMvMjIvMjAyMyAxNDo0NSwgQ2h1bkhhbyBMaW4gd3JvdGU6DQo+ID4NCj4gPiBXaGVu
-IGxpbmsgc3BlZWQgaXMgMTAgTWJwcyBhbmQgdGVtcGVyYXR1cmUgaXMgdW5kZXIgLTIwwrBDLCBy
-dGw4MTY4aA0KPiA+IG1heSBoYXZlIHJ4IGNyYyBlcnJvci4gRGlzYWJsZSBwaHkgMTAgTWJwcyBw
-bGwgb2ZmIHRvIGZpeCB0aGlzIGlzc3VlLg0KPiANCj4gRG9uJ3QgZm9yZ2V0IHRvIGFkZCB0aGUg
-Zml4ZXMgdGFnLg0KPiBBbm90aGVyIGNvbW1lbnQgdGhhdCBJIHVzdWFsbHkgZ2V0IGlzIHRvIHJl
-cGxhY2UgaGFyZGNvZGVkIHZhbHVlcyB3aXRoDQo+IGRlZmluZXMsIGJ1dCBvbiB0aGUgb3RoZXIg
-c2lkZSBJIGNhbiBzZWUgdGhhdCB0aGlzIGZpbGUgYWxyZWFkeSBoYXMgcGxlbnRseSBvZg0KPiBo
-YXJkY29kZWQgdmFsdWVzLg0KPiANCkl0IGlzIG5vdCBhIGZpeCBmb3IgYSBzcGVjaWZpYyBjb21t
-aXQuIFBIWSAxMG0gcGxsIG9mZiBpcyBhbiBwb3dlciBzYXZpbmcgZmVhdHVyZSB3aGljaCBpcyBl
-bmFibGVkIGJ5IEgvVyBkZWZhdWx0Lg0KVGhpcyBpc3N1ZSBjYW4gYmUgZml4ZWQgYnkgZGlzYWJs
-ZSBQSFkgMTBtIHBsbCBvZmYuDQoNCj4gUmV2aWV3ZWQtYnk6IEhvcmF0aXUgVnVsdHVyIDxob3Jh
-dGl1LnZ1bHR1ckBtaWNyb2NoaXAuY29tPg0KPiANCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IENo
-dW5IYW8gTGluIDxoYXVAcmVhbHRlay5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0
-aGVybmV0L3JlYWx0ZWsvcjgxNjlfcGh5X2NvbmZpZy5jIHwgMyArKysNCj4gPiAgMSBmaWxlIGNo
-YW5nZWQsIDMgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0
-L2V0aGVybmV0L3JlYWx0ZWsvcjgxNjlfcGh5X2NvbmZpZy5jDQo+ID4gYi9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9yZWFsdGVrL3I4MTY5X3BoeV9jb25maWcuYw0KPiA+IGluZGV4IDkzMDQ5NmNkMzRl
-ZC4uYjUwZjE2Nzg2YzI0IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3Jl
-YWx0ZWsvcjgxNjlfcGh5X2NvbmZpZy5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-cmVhbHRlay9yODE2OV9waHlfY29uZmlnLmMNCj4gPiBAQCAtODI2LDYgKzgyNiw5IEBAIHN0YXRp
-YyB2b2lkIHJ0bDgxNjhoXzJfaHdfcGh5X2NvbmZpZyhzdHJ1Y3QNCj4gcnRsODE2OV9wcml2YXRl
-ICp0cCwNCj4gPiAgICAgICAgIC8qIGRpc2FibGUgcGh5IHBmbSBtb2RlICovDQo+ID4gICAgICAg
-ICBwaHlfbW9kaWZ5X3BhZ2VkKHBoeWRldiwgMHgwYTQ0LCAweDExLCBCSVQoNyksIDApOw0KPiA+
-DQo+ID4gKyAgICAgICAvKiBkaXNhYmxlIDEwbSBwbGwgb2ZmICovDQo+ID4gKyAgICAgICBwaHlf
-bW9kaWZ5X3BhZ2VkKHBoeWRldiwgMHgwYTQzLCAweDEwLCBCSVQoMCksIDApOw0KPiA+ICsNCj4g
-PiAgICAgICAgIHJ0bDgxNjhnX2Rpc2FibGVfYWxkcHMocGh5ZGV2KTsNCj4gPiAgICAgICAgIHJ0
-bDgxNjhnX2NvbmZpZ19lZWVfcGh5KHBoeWRldik7ICB9DQo+ID4gLS0NCj4gPiAyLjM3LjINCj4g
-Pg0KPiANCj4gLS0NCj4gL0hvcmF0aXUNCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0aGUg
-ZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0K
+-- 
+
+Hello how are you doing? I want to know the situation of things over
+there did  you receive my message?
