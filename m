@@ -2,80 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B4C66C4159
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 04:59:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E948E6C417E
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 05:18:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbjCVD7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 23:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        id S229725AbjCVERo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 00:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230016AbjCVD7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 23:59:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCC247816;
-        Tue, 21 Mar 2023 20:59:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D74561E6B;
-        Wed, 22 Mar 2023 03:59:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 307D8C433D2;
-        Wed, 22 Mar 2023 03:59:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679457575;
-        bh=NoLU/eJzzjgbu3ElUlUbqyFYCYbcbIXfszzy/XJHJwc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FDJZdb5kvsNmTp91a8TD/se1HZfHGeq8h2GbA4wWmmKRxhBIGhv6XqrRvQjC0fN9y
-         M/tHNhFiaB8LX8gOF3UgfItp2TJmKEybApIgP7ICtsxgMjxXVvXHKhy8XGGKxkrveo
-         zOQBIKgLASZ6UAMf4XT0xRbDbm4cN/x/NAJMGLylyXLwZ07a0nexu1nln1Or+8P88N
-         voIik3TWae726aQqStJY9BnYWAAOufp8zuw9pP1gUZNGGF4UP0fgxPYvpn453YvYtt
-         8PAbUKdeqm8NXzjF4mv0b7tcjHadQleZNzBbQ2i7AnGE5XT7FXB+f/U8udAX6WLjRq
-         NA9jirqI4E84A==
-Date:   Tue, 21 Mar 2023 20:59:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 0/8] virtio_net: refactor xdp codes
-Message-ID: <20230321205934.1c787208@kernel.org>
-In-Reply-To: <20230321235326-mutt-send-email-mst@kernel.org>
-References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
-        <20230321233325-mutt-send-email-mst@kernel.org>
-        <1679456456.3777983-1-xuanzhuo@linux.alibaba.com>
-        <20230321235326-mutt-send-email-mst@kernel.org>
+        with ESMTP id S229642AbjCVERl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 00:17:41 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACA656144;
+        Tue, 21 Mar 2023 21:17:41 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id ix20so18194599plb.3;
+        Tue, 21 Mar 2023 21:17:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679458661;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4noCRqZTyGso4rcJ9tz0BhnJ1ueJhB3rLMlziX6jcSw=;
+        b=O9gBomO3JUVG38cUvlpHj75evR+sq2Jz9eF5+rYK1syse9gK24g5Zc9ZhD4WNLxzD9
+         PeuUsmLtznFXb7E7vfRWFKVcrM5h1DL562uWmP0cwBbmlIZQi43+nEDAQAKIh1Ul+0/u
+         9m2uAQTsvW3LaGeyKkZlmjaf01OShBcARRVfrcu+YTlUV77YD8d1ZEFZli0k+mwWGQzT
+         ODGAGJGlejPP9tj/LohCLu0fNxxiPMR3r3kVKtPwKSLn8lyCAMzBaTa+W2guIQ5nSHMV
+         xH6jZsv1D/6AbFPgyb3tzwHaqi/AP8OQcr89a8yI/8c72unYlSFEln+Evk1z8uiM2xUt
+         J2xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679458661;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4noCRqZTyGso4rcJ9tz0BhnJ1ueJhB3rLMlziX6jcSw=;
+        b=vYQsLhS8wsrCYfZzqytajXSMuOMN279mzcUhxoGO/XWIBEuCI06652QurARVVbV8Xp
+         GTJ8d1KzZ04nuBvUTKmBVbFyi/ZCidGNQT2DCd7VdvsYI1CgpFH9nj3dsw4y9rufB7Tz
+         DH7ex+z9Zszk9YZf5Sczjpen7gHjKtXBZWOckInKYmCa4A5oDDSAUsiFQgQJv42GFb8q
+         AwRWp4Z97RlsK9bAH8EOeB+EV9L+U0TnCwhNqHqb2Og77mLm/vRz/UbFCXrql796pe7F
+         gdBXmurfd9GnAFuZHccXiBPxEPVi8LiwECITeuPcC2jYZP++7muosM47eOBDw383Y3t0
+         S6qw==
+X-Gm-Message-State: AO0yUKVeJ/Fk/KGNuXtLnzw7CNPTx0U8EUcl0oY1Pr2iSRf5MjsBDLKm
+        v2afjtJCLcvsRfzSSB6/X1g=
+X-Google-Smtp-Source: AK7set8Zq7ZQ2YiJvjka/7HV7FgrZ3NuNeD2Hx8KwQQHGIFjX/sn1rnOY0Zf9TIpfAB6yEVhvbtB6Q==
+X-Received: by 2002:a05:6a20:7f8c:b0:d9:f4e9:546d with SMTP id d12-20020a056a207f8c00b000d9f4e9546dmr4584846pzj.6.1679458660666;
+        Tue, 21 Mar 2023 21:17:40 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id t187-20020a635fc4000000b0050be5236546sm8944922pgb.59.2023.03.21.21.17.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Mar 2023 21:17:40 -0700 (PDT)
+Date:   Tue, 21 Mar 2023 21:17:37 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Zhang, Tianfei" <tianfei.zhang@intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+        "Weight, Russell H" <russell.h.weight@intel.com>,
+        "matthew.gerlach@linux.intel.com" <matthew.gerlach@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Khadatare, RaghavendraX Anand" 
+        <raghavendrax.anand.khadatare@intel.com>
+Subject: Re: [PATCH v1] ptp: add ToD device driver for Intel FPGA cards
+Message-ID: <ZBqBYbYvd9fMCaSz@hoboy.vegasvil.org>
+References: <ZBHPTz8yH57N1g8J@smile.fi.intel.com>
+ <73rqs90r-nn9o-s981-9557-q70no2435176@syhkavp.arg>
+ <ZBhdnl1OAPcrLdHD@smile.fi.intel.com>
+ <4752oq01-879s-0p0p-s8qq-sn48q27sp1r7@syhkavp.arg>
+ <ZBi24erCdWSy1Rtz@hoboy.vegasvil.org>
+ <40o4o5s6-5oo6-nn03-r257-24po258nq0nq@syhkavp.arg>
+ <ZBmq8cW36e8pRZ+s@smile.fi.intel.com>
+ <BN9PR11MB548394F8DCE5AEC4DA553EB6E3819@BN9PR11MB5483.namprd11.prod.outlook.com>
+ <ZBnBwa/MLdH0ep3g@smile.fi.intel.com>
+ <BN9PR11MB5483DA8ED31B3294C60FC827E3819@BN9PR11MB5483.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5483DA8ED31B3294C60FC827E3819@BN9PR11MB5483.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Mar 2023 23:53:52 -0400 Michael S. Tsirkin wrote:
-> > > Would it make sense to merge this one through the virtio tree? =20
-> >=20
-> > There are some small problems that we merge this patch-set to Virtio Tr=
-ee
-> > directly.
->=20
-> what exactly? is there a dependency on net-next?
+On Tue, Mar 21, 2023 at 02:52:34PM +0000, Zhang, Tianfei wrote:
+> I think sending the other patchset to fix this NULL handled issue of PTP core will be better?
 
-XDP is very actively developed, this seems like a bad idea :(
+Yes, please just fix the driver to conform to the current API.
 
-Is there a problem? Is it because the RFC was not getting much
-attention? RFCs are for interesting code, really, nobody was=20
-interested =F0=9F=A4=B7=EF=B8=8F When it comes to merging - it will be in t=
-he tree
-in two days if nobody finds bugs...
+Thanks,
+Richard
