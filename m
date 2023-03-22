@@ -2,77 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B476C5877
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 22:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8DCD6C5885
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 22:08:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbjCVVIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 17:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S230431AbjCVVI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 17:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbjCVVIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 17:08:09 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC1F4C08
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 14:08:03 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id o12so9103794iow.6
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 14:08:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1679519282;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2NMs74zzuCtt5E+o+ysqW2tmIIs5ug4dARg5jHam9G0=;
-        b=NEfTegf9MNjv8z9211rRLvibighkYaTUQZyTA/djbicnxJjPEp4Y0VAgeIOGnJs+Kz
-         hlY0eEYwAQoEN6oD/a8WDhIFcdW9OaQ9TQd31udqQDfaIKgvbQGpAuHXCe9gmQo9xL4n
-         6wUNapeMfW/A2S79JUY9v32wx5296n6JJOjSdGjIp+nl1WfOO+uFbryqRtQ3DL79BLEA
-         Q9aB94r++4EXz6K4IeS4JN9SzTkhSEbF9o95BAE4wx3hIFVkmMwJ8NQUR8SyJ+nn0VFc
-         757uWDuSsbArvxnfMoYZwucnObeP4lxcvHCkC46KNtEY2KvXeIb+/1sR7qATHE4hLSle
-         7+vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679519282;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2NMs74zzuCtt5E+o+ysqW2tmIIs5ug4dARg5jHam9G0=;
-        b=PTIbJPuYb9o0arP44OyjfWl1mWZ5V97WYkun4TAc3dE4WA41U1wBQ9TvRB3lQQauAb
-         pvRluenK3r5DrQjKokMNie9wlNb5UwIgx8HHZV3MmV0/wScGNaIeY7t33LnRVDMjKAv6
-         YX0YsBhPdWmHz8RraLP8TAPDFPJEWYtPhoCjaPp5iWI4Gcptq4vAfLdoWU4rA0KFOutF
-         Fm0OZtcoWH2M8yrPU9Z86yzvpDemwMLYPV+/IprRrgaItiBdpR+UD+wkBNMF0EEBY2CI
-         bdv6Qy2TP0WTmLac2O50Pc7No2VQzbkxiosvMgSmKgkDLeX/dRMpFY7lx6PPu3SW408E
-         bgng==
-X-Gm-Message-State: AO0yUKUaMMd3aZLEBkltNgfW/ioS21JTZlXxLiZnNQ2hb6pcKQoBWPGY
-        MPB/eOVOtYrb6zHlESRFUVjm7g==
-X-Google-Smtp-Source: AK7set+Mlgw7Cv/VyLzttEDRzn0iS5chZBzcFn7OZZmh3jRipNXqRvrMTGaTZagW7DoKr31cM7L2mQ==
-X-Received: by 2002:a5e:8b01:0:b0:74c:a578:e3a0 with SMTP id g1-20020a5e8b01000000b0074ca578e3a0mr5306285iok.5.1679519282604;
-        Wed, 22 Mar 2023 14:08:02 -0700 (PDT)
-Received: from [172.22.22.4] ([98.61.227.136])
-        by smtp.googlemail.com with ESMTPSA id g8-20020a5edf48000000b00758917bc309sm919372ioq.31.2023.03.22.14.08.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 14:08:02 -0700 (PDT)
-Message-ID: <a0e5f9e3-403d-3334-9f7c-9d649d794a96@linaro.org>
-Date:   Wed, 22 Mar 2023 16:08:01 -0500
+        with ESMTP id S230497AbjCVVIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 17:08:38 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008EC132E9;
+        Wed, 22 Mar 2023 14:08:30 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1pf5h4-00043M-PF; Wed, 22 Mar 2023 22:08:26 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <netfilter-devel@vger.kernel.org>,
+        Madhu Koriginja <madhu.koriginja@nxp.com>
+Subject: [PATCH net-next 5/5] netfilter: keep conntrack reference until IPsecv6 policy checks are done
+Date:   Wed, 22 Mar 2023 22:08:02 +0100
+Message-Id: <20230322210802.6743-6-fw@strlen.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230322210802.6743-1-fw@strlen.de>
+References: <20230322210802.6743-1-fw@strlen.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next] net: ipa: add IPA v5.0 to ipa_version_string()
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, caleb.connolly@linaro.org, mka@chromium.org,
-        evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20230322144742.2203947-1-elder@linaro.org>
- <ZBtrfLOh3EKBKW+F@corigine.com>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <ZBtrfLOh3EKBKW+F@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,14 +42,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/22/23 3:56 PM, Simon Horman wrote:
-> Should IPA_VERSION_5_1 and IPA_VERSION_5_5 also be added?
+From: Madhu Koriginja <madhu.koriginja@nxp.com>
 
-They could, since their symbols are defined.
+Keep the conntrack reference until policy checks have been performed for
+IPsec V6 NAT support, just like ipv4.
 
-We expect to support both of those versions pretty
-soon, and we'll certainly add them to this function
-then.  For now, unless someone thinks it's important
-to add this now, I'd rather keep it this way.
+The reference needs to be dropped before a packet is
+queued to avoid having the conntrack module unloadable.
 
-					-Alex
+Fixes: 58a317f1061c ("netfilter: ipv6: add IPv6 NAT support")
+Signed-off-by: Madhu Koriginja <madhu.koriginja@nxp.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/dccp/ipv6.c      |  1 +
+ net/ipv6/ip6_input.c | 14 ++++++--------
+ net/ipv6/raw.c       |  5 ++---
+ net/ipv6/tcp_ipv6.c  |  2 ++
+ net/ipv6/udp.c       |  2 ++
+ 5 files changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index 47fb10834223..93c98990d726 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -784,6 +784,7 @@ static int dccp_v6_rcv(struct sk_buff *skb)
+ 
+ 	if (!xfrm6_policy_check(sk, XFRM_POLICY_IN, skb))
+ 		goto discard_and_relse;
++	nf_reset_ct(skb);
+ 
+ 	return __sk_receive_skb(sk, skb, 1, dh->dccph_doff * 4,
+ 				refcounted) ? -1 : 0;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index e1ebf5e42ebe..d94041bb4287 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -404,10 +404,6 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+ 			/* Only do this once for first final protocol */
+ 			have_final = true;
+ 
+-			/* Free reference early: we don't need it any more,
+-			   and it may hold ip_conntrack module loaded
+-			   indefinitely. */
+-			nf_reset_ct(skb);
+ 
+ 			skb_postpull_rcsum(skb, skb_network_header(skb),
+ 					   skb_network_header_len(skb));
+@@ -430,10 +426,12 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
+ 				goto discard;
+ 			}
+ 		}
+-		if (!(ipprot->flags & INET6_PROTO_NOPOLICY) &&
+-		    !xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
+-			SKB_DR_SET(reason, XFRM_POLICY);
+-			goto discard;
++		if (!(ipprot->flags & INET6_PROTO_NOPOLICY)) {
++			if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb)) {
++				SKB_DR_SET(reason, XFRM_POLICY);
++				goto discard;
++			}
++			nf_reset_ct(skb);
+ 		}
+ 
+ 		ret = INDIRECT_CALL_2(ipprot->handler, tcp_v6_rcv, udpv6_rcv,
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 6ac2f2690c44..4ab62a9c5c8e 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -194,10 +194,8 @@ static bool ipv6_raw_deliver(struct sk_buff *skb, int nexthdr)
+ 			struct sk_buff *clone = skb_clone(skb, GFP_ATOMIC);
+ 
+ 			/* Not releasing hash table! */
+-			if (clone) {
+-				nf_reset_ct(clone);
++			if (clone)
+ 				rawv6_rcv(sk, clone);
+-			}
+ 		}
+ 	}
+ 	rcu_read_unlock();
+@@ -391,6 +389,7 @@ int rawv6_rcv(struct sock *sk, struct sk_buff *skb)
+ 		kfree_skb_reason(skb, SKB_DROP_REASON_XFRM_POLICY);
+ 		return NET_RX_DROP;
+ 	}
++	nf_reset_ct(skb);
+ 
+ 	if (!rp->checksum)
+ 		skb->ip_summed = CHECKSUM_UNNECESSARY;
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 35cf523c9efd..244cf86c4cbb 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1723,6 +1723,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 	if (drop_reason)
+ 		goto discard_and_relse;
+ 
++	nf_reset_ct(skb);
++
+ 	if (tcp_filter(sk, skb)) {
+ 		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+ 		goto discard_and_relse;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index d350e57c4792..4caa70a1b871 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -704,6 +704,7 @@ static int udpv6_queue_rcv_one_skb(struct sock *sk, struct sk_buff *skb)
+ 		drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+ 		goto drop;
+ 	}
++	nf_reset_ct(skb);
+ 
+ 	if (static_branch_unlikely(&udpv6_encap_needed_key) && up->encap_type) {
+ 		int (*encap_rcv)(struct sock *sk, struct sk_buff *skb);
+@@ -1027,6 +1028,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 
+ 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
+ 		goto discard;
++	nf_reset_ct(skb);
+ 
+ 	if (udp_lib_checksum_complete(skb))
+ 		goto csum_error;
+-- 
+2.39.2
+
