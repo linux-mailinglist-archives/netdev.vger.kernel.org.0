@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FF96C41A3
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 05:40:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 735F16C41A1
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 05:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbjCVEkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 00:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
+        id S229735AbjCVEkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 00:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbjCVEkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 00:40:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68D917CEB;
-        Tue, 21 Mar 2023 21:40:20 -0700 (PDT)
+        with ESMTP id S229676AbjCVEkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 00:40:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3A717150;
+        Tue, 21 Mar 2023 21:40:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D4D3B81B2A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 020AD61F39;
         Wed, 22 Mar 2023 04:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 303FAC4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 46A25C4339C;
         Wed, 22 Mar 2023 04:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1679460018;
-        bh=w40bNQaOzdkmfZmlA2GvF9Q+pMKCnRWIU9AcJrvVFSc=;
+        bh=m8ZwRYnfYuOH/6PxAnAuXjVJ8S0Z9PvIUf2Qea14/JY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dwnClOx3dhE5Oq3XrUAyEn1mUjd41JjiThDSqGOoN2z0fgrDmmKBmZJHn2+qKfVnr
-         uU6fLkA25Yl9BbBrWFZZaVP0oGJsKGP55vFKkwwaFTGb3/LhIcm2segxwg28+lKsEd
-         TfNlul6ehwjzcCi6BBwYhchmp9wkblt+SZJJu+lgmBV/iQYln53R0PBXiESLmZg+Ba
-         PibkVmSfQcPw8Cpc6+D5xkcvTSWmfNkNdMzarIekOaeCG6tm/RaHx9gVqldD+h74hO
-         yBFkSDMzSUUNYO7QIQHPauuJg8duWWhAVM9VILnF/MCHZiXseSiF19li6XrUXJZYy3
-         UlVmz7hhZFn8A==
+        b=q6peMgNYB9CIfyl6gGo2HHHlXBvE3dR8aDz4h5kGWcTeJEOsxo03p5wPgNy0H+GH/
+         sSroGfYNMjCMIG4Gyud6rQ6PhXe0yd//41c+Dqv5pKu0SB1uBOZkAiu8im/FyJDNo3
+         2FqYgmO2DJJM0sPV+NpBAIzXvRMWMqaAHA+xK6allY3V2C66DdUOqzoOjd21TCY0EB
+         OkCOOPxEd6NHLXkj2MRQGhJX0V23qAkVZUKENXIvkLwF5GPlfjDt6C0991mQPLMgmq
+         VlZ1L0fD4U7RUzFJwowo9Cxuw+MkoaBz0fDcH3dUY8Mjq+K7mN8FLHwQX2Q/JZGxj0
+         QZpy/dzBJR2/w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 16B72E4F0DA;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 20154E66C8D;
         Wed, 22 Mar 2023 04:40:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] net/sonic: use dma_mapping_error() for error check
+Subject: Re: [PATCH net 0/3] Fix trainwreck with Ocelot switch statistics counters
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167946001808.24938.4667309228151145576.git-patchwork-notify@kernel.org>
+Message-Id: <167946001812.24938.5518220051677045184.git-patchwork-notify@kernel.org>
 Date:   Wed, 22 Mar 2023 04:40:18 +0000
-References: <6645a4b5c1e364312103f48b7b36783b94e197a2.1679370343.git.fthain@linux-m68k.org>
-In-Reply-To: <6645a4b5c1e364312103f48b7b36783b94e197a2.1679370343.git.fthain@linux-m68k.org>
-To:     Finn Thain <fthain@linux-m68k.org>
-Cc:     tsbogend@alpha.franken.de, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhangchangzhong@huawei.com
+References: <20230321010325.897817-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20230321010325.897817-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        colin.foster@in-advantage.com, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -59,25 +60,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (main)
+This series was applied to netdev/net.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 21 Mar 2023 14:45:43 +1100 you wrote:
-> From: Zhang Changzhong <zhangchangzhong@huawei.com>
+On Tue, 21 Mar 2023 03:03:22 +0200 you wrote:
+> While testing the patch set for preemptible traffic classes with some
+> controlled traffic and measuring counter deltas:
+> https://lore.kernel.org/netdev/20230220122343.1156614-1-vladimir.oltean@nxp.com/
 > 
-> The DMA address returned by dma_map_single() should be checked with
-> dma_mapping_error(). Fix it accordingly.
-> 
-> Fixes: efcce839360f ("[PATCH] macsonic/jazzsonic network drivers update")
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> Tested-by: Stan Johnson <userm57@yahoo.com>
-> Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+> I noticed that in the output of "ethtool -S swp0 --groups eth-mac
+> eth-phy eth-ctrl rmon -- --src emac | grep -v ': 0'", the TX counters
+> were off. Quickly I realized that their values were permutated by 1
+> compared to their names, and that for example
+> tx-rmon-etherStatsPkts64to64Octets was incrementing when
+> tx-rmon-etherStatsPkts65to127Octets should have.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,net] net/sonic: use dma_mapping_error() for error check
-    https://git.kernel.org/netdev/net/c/4107b8746d93
+  - [net,1/3] net: mscc: ocelot: fix stats region batching
+    https://git.kernel.org/netdev/net/c/6acc72a43eac
+  - [net,2/3] net: mscc: ocelot: fix transfer from region->buf to ocelot->stats
+    https://git.kernel.org/netdev/net/c/17dfd2104598
+  - [net,3/3] net: mscc: ocelot: add TX_MM_HOLD to ocelot_mm_stats_layout
+    https://git.kernel.org/netdev/net/c/5291099e0f61
 
 You are awesome, thank you!
 -- 
