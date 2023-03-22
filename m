@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8936E6C53ED
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 19:42:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 239276C53FB
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 19:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbjCVSmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 14:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
+        id S230193AbjCVSpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 14:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbjCVSmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 14:42:36 -0400
+        with ESMTP id S230124AbjCVSpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 14:45:49 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D285F537;
-        Wed, 22 Mar 2023 11:42:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02694E5FE;
+        Wed, 22 Mar 2023 11:45:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=gxpVDH1mh+/A/+t56LjQUDaqRiV8r9sVqml3AJRAo4Y=; b=rg10SCteP+Kstm7Upq85BHo0vz
-        BDp8OfA1PLgJCn2+lYnsCtF3sQ0su7PFyNsVRkVAiLP+o9st6THYYw01TyixGMKJTWbHgdNE+9iO8
-        nnuKpRjaxYEhuW8CgPmBd4QI21Ws1paKccdzTu/JEBNHXbS7Ye5CWkJPtMzKBoonaxnY=;
+        bh=AG2nFeNzBGIGAmkF7WYSDv5/ELQI6V3BW2MOiGCCqaQ=; b=RQM2zAycXzhTmtjh9tkww0up06
+        mgt32I315cZyHVUyifh5fOquWHjUp/XsSvGHdVHb3nRosXIIQgkXf7YdDU6BtBp4EBH1wtjc1SVQ8
+        8v9Ws2ZhMiFx5B4udu2+DMzylyWA6XlCYn5FUwWs9Bt5unnML3g+XqGa8tjHIzxCpbok=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pf3Pg-0085t1-Oa; Wed, 22 Mar 2023 19:42:20 +0100
-Date:   Wed, 22 Mar 2023 19:42:20 +0100
+        id 1pf3Ro-0085uW-7p; Wed, 22 Mar 2023 19:44:32 +0100
+Date:   Wed, 22 Mar 2023 19:44:32 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -41,15 +41,15 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Sakari Ailus <sakari.ailus@linux.intel.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
- get phy interface mode
-Message-ID: <1394b96f-ee3c-43c9-bc26-a991980d6c09@lunn.ch>
+Subject: Re: [PATCH RFC net-next 2/7] net: phylink: provide
+ phylink_find_max_speed()
+Message-ID: <3135baba-8da8-437f-ba17-cff107ccf056@lunn.ch>
 References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
- <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
+ <E1pex8L-00Dvnl-1F@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1pex8L-00Dvnl-1F@rmk-PC.armlinux.org.uk>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
         autolearn=unavailable autolearn_force=no version=3.4.6
@@ -59,12 +59,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 12:00:06PM +0000, Russell King (Oracle) wrote:
-> In preparation for supporting the use of software nodes to setup
-> phylink, switch DSA to use fwnode_get_phy_mode() to retrieve the
-> phy interface mode, rather than using of_get_phy_mode() which is
-> DT specific.
-> 
+On Wed, Mar 22, 2023 at 12:00:01PM +0000, Russell King (Oracle) wrote:
 > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
