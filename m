@@ -2,70 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A06736C4A56
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:23:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04BBA6C4A7D
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbjCVMXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 08:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        id S229966AbjCVM3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 08:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbjCVMXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:23:51 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E661E1D8
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:23:50 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id eg48so72025867edb.13
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:23:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679487829;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qKO3ohsBWGUhAlloy+4N6XU+uE9FlkRAAJDovVxUKqw=;
-        b=KRb5CkW2sk227RRhQ0EHOQNYCVH0Ht6nV7MJP//EHS8OnxUSA6+XWy0ZEQkFGt+U1V
-         n0gY8ZEgcAReYrNEoi45mq9SKSFl3vfljc+BHObGInrg7IhBLM86NRqQRXP9kCNCKVeQ
-         5Mg2Mo71pg2pvugoqqCk7+6xDzpW+UqdYuqGa5MGkOgivFrOskIJrDdihEYOQ8+4BxmT
-         Mma+OLObjz0p4eQSTmbL5U/ijYtyxMd9voUcOQ9dxpQsz4S2IhkJ949syMd1waVF2GXJ
-         8jT4PAAibMPbHme1uXB/zkG5ZDcpX9aFSpZWxAPHp2wEqu46HtzPYtgxnSnceaZpUk94
-         1T8A==
+        with ESMTP id S229797AbjCVM3t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:29:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E517EAF0B
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679488140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/RmaCdFiflknr5F/EzALZWl8EQAEMlohlo+Bq/6n784=;
+        b=IGRiaXY47/CqfQ0HhrV9YXycAt4KYHUdiaYitJlJoN7/+XZUvAlCO1iMkYBinss56kGpGa
+        I4VfKnY1V4KbvSmUIJIRMYVBqB1s6p2S0mASlZ/PXfsonM0pQGzWH+3UHIak4lL0kzT2Ui
+        AQa5juRrC8KEnTtunlpOkaxNBguWy6c=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-284-kh-epCaHPEe8Iw-kBu4cgA-1; Wed, 22 Mar 2023 08:28:59 -0400
+X-MC-Unique: kh-epCaHPEe8Iw-kBu4cgA-1
+Received: by mail-qk1-f198.google.com with SMTP id 198-20020a370bcf000000b007468cffa4e2so3956669qkl.10
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:28:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679487829;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qKO3ohsBWGUhAlloy+4N6XU+uE9FlkRAAJDovVxUKqw=;
-        b=qsKgFtstXGbvir48u4x5LsrgzIJlx7fvPqjS0WHL98O+wt/aoL4c48Hh24Z/1ESKji
-         tr7rdUkgpZG3Hgx43QWKJ2y1Zl7lKkPndnm5vCiW9Izehi48NC4m0Gd5hhOT1b67lJvc
-         0YY+QwNYWu/OXKCiHkbLvDQ29H8ctWfuroRbSD/yS/p3LgUOq5adz5a7fwK9qg7+GWvE
-         Wg3vUYxL9ADc4javoZrrOEnkM1di2LiEoBDwxYdSLu10h+dFOdF2LNlED31ISeY+vyLm
-         4TyJajxNq4/7/0vQvr9Pb0i3+hhgeGFuSIInWHnJFkfKSq76QyDM2aG5faco4q4JHShN
-         mvVg==
-X-Gm-Message-State: AO0yUKUPRu5ZduXF5RKEgIRVaQhpf19NfJYoSUjOGD0QAi0wrO4ZyGqJ
-        noUaBztqgqOx/eyCs7jhi7yCMQcDd8gvSaTOi0kpaNp97Ns=
-X-Google-Smtp-Source: AK7set9CcH94GwONMyMAUmycT3dNEn698ggRHPLY2n+otcIPJ9GSpTWu7gxsR9llgkDGLqUH+2KVk4SVsEsKWijc/FI=
-X-Received: by 2002:a50:9990:0:b0:4fb:7e7a:ebf1 with SMTP id
- m16-20020a509990000000b004fb7e7aebf1mr3294795edb.6.1679487828659; Wed, 22 Mar
- 2023 05:23:48 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679488138;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/RmaCdFiflknr5F/EzALZWl8EQAEMlohlo+Bq/6n784=;
+        b=GMFRUn9AkFkYJo6Wq8cMu1ToZUPM4t8Sjbe3OSg9vie/H/2h3NRc4i/hl15QL1dTAb
+         uFLXNXZaFbiDhCQ07kQSOv0gGN7F4ZPBvGspZcvEEaA9qoTqsTDJ04mnQDqVdpPbi5uN
+         T+fDvteYTdTuFWFIiQVCrKBnQl0uZHY/56d+tMr9Kl2zXfaikY6QZakVNXWr2fvDfk8C
+         WTDR0EaIKHicTvj3ucTGAPw3rXO1LaGNyuAqg6Z9fijn4nX6ZgdlTgvAmkPEjMj3cQbR
+         9Knu5cRFbUxSxo8/ITApg5dX5+xNzF8kNJn6w1rnzmrXO1wvweieaGR9E3X7Edjm4WGo
+         3Yeg==
+X-Gm-Message-State: AO0yUKXumxAuBtYYRm3vVYzVQcL4xtFLTeGSrU+kZtp2uAQ0q1oZOAyB
+        EDxKbfjrh44HyeHQ4h6beKYDlAbIxoEexygIyP82MCZgY/aTBMiqSQEpgJYbF9fBkyInH3U3c/R
+        XIOrxgxy7f0hmsKKOm31N75WiUyc=
+X-Received: by 2002:ac8:7f8e:0:b0:3bf:d9d2:484f with SMTP id z14-20020ac87f8e000000b003bfd9d2484fmr5698838qtj.11.1679488138427;
+        Wed, 22 Mar 2023 05:28:58 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8Gcxx8GdV/OeVtTOhHQR7MlyYiQ1UjJcEDEFgxn3029wWSBoOMbr8ofWD/oxpFcUXsweisow==
+X-Received: by 2002:ac8:7f8e:0:b0:3bf:d9d2:484f with SMTP id z14-20020ac87f8e000000b003bfd9d2484fmr5698812qtj.11.1679488138211;
+        Wed, 22 Mar 2023 05:28:58 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id j13-20020a37ef0d000000b00729b7d71ac7sm11174245qkk.33.2023.03.22.05.28.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 05:28:57 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] ath10k: remove unused ath10k_get_ring_byte function
+Date:   Wed, 22 Mar 2023 08:28:55 -0400
+Message-Id: <20230322122855.2570417-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Received: by 2002:a17:907:7253:b0:86c:9916:d904 with HTTP; Wed, 22 Mar 2023
- 05:23:48 -0700 (PDT)
-Reply-To: fionahill.usa@outlook.com
-From:   Fiona Hill <tonyelumelu67@gmail.com>
-Date:   Wed, 22 Mar 2023 05:23:48 -0700
-Message-ID: <CAAVnhxLUAHL2ZyW2k8LfK1JasfC9K6+YhNqmY8CtFAHznBmuSA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+clang with W=1 reports
+drivers/net/wireless/ath/ath10k/ce.c:88:1: error:
+  unused function 'ath10k_get_ring_byte' [-Werror,-Wunused-function]
+ath10k_get_ring_byte(unsigned int offset,
+^
+This function is not used so remove it.
 
-Hello how are you doing? I want to know the situation of things over
-there did  you receive my message?
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/wireless/ath/ath10k/ce.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/ce.c b/drivers/net/wireless/ath/ath10k/ce.c
+index b656cfc03648..c27b8204718a 100644
+--- a/drivers/net/wireless/ath/ath10k/ce.c
++++ b/drivers/net/wireless/ath/ath10k/ce.c
+@@ -84,13 +84,6 @@ ath10k_set_ring_byte(unsigned int offset,
+ 	return ((offset << addr_map->lsb) & addr_map->mask);
+ }
+ 
+-static inline unsigned int
+-ath10k_get_ring_byte(unsigned int offset,
+-		     struct ath10k_hw_ce_regs_addr_map *addr_map)
+-{
+-	return ((offset & addr_map->mask) >> (addr_map->lsb));
+-}
+-
+ static inline u32 ath10k_ce_read32(struct ath10k *ar, u32 offset)
+ {
+ 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
+-- 
+2.27.0
+
