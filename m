@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 996816C4769
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 11:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F19F6C4784
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 11:23:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbjCVKUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 06:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
+        id S229620AbjCVKXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 06:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbjCVKUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 06:20:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119425A939;
-        Wed, 22 Mar 2023 03:20:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0DBB61FFC;
-        Wed, 22 Mar 2023 10:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F0773C433D2;
-        Wed, 22 Mar 2023 10:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679480418;
-        bh=hGFxyred+az/fWlsQF8g7FJb3BwXQ/Rhotg83+zWI/w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R3k5g/IEE7lDZL8yEq/i5ep1mBZUrVY0/67xhjebU1ZoTc3G2syT7RoUngleIrAUg
-         DHvDGaB2+M/FdYT14UZXmttTSjukCP3YFrhSqck5phgRzrd7IObZcpyFKjSSUyRV/J
-         WlCnC2dARVhBSpHIllIr/UGDXMkM/Bu38FPAn75VChPQpzsnEnlfut4VAeG9aCtTnC
-         r9YnxFu3dSfndIgj/9g+chafjWxC49978zHBsuC+7XRHKHdqdfSY2iq8kCMp0eB7WV
-         gUVgfEjg4GSG0DzqKPF7X1rGVa7zkqBOoWdLITGJO/xWaurttB/60jFXzVNvbWNHMJ
-         e9GYqa2CZrkPQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D433BE66C8B;
-        Wed, 22 Mar 2023 10:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229459AbjCVKXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 06:23:31 -0400
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6623B44B7
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 03:23:27 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1679480598toh98512
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 22 Mar 2023 18:23:10 +0800 (CST)
+X-QQ-SSF: 01400000000000H0Z000B00A0000000
+X-QQ-FEAT: G46xFj+wOV9NyWbjMjq0ndrwk71yly9NQ849SREccsue4G1Kb8NUO+3rx1Rj5
+        OcQL8QrF0aTi7jjLk8mU+/0jWgM2Eb7C+LV0MRMvT4XCMttv6vYL08dXfNMZ5npa3UhnkF6
+        e2bCry6PKHnWP2OrtWUUHAlnF56CQdwCYpWN42rB7nalIG0rlQlXj4T4HFpFXPMjVOIwS87
+        sl2AevGO8VX3I/1OnOCG8BXskGg6wwZB+uEILNjzUvKKlgOhacWVQqZcedeBBeQeDEFQWDc
+        u555cTax2+86JE8Epzog1X2m/aqpShVE2WVa/44oAar/tJheZSx2yJaJCnLdedVA0pGuUsT
+        pBK2qE5h0iHAp6JufGeUM16DMp4t+dbAi8SecIIWqKPjL9XHVQ0qm6Tlm0IZcSO6a/gJ6b5
+X-QQ-GoodBg: 2
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org
+Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net] net: wangxun: Fix vector length of interrupt cause
+Date:   Wed, 22 Mar 2023 18:36:32 +0800
+Message-Id: <20230322103632.132011-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1] virtio/vsock: check transport before skb
- allocation
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167948041786.4306.1602330592289509193.git-patchwork-notify@kernel.org>
-Date:   Wed, 22 Mar 2023 10:20:17 +0000
-References: <08d61bef-0c11-c7f9-9266-cb2109070314@sberdevices.ru>
-In-Reply-To: <08d61bef-0c11-c7f9-9266-cb2109070314@sberdevices.ru>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        bobby.eshleman@bytedance.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
-        oxffffaa@gmail.com, avkrasnov@sberdevices.ru
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-0.0 required=5.0 tests=RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+There is 64-bit interrupt cause register for txgbe. Fix to clear upper
+32 bits.
 
-This patch was applied to netdev/net-next.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+Fixes: 3f703186113f ("net: libwx: Add irq flow functions")
+Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+---
+ drivers/net/ethernet/wangxun/libwx/wx_type.h    | 2 +-
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c   | 2 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe_main.c | 3 ++-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
 
-On Mon, 20 Mar 2023 20:43:29 +0300 you wrote:
-> Pointer to transport could be checked before allocation of skbuff, thus
-> there is no need to free skbuff when this pointer is NULL.
-> 
-> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-> Reviewed-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v1] virtio/vsock: check transport before skb allocation
-    https://git.kernel.org/netdev/net-next/c/4d1f51551777
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+index 77d8d7f1707e..97e2c1e13b80 100644
+--- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
++++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
+@@ -222,7 +222,7 @@
+ #define WX_PX_INTA                   0x110
+ #define WX_PX_GPIE                   0x118
+ #define WX_PX_GPIE_MODEL             BIT(0)
+-#define WX_PX_IC                     0x120
++#define WX_PX_IC(_i)                 (0x120 + (_i) * 4)
+ #define WX_PX_IMS(_i)                (0x140 + (_i) * 4)
+ #define WX_PX_IMC(_i)                (0x150 + (_i) * 4)
+ #define WX_PX_ISB_ADDR_L             0x160
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+index 5b564d348c09..17412e5282de 100644
+--- a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -352,7 +352,7 @@ static void ngbe_up(struct wx *wx)
+ 	netif_tx_start_all_queues(wx->netdev);
+ 
+ 	/* clear any pending interrupts, may auto mask */
+-	rd32(wx, WX_PX_IC);
++	rd32(wx, WX_PX_IC(0));
+ 	rd32(wx, WX_PX_MISC_IC);
+ 	ngbe_irq_enable(wx, true);
+ 	if (wx->gpio_ctrl)
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+index 6c0a98230557..a58ce5463686 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+@@ -229,7 +229,8 @@ static void txgbe_up_complete(struct wx *wx)
+ 	wx_napi_enable_all(wx);
+ 
+ 	/* clear any pending interrupts, may auto mask */
+-	rd32(wx, WX_PX_IC);
++	rd32(wx, WX_PX_IC(0));
++	rd32(wx, WX_PX_IC(1));
+ 	rd32(wx, WX_PX_MISC_IC);
+ 	txgbe_irq_enable(wx, true);
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.27.0
 
