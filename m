@@ -2,576 +2,449 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5CD6C516E
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:59:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F9D6C51F1
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 18:10:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbjCVQ7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 12:59:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
+        id S230060AbjCVRKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 13:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbjCVQ7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:59:19 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E27330E9E
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 09:59:06 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-5456249756bso53921557b3.5
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 09:59:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679504346;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ko9sfXgwHu8T5Ihh3mWKTBO5qJ/71QiDzJGy3g1x0KE=;
-        b=a6Z5ikAbHT273PjRCJxCLGj489zKxmia9qMPZg6gej8UJDYVfPNwsn3UdgGDRVtJBo
-         iz7z0bWYtxBYuH5loylgC8hGGRGqUhHpVS78exrmcyu80is+B7dPj2PRfeG/I1QUkeBm
-         D49eYjfClWjHcCgAW2pb0BRAr83q2aQdkOxwuDZdX0yXfrDSmVGgkC77OfWTZeWjjBYB
-         ZHvel+PEwwPbYERs1QOgrFbI3rhJjGyjsxXG1A+6uHFrDMa2Y+bP4mN/W6WtDzGAssDv
-         3h6V/ubiqugoCjdMY/nvF5E90K3dE2l2g1omGgnWshpeCV+tSzy4/nPktQ5L1p78Mxyc
-         F0Mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679504346;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Ko9sfXgwHu8T5Ihh3mWKTBO5qJ/71QiDzJGy3g1x0KE=;
-        b=IkHmqSCkyQQbY4oI9Tc/oM/pMGb2hp/xWeqkXa9P1/Zf7WoZI7XAqeE1Fz5YQiLBFb
-         2vZ/Jr8h0jaVL/vX7tmPER0XFOBbNMU3LO0W2XVB30d8Mny/yn/hGM6kR/RBHo8NhKHl
-         oxN1YjPWnY/a5Z3fHqrFxm2+dpZuE/xm0xwgzttERZEIkaDR7LbIbg0O4GLtaFzqatD8
-         cGvSJygpbATUJjDQU03JLu8vpDdQqkR+rGnJPPVTDqkA/vgT6jI+qvBFnkf/o2FCx/Tw
-         06a/1jXCxNYta7d60bfhGvgb9gl+oxVKLMoOqNxasGwHut/VIqM3vHWpKW2Xl5aRKScb
-         mIaA==
-X-Gm-Message-State: AAQBX9e8bG9y1Jeo0udmW0g6oHsTU/y3/TAL0ZB79GcuYwMOqAUwJGEn
-        TOsoohMr7SlYLgSJ7Ddl6FWey61Pvfs9e68PilPbxw==
-X-Google-Smtp-Source: AKy350YrW5L9Xiz7y5D86wcUzlRc3vBaoQhPcUQ2mYixeiOriqI+zAf9yL4OCKJeGb6qpayNOo3/ZqqJi4+r2YkhBBs=
-X-Received: by 2002:a81:c60b:0:b0:541:a17f:c779 with SMTP id
- l11-20020a81c60b000000b00541a17fc779mr295271ywi.4.1679504345370; Wed, 22 Mar
- 2023 09:59:05 -0700 (PDT)
+        with ESMTP id S229768AbjCVRKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 13:10:00 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84C212872;
+        Wed, 22 Mar 2023 10:09:58 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32MGt5lZ030391;
+        Wed, 22 Mar 2023 17:09:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=vf706j/q8zAoF+Y1g3q6v/SeTXyELu+wV3+Yl/NGnK8=;
+ b=Mi+gKx+0/fo8w72jO9ASKKswlWVlhYzh7hUBWbd3CNKc67aqGNIL7UdEHcujkLQrF42+
+ Cxcn/hqFO5E8S/6sCpydpn68Of9fCwDxMNuGWRlvPfX+ByoIXFlUZiGn6wZHk+zO1Z8L
+ tPdGkW2HVE1oMlBLBBQrvmiB5uhQbEscSjbjF30B+E4pBjwxKkuFww9bqONacfpidodV
+ 3HeUf/6VVgE96omKZLW8a7CEVk462LE3BoSWaCH6fY7QQ3r2wPXVhVQrVQ5O81B0RR4F
+ LiFL1E1bQIyrL4PlZhkqcJlLK8VPm1eVcz+hBdGpceX1crxboszdrj7cp24oyVUFrBIF vg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pg5m70hsf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Mar 2023 17:09:47 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32MGtF9i030718;
+        Wed, 22 Mar 2023 17:09:47 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pg5m70hrc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Mar 2023 17:09:46 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32MG5XA7014977;
+        Wed, 22 Mar 2023 17:09:45 GMT
+Received: from smtprelay04.dal12v.mail.ibm.com ([9.208.130.102])
+        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3pd4x7qp5r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Mar 2023 17:09:45 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com (smtpav05.wdc07v.mail.ibm.com [10.39.53.232])
+        by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32MH9iDB11272720
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 Mar 2023 17:09:44 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 25B2358053;
+        Wed, 22 Mar 2023 17:09:44 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4287D5805D;
+        Wed, 22 Mar 2023 17:09:42 +0000 (GMT)
+Received: from [9.163.26.126] (unknown [9.163.26.126])
+        by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Wed, 22 Mar 2023 17:09:42 +0000 (GMT)
+Message-ID: <170b35d9-2071-caf3-094e-6abfb7cefa75@linux.ibm.com>
+Date:   Wed, 22 Mar 2023 18:09:41 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.0
+Subject: Re: [PATCH net-next] net/smc: introduce shadow sockets for fallback
+ connections
+To:     Kai Shen <KaiShen@linux.alibaba.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <20230321071959.87786-1-KaiShen@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <20230321071959.87786-1-KaiShen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: bP6G5GaKNxIDsWoie4owz1UXHITzbQUR
+X-Proofpoint-ORIG-GUID: n13PFWurJKxknnqg_Q9H7v6nQ-U9_SRm
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-References: <4a57788dcaf28f5eb4f8dfddcc3a8b172a7357bb.1679504153.git.pabeni@redhat.com>
-In-Reply-To: <4a57788dcaf28f5eb4f8dfddcc3a8b172a7357bb.1679504153.git.pabeni@redhat.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Wed, 22 Mar 2023 12:58:29 -0400
-Message-ID: <CACSApvYmfaAS6608J8nPgBj6+FULnm35E3k1=1YfYocAveks8Q@mail.gmail.com>
-Subject: Re: [PATCH v6] epoll: use refcount to reduce ep_mutex contention
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Carlos Maiolino <cmaiolino@redhat.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Christian Brauner <brauner@kernel.org>,
-        linux-fsdevel@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-22_13,2023-03-22_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
+ malwarescore=0 adultscore=0 clxscore=1015 bulkscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=999 impostorscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303150002 definitions=main-2303220117
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 12:57=E2=80=AFPM Paolo Abeni <pabeni@redhat.com> wr=
-ote:
->
-> We are observing huge contention on the epmutex during an http
-> connection/rate test:
->
->  83.17% 0.25%  nginx            [kernel.kallsyms]         [k] entry_SYSCA=
-LL_64_after_hwframe
-> [...]
->            |--66.96%--__fput
->                       |--60.04%--eventpoll_release_file
->                                  |--58.41%--__mutex_lock.isra.6
->                                            |--56.56%--osq_lock
->
-> The application is multi-threaded, creates a new epoll entry for
-> each incoming connection, and does not delete it before the
-> connection shutdown - that is, before the connection's fd close().
->
-> Many different threads compete frequently for the epmutex lock,
-> affecting the overall performance.
->
-> To reduce the contention this patch introduces explicit reference countin=
-g
-> for the eventpoll struct. Each registered event acquires a reference,
-> and references are released at ep_remove() time.
->
-> The eventpoll struct is released by whoever - among EP file close() and
-> and the monitored file close() drops its last reference.
->
-> Additionally, this introduces a new 'dying' flag to prevent races between
-> the EP file close() and the monitored file close().
-> ep_eventpoll_release() marks, under f_lock spinlock, each epitem as dying
-> before removing it, while EP file close() does not touch dying epitems.
->
-> The above is needed as both close operations could run concurrently and
-> drop the EP reference acquired via the epitem entry. Without the above
-> flag, the monitored file close() could reach the EP struct via the epitem
-> list while the epitem is still listed and then try to put it after its
-> disposal.
->
-> An alternative could be avoiding touching the references acquired via
-> the epitems at EP file close() time, but that could leave the EP struct
-> alive for potentially unlimited time after EP file close(), with nasty
-> side effects.
->
-> With all the above in place, we can drop the epmutex usage at disposal ti=
-me.
->
-> Overall this produces a significant performance improvement in the
-> mentioned connection/rate scenario: the mutex operations disappear from
-> the topmost offenders in the perf report, and the measured connections/ra=
-te
-> grows by ~60%.
->
-> To make the change more readable this additionally renames ep_free() to
-> ep_clear_and_put(), and moves the actual memory cleanup in a separate
-> ep_free() helper.
->
-> Co-developed-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Tested-by: Xiumei Mu <xmu@redhiat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-Thank you Eric for the fix!
+On 21.03.23 08:19, Kai Shen wrote:
+> SMC-R performs not so well on fallback situations right now,
+> especially on short link server fallback occasions. We are planning
+> to make SMC-R widely used and handling this fallback performance
+> issue is really crucial to us. Here we introduce a shadow socket
+> method to try to relief this problem.
+> 
+Could you please elaborate the problem?
+> Basicly, we use two more accept queues to hold incoming connections,
+> one for fallback connections and the other for smc-r connections.
+> We implement this method by using two more 'shadow' sockets and
+> make the connection path of fallback connections almost the same as
+> normal tcp connections.
+> 
+> Now the SMC-R accept path is like:
+>    1. incoming connection
+>    2. schedule work to smc sock alloc, tcp accept and push to smc
+>       acceptq
+>    3. wake up user to accept
+> 
+> When fallback happens on servers, the accepting path is the same
+> which costs more than normal tcp accept path. In fallback
+> situations, the step 2 above is not necessary and the smc sock is
+> also not needed. So we use two more shadow sockets when one smc
+> socket start listening. When new connection comes, we pop the req
+> to the fallback socket acceptq or the non-fallback socket acceptq
+> according to its syn_smc flag. As a result, when fallback happen we
+> can graft the user socket with a normal tcp sock instead of a smc
+> sock and get rid of the cost generated by step 2 and smc sock
+> releasing.
+> 
+>                 +-----> non-fallback socket acceptq
+>                 |
+> incoming req --+
+>                 |
+>                 +-----> fallback socket acceptq
+> 
+> With the help of shadow socket, we gain similar performance as tcp
+> connections on short link nginx server fallback occasions as what
+> is illustrated below.
+> 
+> Cases are like "./wrk http://x.x.x.x:x/
+> 	-H 'Connection: Close' -c 1600 -t 32 -d 20 --latency"
+> 
+> TCP:
+>      Requests/sec: 145438.65
+>      Transfer/sec:     21.64MB
+> 
+> Server fallback occasions on original SMC-R:
+>      Requests/sec: 114192.82
+>      Transfer/sec:     16.99MB
+> 
+> Server fallback occasions on SMC-R with shadow sockets:
+>      Requests/sec: 143528.11
+>      Transfer/sec:     21.35MB
+> 
 
+Generally, I don't have a good feeling about the two non-listenning 
+sockets, and I can not see why it is necessary to introduce the socket 
+actsock instead of using the clcsock itself. Maybe you can convince me 
+with a good reason.
+
+> On the other hand, as a result of using another accept queue, the
+> fastopenq lock is not the right lock to access when accepting. So
+> we need to find the right fastopenq lock in inet_csk_accept.
+> 
+> Signed-off-by: Kai Shen <KaiShen@linux.alibaba.com>
 > ---
-> This addresses a deadlock reported by syzkaller on v5:
-> https://lore.kernel.org/lkml/000000000000c6dc0305f75b4d74@google.com/T/#u
-> Due to such change I stripped the acked-by/reviewed-by tag carried in
-> the previous revision
->
-> v5 at:
-> https://lore.kernel.org/linux-fsdevel/323de732635cc3513c1837c6cbb98f01217=
-4f994.1678312201.git.pabeni@redhat.com/
->
-> v4 at:
-> https://lore.kernel.org/linux-fsdevel/f0c49fb4b682b81d64184d1181bc9607289=
-07474.camel@redhat.com/T/#t
->
-> v3 at:
-> https://lore.kernel.org/linux-fsdevel/1aedd7e87097bc4352ba658ac948c585a65=
-5785a.1669657846.git.pabeni@redhat.com/
->
-> v2 at:
-> https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96=
-d1843.1669312208.git.pabeni@redhat.com/
->
-> v1 at:
-> https://lore.kernel.org/linux-fsdevel/f35e58ed5af8131f0f402c3dc6c3033fa96=
-d1843.1669312208.git.pabeni@redhat.com/
->
-> Previous related effort at:
-> https://lore.kernel.org/linux-fsdevel/20190727113542.162213-1-cj.chengjia=
-n@huawei.com/
-> https://lkml.org/lkml/2017/10/28/81
-> ---
->  fs/eventpoll.c | 195 +++++++++++++++++++++++++++++++------------------
->  1 file changed, 123 insertions(+), 72 deletions(-)
->
-> diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-> index 64659b110973..0ecdfd3043a3 100644
-> --- a/fs/eventpoll.c
-> +++ b/fs/eventpoll.c
-> @@ -57,13 +57,7 @@
->   * we need a lock that will allow us to sleep. This lock is a
->   * mutex (ep->mtx). It is acquired during the event transfer loop,
->   * during epoll_ctl(EPOLL_CTL_DEL) and during eventpoll_release_file().
-> - * Then we also need a global mutex to serialize eventpoll_release_file(=
-)
-> - * and ep_free().
-> - * This mutex is acquired by ep_free() during the epoll file
-> - * cleanup path and it is also acquired by eventpoll_release_file()
-> - * if a file has been pushed inside an epoll set and it is then
-> - * close()d without a previous call to epoll_ctl(EPOLL_CTL_DEL).
-> - * It is also acquired when inserting an epoll fd onto another epoll
-> + * The epmutex is acquired when inserting an epoll fd onto another epoll
->   * fd. We do this so that we walk the epoll tree and ensure that this
->   * insertion does not create a cycle of epoll file descriptors, which
->   * could lead to deadlock. We need a global mutex to prevent two
-> @@ -153,6 +147,13 @@ struct epitem {
->         /* The file descriptor information this item refers to */
->         struct epoll_filefd ffd;
->
-> +       /*
-> +        * Protected by file->f_lock, true for to-be-released epitem alre=
-ady
-> +        * removed from the "struct file" items list; together with
-> +        * eventpoll->refcount orchestrates "struct eventpoll" disposal
-> +        */
-> +       bool dying;
+>   net/ipv4/inet_connection_sock.c |  13 ++-
+>   net/smc/af_smc.c                | 143 ++++++++++++++++++++++++++++++--
+>   net/smc/smc.h                   |   2 +
+>   3 files changed, 150 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> index 65ad4251f6fd..ba2ec5ad4c04 100644
+> --- a/net/ipv4/inet_connection_sock.c
+> +++ b/net/ipv4/inet_connection_sock.c
+> @@ -658,6 +658,7 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
+>   {
+>   	struct inet_connection_sock *icsk = inet_csk(sk);
+>   	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+> +	spinlock_t *fastopenq_lock = &queue->fastopenq.lock;
+>   	struct request_sock *req;
+>   	struct sock *newsk;
+>   	int error;
+> @@ -689,7 +690,15 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
+>   
+>   	if (sk->sk_protocol == IPPROTO_TCP &&
+>   	    tcp_rsk(req)->tfo_listener) {
+> -		spin_lock_bh(&queue->fastopenq.lock);
+> +#if IS_ENABLED(CONFIG_SMC)
+> +		if (tcp_sk(sk)->syn_smc) {
+> +			struct request_sock_queue *orig_queue;
 > +
->         /* List containing poll wait queues */
->         struct eppoll_entry *pwqlist;
->
-> @@ -217,6 +218,12 @@ struct eventpoll {
->         u64 gen;
->         struct hlist_head refs;
->
-> +       /*
-> +        * usage count, used together with epitem->dying to
-> +        * orchestrate the disposal of this struct
-> +        */
-> +       refcount_t refcount;
-> +
->  #ifdef CONFIG_NET_RX_BUSY_POLL
->         /* used to track busy poll napi_id */
->         unsigned int napi_id;
-> @@ -240,9 +247,7 @@ struct ep_pqueue {
->  /* Maximum number of epoll watched descriptors, per user */
->  static long max_user_watches __read_mostly;
->
-> -/*
-> - * This mutex is used to serialize ep_free() and eventpoll_release_file(=
-).
-> - */
-> +/* Used for cycles detection */
->  static DEFINE_MUTEX(epmutex);
->
->  static u64 loop_check_gen =3D 0;
-> @@ -557,8 +562,7 @@ static void ep_remove_wait_queue(struct eppoll_entry =
-*pwq)
->
->  /*
->   * This function unregisters poll callbacks from the associated file
-> - * descriptor.  Must be called with "mtx" held (or "epmutex" if called f=
-rom
-> - * ep_free).
-> + * descriptor.  Must be called with "mtx" held.
->   */
->  static void ep_unregister_pollwait(struct eventpoll *ep, struct epitem *=
-epi)
->  {
-> @@ -681,11 +685,40 @@ static void epi_rcu_free(struct rcu_head *head)
->         kmem_cache_free(epi_cache, epi);
->  }
->
-> +static void ep_get(struct eventpoll *ep)
+> +			orig_queue = &inet_csk(req->rsk_listener)->icsk_accept_queue;
+> +			fastopenq_lock = &orig_queue->fastopenq.lock;
+> +		}
+> +#endif
+> +		spin_lock_bh(fastopenq_lock);
+>   		if (tcp_rsk(req)->tfo_listener) {
+>   			/* We are still waiting for the final ACK from 3WHS
+>   			 * so can't free req now. Instead, we set req->sk to
+> @@ -700,7 +709,7 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
+>   			req->sk = NULL;
+>   			req = NULL;
+>   		}
+> -		spin_unlock_bh(&queue->fastopenq.lock);
+> +		spin_unlock_bh(fastopenq_lock);
+>   	}
+>   
+>   out:
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index a4cccdfdc00a..ad6c3b9ec9a6 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -126,7 +126,9 @@ static struct sock *smc_tcp_syn_recv_sock(const struct sock *sk,
+>   
+>   	smc = smc_clcsock_user_data(sk);
+>   
+> -	if (READ_ONCE(sk->sk_ack_backlog) + atomic_read(&smc->queued_smc_hs) >
+> +	if (READ_ONCE(sk->sk_ack_backlog) + atomic_read(&smc->queued_smc_hs)
+> +			+ READ_ONCE(smc->actsock->sk->sk_ack_backlog)
+> +			+ READ_ONCE(smc->fbsock->sk->sk_ack_backlog) >
+>   				sk->sk_max_ack_backlog)
+>   		goto drop;
+>   
+> @@ -286,6 +288,10 @@ static int __smc_release(struct smc_sock *smc)
+>   				/* wake up clcsock accept */
+>   				rc = kernel_sock_shutdown(smc->clcsock,
+>   							  SHUT_RDWR);
+> +				if (smc->fbsock)
+> +					sock_release(smc->fbsock);
+> +				if (smc->actsock)
+> +					sock_release(smc->actsock);
+>   			}
+>   			sk->sk_state = SMC_CLOSED;
+>   			sk->sk_state_change(sk);
+> @@ -1681,7 +1687,7 @@ static int smc_clcsock_accept(struct smc_sock *lsmc, struct smc_sock **new_smc)
+>   
+>   	mutex_lock(&lsmc->clcsock_release_lock);
+>   	if (lsmc->clcsock)
+> -		rc = kernel_accept(lsmc->clcsock, &new_clcsock, SOCK_NONBLOCK);
+> +		rc = kernel_accept(lsmc->actsock, &new_clcsock, SOCK_NONBLOCK);
+>   	mutex_unlock(&lsmc->clcsock_release_lock);
+>   	lock_sock(lsk);
+>   	if  (rc < 0 && rc != -EAGAIN)
+> @@ -2486,9 +2492,46 @@ static void smc_tcp_listen_work(struct work_struct *work)
+>   	sock_put(&lsmc->sk); /* sock_hold in smc_clcsock_data_ready() */
+>   }
+>   
+> +#define SMC_LINK 1
+> +#define FALLBACK_LINK 2
+> +static inline int smc_sock_pop_to_another_acceptq(struct smc_sock *lsmc)
 > +{
-> +       refcount_inc(&ep->refcount);
+> +	struct sock *lsk = lsmc->clcsock->sk;
+> +	struct inet_connection_sock *icsk = inet_csk(lsk);
+> +	struct inet_connection_sock *dest_icsk;
+> +	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+> +	struct request_sock_queue *dest_queue;
+> +	struct request_sock *req;
+> +	struct sock *dst_sock;
+> +	int ret;
+> +
+> +	req = reqsk_queue_remove(queue, lsk);
+> +	if (!req)
+> +		return -EINVAL;
+> +
+> +	if (tcp_sk(req->sk)->syn_smc || lsmc->sockopt_defer_accept) {
+> +		dst_sock = lsmc->actsock->sk;
+> +		ret = SMC_LINK;
+> +	} else {
+> +		dst_sock = lsmc->fbsock->sk;
+> +		ret = FALLBACK_LINK;
+> +	}
+> +
+> +	dest_icsk = inet_csk(dst_sock);
+> +	dest_queue = &dest_icsk->icsk_accept_queue;
+> +
+> +	spin_lock_bh(&dest_queue->rskq_lock);
+> +	WRITE_ONCE(req->dl_next, dest_queue->rskq_accept_head);
+> +	sk_acceptq_added(dst_sock);
+> +	dest_queue->rskq_accept_head = req;
+> +	spin_unlock_bh(&dest_queue->rskq_lock);
+> +	return ret;
 > +}
 > +
-> +/*
-> + * Returns true if the event poll can be disposed
-> + */
-> +static bool ep_refcount_dec_and_test(struct eventpoll *ep)
+>   static void smc_clcsock_data_ready(struct sock *listen_clcsock)
+>   {
+>   	struct smc_sock *lsmc;
+> +	int ret;
+>   
+>   	read_lock_bh(&listen_clcsock->sk_callback_lock);
+>   	lsmc = smc_clcsock_user_data(listen_clcsock);
+> @@ -2496,14 +2539,41 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
+>   		goto out;
+>   	lsmc->clcsk_data_ready(listen_clcsock);
+>   	if (lsmc->sk.sk_state == SMC_LISTEN) {
+> -		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
+> -		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work)) > -			sock_put(&lsmc->sk);
+> +		ret = smc_sock_pop_to_another_acceptq(lsmc);
+> +		if (ret == SMC_LINK) {
+> +			sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
+> +			if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
+> +				sock_put(&lsmc->sk);
+> +		} else if (ret == FALLBACK_LINK) {
+> +			lsmc->sk.sk_data_ready(&lsmc->sk);
+> +		}
+>   	}
+>   out:
+>   	read_unlock_bh(&listen_clcsock->sk_callback_lock);
+>   }
+>   
+> +static void smc_shadow_socket_init(struct socket *sock)
 > +{
-> +       if (!refcount_dec_and_test(&ep->refcount))
-> +               return false;
+> +	struct inet_connection_sock *icsk = inet_csk(sock->sk);
+> +	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
 > +
-> +       WARN_ON_ONCE(!RB_EMPTY_ROOT(&ep->rbr.rb_root));
-> +       return true;
+> +	tcp_set_state(sock->sk, TCP_LISTEN);
+> +	sock->sk->sk_ack_backlog = 0;
+> +
+> +	inet_csk_delack_init(sock->sk);
+> +
+> +	spin_lock_init(&queue->rskq_lock);
+> +
+> +	spin_lock_init(&queue->fastopenq.lock);
+> +	queue->fastopenq.rskq_rst_head = NULL;
+> +	queue->fastopenq.rskq_rst_tail = NULL;
+> +	queue->fastopenq.qlen = 0;
+> +
+> +	queue->rskq_accept_head = NULL;
+> +
+> +	tcp_sk(sock->sk)->syn_smc = 1;
 > +}
 > +
-> +static void ep_free(struct eventpoll *ep)
+>   static int smc_listen(struct socket *sock, int backlog)
+>   {
+>   	struct sock *sk = sock->sk;
+> @@ -2551,6 +2621,18 @@ static int smc_listen(struct socket *sock, int backlog)
+>   	if (smc->limit_smc_hs)
+>   		tcp_sk(smc->clcsock->sk)->smc_hs_congested = smc_hs_congested;
+>   
+> +	rc = sock_create_kern(sock_net(sk), PF_INET, SOCK_STREAM, IPPROTO_TCP,
+> +			      &smc->fbsock);
+> +	if (rc)
+> +		goto out;
+> +	smc_shadow_socket_init(smc->fbsock);
+> +
+> +	rc = sock_create_kern(sock_net(sk), PF_INET, SOCK_STREAM, IPPROTO_TCP,
+> +			      &smc->actsock);
+> +	if (rc)
+> +		goto out;
+> +	smc_shadow_socket_init(smc->actsock);
+> +
+>   	rc = kernel_listen(smc->clcsock, backlog);
+>   	if (rc) {
+>   		write_lock_bh(&smc->clcsock->sk->sk_callback_lock);
+> @@ -2569,6 +2651,30 @@ static int smc_listen(struct socket *sock, int backlog)
+>   	return rc;
+>   }
+>   
+> +static inline bool tcp_reqsk_queue_empty(struct sock *sk)
 > +{
-> +       mutex_destroy(&ep->mtx);
-> +       free_uid(ep->user);
-> +       wakeup_source_unregister(ep->ws);
-> +       kfree(ep);
+> +	struct inet_connection_sock *icsk = inet_csk(sk);
+> +	struct request_sock_queue *queue = &icsk->icsk_accept_queue;
+> +
+> +	return reqsk_queue_empty(queue);
 > +}
 > +
->  /*
->   * Removes a "struct epitem" from the eventpoll RB tree and deallocates
->   * all the associated resources. Must be called with "mtx" held.
-> + * If the dying flag is set, do the removal only if force is true.
-> + * This prevents ep_clear_and_put() from dropping all the ep references
-> + * while running concurrently with eventpoll_release_file().
-> + * Returns true if the eventpoll can be disposed.
->   */
-> -static int ep_remove(struct eventpoll *ep, struct epitem *epi)
-> +static bool __ep_remove(struct eventpoll *ep, struct epitem *epi, bool f=
-orce)
->  {
->         struct file *file =3D epi->ffd.file;
->         struct epitems_head *to_free;
-> @@ -700,6 +733,11 @@ static int ep_remove(struct eventpoll *ep, struct ep=
-item *epi)
->
->         /* Remove the current item from the list of epoll hooks */
->         spin_lock(&file->f_lock);
-> +       if (epi->dying && !force) {
-> +               spin_unlock(&file->f_lock);
-> +               return false;
-> +       }
-> +
->         to_free =3D NULL;
->         head =3D file->f_ep;
->         if (head->first =3D=3D &epi->fllink && !epi->fllink.next) {
-> @@ -733,28 +771,28 @@ static int ep_remove(struct eventpoll *ep, struct e=
-pitem *epi)
->         call_rcu(&epi->rcu, epi_rcu_free);
->
->         percpu_counter_dec(&ep->user->epoll_watches);
-> +       return ep_refcount_dec_and_test(ep);
-> +}
->
-> -       return 0;
-> +/*
-> + * ep_remove variant for callers owing an additional reference to the ep
-> + */
-> +static void ep_remove_safe(struct eventpoll *ep, struct epitem *epi)
+Since this is only used by smc, I'd like to suggest to use 
+smc_tcp_reqsk_queue_empty instead of tcp_reqsk_queue_empty.
+
+> +static inline void
+> +smc_restore_fbsock_protocol_family(struct socket *new_sock, struct socket *sock)
 > +{
-> +       WARN_ON_ONCE(__ep_remove(ep, epi, false));
->  }
->
-> -static void ep_free(struct eventpoll *ep)
-> +static void ep_clear_and_put(struct eventpoll *ep)
->  {
-> -       struct rb_node *rbp;
-> +       struct rb_node *rbp, *next;
->         struct epitem *epi;
-> +       bool dispose;
->
->         /* We need to release all tasks waiting for these file */
->         if (waitqueue_active(&ep->poll_wait))
->                 ep_poll_safewake(ep, NULL, 0);
->
-> -       /*
-> -        * We need to lock this because we could be hit by
-> -        * eventpoll_release_file() while we're freeing the "struct event=
-poll".
-> -        * We do not need to hold "ep->mtx" here because the epoll file
-> -        * is on the way to be removed and no one has references to it
-> -        * anymore. The only hit might come from eventpoll_release_file()=
- but
-> -        * holding "epmutex" is sufficient here.
-> -        */
-> -       mutex_lock(&epmutex);
-> +       mutex_lock(&ep->mtx);
->
->         /*
->          * Walks through the whole tree by unregistering poll callbacks.
-> @@ -767,26 +805,25 @@ static void ep_free(struct eventpoll *ep)
->         }
->
->         /*
-> -        * Walks through the whole tree by freeing each "struct epitem". =
-At this
-> -        * point we are sure no poll callbacks will be lingering around, =
-and also by
-> -        * holding "epmutex" we can be sure that no file cleanup code wil=
-l hit
-> -        * us during this operation. So we can avoid the lock on "ep->loc=
-k".
-> -        * We do not need to lock ep->mtx, either, we only do it to preve=
-nt
-> -        * a lockdep warning.
-> +        * Walks through the whole tree and try to free each "struct epit=
-em".
-> +        * Note that ep_remove_safe() will not remove the epitem in case =
-of a
-> +        * racing eventpoll_release_file(); the latter will do the remova=
-l.
-> +        * At this point we are sure no poll callbacks will be lingering =
-around.
-> +        * Since we still own a reference to the eventpoll struct, the lo=
-op can't
-> +        * dispose it.
->          */
-> -       mutex_lock(&ep->mtx);
-> -       while ((rbp =3D rb_first_cached(&ep->rbr)) !=3D NULL) {
-> +       for (rbp =3D rb_first_cached(&ep->rbr); rbp; rbp =3D next) {
-> +               next =3D rb_next(rbp);
->                 epi =3D rb_entry(rbp, struct epitem, rbn);
-> -               ep_remove(ep, epi);
-> +               ep_remove_safe(ep, epi);
->                 cond_resched();
->         }
+> +	struct smc_sock *lsmc = smc_sk(sock->sk);
 > +
-> +       dispose =3D ep_refcount_dec_and_test(ep);
->         mutex_unlock(&ep->mtx);
->
-> -       mutex_unlock(&epmutex);
-> -       mutex_destroy(&ep->mtx);
-> -       free_uid(ep->user);
-> -       wakeup_source_unregister(ep->ws);
-> -       kfree(ep);
-> +       if (dispose)
-> +               ep_free(ep);
->  }
->
->  static int ep_eventpoll_release(struct inode *inode, struct file *file)
-> @@ -794,7 +831,7 @@ static int ep_eventpoll_release(struct inode *inode, =
-struct file *file)
->         struct eventpoll *ep =3D file->private_data;
->
->         if (ep)
-> -               ep_free(ep);
-> +               ep_clear_and_put(ep);
->
->         return 0;
->  }
-> @@ -906,33 +943,34 @@ void eventpoll_release_file(struct file *file)
->  {
->         struct eventpoll *ep;
->         struct epitem *epi;
-> -       struct hlist_node *next;
-> +       bool dispose;
->
->         /*
-> -        * We don't want to get "file->f_lock" because it is not
-> -        * necessary. It is not necessary because we're in the "struct fi=
-le"
-> -        * cleanup path, and this means that no one is using this file an=
-ymore.
-> -        * So, for example, epoll_ctl() cannot hit here since if we reach=
- this
-> -        * point, the file counter already went to zero and fget() would =
-fail.
-> -        * The only hit might come from ep_free() but by holding the mute=
-x
-> -        * will correctly serialize the operation. We do need to acquire
-> -        * "ep->mtx" after "epmutex" because ep_remove() requires it when=
- called
-> -        * from anywhere but ep_free().
-> -        *
-> -        * Besides, ep_remove() acquires the lock, so we can't hold it he=
-re.
-> +        * Use the 'dying' flag to prevent a concurrent ep_clear_and_put(=
-) from
-> +        * touching the epitems list before eventpoll_release_file() can =
-access
-> +        * the ep->mtx.
->          */
-> -       mutex_lock(&epmutex);
-> -       if (unlikely(!file->f_ep)) {
-> -               mutex_unlock(&epmutex);
-> -               return;
-> -       }
-> -       hlist_for_each_entry_safe(epi, next, file->f_ep, fllink) {
-> +again:
-> +       spin_lock(&file->f_lock);
-> +       if (file->f_ep && file->f_ep->first) {
-> +               epi =3D hlist_entry(file->f_ep->first, struct epitem, fll=
-ink);
-> +               epi->dying =3D true;
-> +               spin_unlock(&file->f_lock);
+> +	new_sock->sk->sk_data_ready = lsmc->fbsock->sk->sk_data_ready;
+> +	new_sock->ops = lsmc->fbsock->ops;
+> +	new_sock->type = lsmc->fbsock->type;
 > +
-> +               /*
-> +                * ep access is safe as we still own a reference to the e=
-p
-> +                * struct
-> +                */
->                 ep =3D epi->ep;
-> -               mutex_lock_nested(&ep->mtx, 0);
-> -               ep_remove(ep, epi);
-> +               mutex_lock(&ep->mtx);
-> +               dispose =3D __ep_remove(ep, epi, true);
->                 mutex_unlock(&ep->mtx);
+> +	module_put(sock->ops->owner);
+> +	__module_get(new_sock->ops->owner);
 > +
-> +               if (dispose)
-> +                       ep_free(ep);
-> +               goto again;
->         }
-> -       mutex_unlock(&epmutex);
-> +       spin_unlock(&file->f_lock);
->  }
->
->  static int ep_alloc(struct eventpoll **pep)
-> @@ -955,6 +993,7 @@ static int ep_alloc(struct eventpoll **pep)
->         ep->rbr =3D RB_ROOT_CACHED;
->         ep->ovflist =3D EP_UNACTIVE_PTR;
->         ep->user =3D user;
-> +       refcount_set(&ep->refcount, 1);
->
->         *pep =3D ep;
->
-> @@ -1223,10 +1262,10 @@ static int ep_poll_callback(wait_queue_entry_t *w=
-ait, unsigned mode, int sync, v
->                  */
->                 list_del_init(&wait->entry);
->                 /*
-> -                * ->whead !=3D NULL protects us from the race with ep_fr=
-ee()
-> -                * or ep_remove(), ep_remove_wait_queue() takes whead->lo=
-ck
-> -                * held by the caller. Once we nullify it, nothing protec=
-ts
-> -                * ep/epi or even wait.
-> +                * ->whead !=3D NULL protects us from the race with
-> +                * ep_clear_and_put() or ep_remove(), ep_remove_wait_queu=
-e()
-> +                * takes whead->lock held by the caller. Once we nullify =
-it,
-> +                * nothing protects ep/epi or even wait.
->                  */
->                 smp_store_release(&ep_pwq_from_wait(wait)->whead, NULL);
->         }
-> @@ -1496,16 +1535,22 @@ static int ep_insert(struct eventpoll *ep, const =
-struct epoll_event *event,
->         if (tep)
->                 mutex_unlock(&tep->mtx);
->
-> +       /*
-> +        * ep_remove_safe() calls in the later error paths can't lead to
-> +        * ep_free() as the ep file itself still holds an ep reference.
-> +        */
-> +       ep_get(ep);
+> +	if (tcp_sk(new_sock->sk)->syn_smc)
+> +		pr_err("new sock is not fallback.\n");
+> +}
 > +
->         /* now check if we've created too many backpaths */
->         if (unlikely(full_check && reverse_path_check())) {
-> -               ep_remove(ep, epi);
-> +               ep_remove_safe(ep, epi);
->                 return -EINVAL;
->         }
->
->         if (epi->event.events & EPOLLWAKEUP) {
->                 error =3D ep_create_wakeup_source(epi);
->                 if (error) {
-> -                       ep_remove(ep, epi);
-> +                       ep_remove_safe(ep, epi);
->                         return error;
->                 }
->         }
-> @@ -1529,7 +1574,7 @@ static int ep_insert(struct eventpoll *ep, const st=
-ruct epoll_event *event,
->          * high memory pressure.
->          */
->         if (unlikely(!epq.epi)) {
-> -               ep_remove(ep, epi);
-> +               ep_remove_safe(ep, epi);
->                 return -ENOMEM;
->         }
->
-> @@ -2025,7 +2070,7 @@ static int do_epoll_create(int flags)
->  out_free_fd:
->         put_unused_fd(fd);
->  out_free_ep:
-> -       ep_free(ep);
-> +       ep_clear_and_put(ep);
->         return error;
->  }
->
-> @@ -2167,10 +2212,16 @@ int do_epoll_ctl(int epfd, int op, int fd, struct=
- epoll_event *epds,
->                         error =3D -EEXIST;
->                 break;
->         case EPOLL_CTL_DEL:
-> -               if (epi)
-> -                       error =3D ep_remove(ep, epi);
-> -               else
-> +               if (epi) {
-> +                       /*
-> +                        * The eventpoll itself is still alive: the refco=
-unt
-> +                        * can't go to zero here.
-> +                        */
-> +                       ep_remove_safe(ep, epi);
-> +                       error =3D 0;
-> +               } else {
->                         error =3D -ENOENT;
-> +               }
->                 break;
->         case EPOLL_CTL_MOD:
->                 if (epi) {
-> --
-> 2.39.2
->
+>   static int smc_accept(struct socket *sock, struct socket *new_sock,
+>   		      int flags, bool kern)
+>   {
+> @@ -2579,6 +2685,18 @@ static int smc_accept(struct socket *sock, struct socket *new_sock,
+>   	int rc = 0;
+>   
+>   	lsmc = smc_sk(sk);
+> +	/* There is a lock in inet_csk_accept, so to make a fast path we do not lock_sock here */
+> +	if (lsmc->sk.sk_state == SMC_LISTEN && !tcp_reqsk_queue_empty(lsmc->fbsock->sk)) {
+> +		rc = lsmc->clcsock->ops->accept(lsmc->fbsock, new_sock, O_NONBLOCK, true);
+> +		if (rc == -EAGAIN)
+> +			goto normal_path;
+> +		if (rc < 0)
+> +			return rc;
+> +		smc_restore_fbsock_protocol_family(new_sock, sock);
+> +		return rc;
+> +	}
+> +
+> +normal_path:
+>   	sock_hold(sk); /* sock_put below */
+>   	lock_sock(sk);
+>   
+> @@ -2593,6 +2711,18 @@ static int smc_accept(struct socket *sock, struct socket *new_sock,
+>   	add_wait_queue_exclusive(sk_sleep(sk), &wait);
+>   	while (!(nsk = smc_accept_dequeue(sk, new_sock))) {
+>   		set_current_state(TASK_INTERRUPTIBLE);
+> +		if (!tcp_reqsk_queue_empty(lsmc->fbsock->sk)) {
+> +			rc = lsmc->clcsock->ops->accept(lsmc->fbsock, new_sock, O_NONBLOCK, true);
+> +			if (rc == -EAGAIN)
+> +				goto next_round;
+> +			if (rc < 0)
+> +				break;
+> +
+> +			smc_restore_fbsock_protocol_family(new_sock, sock);
+> +			nsk = new_sock->sk;
+> +			break;
+> +		}
+> +next_round:
+>   		if (!timeo) {
+>   			rc = -EAGAIN;
+>   			break;
+> @@ -2731,7 +2861,8 @@ static __poll_t smc_accept_poll(struct sock *parent)
+>   	__poll_t mask = 0;
+>   
+>   	spin_lock(&isk->accept_q_lock);
+> -	if (!list_empty(&isk->accept_q))
+> +	if (!list_empty(&isk->accept_q) ||
+> +	    !reqsk_queue_empty(&inet_csk(isk->fbsock->sk)->icsk_accept_queue))
+>   		mask = EPOLLIN | EPOLLRDNORM;
+>   	spin_unlock(&isk->accept_q_lock);
+>   
+> diff --git a/net/smc/smc.h b/net/smc/smc.h
+> index 5ed765ea0c73..9a62c8f37e26 100644
+> --- a/net/smc/smc.h
+> +++ b/net/smc/smc.h
+> @@ -241,6 +241,8 @@ struct smc_connection {
+>   struct smc_sock {				/* smc sock container */
+>   	struct sock		sk;
+>   	struct socket		*clcsock;	/* internal tcp socket */
+> +	struct socket		*fbsock;	/* socket for fallback connection */
+> +	struct socket		*actsock;	/* socket for non-fallback conneciotn */
+>   	void			(*clcsk_state_change)(struct sock *sk);
+>   						/* original stat_change fct. */
+>   	void			(*clcsk_data_ready)(struct sock *sk);
