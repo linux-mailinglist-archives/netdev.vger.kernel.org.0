@@ -2,401 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DAD96C5091
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:26:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7665F6C50C3
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:31:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbjCVQ0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 12:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
+        id S230458AbjCVQbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 12:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbjCVQ0I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:26:08 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5118A4E5C7
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 09:25:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679502353; x=1711038353;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VY16IVpA2zWQ+lBiKueddb31huvhR2R7Ee97VYglp6U=;
-  b=W8gTfYKsnwdfTEnUE0ewgCcWE93JWR+lGGxrsqxjQNOREmvf1ey3PH3u
-   QJCOenAdMZF/cX9HJqFhqJ2AxUtLo6MUrJ7CnoxuTsobMk8vgxMOLqfWC
-   kHwTjazeq31uXOSxJ/S0wynpwTHKAuQrUCOcr8kjveDsAf1Cnard2bb1n
-   nl7xQmY617uD597lumvzePy4aN7UIXUVmC3TUfh7hQsodubsLn0iO+hL5
-   QqWldAc24USD3KTVIxRV7EhZ1iaIgmLlXBpxMjBzyW6WqOfRMMGR2YktU
-   YT08ah2ojM5MU2gNtgt+ss6ORdBinHWJSFO+YSDn/DKGREFpWr/pTi0Ho
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="404151373"
-X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
-   d="scan'208";a="404151373"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 09:25:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="825462848"
-X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
-   d="scan'208";a="825462848"
-Received: from nimitz.igk.intel.com ([10.102.21.231])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Mar 2023 09:25:49 -0700
-From:   Piotr Raczynski <piotr.raczynski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, michal.swiatkowski@intel.com,
-        shiraz.saleem@intel.com, jacob.e.keller@intel.com,
-        sridhar.samudrala@intel.com, jesse.brandeburg@intel.com,
-        aleksander.lobakin@intel.com, lukasz.czapnik@intel.com,
-        Piotr Raczynski <piotr.raczynski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: [PATCH net-next v2 8/8] ice: add dynamic interrupt allocation
-Date:   Wed, 22 Mar 2023 17:25:30 +0100
-Message-Id: <20230322162530.3317238-9-piotr.raczynski@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230322162530.3317238-1-piotr.raczynski@intel.com>
-References: <20230322162530.3317238-1-piotr.raczynski@intel.com>
+        with ESMTP id S229524AbjCVQbP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:31:15 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8C55D8B5;
+        Wed, 22 Mar 2023 09:31:06 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id x20so1234928ljq.9;
+        Wed, 22 Mar 2023 09:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679502664;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=WDN2v4fnawtl/fLdmkgQCgD7YXJFfAmgBrNHK+rBdtA=;
+        b=lL3O3FgFC+ZslbtYUnj26o9Gal6uSf00mdtOPSf80Ary5bWVMrE/UAyNycan5WZ+u2
+         UC7ginCNUimTNZC/NINPl9EhNaSn00rvCL9uOqnXL1Qv7EZl6kxlQnO0w+ZHS9QYahpj
+         JZ3zUx7fhPSo43XDqupk1XfAlEPE39kbJ8g5ED5bzLzmTtQN439i3XsqzMhyBpTAFsRO
+         rzKkuh6OB2XsGnBpSqzQWK/juzBXkM8mYaVS9w7uVNGSP2tghWQA3USKXCuFAxkgKx2O
+         ELF7yRX+b0pj+BKWEwyxuZmwHMLuDfH8uBlLjGXQm10o4s8PgBvvojT+2ZREZBhVvM9t
+         Oqpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679502664;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WDN2v4fnawtl/fLdmkgQCgD7YXJFfAmgBrNHK+rBdtA=;
+        b=co9yVo8p+xvUFDJXQ4KsM5nFast0WYk11Dag/K18XBzjXaWwRDx5kWj8Zuh5ID5E7O
+         kD9OvkEi97lDi9J1NbG6ogtjJQEw6d0rg8dEX+hPV/S9bIMcf6TjnvTxQ4gmJYTY3b5n
+         bny1MitHJFIqZKJnFyoKC2R84fAFNc+YEB4dxqf/dQHvy5eafPxcDEV0uSZxhPE29I/q
+         69oNzjsiaDU9PU+B5Da+BEDH/+9/Cjw66U2a6zXrn4BDE7qvGVC5uMkH5X7a9wZQDbgo
+         RxYrYbUKJ8cegCZNfy5CwRRKkKHR/j2auAjZlW9aAHxfY9R0ne6v/viRHw+X7VBrd1md
+         HXVQ==
+X-Gm-Message-State: AO0yUKXdLsFRAwk1EOBzjy+15/6skEZ9M2K8e8MgyLBMGKxu36FlDAAI
+        YCePJW6nZCykGNSYPwJDqhg=
+X-Google-Smtp-Source: AK7set/w2xdEtvezo8G2g3U7hpDd2Kz2VHnLxxKk7BXNMvuKR+JJfHQmJP5dPuftGOdc7Zafwhl+mw==
+X-Received: by 2002:a2e:918e:0:b0:293:45dc:8b0f with SMTP id f14-20020a2e918e000000b0029345dc8b0fmr2447083ljg.26.1679502663991;
+        Wed, 22 Mar 2023 09:31:03 -0700 (PDT)
+Received: from mkor.. (89-109-44-234.dynamic.mts-nn.ru. [89.109.44.234])
+        by smtp.gmail.com with ESMTPSA id s24-20020a2e98d8000000b002996e0e6461sm2670494ljj.29.2023.03.22.09.31.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 09:31:03 -0700 (PDT)
+From:   Maxim Korotkov <korotkov.maxim.s@gmail.com>
+To:     Rasesh Mody <rmody@marvell.com>
+Cc:     Maxim Korotkov <korotkov.maxim.s@gmail.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lvc-project@linuxtesting.org, Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH net-next v2] bnx2: remove deadcode in bnx2_init_cpus()
+Date:   Wed, 22 Mar 2023 19:28:43 +0300
+Message-Id: <20230322162843.3452-1-korotkov.maxim.s@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently driver can only allocate interrupt vectors during init phase by
-calling pci_alloc_irq_vectors. Change that and make use of new
-pci_msix_alloc_irq_at/ice_free_irq API and enable to allocate and free more
-interrupts after MSIX has been enabled. Since not all platforms supports
-dynamic allocation, check it with pci_msix_can_alloc_dyn.
+The load_cpu_fw function has no error return code
+and always returns zero. Checking the value returned by
+this function does not make sense.
+Now checking the value of the return value is misleading when reading
+the code. Path with error handling was deleted in 57579f7629a3 
+("bnx2: Use request_firmware()"). 
+As a result, bnx2_init_cpus() will also return only zero
+Therefore, it will be safe to change the type of functions
+to void and remove checking to improving readability.
 
-Extend the tracker to keep track how many interrupts are allocated
-initially so when all such vectors are already used, additional interrupts
-are automatically allocated dynamically. Remember each interrupt allocation
-method to then free appropriately. Since some features may require
-interrupts allocated dynamically add appropriate VSI flag and take it into
-account when allocating new interrupt.
+Found by Security Code and Linux Verification
+Center (linuxtesting.org) with SVACE
 
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Signed-off-by: Piotr Raczynski <piotr.raczynski@intel.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Maxim Korotkov <korotkov.maxim.s@gmail.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h       |   3 +
- drivers/net/ethernet/intel/ice/ice_base.c  |   2 +-
- drivers/net/ethernet/intel/ice/ice_idc.c   |   2 +-
- drivers/net/ethernet/intel/ice/ice_irq.c   | 107 ++++++++++++++++++---
- drivers/net/ethernet/intel/ice/ice_irq.h   |   5 +-
- drivers/net/ethernet/intel/ice/ice_main.c  |   2 +-
- drivers/net/ethernet/intel/ice/ice_sriov.c |   5 +-
- 7 files changed, 105 insertions(+), 21 deletions(-)
+ changes:
+ - added mark about review
+ - changed description of patch
+ drivers/net/ethernet/broadcom/bnx2.c | 31 +++++++---------------------
+ 1 file changed, 8 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index b7398abda26a..26fa176dc1cb 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -338,6 +338,9 @@ struct ice_vsi {
- 	u32 rx_buf_failed;
- 	u32 rx_page_failed;
- 	u16 num_q_vectors;
-+	/* tell if only dynamic irq allocation is allowed */
-+	bool irq_dyn_alloc;
-+
- 	enum ice_vsi_type type;
- 	u16 vsi_num;			/* HW (absolute) index of this VSI */
- 	u16 idx;			/* software index in pf->vsi[] */
-diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-index e5db23eaa3f4..a0c0129c995d 100644
---- a/drivers/net/ethernet/intel/ice/ice_base.c
-+++ b/drivers/net/ethernet/intel/ice/ice_base.c
-@@ -134,7 +134,7 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
- 		}
- 	}
- 
--	q_vector->irq = ice_alloc_irq(pf);
-+	q_vector->irq = ice_alloc_irq(pf, vsi->irq_dyn_alloc);
- 	if (q_vector->irq.index < 0) {
- 		kfree(q_vector);
- 		return -ENOMEM;
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index bc016bb4440c..145b27f2a4ce 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -250,7 +250,7 @@ static int ice_alloc_rdma_qvectors(struct ice_pf *pf)
- 			struct msix_entry *entry = &pf->msix_entries[i];
- 			struct msi_map map;
- 
--			map = ice_alloc_irq(pf);
-+			map = ice_alloc_irq(pf, false);
- 			if (map.index < 0)
- 				break;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_irq.c b/drivers/net/ethernet/intel/ice/ice_irq.c
-index 20d4e9a6aefb..61120d4194f1 100644
---- a/drivers/net/ethernet/intel/ice/ice_irq.c
-+++ b/drivers/net/ethernet/intel/ice/ice_irq.c
-@@ -9,11 +9,14 @@
-  * ice_init_irq_tracker - initialize interrupt tracker
-  * @pf: board private structure
-  * @max_vectors: maximum number of vectors that tracker can hold
-+ * @num_static: number of preallocated interrupts
-  */
- static void
--ice_init_irq_tracker(struct ice_pf *pf, unsigned int max_vectors)
-+ice_init_irq_tracker(struct ice_pf *pf, unsigned int max_vectors,
-+		     unsigned int num_static)
- {
- 	pf->irq_tracker.num_entries = max_vectors;
-+	pf->irq_tracker.num_static = num_static;
- 	xa_init_flags(&pf->irq_tracker.entries, XA_FLAGS_ALLOC);
- }
- 
-@@ -42,6 +45,7 @@ static void ice_free_irq_res(struct ice_pf *pf, u16 index)
- /**
-  * ice_get_irq_res - get an interrupt resource
-  * @pf: board private structure
-+ * @dyn_only: force entry to be dynamically allocated
-  *
-  * Allocate new irq entry in the free slot of the tracker. Since xarray
-  * is used, always allocate new entry at the lowest possible index. Set
-@@ -49,10 +53,11 @@ static void ice_free_irq_res(struct ice_pf *pf, u16 index)
-  *
-  * Returns allocated irq entry or NULL on failure.
-  */
--static struct ice_irq_entry *ice_get_irq_res(struct ice_pf *pf)
-+static struct ice_irq_entry *ice_get_irq_res(struct ice_pf *pf, bool dyn_only)
- {
- 	struct xa_limit limit = { .max = pf->irq_tracker.num_entries,
- 				  .min = 0 };
-+	unsigned int num_static = pf->irq_tracker.num_static;
- 	struct ice_irq_entry *entry;
- 	unsigned int index;
- 	int ret;
-@@ -61,6 +66,10 @@ static struct ice_irq_entry *ice_get_irq_res(struct ice_pf *pf)
- 	if (!entry)
- 		goto exit;
- 
-+	/* skip preallocated entries if the caller says so */
-+	if (dyn_only)
-+		limit.min = num_static;
-+
- 	ret = xa_alloc(&pf->irq_tracker.entries, &index, entry, limit,
- 		       GFP_KERNEL);
- 
-@@ -69,6 +78,7 @@ static struct ice_irq_entry *ice_get_irq_res(struct ice_pf *pf)
- 		entry = NULL;
- 	} else {
- 		entry->index = index;
-+		entry->dynamic = index >= num_static;
- 	}
- 
- exit:
-@@ -242,14 +252,20 @@ void ice_clear_interrupt_scheme(struct ice_pf *pf)
-  */
- int ice_init_interrupt_scheme(struct ice_pf *pf)
- {
--	int vectors;
-+	int total_vectors = pf->hw.func_caps.common_cap.num_msix_vectors;
-+	int vectors, max_vectors;
- 
- 	vectors = ice_ena_msix_range(pf);
- 
- 	if (vectors < 0)
--		return vectors;
-+		return -ENOMEM;
-+
-+	if (pci_msix_can_alloc_dyn(pf->pdev))
-+		max_vectors = total_vectors;
-+	else
-+		max_vectors = vectors;
- 
--	ice_init_irq_tracker(pf, vectors);
-+	ice_init_irq_tracker(pf, max_vectors, vectors);
- 
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 9f473854b0f4..19b053c879b0 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -3829,7 +3829,7 @@ load_rv2p_fw(struct bnx2 *bp, u32 rv2p_proc,
  	return 0;
  }
-@@ -257,33 +273,55 @@ int ice_init_interrupt_scheme(struct ice_pf *pf)
- /**
-  * ice_alloc_irq - Allocate new interrupt vector
-  * @pf: board private structure
-+ * @dyn_only: force dynamic allocation of the interrupt
-  *
-  * Allocate new interrupt vector for a given owner id.
-  * return struct msi_map with interrupt details and track
-  * allocated interrupt appropriately.
-  *
-- * This function mimics individual interrupt allocation,
-- * even interrupts are actually already allocated with
-- * pci_alloc_irq_vectors. Individual allocation helps
-- * to track interrupts and simplifies interrupt related
-- * handling.
-+ * This function reserves new irq entry from the irq_tracker.
-+ * if according to the tracker information all interrupts that
-+ * were allocated with ice_pci_alloc_irq_vectors are already used
-+ * and dynamically allocated interrupts are supported then new
-+ * interrupt will be allocated with pci_msix_alloc_irq_at.
-+ *
-+ * Some callers may only support dynamically allocated interrupts.
-+ * This is indicated with dyn_only flag.
-  *
-  * On failure, return map with negative .index. The caller
-  * is expected to check returned map index.
-  *
-  */
--struct msi_map ice_alloc_irq(struct ice_pf *pf)
-+struct msi_map ice_alloc_irq(struct ice_pf *pf, bool dyn_only)
+ 
+-static int
++static void
+ load_cpu_fw(struct bnx2 *bp, const struct cpu_reg *cpu_reg,
+ 	    const struct bnx2_mips_fw_file_entry *fw_entry)
  {
-+	int sriov_base_vector = pf->sriov_base_vector;
- 	struct msi_map map = { .index = -ENOENT };
-+	struct device *dev = ice_pf_to_dev(pf);
- 	struct ice_irq_entry *entry;
- 
--	entry = ice_get_irq_res(pf);
-+	entry = ice_get_irq_res(pf, dyn_only);
- 	if (!entry)
- 		return map;
- 
--	map.index = entry->index;
--	map.virq = pci_irq_vector(pf->pdev, map.index);
-+	/* fail if we're about to violate SRIOV vectors space */
-+	if (sriov_base_vector && entry->index >= sriov_base_vector)
-+		goto exit_free_res;
-+
-+	if (pci_msix_can_alloc_dyn(pf->pdev) && entry->dynamic) {
-+		map = pci_msix_alloc_irq_at(pf->pdev, entry->index, NULL);
-+		if (map.index < 0)
-+			goto exit_free_res;
-+		dev_dbg(dev, "allocated new irq at index %d\n", map.index);
-+	} else {
-+		map.index = entry->index;
-+		map.virq = pci_irq_vector(pf->pdev, map.index);
-+	}
-+
-+	return map;
- 
-+exit_free_res:
-+	dev_err(dev, "Could not allocate irq at idx %d\n", entry->index);
-+	ice_free_irq_res(pf, entry->index);
- 	return map;
+@@ -3897,48 +3897,34 @@ load_cpu_fw(struct bnx2 *bp, const struct cpu_reg *cpu_reg,
+ 	val &= ~cpu_reg->mode_value_halt;
+ 	bnx2_reg_wr_ind(bp, cpu_reg->state, cpu_reg->state_value_clear);
+ 	bnx2_reg_wr_ind(bp, cpu_reg->mode, val);
+-
+-	return 0;
  }
  
-@@ -292,9 +330,48 @@ struct msi_map ice_alloc_irq(struct ice_pf *pf)
-  * @pf: board private structure
-  * @map: map with interrupt details
-  *
-- * Remove allocated interrupt from the interrupt tracker.
-+ * Remove allocated interrupt from the interrupt tracker. If interrupt was
-+ * allocated dynamically, free respective interrupt vector.
-  */
- void ice_free_irq(struct ice_pf *pf, struct msi_map map)
+-static int
++static void
+ bnx2_init_cpus(struct bnx2 *bp)
  {
-+	struct ice_irq_entry *entry;
-+
-+	entry = xa_load(&pf->irq_tracker.entries, map.index);
-+
-+	if (!entry)
-+		dev_err(ice_pf_to_dev(pf), "Failed to get MSIX interrupt entry at index %d",
-+			map.index);
-+
-+	dev_dbg(ice_pf_to_dev(pf), "Free irq at index %d\n", map.index);
-+
-+	if (entry->dynamic)
-+		pci_msix_free_irq(pf->pdev, map);
-+
- 	ice_free_irq_res(pf, map.index);
+ 	const struct bnx2_mips_fw_file *mips_fw =
+ 		(const struct bnx2_mips_fw_file *) bp->mips_firmware->data;
+ 	const struct bnx2_rv2p_fw_file *rv2p_fw =
+ 		(const struct bnx2_rv2p_fw_file *) bp->rv2p_firmware->data;
+-	int rc;
+ 
+ 	/* Initialize the RV2P processor. */
+ 	load_rv2p_fw(bp, RV2P_PROC1, &rv2p_fw->proc1);
+ 	load_rv2p_fw(bp, RV2P_PROC2, &rv2p_fw->proc2);
+ 
+ 	/* Initialize the RX Processor. */
+-	rc = load_cpu_fw(bp, &cpu_reg_rxp, &mips_fw->rxp);
+-	if (rc)
+-		goto init_cpu_err;
++	load_cpu_fw(bp, &cpu_reg_rxp, &mips_fw->rxp);
+ 
+ 	/* Initialize the TX Processor. */
+-	rc = load_cpu_fw(bp, &cpu_reg_txp, &mips_fw->txp);
+-	if (rc)
+-		goto init_cpu_err;
++	load_cpu_fw(bp, &cpu_reg_txp, &mips_fw->txp);
+ 
+ 	/* Initialize the TX Patch-up Processor. */
+-	rc = load_cpu_fw(bp, &cpu_reg_tpat, &mips_fw->tpat);
+-	if (rc)
+-		goto init_cpu_err;
++	load_cpu_fw(bp, &cpu_reg_tpat, &mips_fw->tpat);
+ 
+ 	/* Initialize the Completion Processor. */
+-	rc = load_cpu_fw(bp, &cpu_reg_com, &mips_fw->com);
+-	if (rc)
+-		goto init_cpu_err;
++	load_cpu_fw(bp, &cpu_reg_com, &mips_fw->com);
+ 
+ 	/* Initialize the Command Processor. */
+-	rc = load_cpu_fw(bp, &cpu_reg_cp, &mips_fw->cp);
+-
+-init_cpu_err:
+-	return rc;
++	load_cpu_fw(bp, &cpu_reg_cp, &mips_fw->cp);
  }
-+
-+/**
-+ * ice_get_max_used_msix_vector - Get the max used interrupt vector
-+ * @pf: board private structure
-+ *
-+ * Return index of maximum used interrupt vectors with respect to the
-+ * beginning of the MSIX table. Take into account that some interrupts
-+ * may have been dynamically allocated after MSIX was initially enabled.
-+ */
-+int ice_get_max_used_msix_vector(struct ice_pf *pf)
-+{
-+	unsigned long start, index, max_idx;
-+	void *entry;
-+
-+	/* Treat all preallocated interrupts as used */
-+	start = pf->irq_tracker.num_static;
-+	max_idx = start - 1;
-+
-+	xa_for_each_start(&pf->irq_tracker.entries, index, entry, start) {
-+		if (index > max_idx)
-+			max_idx = index;
-+	}
-+
-+	return max_idx;
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_irq.h b/drivers/net/ethernet/intel/ice/ice_irq.h
-index da5cdb1f0d3a..f35efc08575e 100644
---- a/drivers/net/ethernet/intel/ice/ice_irq.h
-+++ b/drivers/net/ethernet/intel/ice/ice_irq.h
-@@ -6,17 +6,20 @@
  
- struct ice_irq_entry {
- 	unsigned int index;
-+	bool dynamic;	/* allocation type flag */
- };
+ static void
+@@ -4951,8 +4937,7 @@ bnx2_init_chip(struct bnx2 *bp)
+ 	} else
+ 		bnx2_init_context(bp);
  
- struct ice_irq_tracker {
- 	struct xarray entries;
- 	u16 num_entries;	/* total vectors available */
-+	u16 num_static;	/* preallocated entries */
- };
+-	if ((rc = bnx2_init_cpus(bp)) != 0)
+-		return rc;
++	bnx2_init_cpus(bp);
  
- int ice_init_interrupt_scheme(struct ice_pf *pf);
- void ice_clear_interrupt_scheme(struct ice_pf *pf);
+ 	bnx2_init_nvram(bp);
  
--struct msi_map ice_alloc_irq(struct ice_pf *pf);
-+struct msi_map ice_alloc_irq(struct ice_pf *pf, bool dyn_only);
- void ice_free_irq(struct ice_pf *pf, struct msi_map map);
-+int ice_get_max_used_msix_vector(struct ice_pf *pf);
- 
- #endif
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 8e62ec08f582..68ecb80ec0c8 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3343,7 +3343,7 @@ static int ice_req_irq_msix_misc(struct ice_pf *pf)
- 		goto skip_req_irq;
- 
- 	/* reserve one vector in irq_tracker for misc interrupts */
--	oicr_irq = ice_alloc_irq(pf);
-+	oicr_irq = ice_alloc_irq(pf, false);
- 	if (oicr_irq.index < 0)
- 		return oicr_irq.index;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 195105ce9039..80c643fb9f2f 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -418,7 +418,7 @@ int ice_calc_vf_reg_idx(struct ice_vf *vf, struct ice_q_vector *q_vector)
- static int ice_sriov_set_msix_res(struct ice_pf *pf, u16 num_msix_needed)
- {
- 	u16 total_vectors = pf->hw.func_caps.common_cap.num_msix_vectors;
--	int vectors_used = pf->irq_tracker.num_entries;
-+	int vectors_used = ice_get_max_used_msix_vector(pf);
- 	int sriov_base_vector;
- 
- 	sriov_base_vector = total_vectors - num_msix_needed;
-@@ -458,6 +458,7 @@ static int ice_sriov_set_msix_res(struct ice_pf *pf, u16 num_msix_needed)
-  */
- static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
- {
-+	int vectors_used = ice_get_max_used_msix_vector(pf);
- 	u16 num_msix_per_vf, num_txq, num_rxq, avail_qs;
- 	int msix_avail_per_vf, msix_avail_for_sriov;
- 	struct device *dev = ice_pf_to_dev(pf);
-@@ -470,7 +471,7 @@ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
- 
- 	/* determine MSI-X resources per VF */
- 	msix_avail_for_sriov = pf->hw.func_caps.common_cap.num_msix_vectors -
--		pf->irq_tracker.num_entries;
-+		vectors_used;
- 	msix_avail_per_vf = msix_avail_for_sriov / num_vfs;
- 	if (msix_avail_per_vf >= ICE_NUM_VF_MSIX_MED) {
- 		num_msix_per_vf = ICE_NUM_VF_MSIX_MED;
 -- 
-2.38.1
+2.37.2
 
