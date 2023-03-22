@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89B006C4E86
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 15:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 672B16C4EBE
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 15:59:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231288AbjCVOwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 10:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
+        id S230258AbjCVO7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 10:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbjCVOwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 10:52:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E944169CC0
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 07:49:47 -0700 (PDT)
+        with ESMTP id S229936AbjCVO7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 10:59:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CD759F4
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 07:58:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679496587;
+        s=mimecast20190719; t=1679497125;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HPCji8KxlP8RVox763kqVVCoDfgGEnOq0lSEgexYy6Y=;
-        b=O1Nn4k4El/3Tpbc7Rmu4g5VQdHjDvwhVk5ArDqmBLBuJMdhFUEo+zkLhpMX+L2a45YOspp
-        WWdqYILwABkrf29wSWVOjYpMPeVgAEMgapJ305MS4KR1U3YirQOzuJNrGzMcFPydzO1Q2z
-        FVFfdSVHFaONwKm2shHGN1q/sHS6Ym0=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=NTDHGidtxxNwvUoWqQhKBSxK12xTyzlrRv/7eEx1M9k=;
+        b=JFpYdbVYYAxL6vXQcQwunLozIKNmrxs9cclhOEfzNZ6lobRBZbZYcXaNjN3b2unV5j9o3+
+        K9vB9nLEM+F3giSVDZB3XTcdkc6S0NFUOw0/aBo2FDnoehf6QrpNa3r7Mfr0MsIyQBXh4L
+        g1LyZCATTbkr4MT65aITrpLEY/q9ncg=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-328-7m5P_9ifMeO1kyMJkRMxVw-1; Wed, 22 Mar 2023 10:49:46 -0400
-X-MC-Unique: 7m5P_9ifMeO1kyMJkRMxVw-1
-Received: by mail-qk1-f200.google.com with SMTP id ou5-20020a05620a620500b007423e532628so8740567qkn.5
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 07:49:46 -0700 (PDT)
+ us-mta-411-LjK3vEK6NVCYuDC6fzPSEA-1; Wed, 22 Mar 2023 10:58:44 -0400
+X-MC-Unique: LjK3vEK6NVCYuDC6fzPSEA-1
+Received: by mail-qv1-f70.google.com with SMTP id px9-20020a056214050900b005d510cdfc41so2156899qvb.7
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 07:58:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679496585;
+        d=1e100.net; s=20210112; t=1679497124; x=1682089124;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=HPCji8KxlP8RVox763kqVVCoDfgGEnOq0lSEgexYy6Y=;
-        b=avOgMlWcP83SComrd94NWCFEMf+oQGDQ2hToFj7Fwm3oZoYk0pC79hfDY9Mq+ZMxu2
-         IXNMhnsJvyRKjO9GWV/Gcl5Ko3/WujePoS4uhUxIblOq8e/uB6l+EVlhOLGJ39MELpGc
-         ILalEReJMbYTG/ffZNBgOnRuDonLkcDEhdOpwuJn3i5BJFnuX4axjw6viFqE1cX5DuYs
-         3+XiJTdPo0NpFY8gkTt/uiHDU/WZ6Chms01XPNkYPjoSr17N1JjdqWuvqxSJxoUuTcjv
-         vAmQbyi34PpuW1zuI9p33L7Ae5e3FRfsizs2AOqz/cc3xr5rvUs6Y0UZrnB1F33MoWkd
-         C0/g==
-X-Gm-Message-State: AO0yUKWaHJW/2X8tGrZDSEtbm6HID8pixOp09r85H+yjHe0yVQlOsL+n
-        mjqYVwozIGlL8X+GqElTikxiPLZd9i+TNhMs9UALK/A3Q/xzpMVAjNT1TCWCuprhTW4INm2V7QM
-        +6ssCvVArEBHDustmNh/gvfAd
-X-Received: by 2002:a05:622a:198b:b0:3e1:b2b4:f766 with SMTP id u11-20020a05622a198b00b003e1b2b4f766mr10608255qtc.5.1679496585390;
-        Wed, 22 Mar 2023 07:49:45 -0700 (PDT)
-X-Google-Smtp-Source: AK7set83+n/pztQhG0B5NmXUaaIX9TsRMBjqkX8q3XBT3i8cD2jdTaYA03sxBlOy5HHAN4ULkFjYyg==
-X-Received: by 2002:a05:622a:198b:b0:3e1:b2b4:f766 with SMTP id u11-20020a05622a198b00b003e1b2b4f766mr10608233qtc.5.1679496585125;
-        Wed, 22 Mar 2023 07:49:45 -0700 (PDT)
+        bh=NTDHGidtxxNwvUoWqQhKBSxK12xTyzlrRv/7eEx1M9k=;
+        b=6S5gPhBvmhyhoM7s5/cxPgs+1PTHb2cM9sMNomTh1E5Otcy2e7j6EApT4egYxEuJYq
+         RI6HEAXWaGhDFJgc40OPMo4iu0oY3j4dq/sMsyvrQUv5vVvIaOlhl9R834wFnZxpRGZd
+         6nLGtRmonq37O8Bx/r9QwwNnM7arHhwr+XOPgtl3NHGcMng9CCp1McFjv/pUB08criUA
+         iyeDtdKnD5wMzh2oPMx2gLa/PweDgxT+3lDzzBxWeyuJNd6DdQ93xn/WPmsWIUUDRs4F
+         ebEUgiZf8MlmhZw+TWp5lkMNsKLWmOC4+GaGKoMHU/CeK7vA3JdqFFK4aeGEfsT8ns3F
+         dKew==
+X-Gm-Message-State: AO0yUKU9qfil2s0H93TBGxlfYPi0f4R+PghqSfwBMivKqT2oA69e4XYn
+        DtpqhUqSg34KHg+csbCU0Tq4l8o5ZyMeyMXw/FrhnbVUcWNu2k2asYFmTtC1sJ5OyrZIOrOBD1y
+        uudeToGIu69MBTPBC
+X-Received: by 2002:a05:6214:528d:b0:5ad:cd4b:3765 with SMTP id kj13-20020a056214528d00b005adcd4b3765mr9966455qvb.1.1679497124425;
+        Wed, 22 Mar 2023 07:58:44 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8v93I76Hrh6VYaSGaLjbIuUhXMY4ShyL1lpTiTt6XnQgpguzMVChPp0c+PhTr3DB86BOb1hw==
+X-Received: by 2002:a05:6214:528d:b0:5ad:cd4b:3765 with SMTP id kj13-20020a056214528d00b005adcd4b3765mr9966419qvb.1.1679497124160;
+        Wed, 22 Mar 2023 07:58:44 -0700 (PDT)
 Received: from gerbillo.redhat.com (146-241-244-168.dyn.eolo.it. [146.241.244.168])
-        by smtp.gmail.com with ESMTPSA id r132-20020a37448a000000b007466432a559sm9267612qka.86.2023.03.22.07.49.43
+        by smtp.gmail.com with ESMTPSA id y3-20020a37f603000000b0074382b756c2sm11405364qkj.14.2023.03.22.07.58.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Mar 2023 07:49:44 -0700 (PDT)
-Message-ID: <3b9793e1b2d16c49eb4af40c2c48609a09e2bc5a.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/4] net: ethernet: ti: am65-cpsw: Add support
- for SGMII mode
+        Wed, 22 Mar 2023 07:58:43 -0700 (PDT)
+Message-ID: <65d770947b98805a52573b3fa2df11f5d1778af7.camel@redhat.com>
+Subject: Re: [PATCH net-next] smsc911x: remove superfluous variable init
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        rogerq@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srk@ti.com
-Date:   Wed, 22 Mar 2023 15:49:41 +0100
-In-Reply-To: <ZBnPdlFS2P3Iie5k@shell.armlinux.org.uk>
-References: <20230321111958.2800005-1-s-vadapalli@ti.com>
-         <20230321111958.2800005-3-s-vadapalli@ti.com>
-         <ZBmVGu2vf1ADmEuN@shell.armlinux.org.uk>
-         <9b9ba199-8379-0840-b99a-d729f8ad33e1@ti.com>
-         <ZBnPdlFS2P3Iie5k@shell.armlinux.org.uk>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Date:   Wed, 22 Mar 2023 15:58:40 +0100
+In-Reply-To: <ZBnBZwC9WEoNK0Gp@ninjato>
+References: <20230321114721.20531-1-wsa+renesas@sang-engineering.com>
+         <CAMuHMdXrvdUPTs=ExXJo-WM+=A=WgyCQM_0mGKZxQOrVFePbwA@mail.gmail.com>
+         <ZBnBZwC9WEoNK0Gp@ninjato>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
@@ -86,125 +84,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Tue, 2023-03-21 at 15:38 +0100, Wolfram Sang wrote:
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct smsc911x_data =
+*pdata =3D netdev_priv(dev);
+> > > -       struct phy_device *phydev =3D NULL;
+> > > +       struct phy_device *phydev;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int ret;
+> > >=20
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0phydev =3D phy_find_f=
+irst(pdata->mii_bus);
+> >=20
+> > Nit: perhaps combine this assignment with the variable declaration?
+>=20
+> I thought about it but found this version to be easier readable.
 
-On Tue, 2023-03-21 at 15:38 +0000, Russell King (Oracle) wrote:
-> On Tue, Mar 21, 2023 at 07:04:50PM +0530, Siddharth Vadapalli wrote:
-> > Hello Russell,
-> >=20
-> > On 21-03-2023 16:59, Russell King (Oracle) wrote:
-> > > On Tue, Mar 21, 2023 at 04:49:56PM +0530, Siddharth Vadapalli wrote:
-> > > > Add support for configuring the CPSW Ethernet Switch in SGMII mode.
-> > > >=20
-> > > > Depending on the SoC, allow selecting SGMII mode as a supported int=
-erface,
-> > > > based on the compatible used.
-> > > >=20
-> > > > Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> > > > ---
-> > > >  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 11 ++++++++++-
-> > > >  1 file changed, 10 insertions(+), 1 deletion(-)
-> > > >=20
-> > > > diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net=
-/ethernet/ti/am65-cpsw-nuss.c
-> > > > index cba8db14e160..d2ca1f2035f4 100644
-> > > > --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> > > > +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> > > > @@ -76,6 +76,7 @@
-> > > >  #define AM65_CPSW_PORTN_REG_TS_CTL_LTYPE2       0x31C
-> > > > =20
-> > > >  #define AM65_CPSW_SGMII_CONTROL_REG		0x010
-> > > > +#define AM65_CPSW_SGMII_MR_ADV_ABILITY_REG	0x018
-> > > >  #define AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE	BIT(0)
-> > >=20
-> > > Isn't this misplaced? Shouldn't AM65_CPSW_SGMII_MR_ADV_ABILITY_REG co=
-me
-> > > after AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE, rather than splitting tha=
-t
-> > > from its register offset definition?
-> >=20
-> > Thank you for reviewing the patch. The registers are as follows:
-> > CONTROL_REG offset 0x10
-> > STATUS_REG offset  0x14
-> > MR_ADV_REG offset  0x18
-> >=20
-> > Since the STATUS_REG is not used in the driver, its offset is omitted.
-> > The next register is the MR_ADV_REG, which I placed after the
-> > CONTROL_REG. I grouped the register offsets together, to represent the
-> > order in which the registers are placed. Due to this, the
-> > MR_ADV_ABILITY_REG offset is placed after the CONTROL_REG offset define=
-.
-> >=20
-> > Please let me know if I should move it after the CONTROL_MR_AN_ENABLE
-> > define instead.
->=20
-> Well, it's up to you - whether you wish to group the register offsets
-> separately from the bit definitions for those registers, or whether
-> you wish to describe the register offset and its associated bit
-> definitions in one group before moving on to the next register.
->=20
-> > > If the advertisement register is at 0x18, and the lower 16 bits is th=
-e
-> > > advertisement, are the link partner advertisement found in the upper
-> > > 16 bits?
-> >=20
-> > The MR_LP_ADV_ABILITY_REG is at offset 0x020, which is the the register
-> > corresponding to the Link Partner advertised value. Also, the
-> > AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE Bit is in the CONTROL_REG. The CPS=
-W
-> > Hardware specification describes the process of configuring the CPSW MA=
-C
-> > for SGMII mode as follows:
-> > 1. Write 0x1 (ADVERTISE_SGMII) to the MR_ADV_ABILITY_REG register.
-> > 2. Enable auto-negotiation in the CONTROL_REG by setting the
-> > AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE bit.
->=20
-> Good to hear that there is a link partner register.
->=20
-> > > >  #define AM65_CPSW_CTL_VLAN_AWARE		BIT(1)
-> > > > @@ -1496,9 +1497,14 @@ static void am65_cpsw_nuss_mac_config(struct=
- phylink_config *config, unsigned in
-> > > >  	struct am65_cpsw_port *port =3D container_of(slave, struct am65_c=
-psw_port, slave);
-> > > >  	struct am65_cpsw_common *common =3D port->common;
-> > > > =20
-> > > > -	if (common->pdata.extra_modes & BIT(state->interface))
-> > > > +	if (common->pdata.extra_modes & BIT(state->interface)) {
-> > > > +		if (state->interface =3D=3D PHY_INTERFACE_MODE_SGMII)
-> > > > +			writel(ADVERTISE_SGMII,
-> > > > +			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
-> > > > +
-> > >=20
-> > > I think we can do better with this, by implementing proper PCS suppor=
-t.
-> > >=20
-> > > It seems manufacturers tend to use bought-in IP for this, so have a
-> > > look at drivers/net/pcs/ to see whether any of those (or the one in
-> > > the Mediatek patch set on netdev that has recently been applied) will
-> > > idrive your hardware.
-> > >=20
-> > > However, given the definition of AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE=
-,
-> > > I suspect you won't find a compatible implementation.
-> >=20
-> > I have tested with an SGMII Ethernet PHY in the standard SGMII MAC2PHY
-> > configuration. I am not sure if PCS support will be required or not. I
-> > hope that the information shared above by me regarding the CPSW
-> > Hardware's specification for configuring it in SGMII mode will help
-> > determine what the right approach might be. Please let me know whether
-> > the current implementation is acceptable or PCS support is necessary.
->=20
-> Nevertheless, this SGMII block is a PCS, and if you're going to want to
-> support inband mode (e.g. to read the SGMII word from the PHY), or if
-> someone ever wants to use 1000base-X, you're going to need to implement
-> this properly as a PCS.
->=20
-> That said, it can be converted later, so isn't a blocking sisue.
+This patch does not apply cleanly to net-next, please rebase and
+resping.
 
-Just to be on the same page, I read all the above as you do accept/do
-not oppose to this series in the current form, am I correct?
-
-Thanks,
+Thanks!
 
 Paolo
 
