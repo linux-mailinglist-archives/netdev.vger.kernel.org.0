@@ -2,244 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E3C6C4B87
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:19:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 551A56C4B96
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:21:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbjCVNTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 09:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
+        id S230363AbjCVNV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 09:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbjCVNTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:19:20 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711D05D887
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:16 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id d75a77b69052e-3e0965f70ecso67861cf.0
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:16 -0700 (PDT)
+        with ESMTP id S229797AbjCVNVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:21:24 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB426286B;
+        Wed, 22 Mar 2023 06:20:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VhtADZO8APuKAJoqoF0T6NzFyLjyPvz6TZ5jviBEzPyCYHIW4jJ+FhIxwEOh9/SCwA/a9PDW+vUZGOpUTCi/poPOb5/gADHc0nyHu+H6iGR8Lc5NwJvgGWk7Ug0V19idPEsZ7zaygTUv+89W3JECm4ClZcZ+tCKNyNd7W5HRmBS0RPnWQI/Ft875rPaeI2vswRLWXuoHm5G5mo4g/geC34ZUl2dqLr2h8DMvl37wzAnOyPXEA7HgQXCjcGdOP4Piabv/qbcdj24iZITmxcE4BJagDcZM4t6VUsYHU8LhV2C9hGmznUSo1g4Es9fJ10lpqBsZJnZW7IcxLkZ5LSyg+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3Xgts+bCfPlvupjEPS7v90+Rkp9rJuyCY/YdKaOcFDo=;
+ b=YrJHtHCzrgaUT7xL9EArWYu3VTwew9c4IMeTZort0oSc/+3OIhSMFO8r3VCaXKJ2m83Txup+AAqYcAicw9mgkcy7b0gRiqDeTsT8U1QVQaWSH4yDTslHaDuby18YW//KPmakerNKwCwDcBP9LCX/DTAEJ3bH9m47rcIiWkL949G3sm78/cJ6lfEJuhI28s+62ws0tUFSQlmmP3U7ZXlh9f8aUy9VAc3fzoAnSWEYroQa5Cnqer9VCL5+OC3Z/8vsAicvTztj6mPBR1XwTBpL1NYr1pJzsZOjuYk98mzUQMWM0q19QJzF/upQBG8Xhia+KRjS8AsWk41/BWnO3qcQAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679491155;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4DEfB60tdIGGHy+2AD41Cg2wp32c/s2a8XTIzsgGUAQ=;
-        b=UxSJSCCNXrFgKtq8kpb93OBDWEx0IWm+tUbJ0bi0Sl8gP6lYCGwg4IVRxAKKnOnAKZ
-         9arXjYn3sKID1ITSRqhEdPb8G4VL2Z6AxUzVqoONQYW8hOJHE7FfgvzBDJhsg2pWfnyS
-         yeyD+KYmAU433QQ7HDEi0oowPhI7njFpYM4mXTmnWREUpIyvQYhhQ+YhTHLxDkxNe2Xt
-         sUDwP3gz1FpFiNyVnthOoUuxucrgllPWQTkR6RLP1ivns6y2ya8cO9EOEErk0/vvGWnf
-         /0TYRxT8cdiU1C99tkyt2kgugv7CR3rEHbdUmZAkYFcLWK5JYYg9Qpll5NiBkxwnwXqW
-         +bqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679491155;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4DEfB60tdIGGHy+2AD41Cg2wp32c/s2a8XTIzsgGUAQ=;
-        b=d3GlPpPwdGwXBQZTXKGxeydzfhUjg1Ym8ht267mAEAJ9sMXiOxfnNwvXc4bdIhBKXO
-         1tvIMjd4KkBizE/A29PZ3mJsbOizWenQWHaQ4XWnUfpKgdx84hyjr8EwzZ9d+rSfPp/+
-         +RtgtEaI6h2bkn5nlWE3lDLVDcuZKs7vr3wuH8b0oU7A/ID3Cq+8Ega2a36x753r6LaZ
-         JOz4ZQf9zL1OXzjorjWF8t0dcE93rDfh9EsdxrLY7dL/G4pn7npnKWN0PvyVVP1g/Rj/
-         8QCuQ6HmYNOiYpjp+R2ElaI/KDhcMD3Ij/Hy9MDi9i9opP/q9kuOCD98CzBDpZFiFgmX
-         KNXw==
-X-Gm-Message-State: AO0yUKUE4uGxndNudAcG8A0gjdkZwTPFxON5h4w3sNltG3NEffvEBHG/
-        B+smgdfvHFUUphgR9lFdGpB3/UEyN4fwl4/dBGC+sw==
-X-Google-Smtp-Source: AK7set91FotVwi1kCv9D/MGvwz4WXHIYVIYJBiyhMUlfbhKJ25Z45cJ8kvXJVWDSiPyoEmKvtuCzNUTryUm0qHKv3es=
-X-Received: by 2002:a05:622a:188f:b0:3df:6cbb:c76 with SMTP id
- v15-20020a05622a188f00b003df6cbb0c76mr316575qtc.13.1679491155326; Wed, 22 Mar
- 2023 06:19:15 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Xgts+bCfPlvupjEPS7v90+Rkp9rJuyCY/YdKaOcFDo=;
+ b=EW6CzcF3MFda8FONWKUXTZ5VEiCcem0JP9clHPISNvHC2M3ETqFDY2QiqjBllWL7xJNsEsZQVgzNu4fpKRbChSsMFTukLiwi150dl0UhiGZdhg1IaL+C4JDXSqk4a+SEe7TNCOOnek+wYTwBB2EruO9rVW9IIQUuU2qfl7hxanw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH2PR13MB3878.namprd13.prod.outlook.com (2603:10b6:610:93::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
+ 2023 13:20:53 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
+ 13:20:53 +0000
+Date:   Wed, 22 Mar 2023 14:20:46 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     isdn@linux-pingi.de, nathan@kernel.org, ndesaulniers@google.com,
+        kuba@kernel.org, alexanderduyck@fb.com, yangyingliang@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] mISDN: remove unused vpm_read_address function
+Message-ID: <ZBsArtzFkgz+05LK@corigine.com>
+References: <20230321120127.1782548-1-trix@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230321120127.1782548-1-trix@redhat.com>
+X-ClientProxiedBy: AM9P195CA0026.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21f::31) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-References: <20230313075326.3594869-1-jaewan@google.com> <20230313075326.3594869-5-jaewan@google.com>
- <ZA99U1TMrUfZhk4G@localhost.localdomain>
-In-Reply-To: <ZA99U1TMrUfZhk4G@localhost.localdomain>
-From:   Jaewan Kim <jaewan@google.com>
-Date:   Wed, 22 Mar 2023 22:19:00 +0900
-Message-ID: <CABZjns5OUoBO46EY8Li9RNZ9rDMnN_Uq2euAYZMchddu6m42ww@mail.gmail.com>
-Subject: Re: [PATCH v9 4/5] mac80211_hwsim: add PMSR abort support via virtio
-To:     Michal Kubiak <michal.kubiak@intel.com>
-Cc:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@android.com, adelva@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3878:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5962337b-f35e-4456-5145-08db2ad8434f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sOfIAiB/7Gl/4JhhkVNjvxEpsdagiv8qNy0j3OBq8ETU/iHarq+ZijYSdARm2oDCgyH04EFpUYBh5gUpF6PRvKcyIfgLP7t6LfmVxCcdrIUSDmTfGagSl+8Nn6B34IaFYfluKz+vCDIP55l4H7zhn1qWajazGfef8p1n6EBbDu3z7jCrCZTnh4wmVIWnKMjI8sQYhDLws7IUolHOBo4jKOoOiXBWTKtv6Hl6K7FX6eSrWTeAaephJuUOjGWS7qK2eCBvmc6C7f2IILDpN1MOqY6IKT0sQ8U2l/hSxew59iKNDxNw+UiPWdm678ygMWZCiU630F6cRDx9h70coO9QwHdQnF6KTaQUUN1uQuxKZEET2xSqDcGs6Bd02w57iAh55n/QjqSGZ2XFz0mwYS2zNWlD+Ase5GNrOQTolDcRXFH9UTKmJvvyEI9xjjXPa+M4ITaxL5vREDuX3yspwYY6ZlAU3IpoouOKV9N3UcoC6W7cHMZU0tSisCm7GNk2oUr9rfEpstFkqWBylFtvzPW1D2L5llbzOpL19ScqSNtWUriOvYyCPuf50oubRpMJUJzI3T4jteWMGp908yv5Yoi2nDAe8cA9fWNVSq2rtaUwdQ0DNZ9J5HACAEA08LyHPaIVhR4WUkLZrjkS4HnEjN7naNkzXzWdAmkqJH2ef0PFlyabyNZxSP0eeuzI8U+yfh9yElrfF84A+dXV0yX8vgKUxUJ3diah2tp5ZmvuLrwJFtenVVGy29FHJkVUGnGtAZfL
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39840400004)(366004)(346002)(376002)(136003)(451199018)(66556008)(6512007)(2616005)(6506007)(186003)(6486002)(4326008)(8676002)(6666004)(316002)(6916009)(66476007)(478600001)(66946007)(7416002)(4744005)(8936002)(5660300002)(2906002)(44832011)(41300700001)(86362001)(38100700002)(36756003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XThWeFtnqriwHhzwWijVGGe6jVj+dkWSVa41co4gYA11BiKNtSuXk2lcw7lb?=
+ =?us-ascii?Q?7ohZ/u2ud0kFgOcDBE1gxecKz1K9BHEyDpW8Gz86KtKjCsrKS4lewv8m3UT7?=
+ =?us-ascii?Q?dzwmeHRQk3UxVSfd7AdAf3oZqPKtPmGZqNQ3DFRlkT+0ABiGVOcF1QoOXHcY?=
+ =?us-ascii?Q?W7y8iEOXTKjIZYsfOhar0CNi15AaAO8MrZU376LVS15x1jf92T2iZbK5E0Mb?=
+ =?us-ascii?Q?fK1AXjc/xonxZ+Ii90ol+vRrATtJlTHdm6eOFL6miPQZLnqxEgxB3hjEFkbV?=
+ =?us-ascii?Q?xPFwcp7zPKKJgMoYsUqBcwDFmm6WgQuPv2ufCjQzB/kf8p8C/IBvsj5UakYy?=
+ =?us-ascii?Q?9ljqnsc8TPZez8bcR5/XTiE9rYEh5IID7P1x64+TNU6lt18IPt8OE29Kwy2i?=
+ =?us-ascii?Q?jRIktT4RfBuk2lKB0U9txxzlro6m2RQPxtTY4Zf2P3e0ejSXAhcrz9P/Q4W3?=
+ =?us-ascii?Q?no76N2RFvYk7WnfmY+tDGdJRTSWC3ltAALLO7kbp/yog08KUfMM/8TYXyJe5?=
+ =?us-ascii?Q?r9f+XKFM8iGoQlZlSZVqF6UBUEbB+SadYsZYyE2sou/5NFjK/sjE7oE0QnUn?=
+ =?us-ascii?Q?A6h5b7m/DNdfokCdtTfEramzWqCEctiWczVTfXUnVB7p3Z5nu8E2vuSwbF5M?=
+ =?us-ascii?Q?BfgXJujTafs0TjCFoG3v3MEX/S7eL/XnxvpdU+ml/+DZhYg/sXcfLQea0kOm?=
+ =?us-ascii?Q?9xZUCWCBSbcGXQ/OpqtqW/erKsT6r1GiC6STy3MttqYD7Ko9IIutCWQfdzUj?=
+ =?us-ascii?Q?GqpiFQlVf8mrdSHJCG4aRpui/NpqYBqS4UwNvKH/InD3oc6VEOEPhU73HnJV?=
+ =?us-ascii?Q?ZhIo5mDeWUjqsvK1dOvC90xOd/nv8LHcVcDSvfDbbxOK35PY42iKSRHLg9l/?=
+ =?us-ascii?Q?guOU4vbaoQG4AW/5EhQrcTVm7LY46Lsc92hDD0hFK6DP1WkDQ8opRo915fY/?=
+ =?us-ascii?Q?X5afsd9Kl49bDLasOCz604RHhcovhlTeGoBiP7f+y1jY9aIDjmWcgmTSj9dJ?=
+ =?us-ascii?Q?aTvQSXA+qwuAM0zQUeFlMOo7pXxzEbW9MTyJtm1DxkxDDkk48/emQWng/8Z5?=
+ =?us-ascii?Q?xnbWIgXzSJP6hqUoOIubQP/vWrl+rzubvBitcnlB2s9RD7/+XJwUH79H+AOc?=
+ =?us-ascii?Q?irqvZKWQFUzTcl88q7e/HfPyM/oQsoI6xx0tcOT/wkjCMVNu10wBmVz3F/R9?=
+ =?us-ascii?Q?b4/xbyae4KNVDJALKELOb4RWOljMUrSBKPA4IKKz6ZbtpXXtOZYPjIStnJIw?=
+ =?us-ascii?Q?DnJct1enVVyC3aghPEB1iP9Fl5i50jED49/OIGmNvDn6o0zghIOTzLuEImvS?=
+ =?us-ascii?Q?QaIvNfzisiPjaG9Bhz8Hl+3pbLXFRHMaYBrGp7plrHb6qP6MN1nEBwWlTZZm?=
+ =?us-ascii?Q?x4q1c6oGhhDya1bcjs/fiDPcremcjJ6BZFXvey8wGCpM/k4OBWNrwhVtuhyN?=
+ =?us-ascii?Q?LeT+KfefrNLT0GPOJ1zsREHKNvxJA+BBCFsPw8IswZEuRCwVnaqZgrOK1czC?=
+ =?us-ascii?Q?x+/CbqtwkQZkiEFmmA0brpnxBogbGm5n1uomSL3HrN8MiHsLKSkoaF9jM206?=
+ =?us-ascii?Q?qrCkqbWTembcO7cELTQW8K6RsgnkQEdcjI7OPlIgquyv8NuCXyTK7DGnrwAR?=
+ =?us-ascii?Q?0bNra90pfCEL4z80CKMeythI3BVBVUflY3nAkPbd9hCMPKAlyT+ktv1Z5Rvq?=
+ =?us-ascii?Q?3Q40Zg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5962337b-f35e-4456-5145-08db2ad8434f
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 13:20:53.6148
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fN+1SujG2YVcu78XifloGGA89RBErSGoRV3bgcW4duquJS9UF8aKbaBtr3Mb7LP8hytDAfVAsXDKxnS9X7hZ7JuO1kt2KiMBs7E0EUo30fM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3878
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 4:45=E2=80=AFAM Michal Kubiak <michal.kubiak@intel.=
-com> wrote:
->
-> On Mon, Mar 13, 2023 at 07:53:25AM +0000, Jaewan Kim wrote:
-> > PMSR (a.k.a. peer measurement) is generalized measurement between two
-> > devices with Wi-Fi support. And currently FTM (a.k.a. fine time
-> > measurement or flight time measurement) is the one and only measurement=
-.
-> >
-> > Add necessary functionalities for mac80211_hwsim to abort previous PMSR
-> > request. The abortion request is sent to the wmedium where the PMSR req=
-uest
-> > is actually handled.
-> >
-> > In detail, add new mac80211_hwsim command HWSIM_CMD_ABORT_PMSR. When
-> > mac80211_hwsim receives the PMSR abortion request via
-> > ieee80211_ops.abort_pmsr, the received cfg80211_pmsr_request is resent =
-to
-> > the wmediumd with command HWSIM_CMD_ABORT_PMSR and attribute
-> > HWSIM_ATTR_PMSR_REQUEST. The attribute is formatted as the same way as
-> > nl80211_pmsr_start() expects.
-> >
-> > Signed-off-by: Jaewan Kim <jaewan@google.com>
-> > ---
-> > V7 -> V8: Rewrote commit msg
-> > V7: Initial commit (split from previously large patch)
-> > ---
-> >  drivers/net/wireless/mac80211_hwsim.c | 61 +++++++++++++++++++++++++++
-> >  drivers/net/wireless/mac80211_hwsim.h |  2 +
-> >  2 files changed, 63 insertions(+)
-> >
-> > diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wirele=
-ss/mac80211_hwsim.c
-> > index a692d9c95566..8f699dfab77a 100644
-> > --- a/drivers/net/wireless/mac80211_hwsim.c
-> > +++ b/drivers/net/wireless/mac80211_hwsim.c
-> > @@ -3343,6 +3343,66 @@ static int mac80211_hwsim_start_pmsr(struct ieee=
-80211_hw *hw,
-> >       return err;
-> >  }
-> >
-> > +static void mac80211_hwsim_abort_pmsr(struct ieee80211_hw *hw,
-> > +                                   struct ieee80211_vif *vif,
-> > +                                   struct cfg80211_pmsr_request *reque=
-st)
-> > +{
-> > +     struct mac80211_hwsim_data *data =3D hw->priv;
-> > +     u32 _portid =3D READ_ONCE(data->wmediumd);
-> > +     struct sk_buff *skb =3D NULL;
-> > +     int err =3D 0;
-> > +     void *msg_head;
-> > +     struct nlattr *pmsr;
->
-> Please use RCT style.
->
-> > +
-> > +     if (!_portid && !hwsim_virtio_enabled)
-> > +             return;
-> > +
-> > +     mutex_lock(&data->mutex);
-> > +
-> > +     if (data->pmsr_request !=3D request) {
-> > +             err =3D -EINVAL;
-> > +             goto out_err;
-> > +     }
-> > +
-> > +     if (err)
-> > +             return;
->
-> Redundant code - err is always zero in this place, isn't it?
+On Tue, Mar 21, 2023 at 08:01:27AM -0400, Tom Rix wrote:
+> clang with W=1 reports
+> drivers/isdn/hardware/mISDN/hfcmulti.c:667:1: error: unused function
+>   'vpm_read_address' [-Werror,-Wunused-function]
+> vpm_read_address(struct hfc_multi *c)
+> ^
+> This function is not used, so remove it.
 
-removed.
+Yes, agreed.
 
->
-> > +
-> > +     skb =3D genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-> > +     if (!skb)
-> > +             return;
->
-> Return from the function while the mutex is still locked.
-> I guess 'goto' should be used here like for other checks in this
-> function.
+But with this patch applied, make CC=clang W=1 tells me:
 
-great catch. Thank you so much.
+  CALL    scripts/checksyscalls.sh
+  CC [M]  drivers/isdn/hardware/mISDN/hfcmulti.o
+drivers/isdn/hardware/mISDN/hfcmulti.c:643:1: error: unused function 'cpld_read_reg' [-Werror,-Wunused-function]
 
->
-> > +
-> > +     msg_head =3D genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0, HWSIM_=
-CMD_ABORT_PMSR);
-> > +
-> > +     if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER, ETH_ALEN, data->add=
-resses[1].addr))
-> > +             goto out_err;
-> > +
-> > +     pmsr =3D nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-> > +     if (!pmsr) {
-> > +             err =3D -ENOMEM;
-> > +             goto out_err;
-> > +     }
-> > +
-> > +     err =3D mac80211_hwsim_send_pmsr_request(skb, request);
-> > +     if (err)
-> > +             goto out_err;
-> > +
-> > +     err =3D nla_nest_end(skb, pmsr);
-> > +     if (err)
-> > +             goto out_err;
-> > +
-> > +     genlmsg_end(skb, msg_head);
-> > +     if (hwsim_virtio_enabled)
-> > +             hwsim_tx_virtio(data, skb);
-> > +     else
-> > +             hwsim_unicast_netgroup(data, skb, _portid);
-> > +
-> > +out_err:
-> > +     if (err && skb)
-> > +             nlmsg_free(skb);
->
-> I suggest to reorganize that code (or at least rename the label "out_err"
-> to "out" maybe?) to separate error path and normal path more clearly.
-
-renamed to out.
-
->
-> > +
-> > +     mutex_unlock(&data->mutex);
-> > +}
-> > +
-> >  #define HWSIM_COMMON_OPS                                     \
-> >       .tx =3D mac80211_hwsim_tx,                                \
-> >       .wake_tx_queue =3D ieee80211_handle_wake_tx_queue,        \
-> > @@ -3367,6 +3427,7 @@ static int mac80211_hwsim_start_pmsr(struct ieee8=
-0211_hw *hw,
-> >       .get_et_stats =3D mac80211_hwsim_get_et_stats,            \
-> >       .get_et_strings =3D mac80211_hwsim_get_et_strings,        \
-> >       .start_pmsr =3D mac80211_hwsim_start_pmsr,                \
-> > +     .abort_pmsr =3D mac80211_hwsim_abort_pmsr,
-> >
-> >  #define HWSIM_NON_MLO_OPS                                    \
-> >       .sta_add =3D mac80211_hwsim_sta_add,                      \
-> > diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wirele=
-ss/mac80211_hwsim.h
-> > index 98e586a56582..383f3e39c911 100644
-> > --- a/drivers/net/wireless/mac80211_hwsim.h
-> > +++ b/drivers/net/wireless/mac80211_hwsim.h
-> > @@ -83,6 +83,7 @@ enum hwsim_tx_control_flags {
-> >   *   are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
-> >   * @HWSIM_CMD_START_PMSR: request to start peer measurement with the
-> >   *   %HWSIM_ATTR_PMSR_REQUEST.
-> > + * @HWSIM_CMD_ABORT_PMSR: abort previously sent peer measurement
-> >   * @__HWSIM_CMD_MAX: enum limit
-> >   */
-> >  enum {
-> > @@ -96,6 +97,7 @@ enum {
-> >       HWSIM_CMD_ADD_MAC_ADDR,
-> >       HWSIM_CMD_DEL_MAC_ADDR,
-> >       HWSIM_CMD_START_PMSR,
-> > +     HWSIM_CMD_ABORT_PMSR,
-> >       __HWSIM_CMD_MAX,
-> >  };
-> >  #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-> > --
-> > 2.40.0.rc1.284.g88254d51c5-goog
-> >
-
-Done for reverse christmas tree style.
-
-
---
-Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google Kore=
-a |
-jaewan@google.com | +82-10-2781-5078
+So perhaps cpld_read_reg should be removed too?
