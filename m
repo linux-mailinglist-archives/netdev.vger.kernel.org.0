@@ -2,79 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC3076C4FD2
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:00:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3046C4FE5
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbjCVQAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 12:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
+        id S230368AbjCVQCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 12:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjCVQAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:00:07 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660AB50F93;
-        Wed, 22 Mar 2023 09:00:06 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id l7so1878405pjg.5;
-        Wed, 22 Mar 2023 09:00:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679500806;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7fsNSRb4r7+1es6jl4TDUEgI6uhuTdjKz7luKjMrgiE=;
-        b=jS5bLdTjwhg+BEt0oGwmsHaFi7ZsfoDqG6WH3EglecB+0CDexv7d4XFOe/MlF8WZwQ
-         dwD9N29dvNPcYZ1CwN7t0/mPkISYARzglYWG8binEEdyZQeUeduXMXb2YG4Euk6oBeQ3
-         LpN2REnLg6NIeSrMETjwRJ/ElRZ8fdRYytQCx9dD4K9tF4eCsZ9sLotoB3japT3mqirL
-         dv59HgIL2ksOcHHy6fo4/+E8TKmDAVIn8KRqdw53du0flgoUMwdJwec4kIP2aRfjizW3
-         5S2QuXNx3SX6aAp/ipDdaoweJxrP1qlWnz49sD8MoTJncskfqPAuk/QE8mWjUq3RRCqx
-         gdVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679500806;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7fsNSRb4r7+1es6jl4TDUEgI6uhuTdjKz7luKjMrgiE=;
-        b=LEFVZHDJ65infeNS8Np6ZyVvYp+DQSFbrUGxIgdDfOcZoAF11VyXpfoxMaMCZ6XoBt
-         mbIoayQlB/tQVOITBrnonkkGLzfjzW1iBu6wSWOKPEMCeniRI+UNSK+FmKNAR2KLNtW+
-         5VAjloaE7La16YDHuqET6Hy5oD0S0sEyHqkuLyfJ7qz86fTv38Mw6mDZHwgUhymLnd5R
-         m9th5katSQ87re2xcMO7++2yz8ZiBiqV8yTpizzKboA69VWFA68+vNYaom4PgcpBYcXK
-         2bCCOTJUQX1fjfACd9Zji6+Gw3Xgp9D0zQpwkRiDuLNKQwQjmj4qXseu0nvqy8ZqwluN
-         A9fw==
-X-Gm-Message-State: AO0yUKU3vgG9BN7ddVy9fqdVXu8phBwtD57MJgHLzDNjl0PH/9MPWkkC
-        QafwqF+VPMBvkgQ9uSc3HSk=
-X-Google-Smtp-Source: AK7set+X6Vh7hPC+IqH2RMIDGpUxhrDw5EBkXQ/ogkXL366bKHCV95bigzMdhhQmaq5xtBed9jTsZQ==
-X-Received: by 2002:a17:90b:3ec7:b0:23e:feef:38ef with SMTP id rm7-20020a17090b3ec700b0023efeef38efmr3997903pjb.41.1679500805706;
-        Wed, 22 Mar 2023 09:00:05 -0700 (PDT)
-Received: from [10.69.71.131] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q2-20020a170902edc200b001a1a18a678csm10811329plk.148.2023.03.22.09.00.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 09:00:04 -0700 (PDT)
-Message-ID: <95ee76d7-7668-43b2-29e8-aab8a4281ab5@gmail.com>
-Date:   Wed, 22 Mar 2023 09:00:02 -0700
+        with ESMTP id S230329AbjCVQCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:02:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A95A664D8
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 09:01:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679500887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=u0vcj8yQCVSq1K7a3xv3DSDoQVn1iGPLpiir1Gw25As=;
+        b=VMwl9e/mDjZLEEc3JP4vxZ/f9zR9vac3bEvu2c6Kjo4js8wPjSHV7fXWVArXrLMRwv3oCK
+        uWK7Sv8KK4GvvQECLfnekZHxgeAJ8Zgb5XZeAgTMUE8duReJp7t/O06JurS1YbFJA+hQjd
+        w1/IH38P8txVOHrgVY14lvWQSBFyuAI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-625-kI6ftGVvNrafzbLAcP1GOA-1; Wed, 22 Mar 2023 12:01:22 -0400
+X-MC-Unique: kI6ftGVvNrafzbLAcP1GOA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B62F91C07561;
+        Wed, 22 Mar 2023 16:01:13 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E43E1410F1C;
+        Wed, 22 Mar 2023 16:01:13 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 5873630736C72;
+        Wed, 22 Mar 2023 17:01:12 +0100 (CET)
+Subject: [PATCH bpf-next V3 0/6] XDP-hints kfuncs for Intel driver igc
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net
+Date:   Wed, 22 Mar 2023 17:01:12 +0100
+Message-ID: <167950085059.2796265.16405349421776056766.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next] net: phy: Improved phy_error() with function and
- error code
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20230320213451.2579608-1-f.fainelli@gmail.com>
- <20230321214124.19f29406@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230321214124.19f29406@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,23 +68,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Implemented XDP-hints metadata kfuncs for Intel driver igc.
+
+Primarily used the tool in tools/testing/selftests/bpf/ xdp_hw_metadata,
+when doing driver development of these features. Recommend other driver
+developers to do the same. In the process xdp_hw_metadata was updated to
+help assist development. I've documented my practical experience with igc
+and tool here[1].
+
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/hints/xdp_hints_kfuncs02_driver_igc.org
+
+This patchset implement RX-hash as a simple u32 value (as this is the
+current kfunc API), but my experience with RX-hash is that we will also
+need to provide the Hash-type for this raw value to be useful to
+BPF-developers. This will be addressed in followup work once this patchset
+lands.
+
+---
+
+Jesper Dangaard Brouer (6):
+      igc: enable and fix RX hash usage by netstack
+      selftests/bpf: xdp_hw_metadata track more timestamps
+      selftests/bpf: xdp_hw_metadata RX hash return code info
+      igc: add igc_xdp_buff wrapper for xdp_buff in driver
+      igc: add XDP hints kfuncs for RX timestamp
+      igc: add XDP hints kfuncs for RX hash
 
 
-On 3/21/2023 9:41 PM, Jakub Kicinski wrote:
-> On Mon, 20 Mar 2023 14:34:51 -0700 Florian Fainelli wrote:
->> +static inline void phy_error(struct phy_device *phydev)
->> +{
->> +	phy_error_precise(phydev, (const void *)_RET_IP_, -EIO);
->> +}
-> 
-> LGTM apart from this _RET_IP_ here. Wouldn't this make @func
-> sometimes the function that returned the error and sometimes
-> the caller? The caller is in the stack trace already, so no
-> need to duplicate. Besides how dependable is using _RET_IP_
-> inside a static inline?
+ drivers/net/ethernet/intel/igc/igc.h          | 35 +++++++
+ drivers/net/ethernet/intel/igc/igc_main.c     | 94 ++++++++++++++++---
+ .../selftests/bpf/progs/xdp_hw_metadata.c     | 18 ++--
+ tools/testing/selftests/bpf/xdp_hw_metadata.c | 51 ++++++++--
+ tools/testing/selftests/bpf/xdp_metadata.h    |  1 +
+ 5 files changed, 176 insertions(+), 23 deletions(-)
 
-You have a point that the existing phy_error() already has a WARN_ON() 
-that will tell us which function it has been invoked from whenever 
-phy_error() is used outside of the phy_state_machine(), expect a v2 shortly.
--- 
-Florian
+--
+
