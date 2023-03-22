@@ -2,70 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 568B16C579C
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:30:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB3656C57F9
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:44:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231280AbjCVUao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 16:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
+        id S231749AbjCVUoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 16:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231609AbjCVUaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:30:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2600F99C3E;
-        Wed, 22 Mar 2023 13:21:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1506F622C7;
-        Wed, 22 Mar 2023 20:15:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2673C433D2;
-        Wed, 22 Mar 2023 20:15:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679516106;
-        bh=UucUhJKbwrEMZrCr4rSyAECp/zj+/SZPYe8j26PrTv0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kkM5lo9aJ73JUabezpXGMQaJoNY/3FlSprqd7sLJ3rGUpUrOsNjqvK0AL6xFJG1vu
-         z59v5GbnJogtT+yjwZkZQlxNME7fEWxYK2PRa6+9GunoZCqFmCm8vrnQOjSFUexCfA
-         5dN6SUTiTGIcGhJY8YgJpJyABDb/0Pq7KvgwyrU1x1I5CRwOCmiuqFZSvtl0TPgTyP
-         hs6nglja+d4AMsaWpQYTklGr6tYqHgnGbyiguKITC6aA8/5OP9YGLLKDgoGU0jEk84
-         Zng3S9GvQKB2dpiTZvzp+C1tDWDoLMg7nw6R+xp5XgxxeNuaum907hQU7tuw2awx2U
-         qxuVxsEp00kTA==
-Date:   Wed, 22 Mar 2023 13:15:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leo Li <leoyang.li@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Bauer <mail@david-bauer.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Viorel Suman <viorel.suman@nxp.com>,
-        Wei Fang <wei.fang@nxp.com>
-Subject: Re: [PATCH RESEND v2 1/2] net: phy: at803x: fix the wol setting
- functions
-Message-ID: <20230322131505.132a716f@kernel.org>
-In-Reply-To: <AM0PR04MB6289A4E1DA8BEAA065714B328F869@AM0PR04MB6289.eurprd04.prod.outlook.com>
-References: <20230301030126.18494-1-leoyang.li@nxp.com>
-        <20230303172847.202fa96e@kernel.org>
-        <AM0PR04MB6289A4E1DA8BEAA065714B328F869@AM0PR04MB6289.eurprd04.prod.outlook.com>
+        with ESMTP id S230395AbjCVUoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:44:25 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D472D5598;
+        Wed, 22 Mar 2023 13:37:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=lOw0pWp4oxfyhAJZHJ6ZoPMdYH5fP1+gj8yMHI7HkBI=; b=wVY/UHB9RnKnUdABCeZU9A7o1f
+        QeKOFuEJLIpZovbpowXxnf7p/t78Xpr1VMW4Ylz/5z3MrXtTwWdbb7oiF+10GgeoempoqtuLVN2xX
+        dGcTJsIrJtBDgMeeitW8o7Ng65Z87O8oCZ1GvhAgBtkciIxgTuxeB3fxNJUEdViuc0UY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pf4tK-0086mL-0U; Wed, 22 Mar 2023 21:17:02 +0100
+Date:   Wed, 22 Mar 2023 21:17:02 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
+ node for default settings
+Message-ID: <5922c650-0ef3-4e60-84e6-0bfe535e5a98@lunn.ch>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8f-00Dvo9-KT@rmk-PC.armlinux.org.uk>
+ <04869523-3711-41a6-81ba-ddf2b12fd22e@lunn.ch>
+ <ZBthf8EsnQIttGdI@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBthf8EsnQIttGdI@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Mar 2023 19:55:56 +0000 Leo Li wrote:
-> > Given the fixes tag Luo Jie <luoj@codeaurora.org> should be CCed.  
+On Wed, Mar 22, 2023 at 08:13:51PM +0000, Russell King (Oracle) wrote:
+> On Wed, Mar 22, 2023 at 07:57:19PM +0100, Andrew Lunn wrote:
+> > > +static struct fwnode_handle *mv88e6xxx_port_get_fwnode(struct dsa_switch *ds,
+> > > +						       int port,
+> > > +						       struct fwnode_handle *h)
+> > > +{
+> > > +	struct mv88e6xxx_chip *chip = ds->priv;
+> > > +	struct device_node *np, *phy_node;
+> > > +	int speed, duplex, err;
+> > > +	phy_interface_t mode;
+> > > +	struct dsa_port *dp;
+> > > +	unsigned long caps;
+> > > +
+> > > +	dp = dsa_to_port(ds, port);
+> > > +	if (dsa_port_is_user(dp))
+> > > +		return h;
+> > > +
+> > > +	/* No DT? Eh? */
+> > > +	np = to_of_node(h);
+> > > +	if (!np)
+> > > +		return h;
+> > 
+> > I've not looked at the big picture yet, but you can have a simple
+> > switch setup without DT. I have a couple of amd64 boards which use
+> > platform data. The user ports all have internal PHYs, and the CPU port
+> > defaults to 1G, it might even be strapped that way.
 > 
-> Sorry for the late response, I missed this email.  I tried to cc him,
-> but the email bounced.
+> Are you suggesting that we should generate some swnode description of
+> the max interface mode and speed if we are missing a DT node?
+> 
+> I'm not seeing any port specific data in the mv88e6xxx platform data.
 
-I see, let me add them to the ignored addresses list.
+No, i'm just pointing out that not have DT is not an error, and can
+happen. I just wanted to make sure you are not assuming there is
+always DT.
+
+	Andrew
