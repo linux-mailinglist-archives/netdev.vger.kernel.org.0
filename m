@@ -2,231 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E702A6C4072
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:38:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E85076C407D
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:42:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230137AbjCVCiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 22:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
+        id S229672AbjCVCmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 22:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229922AbjCVCh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:37:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B7059436;
-        Tue, 21 Mar 2023 19:37:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B51D461F25;
-        Wed, 22 Mar 2023 02:37:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B62DDC433EF;
-        Wed, 22 Mar 2023 02:37:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679452671;
-        bh=ahMSQCrkvdtTzmw3vLAN58JOl0U83Mm+lJR6IhMp+pY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MnnyXCLlmTGLJb511gFy7XMUwbkT8RPYP3iaZ5+i+qV2cl2AiULWTUZHu/f9JuHBA
-         zVX0koAWRxjsQggOkbpjK6iOrP05QAOR+uOhXgrqOTucdYja/1wYYBNDxPP7HhTjAC
-         ErltnuvPPketKfZoed+UixkwMfFqXZUynFQM9cCg85R28OkMoeQOcmlemJNOCDqX4a
-         Sr7+hVU+zE1r5tfgmgLddo/db1AMbqamnNnxKnPttMMQacRmjk8Hg3J0du5bdAzwi0
-         Pb0gNa5R1NL2B4GuLBMkOqUvHVVO6n1+2S+CmRk79ATw8+CT7YWL+Gswvq9e538lmx
-         4IPIntVLXG7eg==
-Date:   Tue, 21 Mar 2023 19:41:03 -0700
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v7 4/4] arm64: dts: qcom: sc8280xp-x13s: Add bluetooth
-Message-ID: <20230322024103.fxht7qgaan4m2z5b@ripper>
-References: <20230322011442.34475-1-steev@kali.org>
- <20230322011442.34475-5-steev@kali.org>
+        with ESMTP id S229487AbjCVCmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:42:43 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEC13D907
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1679452962; x=1710988962;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nr2My2wwDiyrHuHSYLUTOgbP/SccfEExjjmMx96Ku8c=;
+  b=WzEUe60WMptTEs6c3Y9fjqM04pbGLqhRj0WlNxw4BGq9ddrI9JlxEEIu
+   Gr+egpVUwy7FsnVBkfQhugE9ldBd38YFjZmBt5tJahdG2RmyyffmJIYv6
+   R7kuRj2nrMPX+lsJIP/U4gfCeibc1LXBCPwDmf78TOf0kTsMcPTCn9ElP
+   g=;
+X-IronPort-AV: E=Sophos;i="5.98,280,1673913600"; 
+   d="scan'208";a="271396508"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-m6i4x-b5bd57cf.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 02:42:36 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-m6i4x-b5bd57cf.us-east-1.amazon.com (Postfix) with ESMTPS id 56077444BB;
+        Wed, 22 Mar 2023 02:42:34 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.22; Wed, 22 Mar 2023 02:42:33 +0000
+Received: from 88665a182662.ant.amazon.com (10.94.217.231) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.24; Wed, 22 Mar 2023 02:42:30 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <dsahern@kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v1 net-next 1/2] ipv6: Remove in6addr_any alternatives.
+Date:   Tue, 21 Mar 2023 19:42:21 -0700
+Message-ID: <20230322024221.37953-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <1d6392a2-ae42-ef7f-30b1-bd5d28b1a586@kernel.org>
+References: <1d6392a2-ae42-ef7f-30b1-bd5d28b1a586@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230322011442.34475-5-steev@kali.org>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.94.217.231]
+X-ClientProxiedBy: EX19D042UWA001.ant.amazon.com (10.13.139.92) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 08:14:42PM -0500, Steev Klimaszewski wrote:
-> The Lenovo Thinkpad X13s has a WCN6855 Bluetooth controller on uart2,
-> add this.
+From:   David Ahern <dsahern@kernel.org>
+Date:   Tue, 21 Mar 2023 20:22:53 -0600
+> On 3/21/23 7:22 PM, Kuniyuki Iwashima wrote:
+> > Some code defines the IPv6 wildcard address as a local variable.
+> > Let's use in6addr_any instead.
+> > 
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> >  .../net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c |  5 ++---
+> >  include/net/ip6_fib.h                                 |  9 +++------
+> >  include/trace/events/fib.h                            |  5 ++---
+> >  include/trace/events/fib6.h                           |  5 +----
+> >  net/ethtool/ioctl.c                                   |  9 ++++-----
+> >  net/ipv4/inet_hashtables.c                            | 11 ++++-------
+> >  6 files changed, 16 insertions(+), 28 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > index a108e73c9f66..6a88f6b02678 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> > @@ -98,7 +98,6 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
+> >  #if IS_ENABLED(CONFIG_INET) && IS_ENABLED(CONFIG_IPV6)
+> >  	else if (ip_version == 6) {
+> >  		int ipv6_size = MLX5_FLD_SZ_BYTES(ipv6_layout, ipv6);
+> > -		struct in6_addr zerov6 = {};
+> >  
+> >  		daddr = MLX5_ADDR_OF(fte_match_param, spec->match_value,
+> >  				     outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6);
+> > @@ -106,8 +105,8 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
+> >  				     outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6);
+> >  		memcpy(&tun_attr->dst_ip.v6, daddr, ipv6_size);
+> >  		memcpy(&tun_attr->src_ip.v6, saddr, ipv6_size);
+> > -		if (!memcmp(&tun_attr->dst_ip.v6, &zerov6, sizeof(zerov6)) ||
+> > -		    !memcmp(&tun_attr->src_ip.v6, &zerov6, sizeof(zerov6)))
+> > +		if (!memcmp(&tun_attr->dst_ip.v6, &in6addr_any, sizeof(in6addr_any)) ||
+> > +		    !memcmp(&tun_attr->src_ip.v6, &in6addr_any, sizeof(in6addr_any)))
 > 
-> Signed-off-by: Steev Klimaszewski <steev@kali.org>
+> I think ipv6_addr_any can be used here.
 
-Reviewed-by: Bjorn Andersson <andersson@kernel.org>
+Exactly, will fix all in v2.
 
-Regards,
-Bjorn
+Thank you!
 
-> ---
-> Changes since v6:
->  * Remove allowed-modes as they aren't needed
->  * Remove regulator-allow-set-load
->  * Set regulator-always-on because the wifi chip also uses the regulator
->  * cts pin uses bias-bus-hold
->  * Alphabetize uart2 pins
+
 > 
-> Changes since v5:
->  * Update patch subject
->  * Specify initial mode (via guess) for vreg_s1c
->  * Drop uart17 definition
->  * Rename bt_en to bt_default because configuring more than one pin
->  * Correct (maybe) bias configurations
->  * Correct cts gpio
->  * Split rts-tx into two nodes
->  * Drop incorrect link in the commit message
+> >  			return 0;
+> >  	}
+> >  #endif
+> >
 > 
-> Changes since v4:
->  * Address Konrad's review comments.
 > 
-> Changes since v3:
->  * Add vreg_s1c
->  * Add regulators and not dead code
->  * Fix commit message changelog
+> > @@ -3233,20 +3232,20 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+> >  
+> >  		v6_spec = &fs->h_u.tcp_ip6_spec;
+> >  		v6_m_spec = &fs->m_u.tcp_ip6_spec;
+> > -		if (memcmp(v6_m_spec->ip6src, &zero_addr, sizeof(zero_addr))) {
+> > +		if (memcmp(v6_m_spec->ip6src, &in6addr_any, sizeof(in6addr_any))) {
+> >  			memcpy(&match->key.ipv6.src, v6_spec->ip6src,
+> >  			       sizeof(match->key.ipv6.src));
+> >  			memcpy(&match->mask.ipv6.src, v6_m_spec->ip6src,
+> >  			       sizeof(match->mask.ipv6.src));
+> >  		}
+> > -		if (memcmp(v6_m_spec->ip6dst, &zero_addr, sizeof(zero_addr))) {
+> > +		if (memcmp(v6_m_spec->ip6dst, &in6addr_any, sizeof(in6addr_any))) {
+> >  			memcpy(&match->key.ipv6.dst, v6_spec->ip6dst,
+> >  			       sizeof(match->key.ipv6.dst));
+> >  			memcpy(&match->mask.ipv6.dst, v6_m_spec->ip6dst,
+> >  			       sizeof(match->mask.ipv6.dst));
+> >  		}
+> > -		if (memcmp(v6_m_spec->ip6src, &zero_addr, sizeof(zero_addr)) ||
+> > -		    memcmp(v6_m_spec->ip6dst, &zero_addr, sizeof(zero_addr))) {
+> > +		if (memcmp(v6_m_spec->ip6src, &in6addr_any, sizeof(in6addr_any)) ||
+> > +		    memcmp(v6_m_spec->ip6dst, &in6addr_any, sizeof(in6addr_any))) {
 > 
-> Changes since v2:
->  * Remove dead code and add TODO comment
->  * Make dtbs_check happy with the pin definitions
->  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 78 +++++++++++++++++++
->  1 file changed, 78 insertions(+)
+> and this group as well.
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> index 92d365519546..05e66505e5cc 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> @@ -24,6 +24,7 @@ / {
->  	aliases {
->  		i2c4 = &i2c4;
->  		i2c21 = &i2c21;
-> +		serial1 = &uart2;
->  	};
->  
->  	wcd938x: audio-codec {
-> @@ -431,6 +432,14 @@ regulators-1 {
->  		qcom,pmic-id = "c";
->  		vdd-bob-supply = <&vreg_vph_pwr>;
->  
-> +		vreg_s1c: smps1 {
-> +			regulator-name = "vreg_s1c";
-> +			regulator-min-microvolt = <1880000>;
-> +			regulator-max-microvolt = <1900000>;
-> +			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-> +			regulator-always-on;
-> +		};
-> +
->  		vreg_l1c: ldo1 {
->  			regulator-name = "vreg_l1c";
->  			regulator-min-microvolt = <1800000>;
-> @@ -918,6 +927,32 @@ &qup0 {
->  	status = "okay";
->  };
->  
-> +&uart2 {
-> +	pinctrl-0 = <&uart2_default>;
-> +	pinctrl-names = "default";
-> +
-> +	status = "okay";
-> +
-> +	bluetooth {
-> +		compatible = "qcom,wcn6855-bt";
-> +
-> +		vddio-supply = <&vreg_s10b>;
-> +		vddbtcxmx-supply = <&vreg_s12b>;
-> +		vddrfacmn-supply = <&vreg_s12b>;
-> +		vddrfa0p8-supply = <&vreg_s12b>;
-> +		vddrfa1p2-supply = <&vreg_s11b>;
-> +		vddrfa1p7-supply = <&vreg_s1c>;
-> +
-> +		max-speed = <3200000>;
-> +
-> +		enable-gpios = <&tlmm 133 GPIO_ACTIVE_HIGH>;
-> +		swctrl-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
-> +
-> +		pinctrl-0 = <&bt_default>;
-> +		pinctrl-names = "default";
-> +	};
-> +};
-> +
->  &qup1 {
->  	status = "okay";
->  };
-> @@ -1192,6 +1227,21 @@ hastings_reg_en: hastings-reg-en-state {
->  &tlmm {
->  	gpio-reserved-ranges = <70 2>, <74 6>, <83 4>, <125 2>, <128 2>, <154 7>;
->  
-> +	bt_default: bt-default-state {
-> +		hstp-sw-ctrl-pins {
-> +			pins = "gpio132";
-> +			function = "gpio";
-> +			bias-pull-down;
-> +		};
-> +
-> +		hstp-bt-en-pins {
-> +			pins = "gpio133";
-> +			function = "gpio";
-> +			drive-strength = <16>;
-> +			bias-disable;
-> +		};
-> +	};
-> +
->  	edp_reg_en: edp-reg-en-state {
->  		pins = "gpio25";
->  		function = "gpio";
-> @@ -1213,6 +1263,34 @@ i2c4_default: i2c4-default-state {
->  		bias-disable;
->  	};
->  
-> +	uart2_default: uart2-default-state {
-> +		cts-pins {
-> +			pins = "gpio121";
-> +			function = "qup2";
-> +			bias-bus-hold;
-> +		};
-> +
-> +		rts-pins {
-> +			pins = "gpio122";
-> +			function = "qup2";
-> +			drive-strength = <2>;
-> +			bias-disable;
-> +		};
-> +
-> +		rx-pins {
-> +			pins = "gpio124";
-> +			function = "qup2";
-> +			bias-pull-up;
-> +		};
-> +
-> +		tx-pins {
-> +			pins = "gpio123";
-> +			function = "qup2";
-> +			drive-strength = <2>;
-> +			bias-disable;
-> +		};
-> +	};
-> +
->  	i2c21_default: i2c21-default-state {
->  		pins = "gpio81", "gpio82";
->  		function = "qup21";
-> -- 
-> 2.39.2
+> >  			match->dissector.used_keys |=
+> >  				BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS);
+> >  			match->dissector.offset[FLOW_DISSECTOR_KEY_IPV6_ADDRS] =
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index 6edae3886885..74caaa0c148b 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -826,13 +826,11 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
+> >  				      unsigned short port, int l3mdev, const struct sock *sk)
+> >  {
+> >  #if IS_ENABLED(CONFIG_IPV6)
+> > -	struct in6_addr addr_any = {};
+> > -
+> >  	if (sk->sk_family != tb->family) {
+> >  		if (sk->sk_family == AF_INET)
+> >  			return net_eq(ib2_net(tb), net) && tb->port == port &&
+> >  				tb->l3mdev == l3mdev &&
+> > -				ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
+> > +				ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
+> >  
+> >  		return false;
+> >  	}
+> > @@ -840,7 +838,7 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
+> >  	if (sk->sk_family == AF_INET6)
+> >  		return net_eq(ib2_net(tb), net) && tb->port == port &&
+> >  			tb->l3mdev == l3mdev &&
+> > -			ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
+> > +			ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
+> >  	else
+> >  #endif
+> >  		return net_eq(ib2_net(tb), net) && tb->port == port &&
 > 
+> and these 2.
