@@ -2,87 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE676C4FCD
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 16:58:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3076C4FD2
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 17:00:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229841AbjCVP6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 11:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
+        id S229521AbjCVQAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 12:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjCVP6e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 11:58:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C1162B54
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 08:57:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679500662;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sigT2R9uIcwlR9W7ZCCufyIQLe9oLQ0ypEEE7tJ90Yo=;
-        b=BJlNMk1XeSdyKqSveLKGjoZWqXyNikqr2T1QHL/zi4v58Kn3oENvs+MjjHfDUcZYDlmwvH
-        5n9Ih9RVLCd5sEzfN02M2qXUS7V6trXOKnnlK16VxxXOgqpuF9ia12Z7se8BZrq4d7JtSZ
-        pju4ZMJFMM7gawqVn8slzMXbjlrKIXQ=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-345-0ubIdq3pPXO2-FnTB_WNKA-1; Wed, 22 Mar 2023 11:57:40 -0400
-X-MC-Unique: 0ubIdq3pPXO2-FnTB_WNKA-1
-Received: by mail-ed1-f69.google.com with SMTP id dn8-20020a05640222e800b004bd35dd76a9so28015341edb.13
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 08:57:40 -0700 (PDT)
+        with ESMTP id S229484AbjCVQAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 12:00:07 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660AB50F93;
+        Wed, 22 Mar 2023 09:00:06 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id l7so1878405pjg.5;
+        Wed, 22 Mar 2023 09:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679500806;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7fsNSRb4r7+1es6jl4TDUEgI6uhuTdjKz7luKjMrgiE=;
+        b=jS5bLdTjwhg+BEt0oGwmsHaFi7ZsfoDqG6WH3EglecB+0CDexv7d4XFOe/MlF8WZwQ
+         dwD9N29dvNPcYZ1CwN7t0/mPkISYARzglYWG8binEEdyZQeUeduXMXb2YG4Euk6oBeQ3
+         LpN2REnLg6NIeSrMETjwRJ/ElRZ8fdRYytQCx9dD4K9tF4eCsZ9sLotoB3japT3mqirL
+         dv59HgIL2ksOcHHy6fo4/+E8TKmDAVIn8KRqdw53du0flgoUMwdJwec4kIP2aRfjizW3
+         5S2QuXNx3SX6aAp/ipDdaoweJxrP1qlWnz49sD8MoTJncskfqPAuk/QE8mWjUq3RRCqx
+         gdVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679500659;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sigT2R9uIcwlR9W7ZCCufyIQLe9oLQ0ypEEE7tJ90Yo=;
-        b=dOpoY/9i03q3OTVrDU4QOf+bLvr+F7/IoSvfo43Q/3JWRd1mUNpnbinnYMaJAmRmo3
-         hYqaLXNEhs6RUL9F44wxkQPC3pcK7bUoOE4oaAkK47Nw5HgNGLI80R2DloqNGTFcIApC
-         4fbymEDfiQkjg7kCrnJYNwdhM0ntMkvKCyods3kEHv4eSCheFisVGX5kBtvRXbwZAbOO
-         CHvv1I8FRhs5PtUXV7m5gUMvJXem1OdULtKU5Vgob+Odo6imSAfmUUpMMDIPVB2XJPMD
-         4W8RYtFwRf90SkMIe4eJEYbtXJbjiXfdXs6zq+P/y0NFe5NlVifHlFBZSdw0cnF3O0E1
-         TQow==
-X-Gm-Message-State: AO0yUKV+kbugti5kiQmjAwKskd4zKAaRiNMTs3tRot7NKu18wRV6eFMC
-        JyXUNtwLxDkfz88YJA/tgjtZK+gy5zRM2/FOEMEYaZ2SHOFkWM4oHK6uyNttBlsMUquOfToHQCT
-        fh4Bsd2/Yo7D1mE7n
-X-Received: by 2002:a17:906:1853:b0:92f:fc08:bb0a with SMTP id w19-20020a170906185300b0092ffc08bb0amr7172249eje.37.1679500659688;
-        Wed, 22 Mar 2023 08:57:39 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9fkk/QFCBQcadzxl/lPAWqLf42GpkbOwji4VtQJtZYST5h158xmD4SDUjEKLyq/7tc1ZJzmw==
-X-Received: by 2002:a17:906:1853:b0:92f:fc08:bb0a with SMTP id w19-20020a170906185300b0092ffc08bb0amr7172228eje.37.1679500659403;
-        Wed, 22 Mar 2023 08:57:39 -0700 (PDT)
-Received: from [192.168.42.100] (194-45-78-10.static.kviknet.net. [194.45.78.10])
-        by smtp.gmail.com with ESMTPSA id e8-20020a170906c00800b008e1509dde19sm7321305ejz.205.2023.03.22.08.57.37
+        d=1e100.net; s=20210112; t=1679500806;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7fsNSRb4r7+1es6jl4TDUEgI6uhuTdjKz7luKjMrgiE=;
+        b=LEFVZHDJ65infeNS8Np6ZyVvYp+DQSFbrUGxIgdDfOcZoAF11VyXpfoxMaMCZ6XoBt
+         mbIoayQlB/tQVOITBrnonkkGLzfjzW1iBu6wSWOKPEMCeniRI+UNSK+FmKNAR2KLNtW+
+         5VAjloaE7La16YDHuqET6Hy5oD0S0sEyHqkuLyfJ7qz86fTv38Mw6mDZHwgUhymLnd5R
+         m9th5katSQ87re2xcMO7++2yz8ZiBiqV8yTpizzKboA69VWFA68+vNYaom4PgcpBYcXK
+         2bCCOTJUQX1fjfACd9Zji6+Gw3Xgp9D0zQpwkRiDuLNKQwQjmj4qXseu0nvqy8ZqwluN
+         A9fw==
+X-Gm-Message-State: AO0yUKU3vgG9BN7ddVy9fqdVXu8phBwtD57MJgHLzDNjl0PH/9MPWkkC
+        QafwqF+VPMBvkgQ9uSc3HSk=
+X-Google-Smtp-Source: AK7set+X6Vh7hPC+IqH2RMIDGpUxhrDw5EBkXQ/ogkXL366bKHCV95bigzMdhhQmaq5xtBed9jTsZQ==
+X-Received: by 2002:a17:90b:3ec7:b0:23e:feef:38ef with SMTP id rm7-20020a17090b3ec700b0023efeef38efmr3997903pjb.41.1679500805706;
+        Wed, 22 Mar 2023 09:00:05 -0700 (PDT)
+Received: from [10.69.71.131] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q2-20020a170902edc200b001a1a18a678csm10811329plk.148.2023.03.22.09.00.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 08:57:38 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <b12c88b4-6921-8a12-e8c5-8ec950ec8d48@redhat.com>
-Date:   Wed, 22 Mar 2023 16:57:36 +0100
+        Wed, 22 Mar 2023 09:00:04 -0700 (PDT)
+Message-ID: <95ee76d7-7668-43b2-29e8-aab8a4281ab5@gmail.com>
+Date:   Wed, 22 Mar 2023 09:00:02 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
-        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
-        yoong.siang.song@intel.com, boon.leong.ong@intel.com
-Subject: Re: [PATCH bpf-next V1 4/7] selftests/bpf: xdp_hw_metadata RX hash
- return code info
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net-next] net: phy: Improved phy_error() with function and
+ error code
 Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <167906343576.2706833.17489167761084071890.stgit@firesoul>
- <167906361094.2706833.8381428662566265476.stgit@firesoul>
- <ZBTX7CBzNk9SaWgx@google.com>
- <8edd0206-0f2a-d5e7-27de-a0a9cc92526e@redhat.com>
- <CAKH8qBvm24VJS4RMNUjHi24LqpYJnOYs_Md-J3FCEvp2vm7rcg@mail.gmail.com>
-In-Reply-To: <CAKH8qBvm24VJS4RMNUjHi24LqpYJnOYs_Md-J3FCEvp2vm7rcg@mail.gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, opendmb@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20230320213451.2579608-1-f.fainelli@gmail.com>
+ <20230321214124.19f29406@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230321214124.19f29406@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -92,72 +84,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 21/03/2023 19.45, Stanislav Fomichev wrote:
-> On Tue, Mar 21, 2023 at 6:32 AM Jesper Dangaard Brouer
-> <jbrouer@redhat.com> wrote:
->>
->>
->>
->> On 17/03/2023 22.13, Stanislav Fomichev wrote:
->>> On 03/17, Jesper Dangaard Brouer wrote:
->>>> When driver developers add XDP-hints kfuncs for RX hash it is
->>>> practical to print the return code in bpf_printk trace pipe log.
->>>
->>>> Print hash value as a hex value, both AF_XDP userspace and bpf_prog,
->>>> as this makes it easier to spot poor quality hashes.
->>>
->>>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->>>
->>> Acked-by: Stanislav Fomichev <sdf@google.com>
->>>
->>> (with a small suggestion below, maybe can do separately?)
->>>
->>>> ---
->>>>    .../testing/selftests/bpf/progs/xdp_hw_metadata.c  |    9 ++++++---
->>>>    tools/testing/selftests/bpf/xdp_hw_metadata.c      |    5 ++++-
->>>>    2 files changed, 10 insertions(+), 4 deletions(-)
->> [...]
->>>> diff --git a/tools/testing/selftests/bpf/xdp_hw_metadata.c
->>>> b/tools/testing/selftests/bpf/xdp_hw_metadata.c
->>>> index 400bfe19abfe..f3ec07ccdc95 100644
->>>> --- a/tools/testing/selftests/bpf/xdp_hw_metadata.c
->>>> +++ b/tools/testing/selftests/bpf/xdp_hw_metadata.c
->>>> @@ -3,6 +3,9 @@
->>>>    /* Reference program for verifying XDP metadata on real HW.
->>>> Functional test
->>>>     * only, doesn't test the performance.
->>>>     *
->>>
->>> [..]
->>>
->>>> + * BPF-prog bpf_printk info outout can be access via
->>>> + * /sys/kernel/debug/tracing/trace_pipe
->>>
->>> Maybe we should just dump the contents of
->>> /sys/kernel/debug/tracing/trace for every poll cycle?
->>>
->>
->> I think this belongs to a separate patch.
+On 3/21/2023 9:41 PM, Jakub Kicinski wrote:
+> On Mon, 20 Mar 2023 14:34:51 -0700 Florian Fainelli wrote:
+>> +static inline void phy_error(struct phy_device *phydev)
+>> +{
+>> +	phy_error_precise(phydev, (const void *)_RET_IP_, -EIO);
+>> +}
 > 
-> SG. If you prefer to keep the comment let's also s/outout/outPut/.
+> LGTM apart from this _RET_IP_ here. Wouldn't this make @func
+> sometimes the function that returned the error and sometimes
+> the caller? The caller is in the stack trace already, so no
+> need to duplicate. Besides how dependable is using _RET_IP_
+> inside a static inline?
 
-Sorry, missed this... will fix in V3
-
-> 
->>> We can also maybe enable tracing in this program transparently?
->>> I usually forget 'echo 1 >
->>> /sys/kernel/debug/tracing/events/bpf_trace/bpf_trace_printk/enable'
->>> myself :-)
->>>
->> What is this trick?
-> 
-> On the recent kernels I think this event has to be explicitly enabled
-> for bpf_prink() to work? Not sure.
-
-The output still work for me then I have zero in 
-/sys/kernel/debug/tracing/events/bpf_trace/bpf_trace_printk/enable
-
-> That's why having something like enable_tracing() and dump_trace()
-> here might be helpful for whoever is running the prog.
-> 
-
+You have a point that the existing phy_error() already has a WARN_ON() 
+that will tell us which function it has been invoked from whenever 
+phy_error() is used outside of the phy_state_machine(), expect a v2 shortly.
+-- 
+Florian
