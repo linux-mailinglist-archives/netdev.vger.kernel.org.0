@@ -2,93 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E211C6C408B
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:53:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D172A6C408E
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:55:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbjCVCxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 22:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
+        id S229676AbjCVCzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 22:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbjCVCxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:53:40 -0400
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423784DE1F
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:53:39 -0700 (PDT)
-Received: by mail-ua1-x931.google.com with SMTP id i22so11709282uat.8
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679453618;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kx/OpxV6VOoLDtUhC9fECZmWcMTho0USpZSQQL+Q51k=;
-        b=daLZBrDc7aBxr4Pb2qto79H9KLnVze3M6lHlbs8qBYPbr7Xvq1Y/qtk1Zcj04wxn2C
-         NXGXkIAiebBOdQAn09EqOr9eSIouvGRxlxKolsg3+iGutpyCdEZtfh36lfUqvEA9/Ipv
-         /HhIPjS9hFr9WHG35YkEpIY9wtoVPVVNQdtXo5F3Oui6KU+KJE+lWhQczT8X+xKp0kEh
-         tLrrmJ29NPtI0/b0HThHyBS5KJdjgGnxMDYv7n2O3yC+2rw7sJ9KNwhijs+gGHQ/oO1E
-         05TVFmjvkdczA++nubjU6a1ngQ0gKVbdSYQav8LSBSGayJCGHwYp0oTDfDDQW2HIeFOK
-         CHfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679453618;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Kx/OpxV6VOoLDtUhC9fECZmWcMTho0USpZSQQL+Q51k=;
-        b=AYUnk3jxPing6c4wp5EufjrgKa1DwoIInARr7JN5hh2y/ayEY+92yCx58RiQCFbAlf
-         MlPAEw9uKZwhTAGJH/ar8KiGInxTMKShTI2g0KYf77lJsj9T30pl1oOWcpNZwiZciPWw
-         UCQ4N9xO7v+NPSL7BeWbMpcM/lUPbzBc0qScAowivF5mlDujiXvEDE+fDhjdseiUJMvx
-         96nUtxf1J4VPF/7FPeoRfC0GTqoVjiEvaIR0ebkOqZRnsjfzlam5MgzRtrQ+bd4GfSWU
-         CgaYnTZLsZ70J356EsChR9aOjtigyWY5Gqgq5yOKOQqg6EWhJVusXurJLCayb/9s9SO5
-         kPCQ==
-X-Gm-Message-State: AO0yUKUVL4DIdlVVMqe51Fp8J5sXR4TWN9pRLtf69vkRhao3BZYRTYfV
-        iFvRCp32BLEM4hNy1M6iOWmyqggX/0zhOdJjMembgQ==
-X-Google-Smtp-Source: AK7set9tZiZ39YazK6WtbzwhehVwcqHUfPMgMZ0lFWwuSuyWA0rQRGsz+4yinB712DA+fRYfk2Pp/YO2XWusIcHeEMQ=
-X-Received: by 2002:a1f:aa15:0:b0:432:6b9b:bbd8 with SMTP id
- t21-20020a1faa15000000b004326b9bbbd8mr2607394vke.1.1679453618156; Tue, 21 Mar
- 2023 19:53:38 -0700 (PDT)
+        with ESMTP id S229662AbjCVCzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:55:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA94251FB2;
+        Tue, 21 Mar 2023 19:55:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0842E61F21;
+        Wed, 22 Mar 2023 02:55:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E16C433D2;
+        Wed, 22 Mar 2023 02:55:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679453701;
+        bh=d4qlAOSOxshZz/xSFFLff/N4ITVjepBM5qtZzLlPmuQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sudPEoNwhcOWAaL5kXZ7fhlCjmBR9kV9To3ED4zBzvUoz3oPAYGTIDQAA9cGKcaI6
+         8dt3BEeJ8hZtJVR4R98OKe4vcLKe6o5biKuMVR7M96EX1JHQSbrd7hhbEH4LkQlpjo
+         MLBmhtOfV612nFkrTTM5kIAqJ5X93DSqy1qrS4+earwyLm/SMZedGvWO+xvzeHaX+7
+         U3NFyOJdkn/xOtOjjfWruxe8AOmgg8kfwu1NTdivx3hi11efpqEZLvhell7btS1Akl
+         C4WWC556XCS2kK+XrvGlwjOZp6PV5diZ1T/TZD9I8GmqKPRXcHJZ3RAjpZ+3lz66XH
+         r/mjyWMHI+hAw==
+Date:   Tue, 21 Mar 2023 19:54:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <yang.yang29@zte.com.cn>
+Cc:     <edumazet@google.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <xu.xin16@zte.com.cn>, <jiang.xuexin@zte.com.cn>,
+        <zhang.yunkai@zte.com.cn>
+Subject: Re: [PATCH] rps: process the skb directly if rps cpu not changed
+Message-ID: <20230321195459.390dea45@kernel.org>
+In-Reply-To: <202303212012296834902@zte.com.cn>
+References: <202303212012296834902@zte.com.cn>
 MIME-Version: 1.0
-References: <20230321081202.2370275-1-lixiaoyan@google.com>
-In-Reply-To: <20230321081202.2370275-1-lixiaoyan@google.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 21 Mar 2023 19:53:26 -0700
-Message-ID: <CANn89i+S9T9+s+_Gdnkz18d9rkKT6bZsK9DhB86zj4ec1qWzdg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net-zerocopy: Reduce compound page head access
-To:     Coco Li <lixiaoyan@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
-        inux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 1:12=E2=80=AFAM Coco Li <lixiaoyan@google.com> wrot=
-e:
->
-> From: Xiaoyan Li <lixiaoyan@google.com>
->
-> When compound pages are enabled, although the mm layer still
-> returns an array of page pointers, a subset (or all) of them
-> may have the same page head since a max 180kb skb can span 2
-> hugepages if it is on the boundary, be a mix of pages and 1 hugepage,
-> or fit completely in a hugepage. Instead of referencing page head
-> on all page pointers, use page length arithmetic to only call page
-> head when referencing a known different page head to avoid touching
-> a cold cacheline.
+On Tue, 21 Mar 2023 20:12:29 +0800 (CST) yang.yang29@zte.com.cn wrote:
+> The measured result shows the patch brings 50% reduction of NET_RX softirqs.
+> The test was done on the QEMU environment with two-core CPU by iperf3.
+> taskset 01 iperf3 -c 192.168.2.250 -t 3 -u -R;
+> taskset 02 iperf3 -c 192.168.2.250 -t 3 -u -R;
+> 
+> Previous RPS:
+> 		    	CPU0       CPU1
 
+this header looks misalinged
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+> NET_RX:         45          0    (before iperf3 testing)
+> NET_RX:        1095         241   (after iperf3 testing)
+> 
+> Patched RPS:
+>                 CPU0       CPU1
+> NET_RX:         28          4    (before iperf3 testing)
+> NET_RX:         573         32   (after iperf3 testing)
+
+This table is really confusing. What's the unit, how is it measured 
+and why are you showing before/after rather than the delta?
+
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index c7853192563d..c33ddac3c012 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -5666,8 +5666,9 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
+>  	if (static_branch_unlikely(&rps_needed)) {
+>  		struct rps_dev_flow voidflow, *rflow = &voidflow;
+>  		int cpu = get_rps_cpu(skb->dev, skb, &rflow);
+> +		int current_cpu = smp_processor_id();
+> 
+> -		if (cpu >= 0) {
+> +		if (cpu >= 0 && cpu != current_cpu) {
+>  			ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
+>  			rcu_read_unlock();
+>  			return ret;
+> @@ -5699,8 +5700,9 @@ void netif_receive_skb_list_internal(struct list_head *head)
+>  		list_for_each_entry_safe(skb, next, head, list) {
+>  			struct rps_dev_flow voidflow, *rflow = &voidflow;
+>  			int cpu = get_rps_cpu(skb->dev, skb, &rflow);
+> +			int current_cpu = smp_processor_id();
+
+This does not have to be in the loop.
+
+> 
+> -			if (cpu >= 0) {
+> +			if (cpu >= 0 && cpu != current_cpu) {
+
+Please answer Yunsheng's question as well..
