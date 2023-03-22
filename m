@@ -2,99 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A4736C57FB
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 568B16C579C
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:30:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbjCVUok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 16:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S231280AbjCVUao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 16:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231405AbjCVUo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:44:26 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B673BC5E;
-        Wed, 22 Mar 2023 13:37:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=y0pJPTEPl7WHxQ/Jc7ambyGwWLZgNOWpVCV6KuKRTvg=; b=JOA1EvRzvqjaIcemN1f6zfh3wf
-        DeMKSUfo9waH3xJ9BmANbSYzNBHmOFvfi7azLVaDRPEPMINj5WcssXeAWRsj+OJE8tJDVsj3OpOlc
-        LSH4+j/UFsTtct4VUvy/M4mo6j60yEjvx94pP4LsXPJMuOLjNnT9VdTfjHKVldK/hgHM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pf4qt-0086lE-9V; Wed, 22 Mar 2023 21:14:31 +0100
-Date:   Wed, 22 Mar 2023 21:14:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 5/7] net: dsa: avoid DT validation for
- drivers which provide default config
-Message-ID: <ae2c68da-2059-40f3-ad77-e1b6c23d28e5@lunn.ch>
-References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
- <E1pex8a-00Dvo3-G7@rmk-PC.armlinux.org.uk>
- <db06c9d7-9ad7-42f0-9b40-6e325f6bcc62@lunn.ch>
- <ZBtgaAGkqQ7JVvoP@shell.armlinux.org.uk>
+        with ESMTP id S231609AbjCVUaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:30:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2600F99C3E;
+        Wed, 22 Mar 2023 13:21:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1506F622C7;
+        Wed, 22 Mar 2023 20:15:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2673C433D2;
+        Wed, 22 Mar 2023 20:15:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679516106;
+        bh=UucUhJKbwrEMZrCr4rSyAECp/zj+/SZPYe8j26PrTv0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kkM5lo9aJ73JUabezpXGMQaJoNY/3FlSprqd7sLJ3rGUpUrOsNjqvK0AL6xFJG1vu
+         z59v5GbnJogtT+yjwZkZQlxNME7fEWxYK2PRa6+9GunoZCqFmCm8vrnQOjSFUexCfA
+         5dN6SUTiTGIcGhJY8YgJpJyABDb/0Pq7KvgwyrU1x1I5CRwOCmiuqFZSvtl0TPgTyP
+         hs6nglja+d4AMsaWpQYTklGr6tYqHgnGbyiguKITC6aA8/5OP9YGLLKDgoGU0jEk84
+         Zng3S9GvQKB2dpiTZvzp+C1tDWDoLMg7nw6R+xp5XgxxeNuaum907hQU7tuw2awx2U
+         qxuVxsEp00kTA==
+Date:   Wed, 22 Mar 2023 13:15:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leo Li <leoyang.li@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Bauer <mail@david-bauer.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Viorel Suman <viorel.suman@nxp.com>,
+        Wei Fang <wei.fang@nxp.com>
+Subject: Re: [PATCH RESEND v2 1/2] net: phy: at803x: fix the wol setting
+ functions
+Message-ID: <20230322131505.132a716f@kernel.org>
+In-Reply-To: <AM0PR04MB6289A4E1DA8BEAA065714B328F869@AM0PR04MB6289.eurprd04.prod.outlook.com>
+References: <20230301030126.18494-1-leoyang.li@nxp.com>
+        <20230303172847.202fa96e@kernel.org>
+        <AM0PR04MB6289A4E1DA8BEAA065714B328F869@AM0PR04MB6289.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBtgaAGkqQ7JVvoP@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 08:09:12PM +0000, Russell King (Oracle) wrote:
-> On Wed, Mar 22, 2023 at 07:51:22PM +0100, Andrew Lunn wrote:
-> > On Wed, Mar 22, 2023 at 12:00:16PM +0000, Russell King (Oracle) wrote:
-> > > When a DSA driver (e.g. mv88e6xxx) provides a default configuration,
-> > > avoid validating the DT description as missing elements will be
-> > > provided by the DSA driver.
-> > > 
-> > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > >  net/dsa/port.c | 3 +++
-> > >  1 file changed, 3 insertions(+)
-> > > 
-> > > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> > > index c30e3a7d2145..23d9970c02d3 100644
-> > > --- a/net/dsa/port.c
-> > > +++ b/net/dsa/port.c
-> > > @@ -1951,6 +1951,9 @@ static void dsa_shared_port_validate_of(struct dsa_port *dp,
-> > >  	*missing_phy_mode = false;
-> > >  	*missing_link_description = false;
-> > >  
-> > > +	if (dp->ds->ops->port_get_fwnode)
-> > > +		return;
-> > 
-> > I wounder if you should actually call it for the given port, and
-> > ensure it does not return -EOPNOTSUPP, or -EINVAL, etc, because it is
-> > not going to override that port? Then the DT values should be
-> > validated?
+On Wed, 22 Mar 2023 19:55:56 +0000 Leo Li wrote:
+> > Given the fixes tag Luo Jie <luoj@codeaurora.org> should be CCed.  
 > 
-> Won't that mean that we need to implement the method for all DSA
-> drivers?
+> Sorry for the late response, I missed this email.  I tried to cc him,
+> but the email bounced.
 
-I mean call it if it exists. We should be only providing overrides for
-CPU and DSA ports, i think. So i expect it returns an error for user
-ports? And then we want to continue with the validation with what
-actually is in DT for user ports.
-
-	 Andrew
+I see, let me add them to the ignored addresses list.
