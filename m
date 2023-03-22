@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 650166C4DBA
+	by mail.lfdr.de (Postfix) with ESMTP id B07496C4DBB
 	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 15:31:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231513AbjCVObs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 10:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48554 "EHLO
+        id S231531AbjCVObt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 10:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbjCVObq (ORCPT
+        with ESMTP id S231464AbjCVObq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 10:31:46 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E0F62B5D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F083862B74
         for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 07:31:45 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pezV1-0003Ou-At; Wed, 22 Mar 2023 15:31:35 +0100
+        id 1pezV1-0003Ot-Aw; Wed, 22 Mar 2023 15:31:35 +0100
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pezUy-005wWL-Oy; Wed, 22 Mar 2023 15:31:32 +0100
+        id 1pezUy-005wWG-K2; Wed, 22 Mar 2023 15:31:32 +0100
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pezUx-0060aC-4f; Wed, 22 Mar 2023 15:31:31 +0100
+        id 1pezUx-0060aL-5F; Wed, 22 Mar 2023 15:31:31 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -38,9 +38,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net v1 5/6] net: dsa: microchip: ksz8863_smi: fix bulk access
-Date:   Wed, 22 Mar 2023 15:31:29 +0100
-Message-Id: <20230322143130.1432106-6-o.rempel@pengutronix.de>
+Subject: [PATCH net v1 6/6] net: dsa: microchip: ksz8: fix MDF configuration with non-zero VID
+Date:   Wed, 22 Mar 2023 15:31:30 +0100
+Message-Id: <20230322143130.1432106-7-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230322143130.1432106-1-o.rempel@pengutronix.de>
 References: <20230322143130.1432106-1-o.rempel@pengutronix.de>
@@ -59,89 +59,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current regmap bulk access is broken, resulting to wrong reads/writes
-if ksz_read64/ksz_write64 functions are used.
-Mostly this issue was visible by using ksz8_fdb_dump(), which returned
-corrupt MAC address.
+FID is directly mapped to VID. However, configuring a MAC address with a
+VID != 0 resulted in incorrect configuration due to an incorrect bit
+mask. This kernel commit fixed the issue by correcting the bit mask and
+ensuring proper configuration of MAC addresses with non-zero VID.
 
-The reason is that regmap was configured to have max_raw_read/write,
-even if ksz8863_mdio_read/write functions are able to handle unlimited
-read/write accesses. On ksz_read64 function we are using multiple 32bit
-accesses by incrementing each access by 1 instead of 4. Resulting buffer
-had 01234567.12345678 instead of 01234567.89abcdef.
-
-We have multiple ways to fix it:
-- enable 4 byte alignment for 32bit accesses. Since the HW do not have
-  this requirement. It will break driver.
-- disable max_raw_* limit.
-
-This patch is removing max_raw_* limit for regmap accesses in ksz8863_smi.
-
-Fixes: 60a364760002 ("net: dsa: microchip: Add Microchip KSZ8863 SMI based driver support")
+Fixes: d23a5e18606c ("net: dsa: microchip: move ksz8->masks to ksz_common")
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz8863_smi.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
-index 2f4623f3bd85..2516c9db7fec 100644
---- a/drivers/net/dsa/microchip/ksz8863_smi.c
-+++ b/drivers/net/dsa/microchip/ksz8863_smi.c
-@@ -70,6 +70,7 @@ static int ksz8863_mdio_write(void *ctx, const void *data, size_t count)
- 				      tmp, val[i]);
- 		if (ret < 0)
- 			goto out;
-+
- 	}
- 
-  out:
-@@ -82,22 +83,16 @@ static const struct regmap_bus regmap_smi[] = {
- 	{
- 		.read = ksz8863_mdio_read,
- 		.write = ksz8863_mdio_write,
--		.max_raw_read = 1,
--		.max_raw_write = 1,
- 	},
- 	{
- 		.read = ksz8863_mdio_read,
- 		.write = ksz8863_mdio_write,
- 		.val_format_endian_default = REGMAP_ENDIAN_BIG,
--		.max_raw_read = 2,
--		.max_raw_write = 2,
- 	},
- 	{
- 		.read = ksz8863_mdio_read,
- 		.write = ksz8863_mdio_write,
- 		.val_format_endian_default = REGMAP_ENDIAN_BIG,
--		.max_raw_read = 4,
--		.max_raw_write = 4,
- 	}
- };
- 
-@@ -108,7 +103,6 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.pad_bits = 24,
- 		.val_bits = 8,
- 		.cache_type = REGCACHE_NONE,
--		.use_single_read = 1,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
- 	},
-@@ -118,7 +112,6 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.pad_bits = 24,
- 		.val_bits = 16,
- 		.cache_type = REGCACHE_NONE,
--		.use_single_read = 1,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
- 	},
-@@ -128,7 +121,6 @@ static const struct regmap_config ksz8863_regmap_config[] = {
- 		.pad_bits = 24,
- 		.val_bits = 32,
- 		.cache_type = REGCACHE_NONE,
--		.use_single_read = 1,
- 		.lock = ksz_regmap_lock,
- 		.unlock = ksz_regmap_unlock,
- 	}
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 4929fb29ed06..74c56d05ab0b 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -404,7 +404,7 @@ static const u32 ksz8863_masks[] = {
+ 	[VLAN_TABLE_VALID]		= BIT(19),
+ 	[STATIC_MAC_TABLE_VALID]	= BIT(19),
+ 	[STATIC_MAC_TABLE_USE_FID]	= BIT(21),
+-	[STATIC_MAC_TABLE_FID]		= GENMASK(29, 26),
++	[STATIC_MAC_TABLE_FID]		= GENMASK(25, 22),
+ 	[STATIC_MAC_TABLE_OVERRIDE]	= BIT(20),
+ 	[STATIC_MAC_TABLE_FWD_PORTS]	= GENMASK(18, 16),
+ 	[DYNAMIC_MAC_TABLE_ENTRIES_H]	= GENMASK(1, 0),
 -- 
 2.30.2
 
