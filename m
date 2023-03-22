@@ -2,120 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 479C46C4743
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 11:11:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43CC76C4749
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 11:14:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbjCVKLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 06:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
+        id S230000AbjCVKOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 06:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbjCVKLb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 06:11:31 -0400
-Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA6B5CC05
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 03:11:30 -0700 (PDT)
-Received: by mail-vs1-xe36.google.com with SMTP id e19so15738943vsu.4
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 03:11:30 -0700 (PDT)
+        with ESMTP id S229642AbjCVKOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 06:14:39 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02252567B2
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 03:14:37 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id ek18so70620227edb.6
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 03:14:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679479889;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IafJreLySfd3MASc8cxT/2Y6WBOvzFufHv4VLDHTTeQ=;
-        b=HFaqUEWqVXW/5CsUbV/OddVkdqh595d7LFT8iwGlZRwvw4TN95d0rEnipMONb24/ry
-         kJgysTThBH8AU23xVymKR2QdVeku98oOEroAtTO/GnUdQ4acuPcKjy7priO0wYQvsg0j
-         uJPb6htPOIJMIQ/2szCA/coE0Q5d3j8h1BE0BsWMTe42GFIy8NuZw5SVHPq9jztFEqww
-         2Qbf7VPRM21xAh1sqLyHLXkigQUAJntiTS1JQ+xeLie6Ehg1AyuetSW0cxKqHSGiIKFV
-         3T5LR2DGSM13YyYvg4fmGGXbVXxT3Z6rABGl20/4Cb7+Ft8MpBjpTtS5RzejsnJvFFBq
-         vmqg==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1679480075;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fpf0go+qffs5DN4t3jky6HX6o3itqno0gW49kjRoxXY=;
+        b=l3vSBn0ptk+YY8G0HqqYDkxnvvHKLCbWI0oopEGI1ZEEcfvK6CsBA90peNqAASHLue
+         fXisRp68NdJLfnVeGyuBhsBpeG5ObbDTG1IzqZf79wt3z8aX4BSeEPJaD1j1LqJlFlnt
+         1iKNK8vnpU6FOW5zbCt+96iktlJM5rfDoyjYYLX7JchTdFjhxF6roI0SnCMicZkAFcA2
+         0aYFXhl9Roza05woSBtTFj4NlXXn8gbmJ2xLpwVWjYCf3gr5XEAHeoTtizoIwkK6EdjP
+         5T/ZLq+imRL5KnrPOcCOogjTfRdUseQIMqxXhPoNNoPxk1hDYz5Kp2XFL16Eu/66tUaN
+         GAeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679479889;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IafJreLySfd3MASc8cxT/2Y6WBOvzFufHv4VLDHTTeQ=;
-        b=xTxfHFKa9bqdHsbcaOmv/d7ddYtlx9DMjtn5egWYZmfE2EPnOFlK9v/wUJKNn6j8yc
-         lM3n81Ynt2/TCb4DuSMIJd6EHXZWfHUXCXr3DNFpnCMSME9TSdAqFyLJaf+iZ8F66XSf
-         TNiPxzF4vm3v9VJZEVF/zXd8zPrjlvXKC8RIOC6fZNNMKiti5N2QXZngiiUKHudyZCfP
-         MVFcQuPiQM1Hyfpw+6E9KvRHWd6fMZyo1KlzCPlkQJQJAV/10Jsi94UdNecw08aGY62F
-         ucTHUnCdZPjyDAlHs6HlFZf9Sow0umzqSl8VnPDn5puFgZd4v+O06PzUpOFnbjevHz89
-         +D5Q==
-X-Gm-Message-State: AO0yUKXKoicm0BfYs/HEgUJJVB09+ne5kH1vEYGxEOhgKCfU4i3Ul99o
-        6KcYxFS8oYACGnyXFPI+n07BP11uqTZk9ZLqviDxLQ==
-X-Google-Smtp-Source: AK7set91bQA2qMqsWs4iqweENTZVavI1PGtrRcZD2M6PDz6B24imVqlCPbOuXqYOWZA5xEpqbkVlZKse6AodxFWVOtA=
-X-Received: by 2002:a67:e04a:0:b0:425:f836:59ba with SMTP id
- n10-20020a67e04a000000b00425f83659bamr3629620vsl.7.1679479889494; Wed, 22 Mar
- 2023 03:11:29 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679480075;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fpf0go+qffs5DN4t3jky6HX6o3itqno0gW49kjRoxXY=;
+        b=5BbQzElnGSuGSi0/bfcy4bJX2WBvoHzTOCNFWgT7QF0FVVWp44oQlL1CoJtBcxyIrq
+         8hwdgnsX2dmM+uLG2glXXYAxkwtcUvKei8VnPl7NGn5xCT1QTlGv9fI05TZ23mNSBiOB
+         O1WxiORXg6PMZH3JDAUTVUOOJTGmJcGzcC/U/6MQhxoa1oBP7XPTZqdr6/Ih0XCIkDc+
+         jOFI9eTJ4bLFLOvaYIULtOQlnP2bw5E7dw26G1udJd72BsNBS5K9Box18FNGRrDs6EkV
+         O2hvbxMyqThjlIIC2H3IIQPmetSQxSZyM8vz7CV9dyEHqhY9wk19V42HyuY/iSWe+nJy
+         yZRA==
+X-Gm-Message-State: AO0yUKWyh6N0JVyIPd/tY2xEvfNLJHANNZ6NFc7EMFyFIHWUxemMjq7c
+        eleu91tXa5PF9ghC1M6YnGODwJr5Az2EC+U+SbvdnA==
+X-Google-Smtp-Source: AK7set9tb80xq/VG1KxwmsWSbtUkgdUcwyX4lsdW+4UihJqm/5CKTT7kJRyaXDJkxmqJmnyPiyh3rA==
+X-Received: by 2002:a17:906:f10c:b0:930:a3a1:bede with SMTP id gv12-20020a170906f10c00b00930a3a1bedemr6300652ejb.50.1679480075455;
+        Wed, 22 Mar 2023 03:14:35 -0700 (PDT)
+Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
+        by smtp.gmail.com with ESMTPSA id ha8-20020a170906a88800b0093a6c591743sm1573254ejb.69.2023.03.22.03.14.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Mar 2023 03:14:35 -0700 (PDT)
+Message-ID: <00525b0b-84fe-16a9-5129-dbb87658447f@blackwall.org>
+Date:   Wed, 22 Mar 2023 12:14:33 +0200
 MIME-Version: 1.0
-References: <20230320163703.GA27712@debian> <20230320170009.GA27961@debian> <889f2dc5e646992033e0d9b0951d5a42f1907e07.camel@redhat.com>
-In-Reply-To: <889f2dc5e646992033e0d9b0951d5a42f1907e07.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 22 Mar 2023 03:11:18 -0700
-Message-ID: <CANn89iK_bsPoaRVe+FNZ7LF_eLbz2Af6kju4j9TVHtbgkpcn5g@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] gro: optimise redundant parsing of packets
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Richard Gobert <richardbgobert@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, dsahern@kernel.org, alexanderduyck@fb.com,
-        lucien.xin@gmail.com, lixiaoyan@google.com, iwienand@redhat.com,
-        leon@kernel.org, ye.xingchen@zte.com.cn, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v2 net-next] net: introduce a config option to tweak
+ MAX_SKB_FRAGS
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+References: <20230321163550.1574254-1-eric.dumazet@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20230321163550.1574254-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=3.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 2:59=E2=80=AFAM Paolo Abeni <pabeni@redhat.com> wro=
-te:
->
-> On Mon, 2023-03-20 at 18:00 +0100, Richard Gobert wrote:
-> > Currently the IPv6 extension headers are parsed twice: first in
-> > ipv6_gro_receive, and then again in ipv6_gro_complete.
-> >
-> > By using the new ->transport_proto field, and also storing the size of =
-the
-> > network header, we can avoid parsing extension headers a second time in
-> > ipv6_gro_complete (which saves multiple memory dereferences and conditi=
-onal
-> > checks inside ipv6_exthdrs_len for a varying amount of extension header=
-s in
-> > IPv6 packets).
-> >
-> > The implementation had to handle both inner and outer layers in case of
-> > encapsulation (as they can't use the same field). I've applied a simila=
-r
-> > optimisation to Ethernet.
-> >
-> > Performance tests for TCP stream over IPv6 with a varying amount of
-> > extension headers demonstrate throughput improvement of ~0.7%.
->
-> I'm surprised that the improvement is measurable: for large aggregate
-> packets a single ipv6_exthdrs_len() call is avoided out of tens calls
-> for the individual pkts. Additionally such figure is comparable to
-> noise level in my tests.
->
-> This adds a couple of additional branches for the common (no extensions
-> header) case.
->
-> while patch 1/2 could be useful, patch 2/2 overall looks not worthy to
-> me.
->
-> I suggest to re-post for inclusion only patch 1, unless others have
-> strong different opinions.
->
+On 21/03/2023 18:35, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Currently, MAX_SKB_FRAGS value is 17.
+> 
+> For standard tcp sendmsg() traffic, no big deal because tcp_sendmsg()
+> attempts order-3 allocations, stuffing 32768 bytes per frag.
+> 
+> But with zero copy, we use order-0 pages.
+> 
+> For BIG TCP to show its full potential, we add a config option
+> to be able to fit up to 45 segments per skb.
+> 
+> This is also needed for BIG TCP rx zerocopy, as zerocopy currently
+> does not support skbs with frag list.
+> 
+> We have used MAX_SKB_FRAGS=45 value for years at Google before
+> we deployed 4K MTU, with no adverse effect, other than
+> a recent issue in mlx4, fixed in commit 26782aad00cc
+> ("net/mlx4: MLX4_TX_BOUNCE_BUFFER_SIZE depends on MAX_SKB_FRAGS")
+> 
+> Back then, goal was to be able to receive full size (64KB) GRO
+> packets without the frag_list overhead.
+> 
+> Note that /proc/sys/net/core/max_skb_frags can also be used to limit
+> the number of fragments TCP can use in tx packets.
+> 
+> By default we keep the old/legacy value of 17 until we get
+> more coverage for the updated values.
+> 
+> Sizes of struct skb_shared_info on 64bit arches
+> 
+> MAX_SKB_FRAGS | sizeof(struct skb_shared_info):
+> ==============================================
+>          17     320
+>          21     320+64  = 384
+>          25     320+128 = 448
+>          29     320+192 = 512
+>          33     320+256 = 576
+>          37     320+320 = 640
+>          41     320+384 = 704
+>          45     320+448 = 768
+> 
+> This inflation might cause problems for drivers assuming they could pack
+> both the incoming packet and skb_shared_info in half a page, using build_skb().
+> 
+> v2: fix two build errors assuming MAX_SKB_FRAGS was "unsigned long"
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  drivers/scsi/cxgbi/libcxgbi.c |  4 ++--
+>  include/linux/skbuff.h        | 14 ++------------
+>  net/Kconfig                   | 12 ++++++++++++
+>  net/packet/af_packet.c        |  4 ++--
+>  4 files changed, 18 insertions(+), 16 deletions(-)
+> 
 
-+2
+Nice! I was statically increasing it for our datapath performance tests
+w/ BIG TCP and zerocopy, had to implement custom header-data split
+for mlx to get it all working but the improvements are impressive as
+expected.
 
-I have the same feeling/opinion.
+FWIW,
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-> Cheers,
->
-> Paolo
->
