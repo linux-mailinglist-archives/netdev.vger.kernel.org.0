@@ -2,204 +2,481 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B226C4DDC
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 15:34:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6331C6C4D9C
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 15:27:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbjCVOex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 10:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        id S231495AbjCVO1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 10:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbjCVOei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 10:34:38 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on20700.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eae::700])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE8765C63
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 07:34:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kdbTpCtPO5qLvWCSjsva2EF/PMRGkdH2DLMQ7MgCIs41mUtkIt2FRflqeFZ4YicTV9Iv5CyMBuIRIM4uysBXeh1s8ZLGGISt4HYR+zTsKgEEtcW5wNI3pPvo9zI+IvvlNnNmF30p1tL/02FlWxUkFh9xPqVust7ujAz/pRuLpul7Ox0Z879oYJkEarBeUOXxnIJeo3vwVLfByaVrV6ayuxqc2k8QAqed4LNmbDG26Dx6otAb9ILIP3HLR17PODdqiTRz+4NuSXFZlNyGQKGUGlnyyd6HOJ7lB+QrzjIHcC53LBRbPmHZoWrY76S13msxDLn1/ky7o7eodlqW+Tet8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6QRbm74Ug5U+Jqdf9K7nQjf3jYDEx91657kKVe+BAvI=;
- b=JQN4dtbsaEVMFfqAXzqY8mCcGG1ccQa3F09dD14IditcPnDVUJyS7edRpFe9SoxpWMszvNDs+HC/+tx/l0OZ4ZVV9QUWvCrVwK9o+XYrXXmN1CJQHWhRh2i2X5kSo9G50NQ/PQVvCRNeZiVgcMBh35pIU3IJ6l06FH4aRhq1gM4An/XCKImZYRCIKqs4JtdmPOrXkNe0N5F/tR9K4BXFN82hllbRyLmrFRFy0/24rP0BTvSJqjrLWNtDsMoqwAMPGzBV8uQFeQyHzqWSGIqTz/GDy8ljP707zj2cOPNOIuABc5bWnyu6gZXxArlFoyOtQQKjj4RKPRB1LPlYf9KUcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6QRbm74Ug5U+Jqdf9K7nQjf3jYDEx91657kKVe+BAvI=;
- b=DnwWpNT88wzSoKqZ3fTsZR2IUgvMuvBo/29ZExT8CxGa2DVHRFgPmh8sYRsCfQkQxtQOruU5kxGvFz97zeNsBEO0uDJZ9vqpQfKIPyW3Vr4Alb3LBjkV1sZhUcKk8z6qr4bJ3Pg1htOaSliK/TgS6DCazoOCqySZEVQOm2Xkg2w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM4PR13MB5932.namprd13.prod.outlook.com (2603:10b6:8:52::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.37; Wed, 22 Mar 2023 14:33:58 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
- 14:33:58 +0000
-Date:   Wed, 22 Mar 2023 15:33:52 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: ethernet: mtk_eth_soc: fix flow block
- refcounting
-Message-ID: <ZBsR0C/3+0ZsWnhf@corigine.com>
-References: <20230321133719.49652-1-nbd@nbd.name>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230321133719.49652-1-nbd@nbd.name>
-X-ClientProxiedBy: AM0PR04CA0058.eurprd04.prod.outlook.com
- (2603:10a6:208:1::35) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S231419AbjCVO1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 10:27:24 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB985FEAE;
+        Wed, 22 Mar 2023 07:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679495242; x=1711031242;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1ziEFRtGV0V5UoqLClzya6tGpzKrLUw0UJ3qscuxhis=;
+  b=Z4Pdu2ZgxZm5SsI/7QVvpADoY0dhWH61I8E7StdWh6qUXF4FgneHU8B9
+   Vjm6GGruILAyZnW2Cta/+ReKH7imASjOR87aGnTRgcjqvx5GG7KW2f6s6
+   xwsRnXt1l3wu6M63FaQmyWBblNlhRMLlSx/QiDZI3wbK1QdqbBJVq5qzr
+   eeVCcfrUw12LektpzpPsPpAhesUy/cXhlB1MAcNVaiU8TnWyDZQQd6Cnr
+   wEwnPDfRP5FnqRYDU3X8iKoDQXLqmqPpoCWgvWr4hftg3jtZpNHw5lX6L
+   RngdHZpGMM/1MCY02E0XDXTI00JmcljfJuwzGwSEPjP4B+OrHs8L5xd/L
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="323069476"
+X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
+   d="scan'208";a="323069476"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 07:27:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="632010172"
+X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
+   d="scan'208";a="632010172"
+Received: from unknown (HELO fedora.sh.intel.com) ([10.238.175.104])
+  by orsmga003.jf.intel.com with ESMTP; 22 Mar 2023 07:27:15 -0700
+From:   Tianfei Zhang <tianfei.zhang@intel.com>
+To:     richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, linux-fpga@vger.kernel.org,
+        ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
+        vinicius.gomes@intel.com, pierre-louis.bossart@linux.intel.com,
+        marpagan@redhat.com, russell.h.weight@intel.com,
+        matthew.gerlach@linux.intel.com, nico@fluxnic.net,
+        Tianfei Zhang <tianfei.zhang@intel.com>,
+        Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
+Subject: [PATCH v2] ptp: add ToD device driver for Intel FPGA cards
+Date:   Wed, 22 Mar 2023 10:35:47 -0400
+Message-Id: <20230322143547.233250-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM4PR13MB5932:EE_
-X-MS-Office365-Filtering-Correlation-Id: eb18955b-e0d6-4fe2-6d37-08db2ae278c0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XMlqGHWSw+VvQ3EBVcC/mPldUMXHactcd/bs5jHXFfRHdhN1Ga6Pi1RW5zxtOBGI9lmeLd8W5fct6CblgImUKy9nCte3n4ywkV7ZmHxTckPF4MhFUD4UU85c9JNR/OnwlVhRqoLa3R3rKkiaCNCJHVJgasXq7CqPVnchYslisjTGJkH5IsHUkEE4s5vcWw729NwWODIFa0gNYEM+7j9WROImftJv8RpJawZxUU64EooST7Lp6u8zn6QZwa7OmuYRUVUf+CLmtJY0ULhw8VCetmQgPOw/29gabNcCXeiw3lYG2C589jKexwbE6RrBlKWnH71X06KrlEx2xhjre3VJSdtkLiYUVFx6XQHb5rUlkYd8FomuVfocUyu1jZdDe3Yf0QkGCV+r1PNEeiUHBAnMmwj3Z1bHdHZrohGa1ZmRQxQz1F353M3NP7/1PWK/1ZsRdH9Pgv6IRd/O/+GU2i2HnONNvryfW4JJ6pf1MdxOG7BjrOZcQM7OMWw8qpkFgKhtFyEpqq3HqPJfpPaUL0y3AYYomwQ0urjWRD/eXhqKr20PRShQfFpKuCnFwfr040Wp98eiixPRY0HRhco1r2k2Etlm+sTVIbBb7y6bo8Q1DdavSdjB0PYqlecNLbt+M0blGQ16U9rRBCcvxBjwIAwQQA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(39840400004)(376002)(396003)(366004)(136003)(451199018)(2616005)(186003)(6506007)(6666004)(6486002)(83380400001)(66476007)(4326008)(66556008)(8676002)(6512007)(66946007)(478600001)(316002)(5660300002)(44832011)(41300700001)(8936002)(2906002)(38100700002)(6916009)(86362001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4FDor3SX6WEmZFyzyoVP0AEle61JYf/pmkXeUdgWqH/TD/TToNa4tWqXtRcA?=
- =?us-ascii?Q?PBBIhvldbVCDg3Bz491Ix0FTxFyYia8XZOOUCBqweuU+XxLTiymGT4MnJcUI?=
- =?us-ascii?Q?cuROjoydb/1X/OY82Vw1er2TInbAFO0Mg2S7LuX1uikronLHO+GWSmyNBmgl?=
- =?us-ascii?Q?iIDLYcv6aJz3hHIS4Nre3RA3tbZMjUV13PK5Z7ceRibC5XVSQwSlfGGiocTn?=
- =?us-ascii?Q?qmZhd8L0I0fHcP/xOte7jsJzoAKX5G8ROhOF+H9gicpYg6+gEKQFlS+1Qmoh?=
- =?us-ascii?Q?m81uA6GJLXV2AysBU75l1dOJYGYIUHquqFFGBPKF/ebOalchWSusLQZnsipm?=
- =?us-ascii?Q?nuzv/uzUgXA8rhZgEDg6j8ZiYrs/4eVQiMvg0Kv/cXDUjzxPzJ5uYa4yJ6VD?=
- =?us-ascii?Q?/wvROxe07R04zufF2SQDAqSClKFw3BvVYS4YwCULKBPqwkBPYRQJ29K38fbM?=
- =?us-ascii?Q?1xsbM/rJPABB/1+7jPzS89XZftE8IAo/V/rxHJ7E1U+Bx7L0iEfq3FJHkUkQ?=
- =?us-ascii?Q?8fCliNlDUctaDqdaOabGTmI0HYtR+tRlIhXtSaXnJvZKpY3nMX8CJNIjG+63?=
- =?us-ascii?Q?CGLRC+x7yQJsDP+9XWgJXsrKq3W1q/Z3HkbIsMeZguQhk26VH2sPIWG5SGqy?=
- =?us-ascii?Q?jUEbtKULOKQVdlH06XJikZ6tcSx48efXF23H4Y7X4OrwvwguIjYpN0iW95Az?=
- =?us-ascii?Q?zwbPoE2d6VN8RWoxdxFqPQMShFbF3qOSEiEUaxxpfELD7sCQ8ym4oWoVQbI1?=
- =?us-ascii?Q?nEiKrpji7EoCPfRG9GC5yiZWPgjfAWQ827JuZoI3ZHG+mDszmQ89Y18SwbTU?=
- =?us-ascii?Q?oXt9IVq89dIJFrIGhO4fL61cg3FYdO+iiyxtcZNklrgemkrNv03liqhKibxu?=
- =?us-ascii?Q?PBT9t8X0eUBhdoFqZxHLD36q75lZnVVuVT3RGgD224VxsK001JTG+Ob+7OOR?=
- =?us-ascii?Q?VJyJ8ATW+uAoHcb5Ra4uhOWGnLr+HNmvVOTMgRB7l1zd4V3l6HUnrN3KPb/Z?=
- =?us-ascii?Q?PaCbAiOdz2/zid9mHtkC1p6dlOu111GxMOCw7MlHSulR2IRKtWTKZ7I+QAzY?=
- =?us-ascii?Q?In4zMTTwEOWkPce+NwTvswuMReRpOph9eNVVCMMttEZD24igPd5DKlvX8XUy?=
- =?us-ascii?Q?tn8AML34x1RbURSx61MZPzfuSwn9cyrnJhB/AYeC6iRsM6Uh2tmbZKfZ09oC?=
- =?us-ascii?Q?YT6jvHq5vf3NzJsYNJNfEvcnTQXFgl4PyTf7DrwXJFQvGDUZJWnosaTdOaE3?=
- =?us-ascii?Q?1/kWJiQ+bmhRB7f/0GaDlSewpPFdvvFH/6+BDfjhnbY3ollUVMUC0kjJLl/s?=
- =?us-ascii?Q?qk6afniPPu6RWcYmB2vZFk6kBCfLfFGRmZBeA5U9YVA6z76Q77Ec1xkWfurh?=
- =?us-ascii?Q?7lck51DVy1n6A3727KV47uZXUIB3diGSDUdjVcoCmYiHpeMJwetLb1bqMDZd?=
- =?us-ascii?Q?MS4W7ROhqv75afcgKmfbc+apHwh77StjUo1TTS1Elps3S1ZCscNeHHqqHImd?=
- =?us-ascii?Q?aDE6TnY7kSzjIsojhisr+/yHdKJeCG+NJ6kIwZF44jx7461+nn+a3pqEqK9U?=
- =?us-ascii?Q?Qun6EGOtCs0HNE3XpCqA7SOOFb6w2Ey1SAAk1ikf6a6bx7x89G2fQ0lo0ZCn?=
- =?us-ascii?Q?yuzxI3AYS/xLo11y8c/f0Qq/qpCEINJy+tDBqLXaFbRRIg2Qw5bp2UeFYvLx?=
- =?us-ascii?Q?3/CWqw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb18955b-e0d6-4fe2-6d37-08db2ae278c0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 14:33:58.3190
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PRypFvmHj7Gvwkc5YlyD8+Lm8UaBemzhUgYivqHEIITXhy0Cch60jwcncZlKRzWDpTR+aX5ukmpfC2osrHbznfWV1wX7rQiW5kKRdh4kjy4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR13MB5932
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 02:37:18PM +0100, Felix Fietkau wrote:
-> Since we call flow_block_cb_decref on FLOW_BLOCK_UNBIND, we need to call
-> flow_block_cb_incref unconditionally, even for a newly allocated cb.
-> Fixes a use-after-free bug. Also fix the accidentally inverted refcount
-> check on unbind.
+Adding a DFL (Device Feature List) device driver of ToD device for
+Intel FPGA cards.
 
-Hi Felix,
+The Intel FPGA Time of Day(ToD) IP within the FPGA DFL bus is exposed
+as PTP Hardware clock(PHC) device to the Linux PTP stack to synchronize
+the system clock to its ToD information using phc2sys utility of the
+Linux PTP stack. The DFL is a hardware List within FPGA, which defines
+a linked list of feature headers within the device MMIO space to provide
+an extensible way of adding subdevice features.
 
-my 2c worth.
+Signed-off-by: Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
 
-Firstly, it's usually best to have one fix per patch.
+---
+v2:
+- handle NULL for ptp_clock_register().
+- use readl_poll_timeout_atomic() instead of readl_poll_timeout(), and
+  change the interval timeout to 10us.
+- fix the uninitialized variable.
+---
+ MAINTAINERS               |   7 +
+ drivers/ptp/Kconfig       |  13 ++
+ drivers/ptp/Makefile      |   1 +
+ drivers/ptp/ptp_dfl_tod.c | 333 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 354 insertions(+)
+ create mode 100644 drivers/ptp/ptp_dfl_tod.c
 
-Second, this seems to conflicts with:
-
-  [PATCH net-next 1/2] net: ethernet: mtk_eth_soc: add code for
-        offloading flows from wlan devices
-
-So I guess that series will need to be rebased on this one at some point.
-
-> Fixes: 502e84e2382d ("net: ethernet: mtk_eth_soc: add flow offloading support")
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
->  .../net/ethernet/mediatek/mtk_ppe_offload.c   | 23 +++++++++++--------
->  1 file changed, 14 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-> index 81afd5ee3fbf..43cc510b51bd 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-> @@ -554,6 +554,7 @@ mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
->  	struct mtk_eth *eth = mac->hw;
->  	static LIST_HEAD(block_cb_list);
->  	struct flow_block_cb *block_cb;
-> +	bool register_block = false;
->  	flow_setup_cb_t *cb;
->  
->  	if (!eth->soc->offload_version)
-> @@ -568,23 +569,27 @@ mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
->  	switch (f->command) {
->  	case FLOW_BLOCK_BIND:
->  		block_cb = flow_block_cb_lookup(f->block, cb, dev);
-> -		if (block_cb) {
-> -			flow_block_cb_incref(block_cb);
-> -			return 0;
-> +		if (!block_cb) {
-> +			block_cb = flow_block_cb_alloc(cb, dev, dev, NULL);
-> +			if (IS_ERR(block_cb))
-> +				return PTR_ERR(block_cb);
-> +
-> +			register_block = true;
->  		}
-> -		block_cb = flow_block_cb_alloc(cb, dev, dev, NULL);
-> -		if (IS_ERR(block_cb))
-> -			return PTR_ERR(block_cb);
->  
-> -		flow_block_cb_add(block_cb, f);
-> -		list_add_tail(&block_cb->driver_list, &block_cb_list);
-> +		flow_block_cb_incref(block_cb);
-> +
-> +		if (register_block) {
-> +			flow_block_cb_add(block_cb, f);
-> +			list_add_tail(&block_cb->driver_list, &block_cb_list);
-> +		}
->  		return 0;
-
-I think the existing code was more idiomatic, and could
-be maintained by simply adding a call to flow_block_cb_incref()
-before the call to flow_block_cb_add().
-
-@@ -576,6 +576,7 @@ mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
- 		if (IS_ERR(block_cb))
- 			return PTR_ERR(block_cb);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d8ebab595b2a..3fd603369464 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15623,6 +15623,13 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/ptp/ptp_ocp.c
  
-+		flow_block_cb_incref(block_cb);
- 		flow_block_cb_add(block_cb, f);
- 		list_add_tail(&block_cb->driver_list, &block_cb_list);
- 		return 0;
++INTEL PTP DFL ToD DRIVER
++M:	Tianfei Zhang <tianfei.zhang@intel.com>
++L:	linux-fpga@vger.kernel.org
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/ptp/ptp_dfl_tod.c
++
+ OPENCORES I2C BUS DRIVER
+ M:	Peter Korsgaard <peter@korsgaard.com>
+ M:	Andrew Lunn <andrew@lunn.ch>
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index fe4971b65c64..e0d6f136ee46 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -186,4 +186,17 @@ config PTP_1588_CLOCK_OCP
+ 
+ 	  More information is available at http://www.timingcard.com/
+ 
++config PTP_DFL_TOD
++	tristate "FPGA DFL ToD Driver"
++	depends on FPGA_DFL
++	help
++	  The DFL (Device Feature List) device driver for the Intel ToD
++	  (Time-of-Day) device in FPGA card. The ToD IP within the FPGA
++	  is exposed as PTP Hardware Clock (PHC) device to the Linux PTP
++	  stack to synchronize the system clock to its ToD information
++	  using phc2sys utility of the Linux PTP stack.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called ptp_dfl_tod.
++
+ endmenu
+diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+index 28a6fe342d3e..553f18bf3c83 100644
+--- a/drivers/ptp/Makefile
++++ b/drivers/ptp/Makefile
+@@ -18,3 +18,4 @@ obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
+ obj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)	+= ptp_idt82p33.o
+ obj-$(CONFIG_PTP_1588_CLOCK_VMW)	+= ptp_vmw.o
+ obj-$(CONFIG_PTP_1588_CLOCK_OCP)	+= ptp_ocp.o
++obj-$(CONFIG_PTP_DFL_TOD)		+= ptp_dfl_tod.o
+diff --git a/drivers/ptp/ptp_dfl_tod.c b/drivers/ptp/ptp_dfl_tod.c
+new file mode 100644
+index 000000000000..d1532778c6b7
+--- /dev/null
++++ b/drivers/ptp/ptp_dfl_tod.c
+@@ -0,0 +1,333 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * DFL device driver for Time-of-Day (ToD) private feature
++ *
++ * Copyright (C) 2023 Intel Corporation
++ */
++
++#include <linux/bitfield.h>
++#include <linux/delay.h>
++#include <linux/dfl.h>
++#include <linux/gcd.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/ptp_clock_kernel.h>
++#include <linux/spinlock.h>
++#include <linux/units.h>
++
++#define FME_FEATURE_ID_TOD		0x22
++
++/* ToD clock register space. */
++#define TOD_CLK_FREQ			0x038
++
++/*
++ * The read sequence of ToD timestamp registers: TOD_NANOSEC, TOD_SECONDSL and
++ * TOD_SECONDSH, because there is a hardware snapshot whenever the TOD_NANOSEC
++ * register is read.
++ *
++ * The ToD IP requires writing registers in the reverse order to the read sequence.
++ * The timestamp is corrected when the TOD_NANOSEC register is written, so the
++ * sequence of write TOD registers: TOD_SECONDSH, TOD_SECONDSL and TOD_NANOSEC.
++ */
++#define TOD_SECONDSH			0x100
++#define TOD_SECONDSL			0x104
++#define TOD_NANOSEC			0x108
++#define TOD_PERIOD			0x110
++#define TOD_ADJUST_PERIOD		0x114
++#define TOD_ADJUST_COUNT		0x118
++#define TOD_DRIFT_ADJUST		0x11c
++#define TOD_DRIFT_ADJUST_RATE		0x120
++#define PERIOD_FRAC_OFFSET		16
++#define SECONDS_MSB			GENMASK_ULL(47, 32)
++#define SECONDS_LSB			GENMASK_ULL(31, 0)
++#define TOD_SECONDSH_SEC_MSB		GENMASK_ULL(15, 0)
++
++#define CAL_SECONDS(m, l)		((FIELD_GET(TOD_SECONDSH_SEC_MSB, (m)) << 32) | (l))
++
++#define TOD_PERIOD_MASK		GENMASK_ULL(19, 0)
++#define TOD_PERIOD_MAX			FIELD_MAX(TOD_PERIOD_MASK)
++#define TOD_PERIOD_MIN			0
++#define TOD_DRIFT_ADJUST_MASK		GENMASK_ULL(15, 0)
++#define TOD_DRIFT_ADJUST_FNS_MAX	FIELD_MAX(TOD_DRIFT_ADJUST_MASK)
++#define TOD_DRIFT_ADJUST_RATE_MAX	TOD_DRIFT_ADJUST_FNS_MAX
++#define TOD_ADJUST_COUNT_MASK		GENMASK_ULL(19, 0)
++#define TOD_ADJUST_COUNT_MAX		FIELD_MAX(TOD_ADJUST_COUNT_MASK)
++#define TOD_ADJUST_INTERVAL_US		10
++#define TOD_ADJUST_MS			\
++		(((TOD_PERIOD_MAX >> 16) + 1) * (TOD_ADJUST_COUNT_MAX + 1))
++#define TOD_ADJUST_MS_MAX		(TOD_ADJUST_MS / MICRO)
++#define TOD_ADJUST_MAX_US		(TOD_ADJUST_MS_MAX * USEC_PER_MSEC)
++#define TOD_MAX_ADJ			(500 * MEGA)
++
++struct dfl_tod {
++	struct ptp_clock_info ptp_clock_ops;
++	struct device *dev;
++	struct ptp_clock *ptp_clock;
++
++	/* ToD Clock address space */
++	void __iomem *tod_ctrl;
++
++	/* ToD clock registers protection */
++	spinlock_t tod_lock;
++};
++
++/*
++ * A fine ToD HW clock offset adjustment. To perform the fine offset adjustment, the
++ * adjust_period and adjust_count argument are used to update the TOD_ADJUST_PERIOD
++ * and TOD_ADJUST_COUNT register for in hardware. The dt->tod_lock spinlock must be
++ * held when calling this function.
++ */
++static int fine_adjust_tod_clock(struct dfl_tod *dt, u32 adjust_period,
++				 u32 adjust_count)
++{
++	void __iomem *base = dt->tod_ctrl;
++	u32 val;
++
++	writel(adjust_period, base + TOD_ADJUST_PERIOD);
++	writel(adjust_count, base + TOD_ADJUST_COUNT);
++
++	/* Wait for present offset adjustment update to complete */
++	return readl_poll_timeout_atomic(base + TOD_ADJUST_COUNT, val, !val, TOD_ADJUST_INTERVAL_US,
++				  TOD_ADJUST_MAX_US);
++}
++
++/*
++ * A coarse ToD HW clock offset adjustment.
++ * The coarse time adjustment performs by adding or subtracting the delta value
++ * from the current ToD HW clock time.
++ */
++static int coarse_adjust_tod_clock(struct dfl_tod *dt, s64 delta)
++{
++	u32 seconds_msb, seconds_lsb, nanosec;
++	void __iomem *base = dt->tod_ctrl;
++	u64 seconds, now;
++
++	if (delta == 0)
++		return 0;
++
++	nanosec = readl(base + TOD_NANOSEC);
++	seconds_lsb = readl(base + TOD_SECONDSL);
++	seconds_msb = readl(base + TOD_SECONDSH);
++
++	/* Calculate new time */
++	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
++	now = seconds * NSEC_PER_SEC + nanosec + delta;
++
++	seconds = div_u64_rem(now, NSEC_PER_SEC, &nanosec);
++	seconds_msb = FIELD_GET(SECONDS_MSB, seconds);
++	seconds_lsb = FIELD_GET(SECONDS_LSB, seconds);
++
++	writel(seconds_msb, base + TOD_SECONDSH);
++	writel(seconds_lsb, base + TOD_SECONDSL);
++	writel(nanosec, base + TOD_NANOSEC);
++
++	return 0;
++}
++
++static int dfl_tod_adjust_fine(struct ptp_clock_info *ptp, long scaled_ppm)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 tod_period, tod_rem, tod_drift_adjust_fns, tod_drift_adjust_rate;
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags, rate;
++	u64 ppb;
++
++	/* Get the clock rate from clock frequency register offset */
++	rate = readl(base + TOD_CLK_FREQ);
++
++	/* add GIGA as nominal ppb */
++	ppb = scaled_ppm_to_ppb(scaled_ppm) + GIGA;
++
++	tod_period = div_u64_rem(ppb << PERIOD_FRAC_OFFSET, rate, &tod_rem);
++	if (tod_period > TOD_PERIOD_MAX)
++		return -ERANGE;
++
++	/*
++	 * The drift of ToD adjusted periodically by adding a drift_adjust_fns
++	 * correction value every drift_adjust_rate count of clock cycles.
++	 */
++	tod_drift_adjust_fns = tod_rem / gcd(tod_rem, rate);
++	tod_drift_adjust_rate = rate / gcd(tod_rem, rate);
++
++	while ((tod_drift_adjust_fns > TOD_DRIFT_ADJUST_FNS_MAX) ||
++	       (tod_drift_adjust_rate > TOD_DRIFT_ADJUST_RATE_MAX)) {
++		tod_drift_adjust_fns >>= 1;
++		tod_drift_adjust_rate >>= 1;
++	}
++
++	if (tod_drift_adjust_fns == 0)
++		tod_drift_adjust_rate = 0;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++	writel(tod_period, base + TOD_PERIOD);
++	writel(0, base + TOD_ADJUST_PERIOD);
++	writel(0, base + TOD_ADJUST_COUNT);
++	writel(tod_drift_adjust_fns, base + TOD_DRIFT_ADJUST);
++	writel(tod_drift_adjust_rate, base + TOD_DRIFT_ADJUST_RATE);
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	return 0;
++}
++
++static int dfl_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 period, diff, rem, rem_period, adj_period;
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags;
++	bool neg_adj;
++	u64 count;
++	int ret;
++
++	neg_adj = delta < 0;
++	if (neg_adj)
++		delta = -delta;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++
++	/*
++	 * Get the maximum possible value of the Period register offset
++	 * adjustment in nanoseconds scale. This depends on the current
++	 * Period register setting and the maximum and minimum possible
++	 * values of the Period register.
++	 */
++	period = readl(base + TOD_PERIOD);
++
++	if (neg_adj) {
++		diff = (period - TOD_PERIOD_MIN) >> PERIOD_FRAC_OFFSET;
++		adj_period = period - (diff << PERIOD_FRAC_OFFSET);
++		count = div_u64_rem(delta, diff, &rem);
++		rem_period = period - (rem << PERIOD_FRAC_OFFSET);
++	} else {
++		diff = (TOD_PERIOD_MAX - period) >> PERIOD_FRAC_OFFSET;
++		adj_period = period + (diff << PERIOD_FRAC_OFFSET);
++		count = div_u64_rem(delta, diff, &rem);
++		rem_period = period + (rem << PERIOD_FRAC_OFFSET);
++	}
++
++	ret = 0;
++
++	if (count > TOD_ADJUST_COUNT_MAX) {
++		ret = coarse_adjust_tod_clock(dt, delta);
++	} else {
++		/* Adjust the period by count cycles to adjust the time */
++		if (count)
++			ret = fine_adjust_tod_clock(dt, adj_period, count);
++
++		/* If there is a remainder, adjust the period for an additional cycle */
++		if (rem)
++			ret = fine_adjust_tod_clock(dt, rem_period, 1);
++	}
++
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	return ret;
++}
++
++static int dfl_tod_get_timex(struct ptp_clock_info *ptp, struct timespec64 *ts,
++			     struct ptp_system_timestamp *sts)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 seconds_msb, seconds_lsb, nanosec;
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags;
++	u64 seconds;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++	ptp_read_system_prets(sts);
++	nanosec = readl(base + TOD_NANOSEC);
++	seconds_lsb = readl(base + TOD_SECONDSL);
++	seconds_msb = readl(base + TOD_SECONDSH);
++	ptp_read_system_postts(sts);
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
++
++	ts->tv_nsec = nanosec;
++	ts->tv_sec = seconds;
++
++	return 0;
++}
++
++static int dfl_tod_set_time(struct ptp_clock_info *ptp,
++			    const struct timespec64 *ts)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 seconds_msb = FIELD_GET(SECONDS_MSB, ts->tv_sec);
++	u32 seconds_lsb = FIELD_GET(SECONDS_LSB, ts->tv_sec);
++	u32 nanosec = FIELD_GET(SECONDS_LSB, ts->tv_nsec);
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++	writel(seconds_msb, base + TOD_SECONDSH);
++	writel(seconds_lsb, base + TOD_SECONDSL);
++	writel(nanosec, base + TOD_NANOSEC);
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	return 0;
++}
++
++static struct ptp_clock_info dfl_tod_clock_ops = {
++	.owner = THIS_MODULE,
++	.name = "dfl_tod",
++	.max_adj = TOD_MAX_ADJ,
++	.adjfine = dfl_tod_adjust_fine,
++	.adjtime = dfl_tod_adjust_time,
++	.gettimex64 = dfl_tod_get_timex,
++	.settime64 = dfl_tod_set_time,
++};
++
++static int dfl_tod_probe(struct dfl_device *ddev)
++{
++	struct device *dev = &ddev->dev;
++	struct dfl_tod *dt;
++
++	dt = devm_kzalloc(dev, sizeof(*dt), GFP_KERNEL);
++	if (!dt)
++		return -ENOMEM;
++
++	dt->tod_ctrl = devm_ioremap_resource(dev, &ddev->mmio_res);
++	if (IS_ERR(dt->tod_ctrl))
++		return PTR_ERR(dt->tod_ctrl);
++
++	dt->dev = dev;
++	spin_lock_init(&dt->tod_lock);
++	dev_set_drvdata(dev, dt);
++
++	dt->ptp_clock_ops = dfl_tod_clock_ops;
++
++	dt->ptp_clock = ptp_clock_register(&dt->ptp_clock_ops, dev);
++	if (IS_ERR_OR_NULL(dt->ptp_clock))
++		return dev_err_probe(dt->dev, PTR_ERR_OR_ZERO(dt->ptp_clock),
++				     "Unable to register PTP clock\n");
++
++	return 0;
++}
++
++static void dfl_tod_remove(struct dfl_device *ddev)
++{
++	struct dfl_tod *dt = dev_get_drvdata(&ddev->dev);
++
++	ptp_clock_unregister(dt->ptp_clock);
++}
++
++static const struct dfl_device_id dfl_tod_ids[] = {
++	{ FME_ID, FME_FEATURE_ID_TOD },
++	{ }
++};
++MODULE_DEVICE_TABLE(dfl, dfl_tod_ids);
++
++static struct dfl_driver dfl_tod_driver = {
++	.drv = {
++		.name = "dfl-tod",
++	},
++	.id_table = dfl_tod_ids,
++	.probe = dfl_tod_probe,
++	.remove = dfl_tod_remove,
++};
++module_dfl_driver(dfl_tod_driver);
++
++MODULE_DESCRIPTION("FPGA DFL ToD driver");
++MODULE_AUTHOR("Intel Corporation");
++MODULE_LICENSE("GPL");
+-- 
+2.38.1
 
->  	case FLOW_BLOCK_UNBIND:
->  		block_cb = flow_block_cb_lookup(f->block, cb, dev);
->  		if (!block_cb)
->  			return -ENOENT;
->  
-> -		if (flow_block_cb_decref(block_cb)) {
-> +		if (!flow_block_cb_decref(block_cb)) {
->  			flow_block_cb_remove(block_cb, f);
->  			list_del(&block_cb->driver_list);
->  		}
-> -- 
-> 2.39.0
-> 
