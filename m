@@ -2,74 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A7F6C4036
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:13:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EAD66C404C
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 03:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbjCVCNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Mar 2023 22:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
+        id S230249AbjCVCXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Mar 2023 22:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbjCVCNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:13:08 -0400
-Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42D05A90B
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:12:44 -0700 (PDT)
-Received: by mail-ua1-x943.google.com with SMTP id v48so11662821uad.6
-        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:12:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679451164;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dQlu0Oc2Q0nPMBCNq5iTPUZpwrRZlsMdPt2zjra8+VI=;
-        b=qNbw/c75cbzn9+niSm00wyE0YIAvUXY8wPEA/T7OdOwzYsGw+VP25yFjjNj4qb+l2B
-         nek6L+BhIe3UVjpN2sJ1Gfb/Vybmc3zdb0wSPznQ7L2mPjZoKkm91h9GbQrU8ntzBRHI
-         zaeKKWCSrXQxlf5VrzsXFEOK8x9m9GbNxBykCd1IEryMrZCF0Th0patc5Qpg7tWWoGfE
-         QWGg4LYN2/lI22wcEhebgGN/RNnAerV+PzrgGWdFjJErUyfSKQBxr6bzrUkQIaDUykoV
-         NIJwLjsuQQpXZajUwxCYQULNJmVBYHRjpcfdKL7E5yuz3SKiKdfFptdp2uZd/lk8BP9U
-         7fvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679451164;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dQlu0Oc2Q0nPMBCNq5iTPUZpwrRZlsMdPt2zjra8+VI=;
-        b=fKSCfoN36EUEIsD+5deBIqFbrF6uw3FdLk+zgt3miSrvdB0bX7rixoLo3bkUFRQ/YG
-         pzfbTBY+2hWLJk9KX5CpoYc0aPEIACY+pdEz+7y4PQBW7e69I+Stswm+LECkJBiVfGWV
-         ysSJ0cwc6RFnd8ek2GmaFuQqkccg5dJtosXPr2op1LM4CvAOHdIlUJzjZsOSAuyp1F82
-         780J/WDbF3pNVk/84joLBoAzkaUPH0cm/8d41drcz+T/R13Puvqx8H8tYEhgWj7KWsTy
-         urj//1+WTFd0gSeyHbZIWiY/u9NYx4dmEGb3z0nJEPR4yhm2Xuh+O6sL9wZy7YsPjYhL
-         t0nA==
-X-Gm-Message-State: AO0yUKU8NxY1K1iY2Z1Fk44a+28r9a/hvtEgYncS0OVnLHFgcWRv5K8H
-        84/EC3sX+Vf5lw1EoPjkpUzCYgZVLe7atsVGN90=
-X-Google-Smtp-Source: AK7set/h3FYX5LR3/BPmzMSLo/lpotMgwHBP1sjKqtKOidWNWJolR0WW8ZObsEyBG0JHyFSkc5ZvI1DJ2FIIzWboq9s=
-X-Received: by 2002:a1f:1c53:0:b0:439:d35c:892b with SMTP id
- c80-20020a1f1c53000000b00439d35c892bmr1522667vkc.1.1679451163702; Tue, 21 Mar
- 2023 19:12:43 -0700 (PDT)
+        with ESMTP id S230167AbjCVCW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Mar 2023 22:22:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 084C5126
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 19:22:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59A9DB816ED
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8539C433D2;
+        Wed, 22 Mar 2023 02:22:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679451774;
+        bh=1if7DUbGyPDpCVZKeJHyrgnUuRA2KO1WpcSUFZ8uqZU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=FsRCkMSWwD9+YYU3ggUZHCisjy0D/71RpkWX+cPSqeGSFh38VLQC7Ik+1K1FV75e2
+         SQxQ3/ogZjdZk9JiroSk++kuezkw/rcOkbLBqFlGrZ3l6ovaTxJnaF7nxaCZhPoFF7
+         TRbHUhyh8wIn+rce/f9l7330IuDMSWlM1Z6Fk2YY6vNICZOkl7fAz4K19Q3blD0n5z
+         CWoJpJR29womytS+yteYgxTpq8ZNBF+VeiOSLbtnzjMeor6nQ5s3m42/GAio2j5KXT
+         ICqmHPDAt8Xk1UUqnulojbeBpNhb2ww2wxNid0OKnjH1hID7EcpCZr1VQ7MTWcMV49
+         C2BAoUZY7R8yQ==
+Message-ID: <1d6392a2-ae42-ef7f-30b1-bd5d28b1a586@kernel.org>
+Date:   Tue, 21 Mar 2023 20:22:53 -0600
 MIME-Version: 1.0
-Received: by 2002:a59:b325:0:b0:3aa:7148:e1ba with HTTP; Tue, 21 Mar 2023
- 19:12:42 -0700 (PDT)
-Reply-To: mariamkouame01@hotmail.com
-From:   Mariam Kouame <mariamkouame1991@gmail.com>
-Date:   Tue, 21 Mar 2023 19:12:42 -0700
-Message-ID: <CAGjw6zAy0+L8VcYO6Pn7RN=HrZUU_5Fh7z3B0njFroCUm--5FQ@mail.gmail.com>
-Subject: from mariam kouame
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.7.2
+Subject: Re: [PATCH v1 net-next 1/2] ipv6: Remove in6addr_any alternatives.
+Content-Language: en-US
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+References: <20230322012204.33157-1-kuniyu@amazon.com>
+ <20230322012204.33157-2-kuniyu@amazon.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20230322012204.33157-2-kuniyu@amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
-X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear,
+On 3/21/23 7:22 PM, Kuniyuki Iwashima wrote:
+> Some code defines the IPv6 wildcard address as a local variable.
+> Let's use in6addr_any instead.
+> 
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  .../net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c |  5 ++---
+>  include/net/ip6_fib.h                                 |  9 +++------
+>  include/trace/events/fib.h                            |  5 ++---
+>  include/trace/events/fib6.h                           |  5 +----
+>  net/ethtool/ioctl.c                                   |  9 ++++-----
+>  net/ipv4/inet_hashtables.c                            | 11 ++++-------
+>  6 files changed, 16 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> index a108e73c9f66..6a88f6b02678 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+> @@ -98,7 +98,6 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
+>  #if IS_ENABLED(CONFIG_INET) && IS_ENABLED(CONFIG_IPV6)
+>  	else if (ip_version == 6) {
+>  		int ipv6_size = MLX5_FLD_SZ_BYTES(ipv6_layout, ipv6);
+> -		struct in6_addr zerov6 = {};
+>  
+>  		daddr = MLX5_ADDR_OF(fte_match_param, spec->match_value,
+>  				     outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6);
+> @@ -106,8 +105,8 @@ int mlx5e_tc_set_attr_rx_tun(struct mlx5e_tc_flow *flow,
+>  				     outer_headers.src_ipv4_src_ipv6.ipv6_layout.ipv6);
+>  		memcpy(&tun_attr->dst_ip.v6, daddr, ipv6_size);
+>  		memcpy(&tun_attr->src_ip.v6, saddr, ipv6_size);
+> -		if (!memcmp(&tun_attr->dst_ip.v6, &zerov6, sizeof(zerov6)) ||
+> -		    !memcmp(&tun_attr->src_ip.v6, &zerov6, sizeof(zerov6)))
+> +		if (!memcmp(&tun_attr->dst_ip.v6, &in6addr_any, sizeof(in6addr_any)) ||
+> +		    !memcmp(&tun_attr->src_ip.v6, &in6addr_any, sizeof(in6addr_any)))
 
-Please grant me permission to share a very crucial discussion with
-you. I am looking forward to hearing from you at your earliest
-convenience.
+I think ipv6_addr_any can be used here.
 
-Mrs. Mariam Kouame
+>  			return 0;
+>  	}
+>  #endif
+>
+
+
+> @@ -3233,20 +3232,20 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+>  
+>  		v6_spec = &fs->h_u.tcp_ip6_spec;
+>  		v6_m_spec = &fs->m_u.tcp_ip6_spec;
+> -		if (memcmp(v6_m_spec->ip6src, &zero_addr, sizeof(zero_addr))) {
+> +		if (memcmp(v6_m_spec->ip6src, &in6addr_any, sizeof(in6addr_any))) {
+>  			memcpy(&match->key.ipv6.src, v6_spec->ip6src,
+>  			       sizeof(match->key.ipv6.src));
+>  			memcpy(&match->mask.ipv6.src, v6_m_spec->ip6src,
+>  			       sizeof(match->mask.ipv6.src));
+>  		}
+> -		if (memcmp(v6_m_spec->ip6dst, &zero_addr, sizeof(zero_addr))) {
+> +		if (memcmp(v6_m_spec->ip6dst, &in6addr_any, sizeof(in6addr_any))) {
+>  			memcpy(&match->key.ipv6.dst, v6_spec->ip6dst,
+>  			       sizeof(match->key.ipv6.dst));
+>  			memcpy(&match->mask.ipv6.dst, v6_m_spec->ip6dst,
+>  			       sizeof(match->mask.ipv6.dst));
+>  		}
+> -		if (memcmp(v6_m_spec->ip6src, &zero_addr, sizeof(zero_addr)) ||
+> -		    memcmp(v6_m_spec->ip6dst, &zero_addr, sizeof(zero_addr))) {
+> +		if (memcmp(v6_m_spec->ip6src, &in6addr_any, sizeof(in6addr_any)) ||
+> +		    memcmp(v6_m_spec->ip6dst, &in6addr_any, sizeof(in6addr_any))) {
+
+and this group as well.
+
+>  			match->dissector.used_keys |=
+>  				BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS);
+>  			match->dissector.offset[FLOW_DISSECTOR_KEY_IPV6_ADDRS] =
+> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> index 6edae3886885..74caaa0c148b 100644
+> --- a/net/ipv4/inet_hashtables.c
+> +++ b/net/ipv4/inet_hashtables.c
+> @@ -826,13 +826,11 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
+>  				      unsigned short port, int l3mdev, const struct sock *sk)
+>  {
+>  #if IS_ENABLED(CONFIG_IPV6)
+> -	struct in6_addr addr_any = {};
+> -
+>  	if (sk->sk_family != tb->family) {
+>  		if (sk->sk_family == AF_INET)
+>  			return net_eq(ib2_net(tb), net) && tb->port == port &&
+>  				tb->l3mdev == l3mdev &&
+> -				ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
+> +				ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
+>  
+>  		return false;
+>  	}
+> @@ -840,7 +838,7 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const
+>  	if (sk->sk_family == AF_INET6)
+>  		return net_eq(ib2_net(tb), net) && tb->port == port &&
+>  			tb->l3mdev == l3mdev &&
+> -			ipv6_addr_equal(&tb->v6_rcv_saddr, &addr_any);
+> +			ipv6_addr_equal(&tb->v6_rcv_saddr, &in6addr_any);
+>  	else
+>  #endif
+>  		return net_eq(ib2_net(tb), net) && tb->port == port &&
+
+and these 2.
+
+
