@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9500C6C53D8
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 19:38:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE55E6C53DD
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 19:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbjCVSij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 14:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
+        id S229797AbjCVSji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 14:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230120AbjCVSii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 14:38:38 -0400
+        with ESMTP id S229513AbjCVSjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 14:39:37 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B015149F1;
-        Wed, 22 Mar 2023 11:38:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFD810F8;
+        Wed, 22 Mar 2023 11:39:36 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 1CEC65FD3E;
-        Wed, 22 Mar 2023 21:38:32 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 87DC25FD3E;
+        Wed, 22 Mar 2023 21:39:34 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1679510312;
-        bh=ezacvqrTrZ1zK6rRKTaH36dKk0Vzi7emuPTjIZNzoFM=;
+        s=mail; t=1679510374;
+        bh=2jI7XF69xGSYc6uWoXcTewsdZMSwsHV3zIs6n8EvIlc=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=WMn0apBNntddj5QS3cJ74Eik7NqqXMh/xKx2hSY77V36ykEshr81eUwq3FP7zD//f
-         bUM7jol15D7eUNYWXDHSBhNLg6M7Dbi0Lnftgs6aExqnKfIlJIcjp6YbqcgAJXOCr0
-         8tGJdrcXjBqwoDWaUQ5ANgMbvW/6LK7a+D2ePLbu9YSEEVpJaLZAojj2KxIwoLvPLf
-         yHgJHyz3XgZ+DulyGMQIF93WikIocu7ooAAMugVJbQMFMKDB18jWggWWWGE4vjfVvo
-         euk7c9A4NVG0pyaFDMLp4RmqdztSLUg81D4m7WOfTO2rXO5spBL3vhx2c1EH8Atgkj
-         xt11pQFK4jADA==
+        b=SZpMU2qEABc12peDtdbirDKGuboITfiDWAirBrD6tS8q1573+ddUDcT40cjQtEPvE
+         v8HUT2EfMlxnzHn3hHhbAjZdf+/roRZcTrSNAdD9hyD9wcfnt1Cqao5CDZ5DRs6BXO
+         tc7mbOPAyo+dj/qBRGCDaPDBdjHfjC8J8vQ2Dbptf3NnUPnN64vdair/N5WgweZ35y
+         eoU+gRWNdp0YKRN5KX0ku2QRugtBV37cSBWkEMUgfBEhkFTD6ApMiyTR09B3Zs+JwI
+         4uhdPb2Qyg0NPKhwQv3QXLKhBwthB0cvfQtfyb7IQxpFm+YrrJiTJsl7eJB5/OooTg
+         dB9e3N1t8nvCg==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 22 Mar 2023 21:38:32 +0300 (MSK)
-Message-ID: <0b841161-1fd2-584e-4920-40644b4b4a7e@sberdevices.ru>
-Date:   Wed, 22 Mar 2023 21:35:22 +0300
+        Wed, 22 Mar 2023 21:39:34 +0300 (MSK)
+Message-ID: <50bb0210-1ed7-42fb-b5f6-8d97247209b5@sberdevices.ru>
+Date:   Wed, 22 Mar 2023 21:36:24 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
@@ -49,11 +49,12 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v5 1/2] virtio/vsock: allocate multiple skbuffs on tx
+Subject: [RFC PATCH v5 2/2] virtio/vsock: check argument to avoid no effect
+ call
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
  S-MS-EXCH01.sberdevices.ru (172.16.1.4)
 X-KSMG-Rule-ID: 4
 X-KSMG-Message-Action: clean
@@ -71,100 +72,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds small optimization for tx path: instead of allocating single
-skbuff on every call to transport, allocate multiple skbuff's until
-credit space allows, thus trying to send as much as possible data without
-return to af_vsock.c.
+Both of these functions have no effect when input argument is 0, so to
+avoid useless spinlock access, check argument before it.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/virtio_transport_common.c | 57 +++++++++++++++++++------
- 1 file changed, 43 insertions(+), 14 deletions(-)
+ net/vmw_vsock/virtio_transport_common.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 6564192e7f20..9e87c7d4d7cf 100644
+index 9e87c7d4d7cf..312658c176bd 100644
 --- a/net/vmw_vsock/virtio_transport_common.c
 +++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -196,7 +196,8 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	const struct virtio_transport *t_ops;
- 	struct virtio_vsock_sock *vvs;
- 	u32 pkt_len = info->pkt_len;
--	struct sk_buff *skb;
-+	u32 rest_len;
-+	int ret;
+@@ -302,6 +302,9 @@ u32 virtio_transport_get_credit(struct virtio_vsock_sock *vvs, u32 credit)
+ {
+ 	u32 ret;
  
- 	info->type = virtio_transport_get_type(sk_vsock(vsk));
- 
-@@ -216,10 +217,6 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 
- 	vvs = vsk->trans;
- 
--	/* we can send less than pkt_len bytes */
--	if (pkt_len > VIRTIO_VSOCK_MAX_PKT_BUF_SIZE)
--		pkt_len = VIRTIO_VSOCK_MAX_PKT_BUF_SIZE;
--
- 	/* virtio_transport_get_credit might return less than pkt_len credit */
- 	pkt_len = virtio_transport_get_credit(vvs, pkt_len);
- 
-@@ -227,17 +224,49 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 	if (pkt_len == 0 && info->op == VIRTIO_VSOCK_OP_RW)
- 		return pkt_len;
- 
--	skb = virtio_transport_alloc_skb(info, pkt_len,
--					 src_cid, src_port,
--					 dst_cid, dst_port);
--	if (!skb) {
--		virtio_transport_put_credit(vvs, pkt_len);
--		return -ENOMEM;
--	}
-+	rest_len = pkt_len;
++	if (!credit)
++		return 0;
 +
-+	do {
-+		struct sk_buff *skb;
-+		size_t skb_len;
-+
-+		skb_len = min_t(u32, VIRTIO_VSOCK_MAX_PKT_BUF_SIZE, rest_len);
-+
-+		skb = virtio_transport_alloc_skb(info, skb_len,
-+						 src_cid, src_port,
-+						 dst_cid, dst_port);
-+		if (!skb) {
-+			ret = -ENOMEM;
-+			break;
-+		}
+ 	spin_lock_bh(&vvs->tx_lock);
+ 	ret = vvs->peer_buf_alloc - (vvs->tx_cnt - vvs->peer_fwd_cnt);
+ 	if (ret > credit)
+@@ -315,6 +318,9 @@ EXPORT_SYMBOL_GPL(virtio_transport_get_credit);
  
--	virtio_transport_inc_tx_pkt(vvs, skb);
-+		virtio_transport_inc_tx_pkt(vvs, skb);
- 
--	return t_ops->send_pkt(skb);
-+		ret = t_ops->send_pkt(skb);
-+		if (ret < 0)
-+			break;
+ void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
+ {
++	if (!credit)
++		return;
 +
-+		/* Both virtio and vhost 'send_pkt()' returns 'skb_len',
-+		 * but for reliability use 'ret' instead of 'skb_len'.
-+		 * Also if partial send happens (e.g. 'ret' != 'skb_len')
-+		 * somehow, we break this loop, but account such returned
-+		 * value in 'virtio_transport_put_credit()'.
-+		 */
-+		rest_len -= ret;
-+
-+		if (WARN_ONCE(ret != skb_len,
-+			      "'send_pkt()' returns %i, but %zu expected\n",
-+			      ret, skb_len))
-+			break;
-+	} while (rest_len);
-+
-+	virtio_transport_put_credit(vvs, rest_len);
-+
-+	/* Return number of bytes, if any data has been sent. */
-+	if (rest_len != pkt_len)
-+		ret = pkt_len - rest_len;
-+
-+	return ret;
- }
- 
- static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
+ 	spin_lock_bh(&vvs->tx_lock);
+ 	vvs->tx_cnt -= credit;
+ 	spin_unlock_bh(&vvs->tx_lock);
 -- 
 2.25.1
