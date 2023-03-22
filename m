@@ -2,117 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 313666C58AA
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 22:19:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654026C58E7
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 22:40:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbjCVVTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 17:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
+        id S229930AbjCVVkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 17:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjCVVTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 17:19:21 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2136.outbound.protection.outlook.com [40.107.244.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBB34ED2;
-        Wed, 22 Mar 2023 14:19:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WFlZo8pTQeLYauC6g6EzWN8wrw4+eBUSEKnIx/NizjxIx4YxKe6yGykdFTyW8XubDHN7qUFtDFHLQR58POjucVYzJJLFIpvFtk9ZIT/4OGZS/zlepsxaAkHD5yRMZ6bKA7Oq1+uYunHWRNslUn+TFkHRNKKKD+ixL19bLWXofNkDr0jNuNePj7sUIi3K7lWWx8Vql/3ADey3EPtHDTG3aMDJTIT4Sdp2QyeKtof9sTYJiSpt4UmaBlXAWLoI5wrs6IJitZQN5sLfHP9RxAkX2hDQyb3I9g/MZRmjD2W/3w05JSRnuHY0fO3e3X0CVMew8zr0bPHJR+1KTZKcdUul1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WSdFiv8oL04Gz6cXjGhxxv/4iVFCTgT1SCQ+EHaC2Mc=;
- b=b1KQC+t3j+eEPJHrijYUYjKow43DWlN4SKUylkk0s+TkA29v7QAAjSKkBlZXbEodo5i3iVYhlV7Pe7/BCVuGmI/YAD8LL/co4S0vbBpWfXMyllFerNaEV5+1ifT6Cey8Wyd6Q3+b+XTS6X1pZZmpiy2dB7U4L2qhxB7fnV9SrHmBDvRFAjBCEYJj/w/GI3rd9VInwnH5sMjT9TjTizcmpmRHuje91TnUomVh87Mv4qdGeEfqjkxUMume1pNNheoN2WqiJlfD68B2RbA6OtYd+fY5w2qHWz/qniA8fR1xJbJZFDbqxAYEQsVZdyIZKOu3CTvZbOJlC4ITc2cj854MLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WSdFiv8oL04Gz6cXjGhxxv/4iVFCTgT1SCQ+EHaC2Mc=;
- b=SiKkPKAVLt2eW1MbSpdBt+RhEASXFkgav//Qbbe3eY7/ENKgime37CPT9KgZe+UcDXKi+oKXFtCUAs+qvCV4vFoieF51E80GuNc1+8w2ODmKlEXDwalBr3icHbN/ZVcuCCdmhdGOZ3SFDjIdK7qpnmtcUIQcUQ1XIks0EC8HKcw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CO1PR13MB4822.namprd13.prod.outlook.com (2603:10b6:303:f1::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
- 2023 21:18:15 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
- 21:18:15 +0000
-Date:   Wed, 22 Mar 2023 22:18:07 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, caleb.connolly@linaro.org, mka@chromium.org,
-        evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ipa: add IPA v5.0 to ipa_version_string()
-Message-ID: <ZBtwj8L6uj018iqy@corigine.com>
-References: <20230322144742.2203947-1-elder@linaro.org>
- <ZBtrfLOh3EKBKW+F@corigine.com>
- <a0e5f9e3-403d-3334-9f7c-9d649d794a96@linaro.org>
+        with ESMTP id S229923AbjCVVkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 17:40:36 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4D7199F4;
+        Wed, 22 Mar 2023 14:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=mXn32usbY28qXPL0LwDEOekJLLI9JaFaQBFZx7OMuL0=; b=ds7awKF4RofwkKR+dt/AQHBwQJ
+        x6mwEW7R+FBAE4JhN7h0quMs6tscOWbbdEgOhTkczrNJap2IiKuqOG5lUotDYQbQooNjDA7XgQYH3
+        IKcXwTkRZ3BbmBMzpHI4OYqigmrfI+SoN203mBKEm234BfGYCvCkHln1QFCeTpoklaNo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pf6C3-0087SM-00; Wed, 22 Mar 2023 22:40:27 +0100
+Date:   Wed, 22 Mar 2023 22:40:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
+ node for default settings
+Message-ID: <8133635f-8d19-4899-83e2-0bf9b7b644b2@lunn.ch>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8f-00Dvo9-KT@rmk-PC.armlinux.org.uk>
+ <04869523-3711-41a6-81ba-ddf2b12fd22e@lunn.ch>
+ <ZBthf8EsnQIttGdI@shell.armlinux.org.uk>
+ <5922c650-0ef3-4e60-84e6-0bfe535e5a98@lunn.ch>
+ <ZBtjl9+bhtpKPmjr@shell.armlinux.org.uk>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a0e5f9e3-403d-3334-9f7c-9d649d794a96@linaro.org>
-X-ClientProxiedBy: AS4P192CA0004.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:5da::12) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4822:EE_
-X-MS-Office365-Filtering-Correlation-Id: 72468c8f-90ce-4dd6-762b-08db2b1af32d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5DRdBgsC1ixjhzcLzkrKnNcGJANNgsdbrwSMs+rHohzxSfS9iil7D+JqLHKCXByPsuYmXpD/GnYXpiznvo+5ywadcVYyrX6swalzRZtrKPTJjm/EUfFCgDWS2hCwXuJLInmnIp3JNpSVS2A/OcQkdy46Rt/Gozwxy6egUpetDHsE/lmbHviXy+/WwXngJJ3Pgaw2sJYOBlu4yRwLE8YOJcOHxTI/cTkRuKo6XTSC52hf/plikFS3cEtTkOU2AcubhbVchDoA21YYrXOWjsPaqd27bmS1W23bpKWXzwX5q6kdq58ztmRG0bIM/7kJayaqnp9ANLsMKi0iH5CBDTG2h+1cB0DM3i9NliOi3+Hx5ge/eJOUkhI6QZ6tMTlqlsuM8Ih7gSPCDG2pDxdGmQ3AljmDP16ocoUe16BpzHGHiIhlGSbF5EDIYAIfWHCLEgx+ER8GDAdSYAj1pTFlNePaOXApgNwtgCOexJeAr8ffrSzFxYKFfDPnl47tPh9Z+ghUSUITDnkWBWjMvVbM5CyQdo38wpl8uhKmfiQgTszz644vtsCgYo6EEHFyrFEVDtDYaLMP0TGw5j7VJWM+Y3HWlawwV6DnmkAdN5JloYwQzrpPTTIbH7fIrebbRx6edBhelE6dNfJLFbHu1i4rl0W0qQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39840400004)(376002)(366004)(396003)(346002)(451199018)(7416002)(5660300002)(8936002)(44832011)(4744005)(41300700001)(36756003)(86362001)(38100700002)(2906002)(4326008)(6486002)(6666004)(478600001)(2616005)(186003)(6506007)(6512007)(53546011)(66476007)(316002)(8676002)(66946007)(6916009)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QR/hufg31rVUs1wjYeT8h/feoy+pcUczRTYmmHlYHwdJmAREEFfOA/NYVEZV?=
- =?us-ascii?Q?pyjiGnw50eMX28HwDZJgjM+SBYYuQHvFP2/kgpXi+LrTAsNhJFigx6Z7Rv95?=
- =?us-ascii?Q?vBuXK9M8R6JR8E01Q1N6auX62paDBzFOm4AKs9yYGyXdOG/ABWdhSDIgQOrX?=
- =?us-ascii?Q?nzWqYDEVH/5mjpGn+4Bk/ZCDjOcdBHxsieQzF6630ecnLnUv9Ktm4NBKifEd?=
- =?us-ascii?Q?p+PiCbL/qtcao2Ik0Yzb7SsnI0Coz5F78D54EJ6KgCmgbtDC1GoNlvST4SZY?=
- =?us-ascii?Q?spsSYxSY+e305tF5vunf6oP/QOOWSHs4DLAf6jVayUSEYXVknxd3Ipdjp9ac?=
- =?us-ascii?Q?cQ3WpuyhNSIssesQL+HrDXinoZedFXC1wmnEHH1/3pjKLEUGTRMHvylUMu7U?=
- =?us-ascii?Q?Bl5wwmrjJtpMoL6mWRt+L9Z7wvAYkBmfcuNbqBy0hZ3xfsRyei8otgtFJ92T?=
- =?us-ascii?Q?sX1CmGKATgg++FFCVzBGmx91Z/o3xUW0+Bn2QZabg7S4+/i/VeTikatkMzMP?=
- =?us-ascii?Q?LO6/DnLctVHCMXJswt/GQdLJ5zDJU+OxdCm9FH5Yo0jtQAXFFuHgnA7boVw2?=
- =?us-ascii?Q?HxIWQ+PeHY/Xw+LiKgOmAQa9UVZUc1wY4bElEm0OaS6oNOCfb/wk+vsIlOls?=
- =?us-ascii?Q?wdNnCfphgxwlY3/D9fjO4PT8wh0nj0mjoQoBbScWj738cG5sVpmcdgmBjL4J?=
- =?us-ascii?Q?XpC1GgCil3HdjI9nJB/7Q4+eDakIs8+9OVgMcDvD1uDub9J3J1Xq+IKHTiVN?=
- =?us-ascii?Q?Hw92+8egtAxjfSunBI4WFb/ESUql27RJ8ZRoHRuvNJe8AFwSjjSfbFWERcFj?=
- =?us-ascii?Q?WjAlPrBbGTaRhcsjfHULVfF0Azq/96+qaXazqVh4+VejQ8W7jjdolm58a3BE?=
- =?us-ascii?Q?gZRfUphZvNTji0LJ7BJ5lrSWxMPauJ3Gcp4QNGc0tx6fazwFtAVfEtZf/iJW?=
- =?us-ascii?Q?XFZGJJkPXJlnCrXbibF7nWJbs9N/xAIGxvsYNkl8FX5vhKA/SkuVVxnIAF/9?=
- =?us-ascii?Q?1q6CzuMSCT+rC1g2tKZo09evon4Ky8SCHwkKdLz41Qv30y/+70gs16YBE3gD?=
- =?us-ascii?Q?Xl0g6mXOLTyoGLYn33QXMzJTT8CnuqxPjHqnjhCcUvOzyguAwAk+YmCVpGzu?=
- =?us-ascii?Q?/F6PEYrwTKwUa1mL3EU/c4jmp9oy+9/BEAxhVAeYDQ6UUhZcSEZcktobeiwp?=
- =?us-ascii?Q?Z8gKQ+B1P/8yZ3lZFEcux6Z6lMahZNFr93MJ0ehY52n3LE2iXoiJKN9zhSqZ?=
- =?us-ascii?Q?+EfSADDGPdY/5/IObaW0Vo4hRlZiAWdwjc2fLaTC2yJfUi3jztuQdnbn+8Xv?=
- =?us-ascii?Q?8AMYJsmss1fdjBtntX+4TesDzOFgFrQ/jwIqcQI0FEjSksmV+mkmJa/qSOPM?=
- =?us-ascii?Q?zQH3lECX4fGdyzy2dOG7RNEtJz84DTZocMchxMdgkIXOFQMeI0cVLEvO/zZX?=
- =?us-ascii?Q?fzykKC2E1sWo+5XLHoJFLBiXc8+Y5DpcbInaS1uDR+R2Pf3HcB5PIZv/QQ2o?=
- =?us-ascii?Q?wM6Y5QrsE0XtKy7GFTa4AaHrkgTFMBP9wvLF8pE6NwK1/wlWV0bs8Jh+l9nu?=
- =?us-ascii?Q?A4Zo/BXdRhsaOnIPwhAnGx4X5JTu6Rz1K4KiwE2xI419TWvuhogrJClOC74d?=
- =?us-ascii?Q?KlwiEynVG2AzALWSmbdKhvoUKhOo+0/IH5mJ21/cnpd7U4hGiS/5IG1lc638?=
- =?us-ascii?Q?seT8AQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72468c8f-90ce-4dd6-762b-08db2b1af32d
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 21:18:15.3897
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3KiwYrv649n7V/5XGAmWmYMyzRxQT0KuEjnYSXnEswoaLP4z4txCgiQzN7+lPxBTpISZVF7tWc49nBQPr1BqYd6OUjNPE59Uoov19E3L9eI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4822
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+In-Reply-To: <ZBtjl9+bhtpKPmjr@shell.armlinux.org.uk>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,URIBL_BLOCKED
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -120,20 +63,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 04:08:01PM -0500, Alex Elder wrote:
-> On 3/22/23 3:56 PM, Simon Horman wrote:
-> > Should IPA_VERSION_5_1 and IPA_VERSION_5_5 also be added?
+> What I'm trying to find out is what you think the behaviour should be
+> in this case. Are you suggesting we should fall back to what we do now
+> which is let the driver do it internally without phylink.
 > 
-> They could, since their symbols are defined.
-> 
-> We expect to support both of those versions pretty
-> soon, and we'll certainly add them to this function
-> then.  For now, unless someone thinks it's important
-> to add this now, I'd rather keep it this way.
+> The problem is that if we don't go down the phylink route for everything
+> then we /can't/ convert mv88e6xxx to phylink_pcs, because the "serdes"
+> stuff will be gone, and the absence of phylink will mean those won't be
+> called e.g. to power up the serdes.
 
-Thanks for the clarification.
+I'm pretty sure non-DT systems have never used SERDES. They are using
+a back to back PHY, or maybe RGMII. So long as this keeps working, we
+can convert to phylink.
 
-FWIIW,
+And i have such a amd64 system, using back to back PHYs so i can test
+it does not regress.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-
+    Andrew
