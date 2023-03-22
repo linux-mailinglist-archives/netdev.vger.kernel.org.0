@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D89206C5A8C
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 00:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 328666C5A8D
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 00:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbjCVXil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 19:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S230083AbjCVXin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 19:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbjCVXik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 19:38:40 -0400
+        with ESMTP id S230031AbjCVXil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 19:38:41 -0400
 Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2048.outbound.protection.outlook.com [40.107.8.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B941BEC;
-        Wed, 22 Mar 2023 16:38:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9C919B1;
+        Wed, 22 Mar 2023 16:38:40 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kPIIYwOFnDN0A+CiUN/IgkG6epTEt8HtAeN2oImorpkOaVh/KlUFKRUozRLtbYqC6NvYNDJ1lCJhXyAe3RAVlqmDfC34Hx0WMcbAgQpLpCjOC1dMaBJdAwazF86rPpcNqcysSMqbY5VBB8Py+k9uA/wnRkaxODFsZFHesV2nobwsvpULBWZuDFGIA2GCKYEWzBZbUYVr/NMvHrgIpooQI5qATcf2Jcs7W/c9lm9jA1Ja2hd+n2+HhqBoxq0NIzqZvhwUEtpE57OU21XuPa5+FZL6zNNppF/UdfoWDgFHnpbIo4LYRIn0JiivQzvEeoOds+Y1TcjnidLVfJ5m1/tl9g==
+ b=RNz57Caoj4S9mx3cRy4OYyhFkuG2+reKeTKWHnVfQpTa8ESCWGTPdtUcmJgfDb1CQCblFPpkgwjLZArp26U9DiE7l0FpRMcfaxaxFNryVZ5NYKmGXxoIxzyPCgLkU9KoC4tZhJarTVq1XtAY2UaOdGoTSw67Obq0fECUuTQsfA5F7iZIlnZ09ygKoLUxsE7mi3jJf20xHB95gjzl35hv02pQzdASv+BH9aMLyWTL+Acf6UGa1gZucS8NyRMxNv4lN7j7o3IybGnDqUBzlFpjGaQH8g6Ds94wS+q85K6rT/pnA47RfwVbQFOqALfuqIN1BJkNIhCP8eteMZdbhQMU0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4fKhcZfCMLLveCAk918+GtZQmbtiq/knicrR1Yr0DIs=;
- b=IV6caY4Rw0MUu2WaHjizz4biR4KUps0nGwn4sQNc2CaEbeQzj5qlB+qRViEaW7I9vke4mrYGy2v8jmS2cQBuCEGGYDpT28g06jJXpc5hqgu7Hx/rD3vzseSl+FKiKR2hOED91JyePcWZ3O4K6fbpn6/Dv9PaqxVZ0dd6ySWnbwMiKhWQn6h5QNDh6sDaqGRK7tM/cmPGyhm4N151ycaglDOrniZS3KShqpYim2uD4gQ6t7wFmLHmsQBHaiiIRT2kohzvjsQArVFZDQ9sGLUryE/WK2kWk6eBAuAUNuixQpWjH299aNXt0/5etELlEtfuSrhkqcP3ATSKF5MsiQA/eg==
+ bh=u0nwgOzUkDp4+jLwDdKrO0jKDyMN991pliSwvJEgiJQ=;
+ b=lPnMRDxsgaOrT1JMvHjXvUDcng8sWTNX6titFO/2vO//OrlJLBTLcyanHGW/VZxO3xpb8JrnUmUmSjNScPt6g1wpTH7JtC9wWMK1IfP+3XfBwGqzDyGWNO/xJNFKR1ZUA8tYILrv7RqczoBtk8rsV6NGCVa0FOl5hZEIBjj6CPmXkfGkTDWbEKqwzhU28M5xU6a50TjS5nGrTS+DX3IRG7I1HlKr2Unyjy/XTIArxHnoilzPrAwGVw9SnCK0s07tqB0JhTTu0UtSQZs6iGtXv4gjcsiWRXRc+S5MG3j42s0E0FslDM9Xc1R/uQkEMKC53r3GEJFXoOvJmctfy+KRxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4fKhcZfCMLLveCAk918+GtZQmbtiq/knicrR1Yr0DIs=;
- b=hDRm/DknAZevELjvYVt1Mb4lEFWmQipprsxL5hF/D9knWS+LFymzOG+rm2hJUtQQflF6QzJJW1Ta8cgTyCocqrg/aJMsntQK69/+zkEZ//FAAyQQ7+THpzAIZJ4UV74mHBq/kVUPmMoA+8G8/B9D8U5mi3Kn7fQSaOLNzX7TRgA=
+ bh=u0nwgOzUkDp4+jLwDdKrO0jKDyMN991pliSwvJEgiJQ=;
+ b=sO63j0a74m2ae2iMjUA7aeUnQtP6Jn1o4IZgSAcZPl4DCDIdZsUBS8aE9/kuEy6+kHGQVkGVlbqnaaDXtnsdXe0KPEpd+cfqSlvikl6P1mqbRTwFuXnUsSVXJb9f0ItHopJ22ZAscPb5uSBYUI/Eu8zz1NJ7rfOz/6Vq7fCczrc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
  by VE1PR04MB7263.eurprd04.prod.outlook.com (2603:10a6:800:1af::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
- 2023 23:38:36 +0000
+ 2023 23:38:37 +0000
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::29a3:120c:7d42:3ca8%7]) with mapi id 15.20.6178.038; Wed, 22 Mar 2023
@@ -47,10 +47,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/9] Remove skb_mac_header() dependency in DSA xmit path
-Date:   Thu, 23 Mar 2023 01:38:14 +0200
-Message-Id: <20230322233823.1806736-1-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 1/9] net: vlan: don't adjust MAC header in __vlan_insert_inner_tag() unless set
+Date:   Thu, 23 Mar 2023 01:38:15 +0200
+Message-Id: <20230322233823.1806736-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230322233823.1806736-1-vladimir.oltean@nxp.com>
+References: <20230322233823.1806736-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR2P281CA0081.DEUP281.PROD.OUTLOOK.COM
@@ -59,51 +61,51 @@ X-ClientProxiedBy: FR2P281CA0081.DEUP281.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|VE1PR04MB7263:EE_
-X-MS-Office365-Filtering-Correlation-Id: c5e051aa-376f-46a7-5cc9-08db2b2e8e3b
+X-MS-Office365-Filtering-Correlation-Id: 0ef91e27-6a3f-48f6-7c16-08db2b2e8ebe
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g9JRoxo/L0DwXRFhoiFs5lPsiJl13FQrK6NGdPj1bkb4cb6WjHt8r+qFGS1cD+2QATBvxG2Grc2qv+wlOoWOX4PyEN1mAd/w32ViUYkNv17ltmqsLtflHWOjpxr68jPNN6v2ka8R4iN7Ui0WuDSciWkrllKx1qxVFosqf1oLyFQM8vmZWbPxUdzFT8lwkMVG1SmhgHNlygGaYQmSBxrozDqBF8JmJMxytLzP2Bj47DrkbE0JBsxWqcncYH3gmoJYOUjM5jqQHkqiW6s4OTlRXRp9yUm2B0atkrGaPSk8wdUOHgGrAfxxbKfrHCam8VvlQZjsE4ibdSW6zC/7pHjMwmgf1YjE/UuahjEnZ7Zgo91Igr6l4Jcez1v1OrA9NydhDgfqS1R4SB5VG2BEuXpbhw51URPn1KnLhmFw1TKvPrJXcut9VxWQ6VNIOY6uAaagCXOuFtI/J3hHR7bQEZD9MYJo/VfdNw3FZ0jsFzqVf+xlCYrYA6M44Q99fjkHrF3/iBuEVWt5I2I4MmQ4dneLXECiBRwUrMxKe3HrnYmXNN4TcNuAgh2lYDrYF2JxJkhJ/PR5xtAuWnhqezlP+rE+6OJCzXXxm3BmUDEf4nQQ34a3mN4vu76is4C9PlpYq4kxpxxpTNrtravMN1zmRW05fxbELe8Xnadb1gdZnyWoyIRrNENM3kPnDIC7+0UWH3SXIBochia1NE25wmf46ViYrut6lHbIFshVDVf3UEOk2+w=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(136003)(366004)(396003)(451199018)(54906003)(66556008)(6486002)(6916009)(316002)(66476007)(8676002)(966005)(66946007)(478600001)(6666004)(4326008)(52116002)(41300700001)(6506007)(1076003)(6512007)(26005)(66899018)(8936002)(186003)(44832011)(5660300002)(2906002)(2616005)(36756003)(83380400001)(38100700002)(38350700002)(86362001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: n8MNN0q+wZ3YoGxc29TcxFqHFPMPtt/eON+jS8ehL3mX9cLGMttF/sUtGOguuR9yfD3kBEo00vdTMAkghDowmy6EwSuJx0M5TOWF0yISWwaEuzXChWeVOc4hvMfouc305BWep95qZc9KxJpGki/Juyoz/aQSC50NEGcvKdyp8N+dsnNzi084Xtgvag02jW4U3P8Ito+LmzUYOSFNP0Yx67H62ItyQYz8SQQXRIknm31WQOell/WggHIip7caw7QE5CSRHYBsAXaeI4Jv6CqQrvQugzGMfGotazwQ4RaOfwmYQFeBamacVz1UbcnyevYx79H/AFCxje7zNlN47t0+cvDQjZi+YNSv+rmd5FrUbnDxWSKH/f1p6W5XOQoThUYALjq6JVvCG/mfhGrnjjvTypvUuhi/1CSqJHjw+i9qaAiMCt+KccmovJkfbLuh9Ucc+mcwbevz7Wd+2guyvENZ9TYN7tatDP878UEIO4ybySX/i7If2MD7nODKlEEr8++/ICs5X3uzelMuTijPQWlaA9z8evzLK6zqcONb7LtRxI+K7v0UXfh8bojLB0GbUnE7SLTyNWGylM0y3bhwg+PyAbc9EnUij1jILTU+3JghdAARAwSUPhWBqxbyzN6JJWElRzLUgzYhgUZs2PRFjojjQ+SY1l4VZOaqrrPLC2DeVOssdWzSV65VAE434Eqm/EB9ht/xiG7QS8zKJA5npYipJHZZrh039rsIg3rNZgyVl/18EgYC4fUnC3GOnwySSKD7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(136003)(366004)(396003)(451199018)(54906003)(66556008)(6486002)(6916009)(316002)(66476007)(8676002)(66946007)(478600001)(6666004)(4326008)(52116002)(41300700001)(6506007)(1076003)(6512007)(26005)(8936002)(186003)(44832011)(5660300002)(2906002)(2616005)(36756003)(83380400001)(38100700002)(38350700002)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3YX6KYhnuAWwfVIs6gp8gBJQ64/Y1oPbkJOTSZmPkv7e6sR6SesJv/BvmmyC?=
- =?us-ascii?Q?YGNJZvlblbmj8FbtasIXSKCTFD5JJsHqKZNkdCJ7V1+wR1247jm88MxuaczH?=
- =?us-ascii?Q?L+dRr2RJSd4O27ZC7MS+Uxq54KnebcGMkVq0b4DbFK39AvnBOY+bdhOAUgLa?=
- =?us-ascii?Q?xLVRjoDT95vU9cTZ7OMWUu+rWyCm1uiU4KsoxSLvAGs4vnM5z4M1fgclhNMT?=
- =?us-ascii?Q?rkb5V4dY0B11wujtxxFpwde4tLm1b1yGtjUrA/L/l1JvjLAzTIt9mQfCzisT?=
- =?us-ascii?Q?6IP2GMNxcr3Yrgus7+3cNjPVM8o1qqqFTr1EZmPY7Gm0jSkQkCwfeFO9CvAb?=
- =?us-ascii?Q?5R/q7xY51rtWEVJ0iVuLqC8zgQ+X8x42ouzBZ4FZqZXSeycrrxR5+iqlfqe2?=
- =?us-ascii?Q?sGXwkzg9jNvxwZBlDXZ+JYoA6D7gW7fcgcOBI4B4fp0tfkdE0Zm1oDuQz02e?=
- =?us-ascii?Q?DPTpkZ0eg9kAHHtV216Sbty/zEUTSIrPFrzUcxZCDUVmCUCrE2XlAFZ4bneI?=
- =?us-ascii?Q?zOGe+lW15yZ0k11MS1M/usSGlPGe3Y+sYrsTUiEy+BUFdWV/MmG1jadzOgSX?=
- =?us-ascii?Q?MpCyCoFPyqTDI1+Yb0VXaiQBO2Tiipc6NGN3dCXFwky4DCpoj7fU7TI3RMgz?=
- =?us-ascii?Q?SzA8jXX0WLeogywsSMjoNE1NFUslc+uqvHYsD64RNA9tFzZDx+tXQDrqSgok?=
- =?us-ascii?Q?vYggTi5AmQ5B6nVBVT+/K84aUsCciLgTcMJ9Lsg7+HAhemfpAAC/ziWFFOUe?=
- =?us-ascii?Q?C+7BrZiFpOhIQUrt+ViN4JnG6v5IWqlIMD/zqDfdAsOwv4Zwig/jPB6rvjzx?=
- =?us-ascii?Q?7TdzbBywl2G2LuS1/80P4olon5+v/+x4gSJVaM4jxb5spF+jB5XkDSyDn58z?=
- =?us-ascii?Q?/LqC1MXcr6lU5UODDZkNi2wKOqKCdzjrKA8mjho0x6W/BqtBoD0pvfudPFie?=
- =?us-ascii?Q?GcqWBpGcgYYaenHdl0FITpqCgXtoBeOtjCZZxWLsyKXTCP9uWDyTmvPEvhsx?=
- =?us-ascii?Q?B9LmaUj0JX3sKkeLae4yByPSFiblvSO3TFQuJFT8QI5Cywv5INTQd22JVuFq?=
- =?us-ascii?Q?kg71DsFAVAFA1Y7lYRYJWmJSaPR2ny77Td8hA0ttFv9kIL8nSzxuozqLMj1H?=
- =?us-ascii?Q?cZItmz/liFhVMK5EAzo0T+CnliIpPKpo9esLz3b9NtEajdhXpQlvkeKVQa9T?=
- =?us-ascii?Q?YeXHhbIxpMh/7SnhdUdKqO2mqXkkCszOtqILGyvkWAf8ZBQgiIlHFJeB1bl2?=
- =?us-ascii?Q?tdRt4X+fuP4mb6pTPt8OQUpfxso5cx8rMqPQJMFhXrFa456J4TkEsvCclzTV?=
- =?us-ascii?Q?D8wQEv/Rg07744+eUh5giAaETUl4zy3EMpku8JzuruMjcbZh3X/khz+T0aIg?=
- =?us-ascii?Q?edyN9DVLDKkH456uEp/NVYKOXbooEni55+Rnr/ctkO+gmnZE5BlVG/vuYkGG?=
- =?us-ascii?Q?Z1bRxWvMmhuE6LpiFSfG3amdLRxbLZ6ssLnxDcXgHh59Rfi6hGMAByQ3IO4P?=
- =?us-ascii?Q?5fBuwFCjKiqw3a5T1ZjFfaYF4600iw4iI8vPTNpfv8l7uqR8yjBQf0jdecYN?=
- =?us-ascii?Q?HlrbHods+AtEZ3mCqyr9pAA7MHKnUry4FIcOHjSy1ECK9w5wzdn8iyExv2ep?=
- =?us-ascii?Q?dg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9TCiQQKEUDuXb4s5SL3NLQN4gc62T30HolErvfPwpbgXa7fvr6DnZshmWxTz?=
+ =?us-ascii?Q?2IJPZdSMFswX/JxHdA9uRkJoxA3MAqUkQvHx8s57TAiLMsGV4TD0CtBC7v/M?=
+ =?us-ascii?Q?N1ue5D4ShGLwZb+osTrPqnDyKoNEwolO+tJDpjK30ADQ+Z7ASW+Sx8c/IcAu?=
+ =?us-ascii?Q?iE9XVqQ/ZWhORUO6B2C3IZxde+Hzl490Vv/6KKUWPKEvwWKn3E47FKx5rgtz?=
+ =?us-ascii?Q?dcXnYwUJeU3+jPae+jw8m+KdkwKnBVQWgI6J70QCcsCXRCZYdmS62bhBi03z?=
+ =?us-ascii?Q?1wnz+plK+VIDAPd+ZnonzH2tUq4ezKkeQbSvhzZBD5ej003PCxbRHRHkv59Z?=
+ =?us-ascii?Q?Fte2RRaKTE+SxEIEhr/2lxI0WRclvjJafFJuIROQuY2sl4Z8ExRNsChbp0u/?=
+ =?us-ascii?Q?jCaCOvGoWy8T2O+ZYQWBTXdg0iR1wPxUQDJaQdN8TxM0j6aHjCC+CNVbL51m?=
+ =?us-ascii?Q?qHbV7qHEgGU/esbQg/va6nguio7bv+TygZ5Omhb1hg1hRG9+Habc6wTuOniX?=
+ =?us-ascii?Q?m02Fh2nQRjLsaKzNnCH6bWU//IgQO+KK3EMzphT9zp5n54klejJqeOxDGQaq?=
+ =?us-ascii?Q?EzYzWXmHpE1hWC1lQvje0RSl5Ey/mtf8kv/Nw7l8pTiwQe5w5XIQMVmxaNyj?=
+ =?us-ascii?Q?3wj7xw2ibn5mAs/NhaoBzRUvVC65Bl6AiL0heZcQFuH6NdY0pRJeyrDP7Ygr?=
+ =?us-ascii?Q?wHql2qd7M8DeFKSJBZruOTrqDWn2x11gY0pZM7fkxs6eAZIFZhbdRwkeeqh7?=
+ =?us-ascii?Q?6hssamNM3Jnj588XaN7TDn5s6MXxe6hcDJDM0vDZIFKcBfURXljL3hEOBjEL?=
+ =?us-ascii?Q?OeA6xIkreMhd5RzniflRAFdH4fK33HhyGaJ3i9HvhlW9znWLs2bJ+CE7TclC?=
+ =?us-ascii?Q?N2SCOPa8xROFUkUrVBCMvRievIjl+GnJVtT4qu4UGt9AXK1vxbPCHRg4RBzc?=
+ =?us-ascii?Q?vuBmzJzcOYUzQbYstb13gYcLET1hMmpy1i6c7/CWNKT8HTQozdQ9z3/I/Za8?=
+ =?us-ascii?Q?ZyebSIaqCr3jKmLkhoywdhDGI1x36d3M/JC3spdjfIWXpNyGxnbHrDwKyT6C?=
+ =?us-ascii?Q?7giqoJB+bJP6wGC9MBo4T5byvw/n8uNhvWbzOpV+lu+vHcHKgJx5v3au3r7g?=
+ =?us-ascii?Q?a5MRGqfX3QQqy1KBscIEQLMa6X8GxtQIASTzAAMg73keuo2okNFS2c2PMyHk?=
+ =?us-ascii?Q?gFwb8juhGiH1YUwN2uXzWyb806evsbufTW5mhTMh6nCl9F+fa4CsUyRDfgM1?=
+ =?us-ascii?Q?o4hvNukpxi68Cap36ccxMGaoOrixk0Bbe0IstTAugIXeRei6FteIPeWZjDaR?=
+ =?us-ascii?Q?Kj+v/UW9Mk1V9HvQ5BDUP4zQk0mulxU6ExAA43NouUYExJUTK3adUTaImS6J?=
+ =?us-ascii?Q?5D9T+EW+lpvTPmc7bsTb5WxLR1jCdbOnave8ytlEnTXcJZstg0GTyHxG3lDH?=
+ =?us-ascii?Q?niIbgZowZO8w/TeD8YvUcKJH3B1K1GuUFozkN5AHOKGOszIfnydwLxLZr+PC?=
+ =?us-ascii?Q?JvO4Ctqg4pVixT3BOb1cYZSdH4xk0Eec/8xNjvcTxtLSZ5LFJgiC+zD/VxG7?=
+ =?us-ascii?Q?SOA7E0O8N7hMQ1qRvg5iie6PXUnvKDTQdD6vnVNhHwBYRPI8ckbplS5rA70g?=
+ =?us-ascii?Q?bg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5e051aa-376f-46a7-5cc9-08db2b2e8e3b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ef91e27-6a3f-48f6-7c16-08db2b2e8ebe
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 23:38:36.0614
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 23:38:36.9207
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V7KOQOri9AVhRd7PCGTnxbbfp2lCEjQ8gmnXkhgNZkbALbyerULz7lXc8qPeT6k6FbMzzWqDQg9eGvZSfB/b+g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: WRFDoVVswj2UM6BfqLDo/rPF38nQ+JTMZqoYK0EVHUf9v5pxvU9kK6O+TNXTDJud4K9c2vdux5rv5L2M69hy+A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7263
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -115,78 +117,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric started working on removing skb_mac_header() assumptions from the
-networking xmit path, and I offered to help for DSA:
-https://lore.kernel.org/netdev/20230321164519.1286357-1-edumazet@google.com/
+This is a preparatory change for the deletion of skb_reset_mac_header(skb)
+from __dev_queue_xmit(). After that deletion, skb_mac_header(skb) will
+no longer be set in TX paths, from which __vlan_insert_inner_tag() can
+still be called (perhaps indirectly).
 
-The majority of this patch set is a straightforward replacement of
-skb_mac_header() with skb->data (hidden either behind skb_eth_hdr(), or
-behind skb_vlan_eth_hdr()). The only patch which is more "interesting"
-is 9/9.
+If we don't make this change, then an unset MAC header (equal to ~0U)
+will become set after the adjustment with VLAN_HLEN.
 
-tcf_vlan_act() is also a potential caller of __skb_vlan_pop() on xmit,
-through skb_vlan_pop(), but I haven't actually managed to convince this
-veth setup to not use vlan hwaccel tags, so I couldn't test my
-assumptions:
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ include/linux/if_vlan.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-ip link add veth0 type veth peer name veth1
-
-ip netns add ns0
-ip link set veth1 netns ns0 && ip -n ns0 link set veth1 up
-ip link set veth0 up
-
-ethtool -K veth0 rx-vlan-offload off tx-vlan-offload off
-ip netns exec ns0 ethtool -K veth1 rx-vlan-offload off tx-vlan-offload off
-
-tc qdisc add dev veth0 clsact
-tc -n ns0 qdisc add dev veth1 clsact
-tc filter add dev veth0 egress protocol 802.1Q flower vlan_id 3 action vlan pop
-tc filter add dev veth0 ingress protocol all matchall action vlan push id 3
-
-ip link add link veth0 name veth0.3 type vlan id 3
-ip link set veth0.3 up
-
-ip -n ns0 addr add 192.168.100.2/24 dev veth1
-ip addr add 192.168.100.1/24 dev veth0.3
-
-I'm likely going to need to resend this, but I'm not able to come up
-with something better for today, so posting this at least for a
-preliminary view.
-
-Vladimir Oltean (9):
-  net: vlan: don't adjust MAC header in __vlan_insert_inner_tag() unless
-    set
-  net: vlan: introduce skb_vlan_eth_hdr()
-  net: dpaa: avoid one skb_reset_mac_header() in dpaa_enable_tx_csum()
-  net: dsa: tag_ocelot: do not rely on skb_mac_header() for VLAN xmit
-  net: dsa: tag_ksz: do not rely on skb_mac_header() in TX paths
-  net: dsa: tag_sja1105: don't rely on skb_mac_header() in TX paths
-  net: dsa: tag_sja1105: replace skb_mac_header() with vlan_eth_hdr()
-  net: dsa: update TX path comments to not mention skb_mac_header()
-  net: dsa: tag_ocelot: call only the relevant portion of
-    __skb_vlan_pop() on TX
-
- .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   |  3 +-
- drivers/net/ethernet/emulex/benet/be_main.c   |  2 +-
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  9 ++---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  2 +-
- .../ethernet/qlogic/netxen/netxen_nic_main.c  |  2 +-
- .../net/ethernet/qlogic/qlcnic/qlcnic_io.c    |  4 +--
- drivers/net/ethernet/sfc/tx_tso.c             |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  7 ++--
- drivers/staging/gdm724x/gdm_lte.c             |  4 +--
- include/linux/if_vlan.h                       | 35 +++++++++++++++++--
- net/batman-adv/soft-interface.c               |  2 +-
- net/core/skbuff.c                             |  8 +----
- net/dsa/tag.h                                 |  2 +-
- net/dsa/tag_8021q.c                           |  4 +--
- net/dsa/tag_ksz.c                             | 18 +++++-----
- net/dsa/tag_ocelot.c                          |  4 +--
- net/dsa/tag_sja1105.c                         |  4 +--
- 19 files changed, 65 insertions(+), 51 deletions(-)
-
+diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+index 6864b89ef868..90b76d63c11c 100644
+--- a/include/linux/if_vlan.h
++++ b/include/linux/if_vlan.h
+@@ -351,7 +351,8 @@ static inline int __vlan_insert_inner_tag(struct sk_buff *skb,
+ 	/* Move the mac header sans proto to the beginning of the new header. */
+ 	if (likely(mac_len > ETH_TLEN))
+ 		memmove(skb->data, skb->data + VLAN_HLEN, mac_len - ETH_TLEN);
+-	skb->mac_header -= VLAN_HLEN;
++	if (skb_mac_header_was_set(skb))
++		skb->mac_header -= VLAN_HLEN;
+ 
+ 	veth = (struct vlan_ethhdr *)(skb->data + mac_len - ETH_HLEN);
+ 
 -- 
 2.34.1
 
