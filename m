@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 698516C423D
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 06:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A286C423C
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 06:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbjCVFkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 01:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53646 "EHLO
+        id S229555AbjCVFkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 01:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbjCVFkX (ORCPT
+        with ESMTP id S229694AbjCVFkX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 01:40:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83B41258F;
-        Tue, 21 Mar 2023 22:40:21 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859D12855
+        for <netdev@vger.kernel.org>; Tue, 21 Mar 2023 22:40:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63B80B81B73;
-        Wed, 22 Mar 2023 05:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0312FC4339C;
-        Wed, 22 Mar 2023 05:40:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F473B81B5B
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 05:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0D8ACC4339B;
+        Wed, 22 Mar 2023 05:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1679463619;
-        bh=YrKBCjQNcJ4f2rJkrtSBAF6Ozw/HGSPyJag5zYV3isI=;
+        bh=Be2plHDAC8wXQh6A+X607TnvD9n4jWY/Ubn3JXpAAlk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DXXc19iFJZoheKTCLlaqQM+rfFwPK0XNqSpd4xLRw0cLu5vjwUuzT37BwJLNaBuU/
-         vHt4Apv0rvEoW3cREjLqV+TTyr82z8niQ2uXA0Eo7VFYmg2DsOacZCgQvLSffs0Qc5
-         +Xu960RXa8/2YMpboNkYmV+H4HQWHkEV2ZK10qbu2PWCE5tyOMsHHc28lwXMh+mUOQ
-         Ce9eOR1+WC3ppypR7ezdqdMUOKTy1nfpRV4bzVG+HfxNrPSVpJhBxj/ZVoEQ0M+B3Q
-         zjiUDha+5BkGt3HqiOSJgDpy7b346yZ6qyQMqla5eENi0Lb14yArmRCnGOBuFkClYW
-         7uBlrC3aza3Ag==
+        b=dWDf6X2o7j10CIsW9BRq5/XAfCm18zJ5Ri/46V0daJkau0H/eLAk2IEPN7/yPYc98
+         7vHeyMPj1PVVlFAJSal8FXl9xN0AdD2kYgdbf+gVKXvRjQ7qEAhDXOlxyAoLa+sRFg
+         Zog/xhrb9syQblPh38/rG7+KS/SSuV62TAk5u6nhkTPDldvrVtSYmWlHU6vlcOuCgj
+         v19KbnGo3M87CVK7ysSXqp4cALYtPoil1z03+hY4BhNmzfIiX0klPR2hbdoYRKtfCm
+         9YVVUe69GgVGV3xj4X0UlmwpkDSuPoN7GH4hwmcFbghpxp1NeGPzz3YL8xTXFhqzhh
+         rurRX/HTohrnw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC074E52513;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E3ACBE4F0D7;
         Wed, 22 Mar 2023 05:40:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: atheros: atl1c: remove unused atl1c_irq_reset function
+Subject: Re: [PATCH net-next 0/3] net: remove some rcu_bh cruft
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167946361889.17510.2656366855499005981.git-patchwork-notify@kernel.org>
+Message-Id: <167946361892.17510.15632019270276603427.git-patchwork-notify@kernel.org>
 Date:   Wed, 22 Mar 2023 05:40:18 +0000
-References: <20230320232317.1729464-1-trix@redhat.com>
-In-Reply-To: <20230320232317.1729464-1-trix@redhat.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     chris.snook@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, yuanjilin@cdjrlc.com,
-        liew.s.piaw@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+References: <20230321040115.787497-1-edumazet@google.com>
+In-Reply-To: <20230321040115.787497-1-edumazet@google.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dsahern@kernel.org, netdev@vger.kernel.org, eric.dumazet@gmail.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,22 +57,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (main)
+This series was applied to netdev/net-next.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 20 Mar 2023 19:23:17 -0400 you wrote:
-> clang with W=1 reports
-> drivers/net/ethernet/atheros/atl1c/atl1c_main.c:214:20: error:
->   unused function 'atl1c_irq_reset' [-Werror,-Wunused-function]
-> static inline void atl1c_irq_reset(struct atl1c_adapter *adapter)
->                    ^
-> This function is not used, so remove it.
+On Tue, 21 Mar 2023 04:01:12 +0000 you wrote:
+> There is no point using rcu_bh variant hoping to free objects faster,
+> especially hen using call_rcu() or kfree_rcu().
+> 
+> Disabling/enabling BH has a non-zero cost, and adds distracting
+> hot spots in kernel profilesm eg in ip6_xmit().
+> 
+> Eric Dumazet (3):
+>   ipv6: flowlabel: do not disable BH where not needed
+>   neighbour: switch to standard rcu, instead of rcu_bh
+>   net: remove rcu_dereference_bh_rtnl()
 > 
 > [...]
 
 Here is the summary with links:
-  - net: atheros: atl1c: remove unused atl1c_irq_reset function
-    https://git.kernel.org/netdev/net-next/c/f6f4e739b164
+  - [net-next,1/3] ipv6: flowlabel: do not disable BH where not needed
+    https://git.kernel.org/netdev/net-next/c/4c5c496a942f
+  - [net-next,2/3] neighbour: switch to standard rcu, instead of rcu_bh
+    https://git.kernel.org/netdev/net-next/c/09eed1192cec
+  - [net-next,3/3] net: remove rcu_dereference_bh_rtnl()
+    https://git.kernel.org/netdev/net-next/c/fe602c87df1b
 
 You are awesome, thank you!
 -- 
