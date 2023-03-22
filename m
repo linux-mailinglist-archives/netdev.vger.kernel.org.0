@@ -2,186 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C3A6C596B
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 23:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C58D76C5979
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 23:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbjCVW1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 18:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        id S229620AbjCVWfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 18:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbjCVW1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 18:27:48 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAFC23A50;
-        Wed, 22 Mar 2023 15:27:46 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b20so46137863edd.1;
-        Wed, 22 Mar 2023 15:27:46 -0700 (PDT)
+        with ESMTP id S229508AbjCVWft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 18:35:49 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC14C18E
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 15:35:47 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id m6-20020a05600c3b0600b003ee6e324b19so63409wms.1
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 15:35:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679524065;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=e/Wjm0b8Ik7+X2MQf3m3hky1zdDJvNFJ4agRqoB9mA0=;
-        b=JQUJQb9gDALwd6Y7wgUsxJSfzD42gRcFCBl+E45QH5FnfzpRHlivPXbtU6vl/Go/yc
-         z/o6VwbUuEs2rsAmGDsfIRwoKU+G5hvXOOKpjvk8mm9iCZFfAHNkwtfyM+9CuOZ8ZYV1
-         z2ef2J+von7Wvbkr+dMh4qaRJmRq6pXhDiFs/Dyol8PVYRTOR86kWd1gtPPFAfo/JkPd
-         2ug/1DAdmXCXrcsot3W+oG9URJn506AB14fh6d557cKSfBI2lrpeL1CcmC2fuNKhbBcO
-         xkcCKNHzFsfSFqsudAw2cKVs5sNkhqp+gLSQhsmdQXfA7NnfZCPXZ+DZeia6spYkSrFV
-         OKUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679524065;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=gmail.com; s=20210112; t=1679524546;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:references:cc:to:from:subject:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=e/Wjm0b8Ik7+X2MQf3m3hky1zdDJvNFJ4agRqoB9mA0=;
-        b=aBNdNFfRGByk9hTTMREUP1rj0JCdMvFjiJ77nwlv+VhpNxG7zk0nTtwAtq5lUMnkI3
-         Oyh6o3gj58CPpDJtm27C4NAdWRSRgzqCHbKc1GsE3CpN37MpLrs2uhYqjo2vX7xGdeT0
-         Fi6ZzEpeVlhb/wUt7vTYonnZs0V++GQQ0GeEW8rUxryBLeNlje7zbBQHA+eL7Rggt0Uw
-         ldKaXxtsW++f20lzAfe77kU2z2hHcWIEkRiJGrH6Q3sHYmFdQ6vMmokpR1PnmGcfGbOo
-         k+E3/q0KrbVFLByubSzuVoUbaOFOsHiU2uoVpcXR9cmsT1JdrJlqiKPWS2DKhwkjEcwp
-         PPQw==
-X-Gm-Message-State: AO0yUKVcHMeYqM9Z2WcB3KsJIjrIt//U1jAv7TZQ8luZm/ckRRAT6QmB
-        Plc7fHxZYz/7BUBTuS/OplYvII7MIzM/GP9kzS4=
-X-Google-Smtp-Source: AK7set8gUyy1sCqRru6eNQSGWAYy+Eqil0jvDXyYXA+sgAPfrL/BhDbBOzzjpcL26JACm1NBn4cQczKuSSkzdJN/AzA=
-X-Received: by 2002:a50:c3cf:0:b0:4fb:2593:846 with SMTP id
- i15-20020a50c3cf000000b004fb25930846mr4193269edf.3.1679524064488; Wed, 22 Mar
- 2023 15:27:44 -0700 (PDT)
+        bh=rR3fuvrC+FOjt4OcNATPVeisOUvCaTLcSxjAeVnvdjE=;
+        b=H9hosocOXushe8xp+xY7tLfConHZ3Tr5KxVGAnhfMBZIuA71altgeZDkn1CitINeWM
+         88rE758qh3aoRAG9mJC/4gbiQptbGosUFpzWpBwSH094Dd+oMpsyB+ew0cYzHxwat4zz
+         I0sbM/PH8CD4Pz2kXdmFhkQkM8aX1RI63bQWRvGHHEuJ5bkzTul8bMw01U/Yn4dRj470
+         W27QYQyMnxKqjmY5ILKKajcukUa2LoUTudXqL+ylBShYewI7MukSLXe7qCubqzzr2LCL
+         uEfSpvCp5jBMHz++2mQpmSFRbo0zU82cUdIGsq39rbW7lN0HIems5TJyGh70dEhMp22h
+         I7yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679524546;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:references:cc:to:from:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rR3fuvrC+FOjt4OcNATPVeisOUvCaTLcSxjAeVnvdjE=;
+        b=uWNTsu7DyDUeOuYQo9MobgrppHQ4FLDCXE1qQwZC67Tv4TXvD28AI2y07hAGYFxiIR
+         dgdfGgdVY0DTZj907Jc4CCRDYVmQ+bL5ucxfBJrmDSQgXOQiEPHUsBgiIh3PioWuTws8
+         zVjBN2U/IKzDiS+kx06fHLn1exB3q4H7VNKSZn2bgHcHTS6RTFEpcKi7i5CVWDHx12Xr
+         4nJSD3D2XUvpZWpVy1Fn8BQmmw144oEAZPA3XSMZOqle3VeZaovIx9c67OWDYmiwdOov
+         6fMb/yAXx/hSxFXm90AiIQ3K3MtVfsnCvTo0eshd1xbfHxJKyjEains+SZNoP47wRtTX
+         MZHQ==
+X-Gm-Message-State: AO0yUKVsAHUvYwbox5I3Hss895ZSbcGnQ7zqocF+DbQfQKFvkbS6DPp7
+        FbEmCZT8paZ8Sr8nJj0aRwc=
+X-Google-Smtp-Source: AK7set+zBoJa6hKoHoW7fmrl2dXqhQmclnV85aL+sepZhGGGpHmHurs0d1XDAIFU/a5R1Wg+D1RqiA==
+X-Received: by 2002:a05:600c:2304:b0:3ed:2949:985b with SMTP id 4-20020a05600c230400b003ed2949985bmr777092wmo.23.1679524546295;
+        Wed, 22 Mar 2023 15:35:46 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id p20-20020a7bcc94000000b003edd1c44b57sm89940wma.27.2023.03.22.15.35.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Mar 2023 15:35:45 -0700 (PDT)
+Subject: Re: [PATCH net-next 5/5] sfc: add offloading of 'foreign' TC (decap)
+ rules
+From:   Edward Cree <ecree.xilinx@gmail.com>
+To:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        edward.cree@amd.com
+Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
+        habetsm.xilinx@gmail.com
+References: <cover.1678815095.git.ecree.xilinx@gmail.com>
+ <a7aabdb45290f1cd50681eb9e1d610893fbce299.1678815095.git.ecree.xilinx@gmail.com>
+ <ZBGZvr/tDZYaUAht@localhost.localdomain>
+ <4553b684-56ec-fe81-1692-b11e10914941@gmail.com>
+Message-ID: <b3ec1f69-eeb0-9c5c-7fdc-e520bd63385f@gmail.com>
+Date:   Wed, 22 Mar 2023 22:35:44 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
- <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com> <b5c80613c696818ce89b92dac54e98878ec3ccd0.camel@huaweicloud.com>
-In-Reply-To: <b5c80613c696818ce89b92dac54e98878ec3ccd0.camel@huaweicloud.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 22 Mar 2023 15:27:33 -0700
-Message-ID: <CAADnVQJC0h7rtuntt0tqS5BbxWsmyWs3ZSbboZMmUKetMG2VhA@mail.gmail.com>
-Subject: Re: [PATCH 0/5] usermode_driver: Add management library and API
-To:     Roberto Sassu <roberto.sassu@huaweicloud.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Luis R. Rodriguez" <mcgrof@kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4553b684-56ec-fe81-1692-b11e10914941@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 5:08=E2=80=AFAM Roberto Sassu
-<roberto.sassu@huaweicloud.com> wrote:
->
-> On Tue, 2023-03-21 at 19:23 -0700, Alexei Starovoitov wrote:
-> > On Fri, Mar 17, 2023 at 7:53=E2=80=AFAM Roberto Sassu
-> > <roberto.sassu@huaweicloud.com> wrote:
-> > > From: Roberto Sassu <roberto.sassu@huawei.com>
-> > >
-> > > A User Mode Driver (UMD) is a specialization of a User Mode Helper (U=
-MH),
-> > > which runs a user space process from a binary blob, and creates a
-> > > bidirectional pipe, so that the kernel can make a request to that pro=
-cess,
-> > > and the latter provides its response. It is currently used by bpfilte=
-r,
-> > > although it does not seem to do any useful work.
-> >
-> > FYI the new home for bpfilter is here:
-> > https://github.com/facebook/bpfilter
->
-> Thanks. I just ensured that it worked, by doing:
->
-> getsockopt(fd, SOL_IP, IPT_SO_GET_INFO, &info, &optlen);
->
-> and accepting IPT_SO_GET_INFO in main.c.
->
-> > > The problem is, if other users would like to implement a UMD similar =
-to
-> > > bpfilter, they would have to duplicate the code. Instead, make an UMD
-> > > management library and API from the existing bpfilter and sockopt cod=
-e,
-> > > and move it to common kernel code.
-> > >
-> > > Also, define the software architecture and the main components of the
-> > > library: the UMD Manager, running in the kernel, acting as the fronte=
-nd
-> > > interface to any user or kernel-originated request; the UMD Loader, a=
-lso
-> > > running in the kernel, responsible to load the UMD Handler; the UMD
-> > > Handler, running in user space, responsible to handle requests from t=
-he UMD
-> > > Manager and to send to it the response.
-> >
-> > That doesn't look like a generic interface for UMD.
->
-> What would make it more generic? I made the API message format-
-> independent. It has the capability of starting the user space process
-> as required, when there is a communication.
->
-> > It was a quick hack to get bpfilter off the ground, but certainly
-> > not a generic one.
->
-> True, it is not generic in the sense that it can accomodate any
-> possible use case. The main goal is to move something that was running
-> in the kernel to user space, with the same isolation guarantees as if
-> the code was executed in the kernel.
+On 15/03/2023 14:43, Edward Cree wrote:
+> On 15/03/2023 10:11, Michal Swiatkowski wrote:
+>> On Tue, Mar 14, 2023 at 05:35:25PM +0000, edward.cree@amd.com wrote:
+>>> +enum efx_encap_type efx_tc_indr_netdev_type(struct net_device *net_dev)
+>>> +{
+>>> +	if (netif_is_vxlan(net_dev))
+>>> +		return EFX_ENCAP_TYPE_VXLAN;
+>>> +	if (netif_is_geneve(net_dev))
+>>> +		return EFX_ENCAP_TYPE_GENEVE;
+>> netif_is_gretap or NVGRE isn't supported?
+> 
+> It should be supported, the hardware can handle it.
+> I'll add it in v2, and test to make sure it actually works ;)
 
-They are not the same guarantees.
-UMD is exactly equivalent to root process running in user space.
-Meaning it can be killed, ptraced, priority inverted, etc
+Fun discovery: while the hardware supports NVGRE, it can *only*
+ match on the VSID field, not the whole GRE Key.
+TC flower, meanwhile, neither knows nor cares about NVGRE; gretap
+ decap rules expect to match on the full 32-bit Key field, and you
+ can't even mask them (there's no TCA_FLOWER_KEY_ENC_KEY_ID_MASK
+ in the uAPI), meaning the driver can't just require the FlowID is
+ masked out and shift the rest.
 
-> > > I have two use cases, but for sake of brevity I will propose one.
-> > >
-> > > I would like to add support for PGP keys and signatures in the kernel=
-, so
-> > > that I can extend secure boot to applications, and allow/deny code
-> > > execution based on the signed file digests included in RPM headers.
-> > >
-> > > While I proposed a patch set a while ago (based on a previous work of=
- David
-> > > Howells), the main objection was that the PGP packet parser should no=
-t run
-> > > in the kernel.
-> > >
-> > > That makes a perfect example for using a UMD. If the PGP parser is mo=
-ved to
-> > > user space (UMD Handler), and the kernel (UMD Manager) just instantia=
-tes
-> > > the key and verifies the signature on already parsed data, this would
-> > > address the concern.
-> >
-> > I don't think PGP parser belongs to UMD either.
-> > Please do it as a normal user space process and define a proper
-> > protocol for communication between kernel and user space.
->
-> UMD is better in the sense that it establishes a bidirectional pipe
-> between the kernel and the user space process. With that, there is no
-> need to further restrict the access to a sysfs file, for example.
-
-If a simple pipe is good enough then you can have a kernel module
-that creates it and interacts with the user space process.
-Out-of-tree bpftiler can do that, so can you.
-PGP is not suitable for kernel git repo either as kernel code or as UMD.
+So enabling this support is nontrivial; I've decided to leave it
+ out of the series and just remove all mention of NVGRE for now.
