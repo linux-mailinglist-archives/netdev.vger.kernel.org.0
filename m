@@ -2,161 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 744FC6C527E
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 18:33:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE816C5313
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 18:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbjCVRdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 13:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        id S229922AbjCVRzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 13:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbjCVRdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 13:33:44 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C079A2197A
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 10:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679506422; x=1711042422;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=iV8NBjgD8gUOuHMXg9ZSbkIqtu8JgYLUmVMhsk1w8ck=;
-  b=XjyOzN1xASYxAOs6G+vMx1N6wxUje3D91Ciqe7EekTJae7FuODQRHrBo
-   BDwaiyh7iPjpVif+mYHP/eZC0nVkKVepp/NVmYljJXgvuvlClxjLDkwN5
-   5oof+gE8tLY1ssITXJ1k0ONrtDjil7DSFCzpF575dc+xogD5av6kjQ4M6
-   hgV7u7EugoIK7fe1HWFVyz9+LfPUnuUwZYrAHqnVdhddM0T189HzUA5ld
-   YYzZZqap0Ad4xAIV8nqSmWOscvnuH7Vr3P88jW4ZkvzNe8J+IYakPk+e7
-   Vol8AGS3+BSG0t2sBf4OJKu6LNewTpMvV16CQURQn3mTBNV3CaJNWPmr/
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="339320948"
-X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
-   d="scan'208";a="339320948"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 10:33:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="1011458281"
-X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
-   d="scan'208";a="1011458281"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga005.fm.intel.com with ESMTP; 22 Mar 2023 10:33:39 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 22 Mar 2023 10:33:38 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Wed, 22 Mar 2023 10:33:37 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Wed, 22 Mar 2023 10:33:37 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Wed, 22 Mar 2023 10:33:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f62Wu0A9kyoCKk16RPCWj9FkSO41Prnnj0Ha6V6wRs+uJh2AHXDzBxlpqbmKb/b31u4w7y9Xu7NJl+PHhD7R79eS91i/V2VVmSbZA5NML2AyLcy0BeTmztOQkHxDGAKUVNEwB2XfvRahE7SFChfoVwSHsSs9blGvUZA9YvSR/NEd8iA6+N710PtPiRYX2ECPAsS2ph5x0tAYqTqTYZH2OCd5I/euVJMoRcIBKrlHuLIIZZTYcsvLKmc37oPgXTVlnySBo1KPYgV1JZmLNS0PySuWFNx3+iwhEZwHp1vbVBaNxwzSQwf3Md1h6txyJJWPg+AlXpItzfO4SmVKFMning==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aXS5wAs4nydufTsnTSXL4EdswUdGKFC0PrIr1WnJhLw=;
- b=BcbUeljxzb54zsUxKKyPb16ktI9inXwiN0lE2qVhZutCyiMF22jZ+aIPDQ1Ta18uur0aaIbxu2P+a/cOxKSokzsV+8M25OQiNTIEB+icwBa9mKu/zCtDzeRUebrCI3PQhn06L5TsDdOCYgd8drCkYUZDueuSe9usqo4vGeRiIRUjukp/Pk8aO+md63Aw3QlH9fMnD4SiNUpNizSLU6W/U0gc7pJZNzsHqy+ZAE4XZipEIOzJVpZzOqxlXZVt8O4m2KrRqg/FzGV3zohzihbXTiiLz45gK7jTa9aO0Ia8OieDowTbvSLSszrtxzheUl6MW2rb+vj9o3ZxZGkvf+RdjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com (2603:10b6:510:3b::14)
- by SA1PR11MB7112.namprd11.prod.outlook.com (2603:10b6:806:2b7::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
- 2023 17:33:33 +0000
-Received: from PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::9612:ae25:42a4:cfd6]) by PH0PR11MB5095.namprd11.prod.outlook.com
- ([fe80::9612:ae25:42a4:cfd6%9]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
- 17:33:33 +0000
-Message-ID: <ec5c3cf4-49b6-32fc-d7cb-06410d6497da@intel.com>
-Date:   Wed, 22 Mar 2023 10:33:31 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next v2 0/8] ice: support dynamic interrupt allocation
-To:     Piotr Raczynski <piotr.raczynski@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>
-CC:     <netdev@vger.kernel.org>, <michal.swiatkowski@intel.com>,
-        <shiraz.saleem@intel.com>, <sridhar.samudrala@intel.com>,
-        <jesse.brandeburg@intel.com>, <aleksander.lobakin@intel.com>,
-        <lukasz.czapnik@intel.com>
-References: <20230322162530.3317238-1-piotr.raczynski@intel.com>
+        with ESMTP id S229584AbjCVRzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 13:55:22 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845125DEEA;
+        Wed, 22 Mar 2023 10:55:20 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32MHsuO5033668;
+        Wed, 22 Mar 2023 17:55:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=gfC0z9F5EeG8mzQKSfB5cas3CbGhnxdksdcE8CAPS3M=;
+ b=MROidBYEqArqxyWD2tlMQ15Nc/TjlKcGK4RwXNtktWxdNUCcT1o0DDvqPZP1d3zSgvaz
+ Re6m6o5NAhCu7ldYk2XwYZVUftOOvrCE7zo48Rn/EWvXOzZPTUZghdi0Ug0AsALFa6au
+ 5NxZ8++vEc87paHdGCjMIZzN1aKOfWs7p7nvCfm6AsnDzX29dbUQqzmQCZCB6cUJe7Pm
+ mnikb4C8PcJ9QWAEyEVeE7oApI+SVThdFlK7ceTXMZm/sPM+mDpdWed4qk3VNDPTIiRa
+ IuywlJjSgyvZPDSjS/56MWzO5Fcl4EN8gQZNcyvCMiuYgdgVmghT4k4Te3i3gujc88mF CQ== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3pg6g1g048-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Mar 2023 17:55:07 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 32MH4arj018405;
+        Wed, 22 Mar 2023 17:54:23 GMT
+Received: from smtprelay03.dal12v.mail.ibm.com ([9.208.130.98])
+        by ppma01dal.us.ibm.com (PPS) with ESMTPS id 3pd4x7qvsh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Mar 2023 17:54:23 +0000
+Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
+        by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 32MHsM0q16646748
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 Mar 2023 17:54:22 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 20BA05805A;
+        Wed, 22 Mar 2023 17:54:22 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BEAC758066;
+        Wed, 22 Mar 2023 17:54:19 +0000 (GMT)
+Received: from [9.43.89.247] (unknown [9.43.89.247])
+        by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+        Wed, 22 Mar 2023 17:54:19 +0000 (GMT)
+Message-ID: <15173797-c28b-f1d9-9488-9cd4cebdaad4@linux.vnet.ibm.com>
+Date:   Wed, 22 Mar 2023 23:24:18 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [next-20230317][PPC/MLX5][bisected 4d5ab0a] Boot WARNING: CPU: 0
+ PID: 9 at net/core/dev.c:1928 call_netdevice_notifiers_info
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     linux-next <linux-next@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+References: <7fe9d0b0-7d77-79cc-405d-3ca38b552782@linux.vnet.ibm.com>
+ <ZBheva8pJ3VJq/pO@lore-desk>
 Content-Language: en-US
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20230322162530.3317238-1-piotr.raczynski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+From:   Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+In-Reply-To: <ZBheva8pJ3VJq/pO@lore-desk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 4j3xZ1vfW6pw_gjz4qkqYSUxH1ULMYRU
+X-Proofpoint-GUID: 4j3xZ1vfW6pw_gjz4qkqYSUxH1ULMYRU
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR04CA0005.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::15) To PH0PR11MB5095.namprd11.prod.outlook.com
- (2603:10b6:510:3b::14)
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5095:EE_|SA1PR11MB7112:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4266012-875f-42dd-4bbb-08db2afb8f10
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bl4jUXy7EV0HoZ6xMbiPhHXCyjYTw9oIsoPEagagcGlxhjGxfTXNbKSw10xwJULEWEqXP1Kic4vtZ0O4Yj8++vEdu0ccC3ekzxwTAN3C12UNej6XV2cJ8Cf4+Yn/7TAxSUpBTX50TZHMw6YFpoHMFnTssL4QY22rDaiDCNl9UCEZo/PdjTHVUY5ik4Mb2dTtxSWpdvnxRJsRSFCLGI2EUNYBeTaiM+bqm+a0Idp6cR46QNcPZ5mprxasbOee8gW4/TrpAXUaPiwb0du/7BIzhy8/Pv6WLTILB7DMsVD5OBTp/JRFCri4RnYc4uY4Q5RAZ60z8KYRrQUJbNP3kkaLPU/9bHyqDY+Y/heFEjwGyNniWT4LBHGC8w8v0hHpwBxBLT/SM/wiBFCKV6tXPnLYNQiAZhxV4+CM5LCV8yy5DtdYs1BEAZNckup41GKBbzgX40bPMKTlRxLokSE0N+MEYv92c/IhctG2A7fXSETjidkzjs51Gc/x+qtSG8o83YraVlLaCSkxWjgZyjHgLdTR8omHJDxQWpM6HFsj0zRGzzY/tBFrJtf7vGFem2ilb7uxIC0JX6w1OA0do5ZUfts0l6wQoCDchyfO7Udk4h/d5c+Ld+U49oYJ27hKyfOYWM7ipHEqavXA6U/gxraoJv+gl06WH+8Uh7D3y0xhBMcSWxx1ktSSd3eLMMFmja2WuiuJny9vUdqif/tEecdr6y30mamLYZ43is9SbSRf+eY7Mps=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(366004)(376002)(346002)(136003)(396003)(451199018)(38100700002)(31696002)(66476007)(316002)(66946007)(8676002)(4326008)(83380400001)(36756003)(66556008)(8936002)(5660300002)(41300700001)(2906002)(478600001)(82960400001)(86362001)(2616005)(31686004)(6506007)(6512007)(53546011)(186003)(26005)(107886003)(66899018)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L3BEeUcvbW9SZzN3YUgrMmY4aGtlcm1Ybmx1dDhUT2I3alA5Y1FvbDFHWVAy?=
- =?utf-8?B?SFJJRzdCYS8yUnFWbnZGdGx1RkJpRXI5NkFzVDQ1SHZoNGxXbGtGZkpmSWZP?=
- =?utf-8?B?bENYOGppMjdRanhHVG8yRG9UNURwSzRreWJQSGgvTkRNWnUxaFhUanhVWmZi?=
- =?utf-8?B?Y1huL0ZnRzFUTE5Ec1NKejBsaG1yY0dOcm8renVPc2M4WEFWR1dhRHBWQUpY?=
- =?utf-8?B?bzlkVFVWbm1yTXZvZFJUZkpvWWxORlVCYnlZL3gzMWZwTE9nMWc1NFdNcW1Q?=
- =?utf-8?B?WG9ES1kyREdBSkE3dHMxM1pCUnpKS1BDMkJaQ0l2TVloaVV6L0NqSnYyc0Ny?=
- =?utf-8?B?MXJrc3FOU0tRUFI1TUQxVW4zejFPbnY1eGtKdy9vOFJ5WjVoZDhMUGQxWkFO?=
- =?utf-8?B?YkZ4N2xUem9PNG9VbnhDYUJ0cTNCZEpZWkoxVis3WU42Y0U0TXByaVBVT0h0?=
- =?utf-8?B?d3RMYktmSUlCMUNYanE5QjNUVjlkYVNpdEZ3MXNQRjQybG1DbTdSM3lpWXFX?=
- =?utf-8?B?UDJkZDREQVBvMmtBZUJZSWhBaDZOOXQ1aUp4S1JhUFZYRlZaWDJ4UEw2ZHhS?=
- =?utf-8?B?YnI3eVVCMDVONjNSQUlIWUU0cFYyOXZJSnk4QlFINDVpa292T3N3bUI1aDRJ?=
- =?utf-8?B?VzErN0JxV1RBbVNYZkRXMm9OaHNIQm5FNHQvdU1Vdk45eHA3dVJDSjZ6K2Ez?=
- =?utf-8?B?VUpYNDJaUm5NNkYvcGRqUytQVTBXVTVyN2hpaWRmTUM0cWlvaklVclBIS09Z?=
- =?utf-8?B?Z2cvZUU5RU9TRGNwMjFJU3liMEtiT2Y3NWVneC9wNlhCalh3cUxFU2N4RVBq?=
- =?utf-8?B?YnJhdHMxZk9Zb0JhdGY1aWdobzNadkoxbCtmak9sM2NKWEpnS1YxS0U1MFp1?=
- =?utf-8?B?U3I4a2tZWnFGU1o3RXNYWTFROFdoeHJpTFU4TVpvaGxjU3VDdTFUUURsU2NV?=
- =?utf-8?B?eGsrQ0VUQnJ6T3hBMU15T1lmbVBiZVVDL0ZRdG1aSWYyYkdCL2Q4MWVadmYx?=
- =?utf-8?B?ZEtQcFNET0VPY2pZdzlaWHM1UUFHcUFUUXVKak45MVk4RzJqUTNPUU13MjM0?=
- =?utf-8?B?WFM3UHAvckJxUVliV0I1ekwvMXNSeXpMK1pISjZIbkpVUm01M2U5UkQwOXYw?=
- =?utf-8?B?S0ZDTlE0ODhtUFZYTkZCZlpHN0ZZaDlwckhIREY1MlRTdDQwcVVoSmFMQmhE?=
- =?utf-8?B?c3o0SlZCK05FR3FZYnN2WC9MR00yWW1zVUpIaHY3WjlmS0VJS3dNWGxzYVVx?=
- =?utf-8?B?c1BWNXJYRjVVSkZkM0RtNTc1RzU0cU9SeG9jUVgreFVIWGRRZUhuUURLc2hV?=
- =?utf-8?B?OWdBVnNOMEN6eFY1YzkweUpJL05nczQvNFpxb1Q2WWdzN2JmSi9xdGdmL3Zk?=
- =?utf-8?B?dVpFa3hLVFN6WWJPR3UrRzhEdm5ieEt1SFNRZldGRUo0VEtBQzRiMUFvM3NL?=
- =?utf-8?B?a1R1TTNwRkRIVHlJc2d1dmd2bTF2elZHeWtiWGdQdFlVZjIrM3BHcHRBSXVG?=
- =?utf-8?B?eTNETGtiSVdnVGo2aWxQeG94WTk3eVBnd20wL0F0YlhkYjgwcDRGbEhIY0Rt?=
- =?utf-8?B?dC9vdjh4c0d5QVpCTUxlbG0yaEk1eitXemlKcWZteTdCSGJVc1NvYVlxMkts?=
- =?utf-8?B?NFVYdWU5cDFibXJDbDNzYmJKUGpYN3NhS0xtNkt5N0d6VVhVQWJ2T2JXQkMr?=
- =?utf-8?B?YUtrOVE1cHhWMWZZeDhRcWpaeWVYYUtnTDJNcGY4T0ZId2FqOExmdUZkbkUy?=
- =?utf-8?B?a2xpODQyRUVzVm83ZUU1N0hjZkpobnlKT3I5cDNBeXhRNXpVRWN0aDdLRDli?=
- =?utf-8?B?R1AwMnE0aitlZTV0Z2dURldCVGI4b0VqRnFOeHZxZjZJcDdKNjk1TDRMZGJa?=
- =?utf-8?B?NG11VWhwYndrbE9RNE1KUHFrdUZJaHZWSTdmSE56V0tWT3owVnE5R2JOS2Rr?=
- =?utf-8?B?NXhya1F6ZEJXNkJWL09keCs0ME1CSENaNG9kVVhZcmZFNUlNbEZ6ZE1KRlBk?=
- =?utf-8?B?bWxVM0xQNlZXUCs3dnh3bnhSZ3p4RTVwMkxPb1RYUjM2aUlYTG5peGFQeVVC?=
- =?utf-8?B?akFYbHN4dWlPUStaMWU0bmRNVTNqNk1UbDB0QXRZUGRqMFhtb1NyRm12SmZ3?=
- =?utf-8?B?eVhBYVZxU05BK0x2ZW5XRHN3clZwaHJmbndMZzdTYjlMSTRjdkc5OGk0UzNF?=
- =?utf-8?B?MWc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4266012-875f-42dd-4bbb-08db2afb8f10
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5095.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 17:33:33.0455
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WNpBBSmcQiQbo+Nosd6NdsGF17xayIggqgteVAJCz+5LNnm5xiU5Ve/b9dfA8RVfm2goc0JUE7bpXNT930gL56c7vrEbuPVO0BBbHr+3D9c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB7112
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-22_14,2023-03-22_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 bulkscore=0 spamscore=0 suspectscore=0 lowpriorityscore=0
+ phishscore=0 mlxscore=0 impostorscore=0 clxscore=1015 malwarescore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303150002 definitions=main-2303220121
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -165,67 +93,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/22/2023 9:25 AM, Piotr Raczynski wrote:
-> This patchset reimplements MSIX interrupt allocation logic to allow dynamic
-> interrupt allocation after MSIX has been initially enabled. This allows
-> current and future features to allocate and free interrupts as needed and
-> will help to drastically decrease number of initially preallocated
-> interrupts (even down to the API hard limit of 1). Although this patchset
-> does not change behavior in terms of actual number of allocated interrupts
-> during probe, it will be subject to change.
+On 3/20/23 6:55 PM, Lorenzo Bianconi wrote:
+>> Greeting's
+>>
+>> Warning is seen while booting kernels from 6.3.0-rc3-next-20230317 on my
+>> powerpc Power 10 LPAR
+>>
+>> Boots fine without warnings when below patch is reverted
+>>
+>> commit 4d5ab0ad964df178beba031b89429a601893ff61
+>> Author: Lorenzo Bianconi <lorenzo@kernel.org>
+>> Date:   Thu Mar 9 13:25:31 2023 +0100
+>>
+>>      net/mlx5e: take into account device reconfiguration for xdp_features
+>> flag
+>>
+>>      Take into account LRO and GRO configuration setting device xdp_features
+>>      flag. Consider channel rq_wq_type enabling rx scatter-gatter support in
+>>      xdp_features flag and disable NETDEV_XDP_ACT_NDO_XMIT_SG since it is not
+>>      supported yet by the driver.
+>>      Moreover always enable NETDEV_XDP_ACT_NDO_XMIT as the ndo_xdp_xmit
+>>
+>> 4d5ab0ad got introduced in next-20230314
+>>
+>> @Lorenzo Could you please look into this
 > 
-> First few patches prepares to introduce dynamic allocation by moving
-> interrupt allocation code to separate file and update allocation API used
-> in the driver to the currently preferred one.
+> I would say this issue has been already fixed by Jakub here:
 > 
-> Due to the current contract between ice and irdma driver which is directly
-> accessing msix entries allocated by ice driver, even after moving away from
-> older pci_enable_msix_range function, still keep msix_entries array for
-> irdma use.
-> 
-> Next patches refactors and removes redundant code from SRIOV related logic
-> as it also make it easier to move away from static allocation scheme.
-> 
-> Last patches actually enables dynamic allocation of MSIX interrupts. First,
-> introduce functions to allocate and free interrupts individually. This sets
-> ground for the rest of the changes even if that patch still allocates the
-> interrupts from the preallocated pool. Since this patch starts to keep
-> interrupt details in ice_q_vector structure we can get rid of functions
-> that calculates base vector number and register offset for the interrupt
-> as it is equal to the interrupt index. Only keep separate register offset
-> functions for the VF VSIs.
-> 
-> Next, replace homegrown interrupt tracker with much simpler xarray based
-> approach. As new API always allocate interrupts one by one, also track
-> interrupts in the same manner.
-> 
-> Lastly, extend the interrupt tracker to deal both with preallocated and
-> dynamically allocated vectors and use pci_msix_alloc_irq_at and
-> pci_msix_free_irq functions. Since not all architecture supports dynamic
-> allocation, check it before trying to allocate a new interrupt.
-> 
-> As previously mentioned, this patchset does not change number of initially
-> allocated interrupts during init phase but now it can and will likely be
-> changed.
-> 
-> Patch 1-3 -> move code around and use newer API
-> Patch 4-5 -> refactor and remove redundant SRIOV code
-> Patch 6   -> allocate every interrupt individually
-> Patch 7   -> replace homegrown interrupt tracker with xarray
-> Patch 8   -> allow dynamic interrupt allocation
-> 
-> Change history:
-> v1 -> v2:
-> - ice: refactor VF control VSI interrupt handling
->   - move ice_get_vf_ctrl_vsi to ice_lib.c (ice_vf_lib.c depends on
->     CONFIG_PCI_IOV)
-> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/net/core/xdp.c?id=769639c1fe8a98129aa97c8ee981639db1e8955c
 
-The other option would have been to make ice_vf_lib.h have a no-op
-function that always returned NULL, since we generally would know that
-there are no VF ctrl VSI if CONFIG_PCI_IOV is disabled.
 
-But I'm ok with it being in ice_lib.c too.
+Thanks Lorenzo,
 
-Thanks,
-Jake
+Verified the patch and it fixes the problem and next-20230321 kernel 
+boots fine on my powerpc lpar
+
+Tested-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+-- 
+Regard's
+
+Abdul Haleem
+IBM Linux Technology Center
