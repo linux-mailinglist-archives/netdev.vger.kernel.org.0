@@ -2,118 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E29206C46E9
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 10:48:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 801BE6C471B
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 11:00:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229841AbjCVJsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 05:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55246 "EHLO
+        id S229691AbjCVKAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 06:00:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbjCVJsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 05:48:19 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB875FA74
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:47:52 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id x3so70228129edb.10
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:47:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112; t=1679478470;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=EI5kNSJUWZUDEom22MsOrhGWvDxqznok5W/2ifCXQ/A=;
-        b=ZayfKBcIE/g358ru+OBzbdUpVdKJJ6zEn9KYnohTOMrCypLCOlJsJPvHeZkSJTLKlF
-         mscVl2mfSar51SFRJBYZkgh5Bso3Y6EDchu9eNVsWRV8k59ohavBjtBQxWGC42QcNg8w
-         goeE/6ZSuX2BEV4y5nwM15gcI6jh/O+KB/Qv8J2XbAYyMIamCFXM38iac5rxvH1jnbXW
-         4U97OJZnSKgUP6rV/cl9eaDGvF0DzvZzsCeDHnqd8tQfHO9tH7VxFfQX4vKZZjnstm0F
-         ZVYgWOAwLK4odh7EuBy/FFlNclJCrbZE/XZWXENZtZ3tgzQQ/+e85QovKeB6ulfpRaqJ
-         UTfg==
+        with ESMTP id S229436AbjCVKAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 06:00:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306253A88
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:59:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679479181;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KGBG0nLcaqVCaoLHEF9OcE8CPFbuG5tHdTJ9VqGf1L0=;
+        b=b+nQmfwJh+3YJXJF9NquWx3c3HMfOfuBj7zCB6ymRjhv1Xnu1PEQeQYOW58agXH46HmNp+
+        azxBuQGAl931txwuX2uL4nocyM+2boMWNz0tL4qVfP29sQIux/S3tqhQQVs06rAg/Ws5uw
+        GlThU8TF8H+rWkeweLua0g3B3jnMBHM=
+Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
+ [209.85.217.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-597-Lfhgq6IEP4iW-VSqMbesdw-1; Wed, 22 Mar 2023 05:59:40 -0400
+X-MC-Unique: Lfhgq6IEP4iW-VSqMbesdw-1
+Received: by mail-vs1-f72.google.com with SMTP id d18-20020a67e112000000b00425d3211955so4751662vsl.2
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:59:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679478470;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EI5kNSJUWZUDEom22MsOrhGWvDxqznok5W/2ifCXQ/A=;
-        b=eP8ZJEadklPrK7cFsZvzkUgQKWUuLNQ+jCu51Qdr38BKooI34ypw0FdXKCbVqfg9rd
-         R+Ad2W84Rt+l4Zf2zb7ScZzl8cZ7wmrBlZWLq3fq838L0ACBZCJvQ5UATG5CabimihvA
-         ITf0MdEj7sQ7iPBbCndbUlp6nOOCvX/LvxFlQr9v6q46E67MqADCk1l8ygyCvMLpMx01
-         t1FqP6cLG+BLS6tmkDSlUj1KVZB/dsR9xfUXAZQ/vf+DGv+wrGNva3tVJc5OH7Z9y7rK
-         Vavudn2PlE2V6Q8s+ifgg+liUK6Au8do9HUhIbWCO4ASxjbLKaXHAXmm+2lJAIZT3yfj
-         iZbw==
-X-Gm-Message-State: AO0yUKWGh347AyHSwo2wCj01Q+HQ8vzJZZ0MwhnpjdgS6PUSmyQ4ZfFC
-        4FmPInylnnTQ6KA0j4Gl/WsAwg==
-X-Google-Smtp-Source: AK7set9h5Mt4NiwOQ8mcl/9qNI/VDRZnKQXW2IOJRIy2u++JoitWwik/yB97L8cAOHVkdcm+1H/f1g==
-X-Received: by 2002:a05:6402:414:b0:502:62:7c with SMTP id q20-20020a056402041400b005020062007cmr838503edv.24.1679478470525;
-        Wed, 22 Mar 2023 02:47:50 -0700 (PDT)
-Received: from [192.168.0.161] (62-73-72-43.ip.btc-net.bg. [62.73.72.43])
-        by smtp.gmail.com with ESMTPSA id k19-20020a508ad3000000b00501c0eaf10csm4493802edk.40.2023.03.22.02.47.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Mar 2023 02:47:50 -0700 (PDT)
-Message-ID: <928a2124-e8c8-471f-feda-0651d6465e57@blackwall.org>
-Date:   Wed, 22 Mar 2023 11:47:49 +0200
+        d=1e100.net; s=20210112; t=1679479179; x=1682071179;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KGBG0nLcaqVCaoLHEF9OcE8CPFbuG5tHdTJ9VqGf1L0=;
+        b=oui4NRsoQyTXT8exLtuLxj1HNmt9Sa6v88Tp6LLdY2qgjpoU/FFp+yu9tr9mWl3bpU
+         0n+J4BuW218tNANar5ysL6mI0UO/aKuswK/R9J24Dw8CPIQyybq4TKFgIAzrqqy7pscD
+         89M1GVFhQAVLDNM4mVTPJ4d4m0lKxNs91R+csitMkYbBxJPTOxl68CG/XEcSJUmuI7sR
+         E/w9MBNVEiJiBf6AWYUMsIC3SF+Xw2MqHkbzz/QbTvPSjN1UM/aqjHLBSjch8rk4y4Cl
+         GiUZEB+b+qnMHcwlOA27Dn+CPBE1UTMBwKsrILXZVv8Swd40520mmk78Wa7zqN3T8+pa
+         niqA==
+X-Gm-Message-State: AO0yUKUUJfQaR/n26L+YKyUWSJ6raJEkAuKnF4BDR5wgb4/kIy1fEt80
+        P0HZBF+NJZ7H8Nzr3bvHtY7XXhHHbpfkj4gqENScuX/3ruBOIJFBaonacyAz1SEO6z8S5Z4SQgY
+        VWj34rBiVmARbqzLmvwBkpqG/
+X-Received: by 2002:ac5:ccc4:0:b0:40f:42c7:25f with SMTP id j4-20020ac5ccc4000000b0040f42c7025fmr2447920vkn.0.1679479179583;
+        Wed, 22 Mar 2023 02:59:39 -0700 (PDT)
+X-Google-Smtp-Source: AK7set8oKZIRsXd2QJi/YoLOXNCkOojL9HERUI1U8eu+QCc5P/KIxvm+kKXv/ez+/1Kn4g2NAzosHw==
+X-Received: by 2002:ac5:ccc4:0:b0:40f:42c7:25f with SMTP id j4-20020ac5ccc4000000b0040f42c7025fmr2447911vkn.0.1679479179273;
+        Wed, 22 Mar 2023 02:59:39 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-244-168.dyn.eolo.it. [146.241.244.168])
+        by smtp.gmail.com with ESMTPSA id i13-20020a1f9f0d000000b004365a349a03sm1140018vke.7.2023.03.22.02.59.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 02:59:38 -0700 (PDT)
+Message-ID: <889f2dc5e646992033e0d9b0951d5a42f1907e07.camel@redhat.com>
+Subject: Re: [PATCH v4 2/2] gro: optimise redundant parsing of packets
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Richard Gobert <richardbgobert@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, dsahern@kernel.org,
+        alexanderduyck@fb.com, lucien.xin@gmail.com, lixiaoyan@google.com,
+        iwienand@redhat.com, leon@kernel.org, ye.xingchen@zte.com.cn,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 22 Mar 2023 10:59:30 +0100
+In-Reply-To: <20230320170009.GA27961@debian>
+References: <20230320163703.GA27712@debian> <20230320170009.GA27961@debian>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH net-next v4] vxlan: try to send a packet normally if local
- bypass fails
-Content-Language: en-US
-To:     Ido Schimmel <idosch@idosch.org>,
-        Vladimir Nikishkin <vladimir@nikishkin.pw>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com
-References: <20230322070414.21257-1-vladimir@nikishkin.pw>
- <ZBq7yv0W5MqhqYnm@shredder>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <ZBq7yv0W5MqhqYnm@shredder>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=3.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,SPF_HELO_NONE,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/03/2023 10:26, Ido Schimmel wrote:
-> On Wed, Mar 22, 2023 at 03:04:14PM +0800, Vladimir Nikishkin wrote:
->> --- a/Documentation/networking/vxlan.rst
->> +++ b/Documentation/networking/vxlan.rst
->> @@ -86,3 +86,16 @@ offloaded ports can be interrogated with `ethtool`::
->>        Types: geneve, vxlan-gpe
->>        Entries (1):
->>            port 1230, vxlan-gpe
->> +
->> +=================
->> +Sysctls
->> +=================
->> +
->> +One sysctl influences the behaviour of the vxlan driver.
->> +
->> + - `vxlan.disable_local_bypass`
->> +
->> +If set to 1, and if there is a packet destined to the local address, for which the
->> +driver cannot find a corresponding vni, it is forwarded to the userspace networking
->> +stack. This is useful if there is some userspace UDP tunnel waiting for such
->> +packets.
-> 
-> Hi,
-> 
-> I don't believe sysctl is the right interface for this. VXLAN options
-> are usually / always added as netlink attributes. See ip-link man page
-> under "VXLAN Type Support".
-> 
-> Also, please add a selftest under tools/testing/selftests/net/. We
-> already have a bunch of VXLAN tests that you can use as a reference.
-> 
-> Thanks
+On Mon, 2023-03-20 at 18:00 +0100, Richard Gobert wrote:
+> Currently the IPv6 extension headers are parsed twice: first in
+> ipv6_gro_receive, and then again in ipv6_gro_complete.
+>=20
+> By using the new ->transport_proto field, and also storing the size of th=
+e
+> network header, we can avoid parsing extension headers a second time in
+> ipv6_gro_complete (which saves multiple memory dereferences and condition=
+al
+> checks inside ipv6_exthdrs_len for a varying amount of extension headers =
+in
+> IPv6 packets).
+>=20
+> The implementation had to handle both inner and outer layers in case of
+> encapsulation (as they can't use the same field). I've applied a similar
+> optimisation to Ethernet.
+>=20
+> Performance tests for TCP stream over IPv6 with a varying amount of
+> extension headers demonstrate throughput improvement of ~0.7%.
 
-Right, that is what I meant when I suggested making it optional.
-Sorry for not being explicit. Please use vxlan netlink attributes.
+I'm surprised that the improvement is measurable: for large aggregate
+packets a single ipv6_exthdrs_len() call is avoided out of tens calls
+for the individual pkts. Additionally such figure is comparable to
+noise level in my tests.
+
+This adds a couple of additional branches for the common (no extensions
+header) case.=20
+
+while patch 1/2 could be useful, patch 2/2 overall looks not worthy to
+me.
+
+I suggest to re-post for inclusion only patch 1, unless others have
+strong different opinions.
 
 Cheers,
- Nik
+
+Paolo
 
