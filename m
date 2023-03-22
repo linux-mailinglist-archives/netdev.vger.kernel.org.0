@@ -2,151 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 653E06C5A5B
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 00:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7671D6C5A81
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 00:35:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbjCVXa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 19:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S230028AbjCVXfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 19:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbjCVXa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 19:30:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF9635B5
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 16:30:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC52E62345
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 23:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCCB6C4339E;
-        Wed, 22 Mar 2023 23:30:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679527854;
-        bh=dIF6TbbYR656AnmKMtLhVGsrjTBoDagis339ed244Bw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ajEsltBSZxg+dURtSgCc73GL0f+/RWMB5PpVGeQn1K44w8S/vzJh7DN2PChVbaCvf
-         yEkWE54xr+XiWT7BBnlFj3ggbCdD33fwNntHO0d+rXBi7CrStNJE55JVA7Bok+0ytQ
-         8JBKGce1OQc9E3wWkZ8FIeiaQc5fdADSlXwY6nDWVa5rZYxDoZdPGZx6wjwvCPgh1T
-         pT1Zl3JpSNqv5+RG7nkSnCuc9mA8yD9rWlZdXOfvVRvJdyMyxMW3aJOT45AJA+I8V3
-         0x8oNmLU5AoJWCZqja9xjx+9Ib4hs4qartR+jwXRRuIADiaEzK4E++VcYmOsWjCZpo
-         tkrcW9P3W2PwA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        willemb@google.com, alexander.duyck@gmail.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/3] bnxt: use new queue try_stop/try_wake macros
-Date:   Wed, 22 Mar 2023 16:30:28 -0700
-Message-Id: <20230322233028.269410-3-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230322233028.269410-1-kuba@kernel.org>
-References: <20230322233028.269410-1-kuba@kernel.org>
+        with ESMTP id S230018AbjCVXfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 19:35:46 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D7E234FB
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 16:35:44 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id c19so24796267qtn.13
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 16:35:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679528143;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1TcgHZ2xQVnxuAiwBC4tGBAmL/RkXYQSNK6o2LGLSpU=;
+        b=dXeEqPNZUqk18Xxz2OqUsTQDD178eeCo+mGCLV2B7t/Sr27amN0Ob7YX2R2J9kkcU5
+         mcmb1KBXepJMtyMx++g459eSV90zQ1QGRKylgYpR9ygFpcMyIwn2okFOm8864Yk4n/7r
+         eI7VAU1fqAxj4Zj7eoDl9vDiXDmXr+tZjeamx7mbZdGLSCryQxxXfi7XfJitXXby/bOO
+         wJlXBCUYcROubkJGs9ENn3UTaO56HwOpZy/CLtcIhSL4tkYbMsUYGd9oXdpSjtxXdYSK
+         pw8JnJhcTIQ3NRo7keectYgtqwn/c4kYEQuwW9zl1Wa4y9PusRFkKqO3C5DcETEj4q5u
+         5jwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679528143;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1TcgHZ2xQVnxuAiwBC4tGBAmL/RkXYQSNK6o2LGLSpU=;
+        b=vUC8yd7QLV8Q2QFOsiKvagxiJ+Y9wBQWn6DL1fYB6gJq0R0f7SwzY4vxtTu+3ZgNCb
+         j6/cYFCF93uvvr9PqtNR355+r4WLs1VJtbccPqz3csE+ihYNL92+Fs9p+fK/GFtTt0fD
+         IDTbKtvQWLrhu1EKk4wYMFuvXUoEy56eMRleP9g6+HT9+DamlhZ/plS3zcxHwEuchWoA
+         rsCk1dyIWLAFZg7HZUinR7vTsHOc3XZZM4sJ9pzoYa8jK6GzJjgp/PwXqeP6etSK9/bD
+         sFPSSphHPeNUofRMZt4yCmk32nUQLYTwyp7rT9isC/jO2V/Aq6hjrfdAUPPnDQegVemc
+         hxEg==
+X-Gm-Message-State: AO0yUKVLYU8IVPiaNewPkLu4KxXui5nZUxX4WLJDKtGZSIicOPFySbrE
+        YxUBK2JaNOZWVBedQ15d+XU04rAvVshuvw==
+X-Google-Smtp-Source: AK7set8cLenHFWTrkzvLHtm4oku88iesDXVOqAWXYGMhnnc29RsjuB/GQueZV/iy+majzpe8zc/FCw==
+X-Received: by 2002:ac8:5cc4:0:b0:3b8:6db0:7565 with SMTP id s4-20020ac85cc4000000b003b86db07565mr9881751qta.11.1679528143452;
+        Wed, 22 Mar 2023 16:35:43 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 69-20020a370c48000000b00746777fd176sm5834205qkm.26.2023.03.22.16.35.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 16:35:42 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [PATCH net-next] ipv6: prevent router_solicitations for team port
+Date:   Wed, 22 Mar 2023 19:35:41 -0400
+Message-Id: <7c052c3bdf8c1ac48833ace66725adf1f9794711.1679528141.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.39.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert bnxt to use new macros rather than open code the logic.
-Two differences:
-(1) bnxt_tx_int() will now only issue a memory barrier if it sees
-    enough space on the ring to wake the queue. This should be fine,
-    the mb() is between the writes to the ring pointers and checking
-    queue state.
-(2) we'll start the queue instead of waking on race, this should
-    be safe inside the xmit handler.
+The issue fixed for bonding in commit c2edacf80e15 ("bonding / ipv6: no
+addrconf for slaves separately from master") also exists in team driver.
+However, we can't just disable ipv6 addrconf for team ports, as 'teamd'
+will need it when nsns_ping watch is used in the user space.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Instead of preventing ipv6 addrconf, this patch only prevents RS packets
+for team ports, as it did in commit b52e1cce31ca ("ipv6: Don't send rs
+packets to the interface of ARPHRD_TUNNEL").
+
+Note that we do not prevent DAD packets, to avoid the changes getting
+intricate / hacky. Also, usually sysctl dad_transmits is set to 1 and
+only 1 DAD packet will be sent, and by now no libteam user complains
+about DAD packets on team ports, unlike RS packets.
+
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 41 +++++------------------
- 1 file changed, 8 insertions(+), 33 deletions(-)
+ net/ipv6/addrconf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f533a8f46217..cbd48c192de3 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -56,6 +56,7 @@
- #include <linux/hwmon-sysfs.h>
- #include <net/page_pool.h>
- #include <linux/align.h>
-+#include <net/netdev_queues.h>
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 31e0097878c5..3797917237d0 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4223,7 +4223,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
+ 		  ipv6_accept_ra(ifp->idev) &&
+ 		  ifp->idev->cnf.rtr_solicits != 0 &&
+ 		  (dev->flags & IFF_LOOPBACK) == 0 &&
+-		  (dev->type != ARPHRD_TUNNEL);
++		  (dev->type != ARPHRD_TUNNEL) &&
++		  !netif_is_team_port(dev);
+ 	read_unlock_bh(&ifp->idev->lock);
  
- #include "bnxt_hsi.h"
- #include "bnxt.h"
-@@ -331,26 +332,6 @@ static void bnxt_txr_db_kick(struct bnxt *bp, struct bnxt_tx_ring_info *txr,
- 	txr->kick_pending = 0;
- }
- 
--static bool bnxt_txr_netif_try_stop_queue(struct bnxt *bp,
--					  struct bnxt_tx_ring_info *txr,
--					  struct netdev_queue *txq)
--{
--	netif_tx_stop_queue(txq);
--
--	/* netif_tx_stop_queue() must be done before checking
--	 * tx index in bnxt_tx_avail() below, because in
--	 * bnxt_tx_int(), we update tx index before checking for
--	 * netif_tx_queue_stopped().
--	 */
--	smp_mb();
--	if (bnxt_tx_avail(bp, txr) >= bp->tx_wake_thresh) {
--		netif_tx_wake_queue(txq);
--		return false;
--	}
--
--	return true;
--}
--
- static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct bnxt *bp = netdev_priv(dev);
-@@ -384,7 +365,8 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		if (net_ratelimit() && txr->kick_pending)
- 			netif_warn(bp, tx_err, dev,
- 				   "bnxt: ring busy w/ flush pending!\n");
--		if (bnxt_txr_netif_try_stop_queue(bp, txr, txq))
-+		if (!netif_tx_queue_try_stop(txq, bnxt_tx_avail(bp, txr),
-+					     bp->tx_wake_thresh))
- 			return NETDEV_TX_BUSY;
- 	}
- 
-@@ -614,7 +596,8 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		if (netdev_xmit_more() && !tx_buf->is_push)
- 			bnxt_txr_db_kick(bp, txr, prod);
- 
--		bnxt_txr_netif_try_stop_queue(bp, txr, txq);
-+		netif_tx_queue_try_stop(txq, bnxt_tx_avail(bp, txr),
-+					bp->tx_wake_thresh);
- 	}
- 	return NETDEV_TX_OK;
- 
-@@ -708,17 +691,9 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
- 	netdev_tx_completed_queue(txq, nr_pkts, tx_bytes);
- 	txr->tx_cons = cons;
- 
--	/* Need to make the tx_cons update visible to bnxt_start_xmit()
--	 * before checking for netif_tx_queue_stopped().  Without the
--	 * memory barrier, there is a small possibility that bnxt_start_xmit()
--	 * will miss it and cause the queue to be stopped forever.
--	 */
--	smp_mb();
--
--	if (unlikely(netif_tx_queue_stopped(txq)) &&
--	    bnxt_tx_avail(bp, txr) >= bp->tx_wake_thresh &&
--	    READ_ONCE(txr->dev_state) != BNXT_DEV_STATE_CLOSING)
--		netif_tx_wake_queue(txq);
-+	__netif_tx_queue_maybe_wake(txq, bnxt_tx_avail(bp, txr),
-+				    bp->tx_wake_thresh,
-+				    READ_ONCE(txr->dev_state) != BNXT_DEV_STATE_CLOSING);
- }
- 
- static struct page *__bnxt_alloc_rx_page(struct bnxt *bp, dma_addr_t *mapping,
+ 	/* While dad is in progress mld report's source address is in6_addrany.
 -- 
-2.39.2
+2.39.1
 
