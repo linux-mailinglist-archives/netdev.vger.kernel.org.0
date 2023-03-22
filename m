@@ -2,277 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CEB96C5755
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:18:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30FD06C575B
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbjCVURw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 16:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
+        id S232295AbjCVUTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 16:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232298AbjCVURh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:17:37 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2070e.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::70e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0015D268
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 13:08:00 -0700 (PDT)
+        with ESMTP id S232191AbjCVUTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:19:02 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A2F97B40
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 13:09:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679515744; x=1711051744;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=BVTHR3VL5J6R0pyN8qzoAVYyMtrhursmwITMNnmqSrQ=;
+  b=I5cqfytxA3dvajF2t/+iirajArH9DHqVwIwa3G+zju+tQmH4Rhffi3hm
+   DD5ORaqb0i0AjTlh5RldfUBCSm29fxi7Mw47vAl+kuboRGzc8KCxbvfLh
+   +uS3qx/gsy+do8JpF7OD2w1qGXsJCxl5YygoEuCrN9vHdK8US6/rF+Qw6
+   gDVWIEuO207AYNWDHr7B/IDc0GguTUvfTmpoi8QPFvzK+++qazhIQMqcX
+   2gR+A/k0rHoblEiGDB7AIXgoXuukmNUsw0QpMf8jp4EPTtEOSk2EYjUuM
+   kCUS2JqumllMGBtPJMy/d95GST073jWsQwMumVaf2PqJxc9erT62piCvI
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="340860033"
+X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
+   d="scan'208";a="340860033"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 13:05:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="856237392"
+X-IronPort-AV: E=Sophos;i="5.98,282,1673942400"; 
+   d="scan'208";a="856237392"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga005.jf.intel.com with ESMTP; 22 Mar 2023 13:05:54 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Wed, 22 Mar 2023 13:05:52 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Wed, 22 Mar 2023 13:05:52 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Wed, 22 Mar 2023 13:05:49 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X7g6AU0c4jjOlZmvo9quix90cl3ufwNdHmWmbt/RJ8uv71AlG2lWmkina6HWXVCrWiAszncmX5qCWFBrQp9BCHQXynI1vz+TzdJcOPAC8IRZeLCDLY33kcqmY/HYoFZkK/zw8pcJbUxjc2XILDRvti2HK461gGjngl5HetpiauOmqSMPCta4MAOsYbun9klaFJReZZu5sVXJ3ArzN91LwNvspg0sh7uebJVGb+2fW0W1qSQLSLcysTWSAqLEGiesbpGswbxDRY2ToY+IyU+NT00VbR5Wb1OdFJs/dXD7gMCXA4hJBUrSK5l9S7PanWFvZyzTajvs54IiZ25n3rfqoA==
+ b=hCye+yPjqL+cbCZufZiBA3zooDua74jfSrj+bXCwCWvy8uuOr+6ut+/7QjEXpyK83WLxUgqIn8FsqrJBuLwBoUN3XYed2diGhdQl+E1wjX9aa9kBOctElAfoXdMh3khItICuYEdSI0YGqoOvnsvZzlJhUi8XWHoAbvdd56+33+5EVkmRE9jdkxz4T62z0LZAO4y1kVip27Dz8f51EAaEIqrfHVQ8QyhXSnU1j8iMuI5546HZYV1LvtZhCNG2lwVEBA3oYSlc9LMVeTRbVtukSijpbYJNvTYN6GoL2jjS07YsCj7ZHXi/FVWHhaxlrFZ8QRZuJNGHsjRfohHL2A/GWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ssCH2dMajs7EvIIXTH5IbnSK4zb7fIrKf92X59FPX9w=;
- b=Q/5e/WBfE7w7gGwVr61cRGG4xAqEv+7XZuvQh5Nk8q7RJVDBJhCmtRGIJpDuGjxtFhCGfTEehgnZxKg5GpLOVxWmAXfhRr3CRhe/xExEdZo7gQDWO4IDXyqE0+yuVdmnk5BgsRDiS4t23uyjXCduYAHhPt5xMBab9FDxzaXQCXK8bnlWweA4s/J5o0k0QenEakY9QiY7GlK2PepCWl2Nl2Ow51F9RoHFe9KhJ6Z+L3d8fHNVF7wCD0EcSloZyiGv6weibt3n60BbfxLZfrR4+X2jRYhiainOcCfpN5qL+Nr7vJw35dcO5IgYj0HfrrWf8s44J1Uym55zqmBh74gzRQ==
+ bh=eGE8QsVTFGxkZ7H+nE2KFviHSyGS+rUnBeBryHhwJNM=;
+ b=YT7DdOx5dzl7qC73tlyafSVK9fZe8BCa+PyraJ8JrDvy3FehzTGOH/BTQX2aBlbRdMzU5UiQHTHf5/ahx6hHKFncgg/BG0TJHeg6OEK7ZbMyxg1dK9X1DtcLReRdX6F+9d7LOiScvRTVnFQ+b8/kXByq3IYo4w1tqpnY/p2/YJIiydEQSRnHC2MBukI/ie/HadY0kUnrXX684kjXJXlILsLLJZo6dqiJmfv7vgCl1PzXfgdDvfOup02zNucx5D8l264tzP2BBeUaKI/EvjHVK2Wi5AdrW366uIUGuc6WI9dCagO5otZulPJIfmhRXaEHmdFJ97ZlTGnqH9RhRxkyEg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ssCH2dMajs7EvIIXTH5IbnSK4zb7fIrKf92X59FPX9w=;
- b=bEyjvOnuIm+3Z6Fe6HrVTe6/xf06+luCS/qEuF+kuU7itSWi9H43OdHmxO9kaMFBgQuzF1ZcMXN+AAjcweF1QcF+bXrtVOZjqVqH0uUowJVBRa5pOdi/u2pxoIYm3KK1oCbJsaz7463uuqi1Ofi+kMRe+++0o+Z3gBnBNZNfkzI=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SJ0PR13MB5286.namprd13.prod.outlook.com (2603:10b6:a03:3db::7) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB5095.namprd11.prod.outlook.com (2603:10b6:510:3b::14)
+ by CY8PR11MB7364.namprd11.prod.outlook.com (2603:10b6:930:87::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Wed, 22 Mar
- 2023 20:04:50 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
- 20:04:50 +0000
-Date:   Wed, 22 Mar 2023 21:04:45 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: ethernet: mtk_eth_soc: add code for
- offloading flows from wlan devices
-Message-ID: <ZBtfXe5mvfIr/a8z@corigine.com>
-References: <20230321133609.49591-1-nbd@nbd.name>
- <ZBsK46vmNtjxJZH6@corigine.com>
- <cbded874-8fc7-0ba5-89d2-20a09809364c@nbd.name>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cbded874-8fc7-0ba5-89d2-20a09809364c@nbd.name>
-X-ClientProxiedBy: AS4P192CA0006.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:5da::7) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ 2023 20:05:48 +0000
+Received: from PH0PR11MB5095.namprd11.prod.outlook.com
+ ([fe80::9612:ae25:42a4:cfd6]) by PH0PR11MB5095.namprd11.prod.outlook.com
+ ([fe80::9612:ae25:42a4:cfd6%9]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
+ 20:05:48 +0000
+Message-ID: <b8e7a0ba-af07-08a8-b987-f82b17f8c69d@intel.com>
+Date:   Wed, 22 Mar 2023 13:05:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net-next v2 0/8] ice: support dynamic interrupt allocation
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Piotr Raczynski <piotr.raczynski@intel.com>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <michal.swiatkowski@intel.com>, <shiraz.saleem@intel.com>,
+        <sridhar.samudrala@intel.com>, <jesse.brandeburg@intel.com>,
+        <aleksander.lobakin@intel.com>, <lukasz.czapnik@intel.com>
+References: <20230322162530.3317238-1-piotr.raczynski@intel.com>
+ <20230322123706.4a787946@kernel.org>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230322123706.4a787946@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR05CA0009.namprd05.prod.outlook.com
+ (2603:10b6:a03:33b::14) To PH0PR11MB5095.namprd11.prod.outlook.com
+ (2603:10b6:510:3b::14)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5286:EE_
-X-MS-Office365-Filtering-Correlation-Id: 487463fb-e416-48b2-2ba1-08db2b10b14e
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5095:EE_|CY8PR11MB7364:EE_
+X-MS-Office365-Filtering-Correlation-Id: fe852cc6-0a3c-433e-4e62-08db2b10d3cf
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7ZN2Iv/ejZ7TPeNlSbDjy/lgWozGXNZLshrRLdAqJx+HYsIk/H2Y1z4BayAnCgY4m+F4s9dR+S+zp4I4wk0T9avTaIagyed50h4utPee8NCuAfFYAJgJGRvZ5YJu0hdwcBwMzHNj2MMkhEKHLOq2qndnENaOGMTwA3LzrrZbT4xITGkCaReB92+N1S7q9jgyenADyQaFLYqN3ScEd7PyHfZRHX9iDg6wDH4f7OD9O2ne+b8Kj9EnjBUaw2lVoL+44bu9ckFXjqEKFawZC23v/wQ7xX1YvMPryj7RfUnAOkGWH4Buc0B7Yx/MHpnc+Nyb7KlhcEC7vVjR/lbKJjoWbO61dL+QzAYXrDNB6XejTZteCr7b7Bhfs2BxiyfaLaW/ISPVPmdHZT3OyiYZcLMPVqCplSArA6+rmbACE6+skwdurGbhnITplR+RD8MhIuaxonLPWEKSOWfROV8DQTNHRfYhfuVsNZqoDwM3VMOcyF/2iw8uyGOubcUn84eragph38Hg2/9zeDirD7FgM3zvwi4Ino7eZ/SFjspmNT2GIQcqK1/0P/dUssAmpzTCNaQtHKuFg5VQovJ7czy2SxvxQfGttVH04iUklq0Qb9SKv4wGycb90BO0k+LiDEyLN3DeofZDBnkd4gwjBrQtgW+0FJPJ5F7ZxYy2ORNWo5wzX3saz5I+EF6rdgIShQXR0LmC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(39840400004)(346002)(366004)(376002)(451199018)(2616005)(6666004)(186003)(6486002)(4326008)(83380400001)(478600001)(6916009)(66946007)(316002)(66556008)(8676002)(66476007)(6506007)(53546011)(5660300002)(44832011)(6512007)(8936002)(2906002)(41300700001)(38100700002)(36756003)(86362001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: ThkOxgnncKhnHSYX46IJ6Q78PzWD++lruMSPb+MYz7V7wy4mVtK46urNKk4kBW9ZCCeapbnmKyPLC1wd1Woin7oBNEL9gvND07f39/E/LXkJsJUI48iCQTUf+03L0aw2s2IyZ1arci0lgQTJ3C2lia2nyvkjU/xs65H6oCJPIdgp8kDUgD1+BHqu2ZMcJ+qOjN1ALy64lb+pR6bi4LAecJ09VemJTDRFBGqoecdwP1+0K6h5CVy05rMUconYGDJUE8zQK1IBtTDC5xK7e91oaM+izQXCZI2rKUYiKiDzFCzRDG1IrQ1tKBkkfRUwEyh4w4JXYl9l7YZDbLcKbKwekC/lWXzI/pdWERoqY0KXjoXcCbrdMkp/8rFdXZkzcTX1NVmrOYDXqgf1oCIJBC/fmhl8UaAX+CzASg+2e3KjZkYMgD45LASQmjWhsV55Wgo8lmhl7hzUfH7D0NpGTA9pVSckJ/SotO70/s20ozu0WqU2LqrHEt3Epexi8WPQ6x2kBEfTn5nITXw1O/JZmlaXn31P6fGJka4LVDRcyzQzSf1Zi3tHDuxXqdwpSLJ01fpLMZTCptusYF9wxqd45Ln9RlUf9R7SAM6CIxax4JtfJmWtGNTH+XzGzcMgppSBjPZNt7dqYfF5hzHT6w6g9IaflykWr/whk32zgm+gj60qZSYzXC67JCC6fJTX5XararkAz4aPj7AuwoGsiuEoW82peZoW7lIwyVyKzBV6QM4U3Eg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5095.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(366004)(396003)(136003)(39860400002)(376002)(346002)(451199018)(31696002)(86362001)(36756003)(38100700002)(5660300002)(8936002)(2906002)(82960400001)(41300700001)(8676002)(2616005)(83380400001)(316002)(6512007)(6506007)(26005)(53546011)(107886003)(186003)(6666004)(6636002)(110136005)(966005)(6486002)(66946007)(66556008)(478600001)(66899018)(66476007)(4326008)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3MY6t2xPHOK4DczqAdr6jdKAybUj7crmNTSNJLmE1ZxLJCOzlEBVzJ2nYaOV?=
- =?us-ascii?Q?CSgmDLplLLv7GMPFPKhI4BJ2dbClIJYH9IEMrYNmHWTz54AsofFxnbGRhI47?=
- =?us-ascii?Q?XCWypIDV1T8ZkmIG0/+0cYUDWsltj5s1NiCMFFWDBqs/A5abJJswwjIVbp5y?=
- =?us-ascii?Q?TKYOMNzY95Xc4ctee4vhwd1WKKFuuIIAs0e4Mv+QENXcS6dA78rz7ZrmUInx?=
- =?us-ascii?Q?P9+K7CfyJpdzTqDKBtpFrqWidJnZMCjzZ0NZOX9ci1v8b9zvEHpPGGUYBFQV?=
- =?us-ascii?Q?FyX7uf8wECYGkO+cjk7jxBqfsrjfnInfMX+R3Mx/I4zv1gSVmUfN/HwatFk4?=
- =?us-ascii?Q?U4FQDOYHBn7pLAE9djtV69/sesmgr0sXlLdmtRq5U/4c7mDFnobQFmzE0eao?=
- =?us-ascii?Q?AjmneUUMbmjC3FawQZA1Ix9fztITDeGHnFczxntwR+ntzhcNOWWy7SalTry1?=
- =?us-ascii?Q?BxjJez2pQ1k9V+kySCHgaAq8YDLwmcpzLroGHYt46ibORabq4vomdSaW8934?=
- =?us-ascii?Q?pzK/7tJCw5DW8kUpSUIRiVwvV29JUuux0SF/8469PCQJRG4qHv2SZ256oN/B?=
- =?us-ascii?Q?S/p0SB48jmuJCzYC5KpYw1vCgSrULk54DhhYVznq88chh58OtLICMWs7q53D?=
- =?us-ascii?Q?ItZ5UKkFjFfIelEPGTL0ySipnzdTsNbY7zRsumucOUh4ABZVHksArFPiHnoX?=
- =?us-ascii?Q?IZG8j4iwwCi22FkCljLgKiktmaK79o5epILrJTaVjRnMlPpfpgq2lNagd2Jk?=
- =?us-ascii?Q?1S6X+yF0saWnzSSuatuwgzg1FgUL0pwkkMABfzG5Jrw8yzLLIj03grTjVI5+?=
- =?us-ascii?Q?RXW6f5fNBljYqrGlcqQJ1/sXK4kImLRubLK4037wG3jt6dSy4V3t5h1SJOte?=
- =?us-ascii?Q?LrGzXsA8a6ubzQ+oBAMFqI2x26EDl1mZDzSuYgGLFcjhocISrlfO/cjYptHR?=
- =?us-ascii?Q?qf1+pdzUggDl5uXkxI+PZ3UNwuopIvkrs/o8kyXLj7QEnEfih16sQRLY4ENr?=
- =?us-ascii?Q?vebg/AgzsqQwxYu/1nlfP5L9l1pFhOQhryXpgb8up/Iudq98qRMC0UmA+4VD?=
- =?us-ascii?Q?BI00SiHt2tzsBlw4kU9V46O5Pz3Jcc97zoOem8NiCV65710D81cz9hWpCl4Y?=
- =?us-ascii?Q?uy39lS+60B6RAhUjY+4cnbnfWxj5FbAAHQK1QbB9WyCqmm6jpFu5d6oyXA0s?=
- =?us-ascii?Q?bazkIMtZpNmk3nCJTYt+jY6P9JmLUl5fgX86yAwBNEK452gU+OdrHynvJvYV?=
- =?us-ascii?Q?kRgRdVB6WIDsf9BW9DAUJ4uaYIitcV2gpc3RwXyiHlUWUkW82FFNlRmH1eTF?=
- =?us-ascii?Q?JWlfJu46IN7ywdPFTM9U96t8y5g0Cz1sR8+AaYYh+MOFhf96WXIkWpuwGzfr?=
- =?us-ascii?Q?LtgamVmiOTyBwWudbjFtzqbw/nEeY8djnQuK1IiY8T2qKtcdfLlcU3lbHvq1?=
- =?us-ascii?Q?K5RUPTFttuajAzF4HSeNy8APYHxMBqJwi8SwXpcu5A0pG7fWiVijMabxQBr8?=
- =?us-ascii?Q?r+XCnIFKE0h61+lptebnekRSmR+EPg5HU08buXqVe+YJVNwoFf7p0BPGiDYv?=
- =?us-ascii?Q?8z/ywhFQ95oSRoJjuGDe+hsJhynXbqlogCd6qA0jUb2PlTm35AmKlJ5y389G?=
- =?us-ascii?Q?jKGkIRxIdM3HhMgEg6ErrTz5pDz9KaggfzsqvTOvC9cPq3wv9pvMNXmsSbvL?=
- =?us-ascii?Q?sCODGQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 487463fb-e416-48b2-2ba1-08db2b10b14e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SXdYUzhPc0s1Y3gwREUyZE01c3ZNWXZzMU1uWDIrTUNwSkRycGdveStzUElj?=
+ =?utf-8?B?eFdEcG45T2VucEVqeXBPaTh2VlVtck43NlF5MkMrVmVVRURGRDFiMU5vRzkv?=
+ =?utf-8?B?ekw5aUlNRDFOVjM2L0J5V0M3alJYTlAvOXdjU2IvNWFmTUpkR2JQa3ZOYWtq?=
+ =?utf-8?B?ZzRkMnNiNWU2NGkxNUVkZCtOZFoydDcxYUpnOVQ5RHBlcWZacVREUk9KZDFp?=
+ =?utf-8?B?R0kwWWg1OEQvQjBFMm43ZWJCYlQrL1NIbVVMZk9WRmtYSG9sQ2ptaWo4cjFR?=
+ =?utf-8?B?MjhEaHBJeGhZY3NqSVZLY2RuY1FQdi9vRm4rRnROWTZSYm9nUmc3N2h4aFQy?=
+ =?utf-8?B?TDc3ckt2STdSV1pvY054MTN5Rms4YnZmTm90QlgvU2RZYVVuUWRZM3UycndN?=
+ =?utf-8?B?bXVsVkNBZEFkeDR1blFxdU93RXpDVzZTejZTSExCbWZSbUd3SEU1YXN0ZlRC?=
+ =?utf-8?B?QUFBQ0NQb3NuWXdsYmZNV1JDK0hKUjhRQTU0anVwQ04vbWZZbHIxSVBXQUY3?=
+ =?utf-8?B?TjY2blRQbVVmOXBpOFdSRElWRXVmUWJob29VYXhENjBneXFUaHpYQlVyN2Nz?=
+ =?utf-8?B?cmhQYWlTQ2l2OElPRU9PMVl1QW5pNmtpUGFXcHVzMmNpNWoxdEsxYmx1VU56?=
+ =?utf-8?B?L2JhMFQ5bWNCMlRyQmtqaGFoR0ZMUmV4YVVEVmVzY1FLUmdGWVI4VHVjLzFm?=
+ =?utf-8?B?UzdqREY3V1VEQ0IyeVNhY3dtMkpQdWZ2UGhXWXVQd1ZWMzl0T05waUVSUDlh?=
+ =?utf-8?B?aEFrWjdQaWlPWWtOOUdsNHpoTkNOenNYUHE5ZlpSOFlsdlgrRGRkeXQxQW1t?=
+ =?utf-8?B?RFpjQkkwb2tFYjNocTgyckd6Y1oyU0ZiRm5IRlBDQTB2WHkvSm1iemNyeFZi?=
+ =?utf-8?B?OUpXUm9naHB2VnVWTjNTT2JSM0d6Q1hqbmhEZzRJYnFmaGxXemdJSExjWi9j?=
+ =?utf-8?B?b21Lb3ZiKzB5TERYSkFSTGlOcUlpWTcyMHpVNVJFaHJzUEt6RjM2SjlWUktW?=
+ =?utf-8?B?RzdSeUVTeS9iMFdseS9ObHdFdzdaVExuNzMxbFNTQ1ZmZnd1Qno3czRDQnUx?=
+ =?utf-8?B?S2JNMXF5b2VTd3NzWmIvbndLeTY1bi9ENHRmSE5Gai9ZZEtLN1BHRytob0hr?=
+ =?utf-8?B?Z3ZoYytPN0xBRnpVU1VFcWFYQUNwSFFGQktiTVNTQVVaR0xQd3A4U1VEVGJH?=
+ =?utf-8?B?ektkZkRUREdERWdJdTRvU2VaZnZ2YmhyeDlNVzRtVE5EZFNxNzZpaHhKRHlQ?=
+ =?utf-8?B?c0E5R2VFVXJCVVhPYThoWm1iQlJrZnUzUzNuTWJGRlZwamcvbnErZkRmSEFL?=
+ =?utf-8?B?d01mOVczN2xUU2dVQndFNm5rZ3Rpa0cwb3p0RUxseGhNYy9RdHlYNmdHcVpa?=
+ =?utf-8?B?U0NudnlZMmcraFU0RUpNWjZTNi9IYmVPSEF0M2R3THMzWlNhWEFtUHJiQ0xu?=
+ =?utf-8?B?bk5IZnEyT0pmdDBxSW5odTJoSDk5ZWZwSFFnZDdldVc4OGVLNVFudUxFRU5w?=
+ =?utf-8?B?elpuN0QrVHMxemgvNkcvUllmS3dIdjltaE9Mb2svSUo3V042WUtmWEk0UjNW?=
+ =?utf-8?B?VUlGQUhxVU9TOXUxalhPUXRELzUzdjVUYnMzYTliVEozeGZYbzkzeEdWYzc1?=
+ =?utf-8?B?VGRwNVJjSk9jaXZFWjNrZm5JSWcxWHlucWZCWjJnSDRybHIrdWR1NDNtWjF3?=
+ =?utf-8?B?S2xnYi9OczlidktSa2xPQTBIQklDT2gxM0pEZ09ESThMeitjVjhvT0RmQlVk?=
+ =?utf-8?B?SlJzd2NGN045MUw5aEd6ZDFiWlhIbnA1akNIekFGbnhScU9qM1ZGRFEydXVn?=
+ =?utf-8?B?MncxTjRIQWhFNTFjSkpBcXJzUCtzYUhXZ2JUbm43aEZUcVN5SEk4bjd1cGVt?=
+ =?utf-8?B?U3hLa1FITDB5RzR3c3FzcXVZaU5jWDJ4cWZKajk1SHB6bDVVUCttUXlrc0lI?=
+ =?utf-8?B?dHYrS1QvSjh0Z3EzSzJHd2ViNXRLc1dIU3BBdURRazk4U3RoOHN4dk9MN3N5?=
+ =?utf-8?B?bTUyYk45WitEWmMySjQ4RkFGQlU1WnF2c2Z2U0gvaGRYVXhDM1A5SVhCMjJS?=
+ =?utf-8?B?S1VsRWc3STlEMlVyUXJJVmRKSXEydFpQR05VS2JRRVRmelJCeUt6WllTQmlM?=
+ =?utf-8?B?ck54V3V1RzBPRTNkeklOTUt5N1l5S2EzVUE1ZXhJNnNLNmpLRGZFK2ZuWncr?=
+ =?utf-8?B?aWc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe852cc6-0a3c-433e-4e62-08db2b10d3cf
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5095.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 20:04:50.0030
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 20:05:47.8137
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x6ksx3MWxN//9IhFJMuX7Mor0joq/NgR0OfIM2qDzuvv7C8XqApQ9p7GRWmNsCri7dLMn25imx70/9NNDRsmanHYOgORciZTW+iGkqpcGKU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5286
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: +aCoVD64oJA8HPCOxWlkgk3YJdt1wYZeNrY+soMbExlIggHKiPeyFMdaChr3aQyerftWPe1bExU0R2SFZNcLjC1wdf5qf+SHnYkXM2+tqdA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7364
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 04:18:29PM +0100, Felix Fietkau wrote:
-> On 22.03.23 15:04, Simon Horman wrote:
-> > On Tue, Mar 21, 2023 at 02:36:08PM +0100, Felix Fietkau wrote:
-> > > WED version 2 (on MT7986 and later) can offload flows originating from wireless
-> > > devices. In order to make that work, ndo_setup_tc needs to be implemented on
-> > > the netdevs. This adds the required code to offload flows coming in from WED,
-> > > while keeping track of the incoming wed index used for selecting the correct
-> > > PPE device.
-> > > 
-> > > Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> > 
-> > Hi Felix,
-> > 
-> > A few nits from my side.
-> > 
-> > First, please reformat the patch description to have a maximum of 75 characters
-> > per line, as suggested by checkpatch.
-> Will do
+
+
+On 3/22/2023 12:37 PM, Jakub Kicinski wrote:
+> On Wed, 22 Mar 2023 17:25:22 +0100 Piotr Raczynski wrote:
+>> This patchset reimplements MSIX interrupt allocation logic to allow dynamic
+>> interrupt allocation after MSIX has been initially enabled. This allows
+>> current and future features to allocate and free interrupts as needed and
+>> will help to drastically decrease number of initially preallocated
+>> interrupts (even down to the API hard limit of 1). Although this patchset
+>> does not change behavior in terms of actual number of allocated interrupts
+>> during probe, it will be subject to change.
 > 
-> > > @@ -512,25 +514,15 @@ mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
-> > >  static DEFINE_MUTEX(mtk_flow_offload_mutex);
-> > > -static int
-> > > -mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
-> > > +int mtk_flow_offload_cmd(struct mtk_eth *eth, struct flow_cls_offload *cls,
-> > > +			 int ppe_index)
-> > >  {
-> > > -	struct flow_cls_offload *cls = type_data;
-> > > -	struct net_device *dev = cb_priv;
-> > > -	struct mtk_mac *mac = netdev_priv(dev);
-> > > -	struct mtk_eth *eth = mac->hw;
-> > >  	int err;
-> > > -	if (!tc_can_offload(dev))
-> > > -		return -EOPNOTSUPP;
-> > > -
-> > > -	if (type != TC_SETUP_CLSFLOWER)
-> > > -		return -EOPNOTSUPP;
-> > > -
-> > >  	mutex_lock(&mtk_flow_offload_mutex);
-> > >  	switch (cls->command) {
-> > >  	case FLOW_CLS_REPLACE:
-> > > -		err = mtk_flow_offload_replace(eth, cls);
-> > > +		err = mtk_flow_offload_replace(eth, cls, ppe_index);
-> > >  		break;
-> > >  	case FLOW_CLS_DESTROY:
-> > >  		err = mtk_flow_offload_destroy(eth, cls);
-> > > @@ -547,6 +539,23 @@ mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_pri
-> > >  	return err;
-> > >  }
-> > > +static int
-> > > +mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
-> > > +{
-> > > +	struct flow_cls_offload *cls = type_data;
-> > > +	struct net_device *dev = cb_priv;
-> > > +	struct mtk_mac *mac = netdev_priv(dev);
-> > > +	struct mtk_eth *eth = mac->hw;
-> > 
-> > Reverse xmas tree - longest line to shortest -
-> > for local variable declarations please.
-> Will do.
+> Have you seen the mlx5 patch set? I haven't read in detail but seems
+> like you're working on the same stuff so could be worth cross-checking
+> each other's work:
 > 
-> > > diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-> > > index 95d890870984..30fe1281d2d3 100644
-> > > --- a/drivers/net/ethernet/mediatek/mtk_wed.c
-> > > +++ b/drivers/net/ethernet/mediatek/mtk_wed.c
-> > 
-> > ...
-> > 
-> > > @@ -1745,6 +1752,102 @@ void mtk_wed_flow_remove(int index)
-> > >  	mutex_unlock(&hw_lock);
-> > >  }
-> > > +static int
-> > > +mtk_wed_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
-> > > +{
-> > > +	struct mtk_wed_flow_block_priv *priv = cb_priv;
-> > > +	struct flow_cls_offload *cls = type_data;
-> > > +	struct mtk_wed_hw *hw = priv->hw;
-> > > +
-> > > +	if (!tc_can_offload(priv->dev))
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	if (type != TC_SETUP_CLSFLOWER)
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	return mtk_flow_offload_cmd(hw->eth, cls, hw->index);
-> > 
-> > This seems very similar to mtk_eth_setup_tc_block_cb().
-> > Can further consolidation be considered?
-> It's similar, but using different data structures and pointer chains.
-> Consolidation does not make sense here.
+> https://lore.kernel.org/all/20230320175144.153187-1-saeed@kernel.org/
 
-Thanks, I see that now.
+Thanks for the pointer. I read through that series just now, and it
+looks good.
 
-> > > +}
-> > > +
-> > > +static int
-> > > +mtk_wed_setup_tc_block(struct mtk_wed_hw *hw, struct net_device *dev,
-> > > +		       struct flow_block_offload *f)
-> > > +{
-> > > +	struct mtk_wed_flow_block_priv *priv;
-> > > +	static LIST_HEAD(block_cb_list);
-> > > +	struct flow_block_cb *block_cb;
-> > > +	struct mtk_eth *eth = hw->eth;
-> > > +	bool register_block = false;
-> > > +	flow_setup_cb_t *cb;
-> > > +
-> > > +	if (!eth->soc->offload_version)
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	cb = mtk_wed_setup_tc_block_cb;
-> > > +	f->driver_block_list = &block_cb_list;
-> > > +
-> > > +	switch (f->command) {
-> > > +	case FLOW_BLOCK_BIND:
-> > > +		block_cb = flow_block_cb_lookup(f->block, cb, dev);
-> > > +		if (!block_cb) {
-> > 
-> > I wonder if this could be written more idiomatically as:
-> > 
-> > 		if (block_cb) {
-> > 			flow_block_cb_incref(block_cb);
-> > 			return 0;
-> > 		}
-> > 
-> > 		priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-> flow_block_cb_incref needs to be called for the newly allocated flow block
-> cb as well. I was following the same pattern that several
+We are doing similar work, though a big difference is that MLX has
+converted *all* allocations to be dynamic. This, I think, works for them
+because they already have a pool allocation scheme and basically treated
+the available vectors as a resource across the function. We didn't
+really do that before (we reserved total based on feature and tried to
+ensure we don't starve some features), and so converting everything to
+dynamic in one-go wasn't done here. Instead, we open the way to allow
+dynamic, with a plan to look at refactoring and removing the initial
+allocations at a later stage.
 
-I guess that to some extent it is a question of style.
-It seems to me that having separate calls to
-flow_block_cb_incref() for the different cases
-leads to nicer, and less indented, code.
+In addition the MLX code already has good data structure for tracking
+vectors, where as we had the mess that was our res_tracker which was
+poorly implemented.
 
-But its just a suggestion from my side.
+Overall I think the end goal is going to be similar: use dynamic
+allocation when possible.
 
-> > > diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
-> > 
-> > ...
-> > 
-> > > @@ -237,6 +240,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
-> > >  	(_dev)->ops->msg_update(_dev, _id, _msg, _len)
-> > >  #define mtk_wed_device_stop(_dev) (_dev)->ops->stop(_dev)
-> > >  #define mtk_wed_device_dma_reset(_dev) (_dev)->ops->reset_dma(_dev)
-> > > +#define mtk_wed_device_setup_tc(_dev, _netdev, _type, _type_data) \
-> > > +	(_dev)->ops->setup_tc(_dev, _netdev, _type, _type_data)
-> > 
-> > nit: checkpatch says:
-> > 
-> > include/linux/soc/mediatek/mtk_wed.h:243: ERROR: Macros with complex values should be enclosed in parentheses
-> > +#define mtk_wed_device_setup_tc(_dev, _netdev, _type, _type_data) \
-> > +	(_dev)->ops->setup_tc(_dev, _netdev, _type, _type_data)
-> > 
-> > include/linux/soc/mediatek/mtk_wed.h:243: CHECK: Macro argument reuse '_dev' - possible side-effects?
-> > +#define mtk_wed_device_setup_tc(_dev, _netdev, _type, _type_data) \
-> > +	(_dev)->ops->setup_tc(_dev, _netdev, _type, _type_data)
-> In my opinion that's a false positive. The newly added macros follow the
-> same pattern as the existing ones.
+For ice, we need to complete this work, then follow up with some work to
+make handling of vector allocation failure better in the case of things
+such as vectors for default PF queues. The current code basically
+determines the number of queues we create based on the number of vectors
+we got. That won't work with dynamic, and we need to instead pick number
+of queues, and be able to handle vector exhaustion if we happen to have
+limited number of vectors available. We also need to make sure other
+uses of vectors can handle failure appropriately, and deal with the
+iRDMA<->ice interfaces which currently assume static allocation as well.
 
-Ack.
+My long term goal would be that the driver only allocates one vector at
+load which is for the control vector used for miscellaneous interrupts,
+and everything else is allocated and released dynamically based on
+feature use. But we have a bit of a ways to get there due to the above
+limitations in current design. We need to make sure every path has a
+suitable path to report failure on vector exhaustion, and that every
+consumer has available knobs or parameters to allow the system to be
+reconfigured to prevent exhaustion.
