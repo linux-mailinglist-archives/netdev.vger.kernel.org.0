@@ -2,96 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C513F6C53B8
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 19:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DACB6C53BB
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 19:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231147AbjCVS0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 14:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55408 "EHLO
+        id S230518AbjCVS1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 14:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbjCVS00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 14:26:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1865C1ACFD;
-        Wed, 22 Mar 2023 11:26:25 -0700 (PDT)
+        with ESMTP id S230262AbjCVS1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 14:27:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AF66285A
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 11:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BABD1B81D85;
-        Wed, 22 Mar 2023 18:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40A43C4339E;
-        Wed, 22 Mar 2023 18:26:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 322D562267
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 18:27:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F92DC433EF;
+        Wed, 22 Mar 2023 18:27:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679509582;
-        bh=Gj//SU+GqNJVcAvg1NerL5+h1QTTjvjmzdALEMxq4XE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VSoBQS5iyxCUOUFLpB0RDnus8HHV4Lq8N7ODEhvT0HqT8ClGw3b8RlxNcRZEtvKdh
-         So+6vuad2V0nVQmVgFvnUoGXBwKQXOtACLrjaqsy6ccQSvukwYmZvUwx98aF2xby9M
-         ossP6QBJ5Vc0Eu7XF2f9UBjZ/JBz4AR8nVpWkZtJrdCDxD6V6YAg6rQ4VGWoHYtvsc
-         QLgreyQZgFc3F8AU9Al5sKDSSwWzyU9s/y2lE/7CHsWHdjhCqyX5HAyT8uy4O3Kjng
-         PJzNbFRSQb15jFtjtvdvyZpBKvquMal4eNmUvScyQr34UiNxLXvjPhIBpOxTmXCZfY
-         X1foNftxqlxXA==
-Date:   Wed, 22 Mar 2023 12:26:53 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jussi Kivilinna <jussi.kivilinna@iki.fi>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        s=k20201202; t=1679509622;
+        bh=sbbDyJvcujuyJeht1hag+y9zwJYw9hMcKgz58ommyWY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KFfFT9X1s+CKoZFI7Ttzh29Y4qt52djWeKPvsbDmTBsCACzXipunCexVAgP3V27DR
+         FMRg43ZPVw73R648K4UIwZUBnODmMWV7/pbCDs5rU0c+/1qAn49JajjhxA+kAwSIsf
+         DafZHU4Qoii5cYeLuGmIZSlL3Dx4DnVft8HMWacMt/z5WLmP/ns7ZOb+pHR8l3xV7r
+         w1DeSeyCa3RRnh7NVDa+/N5ea8Y/jodS+yIjXLZpphAf6xxt7auq42T8fKal2OEAFJ
+         2AHpBVM1G6gaE9mSDT/UrNbVVmVMDz4GMXIJHaia/aT9jxu16Inw9zP2wftiT3jIG3
+         FmMYVeUBdwBTA==
+Date:   Wed, 22 Mar 2023 11:27:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Donald Hunter <donald.hunter@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] wifi: rndis_wlan: Replace fake flex-array with
- flexible-array member
-Message-ID: <ZBtIbU77L9eXqa4j@work>
+        Paolo Abeni <pabeni@redhat.com>, donald.hunter@redhat.com
+Subject: Re: [PATCH net-next v2 3/6] tools: ynl: Add array-nest attr
+ decoding to ynl
+Message-ID: <20230322112701.6af8adf1@kernel.org>
+In-Reply-To: <m2fs9xjaaq.fsf@gmail.com>
+References: <20230319193803.97453-1-donald.hunter@gmail.com>
+        <20230319193803.97453-4-donald.hunter@gmail.com>
+        <20230321221809.26293ca7@kernel.org>
+        <m2fs9xjaaq.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zero-length arrays as fake flexible arrays are deprecated and we are
-moving towards adopting C99 flexible-array members instead.
+On Wed, 22 Mar 2023 11:27:25 +0000 Donald Hunter wrote:
+> > So in terms of C this treats the payload of the attr as a packed array?
+> > That's not what array-nest is, array-nest wraps every entry in another
+> > nlattr:
+> > https://docs.kernel.org/next/userspace-api/netlink/genetlink-legacy.html#array-nest
+> >
+> > It's not a C array dumped into an attribute.
+> >
+> > IIRC I was intending to use 'binary' for packed arrays. Still use
+> > sub-type to carry the type, but main type should be 'binary'.
+> >
+> > If that sounds reasonable could you document or remind me to document
+> > this as the expected behavior? Sub-type appears completely undocumented
+> > now :S  
+> 
+> That sounds reasonable, yes. I will also rename the method to
+> 'as_c_array'. I think it should just be restricted to scalar subtypes,
+> i.e. u16, u32, etc. Do you agree?
 
-Address the following warning found with GCC-13 and
--fstrict-flex-array=3 enabled:
-drivers/net/wireless/rndis_wlan.c:2902:23: warning: array subscript 0 is outside array bounds of ‘struct ndis_80211_auth_request[0]’ [-Warray-bounds=]
-
-This helps with the ongoing efforts to tighten the FORTIFY_SOURCE
-routines on memcpy() and help us make progress towards globally
-enabling -fstrict-flex-arrays=3 [1].
-
-Link: https://github.com/KSPP/linux/issues/21
-Link: https://github.com/KSPP/linux/issues/274
-Link: https://gcc.gnu.org/pipermail/gcc-patches/2022-October/602902.html [1]
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/net/wireless/legacy/rndis_wlan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/legacy/rndis_wlan.c b/drivers/net/wireless/legacy/rndis_wlan.c
-index bf72e5fd39cf..54c347fa54c4 100644
---- a/drivers/net/wireless/legacy/rndis_wlan.c
-+++ b/drivers/net/wireless/legacy/rndis_wlan.c
-@@ -209,7 +209,7 @@ struct ndis_80211_status_indication {
- 	union {
- 		__le32					media_stream_mode;
- 		__le32					radio_status;
--		struct ndis_80211_auth_request		auth_request[0];
-+		DECLARE_FLEX_ARRAY(struct ndis_80211_auth_request, auth_request);
- 		struct ndis_80211_pmkid_cand_list	cand_list;
- 	} u;
- } __packed;
--- 
-2.34.1
-
+We can limit it to scalars for now. There are some arrays of structs
+(from memory TC GRED had VCs defined as array of structs?) but that
+should hopefully be rare and can be added later.
