@@ -2,224 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDDEB6C495C
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 12:41:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DFE96C49BA
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 12:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbjCVLls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 07:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
+        id S230247AbjCVLzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 07:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbjCVLlp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 07:41:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0928E5D775;
-        Wed, 22 Mar 2023 04:41:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81A13B81C25;
-        Wed, 22 Mar 2023 11:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB87C433EF;
-        Wed, 22 Mar 2023 11:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679485300;
-        bh=KV7Jg9Jy9M+HzvGb4HuWBzw6Mgf+m1xY4l7N+BLviJY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tw6+HLmFoknhV8wFIBm+JPjmRSoGmmA09vlVIJdyGv2FTS5+PUnTEgSGcPMKwtYHt
-         1prMWIyy7dXdaPSs4s+Pf99B/LVIYvavbUZVgQGPEquqZh30gLjJG6p23nz0wnkW+M
-         0wghGisZCm80ezKLUsJVDMYsfKVN1hsU7iULtX4LWM/a8YaV0zmLffpJw6sejcHKFw
-         Svh7pf2KdHVZGYANOJNRV49kyIEcCGq1s17XbC8843SdOJT1xVl9A5Jnj/ZL7SVEYj
-         Cj4f3Un7TBvtCSpFfkLsQZOJ9Rh3eH119xS2Xr3NVN914V1NG5rhBuEUsBLJeqRFvX
-         XueUPFwkwKinw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1pewrx-0004lp-W1; Wed, 22 Mar 2023 12:43:06 +0100
-Date:   Wed, 22 Mar 2023 12:43:05 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Steev Klimaszewski <steev@kali.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230233AbjCVLzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 07:55:39 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392F550FB1
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 04:55:38 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id t19so8092211qta.12
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 04:55:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679486137;
+        h=mime-version:user-agent:references:message-id:date:in-reply-to
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5ww91BS0BsTBRfhDuq0L/dZ3gbj1JWcZ7Z1J95zKsT0=;
+        b=NmjuJ84JWbJrWABsGO3X2w2jmXd+iP+pLsZYkJUq8IYeRd+R9m2QeOrPNtGlIcZbZ4
+         7jy218wLkppZXYpeKxScMCPCJGBPX0ooODOwrxuR7JxPI3PUd+T8k8LFLlGaQtESOyrF
+         nSAmmf9BlrjvleOt7MNHuxi0rh9v/MHsTMK9xcG1xOGWh3kgaEHpZfRaeAFbZiki0elr
+         RFKRQpsWMm03BwcswHMGn+AG6CNjJHZpClsYs1VeTfhVM08jN0C0Nh5d0x3n3EfOzSyt
+         LLJYvi37sNVwKhaAuM05oCzkpZdhGE/ndn+AhUH9/7S37+DO0vzCbOeX7MIyu0N3diIv
+         w5Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679486137;
+        h=mime-version:user-agent:references:message-id:date:in-reply-to
+         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5ww91BS0BsTBRfhDuq0L/dZ3gbj1JWcZ7Z1J95zKsT0=;
+        b=JfDvQNJja1c6UfcGhZKYx9wWOPueYTUcmdht+2wF9YMeezv7a5Q8AMwFXQg58jT7m0
+         J28WiarJIWCOsgQ0IhwcN8tAW/gQwLWSbXjoFCcDqkAa4y+OF77zcK0UK9zolxEd86bk
+         xlIcU0x1FHGQIi2wsL4a1rfYFodC4Gnz1ySeRZ2y8W3SN+bLGpEz/lsQP8oTHWxs+18f
+         3GcrYkZvLmOEpB+sxDh70f7pOFXA8XDL4PIrg8vZqC0FD5DZK5nopkXl/8Y045P19r0y
+         2eOMkVQQFR/FudVY5MqVE83wGnR88lfAkAol5ao5nbDatgzLO6o1lDhXXKhsO/J+D2KB
+         lZuw==
+X-Gm-Message-State: AO0yUKX6nE5ax7kPPkcOGCPKojaXvWYm4eVUw2XT00G3phDIRadLh+pW
+        zr1VS92eT0v6p1YLUnIeEwg=
+X-Google-Smtp-Source: AK7set9en6/1s4dXucYz+AW9uUsH88NHDSUqGyeAA4ygPSSQuzE16ekXI7/KpkaqB/b7AnP2z6jrPA==
+X-Received: by 2002:ac8:4e42:0:b0:3bf:e415:5cc3 with SMTP id e2-20020ac84e42000000b003bfe4155cc3mr6184627qtw.58.1679486137248;
+        Wed, 22 Mar 2023 04:55:37 -0700 (PDT)
+Received: from imac ([88.97.103.74])
+        by smtp.gmail.com with ESMTPSA id 130-20020a370888000000b007467f7536d0sm6613968qki.99.2023.03.22.04.55.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Mar 2023 04:55:36 -0700 (PDT)
+From:   Donald Hunter <donald.hunter@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        Mark Pearson <markpearson@lenovo.com>
-Subject: Re: [PATCH v7 4/4] arm64: dts: qcom: sc8280xp-x13s: Add bluetooth
-Message-ID: <ZBrpyXrkHDTQ6Z+l@hovoldconsulting.com>
-References: <20230322011442.34475-1-steev@kali.org>
- <20230322011442.34475-5-steev@kali.org>
+        Paolo Abeni <pabeni@redhat.com>, donald.hunter@redhat.com
+Subject: Re: [PATCH net-next v2 4/6] tools: ynl: Add struct attr decoding to
+ ynl
+In-Reply-To: <20230321223055.21def08d@kernel.org> (Jakub Kicinski's message of
+        "Tue, 21 Mar 2023 22:30:55 -0700")
+Date:   Wed, 22 Mar 2023 11:48:12 +0000
+Message-ID: <m27cv9j9c3.fsf@gmail.com>
+References: <20230319193803.97453-1-donald.hunter@gmail.com>
+        <20230319193803.97453-5-donald.hunter@gmail.com>
+        <20230321223055.21def08d@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230322011442.34475-5-steev@kali.org>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 08:14:42PM -0500, Steev Klimaszewski wrote:
-> The Lenovo Thinkpad X13s has a WCN6855 Bluetooth controller on uart2,
-> add this.
-> 
-> Signed-off-by: Steev Klimaszewski <steev@kali.org>
-> ---
-> Changes since v6:
->  * Remove allowed-modes as they aren't needed
->  * Remove regulator-allow-set-load
->  * Set regulator-always-on because the wifi chip also uses the regulator
->  * cts pin uses bias-bus-hold
->  * Alphabetize uart2 pins
-> 
-> Changes since v5:
->  * Update patch subject
->  * Specify initial mode (via guess) for vreg_s1c
->  * Drop uart17 definition
->  * Rename bt_en to bt_default because configuring more than one pin
->  * Correct (maybe) bias configurations
->  * Correct cts gpio
->  * Split rts-tx into two nodes
->  * Drop incorrect link in the commit message
-> 
-> Changes since v4:
->  * Address Konrad's review comments.
-> 
-> Changes since v3:
->  * Add vreg_s1c
->  * Add regulators and not dead code
->  * Fix commit message changelog
-> 
-> Changes since v2:
->  * Remove dead code and add TODO comment
->  * Make dtbs_check happy with the pin definitions
->  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 78 +++++++++++++++++++
->  1 file changed, 78 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> index 92d365519546..05e66505e5cc 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> @@ -24,6 +24,7 @@ / {
->  	aliases {
->  		i2c4 = &i2c4;
->  		i2c21 = &i2c21;
-> +		serial1 = &uart2;
->  	};
->  
->  	wcd938x: audio-codec {
-> @@ -431,6 +432,14 @@ regulators-1 {
->  		qcom,pmic-id = "c";
->  		vdd-bob-supply = <&vreg_vph_pwr>;
->  
-> +		vreg_s1c: smps1 {
-> +			regulator-name = "vreg_s1c";
-> +			regulator-min-microvolt = <1880000>;
-> +			regulator-max-microvolt = <1900000>;
-> +			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-> +			regulator-always-on;
-> +		};
+Jakub Kicinski <kuba@kernel.org> writes:
 
-I went through the schematics to check for further problems with
-consumers that are not yet described and found a few more bugs:
+> On Sun, 19 Mar 2023 19:38:01 +0000 Donald Hunter wrote:
+>>                  enum: [ unused, pad, flag, binary, u8, u16, u32, u64, s32, s64,
+>> -                        string, nest, array-nest, nest-type-value ]
+>> +                        string, nest, array-nest, nest-type-value, struct ]
+>
+> I wonder if we should also only allow struct as a subtype of binary?
+>
+> Structs can technically grow with newer kernels (i.e. new members can
+> be added at the end). So I think for languages like C we will still
+> need to expose to the user the original length of the attribute.
+> And binary comes with a length so codgen reuse fits nicely.
+>
+> Either way - docs need to be updated.
 
-	https://lore.kernel.org/lkml/20230322113318.17908-1-johan+linaro@kernel.org
+Yep, as I was replying to your previous comment, I started to think
+about making struct a subtype of binary. That would make a struct attr
+something like:
 
-Note that that series is now adding the s1c supply as it also used by
-some of the pmics.
+ -
+   name: stats
+   type: binary
+   sub-type: struct
+   struct: vport-stats
 
-I'm assuming those fixes may get merged before this patch is, in which
-case the above hunk should be dropped.
+I originally chose 'struct' as the attr name, following the pattern that
+'enum' is used for enum names but I'm not sure it's clear enough. Maybe
+'sub-type-name' would be better?
 
-> +
->  		vreg_l1c: ldo1 {
->  			regulator-name = "vreg_l1c";
->  			regulator-min-microvolt = <1800000>;
-> @@ -918,6 +927,32 @@ &qup0 {
->  	status = "okay";
->  };
->  
-> +&uart2 {
-
-This node in no longer in alphabetical order and needs to be moved
-further down (above &usb_0).
-
-> +	pinctrl-0 = <&uart2_default>;
-> +	pinctrl-names = "default";
-> +
-> +	status = "okay";
-> +
-> +	bluetooth {
-> +		compatible = "qcom,wcn6855-bt";
-> +
-> +		vddio-supply = <&vreg_s10b>;
-> +		vddbtcxmx-supply = <&vreg_s12b>;
-> +		vddrfacmn-supply = <&vreg_s12b>;
-> +		vddrfa0p8-supply = <&vreg_s12b>;
-> +		vddrfa1p2-supply = <&vreg_s11b>;
-> +		vddrfa1p7-supply = <&vreg_s1c>;
-> +
-> +		max-speed = <3200000>;
-> +
-> +		enable-gpios = <&tlmm 133 GPIO_ACTIVE_HIGH>;
-> +		swctrl-gpios = <&tlmm 132 GPIO_ACTIVE_HIGH>;
-> +
-> +		pinctrl-0 = <&bt_default>;
-> +		pinctrl-names = "default";
-> +	};
-> +};
-> +
->  &qup1 {
->  	status = "okay";
->  };
-> @@ -1192,6 +1227,21 @@ hastings_reg_en: hastings-reg-en-state {
->  &tlmm {
->  	gpio-reserved-ranges = <70 2>, <74 6>, <83 4>, <125 2>, <128 2>, <154 7>;
->  
-> +	bt_default: bt-default-state {
-> +		hstp-sw-ctrl-pins {
-> +			pins = "gpio132";
-> +			function = "gpio";
-> +			bias-pull-down;
-> +		};
-
-Similarly, this one should go after hstp-bt-en-pins.
-
-> +
-> +		hstp-bt-en-pins {
-> +			pins = "gpio133";
-> +			function = "gpio";
-> +			drive-strength = <16>;
-> +			bias-disable;
-> +		};
-> +	};
-> +
->  	edp_reg_en: edp-reg-en-state {
->  		pins = "gpio25";
->  		function = "gpio";
-> @@ -1213,6 +1263,34 @@ i2c4_default: i2c4-default-state {
->  		bias-disable;
->  	};
->  
-> +	uart2_default: uart2-default-state {
-
-And this one is also not ordered correctly.
-
-> +	};
-> +
->  	i2c21_default: i2c21-default-state {
->  		pins = "gpio81", "gpio82";
->  		function = "qup21";
-
-Johan
+I will update the documentation for this.
