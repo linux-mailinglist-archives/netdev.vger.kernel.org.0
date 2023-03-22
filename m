@@ -2,239 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 724716C46B8
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 10:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F246C46BC
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 10:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbjCVJmb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Mar 2023 05:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46852 "EHLO
+        id S230446AbjCVJnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 05:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230363AbjCVJm1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 05:42:27 -0400
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62245BD94;
-        Wed, 22 Mar 2023 02:42:25 -0700 (PDT)
-Received: by mail-pf1-f176.google.com with SMTP id i15so6665805pfo.8;
-        Wed, 22 Mar 2023 02:42:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679478145;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NhZUtTtMRX3iHKSkNc847opMuxtybiEK1qLunXYiYUg=;
-        b=zcNJ+eVs8nEDLyQlYr1Dc3lIF/xLuMbS5fGXHBpWTy66GJv6XReMEnpCEqhAKsUKVF
-         FwjZvs4td0HJLTnUldItZ//0GAmtTd4DSbse0VqNK5TpqmdvQP9rvXjhuMMW7TNbXEXK
-         6FbL6SK9M8NKERlhMkuFa5Xjxds7BN7839U4aCPNLBCjg+9fMeRFeCtpoGdyEZn8e/wm
-         71S9w+qY3diNekbTc4PGYz1/JDrRobRWRYpc3yJCq0SLMCtmoZlMd2/7vrL3gN421mJU
-         886ubgHzDDW254ziKTS3sUmqUtxn6Fi+rtPasR/I3PMfoG45V2u7FqwB3bG7Yp30KMnf
-         8/cg==
-X-Gm-Message-State: AO0yUKXYZLNNQ3GAc7rYtFR6WhUf9DoJ6W0py+cfB4VZR6AyTqcFzDOg
-        1UAERPGYtssL7dzDMVKpH5weT0fdd4+ljp74Aig=
-X-Google-Smtp-Source: AK7set8tTSoGJeYe9Juyd5/U1PJ1GRZCIYADXwoDW4axal2mDpbqDwLspDVA+ZWO0YRlKoX7aMnpZWiCV4VachuvlWc=
-X-Received: by 2002:a05:6a00:174c:b0:628:123c:99be with SMTP id
- j12-20020a056a00174c00b00628123c99bemr1453184pfc.2.1679478144816; Wed, 22 Mar
- 2023 02:42:24 -0700 (PDT)
+        with ESMTP id S230207AbjCVJnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 05:43:18 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2041.outbound.protection.outlook.com [40.107.95.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F2E1BD1
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 02:43:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JclOWY9+XcXeepQdidxPEr7tmlHClcgTYPNwhpGY060wMUq9WtSp8twXb5Ewl2L+dYAg77SlAVIIQaSC45sBmkHEou25C2kR4cs11A1ufJHNBFc6uP8yXY0/nWiZDo/wW8qD7JN9ai/PsBbbYHra0ijdrV14wzkf0dKvbudq4G8iKMl8vOMpuHh6FTOjMUU4BREnmmTQyy+adIZbSMfiiP7mlVyQl4nKHbPP2RPu5/Euu+6CNKl9yHXbq35VTgy5O9P4OAeKFSENmnLjP/pUqeJjIh+QLXMZh8vZpRPjxHTtL/1KRqdqqsnuDve+AEEOa8fMtuAXwrD4uTAoutW7aQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V6GhOarx4JZFnkI7Fbw7g7/4XW8KNBdFCniqTNqZh70=;
+ b=WB4riQjBLpcHfHUKgmOYBmey16knWqqf9blYE0Jo7zMpcNQyQdbS5AEC/jW0hFXS1Dw8LGi74WltTHgisoK7ioxGv3vRcKZdlGAl+0adz1QNBu7CADsLgW1YlFygEH28g0/6OHKDNpeeVOMu9gIA4ovF2YkDziRLOi+Xn8D0mBa4P/O0HQRnYMpkID0VXusdXnFmrjBjyUN/12bAnzvasK05rQ7TQxiJ3bl7zqAdcgnthuo8yeRr7iEOYHV1+1hnfuGT3hG3lVpXGNKy07yReD74AWfBWbH+2rChWPCqSlYnGWqoquieJNJxdOGXnMcU8O5aaQvUrXKYJSva+neewA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V6GhOarx4JZFnkI7Fbw7g7/4XW8KNBdFCniqTNqZh70=;
+ b=oppNuH8bIMgJpUyNaTlCSl27ixAsjQpGYvKZFeNQcTzH+dUQKxfK/pUba4OlgwTUbITIqSFnyPmB8r12EI6YpSgHMIbyIeRuWeih5Y+LOLM9rZVIRgPyQoV1MOLJ/r+x4z5ezChqHGHE6rvSEa6rT0czF5AJ/IuZC8zMmJ8Pw4nEkxHPUjRJu2g6QC2mRt+aH6sTlG8hX0imlEztBGwWKyTsTWOmzAqXY3vEKVFXvyGtl2z14OdeNzsbwBShRtSvyxV1yQtSufO1JIzeneO/M3BtIjN2UaI3a6JXle2CrkEHRLLVqEqO2QXTNi9I8gYLvW50wb/bizN2jnCbdZV8Yg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
+ SJ2PR12MB8927.namprd12.prod.outlook.com (2603:10b6:a03:547::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.37; Wed, 22 Mar 2023 09:43:15 +0000
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::ff9c:7a7e:87ba:6314]) by DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::ff9c:7a7e:87ba:6314%9]) with mapi id 15.20.6178.037; Wed, 22 Mar 2023
+ 09:43:15 +0000
+Message-ID: <a0775e23-56dc-fe0d-f9fb-91e421a596c1@nvidia.com>
+Date:   Wed, 22 Mar 2023 11:43:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [net-next 01/14] lib: cpu_rmap: Avoid use after free on rmap->obj
+ array entries
+To:     Jakub Kicinski <kuba@kernel.org>, Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+References: <20230320175144.153187-1-saeed@kernel.org>
+ <20230320175144.153187-2-saeed@kernel.org>
+ <20230321203836.5ab4951e@kernel.org>
+Content-Language: en-US
+From:   Eli Cohen <elic@nvidia.com>
+In-Reply-To: <20230321203836.5ab4951e@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR3P281CA0120.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::18) To DM8PR12MB5400.namprd12.prod.outlook.com
+ (2603:10b6:8:3b::12)
 MIME-Version: 1.0
-References: <cover.1679414936.git.geert+renesas@glider.be> <4162cc46f72257ec191007675933985b6df394b9.1679414936.git.geert+renesas@glider.be>
-In-Reply-To: <4162cc46f72257ec191007675933985b6df394b9.1679414936.git.geert+renesas@glider.be>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 22 Mar 2023 18:42:13 +0900
-Message-ID: <CAMZ6Rq+KxHxT_vm1rVW0Q6UZpfKo=63mmgn5pSwn40M-Dke9PA@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] can: rcar_canfd: Improve error messages
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Simon Horman <simon.horman@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5400:EE_|SJ2PR12MB8927:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9ae11fdf-38c0-4014-14bd-08db2ab9dbc2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YSkXcV3U3PGiyhNtbon3Npvn0LJXK6KMhUnXVzXSm+BCcyDQ3MqyEWZimq5eKUmSySLRrECIhDkYWlVB1xQdKUSe++Y9Dqi4yPe+vOICLDuG/QlTPsg+4MPQARyp7bhVw7eTbB/OTKgr0rrIZaeSX/DuZqbw4y1yB8E3t9ke/6WPTwGt1yEKWjMzcl8LBFAw6jNELAm3q4FHNP4wENTz6/rZU/3GXNEHeHbuF7bb2nJLJpQCB3/EsnddQTwSFRfopDH2G/8KtVIA60+8wS9UL+loSbV5Kgo/0Fyr+vM25ihmY8zgwNDdASBn03JcySptqkF0CivZ9exmtmfY1SGblrvKo2iITuHBKvuoqO+VexVEWir63atpZuRx83RZyc1eW9DG4e2doGakNIwEhQgO4oFQVtZrAQDDozWH0ZBcEVaCg/7jUC8nolHjV5L5mZCDwOg+1nqQWzmyzgiwcoyRo2QWaEaYlmvgwTtx08mxBecJFOTJAH4ePG89QkpuztPJmGwvYYs0Dos4kS7i2vFwOe02dTO4njEI5GntJ3CUIMlpBPYIAfZuq2WIMqp47LFmAJseUWAZsqCsSjAbVV7sQsLCkAZqGwRWlNyQew7wHaHIJ1fnPVj/dNjCEOySqrx810N2p/6IhAngmTcfhxnatZ6z2kh6bpNyizGebpLYZrwbAKIFMVOJMamp+E9Y/So6QAu6lxNQ1IODKYFx622PlBusYyzkL9RTdQogXujTXq8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(451199018)(31696002)(86362001)(2906002)(38100700002)(41300700001)(8676002)(4326008)(5660300002)(8936002)(66556008)(110136005)(6666004)(66476007)(6512007)(26005)(53546011)(186003)(6506007)(2616005)(66946007)(107886003)(6486002)(316002)(478600001)(83380400001)(54906003)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?czBCWm94WFQ1aURBWDhma1l1dWFualhFR3h5SEtjU2pxSEVpUytJT1pBSkFX?=
+ =?utf-8?B?TUlDL3MycjErV2JCeG5WRFpWdTBab0NxQWYxS1AxbzAyMTMvUUhlQVl3T1pW?=
+ =?utf-8?B?ckdZaDZNMkswL2FXLzZrYnZEMHdpNU9DUW5PYXhZRGNYVjJVVXVaM0p5MTJI?=
+ =?utf-8?B?THJYT3Nvd09lcG9pNWlTZ2phRWV3NHFkc1N4NFBUdk5GZTBKVDZTT3UydTZM?=
+ =?utf-8?B?RGtTMHlvTUxUMVkzQkxVanVzZ1BzVElsYTh3QWVmamxXS3lHMlZqWUUzMjdy?=
+ =?utf-8?B?S1dkQ2VUUVVmTk1XUjdnUW1TOHgzdXI2VkJwYWNjT3A1ajNGUGVxdmVKWVhl?=
+ =?utf-8?B?Y3AyRFA5Z2FCcUlnY0tGSmNKVFJGZE1jR215M2pPZWI0Y3JyczJLUndZWElM?=
+ =?utf-8?B?WVZJemN6dlhQMlJmQU1nWlJSQVVUWlZjcXRiRjdyeGxaa1puYWYvWSthUlNa?=
+ =?utf-8?B?bDh6OHZqTFhFb3NYYktFNTlLVG8xcHFSM2tCdVZwSFZlTkgwY1BYcWNhY3R0?=
+ =?utf-8?B?bEsxT1dWZVpwOW41MEd0VVpnL1NqN2dpaTdFSUQrVzZkQkpNa3dMbzFBMjQ0?=
+ =?utf-8?B?R0MyYlNZVERBeUxQcTVHMTZsSmN1QUltSElNTDlVbWhxRFozdWovOFdYc3Q0?=
+ =?utf-8?B?TnZ6akVFVE9oNGNuYlkrL2NjUTY1TDR1L2hVZmNSQmx4ckUyNjhLU3ZTT2dw?=
+ =?utf-8?B?bkhzSUw5RlFBUTBZM05WbldpRTdadzAxT0p0ZHZtQ244VjlmS20wODJLdnow?=
+ =?utf-8?B?TXkyYk9sSFZvVGRsSWFFWXJYc1ROMXc4ODQwVmR0WmRYQkVUdzg1TnkwQTdo?=
+ =?utf-8?B?UWxndC9KZVhwbkNTYWxkeHc3bHgzdTA5dDc5RE8vTWlMS2JBWmo1VXJpVVhO?=
+ =?utf-8?B?cVFYK09kUWdVK2lhWkdJL09xQmFDMWFPVWw1Uk5QenlLMlZqSkpaSUMxMjFh?=
+ =?utf-8?B?QkZPRHdVVlcxK0FOU3VaYjlOQkpCeWtzaERSVFM1VWxhZmJUK3JyUENOK0s1?=
+ =?utf-8?B?ZC94Zy9zclhucUxFNkdzQklNT0NtRnRWRW1ZdHJHb1pxam91UTNGTUlvMEVl?=
+ =?utf-8?B?YWZlNmNtZkQ1eTgxeTJLMEhWZjVpY3Bya1FRS1hyazJHTENzYndWMjZUWVRi?=
+ =?utf-8?B?bm8rVVBpQnpVKzJMbWNpdHFXVG9sSmpuVy90ZnJ4bHhpNDJGM3VwdUNRSnZw?=
+ =?utf-8?B?cXV4ajhtZVZ1MU5OODkwVzY3ZWIzSzBsSlAvTWtpaXFxV05aNWIyU3NLdVJ6?=
+ =?utf-8?B?dU1KdkI1L1BQUkVzbFJEMEs3TEpOVUgzU1Z2RkRwZ3RvaktBcUZkeUNqVThw?=
+ =?utf-8?B?SG42TFgwbzRuaHJ5UTVmeVYzYk16bFRURHVYRmlCRmkvTW9XRzBhalhBaU1R?=
+ =?utf-8?B?S2h5S0UrY01obnJQcTI3SFFyeUMrT0pITlF2UEo4WW0zOE51bVFISHhuVGZF?=
+ =?utf-8?B?c3FYdFRaK3VUM2ZUbE0rZTJzY1lYdFZwSTQxU3h1dGVZeXMxUnh0bXY4bHgw?=
+ =?utf-8?B?RU9hbC8xaVJIU01FNlFMejNyemVGZjVaVDlJbzB1TUhqbTlmRlh3NVJObmZi?=
+ =?utf-8?B?UnE5NXVvNXlLaFhTTXFzNUtWUXFNbWtKeVg4ZHdJdUZqenlJeHdYcU4vRWNl?=
+ =?utf-8?B?RU8wejUyMm0yNHhRb0piSkFLN0ZaaU9HRmFEYWtiS1EzRTFwWlBMdUZZdm8y?=
+ =?utf-8?B?Q0lMQWxGYkhNRFpZeHFXMmFnakwwbnhQZGdGeFB2WExTZ2NWUUpiYWdNSHVj?=
+ =?utf-8?B?dHUzeTB0eEJUNXJqdVY3Y0QwUng1a1RJbmxXcDFtM2hzVE5vcm15TGVqYmdn?=
+ =?utf-8?B?Zzk3eTNjVTcxTC8xcWxFdVVLcW42cVVhRkowa0RlSHFVK01TQzdud1puQ0VY?=
+ =?utf-8?B?UDJJcmVZOVlESDl3Ly83UDh5djdVV2R2UEZ2a2Fwc2RHZW5iSWdVNTloMXZZ?=
+ =?utf-8?B?R3ZUVWNHQ0crN0p5M0grRy9aNE9oL3FhY2lWYUpYa2pod3cxdW5McjlIS3FD?=
+ =?utf-8?B?Q1lKT3p0bjhmcit5VVg0QnpQSnkxdDE2Nk1ZQytTVWE3YmNXTFo3NGFQVHJJ?=
+ =?utf-8?B?TmJqSmRaSThUdzVOV1kzakF4R1hESytzVDY1dTI5Y3RRWkRmVU5vdThxN3E1?=
+ =?utf-8?Q?6MZmmoH44uBdcIPDsGjIjG8h/?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ae11fdf-38c0-4014-14bd-08db2ab9dbc2
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2023 09:43:14.9659
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rY2AsNpX3yOjs0E2m/lC5NfMbtA1fOFTjEpxFyZtKbgLjP9BTixGnzxNj2T1GJCW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8927
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 22 Mar 2023 à 01:26, Geert Uytterhoeven <geert+renesas@glider.be> wrote:
-> Improve printed error messages:
->   - Replace numerical error codes by mnemotechnic error codes, to
->     improve the user experience in case of errors,
->   - Drop parentheses around printed numbers, cfr.
->     Documentation/process/coding-style.rst,
->   - Drop printing of an error message in case of out-of-memory, as the
->     core memory allocation code already takes care of this.
->
-> Suggested-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-I added a nitpick. If you prefer to keep as-is, OK for me.
+On 22/03/2023 5:38, Jakub Kicinski wrote:
+> On Mon, 20 Mar 2023 10:51:31 -0700 Saeed Mahameed wrote:
+>> From: Eli Cohen <elic@nvidia.com>
+>>
+>> When calling irq_set_affinity_notifier() with NULL at the notify
+>> argument, it will cause freeing of the glue pointer in the
+>> corresponding array entry but will leave the pointer in the array. A
+>> subsequent call to free_irq_cpu_rmap() will try to free this entry again
+>> leading to possible use after free.
+>>
+>> Fix that by setting NULL to the array entry and checking that we have
+>> non-zero at the array entry when iterating over the array in
+>> free_irq_cpu_rmap().
+> Commit message needs some work. Are you trying to make double
+> free_irq_cpu_rmap() work fine because of callers?
 
-Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Some callers may want to call irq_set_affinity_notifier() for a specific 
+vector and then call free_irq_cpu_rmap() to to free the struct cpu_rmap 
+allocation.  This is a valid scenario as both 
+irq_set_affinity_notifier() are exported. This sequence. This sequence 
+of calls does not happen in the current kernel but my other patches in 
+the series do.
 
-> ---
-> v4:
->   - Reviewed-by: Simon Horman <simon.horman@corigine.com>,
->
-> v3:
->   - Add missing SoB,
->
-> v2:
->   - This is v2 of "[PATCH] can: rcar_canfd: Print mnemotechnic error
->     codes".  I haven't added any tags given on v1, as half of the
->     printed message changed.
-> ---
->  drivers/net/can/rcar/rcar_canfd.c | 43 +++++++++++++++----------------
->  1 file changed, 21 insertions(+), 22 deletions(-)
->
-> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-> index 6df9a259e5e4f92c..ecdb8ffe2f670c9b 100644
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -1417,20 +1417,20 @@ static int rcar_canfd_open(struct net_device *ndev)
->
->         err = phy_power_on(priv->transceiver);
->         if (err) {
-> -               netdev_err(ndev, "failed to power on PHY, error %d\n", err);
-> +               netdev_err(ndev, "failed to power on PHY, %pe\n", ERR_PTR(err));
-                                                          ^
+I will try to improve the commit message.
 
-Nitpick, consider a colon instead of the coma:
-
-                 netdev_err(ndev, "failed to power on PHY: %pe\n",
-ERR_PTR(err));
-
-N.B. This is more a personal preference than an official Linux style.
-If you prefer the coma, you can ignore my nitpick and keep it as it is
-:)
-
->                 return err;
->         }
+>   Are there problems
+> with error path of irq_cpu_rmap_add()? I can tell what you're trying
+> to prevent but not why.
+No, as explained above.
 >
->         /* Peripheral clock is already enabled in probe */
->         err = clk_prepare_enable(gpriv->can_clk);
->         if (err) {
-> -               netdev_err(ndev, "failed to enable CAN clock, error %d\n", err);
-> +               netdev_err(ndev, "failed to enable CAN clock, %pe\n", ERR_PTR(err));
->                 goto out_phy;
->         }
+>> Fixes: c39649c331c7 ("lib: cpu_rmap: CPU affinity reverse-mapping")
+> What is this Fixes tag doing in a net-next patch :S
+> If it can be triggered it needs to go to net.
+It can't be triggered but with my subsequent patches it could.
 >
->         err = open_candev(ndev);
->         if (err) {
-> -               netdev_err(ndev, "open_candev() failed, error %d\n", err);
-> +               netdev_err(ndev, "open_candev() failed, %pe\n", ERR_PTR(err));
->                 goto out_can_clock;
->         }
+>> Signed-off-by: Eli Cohen <elic@nvidia.com>
+>> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+>> ---
+>>   lib/cpu_rmap.c | 5 ++++-
+>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/lib/cpu_rmap.c b/lib/cpu_rmap.c
+>> index f08d9c56f712..e77f12bb3c77 100644
+>> --- a/lib/cpu_rmap.c
+>> +++ b/lib/cpu_rmap.c
+>> @@ -232,7 +232,8 @@ void free_irq_cpu_rmap(struct cpu_rmap *rmap)
+>>   
+>>   	for (index = 0; index < rmap->used; index++) {
+> After looking at this code for 10min - isn't the problem that used
+> is never decremented on the error path?
 >
-> @@ -1731,10 +1731,9 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->         int err = -ENODEV;
+> I don't see a way to remove from the map so it can't be sparse.
+This call, irq_set_affinity_notifier(glue->notify.irq, NULL) can be made 
+by drivers.
 >
->         ndev = alloc_candev(sizeof(*priv), RCANFD_FIFO_DEPTH);
-> -       if (!ndev) {
-> -               dev_err(dev, "alloc_candev() failed\n");
-> +       if (!ndev)
->                 return -ENOMEM;
-> -       }
-> +
->         priv = netdev_priv(ndev);
->
->         ndev->netdev_ops = &rcar_canfd_netdev_ops;
-> @@ -1777,8 +1776,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->                                        rcar_canfd_channel_err_interrupt, 0,
->                                        irq_name, priv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq CH Err(%d) failed, error %d\n",
-> -                               err_irq, err);
-> +                       dev_err(dev, "devm_request_irq CH Err %d failed, %pe\n",
-> +                               err_irq, ERR_PTR(err));
->                         goto fail;
->                 }
->                 irq_name = devm_kasprintf(dev, GFP_KERNEL, "canfd.ch%d_trx",
-> @@ -1791,8 +1790,8 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->                                        rcar_canfd_channel_tx_interrupt, 0,
->                                        irq_name, priv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq Tx (%d) failed, error %d\n",
-> -                               tx_irq, err);
-> +                       dev_err(dev, "devm_request_irq Tx %d failed, %pe\n",
-> +                               tx_irq, ERR_PTR(err));
->                         goto fail;
->                 }
->         }
-> @@ -1823,7 +1822,7 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
->         gpriv->ch[priv->channel] = priv;
->         err = register_candev(ndev);
->         if (err) {
-> -               dev_err(dev, "register_candev() failed, error %d\n", err);
-> +               dev_err(dev, "register_candev() failed, %pe\n", ERR_PTR(err));
->                 goto fail_candev;
->         }
->         dev_info(dev, "device registered (channel %u)\n", priv->channel);
-> @@ -1967,16 +1966,16 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->                                        rcar_canfd_channel_interrupt, 0,
->                                        "canfd.ch_int", gpriv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               ch_irq, err);
-> +                       dev_err(dev, "devm_request_irq %d failed, %pe\n",
-> +                               ch_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->
->                 err = devm_request_irq(dev, g_irq, rcar_canfd_global_interrupt,
->                                        0, "canfd.g_int", gpriv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               g_irq, err);
-> +                       dev_err(dev, "devm_request_irq %d failed, %pe\n",
-> +                               g_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->         } else {
-> @@ -1985,8 +1984,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->                                        "canfd.g_recc", gpriv);
->
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               g_recc_irq, err);
-> +                       dev_err(dev, "devm_request_irq %d failed, %pe\n",
-> +                               g_recc_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->
-> @@ -1994,8 +1993,8 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->                                        rcar_canfd_global_err_interrupt, 0,
->                                        "canfd.g_err", gpriv);
->                 if (err) {
-> -                       dev_err(dev, "devm_request_irq(%d) failed, error %d\n",
-> -                               g_err_irq, err);
-> +                       dev_err(dev, "devm_request_irq %d failed, %pe\n",
-> +                               g_err_irq, ERR_PTR(err));
->                         goto fail_dev;
->                 }
->         }
-> @@ -2012,14 +2011,14 @@ static int rcar_canfd_probe(struct platform_device *pdev)
->         /* Enable peripheral clock for register access */
->         err = clk_prepare_enable(gpriv->clkp);
->         if (err) {
-> -               dev_err(dev, "failed to enable peripheral clock, error %d\n",
-> -                       err);
-> +               dev_err(dev, "failed to enable peripheral clock, %pe\n",
-> +                       ERR_PTR(err));
->                 goto fail_reset;
->         }
->
->         err = rcar_canfd_reset_controller(gpriv);
->         if (err) {
-> -               dev_err(dev, "reset controller failed\n");
-> +               dev_err(dev, "reset controller failed, %pe\n", ERR_PTR(err));
->                 goto fail_clk;
->         }
->
-> --
-> 2.34.1
->
+>>   		glue = rmap->obj[index];
+>> -		irq_set_affinity_notifier(glue->notify.irq, NULL);
+>> +		if (glue)
+>> +			irq_set_affinity_notifier(glue->notify.irq, NULL);
+>>   	}
+>>   
+>>   	cpu_rmap_put(rmap);
+>> @@ -268,6 +269,7 @@ static void irq_cpu_rmap_release(struct kref *ref)
+>>   		container_of(ref, struct irq_glue, notify.kref);
+>>   
+>>   	cpu_rmap_put(glue->rmap);
+>> +	glue->rmap->obj[glue->index] = NULL;
+>>   	kfree(glue);
+>>   }
+>>   
+>> @@ -297,6 +299,7 @@ int irq_cpu_rmap_add(struct cpu_rmap *rmap, int irq)
+>>   	rc = irq_set_affinity_notifier(irq, &glue->notify);
+>>   	if (rc) {
+>>   		cpu_rmap_put(glue->rmap);
+>> +		rmap->obj[glue->index] = NULL;
+>>   		kfree(glue);
+>>   	}
+>>   	return rc;
