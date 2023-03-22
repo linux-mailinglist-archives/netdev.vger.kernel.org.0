@@ -2,158 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 763886C49D2
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B01556C49EB
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 13:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbjCVMAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 08:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
+        id S229734AbjCVMIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 08:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbjCVMAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:00:43 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710F85D898;
-        Wed, 22 Mar 2023 05:00:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=C/XopkrHSruhQua4EDHj5yjjnPImZ/En/wTRBJCzjiY=; b=bcDjKlwK2fma6eRRmDN8WLysZm
-        KhymViMWNAaIPFvvwU5jseL+izR7nP421pn/joDGoStk94T5MK1T8rCdBqsgPkYkHh8FmaQS+0Uq/
-        FdxlBpHRyk/0oxduiK6AMupkEXEAEUekwlwgHaEYd9QuPEr/EkPtWxhTMEV4uZCBSY900kxk1qc/K
-        WuwJN4OGcCNvhOJJbaZbPEQz2VaVrCKVAb6DGCWIlUD6WfdsMY/sxReC/x4ZgAPGwmjddXvm0zQDs
-        TrjbXoH251GLjdgPqC2EttgMAr4dGKMpcyAnBSLiIY1gizqCJjE2vOSRt54eH8a6YkelAN/DYFkje
-        wQkCzGIw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:45962 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1pex8l-00037L-Ey; Wed, 22 Mar 2023 12:00:27 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1pex8k-00DvoF-PF; Wed, 22 Mar 2023 12:00:26 +0000
-In-Reply-To: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
-References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
+        with ESMTP id S229459AbjCVMIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 08:08:21 -0400
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A077CEB71;
+        Wed, 22 Mar 2023 05:08:19 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4PhRpY0Y3Fz9v7Nc;
+        Wed, 22 Mar 2023 19:59:17 +0800 (CST)
+Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
+        by APP1 (Coremail) with SMTP id LxC2BwBn6QSL7xpkVHG9AQ--.51830S2;
+        Wed, 22 Mar 2023 13:07:54 +0100 (CET)
+Message-ID: <b5c80613c696818ce89b92dac54e98878ec3ccd0.camel@huaweicloud.com>
+Subject: Re: [PATCH 0/5] usermode_driver: Add management library and API
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH RFC net-next 7/7] net: dsa: mv88e6xxx: remove handling for DSA
- and CPU ports
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Date:   Wed, 22 Mar 2023 13:07:37 +0100
+In-Reply-To: <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com>
+References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
+         <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1pex8k-00DvoF-PF@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 22 Mar 2023 12:00:26 +0000
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+X-CM-TRANSID: LxC2BwBn6QSL7xpkVHG9AQ--.51830S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZF47uw1rWFyrGFWUZw4DXFb_yoWrGF18pF
+        4YkFW7K3WkJF17Crn7Zw48Ca4I9397J3y3Grn3try5Zwn0kFySkr1IvF13uF1DGr4fKw1a
+        qrW5X34jg34DZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkjb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2Ij
+        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE
+        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42
+        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+        c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UAkuxUUUUU=
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAEBF1jj4bRvQACsb
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As we now always use a fixed-link for DSA and CPU ports, we no longer
-need the hack in the Marvell code to make this work. Remove it.
+On Tue, 2023-03-21 at 19:23 -0700, Alexei Starovoitov wrote:
+> On Fri, Mar 17, 2023 at 7:53 AM Roberto Sassu
+> <roberto.sassu@huaweicloud.com> wrote:
+> > From: Roberto Sassu <roberto.sassu@huawei.com>
+> > 
+> > A User Mode Driver (UMD) is a specialization of a User Mode Helper (UMH),
+> > which runs a user space process from a binary blob, and creates a
+> > bidirectional pipe, so that the kernel can make a request to that process,
+> > and the latter provides its response. It is currently used by bpfilter,
+> > although it does not seem to do any useful work.
+> 
+> FYI the new home for bpfilter is here:
+> https://github.com/facebook/bpfilter
 
-This is especially important with the conversion of DSA drivers to
-phylink_pcs, as the PCS code only gets called if we are using
-phylink for the port.
+Thanks. I just ensured that it worked, by doing:
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 48 ++++----------------------------
- 1 file changed, 5 insertions(+), 43 deletions(-)
+getsockopt(fd, SOL_IP, IPT_SO_GET_INFO, &info, &optlen);
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index dde0c306fb3a..35dcfe86bdc4 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3395,56 +3395,17 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
- 	struct device_node *phy_handle = NULL;
- 	struct dsa_switch *ds = chip->ds;
--	phy_interface_t mode;
- 	struct dsa_port *dp;
--	int tx_amp, speed;
-+	int tx_amp;
- 	int err;
- 	u16 reg;
- 
- 	chip->ports[port].chip = chip;
- 	chip->ports[port].port = port;
- 
--	dp = dsa_to_port(ds, port);
--
--	/* MAC Forcing register: don't force link, speed, duplex or flow control
--	 * state to any particular values on physical ports, but force the CPU
--	 * port and all DSA ports to their maximum bandwidth and full duplex.
--	 */
--	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port)) {
--		struct phylink_config pl_config = {};
--		unsigned long caps;
--
--		chip->info->ops->phylink_get_caps(chip, port, &pl_config);
--
--		caps = pl_config.mac_capabilities;
--
--		if (chip->info->ops->port_max_speed_mode)
--			mode = chip->info->ops->port_max_speed_mode(port);
--		else
--			mode = PHY_INTERFACE_MODE_NA;
--
--		if (caps & MAC_10000FD)
--			speed = SPEED_10000;
--		else if (caps & MAC_5000FD)
--			speed = SPEED_5000;
--		else if (caps & MAC_2500FD)
--			speed = SPEED_2500;
--		else if (caps & MAC_1000)
--			speed = SPEED_1000;
--		else if (caps & MAC_100)
--			speed = SPEED_100;
--		else
--			speed = SPEED_10;
--
--		err = mv88e6xxx_port_setup_mac(chip, port, LINK_FORCED_UP,
--					       speed, DUPLEX_FULL,
--					       PAUSE_OFF, mode);
--	} else {
--		err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
--					       SPEED_UNFORCED, DUPLEX_UNFORCED,
--					       PAUSE_ON,
--					       PHY_INTERFACE_MODE_NA);
--	}
-+	err = mv88e6xxx_port_setup_mac(chip, port, LINK_UNFORCED,
-+				       SPEED_UNFORCED, DUPLEX_UNFORCED,
-+				       PAUSE_ON, PHY_INTERFACE_MODE_NA);
- 	if (err)
- 		return err;
- 
-@@ -3616,6 +3577,7 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 	}
- 
- 	if (chip->info->ops->serdes_set_tx_amplitude) {
-+		dp = dsa_to_port(ds, port);
- 		if (dp)
- 			phy_handle = of_parse_phandle(dp->dn, "phy-handle", 0);
- 
--- 
-2.30.2
+and accepting IPT_SO_GET_INFO in main.c.
+
+> > The problem is, if other users would like to implement a UMD similar to
+> > bpfilter, they would have to duplicate the code. Instead, make an UMD
+> > management library and API from the existing bpfilter and sockopt code,
+> > and move it to common kernel code.
+> > 
+> > Also, define the software architecture and the main components of the
+> > library: the UMD Manager, running in the kernel, acting as the frontend
+> > interface to any user or kernel-originated request; the UMD Loader, also
+> > running in the kernel, responsible to load the UMD Handler; the UMD
+> > Handler, running in user space, responsible to handle requests from the UMD
+> > Manager and to send to it the response.
+> 
+> That doesn't look like a generic interface for UMD.
+
+What would make it more generic? I made the API message format-
+independent. It has the capability of starting the user space process
+as required, when there is a communication.
+
+> It was a quick hack to get bpfilter off the ground, but certainly
+> not a generic one.
+
+True, it is not generic in the sense that it can accomodate any
+possible use case. The main goal is to move something that was running
+in the kernel to user space, with the same isolation guarantees as if
+the code was executed in the kernel.
+
+> > I have two use cases, but for sake of brevity I will propose one.
+> > 
+> > I would like to add support for PGP keys and signatures in the kernel, so
+> > that I can extend secure boot to applications, and allow/deny code
+> > execution based on the signed file digests included in RPM headers.
+> > 
+> > While I proposed a patch set a while ago (based on a previous work of David
+> > Howells), the main objection was that the PGP packet parser should not run
+> > in the kernel.
+> > 
+> > That makes a perfect example for using a UMD. If the PGP parser is moved to
+> > user space (UMD Handler), and the kernel (UMD Manager) just instantiates
+> > the key and verifies the signature on already parsed data, this would
+> > address the concern.
+> 
+> I don't think PGP parser belongs to UMD either.
+> Please do it as a normal user space process and define a proper
+> protocol for communication between kernel and user space.
+
+UMD is better in the sense that it establishes a bidirectional pipe
+between the kernel and the user space process. With that, there is no
+need to further restrict the access to a sysfs file, for example.
+
+The UMD mechanism is much more effective: the pipe is already
+established with the right process, whose code was integrity-checked
+because embedded in the kernel module.
+
+In addition to that, I'm using seccomp to further restrict what the
+user space process can do (read, write, exit, ...). That process cannot
+open new communication channels, even if corrupted. It is expected to
+send to the kernel simple data structures, that the kernel can
+effectively sanitize.
+
+The last step to achieve full isolation would be to deny ptrace/kill on
+the user space process created by the UMD management library so that,
+in lockdown mode, not even root can interfer with that process.
+
+Roberto
 
