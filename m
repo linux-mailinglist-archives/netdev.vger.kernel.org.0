@@ -2,107 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DFE96C49BA
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 12:55:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1B46C49B4
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 12:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbjCVLzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 07:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
+        id S230176AbjCVLwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 07:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbjCVLzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 07:55:39 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392F550FB1
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 04:55:38 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id t19so8092211qta.12
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 04:55:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679486137;
-        h=mime-version:user-agent:references:message-id:date:in-reply-to
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5ww91BS0BsTBRfhDuq0L/dZ3gbj1JWcZ7Z1J95zKsT0=;
-        b=NmjuJ84JWbJrWABsGO3X2w2jmXd+iP+pLsZYkJUq8IYeRd+R9m2QeOrPNtGlIcZbZ4
-         7jy218wLkppZXYpeKxScMCPCJGBPX0ooODOwrxuR7JxPI3PUd+T8k8LFLlGaQtESOyrF
-         nSAmmf9BlrjvleOt7MNHuxi0rh9v/MHsTMK9xcG1xOGWh3kgaEHpZfRaeAFbZiki0elr
-         RFKRQpsWMm03BwcswHMGn+AG6CNjJHZpClsYs1VeTfhVM08jN0C0Nh5d0x3n3EfOzSyt
-         LLJYvi37sNVwKhaAuM05oCzkpZdhGE/ndn+AhUH9/7S37+DO0vzCbOeX7MIyu0N3diIv
-         w5Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679486137;
-        h=mime-version:user-agent:references:message-id:date:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5ww91BS0BsTBRfhDuq0L/dZ3gbj1JWcZ7Z1J95zKsT0=;
-        b=JfDvQNJja1c6UfcGhZKYx9wWOPueYTUcmdht+2wF9YMeezv7a5Q8AMwFXQg58jT7m0
-         J28WiarJIWCOsgQ0IhwcN8tAW/gQwLWSbXjoFCcDqkAa4y+OF77zcK0UK9zolxEd86bk
-         xlIcU0x1FHGQIi2wsL4a1rfYFodC4Gnz1ySeRZ2y8W3SN+bLGpEz/lsQP8oTHWxs+18f
-         3GcrYkZvLmOEpB+sxDh70f7pOFXA8XDL4PIrg8vZqC0FD5DZK5nopkXl/8Y045P19r0y
-         2eOMkVQQFR/FudVY5MqVE83wGnR88lfAkAol5ao5nbDatgzLO6o1lDhXXKhsO/J+D2KB
-         lZuw==
-X-Gm-Message-State: AO0yUKX6nE5ax7kPPkcOGCPKojaXvWYm4eVUw2XT00G3phDIRadLh+pW
-        zr1VS92eT0v6p1YLUnIeEwg=
-X-Google-Smtp-Source: AK7set9en6/1s4dXucYz+AW9uUsH88NHDSUqGyeAA4ygPSSQuzE16ekXI7/KpkaqB/b7AnP2z6jrPA==
-X-Received: by 2002:ac8:4e42:0:b0:3bf:e415:5cc3 with SMTP id e2-20020ac84e42000000b003bfe4155cc3mr6184627qtw.58.1679486137248;
-        Wed, 22 Mar 2023 04:55:37 -0700 (PDT)
-Received: from imac ([88.97.103.74])
-        by smtp.gmail.com with ESMTPSA id 130-20020a370888000000b007467f7536d0sm6613968qki.99.2023.03.22.04.55.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Mar 2023 04:55:36 -0700 (PDT)
-From:   Donald Hunter <donald.hunter@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229767AbjCVLwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 07:52:54 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB156A6D;
+        Wed, 22 Mar 2023 04:52:52 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4PhRfg2FP0z9vrP;
+        Wed, 22 Mar 2023 19:52:27 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 22 Mar
+ 2023 19:52:49 +0800
+Subject: Re: [PATCH net-next 2/8] virtio_net: mergeable xdp: introduce
+ mergeable_xdp_prepare
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, <netdev@vger.kernel.org>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, donald.hunter@redhat.com
-Subject: Re: [PATCH net-next v2 4/6] tools: ynl: Add struct attr decoding to
- ynl
-In-Reply-To: <20230321223055.21def08d@kernel.org> (Jakub Kicinski's message of
-        "Tue, 21 Mar 2023 22:30:55 -0700")
-Date:   Wed, 22 Mar 2023 11:48:12 +0000
-Message-ID: <m27cv9j9c3.fsf@gmail.com>
-References: <20230319193803.97453-1-donald.hunter@gmail.com>
-        <20230319193803.97453-5-donald.hunter@gmail.com>
-        <20230321223055.21def08d@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>
+References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
+ <20230322030308.16046-3-xuanzhuo@linux.alibaba.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <c7749936-c154-da51-ccfb-f16150d19c62@huawei.com>
+Date:   Wed, 22 Mar 2023 19:52:48 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230322030308.16046-3-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On 2023/3/22 11:03, Xuan Zhuo wrote:
+> Separating the logic of preparation for xdp from receive_mergeable.
+> 
+> The purpose of this is to simplify the logic of execution of XDP.
+> 
+> The main logic here is that when headroom is insufficient, we need to
+> allocate a new page and calculate offset. It should be noted that if
+> there is new page, the variable page will refer to the new page.
+> 
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  drivers/net/virtio_net.c | 135 ++++++++++++++++++++++-----------------
+>  1 file changed, 77 insertions(+), 58 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 4d2bf1ce0730..bb426958cdd4 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1162,6 +1162,79 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
+>  	return 0;
+>  }
+>  
+> +static void *mergeable_xdp_prepare(struct virtnet_info *vi,
+> +				   struct receive_queue *rq,
+> +				   struct bpf_prog *xdp_prog,
+> +				   void *ctx,
+> +				   unsigned int *frame_sz,
+> +				   int *num_buf,
+> +				   struct page **page,
+> +				   int offset,
+> +				   unsigned int *len,
+> +				   struct virtio_net_hdr_mrg_rxbuf *hdr)
 
-> On Sun, 19 Mar 2023 19:38:01 +0000 Donald Hunter wrote:
->>                  enum: [ unused, pad, flag, binary, u8, u16, u32, u64, s32, s64,
->> -                        string, nest, array-nest, nest-type-value ]
->> +                        string, nest, array-nest, nest-type-value, struct ]
->
-> I wonder if we should also only allow struct as a subtype of binary?
->
-> Structs can technically grow with newer kernels (i.e. new members can
-> be added at the end). So I think for languages like C we will still
-> need to expose to the user the original length of the attribute.
-> And binary comes with a length so codgen reuse fits nicely.
->
-> Either way - docs need to be updated.
+The naming convention seems to be xdp_prepare_mergeable().
 
-Yep, as I was replying to your previous comment, I started to think
-about making struct a subtype of binary. That would make a struct attr
-something like:
+> +{
+> +	unsigned int truesize = mergeable_ctx_to_truesize(ctx);
+> +	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
+> +	struct page *xdp_page;
+> +	unsigned int xdp_room;
+> +
+> +	/* Transient failure which in theory could occur if
+> +	 * in-flight packets from before XDP was enabled reach
+> +	 * the receive path after XDP is loaded.
+> +	 */
+> +	if (unlikely(hdr->hdr.gso_type))
+> +		return NULL;
+> +
+> +	/* Now XDP core assumes frag size is PAGE_SIZE, but buffers
+> +	 * with headroom may add hole in truesize, which
+> +	 * make their length exceed PAGE_SIZE. So we disabled the
+> +	 * hole mechanism for xdp. See add_recvbuf_mergeable().
+> +	 */
+> +	*frame_sz = truesize;
+> +
+> +	/* This happens when headroom is not enough because
+> +	 * of the buffer was prefilled before XDP is set.
+> +	 * This should only happen for the first several packets.
+> +	 * In fact, vq reset can be used here to help us clean up
+> +	 * the prefilled buffers, but many existing devices do not
+> +	 * support it, and we don't want to bother users who are
+> +	 * using xdp normally.
+> +	 */
+> +	if (!xdp_prog->aux->xdp_has_frags &&
+> +	    (*num_buf > 1 || headroom < virtnet_get_headroom(vi))) {
+> +		/* linearize data for XDP */
+> +		xdp_page = xdp_linearize_page(rq, num_buf,
+> +					      *page, offset,
+> +					      VIRTIO_XDP_HEADROOM,
+> +					      len);
+> +
+> +		if (!xdp_page)
+> +			return NULL;
+> +	} else if (unlikely(headroom < virtnet_get_headroom(vi))) {
+> +		xdp_room = SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
+> +					  sizeof(struct skb_shared_info));
+> +		if (*len + xdp_room > PAGE_SIZE)
+> +			return NULL;
+> +
+> +		xdp_page = alloc_page(GFP_ATOMIC);
+> +		if (!xdp_page)
+> +			return NULL;
+> +
+> +		memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
+> +		       page_address(*page) + offset, *len);
 
- -
-   name: stats
-   type: binary
-   sub-type: struct
-   struct: vport-stats
+It seems the above 'else if' was not really tested even before this patch,
+as there is no "--*num_buf" if xdp_linearize_page() is not called, which
+may causes virtnet_build_xdp_buff_mrg() to comsume one more buffer than
+expected?
 
-I originally chose 'struct' as the attr name, following the pattern that
-'enum' is used for enum names but I'm not sure it's clear enough. Maybe
-'sub-type-name' would be better?
+Also, it seems better to split the xdp_linearize_page() to two functions
+as pskb_expand_head() and __skb_linearize() do, one to expand the headroom,
+the other one to do the linearizing.
 
-I will update the documentation for this.
+
+> +	} else {
+> +		return page_address(*page) + offset;
+> +	}
+> +
+> +	*frame_sz = PAGE_SIZE;
+> +
+> +	put_page(*page);
+> +
+> +	*page = xdp_page;
+> +
+> +	return page_address(xdp_page) + VIRTIO_XDP_HEADROOM;
+> +}
+> +
+>  static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  					 struct virtnet_info *vi,
+>  					 struct receive_queue *rq,
+> @@ -1181,7 +1254,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
+>  	unsigned int tailroom = headroom ? sizeof(struct skb_shared_info) : 0;
+>  	unsigned int room = SKB_DATA_ALIGN(headroom + tailroom);
+> -	unsigned int frame_sz, xdp_room;
+> +	unsigned int frame_sz;
+>  	int err;
+>  
+>  	head_skb = NULL;
+> @@ -1211,65 +1284,11 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  		u32 act;
+>  		int i;
+>  
+> -		/* Transient failure which in theory could occur if
+> -		 * in-flight packets from before XDP was enabled reach
+> -		 * the receive path after XDP is loaded.
+> -		 */
+> -		if (unlikely(hdr->hdr.gso_type))
+> +		data = mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_buf, &page,
+> +					     offset, &len, hdr);
+> +		if (!data)
+
+unlikely().
+
+>  			goto err_xdp;
+>  
+> -		/* Now XDP core assumes frag size is PAGE_SIZE, but buffers
+> -		 * with headroom may add hole in truesize, which
+> -		 * make their length exceed PAGE_SIZE. So we disabled the
+> -		 * hole mechanism for xdp. See add_recvbuf_mergeable().
+> -		 */
+> -		frame_sz = truesize;
+> -
+> -		/* This happens when headroom is not enough because
+> -		 * of the buffer was prefilled before XDP is set.
+> -		 * This should only happen for the first several packets.
+> -		 * In fact, vq reset can be used here to help us clean up
+> -		 * the prefilled buffers, but many existing devices do not
+> -		 * support it, and we don't want to bother users who are
+> -		 * using xdp normally.
+> -		 */
+> -		if (!xdp_prog->aux->xdp_has_frags &&
+> -		    (num_buf > 1 || headroom < virtnet_get_headroom(vi))) {
+> -			/* linearize data for XDP */
+> -			xdp_page = xdp_linearize_page(rq, &num_buf,
+> -						      page, offset,
+> -						      VIRTIO_XDP_HEADROOM,
+> -						      &len);
+> -			frame_sz = PAGE_SIZE;
+> -
+> -			if (!xdp_page)
+> -				goto err_xdp;
+> -			offset = VIRTIO_XDP_HEADROOM;
+> -
+> -			put_page(page);
+> -			page = xdp_page;
+> -		} else if (unlikely(headroom < virtnet_get_headroom(vi))) {
+> -			xdp_room = SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
+> -						  sizeof(struct skb_shared_info));
+> -			if (len + xdp_room > PAGE_SIZE)
+> -				goto err_xdp;
+> -
+> -			xdp_page = alloc_page(GFP_ATOMIC);
+> -			if (!xdp_page)
+> -				goto err_xdp;
+> -
+> -			memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
+> -			       page_address(page) + offset, len);
+> -			frame_sz = PAGE_SIZE;
+> -			offset = VIRTIO_XDP_HEADROOM;
+> -
+> -			put_page(page);
+> -			page = xdp_page;
+> -		} else {
+> -			xdp_page = page;
+> -		}
+> -
+> -		data = page_address(xdp_page) + offset;
+>  		err = virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame_sz,
+>  						 &num_buf, &xdp_frags_truesz, stats);
+>  		if (unlikely(err))
+> 
