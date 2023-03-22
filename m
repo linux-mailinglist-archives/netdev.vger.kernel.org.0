@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FED46C4B7F
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:19:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2A46C4B85
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:19:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbjCVNTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 09:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        id S230513AbjCVNT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 09:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbjCVNTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:19:00 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40145FE9B
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:18:41 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id d75a77b69052e-3e0965f70ecso67761cf.0
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:18:41 -0700 (PDT)
+        with ESMTP id S231145AbjCVNTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:19:12 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3E92CFC4
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:05 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id d75a77b69052e-3d7aef37dccso68871cf.0
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679491121;
+        d=google.com; s=20210112; t=1679491145;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=J/e20Mt3eJBtDn4whlWHuUSFxZLO9WQUi9MdevR4Kf8=;
-        b=TWlF/tdSqN/8acdYnoUMPCVX1vwSJudd9RfephQ08ug2fn9WMWrXswVx5oBuGnO+V2
-         I86ZcmrdhfQD4sVFt1xwMmyOKnB/Yz1FPS5ApP5hPlpKiIOk8etYu9JAXB/PHboaSTux
-         oWCrWnpePWQtd+NHKySr9M1WIzGInLejaV3J6wYAYtDY2FEAyw3RI7+f2Y2UHX0RO4qf
-         RP+S0QChmT8jf+06BEFiuBLmRofPQGxY+G1BkonZGyEe8cdlSMW6eX3E2D0Lkd+r/o0y
-         MBgoxflkO6mhJV061VKRtWrgi9w2funKV78ByWRTTFVjsdXuWG9cRQhJ5/JHqbJJq7ar
-         UyjQ==
+        bh=QnSJkDxbuJSOP2omYqJWXJiIXtqsN+hXQRJ0Te3TQM0=;
+        b=tOWW0pplRF4tD+WHArVYrR9GuU2Oi+PdYQK1+Rr0k975ZaQWbTfQKNuYOuD7EhiMu2
+         6wGGvtc4ZcilgwK133bgLC3vkeAwMbiwONjvtI+qGmPPL0tr+fr9vFjUGZPJjzYZMRVc
+         uI9e0ddRZKTO/d4730R8LYcTFx8F/Gq7U1wt1iNV9t8EZxrrivunxY5eGYZObppgupdS
+         CttnxySFFwZ5BkfzLHccJ8xsmBF8RCKEyHLle6J/NlDOnvhZQBgHi3w24KcP9hQtneNi
+         KScN/HnYamuPQjPNVvVUDGglkqzmsXCufuonMsP6/VmdA1qO86OWom6hAw48+Pfw+ar/
+         6TWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679491121;
+        d=1e100.net; s=20210112; t=1679491145;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=J/e20Mt3eJBtDn4whlWHuUSFxZLO9WQUi9MdevR4Kf8=;
-        b=PHaGkOZugSr5AKUCjVSs/HH+N8+ygGjZFx20n0z7SQO3hFdHwOLeCSiBCJpKzIUj6v
-         PDCrpyNJ47fiW7YE1dvyFpWjhkYa1M0qWPRBoErFTkgV8JKNnjjiLPo1w53uQavWvNib
-         CKwYXJoaUtKXYLNlWv4n+NNkPJLEC3wD8Dvv8g1/IisX8tg/v/wkKDHL/qAYUD5HOEJ3
-         GZ6vGyLmxaBYRAe0cVxSrfOJ4mmHr1wFEHLD5Nu9dyYWIsSuhVyNm5TkZ7EFwZ7bPIMR
-         OTzFAvkWY2rLXXuA6nJqkP/8U01JRndZRAZKLVDgN+ChwjqSxZ4RLQl9S27Ua+e3Sw+X
-         VdnQ==
-X-Gm-Message-State: AO0yUKUJqixDpgQsA8t490zMIwuV8cwTLUZ9CfYQMzHvWvMnbwTF7L6Y
-        utOpj2mI0bBKSKBh9hAQYzCkxi/Nw4NP/b/FlLpyDg==
-X-Google-Smtp-Source: AK7set9lxWM/lEjUSHvch37Bwr/atH1InK3RQ3R/4oeGLej6EUxPOkY4XiFIeIlMmIpvwfjQOAYaIVvaJAPUvttKLE4=
-X-Received: by 2002:a05:622a:551:b0:3e2:3de:371f with SMTP id
- m17-20020a05622a055100b003e203de371fmr333173qtx.15.1679491120767; Wed, 22 Mar
- 2023 06:18:40 -0700 (PDT)
+        bh=QnSJkDxbuJSOP2omYqJWXJiIXtqsN+hXQRJ0Te3TQM0=;
+        b=J4ocDiTAhyqOx1SmSndt/fX//a9iLBZXEKrg2ZOgRSQU+yaMYdKGR4tGUYDJSJnCaq
+         W4rRue3fpgyjQJI7Z7pNNc1quNA/KoQUqkUIrC0KgScN1dpvhad/WbHJRcHOMLw8wGzs
+         43Ab8EOLCAljiz73DIIq57hRC/KF593PAW3/1gbl5OihnVQd1wZ66Ec/Qs63QSG3QAhH
+         +2+17ZKs6ZLSjZypcJIPlOeNN3GkDlYyMCiCZZYnrQkyH7n6h5tZ0YSd/QM0i5uADQbA
+         FXORc/6qndQlTkpWZj8vo5BT8sUwJlCzCFhsNIFDEvhVuRZtjdvND11a9Mk1GUo0ALTB
+         3sLg==
+X-Gm-Message-State: AO0yUKX/gD8sjEXk7t/usJxO5P63H6hg+9V9lfNvE1HvYl6fCe18P/Tn
+        Lj2Rb3j1B3twHKjootEzpDKgt49jxmqoN/gVYjeypg==
+X-Google-Smtp-Source: AK7set+xQ+/jHKrZ8G98trdpO4AlAx2CgQ6ek3fMCs8yoeVP+wqg742F/kUglup1MLh0vLQe/Bvez9CS1Ta3shzqcsk=
+X-Received: by 2002:ac8:7d14:0:b0:3b9:f696:c754 with SMTP id
+ g20-20020ac87d14000000b003b9f696c754mr295023qtb.5.1679491144609; Wed, 22 Mar
+ 2023 06:19:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230313075326.3594869-1-jaewan@google.com> <20230313075326.3594869-4-jaewan@google.com>
- <ZA93nupR04173j+h@localhost.localdomain>
-In-Reply-To: <ZA93nupR04173j+h@localhost.localdomain>
+References: <20230313075326.3594869-1-jaewan@google.com> <20230313075326.3594869-6-jaewan@google.com>
+ <ZA+G3Rr+ibEL+2cX@localhost.localdomain> <CABZjns6=8-cxQbUh2510eQ0B6C80hzMNDxFyY7zxgLY+NJTRGQ@mail.gmail.com>
+ <ZBDBbZYSmBWIVOVh@localhost.localdomain>
+In-Reply-To: <ZBDBbZYSmBWIVOVh@localhost.localdomain>
 From:   Jaewan Kim <jaewan@google.com>
-Date:   Wed, 22 Mar 2023 22:18:28 +0900
-Message-ID: <CABZjns4X-8d6BuE_Mq+t6s3hyUVODyo7rYpyRw_x7j7d+tMgWQ@mail.gmail.com>
-Subject: Re: [PATCH v9 3/5] mac80211_hwsim: add PMSR request support via virtio
+Date:   Wed, 22 Mar 2023 22:18:51 +0900
+Message-ID: <CABZjns48pZKTgHKziRmKiwQ6jfznqHnczUg+DVdAUtVg59kS+Q@mail.gmail.com>
+Subject: Re: [PATCH v9 5/5] mac80211_hwsim: add PMSR report support via virtio
 To:     Michal Kubiak <michal.kubiak@intel.com>
 Cc:     gregkh@linuxfoundation.org, johannes@sipsolutions.net,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
@@ -71,396 +72,760 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 14, 2023 at 4:21=E2=80=AFAM Michal Kubiak <michal.kubiak@intel.=
+On Wed, Mar 15, 2023 at 3:48=E2=80=AFAM Michal Kubiak <michal.kubiak@intel.=
 com> wrote:
 >
-> On Mon, Mar 13, 2023 at 07:53:24AM +0000, Jaewan Kim wrote:
-> > PMSR (a.k.a. peer measurement) is generalized measurement between two
-> > Wi-Fi devices. And currently FTM (a.k.a. fine time measurement or fligh=
-t
-> > time measurement) is the one and only measurement. FTM is measured by
-> > RTT (a.k.a. round trip time) of packets between two Wi-Fi devices.
+> On Wed, Mar 15, 2023 at 01:31:38AM +0900, Jaewan Kim wrote:
+> > On Tue, Mar 14, 2023 at 5:26=E2=80=AFAM Michal Kubiak <michal.kubiak@in=
+tel.com> wrote:
+> > >
+> > > On Mon, Mar 13, 2023 at 07:53:26AM +0000, Jaewan Kim wrote:
+> > > > PMSR (a.k.a. peer measurement) is generalized measurement between t=
+wo
+> > > > devices with Wi-Fi support. And currently FTM (a.k.a. fine time mea=
+surement
+> > > > or flight time measurement) is the one and only measurement.
+> > > >
+> > > > Add the necessary functionality to allow mac80211_hwsim to report P=
+MSR
+> > > > result. The result would come from the wmediumd, where other Wi-Fi
+> > > > devices' information are kept. mac80211_hwsim only need to deliver =
+the
+> > > > result to the userspace.
+> > > >
+> > > > In detail, add new mac80211_hwsim attributes HWSIM_CMD_REPORT_PMSR,=
+ and
+> > > > HWSIM_ATTR_PMSR_RESULT. When mac80211_hwsim receives the PMSR resul=
+t with
+> > > > command HWSIM_CMD_REPORT_PMSR and detail with attribute
+> > > > HWSIM_ATTR_PMSR_RESULT, received data is parsed to cfg80211_pmsr_re=
+sult and
+> > > > resent to the userspace by cfg80211_pmsr_report().
+> > > >
+> > > > To help receive the details of PMSR result, hwsim_rate_info_attribu=
+tes is
+> > > > added to receive rate_info without complex bitrate calculation. (i.=
+e. send
+> > > > rate_info without adding inverse of nl80211_put_sta_rate()).
+> > > >
+> > > > Signed-off-by: Jaewan Kim <jaewan@google.com>
+> > > > ---
+> > > > V7 -> V8: Changed to specify calculated last HWSIM_CMD for resv_sta=
+rt_op
+> > > >           instead of __HWSIM_CMD_MAX for adding new CMD more explic=
+it.
+> > > > V7: Initial commit (split from previously large patch)
+> > > > ---
+> > > >  drivers/net/wireless/mac80211_hwsim.c | 379 ++++++++++++++++++++++=
++++-
+> > > >  drivers/net/wireless/mac80211_hwsim.h |  51 +++-
+> > > >  2 files changed, 420 insertions(+), 10 deletions(-)
+> > > >
+> > >
+> > > General comment: there are many lines exceeding 80 characters (the li=
+mit
+> > > for net).
+> > > The rest of my comments - inline.
 > >
-> > Add necessary functionalities for mac80211_hwsim to start PMSR request =
-by
-> > passthrough the request to wmediumd via virtio. mac80211_hwsim can't
-> > measure RTT for real because mac80211_hwsim the software simulator and
-> > packets are sent almost immediately for real. This change expect wmediu=
-md
-> > to have all the location information of devices, so passthrough request=
-s
-> > to wmediumd.
+> > We can now using 100 columns
+> > because 80 character limit is deprecated
 > >
-> > In detail, add new mac80211_hwsim command HWSIM_CMD_ABORT_PMSR. When
-> > mac80211_hwsim receives the PMSR start request via
-> > ieee80211_ops.start_pmsr, the received cfg80211_pmsr_request is resent =
-to
-> > the wmediumd with command HWSIM_CMD_START_PMSR and attribute
-> > HWSIM_ATTR_PMSR_REQUEST. The attribute is formatted as the same way as
-> > nl80211_pmsr_start() expects.
+> > Here's previous discussion thread:
+> > https://patchwork.kernel.org/project/linux-wireless/patch/2023020708540=
+0.2232544-2-jaewan@google.com/#25217046
+>
+> Oh, sorry, so it's my mistake.
+> I mainly had an experience with ethernet drivers, where we still check
+> the limit 80 characters.
+>
+> Thanks,
+> Michal
+>
 > >
-> > Signed-off-by: Jaewan Kim <jaewan@google.com>
-> > ---
-> > V7 -> V8: Exported nl80211_send_chandef directly instead of creating
-> >           wrapper.
-> > V7: Initial commit (split from previously large patch)
-> > ---
-> >  drivers/net/wireless/mac80211_hwsim.c | 207 +++++++++++++++++++++++++-
-> >  drivers/net/wireless/mac80211_hwsim.h |   6 +
-> >  2 files changed, 212 insertions(+), 1 deletion(-)
+> > >
+> > > Thanks,
+> > > Michal
+> > >
+> > > > diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wi=
+reless/mac80211_hwsim.c
+> > > > index 8f699dfab77a..d1218c1efba4 100644
+> > > > --- a/drivers/net/wireless/mac80211_hwsim.c
+> > > > +++ b/drivers/net/wireless/mac80211_hwsim.c
+> > > > @@ -752,6 +752,11 @@ struct hwsim_radiotap_ack_hdr {
+> > > >       __le16 rt_chbitmask;
+> > > >  } __packed;
+> > > >
+> > > > +static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(co=
+nst u8 *addr)
+> > > > +{
+> > > > +     return rhashtable_lookup_fast(&hwsim_radios_rht, addr, hwsim_=
+rht_params);
+> > > > +}
+> > > > +
+> > > >  /* MAC80211_HWSIM netlink family */
+> > > >  static struct genl_family hwsim_genl_family;
+> > > >
+> > > > @@ -765,6 +770,76 @@ static const struct genl_multicast_group hwsim=
+_mcgrps[] =3D {
+> > > >
+> > > >  /* MAC80211_HWSIM netlink policy */
+> > > >
+> > > > +static const struct nla_policy
+> > > > +hwsim_rate_info_policy[HWSIM_RATE_INFO_ATTR_MAX + 1] =3D {
+> > > > +     [HWSIM_RATE_INFO_ATTR_FLAGS] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_MCS] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_LEGACY] =3D { .type =3D NLA_U16 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_NSS] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_BW] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_HE_GI] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_HE_DCM] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_EHT_GI] =3D { .type =3D NLA_U8 },
+> > > > +     [HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC] =3D { .type =3D NLA_U8 },
+> > > > +};
+> > > > +
+> > > > +static const struct nla_policy
+> > > > +hwsim_ftm_result_policy[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1] =3D {
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON] =3D { .type =3D NLA_=
+U32 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX] =3D { .type =3D NLA_=
+U16 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS] =3D { .type =
+=3D NLA_U32 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES] =3D { .type =
+=3D NLA_U32 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME] =3D { .type =3D =
+NLA_U8 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP] =3D { .type =3D N=
+LA_U8 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION] =3D { .type =3D N=
+LA_U8 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST] =3D { .type =3D N=
+LA_U8 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG] =3D { .type =3D NLA_U32=
+ },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD] =3D { .type =3D NLA_=
+U32 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_TX_RATE] =3D NLA_POLICY_NESTED(hw=
+sim_rate_info_policy),
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_RX_RATE] =3D NLA_POLICY_NESTED(hw=
+sim_rate_info_policy),
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG] =3D { .type =3D NLA_U64 =
+},
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE] =3D { .type =3D NLA=
+_U64 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD] =3D { .type =3D NLA_U=
+64 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG] =3D { .type =3D NLA_U64=
+ },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE] =3D { .type =3D NL=
+A_U64 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD] =3D { .type =3D NLA_=
+U64 },
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_LCI] =3D { .type =3D NLA_STRING }=
+,
+> > > > +     [NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC] =3D { .type =3D NLA_STR=
+ING },
+> > > > +};
+> > > > +
+> > > > +static const struct nla_policy
+> > > > +hwsim_pmsr_resp_type_policy[NL80211_PMSR_TYPE_MAX + 1] =3D {
+> > > > +     [NL80211_PMSR_TYPE_FTM] =3D NLA_POLICY_NESTED(hwsim_ftm_resul=
+t_policy),
+> > > > +};
+> > > > +
+> > > > +static const struct nla_policy
+> > > > +hwsim_pmsr_resp_policy[NL80211_PMSR_RESP_ATTR_MAX + 1] =3D {
+> > > > +     [NL80211_PMSR_RESP_ATTR_STATUS] =3D { .type =3D NLA_U32 },
+> > > > +     [NL80211_PMSR_RESP_ATTR_HOST_TIME] =3D { .type =3D NLA_U64 },
+> > > > +     [NL80211_PMSR_RESP_ATTR_AP_TSF] =3D { .type =3D NLA_U64 },
+> > > > +     [NL80211_PMSR_RESP_ATTR_FINAL] =3D { .type =3D NLA_FLAG },
+> > > > +     [NL80211_PMSR_RESP_ATTR_DATA] =3D NLA_POLICY_NESTED(hwsim_pms=
+r_resp_type_policy),
+> > > > +};
+> > > > +
+> > > > +static const struct nla_policy
+> > > > +hwsim_pmsr_peer_result_policy[NL80211_PMSR_PEER_ATTR_MAX + 1] =3D =
+{
+> > > > +     [NL80211_PMSR_PEER_ATTR_ADDR] =3D NLA_POLICY_ETH_ADDR_COMPAT,
+> > > > +     [NL80211_PMSR_PEER_ATTR_CHAN] =3D { .type =3D NLA_REJECT },
+> > > > +     [NL80211_PMSR_PEER_ATTR_REQ] =3D { .type =3D NLA_REJECT },
+> > > > +     [NL80211_PMSR_PEER_ATTR_RESP] =3D NLA_POLICY_NESTED(hwsim_pms=
+r_resp_policy),
+> > > > +};
+> > > > +
+> > > > +static const struct nla_policy
+> > > > +hwsim_pmsr_peers_result_policy[NL80211_PMSR_ATTR_MAX + 1] =3D {
+> > > > +     [NL80211_PMSR_ATTR_MAX_PEERS] =3D { .type =3D NLA_REJECT },
+> > > > +     [NL80211_PMSR_ATTR_REPORT_AP_TSF] =3D { .type =3D NLA_REJECT =
+},
+> > > > +     [NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] =3D { .type =3D NLA_RE=
+JECT },
+> > > > +     [NL80211_PMSR_ATTR_TYPE_CAPA] =3D { .type =3D NLA_REJECT },
+> > > > +     [NL80211_PMSR_ATTR_PEERS] =3D NLA_POLICY_NESTED_ARRAY(hwsim_p=
+msr_peer_result_policy),
+> > > > +};
+> > > > +
+> > > >  static const struct nla_policy
+> > > >  hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] =3D {
+> > > >       [NL80211_PMSR_FTM_CAPA_ATTR_ASAP] =3D { .type =3D NLA_FLAG },
+> > > > @@ -822,6 +897,7 @@ static const struct nla_policy hwsim_genl_polic=
+y[HWSIM_ATTR_MAX + 1] =3D {
+> > > >       [HWSIM_ATTR_CIPHER_SUPPORT] =3D { .type =3D NLA_BINARY },
+> > > >       [HWSIM_ATTR_MLO_SUPPORT] =3D { .type =3D NLA_FLAG },
+> > > >       [HWSIM_ATTR_PMSR_SUPPORT] =3D NLA_POLICY_NESTED(hwsim_pmsr_ca=
+pa_policy),
+> > > > +     [HWSIM_ATTR_PMSR_RESULT] =3D NLA_POLICY_NESTED(hwsim_pmsr_pee=
+rs_result_policy),
+> > > >  };
+> > > >
+> > > >  #if IS_REACHABLE(CONFIG_VIRTIO)
+> > > > @@ -3403,6 +3479,292 @@ static void mac80211_hwsim_abort_pmsr(struc=
+t ieee80211_hw *hw,
+> > > >       mutex_unlock(&data->mutex);
+> > > >  }
+> > > >
+> > > > +static int mac80211_hwsim_parse_rate_info(struct nlattr *rateattr,
+> > > > +                                       struct rate_info *rate_info=
+,
+> > > > +                                       struct genl_info *info)
+> > > > +{
+> > > > +     struct nlattr *tb[HWSIM_RATE_INFO_ATTR_MAX + 1];
+> > > > +     int ret;
+> > > > +
+> > > > +     ret =3D nla_parse_nested(tb, HWSIM_RATE_INFO_ATTR_MAX,
+> > > > +                            rateattr, hwsim_rate_info_policy, info=
+->extack);
+> > > > +     if (ret)
+> > > > +             return ret;
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_FLAGS])
+> > > > +             rate_info->flags =3D nla_get_u8(tb[HWSIM_RATE_INFO_AT=
+TR_FLAGS]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_MCS])
+> > > > +             rate_info->mcs =3D nla_get_u8(tb[HWSIM_RATE_INFO_ATTR=
+_MCS]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_LEGACY])
+> > > > +             rate_info->legacy =3D nla_get_u16(tb[HWSIM_RATE_INFO_=
+ATTR_LEGACY]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_NSS])
+> > > > +             rate_info->nss =3D nla_get_u8(tb[HWSIM_RATE_INFO_ATTR=
+_NSS]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_BW])
+> > > > +             rate_info->bw =3D nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_=
+BW]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_HE_GI])
+> > > > +             rate_info->he_gi =3D nla_get_u8(tb[HWSIM_RATE_INFO_AT=
+TR_HE_GI]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_HE_DCM])
+> > > > +             rate_info->he_dcm =3D nla_get_u8(tb[HWSIM_RATE_INFO_A=
+TTR_HE_DCM]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC])
+> > > > +             rate_info->he_ru_alloc =3D
+> > > > +                     nla_get_u8(tb[HWSIM_RATE_INFO_ATTR_HE_RU_ALLO=
+C]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH])
+> > > > +             rate_info->n_bonded_ch =3D nla_get_u8(tb[HWSIM_RATE_I=
+NFO_ATTR_N_BOUNDED_CH]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_EHT_GI])
+> > > > +             rate_info->eht_gi =3D nla_get_u8(tb[HWSIM_RATE_INFO_A=
+TTR_EHT_GI]);
+> > > > +
+> > > > +     if (tb[HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC])
+> > > > +             rate_info->eht_ru_alloc =3D nla_get_u8(tb[HWSIM_RATE_=
+INFO_ATTR_EHT_RU_ALLOC]);
+> > > > +
+> > > > +     return 0;
+> > > > +}
+> > >
+> > > Lines in the function above often exceed 80 chars.
+> > >
+> > > > +
+> > > > +static int mac80211_hwsim_parse_ftm_result(struct nlattr *ftm,
+> > > > +                                        struct cfg80211_pmsr_ftm_r=
+esult *result,
+> > > > +                                        struct genl_info *info)
+> > > > +{
+> > > > +     struct nlattr *tb[NL80211_PMSR_FTM_RESP_ATTR_MAX + 1];
+> > > > +     int ret;
+> > > > +
+> > > > +     ret =3D nla_parse_nested(tb, NL80211_PMSR_FTM_RESP_ATTR_MAX,
+> > > > +                            ftm, hwsim_ftm_result_policy, info->ex=
+tack);
+> > > > +     if (ret)
+> > > > +             return ret;
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_FAIL_REASON])
+> > > > +             result->failure_reason =3D nla_get_u32(tb[NL80211_PMS=
+R_FTM_RESP_ATTR_FAIL_REASON]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_INDEX])
+> > > > +             result->burst_index =3D nla_get_u16(tb[NL80211_PMSR_F=
+TM_RESP_ATTR_BURST_INDEX]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_ATTEMPTS]) {
+> > > > +             result->num_ftmr_attempts_valid =3D 1;
+> > > > +             result->num_ftmr_attempts =3D
+> > > > +                     nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM=
+_FTMR_ATTEMPTS]);
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_FTMR_SUCCESSES]) {
+> > > > +             result->num_ftmr_successes_valid =3D 1;
+> > > > +             result->num_ftmr_successes =3D
+> > > > +                     nla_get_u32(tb[NL80211_PMSR_FTM_RESP_ATTR_NUM=
+_FTMR_SUCCESSES]);
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY_RETRY_TIME])
+> > > > +             result->busy_retry_time =3D
+> > > > +                     nla_get_u8(tb[NL80211_PMSR_FTM_RESP_ATTR_BUSY=
+_RETRY_TIME]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_NUM_BURSTS_EXP])
+> > > > +             result->num_bursts_exp =3D nla_get_u8(tb[NL80211_PMSR=
+_FTM_RESP_ATTR_NUM_BURSTS_EXP]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_BURST_DURATION])
+> > > > +             result->burst_duration =3D nla_get_u8(tb[NL80211_PMSR=
+_FTM_RESP_ATTR_BURST_DURATION]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_FTMS_PER_BURST])
+> > > > +             result->ftms_per_burst =3D nla_get_u8(tb[NL80211_PMSR=
+_FTM_RESP_ATTR_FTMS_PER_BURST]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_AVG]) {
+> > > > +             result->rssi_avg_valid =3D 1;
+> > > > +             result->rssi_avg =3D nla_get_s32(tb[NL80211_PMSR_FTM_=
+RESP_ATTR_RSSI_AVG]);
+> > > > +     }
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_RSSI_SPREAD]) {
+> > > > +             result->rssi_spread_valid =3D 1;
+> > > > +             result->rssi_spread =3D
+> > > > +                     nla_get_s32(tb[NL80211_PMSR_FTM_RESP_ATTR_RSS=
+I_SPREAD]);
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_TX_RATE]) {
+> > > > +             result->tx_rate_valid =3D 1;
+> > > > +             ret =3D mac80211_hwsim_parse_rate_info(tb[NL80211_PMS=
+R_FTM_RESP_ATTR_TX_RATE],
+> > > > +                                                  &result->tx_rate=
+, info);
+> > > > +             if (ret)
+> > > > +                     return ret;
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_RX_RATE]) {
+> > > > +             result->rx_rate_valid =3D 1;
+> > > > +             ret =3D mac80211_hwsim_parse_rate_info(tb[NL80211_PMS=
+R_FTM_RESP_ATTR_RX_RATE],
+> > > > +                                                  &result->rx_rate=
+, info);
+> > > > +             if (ret)
+> > > > +                     return ret;
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_AVG]) {
+> > > > +             result->rtt_avg_valid =3D 1;
+> > > > +             result->rtt_avg =3D
+> > > > +                     nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT=
+_AVG]);
+> > > > +     }
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_VARIANCE]) {
+> > > > +             result->rtt_variance_valid =3D 1;
+> > > > +             result->rtt_variance =3D
+> > > > +                     nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT=
+_VARIANCE]);
+> > > > +     }
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_RTT_SPREAD]) {
+> > > > +             result->rtt_spread_valid =3D 1;
+> > > > +             result->rtt_spread =3D
+> > > > +                     nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_RTT=
+_SPREAD]);
+> > > > +     }
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_AVG]) {
+> > > > +             result->dist_avg_valid =3D 1;
+> > > > +             result->dist_avg =3D
+> > > > +                     nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIS=
+T_AVG]);
+> > > > +     }
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_VARIANCE]) {
+> > > > +             result->dist_variance_valid =3D 1;
+> > > > +             result->dist_variance =3D
+> > > > +                     nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIS=
+T_VARIANCE]);
+> > > > +     }
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_DIST_SPREAD]) {
+> > > > +             result->dist_spread_valid =3D 1;
+> > > > +             result->dist_spread =3D
+> > > > +                     nla_get_u64(tb[NL80211_PMSR_FTM_RESP_ATTR_DIS=
+T_SPREAD]);
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_LCI]) {
+> > > > +             result->lci =3D nla_data(tb[NL80211_PMSR_FTM_RESP_ATT=
+R_LCI]);
+> > > > +             result->lci_len =3D nla_len(tb[NL80211_PMSR_FTM_RESP_=
+ATTR_LCI]);
+> > > > +     }
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_FTM_RESP_ATTR_CIVICLOC]) {
+> > > > +             result->civicloc =3D nla_data(tb[NL80211_PMSR_FTM_RES=
+P_ATTR_CIVICLOC]);
+> > > > +             result->civicloc_len =3D nla_len(tb[NL80211_PMSR_FTM_=
+RESP_ATTR_CIVICLOC]);
+> > > > +     }
+> > > > +
+> > > > +     return 0;
+> > > > +}
+> > > > +
+> > > > +static int mac80211_hwsim_parse_pmsr_resp(struct nlattr *resp,
+> > > > +                                       struct cfg80211_pmsr_result=
+ *result,
+> > > > +                                       struct genl_info *info)
+> > > > +{
+> > > > +     struct nlattr *tb[NL80211_PMSR_RESP_ATTR_MAX + 1];
+> > > > +     struct nlattr *pmsr;
+> > > > +     int rem;
+> > > > +     int ret;
+> > > > +
+> > > > +     ret =3D nla_parse_nested(tb, NL80211_PMSR_RESP_ATTR_MAX, resp=
+,
+> > > > +                            hwsim_pmsr_resp_policy, info->extack);
+> > >
+> > > You are assigning the value to "ret" variable but you are never using
+> > > it. Is the check for "ret" missing?
+> > >
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_RESP_ATTR_STATUS])
+> > > > +             result->status =3D nla_get_u32(tb[NL80211_PMSR_RESP_A=
+TTR_STATUS]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_RESP_ATTR_HOST_TIME])
+> > > > +             result->host_time =3D nla_get_u64(tb[NL80211_PMSR_RES=
+P_ATTR_HOST_TIME]);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_RESP_ATTR_AP_TSF]) {
+> > > > +             result->ap_tsf_valid =3D 1;
+> > > > +             result->ap_tsf =3D nla_get_u64(tb[NL80211_PMSR_RESP_A=
+TTR_AP_TSF]);
+> > > > +     }
+> > > > +
+> > > > +     result->final =3D !!tb[NL80211_PMSR_RESP_ATTR_FINAL];
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_RESP_ATTR_DATA]) {
+> > >
+> > > How about using a negative logic in here to decrease indentation?
+> > > For example:
+> > >
+> > >         if (!tb[NL80211_PMSR_RESP_ATTR_DATA])
+> > >                 return ret;
+> > >
+> > > > +             nla_for_each_nested(pmsr, tb[NL80211_PMSR_RESP_ATTR_D=
+ATA], rem) {
+> > > > +                     switch (nla_type(pmsr)) {
+> > > > +                     case NL80211_PMSR_TYPE_FTM:
+> > > > +                             result->type =3D NL80211_PMSR_TYPE_FT=
+M;
+> > > > +                             ret =3D mac80211_hwsim_parse_ftm_resu=
+lt(pmsr, &result->ftm, info);
+> > > > +                             if (ret)
+> > > > +                                     return ret;
+> > > > +                             break;
+> > > > +                     default:
+> > > > +                             NL_SET_ERR_MSG_ATTR(info->extack, pms=
+r, "Unknown pmsr resp type");
+> > > > +                             return -EINVAL;
+> > > > +                     }
+> > > > +             }
+> > > > +     }
+> > > > +
+> > > > +     return 0;
+> > > > +}
+> > > > +
+> > > > +static int mac80211_hwsim_parse_pmsr_result(struct nlattr *peer,
+> > > > +                                         struct cfg80211_pmsr_resu=
+lt *result,
+> > > > +                                         struct genl_info *info)
+> > > > +{
+> > > > +     struct nlattr *tb[NL80211_PMSR_PEER_ATTR_MAX + 1];
+> > > > +     int ret;
+> > > > +
+> > > > +     if (!peer)
+> > > > +             return -EINVAL;
+> > > > +
+> > > > +     ret =3D nla_parse_nested(tb, NL80211_PMSR_PEER_ATTR_MAX, peer=
+,
+> > > > +                            hwsim_pmsr_peer_result_policy, info->e=
+xtack);
+> > > > +     if (ret)
+> > > > +             return ret;
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_PEER_ATTR_ADDR])
+> > > > +             memcpy(result->addr, nla_data(tb[NL80211_PMSR_PEER_AT=
+TR_ADDR]),
+> > > > +                    ETH_ALEN);
+> > > > +
+> > > > +     if (tb[NL80211_PMSR_PEER_ATTR_RESP]) {
+> > > > +             ret =3D mac80211_hwsim_parse_pmsr_resp(tb[NL80211_PMS=
+R_PEER_ATTR_RESP], result, info);
+> > > > +             if (ret)
+> > > > +                     return ret;
+> > > > +     }
+> > > > +
+> > > > +     return 0;
+> > > > +};
+> > > > +
+> > > > +static int hwsim_pmsr_report_nl(struct sk_buff *msg, struct genl_i=
+nfo *info)
+> > > > +{
+> > > > +     struct nlattr *reqattr;
+> > > > +     const u8 *src;
+> > > > +     int err, rem;
+> > > > +     struct nlattr *peers, *peer;
+> > > > +     struct mac80211_hwsim_data *data;
+> > >
+> > > Please use RCT formatting.
+> > >
+> > > > +
+> > > > +     src =3D nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
+> > > > +     data =3D get_hwsim_data_ref_from_addr(src);
+> > > > +     if (!data)
+> > > > +             return -EINVAL;
+> > > > +
+> > > > +     mutex_lock(&data->mutex);
+> > > > +     if (!data->pmsr_request) {
+> > > > +             err =3D -EINVAL;
+> > > > +             goto out_err;
+> > > > +     }
+> > > > +
+> > > > +     reqattr =3D info->attrs[HWSIM_ATTR_PMSR_RESULT];
+> > > > +     if (!reqattr) {
+> > > > +             err =3D -EINVAL;
+> > > > +             goto out_err;
+> > > > +     }
+> > > > +
+> > > > +     peers =3D nla_find_nested(reqattr, NL80211_PMSR_ATTR_PEERS);
+> > > > +     if (!peers) {
+> > > > +             err =3D -EINVAL;
+> > > > +             goto out_err;
+> > > > +     }
+> > > > +
+> > > > +     nla_for_each_nested(peer, peers, rem) {
+> > > > +             struct cfg80211_pmsr_result result;
+> > > > +
+> > > > +             err =3D mac80211_hwsim_parse_pmsr_result(peer, &resul=
+t, info);
+> > > > +             if (err)
+> > > > +                     goto out_err;
+> > > > +
+> > > > +             cfg80211_pmsr_report(data->pmsr_request_wdev,
+> > > > +                                  data->pmsr_request, &result, GFP=
+_KERNEL);
+> > > > +     }
+> > > > +
+> > > > +     cfg80211_pmsr_complete(data->pmsr_request_wdev, data->pmsr_re=
+quest, GFP_KERNEL);
+> > > > +
+> > > > +out_err:
+> > >
+> > > How about renaming this label to "out" or "exit"?
+> > > The code below is used for error path as well as for a normal path.
+> > >
+> > > > +     data->pmsr_request =3D NULL;
+> > > > +     data->pmsr_request_wdev =3D NULL;
+> > > > +
+> > > > +     mutex_unlock(&data->mutex);
+> > > > +     return err;
+> > > > +}
+> > > > +
+> > > >  #define HWSIM_COMMON_OPS                                     \
+> > > >       .tx =3D mac80211_hwsim_tx,                                \
+> > > >       .wake_tx_queue =3D ieee80211_handle_wake_tx_queue,        \
+> > > > @@ -5072,13 +5434,6 @@ static void hwsim_mon_setup(struct net_devic=
+e *dev)
+> > > >       eth_hw_addr_set(dev, addr);
+> > > >  }
+> > > >
+> > > > -static struct mac80211_hwsim_data *get_hwsim_data_ref_from_addr(co=
+nst u8 *addr)
+> > > > -{
+> > > > -     return rhashtable_lookup_fast(&hwsim_radios_rht,
+> > > > -                                   addr,
+> > > > -                                   hwsim_rht_params);
+> > > > -}
+> > > > -
+> > > >  static void hwsim_register_wmediumd(struct net *net, u32 portid)
+> > > >  {
+> > > >       struct mac80211_hwsim_data *data;
+> > > > @@ -5746,6 +6101,11 @@ static const struct genl_small_ops hwsim_ops=
+[] =3D {
+> > > >               .doit =3D hwsim_get_radio_nl,
+> > > >               .dumpit =3D hwsim_dump_radio_nl,
+> > > >       },
+> > > > +     {
+> > > > +             .cmd =3D HWSIM_CMD_REPORT_PMSR,
+> > > > +             .validate =3D GENL_DONT_VALIDATE_STRICT | GENL_DONT_V=
+ALIDATE_DUMP,
+> > > > +             .doit =3D hwsim_pmsr_report_nl,
+> > > > +     },
+> > > >  };
+> > > >
+> > > >  static struct genl_family hwsim_genl_family __ro_after_init =3D {
+> > > > @@ -5757,7 +6117,7 @@ static struct genl_family hwsim_genl_family _=
+_ro_after_init =3D {
+> > > >       .module =3D THIS_MODULE,
+> > > >       .small_ops =3D hwsim_ops,
+> > > >       .n_small_ops =3D ARRAY_SIZE(hwsim_ops),
+> > > > -     .resv_start_op =3D HWSIM_CMD_DEL_MAC_ADDR + 1,
+> > > > +     .resv_start_op =3D HWSIM_CMD_REPORT_PMSR + 1, // match with _=
+_HWSIM_CMD_MAX
+> > >
+> > >
+> > > >       .mcgrps =3D hwsim_mcgrps,
+> > > >       .n_mcgrps =3D ARRAY_SIZE(hwsim_mcgrps),
+> > > >  };
+> > > > @@ -5926,6 +6286,9 @@ static int hwsim_virtio_handle_cmd(struct sk_=
+buff *skb)
+> > > >       case HWSIM_CMD_TX_INFO_FRAME:
+> > > >               hwsim_tx_info_frame_received_nl(skb, &info);
+> > > >               break;
+> > > > +     case HWSIM_CMD_REPORT_PMSR:
+> > > > +             hwsim_pmsr_report_nl(skb, &info);
+> > > > +             break;
+> > > >       default:
+> > > >               pr_err_ratelimited("hwsim: invalid cmd: %d\n", gnlh->=
+cmd);
+> > > >               return -EPROTO;
+> > > > diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wi=
+reless/mac80211_hwsim.h
+> > > > index 383f3e39c911..92126f02c58f 100644
+> > > > --- a/drivers/net/wireless/mac80211_hwsim.h
+> > > > +++ b/drivers/net/wireless/mac80211_hwsim.h
+> > > > @@ -82,8 +82,8 @@ enum hwsim_tx_control_flags {
+> > > >   * @HWSIM_CMD_DEL_MAC_ADDR: remove the MAC address again, the attr=
+ibutes
+> > > >   *   are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
+> > > >   * @HWSIM_CMD_START_PMSR: request to start peer measurement with t=
+he
+> > > > - *   %HWSIM_ATTR_PMSR_REQUEST.
+> > > > - * @HWSIM_CMD_ABORT_PMSR: abort previously sent peer measurement
+> > > > + *   %HWSIM_ATTR_PMSR_REQUEST. Result will be sent back asynchrono=
+usly
+> > > > + *   with %HWSIM_CMD_REPORT_PMSR.
+> > > >   * @__HWSIM_CMD_MAX: enum limit
+> > > >   */
+> > > >  enum {
+> > > > @@ -98,6 +98,7 @@ enum {
+> > > >       HWSIM_CMD_DEL_MAC_ADDR,
+> > > >       HWSIM_CMD_START_PMSR,
+> > > >       HWSIM_CMD_ABORT_PMSR,
+> > > > +     HWSIM_CMD_REPORT_PMSR,
+> > > >       __HWSIM_CMD_MAX,
+> > > >  };
+> > > >  #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
+> > > > @@ -151,6 +152,8 @@ enum {
+> > > >   *   to provide peer measurement capabilities. (nl80211_peer_measu=
+rement_attrs)
+> > > >   * @HWSIM_ATTR_PMSR_REQUEST: nested attribute used with %HWSIM_CMD=
+_START_PMSR
+> > > >   *   to provide details about peer measurement request (nl80211_pe=
+er_measurement_attrs)
+> > > > + * @HWSIM_ATTR_PMSR_RESULT: nested attributed used with %HWSIM_CMD=
+_REPORT_PMSR
+> > > > + *   to provide peer measurement result (nl80211_peer_measurement_=
+attrs)
+> > > >   * @__HWSIM_ATTR_MAX: enum limit
+> > > >   */
+> > > >
+> > > > @@ -184,6 +187,7 @@ enum {
+> > > >       HWSIM_ATTR_MLO_SUPPORT,
+> > > >       HWSIM_ATTR_PMSR_SUPPORT,
+> > > >       HWSIM_ATTR_PMSR_REQUEST,
+> > > > +     HWSIM_ATTR_PMSR_RESULT,
+> > > >       __HWSIM_ATTR_MAX,
+> > > >  };
+> > > >  #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
+> > > > @@ -288,4 +292,47 @@ enum {
+> > > >       HWSIM_VQ_RX,
+> > > >       HWSIM_NUM_VQS,
+> > > >  };
+> > > > +
+> > > > +/**
+> > > > + * enum hwsim_rate_info -- bitrate information.
+> > > > + *
+> > > > + * Information about a receiving or transmitting bitrate
+> > > > + * that can be mapped to struct rate_info
+> > > > + *
+> > > > + * @HWSIM_RATE_INFO_ATTR_FLAGS: bitflag of flags from &enum rate_i=
+nfo_flags
+> > > > + * @HWSIM_RATE_INFO_ATTR_MCS: mcs index if struct describes an HT/=
+VHT/HE rate
+> > > > + * @HWSIM_RATE_INFO_ATTR_LEGACY: bitrate in 100kbit/s for 802.11ab=
+g
+> > > > + * @HWSIM_RATE_INFO_ATTR_NSS: number of streams (VHT & HE only)
+> > > > + * @HWSIM_RATE_INFO_ATTR_BW: bandwidth (from &enum rate_info_bw)
+> > > > + * @HWSIM_RATE_INFO_ATTR_HE_GI: HE guard interval (from &enum nl80=
+211_he_gi)
+> > > > + * @HWSIM_RATE_INFO_ATTR_HE_DCM: HE DCM value
+> > > > + * @HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC:  HE RU allocation (from &enu=
+m nl80211_he_ru_alloc,
+> > > > + *   only valid if bw is %RATE_INFO_BW_HE_RU)
+> > > > + * @HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH: In case of EDMG the number =
+of bonded channels (1-4)
+> > > > + * @HWSIM_RATE_INFO_ATTR_EHT_GI: EHT guard interval (from &enum nl=
+80211_eht_gi)
+> > > > + * @HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC: EHT RU allocation (from &en=
+um nl80211_eht_ru_alloc,
+> > > > + *   only valid if bw is %RATE_INFO_BW_EHT_RU)
+> > > > + * @NUM_HWSIM_RATE_INFO_ATTRS: internal
+> > > > + * @HWSIM_RATE_INFO_ATTR_MAX: highest attribute number
+> > > > + */
+> > > > +enum hwsim_rate_info_attributes {
+> > > > +     __HWSIM_RATE_INFO_ATTR_INVALID,
+> > > > +
+> > > > +     HWSIM_RATE_INFO_ATTR_FLAGS,
+> > > > +     HWSIM_RATE_INFO_ATTR_MCS,
+> > > > +     HWSIM_RATE_INFO_ATTR_LEGACY,
+> > > > +     HWSIM_RATE_INFO_ATTR_NSS,
+> > > > +     HWSIM_RATE_INFO_ATTR_BW,
+> > > > +     HWSIM_RATE_INFO_ATTR_HE_GI,
+> > > > +     HWSIM_RATE_INFO_ATTR_HE_DCM,
+> > > > +     HWSIM_RATE_INFO_ATTR_HE_RU_ALLOC,
+> > > > +     HWSIM_RATE_INFO_ATTR_N_BOUNDED_CH,
+> > > > +     HWSIM_RATE_INFO_ATTR_EHT_GI,
+> > > > +     HWSIM_RATE_INFO_ATTR_EHT_RU_ALLOC,
+> > > > +
+> > > > +     /* keep last */
+> > > > +     NUM_HWSIM_RATE_INFO_ATTRS,
+> > > > +     HWSIM_RATE_INFO_ATTR_MAX =3D NUM_HWSIM_RATE_INFO_ATTRS - 1
+> > > > +};
+> > > > +
+> > > >  #endif /* __MAC80211_HWSIM_H */
+> > > > --
+> > > > 2.40.0.rc1.284.g88254d51c5-goog
+> > > >
 > >
-> > diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wirele=
-ss/mac80211_hwsim.c
-> > index 65868f28a00f..a692d9c95566 100644
-> > --- a/drivers/net/wireless/mac80211_hwsim.c
-> > +++ b/drivers/net/wireless/mac80211_hwsim.c
-> > @@ -721,6 +721,8 @@ struct mac80211_hwsim_data {
+> > Many Thanks,
 > >
-> >       /* only used when pmsr capability is supplied */
-> >       struct cfg80211_pmsr_capabilities pmsr_capa;
-> > +     struct cfg80211_pmsr_request *pmsr_request;
-> > +     struct wireless_dev *pmsr_request_wdev;
-> >
-> >       struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_L=
-INKS];
-> >  };
-> > @@ -3139,6 +3141,208 @@ static int mac80211_hwsim_change_sta_links(stru=
-ct ieee80211_hw *hw,
-> >       return 0;
-> >  }
-> >
-> > +static int mac80211_hwsim_send_pmsr_ftm_request_peer(struct sk_buff *m=
-sg,
-> > +                                                  struct cfg80211_pmsr=
-_ftm_request_peer *request)
-> > +{
-> > +     struct nlattr *ftm;
-> > +
-> > +     if (!request->requested)
-> > +             return -EINVAL;
-> > +
-> > +     ftm =3D nla_nest_start(msg, NL80211_PMSR_TYPE_FTM);
-> > +     if (!ftm)
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u32(msg, NL80211_PMSR_FTM_REQ_ATTR_PREAMBLE, request-=
->preamble))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u16(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_PERIOD, requ=
-est->burst_period))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (request->asap && nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_=
-ASAP))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (request->request_lci && nla_put_flag(msg, NL80211_PMSR_FTM_RE=
-Q_ATTR_REQUEST_LCI))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (request->request_civicloc &&
-> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_REQUEST_CIVICLOC)=
-)
-> > +             return -ENOBUFS;
-> > +
-> > +     if (request->trigger_based && nla_put_flag(msg, NL80211_PMSR_FTM_=
-REQ_ATTR_TRIGGER_BASED))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (request->non_trigger_based &&
-> > +         nla_put_flag(msg, NL80211_PMSR_FTM_REQ_ATTR_NON_TRIGGER_BASED=
-))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (request->lmr_feedback && nla_put_flag(msg, NL80211_PMSR_FTM_R=
-EQ_ATTR_LMR_FEEDBACK))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_BURSTS_EXP, req=
-uest->num_bursts_exp))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION, req=
-uest->burst_duration))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_FTMS_PER_BURST, req=
-uest->ftms_per_burst))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_NUM_FTMR_RETRIES, r=
-equest->ftmr_retries))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BURST_DURATION, req=
-uest->burst_duration))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u8(msg, NL80211_PMSR_FTM_REQ_ATTR_BSS_COLOR, request-=
->bss_color))
-> > +             return -ENOBUFS;
-> > +
-> > +     nla_nest_end(msg, ftm);
-> > +
-> > +     return 0;
-> > +}
->
-> Lenght of lines in the function above exceeds 80 characters.
->
-> > +
-> > +static int mac80211_hwsim_send_pmsr_request_peer(struct sk_buff *msg,
-> > +                                              struct cfg80211_pmsr_req=
-uest_peer *request)
-> > +{
-> > +     struct nlattr *peer, *chandef, *req, *data;
-> > +     int err;
-> > +
-> > +     peer =3D nla_nest_start(msg, NL80211_PMSR_ATTR_PEERS);
-> > +     if (!peer)
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put(msg, NL80211_PMSR_PEER_ATTR_ADDR, ETH_ALEN,
-> > +                 request->addr))
-> > +             return -ENOBUFS;
-> > +
-> > +     chandef =3D nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_CHAN);
-> > +     if (!chandef)
-> > +             return -ENOBUFS;
-> > +
-> > +     err =3D nl80211_send_chandef(msg, &request->chandef);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     nla_nest_end(msg, chandef);
-> > +
-> > +     req =3D nla_nest_start(msg, NL80211_PMSR_PEER_ATTR_REQ);
->
-> Don't you need to check "if (!req)" as you have done for other pointers
-> returned by "nla_put_flag()"?
-> Is it by mistake or intentional?
-
-My mistake. Thank you for the review.
-
->
-> > +     if (request->report_ap_tsf && nla_put_flag(msg, NL80211_PMSR_REQ_=
-ATTR_GET_AP_TSF))
->
-> Line length above 80 chars.
->
-> > +             return -ENOBUFS;
-> > +
-> > +     data =3D nla_nest_start(msg, NL80211_PMSR_REQ_ATTR_DATA);
-> > +     if (!data)
-> > +             return -ENOBUFS;
-> > +
-> > +     err =3D mac80211_hwsim_send_pmsr_ftm_request_peer(msg, &request->=
-ftm);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     nla_nest_end(msg, data);
-> > +     nla_nest_end(msg, req);
-> > +     nla_nest_end(msg, peer);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int mac80211_hwsim_send_pmsr_request(struct sk_buff *msg,
-> > +                                         struct cfg80211_pmsr_request =
-*request)
-> > +{
-> > +     int err;
-> > +     struct nlattr *pmsr =3D nla_nest_start(msg, NL80211_ATTR_PEER_MEA=
-SUREMENTS);
->
-> Please follow the RCT principle.
-> Also, I would suggest to split declaration of "pmsr" and assignment becau=
-se
-> "nla_nest_start() is a call that is more in the action part of the code
-> than the declaration part.
->
-> > +
-> > +     if (!pmsr)
-> > +             return -ENOBUFS;
-> > +
-> > +     if (nla_put_u32(msg, NL80211_ATTR_TIMEOUT, request->timeout))
-> > +             return -ENOBUFS;
-> > +
-> > +     if (!is_zero_ether_addr(request->mac_addr)) {
-> > +             if (nla_put(msg, NL80211_ATTR_MAC, ETH_ALEN, request->mac=
-_addr))
-> > +                     return -ENOBUFS;
-> > +             if (nla_put(msg, NL80211_ATTR_MAC_MASK, ETH_ALEN, request=
-->mac_addr_mask))
-> > +                     return -ENOBUFS;
-> > +     }
-> > +
-> > +     for (int i =3D 0; i < request->n_peers; i++) {
-> > +             err =3D mac80211_hwsim_send_pmsr_request_peer(msg, &reque=
-st->peers[i]);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     nla_nest_end(msg, pmsr);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int mac80211_hwsim_start_pmsr(struct ieee80211_hw *hw,
-> > +                                  struct ieee80211_vif *vif,
-> > +                                  struct cfg80211_pmsr_request *reques=
-t)
-> > +{
-> > +     struct mac80211_hwsim_data *data =3D hw->priv;
-> > +     u32 _portid =3D READ_ONCE(data->wmediumd);
-> > +     int err =3D 0;
-> > +     struct sk_buff *skb =3D NULL;
-> > +     void *msg_head;
-> > +     struct nlattr *pmsr;
->
-> Please use RCT.
->
-> > +
-> > +     if (!_portid && !hwsim_virtio_enabled)
-> > +             return -EOPNOTSUPP;
-> > +
-> > +     mutex_lock(&data->mutex);
-> > +
-> > +     if (data->pmsr_request) {
-> > +             err =3D -EBUSY;
-> > +             goto out_err;
-> > +     }
-> > +
-> > +     skb =3D genlmsg_new(GENLMSG_DEFAULT_SIZE, GFP_KERNEL);
-> > +
-> > +     if (!skb) {
-> > +             err =3D -ENOMEM;
-> > +             goto out_err;
-> > +     }
-> > +
-> > +     msg_head =3D genlmsg_put(skb, 0, 0, &hwsim_genl_family, 0,
-> > +                            HWSIM_CMD_START_PMSR);
-> > +
-> > +     if (nla_put(skb, HWSIM_ATTR_ADDR_TRANSMITTER,
-> > +                 ETH_ALEN, data->addresses[1].addr)) {
-> > +             err =3D -ENOMEM;
-> > +             goto out_err;
-> > +     }
-> > +
-> > +     pmsr =3D nla_nest_start(skb, HWSIM_ATTR_PMSR_REQUEST);
-> > +     if (!pmsr) {
-> > +             err =3D -ENOMEM;
-> > +             goto out_err;
-> > +     }
-> > +
-> > +     err =3D mac80211_hwsim_send_pmsr_request(skb, request);
-> > +     if (err)
-> > +             goto out_err;
-> > +
-> > +     nla_nest_end(skb, pmsr);
-> > +
-> > +     genlmsg_end(skb, msg_head);
-> > +     if (hwsim_virtio_enabled)
-> > +             hwsim_tx_virtio(data, skb);
-> > +     else
-> > +             hwsim_unicast_netgroup(data, skb, _portid);
-> > +
-> > +out_err:
-> > +     if (err && skb)
-> > +             nlmsg_free(skb);
-> > +
-> > +     if (!err) {
-> > +             data->pmsr_request =3D request;
-> > +             data->pmsr_request_wdev =3D ieee80211_vif_to_wdev(vif);
-> > +     }
->
-> It looks confusing to have such a check under "out_err" label.
-> I would expect error handling only under "out_err".
-
-renamed out_err to out_free, to keep the mutex_unlock() code under the out_=
-err.
-
-> Please improve both checks above:
->  - handle normal cases e.g. "ieee80211_vif_to_wdev()" above the eror
->    label.
-
-done
-
->  - try to avoid checking if error occured if you are already in the
->    error path.
->
-> > +
-> > +     mutex_unlock(&data->mutex);
-> > +     return err;
-> > +}
-> > +
-> >  #define HWSIM_COMMON_OPS                                     \
-> >       .tx =3D mac80211_hwsim_tx,                                \
-> >       .wake_tx_queue =3D ieee80211_handle_wake_tx_queue,        \
-> > @@ -3161,7 +3365,8 @@ static int mac80211_hwsim_change_sta_links(struct=
- ieee80211_hw *hw,
-> >       .flush =3D mac80211_hwsim_flush,                          \
-> >       .get_et_sset_count =3D mac80211_hwsim_get_et_sset_count,  \
-> >       .get_et_stats =3D mac80211_hwsim_get_et_stats,            \
-> > -     .get_et_strings =3D mac80211_hwsim_get_et_strings,
-> > +     .get_et_strings =3D mac80211_hwsim_get_et_strings,        \
-> > +     .start_pmsr =3D mac80211_hwsim_start_pmsr,                \
-> >
-> >  #define HWSIM_NON_MLO_OPS                                    \
-> >       .sta_add =3D mac80211_hwsim_sta_add,                      \
-> > diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wirele=
-ss/mac80211_hwsim.h
-> > index d10fa7f4853b..98e586a56582 100644
-> > --- a/drivers/net/wireless/mac80211_hwsim.h
-> > +++ b/drivers/net/wireless/mac80211_hwsim.h
-> > @@ -81,6 +81,8 @@ enum hwsim_tx_control_flags {
-> >   *   to this receiver address for a given station.
-> >   * @HWSIM_CMD_DEL_MAC_ADDR: remove the MAC address again, the attribut=
-es
-> >   *   are the same as to @HWSIM_CMD_ADD_MAC_ADDR.
-> > + * @HWSIM_CMD_START_PMSR: request to start peer measurement with the
-> > + *   %HWSIM_ATTR_PMSR_REQUEST.
-> >   * @__HWSIM_CMD_MAX: enum limit
-> >   */
-> >  enum {
-> > @@ -93,6 +95,7 @@ enum {
-> >       HWSIM_CMD_GET_RADIO,
-> >       HWSIM_CMD_ADD_MAC_ADDR,
-> >       HWSIM_CMD_DEL_MAC_ADDR,
-> > +     HWSIM_CMD_START_PMSR,
-> >       __HWSIM_CMD_MAX,
-> >  };
-> >  #define HWSIM_CMD_MAX (_HWSIM_CMD_MAX - 1)
-> > @@ -144,6 +147,8 @@ enum {
-> >   *   the new radio
-> >   * @HWSIM_ATTR_PMSR_SUPPORT: nested attribute used with %HWSIM_CMD_CRE=
-ATE_RADIO
-> >   *   to provide peer measurement capabilities. (nl80211_peer_measureme=
-nt_attrs)
-> > + * @HWSIM_ATTR_PMSR_REQUEST: nested attribute used with %HWSIM_CMD_STA=
-RT_PMSR
-> > + *   to provide details about peer measurement request (nl80211_peer_m=
-easurement_attrs)
-> >   * @__HWSIM_ATTR_MAX: enum limit
-> >   */
-> >
-> > @@ -176,6 +181,7 @@ enum {
-> >       HWSIM_ATTR_CIPHER_SUPPORT,
-> >       HWSIM_ATTR_MLO_SUPPORT,
-> >       HWSIM_ATTR_PMSR_SUPPORT,
-> > +     HWSIM_ATTR_PMSR_REQUEST,
-> >       __HWSIM_ATTR_MAX,
-> >  };
-> >  #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
 > > --
-> > 2.40.0.rc1.284.g88254d51c5-goog
-> >
+> > Jaewan Kim (=EA=B9=80=EC=9E=AC=EC=99=84) | Software Engineer in Google =
+Korea |
+> > jaewan@google.com | +82-10-2781-5078
 
-
-Applied reverse xmas tree style and renamed goto label.
-Line limits are unchanged because 80 is deprecated now.
+Done for everything except for line limits.
+Thank you for the reviews.
 
 
 --
