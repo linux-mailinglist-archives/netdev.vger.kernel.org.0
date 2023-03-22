@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 901346C561B
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:03:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E296C5658
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 21:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231590AbjCVUDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 16:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S231339AbjCVUFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 16:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231530AbjCVUC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:02:29 -0400
+        with ESMTP id S231716AbjCVUEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 16:04:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF3F6C194;
-        Wed, 22 Mar 2023 12:59:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E832B72013;
+        Wed, 22 Mar 2023 13:00:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C391CB81DEC;
-        Wed, 22 Mar 2023 19:59:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F40C4339B;
-        Wed, 22 Mar 2023 19:59:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77F89B81DE6;
+        Wed, 22 Mar 2023 19:59:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4EECC433A1;
+        Wed, 22 Mar 2023 19:59:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679515155;
-        bh=ka09scpr85fTJaNZZ/TCmNGG300rxFPGXllP186sa8s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nts8UoKjhbwVUur8fuBDPlIqbYWVOfH0v8q46PPbNiRRMcp6AbASPZWmRCXn7pLVv
-         TA1bj+MyCtc5ZL2glIi7IK0IYbGHiOEPeuDPtcjeuwRjc3a6zZe1S1q3OU7gaYM0Jq
-         kv1Y7PuPsCClAoyPew6xlUyN3kzQE7JoXpvDj8hsFFY8RJZmU1Xhk2TPldBTo8xGBC
-         cRlr5Kjd0MVYvQtPdKW3dXfAgEjpfVOpqMNOwmGqAaSKnyOiYAAr88ATK+lUR504Ig
-         /Vo1e9snsrgve7qVoQRexyTN/O+u91z6aoMFgObOPChqDayLPavfkt9/TngJNHcxer
-         Tq3Uy46IEdJzg==
+        s=k20201202; t=1679515170;
+        bh=8km0x1vLwE9boiOOdqbni5fdBgKSZiQh0+IwayiLD28=;
+        h=From:To:Cc:Subject:Date:From;
+        b=D+6TWfIMcxyJIm9gPgKM6iqNprWt+Az0TepDabh35Mpkz0Yq+Pc3x4NlThf6K8gRU
+         oiuzD/6Krput3vGaupF1AE9HMH29aHJa02gZsAc67JFnfhCUfDEaN6EMh64L5NBIRL
+         tzdE59LD2Bbnfk8cPd0gy/J44A+5SlGqbmnYDc6+Q+4Ysdse3JKe4Sf8fR3u0KHty4
+         96ZRTIu3pyR/zud7o744WnJnySe0r9cFBHGaosd/PhXAxHc/quy9NMWz1w7A5H7Ztz
+         PBP7pXT8DUFZ8WtUKEXPNU3fGCSk414nxEVRB7KGyPMhzPCJWlg3+zxsI8+iKESS+Z
+         Cc2AgzKX3f1/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Adham Faris <afaris@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        syzbot+fa5414772d5c445dac3c@syzkaller.appspotmail.com,
+        Hyunwoo Kim <v4bel@theori.io>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.2 38/45] net/mlx5e: Lower maximum allowed MTU in XSK to match XDP prerequisites
-Date:   Wed, 22 Mar 2023 15:56:32 -0400
-Message-Id: <20230322195639.1995821-38-sashal@kernel.org>
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.1 01/34] xfrm: Zero padding when dumping algos and encap
+Date:   Wed, 22 Mar 2023 15:58:53 -0400
+Message-Id: <20230322195926.1996699-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230322195639.1995821-1-sashal@kernel.org>
-References: <20230322195639.1995821-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,69 +58,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Adham Faris <afaris@nvidia.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 78dee7befd56987283c13877b834c0aa97ad51b9 ]
+[ Upstream commit 8222d5910dae08213b6d9d4bc9a7f8502855e624 ]
 
-XSK redirecting XDP programs require linearity, hence applies
-restrictions on the MTU. For PAGE_SIZE=4K, MTU shouldn't exceed 3498.
+When copying data to user-space we should ensure that only valid
+data is copied over.  Padding in structures may be filled with
+random (possibly sensitve) data and should never be given directly
+to user-space.
 
-Features that contradict with XDP such HW-LRO and HW-GRO are enforced
-by the driver in advance, during XSK params validation, except for MTU,
-which was not enforced before this patch.
+This patch fixes the copying of xfrm algorithms and the encap
+template in xfrm_user so that padding is zeroed.
 
-This has been spotted during test scenario described below:
-Attaching xdpsock program (PAGE_SIZE=4K), with MTU < 3498, detaching
-XDP program, changing the MTU to arbitrary value in the range
-[3499, 3754], attaching XDP program again, which ended up with failure
-since MTU is > 3498.
-
-This commit lowers the XSK MTU limitation to be aligned with XDP MTU
-limitation, since XSK socket is meaningless without XDP program.
-
-Signed-off-by: Adham Faris <afaris@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reported-by: syzbot+fa5414772d5c445dac3c@syzkaller.appspotmail.com
+Reported-by: Hyunwoo Kim <v4bel@theori.io>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reviewed-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ net/xfrm/xfrm_user.c | 45 ++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 6c24f33a5ea5c..a859c8ce1d664 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4113,13 +4113,17 @@ static bool mlx5e_xsk_validate_mtu(struct net_device *netdev,
- 		struct xsk_buff_pool *xsk_pool =
- 			mlx5e_xsk_get_pool(&chs->params, chs->params.xsk, ix);
- 		struct mlx5e_xsk_param xsk;
-+		int max_xdp_mtu;
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index e73f9efc54c12..83f35ecacf24f 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -997,7 +997,9 @@ static int copy_to_user_aead(struct xfrm_algo_aead *aead, struct sk_buff *skb)
+ 		return -EMSGSIZE;
  
- 		if (!xsk_pool)
- 			continue;
+ 	ap = nla_data(nla);
+-	memcpy(ap, aead, sizeof(*aead));
++	strscpy_pad(ap->alg_name, aead->alg_name, sizeof(ap->alg_name));
++	ap->alg_key_len = aead->alg_key_len;
++	ap->alg_icv_len = aead->alg_icv_len;
  
- 		mlx5e_build_xsk_param(xsk_pool, &xsk);
-+		max_xdp_mtu = mlx5e_xdp_max_mtu(new_params, &xsk);
+ 	if (redact_secret && aead->alg_key_len)
+ 		memset(ap->alg_key, 0, (aead->alg_key_len + 7) / 8);
+@@ -1017,7 +1019,8 @@ static int copy_to_user_ealg(struct xfrm_algo *ealg, struct sk_buff *skb)
+ 		return -EMSGSIZE;
  
--		if (!mlx5e_validate_xsk_param(new_params, &xsk, mdev)) {
-+		/* Validate XSK params and XDP MTU in advance */
-+		if (!mlx5e_validate_xsk_param(new_params, &xsk, mdev) ||
-+		    new_params->sw_mtu > max_xdp_mtu) {
- 			u32 hr = mlx5e_get_linear_rq_headroom(new_params, &xsk);
- 			int max_mtu_frame, max_mtu_page, max_mtu;
+ 	ap = nla_data(nla);
+-	memcpy(ap, ealg, sizeof(*ealg));
++	strscpy_pad(ap->alg_name, ealg->alg_name, sizeof(ap->alg_name));
++	ap->alg_key_len = ealg->alg_key_len;
  
-@@ -4129,9 +4133,9 @@ static bool mlx5e_xsk_validate_mtu(struct net_device *netdev,
- 			 */
- 			max_mtu_frame = MLX5E_HW2SW_MTU(new_params, xsk.chunk_size - hr);
- 			max_mtu_page = MLX5E_HW2SW_MTU(new_params, SKB_MAX_HEAD(0));
--			max_mtu = min(max_mtu_frame, max_mtu_page);
-+			max_mtu = min3(max_mtu_frame, max_mtu_page, max_xdp_mtu);
+ 	if (redact_secret && ealg->alg_key_len)
+ 		memset(ap->alg_key, 0, (ealg->alg_key_len + 7) / 8);
+@@ -1028,6 +1031,40 @@ static int copy_to_user_ealg(struct xfrm_algo *ealg, struct sk_buff *skb)
+ 	return 0;
+ }
  
--			netdev_err(netdev, "MTU %d is too big for an XSK running on channel %u. Try MTU <= %d\n",
-+			netdev_err(netdev, "MTU %d is too big for an XSK running on channel %u or its redirection XDP program. Try MTU <= %d\n",
- 				   new_params->sw_mtu, ix, max_mtu);
- 			return false;
- 		}
++static int copy_to_user_calg(struct xfrm_algo *calg, struct sk_buff *skb)
++{
++	struct nlattr *nla = nla_reserve(skb, XFRMA_ALG_COMP, sizeof(*calg));
++	struct xfrm_algo *ap;
++
++	if (!nla)
++		return -EMSGSIZE;
++
++	ap = nla_data(nla);
++	strscpy_pad(ap->alg_name, calg->alg_name, sizeof(ap->alg_name));
++	ap->alg_key_len = 0;
++
++	return 0;
++}
++
++static int copy_to_user_encap(struct xfrm_encap_tmpl *ep, struct sk_buff *skb)
++{
++	struct nlattr *nla = nla_reserve(skb, XFRMA_ENCAP, sizeof(*ep));
++	struct xfrm_encap_tmpl *uep;
++
++	if (!nla)
++		return -EMSGSIZE;
++
++	uep = nla_data(nla);
++	memset(uep, 0, sizeof(*uep));
++
++	uep->encap_type = ep->encap_type;
++	uep->encap_sport = ep->encap_sport;
++	uep->encap_dport = ep->encap_dport;
++	uep->encap_oa = ep->encap_oa;
++
++	return 0;
++}
++
+ static int xfrm_smark_put(struct sk_buff *skb, struct xfrm_mark *m)
+ {
+ 	int ret = 0;
+@@ -1083,12 +1120,12 @@ static int copy_to_user_state_extra(struct xfrm_state *x,
+ 			goto out;
+ 	}
+ 	if (x->calg) {
+-		ret = nla_put(skb, XFRMA_ALG_COMP, sizeof(*(x->calg)), x->calg);
++		ret = copy_to_user_calg(x->calg, skb);
+ 		if (ret)
+ 			goto out;
+ 	}
+ 	if (x->encap) {
+-		ret = nla_put(skb, XFRMA_ENCAP, sizeof(*x->encap), x->encap);
++		ret = copy_to_user_encap(x->encap, skb);
+ 		if (ret)
+ 			goto out;
+ 	}
 -- 
 2.39.2
 
