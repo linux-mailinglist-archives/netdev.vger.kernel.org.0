@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33DF26C4B86
-	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:19:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA756C4B90
+	for <lists+netdev@lfdr.de>; Wed, 22 Mar 2023 14:20:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230523AbjCVNT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 09:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
+        id S230507AbjCVNTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 09:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbjCVNTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:19:17 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531AB5BD86
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:13 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id x15-20020a25accf000000b00b3b4535c48dso19412539ybd.7
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:13 -0700 (PDT)
+        with ESMTP id S229766AbjCVNTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 09:19:21 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625C65F221
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:17 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5425c04765dso185845447b3.0
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 06:19:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1679491152;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Yb81hp7ZlCpX7Yr6wz12GTlDZ40WK1rINM0mAGZ5OpM=;
-        b=KBNKtldMVauP0c3qFAYy0easJJXbtNYVy4U/IesleLkFYfKKbALxTxCH7Inv4oVyLT
-         qYLwRhvBHmwfG+4YVOXvTFnS/DbxB69WjXLSPA2NmYGFKEvAIDDTZMiZ2j37eBYEK15+
-         ltVmLrHobkqo8LIrLNlH/L65MWb2X/Dy/y1b3yPNotkUunTUt3TFOg6FvXQhTk11u/j7
-         ZyXr5rj/vDOccu30NhJZvxCXpjNDvMXNzN0znRYYT6l7SjuEkk6a7TKsb919eu38Q5sz
-         vM1VWaIRLvTMldqJj8vlRptxFLqN1mT4bYK/JvBXxJc9NGbYQwNY0tQ8R/8DM2/qri6u
-         DXww==
+        d=google.com; s=20210112; t=1679491156;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=t6FTd9IM6YHYO3hjFYYJ9V+ozElyww/GBjLmXMmk7ks=;
+        b=Rz1QUnXIsNuip278dg9jg+f96bxGRYL4BmivstWLPkNnq9etxhp7eu0m6NdNEcsK91
+         b+OWPX30mMb/YhD96tlUlvn0iF9fR1kssNdFYI2/yy6DjvErX2IigK/Oehbp5d98dqpl
+         yoifi+6Jh73lb2PDM3o7T4yr0pxQ9wBFM+s1stzEh5D62B5WcjzJw2+a0W3VynB8nPyc
+         q7HHELY7qBedAfBhgUhBivUBRvHNtlwq11R5QUOwPla+/alls4TwJVkaeowVNXMGVPcT
+         8aYO5vYjp8hbSaqAODS7qONj1m7mdQl6Np6d2Xy+srt4ksK9r6nVNKcTUu/7HE16A0DR
+         e57w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679491152;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Yb81hp7ZlCpX7Yr6wz12GTlDZ40WK1rINM0mAGZ5OpM=;
-        b=V2+5rxKKx6B3CNquFEmBLSvf1nvoTHTF1FaKfQ5c+n/AXNHxIRiIp+1tdiCZ7LhSoY
-         nW+JrKa+Z+NSJAwFxmuEufKQ73MEXq+t18+MGO6hhH9sPcD95Az59nziQKaiSEt2BWDr
-         OawXGCiFC1Ab33+i7xIdb0LVrfib+c9Lk6pICMOoHXww7yIILYz4ewaFrhgHYlXSJauv
-         8pr6rHAhDgt8TsLixCJlnazlASzOALqzUULBqcwVXuC7Me+nMAXSqYXP3F2ywbSPL90M
-         vDZ3NBQMPPFpwhgnZDrwAit6DS9yi34LyZrOUIPt3P77LPl3vwwyLi0r3qG83kqSxkhz
-         9G2w==
-X-Gm-Message-State: AAQBX9d6M8WAKeayK32ScptyiIkO5SexPazP9lZIv8/5bWKXvsRI8psh
-        5YHBg3DL/06xb6YgMp/BWaG8SAr2R84=
-X-Google-Smtp-Source: AKy350aspfgHB1gDVWJthbqNoLqeIswB1rcjtYlr4D89NRndFfZREPvg7ka5TcVt7NpUkmh1ZsQMUOU9HBI=
+        d=1e100.net; s=20210112; t=1679491156;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=t6FTd9IM6YHYO3hjFYYJ9V+ozElyww/GBjLmXMmk7ks=;
+        b=qF6BMiX6DMegpJjBgLUj6DjL/N3WZBnEtdwzGtIflM/N2c+2nA3vn2RfQmcNNCgtUf
+         d3r4+fsfvsJ9iyEbSy/MCStLMkgByT4uMfME8ztCat2mhFK7ujKeB31Kibugr0w1gVUD
+         EsnY15J9iJ706u39Kn62RdM7+dpV40hLd/H/B9q37Quv8ZAgo3+3dN+7JzT8CdgiV0bK
+         nFFcBRLEPSOYAoFFpkzKmHKs2pGTtzVzDS7JKeOlX2nh9SvTtRq9ER6s1eeSOV1sDQBi
+         /XAYi4cW3AbkO8wmpWo2M9T2TZFpzRSWFcfb/cp5Mn1ZluytHYNmvjgZJgK/DWzLKxJe
+         y+UQ==
+X-Gm-Message-State: AAQBX9egiSRXnq0rsyAEApNMwhbQB03gGlVJKTyRWBOuVhZHWRb2Q8xq
+        WcvTAjFBi7HzjsGW3hudRUsQEKRe0FU=
+X-Google-Smtp-Source: AKy350aqYjj0lDU5Xj3edaz0INRl6nw9JC9jNsRPqdSHYPi3cqJT3hnjQJ6U7DZqFTAeO90hqr+vRDyh1Z0=
 X-Received: from jaewan1.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:e59])
- (user=jaewan job=sendgmr) by 2002:a05:6902:1003:b0:b3c:637f:ad00 with SMTP id
- w3-20020a056902100300b00b3c637fad00mr4107795ybt.5.1679491152591; Wed, 22 Mar
- 2023 06:19:12 -0700 (PDT)
-Date:   Wed, 22 Mar 2023 13:16:32 +0000
+ (user=jaewan job=sendgmr) by 2002:a05:6902:1005:b0:a58:7139:cf85 with SMTP id
+ w5-20020a056902100500b00a587139cf85mr3898901ybt.13.1679491156362; Wed, 22 Mar
+ 2023 06:19:16 -0700 (PDT)
+Date:   Wed, 22 Mar 2023 13:16:33 +0000
+In-Reply-To: <20230322131637.2633968-1-jaewan@google.com>
 Mime-Version: 1.0
+References: <20230322131637.2633968-1-jaewan@google.com>
 X-Mailer: git-send-email 2.40.0.rc1.284.g88254d51c5-goog
-Message-ID: <20230322131637.2633968-1-jaewan@google.com>
-Subject: [PATCH v10 0/5] mac80211_hwsim: Add PMSR support
+Message-ID: <20230322131637.2633968-2-jaewan@google.com>
+Subject: [PATCH v10 1/5] mac80211_hwsim: add PMSR capability support
 From:   Jaewan Kim <jaewan@google.com>
 To:     michal.kubiak@intel.com, gregkh@linuxfoundation.org,
         johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
@@ -67,57 +69,261 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Kernel maintainers,
+PMSR (a.k.a. peer measurement) is generalized measurement between two
+Wi-Fi devices. And currently FTM (a.k.a. fine time measurement or flight
+time measurement) is the one and only measurement. FTM is measured by
+RTT (a.k.a. round trip time) of packets between two Wi-Fi devices.
 
-First of all, thank you for spending your precious time for reviewing
-my changes.
+Add necessary functionality to allow mac80211_hwsim to be configured with
+PMSR capability. The capability is mandatory to accept incoming PMSR
+request because nl80211_pmsr_start() ignores incoming the request without
+the PMSR capability.
 
-Let me propose series of patches for adding PMSR support in the
-mac80211_hwsim.
+In detail, add new mac80211_hwsim attribute HWSIM_ATTR_PMSR_SUPPORT.
+HWSIM_ATTR_PMSR_SUPPORT is used to set PMSR capability when creating a new
+radio. To send extra capability details, HWSIM_ATTR_PMSR_SUPPORT can have
+nested PMSR capability attributes defined in the nl80211.h. Data format is
+the same as cfg80211_pmsr_capabilities.
 
-PMSR (peer measurement) is generalized measurement between STAs,
-and currently FTM (fine time measurement or flight time measurement)
-is the one and only measurement.
+If HWSIM_ATTR_PMSR_SUPPORT is specified, mac80211_hwsim builds
+cfg80211_pmsr_capabilities and sets wiphy.pmsr_capa.
 
-FTM measures the RTT (round trip time) and FTM can be used to measure
-distances between two STAs. RTT is often referred as 'measuring distance'
-as well.
-
-Kernel had already defined protocols for PMSR in the
-include/uapi/linux/nl80211.h and relevant parsing/sending code are in the
-net/wireless/pmsr.c, but they are only used in intel's iwlwifi driver.
-
-Patchset is tested with iw tool on Virtual Android device (a.k.a.
-Cuttlefish). Hope this explains my changes.
-
-Many Thanks,
---
+Signed-off-by: Jaewan Kim <jaewan@google.com>
+---
 V9 -> V10: Applied reverse xmas tree style (a.k.a. RCS).
-V8 -> V9: Removed any wrong words for patch. Changed to reject unknown
-          PMSR types.
-V7 -> V8: Separated patch for exporting nl80211_send_chandef
-V6 -> V7: Split 'mac80211_hwsim: handle FTM requests with virtio'
-          with three pieces
-V5 -> V6: Added per patch change history.
-V4 -> V5: Fixed style
-V3 -> V4: Added detailed explanation to cover letter and per patch commit
-          messages, includes explanation of PMSR and FTM.
-          Also fixed memory leak.
-V1 -> V3: Initial commits (include resends)
+V8 -> V9: Changed to consider unknown PMSR type as error.
+V7 -> V8: Changed not to send pmsr_capa when adding new radio to limit
+          exporting cfg80211 function to driver.
+V6 -> V7: Added terms definitions. Removed pr_*() uses.
+V5 -> V6: Added per change patch history.
+V4 -> V5: Fixed style for commit messages.
+V3 -> V4: Added change details for new attribute, and fixed memory leak.
+V1 -> V3: Initial commit (includes resends).
+---
+ drivers/net/wireless/mac80211_hwsim.c | 130 ++++++++++++++++++++++++++
+ drivers/net/wireless/mac80211_hwsim.h |   3 +
+ 2 files changed, 133 insertions(+)
 
-Jaewan Kim (5):
-  mac80211_hwsim: add PMSR capability support
-  wifi: nl80211: make nl80211_send_chandef non-static
-  mac80211_hwsim: add PMSR request support via virtio
-  mac80211_hwsim: add PMSR abort support via virtio
-  mac80211_hwsim: add PMSR report support via virtio
-
- drivers/net/wireless/mac80211_hwsim.c | 785 +++++++++++++++++++++++++-
- drivers/net/wireless/mac80211_hwsim.h |  58 ++
- include/net/cfg80211.h                |   9 +
- net/wireless/nl80211.c                |   4 +-
- 4 files changed, 845 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 4cc4eaf80b14..894049b15f3f 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -719,6 +719,9 @@ struct mac80211_hwsim_data {
+ 	/* RSSI in rx status of the receiver */
+ 	int rx_rssi;
+ 
++	/* only used when pmsr capability is supplied */
++	struct cfg80211_pmsr_capabilities pmsr_capa;
++
+ 	struct mac80211_hwsim_link_data link_data[IEEE80211_MLD_MAX_NUM_LINKS];
+ };
+ 
+@@ -760,6 +763,34 @@ static const struct genl_multicast_group hwsim_mcgrps[] = {
+ 
+ /* MAC80211_HWSIM netlink policy */
+ 
++static const struct nla_policy
++hwsim_ftm_capa_policy[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1] = {
++	[NL80211_PMSR_FTM_CAPA_ATTR_ASAP] = { .type = NLA_FLAG },
++	[NL80211_PMSR_FTM_CAPA_ATTR_NON_ASAP] = { .type = NLA_FLAG },
++	[NL80211_PMSR_FTM_CAPA_ATTR_REQ_LCI] = { .type = NLA_FLAG },
++	[NL80211_PMSR_FTM_CAPA_ATTR_REQ_CIVICLOC] = { .type = NLA_FLAG },
++	[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES] = { .type = NLA_U32 },
++	[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS] = { .type = NLA_U32 },
++	[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT] = NLA_POLICY_MAX(NLA_U8, 15),
++	[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST] = NLA_POLICY_MAX(NLA_U8, 31),
++	[NL80211_PMSR_FTM_CAPA_ATTR_TRIGGER_BASED] = { .type = NLA_FLAG },
++	[NL80211_PMSR_FTM_CAPA_ATTR_NON_TRIGGER_BASED] = { .type = NLA_FLAG },
++};
++
++static const struct nla_policy
++hwsim_pmsr_capa_type_policy[NL80211_PMSR_TYPE_MAX + 1] = {
++	[NL80211_PMSR_TYPE_FTM] = NLA_POLICY_NESTED(hwsim_ftm_capa_policy),
++};
++
++static const struct nla_policy
++hwsim_pmsr_capa_policy[NL80211_PMSR_ATTR_MAX + 1] = {
++	[NL80211_PMSR_ATTR_MAX_PEERS] = { .type = NLA_U32 },
++	[NL80211_PMSR_ATTR_REPORT_AP_TSF] = { .type = NLA_FLAG },
++	[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR] = { .type = NLA_FLAG },
++	[NL80211_PMSR_ATTR_TYPE_CAPA] = NLA_POLICY_NESTED(hwsim_pmsr_capa_type_policy),
++	[NL80211_PMSR_ATTR_PEERS] = { .type = NLA_REJECT }, // only for request.
++};
++
+ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
+ 	[HWSIM_ATTR_ADDR_RECEIVER] = NLA_POLICY_ETH_ADDR_COMPAT,
+ 	[HWSIM_ATTR_ADDR_TRANSMITTER] = NLA_POLICY_ETH_ADDR_COMPAT,
+@@ -788,6 +819,7 @@ static const struct nla_policy hwsim_genl_policy[HWSIM_ATTR_MAX + 1] = {
+ 	[HWSIM_ATTR_IFTYPE_SUPPORT] = { .type = NLA_U32 },
+ 	[HWSIM_ATTR_CIPHER_SUPPORT] = { .type = NLA_BINARY },
+ 	[HWSIM_ATTR_MLO_SUPPORT] = { .type = NLA_FLAG },
++	[HWSIM_ATTR_PMSR_SUPPORT] = NLA_POLICY_NESTED(hwsim_pmsr_capa_policy),
+ };
+ 
+ #if IS_REACHABLE(CONFIG_VIRTIO)
+@@ -3186,6 +3218,7 @@ struct hwsim_new_radio_params {
+ 	u32 *ciphers;
+ 	u8 n_ciphers;
+ 	bool mlo;
++	const struct cfg80211_pmsr_capabilities *pmsr_capa;
+ };
+ 
+ static void hwsim_mcast_config_msg(struct sk_buff *mcast_skb,
+@@ -4445,6 +4478,7 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
+ 			      NL80211_EXT_FEATURE_MULTICAST_REGISTRATIONS);
+ 	wiphy_ext_feature_set(hw->wiphy,
+ 			      NL80211_EXT_FEATURE_BEACON_RATE_LEGACY);
++	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_ENABLE_FTM_RESPONDER);
+ 
+ 	hw->wiphy->interface_modes = param->iftypes;
+ 
+@@ -4606,6 +4640,11 @@ static int mac80211_hwsim_new_radio(struct genl_info *info,
+ 				    data->debugfs,
+ 				    data, &hwsim_simulate_radar);
+ 
++	if (param->pmsr_capa) {
++		data->pmsr_capa = *param->pmsr_capa;
++		hw->wiphy->pmsr_capa = &data->pmsr_capa;
++	}
++
+ 	spin_lock_bh(&hwsim_radio_lock);
+ 	err = rhashtable_insert_fast(&hwsim_radios_rht, &data->rht,
+ 				     hwsim_rht_params);
+@@ -4715,6 +4754,7 @@ static int mac80211_hwsim_get_radio(struct sk_buff *skb,
+ 	param.regd = data->regd;
+ 	param.channels = data->channels;
+ 	param.hwname = wiphy_name(data->hw->wiphy);
++	param.pmsr_capa = &data->pmsr_capa;
+ 
+ 	res = append_radio_msg(skb, data->idx, &param);
+ 	if (res < 0)
+@@ -5053,6 +5093,79 @@ static bool hwsim_known_ciphers(const u32 *ciphers, int n_ciphers)
+ 	return true;
+ }
+ 
++static int parse_ftm_capa(const struct nlattr *ftm_capa, struct cfg80211_pmsr_capabilities *out,
++			  struct genl_info *info)
++{
++	struct nlattr *tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX + 1];
++	int ret;
++
++	ret = nla_parse_nested(tb, NL80211_PMSR_FTM_CAPA_ATTR_MAX, ftm_capa, hwsim_ftm_capa_policy,
++			       NULL);
++	if (ret) {
++		NL_SET_ERR_MSG_ATTR(info->extack, ftm_capa, "malformed FTM capability");
++		return -EINVAL;
++	}
++
++	out->ftm.supported = 1;
++	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES])
++		out->ftm.preambles = nla_get_u32(tb[NL80211_PMSR_FTM_CAPA_ATTR_PREAMBLES]);
++	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS])
++		out->ftm.bandwidths = nla_get_u32(tb[NL80211_PMSR_FTM_CAPA_ATTR_BANDWIDTHS]);
++	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT])
++		out->ftm.max_bursts_exponent =
++			nla_get_u8(tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_BURSTS_EXPONENT]);
++	if (tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST])
++		out->ftm.max_ftms_per_burst =
++			nla_get_u8(tb[NL80211_PMSR_FTM_CAPA_ATTR_MAX_FTMS_PER_BURST]);
++	out->ftm.asap = !!tb[NL80211_PMSR_FTM_CAPA_ATTR_ASAP];
++	out->ftm.non_asap = !!tb[NL80211_PMSR_FTM_CAPA_ATTR_NON_ASAP];
++	out->ftm.request_lci = !!tb[NL80211_PMSR_FTM_CAPA_ATTR_REQ_LCI];
++	out->ftm.request_civicloc = !!tb[NL80211_PMSR_FTM_CAPA_ATTR_REQ_CIVICLOC];
++	out->ftm.trigger_based = !!tb[NL80211_PMSR_FTM_CAPA_ATTR_TRIGGER_BASED];
++	out->ftm.non_trigger_based = !!tb[NL80211_PMSR_FTM_CAPA_ATTR_NON_TRIGGER_BASED];
++
++	return 0;
++}
++
++static int parse_pmsr_capa(const struct nlattr *pmsr_capa, struct cfg80211_pmsr_capabilities *out,
++			   struct genl_info *info)
++{
++	struct nlattr *tb[NL80211_PMSR_ATTR_MAX + 1];
++	struct nlattr *nla;
++	int size;
++	int ret;
++
++	ret = nla_parse_nested(tb, NL80211_PMSR_ATTR_MAX, pmsr_capa, hwsim_pmsr_capa_policy, NULL);
++	if (ret) {
++		NL_SET_ERR_MSG_ATTR(info->extack, pmsr_capa, "malformed PMSR capability");
++		return -EINVAL;
++	}
++
++	if (tb[NL80211_PMSR_ATTR_MAX_PEERS])
++		out->max_peers = nla_get_u32(tb[NL80211_PMSR_ATTR_MAX_PEERS]);
++	out->report_ap_tsf = !!tb[NL80211_PMSR_ATTR_REPORT_AP_TSF];
++	out->randomize_mac_addr = !!tb[NL80211_PMSR_ATTR_RANDOMIZE_MAC_ADDR];
++
++	if (!tb[NL80211_PMSR_ATTR_TYPE_CAPA]) {
++		NL_SET_ERR_MSG_ATTR(info->extack, tb[NL80211_PMSR_ATTR_TYPE_CAPA],
++				    "malformed PMSR type");
++		return -EINVAL;
++	}
++
++	nla_for_each_nested(nla, tb[NL80211_PMSR_ATTR_TYPE_CAPA], size) {
++		switch (nla_type(nla)) {
++		case NL80211_PMSR_TYPE_FTM:
++			parse_ftm_capa(nla, out, info);
++			break;
++		default:
++			NL_SET_ERR_MSG_ATTR(info->extack, nla, "unsupported measurement type");
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
+ static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
+ {
+ 	struct hwsim_new_radio_params param = { 0 };
+@@ -5173,8 +5286,25 @@ static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
+ 		param.hwname = hwname;
+ 	}
+ 
++	if (info->attrs[HWSIM_ATTR_PMSR_SUPPORT]) {
++		struct cfg80211_pmsr_capabilities *pmsr_capa;
++
++		pmsr_capa = kmalloc(sizeof(*pmsr_capa), GFP_KERNEL);
++		if (!pmsr_capa) {
++			ret = -ENOMEM;
++			goto out_free;
++		}
++		ret = parse_pmsr_capa(info->attrs[HWSIM_ATTR_PMSR_SUPPORT], pmsr_capa, info);
++		if (ret)
++			goto out_free;
++		param.pmsr_capa = pmsr_capa;
++	}
++
+ 	ret = mac80211_hwsim_new_radio(info, &param);
++
++out_free:
+ 	kfree(hwname);
++	kfree(param.pmsr_capa);
+ 	return ret;
+ }
+ 
+diff --git a/drivers/net/wireless/mac80211_hwsim.h b/drivers/net/wireless/mac80211_hwsim.h
+index 527799b2de0f..d10fa7f4853b 100644
+--- a/drivers/net/wireless/mac80211_hwsim.h
++++ b/drivers/net/wireless/mac80211_hwsim.h
+@@ -142,6 +142,8 @@ enum {
+  * @HWSIM_ATTR_CIPHER_SUPPORT: u32 array of supported cipher types
+  * @HWSIM_ATTR_MLO_SUPPORT: claim MLO support (exact parameters TBD) for
+  *	the new radio
++ * @HWSIM_ATTR_PMSR_SUPPORT: nested attribute used with %HWSIM_CMD_CREATE_RADIO
++ *	to provide peer measurement capabilities. (nl80211_peer_measurement_attrs)
+  * @__HWSIM_ATTR_MAX: enum limit
+  */
+ 
+@@ -173,6 +175,7 @@ enum {
+ 	HWSIM_ATTR_IFTYPE_SUPPORT,
+ 	HWSIM_ATTR_CIPHER_SUPPORT,
+ 	HWSIM_ATTR_MLO_SUPPORT,
++	HWSIM_ATTR_PMSR_SUPPORT,
+ 	__HWSIM_ATTR_MAX,
+ };
+ #define HWSIM_ATTR_MAX (__HWSIM_ATTR_MAX - 1)
 -- 
 2.40.0.rc1.284.g88254d51c5-goog
 
