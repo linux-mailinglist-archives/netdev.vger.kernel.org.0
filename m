@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E896C6DF0
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:42:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E4C6C6DF5
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232373AbjCWQmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 12:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34978 "EHLO
+        id S232397AbjCWQnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 12:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232376AbjCWQmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:42:06 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354A53B3C5
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 09:39:49 -0700 (PDT)
+        with ESMTP id S231834AbjCWQmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:42:52 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744B35B89
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 09:40:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1679589590; x=1711125590;
+  t=1679589638; x=1711125638;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rBeFmhT0vfMHmkUGk7UEHCSHI9sBr37XP3EMCntouI8=;
-  b=DwMD/On3g20l4GtKHUCavoWEVzMnUQ+ruxUkZlaN9PFghP2jVBAglMkA
-   YLXS7lBZwBQBGsu6YXqdeHWT+o/LC2/8TWbwqmySNH2N7LEr+AidGw9ER
-   gnO/EFWF+S2XARcE8g6K1u5PTx58mqjXRIzzBwv1BIgaqDMOXoN/bVKlH
-   0=;
+  bh=poTVKikJTLYFLym93nAL8U+GLDgOos1wwibZdkCU2+g=;
+  b=UrhbgoY4jHx0xspcVgRTxwuvTKeNtYGzd0fABzuYwSgePONsSU6CLORx
+   xYqdjwHY3SMKgKjcZ2s1T0jadCPz6ptCYENAmH7I1MdAaozli11zFrR2i
+   Myh+/upaRjptGIfWNx923JAocCnoLBPA9wxG4F/CXHT3bFHzNCmsAMD5H
+   o=;
 X-IronPort-AV: E=Sophos;i="5.98,285,1673913600"; 
-   d="scan'208";a="321866539"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1box-1dm6-7f722725.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 16:37:36 +0000
-Received: from EX19D018EUA004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1box-1dm6-7f722725.us-east-1.amazon.com (Postfix) with ESMTPS id 6485CA09ED;
-        Thu, 23 Mar 2023 16:37:31 +0000 (UTC)
+   d="scan'208";a="196780846"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-m6i4x-3554bfcf.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 16:38:07 +0000
+Received: from EX19D010EUA004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-m6i4x-3554bfcf.us-east-1.amazon.com (Postfix) with ESMTPS id DCA8981019;
+        Thu, 23 Mar 2023 16:38:04 +0000 (UTC)
 Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D018EUA004.ant.amazon.com (10.252.50.85) with Microsoft SMTP Server
+ EX19D010EUA004.ant.amazon.com (10.252.50.94) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 23 Mar 2023 16:37:30 +0000
+ 15.2.1118.24; Thu, 23 Mar 2023 16:38:04 +0000
 Received: from u570694869fb251.ant.amazon.com (10.85.143.177) by
  EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.24; Thu, 23 Mar 2023 16:37:19 +0000
+ 15.2.1118.24; Thu, 23 Mar 2023 16:37:52 +0000
 From:   Shay Agroskin <shayagr@amazon.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>,
+CC:     David Arinzon <darinzon@amazon.com>,
         "Woodhouse, David" <dwmw@amazon.com>,
         "Machulsky, Zorik" <zorik@amazon.com>,
         "Matushevsky, Alexander" <matua@amazon.com>,
@@ -55,7 +55,7 @@ CC:     Shay Agroskin <shayagr@amazon.com>,
         "Herrenschmidt, Benjamin" <benh@amazon.com>,
         "Kiyanovski, Arthur" <akiyano@amazon.com>,
         "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
         "Itzko, Shahar" <itzko@amazon.com>,
         "Abboud, Osama" <osamaabb@amazon.com>,
         Eric Dumazet <edumazet@google.com>,
@@ -69,9 +69,9 @@ CC:     Shay Agroskin <shayagr@amazon.com>,
         Florian Westphal <fw@strlen.de>,
         "Simon Horman" <simon.horman@corigine.com>,
         Michal Kubiak <michal.kubiak@intel.com>
-Subject: [PATCH v7 net-next 3/7] net: ena: Make few cosmetic preparations to support large LLQ
-Date:   Thu, 23 Mar 2023 18:36:06 +0200
-Message-ID: <20230323163610.1281468-4-shayagr@amazon.com>
+Subject: [PATCH v7 net-next 4/7] net: ena: Add an option to configure large LLQ headers
+Date:   Thu, 23 Mar 2023 18:36:07 +0200
+Message-ID: <20230323163610.1281468-5-shayagr@amazon.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20230323163610.1281468-1-shayagr@amazon.com>
 References: <20230323163610.1281468-1-shayagr@amazon.com>
@@ -79,7 +79,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.85.143.177]
-X-ClientProxiedBy: EX19D032UWB002.ant.amazon.com (10.13.139.190) To
+X-ClientProxiedBy: EX19D033UWA001.ant.amazon.com (10.13.139.103) To
  EX19D028EUB003.ant.amazon.com (10.252.61.31)
 X-Spam-Status: No, score=-10.0 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
@@ -91,185 +91,228 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move ena_calc_io_queue_size() implementation closer to the file's
-beginning so that it can be later called from ena_device_init()
-function without adding a function declaration.
+From: David Arinzon <darinzon@amazon.com>
 
-Also add an empty line at some spots to separate logical blocks in
-funcitons.
+Allow configuring the device with large LLQ headers. The Low Latency
+Queue (LLQ) allows the driver to write the first N bytes of the packet,
+along with the rest of the TX descriptors directly into device (N can be
+either 96 or 224 for large LLQ headers configuration).
+
+Having L4 TCP/UDP headers contained in the first 96 bytes of the packet
+is required to get maximum performance from the device.
 
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
+Signed-off-by: David Arinzon <darinzon@amazon.com>
 Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 133 ++++++++++---------
- 1 file changed, 67 insertions(+), 66 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 90 +++++++++++++++-----
+ drivers/net/ethernet/amazon/ena/ena_netdev.h |  8 ++
+ 2 files changed, 76 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index cbfe7f977270..794f8eec468a 100644
+index 794f8eec468a..97da4d841df3 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3364,6 +3364,71 @@ static const struct net_device_ops ena_netdev_ops = {
- 	.ndo_xdp_xmit		= ena_xdp_xmit,
- };
+@@ -3374,6 +3374,15 @@ static void ena_calc_io_queue_size(struct ena_adapter *adapter,
+ 	u32 max_tx_queue_size;
+ 	u32 max_rx_queue_size;
  
-+static void ena_calc_io_queue_size(struct ena_adapter *adapter,
-+				   struct ena_com_dev_get_features_ctx *get_feat_ctx)
-+{
-+	struct ena_admin_feature_llq_desc *llq = &get_feat_ctx->llq;
-+	struct ena_com_dev *ena_dev = adapter->ena_dev;
-+	u32 tx_queue_size = ENA_DEFAULT_RING_SIZE;
-+	u32 rx_queue_size = ENA_DEFAULT_RING_SIZE;
-+	u32 max_tx_queue_size;
-+	u32 max_rx_queue_size;
++	/* If this function is called after driver load, the ring sizes have already
++	 * been configured. Take it into account when recalculating ring size.
++	 */
++	if (adapter->tx_ring->ring_size)
++		tx_queue_size = adapter->tx_ring->ring_size;
 +
-+	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
-+		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
-+			&get_feat_ctx->max_queue_ext.max_queue_ext;
-+		max_rx_queue_size = min_t(u32, max_queue_ext->max_rx_cq_depth,
-+					  max_queue_ext->max_rx_sq_depth);
-+		max_tx_queue_size = max_queue_ext->max_tx_cq_depth;
++	if (adapter->rx_ring->ring_size)
++		rx_queue_size = adapter->rx_ring->ring_size;
 +
-+		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
-+			max_tx_queue_size = min_t(u32, max_tx_queue_size,
-+						  llq->max_llq_depth);
-+		else
-+			max_tx_queue_size = min_t(u32, max_tx_queue_size,
-+						  max_queue_ext->max_tx_sq_depth);
+ 	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
+ 		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
+ 			&get_feat_ctx->max_queue_ext.max_queue_ext;
+@@ -3415,6 +3424,24 @@ static void ena_calc_io_queue_size(struct ena_adapter *adapter,
+ 	max_tx_queue_size = rounddown_pow_of_two(max_tx_queue_size);
+ 	max_rx_queue_size = rounddown_pow_of_two(max_rx_queue_size);
+ 
++	/* When forcing large headers, we multiply the entry size by 2, and therefore divide
++	 * the queue size by 2, leaving the amount of memory used by the queues unchanged.
++	 */
++	if (adapter->large_llq_header_enabled) {
++		if ((llq->entry_size_ctrl_supported & ENA_ADMIN_LIST_ENTRY_SIZE_256B) &&
++		    ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
++			max_tx_queue_size /= 2;
++			dev_info(&adapter->pdev->dev,
++				 "Forcing large headers and decreasing maximum TX queue size to %d\n",
++				 max_tx_queue_size);
++		} else {
++			dev_err(&adapter->pdev->dev,
++				"Forcing large headers failed: LLQ is disabled or device does not support large headers\n");
 +
-+		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
-+						 max_queue_ext->max_per_packet_tx_descs);
-+		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
-+						 max_queue_ext->max_per_packet_rx_descs);
-+	} else {
-+		struct ena_admin_queue_feature_desc *max_queues =
-+			&get_feat_ctx->max_queues;
-+		max_rx_queue_size = min_t(u32, max_queues->max_cq_depth,
-+					  max_queues->max_sq_depth);
-+		max_tx_queue_size = max_queues->max_cq_depth;
-+
-+		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
-+			max_tx_queue_size = min_t(u32, max_tx_queue_size,
-+						  llq->max_llq_depth);
-+		else
-+			max_tx_queue_size = min_t(u32, max_tx_queue_size,
-+						  max_queues->max_sq_depth);
-+
-+		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
-+						 max_queues->max_packet_tx_descs);
-+		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
-+						 max_queues->max_packet_rx_descs);
++			adapter->large_llq_header_enabled = false;
++		}
 +	}
 +
-+	max_tx_queue_size = rounddown_pow_of_two(max_tx_queue_size);
-+	max_rx_queue_size = rounddown_pow_of_two(max_rx_queue_size);
-+
-+	tx_queue_size = clamp_val(tx_queue_size, ENA_MIN_RING_SIZE,
-+				  max_tx_queue_size);
-+	rx_queue_size = clamp_val(rx_queue_size, ENA_MIN_RING_SIZE,
-+				  max_rx_queue_size);
-+
-+	tx_queue_size = rounddown_pow_of_two(tx_queue_size);
-+	rx_queue_size = rounddown_pow_of_two(rx_queue_size);
-+
-+	adapter->max_tx_ring_size  = max_tx_queue_size;
-+	adapter->max_rx_ring_size = max_rx_queue_size;
-+	adapter->requested_tx_ring_size = tx_queue_size;
-+	adapter->requested_rx_ring_size = rx_queue_size;
-+}
-+
- static int ena_device_validate_params(struct ena_adapter *adapter,
- 				      struct ena_com_dev_get_features_ctx *get_feat_ctx)
- {
-@@ -4162,72 +4227,6 @@ static void ena_release_bars(struct ena_com_dev *ena_dev, struct pci_dev *pdev)
- 	pci_release_selected_regions(pdev, release_bars);
+ 	tx_queue_size = clamp_val(tx_queue_size, ENA_MIN_RING_SIZE,
+ 				  max_tx_queue_size);
+ 	rx_queue_size = clamp_val(rx_queue_size, ENA_MIN_RING_SIZE,
+@@ -3452,13 +3479,30 @@ static int ena_device_validate_params(struct ena_adapter *adapter,
+ 	return 0;
  }
  
--
--static void ena_calc_io_queue_size(struct ena_adapter *adapter,
--				   struct ena_com_dev_get_features_ctx *get_feat_ctx)
--{
--	struct ena_admin_feature_llq_desc *llq = &get_feat_ctx->llq;
--	struct ena_com_dev *ena_dev = adapter->ena_dev;
--	u32 tx_queue_size = ENA_DEFAULT_RING_SIZE;
--	u32 rx_queue_size = ENA_DEFAULT_RING_SIZE;
--	u32 max_tx_queue_size;
--	u32 max_rx_queue_size;
--
--	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
--		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
--			&get_feat_ctx->max_queue_ext.max_queue_ext;
--		max_rx_queue_size = min_t(u32, max_queue_ext->max_rx_cq_depth,
--					  max_queue_ext->max_rx_sq_depth);
--		max_tx_queue_size = max_queue_ext->max_tx_cq_depth;
--
--		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
--			max_tx_queue_size = min_t(u32, max_tx_queue_size,
--						  llq->max_llq_depth);
--		else
--			max_tx_queue_size = min_t(u32, max_tx_queue_size,
--						  max_queue_ext->max_tx_sq_depth);
--
--		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
--						 max_queue_ext->max_per_packet_tx_descs);
--		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
--						 max_queue_ext->max_per_packet_rx_descs);
--	} else {
--		struct ena_admin_queue_feature_desc *max_queues =
--			&get_feat_ctx->max_queues;
--		max_rx_queue_size = min_t(u32, max_queues->max_cq_depth,
--					  max_queues->max_sq_depth);
--		max_tx_queue_size = max_queues->max_cq_depth;
--
--		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
--			max_tx_queue_size = min_t(u32, max_tx_queue_size,
--						  llq->max_llq_depth);
--		else
--			max_tx_queue_size = min_t(u32, max_tx_queue_size,
--						  max_queues->max_sq_depth);
--
--		adapter->max_tx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
--						 max_queues->max_packet_tx_descs);
--		adapter->max_rx_sgl_size = min_t(u16, ENA_PKT_MAX_BUFS,
--						 max_queues->max_packet_rx_descs);
--	}
--
--	max_tx_queue_size = rounddown_pow_of_two(max_tx_queue_size);
--	max_rx_queue_size = rounddown_pow_of_two(max_rx_queue_size);
--
--	tx_queue_size = clamp_val(tx_queue_size, ENA_MIN_RING_SIZE,
--				  max_tx_queue_size);
--	rx_queue_size = clamp_val(rx_queue_size, ENA_MIN_RING_SIZE,
--				  max_rx_queue_size);
--
--	tx_queue_size = rounddown_pow_of_two(tx_queue_size);
--	rx_queue_size = rounddown_pow_of_two(rx_queue_size);
--
--	adapter->max_tx_ring_size  = max_tx_queue_size;
--	adapter->max_rx_ring_size = max_rx_queue_size;
--	adapter->requested_tx_ring_size = tx_queue_size;
--	adapter->requested_rx_ring_size = rx_queue_size;
--}
--
- /* ena_probe - Device Initialization Routine
-  * @pdev: PCI device information struct
-  * @ent: entry in ena_pci_tbl
-@@ -4364,6 +4363,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			"Failed to query interrupt moderation feature\n");
- 		goto err_device_destroy;
+-static void set_default_llq_configurations(struct ena_llq_configurations *llq_config)
++static void set_default_llq_configurations(struct ena_adapter *adapter,
++					   struct ena_llq_configurations *llq_config,
++					   struct ena_admin_feature_llq_desc *llq)
+ {
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
++
+ 	llq_config->llq_header_location = ENA_ADMIN_INLINE_HEADER;
+ 	llq_config->llq_stride_ctrl = ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY;
+ 	llq_config->llq_num_decs_before_header = ENA_ADMIN_LLQ_NUM_DESCS_BEFORE_HEADER_2;
+-	llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_128B;
+-	llq_config->llq_ring_entry_size_value = 128;
++
++	adapter->large_llq_header_supported =
++		!!(ena_dev->supported_features & BIT(ENA_ADMIN_LLQ));
++	adapter->large_llq_header_supported &=
++		!!(llq->entry_size_ctrl_supported &
++			ENA_ADMIN_LIST_ENTRY_SIZE_256B);
++
++	if ((llq->entry_size_ctrl_supported & ENA_ADMIN_LIST_ENTRY_SIZE_256B) &&
++	    adapter->large_llq_header_enabled) {
++		llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_256B;
++		llq_config->llq_ring_entry_size_value = 256;
++	} else {
++		llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_128B;
++		llq_config->llq_ring_entry_size_value = 128;
++	}
+ }
+ 
+ static int ena_set_queues_placement_policy(struct pci_dev *pdev,
+@@ -3477,6 +3521,13 @@ static int ena_set_queues_placement_policy(struct pci_dev *pdev,
+ 		return 0;
  	}
+ 
++	if (!ena_dev->mem_bar) {
++		netdev_err(ena_dev->net_device,
++			   "LLQ is advertised as supported but device doesn't expose mem bar\n");
++		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++		return 0;
++	}
 +
- 	ena_init_io_rings(adapter,
- 			  0,
- 			  adapter->xdp_num_queues +
-@@ -4488,6 +4488,7 @@ static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
- 	rtnl_lock(); /* lock released inside the below if-else block */
- 	adapter->reset_reason = ENA_REGS_RESET_SHUTDOWN;
- 	ena_destroy_device(adapter, true);
+ 	rc = ena_com_config_dev_mode(ena_dev, llq, llq_default_configurations);
+ 	if (unlikely(rc)) {
+ 		dev_err(&pdev->dev,
+@@ -3492,15 +3543,8 @@ static int ena_map_llq_mem_bar(struct pci_dev *pdev, struct ena_com_dev *ena_dev
+ {
+ 	bool has_mem_bar = !!(bars & BIT(ENA_MEM_BAR));
+ 
+-	if (!has_mem_bar) {
+-		if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) {
+-			dev_err(&pdev->dev,
+-				"ENA device does not expose LLQ bar. Fallback to host mode policy.\n");
+-			ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		}
+-
++	if (!has_mem_bar)
+ 		return 0;
+-	}
+ 
+ 	ena_dev->mem_bar = devm_ioremap_wc(&pdev->dev,
+ 					   pci_resource_start(pdev, ENA_MEM_BAR),
+@@ -3512,10 +3556,11 @@ static int ena_map_llq_mem_bar(struct pci_dev *pdev, struct ena_com_dev *ena_dev
+ 	return 0;
+ }
+ 
+-static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
++static int ena_device_init(struct ena_adapter *adapter, struct pci_dev *pdev,
+ 			   struct ena_com_dev_get_features_ctx *get_feat_ctx,
+ 			   bool *wd_state)
+ {
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 	struct ena_llq_configurations llq_config;
+ 	struct device *dev = &pdev->dev;
+ 	bool readless_supported;
+@@ -3600,7 +3645,7 @@ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 
+ 	*wd_state = !!(aenq_groups & BIT(ENA_ADMIN_KEEP_ALIVE));
+ 
+-	set_default_llq_configurations(&llq_config);
++	set_default_llq_configurations(adapter, &llq_config, &get_feat_ctx->llq);
+ 
+ 	rc = ena_set_queues_placement_policy(pdev, ena_dev, &get_feat_ctx->llq,
+ 					     &llq_config);
+@@ -3609,6 +3654,8 @@ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 		goto err_admin_init;
+ 	}
+ 
++	ena_calc_io_queue_size(adapter, get_feat_ctx);
 +
- 	if (shutdown) {
- 		netif_device_detach(netdev);
- 		dev_close(netdev);
+ 	return 0;
+ 
+ err_admin_init:
+@@ -3707,7 +3754,7 @@ static int ena_restore_device(struct ena_adapter *adapter)
+ 	int rc;
+ 
+ 	set_bit(ENA_FLAG_ONGOING_RESET, &adapter->flags);
+-	rc = ena_device_init(ena_dev, adapter->pdev, &get_feat_ctx, &wd_state);
++	rc = ena_device_init(adapter, adapter->pdev, &get_feat_ctx, &wd_state);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "Can not initialize device\n");
+ 		goto err;
+@@ -4309,18 +4356,18 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	pci_set_drvdata(pdev, adapter);
+ 
+-	rc = ena_device_init(ena_dev, pdev, &get_feat_ctx, &wd_state);
++	rc = ena_map_llq_mem_bar(pdev, ena_dev, bars);
+ 	if (rc) {
+-		dev_err(&pdev->dev, "ENA device init failed\n");
+-		if (rc == -ETIME)
+-			rc = -EPROBE_DEFER;
++		dev_err(&pdev->dev, "ENA LLQ bar mapping failed\n");
+ 		goto err_netdev_destroy;
+ 	}
+ 
+-	rc = ena_map_llq_mem_bar(pdev, ena_dev, bars);
++	rc = ena_device_init(adapter, pdev, &get_feat_ctx, &wd_state);
+ 	if (rc) {
+-		dev_err(&pdev->dev, "ENA llq bar mapping failed\n");
+-		goto err_device_destroy;
++		dev_err(&pdev->dev, "ENA device init failed\n");
++		if (rc == -ETIME)
++			rc = -EPROBE_DEFER;
++		goto err_netdev_destroy;
+ 	}
+ 
+ 	/* Initial TX and RX interrupt delay. Assumes 1 usec granularity.
+@@ -4330,7 +4377,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	ena_dev->intr_moder_rx_interval = ENA_INTR_INITIAL_RX_INTERVAL_USECS;
+ 	ena_dev->intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
+ 	max_num_io_queues = ena_calc_max_io_queue_num(pdev, ena_dev, &get_feat_ctx);
+-	ena_calc_io_queue_size(adapter, &get_feat_ctx);
+ 	if (unlikely(!max_num_io_queues)) {
+ 		rc = -EFAULT;
+ 		goto err_device_destroy;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 2cb141079474..3e8c4a66c7d8 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -334,6 +334,14 @@ struct ena_adapter {
+ 
+ 	u32 msg_enable;
+ 
++	/* large_llq_header_enabled is used for two purposes:
++	 * 1. Indicates that large LLQ has been requested.
++	 * 2. Indicates whether large LLQ is set or not after device
++	 *    initialization / configuration.
++	 */
++	bool large_llq_header_enabled;
++	bool large_llq_header_supported;
++
+ 	u16 max_tx_sgl_size;
+ 	u16 max_rx_sgl_size;
+ 
 -- 
 2.25.1
 
