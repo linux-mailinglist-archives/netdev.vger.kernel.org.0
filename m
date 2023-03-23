@@ -2,260 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D0A16C5C53
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 02:50:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A70936C5C69
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 02:57:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbjCWBuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 21:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60450 "EHLO
+        id S230045AbjCWB51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 21:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjCWBuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 21:50:19 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489A911660;
-        Wed, 22 Mar 2023 18:50:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VeSND30_1679536210;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VeSND30_1679536210)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Mar 2023 09:50:11 +0800
-Message-ID: <1679535924.6219428-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next 2/8] virtio_net: mergeable xdp: introduce mergeable_xdp_prepare
-Date:   Thu, 23 Mar 2023 09:45:24 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
- <20230322030308.16046-3-xuanzhuo@linux.alibaba.com>
- <c7749936-c154-da51-ccfb-f16150d19c62@huawei.com>
-In-Reply-To: <c7749936-c154-da51-ccfb-f16150d19c62@huawei.com>
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230128AbjCWB5X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 21:57:23 -0400
+Received: from 126.com (m126.mail.126.com [220.181.12.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 532DC21A36
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 18:57:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+        Message-ID; bh=q545NseQsTRgNhozGkQ9/VJ4Dk+GCAVbo+edHCtxhgQ=; b=I
+        5BrkzH/Oi7afkXva93CPsZyiMf6mjk6ApcSIVokeLjRWExUalG5eBHHRBOKXxp1A
+        sxU0tpmAZ/aDnYrv0PT0E3n+dW082HsBhSVPqImFXM6YT0DxYotwS6FJ/sY7pQpy
+        LUoOKdu/i+naZeWjmwUxhl38McIEFV5W0xa9Jv64Dg=
+Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
+ (Coremail) ; Thu, 23 Mar 2023 09:53:57 +0800 (CST)
+X-Originating-IP: [124.16.139.61]
+Date:   Thu, 23 Mar 2023 09:53:57 +0800 (CST)
+From:   "Liang He" <windhl@126.com>
+To:     "Horatiu Vultur" <horatiu.vultur@microchip.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, david.daney@cavium.com
+Subject: Re:Re: [PATCH] net: mdio: thunder: Add missing fwnode_handle_put()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2023 www.mailtech.cn 126com
+In-Reply-To: <20230322085538.pn57j2b5dyxizb4o@soft-dev3-1>
+References: <20230322062057.1857614-1-windhl@126.com>
+ <20230322085538.pn57j2b5dyxizb4o@soft-dev3-1>
+X-NTES-SC: AL_QuycC/mYuUwo4SeYbOkXnkwQhu05Ucq4u/8l1YVVP5E0uCrJ+y8fZ3hAPXbN//CiMRyWtx+2cilU5PZxeLlHRoF5n7+FDo5NbprAdqj8jxbF
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
+MIME-Version: 1.0
+Message-ID: <21d42d91.1283.1870c2c39cf.Coremail.windhl@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: _____wDn72M2sRtkv48AAA--.5101W
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGg87F1-HarjlhQACsR
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=0.2 required=5.0 tests=DKIM_INVALID,DKIM_SIGNED,
+        FREEMAIL_FROM,SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Mar 2023 19:52:48 +0800, Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> On 2023/3/22 11:03, Xuan Zhuo wrote:
-> > Separating the logic of preparation for xdp from receive_mergeable.
-> >
-> > The purpose of this is to simplify the logic of execution of XDP.
-> >
-> > The main logic here is that when headroom is insufficient, we need to
-> > allocate a new page and calculate offset. It should be noted that if
-> > there is new page, the variable page will refer to the new page.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  drivers/net/virtio_net.c | 135 ++++++++++++++++++++++-----------------
-> >  1 file changed, 77 insertions(+), 58 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 4d2bf1ce0730..bb426958cdd4 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -1162,6 +1162,79 @@ static int virtnet_build_xdp_buff_mrg(struct net_device *dev,
-> >  	return 0;
-> >  }
-> >
-> > +static void *mergeable_xdp_prepare(struct virtnet_info *vi,
-> > +				   struct receive_queue *rq,
-> > +				   struct bpf_prog *xdp_prog,
-> > +				   void *ctx,
-> > +				   unsigned int *frame_sz,
-> > +				   int *num_buf,
-> > +				   struct page **page,
-> > +				   int offset,
-> > +				   unsigned int *len,
-> > +				   struct virtio_net_hdr_mrg_rxbuf *hdr)
->
-> The naming convention seems to be xdp_prepare_mergeable().
-
-What convention?
-
-
->
-> > +{
-> > +	unsigned int truesize = mergeable_ctx_to_truesize(ctx);
-> > +	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
-> > +	struct page *xdp_page;
-> > +	unsigned int xdp_room;
-> > +
-> > +	/* Transient failure which in theory could occur if
-> > +	 * in-flight packets from before XDP was enabled reach
-> > +	 * the receive path after XDP is loaded.
-> > +	 */
-> > +	if (unlikely(hdr->hdr.gso_type))
-> > +		return NULL;
-> > +
-> > +	/* Now XDP core assumes frag size is PAGE_SIZE, but buffers
-> > +	 * with headroom may add hole in truesize, which
-> > +	 * make their length exceed PAGE_SIZE. So we disabled the
-> > +	 * hole mechanism for xdp. See add_recvbuf_mergeable().
-> > +	 */
-> > +	*frame_sz = truesize;
-> > +
-> > +	/* This happens when headroom is not enough because
-> > +	 * of the buffer was prefilled before XDP is set.
-> > +	 * This should only happen for the first several packets.
-> > +	 * In fact, vq reset can be used here to help us clean up
-> > +	 * the prefilled buffers, but many existing devices do not
-> > +	 * support it, and we don't want to bother users who are
-> > +	 * using xdp normally.
-> > +	 */
-> > +	if (!xdp_prog->aux->xdp_has_frags &&
-> > +	    (*num_buf > 1 || headroom < virtnet_get_headroom(vi))) {
-> > +		/* linearize data for XDP */
-> > +		xdp_page = xdp_linearize_page(rq, num_buf,
-> > +					      *page, offset,
-> > +					      VIRTIO_XDP_HEADROOM,
-> > +					      len);
-> > +
-> > +		if (!xdp_page)
-> > +			return NULL;
-> > +	} else if (unlikely(headroom < virtnet_get_headroom(vi))) {
-> > +		xdp_room = SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
-> > +					  sizeof(struct skb_shared_info));
-> > +		if (*len + xdp_room > PAGE_SIZE)
-> > +			return NULL;
-> > +
-> > +		xdp_page = alloc_page(GFP_ATOMIC);
-> > +		if (!xdp_page)
-> > +			return NULL;
-> > +
-> > +		memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
-> > +		       page_address(*page) + offset, *len);
->
-> It seems the above 'else if' was not really tested even before this patch,
-> as there is no "--*num_buf" if xdp_linearize_page() is not called, which
-> may causes virtnet_build_xdp_buff_mrg() to comsume one more buffer than
-> expected?
-
-Why do you think so?
-
->
-> Also, it seems better to split the xdp_linearize_page() to two functions
-> as pskb_expand_head() and __skb_linearize() do, one to expand the headroom,
-> the other one to do the linearizing.
-
-No skb here.
-
-
->
->
-> > +	} else {
-> > +		return page_address(*page) + offset;
-> > +	}
-> > +
-> > +	*frame_sz = PAGE_SIZE;
-> > +
-> > +	put_page(*page);
-> > +
-> > +	*page = xdp_page;
-> > +
-> > +	return page_address(xdp_page) + VIRTIO_XDP_HEADROOM;
-> > +}
-> > +
-> >  static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >  					 struct virtnet_info *vi,
-> >  					 struct receive_queue *rq,
-> > @@ -1181,7 +1254,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >  	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
-> >  	unsigned int tailroom = headroom ? sizeof(struct skb_shared_info) : 0;
-> >  	unsigned int room = SKB_DATA_ALIGN(headroom + tailroom);
-> > -	unsigned int frame_sz, xdp_room;
-> > +	unsigned int frame_sz;
-> >  	int err;
-> >
-> >  	head_skb = NULL;
-> > @@ -1211,65 +1284,11 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
-> >  		u32 act;
-> >  		int i;
-> >
-> > -		/* Transient failure which in theory could occur if
-> > -		 * in-flight packets from before XDP was enabled reach
-> > -		 * the receive path after XDP is loaded.
-> > -		 */
-> > -		if (unlikely(hdr->hdr.gso_type))
-> > +		data = mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_buf, &page,
-> > +					     offset, &len, hdr);
-> > +		if (!data)
->
-> unlikely().
-
-
-Thanks.
-
->
-> >  			goto err_xdp;
-> >
-> > -		/* Now XDP core assumes frag size is PAGE_SIZE, but buffers
-> > -		 * with headroom may add hole in truesize, which
-> > -		 * make their length exceed PAGE_SIZE. So we disabled the
-> > -		 * hole mechanism for xdp. See add_recvbuf_mergeable().
-> > -		 */
-> > -		frame_sz = truesize;
-> > -
-> > -		/* This happens when headroom is not enough because
-> > -		 * of the buffer was prefilled before XDP is set.
-> > -		 * This should only happen for the first several packets.
-> > -		 * In fact, vq reset can be used here to help us clean up
-> > -		 * the prefilled buffers, but many existing devices do not
-> > -		 * support it, and we don't want to bother users who are
-> > -		 * using xdp normally.
-> > -		 */
-> > -		if (!xdp_prog->aux->xdp_has_frags &&
-> > -		    (num_buf > 1 || headroom < virtnet_get_headroom(vi))) {
-> > -			/* linearize data for XDP */
-> > -			xdp_page = xdp_linearize_page(rq, &num_buf,
-> > -						      page, offset,
-> > -						      VIRTIO_XDP_HEADROOM,
-> > -						      &len);
-> > -			frame_sz = PAGE_SIZE;
-> > -
-> > -			if (!xdp_page)
-> > -				goto err_xdp;
-> > -			offset = VIRTIO_XDP_HEADROOM;
-> > -
-> > -			put_page(page);
-> > -			page = xdp_page;
-> > -		} else if (unlikely(headroom < virtnet_get_headroom(vi))) {
-> > -			xdp_room = SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
-> > -						  sizeof(struct skb_shared_info));
-> > -			if (len + xdp_room > PAGE_SIZE)
-> > -				goto err_xdp;
-> > -
-> > -			xdp_page = alloc_page(GFP_ATOMIC);
-> > -			if (!xdp_page)
-> > -				goto err_xdp;
-> > -
-> > -			memcpy(page_address(xdp_page) + VIRTIO_XDP_HEADROOM,
-> > -			       page_address(page) + offset, len);
-> > -			frame_sz = PAGE_SIZE;
-> > -			offset = VIRTIO_XDP_HEADROOM;
-> > -
-> > -			put_page(page);
-> > -			page = xdp_page;
-> > -		} else {
-> > -			xdp_page = page;
-> > -		}
-> > -
-> > -		data = page_address(xdp_page) + offset;
-> >  		err = virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame_sz,
-> >  						 &num_buf, &xdp_frags_truesz, stats);
-> >  		if (unlikely(err))
-> >
+CgpBdCAyMDIzLTAzLTIyIDE2OjU1OjM4LCAiSG9yYXRpdSBWdWx0dXIiIDxob3JhdGl1LnZ1bHR1
+ckBtaWNyb2NoaXAuY29tPiB3cm90ZToKPlRoZSAwMy8yMi8yMDIzIDE0OjIwLCBMaWFuZyBIZSB3
+cm90ZToKPj4gCj4+IEluIGRldmljZV9mb3JfZWFjaF9jaGlsZF9ub2RlKCksIHdlIHNob3VsZCBh
+ZGQgZndub2RlX2hhbmRsZV9wdXQoKQo+PiB3aGVuIGJyZWFrIG91dCBvZiB0aGUgaXRlcmF0aW9u
+IGRldmljZV9mb3JfZWFjaF9jaGlsZF9ub2RlKCkKPj4gYXMgaXQgd2lsbCBhdXRvbWF0aWNhbGx5
+IGluY3JlYXNlIGFuZCBkZWNyZWFzZSB0aGUgcmVmY291bnRlci4KPgo+RG9uJ3QgZm9yZ2V0IHRv
+IG1lbnRpb24gdGhlIHRyZWUgd2hpY2ggeW91IGFyZSB0YXJnZXRpbmcuCj5JdCBzaG91ZCBiZSBz
+b21ldGhpbmcgbGlrZToKPiJbUEFUQ0ggbmV0XSBuZXQ6IG1kaW86IHRodW5kZXI6IEFkZCBtaXNz
+aW5nIGZ3bm9kZV9oYW5kbGVfcHV0KCkiIGFuZAo+eW91IGNhbiBhY2hpZXZlIHRoaXMgdXNpbmcg
+b3B0aW9uIC0tc3ViamVjdC1wcmVmaXggd2hlbiB5b3UgY3JlYXRlIHlvdXIKPnBhdGNoOgo+Z2l0
+IGZvcm1hdC1wYXRjaCAuLi4gLS1zdWJqZWN0LXByZWZpeCAiUEFUQ0ggbmV0Igo+CgpUaGFua3Mg
+Zm9yIHlvdXIgcmVwbHkgYW5kIGFkdmlzZSwgSSB3aWxsIGFkZCBpdCBpbiBteSBmdXR1cmUgcGF0
+Y2hlcy4KCj4KPj4gCj4+IEZpeGVzOiAzNzlkN2FjN2NhMzEgKCJwaHk6IG1kaW8tdGh1bmRlcjog
+QWRkIGRyaXZlciBmb3IgQ2F2aXVtIFRodW5kZXIgU29DIE1ESU8gYnVzZXMuIikKPj4gU2lnbmVk
+LW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvbmV0
+L21kaW8vbWRpby10aHVuZGVyLmMgfCAxICsKPj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlv
+bigrKQo+PiAKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L21kaW8vbWRpby10aHVuZGVyLmMg
+Yi9kcml2ZXJzL25ldC9tZGlvL21kaW8tdGh1bmRlci5jCj4+IGluZGV4IDgyMmQyY2RkMmYzNS4u
+Mzk0Yjg2NGFhYTM3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL25ldC9tZGlvL21kaW8tdGh1bmRl
+ci5jCj4+ICsrKyBiL2RyaXZlcnMvbmV0L21kaW8vbWRpby10aHVuZGVyLmMKPj4gQEAgLTEwNCw2
+ICsxMDQsNyBAQCBzdGF0aWMgaW50IHRodW5kZXJfbWRpb2J1c19wY2lfcHJvYmUoc3RydWN0IHBj
+aV9kZXYgKnBkZXYsCj4+ICAgICAgICAgICAgICAgICBpZiAoaSA+PSBBUlJBWV9TSVpFKG5leHVz
+LT5idXNlcykpCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrOwo+PiAgICAgICAgIH0K
+Pj4gKyAgICAgICBmd25vZGVfaGFuZGxlX3B1dChmd24pOwo+Cj5DYW4geW91IGRlY2xhcmUgb25s
+eSAxIG1kaW8gYnVzIGluIHRoZSBEVCB1bmRlciB0aGlzIHBjaSBkZXZpY2U/Cj5CZWNhdXNlIGlu
+IHRoYXQgY2FzZSwgSSBkb24ndCB0aGluayB0aGlzIGlzIGNvcnJlY3QsIGJlY2F1c2UgdGhlbgo+
+J2RldmljZV9mb3JfZWFjaF9jaGlsZF9ub2RlJyB3aWxsIGV4aXQgYmVmb3JlIGFsbCA0IG1kaW8g
+YnVzZXMgYXJlIHByb2JlZC4KPkFuZCBhY2NvcmRpbmcgdG8gdGhlIGNvbW1lbnRzIGZvciAnZndu
+b2RlX2hhbmRsZV9wdXQnIHlvdSBuZWVkIHRvIHVzZQo+d2l0aCBicmVhayBvciByZXR1cm4uCj4K
+CkluIGZhY3QsIHRoZSBmd25vZGVfaGFuZGxlX3B1dChmd24pIGNvbnNpZGVyIHRoZSBOVUxMLWNo
+ZWNrIG9mIGZ3biwgYW5kIAp0aGVyZSBhcmUgb25seSBicmVhaywgbm90IHJldHVybiwgc28gSSB0
+aGluayBpdCBjYW4gd29yayBpbiB0aGlzIGNhc2UuCkhvd2V2ZXIsIGlmIHlvdSBwcmVmZXIgdG8g
+YWRkIGZ3bm9kZV9oYW5kbGVfcHV0IGJlZm9yZSBicmVhaywgSSBjYW4Kc2VuZCBhIG5ldyBwYXRj
+aC4KClRoYW5rcywKTGlhbmcKCj4+ICAgICAgICAgcmV0dXJuIDA7Cj4+IAo+PiAgZXJyX3JlbGVh
+c2VfcmVnaW9uczoKPj4gLS0KPj4gMi4yNS4xCj4+IAo+Cj4tLSAKPi9Ib3JhdGl1Cg==
