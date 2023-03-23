@@ -2,102 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 055BD6C6FB0
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 18:51:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0908E6C6FBD
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 18:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbjCWRvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 13:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        id S230165AbjCWRyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 13:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbjCWRvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 13:51:41 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD5826874
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 10:51:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679593900; x=1711129900;
-  h=from:to:cc:subject:date:message-id;
-  bh=3hhPjNPNXJlP2n8oMMrL1RTGBinNaY0t02BvlLuBFI0=;
-  b=CYDQHLy4kPiTKcm7bpQu4Mfs9UPoldm7gppN849nLTT5uFhDkmktDY60
-   hZr1SwpGxRKKbTTgQhvkL6gPWOGbsBzfYlV9ZjNVUbBmSYcQUykFGjYzn
-   j9po6hWUWR8qP1nKGyqbOgrNGqvJS6dHilfsjov2/HNkK8O5VVzjkreYN
-   GMzzm5FZmVet1PKP8Quzx6TMp3IibJmckbb3zMo55rstTSwMw3RzomXfM
-   xxQ2Yl1Hr28VzcAkYhAJg3PS2a7Il1tCQpGE00hXCB/bCbPP9dQMhJoWo
-   +JocQr4kouh2r5q+lKkF1kxZySEi2fdNkX95yRscd6wr+0fgYlFe9GFqa
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="425849418"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="425849418"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 10:51:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="684833995"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="684833995"
-Received: from mmichali-devpc.igk.intel.com ([10.211.235.239])
-  by fmsmga007.fm.intel.com with ESMTP; 23 Mar 2023 10:51:38 -0700
-From:   Michal Michalik <michal.michalik@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Michal Michalik <michal.michalik@intel.com>
-Subject: [PATCH net-next v3] tools: ynl: Add missing types to encode/decode
-Date:   Thu, 23 Mar 2023 18:51:29 +0100
-Message-Id: <20230323175129.17122-1-michal.michalik@intel.com>
-X-Mailer: git-send-email 2.9.5
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S230009AbjCWRyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 13:54:09 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C9335B1;
+        Thu, 23 Mar 2023 10:54:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=54YsC8XzqQpsB2UsHYA2SFE4Iu7ECpACpg/2TdxhMVA=; b=mSl1ILCEhcP+6TYKUcje1z0Fzy
+        wuc4Oz1++D3ao2BjWUfe685253N24840brNWQXjmH+BCmMbuaLYB6qUTiKDcOoAoiL3ZbHmmXJx7f
+        YSke0rpz8MVYWjNNV2seNzbBckCUYJsN4iavlYtMuqqx4haUArtM3/N3t1cdNnIYHhjyyCX2/Aw1R
+        ZTINd144IjD8Glo6y7ghDaem7E/eHrTjBTz5EvoDHD4HCR6x9dYM7AOuJ83AUnKt1vquhYizKeE/Q
+        hJwKIdKa9hdCg7YKOjz1X3Yovwa2IJm9utO3STotzcIc8UDbq4x6Otvx1naOB9h0/T1ffXSGDl3JY
+        tp3hKDKA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55298)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pfP8I-0005bK-Dp; Thu, 23 Mar 2023 17:53:50 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pfP8E-0001aL-Pf; Thu, 23 Mar 2023 17:53:46 +0000
+Date:   Thu, 23 Mar 2023 17:53:46 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
+ get phy interface mode
+Message-ID: <ZBySKoHh25AMMBVg@shell.armlinux.org.uk>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
+ <ZBxcGXSVe0dlzKZb@smile.fi.intel.com>
+ <ZBxiqJo470A7bkig@shell.armlinux.org.uk>
+ <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
+ <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
+ <ZBxpeLOmTMzqVTRV@smile.fi.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBxpeLOmTMzqVTRV@smile.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While testing the tool I noticed we miss the u16 type on payload create.
-On the code inspection it turned out we miss also u8 and u64 - add them.
+On Thu, Mar 23, 2023 at 05:00:08PM +0200, Andy Shevchenko wrote:
+> On Thu, Mar 23, 2023 at 02:49:01PM +0000, Russell King (Oracle) wrote:
+> > Let's start here. We pass this fwnode to fwnode_get_phy_mode():
+> > 
+> > include/linux/property.h:int fwnode_get_phy_mode(struct fwnode_handle *fwnode);
+> > 
+> > Does fwnode_get_phy_mode() alter the contents of the fwnode? Probably
+> > not, but it doesn't take a const pointer. Therefore, to declare my
+> > fwnode as const, I'd need to cast the const-ness away before calling
+> > this.
+> 
+> So, fix the fwnode_get_phy_mode(). Is it a problem?
+> 
+> > Then there's phylink_create(). Same problem.
+> 
+> So, fix that. Is it a problem?
 
-We also miss the decoding of u16 despite the fact `NlAttr` class
-supports it - add it.
+To do both of these creates a five patch series, because there are so
+many things that need to be constified:
 
-Fixes: e4b48ed460d3 ("tools: ynl: add a completely generic client")
-Signed-off-by: Michal Michalik <michal.michalik@intel.com>
---
-v3: change tree `net` -> `net-next`
-v2: add a `Fixes:` tag to the commit message
----
- tools/net/ynl/lib/ynl.py | 8 ++++++++
- 1 file changed, 8 insertions(+)
+fwnode_get_phy_mode() is the trivial one.
 
-diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
-index 90764a8..788f130 100644
---- a/tools/net/ynl/lib/ynl.py
-+++ b/tools/net/ynl/lib/ynl.py
-@@ -334,8 +334,14 @@ class YnlFamily(SpecFamily):
-                 attr_payload += self._add_attr(attr['nested-attributes'], subname, subvalue)
-         elif attr["type"] == 'flag':
-             attr_payload = b''
-+        elif attr["type"] == 'u8':
-+            attr_payload = struct.pack("B", int(value))
-+        elif attr["type"] == 'u16':
-+            attr_payload = struct.pack("H", int(value))
-         elif attr["type"] == 'u32':
-             attr_payload = struct.pack("I", int(value))
-+        elif attr["type"] == 'u64':
-+            attr_payload = struct.pack("Q", int(value))
-         elif attr["type"] == 'string':
-             attr_payload = str(value).encode('ascii') + b'\x00'
-         elif attr["type"] == 'binary':
-@@ -371,6 +377,8 @@ class YnlFamily(SpecFamily):
-                 decoded = subdict
-             elif attr_spec['type'] == 'u8':
-                 decoded = attr.as_u8()
-+            elif attr_spec['type'] == 'u16':
-+                decoded = attr.as_u16()
-             elif attr_spec['type'] == 'u32':
-                 decoded = attr.as_u32()
-             elif attr_spec['type'] == 'u64':
+sfp_bus_find_fwnode(), and the sfp-bus internal fwnode uses.
+
+fwnode_get_phy_node().
+
+phylink_create(), phylink_parse_fixedlink(), phylink_parse_mode(),
+phylink_fwnode_phy_connect().
+
+Hopefully nothing breaks as a result of changing all those - but that
+can hardly be "tacked" on to the start of my series as a trivial
+change - and clearly such a change should _not_ be part of this
+series.
+
+Those five patches do not include moving fwnode_get_phy_mode(), whose
+location remains undecided.
+
 -- 
-2.9.5
-
-base-commit: fcb3a4653bc5fb0525d957db0cc8b413252029f8
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
