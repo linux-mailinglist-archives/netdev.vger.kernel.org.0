@@ -2,319 +2,480 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84AFB6C6144
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 09:03:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7CD56C6157
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 09:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbjCWID3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 04:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
+        id S231270AbjCWIKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 04:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbjCWID1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 04:03:27 -0400
-Received: from outbound-ip23a.ess.barracuda.com (outbound-ip23a.ess.barracuda.com [209.222.82.205])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA67BDE0
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 01:03:13 -0700 (PDT)
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2104.outbound.protection.outlook.com [104.47.70.104]) by mx-outbound12-205.us-east-2a.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Thu, 23 Mar 2023 08:02:48 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YFBwXpIeGIpFwNcDxT6Gm/HTqkWzBZpBM/pFELyx+9TqWzNyg6awefRMvlcYnkfOULEBi0mUUSqLfDqLmeK88jgtgNhcdsMl9YdTYTsc6l6GxuzcBCZ+IF371ck8eW71LOJxyYfx07vnJlxwxwzMc78jzhhDUI/gAiXTffDV06dwvyHFihmbKndYfii5x058FN1Hhox0nrkQLckFugrrzUl0VMGkLQbqKj8ao3uzPhwjQB8yYGNA8TngzGJ40vVUreQblBOrhGqLk6ItzJZy6jEDR12G3GFM+2KiCa42CgI17+VnR3aE/fl/FEfaaMrOsBJ+ZWb8CF4ukNWgJ51rlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wDO2sIIUiGiJiBPXXZBy0jpiEuuPLhTaXu97vcKB6P8=;
- b=eUqNDiDm6ZOAKsVXxnISDtEf3lb3XTQpJbiB/ICii00pjgSPxvDyDYsCi6hC0Yl5lfARi0wHlRDiY8bwctUMMrqWMElXYZzBCEkAuvBikJwufy8Uoe+jZ5Ma/QmTAmQSkVB9fuA46MHjAe6yTgtIVq9e62KDp1UEEetDzS1zV93uQFZPkmKEa01Bq+2Wl6KNR8xu6LNQ+xTXNsrpq8ckQCaRdlx5GMwUUGNnth/EhqWQfNkGJypI4cVqjL+QGlfttXBy3hBs6eGnb24ptgxCFQWBtqPwku/sP7YfKWc0k1HtYbApQpCJ9e6gxnC4D9x1Y0qvHiv/8wHVxhN+0uDguA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=digi.com; dmarc=pass action=none header.from=digi.com;
- dkim=pass header.d=digi.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digi.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wDO2sIIUiGiJiBPXXZBy0jpiEuuPLhTaXu97vcKB6P8=;
- b=XcL/exfqWkKE6+IU4yCUDOSqdJypUGs8p+khelUlEZfv1ZpibhmYvH9B9NT4ny+iuc21exdHrM/bpDi3aHT43vFWuhnTlC7o3Gtvg40No82swOIWrCAbI9JztWyoYCZTYIfFyTaJbrq56kPKH+S0MYQGIX1Kq7sr7QbyEoHzYpDH/cPrLVvbxmA96u6dMlJBxuVSHMb1kqIc2Zx5inX/++uXJSPVdwEq4IJmymzqqej9fiJEwztBRY/VfQHEjBLHCCPyJo11E3b6ONVjw2SeHeTxyr49AviS+ZUYSMSVQ2W7d7bfmc77QUyn84IvenND+TXniyBpgkXosu7srthfSA==
-Received: from DS7PR10MB4926.namprd10.prod.outlook.com (2603:10b6:5:3ac::20)
- by CO1PR10MB4514.namprd10.prod.outlook.com (2603:10b6:303:9d::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
- 2023 08:02:44 +0000
-Received: from DS7PR10MB4926.namprd10.prod.outlook.com
- ([fe80::9ee4:1e8a:76b6:959b]) by DS7PR10MB4926.namprd10.prod.outlook.com
- ([fe80::9ee4:1e8a:76b6:959b%2]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 08:02:44 +0000
-From:   "Buzarra, Arturo" <Arturo.Buzarra@digi.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: RE: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
-Thread-Topic: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
-Thread-Index: AQHZWP1FSdAaHxazwkKnE2fAhKZFWq8DUXYQgABD0YCAAEfQAA==
-Date:   Thu, 23 Mar 2023 08:02:43 +0000
-Message-ID: <DS7PR10MB49260FFA60F0B3A5AB7AD69EFA879@DS7PR10MB4926.namprd10.prod.outlook.com>
-References: <20230317121646.19616-1-arturo.buzarra@digi.com>
- <3e904a01-7ea8-705c-bf7a-05059729cebf@gmail.com>
- <DS7PR10MB4926EBB7DAA389E69A4E2FC1FA809@DS7PR10MB4926.namprd10.prod.outlook.com>
- <74cef958-9513-40d7-8da4-7a566ba47291@lunn.ch>
-In-Reply-To: <74cef958-9513-40d7-8da4-7a566ba47291@lunn.ch>
-Accept-Language: es-ES, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=digi.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DS7PR10MB4926:EE_|CO1PR10MB4514:EE_
-x-ms-office365-filtering-correlation-id: 81bce545-83db-4937-c9e2-08db2b74fb7f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AiOLokxZFGR1WvjDrLpBL+UTfqnAKtg8Aymcv5heGdUsy526vu30BYafDPodfzGODB6oFIHfS05KxCaLDaS04LnHcpg4CxMJTv/+iCVBi0aTUZaKONI/8rsYXrX/K0wk8Ic+jJUpw8iwxkdePVsFFzlYWA/5caQuxYWUjYbThWC4fVEMbRsm0tnNsmCRXsJTdIHPzRTlxAVSiuqoYfG9ur/XIwhWrQoil+Z9ErsKQHsVyLU2puUrcSmAF0d6/K9F1L+LzoKHBKUqWYcJUXL0305q1frz4jMyrVyQ2e4ZO4zyeRYxtCo3o9NN1iGvhaqXeoLykE/hHxoucrZVkUYpHjW1X3D9Qu3ZmoBlMRYHdRCdaYaE3GDHVvwPtlw6F5QDw+bIj1ZVCmuR5rrASlSLmDokE5JqFk0J3nV70iOXkuz7rz/f+1P7QSDs8b8te96wgO0QtWM4OViCbiJtluahhmRhsRF0AJNS1baPwtARcTsGxfbJSpUHHt/0Cq1lF91Y93M1cT8RtVQaKQiIpQ/atjMCU1eDjARpiTsf/sYukiaQY1DYmq1PUf1seBRd2Wq8elTRjYOL8QmSNqj7oyOaiPXrgMwXtnVrJ5XxYE1kMAtSDVsiHjjVqU6Eqy+I3dY/+GSrQcEWWVVryVCFjmlWbSFeH8vbREkw/ENQno4kbHscP1lv5j0rs9wEM/LcMzLdW8is7iF5PDJNCWEdVHrLPA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB4926.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(366004)(39850400004)(376002)(451199018)(38100700002)(38070700005)(55016003)(2906002)(66899018)(71200400001)(83380400001)(478600001)(9686003)(186003)(33656002)(86362001)(7696005)(316002)(54906003)(66946007)(66556008)(66476007)(66446008)(64756008)(8676002)(4326008)(6916009)(76116006)(52536014)(8936002)(53546011)(26005)(6506007)(122000001)(5660300002)(41300700001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UK8GshCr6wdnupUHTO+Dq8U49hY/I/Cd7P0xDXWGQXDJM2fpMkCCekqwSCTt?=
- =?us-ascii?Q?96qDbNbv5DHrlxUYI5mBH1Kzq7gSb88WtaZUNICRNcPecH0xKvZjNjb6iKaa?=
- =?us-ascii?Q?uGm0iOYWF4eDLIHO6NNawqXR9MrSEgaolrHq2h9by+DFBpcaa24FpnYtYywk?=
- =?us-ascii?Q?sXDUN+41hGgqO/va5pjOMvk04xy1qQ5hrhMrn1uzgmuZXAbi3ToLGvWDJ91B?=
- =?us-ascii?Q?kyLWXXk7IlRl77J4a6h56OwC4hYScOkQq8G6VtfSzml5oq7vcVqb6jGz/gag?=
- =?us-ascii?Q?B99WPjIhO7cLbQt4/zttyLtiCXAkxcLPMIbmK+kLD5dnVfdl+mzF07ijIExL?=
- =?us-ascii?Q?qVmxXJI5golRsRw2NpGXMxufe5yJFHr3a/hcY2aXLk8gSHnGWd/A10XstaXY?=
- =?us-ascii?Q?64eea1wJ7DAE7OIY8Uweq9fSru+Q/lRtwS+Qs/dzSf15nmHd+1KYCCP4QRlK?=
- =?us-ascii?Q?UMefFu5GxJOiSF1lpOGtOabcWSh5dq1RF24a9puEkQBuHkFKv2rv4jhOj0rm?=
- =?us-ascii?Q?24OE9w8iabm3x1e38lkZC+36GpBGYFtvUfR5j/5mNIJrhB/d2dL3IlQD6DP7?=
- =?us-ascii?Q?VBQyUJ1I3bYKdDLK1e0GHoVAhyWRdXkx5XB5rRb2bM8+J1a/ogUHgjzK3oGZ?=
- =?us-ascii?Q?OQ+04hpJdFeXQNXohXAaFd92J5lsHEr6bL1EC0FcmrC/OV3XegtfoO1To7Hz?=
- =?us-ascii?Q?ivWSG2L76+BzGHsq7SeqBYuwZgJSvDC6M1EKCJc4S9CGQlC6PEazCUzV4iU3?=
- =?us-ascii?Q?KsShGv41J10SBLhK/NEDTGcniOkBVW1tTs3xQrq9Echf/Bx6Q0hUabnb0vZC?=
- =?us-ascii?Q?Y78+IMt/j5dESiHgeJv1KtfXOi2WGccH81N07gDASNDQDpNCDWeiAvmd82k+?=
- =?us-ascii?Q?XGEvRNLpXEvwLWs6oSrCvkjU9cUQIYCMzmO+Sg3g4LuNC6GsG24Bc3rEYMiO?=
- =?us-ascii?Q?vxPjQZuq092eyGDDQTKGa1l+sE71+KGu8F4cNFQn3fm23wIiIMUy5q5rAksO?=
- =?us-ascii?Q?u4aX3Uk4wd7BcX6raAEN5IooDd30DRMht+Qo6qALQjzoHDndmKQkOUfBJ5bY?=
- =?us-ascii?Q?v/KFhraRBEkcb39T0RSCJ60Ixsvfvge0bmDMgOqrVoFVliDJMz/vltbAaBFe?=
- =?us-ascii?Q?KAuT0hbcLcWmZCgHxOQBUOFrJnHVSBfa42LKoRHv5b3cx1hbQVY7Q3MHq72w?=
- =?us-ascii?Q?b+OcedBOVTnVgdg64dljD9HTVeNtiZlbfjPZboDcVtxIkQOyVVnXkEi+zx34?=
- =?us-ascii?Q?X+V9T2wQW96kwBccKuQdt1ll+Z3Qt5flGIvf/RJbr+iR4mMre2QMewxkwTpe?=
- =?us-ascii?Q?Lefeb/hsdwTIPiO20NgfAs4LWIHrvbOxa1ZRO8mSjJwc5o0G5eHBzEXOWoAz?=
- =?us-ascii?Q?KamA/MF9i0VI0nwf1EY9kjZ7Hu8IB8kqBUQoQj/3SWzJe0xAZrrx02O9ruOF?=
- =?us-ascii?Q?RMQzyG4xXMsKN+whgEYVp41nCN6H1eVGTQtFWbZUMT+F4PRGeeouAE+et+Er?=
- =?us-ascii?Q?2sYm1DCWQYfG6EF22hmgQ4lL9wkGDY5kFGwvO3FylhUumENQmLfaKMwdJyg3?=
- =?us-ascii?Q?r7uW7YJp3Sgw7EIrC+wr+mdGoDingDZFtroiZ4lH?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230404AbjCWIKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 04:10:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6E055BE
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 01:09:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679558994;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EwNJuTQzZa68E+uwGkDROnOU0eGSdGgfEOhZyYP5hIQ=;
+        b=Q+oALxgJUA3KPR7IbC5tMfqyfU03vBFFsQgMA0loJqPPUNa8lXS81nEpa9YtJwJGI04c1p
+        +aXHjO/g8tMppAqVHUgHgaRDsSbs8J8R5ng2x7WjQMpc3BHOmNVJw0R756ggLW4IUWP0oD
+        UDMqbfWnas2D2Tfd0E7UvSb7hgre4GE=
+Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
+ [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-396-OextnDASN7-A9oIJiVwVFA-1; Thu, 23 Mar 2023 04:09:52 -0400
+X-MC-Unique: OextnDASN7-A9oIJiVwVFA-1
+Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-5425c04765dso211839937b3.0
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 01:09:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679558991;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EwNJuTQzZa68E+uwGkDROnOU0eGSdGgfEOhZyYP5hIQ=;
+        b=cCtICYJL5oImYr/KgKeM7us5QCw/kuzOORiOOmDD7XhYz5voMafx+LEdID6gUPx9oe
+         wfcuQIRAMQRZ/l0wLFdO6zyIsY5SKOq6qxoB6IeMdeRKQkzQaGKLTgtQ02+VUoEJj1Dy
+         oT0s9xyFUplfDitiNjAtj73XYGQxOdrk/z8T21kASP+n7WGHZVbaLMUtsbTN8apseUU1
+         FVFZe+7x0/RDEJDV4cwY63QQwwFnSdTIuisTLHDLJqxdvEgarUFoenapRFMVRT8HY6Yd
+         TR9zTSIw4LX8NEQYSOVcfDBrIJ2qQQupSK8y9AogDwR3+zSrfGqs/mzwnsjwboG2mUMN
+         5N7Q==
+X-Gm-Message-State: AAQBX9fdddT+VLW8KQGypPIi1lD7KII7/Fj/YFVTBVBoVj7vLZ6uv/Wi
+        b5ayBqP3mPTvnZu5QuevJoMFrkmGJXbMTgOtCEu6Xv/HkbPfy5efEvwjpANwSFNz1+0PKpyZEs4
+        k5i4Nc23b1wvTNaLHeUXX/uqMj20VwNxA
+X-Received: by 2002:a25:81c5:0:b0:b6a:2590:6c63 with SMTP id n5-20020a2581c5000000b00b6a25906c63mr1540656ybm.2.1679558991010;
+        Thu, 23 Mar 2023 01:09:51 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YEdA5g/M24d+xdNdb8u9nUwF+a4wIVM3Rn+E4/TIXzeIZaWYUzywXTk8fMMt/V8zCAMqGWFgu8zalgu1VOl+I=
+X-Received: by 2002:a25:81c5:0:b0:b6a:2590:6c63 with SMTP id
+ n5-20020a2581c5000000b00b6a25906c63mr1540638ybm.2.1679558990627; Thu, 23 Mar
+ 2023 01:09:50 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: digi.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB4926.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81bce545-83db-4937-c9e2-08db2b74fb7f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2023 08:02:43.8245
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: abb4cdb7-1b7e-483e-a143-7ebfd1184b9e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yfdBrfZq5wf1SyW1uSG/CxaQGDC9C4IBJs+0+AQhsgRJ0V/u9Ie7FQowiv+QeekIM9vWBEenhqrUZaLu2ZK0fg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4514
-X-BESS-ID: 1679558568-103277-5654-10400-1
-X-BESS-VER: 2019.1_20230317.2229
-X-BESS-Apparent-Source-IP: 104.47.70.104
-X-BESS-Parts: H4sIAAAAAAACA4uuVkqtKFGyUioBkjpK+cVKVuamZgZAVgZQ0MDEINncLNHAKD
-        XRIjXN1Mw42dgy2SLNyNI8xSQ10SxZqTYWAGntwXxBAAAA
-X-BESS-Outbound-Spam-Score: 0.50
-X-BESS-Outbound-Spam-Report: Code version 3.2, rules version 3.2.2.246985 [from 
-        cloudscan20-160.us-east-2b.ess.aws.cudaops.com]
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------
-        0.50 BSF_RULE7568M          META: Custom Rule 7568M 
-        0.00 BSF_BESS_OUTBOUND      META: BESS Outbound 
-X-BESS-Outbound-Spam-Status: SCORE=0.50 using account:ESS112744 scores of KILL_LEVEL=7.0 tests=BSF_RULE7568M, BSF_BESS_OUTBOUND
-X-BESS-BRTS-Status: 1
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230321154228.182769-1-sgarzare@redhat.com> <20230321154228.182769-5-sgarzare@redhat.com>
+In-Reply-To: <20230321154228.182769-5-sgarzare@redhat.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Thu, 23 Mar 2023 09:09:14 +0100
+Message-ID: <CAJaqyWcCwwu1UJ968A=s30GCezjLcwWKDhCFMsQ2EcGGgkiz7g@mail.gmail.com>
+Subject: Re: [PATCH v3 4/8] vringh: support VA with iotlb
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, stefanha@redhat.com,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-" You have two MACs. Do you have two MDIO busses, with one PHY on each bus,=
- or do you have just one MDIO bus in use, with two PHYs on it?"
-I have two Ethernet MACs, with one MDIO bus connected to two different PHYs
-
-"There is a pull up on the MDIO data line, so that if nothing drives it low=
-, it reads 1. This was one of Florian comments. Have you check the value of=
- that pull up resistor?"
-Yes, but with/without this pull-up we obtain the same behavior
-
-"Which is odd, because the MDIO bus probe code would assume there is no PHY=
- there given those two values, and then would not bother trying to read the=
- abilities. So you are somehow forcing the core to assume there is a PHY th=
-ere. Do you have the PHY ID in DT?"
-Yes, we have both PHYs defined in the DT
-
-"Where is the clock coming from? Does each PHY have its own crystal? Is the=
- clock coming from one of the MACs? Is one PHY a clock source and the other=
- a clock sync?"
-Gigabit PHY has its own Crystal, however the 10/100 PHY uses a clock from t=
-he CPU and it is the root cause of the issue because when Linux asks the PH=
-Y capabilities the clock is not ready yet.
-
-"We first want to understand the problem before adding such hacks. It reall=
-y sounds like something the PHY needs is missing, a clock, time after a res=
-et, etc. If we can figure that out, we can avoid such hacks"
-We have identified the root cause of the 0xFFFF issue, it is because the tw=
-o PHYs are defined in the same MDIO bus node inside the first Ethernet MAC =
-node, and when the 10/100 PHY is probed the PHY Clock from the CPU is not r=
-eady, this is the DT definition:
----------
-/* Gigabit Ethernet */
-&eth1 {
-	status =3D "okay";
-	pinctrl-0 =3D <&eth1_rgmii_pins>;
-	pinctrl-names =3D "default";
-	phy-mode =3D "rgmii-id";
-	max-speed =3D <1000>;
-	phy-handle =3D <&phy0_eth1>;
-
-	mdio1 {
-		#address-cells =3D <1>;
-		#size-cells =3D <0>;
-		compatible =3D "snps,dwmac-mdio";
-
-		phy0_eth1: ethernet-phy@0 {
-			reg =3D <0>;
-			compatible =3D "ethernet-phy-id0141.0dd0"; /* PHY ID for Marvell 88E1512=
- */
-			reset-gpios =3D <&gpioi 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-			reset-assert-us =3D <1000>;
-			reset-deassert-us =3D <2000>;
-		};
-
-		phy0_eth2: ethernet-phy@1 {
-			reg =3D <1>;
-			compatible =3D "ethernet-phy-id0007.c0f0"; /* PHY ID for SMSC LAN8720Ai =
-*/
-			reset-gpios =3D <&gpioh 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-			interrupt-parent =3D <&gpioh>;
-			interrupts =3D <2 IRQ_TYPE_LEVEL_LOW>;
-		};
-	};
-};
-
-/* 10/100 Ethernet */
-&eth2 {
-	status =3D "okay";
-	pinctrl-0 =3D <&eth2_rmii_pins>;
-	pinctrl-names =3D "default";
-	phy-mode =3D "rmii";
-	max-speed =3D <100>;
-	phy-handle =3D <&phy0_eth2>;
-	st,ext-phyclk;
-};
----------
-This is the power-up sequence:
-- ST MAC driver (dwmac-stm32.c) initializes the first Ethernet interface in=
- RGMII mode
-- Linux kernel perform the Gigabit PHY probe
-- Linux kernel perform the 10/100 PHY probe ( and reads a wrong value from =
-the MII_BMSR register because the PHY clock from the CPU is not ready)
-- ST MAC driver (dwmac-stm32.c) initializes the second Ethernet interface i=
-n RMII mode (Here the CPU initializes the PHY Clock)
-
-So the 10/100 PHY is probed BEFORE the PHY Clock is initialized.
-
-In spite of this corner case issue that we have with our particular setup, =
-I think that consider a 0x0000 or 0xFFFF read value as a valid value is wro=
-ng. For our issue I have several fixes: hardcoded the PHY capabilities in t=
-he smsc.c driver with " .features  =3D PHY_BASIC_FEATURES" , another fix is=
- in the same driver adding a custom function for " .get_features" where if =
-I read 0xFFFF or 0x0000 return a EPROBE_DEFER. But the real motivation to s=
-end that patch was that after review several drivers that also checks the r=
-esult of read MII_BMSR against 0x0000 and 0xFFFF , I tried to send a common=
- fix in the PHY core, to avoid maintain this verification in different driv=
-ers.
-
-Thanks,
-
-Arturo.
-
------Original Message-----
-From: Andrew Lunn <andrew@lunn.ch>=20
-Sent: lunes, 20 de marzo de 2023 13:01
-To: Buzarra, Arturo <Arturo.Buzarra@digi.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>; netdev@vger.kernel.org; Florian=
- Fainelli <f.fainelli@gmail.com>; Russell King - ARM Linux <linux@armlinux.=
-org.uk>
-Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
-
-[EXTERNAL E-MAIL] Warning! This email originated outside of the organizatio=
-n! Do not click links or open attachments unless you recognize the sender a=
-nd know the content is safe.
-
-
-
-On Mon, Mar 20, 2023 at 09:45:38AM +0000, Buzarra, Arturo wrote:
-> Hi,
+On Tue, Mar 21, 2023 at 4:43=E2=80=AFPM Stefano Garzarella <sgarzare@redhat=
+.com> wrote:
 >
-> I will try to answer all your questions:
+> vDPA supports the possibility to use user VA in the iotlb messages.
+> So, let's add support for user VA in vringh to use it in the vDPA
+> simulators.
 >
-> - "We need more specifics here, what type of PHY device are you seeing th=
-is with?"
-> - " So best start with some details about your use case, which MAC, which=
- PHY, etc"
-> I'm using a LAN8720A PHY (10/100 on RMII mode) with a ST MAC ( in particu=
-lar is a stm32mp1 processor).
-> We have two PHYs one is a Gigabit PHY (RGMII mode) and the another one is=
- a 10/100 (RMII mode).
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>
+> Notes:
+>     v3:
+>     - refactored avoiding code duplication [Eugenio]
+>     v2:
+>     - replace kmap_atomic() with kmap_local_page() [see previous patch]
+>     - fix cast warnings when build with W=3D1 C=3D1
+>
+>  include/linux/vringh.h            |   5 +-
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c |   2 +-
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c  |   4 +-
+>  drivers/vhost/vringh.c            | 153 +++++++++++++++++++++++-------
+>  4 files changed, 127 insertions(+), 37 deletions(-)
+>
+> diff --git a/include/linux/vringh.h b/include/linux/vringh.h
+> index 1991a02c6431..d39b9f2dcba0 100644
+> --- a/include/linux/vringh.h
+> +++ b/include/linux/vringh.h
+> @@ -32,6 +32,9 @@ struct vringh {
+>         /* Can we get away with weak barriers? */
+>         bool weak_barriers;
+>
+> +       /* Use user's VA */
+> +       bool use_va;
+> +
+>         /* Last available index we saw (ie. where we're up to). */
+>         u16 last_avail_idx;
+>
+> @@ -279,7 +282,7 @@ void vringh_set_iotlb(struct vringh *vrh, struct vhos=
+t_iotlb *iotlb,
+>                       spinlock_t *iotlb_lock);
+>
+>  int vringh_init_iotlb(struct vringh *vrh, u64 features,
+> -                     unsigned int num, bool weak_barriers,
+> +                     unsigned int num, bool weak_barriers, bool use_va,
+>                       struct vring_desc *desc,
+>                       struct vring_avail *avail,
+>                       struct vring_used *used);
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/ml=
+x5_vnet.c
+> index 520646ae7fa0..dfd0e000217b 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -2537,7 +2537,7 @@ static int setup_cvq_vring(struct mlx5_vdpa_dev *mv=
+dev)
+>
+>         if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ))
+>                 err =3D vringh_init_iotlb(&cvq->vring, mvdev->actual_feat=
+ures,
+> -                                       MLX5_CVQ_MAX_ENT, false,
+> +                                       MLX5_CVQ_MAX_ENT, false, false,
+>                                         (struct vring_desc *)(uintptr_t)c=
+vq->desc_addr,
+>                                         (struct vring_avail *)(uintptr_t)=
+cvq->driver_addr,
+>                                         (struct vring_used *)(uintptr_t)c=
+vq->device_addr);
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdp=
+a_sim.c
+> index eea23c630f7c..47cdf2a1f5b8 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -60,7 +60,7 @@ static void vdpasim_queue_ready(struct vdpasim *vdpasim=
+, unsigned int idx)
+>         struct vdpasim_virtqueue *vq =3D &vdpasim->vqs[idx];
+>         uint16_t last_avail_idx =3D vq->vring.last_avail_idx;
+>
+> -       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true,
+> +       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true, f=
+alse,
+>                           (struct vring_desc *)(uintptr_t)vq->desc_addr,
+>                           (struct vring_avail *)
+>                           (uintptr_t)vq->driver_addr,
+> @@ -92,7 +92,7 @@ static void vdpasim_vq_reset(struct vdpasim *vdpasim,
+>         vq->cb =3D NULL;
+>         vq->private =3D NULL;
+>         vringh_init_iotlb(&vq->vring, vdpasim->dev_attr.supported_feature=
+s,
+> -                         VDPASIM_QUEUE_MAX, false, NULL, NULL, NULL);
+> +                         VDPASIM_QUEUE_MAX, false, false, NULL, NULL, NU=
+LL);
+>
+>         vq->vring.notify =3D NULL;
+>  }
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index 0ba3ef809e48..72c88519329a 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -1094,10 +1094,18 @@ EXPORT_SYMBOL(vringh_need_notify_kern);
+>
+>  #if IS_REACHABLE(CONFIG_VHOST_IOTLB)
+>
+> +struct iotlb_vec {
+> +       union {
+> +               struct iovec *iovec;
+> +               struct bio_vec *bvec;
+> +       } iov;
+> +       size_t count;
+> +       bool is_iovec;
+> +};
+> +
+>  static int iotlb_translate(const struct vringh *vrh,
+>                            u64 addr, u64 len, u64 *translated,
+> -                          struct bio_vec iov[],
+> -                          int iov_size, u32 perm)
+> +                          struct iotlb_vec *ivec, u32 perm)
+>  {
+>         struct vhost_iotlb_map *map;
+>         struct vhost_iotlb *iotlb =3D vrh->iotlb;
+> @@ -1107,9 +1115,9 @@ static int iotlb_translate(const struct vringh *vrh=
+,
+>         spin_lock(vrh->iotlb_lock);
+>
+>         while (len > s) {
+> -               u64 size, pa, pfn;
+> +               u64 size;
+>
+> -               if (unlikely(ret >=3D iov_size)) {
+> +               if (unlikely(ret >=3D ivec->count)) {
+>                         ret =3D -ENOBUFS;
+>                         break;
+>                 }
+> @@ -1124,10 +1132,22 @@ static int iotlb_translate(const struct vringh *v=
+rh,
+>                 }
+>
+>                 size =3D map->size - addr + map->start;
+> -               pa =3D map->addr + addr - map->start;
+> -               pfn =3D pa >> PAGE_SHIFT;
+> -               bvec_set_page(&iov[ret], pfn_to_page(pfn), min(len - s, s=
+ize),
+> -                             pa & (PAGE_SIZE - 1));
+> +               if (ivec->is_iovec) {
+> +                       struct iovec *iovec =3D ivec->iov.iovec;
+> +
+> +                       iovec[ret].iov_len =3D min(len - s, size);
+> +                       iovec[ret].iov_base =3D (void __user *)(unsigned =
+long)
 
-Where is the clock coming from? Does each PHY have its own crystal? Is the =
-clock coming from one of the MACs? Is one PHY a clock source and the other =
-a clock sync?
+s/unsigned long/uintptr_t ?
 
-> In the boot process, I think that there is a race condition between=20
-> configuring the Ethernet MACs and the two PHYs. At same point the=20
-> RGMII Ethernet MAC is configured and starts the PHY probes.
 
-You have two MACs. Do you have two MDIO busses, with one PHY on each bus, o=
-r do you have just one MDIO bus in use, with two PHYs on it?
 
-Please show us your Device Tree description of the hardware.
+> +                                             (map->addr + addr - map->st=
+art);
+> +               } else {
+> +                       u64 pa =3D map->addr + addr - map->start;
+> +                       u64 pfn =3D pa >> PAGE_SHIFT;
+> +                       struct bio_vec *bvec =3D ivec->iov.bvec;
+> +
+> +                       bvec_set_page(&bvec[ret], pfn_to_page(pfn),
+> +                                     min(len - s, size),
+> +                                     pa & (PAGE_SIZE - 1));
+> +               }
+> +
+>                 s +=3D size;
+>                 addr +=3D size;
+>                 ++ret;
+> @@ -1141,26 +1161,42 @@ static int iotlb_translate(const struct vringh *v=
+rh,
+>         return ret;
+>  }
+>
+> +#define IOTLB_IOV_SIZE 16
 
-> When the 10/100 PHY starts the probe, it tries to read the
-> genphy_read_abilities() and always reads 0xFFFF ( I assume that this=20
-> is the default electrical values for that lines before it are=20
-> configured).
+I'm fine with defining here, but maybe it is better to isolate the
+change in a previous patch or reuse another well known macro?
 
-There is a pull up on the MDIO data line, so that if nothing drives it low,=
- it reads 1. This was one of Florian comments. Have you check the value of =
-that pull up resistor?
+Other looks good, and I agree with Jason's comments so even if the
+macro declaration is not moved:
 
-> - " Does the device reliably enumerate on the bus, i.e. reading registers=
- 2 and 3 to get its ID?"
-> Reading the registers PHYSID1 and PHYSID2 reports also 0xFFFF
+Acked-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
 
-Which is odd, because the MDIO bus probe code would assume there is no PHY =
-there given those two values, and then would not bother trying to read the =
-abilities. So you are somehow forcing the core to assume there is a PHY the=
-re. Do you have the PHY ID in DT?
+> +
+>  static inline int copy_from_iotlb(const struct vringh *vrh, void *dst,
+>                                   void *src, size_t len)
+>  {
+> +       struct iotlb_vec ivec;
+> +       union {
+> +               struct iovec iovec[IOTLB_IOV_SIZE];
+> +               struct bio_vec bvec[IOTLB_IOV_SIZE];
+> +       } iov;
+>         u64 total_translated =3D 0;
+>
+> +       ivec.iov.iovec =3D iov.iovec;
+> +       ivec.count =3D IOTLB_IOV_SIZE;
+> +       ivec.is_iovec =3D vrh->use_va;
+> +
+>         while (total_translated < len) {
+> -               struct bio_vec iov[16];
+>                 struct iov_iter iter;
+>                 u64 translated;
+>                 int ret;
+>
+>                 ret =3D iotlb_translate(vrh, (u64)(uintptr_t)src,
+>                                       len - total_translated, &translated=
+,
+> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_RO)=
+;
+> +                                     &ivec, VHOST_MAP_RO);
+>                 if (ret =3D=3D -ENOBUFS)
+> -                       ret =3D ARRAY_SIZE(iov);
+> +                       ret =3D IOTLB_IOV_SIZE;
+>                 else if (ret < 0)
+>                         return ret;
+>
+> -               iov_iter_bvec(&iter, ITER_SOURCE, iov, ret, translated);
+> +               if (ivec.is_iovec) {
+> +                       iov_iter_init(&iter, ITER_SOURCE, ivec.iov.iovec,=
+ ret,
+> +                                     translated);
+> +               } else {
+> +                       iov_iter_bvec(&iter, ITER_SOURCE, ivec.iov.bvec, =
+ret,
+> +                                     translated);
+> +               }
+>
+>                 ret =3D copy_from_iter(dst, translated, &iter);
+>                 if (ret < 0)
+> @@ -1177,23 +1213,37 @@ static inline int copy_from_iotlb(const struct vr=
+ingh *vrh, void *dst,
+>  static inline int copy_to_iotlb(const struct vringh *vrh, void *dst,
+>                                 void *src, size_t len)
+>  {
+> +       struct iotlb_vec ivec;
+> +       union {
+> +               struct iovec iovec[IOTLB_IOV_SIZE];
+> +               struct bio_vec bvec[IOTLB_IOV_SIZE];
+> +       } iov;
+>         u64 total_translated =3D 0;
+>
+> +       ivec.iov.iovec =3D iov.iovec;
+> +       ivec.count =3D IOTLB_IOV_SIZE;
+> +       ivec.is_iovec =3D vrh->use_va;
+> +
+>         while (total_translated < len) {
+> -               struct bio_vec iov[16];
+>                 struct iov_iter iter;
+>                 u64 translated;
+>                 int ret;
+>
+>                 ret =3D iotlb_translate(vrh, (u64)(uintptr_t)dst,
+>                                       len - total_translated, &translated=
+,
+> -                                     iov, ARRAY_SIZE(iov), VHOST_MAP_WO)=
+;
+> +                                     &ivec, VHOST_MAP_WO);
+>                 if (ret =3D=3D -ENOBUFS)
+> -                       ret =3D ARRAY_SIZE(iov);
+> +                       ret =3D IOTLB_IOV_SIZE;
+>                 else if (ret < 0)
+>                         return ret;
+>
+> -               iov_iter_bvec(&iter, ITER_DEST, iov, ret, translated);
+> +               if (ivec.is_iovec) {
+> +                       iov_iter_init(&iter, ITER_DEST, ivec.iov.iovec, r=
+et,
+> +                                     translated);
+> +               } else {
+> +                       iov_iter_bvec(&iter, ITER_DEST, ivec.iov.bvec, re=
+t,
+> +                                     translated);
+> +               }
+>
+>                 ret =3D copy_to_iter(src, translated, &iter);
+>                 if (ret < 0)
+> @@ -1210,20 +1260,37 @@ static inline int copy_to_iotlb(const struct vrin=
+gh *vrh, void *dst,
+>  static inline int getu16_iotlb(const struct vringh *vrh,
+>                                u16 *val, const __virtio16 *p)
+>  {
+> -       struct bio_vec iov;
+> -       void *kaddr, *from;
+> +       struct iotlb_vec ivec;
+> +       union {
+> +               struct iovec iovec[1];
+> +               struct bio_vec bvec[1];
+> +       } iov;
+> +       __virtio16 tmp;
+>         int ret;
+>
+> +       ivec.iov.iovec =3D iov.iovec;
+> +       ivec.count =3D 1;
+> +       ivec.is_iovec =3D vrh->use_va;
+> +
+>         /* Atomic read is needed for getu16 */
+> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
+> -                             &iov, 1, VHOST_MAP_RO);
+> +       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
+> +                             NULL, &ivec, VHOST_MAP_RO);
+>         if (ret < 0)
+>                 return ret;
+>
+> -       kaddr =3D kmap_local_page(iov.bv_page);
+> -       from =3D kaddr + iov.bv_offset;
+> -       *val =3D vringh16_to_cpu(vrh, READ_ONCE(*(__virtio16 *)from));
+> -       kunmap_local(kaddr);
+> +       if (ivec.is_iovec) {
+> +               ret =3D __get_user(tmp, (__virtio16 __user *)ivec.iov.iov=
+ec[0].iov_base);
+> +               if (ret)
+> +                       return ret;
+> +       } else {
+> +               void *kaddr =3D kmap_local_page(ivec.iov.bvec[0].bv_page)=
+;
+> +               void *from =3D kaddr + ivec.iov.bvec[0].bv_offset;
+> +
+> +               tmp =3D READ_ONCE(*(__virtio16 *)from);
+> +               kunmap_local(kaddr);
+> +       }
+> +
+> +       *val =3D vringh16_to_cpu(vrh, tmp);
+>
+>         return 0;
+>  }
+> @@ -1231,20 +1298,37 @@ static inline int getu16_iotlb(const struct vring=
+h *vrh,
+>  static inline int putu16_iotlb(const struct vringh *vrh,
+>                                __virtio16 *p, u16 val)
+>  {
+> -       struct bio_vec iov;
+> -       void *kaddr, *to;
+> +       struct iotlb_vec ivec;
+> +       union {
+> +               struct iovec iovec;
+> +               struct bio_vec bvec;
+> +       } iov;
+> +       __virtio16 tmp;
+>         int ret;
+>
+> +       ivec.iov.iovec =3D &iov.iovec;
+> +       ivec.count =3D 1;
+> +       ivec.is_iovec =3D vrh->use_va;
+> +
+>         /* Atomic write is needed for putu16 */
+> -       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p), NULL,
+> -                             &iov, 1, VHOST_MAP_WO);
+> +       ret =3D iotlb_translate(vrh, (u64)(uintptr_t)p, sizeof(*p),
+> +                             NULL, &ivec, VHOST_MAP_RO);
+>         if (ret < 0)
+>                 return ret;
+>
+> -       kaddr =3D kmap_local_page(iov.bv_page);
+> -       to =3D kaddr + iov.bv_offset;
+> -       WRITE_ONCE(*(__virtio16 *)to, cpu_to_vringh16(vrh, val));
+> -       kunmap_local(kaddr);
+> +       tmp =3D cpu_to_vringh16(vrh, val);
+> +
+> +       if (ivec.is_iovec) {
+> +               ret =3D __put_user(tmp, (__virtio16 __user *)ivec.iov.iov=
+ec[0].iov_base);
+> +               if (ret)
+> +                       return ret;
+> +       } else {
+> +               void *kaddr =3D kmap_local_page(ivec.iov.bvec[0].bv_page)=
+;
+> +               void *to =3D kaddr + ivec.iov.bvec[0].bv_offset;
+> +
+> +               WRITE_ONCE(*(__virtio16 *)to, tmp);
+> +               kunmap_local(kaddr);
+> +       }
+>
+>         return 0;
+>  }
+> @@ -1306,6 +1390,7 @@ static inline int putused_iotlb(const struct vringh=
+ *vrh,
+>   * @features: the feature bits for this ring.
+>   * @num: the number of elements.
+>   * @weak_barriers: true if we only need memory barriers, not I/O.
+> + * @use_va: true if IOTLB contains user VA
+>   * @desc: the userpace descriptor pointer.
+>   * @avail: the userpace avail pointer.
+>   * @used: the userpace used pointer.
+> @@ -1313,11 +1398,13 @@ static inline int putused_iotlb(const struct vrin=
+gh *vrh,
+>   * Returns an error if num is invalid.
+>   */
+>  int vringh_init_iotlb(struct vringh *vrh, u64 features,
+> -                     unsigned int num, bool weak_barriers,
+> +                     unsigned int num, bool weak_barriers, bool use_va,
+>                       struct vring_desc *desc,
+>                       struct vring_avail *avail,
+>                       struct vring_used *used)
+>  {
+> +       vrh->use_va =3D use_va;
+> +
+>         return vringh_init_kern(vrh, features, num, weak_barriers,
+>                                 desc, avail, used);
+>  }
+> --
+> 2.39.2
+>
 
-> - " If the PHY is broken, by some yet to be determined definition of brok=
-en, we try to limit the workaround to as narrow as possible. So it should n=
-ot be in the core probe code. It should be in the PHY specific driver, and =
-ideally for only its ID, not the whole vendors family of PHYs"
-> I have several workarounds/fixed for that, the easy way is set the PHY ca=
-pabilities in the smsc.c driver " .features  =3D PHY_BASIC_FEATURES" like i=
-n the past and it works fine. Also I have another fix in the same driver ad=
-ding a custom function for " get_features" where if I read 0xFFFF or 0x0000=
- return a EPROBE_DEFER. However after review another drivers (net/usb/pegas=
-us.c , net/Ethernet/toshiba/spider_net.c, net/sis/sis190.c, and more...)  t=
-hat also checks the result of read MII_BMSR against 0x0000 and 0xFFFF , I t=
-ried to send a common fix in the PHY core. From my point of view read a 0x0=
-000 or 0xFFFF value is an error in the probe step like if the phy_read() re=
-turns an error, so I think that the PHY core should consider return a EPROB=
-E_DEFER to at least provide a second try for that PHY device.
-
-We first want to understand the problem before adding such hacks. It really=
- sounds like something the PHY needs is missing, a clock, time after a rese=
-t, etc. If we can figure that out, we can avoid such hacks.
-
-        Andrew
