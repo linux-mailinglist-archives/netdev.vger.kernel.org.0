@@ -2,72 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 450C76C6925
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:09:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA286C699C
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:36:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229379AbjCWNIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 09:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
+        id S231232AbjCWNgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 09:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbjCWNIf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:08:35 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D85B450
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:08:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=KA2oH1SDRmplQJUEe4rTRO2Ooiicz6rXc3GsgXPN5Ok=; b=n5oL9+qSRpq2IT2jkXX3PKu0+j
-        N1qAzaNOzWeBbwusQC9uUg1MY0m6ROIVv+wDpiZVH85GyUtSyXHBIQV5/N49iIKdG7R3SrjWb6pLJ
-        xAaceEjNuExkapDRUK3OKo/mth8miPk3VHQsPZMVCIvLqxwOrtxS6rI0ay/2qZizJlFQ=;
-Received: from [217.114.218.29] (helo=localhost.localdomain)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pfKfw-0062oc-Tw
-        for netdev@vger.kernel.org; Thu, 23 Mar 2023 14:08:17 +0100
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Subject: [PATCH v2 3/3] net: ethernet: mtk_eth_soc: add missing ppe cache flush when deleting a flow
-Date:   Thu, 23 Mar 2023 14:08:15 +0100
-Message-Id: <20230323130815.7753-3-nbd@nbd.name>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230323130815.7753-1-nbd@nbd.name>
-References: <20230323130815.7753-1-nbd@nbd.name>
+        with ESMTP id S229842AbjCWNgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:36:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD89298F9
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:35:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679578510;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=n7AMhYl/psk6mNgSSEral9AUOQ+fKTl8zukF3yGM9fI=;
+        b=CZUNQiZzFHS20gCs+nemHSani9u5pVBvEh8gdhixT+ZQKNUoUvsaeMeq1tF4iwBaI1VPbl
+        Q5tyPO1F8LqzZj0nzTnDVq8i24x677/Wz3p3Ea5wVUVdP9tSVmOwKqBRG260E4nd9avOq8
+        5RIfbKMK+EsiOM5xOj02Wg2q7V+OJvI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-629-Z898XBJPNTaK8Wm6N1xOTA-1; Thu, 23 Mar 2023 09:35:07 -0400
+X-MC-Unique: Z898XBJPNTaK8Wm6N1xOTA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6D6CD3C0ED70;
+        Thu, 23 Mar 2023 13:35:06 +0000 (UTC)
+Received: from dcaratti.users.ipa.redhat.com (unknown [10.45.225.76])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B73CF1410F1C;
+        Thu, 23 Mar 2023 13:35:04 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ilya Maximets <i.maximets@ovn.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next v2 0/4] net/sched: act_tunnel_key: add support for TUNNEL_DONT_FRAGMENT
+Date:   Thu, 23 Mar 2023 14:34:39 +0100
+Message-Id: <cover.1679569719.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cache needs to be flushed to ensure that the hardware stops offloading
-the flow immediately.
+- patch 1 extends TC tunnel_key action to add support for TUNNEL_DONT_FRAGMENT 
+- patch 2 extends tdc to skip tests when iproute2 support is missing
+- patch 3 adds a tdc test case to verify functionality of the control plane
+- patch 4 adds a net/forwarding test case to verify functionality of the data plane
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/net/ethernet/mediatek/mtk_ppe.c | 1 +
- 1 file changed, 1 insertion(+)
+v1->v2:
+ - split patchset to have test cases in separate patches (thanks to
+   Pedro Tammela)
+ - change TCA_TUNNEL_KEY_NO_FRAG attribute, so the it is a flag istead
+   of u8 (thanks to Jakub Kicinski)
+ - add missing TEST_PROGS assignment (thanks to Jakub Kicinski)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index a038b99ecbda..fd07d6e14273 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -459,6 +459,7 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- 		hwe->ib1 &= ~MTK_FOE_IB1_STATE;
- 		hwe->ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE, MTK_FOE_STATE_INVALID);
- 		dma_wmb();
-+		mtk_ppe_cache_clear(ppe);
- 	}
- 	entry->hash = 0xffff;
- 
+Davide Caratti (4):
+  net/sched: act_tunnel_key: add support for "don't fragment"
+  selftests: tc-testing: extend the "skip" property
+  selftests: tc-testing: add tunnel_key "nofrag" test case
+  selftests: forwarding: add tunnel_key "nofrag" test case
+
+ include/uapi/linux/tc_act/tc_tunnel_key.h     |   1 +
+ net/sched/act_tunnel_key.c                    |   5 +
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../selftests/net/forwarding/tc_tunnel_key.sh | 161 ++++++++++++++++++
+ .../creating-testcases/AddingTestCases.txt    |   4 +-
+ .../tc-tests/actions/tunnel_key.json          |  25 +++
+ tools/testing/selftests/tc-testing/tdc.py     |  21 ++-
+ 7 files changed, 211 insertions(+), 7 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
+
 -- 
-2.39.0
+2.39.2
 
