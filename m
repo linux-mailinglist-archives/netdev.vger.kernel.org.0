@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D865C6C62AF
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE17B6C62B5
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:05:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231660AbjCWJFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 05:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S231612AbjCWJFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 05:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbjCWJEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:04:54 -0400
-Received: from out-15.mta0.migadu.com (out-15.mta0.migadu.com [IPv6:2001:41d0:1004:224b::f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2E1211D6
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:04:41 -0700 (PDT)
+        with ESMTP id S231603AbjCWJFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:05:07 -0400
+X-Greylist: delayed 68 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Mar 2023 02:04:54 PDT
+Received: from out-55.mta1.migadu.com (out-55.mta1.migadu.com [95.215.58.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9140E1DB84
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:04:53 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1679562279;
+        t=1679562291;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5nEaPllgZlxaf5JlJz0X6lv294PfQyE1/LsvcdyaxrU=;
-        b=qhKtb/HZfXNjw65QQis9iDr7t12r8yC3e/GHiq2ISPlR53hm9nC2bBV57WUaDAiLAs978S
-        ZB/Mibd2UwHRqjET0dnaGyZuc+OnYPxpYA6rADKF6JWQivgTJLZ0bKaSnsVXVYAnZdYUoF
-        jeSQxTFo1iuIN6pZglrK93L10B3qGtM=
+        bh=ZuGH7lfals9FAOONYzJSHBoUi4ZX1DWn7Ng0ojEzetw=;
+        b=bsykZhx6FsSoBkYkZ46VqTfzECb7zGc/RXwhrTSzX73HpY1FKoBLbvxTiJNDnSLjtOyngo
+        DBfVQGQZFjZjJG0Ft2bkoxLc6CG+b0iCNKVd1YEBhe7ZjpqJG+jUKoI2z4P670P+IlUeBD
+        d9/UO0K6nX2Mxgqqb/9zhmRZv5HLirI=
 From:   Cai Huoqing <cai.huoqing@linux.dev>
 To:     cai.huoqing@linux.dev
 Cc:     Derek Chickles <dchickles@marvell.com>,
@@ -54,9 +55,9 @@ Cc:     Derek Chickles <dchickles@marvell.com>,
         Long Li <longli@microsoft.com>, Jiri Pirko <jiri@resnulli.us>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-hyperv@vger.kernel.org
-Subject: [PATCH 7/8] ionic: Remove redundant pci_clear_master
-Date:   Thu, 23 Mar 2023 17:03:06 +0800
-Message-Id: <20230323090314.22431-7-cai.huoqing@linux.dev>
+Subject: [PATCH 8/8] ethernet: ec_bhf: Remove redundant pci_clear_master
+Date:   Thu, 23 Mar 2023 17:03:07 +0800
+Message-Id: <20230323090314.22431-8-cai.huoqing@linux.dev>
 In-Reply-To: <20230323090314.22431-1-cai.huoqing@linux.dev>
 References: <20230323090314.22431-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
@@ -91,21 +92,29 @@ And dev->is_busmaster is set to 0 in pci_disable_device.
 
 Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/ec_bhf.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index e508f8eb43bf..b8678da1cce5 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -392,7 +392,6 @@ static void ionic_remove(struct pci_dev *pdev)
- 	ionic_port_reset(ionic);
- 	ionic_reset(ionic);
- 	ionic_dev_teardown(ionic);
--	pci_clear_master(pdev);
- 	ionic_unmap_bars(ionic);
- 	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
+diff --git a/drivers/net/ethernet/ec_bhf.c b/drivers/net/ethernet/ec_bhf.c
+index 46e3a05e9582..c2c5c589a5e3 100644
+--- a/drivers/net/ethernet/ec_bhf.c
++++ b/drivers/net/ethernet/ec_bhf.c
+@@ -558,7 +558,6 @@ static int ec_bhf_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ err_release_regions:
+ 	pci_release_regions(dev);
+ err_disable_dev:
+-	pci_clear_master(dev);
+ 	pci_disable_device(dev);
+ 
+ 	return err;
+@@ -577,7 +576,6 @@ static void ec_bhf_remove(struct pci_dev *dev)
+ 	free_netdev(net_dev);
+ 
+ 	pci_release_regions(dev);
+-	pci_clear_master(dev);
+ 	pci_disable_device(dev);
+ }
+ 
 -- 
 2.34.1
 
