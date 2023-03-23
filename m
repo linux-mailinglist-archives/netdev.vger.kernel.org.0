@@ -2,123 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86E3E6C679F
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 13:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 014636C67AD
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 13:09:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231816AbjCWMG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 08:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46174 "EHLO
+        id S230002AbjCWMJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 08:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbjCWMGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 08:06:07 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950D310E0;
-        Thu, 23 Mar 2023 05:04:55 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 4576E1C0E49; Thu, 23 Mar 2023 13:04:54 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
-        t=1679573094;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a/KoMv72J5IIz0NM8GNmcSDXPLFS3Vkv0wZ+gg3A9vc=;
-        b=D3RWeS7ZzdCwgmaip0tK7qF1pk+0eq9crqm8wlRLN0VwU4ch5LoLGN9GkYiUKbHStOHQG5
-        ip72ixYlxxhVXDeZWurv7JvDnzYRhY38H53HaSB392q1stZiSOrW5vqP4OKqBXNebHqlHi
-        jS7wZujiZ36L/6mjm/7tRHZFq4pMD+4=
-Date:   Thu, 23 Mar 2023 13:04:53 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S229563AbjCWMI7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 08:08:59 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5375A46B6;
+        Thu, 23 Mar 2023 05:08:58 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id s8so27120909lfr.8;
+        Thu, 23 Mar 2023 05:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679573336;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xzgI+B9ASfOGNYBH0IR4jXCQ7CKwmiqjpGUIbZHwnnc=;
+        b=LFKNwiWKSW7Ndn5zWY0V3TIVkQO7LGJoUbnGfHAzF6WG24W5M+VIvRUapx+q+WFgqu
+         SiyZaq1BBzTjpH26yZ1+BD5RLXxCxh8nNjMJnF+CGTYpFdCpXcRkYajpbGkw1zfSivqo
+         5IbuF/edaVAQ5qWwJFUnXpaJhfGHvvtuN3Idj9qkPciVMZV3kF20JpRrP/irEPtV356v
+         YTIncCqa+BiKhDPKRbdtpvbYACV7gZI35YJAvAl+ch2HBhVuntntMdOtTX6Nz6EXUFm7
+         +TzPJp7JG42UcAAjUTqqvbbhAuK3aC9XyJgPsXIeicQ66tAIUXpg+pjastRoG67dkUgj
+         f+vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679573336;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xzgI+B9ASfOGNYBH0IR4jXCQ7CKwmiqjpGUIbZHwnnc=;
+        b=Z8eHpdCJ+GeDWSdryqygS/svudkg4BpbiVZDq82TjfBNaAUZwqVShysGCYKEKDL6ws
+         qcKxLqxfwSIPbPeT74CGfpXRZM8yQL4t0T3VGHD5iO2LX1drPqxW7Spon+3Wv7rAF8NM
+         y0/+t1sBi+P4waR83p24niqw+hdq2PXToWadsMAX9wr4JpiOZh+dbkKjR/BZlMkBTNRv
+         Cl1wd4xv4GlUzRgrE3m8FkMZZLA3XlWtHm3ijlivtiFX8HysNLN4+oxkeb7AafuyZtN5
+         iFq7CvQWKUhcy0yJ9YpMfBtUAt/rg4l83Ne8HtJ03DNN2m9LpkUB35JcHJjO96ePcv3J
+         CNlA==
+X-Gm-Message-State: AO0yUKXQ0v2ZgYR2TEQ6Q75u9e8LL5j2/9iHI5tPXTk6+VZMRup4rLqw
+        20m14uYeK82j5PtqkWw4kWQ=
+X-Google-Smtp-Source: AK7set+84k7eBxJAPoHl2JzEu70ox/d+Ysoy3SdQ5Tz3UrPm6eVSvg55ypTOmhgj5bq6t2O+AVvFgA==
+X-Received: by 2002:a05:6512:249:b0:4b4:e14a:ec7d with SMTP id b9-20020a056512024900b004b4e14aec7dmr3143131lfo.17.1679573336526;
+        Thu, 23 Mar 2023 05:08:56 -0700 (PDT)
+Received: from mobilestation ([95.79.133.202])
+        by smtp.gmail.com with ESMTPSA id p19-20020a19f013000000b004eaf9ef5e7asm422577lfc.226.2023.03.23.05.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Mar 2023 05:08:56 -0700 (PDT)
+Date:   Thu, 23 Mar 2023 15:08:53 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Lee Jones <lee@kernel.org>, John Crispin <john@phrozen.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [net-next PATCH v5 15/15] arm: mvebu: dt: Add PHY LED support
- for 370-rd WAN port
-Message-ID: <ZBxAZRcEBg4to132@duo.ucw.cz>
-References: <20230319191814.22067-1-ansuelsmth@gmail.com>
- <20230319191814.22067-16-ansuelsmth@gmail.com>
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 14/16] dt-bindings: net: dwmac: Use flag
+ definition instead of booleans
+Message-ID: <20230323120853.wse2pvknvznawxpk@mobilestation>
+References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
+ <20230313225103.30512-15-Sergey.Semin@baikalelectronics.ru>
+ <faf70823-f87b-ba50-ac72-3552de1cc7e3@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="PW0UYIpUfo2k2zdg"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230319191814.22067-16-ansuelsmth@gmail.com>
+In-Reply-To: <faf70823-f87b-ba50-ac72-3552de1cc7e3@linaro.org>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 16, 2023 at 09:09:37AM +0100, Krzysztof Kozlowski wrote:
+> On 13/03/2023 23:51, Serge Semin wrote:
+> > Currently some of the boolean properties defined in the DT-schema are
+> > marked to have the basic boolean type meanwhile the rest referencing the
+> > /schemas/types.yaml#/definitions/flag schema. For the sake of unification
+> > let's convert the first group to referencing the pre-defined flag schema.
+> > Thus bindings will look a bit more coherent and the DT-bindings
+> > maintainers will have a better control over the booleans defined in the
+> > schema (if ever needed).
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  .../devicetree/bindings/net/snps,dwmac.yaml   | 45 ++++++++++++-------
+> >  1 file changed, 30 insertions(+), 15 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index 69be39d55403..a863b5860566 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -120,11 +120,13 @@ properties:
+> >          maximum: 12
+> >  
+> >        snps,rx-sched-sp:
+> > -        type: boolean
+> > +        $ref: /schemas/types.yaml#/definitions/flag
+> >          description: Strict priority
+> 
 
---PW0UYIpUfo2k2zdg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> If ever touching this, it should be other way -> boolean.
 
-Hi!
+Ok. I'll drop the patch then.
 
-> From: Andrew Lunn <andrew@lunn.ch>
->=20
-> The WAN port of the 370-RD has a Marvell PHY, with one LED on
-> the front panel. List this LED in the device tree.
->=20
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+-Serge(y)
 
-> @@ -135,6 +136,19 @@ &mdio {
->  	pinctrl-names =3D "default";
->  	phy0: ethernet-phy@0 {
->  		reg =3D <0>;
-> +		leds {
-> +			#address-cells =3D <1>;
-> +			#size-cells =3D <0>;
-> +
-> +			led@0 {
-> +				reg =3D <0>;
-> +				label =3D "WAN";
-> +				color =3D <LED_COLOR_ID_WHITE>;
-> +				function =3D LED_FUNCTION_LAN;
-> +				function-enumerator =3D <1>;
-> +				linux,default-trigger =3D "netdev";
-> +			};
-> +		};
->  	};
-> =20
-
-How will this end up looking in sysfs? Should documentation be added
-to Documentation/leds/leds-blinkm.rst ?
-
-BR,
-								Pavel
---=20
-People of Russia, stop Putin before his war on Ukraine escalates.
-
---PW0UYIpUfo2k2zdg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCZBxAZQAKCRAw5/Bqldv6
-8pImAJ980SFJLWibENGuBRgkO7NwT1wjugCguwbshHgsV+9S/7u61KaJxx8XEEA=
-=1SzX
------END PGP SIGNATURE-----
-
---PW0UYIpUfo2k2zdg--
+> 
+> Best regards,
+> Krzysztof
+> 
