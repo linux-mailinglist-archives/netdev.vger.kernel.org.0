@@ -2,345 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1166C631C
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D5A6C6337
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:23:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231325AbjCWJSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 05:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S231679AbjCWJXD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Mar 2023 05:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbjCWJSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:18:32 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2076.outbound.protection.outlook.com [40.107.96.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679DEC1;
-        Thu, 23 Mar 2023 02:18:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aZHVuTLTU+0Xd+rJ5afSrDVaYR7UvsKcDItVJaSZrpFeNjwPiEadTKt0aZlsREQWyRHxBmVTHITgOlE+GAlN487vO8jq0ftnRZ1wA0QLwGyqc8QJYflKCXKMWSHjI+Vm6eJxo14+IjI9sa4RqKeIVkSGHlbVpXgYo3e1egGy9pd/EKgxZN8l5+jiW6hQzGy7AAR5bH+o0L3E0KIceVqnOz98ynO0XHwW9sCUBrA0tXqw362HkYMMQsVg3cIkYlkPOJXq3d0BzmahlmfPIrtOE/I3BeqGkafxewPwv0HJuzRpudVIo2NKAT+0Hju1MawjOZlXVjeJpShS5ZWk0Pk+wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SUwkkgJ97zyVav2tbev6cqrKREvSS9MCKUzVAdZ3vnA=;
- b=nfoZRBaOslsozZT/aONZ3Va1H6R+Fsf/88WQZn435f91SkjDBRglZaT6h7LQDMO/b9o1Ag5lHhbI+fy0HqPwyD7Wa5J3plPAS+M8d8LPnCxOQGgaWELlZrHq1xca/C5KeZDYlruFjA7W/uLlbrA3O6l5n4d3RHuSiW+Bdm8Hx+eCC1rMY1LLkNGit+eRLy5JPsX/4QLUG9w/YH4cwpFmEAlBxlseEFcPLuLxLPp0Eaq/g54PDbuA7j7hrGXp/IwaQ04NfkqNO1OQFfK4b1bMKq/owiLksBb64ggw4i880ZC0WK3bjia4aT4R35/HmQsJatu7kKAqyGLYggVn34vRHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SUwkkgJ97zyVav2tbev6cqrKREvSS9MCKUzVAdZ3vnA=;
- b=E8aIenuvbhNxsOeJWvcvvd/w6pPK7zja3jErUM5iUx2rn9KCRkfp65nluQw0upGzocTxODHNayiWxcnrRu4MhjEmut52BihxPITooblr/hIxR/YrkxAQ1wX2f0gHH7+bbUbxRX60Ndg0hsaqehMd8sOUoBv7XU7pIDTD8F0ELNQSKUrxuJSoECrxMwpwrB4ffYTcozLs3BVEhx5VJrvJflkfTmyMXmx6UxkXq6d4YRVdzi/tAFhHeslMWDrUj2RM/EFa/uK06fwUhV5HtZwINBjOWjtlHnLlhgaPdEmsVLR3J519mJC1jevNYrlvlLoFM4iCj0jLop4h7blVbQlhsw==
-Received: from DS7P222CA0015.NAMP222.PROD.OUTLOOK.COM (2603:10b6:8:2e::27) by
- PH8PR12MB6963.namprd12.prod.outlook.com (2603:10b6:510:1be::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Thu, 23 Mar
- 2023 09:18:28 +0000
-Received: from DS1PEPF0000E63F.namprd02.prod.outlook.com
- (2603:10b6:8:2e:cafe::e7) by DS7P222CA0015.outlook.office365.com
- (2603:10b6:8:2e::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38 via Frontend
- Transport; Thu, 23 Mar 2023 09:18:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DS1PEPF0000E63F.mail.protection.outlook.com (10.167.17.199) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.30 via Frontend Transport; Thu, 23 Mar 2023 09:18:28 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 23 Mar 2023
- 02:18:15 -0700
-Received: from yaviefel (10.126.231.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 23 Mar
- 2023 02:18:12 -0700
-References: <cover.1679502371.git.petrm@nvidia.com>
- <c61d07469ecf5d3053442e24d4d050405f466b76.1679502371.git.petrm@nvidia.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Petr Machata <petrm@nvidia.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>, <mlxsw@nvidia.com>,
-        <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH net-next 6/6] mlxsw: pci: Add support for new reset flow
-Date:   Thu, 23 Mar 2023 10:13:41 +0100
-In-Reply-To: <c61d07469ecf5d3053442e24d4d050405f466b76.1679502371.git.petrm@nvidia.com>
-Message-ID: <87cz4zq10u.fsf@nvidia.com>
+        with ESMTP id S231395AbjCWJWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:22:40 -0400
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB481CBC4;
+        Thu, 23 Mar 2023 02:22:35 -0700 (PDT)
+Received: by mail-pj1-f48.google.com with SMTP id a16so16591671pjs.4;
+        Thu, 23 Mar 2023 02:22:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679563355;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HpKkhyG3kY0MZoMYHml99x+9t/mfe40fmpPl1syLvyE=;
+        b=hcPQnb55qxobdkcUGjvllNOqdlrn32Fl0+5+1G+dFyQrinMSTvzPhgO8edgvobcZ1e
+         0e4ksRvf/0mMZczECwpgPNWBX5fNuF1inQQIUpb1kPdSUDQMYWwYzH7bt8XQzjgtSGho
+         pCCj3+2ECLIgIhDvNwmjSRd2zviqM3ggL+eub9ZDEgUXKF421zOtLpcxXDDaIz8e7PRJ
+         BAeSuCrW0GsvvGglHHFiZ7hNsK1RwTzeOOv18vqN7XgxCUJ5sAUVY74SyC/26QAzgsQe
+         piwZkZOFpklyfIAax5d7thRUNlEmMcYMdLR6AjqYqn5K3nUktaG510+WrPWbR15JGmNb
+         kt7Q==
+X-Gm-Message-State: AAQBX9dY2WhH3WSzWyPPl+yrxGJOlbxoeGdp8CL0lqOj1krJOKVN++kK
+        LBgAjyqGLE9gZRO0Nj4aculsCQIcDslYpAWM89SGrW+ky2j2kw==
+X-Google-Smtp-Source: AKy350bIoU8Zid66dudm652RyKct4B57/THEpIrfPdquoM1cIMEZDGNzlLCKkxJ9KBe0l0l2FigPWyRsP6p3mJzsqFo=
+X-Received: by 2002:a17:903:7c8:b0:19f:39f8:88c4 with SMTP id
+ ko8-20020a17090307c800b0019f39f888c4mr1906789plb.2.1679563354730; Thu, 23 Mar
+ 2023 02:22:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E63F:EE_|PH8PR12MB6963:EE_
-X-MS-Office365-Filtering-Correlation-Id: bf10dc37-0e9a-432a-e219-08db2b7f9023
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Zqiv79CW6lylKXrzwKDxhgx3q4aBBFyUXT0/bGLt6BW1VSp5Xqm4RIJikZgv+sg2L3L6M54Cej91q2kJn2wxenEmqR+fTgrrEzs8Ukg1XNRhFPNLyyigYT77jypmQa7mK8lHI7KTlW9t9CsGdMLOhLU1bOaismx0LQzuMVge7nDXm2id4Km+8uQfq9T4tDwVqtD5L/z6adcLS+eXcJvcAVArTv15hqcwsCe6l/LlLZQbGllJAoqa6Qs3bZcdeKGJ3j7hi7BUTS24qpcztWS9bG3dfLc56UjxCfHkGxu+Fib/Kd4Yq6F+LIAMOKlWZH9IcleLeT1YKUyZNUZ8wnpGbxTUEmGw4/64qa0LrgomVuj4TlvgW2RwM0II/zxI8atW3Nzw+ibwXDnIlPyyjs1/U8HTthTLZBk6VidkV3DhAMeGAFW34fGPLTkzqKNBQ5eMa9q3K52cvpuxKk20ae15xwE1FPFoM8kJtAIbxivaYf4qgddZw4upu2/fsjYCPIdqj45iKvFcqxI5MTLqQWx21p1CFHCxZ1DZGib4nuppzmrpKrqrzvbLKL57J7jj4nNVPaA/CqlY4Ufam8Ei26TQajixlXSTwtS3wHG1uJSq+8Qt+ayx5xPuuM4MwqW2h7xKIGVXEMbmR/gP1igtwKRMvlNlo7/n4B0Kac6KKmk//FGt2JiJhHUKWxGoJ92YFSkcX6KKOG7Iv+SdT/7KzxSnrXFI7Ub3ghBtSXrP0CZHHOk2TFLQoKle+OzcJGx6ltRF
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199018)(46966006)(40470700004)(36840700001)(16526019)(186003)(2616005)(6666004)(356005)(336012)(26005)(6200100001)(86362001)(426003)(47076005)(54906003)(7636003)(478600001)(40460700003)(82740400003)(2906002)(45080400002)(83380400001)(8676002)(82310400005)(6862004)(316002)(8936002)(41300700001)(40480700001)(37006003)(70586007)(70206006)(36756003)(5660300002)(4326008)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 09:18:28.0606
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf10dc37-0e9a-432a-e219-08db2b7f9023
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E63F.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6963
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230321081152.26510-1-peter_hong@fintek.com.tw>
+ <CAMZ6RqJWg1H6Yo3nhsa-Kk-WdU=ZH39ecWaE6wiuKRJe1gLMkQ@mail.gmail.com>
+ <f71f1f59-f729-2c8c-f6da-8474be2074b1@fintek.com.tw> <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
+In-Reply-To: <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 23 Mar 2023 18:22:23 +0900
+Message-ID: <CAMZ6RqJNn8UQ62zyKFVHGLm44h2zverRgkKkwwFCUfSjYEXe-A@mail.gmail.com>
+Subject: Re: [PATCH V2] can: usb: f81604: add Fintek F81604 support
+To:     Peter Hong <peter_hong@fintek.com.tw>
+Cc:     wg@grandegger.com, mkl@pengutronix.de,
+        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, frank.jungclaus@esd.eu,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu. 23 Mar 2023 at 14:54, Vincent MAILHOL
+<mailhol.vincent@wanadoo.fr> wrote:
+> Le jeu. 23 mars 2023 à 14:14, Peter Hong <peter_hong@fintek.com.tw> a écrit :
+> >
+> > Hi Vincent,
+> >
+> > Vincent MAILHOL 於 2023/3/21 下午 11:50 寫道:
+> > >> +static netdev_tx_t f81604_start_xmit(struct sk_buff *skb,
+> > >> +                                    struct net_device *netdev)
+> > >> +{
+> > >> +       struct can_frame *cf = (struct can_frame *)skb->data;
+> > >> +       struct f81604_port_priv *priv = netdev_priv(netdev);
+> > >> +       struct net_device_stats *stats = &netdev->stats;
+> > >> +       int status;
+> > >> +       u8 *ptr;
+> > >> +       u32 id;
+> > >> +
+> > >> +       if (can_dropped_invalid_skb(netdev, skb))
+> > >> +               return NETDEV_TX_OK;
+> > >> +
+> > >> +       netif_stop_queue(netdev);
+> > >> +
+> > >> +       ptr = priv->bulk_write_buffer;
+> > >> +       memset(ptr, 0, F81604_DATA_SIZE);
+> > >> +
+> > >> +       ptr[0] = F81604_CMD_DATA;
+> > >> +       ptr[1] = min_t(u8, cf->can_dlc & 0xf, 8);
+> > >> +
+> > >> +       if (cf->can_id & CAN_EFF_FLAG) {
+> > >> +               id = (cf->can_id & CAN_ERR_MASK) << 3;
+> > >> +               ptr[1] |= F81604_EFF_BIT;
+> > >> +               ptr[2] = (id >> 24) & 0xff;
+> > >> +               ptr[3] = (id >> 16) & 0xff;
+> > >> +               ptr[4] = (id >> 8) & 0xff;
+> > >> +               ptr[5] = (id >> 0) & 0xff;
+> > >> +               memcpy(&ptr[6], cf->data, ptr[1]);
+> > > Rather than manipulating an opaque u8 array, please declare a
+> > > structure with explicit names.
+> >
+> > I had try to declare a struct like below and refactoring code :
+> >
+> > struct f81604_bulk_data {
+> >      u8 cmd;
+> >      u8 dlc;
+> >
+> >      union {
+> >          struct {
+> >              u8 id1, id2;
+> >              u8 data[CAN_MAX_DLEN];
+> >          } sff;
+> >
+> >          struct {
+> >              u8 id1, id2, id3, id4;
+> >              u8 data[CAN_MAX_DLEN];
+> >          } eff;
+> >      };
+> > } __attribute__((packed));
+> >
+> > This struct can used in TX/RX bulk in/out. Is it ok?
+>
+> That's nearly it. It is better to declare the struct sff and eff
+> separately. Also, do not split the id in bytes. Declare it as a little
+> endian using the __le16 and __le32 types.
+>
+> Something like this (I let you adjust):
+>
+>   struct f81604_sff {
+>           __le16 id:
+>           u8 data[CAN_MAX_DLEN];
+>   } __attribute__((packed));
+>
+>   struct f81604_eff {
+>           __le32 id;
+>           u8 data[CAN_MAX_DLEN];
+>   } __attribute__((packed));
+>
+>   struct f81604_bulk_data {
+>           u8 cmd;
+>           u8 dlc;
+>
+>           union {
+>                   struct f81604_sff sff;
+>                   struct f81604_eff eff;
+>            };
+>   } __attribute__((packed));
+>
+> The __le16 field should be manipulated using cpu_to_leXX() and
+> leXX_to_cpu() if the field is aligned, if not, it should be
+> manipulated using {get|set}_unaligned_leXX() (where XX represents the
+> size in bits).
+>
+> Also, f81604_bulk_data->dlc is not only a DLC but also carries the
+> F81604_EFF_BIT flag, right? At least, add documentation to the
+> structure to clarify this point.
+>
+> > > +static int f81604_prepare_urbs(struct net_device *netdev)
+> > > +{
+> > > +       static const u8 bulk_in_addr[F81604_MAX_DEV] = { 0x82, 0x84 };
+> > > +       static const u8 bulk_out_addr[F81604_MAX_DEV] = { 0x01, 0x03 };
+> > > +       static const u8 int_in_addr[F81604_MAX_DEV] = { 0x81, 0x83 };
+> > > +       struct f81604_port_priv *priv = netdev_priv(netdev);
+> > > +       int id = netdev->dev_id;
+> > > +       int i;
+> > > +
+> > > +       /* initialize to NULL for error recovery */
+> > > +       for (i = 0; i < F81604_MAX_RX_URBS; ++i)
+> > > +               priv->read_urb[i] = NULL;
+> > > priv was allocated with devm_kzalloc() so it should already be zeroed,
+> > > right? What is the purpose of this loop?
+> >
+> > This operation due to following condition:
+> >      f81604_open() -> f81604_close() -> f81604_open() failed.
+> >
+> > We had used  devm_kzalloc() in f81604_probe(), so first f81604_open() all
+> > pointers are NULL. But after f81604_close() then f81604_open() second
+> > times, the URB pointers are not NULLed, it'll makes error on 2nd
+> > f81604_open()
+> > with fail.
+>
+> Makes sense, thanks for the clarification.
+>
+> Then, please replace your loop by a memset(priv->read_urb, 0,
+> sizeof(priv->read_urb).
 
-Petr Machata <petrm@nvidia.com> writes:
+Actually, your code never accesses the zeroed memory. The next lines are:
 
-> From: Amit Cohen <amcohen@nvidia.com>
->
-> The driver resets the device during probe and during a devlink reload.
-> The current reset method reloads the current firmware version or a pending
-> one, if one was previously flashed using devlink. However, the reset does
-> not take down the PCI link, preventing the PCI firmware from being
-> upgraded, unless the system is rebooted.
->
-> To solve this problem, a new reset command (6) was implemented in the
-> firmware. Unlike the current command (1), after issuing the new command
-> the device will not start the reset immediately, but only after the PCI
-> link was disabled. The driver is expected to wait for 500ms before
-> re-enabling the link to give the firmware enough time to start the reset.
->
-> Implement the new reset method and use it only after verifying it is
-> supported by the current firmware version by querying the Management
-> Capabilities Mask (MCAM) register. Consider the PCI firmware to be
-> operational either after waiting for a predefined time of 2000ms or after
-> reading an active link status when "Data Link Layer Link Active Reporting"
-> is supported. For good measures, make sure the device ID can be read from
-> the configuration space of the device.
->
-> Once the PCI firmware is operational, go back to the regular reset flow
-> and wait for the entire device to become ready. That is, repeatedly read
-> the "system_status" register from the BAR until a value of "FW_READY"
-> (0x5E) appears.
->
-> Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
+  for (i = 0; i < F81604_MAX_RX_URBS; ++i) {
+          priv->read_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
 
-What I forgot to do was to CC PCI maintainer / subsystem. None of us in
-the mlxsw team is well versed in PCI odds and ends, and we would
-appreciate a sanity check of this code.
+If priv->read_urb[i] is never read before being initialized, no need to zero it.
 
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/pci.c    | 151 ++++++++++++++++++-
->  drivers/net/ethernet/mellanox/mlxsw/pci_hw.h |   5 +
->  2 files changed, 155 insertions(+), 1 deletion(-)
+> > >> +/* Called by the usb core when driver is unloaded or device is removed */
+> > >> +static void f81604_disconnect(struct usb_interface *intf)
+> > >> +{
+> > >> +       struct f81604_priv *priv = usb_get_intfdata(intf);
+> > >> +       int i;
+> > >> +
+> > >> +       for (i = 0; i < F81604_MAX_DEV; ++i) {
+> > >> +               if (!priv->netdev[i])
+> > >> +                       continue;
+> > >> +
+> > >> +               unregister_netdev(priv->netdev[i]);
+> > >> +               free_candev(priv->netdev[i]);
+> > >> +       }
+> > >   i> +}
+> >
+> > Is typo here?
 >
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-> index 73ae2fdd94c4..9b11c5280424 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-> @@ -1459,6 +1459,137 @@ static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
->  	return -EBUSY;
->  }
->  
-> +static int mlxsw_pci_link_active_wait(struct pci_dev *pdev)
-> +{
-> +	unsigned long end;
-> +	u16 lnksta;
-> +	int err;
-> +
-> +	end = jiffies + msecs_to_jiffies(MLXSW_PCI_TOGGLE_TIMEOUT_MSECS);
-> +	do {
-> +		msleep(MLXSW_PCI_TOGGLE_WAIT_MSECS);
-> +		err = pcie_capability_read_word(pdev, PCI_EXP_LNKSTA, &lnksta);
-> +		if (err)
-> +			return pcibios_err_to_errno(err);
-> +
-> +		if (lnksta & PCI_EXP_LNKSTA_DLLLA)
-> +			return 0;
-> +	} while (time_before(jiffies, end));
-> +
-> +	pci_err(pdev, "PCI link not ready (0x%04x) after %d ms\n", lnksta,
-> +		MLXSW_PCI_TOGGLE_TIMEOUT_MSECS);
-> +
-> +	return -ETIMEDOUT;
-> +}
-> +
-> +static int mlxsw_pci_link_active_check(struct pci_dev *pdev)
-> +{
-> +	u32 lnkcap;
-> +	int err;
-> +
-> +	err = pcie_capability_read_dword(pdev, PCI_EXP_LNKCAP, &lnkcap);
-> +	if (err)
-> +		goto out;
-> +
-> +	if (lnkcap & PCI_EXP_LNKCAP_DLLLARC)
-> +		return mlxsw_pci_link_active_wait(pdev);
-> +
-> +	/* In case the device does not support "Data Link Layer Link Active
-> +	 * Reporting", simply wait for a predefined time for the device to
-> +	 * become active.
-> +	 */
-> +	pci_dbg(pdev, "No PCI link reporting capability (0x%08x)\n", lnkcap);
-> +
-> +out:
-> +	/* Sleep before handling the rest of the flow and accessing to PCI. */
-> +	msleep(MLXSW_PCI_TOGGLE_TIMEOUT_MSECS);
-> +	return pcibios_err_to_errno(err);
-> +}
-> +
-> +static int mlxsw_pci_link_toggle(struct pci_dev *pdev)
-> +{
-> +	int err;
-> +
-> +	/* Disable the link. */
-> +	err = pcie_capability_set_word(pdev, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_LD);
-> +	if (err)
-> +		return pcibios_err_to_errno(err);
-> +
-> +	/* Sleep to give firmware enough time to start the reset. */
-> +	msleep(MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS);
-> +
-> +	/* Enable the link. */
-> +	err = pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL,
-> +					 PCI_EXP_LNKCTL_LD);
-> +	if (err)
-> +		return pcibios_err_to_errno(err);
-> +
-> +	/* Wait for link active. */
-> +	return mlxsw_pci_link_active_check(pdev);
-> +}
-> +
-> +static int mlxsw_pci_device_id_read(struct pci_dev *pdev, u16 exp_dev_id)
-> +{
-> +	unsigned long end;
-> +	u16 dev_id;
-> +	int err;
-> +
-> +	end = jiffies + msecs_to_jiffies(MLXSW_PCI_TOGGLE_TIMEOUT_MSECS);
-> +	do {
-> +		msleep(MLXSW_PCI_TOGGLE_WAIT_MSECS);
-> +
-> +		/* Expect to get the correct PCI device ID as first indication
-> +		 * that the ASIC is available.
-> +		 */
-> +		err = pci_read_config_word(pdev, PCI_DEVICE_ID, &dev_id);
-> +		if (err)
-> +			return pcibios_err_to_errno(err);
-> +
-> +		if (dev_id == exp_dev_id)
-> +			return 0;
-> +	} while (time_before(jiffies, end));
-> +
-> +	pci_err(pdev, "PCI device ID is not as expected after %d ms\n",
-> +		MLXSW_PCI_TOGGLE_TIMEOUT_MSECS);
-> +
-> +	return -ETIMEDOUT;
-> +}
-> +
-> +static int mlxsw_pci_reset_at_pci_disable(struct mlxsw_pci *mlxsw_pci)
-> +{
-> +	struct pci_bus *bridge_bus = mlxsw_pci->pdev->bus;
-> +	struct pci_dev *bridge_pdev = bridge_bus->self;
-> +	struct pci_dev *pdev = mlxsw_pci->pdev;
-> +	char mrsr_pl[MLXSW_REG_MRSR_LEN];
-> +	u16 dev_id = pdev->device;
-> +	int err;
-> +
-> +	mlxsw_reg_mrsr_pack(mrsr_pl,
-> +			    MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE);
-> +	err = mlxsw_reg_write(mlxsw_pci->core, MLXSW_REG(mrsr), mrsr_pl);
-> +	if (err)
-> +		return err;
-> +
-> +	/* Save the PCI configuration space so that we will be able to restore
-> +	 * it after the firmware was reset.
-> +	 */
-> +	pci_save_state(pdev);
-> +	pci_cfg_access_lock(pdev);
-> +
-> +	err = mlxsw_pci_link_toggle(bridge_pdev);
-> +	if (err) {
-> +		pci_err(bridge_pdev, "Failed to toggle PCI link\n");
-> +		goto restore;
-> +	}
-> +
-> +	err = mlxsw_pci_device_id_read(pdev, dev_id);
-> +
-> +restore:
-> +	pci_cfg_access_unlock(pdev);
-> +	pci_restore_state(pdev);
-> +	return err;
-> +}
-> +
->  static int mlxsw_pci_reset_sw(struct mlxsw_pci *mlxsw_pci)
->  {
->  	char mrsr_pl[MLXSW_REG_MRSR_LEN];
-> @@ -1471,6 +1602,8 @@ static int
->  mlxsw_pci_reset(struct mlxsw_pci *mlxsw_pci, const struct pci_device_id *id)
->  {
->  	struct pci_dev *pdev = mlxsw_pci->pdev;
-> +	char mcam_pl[MLXSW_REG_MCAM_LEN];
-> +	bool pci_reset_supported;
->  	u32 sys_status;
->  	int err;
->  
-> @@ -1481,7 +1614,23 @@ mlxsw_pci_reset(struct mlxsw_pci *mlxsw_pci, const struct pci_device_id *id)
->  		return err;
->  	}
->  
-> -	err = mlxsw_pci_reset_sw(mlxsw_pci);
-> +	mlxsw_reg_mcam_pack(mcam_pl,
-> +			    MLXSW_REG_MCAM_FEATURE_GROUP_ENHANCED_FEATURES);
-> +	err = mlxsw_reg_query(mlxsw_pci->core, MLXSW_REG(mcam), mcam_pl);
-> +	if (err)
-> +		return err;
-> +
-> +	mlxsw_reg_mcam_unpack(mcam_pl, MLXSW_REG_MCAM_PCI_RESET,
-> +			      &pci_reset_supported);
-> +
-> +	if (pci_reset_supported) {
-> +		pci_dbg(pdev, "Starting PCI reset flow\n");
-> +		err = mlxsw_pci_reset_at_pci_disable(mlxsw_pci);
-> +	} else {
-> +		pci_dbg(pdev, "Starting software reset flow\n");
-> +		err = mlxsw_pci_reset_sw(mlxsw_pci);
-> +	}
-> +
->  	if (err)
->  		return err;
->  
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h b/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
-> index 48dbfea0a2a1..ded0828d7f1f 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
-> @@ -27,6 +27,11 @@
->  
->  #define MLXSW_PCI_SW_RESET_TIMEOUT_MSECS	900000
->  #define MLXSW_PCI_SW_RESET_WAIT_MSECS		200
-> +
-> +#define MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS	500
-> +#define MLXSW_PCI_TOGGLE_WAIT_MSECS		20
-> +#define MLXSW_PCI_TOGGLE_TIMEOUT_MSECS		2000
-> +
->  #define MLXSW_PCI_FW_READY			0xA1844
->  #define MLXSW_PCI_FW_READY_MASK			0xFFFF
->  #define MLXSW_PCI_FW_READY_MAGIC		0x5E
-
+> Yes, please ignore.
+>
+>
+> Yours sincerely,
+> Vincent Mailhol
