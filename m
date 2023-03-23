@@ -2,127 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3150C6C6392
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC30F6C63B3
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:34:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbjCWJ2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 05:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        id S231233AbjCWJeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 05:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbjCWJ2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:28:10 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1647A1B542;
-        Thu, 23 Mar 2023 02:25:01 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y2so8303210pfw.9;
-        Thu, 23 Mar 2023 02:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679563501;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=oedrkQTKeKhk5jpPMXJExckMWKmDYsOLUWEd03oO1jc=;
-        b=Xsnwqe0u+OhenA0uQnCmo5f7oZse/SWWrlZMDr1wmNtIez+HCNRnydnG7mIWS5H7cc
-         jQErK+9VQDBe9Ybt86Bh8s5xzW660Zs4Wlc0qYNxJGvE/KrYckpFYE3c7BjNeAxxnJR/
-         +CPRu1DhGodVbU5q9R8xszUXPwfvJkbd7GyiLnGnDiXIV3IR5RVubAFqy5uedx5/rpBU
-         desOUjczT857xaWluqFGj5kMfTiiRQenWqjXBO5QNuVfO4Gi8uqxPFGwGVw/1ZC7L+es
-         Z8aTaPy+16fxwcuRztySG+OgRmQNXcBgKwcbE3lZjj3V5uNpIhoOU8QZQ6Y5BYdcVnH/
-         Gf0Q==
+        with ESMTP id S231261AbjCWJdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:33:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF12A19114
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:29:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679563758;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fH6RVdKUD2qMc5iJ7El8bayWDBifjWMzYWs3C5XGkao=;
+        b=NO3zghou7Nq+G5wDEc94eU4ubHRr+VZEiCyC2pJ4djh1YInibXGS7+p6U0CLBtXFzjzQjS
+        LqZQtkdc3bxVByipWuaVpJbTJyZQbzl/NJ+YJoa1m2PGOV0JVDXAoUB2d6XQIdenceNZ2/
+        ncAvalRSDPh9XvXXRM1mAmzr6VVy2PE=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-8-iKRM3nBIP-KSzLSpiN2uZA-1; Thu, 23 Mar 2023 05:29:13 -0400
+X-MC-Unique: iKRM3nBIP-KSzLSpiN2uZA-1
+Received: by mail-qk1-f199.google.com with SMTP id ou5-20020a05620a620500b007423e532628so9901528qkn.5
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:29:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679563501;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oedrkQTKeKhk5jpPMXJExckMWKmDYsOLUWEd03oO1jc=;
-        b=tvlErEZ0rFvo2rd0SAz1xjl83bgOYTRUYE349+DTpxU7bfZFchRvmzE43qAqNgsHPC
-         Au89A2n6rTRKqJPVIMgaoLxuv7M/hbPShImRgmCkK9av5gzeRRYCCRasVz1ksEFrQJzE
-         W3SVXa4YHkE/qbLJxiY1okJjGJuJcj8W/2llWK+q5aHNvko5HmvO/23O85cpM6dhUMFO
-         RZX97efjbDidbGILgMA+5OQmFFESg+dalnbx64vtptZkQsdm4GQd/FsBbnedbbEbVW3c
-         DjQjwNbH8IArypKdGanu0fwZMF1ulmZ3MIN2HsZmi7OWRAYNMCpRteQNNPHeaWUUWRoX
-         2n/w==
-X-Gm-Message-State: AO0yUKXrC/NCGenecwyltk2Le67X5yq9qFi0mS6z7w8z1/n6Gk8ibSgG
-        ZOnQTWUctlKcaaSr5aHLdyg=
-X-Google-Smtp-Source: AK7set90RsGF6plNEmkD3dIggH5nrDX5jcX7Ql9g4f9DKWsEsiMQK33OuujoCaxeaDME4YoPIa1akg==
-X-Received: by 2002:aa7:9dc1:0:b0:627:e69c:847c with SMTP id g1-20020aa79dc1000000b00627e69c847cmr6401408pfq.16.1679563501129;
-        Thu, 23 Mar 2023 02:25:01 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-11.three.co.id. [180.214.232.11])
-        by smtp.gmail.com with ESMTPSA id u16-20020aa78490000000b00627df85cd72sm9547769pfn.199.2023.03.23.02.25.00
+        d=1e100.net; s=20210112; t=1679563753;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fH6RVdKUD2qMc5iJ7El8bayWDBifjWMzYWs3C5XGkao=;
+        b=6grmpPmHjYHsgzPhnM2UI5y4QWFqP8mK1oq4ZYxEl/bFizn1HSiKxee4h6+EOoovKK
+         /qgLNBQyfERKvWMn1jCUwTXPmJmIRzuw/91OzurjGbhv+5VaeU3WGr0jHEBqbTeRRmhf
+         W6mcG4Q9kVD7YIoJKn1jxA+IhT9dEsk9HHbRjCYKyiixQJCweQBUtWBb0ty2gzVCIyt/
+         WLgd8yZ+lZ+sLCFSoMlU5Xhqjh+8IKx4IKs8cVirch/k+Hrcs+SPDGv5sbUh+BXblOVC
+         qbJa45l7YOjhDCJtp5e0ps+pNfX1coqpXbWpdrp3+CkLpFG60JBUrqkXNe3Cb3pl8QYk
+         eYkg==
+X-Gm-Message-State: AO0yUKU11rXPIkId3pVNKNISX2qSE67jTx5Yy9w78tFhF+4ejO1xdpM3
+        GwP/9nmUOHlcnQAnMRKzl1+4XQpC98CPEx3r0Bp1qjcwwkdTrv5aOSEdDFcSZnE8SVEB9l/maUe
+        uOAvYgy7LHoYfaJxH
+X-Received: by 2002:a05:622a:34e:b0:3e1:9557:123c with SMTP id r14-20020a05622a034e00b003e19557123cmr9437371qtw.52.1679563753153;
+        Thu, 23 Mar 2023 02:29:13 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+dTXZSkoRXA666MxWsVBLAIywm8KzMAVacD1thH1ce+YO4OCqSzCTtD2lH0cRCelCFnUU+cQ==
+X-Received: by 2002:a05:622a:34e:b0:3e1:9557:123c with SMTP id r14-20020a05622a034e00b003e19557123cmr9437356qtw.52.1679563752860;
+        Thu, 23 Mar 2023 02:29:12 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id o10-20020a05620a228a00b007441b675e81sm12893452qkh.22.2023.03.23.02.29.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 02:25:00 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 2DEB21066D3; Thu, 23 Mar 2023 16:24:56 +0700 (WIB)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Linux Wireless Development <linux-wireless@vger.kernel.org>,
-        Linux Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Documentation <linux-doc@vger.kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Thu, 23 Mar 2023 02:29:12 -0700 (PDT)
+Date:   Thu, 23 Mar 2023 10:29:05 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Felix Fietkau <nbd@nbd.name>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH] wifi: mac80211: use bullet list for amsdu_mesh_control formats list
-Date:   Thu, 23 Mar 2023 16:24:54 +0700
-Message-Id: <20230323092454.391815-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.40.0
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@sberdevices.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v5 2/2] virtio/vsock: check argument to avoid no
+ effect call
+Message-ID: <20230323092905.fpsiiaca2ba2wug3@sgarzare-redhat>
+References: <f0b283a1-cc63-dc3d-cc0c-0da7f684d4d2@sberdevices.ru>
+ <50bb0210-1ed7-42fb-b5f6-8d97247209b5@sberdevices.ru>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1928; i=bagasdotme@gmail.com; h=from:subject; bh=sghnb6cYp6gN1i8QCZqutc4mpo/Cxsdj7NRwu8vq+VU=; b=owGbwMvMwCX2bWenZ2ig32LG02pJDCkyUo8eHzmYfPRswKMlnzI3W72vkvracW57yWE9v+lG2 2ZOzFO90FHKwiDGxSArpsgyKZGv6fQuI5EL7WsdYeawMoEMYeDiFICJnJNnZHjVwetxtMOwVtgi rJhzkpP32kmTmkqdrnE/f7p3cZ2YRgrD/4zzMT8rpB82877SmnmCad+uu3V7agueN1zTVtB1Yi8 15QAA
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <50bb0210-1ed7-42fb-b5f6-8d97247209b5@sberdevices.ru>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
-X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit fe4a6d2db3bad4 ("wifi: mac80211: implement support for yet
-another mesh A-MSDU format") expands amsdu_mesh_control list to
-multi-line list. However, the expansion triggers Sphinx warning:
+On Wed, Mar 22, 2023 at 09:36:24PM +0300, Arseniy Krasnov wrote:
+>Both of these functions have no effect when input argument is 0, so to
+>avoid useless spinlock access, check argument before it.
+>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> net/vmw_vsock/virtio_transport_common.c | 6 ++++++
+> 1 file changed, 6 insertions(+)
 
-Documentation/driver-api/80211/mac80211-advanced:214: ./net/mac80211/sta_info.h:628: WARNING: Unexpected indentation.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Use bullet list instead to fix the warning.
-
-Link: https://lore.kernel.org/linux-next/20230323141548.659479ef@canb.auug.org.au/
-Fixes: fe4a6d2db3bad4 ("wifi: mac80211: implement support for yet another mesh A-MSDU format")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- net/mac80211/sta_info.h | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
-index f354d470e1740c..195b563132d6c5 100644
---- a/net/mac80211/sta_info.h
-+++ b/net/mac80211/sta_info.h
-@@ -622,11 +622,13 @@ struct link_sta_info {
-  *	taken from HT/VHT capabilities or VHT operating mode notification
-  * @cparams: CoDel parameters for this station.
-  * @reserved_tid: reserved TID (if any, otherwise IEEE80211_TID_UNRESERVED)
-- * @amsdu_mesh_control: track the mesh A-MSDU format used by the peer
-- *	(-1: not yet known,
-- *	  0: non-mesh A-MSDU length field
-- *	  1: big-endian mesh A-MSDU length field
-- *	  2: little-endian mesh A-MSDU length field)
-+ * @amsdu_mesh_control: track the mesh A-MSDU format used by the peer:
-+ *
-+ *	  * -1: not yet known
-+ *	  * 0: non-mesh A-MSDU length field
-+ *	  * 1: big-endian mesh A-MSDU length field
-+ *	  * 2: little-endian mesh A-MSDU length field
-+ *
-  * @fast_tx: TX fastpath information
-  * @fast_rx: RX fastpath information
-  * @tdls_chandef: a TDLS peer can have a wider chandef that is compatible to
-
-base-commit: 0dd45ebc08de2449efe1a0908147796856a5f824
--- 
-An old man doll... just what I always wanted! - Clara
+>
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index 9e87c7d4d7cf..312658c176bd 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -302,6 +302,9 @@ u32 virtio_transport_get_credit(struct virtio_vsock_sock *vvs, u32 credit)
+> {
+> 	u32 ret;
+>
+>+	if (!credit)
+>+		return 0;
+>+
+> 	spin_lock_bh(&vvs->tx_lock);
+> 	ret = vvs->peer_buf_alloc - (vvs->tx_cnt - vvs->peer_fwd_cnt);
+> 	if (ret > credit)
+>@@ -315,6 +318,9 @@ EXPORT_SYMBOL_GPL(virtio_transport_get_credit);
+>
+> void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
+> {
+>+	if (!credit)
+>+		return;
+>+
+> 	spin_lock_bh(&vvs->tx_lock);
+> 	vvs->tx_cnt -= credit;
+> 	spin_unlock_bh(&vvs->tx_lock);
+>-- 
+>2.25.1
+>
 
