@@ -2,324 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A4F6C5DD3
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 05:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E90E6C5DE7
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 05:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbjCWENE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 00:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
+        id S229790AbjCWE01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 00:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbjCWEND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 00:13:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DDE10CA
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:12:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679544735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P/rEURdgh4BDr+hLgWS6iVZmhSJ0z8sziCYrloAoZJ8=;
-        b=WPj7tYN9lEgIu2k8PfUzhRfPAABiJX4iVTHUvrdpdBzqbUumK4SFfIB5CGGRILquRnSF0S
-        ProzeVTEJ3YiMtE625c63kj5d680+NXN2/52zHYWwb2NgbO0IaYAaPyyUuAFqA0vrK1F9v
-        o3+sMqQZEmYA9foRKGTeFF9FXwY2mKQ=
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
- [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-549-aFYW7DG2OjepeftRy5UJaw-1; Thu, 23 Mar 2023 00:12:14 -0400
-X-MC-Unique: aFYW7DG2OjepeftRy5UJaw-1
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-17ab1d11480so10870754fac.13
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:12:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679544732;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=P/rEURdgh4BDr+hLgWS6iVZmhSJ0z8sziCYrloAoZJ8=;
-        b=OcpR1t8VkGLEP+n1PVpTO1Dz0WOjWiHR0G52nwzlcfi8zKmSuoe7hMJV1K9+aU0r8z
-         JPSgul2rCCl6kn1PvXy+1/rNoWjrW7Benyf5BgRSCBMFD22AfFttatnzOlYzzCsDuAqf
-         TjLOU9yoM6EhINR3jaS8vQ/g2qSYRpZpG0fYiwvluj3MJzVMtW/GrAfbcQeOm9TgB0WT
-         dO8wS12Q1YtDGs25jVKpB7B9hhBOganPVhq2sjSrRnk0WgzL6ejM3hMGIOvKTE36Vx6L
-         RRNXOQTCEV8lMgH9xJaleOqbfcl/23p1ubajNqleLeRnMEWN7O2DImdNXxcfYJseQKwT
-         OB/Q==
-X-Gm-Message-State: AO0yUKUfMAPcDEHe4mXsrLndwjg/4oeHQJqxlignZZMTsfJeSjqi1kXp
-        Y0EJwbuMEFj7qcST8qVBfMj6g2eS7V6lx0pALiLbRuGsNLw/OoHZ8/3A9Z53k1uM/9QzxV8XcwI
-        6etav8qYTot45H3ut/rZVN7gIIEvh5i4B
-X-Received: by 2002:a54:4189:0:b0:384:c4a:1b49 with SMTP id 9-20020a544189000000b003840c4a1b49mr1677808oiy.9.1679544732684;
-        Wed, 22 Mar 2023 21:12:12 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9dXESIokZypKTeU6rPDw1zCB9t6hzb9iX9sruRgTHNecmX/0775oZf2BKRn+7pZSFebEG235WB2+zaqAN/QPY=
-X-Received: by 2002:a54:4189:0:b0:384:c4a:1b49 with SMTP id
- 9-20020a544189000000b003840c4a1b49mr1677801oiy.9.1679544732468; Wed, 22 Mar
- 2023 21:12:12 -0700 (PDT)
+        with ESMTP id S229713AbjCWE00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 00:26:26 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8157ACDCA
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:26:24 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id F21395C01A8;
+        Thu, 23 Mar 2023 00:26:21 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 23 Mar 2023 00:26:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1679545581; x=1679631981; bh=3v/z7CqmnA
+        D5jx5/HaHvEZhbXuBHVkGN2N+hz8caQUI=; b=frtJnk6TI1E+EtYIVP8JCQkYLs
+        aAJUD9uw6VZVSX25KEJGJ5dLumDuukCOX910vITP0dwPsComD8zmioGa7iBoYRsV
+        hctGzktvkz6AqKnUuAV05kVw06frXIykBuXxTiSfGAEOZNUd/sYhqcRc1C6hNzJx
+        E0eJ5xTyupGZJmWFJKbkqHMXCUVRRrnPZ6iBL3+ou/+ut4KIxAQPV0TeGvHq07dd
+        XIFGaTAwvflVLqEXPJYZqIEaOmawE8e/g0nZJKGq7KPuVx0ymHaeg2sfjpk8i3is
+        2WBFqOcRVldcD+5IT8cCnOLsF6YuAjBhh5Ed92wwYBt+JEX5+DoxHFjA+sHw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; t=1679545581; x=1679631981; bh=3v/z7CqmnAD5j
+        x5/HaHvEZhbXuBHVkGN2N+hz8caQUI=; b=Txt0qov2R8CpjxMD4LePynupmVmm9
+        MntyIUbeQbjCh0Zo2/OTK6XOe749RVPjqhMhJ1R1xuiizk4Z59aow3sinhsUyOiK
+        Kt9q1vCYN36xiM8BlC4moA6w5vIxEV0z+MYpoBXbYbe1IhJoYOdos88eRr7tUH3A
+        7a8kt/sarG2O2qzS6dtBXbzhzPatGbx4t1YX+VkUxXqxY8hDwklSNylV16c7V2s0
+        sg0axZmLWpnj8KcfZzJ4Wkgtnm0I0C6+hNyLkdk2G4o7lytFyvilteXTeb0CeEbn
+        2kR/+MM9aqgnSW+kl6fIyvdiF7FEnj7bf9dtxJZfboFFwuHzIKMAN+s0A==
+X-ME-Sender: <xms:7dQbZKSbPAPieHyk66wd_HtfL63KYg2tZ7yin98S0MauZeSQZtzxQg>
+    <xme:7dQbZPy4yc-1WHw7wM7-3PLWjEmtUwjH-ZKrdeOiE55uhb0GZz2A5JNopgVCz_OZN
+    BzsJr3gpadHUMYBGx8>
+X-ME-Received: <xmr:7dQbZH2DxrxdBWk55ME2mT7sorVUIVBZfBHish7jEJoKX3iCHJUz5jiSydK8qICDLeSkFkY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdegfedgieelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdlfedtmdenucfjughrpefhvf
+    evufffkffoggfgsedtkeertdertddtnecuhfhrohhmpegglhgrughimhhirhcupfhikhhi
+    shhhkhhinhcuoehvlhgrughimhhirhesnhhikhhishhhkhhinhdrphifqeenucggtffrrg
+    htthgvrhhnpeevjeetfeeftefhffelvefgteelieehveehgeeltdettedvtdekffelgeeg
+    iedtveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hvlhgrughimhhirhesnhhikhhishhhkhhinhdrphif
+X-ME-Proxy: <xmx:7dQbZGC2x5wLEo0Bin3XluN4Leuf9eJZCJ6mf0NrtB0s6TcPWHikNg>
+    <xmx:7dQbZDirpssaCO4vU51xIoY5fuWDVZtJQx9NooJd_LDmJKKWCmESRA>
+    <xmx:7dQbZCrTUVxDmJkKkb61rHa5_-1xQmQtld2x6pazle4Qvk8JpSz9-A>
+    <xmx:7dQbZDh6Q5qNIeIOi0hIsQCM7rqKCxdqxJX9hbVfqvw_nWcsHAsSJg>
+Feedback-ID: id3b446c5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 23 Mar 2023 00:26:18 -0400 (EDT)
+From:   Vladimir Nikishkin <vladimir@nikishkin.pw>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, eng.alaamohamedsoliman.am@gmail.com,
+        gnault@redhat.com, razor@blackwall.org,
+        Vladimir Nikishkin <vladimir@nikishkin.pw>
+Subject: [PATCH net-next v5] vxlan: try to send a packet normally if local bypass fails
+Date:   Thu, 23 Mar 2023 12:26:08 +0800
+Message-Id: <20230323042608.17573-1-vladimir@nikishkin.pw>
+X-Mailer: git-send-email 2.35.7
 MIME-Version: 1.0
-References: <20230322191038.44037-1-shannon.nelson@amd.com> <20230322191038.44037-3-shannon.nelson@amd.com>
-In-Reply-To: <20230322191038.44037-3-shannon.nelson@amd.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 23 Mar 2023 12:12:01 +0800
-Message-ID: <CACGkMEvRr968H1_e+bdK-r4ApvJg8g+PTeShNS1tp6Ju_5sP8g@mail.gmail.com>
-Subject: Re: [PATCH v3 virtio 2/8] pds_vdpa: Add new vDPA driver for
- AMD/Pensando DSC
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
-        kuba@kernel.org, drivers@pensando.io
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 3:11=E2=80=AFAM Shannon Nelson <shannon.nelson@amd.=
-com> wrote:
->
-> This is the initial auxiliary driver framework for a new vDPA
-> device driver, an auxiliary_bus client of the pds_core driver.
-> The pds_core driver supplies the PCI services for the VF device
-> and for accessing the adminq in the PF device.
->
-> This patch adds the very basics of registering for the auxiliary
-> device and setting up debugfs entries.
->
-> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+In vxlan_core, if an fdb entry is pointing to a local
+address with some port, the system tries to get the packet to
+deliver the packet to the vxlan directly, bypassing the network
+stack.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+This patch makes it still try canonical delivery, if there is no
+linux kernel vxlan listening on this port. This will be useful
+for the cases when there is some userspace daemon expecting
+vxlan packets for post-processing, or some other implementation
+of vxlan.
 
-Thanks
+Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
+---
+ drivers/net/vxlan/vxlan_core.c     | 34 ++++++++++++++++++++++++------
+ include/net/vxlan.h                |  4 +++-
+ include/uapi/linux/if_link.h       |  1 +
+ tools/include/uapi/linux/if_link.h |  2 ++
+ 4 files changed, 33 insertions(+), 8 deletions(-)
 
-> ---
->  drivers/vdpa/Makefile        |  1 +
->  drivers/vdpa/pds/Makefile    |  8 ++++
->  drivers/vdpa/pds/aux_drv.c   | 84 ++++++++++++++++++++++++++++++++++++
->  drivers/vdpa/pds/aux_drv.h   | 15 +++++++
->  drivers/vdpa/pds/debugfs.c   | 29 +++++++++++++
->  drivers/vdpa/pds/debugfs.h   | 18 ++++++++
->  include/linux/pds/pds_vdpa.h | 10 +++++
->  7 files changed, 165 insertions(+)
->  create mode 100644 drivers/vdpa/pds/Makefile
->  create mode 100644 drivers/vdpa/pds/aux_drv.c
->  create mode 100644 drivers/vdpa/pds/aux_drv.h
->  create mode 100644 drivers/vdpa/pds/debugfs.c
->  create mode 100644 drivers/vdpa/pds/debugfs.h
->  create mode 100644 include/linux/pds/pds_vdpa.h
->
-> diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
-> index 59396ff2a318..8f53c6f3cca7 100644
-> --- a/drivers/vdpa/Makefile
-> +++ b/drivers/vdpa/Makefile
-> @@ -7,3 +7,4 @@ obj-$(CONFIG_MLX5_VDPA) +=3D mlx5/
->  obj-$(CONFIG_VP_VDPA)    +=3D virtio_pci/
->  obj-$(CONFIG_ALIBABA_ENI_VDPA) +=3D alibaba/
->  obj-$(CONFIG_SNET_VDPA) +=3D solidrun/
-> +obj-$(CONFIG_PDS_VDPA) +=3D pds/
-> diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
-> new file mode 100644
-> index 000000000000..a9cd2f450ae1
-> --- /dev/null
-> +++ b/drivers/vdpa/pds/Makefile
-> @@ -0,0 +1,8 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +# Copyright(c) 2023 Advanced Micro Devices, Inc
-> +
-> +obj-$(CONFIG_PDS_VDPA) :=3D pds_vdpa.o
-> +
-> +pds_vdpa-y :=3D aux_drv.o
-> +
-> +pds_vdpa-$(CONFIG_DEBUG_FS) +=3D debugfs.o
-> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
-> new file mode 100644
-> index 000000000000..39c03f067b77
-> --- /dev/null
-> +++ b/drivers/vdpa/pds/aux_drv.c
-> @@ -0,0 +1,84 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-> +
-> +#include <linux/auxiliary_bus.h>
-> +#include <linux/pci.h>
-> +
-> +#include <linux/pds/pds_common.h>
-> +#include <linux/pds/pds_core_if.h>
-> +#include <linux/pds/pds_adminq.h>
-> +#include <linux/pds/pds_auxbus.h>
-> +#include <linux/pds/pds_vdpa.h>
-> +
-> +#include "aux_drv.h"
-> +#include "debugfs.h"
-> +
-> +static const struct auxiliary_device_id pds_vdpa_id_table[] =3D {
-> +       { .name =3D PDS_VDPA_DEV_NAME, },
-> +       {},
-> +};
-> +
-> +static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
-> +                         const struct auxiliary_device_id *id)
-> +
-> +{
-> +       struct pds_auxiliary_dev *padev =3D
-> +               container_of(aux_dev, struct pds_auxiliary_dev, aux_dev);
-> +       struct pds_vdpa_aux *vdpa_aux;
-> +
-> +       vdpa_aux =3D kzalloc(sizeof(*vdpa_aux), GFP_KERNEL);
-> +       if (!vdpa_aux)
-> +               return -ENOMEM;
-> +
-> +       vdpa_aux->padev =3D padev;
-> +       auxiliary_set_drvdata(aux_dev, vdpa_aux);
-> +
-> +       return 0;
-> +}
-> +
-> +static void pds_vdpa_remove(struct auxiliary_device *aux_dev)
-> +{
-> +       struct pds_vdpa_aux *vdpa_aux =3D auxiliary_get_drvdata(aux_dev);
-> +       struct device *dev =3D &aux_dev->dev;
-> +
-> +       kfree(vdpa_aux);
-> +       auxiliary_set_drvdata(aux_dev, NULL);
-> +
-> +       dev_info(dev, "Removed\n");
-> +}
-> +
-> +static struct auxiliary_driver pds_vdpa_driver =3D {
-> +       .name =3D PDS_DEV_TYPE_VDPA_STR,
-> +       .probe =3D pds_vdpa_probe,
-> +       .remove =3D pds_vdpa_remove,
-> +       .id_table =3D pds_vdpa_id_table,
-> +};
-> +
-> +static void __exit pds_vdpa_cleanup(void)
-> +{
-> +       auxiliary_driver_unregister(&pds_vdpa_driver);
-> +
-> +       pds_vdpa_debugfs_destroy();
-> +}
-> +module_exit(pds_vdpa_cleanup);
-> +
-> +static int __init pds_vdpa_init(void)
-> +{
-> +       int err;
-> +
-> +       pds_vdpa_debugfs_create();
-> +
-> +       err =3D auxiliary_driver_register(&pds_vdpa_driver);
-> +       if (err) {
-> +               pr_err("%s: aux driver register failed: %pe\n",
-> +                      PDS_VDPA_DRV_NAME, ERR_PTR(err));
-> +               pds_vdpa_debugfs_destroy();
-> +       }
-> +
-> +       return err;
-> +}
-> +module_init(pds_vdpa_init);
-> +
-> +MODULE_DESCRIPTION(PDS_VDPA_DRV_DESCRIPTION);
-> +MODULE_AUTHOR("Advanced Micro Devices, Inc");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
-> new file mode 100644
-> index 000000000000..14e465944dfd
-> --- /dev/null
-> +++ b/drivers/vdpa/pds/aux_drv.h
-> @@ -0,0 +1,15 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-> +
-> +#ifndef _AUX_DRV_H_
-> +#define _AUX_DRV_H_
-> +
-> +#define PDS_VDPA_DRV_DESCRIPTION    "AMD/Pensando vDPA VF Device Driver"
-> +#define PDS_VDPA_DRV_NAME           "pds_vdpa"
-> +
-> +struct pds_vdpa_aux {
-> +       struct pds_auxiliary_dev *padev;
-> +
-> +       struct dentry *dentry;
-> +};
-> +#endif /* _AUX_DRV_H_ */
-> diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
-> new file mode 100644
-> index 000000000000..12e844f96ccc
-> --- /dev/null
-> +++ b/drivers/vdpa/pds/debugfs.c
-> @@ -0,0 +1,29 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-> +
-> +#include <linux/pci.h>
-> +
-> +#include <linux/pds/pds_common.h>
-> +#include <linux/pds/pds_core_if.h>
-> +#include <linux/pds/pds_adminq.h>
-> +#include <linux/pds/pds_auxbus.h>
-> +
-> +#include "aux_drv.h"
-> +#include "debugfs.h"
-> +
-> +#ifdef CONFIG_DEBUG_FS
-> +
-> +static struct dentry *dbfs_dir;
-> +
-> +void pds_vdpa_debugfs_create(void)
-> +{
-> +       dbfs_dir =3D debugfs_create_dir(PDS_VDPA_DRV_NAME, NULL);
-> +}
-> +
-> +void pds_vdpa_debugfs_destroy(void)
-> +{
-> +       debugfs_remove_recursive(dbfs_dir);
-> +       dbfs_dir =3D NULL;
-> +}
-> +
-> +#endif /* CONFIG_DEBUG_FS */
-> diff --git a/drivers/vdpa/pds/debugfs.h b/drivers/vdpa/pds/debugfs.h
-> new file mode 100644
-> index 000000000000..fff078a869e5
-> --- /dev/null
-> +++ b/drivers/vdpa/pds/debugfs.h
-> @@ -0,0 +1,18 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-> +
-> +#ifndef _PDS_VDPA_DEBUGFS_H_
-> +#define _PDS_VDPA_DEBUGFS_H_
-> +
-> +#include <linux/debugfs.h>
-> +
-> +#ifdef CONFIG_DEBUG_FS
-> +
-> +void pds_vdpa_debugfs_create(void);
-> +void pds_vdpa_debugfs_destroy(void);
-> +#else
-> +static inline void pds_vdpa_debugfs_create(void) { }
-> +static inline void pds_vdpa_debugfs_destroy(void) { }
-> +#endif
-> +
-> +#endif /* _PDS_VDPA_DEBUGFS_H_ */
-> diff --git a/include/linux/pds/pds_vdpa.h b/include/linux/pds/pds_vdpa.h
-> new file mode 100644
-> index 000000000000..d3414536985d
-> --- /dev/null
-> +++ b/include/linux/pds/pds_vdpa.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
-> +
-> +#ifndef _PDS_VDPA_H_
-> +#define _PDS_VDPA_H_
-> +
-> +#define PDS_DEV_TYPE_VDPA_STR  "vDPA"
-> +#define PDS_VDPA_DEV_NAME      PDS_CORE_DRV_NAME "." PDS_DEV_TYPE_VDPA_S=
-TR
-> +
-> +#endif /* _PDS_VDPA_H_ */
-> --
-> 2.17.1
->
+diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
+index 561fe1b314f5..cef7a9aec24b 100644
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -2341,7 +2341,7 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ 				 union vxlan_addr *daddr,
+ 				 __be16 dst_port, int dst_ifindex, __be32 vni,
+ 				 struct dst_entry *dst,
+-				 u32 rt_flags)
++				 u32 rt_flags, bool localbypass)
+ {
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	/* IPv6 rt-flags are checked against RTF_LOCAL, but the value of
+@@ -2355,18 +2355,21 @@ static int encap_bypass_if_local(struct sk_buff *skb, struct net_device *dev,
+ 	    !(rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))) {
+ 		struct vxlan_dev *dst_vxlan;
+ 
+-		dst_release(dst);
+ 		dst_vxlan = vxlan_find_vni(vxlan->net, dst_ifindex, vni,
+ 					   daddr->sa.sa_family, dst_port,
+ 					   vxlan->cfg.flags);
+-		if (!dst_vxlan) {
++		if (!dst_vxlan && localbypass) {
++			dst_release(dst);
+ 			dev->stats.tx_errors++;
+ 			vxlan_vnifilter_count(vxlan, vni, NULL,
+ 					      VXLAN_VNI_STATS_TX_ERRORS, 0);
+ 			kfree_skb(skb);
+ 
+ 			return -ENOENT;
++		} else if (!dst_vxlan && !localbypass) {
++			return 0;
+ 		}
++		dst_release(dst);
+ 		vxlan_encap_bypass(skb, vxlan, dst_vxlan, vni, true);
+ 		return 1;
+ 	}
+@@ -2393,6 +2396,7 @@ void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 	int err;
+ 	u32 flags = vxlan->cfg.flags;
+ 	bool udp_sum = false;
++	bool localbypass = true;
+ 	bool xnet = !net_eq(vxlan->net, dev_net(vxlan->dev));
+ 	__be32 vni = 0;
+ #if IS_ENABLED(CONFIG_IPV6)
+@@ -2494,9 +2498,11 @@ void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 
+ 		if (!info) {
+ 			/* Bypass encapsulation if the destination is local */
++			localbypass =	!(flags & VXLAN_F_LOCALBYPASS);
+ 			err = encap_bypass_if_local(skb, dev, vxlan, dst,
+ 						    dst_port, ifindex, vni,
+-						    &rt->dst, rt->rt_flags);
++						    &rt->dst, rt->rt_flags,
++						    localbypass);
+ 			if (err)
+ 				goto out_unlock;
+ 
+@@ -2568,10 +2574,10 @@ void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 
+ 		if (!info) {
+ 			u32 rt6i_flags = ((struct rt6_info *)ndst)->rt6i_flags;
+-
++			localbypass =  !(flags & VXLAN_F_LOCALBYPASS);
+ 			err = encap_bypass_if_local(skb, dev, vxlan, dst,
+ 						    dst_port, ifindex, vni,
+-						    ndst, rt6i_flags);
++						    ndst, rt6i_flags, localbypass);
+ 			if (err)
+ 				goto out_unlock;
+ 		}
+@@ -3202,6 +3208,7 @@ static const struct nla_policy vxlan_policy[IFLA_VXLAN_MAX + 1] = {
+ 	[IFLA_VXLAN_TTL_INHERIT]	= { .type = NLA_FLAG },
+ 	[IFLA_VXLAN_DF]		= { .type = NLA_U8 },
+ 	[IFLA_VXLAN_VNIFILTER]	= { .type = NLA_U8 },
++	[IFLA_VXLAN_LOCALBYPASS]	= { .type = NLA_U8 },
+ };
+ 
+ static int vxlan_validate(struct nlattr *tb[], struct nlattr *data[],
+@@ -4011,6 +4018,16 @@ static int vxlan_nl2conf(struct nlattr *tb[], struct nlattr *data[],
+ 			conf->flags |= VXLAN_F_UDP_ZERO_CSUM_TX;
+ 	}
+ 
++	if (data[IFLA_VXLAN_LOCALBYPASS]) {
++		if (changelink) {
++			NL_SET_ERR_MSG_ATTR(extack, tb[IFLA_VXLAN_LOCALBYPASS],
++					    "Cannot change LOCALBYPASS flag");
++			return -EOPNOTSUPP;
++		}
++		if (!nla_get_u8(data[IFLA_VXLAN_LOCALBYPASS]))
++			conf->flags |= VXLAN_F_LOCALBYPASS;
++	}
++
+ 	if (data[IFLA_VXLAN_UDP_ZERO_CSUM6_TX]) {
+ 		err = vxlan_nl2flag(conf, data, IFLA_VXLAN_UDP_ZERO_CSUM6_TX,
+ 				    VXLAN_F_UDP_ZERO_CSUM6_TX, changelink,
+@@ -4232,6 +4249,7 @@ static size_t vxlan_get_size(const struct net_device *dev)
+ 		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_UDP_ZERO_CSUM6_RX */
+ 		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_REMCSUM_TX */
+ 		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_REMCSUM_RX */
++		nla_total_size(sizeof(__u8)) + /* IFLA_VXLAN_LOCALBYPASS */
+ 		0;
+ }
+ 
+@@ -4308,7 +4326,9 @@ static int vxlan_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 	    nla_put_u8(skb, IFLA_VXLAN_REMCSUM_TX,
+ 		       !!(vxlan->cfg.flags & VXLAN_F_REMCSUM_TX)) ||
+ 	    nla_put_u8(skb, IFLA_VXLAN_REMCSUM_RX,
+-		       !!(vxlan->cfg.flags & VXLAN_F_REMCSUM_RX)))
++		       !!(vxlan->cfg.flags & VXLAN_F_REMCSUM_RX)) ||
++	    nla_put_u8(skb, IFLA_VXLAN_LOCALBYPASS,
++		       !(vxlan->cfg.flags & VXLAN_F_LOCALBYPASS)))
+ 		goto nla_put_failure;
+ 
+ 	if (nla_put(skb, IFLA_VXLAN_PORT_RANGE, sizeof(ports), &ports))
+diff --git a/include/net/vxlan.h b/include/net/vxlan.h
+index 20bd7d893e10..0be91ca78d3a 100644
+--- a/include/net/vxlan.h
++++ b/include/net/vxlan.h
+@@ -328,6 +328,7 @@ struct vxlan_dev {
+ #define VXLAN_F_TTL_INHERIT		0x10000
+ #define VXLAN_F_VNIFILTER               0x20000
+ #define VXLAN_F_MDB			0x40000
++#define VXLAN_F_LOCALBYPASS		0x80000
+ 
+ /* Flags that are used in the receive path. These flags must match in
+  * order for a socket to be shareable
+@@ -348,7 +349,8 @@ struct vxlan_dev {
+ 					 VXLAN_F_UDP_ZERO_CSUM6_TX |	\
+ 					 VXLAN_F_UDP_ZERO_CSUM6_RX |	\
+ 					 VXLAN_F_COLLECT_METADATA  |	\
+-					 VXLAN_F_VNIFILTER)
++					 VXLAN_F_VNIFILTER         |    \
++					 VXLAN_F_LOCALBYPASS)
+ 
+ struct net_device *vxlan_dev_create(struct net *net, const char *name,
+ 				    u8 name_assign_type, struct vxlan_config *conf);
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 57ceb788250f..4e3a3d295056 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -826,6 +826,7 @@ enum {
+ 	IFLA_VXLAN_TTL_INHERIT,
+ 	IFLA_VXLAN_DF,
+ 	IFLA_VXLAN_VNIFILTER, /* only applicable with COLLECT_METADATA mode */
++	IFLA_VXLAN_LOCALBYPASS,
+ 	__IFLA_VXLAN_MAX
+ };
+ #define IFLA_VXLAN_MAX	(__IFLA_VXLAN_MAX - 1)
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index 901d98b865a1..3d9a1fd6f7e7 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -747,6 +747,8 @@ enum {
+ 	IFLA_VXLAN_GPE,
+ 	IFLA_VXLAN_TTL_INHERIT,
+ 	IFLA_VXLAN_DF,
++	IFLA_VXLAN_VNIFILTER,
++	IFLA_VXLAN_LOCALBYPASS,
+ 	__IFLA_VXLAN_MAX
+ };
+ #define IFLA_VXLAN_MAX	(__IFLA_VXLAN_MAX - 1)
+-- 
+2.35.7
+
+--
+Fastmail.
 
