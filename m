@@ -2,77 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 501196C5E53
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3794D6C5E6F
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:09:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbjCWFAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 01:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
+        id S229820AbjCWFJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 01:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbjCWFAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:00:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491446EA8;
-        Wed, 22 Mar 2023 22:00:19 -0700 (PDT)
+        with ESMTP id S230009AbjCWFJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:09:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB9B19119
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 22:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D94BE623BD;
-        Thu, 23 Mar 2023 05:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 467FEC4339E;
-        Thu, 23 Mar 2023 05:00:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EB50CCE2020
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 05:08:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2D14C433EF;
+        Thu, 23 Mar 2023 05:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679547618;
-        bh=NPnB/UKnNUercF44HUDX/+E3dqZ3zJVMKeECg6m+d1A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IsZJcdwN7BEzr41ZzVOxogP/fo9bLZra4v8eGb4EUa1bebhFu3AHFwAuHzM+uW3j4
-         FVEGqDpUtiyjsw6cxk/EY51PNCkW5TDrwdTjTsd51ePOQUek5onn2Tl45jGa/lPq7B
-         IrTXp0IXIZHn9lfxZ7RvJ23PQuYkYopnkYjMbLUUsMtjrHPdokfHMkQCvc4qPucy3i
-         87hhPSfaDMVrjblhVr9BbaSaj6CmkEPSrOyN5Fqm7vs01FRYrO2P4wqjGa7Gb80a6N
-         4bncUA09GxrPJxzloqiV5FOTNOtkvYP1pWr5dwyhHFQJHmeSVQfZaM7bnhYKVJbr9U
-         grdHl1qm9Jsfg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A7FDE4F0D7;
-        Thu, 23 Mar 2023 05:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1679548125;
+        bh=O+ezgk3Jk7o7eVUUqgYs3nMg+rutiWTNx1RHi+amYUM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZcC0Ef6Ff5jMm/Qd618MO5JXCQHY/rlBPNcrtkXGI5LvOLjqCDkf6t9Yy3WEEFRXG
+         CaSSNYBtIHOSZBCWcLRSc4/WtVGn1S88aPECj4tXYPZVqrlGOpc4ddAOROupbqvWWj
+         gsCs3nHVDSbwEXKdiFIC5V2VynSRJlBp05vNGjwT3Oo9qmo+ZWBtoLhD6def8sTN5L
+         8Dkv7mpSpc3Hk311gbZiZAwYMH8f2TgCIUyX1IPlaqvZUcl/K5b5Zpj5JFC9ZxY2sC
+         H4xTvrs+bGjGbBiSRtq66wXDLFpkW/oHYSMgRdRSwBt7GXAjztpzoADfn9m8pC8zcf
+         ocA11sFOCAAew==
+Date:   Wed, 22 Mar 2023 22:08:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, willemb@google.com, alexander.duyck@gmail.com
+Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
+ lockless queue stop/wake code
+Message-ID: <20230322220843.6db66d98@kernel.org>
+In-Reply-To: <CALs4sv3O73a+KT8wbQvFnGFj7Rzxbxz07j79sUWB4BybMSHDXg@mail.gmail.com>
+References: <20230322233028.269410-1-kuba@kernel.org>
+        <CALs4sv3O73a+KT8wbQvFnGFj7Rzxbxz07j79sUWB4BybMSHDXg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] dt-bindings: net: Drop unneeded quotes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167954761809.22889.18341092686850307793.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Mar 2023 05:00:18 +0000
-References: <20230320233758.2918972-1-robh@kernel.org>
-In-Reply-To: <20230320233758.2918972-1-robh@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
-        afaerber@suse.de, mani@kernel.org, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        neil.armstrong@linaro.org, khilman@baylibre.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        joel@jms.id.au, andrew@aj.id.au, rafal@milecki.pl,
-        bcm-kernel-feedback-list@broadcom.com, f.fainelli@gmail.com,
-        appana.durga.rao@xilinx.com, naga.sureshkumar.relli@xilinx.com,
-        wg@grandegger.com, mkl@pengutronix.de, michal.simek@xilinx.com,
-        andrew@lunn.ch, olteanv@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, tobias@waldekranz.com,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        daniel.machon@microchip.com, UNGLinuxDriver@microchip.com,
-        agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
-        heiko@sntech.de, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        richardcochran@gmail.com, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.com,
-        krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-actions@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-amlogic@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-can@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-mediatek@lists.infradead.org
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,31 +54,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 20 Mar 2023 18:37:54 -0500 you wrote:
-> Cleanup bindings dropping unneeded quotes. Once all these are fixed,
-> checking for this can be enabled in yamllint.
+On Thu, 23 Mar 2023 10:23:32 +0530 Pavan Chebbi wrote:
+> > +               /* We need to check again in a case another             \
+> > +                * CPU has just made room available.                    \
+> > +                */                                                     \
+> > +               if (likely(get_desc < start_thrs)) {                    \  
 > 
-> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for bindings/net/can
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> 
-> [...]
+> I am only curious to understand why initializing _res with likely
+> result and having a condition to cover only the unlikely case, would
+> not be better.
+> As in:
+>     int _res = 0;
+>     if (unlikely(get_desc >= start_thrs) {
+>         start_queue()
+>         _res = -1
+>     }
 
-Here is the summary with links:
-  - [v2] dt-bindings: net: Drop unneeded quotes
-    https://git.kernel.org/netdev/net-next/c/3079bfdbda6c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I don't think it matters.
