@@ -2,166 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A38276C6A95
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 684246C6AA5
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbjCWOS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 10:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47902 "EHLO
+        id S231627AbjCWOT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 10:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbjCWOSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:18:23 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2133.outbound.protection.outlook.com [40.107.114.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7795E19D;
-        Thu, 23 Mar 2023 07:18:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y9tLRob2Vn/Qw+bjxHK/PGtM6ybCFsdyL30F1aL/Lvj6/qEZjyhXu15rD20oi32NH9s9nKJeTanXuiKNi19sMq7DQUQ33CDh55HzgU1KRNsIM+JIBKy16cgAGg5kWHQF3X4nUQHuvVhTT6KMWT4EeutTYdsx3PSBGDPPH1gP5gx2Xop7pDkgjMucIYrDGdV6KNmF0fVl+oirllANbYLjFw9zMUQbGl/JjBvH4okWc2Undixg2De1GzKWSQQSIBICYWBCYm77z7AuaeipSL++EtBs6foAhbDs0sO2WP1SeVTBGX3npOJmZfPkBtM7Xi19ugbvUcIB+mqIZy7QRTHq7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/loPbq+kzR4pmMBA59Z+5Xn7XF1bMGvAYV1k9r0wcoM=;
- b=EJ3OCdiydfEEYY+b7LB9yRo60NuiwA+bVAW7M5H5blSZx+vElDtW63JJdlmc8MvLnSF5bljpwX4BS1ZYsPEHaW7rwGJsPVU+4t3+wMSqcB55tW+ZBg8NkgkLVAZBQJuplm6WapdjKj2TRvp4mwr9Y3CovsYVZqn9REWSMeCZOiBkNrk1L7PgKZRnylWbagy43mQdd9lFMU2tbIM4iit4bAwcVeskGZ0l8GfsFQfB3dvJ9XAXKZ10+8SidPo+/5d0VSz6oEEhv8gjwECfWw4SPJ4DRv+kXcmuXtQA0Jf1ME6DCtkKVQE9aOIjda7yBaLIjidBANijr3GWfEPyQylkDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/loPbq+kzR4pmMBA59Z+5Xn7XF1bMGvAYV1k9r0wcoM=;
- b=pej2JjU8YqobbwSR8+0mofehoDPOuzF3cIawyalEpPjzTCuKzzBXxwUqvcccD8j/mRbNDIFYJUCcEsbpS+BucngjejYpnvlHeSsDu7azY1+DQVDnDeFQmgElcGhu3vzhoIRtfW9aGj7X2f5KZWsEnrmDD3fLAJE3o2sdnhnIq/Q=
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
- by TYCPR01MB10365.jpnprd01.prod.outlook.com (2603:1096:400:241::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
- 2023 14:18:16 +0000
-Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::24d:9af3:518d:5159]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
- ([fe80::24d:9af3:518d:5159%6]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 14:18:16 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Min Li <lnimi@hotmail.com>
-CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "lee@kernel.org" <lee@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH mfd 1/1] mfd/ptp: clockmatrix: support 32-bit address
- space
-Thread-Topic: [PATCH mfd 1/1] mfd/ptp: clockmatrix: support 32-bit address
- space
-Thread-Index: AQHZXCjUCj5+k/s/xkuefo+qVAurWq8HOGuAgAEsrQA=
-Date:   Thu, 23 Mar 2023 14:18:16 +0000
-Message-ID: <OS3PR01MB65937690235A4DF614329A96BA879@OS3PR01MB6593.jpnprd01.prod.outlook.com>
-References: <MW5PR03MB69323E281F1360A4F6C92838A0819@MW5PR03MB6932.namprd03.prod.outlook.com>
- <20230322125619.731912cf@kernel.org>
-In-Reply-To: <20230322125619.731912cf@kernel.org>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OS3PR01MB6593:EE_|TYCPR01MB10365:EE_
-x-ms-office365-filtering-correlation-id: 07e57e0d-e7b4-4e3a-2025-08db2ba971fa
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JbTIzTd+UsUhtcl9bPVZsjL8o8CnN7AO+wj/qnKLOE390VNwrmldg1ipy3XEAtHY1HDGim/iFss1KEXEJZBrwUXIH+MYYpkWqFDr2j7W7RZ+b5FXIcff9ykugdu+ZwIAHNui4bZA/hXACQG7AJSdS7g1GkyKtUntOZBIa2csWmGXuBHSLPIRWaXI/a1BOzx57Ek5TEuugN2eM9xiqrN5z+C3vlgHdx1Nx5aBi0XB2V1G216+Epd103y0OQeZvTo5MAHvF/F6GOs0ZT1ufzlnbZCchsHWZ3SlovwRI3O8x6X76fliFSrTn+A+mkQFo7t0Lp5j0noC0TNa9C0nnz2WUnkOOmIVSUbtXWssxXaSYmRfBMIkNR6pc6UQeldi1yLALOZV9kTQsl6Dcttw2gNbNZqLuTgkYeRVbTcJaGDGrj7zcuSE+q25+IQ416n/ObADZDF5vKrF0wINRogn7vOgOZsY4y6HmPMJixOPYsoKjUIaSF669TEaH3FBKYBBcSLV00fwPMGGsrpHhpdB8XxUuargkjhJVYL2NW45y6wRlwF0x17ZekA3GjZ1Z5XL2G9Imozk+jQmoydNCBpQjQ84mFdsvfutyV+eMkRm+N5f/YXb0O/lTh7+z/LqvOjDOtV6yznIk4kX5r3f1Ht51faDhSZ0H5EF0jDYgQuk2KMeRlGY31F2fh3yD6eiwBtP1yNQjaSl0XuDj6kyhGyZzu3WYA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(396003)(346002)(366004)(39860400002)(376002)(451199018)(66556008)(66446008)(4326008)(76116006)(8676002)(66946007)(66476007)(64756008)(110136005)(54906003)(5660300002)(122000001)(41300700001)(8936002)(52536014)(26005)(6506007)(316002)(186003)(9686003)(478600001)(71200400001)(86362001)(33656002)(7696005)(55016003)(38100700002)(38070700005)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XcGEntPqzFLKJ4g4Qr3hhMvLgG12xgKjvcygb8mJEWKrK9XdzCOnU48KDDOZ?=
- =?us-ascii?Q?sU/eN65OltFlI5ooiT1XhSMBYy/4DZR8V/FNmwZu5XggB/B+V+BfUMkpla4D?=
- =?us-ascii?Q?rJaaT+/lYEkkFbbpJDf0Y8lymG3L6cMU6R3/espJbPyCw8S/huroODoKD4G6?=
- =?us-ascii?Q?7e/Z1xiT4jLG1QQagjQgnlWYtPjfAJpoudTQHw9XNiR/VJAXJBuHqEfoWSnL?=
- =?us-ascii?Q?KIzYeFS1SHO0fxYkvea9LkM2rwZQvdmoldlgk/16Wy6UM4DRaT40xsaKREjT?=
- =?us-ascii?Q?nvYl564j26I0uz9QbXo1zmtfDrppjuQwQ3pxCmz6YIuNUizPY5yM0aRFtVkQ?=
- =?us-ascii?Q?aCcfXXlCK2mVYf/Nqog7LEnwZzlE5f17BWcoNURJHKvZPJWCW8zPRlxuVGvY?=
- =?us-ascii?Q?kpd0hBFMB8RKfJsy12tuCUhCeo1VTB3k08Ab/CJcyxDdSnueBDOfBG9vZYhF?=
- =?us-ascii?Q?c3CQ0QLLBQjVGvWBhd022hrdhxDzIek/coK7u7mySCGiLR851xqPq7P1OHbW?=
- =?us-ascii?Q?YMH2VbzwmGtQftKDDvuNZ40K8Pn0tTfc1KRZ74ynjEILjipB2qCi9hkGwreu?=
- =?us-ascii?Q?6Bg06E58TtEPSZ0FCHBGMVPeJIr0Asa7U1y1bih8stP8bP0vVQzxK6Ys6rGR?=
- =?us-ascii?Q?UhgVnMXuxSgV9p4GUihNTUV2+SU4WV6rfy2LN2p6iUTBvn3grZxHSMgWrd4x?=
- =?us-ascii?Q?pYrBQkNpPi7QqO6l28nOwmwflE1sSgpUV9dzGEMlpQev+r03UPUvSTEv0lkr?=
- =?us-ascii?Q?51ySsnmqUvMBC/TRA9Hz4w5Okuh5BTFTvCDvX31wRCzps9ucUVHcArJw2vky?=
- =?us-ascii?Q?zdC53PpeyCdg7wS2AZfQax8fpKw8PdNQR6HL6RFLi1Jd+7Wi6PKeqg/lGkCl?=
- =?us-ascii?Q?OGuImQPJIA5KoYWxT8dGexkBQRfuUPJfkmjhIiaTN+cGtSsmq500uCe4bsdP?=
- =?us-ascii?Q?4TG3bGoMzZe+nYT8uZXocDJN5PgW1PFPOmX6s4Pv1YQIKTCagU1qh76JW7dj?=
- =?us-ascii?Q?u91dtK4BLBX4sQFSeu+nDS7zHbYodRXzgV/pSzu9cWNKK9fQnWOq0lO0oEX+?=
- =?us-ascii?Q?sEIGgepo0YqLBAFR2oAucMy86jV/HOQ6BNwclHDXLfUMUi19pOtH9vFc/Z6i?=
- =?us-ascii?Q?lrhNox8Qp/ew/+M7hWRbhPXWJtILH8bcDE/cTyk+vH9ibUudrmQF/yLBzdv4?=
- =?us-ascii?Q?AhEv/qmoDDdBH3TPk2+g+F4IToN2Gdrm0DY0C9MwXu0jBvjQoj0GqSiQaeo7?=
- =?us-ascii?Q?zPbwFvD2wDY3SiMG73IODh+FJPilCWZlvqErhkd4MAauJYjhrb0dDry2YJmb?=
- =?us-ascii?Q?8S2SrgtW/zNpXRusNaZoue1ak4HhqvcTUGxBgycvFz5nDMzbqiNVvAYA6mJ3?=
- =?us-ascii?Q?Q6Cvdw/b+B0XJzhc2+VLEpA1heQtuj9zGrxP6Wz3u4+uyOurvum6UbHGufzK?=
- =?us-ascii?Q?dme09yQknrRjThVCffcOC+9qUCO51Ut1XgtL3Dpp/C+KX2gluDs4QxvTkRAs?=
- =?us-ascii?Q?MtKVxibivEZnTffFmdBNG4JjNAVU5fmelcxpQPI+T+4x5b/s8LaYDZFuL0iA?=
- =?us-ascii?Q?m8tp9XkMDhMY5QK42xfDFM3B1V3/fAerhUVHvZwS?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231743AbjCWOT3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:19:29 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5033403D
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 07:19:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/yPfIhK2CW+V1Ih2tVzFoUkOX1EaGIBx3YPMWWOZ8hI=; b=UTnXYsQsrdPJ9M7yEg/XyNQjRm
+        ywG5l1z5sc67aM1Sa/G/7DbWMxetyvAf70gXzBh/+dOTb7hn9vYMdMRR72Z+e2h1Kw4vY4HNIMO15
+        cMDCRYUzoV15ygUuXy41+1jNygPVmTgIJ9F6Q7DHGCWmjIn0uUU0Sjak82Bn+29cASK8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pfLmj-008ClS-Sg; Thu, 23 Mar 2023 15:19:21 +0100
+Date:   Thu, 23 Mar 2023 15:19:21 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Buzarra, Arturo" <Arturo.Buzarra@digi.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
+Message-ID: <156b7aee-b61a-40b9-ac51-59bcaef0c129@lunn.ch>
+References: <20230317121646.19616-1-arturo.buzarra@digi.com>
+ <3e904a01-7ea8-705c-bf7a-05059729cebf@gmail.com>
+ <DS7PR10MB4926EBB7DAA389E69A4E2FC1FA809@DS7PR10MB4926.namprd10.prod.outlook.com>
+ <74cef958-9513-40d7-8da4-7a566ba47291@lunn.ch>
+ <DS7PR10MB49260FFA60F0B3A5AB7AD69EFA879@DS7PR10MB4926.namprd10.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07e57e0d-e7b4-4e3a-2025-08db2ba971fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2023 14:18:16.4586
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PUvcugd6kzJoZjr152sMBcV6CiqyNMGk6zT1nNX9DDFuCFcIAVnJzfQeY7/ZFg1LHXUoU/T1AKwXXIePYryahw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB10365
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DS7PR10MB49260FFA60F0B3A5AB7AD69EFA879@DS7PR10MB4926.namprd10.prod.outlook.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Tue, 21 Mar 2023 15:10:06 -0400 Min Li wrote:
-> > -		buf[0] =3D (u8)(page & 0xff);
-> > -		buf[1] =3D (u8)((page >> 8) & 0xff);
-> > +		buf[0] =3D (u8)(page & 0xFF);
-> > +		buf[1] =3D (u8)((page >> 8) & 0xFF);
->=20
-> why did you decide to change from 0xff to 0xFF as part of this big change=
-?
-> It's unnecessary churn.
+> Gigabit PHY has its own Crystal, however the 10/100 PHY uses a clock
+> from the CPU and it is the root cause of the issue because when
+> Linux asks the PHY capabilities the clock is not ready yet.
 
-I will revert it back to 0xff
+O.K, now we are getting closer.
 
-> > -		err =3D idtcm_write(idtcm, 0, HW_Q8_CTRL_SPARE,
-> > +		err =3D idtcm_write(idtcm, HW_Q8_CTRL_SPARE, 0,
-> >  				  &temp, sizeof(temp));
-> >  		if (err)
-> >  			return err;
-> >
-> >  		temp |=3D Q9_TO_Q8_SYNC_TRIG;
-> >
-> > -		err =3D idtcm_write(idtcm, 0, HW_Q8_CTRL_SPARE,
-> > +		err =3D idtcm_write(idtcm, HW_Q8_CTRL_SPARE, 0,
-> >  				  &temp, sizeof(temp));
-> >  		if (err)
-> >  			return err;
->=20
-> Why are you flipping all these arguments?
-> Isn't HW_Q8_CTRL_SPARE regaddr?
+Which clock is it exactly? Both for the MAC and the PHY?
 
-static inline int idtcm_write(struct idtcm *idtcm,
--			      u16 module,
-+			      u32 module,
- 			      u16 regaddr,
- 			      u8 *buf,
- 			      u16 count)
+> We have identified the root cause of the 0xFFFF issue, it is because
+> the two PHYs are defined in the same MDIO bus node inside the first
+> Ethernet MAC node, and when the 10/100 PHY is probed the PHY Clock
+> from the CPU is not ready, this is the DT definition:
 
-HW_Q8_CTRL_SPARE is the module and is a u32. regaddr is the offset within t=
-he module.=20
-They used to be both u16 but after the change, module becomes u32.
 
-> Could you to split your patches into multiple steps to make them easier t=
-o
-> reivew?
+> ---------
+> /* Gigabit Ethernet */
+> &eth1 {
+> 	status = "okay";
+> 	pinctrl-0 = <&eth1_rgmii_pins>;
+> 	pinctrl-names = "default";
+> 	phy-mode = "rgmii-id";
+> 	max-speed = <1000>;
+> 	phy-handle = <&phy0_eth1>;
+> 
+> 	mdio1 {
+> 		#address-cells = <1>;
+> 		#size-cells = <0>;
+> 		compatible = "snps,dwmac-mdio";
+> 
+> 		phy0_eth1: ethernet-phy@0 {
+> 			reg = <0>;
+> 			compatible = "ethernet-phy-id0141.0dd0"; /* PHY ID for Marvell 88E1512 */
+> 			reset-gpios = <&gpioi 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+> 			reset-assert-us = <1000>;
+> 			reset-deassert-us = <2000>;
+> 		};
+> 
+> 		phy0_eth2: ethernet-phy@1 {
+> 			reg = <1>;
+> 			compatible = "ethernet-phy-id0007.c0f0"; /* PHY ID for SMSC LAN8720Ai */
+> 			reset-gpios = <&gpioh 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+> 			interrupt-parent = <&gpioh>;
+> 			interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+> 		};
+> 	};
+> };
 
-I will split the change into ptp and mfd respectively.
+This all looks reasonable.
+
+
+> /* 10/100 Ethernet */
+> &eth2 {
+> 	status = "okay";
+> 	pinctrl-0 = <&eth2_rmii_pins>;
+> 	pinctrl-names = "default";
+> 	phy-mode = "rmii";
+> 	max-speed = <100>;
+> 	phy-handle = <&phy0_eth2>;
+> 	st,ext-phyclk;
+> };
+
+st,ext-phyclk is interesting. But looking at the code, that means the
+clock is coming from somewhere else. And there appears to be eth-ck,
+which the driver does a
+
+devm_clk_get() on.
+
+Is eth-ck being fed to both the MAC and the PHY? Is this the missing
+clock?
+
+So this is what we need to fix. And the correct way to do this is to
+express this clock in DT. If you look at the PHY driver smsc, in its
+probe function it has:
+
+       /* Make clk optional to keep DTB backward compatibility. */
+        refclk = devm_clk_get_optional_enabled(dev, NULL);
+        if (IS_ERR(refclk))
+                return dev_err_probe(dev, PTR_ERR(refclk),
+                                     "Failed to request clock\n");
+
+If there is a clock in DT, it will try to enable it. If the clock does
+not exist yet, it will fail the probe with -EPRODE_DEFER, and the core
+will try the probe again later, hopefully once the clock exists.
+
+So this is the clock consumer. You also need a clock provider. What
+exactly is this clock? We need the answer to the questions above,
+but... If it is a SoC clock, it is quite likely there already is a
+clock provider for it. If it is a clock in the MAC, you need to extend
+the MAC driver to implement a clock provider. Maybe
+meson8b_dwmac_register_clk() is a useful example?
+
+	Andrew
+
+
