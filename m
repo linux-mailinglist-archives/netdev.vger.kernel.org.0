@@ -2,128 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 072C16C6DFE
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F30486C6E17
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:49:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231537AbjCWQoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 12:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
+        id S230500AbjCWQtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 12:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbjCWQoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:44:15 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B28E5FDC;
-        Thu, 23 Mar 2023 09:43:19 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id c19so27278432qtn.13;
-        Thu, 23 Mar 2023 09:43:19 -0700 (PDT)
+        with ESMTP id S232319AbjCWQtj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:49:39 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 372A710C;
+        Thu, 23 Mar 2023 09:49:16 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id r187so1511051ybr.6;
+        Thu, 23 Mar 2023 09:49:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679589799;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KngbDLDLHWwJVgnKsTodwutrgVkaNy3euy5YQN5mZYo=;
-        b=g86ZuLQbOhJu06WVOvNn+C4skxE03+YPioFTouQbBLfHUlvElCd3dFaS5OMIDIvkao
-         bPKaOsoRAbQiIDF4WUytRb9TA5BK5N0jKbar4WPssbHow3J8N9nAfVhzrK2508J3/Hmt
-         jRalDZnBiOKL6k8b/znmH9c17ZrTUE0rtntxGSiEIzvZ8pTW0OPBuzKtbfKdiVKkqEql
-         u1hnr6GlXXcvjS8AvWpkKy/sukSkiucvANDa3Mhn/m56++s5OJCDOVL6z6WQ9LKLpPj2
-         Ja4pn05yTIlEu3AexHxDsYnVDWuIzqsoCEziA0r9yVuL7pi6XcRKGm+Z1py9C4oaccfZ
-         siUA==
+        d=gmail.com; s=20210112; t=1679590155;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dwoV3gmNkNpNC5jzl06VUkReYtn9s53/my1cgAWnlDI=;
+        b=Bu2EK1yQ3ZQVr0rLJl1Z0U6NP/ZjP2zs3EN8k8LH4XkMWW2am5t/w64NcAarDlKBqc
+         woh2rX2JelIywNo6JFQAdDSwgFj/TOPBCsCr+kGiXyBhWACvIZwvnfpLBJ4KT4L5JquP
+         AsytgRRtivCKASUJm2vizYsjNbLjQpQUoUpG7zoNdhBUXlMVlHVQVAwRNziOnGAOhem4
+         8ElN11barkcdkH2bNjizjSNhK2LjMUE3SUjj5xVkDvbgVVvloJ8iS3qxFS1bXs8DJAiD
+         ix/bS+kXAPIFKIOs7cH4TVS3rjFWMjuF/5M6FyuFGbvvcsbYTLlDb7QGo6VmogfX3K6Z
+         CEug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679589799;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KngbDLDLHWwJVgnKsTodwutrgVkaNy3euy5YQN5mZYo=;
-        b=4LiV+Ntr31DOE49X016GZpVtq1FUdoyweEzt5YJ1yCFZmi3ph6N1ac5Aby8aHnXpdV
-         0oJpsfBcanSHQQjEnUzc0VOtvSOGQ2BrBOt5TZbwnL+tSZwNuQaFGSJmPoeodzkEa880
-         Xr2PKu8i7HqeaRp29tbADvgDqwLdrhDUxpEsmYMerxe86NK8haXejWdSttodh9coaKln
-         P+7AI3LvPyCd1gqRec8sWszLhjCxcOt1N/MXzqwnEq42qOYwe089Rt8CYpOdF926T4RH
-         uxP+vecdW8SCFpEuLOaippHXeEs+VINzjMMlXEkXkBoqeYvwSCsdgjD7vTGZwKKSslvL
-         fX/w==
-X-Gm-Message-State: AO0yUKUvMvGSyEXgh8+AZOxZ+0i+mWbkjbEjb9jssp4salJt8F2QgkEA
-        JG//LYyfF+wfYozA2zNHIkU=
-X-Google-Smtp-Source: AK7set/AVHrsDHxRPKjskTuZRBFHNlO4bwbcOSa76yoI/1gjB6LW1D/3mkTTMpLSQwiiHEO5XkDsuQ==
-X-Received: by 2002:ac8:4e82:0:b0:3b6:323d:bcac with SMTP id 2-20020ac84e82000000b003b6323dbcacmr12078478qtp.32.1679589798775;
-        Thu, 23 Mar 2023 09:43:18 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o140-20020a374192000000b007343fceee5fsm7385670qka.8.2023.03.23.09.43.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Mar 2023 09:43:18 -0700 (PDT)
-Message-ID: <ee867960-91bb-659b-a87b-6c04613608c5@gmail.com>
-Date:   Thu, 23 Mar 2023 09:43:10 -0700
+        d=1e100.net; s=20210112; t=1679590155;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dwoV3gmNkNpNC5jzl06VUkReYtn9s53/my1cgAWnlDI=;
+        b=ZAcqaVS1vNSLU46uVsK+FVUjt9B8Z1YeFeHv21Qb29RHECKCJcwgajlArXY9gvtxSK
+         Qbjap3u+ZKSCThiqsZS2LV5KKSEWpCbt/+bZT2bTvNKI07J/M0+YuzU6RE3S2q+YMwQ4
+         XmMr9vNwhbMaLueYEfcGF28s0C+Q/JyQrIY1YiKi0rA4tYDySuCKB7MdQTKYpQXw2LzH
+         bgJALWYkJymuMni+XjSpjD30XSRj8wWsttA/u/8/+afz1Rsr4uUDEqSt5Z3gP1BbNwtH
+         zF3JeiP1VcgLoRpulP2xDTPknDlN1wkZz7sgS+0AslUr5knSlL9V6TsGudVOEiU8DMB6
+         ZF6Q==
+X-Gm-Message-State: AAQBX9f8fZo8/yR/TO4H6T0PYAOpH6cy+xZmIgYRLKfyaIpY+ZAdEaOq
+        RVo01wa2Q3+6Fc61q7jXr1g7kRCtbWAWq6Yr36Y=
+X-Google-Smtp-Source: AKy350Z+SoFgmE7Fb9j9rcIHPb9emHS6wyfThq3Cf4KKJpyp8YY2Ehz1LoJCn2pl0zUe55El3gzt+EyzZpV7KVhUC6I=
+X-Received: by 2002:a25:7456:0:b0:b6b:79a2:8cff with SMTP id
+ p83-20020a257456000000b00b6b79a28cffmr2115988ybc.9.1679590155233; Thu, 23 Mar
+ 2023 09:49:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
+References: <20230323121804.2249605-1-noltari@gmail.com> <20230323121804.2249605-3-noltari@gmail.com>
+ <ee867960-91bb-659b-a87b-6c04613608c5@gmail.com>
+In-Reply-To: <ee867960-91bb-659b-a87b-6c04613608c5@gmail.com>
+From:   =?UTF-8?B?w4FsdmFybyBGZXJuw6FuZGV6IFJvamFz?= <noltari@gmail.com>
+Date:   Thu, 23 Mar 2023 17:49:04 +0100
+Message-ID: <CAKR-sGdhVTH__KT2bu3NM56QoJgiM0JuKXGabW5uLRg8NMwGmA@mail.gmail.com>
 Subject: Re: [PATCH 2/2] net: dsa: b53: mdio: add support for BCM53134
-Content-Language: en-US
-To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
-        paul.geurts@prodrive-technologies.com, jonas.gorski@gmail.com,
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     paul.geurts@prodrive-technologies.com, jonas.gorski@gmail.com,
         andrew@lunn.ch, olteanv@gmail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20230323121804.2249605-1-noltari@gmail.com>
- <20230323121804.2249605-3-noltari@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230323121804.2249605-3-noltari@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/23/23 05:18, Álvaro Fernández Rojas wrote:
-> From: Paul Geurts <paul.geurts@prodrive-technologies.com>
-> 
-> Add support for the BCM53134 Ethernet switch in the existing b53 dsa driver.
-> BCM53134 is very similar to the BCM58XX series.
-> 
-> Signed-off-by: Paul Geurts <paul.geurts@prodrive-technologies.com>
-> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-> ---
->   drivers/net/dsa/b53/b53_common.c | 53 +++++++++++++++++++++++++++++++-
->   drivers/net/dsa/b53/b53_mdio.c   |  5 ++-
->   drivers/net/dsa/b53/b53_priv.h   |  9 +++++-
->   3 files changed, 64 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> index 1f9b251a5452..aaa0813e6f59 100644
+El jue, 23 mar 2023 a las 17:43, Florian Fainelli
+(<f.fainelli@gmail.com>) escribi=C3=B3:
+>
+> On 3/23/23 05:18, =C3=81lvaro Fern=C3=A1ndez Rojas wrote:
+> > From: Paul Geurts <paul.geurts@prodrive-technologies.com>
+> >
+> > Add support for the BCM53134 Ethernet switch in the existing b53 dsa dr=
+iver.
+> > BCM53134 is very similar to the BCM58XX series.
+> >
+> > Signed-off-by: Paul Geurts <paul.geurts@prodrive-technologies.com>
+> > Signed-off-by: =C3=81lvaro Fern=C3=A1ndez Rojas <noltari@gmail.com>
+> > ---
+> >   drivers/net/dsa/b53/b53_common.c | 53 +++++++++++++++++++++++++++++++=
+-
+> >   drivers/net/dsa/b53/b53_mdio.c   |  5 ++-
+> >   drivers/net/dsa/b53/b53_priv.h   |  9 +++++-
+> >   3 files changed, 64 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53=
+_common.c
+> > index 1f9b251a5452..aaa0813e6f59 100644
+> > --- a/drivers/net/dsa/b53/b53_common.c
+> > +++ b/drivers/net/dsa/b53/b53_common.c
+> > @@ -1282,6 +1282,42 @@ static void b53_adjust_link(struct dsa_switch *d=
+s, int port,
+> >       if (is63xx(dev) && port >=3D B53_63XX_RGMII0)
+> >               b53_adjust_63xx_rgmii(ds, port, phydev->interface);
+> >
+> > +     if (is53134(dev) && phy_interface_is_rgmii(phydev)) {
+>
+> Why is not this in the same code block as the one for the is531x5()
+> device like this:
+
+This is what I asked on the cover letter:
+> I also added a separate RGMII handling block for is53134() since accordin=
+g to
+> Paul, BCM53134 doesn't support RGMII_CTRL_TIMING_SEL as opposed to is531x=
+5().
+
+Should I add it to the same block and avoid adding
+RGMII_CTRL_TIMING_SEL if is53134() or is it compatible with
+RGMII_CTRL_TIMING_SEL?
+
+>
+> diff --git a/drivers/net/dsa/b53/b53_common.c
+> b/drivers/net/dsa/b53/b53_common.c
+> index 59cdfc51ce06..1c64b6ce7e78 100644
 > --- a/drivers/net/dsa/b53/b53_common.c
 > +++ b/drivers/net/dsa/b53/b53_common.c
-> @@ -1282,6 +1282,42 @@ static void b53_adjust_link(struct dsa_switch *ds, int port,
->   	if (is63xx(dev) && port >= B53_63XX_RGMII0)
->   		b53_adjust_63xx_rgmii(ds, port, phydev->interface);
->   
-> +	if (is53134(dev) && phy_interface_is_rgmii(phydev)) {
+> @@ -1235,7 +1235,7 @@ static void b53_adjust_link(struct dsa_switch *ds,
+> int port,
+>                                tx_pause, rx_pause);
+>          b53_force_link(dev, port, phydev->link);
+>
+> -       if (is531x5(dev) && phy_interface_is_rgmii(phydev)) {
+> +       if ((is531x5(dev) || is53134(dev)) &&
+> phy_interface_is_rgmii(phydev)) {
+>                  if (port =3D=3D dev->imp_port)
+>                          off =3D B53_RGMII_CTRL_IMP;
+>                  else
+>
+> Other than that, LGTM!
+> --
+> Florian
+>
 
-Why is not this in the same code block as the one for the is531x5() 
-device like this:
-
-diff --git a/drivers/net/dsa/b53/b53_common.c 
-b/drivers/net/dsa/b53/b53_common.c
-index 59cdfc51ce06..1c64b6ce7e78 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1235,7 +1235,7 @@ static void b53_adjust_link(struct dsa_switch *ds, 
-int port,
-                               tx_pause, rx_pause);
-         b53_force_link(dev, port, phydev->link);
-
--       if (is531x5(dev) && phy_interface_is_rgmii(phydev)) {
-+       if ((is531x5(dev) || is53134(dev)) && 
-phy_interface_is_rgmii(phydev)) {
-                 if (port == dev->imp_port)
-                         off = B53_RGMII_CTRL_IMP;
-                 else
-
-Other than that, LGTM!
--- 
-Florian
-
+--
+=C3=81lvaro.
