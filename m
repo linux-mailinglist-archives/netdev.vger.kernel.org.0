@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4B16C6924
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:09:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 450C76C6925
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbjCWNIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 09:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
+        id S229379AbjCWNIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 09:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbjCWNIf (ORCPT
+        with ESMTP id S230257AbjCWNIf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:08:35 -0400
 Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69B9B449
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D85B450
         for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:08:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -20,20 +20,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=thE29ucH0NUOsps3SgshSqi0yADyf5rxz705GPpGMBk=; b=e2SrUfr6tZQQmKBHmVQBUG98sa
-        f3mQxmQRdhPQ4DPEGgT7IYW1+8bzestb9Zy6u7cp0bsf3o2SUZX+2voy2+NyKwbe8pJzkVoi2VkZx
-        XG4HTHyX0JMA8o0TvtXIgXej2zoB/InCdqEHgPYB5CPF29pcSgYqjRHxoPGFQHlTyr28=;
+        bh=KA2oH1SDRmplQJUEe4rTRO2Ooiicz6rXc3GsgXPN5Ok=; b=n5oL9+qSRpq2IT2jkXX3PKu0+j
+        N1qAzaNOzWeBbwusQC9uUg1MY0m6ROIVv+wDpiZVH85GyUtSyXHBIQV5/N49iIKdG7R3SrjWb6pLJ
+        xAaceEjNuExkapDRUK3OKo/mth8miPk3VHQsPZMVCIvLqxwOrtxS6rI0ay/2qZizJlFQ=;
 Received: from [217.114.218.29] (helo=localhost.localdomain)
         by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
         (Exim 4.94.2)
         (envelope-from <nbd@nbd.name>)
-        id 1pfKfw-0062oc-Mi
-        for netdev@vger.kernel.org; Thu, 23 Mar 2023 14:08:16 +0100
+        id 1pfKfw-0062oc-Tw
+        for netdev@vger.kernel.org; Thu, 23 Mar 2023 14:08:17 +0100
 From:   Felix Fietkau <nbd@nbd.name>
 To:     netdev@vger.kernel.org
-Subject: [PATCH v2 2/3] net: ethernet: mtk_eth_soc: fix L2 offloading with DSA untag offload
-Date:   Thu, 23 Mar 2023 14:08:14 +0100
-Message-Id: <20230323130815.7753-2-nbd@nbd.name>
+Subject: [PATCH v2 3/3] net: ethernet: mtk_eth_soc: add missing ppe cache flush when deleting a flow
+Date:   Thu, 23 Mar 2023 14:08:15 +0100
+Message-Id: <20230323130815.7753-3-nbd@nbd.name>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230323130815.7753-1-nbd@nbd.name>
 References: <20230323130815.7753-1-nbd@nbd.name>
@@ -48,62 +48,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check for skb metadata in order to detect the case where the DSA header
-is not present.
+The cache needs to be flushed to ensure that the hardware stops offloading
+the flow immediately.
 
-Fixes: 2d7605a72906 ("net: ethernet: mtk_eth_soc: enable hardware DSA untagging")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 6 +++---
- drivers/net/ethernet/mediatek/mtk_ppe.c     | 5 ++++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 3cb43623d3db..a94aa08515af 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2059,9 +2059,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			skb_checksum_none_assert(skb);
- 		skb->protocol = eth_type_trans(skb, netdev);
- 
--		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
--			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
--
- 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
- 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
- 				if (trxd.rxd3 & RX_DMA_VTAG_V2) {
-@@ -2089,6 +2086,9 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			__vlan_hwaccel_put_tag(skb, htons(vlan_proto), vlan_tci);
- 		}
- 
-+		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
-+			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
-+
- 		skb_record_rx_queue(skb, 0);
- 		napi_gro_receive(napi, skb);
- 
 diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 6883eb34cd8b..a038b99ecbda 100644
+index a038b99ecbda..fd07d6e14273 100644
 --- a/drivers/net/ethernet/mediatek/mtk_ppe.c
 +++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -8,6 +8,7 @@
- #include <linux/platform_device.h>
- #include <linux/if_ether.h>
- #include <linux/if_vlan.h>
-+#include <net/dst_metadata.h>
- #include <net/dsa.h>
- #include "mtk_eth_soc.h"
- #include "mtk_ppe.h"
-@@ -699,7 +700,9 @@ void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
- 		    skb->dev->dsa_ptr->tag_ops->proto != DSA_TAG_PROTO_MTK)
- 			goto out;
- 
--		tag += 4;
-+		if (!skb_metadata_dst(skb))
-+			tag += 4;
-+
- 		if (get_unaligned_be16(tag) != ETH_P_8021Q)
- 			break;
+@@ -459,6 +459,7 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
+ 		hwe->ib1 &= ~MTK_FOE_IB1_STATE;
+ 		hwe->ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE, MTK_FOE_STATE_INVALID);
+ 		dma_wmb();
++		mtk_ppe_cache_clear(ppe);
+ 	}
+ 	entry->hash = 0xffff;
  
 -- 
 2.39.0
