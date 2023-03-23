@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C288D6C5B6A
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 01:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E596C5B70
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 01:40:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbjCWAj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 20:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
+        id S229760AbjCWAkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 20:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbjCWAj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 20:39:56 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA9CD520
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 17:39:54 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id r25-20020a056602235900b0074d472df653so10614796iot.2
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 17:39:54 -0700 (PDT)
+        with ESMTP id S229666AbjCWAj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 20:39:58 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3836B1E290
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 17:39:55 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id n9-20020a056e02100900b00325c9240af7so1417601ilj.10
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 17:39:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679531993;
+        d=1e100.net; s=20210112; t=1679531994;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=8NiIyltKxDJdFrINjX75BJjnuGiPstgqlqzvrWa9wCg=;
-        b=Fr5Hh5Srumf9MgQOoXsmGZyx3jYosMq4xAMYRVD+UhgqqEIFK+neyoQfPzwUH4ZfFM
-         J75SmPBo1lbrxy159+m28tzfvMQTsdNS2QSvatZpxgYJh+5uaPjuCaDJO8pDFUtaZcEu
-         kmCPXlfjzzwb/s97yph8OEM3WZPS10RqpMM+E105u/msGl48a4HH2cDO58x1DPOC2m2m
-         h9FaRScaPyZuk+MjLYjdtfYtMwaD4JsxIAIHTZGZi+Pk15J9FB32qiPQwuh9rYrsgUsi
-         YN5SBRMeakMISpiRk8obPQsPyCv0DQca1cQSb1uPJKdklRzNGUb9PWv8Q7LSTXn1P8//
-         Va3w==
-X-Gm-Message-State: AO0yUKUNxJFx5vW7CLFcGXDIdyCGPSDpRp19oAcudvRMLOpRrX3rPQXs
-        hrkheorM/f7FD96fJKvQCTVNMxUjUM4u605EE/yryLtDCt1U
-X-Google-Smtp-Source: AK7set/r2bjv2gut2DmPb/OiOdE6rFWol8dZ6yO9KmoyMdYpYo/Kw3qrwV0I1KCLokNOAifW2P8hAQsLKIegzDdh+VirQ3lR4qPA
+        bh=cRmAnTw5x2//9xw8ssGmcUbF4NEnjW4TaY2uygOKll4=;
+        b=Q5JtYdoF+/6X3z0/0h8cHKTpguYkc8754bLFAwZHBmIRE0k/qjPjDNTzEDFbmwxGF7
+         FbzbzcRypF7WKwrBq9lFhVsz4SFkqZKE4p/coTFpt15QopJvEpJtuXe2SJoWgo+XlNZO
+         z0LbBJpV1v5MUuMnLRF4veywiUqgTQ9FWXBEWnNa20twUNAj9Y11qY2DtXfW9ZORZtZh
+         ZOk2GQnLW9MrCMz8eR8JxliMzFjedRae9YfXPsBd1z7Hy6ZzvRjzkPJRxaJh0mgg3igH
+         Q+9raGaVf/xhnh9tTmfiZlSmVuM2G7UlE9otxyJ1k/wl0KfqVUgmG3IqckYDryinjUpv
+         wI5A==
+X-Gm-Message-State: AO0yUKUZYaGq8Z1Mni1ueoZTZT1TA2LbuGd2+BkRc6rEoNORs1Cmoblm
+        oW0EUBvZG4LsjO8WGYUZgFQdLM+Iatyhc8rHj5PWW+OWPK9I
+X-Google-Smtp-Source: AK7set+lg35o6E3vNTGqfBkhJh4iHmqWe/pBv0lYcq/fhuijMdnHb973Am1aOOD/gFF2NnmeIci09LMorlH0GDh/RAPQAPXKckwK
 MIME-Version: 1.0
-X-Received: by 2002:a92:2612:0:b0:313:cc98:7eee with SMTP id
- n18-20020a922612000000b00313cc987eeemr3738082ile.1.1679531993740; Wed, 22 Mar
- 2023 17:39:53 -0700 (PDT)
-Date:   Wed, 22 Mar 2023 17:39:53 -0700
+X-Received: by 2002:a02:84e6:0:b0:3c5:1971:1b7f with SMTP id
+ f93-20020a0284e6000000b003c519711b7fmr3728669jai.6.1679531994236; Wed, 22 Mar
+ 2023 17:39:54 -0700 (PDT)
+Date:   Wed, 22 Mar 2023 17:39:54 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e03bc805f78683cd@google.com>
-Subject: [syzbot] [sctp?] general protection fault in sctp_outq_tail
-From:   syzbot <syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com>
+Message-ID: <000000000000e7f27b05f78683fb@google.com>
+Subject: [syzbot] [arm-msm?] [net?] WARNING: refcount bug in qrtr_node_lookup (2)
+From:   syzbot <syzbot+e8a22d28d4527d9d6148@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-        lucien.xin@gmail.com, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com, pabeni@redhat.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mani@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
@@ -61,104 +60,72 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    cdd28833100c net: microchip: sparx5: fix deletion of exist..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1588fe92c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cab35c936731a347
-dashboard link: https://syzkaller.appspot.com/bug?extid=47c24ca20a2fa01f082e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d80ff4c80000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f6e90ac80000
+HEAD commit:    fe15c26ee26e Linux 6.3-rc1
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=111b3ca4c80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7573cbcd881a88c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=e8a22d28d4527d9d6148
+compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=160ec3dcc80000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=103d9d42c80000
 
 Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/2fb6257d1131/disk-cdd28833.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/a3025d79117c/vmlinux-cdd28833.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/8e6d670a5fed/bzImage-cdd28833.xz
+disk image: https://storage.googleapis.com/syzbot-assets/89d41abd07bd/disk-fe15c26e.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/fa75f5030ade/vmlinux-fe15c26e.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/590d0f5903ee/Image-fe15c26e.gz.xz
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com
+Reported-by: syzbot+e8a22d28d4527d9d6148@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xdffffc0000000007: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000038-0x000000000000003f]
-CPU: 1 PID: 5783 Comm: syz-executor825 Not tainted 6.2.0-syzkaller-12889-gcdd28833100c #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-RIP: 0010:list_add_tail include/linux/list.h:102 [inline]
-RIP: 0010:sctp_outq_tail_data net/sctp/outqueue.c:91 [inline]
-RIP: 0010:sctp_outq_tail+0x4ab/0xbf0 net/sctp/outqueue.c:299
-Code: 8b 48 08 4c 8d 6b 18 48 8d 41 30 48 89 44 24 08 48 8d 41 38 48 89 c2 48 89 44 24 20 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 0a 06 00 00 4c 8b 79 38 4c 89 ef 48 89 4c 24 28
-RSP: 0018:ffffc90005257568 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888072779140 RCX: 0000000000000000
-RDX: 0000000000000007 RSI: ffffffff841d7ef0 RDI: ffff888071fbb0c8
-RBP: ffff8880787a47e0 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 1ffff92000a4aeb3
-R13: ffff888072779158 R14: ffff8880787c0000 R15: ffff888071ad7c80
-FS:  00007f5801104700(0000) GS:ffff8880b9900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f58011b0740 CR3: 000000002a37e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- sctp_cmd_send_msg net/sctp/sm_sideeffect.c:1114 [inline]
- sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1777 [inline]
- sctp_side_effects net/sctp/sm_sideeffect.c:1199 [inline]
- sctp_do_sm+0x197d/0x5310 net/sctp/sm_sideeffect.c:1170
- sctp_primitive_SEND+0x9f/0xc0 net/sctp/primitive.c:163
- sctp_sendmsg_to_asoc+0x10eb/0x1a30 net/sctp/socket.c:1868
- sctp_sendmsg+0x8d4/0x1d90 net/sctp/socket.c:2026
- inet_sendmsg+0x9d/0xe0 net/ipv4/af_inet.c:825
- sock_sendmsg_nosec net/socket.c:722 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:745
- __sys_sendto+0x23a/0x340 net/socket.c:2145
- __do_sys_sendto net/socket.c:2157 [inline]
- __se_sys_sendto net/socket.c:2153 [inline]
- __x64_sys_sendto+0xe1/0x1b0 net/socket.c:2153
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f5801177ce9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f58011042f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007f58012004b8 RCX: 00007f5801177ce9
-RDX: 0000000000034000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00007f58012004b0 R08: 00000000200005c0 R09: 000000000000001c
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f58012004bc
-R13: 00007f58011cd600 R14: 0100000000000000 R15: 0000000000022000
- </TASK>
+------------[ cut here ]------------
+refcount_t: addition on 0; use-after-free.
+WARNING: CPU: 1 PID: 9 at lib/refcount.c:25 refcount_warn_saturate+0x1a8/0x20c lib/refcount.c:25
 Modules linked in:
+CPU: 1 PID: 9 Comm: kworker/u4:0 Not tainted 6.3.0-rc1-syzkaller-gfe15c26ee26e #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
+Workqueue: qrtr_ns_handler qrtr_ns_worker
+pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : refcount_warn_saturate+0x1a8/0x20c lib/refcount.c:25
+lr : refcount_warn_saturate+0x1a8/0x20c lib/refcount.c:25
+sp : ffff80001a3a6da0
+x29: ffff80001a3a6da0 x28: dfff800000000000 x27: ffff700003474dc8
+x26: ffff80001a3a6e60 x25: 0000000000000000 x24: 00000000003a6056
+x23: ffff0000d22173f0 x22: 0000000000000000 x21: 0000000000000002
+x20: ffff0000d751c098 x19: ffff8000186ee000 x18: ffff80001a3a62a0
+x17: 0000000000000000 x16: ffff80001246250c x15: 0000000000000000
+x14: 0000000000000000 x13: 0000000000000001 x12: 0000000000000001
+x11: ff808000081bd230 x10: 0000000000000000 x9 : 04bb8433d1680a00
+x8 : 04bb8433d1680a00 x7 : 0000000000000001 x6 : 0000000000000001
+x5 : ffff80001a3a6698 x4 : ffff800015dc52c0 x3 : ffff80000859c514
+x2 : 0000000000000001 x1 : 0000000100000001 x0 : 0000000000000000
+Call trace:
+ refcount_warn_saturate+0x1a8/0x20c lib/refcount.c:25
+ __refcount_inc include/linux/refcount.h:250 [inline]
+ refcount_inc include/linux/refcount.h:267 [inline]
+ kref_get include/linux/kref.h:45 [inline]
+ qrtr_node_acquire net/qrtr/af_qrtr.c:202 [inline]
+ qrtr_node_lookup+0xdc/0x100 net/qrtr/af_qrtr.c:398
+ qrtr_send_resume_tx net/qrtr/af_qrtr.c:1003 [inline]
+ qrtr_recvmsg+0x3dc/0x954 net/qrtr/af_qrtr.c:1070
+ sock_recvmsg_nosec net/socket.c:1015 [inline]
+ sock_recvmsg net/socket.c:1036 [inline]
+ kernel_recvmsg+0x124/0x18c net/socket.c:1061
+ qrtr_ns_worker+0x294/0x513c net/qrtr/ns.c:688
+ process_one_work+0x868/0x16f4 kernel/workqueue.c:2390
+ worker_thread+0x8e0/0xfe8 kernel/workqueue.c:2537
+ kthread+0x24c/0x2d4 kernel/kthread.c:376
+ ret_from_fork+0x10/0x20 arch/arm64/kernel/entry.S:870
+irq event stamp: 766220
+hardirqs last  enabled at (766219): [<ffff800012543b48>] __raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:151 [inline]
+hardirqs last  enabled at (766219): [<ffff800012543b48>] _raw_spin_unlock_irqrestore+0x44/0xa4 kernel/locking/spinlock.c:194
+hardirqs last disabled at (766220): [<ffff80001254393c>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
+hardirqs last disabled at (766220): [<ffff80001254393c>] _raw_spin_lock_irqsave+0x2c/0x88 kernel/locking/spinlock.c:162
+softirqs last  enabled at (766216): [<ffff80001066ca80>] spin_unlock_bh include/linux/spinlock.h:395 [inline]
+softirqs last  enabled at (766216): [<ffff80001066ca80>] lock_sock_nested+0xe8/0x138 net/core/sock.c:3480
+softirqs last disabled at (766214): [<ffff80001066ca28>] spin_lock_bh include/linux/spinlock.h:355 [inline]
+softirqs last disabled at (766214): [<ffff80001066ca28>] lock_sock_nested+0x90/0x138 net/core/sock.c:3476
 ---[ end trace 0000000000000000 ]---
-RIP: 0010:list_add_tail include/linux/list.h:102 [inline]
-RIP: 0010:sctp_outq_tail_data net/sctp/outqueue.c:91 [inline]
-RIP: 0010:sctp_outq_tail+0x4ab/0xbf0 net/sctp/outqueue.c:299
-Code: 8b 48 08 4c 8d 6b 18 48 8d 41 30 48 89 44 24 08 48 8d 41 38 48 89 c2 48 89 44 24 20 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 0a 06 00 00 4c 8b 79 38 4c 89 ef 48 89 4c 24 28
-RSP: 0018:ffffc90005257568 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff888072779140 RCX: 0000000000000000
-RDX: 0000000000000007 RSI: ffffffff841d7ef0 RDI: ffff888071fbb0c8
-RBP: ffff8880787a47e0 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 1ffff92000a4aeb3
-R13: ffff888072779158 R14: ffff8880787c0000 R15: ffff888071ad7c80
-FS:  00007f5801104700(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffd458c9960 CR3: 000000002a37e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	8b 48 08             	mov    0x8(%rax),%ecx
-   3:	4c 8d 6b 18          	lea    0x18(%rbx),%r13
-   7:	48 8d 41 30          	lea    0x30(%rcx),%rax
-   b:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
-  10:	48 8d 41 38          	lea    0x38(%rcx),%rax
-  14:	48 89 c2             	mov    %rax,%rdx
-  17:	48 89 44 24 20       	mov    %rax,0x20(%rsp)
-  1c:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  23:	fc ff df
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
-  2e:	0f 85 0a 06 00 00    	jne    0x63e
-  34:	4c 8b 79 38          	mov    0x38(%rcx),%r15
-  38:	4c 89 ef             	mov    %r13,%rdi
-  3b:	48 89 4c 24 28       	mov    %rcx,0x28(%rsp)
 
 
 ---
