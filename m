@@ -2,135 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F372B6C7294
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 22:51:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A43DF6C729F
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 22:54:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbjCWVvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 17:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
+        id S229951AbjCWVy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 17:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbjCWVvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 17:51:15 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D78CE181;
-        Thu, 23 Mar 2023 14:51:14 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id i7so125147ybt.0;
-        Thu, 23 Mar 2023 14:51:14 -0700 (PDT)
+        with ESMTP id S229508AbjCWVyY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 17:54:24 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09D3113CE
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 14:54:23 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id ek18so742723edb.6
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 14:54:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679608273;
+        d=linuxfoundation.org; s=google; t=1679608462;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vWGzwKfmQ8YcB4xPR2K7LbYdFkNoBqkDdULTLqBuFYc=;
-        b=MCEdKoRgX+p2BO+yFR8tXTiCMW2HmyOXC1tYXjvTQzSlDMFUw+COGfN03fD6g6j5W4
-         9lRt6BdrQCGusPH3bQeBo5pFfi5uhDRYSLSsNuLHgGH129nBwBfX/bXUE/Pj7IvfMoZQ
-         CH92IsoGwE+jB26ap7gyjsUPry6KQAeZbgfwSrJStDl8VYzZZjl4uEeulFx0c7q6wyVB
-         Bxm/UCPBuXt/4tfhpaip13R4XLh5bX5gWebaW1ZhES4YIZvBaCBw/k/jxB9v14P6tkC7
-         RQmo5AZY6lE9/ZZGhIjyISKVV+myO9aTpuF0ryTjWFM3sehGJjsybErRoFdIAIF0NCzr
-         ufdg==
+        bh=UwF4PjfX50G0tO1s1nkfZf9mTnmPVFCblQ+X/mkUZqQ=;
+        b=E9yb93D9vJl2xfJOVLj0UIRZ0hZs3DiPYLnTS/7VQ/BdIrdAeww1WuyMmSMl4bFreV
+         LPDpnsKQmCeYn1nLfPseVfjE0x28g2Kh5OsuaAKcHn1kXxQAW0SYdYYYlpH1NxID6pIh
+         YH13e13dhKszTvD9Zo+ak7xgtuXUXf4LHq0kM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679608273;
+        d=1e100.net; s=20210112; t=1679608462;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vWGzwKfmQ8YcB4xPR2K7LbYdFkNoBqkDdULTLqBuFYc=;
-        b=GiQWej17+zlsiJIz12leRmVVuEdaKVgfJsRD9W1VajuXRO5R4y/glW/gjYy78KG5lH
-         ALcdytRf0JabUDXQT8vhrBX383di7Q5N/ESVkMr6BUHiZD1juejF7ea86dhUtqDl9CHt
-         oVBHL260G5rhfqJ4ExL9W7aeUJCa1UhXsdF5hpoxaXGSJVaMHafrDvNuQl9zPmdFHyay
-         J/HfkVzjB/H8dmqWgJ7AGNhwknn1SUMvrg71vOm8OI6GIRaXBs/duVxXP6yUTPtbJK6B
-         mLsvR2jaFaaQqxB1FvogTKSjWpTwzdf0xxvNn+IC0+PYTqxfZ/VRA0d3djCn0K4WjjwM
-         6ZqA==
-X-Gm-Message-State: AAQBX9dpAc8RdDPikB/tKDamKLfQQAHX+akYTRlhC3yG0m/JZ4703cnR
-        5OxAQbeGEP/RYw+nKNkpPeLsi7zCSDRjp0UHILo=
-X-Google-Smtp-Source: AKy350ZQnmm1RgM4DIQsZatmx62Fkd8K2kQHe7Puo4INe2mLhOpukfbp8mHPhKG5AQxc+/FsMNZFS57RLClRHE+v8Sw=
-X-Received: by 2002:a25:c78f:0:b0:b31:34ab:5ca0 with SMTP id
- w137-20020a25c78f000000b00b3134ab5ca0mr16303ybe.11.1679608273214; Thu, 23 Mar
- 2023 14:51:13 -0700 (PDT)
+        bh=UwF4PjfX50G0tO1s1nkfZf9mTnmPVFCblQ+X/mkUZqQ=;
+        b=wZ6fAF6QYExUaP0UFlcOoVmuy+JNdr+G4ARqt7wH5RAo06FXSKeIRRRHfDn4dKiiY6
+         Y9qbUMhvFN25kSM7nU1Tpg3WAuC3fVR+bnqu9JwULVOYoTqs14Z8JneJkRLcBui99WaW
+         tnrZlPWziBEcai9PdEv0ZoIb3PnekoA8ZZl1N+OyofGlMWYGrsTfOwygLSNa794e/PR5
+         Ot+hHgiS6aV+A91+Kf0Dp6/xZ2XYpYkyP2t+vYFJnCSzkWWvLv5bW+aJm71FMnKJN9YE
+         4rLizY2xHs/0VvWSYtTHivJpuMJ0s0FiaTWN6S4AkOEWo9T7GUQh6sCShEecJ/rz7Byx
+         jn+Q==
+X-Gm-Message-State: AAQBX9eWMR8rbStrYaamZUle88qjVOgdF3cMDJ7MKSg4IHzIasOeV90W
+        vvHmkg6gNNjyeaiRt686RRpFnvxbjlltp7xF3r97Bw==
+X-Google-Smtp-Source: AKy350bsdy+s9/BiTs0GpVpndmijsrqahXc/dn3N4g79vzme1J+Gdm4FOzzAZY9d/vkfU/nK0TZTvQ==
+X-Received: by 2002:a17:906:40c8:b0:921:d539:1a3a with SMTP id a8-20020a17090640c800b00921d5391a3amr539763ejk.58.1679608461796;
+        Thu, 23 Mar 2023 14:54:21 -0700 (PDT)
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com. [209.85.208.51])
+        by smtp.gmail.com with ESMTPSA id g13-20020a170906198d00b008c16025b318sm9160018ejd.155.2023.03.23.14.54.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Mar 2023 14:54:20 -0700 (PDT)
+Received: by mail-ed1-f51.google.com with SMTP id cn12so776551edb.4
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 14:54:20 -0700 (PDT)
+X-Received: by 2002:a17:906:2456:b0:8e5:411d:4d09 with SMTP id
+ a22-20020a170906245600b008e5411d4d09mr252006ejb.15.1679608460276; Thu, 23 Mar
+ 2023 14:54:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000e03bc805f78683cd@google.com>
-In-Reply-To: <000000000000e03bc805f78683cd@google.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 23 Mar 2023 17:50:34 -0400
-Message-ID: <CADvbK_e5+Ujn+yyATPEjqwT0TG6KEJrU9CvWk7VC3Hfz-m2ykQ@mail.gmail.com>
-Subject: Re: [syzbot] [sctp?] general protection fault in sctp_outq_tail
-To:     syzbot <syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+References: <20230323102649.764958589@linutronix.de> <20230323102800.215027837@linutronix.de>
+In-Reply-To: <20230323102800.215027837@linutronix.de>
+From:   Linus Torvalds <torvalds@linuxfoundation.org>
+Date:   Thu, 23 Mar 2023 14:54:03 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiVN+bMsYjTWQZehtRJNifGDuoMsgQg8789aZ9QT1pfjw@mail.gmail.com>
+Message-ID: <CAHk-=wiVN+bMsYjTWQZehtRJNifGDuoMsgQg8789aZ9QT1pfjw@mail.gmail.com>
+Subject: Re: [patch V3 4/4] net: dst: Switch to rcuref_t reference counting
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        Wangyang Guo <wangyang.guo@intel.com>,
+        Arjan van De Ven <arjan@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Arjan Van De Ven <arjan.van.de.ven@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
-X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 8:39=E2=80=AFPM syzbot
-<syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com> wrote:
+On Thu, Mar 23, 2023 at 1:55=E2=80=AFPM Thomas Gleixner <tglx@linutronix.de=
+> wrote:
 >
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    cdd28833100c net: microchip: sparx5: fix deletion of exis=
-t..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D1588fe92c8000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Dcab35c936731a=
-347
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D47c24ca20a2fa01=
-f082e
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
-ls for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D15d80ff4c80=
-000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D17f6e90ac8000=
-0
->
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/2fb6257d1131/dis=
-k-cdd28833.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/a3025d79117c/vmlinu=
-x-cdd28833.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/8e6d670a5fed/b=
-zImage-cdd28833.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com
->
-> general protection fault, probably for non-canonical address 0xdffffc0000=
-000007: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000038-0x000000000000003f]
-> CPU: 1 PID: 5783 Comm: syz-executor825 Not tainted 6.2.0-syzkaller-12889-=
-gcdd28833100c #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
-oogle 03/02/2023
-> RIP: 0010:list_add_tail include/linux/list.h:102 [inline]
-> RIP: 0010:sctp_outq_tail_data net/sctp/outqueue.c:91 [inline]
-The null-ptr-deref is 'SCTP_SO(&q->asoc->stream, stream)->ext' in
-sctp_outq_tail_data(). It should be set in sctp_sendmsg_to_asoc(),
-unless the out stream got shrunk by:
+> V3: Rename the refcount member to __rcuref (Linus)
 
-  sctp_stream_update() -> sctp_stream_outq_migrate() ->
-sctp_stream_shrink_out().
+Thanks. LGTM,
 
-When sending msgs on a closed association, it will first do handshakes.
-During the handshake, send more data with a big stream_num N until the
-tx buffer is full and the sending is waiting for more buffer, then
-after the handshakes are over and the big stream N is freed during the
-handshakes(which may happen when peer doesn't support so many streams),
-and the sending waiting for the tx buffer will try to enqueue data on a
-freed out stream, then this issue occurred.
-
-I will confirm this and give a fix.
-
-Thanks.
+                 Linus
