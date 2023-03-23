@@ -2,147 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B23E6C7292
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 22:50:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F372B6C7294
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 22:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbjCWVuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 17:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
+        id S230257AbjCWVvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 17:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbjCWVuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 17:50:01 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E20B198B
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 14:50:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679608200; x=1711144200;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fNaLWXwBB1Qiw2oM0o5jUpTHKR6YtK+qcGXk7SgRkTU=;
-  b=dMeuND0900l5JbhUoqKP0QolEHzX++YxYyP1R9cHv2XPqpRthC9n9c0a
-   q7kEz7LMTMYW8Fbo/r0vyUXHudjvCqN5+QMPD9Mn/Y2AU+Bid5ub8+v0q
-   nDkkNvbh9WVfEQuH82UCFDONrFIX4gZvHpqhOHcm5XwdAfDWFQuaDFQM4
-   5OFXZQr9hs9ty+Jezw/NzUASOUnKusO4YRnyhe4XByrYkzJYna7LKN0nu
-   5Nrg5C5kEcvRtMHQ41Zc+qQXzc1oIEDva5fcuugvwO18L+APg83pmGKqr
-   elnKStT14N6DjvXjJbIHO+KXRpmIiH7GH21nWX8V/yEDorwUrkd+VXjqo
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="323496831"
-X-IronPort-AV: E=Sophos;i="5.98,286,1673942400"; 
-   d="scan'208";a="323496831"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 14:49:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="928394410"
-X-IronPort-AV: E=Sophos;i="5.98,286,1673942400"; 
-   d="scan'208";a="928394410"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Mar 2023 14:49:45 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pfSob-000EjF-01;
-        Thu, 23 Mar 2023 21:49:45 +0000
-Date:   Fri, 24 Mar 2023 05:49:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dima Chumak <dchumak@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Cc:     oe-kbuild-all@lists.linux.dev, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Leon Romanovsky <leon@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Dima Chumak <dchumak@nvidia.com>
-Subject: Re: [PATCH net-next 2/4] net/mlx5: Implement devlink port function
- cmds to control ipsec_crypto
-Message-ID: <202303240548.WDzL68Ny-lkp@intel.com>
-References: <20230323111059.210634-3-dchumak@nvidia.com>
+        with ESMTP id S229690AbjCWVvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 17:51:15 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D78CE181;
+        Thu, 23 Mar 2023 14:51:14 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id i7so125147ybt.0;
+        Thu, 23 Mar 2023 14:51:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679608273;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vWGzwKfmQ8YcB4xPR2K7LbYdFkNoBqkDdULTLqBuFYc=;
+        b=MCEdKoRgX+p2BO+yFR8tXTiCMW2HmyOXC1tYXjvTQzSlDMFUw+COGfN03fD6g6j5W4
+         9lRt6BdrQCGusPH3bQeBo5pFfi5uhDRYSLSsNuLHgGH129nBwBfX/bXUE/Pj7IvfMoZQ
+         CH92IsoGwE+jB26ap7gyjsUPry6KQAeZbgfwSrJStDl8VYzZZjl4uEeulFx0c7q6wyVB
+         Bxm/UCPBuXt/4tfhpaip13R4XLh5bX5gWebaW1ZhES4YIZvBaCBw/k/jxB9v14P6tkC7
+         RQmo5AZY6lE9/ZZGhIjyISKVV+myO9aTpuF0ryTjWFM3sehGJjsybErRoFdIAIF0NCzr
+         ufdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679608273;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vWGzwKfmQ8YcB4xPR2K7LbYdFkNoBqkDdULTLqBuFYc=;
+        b=GiQWej17+zlsiJIz12leRmVVuEdaKVgfJsRD9W1VajuXRO5R4y/glW/gjYy78KG5lH
+         ALcdytRf0JabUDXQT8vhrBX383di7Q5N/ESVkMr6BUHiZD1juejF7ea86dhUtqDl9CHt
+         oVBHL260G5rhfqJ4ExL9W7aeUJCa1UhXsdF5hpoxaXGSJVaMHafrDvNuQl9zPmdFHyay
+         J/HfkVzjB/H8dmqWgJ7AGNhwknn1SUMvrg71vOm8OI6GIRaXBs/duVxXP6yUTPtbJK6B
+         mLsvR2jaFaaQqxB1FvogTKSjWpTwzdf0xxvNn+IC0+PYTqxfZ/VRA0d3djCn0K4WjjwM
+         6ZqA==
+X-Gm-Message-State: AAQBX9dpAc8RdDPikB/tKDamKLfQQAHX+akYTRlhC3yG0m/JZ4703cnR
+        5OxAQbeGEP/RYw+nKNkpPeLsi7zCSDRjp0UHILo=
+X-Google-Smtp-Source: AKy350ZQnmm1RgM4DIQsZatmx62Fkd8K2kQHe7Puo4INe2mLhOpukfbp8mHPhKG5AQxc+/FsMNZFS57RLClRHE+v8Sw=
+X-Received: by 2002:a25:c78f:0:b0:b31:34ab:5ca0 with SMTP id
+ w137-20020a25c78f000000b00b3134ab5ca0mr16303ybe.11.1679608273214; Thu, 23 Mar
+ 2023 14:51:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230323111059.210634-3-dchumak@nvidia.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <000000000000e03bc805f78683cd@google.com>
+In-Reply-To: <000000000000e03bc805f78683cd@google.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 23 Mar 2023 17:50:34 -0400
+Message-ID: <CADvbK_e5+Ujn+yyATPEjqwT0TG6KEJrU9CvWk7VC3Hfz-m2ykQ@mail.gmail.com>
+Subject: Re: [syzbot] [sctp?] general protection fault in sctp_outq_tail
+To:     syzbot <syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dima,
+On Wed, Mar 22, 2023 at 8:39=E2=80=AFPM syzbot
+<syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    cdd28833100c net: microchip: sparx5: fix deletion of exis=
+t..
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D1588fe92c8000=
+0
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Dcab35c936731a=
+347
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3D47c24ca20a2fa01=
+f082e
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
+ls for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D15d80ff4c80=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D17f6e90ac8000=
+0
+>
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/2fb6257d1131/dis=
+k-cdd28833.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/a3025d79117c/vmlinu=
+x-cdd28833.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/8e6d670a5fed/b=
+zImage-cdd28833.xz
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the comm=
+it:
+> Reported-by: syzbot+47c24ca20a2fa01f082e@syzkaller.appspotmail.com
+>
+> general protection fault, probably for non-canonical address 0xdffffc0000=
+000007: 0000 [#1] PREEMPT SMP KASAN
+> KASAN: null-ptr-deref in range [0x0000000000000038-0x000000000000003f]
+> CPU: 1 PID: 5783 Comm: syz-executor825 Not tainted 6.2.0-syzkaller-12889-=
+gcdd28833100c #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
+oogle 03/02/2023
+> RIP: 0010:list_add_tail include/linux/list.h:102 [inline]
+> RIP: 0010:sctp_outq_tail_data net/sctp/outqueue.c:91 [inline]
+The null-ptr-deref is 'SCTP_SO(&q->asoc->stream, stream)->ext' in
+sctp_outq_tail_data(). It should be set in sctp_sendmsg_to_asoc(),
+unless the out stream got shrunk by:
 
-Thank you for the patch! Yet something to improve:
+  sctp_stream_update() -> sctp_stream_outq_migrate() ->
+sctp_stream_shrink_out().
 
-[auto build test ERROR on next-20230323]
-[cannot apply to net-next/main net/main horms-ipvs/master linus/master v6.3-rc3 v6.3-rc2 v6.3-rc1 v6.3-rc3]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+When sending msgs on a closed association, it will first do handshakes.
+During the handshake, send more data with a big stream_num N until the
+tx buffer is full and the sending is waiting for more buffer, then
+after the handshakes are over and the big stream N is freed during the
+handshakes(which may happen when peer doesn't support so many streams),
+and the sending waiting for the tx buffer will try to enqueue data on a
+freed out stream, then this issue occurred.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Dima-Chumak/devlink-Expose-port-function-commands-to-control-IPsec-crypto-offloads/20230323-191353
-patch link:    https://lore.kernel.org/r/20230323111059.210634-3-dchumak%40nvidia.com
-patch subject: [PATCH net-next 2/4] net/mlx5: Implement devlink port function cmds to control ipsec_crypto
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20230324/202303240548.WDzL68Ny-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ca580efef4996834c003bf5e8d6d244fe0550415
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Dima-Chumak/devlink-Expose-port-function-commands-to-control-IPsec-crypto-offloads/20230323-191353
-        git checkout ca580efef4996834c003bf5e8d6d244fe0550415
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mellanox/mlx5/core/
+I will confirm this and give a fix.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303240548.WDzL68Ny-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c: In function 'mlx5_devlink_port_fn_ipsec_crypto_set':
->> drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:4203:24: error: 'struct net' has no member named 'xfrm'
-    4203 |         mutex_lock(&net->xfrm.xfrm_cfg_mutex);
-         |                        ^~
-   drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:4239:26: error: 'struct net' has no member named 'xfrm'
-    4239 |         mutex_unlock(&net->xfrm.xfrm_cfg_mutex);
-         |                          ^~
-
-
-vim +4203 drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-
-  4173	
-  4174	int mlx5_devlink_port_fn_ipsec_crypto_set(struct devlink_port *port, bool enable,
-  4175						  struct netlink_ext_ack *extack)
-  4176	{
-  4177		struct mlx5_eswitch *esw;
-  4178		struct mlx5_vport *vport;
-  4179		int err = -EOPNOTSUPP;
-  4180		struct net *net;
-  4181	
-  4182		esw = mlx5_devlink_eswitch_get(port->devlink);
-  4183		if (IS_ERR(esw))
-  4184			return PTR_ERR(esw);
-  4185	
-  4186		if (!mlx5_esw_ipsec_vf_offload_supported(esw->dev)) {
-  4187			NL_SET_ERR_MSG_MOD(extack, "Device doesn't support ipsec_crypto");
-  4188			return err;
-  4189		}
-  4190	
-  4191		vport = mlx5_devlink_port_fn_get_vport(port, esw);
-  4192		if (IS_ERR(vport)) {
-  4193			NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-  4194			return PTR_ERR(vport);
-  4195		}
-  4196	
-  4197		/* xfrm_cfg lock is needed to avoid races with XFRM state being added to
-  4198		 * the PF net device. Netlink stack takes this lock for `ip xfrm` user
-  4199		 * commands, so here we need to take it before esw->state_lock to
-  4200		 * preserve the order.
-  4201		 */
-  4202		net = dev_net(esw->dev->mlx5e_res.uplink_netdev);
-> 4203		mutex_lock(&net->xfrm.xfrm_cfg_mutex);
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Thanks.
