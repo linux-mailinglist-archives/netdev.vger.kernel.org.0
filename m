@@ -2,95 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7DAF6C6ED2
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 18:28:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3E316C6ED5
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 18:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbjCWR2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 13:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
+        id S232055AbjCWR3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 13:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232037AbjCWR2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 13:28:17 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1856E19A6;
-        Thu, 23 Mar 2023 10:28:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679592497; x=1711128497;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UIc1/ThXJFz9AMzhIAkZvLIUVpbC0O3PE+XwWoKlAGM=;
-  b=nQ1zsANUptFMhb8iqzcdbB1fOgFVKlguLruH9AGnwtk7e8LXGaHPnrBW
-   SSDIrTU6FsbRgZxCOgfg8AbJSSsGe6BRVwptK0MvYnzvY+BvdRubprotp
-   uaoKY1JImZrqXIVjOfC2k4kST7o7gsJqbnbo7lfoY9XOWaQWzddTA99/o
-   nG4yR8wzph30V0oLrl6M1c2nOI4J+FPhrzo2rW+xjWIXcUjy7uWEFnY2P
-   72QsMY0FqQM/Fk2v5HIttH5SXY9Uo4Ww9X6KBHPCQ32fdwnbPsJHQnneN
-   DjBoHaaWS9RDktRbo33l1MHu75xakrhTVPpwRg3Yq7HXcKOqRXA/bo3Da
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="337074673"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="337074673"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 10:28:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="746822505"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="746822505"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Mar 2023 10:28:09 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pfOjP-007agn-1P;
-        Thu, 23 Mar 2023 19:28:07 +0200
-Date:   Thu, 23 Mar 2023 19:28:07 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231905AbjCWR3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 13:29:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFC81BE
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 10:29:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2F9A6282A
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 17:29:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C3DC4339B;
+        Thu, 23 Mar 2023 17:29:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679592548;
+        bh=2wD+Yhui6h/4n2Ta6y2M26vmdm9ZRpyu3gJp179tOts=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TEWFMs2D0i64WpH2S9EP8qUVA/F7cvTPng2TYaRooSEmnOoutidR9HMTHMfn7d9Zq
+         coG5tvU7BSTRJXlDWPNMf2i9+p51R3WL9haYplJfUML3Y0W+oNDSymuBYCuKuOgsie
+         11cXEYxBbxfX42DpMFTnjPCL/7EBBqsprXW2LGqD7yRWnHeQJVVISoAEPglnkrjusb
+         Vz69Nsz26cvYEy606l7lo002jUYsCQRcVF6DE6SMZIOn0WIMyfGi41ZGjrcrvKn+h3
+         aq36fo9YDcRWsoq8EIC6CEz4cvQ2RON4i6vYsEP20g0FWA/fniDR/xc3kr8V+iZY9h
+         6t+PUcdYY4GDg==
+Date:   Thu, 23 Mar 2023 10:29:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
- get phy interface mode
-Message-ID: <ZByMJxwwPTG2qGO8@smile.fi.intel.com>
-References: <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
- <ZBxcGXSVe0dlzKZb@smile.fi.intel.com>
- <ZBxiqJo470A7bkig@shell.armlinux.org.uk>
- <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
- <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
- <ZBxpeLOmTMzqVTRV@smile.fi.intel.com>
- <ZBxu4FvyO2JDwmMq@shell.armlinux.org.uk>
- <ZBx7xxs0NQV25cFn@shell.armlinux.org.uk>
- <ZBx/mO/z3t3dQCAx@smile.fi.intel.com>
- <ZByHKXgIuNI683kN@shell.armlinux.org.uk>
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "Jie Wang" <wangjie125@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH v7 net-next 1/7] netlink: Add a macro to set policy
+ message with format string
+Message-ID: <20230323102906.3fb3d658@kernel.org>
+In-Reply-To: <20230323163610.1281468-2-shayagr@amazon.com>
+References: <20230323163610.1281468-1-shayagr@amazon.com>
+        <20230323163610.1281468-2-shayagr@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZByHKXgIuNI683kN@shell.armlinux.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 05:06:49PM +0000, Russell King (Oracle) wrote:
+On Thu, 23 Mar 2023 18:36:04 +0200 Shay Agroskin wrote:
+> +#define NL_SET_ERR_MSG_ATTR_POL_FMT(extack, attr, pol, fmt, args...) do {	\
+> +	struct netlink_ext_ack *__extack = (extack);				\
+> +										\
+> +	if (!__extack)								\
+> +		break;								\
+> +										\
+> +	if (snprintf(__extack->_msg_buf, NETLINK_MAX_FMTMSG_LEN,		\
+> +		     "%s" fmt "%s", "", ##args, "") >=				\
+> +	    NETLINK_MAX_FMTMSG_LEN)						\
+> +		net_warn_ratelimited("%s" fmt "%s", "truncated extack: ",       \
+> +				     ##args, "\n");				\
+> +										\
+> +	do_trace_netlink_extack(__extack->_msg_buf);				\
+> +										\
+> +	__extack->_msg = __extack->_msg_buf;					\
+> +	__extack->bad_attr = (attr);						\
+> +	__extack->policy = (pol);						\
+> +} while (0)
 
-OK, you are right as always, I'm wrong. Case closed. Thank you.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Given the misunderstanding let me give you an exception to the 24h 
+wait period. Feel free to send v8 when ready, I'll drop this version 
+from pw.
