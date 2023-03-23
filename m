@@ -2,49 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 684246C6AA5
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 278686C6AEF
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231627AbjCWOT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 10:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S230450AbjCWO3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 10:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231743AbjCWOT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:19:29 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E5033403D
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 07:19:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/yPfIhK2CW+V1Ih2tVzFoUkOX1EaGIBx3YPMWWOZ8hI=; b=UTnXYsQsrdPJ9M7yEg/XyNQjRm
-        ywG5l1z5sc67aM1Sa/G/7DbWMxetyvAf70gXzBh/+dOTb7hn9vYMdMRR72Z+e2h1Kw4vY4HNIMO15
-        cMDCRYUzoV15ygUuXy41+1jNygPVmTgIJ9F6Q7DHGCWmjIn0uUU0Sjak82Bn+29cASK8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pfLmj-008ClS-Sg; Thu, 23 Mar 2023 15:19:21 +0100
-Date:   Thu, 23 Mar 2023 15:19:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Buzarra, Arturo" <Arturo.Buzarra@digi.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        with ESMTP id S229729AbjCWO3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:29:43 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B549756;
+        Thu, 23 Mar 2023 07:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lxEWxpzOY4LJygvTGhMtmdDomHrkMWj+mRCVORlP7MM=; b=oWIULdi7Ub0sSWYxf1dm4bhvgm
+        X3lvYtpFVGQH0FQM3ZEZkuErNQhyF29b1LbRA+A4V9m4jI78+oaZMpo+6XH8suQWZeb6APsQGLDXN
+        vhjn32TAfIZ+R+mRIpJSzeCdojeO8PaD9uUBTBfiqJVEZTXrN6D9LijTq8+Hc5gUmkdt8omqByAly
+        fSDf9XSRbCGnixBiy5TVDHfW8/gl0vNcFbbxLTEQ0pSEpLvQ8OY+YdMXm2y1nT/CrS/MXw0ZXiKGv
+        tCn1EbhPQNcDHt9X5xD2Kzyhmcz+3NKSXYGdWU1zGvcPTyf9ZxOwovA1Z60TSffCn5+9PUgjlfEzb
+        xAcnGCsA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50744)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pfLwW-0005G3-EE; Thu, 23 Mar 2023 14:29:28 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pfLwS-0001Rp-Ts; Thu, 23 Mar 2023 14:29:24 +0000
+Date:   Thu, 23 Mar 2023 14:29:24 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
-Message-ID: <156b7aee-b61a-40b9-ac51-59bcaef0c129@lunn.ch>
-References: <20230317121646.19616-1-arturo.buzarra@digi.com>
- <3e904a01-7ea8-705c-bf7a-05059729cebf@gmail.com>
- <DS7PR10MB4926EBB7DAA389E69A4E2FC1FA809@DS7PR10MB4926.namprd10.prod.outlook.com>
- <74cef958-9513-40d7-8da4-7a566ba47291@lunn.ch>
- <DS7PR10MB49260FFA60F0B3A5AB7AD69EFA879@DS7PR10MB4926.namprd10.prod.outlook.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 1/7] software node: allow named software
+ node to be created
+Message-ID: <ZBxiRJXMqjrOl9TE@shell.armlinux.org.uk>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8F-00Dvnf-Sm@rmk-PC.armlinux.org.uk>
+ <ZBxbKxAcAKznIVJ2@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DS7PR10MB49260FFA60F0B3A5AB7AD69EFA879@DS7PR10MB4926.namprd10.prod.outlook.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+In-Reply-To: <ZBxbKxAcAKznIVJ2@smile.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,97 +70,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Gigabit PHY has its own Crystal, however the 10/100 PHY uses a clock
-> from the CPU and it is the root cause of the issue because when
-> Linux asks the PHY capabilities the clock is not ready yet.
-
-O.K, now we are getting closer.
-
-Which clock is it exactly? Both for the MAC and the PHY?
-
-> We have identified the root cause of the 0xFFFF issue, it is because
-> the two PHYs are defined in the same MDIO bus node inside the first
-> Ethernet MAC node, and when the 10/100 PHY is probed the PHY Clock
-> from the CPU is not ready, this is the DT definition:
-
-
-> ---------
-> /* Gigabit Ethernet */
-> &eth1 {
-> 	status = "okay";
-> 	pinctrl-0 = <&eth1_rgmii_pins>;
-> 	pinctrl-names = "default";
-> 	phy-mode = "rgmii-id";
-> 	max-speed = <1000>;
-> 	phy-handle = <&phy0_eth1>;
+On Thu, Mar 23, 2023 at 03:59:07PM +0200, Andy Shevchenko wrote:
+> On Wed, Mar 22, 2023 at 11:59:55AM +0000, Russell King wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > Allow a named software node to be created, which is needed for software
+> > nodes for a fixed-link specification for DSA.
 > 
-> 	mdio1 {
-> 		#address-cells = <1>;
-> 		#size-cells = <0>;
-> 		compatible = "snps,dwmac-mdio";
+> ...
 > 
-> 		phy0_eth1: ethernet-phy@0 {
-> 			reg = <0>;
-> 			compatible = "ethernet-phy-id0141.0dd0"; /* PHY ID for Marvell 88E1512 */
-> 			reset-gpios = <&gpioi 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-> 			reset-assert-us = <1000>;
-> 			reset-deassert-us = <2000>;
-> 		};
+> > +fwnode_create_named_software_node(const struct property_entry *properties,
+> > +				  const struct fwnode_handle *parent,
+> > +				  const char *name)
+> >  {
+> >  	struct fwnode_handle *fwnode;
+> >  	struct software_node *node;
+> > @@ -930,6 +931,7 @@ fwnode_create_software_node(const struct property_entry *properties,
+> >  		return ERR_CAST(node);
+> >  
+> >  	node->parent = p ? p->node : NULL;
+> > +	node->name = name;
 > 
-> 		phy0_eth2: ethernet-phy@1 {
-> 			reg = <1>;
-> 			compatible = "ethernet-phy-id0007.c0f0"; /* PHY ID for SMSC LAN8720Ai */
-> 			reset-gpios = <&gpioh 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-> 			interrupt-parent = <&gpioh>;
-> 			interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
-> 		};
-> 	};
-> };
+> The same question stays as before: how can we be sure that the name is unique
+> and we won't have a collision?
 
-This all looks reasonable.
+This got discussed at length last time around, starting here:
 
+https://lore.kernel.org/all/YtHGwz4v7VWKhIXG@smile.fi.intel.com/
 
-> /* 10/100 Ethernet */
-> &eth2 {
-> 	status = "okay";
-> 	pinctrl-0 = <&eth2_rmii_pins>;
-> 	pinctrl-names = "default";
-> 	phy-mode = "rmii";
-> 	max-speed = <100>;
-> 	phy-handle = <&phy0_eth2>;
-> 	st,ext-phyclk;
-> };
+My conclusion is that your concern is invalid, because we're creating
+this tree:
 
-st,ext-phyclk is interesting. But looking at the code, that means the
-clock is coming from somewhere else. And there appears to be eth-ck,
-which the driver does a
+	node%d
+	+- phy-mode property
+	`- fixed-link node
+	   +- speed property
+	   `- full-duplex (optional) property
 
-devm_clk_get() on.
+Given that node%d will be allocated against the swnode_root_ids IDA,
+then how can there possibly be a naming collision.
 
-Is eth-ck being fed to both the MAC and the PHY? Is this the missing
-clock?
+You would be correct if the "fixed-link" node were to be created at
+root level, or if we were intentionally creating two swnodes under
+the same parent with the same name, but we aren't.
 
-So this is what we need to fix. And the correct way to do this is to
-express this clock in DT. If you look at the PHY driver smsc, in its
-probe function it has:
+Plus, the code _already_ allows for e.g. multiple "node1" names - for
+example, one in root and one as a child node, since the code uses
+separate IDAs to allocate those.
 
-       /* Make clk optional to keep DTB backward compatibility. */
-        refclk = devm_clk_get_optional_enabled(dev, NULL);
-        if (IS_ERR(refclk))
-                return dev_err_probe(dev, PTR_ERR(refclk),
-                                     "Failed to request clock\n");
+Hence, I do not recognise the conern you are raising, and I believe
+your concern is not valid.
 
-If there is a clock in DT, it will try to enable it. If the clock does
-not exist yet, it will fail the probe with -EPRODE_DEFER, and the core
-will try the probe again later, hopefully once the clock exists.
+Your concern would be valid if it was a general concern about
+fwnode_create_named_software_node() being used to create the same
+named node under the same parent, but that IMHO is a programming
+bug, no different from trying to create two devices under the same
+parent with the same name.
 
-So this is the clock consumer. You also need a clock provider. What
-exactly is this clock? We need the answer to the questions above,
-but... If it is a SoC clock, it is quite likely there already is a
-clock provider for it. If it is a clock in the MAC, you need to extend
-the MAC driver to implement a clock provider. Maybe
-meson8b_dwmac_register_clk() is a useful example?
+So, unless you can be more expansive about _precisely_ what your
+concern is, then I don't think there exists any problem with this.
 
-	Andrew
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
