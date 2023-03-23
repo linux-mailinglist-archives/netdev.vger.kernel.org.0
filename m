@@ -2,216 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72D5A6C6337
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7C6A6C6340
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:23:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbjCWJXD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Mar 2023 05:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        id S231348AbjCWJXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 05:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231395AbjCWJWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:22:40 -0400
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB481CBC4;
-        Thu, 23 Mar 2023 02:22:35 -0700 (PDT)
-Received: by mail-pj1-f48.google.com with SMTP id a16so16591671pjs.4;
-        Thu, 23 Mar 2023 02:22:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679563355;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=HpKkhyG3kY0MZoMYHml99x+9t/mfe40fmpPl1syLvyE=;
-        b=hcPQnb55qxobdkcUGjvllNOqdlrn32Fl0+5+1G+dFyQrinMSTvzPhgO8edgvobcZ1e
-         0e4ksRvf/0mMZczECwpgPNWBX5fNuF1inQQIUpb1kPdSUDQMYWwYzH7bt8XQzjgtSGho
-         pCCj3+2ECLIgIhDvNwmjSRd2zviqM3ggL+eub9ZDEgUXKF421zOtLpcxXDDaIz8e7PRJ
-         BAeSuCrW0GsvvGglHHFiZ7hNsK1RwTzeOOv18vqN7XgxCUJ5sAUVY74SyC/26QAzgsQe
-         piwZkZOFpklyfIAax5d7thRUNlEmMcYMdLR6AjqYqn5K3nUktaG510+WrPWbR15JGmNb
-         kt7Q==
-X-Gm-Message-State: AAQBX9dY2WhH3WSzWyPPl+yrxGJOlbxoeGdp8CL0lqOj1krJOKVN++kK
-        LBgAjyqGLE9gZRO0Nj4aculsCQIcDslYpAWM89SGrW+ky2j2kw==
-X-Google-Smtp-Source: AKy350bIoU8Zid66dudm652RyKct4B57/THEpIrfPdquoM1cIMEZDGNzlLCKkxJ9KBe0l0l2FigPWyRsP6p3mJzsqFo=
-X-Received: by 2002:a17:903:7c8:b0:19f:39f8:88c4 with SMTP id
- ko8-20020a17090307c800b0019f39f888c4mr1906789plb.2.1679563354730; Thu, 23 Mar
- 2023 02:22:34 -0700 (PDT)
+        with ESMTP id S231628AbjCWJWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:22:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0040A1A95B;
+        Thu, 23 Mar 2023 02:22:40 -0700 (PDT)
+Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Pj0CM5ChTzSm34;
+        Thu, 23 Mar 2023 17:19:11 +0800 (CST)
+Received: from [10.174.179.79] (10.174.179.79) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 23 Mar 2023 17:22:37 +0800
+Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>, <joro@8bytes.org>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <wangrong68@huawei.com>,
+        Cindy Lu <lulu@redhat.com>
+References: <20230207120843.1580403-1-sunnanyong@huawei.com>
+ <Y+7G+tiBCjKYnxcZ@nvidia.com> <20230217051158-mutt-send-email-mst@kernel.org>
+ <Y+92c9us3HVjO2Zq@nvidia.com>
+ <CACGkMEsVBhxtpUFs7TrQzAecO8kK_NR+b1EvD2H7MjJ+2aEKJw@mail.gmail.com>
+ <20230310034101-mutt-send-email-mst@kernel.org>
+ <CACGkMEsr3xSa=1WtU35CepWSJ8CK9g4nGXgmHS_9D09LHi7H8g@mail.gmail.com>
+ <20230310045100-mutt-send-email-mst@kernel.org> <ZAskNjP3d9ipki4k@nvidia.com>
+From:   Nanyong Sun <sunnanyong@huawei.com>
+Message-ID: <c6e60ed9-6de2-2f4a-7bd1-52c53ed57a28@huawei.com>
+Date:   Thu, 23 Mar 2023 17:22:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20230321081152.26510-1-peter_hong@fintek.com.tw>
- <CAMZ6RqJWg1H6Yo3nhsa-Kk-WdU=ZH39ecWaE6wiuKRJe1gLMkQ@mail.gmail.com>
- <f71f1f59-f729-2c8c-f6da-8474be2074b1@fintek.com.tw> <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
-In-Reply-To: <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Thu, 23 Mar 2023 18:22:23 +0900
-Message-ID: <CAMZ6RqJNn8UQ62zyKFVHGLm44h2zverRgkKkwwFCUfSjYEXe-A@mail.gmail.com>
-Subject: Re: [PATCH V2] can: usb: f81604: add Fintek F81604 support
-To:     Peter Hong <peter_hong@fintek.com.tw>
-Cc:     wg@grandegger.com, mkl@pengutronix.de,
-        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, frank.jungclaus@esd.eu,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <ZAskNjP3d9ipki4k@nvidia.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.79]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu. 23 Mar 2023 at 14:54, Vincent MAILHOL
-<mailhol.vincent@wanadoo.fr> wrote:
-> Le jeu. 23 mars 2023 à 14:14, Peter Hong <peter_hong@fintek.com.tw> a écrit :
-> >
-> > Hi Vincent,
-> >
-> > Vincent MAILHOL 於 2023/3/21 下午 11:50 寫道:
-> > >> +static netdev_tx_t f81604_start_xmit(struct sk_buff *skb,
-> > >> +                                    struct net_device *netdev)
-> > >> +{
-> > >> +       struct can_frame *cf = (struct can_frame *)skb->data;
-> > >> +       struct f81604_port_priv *priv = netdev_priv(netdev);
-> > >> +       struct net_device_stats *stats = &netdev->stats;
-> > >> +       int status;
-> > >> +       u8 *ptr;
-> > >> +       u32 id;
-> > >> +
-> > >> +       if (can_dropped_invalid_skb(netdev, skb))
-> > >> +               return NETDEV_TX_OK;
-> > >> +
-> > >> +       netif_stop_queue(netdev);
-> > >> +
-> > >> +       ptr = priv->bulk_write_buffer;
-> > >> +       memset(ptr, 0, F81604_DATA_SIZE);
-> > >> +
-> > >> +       ptr[0] = F81604_CMD_DATA;
-> > >> +       ptr[1] = min_t(u8, cf->can_dlc & 0xf, 8);
-> > >> +
-> > >> +       if (cf->can_id & CAN_EFF_FLAG) {
-> > >> +               id = (cf->can_id & CAN_ERR_MASK) << 3;
-> > >> +               ptr[1] |= F81604_EFF_BIT;
-> > >> +               ptr[2] = (id >> 24) & 0xff;
-> > >> +               ptr[3] = (id >> 16) & 0xff;
-> > >> +               ptr[4] = (id >> 8) & 0xff;
-> > >> +               ptr[5] = (id >> 0) & 0xff;
-> > >> +               memcpy(&ptr[6], cf->data, ptr[1]);
-> > > Rather than manipulating an opaque u8 array, please declare a
-> > > structure with explicit names.
-> >
-> > I had try to declare a struct like below and refactoring code :
-> >
-> > struct f81604_bulk_data {
-> >      u8 cmd;
-> >      u8 dlc;
-> >
-> >      union {
-> >          struct {
-> >              u8 id1, id2;
-> >              u8 data[CAN_MAX_DLEN];
-> >          } sff;
-> >
-> >          struct {
-> >              u8 id1, id2, id3, id4;
-> >              u8 data[CAN_MAX_DLEN];
-> >          } eff;
-> >      };
-> > } __attribute__((packed));
-> >
-> > This struct can used in TX/RX bulk in/out. Is it ok?
->
-> That's nearly it. It is better to declare the struct sff and eff
-> separately. Also, do not split the id in bytes. Declare it as a little
-> endian using the __le16 and __le32 types.
->
-> Something like this (I let you adjust):
->
->   struct f81604_sff {
->           __le16 id:
->           u8 data[CAN_MAX_DLEN];
->   } __attribute__((packed));
->
->   struct f81604_eff {
->           __le32 id;
->           u8 data[CAN_MAX_DLEN];
->   } __attribute__((packed));
->
->   struct f81604_bulk_data {
->           u8 cmd;
->           u8 dlc;
->
->           union {
->                   struct f81604_sff sff;
->                   struct f81604_eff eff;
->            };
->   } __attribute__((packed));
->
-> The __le16 field should be manipulated using cpu_to_leXX() and
-> leXX_to_cpu() if the field is aligned, if not, it should be
-> manipulated using {get|set}_unaligned_leXX() (where XX represents the
-> size in bits).
->
-> Also, f81604_bulk_data->dlc is not only a DLC but also carries the
-> F81604_EFF_BIT flag, right? At least, add documentation to the
-> structure to clarify this point.
->
-> > > +static int f81604_prepare_urbs(struct net_device *netdev)
-> > > +{
-> > > +       static const u8 bulk_in_addr[F81604_MAX_DEV] = { 0x82, 0x84 };
-> > > +       static const u8 bulk_out_addr[F81604_MAX_DEV] = { 0x01, 0x03 };
-> > > +       static const u8 int_in_addr[F81604_MAX_DEV] = { 0x81, 0x83 };
-> > > +       struct f81604_port_priv *priv = netdev_priv(netdev);
-> > > +       int id = netdev->dev_id;
-> > > +       int i;
-> > > +
-> > > +       /* initialize to NULL for error recovery */
-> > > +       for (i = 0; i < F81604_MAX_RX_URBS; ++i)
-> > > +               priv->read_urb[i] = NULL;
-> > > priv was allocated with devm_kzalloc() so it should already be zeroed,
-> > > right? What is the purpose of this loop?
-> >
-> > This operation due to following condition:
-> >      f81604_open() -> f81604_close() -> f81604_open() failed.
-> >
-> > We had used  devm_kzalloc() in f81604_probe(), so first f81604_open() all
-> > pointers are NULL. But after f81604_close() then f81604_open() second
-> > times, the URB pointers are not NULLed, it'll makes error on 2nd
-> > f81604_open()
-> > with fail.
->
-> Makes sense, thanks for the clarification.
->
-> Then, please replace your loop by a memset(priv->read_urb, 0,
-> sizeof(priv->read_urb).
 
-Actually, your code never accesses the zeroed memory. The next lines are:
-
-  for (i = 0; i < F81604_MAX_RX_URBS; ++i) {
-          priv->read_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
-
-If priv->read_urb[i] is never read before being initialized, no need to zero it.
-
-> > >> +/* Called by the usb core when driver is unloaded or device is removed */
-> > >> +static void f81604_disconnect(struct usb_interface *intf)
-> > >> +{
-> > >> +       struct f81604_priv *priv = usb_get_intfdata(intf);
-> > >> +       int i;
-> > >> +
-> > >> +       for (i = 0; i < F81604_MAX_DEV; ++i) {
-> > >> +               if (!priv->netdev[i])
-> > >> +                       continue;
-> > >> +
-> > >> +               unregister_netdev(priv->netdev[i]);
-> > >> +               free_candev(priv->netdev[i]);
-> > >> +       }
-> > >   i> +}
-> >
-> > Is typo here?
+On 2023/3/10 20:36, Jason Gunthorpe wrote:
+> On Fri, Mar 10, 2023 at 04:53:42AM -0500, Michael S. Tsirkin wrote:
+>> On Fri, Mar 10, 2023 at 05:45:46PM +0800, Jason Wang wrote:
+>>> On Fri, Mar 10, 2023 at 4:41 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>>>> On Mon, Feb 20, 2023 at 10:37:18AM +0800, Jason Wang wrote:
+>>>>> On Fri, Feb 17, 2023 at 8:43 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>>>>> On Fri, Feb 17, 2023 at 05:12:29AM -0500, Michael S. Tsirkin wrote:
+>>>>>>> On Thu, Feb 16, 2023 at 08:14:50PM -0400, Jason Gunthorpe wrote:
+>>>>>>>> On Tue, Feb 07, 2023 at 08:08:43PM +0800, Nanyong Sun wrote:
+>>>>>>>>> From: Rong Wang <wangrong68@huawei.com>
+>>>>>>>>>
+>>>>>>>>> Once enable iommu domain for one device, the MSI
+>>>>>>>>> translation tables have to be there for software-managed MSI.
+>>>>>>>>> Otherwise, platform with software-managed MSI without an
+>>>>>>>>> irq bypass function, can not get a correct memory write event
+>>>>>>>>> from pcie, will not get irqs.
+>>>>>>>>> The solution is to obtain the MSI phy base address from
+>>>>>>>>> iommu reserved region, and set it to iommu MSI cookie,
+>>>>>>>>> then translation tables will be created while request irq.
+>>>>>>>> Probably not what anyone wants to hear, but I would prefer we not add
+>>>>>>>> more uses of this stuff. It looks like we have to get rid of
+>>>>>>>> iommu_get_msi_cookie() :\
+>>>>>>>>
+>>>>>>>> I'd like it if vdpa could move to iommufd not keep copying stuff from
+>>>>>>>> it..
+>>>>>>> Absolutely but when is that happening?
+>>>>>> Don't know, I think it has to come from the VDPA maintainers, Nicolin
+>>>>>> made some drafts but wasn't able to get it beyond that.
+>>>>> Cindy (cced) will carry on the work.
+>>>>>
+>>>>> Thanks
+>>>> Hmm didn't see anything yet. Nanyong Sun maybe you can take a look?
+>>> Just to clarify, Cindy will work on the iommufd conversion for
+>>> vhost-vDPA, the changes are non-trivial and may take time. Before we
+>>> are able to achieve that,  I think we still need something like this
+>>> patch to make vDPA work on software managed MSI platforms.
+>>>
+>>> Maybe Nanyong can post a new version that addresses the comment so far?
+>>>
+>>> Thanks
+>> Maybe but an ack from iommu maintainers will be needed anyway. Let's see
+>> that version, maybe split the export to a patch by itself to make the
+>> need for that ack clear.
+> A patch to export that function is alread posted:
 >
-> Yes, please ignore.
+> https://lore.kernel.org/linux-iommu/BN9PR11MB52760E9705F2985EACCD5C4A8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com/T/#u
 >
+> But I do not want VDPA to mis-use it unless it also implements all the
+> ownership stuff properly.
 >
-> Yours sincerely,
-> Vincent Mailhol
+> Jason
+> .
+I want to confirm if we need to introduce iommu group logic to vdpa, as 
+"all the ownership stuff" ?
