@@ -2,55 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA51C6C5E39
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 05:51:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCB216C5E3C
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 05:53:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbjCWEvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 00:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54986 "EHLO
+        id S229666AbjCWExN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 00:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230219AbjCWEu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 00:50:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59144C3D;
-        Wed, 22 Mar 2023 21:50:20 -0700 (PDT)
+        with ESMTP id S229615AbjCWExB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 00:53:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8464E7ECF;
+        Wed, 22 Mar 2023 21:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DF676236E;
-        Thu, 23 Mar 2023 04:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 853F2C4339B;
-        Thu, 23 Mar 2023 04:50:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16EF9623CF;
+        Thu, 23 Mar 2023 04:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D00A0C433D2;
+        Thu, 23 Mar 2023 04:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679547019;
-        bh=MbvMu3rd50D+yU7oFqgsU4OhL/Yysf7P1eFd49ooYCc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TUQR7GZAGZ8+ux0AWOX70TdKcoZ3Cob3HIsTuXbQcjlvSSxCoLcCPis2cek8RnfBq
-         VxzdkoQ+mn6nmzmmnPtSPLs5zaH7aGWtzARVcj+Fm0rehMSTShs77HLgM9dIDs14tK
-         24XsQVAcFQoBafzPgVNXojX1P3zKvxFuDHfgySNCP5J+yYEvxYTvAITW8U8q4UZF77
-         vq+/akjs7GpxMS7JXFi3hxA/m+OH7I47FlFH3D2N1w7jZ3SZd2lJHexFDKCCJFh5AQ
-         7X2MWfxlSW1Qmsbujgtx94k7NqO/S79LTb8y7pRW6Wy+p71ubA29KAnaLveKyTdZ3e
-         DfPM6xiTu+GsQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64843E61B85;
-        Thu, 23 Mar 2023 04:50:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1679547179;
+        bh=7BfqstAZyyD9UKiEt7BWWwDiPxvdWe5+eqGDCaj/lIg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kxKkrIPywX4ik00OEx2XmezAExmx2F0GyS6XS+6oS7ciwrvQc/JF75pRPNLx9cBor
+         WL3YWvf9LUxSinElzU00BosC4ZOaWWKdhzLnrhImFcklvOoo86N89ak2PI9doxNo4f
+         ABYEQjnIl/M/HcZRpTWRtzi2I1hgJ6eUv22rzcnls/PAQnE12fDTDDTV7GLqxE+iVz
+         AEopkwqY/E7AIWc4WhEOnQRcWQRIYvLaq3yjTLjxj4uZ40NXBjUtlTvBhOoMyLsjXU
+         ZIuB+Nz0ZhDlUBHDl1mpj6ILkjIT850T28V4XAJTIRrEsCkIN4DfWR0YfNRzmT62eI
+         cVmZ1GDk7V/4w==
+Date:   Wed, 22 Mar 2023 21:52:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/8] virtio_net: mergeable xdp: introduce
+ mergeable_xdp_prepare
+Message-ID: <20230322215257.298b54cb@kernel.org>
+In-Reply-To: <215e791d-1802-2419-ff59-49476bcdcd02@huawei.com>
+References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
+        <20230322030308.16046-3-xuanzhuo@linux.alibaba.com>
+        <c7749936-c154-da51-ccfb-f16150d19c62@huawei.com>
+        <1679535924.6219428-2-xuanzhuo@linux.alibaba.com>
+        <215e791d-1802-2419-ff59-49476bcdcd02@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/4] net: dsa: b53: configure 6318 and 63268 RGMII ports
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167954701940.19209.2589458532549519819.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Mar 2023 04:50:19 +0000
-References: <20230321173359.251778-1-noltari@gmail.com>
-In-Reply-To: <20230321173359.251778-1-noltari@gmail.com>
-To:     =?utf-8?q?=C3=81lvaro_Fern=C3=A1ndez_Rojas_=3Cnoltari=40gmail=2Ecom=3E?=@ci.codeaurora.org
-Cc:     f.fainelli@gmail.com, jonas.gorski@gmail.com, andrew@lunn.ch,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,34 +67,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 21 Mar 2023 18:33:55 +0100 you wrote:
-> BCM6318 and BCM63268 need special configuration for their RGMII ports, so we
-> need to be able to identify them as a special BCM63xx switch.
-> In the meantime, let's add some missing BCM63xx SoCs to B53 MMAP device table.
+On Thu, 23 Mar 2023 12:45:41 +0800 Yunsheng Lin wrote:
+> >> Also, it seems better to split the xdp_linearize_page() to two functions
+> >> as pskb_expand_head() and __skb_linearize() do, one to expand the headroom,
+> >> the other one to do the linearizing.  
+> > 
+> > No skb here.  
 > 
-> This should be applied after "net: dsa: b53: add support for BCM63xx RGMIIs":
-> https://patchwork.kernel.org/project/netdevbpf/patch/20230319220805.124024-1-noltari@gmail.com/
-> 
-> [...]
+> I means following the semantics of pskb_expand_head() and __skb_linearize(),
+> not to combine the headroom expanding and linearizing into one function as
+> xdp_linearize_page() does now if we want a better refoctor result.
 
-Here is the summary with links:
-  - [v2,1/4] dt-bindings: net: dsa: b53: add more 63xx SoCs
-    https://git.kernel.org/netdev/net-next/c/3ec5ac3133b5
-  - [v2,2/4] net: dsa: b53: mmap: add more 63xx SoCs
-    https://git.kernel.org/netdev/net-next/c/a2b212fe5c32
-  - [v2,3/4] net: dsa: b53: mmap: allow passing a chip ID
-    https://git.kernel.org/netdev/net-next/c/260887c770eb
-  - [v2,4/4] net: dsa: b53: add BCM63268 RGMII configuration
-    https://git.kernel.org/netdev/net-next/c/594c6c2e3ea2
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+It's a driver-local function, if I was reading the code and saw
+xdp_prepare_mergeable() I'd have thought it's a function from XDP core.
+If anything the functions are missing local driver prefix. But it's
+not a huge deal (given Michael's ping yesterday asking us if we can
+expedite merging..)
