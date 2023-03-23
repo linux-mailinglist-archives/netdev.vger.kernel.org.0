@@ -2,136 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E48066C719F
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 21:23:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF3E6C71B1
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 21:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbjCWUXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 16:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
+        id S230064AbjCWUe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 16:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbjCWUXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 16:23:40 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3FA1E9F1;
-        Thu, 23 Mar 2023 13:23:38 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id fy10-20020a17090b020a00b0023b4bcf0727so3276246pjb.0;
-        Thu, 23 Mar 2023 13:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679603017;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4subVKgPXkKfzo/vmEBk9Q9vczgkdwx4inemRKlfvp4=;
-        b=jmhMp73fB3C5vPmHUFJe1aAgbVDQvPER+I5RbVKE1PtK6yhA6SNTIjeS4aehdWDM6/
-         nV8Ro0WHYLrdpamYWD9wWQUISL9PtjoS/AwOxaGPFmHODOv/hAzbbDGZk/sU767pUoGL
-         D4MteYqnYz2BjaYnO6F/matRJhshitB14YGGI1i9Dm03IEqoa0cuZ76aHO8J3eFxTl9L
-         oWaJumeoAIzj62Qb2IQGqUN0t+tsFJ6a/12wl1kbuehhbGK8lAq7kUPCncXIAbETZCzO
-         ctsWCTQH5bH4b7F752bAP84N0rC64wguqkWPbxegBpRcu8aHQqoKxY2D0a34cp6fZ3dE
-         giNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679603017;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4subVKgPXkKfzo/vmEBk9Q9vczgkdwx4inemRKlfvp4=;
-        b=fPGexKfoypUntBlP+r5p4azg2ZCuGSnH5PrYlGOP6oZp308IBzS+TMgIhzBFiJt9ai
-         ivZXATCILVNDppuC8tXXeYy6tF0MD0//e30QupakQw9TObjFAxBFA5woCekyLbHzRazM
-         cvRyXXd3Iwr2x82ATYY1WckhjwOBBHH2YiqhbiiepfdMkxs5MsaU7KguV8T6G/gDOKkJ
-         Q1uiMfctyF4ZTahyOiO78wSukCft2pYy3+2Sp1+37Ed/IWHNrksmzBHwKaA+cQ3Obljk
-         3EEyqOcvYeDzjIrSfGqb8ySEc+sDMdmijv0hB3W2fY74RNO6mTzfsWrf4ksvkgDeud6w
-         0Qfw==
-X-Gm-Message-State: AO0yUKV5vGrnxyEHITcheAW9e7FLKFHzWVBS0U5/JggdFzfxT8GnfeMf
-        1dP7/P/m9wNMCMBv63aSQNyMj1OiGmo=
-X-Google-Smtp-Source: AK7set8Opev8Ne0BBATRKDzR22cX3a1vtfg16iJ0HIGKjwFMIO3e2psoGkoZGHgmlZdnSj3Gi6kROA==
-X-Received: by 2002:a05:6a20:c426:b0:d5:e640:15ec with SMTP id en38-20020a056a20c42600b000d5e64015ecmr596515pzb.29.1679603017292;
-        Thu, 23 Mar 2023 13:23:37 -0700 (PDT)
-Received: from lvondent-mobl4.. (c-71-59-129-171.hsd1.or.comcast.net. [71.59.129.171])
-        by smtp.gmail.com with ESMTPSA id x5-20020aa79185000000b0062612b97cfdsm12315581pfa.123.2023.03.23.13.23.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 13:23:36 -0700 (PDT)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull-request: bluetooth 2023-03-23
-Date:   Thu, 23 Mar 2023 13:23:35 -0700
-Message-Id: <20230323202335.3380841-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229485AbjCWUe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 16:34:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE798FF0E
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 13:34:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D338628A0
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 20:34:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C9DC433EF;
+        Thu, 23 Mar 2023 20:34:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679603664;
+        bh=LV+wPG6mP4ZGZkf70LwDcE+PYbxFku3PzFdtmsHbi4o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EQTXQigv7VN9ZWyM58fTMwQogL7bs/pPDr2SB+HTTv3Mr6J01ui1S9CLUC9SSwFXZ
+         f4JVplJIg78G0wAxX4EiljH/UM7TMoUDA2/7qLvDOeYbVad6rUyMh08JARVkgjuVe7
+         nKwb+q37NIPZaG0kIEvk008gEOavYExBbmhgRlRjA1VYsC6CTFW86XyGVEmmQpNdz4
+         xgR842TdDn5x83w8BsZC7L5LNq39FRuWGslPXKAlU/u2HnFcxTDCDc2hLrJfnHQ0u4
+         IKppPJLv1gjIbGBUfwNqfrg05FtzlKrI7T0QuRkp496Cf3SpUE6/vywb45Fc83hX25
+         YERJP37A1qgyg==
+Date:   Thu, 23 Mar 2023 13:34:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "Florian Westphal" <fw@strlen.de>
+Subject: Re: [PATCH v6 net-next 1/7] netlink: Add a macro to set policy
+ message with format string
+Message-ID: <20230323133422.110d6cab@kernel.org>
+In-Reply-To: <pj41zla6032qn4.fsf@u570694869fb251.ant.amazon.com>
+References: <20230320132523.3203254-1-shayagr@amazon.com>
+        <20230320132523.3203254-2-shayagr@amazon.com>
+        <ed1b26c32307ecfc39da3eaba474645280809dec.camel@redhat.com>
+        <pj41zlsfdxymx0.fsf@u570694869fb251.ant.amazon.com>
+        <20230322114041.71df75d1@kernel.org>
+        <pj41zlmt432zea.fsf@u570694869fb251.ant.amazon.com>
+        <20230323095454.048d7130@kernel.org>
+        <pj41zla6032qn4.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit bb765a743377d46d8da8e7f7e5128022504741b9:
+On Thu, 23 Mar 2023 21:44:52 +0200 Shay Agroskin wrote:
+> > That's why we have the local variable called __extack, that we 
+> > *can*
+> > use multiple times, because it's a separate variable, (extack) 
+> > is
+> > evaluated only once, to initialize it...
+> >
+> > We don't need to copy the string formatting, unless I'm missing
+> > something. Paolo was just asking for:  
+> 
+> There is an issue with shadowing __extack by NL_SET_ERR_MSG_FMT 
+> causing the changes to __extack not to be propagated back to the 
+> caller.
+> I'm not that big of an expert in C but changing __extack -> 
+> _extack fixes the shadowing issue.
+> 
+> Might not be the most robust solution, though it might suffice for 
+> this use case.
 
-  mlxsw: spectrum_fid: Fix incorrect local port type (2023-03-22 15:50:32 +0100)
+TBH the hierarchy should be the other way around, NL_SET_ERR_MSG_FMT()
+should be converted to be:
 
-are available in the Git repository at:
+#define NL_SET_ERR_MSG_FMT(extack, attr, msg, args...) \
+	NL_SET_ERR_MSG_ATTR_POL_FMT(extack, NULL, NULL, msg, ##args)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2023-03-23
-
-for you to fetch changes up to bce56405201111807cc8e4f47c6de3e10b17c1ac:
-
-  Bluetooth: HCI: Fix global-out-of-bounds (2023-03-23 13:09:38 -0700)
-
-----------------------------------------------------------------
-bluetooth pull request for net:
-
- - Fix MGMT add advmon with RSSI command
- - L2CAP: Fix responding with wrong PDU type
- - Fix race condition in hci_cmd_sync_clear
- - ISO: Fix timestamped HCI ISO data packet parsing
- - HCI: Fix global-out-of-bounds
- - hci_sync: Resume adv with no RPA when active scan
-
-----------------------------------------------------------------
-Brian Gix (1):
-      Bluetooth: Remove "Power-on" check from Mesh feature
-
-Howard Chung (1):
-      Bluetooth: mgmt: Fix MGMT add advmon with RSSI command
-
-Kiran K (2):
-      Bluetooth: btintel: Iterate only bluetooth device ACPI entries
-      Bluetooth: btinel: Check ACPI handle for NULL before accessing
-
-Luiz Augusto von Dentz (3):
-      Bluetooth: hci_core: Detect if an ACL packet is in fact an ISO packet
-      Bluetooth: btusb: Remove detection of ISO packets over bulk
-      Bluetooth: L2CAP: Fix responding with wrong PDU type
-
-Min Li (1):
-      Bluetooth: Fix race condition in hci_cmd_sync_clear
-
-Pauli Virtanen (1):
-      Bluetooth: ISO: fix timestamped HCI ISO data packet parsing
-
-Stephan Gerhold (1):
-      Bluetooth: btqcomsmd: Fix command timeout after setting BD address
-
-Sungwoo Kim (1):
-      Bluetooth: HCI: Fix global-out-of-bounds
-
-Zheng Wang (1):
-      Bluetooth: btsdio: fix use after free bug in btsdio_remove due to unfinished work
-
-Zhengping Jiang (1):
-      Bluetooth: hci_sync: Resume adv with no RPA when active scan
-
- drivers/bluetooth/btintel.c      |  51 +++++++++++------
- drivers/bluetooth/btintel.h      |   7 ---
- drivers/bluetooth/btqcomsmd.c    |  17 +++++-
- drivers/bluetooth/btsdio.c       |   1 +
- drivers/bluetooth/btusb.c        |  10 ----
- include/net/bluetooth/hci_core.h |   1 +
- net/bluetooth/hci_core.c         |  23 ++++++--
- net/bluetooth/hci_sync.c         |  68 ++++++++++++++++-------
- net/bluetooth/iso.c              |   9 ++-
- net/bluetooth/l2cap_core.c       | 117 ++++++++++++++++++++++++++-------------
- net/bluetooth/mgmt.c             |   9 +--
- 11 files changed, 206 insertions(+), 107 deletions(-)
+and that'd fix the shadowing, right?
