@@ -2,136 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 541406C6B4A
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:41:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6056C6B60
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:45:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbjCWOlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 10:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39450 "EHLO
+        id S231849AbjCWOpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 10:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231663AbjCWOlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:41:50 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2114.outbound.protection.outlook.com [40.107.243.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C415F22CAE
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 07:41:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A3BjYIHa2WjjgenpMtpwvEUVwbR0LMPAXuU2cM+fE5fkr/mO70Fsg3NYZCv+8pUSUnryX/+6WJg4vV97vMwt0If411fbN/gDC9bBN7smxbi/XvrRPVK+0pAS+sh718i+8WPRMO7hHhybbvtT/O2Q8uwTcdt03oHEw6WI7WGX426z6tu3jq/YGFC81GuAMxLuuOZsKJiNDqUrTMEYd7wouFke0I0IUPrr2Thq1sekMQjGMAl9o/L5bXORzVILwEsutRoM5KGt1R6/ADk3HQVz3Fv5+WFcHeILbD7JPmtR1cgk6yFLZN8iD/UTMUSBVYO4fSQqc4DtBunIfnVKSEXO/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2893fDYHV7GWdvrnz5UVAThynzidlm4A/vQiezwiC7s=;
- b=S5q7idzQdf4z8/FyZhYta2RpWKfPDDeiOb6O7FdhVDO26maZrBjcV6DUFyYMvnrgEV8w6Bx+H7fusfow6RdtEEbOkp8AOdjU9aYIyWQwo6waT37ZhCHOOlQKaXJyzv+YBtUWfQM35AJoy7UPSm1Nutp+e7el7zuMQrY6b2H1ReQWjCjpR4ML9I+4WHO+tP7o0uaz/k4VF6k+16oJsfOMRD3EKGhLRfW3L2u0K+Kn9nJ0jQANm8qefd2tzmLuBeU1Cy6FbuydevKNvwvYsQIyPtUHHnfFmg4dpsxtxAeGx3xGEWrQ1IGoaXAaKbQa/7i3jiGnF++iFJAHlwNHhPfMEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2893fDYHV7GWdvrnz5UVAThynzidlm4A/vQiezwiC7s=;
- b=nR4HHLVJkX1NH5TncF67eP1J6LXVMVLEayDfSO0Bngu6ez+7krECDDzGbfofES6D1tZIft6qVAg6z5aGDZcod1H2E6jlOpzvB47lM3Ejfv91Xrx3vXxV4ICaR0r1sQWwVxa0XcWpUzzy8xQG1SpiYmbbOBQzzfuzQNQ7S4hCxrU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH0PR13MB5169.namprd13.prod.outlook.com (2603:10b6:610:ea::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
- 2023 14:41:46 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 14:41:46 +0000
-Date:   Thu, 23 Mar 2023 15:41:39 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net-next] ipv6: prevent router_solicitations for team port
-Message-ID: <ZBxlI7LSDKgxAw3Q@corigine.com>
-References: <7c052c3bdf8c1ac48833ace66725adf1f9794711.1679528141.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c052c3bdf8c1ac48833ace66725adf1f9794711.1679528141.git.lucien.xin@gmail.com>
-X-ClientProxiedBy: AS4P192CA0023.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:5e1::9) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S231611AbjCWOpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:45:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E4C23A65
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 07:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679582652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NrVA7uU+nRMqFw4cOUV9tVLaScyoHsXz3KJEw/B4yIU=;
+        b=iykAq50kKmPFl06b9WG734W/TkQf4eIEAI145ViXa4gtD9RCQ7IlXwleULZ9YE1I2qmUp9
+        GBiLxMZ/NCJy76nVFkz6n4DPf/3FJWmFqp/DLKGVX7+pO2z8HatkVeHXH7ddnC6nBmBPyj
+        xTqxg0cfd8FQYmDKzupI7Ur+AWG+MNA=
+Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com
+ [209.85.128.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-546-WEitqCQWNbGkC2lVdXGkxQ-1; Thu, 23 Mar 2023 10:44:11 -0400
+X-MC-Unique: WEitqCQWNbGkC2lVdXGkxQ-1
+Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-541888850d4so224933737b3.21
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 07:44:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679582650;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NrVA7uU+nRMqFw4cOUV9tVLaScyoHsXz3KJEw/B4yIU=;
+        b=bcD+Tpk65WSmp1domV0urx/C4mvoehiC7RJpchJqakNkqaEpUp3yFNXivfsbXaQh6o
+         tdMA+7HTOohKyGnhtsz5JXIPQ1ay9HCqzz+Gof0CVtUGuWDeg5ZbQQKrFmc1behB4BaL
+         RS1l27NXWWR1lblhk1T75hhmQ8la9BnYf5hFvx3wXaehhadhlRrtsk4zlw0Iu/AhnOi4
+         BRARsSxBJp9Rk3N814Gzx4wTL1CHUzV+X56f3otctH8UavvlTGRsH09ENSyetHD8BxgR
+         y9JM2jfBI4vP6m3kMa4YOoaXarzbeUO0Edu8Yw1Zq4qOCN9xcCKH+jIZyV1MrPH9+N7Q
+         71AQ==
+X-Gm-Message-State: AAQBX9eTm5DCrQSn2Q2/VPnKNi2XZW6k1dep2OuWaf5o30UiiQb7vY99
+        0TdxA3eNe086b9j1YPmhG0806kJyAhqOiyPrtZXiXhvHg+BpVPTw5ueQ1pGA8yjGgVXn6+CHeX0
+        dnaz528bAhBgd2uHdNS4czJ5Kpbo0xiH5
+X-Received: by 2002:a25:b001:0:b0:b70:ad30:dacc with SMTP id q1-20020a25b001000000b00b70ad30daccmr1906302ybf.2.1679582650465;
+        Thu, 23 Mar 2023 07:44:10 -0700 (PDT)
+X-Google-Smtp-Source: AKy350Yp90qJTyafDDZI8Zx6KKeaVqtRTbdnVnhZPzCnb/pi2s126PXUI5QEyJvtGxI/gRHywVjAEr2ZJillufAyOvY=
+X-Received: by 2002:a25:b001:0:b0:b70:ad30:dacc with SMTP id
+ q1-20020a25b001000000b00b70ad30daccmr1906287ybf.2.1679582650156; Thu, 23 Mar
+ 2023 07:44:10 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH0PR13MB5169:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7ee90d96-2798-4b24-ff28-08db2bacb9fc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YwwAcqTlvqDSh29Y6zi1YOUFrPP2eZiT0Dih/RujqnXnlOeyEGmsgBhU8zB2XvAX/uBpUtSavK4onQ737Yb9lSLniHuarKzIjw6Kt0TE1InqpN+si7ZepNrXejHJmkSEqqc1i0I8dwIi5iEBtVSVBz4Mn+1voQPlWnjImKsECjA8Wr1byoefuRenkFhEjeZKB7YPaxmkCdxmeDERyVWqmD5DeV2wyelNGdvpplnVTIZX+yRPGilvx76S0b+xmy7DxJyF8Puc2r8JddSm4EgKNgs6Dh504o2HFZkLfDbn+p608vxTl1ojkrUTiLD8mTzWGvUKaL9aghO2S5DK7fQ4lSmq3+F/P6Ao7KU24zAYMLS67TOha4+pcOIjDyWNalQm4cbK+w/WxlXs4rDH798hRlutu7RbPQAH6m+3eYCDTBD1AE6ZRvNT7hkErfqf6GyDXoyFPT4A5QEZIvf1dt8YsZO+NrqFI3ZBcgL7phgSS9IWsrFgbQPpQe3DmvT8ko68sDox5KX9vQDTpOI3HqlpiR5phX60v9ZysO6VGWHUMDk4P9fiiNzy8o2Q9/RoskOUx3ux+ae5mWk/QCfL4CfklK+KUd3AHhX+rHn1cO70igPxHa8tL7MrG6gTmAxm3+dYhnJvbtuROX91+cZ5DfGqxw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(366004)(136003)(376002)(396003)(39840400004)(451199018)(86362001)(36756003)(38100700002)(2906002)(44832011)(66476007)(41300700001)(4744005)(4326008)(66556008)(8676002)(5660300002)(6916009)(8936002)(66946007)(2616005)(186003)(6512007)(6506007)(54906003)(478600001)(316002)(6666004)(6486002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LyeOYCmD1dRF8Nv4zJqG5J/PguAYIeuG9QTXXQdQghW6JQ2G2tUeDW4gKjmQ?=
- =?us-ascii?Q?3S5XBw8IMny8wyhvUD6cB0e6hEpMfvr8ycnzgIUp6GHyXBCZjYWeeqYBEZkd?=
- =?us-ascii?Q?BOCTC4m45sFZTCofAI+tlxKYtedSwtiIvn8CUUvh9cPvdwESiB9oTvsANjxB?=
- =?us-ascii?Q?z0W4B+GhQAHLXR4kv1w2dvitZ+iLEbAsmz7iVUHdgV1tT7/0yPIfrfz8t1WZ?=
- =?us-ascii?Q?Z/QWuG12/dVQc0ymYQZIFaj6eG2gJhj9zbnPr3BV5nRWemlV1sfDs8osLM16?=
- =?us-ascii?Q?ThH6GYVv2DpI2nFHUPD27LGO/BRC7JaetE/QtBymbW9VV0fA+icXSi1mSURK?=
- =?us-ascii?Q?CutDkxXnRfEyPqBAFFVcAntTeBYm/XvhMSDK7O3HyB9RxFIW43B7I/MqEIrg?=
- =?us-ascii?Q?Kap74WFvOmN9thO9iBqQ7r9/g17btyHvL6jHU/re/9UujmMxK/JP7chSXRB6?=
- =?us-ascii?Q?Hfqba/PYGeUAyAZhg24v5ftTVWfN99nyPMonOgnTp/YHXuNVD4Z//7m132eh?=
- =?us-ascii?Q?fRKn4Xi80DkLq2FWPJL+fD7cKvuEsFKwaGi7MeuavWZadKX9PLMm6/bvzgRF?=
- =?us-ascii?Q?ABiRmQ0ezAZCR7Nc0Rs1mA14o1isqeqD3FGktD/eD7xkKn1vipXeqf7XzWLs?=
- =?us-ascii?Q?zuT5ROq3YMwwfW5Zks1a578MgZFnrplJIbT7VbfQ2K5aY1oj8kPvxFXtCvBJ?=
- =?us-ascii?Q?xzHM5ukRdiisGq/ovqKT6Bf5pvjL2lYoBX2L1sFntUu7V4rNwqR8FsxcLs1X?=
- =?us-ascii?Q?bQMBp68ewOAx7if0EIdND/et/t/vRBC4ds57OFPAaplDZQ8EVBNNUHcAqtlJ?=
- =?us-ascii?Q?Sie04QKAc79CvCCYraNpM4FZUXEj7FA1EyAAgJTEgFv1BS9rM5hnSHn1OOkj?=
- =?us-ascii?Q?Rl1rMjgf7jba0fvCstTww/cee8i/dYg9PEjNVf43TWbNohZhAt9rsQFJrj9L?=
- =?us-ascii?Q?x8oro71GHXYc19rap3FA84EKCjVl0//kI+l4SMY97hVlkwimPZyu0ACI+8CT?=
- =?us-ascii?Q?RPFj9NasqB43DYGz6B3DIXv2bmlNcPzhbF8J8+NxLuEFxsg0miuMoWI83I/b?=
- =?us-ascii?Q?X5mjsHOM2DHmqLREa4y812AsU0chSEr29L1JTwV2p4L54uf503+30/HQdi8M?=
- =?us-ascii?Q?Xmmh+HpSEp/P19aaRd7QH/Im12647c/9XipZtgtzaLBkpO6k6qJPANfuj4dq?=
- =?us-ascii?Q?jvQmSsMgABKap7eammMVFNnxQs6T0FNEarw1vvRzJhPsbSu87V7wpunC6K9O?=
- =?us-ascii?Q?q8HE59+Fi4kUonwzBTzhAGbyxC2STwGtaVywXtQCDYbbQc+v71Ozqd7gQDS/?=
- =?us-ascii?Q?HVZXJcQYfi9E+lPFYcVHJ5BuyfVMsx0HhME8Q+atnksH4S+P9uDX3DFTRLKR?=
- =?us-ascii?Q?LQe9loxk8FelQY1DRoaMi/0sF3Qs4QkGfDALB7lXaDtT0kB6t4wix+fLkuf8?=
- =?us-ascii?Q?rgt2VDm2G57sV4jswEd7BuqMJxACnqYKFyuMAI04LmlVtydxYVbBssgBTgGe?=
- =?us-ascii?Q?jAu6gO+IRjpcGVvJZ5VdPbHhpbJDBjs7559mJVo84vx3gNdulsxCjmlgJ3Q5?=
- =?us-ascii?Q?HWxqQV6oISYsk4lbcpKQeitHSAJGGf5NXsvREb9zu10wb7s9nIs4daoHKr8b?=
- =?us-ascii?Q?utQcdVXGmDjShOQS76KrHGBKaROZBqJp8aswqVS9QaPdN/+gmmEWcZqcD86E?=
- =?us-ascii?Q?EcstKw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ee90d96-2798-4b24-ff28-08db2bacb9fc
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 14:41:45.9978
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zfwBHcQaEd0tjSQk9ab4K5cGg/JGSCcjsMlrAw7sVp0QQwO01p4Qv9eSw/fmFEw5Jow+ORyRnq2+10ngNt2HJz0eBrYKyRGz+UdhW/OfmB8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB5169
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230321154228.182769-1-sgarzare@redhat.com> <20230321154228.182769-5-sgarzare@redhat.com>
+ <CAJaqyWcCwwu1UJ968A=s30GCezjLcwWKDhCFMsQ2EcGGgkiz7g@mail.gmail.com> <20230323104638.67hbwwbk7ayp4psq@sgarzare-redhat>
+In-Reply-To: <20230323104638.67hbwwbk7ayp4psq@sgarzare-redhat>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Thu, 23 Mar 2023 15:43:34 +0100
+Message-ID: <CAJaqyWfSor5PKZn0iAOthCkeGDBc7+rjVXuSHMy1LWY+fV5o7A@mail.gmail.com>
+Subject: Re: [PATCH v3 4/8] vringh: support VA with iotlb
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, stefanha@redhat.com,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 07:35:41PM -0400, Xin Long wrote:
-> The issue fixed for bonding in commit c2edacf80e15 ("bonding / ipv6: no
-> addrconf for slaves separately from master") also exists in team driver.
-> However, we can't just disable ipv6 addrconf for team ports, as 'teamd'
-> will need it when nsns_ping watch is used in the user space.
-> 
-> Instead of preventing ipv6 addrconf, this patch only prevents RS packets
-> for team ports, as it did in commit b52e1cce31ca ("ipv6: Don't send rs
-> packets to the interface of ARPHRD_TUNNEL").
-> 
-> Note that we do not prevent DAD packets, to avoid the changes getting
-> intricate / hacky. Also, usually sysctl dad_transmits is set to 1 and
-> only 1 DAD packet will be sent, and by now no libteam user complains
-> about DAD packets on team ports, unlike RS packets.
-> 
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+On Thu, Mar 23, 2023 at 11:46=E2=80=AFAM Stefano Garzarella <sgarzare@redha=
+t.com> wrote:
+>
+> On Thu, Mar 23, 2023 at 09:09:14AM +0100, Eugenio Perez Martin wrote:
+> >On Tue, Mar 21, 2023 at 4:43=E2=80=AFPM Stefano Garzarella <sgarzare@red=
+hat.com> wrote:
+> >>
+> >> vDPA supports the possibility to use user VA in the iotlb messages.
+> >> So, let's add support for user VA in vringh to use it in the vDPA
+> >> simulators.
+> >>
+> >> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> >> ---
+> >>
+> >> Notes:
+> >>     v3:
+> >>     - refactored avoiding code duplication [Eugenio]
+> >>     v2:
+> >>     - replace kmap_atomic() with kmap_local_page() [see previous patch=
+]
+> >>     - fix cast warnings when build with W=3D1 C=3D1
+> >>
+> >>  include/linux/vringh.h            |   5 +-
+> >>  drivers/vdpa/mlx5/net/mlx5_vnet.c |   2 +-
+> >>  drivers/vdpa/vdpa_sim/vdpa_sim.c  |   4 +-
+> >>  drivers/vhost/vringh.c            | 153 +++++++++++++++++++++++------=
+-
+> >>  4 files changed, 127 insertions(+), 37 deletions(-)
+> >>
+> >> diff --git a/include/linux/vringh.h b/include/linux/vringh.h
+> >> index 1991a02c6431..d39b9f2dcba0 100644
+> >> --- a/include/linux/vringh.h
+> >> +++ b/include/linux/vringh.h
+> >> @@ -32,6 +32,9 @@ struct vringh {
+> >>         /* Can we get away with weak barriers? */
+> >>         bool weak_barriers;
+> >>
+> >> +       /* Use user's VA */
+> >> +       bool use_va;
+> >> +
+> >>         /* Last available index we saw (ie. where we're up to). */
+> >>         u16 last_avail_idx;
+> >>
+> >> @@ -279,7 +282,7 @@ void vringh_set_iotlb(struct vringh *vrh, struct v=
+host_iotlb *iotlb,
+> >>                       spinlock_t *iotlb_lock);
+> >>
+> >>  int vringh_init_iotlb(struct vringh *vrh, u64 features,
+> >> -                     unsigned int num, bool weak_barriers,
+> >> +                     unsigned int num, bool weak_barriers, bool use_v=
+a,
+> >>                       struct vring_desc *desc,
+> >>                       struct vring_avail *avail,
+> >>                       struct vring_used *used);
+> >> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net=
+/mlx5_vnet.c
+> >> index 520646ae7fa0..dfd0e000217b 100644
+> >> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> >> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> >> @@ -2537,7 +2537,7 @@ static int setup_cvq_vring(struct mlx5_vdpa_dev =
+*mvdev)
+> >>
+> >>         if (mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ))
+> >>                 err =3D vringh_init_iotlb(&cvq->vring, mvdev->actual_f=
+eatures,
+> >> -                                       MLX5_CVQ_MAX_ENT, false,
+> >> +                                       MLX5_CVQ_MAX_ENT, false, false=
+,
+> >>                                         (struct vring_desc *)(uintptr_=
+t)cvq->desc_addr,
+> >>                                         (struct vring_avail *)(uintptr=
+_t)cvq->driver_addr,
+> >>                                         (struct vring_used *)(uintptr_=
+t)cvq->device_addr);
+> >> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/=
+vdpa_sim.c
+> >> index eea23c630f7c..47cdf2a1f5b8 100644
+> >> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> >> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> >> @@ -60,7 +60,7 @@ static void vdpasim_queue_ready(struct vdpasim *vdpa=
+sim, unsigned int idx)
+> >>         struct vdpasim_virtqueue *vq =3D &vdpasim->vqs[idx];
+> >>         uint16_t last_avail_idx =3D vq->vring.last_avail_idx;
+> >>
+> >> -       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true=
+,
+> >> +       vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true=
+, false,
+> >>                           (struct vring_desc *)(uintptr_t)vq->desc_add=
+r,
+> >>                           (struct vring_avail *)
+> >>                           (uintptr_t)vq->driver_addr,
+> >> @@ -92,7 +92,7 @@ static void vdpasim_vq_reset(struct vdpasim *vdpasim=
+,
+> >>         vq->cb =3D NULL;
+> >>         vq->private =3D NULL;
+> >>         vringh_init_iotlb(&vq->vring, vdpasim->dev_attr.supported_feat=
+ures,
+> >> -                         VDPASIM_QUEUE_MAX, false, NULL, NULL, NULL);
+> >> +                         VDPASIM_QUEUE_MAX, false, false, NULL, NULL,=
+ NULL);
+> >>
+> >>         vq->vring.notify =3D NULL;
+> >>  }
+> >> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> >> index 0ba3ef809e48..72c88519329a 100644
+> >> --- a/drivers/vhost/vringh.c
+> >> +++ b/drivers/vhost/vringh.c
+> >> @@ -1094,10 +1094,18 @@ EXPORT_SYMBOL(vringh_need_notify_kern);
+> >>
+> >>  #if IS_REACHABLE(CONFIG_VHOST_IOTLB)
+> >>
+> >> +struct iotlb_vec {
+> >> +       union {
+> >> +               struct iovec *iovec;
+> >> +               struct bio_vec *bvec;
+> >> +       } iov;
+> >> +       size_t count;
+> >> +       bool is_iovec;
+> >> +};
+> >> +
+> >>  static int iotlb_translate(const struct vringh *vrh,
+> >>                            u64 addr, u64 len, u64 *translated,
+> >> -                          struct bio_vec iov[],
+> >> -                          int iov_size, u32 perm)
+> >> +                          struct iotlb_vec *ivec, u32 perm)
+> >>  {
+> >>         struct vhost_iotlb_map *map;
+> >>         struct vhost_iotlb *iotlb =3D vrh->iotlb;
+> >> @@ -1107,9 +1115,9 @@ static int iotlb_translate(const struct vringh *=
+vrh,
+> >>         spin_lock(vrh->iotlb_lock);
+> >>
+> >>         while (len > s) {
+> >> -               u64 size, pa, pfn;
+> >> +               u64 size;
+> >>
+> >> -               if (unlikely(ret >=3D iov_size)) {
+> >> +               if (unlikely(ret >=3D ivec->count)) {
+> >>                         ret =3D -ENOBUFS;
+> >>                         break;
+> >>                 }
+> >> @@ -1124,10 +1132,22 @@ static int iotlb_translate(const struct vringh=
+ *vrh,
+> >>                 }
+> >>
+> >>                 size =3D map->size - addr + map->start;
+> >> -               pa =3D map->addr + addr - map->start;
+> >> -               pfn =3D pa >> PAGE_SHIFT;
+> >> -               bvec_set_page(&iov[ret], pfn_to_page(pfn), min(len - s=
+, size),
+> >> -                             pa & (PAGE_SIZE - 1));
+> >> +               if (ivec->is_iovec) {
+> >> +                       struct iovec *iovec =3D ivec->iov.iovec;
+> >> +
+> >> +                       iovec[ret].iov_len =3D min(len - s, size);
+> >> +                       iovec[ret].iov_base =3D (void __user *)(unsign=
+ed long)
+> >
+> >s/unsigned long/uintptr_t ?
+> >
+>
+> yep, good catch!
+>
+> As I wrote to Jason, I think I'll take it out of the if and just declare
+> an uintptr_t variable, since I'm using it also in the else branch.
+>
+> >
+> >
+> >> +                                             (map->addr + addr - map-=
+>start);
+> >> +               } else {
+> >> +                       u64 pa =3D map->addr + addr - map->start;
+> >> +                       u64 pfn =3D pa >> PAGE_SHIFT;
+> >> +                       struct bio_vec *bvec =3D ivec->iov.bvec;
+> >> +
+> >> +                       bvec_set_page(&bvec[ret], pfn_to_page(pfn),
+> >> +                                     min(len - s, size),
+> >> +                                     pa & (PAGE_SIZE - 1));
+> >> +               }
+> >> +
+> >>                 s +=3D size;
+> >>                 addr +=3D size;
+> >>                 ++ret;
+> >> @@ -1141,26 +1161,42 @@ static int iotlb_translate(const struct vringh=
+ *vrh,
+> >>         return ret;
+> >>  }
+> >>
+> >> +#define IOTLB_IOV_SIZE 16
+> >
+> >I'm fine with defining here, but maybe it is better to isolate the
+> >change in a previous patch or reuse another well known macro?
+>
+> Yep, good point!
+>
+> Do you have any well known macro to suggest?
+>
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Not really, 16 seems like a convenience value here actually :). Maybe
+replace _SIZE with _STRIDE or similar?
+
+I keep the Acked-by even if the final name is IOTLB_IOV_SIZE though.
+
+Thanks!
+
