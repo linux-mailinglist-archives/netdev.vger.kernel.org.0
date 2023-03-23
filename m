@@ -2,208 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D92BE6C5D33
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 04:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11EDB6C5D38
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 04:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbjCWD1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 23:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
+        id S230018AbjCWD2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 23:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbjCWD06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 23:26:58 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3583F25E17
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 20:26:56 -0700 (PDT)
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32N0gZcf021267
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 20:26:55 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=meta.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=s2048-2021-q4;
- bh=BjQy3aUUufJ+026SPDGyGiUVo6uCwdZYOChPF0HQ8Ko=;
- b=OanB+FA8aou9Peg/zGb7cMu1uqlQIBAq927UrNZ+HKBypRK/i8knKwHWMPom23wyRHMf
- J7axn1N5KMV3V3K+JAidmFn+pwREihdjgXLZwbpm14DMm6e05YGC9qBaaQNq7y64LTwI
- uY6E6f5XOqnSSCMes35Cn9m4xC7ZdUgAN1+N0J8vRLgQhf9NV2/ZkNfU0CsouYQl7f38
- xCMyMmUvG8MxD1y++Mqmf5n484EFpIsjy01rgYKiYoEVoRNrhpANgV7E42TIp5gYavS4
- FyvjszxIegus/i/83sENXuo+LEKlUC1um5qABSeE02ofUmmP2HMCCu+BiTRS9UAbSjrR ow== 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3pfufcy1y8-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 20:26:55 -0700
-Received: from twshared52565.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Wed, 22 Mar 2023 20:26:54 -0700
-Received: by devbig931.frc1.facebook.com (Postfix, from userid 460691)
-        id 187E18086D98; Wed, 22 Mar 2023 20:24:07 -0700 (PDT)
-From:   Kui-Feng Lee <kuifeng@meta.com>
-To:     <bpf@vger.kernel.org>, <ast@kernel.org>, <martin.lau@linux.dev>,
-        <song@kernel.org>, <kernel-team@meta.com>, <andrii@kernel.org>,
-        <sdf@google.com>
-CC:     Kui-Feng Lee <kuifeng@meta.com>, <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH bpf-next v12 2/8] net: Update an existing TCP congestion control algorithm.
-Date:   Wed, 22 Mar 2023 20:23:59 -0700
-Message-ID: <20230323032405.3735486-3-kuifeng@meta.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230323032405.3735486-1-kuifeng@meta.com>
-References: <20230323032405.3735486-1-kuifeng@meta.com>
+        with ESMTP id S229738AbjCWD2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 23:28:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02FB9747
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 20:27:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42C7AB811AB
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 03:27:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 417ACC433EF;
+        Thu, 23 Mar 2023 03:27:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679542076;
+        bh=kE8dpu6QSEPFy6ETzW5VBAbBgYaAaIotKQYYrnBq6VM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Pn1J34J669wyYfMbAlifakdFlyWw1C0X1Zq6b2U4yBsqIU+A5OEram85AbtRLx7iR
+         H55uILKtx9DeRz6R/JvjKvA0XNEFFIyeM9czayPl2KpwXAXp7sWbliqw3B0cZ2fR/s
+         OYuQjqHc7CBXtUXfKkaY8i9b5xauqmXh01nGpu9jnV2wpApja892f3N5pyHmyHefhh
+         WavedHPEOzcV9lMbXUHE1M2FauL8CqfgNNMDycIaA/NGXzRni8j5JHLq7qEfJ2cArn
+         cK3Z3LzwbPTJ1PvKw4s29T7WUxeqSJd7IdWxhS3QI9ghZYDLKmdXrPA+hAuOAzotio
+         ZuOXQzez3e+CA==
+Date:   Wed, 22 Mar 2023 20:27:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>, <willemb@google.com>,
+        <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
+ lockless queue stop/wake code
+Message-ID: <20230322202755.18e0f105@kernel.org>
+In-Reply-To: <e66b0ae0-8c26-927f-2342-a7a4383068a3@huawei.com>
+References: <20230322233028.269410-1-kuba@kernel.org>
+        <e66b0ae0-8c26-927f-2342-a7a4383068a3@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Ps-2yDHqsQccnMYdfIYseTFXDesqPREH
-X-Proofpoint-GUID: Ps-2yDHqsQccnMYdfIYseTFXDesqPREH
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-22_21,2023-03-22_01,2023-02-09_01
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This feature lets you immediately transition to another congestion
-control algorithm or implementation with the same name.  Once a name
-is updated, new connections will apply this new algorithm.
-
-The purpose is to update a customized algorithm implemented in BPF
-struct_ops with a new version on the flight.  The following is an
-example of using the userspace API implemented in later BPF patches.
-
-   link =3D bpf_map__attach_struct_ops(skel->maps.ca_update_1);
-   .......
-   err =3D bpf_link__update_map(link, skel->maps.ca_update_2);
-
-We first load and register an algorithm implemented in BPF struct_ops,
-then swap it out with a new one using the same name. After that, newly
-created connections will apply the updated algorithm, while older ones
-retain the previous version already applied.
-
-This patch also takes this chance to refactor the ca validation into
-the new tcp_validate_congestion_control() function.
-
-Cc: netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-Signed-off-by: Kui-Feng Lee <kuifeng@meta.com>
----
- include/net/tcp.h   |  3 +++
- net/ipv4/tcp_cong.c | 65 ++++++++++++++++++++++++++++++++++++++++-----
- 2 files changed, 61 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index db9f828e9d1e..2abb755e6a3a 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1117,6 +1117,9 @@ struct tcp_congestion_ops {
+On Thu, 23 Mar 2023 11:05:36 +0800 Yunsheng Lin wrote:
+> > +/* Lockless queue stopping / waking helpers.
+> > + *
+> > + * These macros are designed to safely implement stopping and waking
+> > + * netdev queues without full lock protection. We assume that there can
+> > + * be no concurrent stop attempts and no concurrent wake attempts.
+> > + * The try-stop should happen from the xmit handler*, while wake up =20
+>=20
+> unnecessary '*' after handler?
+>=20
+> > + * should be triggered from NAPI poll context. The two may run
+> > + * concurrently (single producer, single consumer).
+> > + *
+> > + * All descriptor ring indexes (and other relevant shared state) must
+> > + * be updated before invoking the macros.
+> > + *
+> > + * * the try-stop side does not reschedule Tx (netif_tx_start_queue() =
 =20
- int tcp_register_congestion_control(struct tcp_congestion_ops *type);
- void tcp_unregister_congestion_control(struct tcp_congestion_ops *type);
-+int tcp_update_congestion_control(struct tcp_congestion_ops *type,
-+				  struct tcp_congestion_ops *old_type);
-+int tcp_validate_congestion_control(struct tcp_congestion_ops *ca);
-=20
- void tcp_assign_congestion_control(struct sock *sk);
- void tcp_init_congestion_control(struct sock *sk);
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index db8b4b488c31..e677d0bc12ad 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -75,14 +75,8 @@ struct tcp_congestion_ops *tcp_ca_find_key(u32 key)
- 	return NULL;
- }
-=20
--/*
-- * Attach new congestion control algorithm to the list
-- * of available options.
-- */
--int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-+int tcp_validate_congestion_control(struct tcp_congestion_ops *ca)
- {
--	int ret =3D 0;
--
- 	/* all algorithms must implement these */
- 	if (!ca->ssthresh || !ca->undo_cwnd ||
- 	    !(ca->cong_avoid || ca->cong_control)) {
-@@ -90,6 +84,20 @@ int tcp_register_congestion_control(struct tcp_congest=
-ion_ops *ca)
- 		return -EINVAL;
- 	}
-=20
-+	return 0;
-+}
-+
-+/* Attach new congestion control algorithm to the list
-+ * of available options.
-+ */
-+int tcp_register_congestion_control(struct tcp_congestion_ops *ca)
-+{
-+	int ret;
-+
-+	ret =3D tcp_validate_congestion_control(ca);
-+	if (ret)
-+		return ret;
-+
- 	ca->key =3D jhash(ca->name, sizeof(ca->name), strlen(ca->name));
-=20
- 	spin_lock(&tcp_cong_list_lock);
-@@ -130,6 +138,49 @@ void tcp_unregister_congestion_control(struct tcp_co=
-ngestion_ops *ca)
- }
- EXPORT_SYMBOL_GPL(tcp_unregister_congestion_control);
-=20
-+/* Replace a registered old ca with a new one.
-+ *
-+ * The new ca must have the same name as the old one, that has been
-+ * registered.
-+ */
-+int tcp_update_congestion_control(struct tcp_congestion_ops *ca, struct =
-tcp_congestion_ops *old_ca)
-+{
-+	struct tcp_congestion_ops *existing;
-+	int ret;
-+
-+	ret =3D tcp_validate_congestion_control(ca);
-+	if (ret)
-+		return ret;
-+
-+	ca->key =3D jhash(ca->name, sizeof(ca->name), strlen(ca->name));
-+
-+	spin_lock(&tcp_cong_list_lock);
-+	existing =3D tcp_ca_find_key(old_ca->key);
-+	if (ca->key =3D=3D TCP_CA_UNSPEC || !existing || strcmp(existing->name,=
- ca->name)) {
-+		pr_notice("%s not registered or non-unique key\n",
-+			  ca->name);
-+		ret =3D -EINVAL;
-+	} else if (existing !=3D old_ca) {
-+		pr_notice("invalid old congestion control algorithm to replace\n");
-+		ret =3D -EINVAL;
-+	} else {
-+		/* Add the new one before removing the old one to keep
-+		 * one implementation available all the time.
-+		 */
-+		list_add_tail_rcu(&ca->list, &tcp_cong_list);
-+		list_del_rcu(&existing->list);
-+		pr_debug("%s updated\n", ca->name);
-+	}
-+	spin_unlock(&tcp_cong_list_lock);
-+
-+	/* Wait for outstanding readers to complete before the
-+	 * module or struct_ops gets removed entirely.
-+	 */
-+	synchronize_rcu();
-+
-+	return ret;
-+}
-+
- u32 tcp_ca_get_key_by_name(struct net *net, const char *name, bool *ecn_=
-ca)
- {
- 	const struct tcp_congestion_ops *ca;
---=20
-2.34.1
+>=20
+> double '*' here?
 
+It's a footnote..
+
+> > + *   instead of netif_tx_wake_queue()) so uses outside of the xmit
+> > + *   handler may lead to bugs
+> > + */
+> > +
+> > +#define netif_tx_queue_try_stop(txq, get_desc, start_thrs)		\
+> > +	({								\
+> > +		int _res;						\
+> > +									\
+> > +		netif_tx_stop_queue(txq);				\
+> > +									\
+> > +		smp_mb();						\
+> > +									\
+> > +		/* We need to check again in a case another		\
+> > +		 * CPU has just made room available.			\
+> > +		 */							\
+> > +		if (likely(get_desc < start_thrs)) {			\
+> > +			_res =3D 0;					\
+> > +		} else {						\
+> > +			netif_tx_start_queue(txq);			\
+> > +			_res =3D -1;					\
+> > +		}							\
+> > +		_res;							\
+> > +	})								\
+> > +
+> > +/**
+> > + * netif_tx_queue_maybe_stop() - locklessly stop a Tx queue, if needed
+> > + * @txq:	struct netdev_queue to stop/start
+> > + * @get_desc:	get current number of free descriptors (see requirements=
+ below!)
+> > + * @stop_thrs:	minimal number of available descriptors for queue to be=
+ left
+> > + *		enabled
+> > + * @start_thrs:	minimal number of descriptors to re-enable the queue, =
+can be
+> > + *		equal to @stop_thrs or higher to avoid frequent waking
+> > + *
+> > + * All arguments may be evaluated multiple times, beware of side effec=
+ts.
+> > + * @get_desc must be a formula or a function call, it must always
+> > + * return up-to-date information when evaluated!
+> > + * Expected to be used from ndo_start_xmit, see the comment on top of =
+the file. =20
+>=20
+> For now=EF=BC=8Cthere seems to be three ways of calling *_maybe_stop():
+> 1. called before transimting a skb.
+> 2. called after transimting a skb.
+> 3. called both before and after transimting a skb.
+>=20
+> Which one should new driver follow?
+> Do we need to make it clear here?
+
+After, the check before is more of a sanity check.
+AFAIR netdevice.rst or some other place documents the stopping
+expectations.
