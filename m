@@ -2,167 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 380486C6C89
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 16:48:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E8946C6CC2
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 16:58:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbjCWPsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 11:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
+        id S232198AbjCWP6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 11:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbjCWPsh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 11:48:37 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2121.outbound.protection.outlook.com [40.107.223.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D81590;
-        Thu, 23 Mar 2023 08:48:35 -0700 (PDT)
+        with ESMTP id S232128AbjCWP6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 11:58:19 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2086.outbound.protection.outlook.com [40.107.104.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D4AC641
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 08:58:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FBObLUO9mfwvvYAgkj+041++Yvr36xltLL5EV/KS1AE=;
+ b=AKbSvJ2YxkNYVBVYQmEuIdTsuUNuM1UHUK7qd/AK5iZYBvNyQMF4bN1jHIS4PtZeD3OhqBG70AJCZEC8TV1cEbh8wDjqvrtCP5ZNTwGTjL9oMd4pxh/ZZLSMUlWAmnp2T52XJKPPWqt8QR0gmAC6Oert7QCTnTqObyhdUk+wcW95JTXo+izmeDktgNXNnR5gAvd89AYlMnmJIFnXThg1iH/GlGcDtAW8fU6LoZO0ATo/nR6nf7mbiiOkH/+QpshnJ+rNbv/Ied5vdj+fR3ucVmdGld1FkXWDPp2I4+PVvCQTunpr+BFh52hDSiRiWIi5tfh3o2FKNCAKUAeH/uWGyw==
+Received: from ZR2P278CA0042.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:47::13)
+ by PA4PR03MB6831.eurprd03.prod.outlook.com (2603:10a6:102:e6::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
+ 2023 15:58:14 +0000
+Received: from VI1EUR05FT008.eop-eur05.prod.protection.outlook.com
+ (2603:10a6:910:47:cafe::90) by ZR2P278CA0042.outlook.office365.com
+ (2603:10a6:910:47::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38 via Frontend
+ Transport; Thu, 23 Mar 2023 15:58:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.160.56.80)
+ smtp.mailfrom=seco.com; dkim=pass (signature was verified)
+ header.d=seco.com;dmarc=pass action=none header.from=seco.com;
+Received-SPF: Pass (protection.outlook.com: domain of seco.com designates
+ 20.160.56.80 as permitted sender) receiver=protection.outlook.com;
+ client-ip=20.160.56.80; helo=inpost-eu.tmcas.trendmicro.com; pr=C
+Received: from inpost-eu.tmcas.trendmicro.com (20.160.56.80) by
+ VI1EUR05FT008.mail.protection.outlook.com (10.233.243.181) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6222.17 via Frontend Transport; Thu, 23 Mar 2023 15:58:14 +0000
+Received: from outmta (unknown [192.168.82.140])
+        by inpost-eu.tmcas.trendmicro.com (Trend Micro CAS) with ESMTP id C9B3C2008088C;
+        Thu, 23 Mar 2023 15:58:13 +0000 (UTC)
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (unknown [104.47.13.51])
+        by repre.tmcas.trendmicro.com (Trend Micro CAS) with ESMTPS id 0DB742008006F;
+        Thu, 23 Mar 2023 15:57:03 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CZmUOfOsKqHMg4j9xF2aIknMsDIKLWYmTf1yYBsgVdRTHMevvKO+KD6Xe5t6zzTHGUXgbiUATGtV7jUZLCyvc1YV6FOKHSjihlSTbDrIVvobb4SNde0ZCzOhUk9R+L4kEpd8W/LiqeokePhpM3qk5ZLqvmDJ3gmo9AvgtxuklbwqhiS5yDce2ESQG4HKvBb6SI9/wILdYdN3JEW10wFs/9xAdE/mBGacbB9bKTCIteesFnifkkp76qE84ixYU18BdZBI4GEuHGbHhwEcPLyjvQDqZJVQAXWUW8wc9NvzmivBlGK3/KQR7IL9J+M+Z02LdSt0UaONi8H/zbbSi3vsvg==
+ b=Q50ntLQM3+ZEo+XXzjXBuQVPv6b1cpJtd08yB9UWrI7Viiu7J+NLCfRaoWjLcp6J+kXM19Zl76+JLqhoJHxW96iedgQq4XtYOZ49zmEb5+Zw6teOzUUGD/t+zpWRW00Otq9g1EXEz1161oTp5XsYsNz7zC6cxBp0QoViWkvbrFPIRMwayjVhc07GOC78W0g7TbxeqeEis/J//NOOYrJp5gnryTgOj3roJz6+pcjG0ED2IH0JdRNgAQ1ogAVVIQDwjn/rS9uYAhHHTfSQ5X10syyOKhP1zPqg5rkQr6aVGdMLi6UHIMRQQs+a8te0BmniliZsUjmYEuRwhx6YIVDUlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=q8FnoMTeLMXtYBa3/zdatvhWV36G6eOwWQGvpi+giG8=;
- b=C80qubEQzLF3Ekf4TjVPXqtA1dB98mS1lS1z640lcEJBY+40l91SUyQB93g/I87ku1nj5Nr5TTvWpmei6e1pur/zHOXTNPVWXdicW62KTQN4CXLOkgLkZ6yBrOdgEkZrD7j5zQO6MwHeltgaFi9JRc0/LxzGyzOXN+rE/Feamxj/zDacNgYm4Px4BfmDZNiIDA4BYpWcw41RDtk0+Y2JYkRvjRsHp5hI6gLzCoeUctw/rFzkXVXqc9sKo0Xuef+5kL4a1pADfwMNi0r8WIQIY2LRh0SUQdYKi+6jfrV4PfwXjriR83MknanzI5fSToO67QLO5rqR7UOG1larL/r5ug==
+ bh=FBObLUO9mfwvvYAgkj+041++Yvr36xltLL5EV/KS1AE=;
+ b=L6pqz8rQoEulSkcPMLlDuASBfVbRiIJmTdXc+Tbhp964r5bwu5HjezeMLjlvcKIN8cBAoRqBteC2MCzeiLxH7BvilkT0zMfV/UszhNr+0OS0Gy0gATq69dohKVqUC52CpgyNtyACThTd2OCs/gtN2O8Z3pxpkVWtMHNrupA4mSE2c/ucCGGvwc/0GbVLa3HcFsgwO2akZHj0svxJ5SczSsIlFq5+Y1xX8NxOSZmzr1gE7kIwg0HRBWoQ+HhoiMgLy0bRnw4bpiKRBVL1aVdyJsPoQmyGn7gRuEyIFKOuX6vx4xsmnZwKJ0HmHpIsMGGmX0TKRyM1+Exlo6BlIDrtOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q8FnoMTeLMXtYBa3/zdatvhWV36G6eOwWQGvpi+giG8=;
- b=iL6jac8ydZpYbLeOzn58+zcSodTi1tM84/pGvU6l+2b8JNVkCDzsU7J2dfNcZIw6axiDQ362kiDREtCEpOLGijXDX1NuLp2gv2piWI3NoJVFDPjaC8jP0njGBWlNpJAKDetm/dMIKaeBg3TAYuAmxy5O8w+0PLnoJOIgteXnbZE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by SA1PR13MB5612.namprd13.prod.outlook.com (2603:10b6:806:233::9) with
+ bh=FBObLUO9mfwvvYAgkj+041++Yvr36xltLL5EV/KS1AE=;
+ b=AKbSvJ2YxkNYVBVYQmEuIdTsuUNuM1UHUK7qd/AK5iZYBvNyQMF4bN1jHIS4PtZeD3OhqBG70AJCZEC8TV1cEbh8wDjqvrtCP5ZNTwGTjL9oMd4pxh/ZZLSMUlWAmnp2T52XJKPPWqt8QR0gmAC6Oert7QCTnTqObyhdUk+wcW95JTXo+izmeDktgNXNnR5gAvd89AYlMnmJIFnXThg1iH/GlGcDtAW8fU6LoZO0ATo/nR6nf7mbiiOkH/+QpshnJ+rNbv/Ied5vdj+fR3ucVmdGld1FkXWDPp2I4+PVvCQTunpr+BFh52hDSiRiWIi5tfh3o2FKNCAKUAeH/uWGyw==
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
+ by AM9PR03MB7836.eurprd03.prod.outlook.com (2603:10a6:20b:41c::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Thu, 23 Mar
- 2023 15:48:31 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
- 15:48:31 +0000
-Date:   Thu, 23 Mar 2023 16:48:24 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guolin Yang <gyang@vmware.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] vmxnet3: use gro callback when UPT is enabled
-Message-ID: <ZBx0yD9FkEVwZ8oI@corigine.com>
-References: <20230323054322.24938-1-doshir@vmware.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230323054322.24938-1-doshir@vmware.com>
-X-ClientProxiedBy: AS4P189CA0034.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:5dd::12) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ 2023 15:58:04 +0000
+Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::dbcf:1089:3242:614e]) by DB9PR03MB8847.eurprd03.prod.outlook.com
+ ([fe80::dbcf:1089:3242:614e%6]) with mapi id 15.20.6178.037; Thu, 23 Mar 2023
+ 15:58:04 +0000
+Message-ID: <1c7aeddb-da26-f7c0-0e7b-620d2eb089b9@seco.com>
+Date:   Thu, 23 Mar 2023 11:58:00 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: Invalid wait context in qman_update_cgr()
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+        Camelia Groza <camelia.groza@nxp.com>
+References: <20230323153935.nofnjucqjqnz34ej@skbuf>
+From:   Sean Anderson <sean.anderson@seco.com>
+In-Reply-To: <20230323153935.nofnjucqjqnz34ej@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0329.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::34) To DB9PR03MB8847.eurprd03.prod.outlook.com
+ (2603:10a6:10:3dd::13)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB5612:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1aa71165-a4be-48ae-693f-08db2bb60d6a
+X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|AM9PR03MB7836:EE_|VI1EUR05FT008:EE_|PA4PR03MB6831:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7a42565e-921d-4d9b-3d7e-08db2bb768e0
+X-TrendMicro-CAS-OUT-LOOP-IDENTIFIER: 656f966764b7fb185830381c646b41a1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: Zdo5vsfrHNNUpeCmYEdN+UsBd40vOMhMJiRRTZEP1qgUUrPCelrPaNLaZZtTNYllLr2XIK5bVjDj8JC71k7N2X2JLEhck6asbkwK68Amc9yz66PyizqSvOnWoGEiz2vPNNvcgvSioXx+ZD68jj/UBcUsDTnhICS5/sNV0lsilpj5sfajYZaBo5QjPktMALEmIwVs4KOMBL6EUiF0Neb4x6Jj+gqPDf+KtdN0rggMex4QJWsAwPPVtIMzFtO+aLYdLdIstPXRV7NIQ8QXRh6Uop+ZJRkFdRUmWAUbZ57/BMKp9hnNhRs45dKEqKDXt/dP/U3kqG+g6HwBekssVckonDE1GqeyvDwZcBkrRdtHk2rpnOPmu4UZcTuQM5lVvI8MQqG+BcnV8HC33Lbz3fF23i0bJyyfu9BSpJlgifFs/ZjKRWL8D2bGGzJGx0gXscXrr+cHL8X9ipTZp96rAwxQQcGOAGV+InFDhv/wR0rbi83/ER/7YPr5hsI5lqvRV7HpRMcXk6/rQMXnBPRSpK4+1CXet7dSyxbV1q4CTilyQflbja/H7fw9UwrI+TutMg9deTaIJ2f7wHtYkeClrLVKkiJWnrJnM+LG7DePcX/gtgFc9/f2/Grd72qz/Dwdahi6sF91sg/AmAUP2zg74n9BvgD20+f7UQygVzXhl1EceAqmFGOdBug9c46f0UBARIZ4VPqA8iOrxSG+76xoPTZuXrUVJhriZWCxkhgGWIcIRubq8FMbmBsaJ6LL2NglRmwWYjvUyOFy/f8I2fdWpFxQHA==
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(136003)(376002)(39850400004)(366004)(396003)(346002)(451199018)(36756003)(4326008)(86362001)(8676002)(66946007)(66476007)(66556008)(8936002)(41300700001)(478600001)(6486002)(316002)(54906003)(52116002)(44832011)(2906002)(5660300002)(31696002)(26005)(38100700002)(6512007)(6506007)(53546011)(6666004)(83380400001)(2616005)(186003)(38350700002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR03MB7836
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: VI1EUR05FT008.eop-eur05.prod.protection.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 939146aa-2b2a-4cb1-9073-08db2bb762f1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0pB2a3CsdJAj96VnzkoINliOYsmPntN1DgIRSH21AmMt3OreVjHjZNZDShvsgnlwMjr5PZd0JGezlqUS6U7F9hzqEoqccIG4dxNHsChV4PB59BOO6YTJN5YyaNx3K+IaXmipmAmPVHwd3kPkHDVCiD9SxbgQyWB6N4XWTmBmnglwfFIF3+AZvM/FIrei2GfWfav1oaLRGpi+QSpKwFs9zACJhC2t1BGzIeHEJGiiSHI+/fVkyOyo5K+wID9MKTnovsSyWFg1Hzk2XeNELFgNacV+OfbqzoyDkwomAJfq7+K3nL7oHoAk34jMIjN5iz2Hxc1chy4TKhztHKcdhmifXy9TelDK7g3Gv1Ddop+Qy+2X5qUCsEwtRd60jly71uoOvBkRWahY1/z+itSgQjNdG6p3PL0SPXVBc9QoHnn+1WY4biltIWvEISYeFd/z1c8uZYc9JkegKEk544AaZeeoWwP71Jx3FyEclccbhwhEnyH3pRXPNsrvIYto7TqiBcKSYA3Wu+Z4tKKkC1TNw3F2F8koNvB0g+XDpZGf4iH9krLWlOO3w20HdrCyeeuaT2fKGvQz7QJDDl59aaJFVtcQDkbno9CPA19Ev0sfEZ1un9O7VjMCE6qssrWdwqpwMDq5suk9lkzVJiBfPtL7//d1SZw7s6C8UKcOBCNSrSDmjwjS04/6trRsFYFjOEKl0hRy
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(366004)(39840400004)(136003)(346002)(376002)(451199018)(6512007)(6506007)(5660300002)(7416002)(6666004)(83380400001)(41300700001)(4326008)(2906002)(316002)(44832011)(2616005)(54906003)(38100700002)(66476007)(66556008)(66946007)(36756003)(8936002)(186003)(6486002)(6916009)(478600001)(8676002)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3NPBCxuEeOCcn7v71VyPnabCpr/zcBtdFlo3Tp8O1bXm0y7xTmqCgz9xyt0v?=
- =?us-ascii?Q?rkjVkFTNGxKzYXlfLmXO+oS1bNHZanbAleSiWlKp7Pdy4joEkRFRQuJD2hXv?=
- =?us-ascii?Q?vHyBqmI2Axo2J28V84BndMwL5YRv/93C7Rc9r6U3ziM9RcFhNr/RtbirGhcp?=
- =?us-ascii?Q?evPoMuebEWEmlWpRnQzolEXmfVwFZHlYWb5Hci2QtX8jnkWKKpzHqQ2oPiZW?=
- =?us-ascii?Q?Otc9OUTGpTuA4NWJNRcZDSZssZ14zwyoETjtCJjdn1tU9ur8H0BJlr1TnWN1?=
- =?us-ascii?Q?eopCvWzsnS3loz2LTxfaMMunKizqD5JelvfGaVrOvrW4ot+kMRJh7wvpIbIv?=
- =?us-ascii?Q?EvtmGn8dedu4WsBnXHrwACNopB3mtlhTMzSqEGoT6UfE/IU4a0J2vgH82V4g?=
- =?us-ascii?Q?Ix+ItrU+4nxwoczxpK9a7FyFvKTxk6/YTVPaJeld2Eva0R9rHGoM2F2uvbz8?=
- =?us-ascii?Q?xpJ76+L/JXX7HU7hyeWZ7B947DhpU3bkAjxfCKnv72+fkRejzpZ2Fm6TyU36?=
- =?us-ascii?Q?UOgk1bdjH5yVeWyXqU1qejpcaWXRSkMQy478hgj5VCj6VnCO433xmWL98Hn+?=
- =?us-ascii?Q?J9J07u/xFazyekRRhJpV28PW9jhiSBi6EHVUns5I29i3p2r0FT35npXkqfoi?=
- =?us-ascii?Q?PbXUW4AjAw9Lmx/Gm94iKN67zI1grZJmqOrD5oo9zp2k070N7bgwZsPXsZwk?=
- =?us-ascii?Q?QRsH8JD+TC1kDis3uMVJqNPePd1IKaEU7+myd5wEVg0DRsyz3oniXxyTKhdy?=
- =?us-ascii?Q?xS8AbXyOfzBvRYA99Ujvgh9KtJnVcbfEU3s14o9hjGdBUF2mOvvsBfuI0DD6?=
- =?us-ascii?Q?l4qTFKZXwtNiVhLve754VjSTYF397v6b6bXYx/0BqWFQ5k0fH2OhWcp57O+u?=
- =?us-ascii?Q?xClwtXAt53qr1mLDFcmhWDNQryZSnEOhhzV7y8QB/fSzyR25r/lRfwa99PI9?=
- =?us-ascii?Q?PLksLyVeVHLRzyJNwuF+O7YPeutacbPLdua+FfTqFAua0ONlhLqo3sU1v7jJ?=
- =?us-ascii?Q?K79y4l0n9zi9J4uMzNp8Q65jFNplrpQSTRkG4/fPFDo6rl+kJGrVov0hDedq?=
- =?us-ascii?Q?F3OoD4XfGZv+ZSMXl0mloJXnTMHLXTypiAWoVtOlr07FGCkV7m7RecE6vVbV?=
- =?us-ascii?Q?c6rI71dbFthoSUdW607CHbhPpNUePkHK8GCN/FceDUNAOZ8ulAWRYxZsz5l8?=
- =?us-ascii?Q?+YWS+SwdLPTtvBANtZBrM8uQLSL+9lEHF+kUX/hUrFlMHvt1apPMll6ycv/z?=
- =?us-ascii?Q?+xsRtZR1yRRa/RC4CrGH1bo5PE4Ula8uFG9Uj2J1zD6LUiLwX2IY17ejJDap?=
- =?us-ascii?Q?mxaiUvEDmfCx9v+GAAhbLOF4ryI/DBnIHjW+g5+qDH361K6PaPL4aoAFxfP4?=
- =?us-ascii?Q?TWlGNXuL06BKXfn87C3DwCtr2/bUK+kVfqNKoqEi1vdYQ/cnbJ5IyQV6x+O6?=
- =?us-ascii?Q?sdk/IpxTKjzc9YOHOzCS1uDBmCaRgKogKY78VZT7qGUDIUDNafaskJEROvus?=
- =?us-ascii?Q?jkqWcSKHIoOFSzHdRY5BaU8DIf+H5hvfMRPESh1oBQtsByd//wKv769OOdmU?=
- =?us-ascii?Q?2k7Dk8lseVGG20RnpghJ9wcCxR4RpGQFUVyads+BeyqvT5A0Qwe75AHk/z7W?=
- =?us-ascii?Q?viQUasr7JRNMMFbaCi7G6aFdx+TiEa2CDP5e2m/w0BDFtfNTafpyJmLifrTO?=
- =?us-ascii?Q?39H2Cw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1aa71165-a4be-48ae-693f-08db2bb60d6a
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 15:48:31.4207
+X-Microsoft-Antispam-Message-Info: wrrlKF5bcXGwiZU/EFctHPZCpruLsoRSQ3sep9PN8+b6bFM5HgWVhl8eIoT1A9Q8Yq61hpjvrlCrrZ6UwHb7shCK1TFVqEXkiJ4Wwkm53KZ0EAieH9P/6fsRyEj51ePUvaeHPE8g+ypukYWpel4kEhYi1qh7l3s9d+Ul5zvFIuOcVyWfs+MC/MjWW6o/C5aixYMPpw4DYJquqLaC16jHU1QUnKWNHFtwUue3e0O4TfsmQsAJZ2Ej2E1bzzDJJU9jymNpp4brySBdEFq9WFTHxSbvunxvRe1guXsXkK77uMMMS6EezHyo6X3ePsotFrTt+XxCS+yT1EtQJrv1EzN5NC7h9FRxwJl8LKbppy0OVxm/4mQDbBdK6ZsWLSAf/CQbPG74s4tYu9nqHstzsMshwVz8m1hDii/zcn8Yj0ZEjSO7rC00IBzNSY2xT6sxmL6/om/ugnYvYUsEFytFEaxlztxOsLSjCHuXA4JSe9NwPW/epQtOyWOMLw0r2XpZYKaq82YgDHyMCT6/YN4XI8u2Gdcnis0fqoLXP8HGkfBcWL5/zNsgW6YaEqzYdlqbp5LaRO70l5qUfFOZnJKzHbGKS8UvmEOUXLnwlyjApzDaI5vR8PSu66GaHVBA5BVsLECjpMxjteMhk2ywJtZsx9fap0ZNMNeA9CUv0jjIAHS6fffNoBAqzr10MXQy9BOjT8B5EQnjpX/s3cm8JFeJIS6ha4mWjjs4uruMzN9ScDRzcnKzXZMzZj68TsRxxZ0CdArzCcxeM86IWF2rmKBker6Q4w==
+X-Forefront-Antispam-Report: CIP:20.160.56.80;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:inpost-eu.tmcas.trendmicro.com;PTR:inpost-eu.tmcas.trendmicro.com;CAT:NONE;SFS:(13230025)(136003)(346002)(39850400004)(396003)(376002)(451199018)(46966006)(36840700001)(40470700004)(31696002)(86362001)(36756003)(36860700001)(82740400003)(34020700004)(7596003)(356005)(7636003)(2906002)(40460700003)(44832011)(41300700001)(4326008)(8676002)(5660300002)(40480700001)(8936002)(82310400005)(2616005)(336012)(186003)(53546011)(83380400001)(47076005)(6506007)(6512007)(54906003)(478600001)(70586007)(70206006)(316002)(6666004)(26005)(6486002)(31686004)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 15:58:14.0655
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3Ne8lKe3i21A/wVFUV+ywyyqUuc67mGyd20rIeOKWai6kyLc4dqagUhcPqXUt9xlHbDZX62VWt1/+jqrRgJKF8dhjDmx3+HfXpCgzRoHWJU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB5612
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a42565e-921d-4d9b-3d7e-08db2bb768e0
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=bebe97c3-6438-442e-ade3-ff17aa50e733;Ip=[20.160.56.80];Helo=[inpost-eu.tmcas.trendmicro.com]
+X-MS-Exchange-CrossTenant-AuthSource: VI1EUR05FT008.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB6831
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 22, 2023 at 10:43:19PM -0700, Ronak Doshi wrote:
-> Currently, vmxnet3 uses GRO callback only if LRO is disabled. However,
-> on smartNic based setups where UPT is supported, LRO can be enabled
-> from guest VM but UPT devicve does not support LRO as of now. In such
-> cases, there can be performance degradation as GRO is not being done.
+On 3/23/23 11:39, Vladimir Oltean wrote:
+> Hi,
 > 
-> This patch fixes this issue by calling GRO API when UPT is enabled. We
-> use updateRxProd to determine if UPT mode is active or not.
+> Since commit 914f8b228ede ("soc: fsl: qbman: Add CGR update function"),
+> I have started seeing the following stack trace on the NXP T1040RDB
+> board:
 > 
-> To clarify few things discussed over the thread:
-> The patch is not neglecting any feature bits nor disabling GRO. It uses
-> GRO callback when UPT is active as LRO is not available in UPT.
-> GRO callback cannot be used as default for all cases as it degrades
-> performance for non-UPT cases or for cases when LRO is already done in
-> ESXi.
+> [   10.215392] =============================
+> [   10.219403] [ BUG: Invalid wait context ]
+> [   10.223413] 6.2.0-rc8-07010-ga9b9500ffaac-dirty #18 Not tainted
+> [   10.229338] -----------------------------
+> [   10.233347] swapper/0/0 is trying to lock:
+> [   10.237442] c0000000ff1cda20 (&portal->cgr_lock){+.+.}-{3:3}, at: .qman_update_cgr+0x40/0xb0
+> [   10.254270] other info that might help us debug this:
+> [   10.259320] context-{2:2}
+> [   10.259323] no locks held by swapper/0/0.
+> [   10.259327] stack backtrace:
+> [   10.259329] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 6.2.0-rc8-07010-ga9b9500ffaac-dirty #18
+> [   10.259336] Hardware name: fsl,T1040RDB e5500 0x80241021 CoreNet Generic
+> [   10.259341] Call Trace:
+> [   10.259344] [c000000002163280] [c0000000015263d0] .dump_stack_lvl+0x8c/0xd0
+> [   10.273180]  (unreliable)
+> [   10.288587] [c000000002163300] [c0000000000e1714] .__lock_acquire+0x24c4/0x2500
+> [   10.288598] [c000000002163450] [c0000000000e24cc] .lock_acquire+0x13c/0x410
+> [   10.288608] [c000000002163560] [c00000000156983c] ._raw_spin_lock_irqsave+0x6c/0x120
+> [   10.297764] [c0000000021635f0] [c000000000938990] .qman_update_cgr+0x40/0xb0
+> [   10.312820] [c000000002163680] [c000000000938a20] .qman_update_cgr_smp_call+0x20/0x40
+> [   10.312830] [c000000002163700] [c0000000001609c8] .__flush_smp_call_function_queue+0x118/0x3f0
+> [   10.324241] [c0000000021637a0] [c000000000023f04] .smp_ipi_demux_relaxed+0xb4/0xc0
+> [   10.324258] [c000000002163830] [c000000000020bf4] .doorbell_exception+0x114/0x410
+> [   10.338529] [c0000000021638d0] [c00000000001dde4] exc_0x280_common+0x110/0x114
+> [   10.338540] --- interrupt: 280 at .e500_idle+0x30/0x6c
+> [   10.338547] NIP:  c00000000001f104 LR: c00000000001f104 CTR: c00000000001f0d4
+> [   10.338552] REGS: c000000002163940 TRAP: 0280   Not tainted  (6.2.0-rc8-07010-ga9b9500ffaac-dirty)
+> [   10.338557] MSR:  0000000080029002
+> [   10.355087] <CE,EE,ME>  CR: 24042284  XER: 00000000
+> [   10.355102] IRQMASK: 0
+> [   10.355102] GPR00: 0000000000000000 c000000002163be0 c000000001c0a000 c00000000001f0f4
+> [   10.355102] GPR04: ffffffffffffffff
+> [   10.363650] c000000002187f50 0000000000000000 00000000fd236000
+> [   10.363650] GPR08: 0000000000000001 0000000000000001 0000000000000001 c000000002138f80
+> [   10.363650] GPR12:
+> [   10.373940] 0000000024042282 c000000002cf4000 000000007ff9382c 000000007fb2d3d0
+> [   10.373940] GPR16: 000000007ff9381c 0000000000000000 0000000008d77cf3 000000007ff190dc
+> [   10.373940] GPR20: 0000000000000001 000000007fb2d460 0000000000000000 000000007ffb5338
+> [   10.373940] GPR24: 000000007fb2d3d4 0000000000000003 0000000000080000 c000000002187ff8
+> [   10.373940] GPR28: 0000000000000001 c000000002187f50 0000000000000001 c000000002138f80
+> [   10.558780] NIP [c00000000001f104] .e500_idle+0x30/0x6c
+> [   10.564012] LR [c00000000001f104] .e500_idle+0x30/0x6c
+> [   10.569156] --- interrupt: 280
+> [   10.572210] [c000000002163be0] [c000000000008a54] .arch_cpu_idle+0x34/0xb0 (unreliable)
+> [   10.580234] [c000000002163c50] [c0000000015691d8] .default_idle_call+0x98/0xf8
+> [   10.587471] [c000000002163cc0] [c0000000000bda0c] .do_idle+0x13c/0x1e0
+> [   10.594014] [c000000002163d60] [c0000000000bde08] .cpu_startup_entry+0x28/0x30
+> [   10.601250] [c000000002163dd0] [c0000000000024f0] .rest_init+0x190/0x22c
+> [   10.607963] [c000000002163e60] [c000000001d57958] .arch_post_acpi_subsys_init+0x0/0x4
+> [   10.615809] [c000000002163ed0] [c000000001d58254] .start_kernel+0x8e4/0x934
+> [   10.622783] [c000000002163f90] [c000000000000a5c] start_here_common+0x1c/0x20
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: 6f91f4ba046e ("vmxnet3: add support for capability registers")
-> Signed-off-by: Ronak Doshi <doshir@vmware.com>
-> Acked-by: Guolin Yang <gyang@vmware.com>
+> Do you have any clues what is wrong?
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Do you have PREEMPT_RT+PROVE_RAW_LOCK_NESTING enabled?
 
-> ---
->  drivers/net/vmxnet3/vmxnet3_drv.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-> index 682987040ea8..8f7ac7d85afc 100644
-> --- a/drivers/net/vmxnet3/vmxnet3_drv.c
-> +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-> @@ -1688,7 +1688,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
->  			if (unlikely(rcd->ts))
->  				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), rcd->tci);
->  
-> -			if (adapter->netdev->features & NETIF_F_LRO)
-> +			/* Use GRO callback if UPT is enabled */
-> +			if ((adapter->netdev->features & NETIF_F_LRO) && !rq->shared->updateRxProd)
+If so, the problem seems to be that we're in unthreaded hardirq context
+(LD_WAIT_SPIN), but the lock is LD_WAIT_CONFIG. Maybe we should be
+using some other smp_call function? Maybe we should be using
+spin_lock (like qman_create_cgr) and not spin_lock_irqsave (like
+qman_delete_cgr)?
 
-nit: this could be two lines, fitting into 80 columns
-
->  				netif_receive_skb(skb);
->  			else
->  				napi_gro_receive(&rq->napi, skb);
-> -- 
-> 2.11.0
-> 
+--Sean
