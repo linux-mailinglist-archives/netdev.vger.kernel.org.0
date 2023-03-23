@@ -2,333 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D98C16C6CE7
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:05:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF576C6CEE
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:08:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbjCWQFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 12:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        id S229732AbjCWQIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 12:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbjCWQFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:05:39 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4212798B
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 09:05:38 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id u10so1039981plz.7
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 09:05:38 -0700 (PDT)
+        with ESMTP id S229522AbjCWQIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:08:22 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FF71EFEB;
+        Thu, 23 Mar 2023 09:08:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WUYFbygYjoKbOWzeE2u+AhGFCbhr7mFyZC8dMvz42FdbjYgLtXTYOt7wNT/E3a2Cbre32qyTragKqcmtF6s63nYSVC9vyiszK6VTsk9t90z4TlKBfSUN+s1DNQbTEfotbqxyv7ZQa0I1u9js4MM4NWAuPzDHUn1UFxSEgy+iZQtTu0y++JizcyFaAmVEIgo2q3rOD3Ch42q9ImlgbbxZpu4zqxsvpM2HCYxO1w58YlI98GU8I7B9tjxbb4ARf1wQrR5h/JYl1LCbzKyBPHtD6QOK4uLBaQoQal0/5NOs0+muqYBJwdXKCBNnMuNVwJs3/bthBD0+n8iGHzQOE7ZJ8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Oiz8pa9BKYrnl6JhgkDaM9I+9V11dkEeYxfJH/19Fzs=;
+ b=AucwVO+uPTeanfR92LIBJ6hFbVoiUSJ4bDvXZ4LJC6hLMwcgaXTx/x6vNBlXzJc6crBGMkUmQeAFYrR4eyJcf8KV0axV5QqWbQcJur0/dltRvwfE2wubcoTFnUyEusJ2xQHZq7QZywvlCyN+Znhb25bJn1QLU6NauXVnKRSJByrc4UVN7yqg+Q1QdPXX0aULf+dBugz/RN3UgXJYVmmkNdXD3547RDmM5hf2175PqS//yiuKUKNG3yr4y98pzaObxxIVnBzdl0N/hRPF4m6oexYJRd+896xhg+zDttd8SMVOSnGcAO4TV2qLS6dFdJpZiTPBYW8E4jTNafdRAzyewA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679587537;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=rv/skISr3z3SdmS0Ib30xBiuStpEP9xwh7ontts5CkE=;
-        b=fzWxtG1NxR6d3AK29ytDv3ySyOV27osq3RyCxqPfXitWutzni32H9qZNvkFCI/6ThS
-         0xKe51STKNBuvT2FL2ntRYWBMSXak7GvdSHYl52waMXSIPQpgzR/rLKDl79OI1fNQI50
-         VcPlE3Y9f/NO3G8k8WgqWmXiKeanyk3605GbB5Z2c40BvpMVXoAvbzke3Xd8SAF+XclC
-         Lar9J55PhrXnzZ4z1M8CTF42TEdoxVF/jctB9a6wd3I8xpJcIQZHkIEDmNy2CZVh3ZHl
-         OpPTVk3e/i3+hE6X5FU6cjRxQ2zbAJSdYgR+XyW9QNCwSxUBJlOM5I2CKcVai8Dwj9FM
-         bRSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679587537;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rv/skISr3z3SdmS0Ib30xBiuStpEP9xwh7ontts5CkE=;
-        b=aROhfrtksZSomSEfkRFkvIhpe3obC41ol5Yhnp/gAUjYc7jDVFqrKfe67LIl6iB+Ri
-         pawxG84GAwHFHJHA/ZoWcpdedz6GNo+M89yqdzLSQDgtqNxCnE8y0iLiv4jJIxCRRaTH
-         5vwSr/JdpOxxPLCleAQlm5sMm40g1+JSewvoUPKcZfm8fNLAxwRyvY/Tz3kBOzsr/oVL
-         3NreRa5zTfUc5nJvtJtZRrkxxu/9nVINLvPOvMKctwysY2XusCp649gvl0lEYXMDodhM
-         QGn9nj/UNIo9HK3h4siBBHob/7LxSNFHX23hNuJzu6vKJ4AOC+en/j0ek8Qls1pg7uRp
-         M1eQ==
-X-Gm-Message-State: AAQBX9c11ke26hxa/ZQesTwI/dY7f6BDXaw30t40XwLHIkxYwqaCouPr
-        PCNIUD4TMgOeiM9F1pMe0Aiqt4NhHO8=
-X-Google-Smtp-Source: AKy350YDy08JqePW48nsjCVl4tKAdEQzD6kd8fQ/3/0mFz1qYh0nL5Kwn+C4jRfKAeSPW8EPwr45bw==
-X-Received: by 2002:a17:902:f552:b0:1a1:7899:f009 with SMTP id h18-20020a170902f55200b001a17899f009mr6149166plf.17.1679587537259;
-        Thu, 23 Mar 2023 09:05:37 -0700 (PDT)
-Received: from [192.168.0.128] ([98.97.116.32])
-        by smtp.googlemail.com with ESMTPSA id c2-20020a170902aa4200b001a1bbe7020esm10204295plr.231.2023.03.23.09.05.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 09:05:36 -0700 (PDT)
-Message-ID: <5060c11df10c66f56b5ca7ec2ec92333252b084b.camel@gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
- lockless queue stop/wake code
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        willemb@google.com
-Date:   Thu, 23 Mar 2023 09:05:35 -0700
-In-Reply-To: <20230322233028.269410-1-kuba@kernel.org>
-References: <20230322233028.269410-1-kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Oiz8pa9BKYrnl6JhgkDaM9I+9V11dkEeYxfJH/19Fzs=;
+ b=ANHS+Rqfnt0wqh44rtePxBbIyfip+5FN2I4mgu+qr2LsCNBFBkM+xE0+FYiy5EiFUJTSUOVIYNHchNShSfb31K+8aN7zpNWfQeSWRTid7vRv7vVrTguq9jOUE3Mh0C2iGUm7/O+1p9wdx+7hYlHdiTbEdxeIY9N4ZziXctT/qf8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB4795.namprd13.prod.outlook.com (2603:10b6:510:92::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
+ 2023 16:08:16 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
+ 16:08:16 +0000
+Date:   Thu, 23 Mar 2023 17:08:09 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/9] net: vlan: don't adjust MAC header in
+ __vlan_insert_inner_tag() unless set
+Message-ID: <ZBx5ac4cfv/tmJ2C@corigine.com>
+References: <20230322233823.1806736-1-vladimir.oltean@nxp.com>
+ <20230322233823.1806736-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230322233823.1806736-2-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: AM0PR02CA0089.eurprd02.prod.outlook.com
+ (2603:10a6:208:154::30) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB4795:EE_
+X-MS-Office365-Filtering-Correlation-Id: ccbc005c-7eb7-4be9-b5c9-08db2bb8cfd9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /rIjYbq4ER9bVida3rabPcXYmlmCoNnw0acqIg1O1kJBiKETinQWTAE7JRsXHeVnAQPLSOIHxxo9t7QGI9Acisn4QZCKYMUn417tnJrHQdDX9tKO8yx0Q8opS3OZe9nS9A65LtTuO/Sk4emkBW0IfHDNnwlAcKUTGXWqoxEGWRgMqIM40ICWFMN/9NGNFTRIlJv4N1RYxdMyB2pMDAm7Z7dCxBWIoGh0BXwqJKJzXdw56+8RRh7mPkJnTYffTM5NRawc5nifgrwJtCyE/VhXDJWgXr1zgfc2l4uHLSCHIJL/AVurk9ZW4u4u44k2Q+e0BLOiUtEG8xMaEzadBZk2liwkzh6wHo/YG4mlzSZr17gHig9A+ucdZCaYWd4wjO1Sy2+Hcx3Y9N3B1KVrHGghR/GMGZJ32jsmTts2aVFpfFdr2odJlqHLl1w84o28rDOPqOpYopLCBjSn4eTv9vl1zjipL0fNOuBoqUTKvZKX051dMvPgBz5EytpAI79a1LESyroKovT5iS0hjLDBh8af7DxY5HqTXOvwJ9K8v0DVv5lT9uPmSj0m5niTZMBvztgGWf6Gjhw0Qh+GHXRZrHLK8s5KB4KxcD8fqowehpr5YsHOSpya64z7gOwCw70BrWEJqdd+iJcrBiSSbKoiJ6n8Lg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(366004)(396003)(39840400004)(376002)(451199018)(83380400001)(478600001)(2616005)(186003)(6486002)(6666004)(66476007)(6916009)(4326008)(66556008)(8676002)(316002)(54906003)(66946007)(6506007)(6512007)(41300700001)(8936002)(5660300002)(2906002)(44832011)(4744005)(38100700002)(86362001)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KYPfURrQeLNzY10bqz1bcKmDRqdyCXBC/psrQQGhIF0xYyyzw6dk/6xXY1KP?=
+ =?us-ascii?Q?Ha2cTdqobKLsqDmOujSPXzoRX1yGeCN7qylTND4pg3oRCFPdJ3xaUuo6r9x8?=
+ =?us-ascii?Q?GRwqtvhapZqnOZjKqpbfoT1f16+76xnJphoXfPAf5SIy49AYWco+zpJmK8XK?=
+ =?us-ascii?Q?0fuE7GI4h9SKz669E6h8+XSUln7Hsk9mAyj+W4xNygFUrYPul8G4th/UA6xi?=
+ =?us-ascii?Q?bl1LRtojP5INh28ut+vYjRTc4Tz6KcX64OMPcsE3Vh2tMCerY7ZrevFAoF/4?=
+ =?us-ascii?Q?wrA8dwcW9vKIfmsz1ClGO2xSHv6kJNlHGHkQYFDiK+qi1taQBIpiWXj8xxf+?=
+ =?us-ascii?Q?f3I56FevTPW491RVRAVGDqUjCZI2wRHE1aMLcOQsUER98tGESIO4dD/Cu0gN?=
+ =?us-ascii?Q?d+y1DBYuE9vZ3DTxF9PzQHd4weUxSGyDlkjm70AH8aTaKw0Yr9CPTOUgLsPk?=
+ =?us-ascii?Q?50U3XztLhfqhAnAFYFgcmkPhZ+/SCRYkvPsAdpHsqUFqrwFDZEDNAWJnwgF8?=
+ =?us-ascii?Q?PmZX/HKWEB+kC6+o/COa8GMgJfcdUrMqK9lkZcckAI0fJoWqsEc/z+lip+g1?=
+ =?us-ascii?Q?TanLLv6ej7pqOkmXQi6aw8M8g9Va/fvsbTkHfTXyBTt9b10gD/zQtoojzFUO?=
+ =?us-ascii?Q?OrmGpTotbKigMSJQ+Y8LTqn/AUluNIHR4O6cY2OyLfV6lCcSrY3xmVaUN81t?=
+ =?us-ascii?Q?Zh8rTykYnpBAVdhTYCsVQxJCNBpynil3iiRuIpSgC/9iLqs9RfidIM1FetZC?=
+ =?us-ascii?Q?Hs/7m7J23waznw4T0dFQrUENTIEPEfuXzZOi6hCBy8/pJd/UwoI8sw2nKQwO?=
+ =?us-ascii?Q?6NYWsRwqto8pyhFe6TOy1SPcjYgfjKij58CRLXj7KqLl3/XbRrSAWBDzALpW?=
+ =?us-ascii?Q?hWv4aO4FX8CeOI8urGc9b+noMFeuAUf+YowRL+MBPC3I8lKPhPiygRii1W9v?=
+ =?us-ascii?Q?m5cU2YeVuPa9CIpa5ETkUmZbin4ovDE5viixsygZh3894tCCOTNLs08LUmb0?=
+ =?us-ascii?Q?ExJSyornkFn3WIGgwizU5n9nMUByURfrQPKIbvxdK9pzqKgIi4khzbmmKHeV?=
+ =?us-ascii?Q?eVecWhknMeqxQOZByBiF7ev1xWUVt8vt6kILevm3o/mtoq+lbehuvXJD9EPw?=
+ =?us-ascii?Q?r+Vg1oMpptV1oXA5u2yNRf0IrA8Sph6OTAVQPp9VgwfbNEUGxyL/+ZUp9A+l?=
+ =?us-ascii?Q?TFumcnla8F99hMq1JSqOIooFpA6+zjrUt06WB2N2I1kJ+nHLGBLyexGbnadC?=
+ =?us-ascii?Q?lddt/lNkt/MfBJrbDSxYU7fn+JYhJ3+6ogC2ApF++wSI5bzkIY68+uyl4HvO?=
+ =?us-ascii?Q?/ltL47+2VUOFe/WziTfptP+Xm29Z3ZPfpW1Czb5PBtyEHUtZhBEYs34j272T?=
+ =?us-ascii?Q?RNNcys7R7A7qHhVpLEavfYWYd9tCuvUkgRd4xztc+BITeeVx4R1pqzDIuugg?=
+ =?us-ascii?Q?cKDPIHRVrLV0jDNgwYDT2tRV5AGxVf/taNVah/GZ4y32WuapQ++DTAcH7VTQ?=
+ =?us-ascii?Q?CT+u0E+AxAAsj83CWatnZpB9ZU8vJlrlaFVG6fq6hIwuT8Lor8Kqvt7B6e0n?=
+ =?us-ascii?Q?TaLQU1YnKE4azx4b+RQtTaXPef41aEm0VqrKMWdEtJgWXE7HBDZrr6nqvOLZ?=
+ =?us-ascii?Q?jz+6wZyWd7IDGmO5eEBT/gOcpVGdqP5WUWX7CV5eOsg+WMT+/cwUih+DYZRx?=
+ =?us-ascii?Q?jnZq+Q=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ccbc005c-7eb7-4be9-b5c9-08db2bb8cfd9
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 16:08:16.6528
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: erQuoGw4TC5Wmu3Go2h+mW6Y8SPlyXGxKQwt8OdiwCTFYPLxluP9HapGZC7AHcxYeMK1JcZesjInC/wJSSBT0xPlrv26PZv+zFg/rNDP0LY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4795
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2023-03-22 at 16:30 -0700, Jakub Kicinski wrote:
-> A lot of drivers follow the same scheme to stop / start queues
-> without introducing locks between xmit and NAPI tx completions.
-> I'm guessing they all copy'n'paste each other's code.
->=20
-> Smaller drivers shy away from the scheme and introduce a lock
-> which may cause deadlocks in netpoll.
->=20
-> Provide macros which encapsulate the necessary logic.
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> rfc: https://lore.kernel.org/all/20230311050130.115138-1-kuba@kernel.org/
->  - perdicate -> predicate
->  - on race use start instead of wake and make a note of that
->    in the doc / comment at the start
-> ---
->  include/net/netdev_queues.h | 171 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 171 insertions(+)
->  create mode 100644 include/net/netdev_queues.h
->=20
-> diff --git a/include/net/netdev_queues.h b/include/net/netdev_queues.h
-> new file mode 100644
-> index 000000000000..64e059647274
-> --- /dev/null
-> +++ b/include/net/netdev_queues.h
-> @@ -0,0 +1,171 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_NET_QUEUES_H
-> +#define _LINUX_NET_QUEUES_H
-> +
-> +#include <linux/netdevice.h>
-> +
-> +/* Lockless queue stopping / waking helpers.
-> + *
-> + * These macros are designed to safely implement stopping and waking
-> + * netdev queues without full lock protection. We assume that there can
-> + * be no concurrent stop attempts and no concurrent wake attempts.
-> + * The try-stop should happen from the xmit handler*, while wake up
-> + * should be triggered from NAPI poll context. The two may run
-> + * concurrently (single producer, single consumer).
-> + *
-> + * All descriptor ring indexes (and other relevant shared state) must
-> + * be updated before invoking the macros.
-> + *
-> + * * the try-stop side does not reschedule Tx (netif_tx_start_queue()
-> + *   instead of netif_tx_wake_queue()) so uses outside of the xmit
-> + *   handler may lead to bugs
-> + */
-> +
-> +#define netif_tx_queue_try_stop(txq, get_desc, start_thrs)		\
-> +	({								\
-> +		int _res;						\
-> +									\
-> +		netif_tx_stop_queue(txq);				\
-> +									\
-> +		smp_mb();						\
-> +									\
-> +		/* We need to check again in a case another		\
-> +		 * CPU has just made room available.			\
-> +		 */							\
-> +		if (likely(get_desc < start_thrs)) {			\
-> +			_res =3D 0;					\
-> +		} else {						\
-> +			netif_tx_start_queue(txq);			\
-> +			_res =3D -1;					\
-> +		}							\
-> +		_res;							\
-> +	})								\
-> +
+On Thu, Mar 23, 2023 at 01:38:15AM +0200, Vladimir Oltean wrote:
+> This is a preparatory change for the deletion of skb_reset_mac_header(skb)
+> from __dev_queue_xmit(). After that deletion, skb_mac_header(skb) will
+> no longer be set in TX paths, from which __vlan_insert_inner_tag() can
+> still be called (perhaps indirectly).
+> 
+> If we don't make this change, then an unset MAC header (equal to ~0U)
+> will become set after the adjustment with VLAN_HLEN.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The issue I see here is that with this being a macro it abstracts away
-the relationship between get_desc and the memory barrier. At a minimum
-I think we should be treating get_desc as a function instead of just
-passing it and its arguments as a single value. Maybe something more
-like how read_poll_timeout passes the "op" and then uses it as a
-function with args passed seperately. What we want to avoid is passing
-a precomuted value to this function as get_desc.
-
-In addition I think I would prefer to see _res initialized to the
-likely value so that we can drop this to one case instead of having to
-have two. Same thing for the macros below.
-
-> +/**
-> + * netif_tx_queue_maybe_stop() - locklessly stop a Tx queue, if needed
-> + * @txq:	struct netdev_queue to stop/start
-> + * @get_desc:	get current number of free descriptors (see requirements b=
-elow!)
-> + * @stop_thrs:	minimal number of available descriptors for queue to be l=
-eft
-> + *		enabled
-> + * @start_thrs:	minimal number of descriptors to re-enable the queue, ca=
-n be
-> + *		equal to @stop_thrs or higher to avoid frequent waking
-> + *
-> + * All arguments may be evaluated multiple times, beware of side effects=
-.
-> + * @get_desc must be a formula or a function call, it must always
-> + * return up-to-date information when evaluated!
-> + * Expected to be used from ndo_start_xmit, see the comment on top of th=
-e file.
-> + *
-> + * Returns:
-> + *	 0 if the queue was stopped
-> + *	 1 if the queue was left enabled
-> + *	-1 if the queue was re-enabled (raced with waking)
-> + */
-
-We may want to change the values here. The most likely case is "left
-enabled" with that being the case we probably want to make that the 0
-case. I would then probably make 1 the re-enabled case and -1 the
-stopped case.
-
-With that the decision tree becomes more straightforward as we would do
-something like:
-	if (result) {
-		if (result < 0)
-			Increment stopped stat
-			return
-		else
-			Increment restarted stat
-	}
-
-In addition for readability we may want consider adding an enum simliar
-to the netdev_tx enum as then we have the return types locked and
-usable should we want to specifically pick out one.
-
-
-> +#define netif_tx_queue_maybe_stop(txq, get_desc, stop_thrs, start_thrs)	=
-\
-> +	({								\
-> +		int _res;						\
-> +									\
-> +		if (likely(get_desc > stop_thrs))			\
-> +			_res =3D 1;					\
-> +		else							\
-> +			_res =3D netif_tx_queue_try_stop(txq, get_desc,	\
-> +						       start_thrs);	\
-> +		_res;							\
-> +	})								\
-> +
-> +#define __netif_tx_queue_try_wake(txq, get_desc, start_thrs, down_cond) =
-\
-> +	({								\
-> +		int _res;						\
-> +									\
-> +		/* Make sure that anybody stopping the queue after	\
-> +		 * this sees the new next_to_clean.			\
-> +		 */							\
-> +		smp_mb();						\
-> +		if (netif_tx_queue_stopped(txq) && !(down_cond)) {	\
-> +			netif_tx_wake_queue(txq);			\
-> +			_res =3D 0;					\
-> +		} else {						\
-> +			_res =3D 1;					\
-> +		}							\
-> +		_res;							\
-> +	})
-> +
-> +#define netif_tx_queue_try_wake(txq, get_desc, start_thrs)		\
-> +	__netif_tx_queue_try_wake(txq, get_desc, start_thrs, false)
-> +
-> +/**
-> + * __netif_tx_queue_maybe_wake() - locklessly wake a Tx queue, if needed
-> + * @txq:	struct netdev_queue to stop/start
-> + * @get_desc:	get current number of free descriptors (see requirements b=
-elow!)
-> + * @start_thrs:	minimal number of descriptors to re-enable the queue
-> + * @down_cond:	down condition, predicate indicating that the queue shoul=
-d
-> + *		not be woken up even if descriptors are available
-> + *
-> + * All arguments may be evaluated multiple times.
-> + * @get_desc must be a formula or a function call, it must always
-> + * return up-to-date information when evaluated!
-> + *
-> + * Returns:
-> + *	 0 if the queue was woken up
-> + *	 1 if the queue was already enabled (or disabled but @down_cond is tr=
-ue)
-> + *	-1 if the queue was left stopped
-> + */
-
-I would go with the same here. The most common case should probably be
-0 which would be "already enabled" with 1 being woken up and -1 being
-stopped. In addition keeping the two consistent with each other would
-allow for easier understanding of the two.
-
-> +#define __netif_tx_queue_maybe_wake(txq, get_desc, start_thrs, down_cond=
-) \
-> +	({								\
-> +		int _res;						\
-> +									\
-> +		if (likely(get_desc < start_thrs))			\
-> +			_res =3D -1;					\
-> +		else							\
-> +			_res =3D __netif_tx_queue_try_wake(txq, get_desc,	\
-> +							 start_thrs,	\
-> +							 down_cond);	\
-> +		_res;							\
-> +	})
-> +
-
-The likely here is probably not correct. In most cases the queue will
-likely have enough descriptors to enable waking since Tx cleanup can
-usually run pretty fast compared to the transmit path itself since it
-can run without needing to take locks.
-
-> +#define netif_tx_queue_maybe_wake(txq, get_desc, start_thrs)		\
-> +	__netif_tx_queue_maybe_wake(txq, get_desc, start_thrs, false)
-> +
-> +/* subqueue variants follow */
-> +
-> +#define netif_subqueue_try_stop(dev, idx, get_desc, start_thrs)		\
-> +	({								\
-> +		struct netdev_queue *txq;				\
-> +									\
-> +		txq =3D netdev_get_tx_queue(dev, idx);			\
-> +		netif_tx_queue_try_stop(txq, get_desc, start_thrs);	\
-> +	})
-> +
-> +#define netif_subqueue_maybe_stop(dev, idx, get_desc, stop_thrs, start_t=
-hrs) \
-> +	({								\
-> +		struct netdev_queue *txq;				\
-> +									\
-> +		txq =3D netdev_get_tx_queue(dev, idx);			\
-> +		netif_tx_queue_maybe_stop(txq, get_desc,		\
-> +					  stop_thrs, start_thrs);	\
-> +	})
-> +
-> +#define __netif_subqueue_try_wake(dev, idx, get_desc, start_thrs, down_c=
-ond) \
-> +	({								\
-> +		struct netdev_queue *txq;				\
-> +									\
-> +		txq =3D netdev_get_tx_queue(dev, idx);			\
-> +		__netif_tx_queue_try_wake(txq, get_desc,		\
-> +					  start_thrs, down_cond);	\
-> +	})
-> +
-> +#define netif_subqueue_try_wake(dev, idx, get_desc, start_thrs)		\
-> +	__netif_subqueue_try_wake(dev, idx, get_desc, start_thrs, false)
-> +
-> +#define __netif_subqueue_maybe_wake(dev, idx, get_desc, start_thrs, down=
-_cond) \
-> +	({								\
-> +		struct netdev_queue *txq;				\
-> +									\
-> +		txq =3D netdev_get_tx_queue(dev, idx);			\
-> +		__netif_tx_queue_maybe_wake(txq, get_desc,		\
-> +					    start_thrs, down_cond);	\
-> +	})
-> +
-> +#define netif_subqueue_maybe_wake(dev, idx, get_desc, start_thrs)	\
-> +	__netif_subqueue_maybe_wake(dev, idx, get_desc, start_thrs, false)
-> +
-> +#endif
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
