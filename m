@@ -2,250 +2,359 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB93A6C5C79
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 03:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D77876C5C89
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 03:23:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbjCWCHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 22:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
+        id S229635AbjCWCXs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Mar 2023 22:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjCWCHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 22:07:10 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5F1C158;
-        Wed, 22 Mar 2023 19:07:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679537229; x=1711073229;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YcF6oXbkraAUc5DQwXJNDo/0gXTDsPYlop4iuj4uF1E=;
-  b=dOdhi50g5Kdp7MIK8jZJoGfHT97jo+LA+qJHgqDA5QnN47sa4h3q9KZi
-   6fkECYS5dOsXbSnL6tFAlTeqs5d7BKpEMVz2EpVZ5YuswIAbXRBK/L8kU
-   lUGFThl4nDvzE9Hv29VGDJRP56/pWi5AfF1MYBfFE8L4uqYpK+Uxp6oH1
-   62+N2uP6zVBJNRdkbNqHdGRVVrdWemxgJ8snal/9PeAN3KP7uEjOsJPIE
-   yT2r+tbGkiXJNJ8GwZbLOFSeOHrOhER6VcEQQTthFJLHx8DZdghVtGzEI
-   oQdXrhlfuErs+Qd3cYdl1xRTpk332BrguIlVwtbTiqtYk0a4/sJHqNXgj
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="341739542"
-X-IronPort-AV: E=Sophos;i="5.98,283,1673942400"; 
-   d="scan'208";a="341739542"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2023 19:07:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="684527365"
-X-IronPort-AV: E=Sophos;i="5.98,283,1673942400"; 
-   d="scan'208";a="684527365"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Mar 2023 19:07:05 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pfAM4-000DqN-1B;
-        Thu, 23 Mar 2023 02:07:04 +0000
-Date:   Thu, 23 Mar 2023 10:06:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 8/8] virtio_net: introduce receive_small_xdp()
-Message-ID: <202303230953.y0P1e1Fc-lkp@intel.com>
-References: <20230322030308.16046-9-xuanzhuo@linux.alibaba.com>
+        with ESMTP id S229480AbjCWCXr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 22:23:47 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4FF76A5;
+        Wed, 22 Mar 2023 19:23:45 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32N2NAWV0032672, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32N2NAWV0032672
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Thu, 23 Mar 2023 10:23:10 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Thu, 23 Mar 2023 10:23:25 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 23 Mar 2023 10:23:24 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Thu, 23 Mar 2023 10:23:24 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        "Nitin Gupta" <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Subject: RE: [PATCH v3 2/9] wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets
+Thread-Topic: [PATCH v3 2/9] wifi: rtw88: sdio: Add HCI implementation for
+ SDIO based chipsets
+Thread-Index: AQHZW3PmZA7gPA0kmU6G6BuQjRUl4q8HoQbg
+Date:   Thu, 23 Mar 2023 02:23:24 +0000
+Message-ID: <f7b9dda9d852456caffc3c0572f88947@realtek.com>
+References: <20230320213508.2358213-1-martin.blumenstingl@googlemail.com>
+ <20230320213508.2358213-3-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20230320213508.2358213-3-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2023/3/22_=3F=3F_11:29:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230322030308.16046-9-xuanzhuo@linux.alibaba.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xuan,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/main]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Xuan-Zhuo/virtio_net-mergeable-xdp-put-old-page-immediately/20230322-110445
-patch link:    https://lore.kernel.org/r/20230322030308.16046-9-xuanzhuo%40linux.alibaba.com
-patch subject: [PATCH net-next 8/8] virtio_net: introduce receive_small_xdp()
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20230323/202303230953.y0P1e1Fc-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6445923dc4c91e57f98b8356d0bd706e95dafaa1
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Xuan-Zhuo/virtio_net-mergeable-xdp-put-old-page-immediately/20230322-110445
-        git checkout 6445923dc4c91e57f98b8356d0bd706e95dafaa1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303230953.y0P1e1Fc-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/virtio_net.c:969:6: warning: variable 'buflen' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:78:22: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/virtio_net.c:990:22: note: uninitialized use occurs here
-           xdp_init_buff(&xdp, buflen, &rq->xdp_rxq);
-                               ^~~~~~
-   drivers/net/virtio_net.c:969:2: note: remove the 'if' if its condition is always true
-           if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/virtio_net.c:958:21: note: initialize the variable 'buflen' to silence this warning
-           unsigned int buflen;
-                              ^
-                               = 0
-   drivers/net/virtio_net.c:1428:6: warning: variable 'page' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (unlikely(len > truesize - room)) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:78:22: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/virtio_net.c:1519:11: note: uninitialized use occurs here
-           put_page(page);
-                    ^~~~
-   drivers/net/virtio_net.c:1428:2: note: remove the 'if' if its condition is always false
-           if (unlikely(len > truesize - room)) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/virtio_net.c:1421:19: note: initialize the variable 'page' to silence this warning
-           struct page *page;
-                            ^
-                             = NULL
-   drivers/net/virtio_net.c:1428:6: warning: variable 'num_buf' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (unlikely(len > truesize - room)) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:78:22: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/virtio_net.c:1520:25: note: uninitialized use occurs here
-           mergeable_buf_free(rq, num_buf, dev, stats);
-                                  ^~~~~~~
-   drivers/net/virtio_net.c:1428:2: note: remove the 'if' if its condition is always false
-           if (unlikely(len > truesize - room)) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/virtio_net.c:1422:13: note: initialize the variable 'num_buf' to silence this warning
-           int num_buf;
-                      ^
-                       = 0
-   3 warnings generated.
 
 
-vim +969 drivers/net/virtio_net.c
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Tuesday, March 21, 2023 5:35 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
+> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
+> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Larry Finger <Larry.Finger@lwfinger.net>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v3 2/9] wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets
+> 
+> Add a sub-driver for SDIO based chipsets which implements the following
+> functionality:
+> - register accessors for 8, 16 and 32 bits for all states of the card
+>   (including usage of 4x 8 bit access for one 32 bit buffer if the card
+>   is not fully powered on yet - or if it's fully powered on then 1x 32
+>   bit access is used)
+> - checking whether there's space in the TX FIFO queue to transmit data
+> - transfers from the host to the device for actual network traffic,
+>   reserved pages (for firmware download) and H2C (host-to-card)
+>   transfers
+> - receiving data from the device
+> - deep power saving state
+> 
+> The transmit path is optimized so DMA-capable SDIO host controllers can
+> directly use the buffers provided because the buffer's physical
+> addresses are 8 byte aligned.
+> 
+> The receive path is prepared to support RX aggregation where the
+> chipset combines multiple MAC frames into one bigger buffer to reduce
+> SDIO transfer overhead.
+> 
+> Co-developed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+> Changes since v2:
+> - add sdio.h include in patch 2 already (instead of patch 3) as
+>   suggested by Larry Finger (thank you!) so the build doesn't break
+>   during bisect
+> - move #include "main.h" from sdio.h to sdio.c
+> - sort includes in sdio.c alphabetically as suggested by Ping-Ke
+>   (except main.h, which must be included before other rtw88 headers)
+> - don't use memcpy to copy struct ieee80211_rx_status in
+>   rtw_sdio_rx_skb() as suggested by Ping-Ke
+> - prevent infinite looping in rtw_sdio_rx_isr() by limiting the number
+>   of bytes to process for one interrupt (if more bytes need to be
+>   received the interrupt will immediately fire again - tested by
+>   limiting to one transfer, which then hurt RX performance a lot as it
+>   went down from 19Mbit/s to 0.5Mbit/s). 64k was chosen as it doesn't
+>   hurt RX performance and still prevents infinite loops
+> - don't disable RX aggregation for RTL8822CS anymore (either the most
+>   recent firmware v9.9.14 had some impact on this or an update of my
+>   main AP's firmware improved this) the RX throughput is within 5%
+>   regardless of whether RX aggregation is enabled or disabled
+> - fix suspend/resume cycle by enabling MMC_PM_KEEP_POWER in
+>   rtw_sdio_suspend() as for example reported by Chris Morgan
+> - fix smatch false positive "uninitialized symbol 'ret'" in
+>   rtw_sdio_read_indirect_bytes() by initializing ret to 0 (Ping-Ke
+>   suggested that it may be because "it considers 'count = 0' is
+>   possible"). Thanks for the suggestion!
+> 
+> Changes since v1:
+> - fixed size_t printk format in rtw_sdio_{read,write}_port as reported
+>   by the Intel kernel test robot
+> - return -EINVAL from the 11n wcpu case in rtw_sdio_check_free_txpg to
+>   fix an uninitialized variable (pages_free) warning as reported by
+>   the Intel kernel test robot
+> - rename all int *ret to int *err_ret for better consistency with the
+>   sdio_readX functions as suggested by Ping-Ke
+> - fix typos to use "if (!*err_ret ..." (to read the error code)
+>   instead of "if (!err_ret ..." (which just checks if a non-null
+>   pointer was passed) in rtw_sdio_read_indirect{8,32})
+> - use a u8 tmp variable for reading the indirect status (BIT(4)) in
+>   rtw_sdio_read_indirect32
+> - change buf[0] to buf[i] in rtw_sdio_read_indirect_bytes
+> - remove stray semicolon after rtw_sdio_get_tx_qsel
+> - add proper BIT_RXDMA_AGG_PG_TH, BIT_DMA_AGG_TO_V1, BIT_HCI_SUS_REQ,
+>   BIT_HCI_RESUME_RDY and BIT_SDIO_PAD_E5 macros as suggested by
+>   Ping-Ke (thanks for sharing these names!)
+> - use /* ... */ style for copyright comments
+> - don't infinitely loop in rtw_sdio_process_tx_queue and limit the
+>   number of skbs to process per queue to 1000 in rtw_sdio_tx_handler
+> - add bus_claim check to rtw_sdio_read_port() so it works similar to
+>   rtw_sdio_write_port() (meaning it can be used from interrupt and
+>   non interrupt context)
+> - enable RX aggregation on all chips except RTL8822CS (where it hurts
+>   RX performance)
+> - use rtw_tx_fill_txdesc_checksum() helper instead of open-coding it
+> - re-use RTW_FLAG_POWERON instead of a new .power_switch callback
+> - added Ulf's Reviewed-by (who had a look at the SDIO specific bits,
+>   thank you!)
+> 
+> 
+>  drivers/net/wireless/realtek/rtw88/Kconfig  |    3 +
+>  drivers/net/wireless/realtek/rtw88/Makefile |    3 +
+>  drivers/net/wireless/realtek/rtw88/debug.h  |    1 +
+>  drivers/net/wireless/realtek/rtw88/mac.c    |    1 +
+>  drivers/net/wireless/realtek/rtw88/mac.h    |    1 -
+>  drivers/net/wireless/realtek/rtw88/reg.h    |   12 +
+>  drivers/net/wireless/realtek/rtw88/sdio.c   | 1252 +++++++++++++++++++
+>  drivers/net/wireless/realtek/rtw88/sdio.h   |  173 +++
+>  8 files changed, 1445 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/sdio.c
+>  create mode 100644 drivers/net/wireless/realtek/rtw88/sdio.h
+> 
 
-4941d472bf95b4 Jason Wang             2017-07-19   941  
-6445923dc4c91e Xuan Zhuo              2023-03-22   942  static struct sk_buff *receive_small_xdp(struct net_device *dev,
-bb91accf27335c Jason Wang             2016-12-23   943  					 struct virtnet_info *vi,
-bb91accf27335c Jason Wang             2016-12-23   944  					 struct receive_queue *rq,
-6445923dc4c91e Xuan Zhuo              2023-03-22   945  					 struct bpf_prog *xdp_prog,
-6445923dc4c91e Xuan Zhuo              2023-03-22   946  					 void *buf,
-6445923dc4c91e Xuan Zhuo              2023-03-22   947  					 void *ctx,
-186b3c998c50fc Jason Wang             2017-09-19   948  					 unsigned int len,
-7d9d60fd4ab696 Toshiaki Makita        2018-07-23   949  					 unsigned int *xdp_xmit,
-d46eeeaf99bcfa Jason Wang             2018-07-31   950  					 struct virtnet_rq_stats *stats)
-f121159d72091f Michael S. Tsirkin     2013-11-28   951  {
-4941d472bf95b4 Jason Wang             2017-07-19   952  	unsigned int xdp_headroom = (unsigned long)ctx;
-f6b10209b90d48 Jason Wang             2017-02-21   953  	unsigned int header_offset = VIRTNET_RX_PAD + xdp_headroom;
-f6b10209b90d48 Jason Wang             2017-02-21   954  	unsigned int headroom = vi->hdr_len + header_offset;
-6445923dc4c91e Xuan Zhuo              2023-03-22   955  	struct virtio_net_hdr_mrg_rxbuf *hdr = buf + header_offset;
-4941d472bf95b4 Jason Wang             2017-07-19   956  	struct page *page = virt_to_head_page(buf);
-4941d472bf95b4 Jason Wang             2017-07-19   957  	struct page *xdp_page;
-6445923dc4c91e Xuan Zhuo              2023-03-22   958  	unsigned int buflen;
-0354e4d19cd5de John Fastabend         2017-02-02   959  	struct xdp_buff xdp;
-6445923dc4c91e Xuan Zhuo              2023-03-22   960  	struct sk_buff *skb;
-6445923dc4c91e Xuan Zhuo              2023-03-22   961  	unsigned int delta = 0;
-6445923dc4c91e Xuan Zhuo              2023-03-22   962  	unsigned int metasize = 0;
-f6b10209b90d48 Jason Wang             2017-02-21   963  	void *orig_data;
-bb91accf27335c Jason Wang             2016-12-23   964  	u32 act;
-bb91accf27335c Jason Wang             2016-12-23   965  
-95dbe9e7b3720e Jesper Dangaard Brouer 2018-02-20   966  	if (unlikely(hdr->hdr.gso_type))
-bb91accf27335c Jason Wang             2016-12-23   967  		goto err_xdp;
-0354e4d19cd5de John Fastabend         2017-02-02   968  
-4941d472bf95b4 Jason Wang             2017-07-19  @969  	if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
-4941d472bf95b4 Jason Wang             2017-07-19   970  		int offset = buf - page_address(page) + header_offset;
-4941d472bf95b4 Jason Wang             2017-07-19   971  		unsigned int tlen = len + vi->hdr_len;
-981f14d42a7f16 Heng Qi                2023-01-31   972  		int num_buf = 1;
-4941d472bf95b4 Jason Wang             2017-07-19   973  
-4941d472bf95b4 Jason Wang             2017-07-19   974  		xdp_headroom = virtnet_get_headroom(vi);
-4941d472bf95b4 Jason Wang             2017-07-19   975  		header_offset = VIRTNET_RX_PAD + xdp_headroom;
-4941d472bf95b4 Jason Wang             2017-07-19   976  		headroom = vi->hdr_len + header_offset;
-4941d472bf95b4 Jason Wang             2017-07-19   977  		buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-4941d472bf95b4 Jason Wang             2017-07-19   978  			SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-4941d472bf95b4 Jason Wang             2017-07-19   979  		xdp_page = xdp_linearize_page(rq, &num_buf, page,
-4941d472bf95b4 Jason Wang             2017-07-19   980  					      offset, header_offset,
-4941d472bf95b4 Jason Wang             2017-07-19   981  					      &tlen);
-4941d472bf95b4 Jason Wang             2017-07-19   982  		if (!xdp_page)
-4941d472bf95b4 Jason Wang             2017-07-19   983  			goto err_xdp;
-4941d472bf95b4 Jason Wang             2017-07-19   984  
-4941d472bf95b4 Jason Wang             2017-07-19   985  		buf = page_address(xdp_page);
-4941d472bf95b4 Jason Wang             2017-07-19   986  		put_page(page);
-4941d472bf95b4 Jason Wang             2017-07-19   987  		page = xdp_page;
-4941d472bf95b4 Jason Wang             2017-07-19   988  	}
-4941d472bf95b4 Jason Wang             2017-07-19   989  
-43b5169d8355cc Lorenzo Bianconi       2020-12-22   990  	xdp_init_buff(&xdp, buflen, &rq->xdp_rxq);
-be9df4aff65f18 Lorenzo Bianconi       2020-12-22   991  	xdp_prepare_buff(&xdp, buf + VIRTNET_RX_PAD + vi->hdr_len,
-be9df4aff65f18 Lorenzo Bianconi       2020-12-22   992  			 xdp_headroom, len, true);
-f6b10209b90d48 Jason Wang             2017-02-21   993  	orig_data = xdp.data;
-4249e276b1ab30 Xuan Zhuo              2023-03-22   994  
-4249e276b1ab30 Xuan Zhuo              2023-03-22   995  	act = virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
-0354e4d19cd5de John Fastabend         2017-02-02   996  
-bb91accf27335c Jason Wang             2016-12-23   997  	switch (act) {
-4249e276b1ab30 Xuan Zhuo              2023-03-22   998  	case VIRTNET_XDP_RES_PASS:
-2de2f7f40ef923 John Fastabend         2017-02-02   999  		/* Recalculate length in case bpf program changed it */
-f6b10209b90d48 Jason Wang             2017-02-21  1000  		delta = orig_data - xdp.data;
-6870de435b90c0 Nikita V. Shirokov     2018-04-17  1001  		len = xdp.data_end - xdp.data;
-503d539a6e417b Yuya Kusakabe          2020-02-25  1002  		metasize = xdp.data - xdp.data_meta;
-bb91accf27335c Jason Wang             2016-12-23  1003  		break;
-4249e276b1ab30 Xuan Zhuo              2023-03-22  1004  
-4249e276b1ab30 Xuan Zhuo              2023-03-22  1005  	case VIRTNET_XDP_RES_CONSUMED:
-bb91accf27335c Jason Wang             2016-12-23  1006  		goto xdp_xmit;
-4249e276b1ab30 Xuan Zhuo              2023-03-22  1007  
-4249e276b1ab30 Xuan Zhuo              2023-03-22  1008  	case VIRTNET_XDP_RES_DROP:
-bb91accf27335c Jason Wang             2016-12-23  1009  		goto err_xdp;
-bb91accf27335c Jason Wang             2016-12-23  1010  	}
-bb91accf27335c Jason Wang             2016-12-23  1011  
-f6b10209b90d48 Jason Wang             2017-02-21  1012  	skb = build_skb(buf, buflen);
-053c9e18c6f9cf Wenliang Wang          2021-12-16  1013  	if (!skb)
-f6b10209b90d48 Jason Wang             2017-02-21  1014  		goto err;
-6445923dc4c91e Xuan Zhuo              2023-03-22  1015  
-f6b10209b90d48 Jason Wang             2017-02-21  1016  	skb_reserve(skb, headroom - delta);
-6870de435b90c0 Nikita V. Shirokov     2018-04-17  1017  	skb_put(skb, len);
-503d539a6e417b Yuya Kusakabe          2020-02-25  1018  	if (metasize)
-503d539a6e417b Yuya Kusakabe          2020-02-25  1019  		skb_metadata_set(skb, metasize);
-503d539a6e417b Yuya Kusakabe          2020-02-25  1020  
-f121159d72091f Michael S. Tsirkin     2013-11-28  1021  	return skb;
-bb91accf27335c Jason Wang             2016-12-23  1022  
-bb91accf27335c Jason Wang             2016-12-23  1023  err_xdp:
-d46eeeaf99bcfa Jason Wang             2018-07-31  1024  	stats->xdp_drops++;
-053c9e18c6f9cf Wenliang Wang          2021-12-16  1025  err:
-d46eeeaf99bcfa Jason Wang             2018-07-31  1026  	stats->drops++;
-4941d472bf95b4 Jason Wang             2017-07-19  1027  	put_page(page);
-bb91accf27335c Jason Wang             2016-12-23  1028  xdp_xmit:
-bb91accf27335c Jason Wang             2016-12-23  1029  	return NULL;
-f121159d72091f Michael S. Tsirkin     2013-11-28  1030  }
-f121159d72091f Michael S. Tsirkin     2013-11-28  1031  
+[...]
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+> +static u16 rtw_sdio_read16(struct rtw_dev *rtwdev, u32 addr)
+> +{
+> +       struct rtw_sdio *rtwsdio = (struct rtw_sdio *)rtwdev->priv;
+> +       bool direct, bus_claim;
+> +       u8 buf[2];
+> +       int ret;
+> +       u16 val;
+> +
+> +       bus_claim = rtw_sdio_bus_claim_needed(rtwsdio);
+> +       direct = rtw_sdio_is_bus_addr(addr);
+> +
+> +       if (bus_claim)
+> +               sdio_claim_host(rtwsdio->sdio_func);
+> +
+> +       if (direct) {
+> +               addr = rtw_sdio_to_bus_offset(rtwdev, addr);
+> +               buf[0] = sdio_readb(rtwsdio->sdio_func, addr, &ret);
+> +               if (!ret)
+> +                       buf[1] = sdio_readb(rtwsdio->sdio_func, addr + 1, &ret);
+> +               val = le16_to_cpu(*(__le16 *)buf);
+> +       } else if (addr & 1) {
+
+else if (IS_ALIGNED(addr, 2) {
+
+> +               ret = rtw_sdio_read_indirect_bytes(rtwdev, addr, buf, 2);
+> +               val = le16_to_cpu(*(__le16 *)buf);
+> +       } else {
+> +               val = rtw_sdio_read_indirect32(rtwdev, addr, &ret);
+> +       }
+> +
+> +       if (bus_claim)
+> +               sdio_release_host(rtwsdio->sdio_func);
+> +
+> +       if (ret)
+> +               rtw_warn(rtwdev, "sdio read16 failed (0x%x): %d", addr, ret);
+> +
+> +       return val;
+> +}
+> +
+> +static u32 rtw_sdio_read32(struct rtw_dev *rtwdev, u32 addr)
+> +{
+> +       struct rtw_sdio *rtwsdio = (struct rtw_sdio *)rtwdev->priv;
+> +       bool direct, bus_claim;
+> +       u8 buf[4];
+> +       u32 val;
+> +       int ret;
+> +
+> +       bus_claim = rtw_sdio_bus_claim_needed(rtwsdio);
+> +       direct = rtw_sdio_is_bus_addr(addr);
+> +
+> +       if (bus_claim)
+> +               sdio_claim_host(rtwsdio->sdio_func);
+> +
+> +       if (direct) {
+> +               addr = rtw_sdio_to_bus_offset(rtwdev, addr);
+> +               val = rtw_sdio_readl(rtwdev, addr, &ret);
+> +       } else if (addr & 3) {
+
+else if (IS_ALIGNED(addr, 4) {
+
+> +               ret = rtw_sdio_read_indirect_bytes(rtwdev, addr, buf, 4);
+> +               val = le32_to_cpu(*(__le32 *)buf);
+> +       } else {
+> +               val = rtw_sdio_read_indirect32(rtwdev, addr, &ret);
+> +       }
+> +
+> +       if (bus_claim)
+> +               sdio_release_host(rtwsdio->sdio_func);
+> +
+> +       if (ret)
+> +               rtw_warn(rtwdev, "sdio read32 failed (0x%x): %d", addr, ret);
+> +
+> +       return val;
+> +}
+> +
+
+[...]
+
+> +int rtw_sdio_probe(struct sdio_func *sdio_func,
+> +                  const struct sdio_device_id *id)
+> +{
+> +       struct ieee80211_hw *hw;
+> +       struct rtw_dev *rtwdev;
+> +       int drv_data_size;
+> +       int ret;
+> +
+> +       drv_data_size = sizeof(struct rtw_dev) + sizeof(struct rtw_sdio);
+> +       hw = ieee80211_alloc_hw(drv_data_size, &rtw_ops);
+> +       if (!hw) {
+> +               dev_err(&sdio_func->dev, "failed to allocate hw");
+> +               return -ENOMEM;
+> +       }
+> +
+> +       rtwdev = hw->priv;
+> +       rtwdev->hw = hw;
+> +       rtwdev->dev = &sdio_func->dev;
+> +       rtwdev->chip = (struct rtw_chip_info *)id->driver_data;
+> +       rtwdev->hci.ops = &rtw_sdio_ops;
+> +       rtwdev->hci.type = RTW_HCI_TYPE_SDIO;
+> +
+> +       ret = rtw_core_init(rtwdev);
+> +       if (ret)
+> +               goto err_release_hw;
+> +
+> +       rtw_dbg(rtwdev, RTW_DBG_SDIO,
+> +               "rtw88 SDIO probe: vendor=0x%04x device=%04x class=%02x",
+> +               id->vendor, id->device, id->class);
+> +
+> +       ret = rtw_sdio_claim(rtwdev, sdio_func);
+> +       if (ret) {
+> +               rtw_err(rtwdev, "failed to claim SDIO device");
+> +               goto err_deinit_core;
+> +       }
+> +
+> +       rtw_sdio_init(rtwdev);
+> +
+> +       ret = rtw_sdio_init_tx(rtwdev);
+> +       if (ret) {
+> +               rtw_err(rtwdev, "failed to init SDIO TX queue\n");
+> +               goto err_sdio_declaim;
+> +       }
+> +
+> +       ret = rtw_chip_info_setup(rtwdev);
+> +       if (ret) {
+> +               rtw_err(rtwdev, "failed to setup chip information");
+> +               goto err_destroy_txwq;
+> +       }
+> +
+> +       ret = rtw_register_hw(rtwdev, hw);
+> +       if (ret) {
+> +               rtw_err(rtwdev, "failed to register hw");
+> +               goto err_destroy_txwq;
+> +       }
+> +
+
+Today, people reported there is race condition between register netdev and NAPI
+in rtw89 driver. I wonder if there will be in register netdev and request IRQ.
+
+You can add a msleep(10 * 100) here, and then do 'ifconfig up' and 'iw scan'
+quickly right after SDIO probe to see if it can work well. Otherwise, switching
+the order of rtw_register_hw() and rtw_sdio_request_irq() could be a possible
+solution.
+
+> +       ret = rtw_sdio_request_irq(rtwdev, sdio_func);
+> +       if (ret)
+> +               goto err_unregister_hw;
+> +
+> +       return 0;
+> +
+> +err_unregister_hw:
+> +       rtw_unregister_hw(rtwdev, hw);
+> +err_destroy_txwq:
+> +       rtw_sdio_deinit_tx(rtwdev);
+> +err_sdio_declaim:
+> +       rtw_sdio_declaim(rtwdev, sdio_func);
+> +err_deinit_core:
+> +       rtw_core_deinit(rtwdev);
+> +err_release_hw:
+> +       ieee80211_free_hw(hw);
+> +
+> +       return ret;
+> +}
+> +EXPORT_SYMBOL(rtw_sdio_probe);
+
+[...]
+
+Only minor comments.
+
+Ping-Ke
+
