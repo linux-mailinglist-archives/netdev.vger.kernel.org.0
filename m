@@ -2,81 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 693E16C6DCE
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 814C76C6DC4
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:36:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbjCWQhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 12:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
+        id S232333AbjCWQgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 12:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbjCWQgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:36:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DBD28E72;
-        Thu, 23 Mar 2023 09:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679589313; x=1711125313;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6dmk7dESK06bL7bYbgjdANZzXihd1W0ybweFM1q6ffQ=;
-  b=BIedNtzkq8bEEekwXagTwsO2WBaOlHwEZFxRrm7qEPizn3ViFwfXil+c
-   LwJ3DYFoaSk2P1RzjBlV3OPRW1zjA2dAtH922mNbJM6XxJIKaeYJEGs9f
-   sReg8bnbZui8+5wqdGzucZh/5waS/kJA8gq2MaqU5X+zQj2JZ/YAlZDN7
-   MIvAn0Zx//u9VWfhKmFYfbytmryXcv0b9xdioM6xiUwvTwfUujg0u9PZx
-   AoIa2Fk67T5r/KWPO6O/W+JKPIsaYVbECYq67U2aOOb8pohHI20pNsTj5
-   PXW7avr3nJNV5Llou2ohs6i1mkPAqEkb1cmagrpcIHOfTslUblyoTGrX3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="323411054"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="323411054"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 09:34:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="1011885195"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="1011885195"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP; 23 Mar 2023 09:34:35 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pfNtY-007Znn-28;
-        Thu, 23 Mar 2023 18:34:32 +0200
-Date:   Thu, 23 Mar 2023 18:34:32 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
- get phy interface mode
-Message-ID: <ZBx/mO/z3t3dQCAx@smile.fi.intel.com>
-References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
- <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
- <ZBxcGXSVe0dlzKZb@smile.fi.intel.com>
- <ZBxiqJo470A7bkig@shell.armlinux.org.uk>
- <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
- <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
- <ZBxpeLOmTMzqVTRV@smile.fi.intel.com>
- <ZBxu4FvyO2JDwmMq@shell.armlinux.org.uk>
- <ZBx7xxs0NQV25cFn@shell.armlinux.org.uk>
+        with ESMTP id S229708AbjCWQgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:36:23 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3781367E1;
+        Thu, 23 Mar 2023 09:34:58 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id t13so14459592qvn.2;
+        Thu, 23 Mar 2023 09:34:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679589294;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=stUzCFXiD8PEYBONMfjB7APazeCwrM/CiIh5xilJVJw=;
+        b=eKJLZ3Cdh0SSrcbVglElFiWgm8u8asgClu667oKe4dLR6pNXT1rg0Y14NS7rybTGKK
+         EVTsaQm5UYqpvKAY2z/7N5zVRmvQc9GTaJXpCSxQlexZ8TT2ZHsfVJNqDQF3yO4YIiLP
+         JzJO8TYDoEVC+gFK028z5Yb1F9S2D6+jwPEhWt43xXssMdOTlHaNu1z2awMv1F20vifC
+         DEeNJJOCuylD9doTvOI4S1UF2L+d02esoWjLRH9SDog4/E22ThyHFxMU+zwg6wrDdG8U
+         T8Lq1w27fYl6w6w8PRieIsmiA7Cb9ZI/GtQm6WqdtnZaUZhhbV9lVvpCDitRg5IncSt9
+         fw0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679589294;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=stUzCFXiD8PEYBONMfjB7APazeCwrM/CiIh5xilJVJw=;
+        b=qClwRTPSjqM7cpLu6kGK9yTEXJ3kQu2j2VqzibPnE7+x9lzPWP+6v7U3GhDzon/S1S
+         bgAoF71RqI/4iLUsILYtvEtlf+nexD2Y0WgsNbyWew24Rl1zdfdjE2pe6rNFfiVIcTzV
+         DUTzHT2/3f8uhGG/9sLXW2YOA/80p3QQNWWKulCyv1Uf5qMvMDmrS4rIcE0HX2tNkHyB
+         w/yObrFVmo9cIr3y5Hy8ifoL/JYLocAv2yZSUSpra5R3ixQApySXqgoVVYMmUDftdDjm
+         7K7jMo1171pvnI3QwAKcoICxiaSh3qvq9GII/hcTl+feDvk9TxgjbiUUO47rVhsawZtv
+         nPGA==
+X-Gm-Message-State: AO0yUKV5ZyA37wD5Q0BmFpaPoLZbc3rW4Acu9w9FGaliKMHEUoxwHyM9
+        //6KXIDEF1+rzBHXHTB8BhM=
+X-Google-Smtp-Source: AK7set8wSykQWhLKJW29Dr3h+aqlQ2XOZDHdJCbSAbjLfBqN9d1PUV6EBv7PR5nMwBVzXM49BB6C7A==
+X-Received: by 2002:a05:6214:2409:b0:5a7:a434:c307 with SMTP id fv9-20020a056214240900b005a7a434c307mr14968249qvb.24.1679589293908;
+        Thu, 23 Mar 2023 09:34:53 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id p11-20020a05620a22ab00b0074583bda590sm13401830qkh.10.2023.03.23.09.34.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Mar 2023 09:34:53 -0700 (PDT)
+Message-ID: <d9d3b20b-d288-8b6c-b8fd-77a24bf7aab2@gmail.com>
+Date:   Thu, 23 Mar 2023 09:34:45 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBx7xxs0NQV25cFn@shell.armlinux.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH 1/2] dt-bindings: net: dsa: b53: add BCM53134 support
+Content-Language: en-US
+To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
+        paul.geurts@prodrive-technologies.com, jonas.gorski@gmail.com,
+        andrew@lunn.ch, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230323121804.2249605-1-noltari@gmail.com>
+ <20230323121804.2249605-2-noltari@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230323121804.2249605-2-noltari@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,123 +79,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 04:18:15PM +0000, Russell King (Oracle) wrote:
-> On Thu, Mar 23, 2023 at 03:23:12PM +0000, Russell King (Oracle) wrote:
-> > On Thu, Mar 23, 2023 at 05:00:08PM +0200, Andy Shevchenko wrote:
-> > > On Thu, Mar 23, 2023 at 02:49:01PM +0000, Russell King (Oracle) wrote:
-> > > > On Thu, Mar 23, 2023 at 04:38:29PM +0200, Andy Shevchenko wrote:
-> > > > > Do you modify its content on the fly?
-> > > > 
-> > > > Do you want to litter code with casts to get rid of the const?
-> > > > 
-> > > > > For fwnode as a basic object type we want to reduce the scope of the possible
-> > > > > modifications. If you don't modify and APIs you call do not require non-const
-> > > > > object, use const for fwnode.
-> > > > 
-> > > > Let's start here. We pass this fwnode to fwnode_get_phy_mode():
-> > > > 
-> > > > include/linux/property.h:int fwnode_get_phy_mode(struct fwnode_handle *fwnode);
-> > > > 
-> > > > Does fwnode_get_phy_mode() alter the contents of the fwnode? Probably
-> > > > not, but it doesn't take a const pointer. Therefore, to declare my
-> > > > fwnode as const, I'd need to cast the const-ness away before calling
-> > > > this.
-> > > 
-> > > So, fix the fwnode_get_phy_mode(). Is it a problem?
-> > 
-> > No, I refuse. That's for a different patch set.
-> > 
-> > > > Then there's phylink_create(). Same problem.
-> > > 
-> > > So, fix that. Is it a problem?
-> > 
-> > No for the same reason.
-> > 
-> > > > So NAK to this const - until such time that we have a concerted effort
-> > > > to making functions we call which do not modify the "fwnode" argument
-> > > > constify that argument. Otherwise it's just rediculously crazy to
-> > > > declare a variable const only to then litter the code with casts to get
-> > > > rid of it at every call site.
-> > > > 
-> > > > Please do a bit of research before making suggestions. Thanks.
-> > > 
-> > > So, MAK to your patch. You can fix that, and you know that.
-> > 
-> > Sorry, I don't accept your NAK. While you have a valid point about
-> > these things being const, that is not the fault of this patch series,
-> > and is something that should be addressed separately.
-> > 
-> > The lack of const-ness that has been there for quite some time is no
-> > reason to NAK a patch that has nothing to do with this.
+On 3/23/23 05:18, Álvaro Fernández Rojas wrote:
+> BCM53134 are B53 switches connected by MDIO.
 > 
-> To illustrate how rediculous this is:
+> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
 
-It's not. But does it make difference?
-
-> $ git grep 'struct fwnode_handle \*.*='
-> 
-> gives 134 instances. Of those, only five are const, which means 129
-> aren't. So I question - why are you singling mine out for what appears
-> to be special treatment.
-> 
-> 
-> Let's look at other parts of the fwnode API.
-> 
-> void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index);
-> 
-> Does that modify the fwnode it was passed? It calls:
-> 
->         void __iomem *(*iomap)(struct fwnode_handle *fwnode, int index);
-> 
-> in struct fwnode_operations, so that would need to be made const as well.
-> The only implementation of that which I can find is of_fwnode_iomap()
-> which uses to_of_node() on that, which casts away the const-ness. So
-> this would be a candidate to making const.
-
-Correct.
-
-> bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child);
-> 
-> I'd be surprised if that modifies either of those fwnodes.
-
-It does. Now your time to be surprised.
-
-> It seems
-> to use fwnode_for_each_parent_node() from the child, which passes
-> "child" to fwnode_get_parent(), which itself is const. Therefore, it
-> seems there's no reason not to make "child" const. "ancestor" can
-> also be made const since it's only being used for pointer-compares.
-
-All getters return _different_ fwnode which is not const due to modification
-of the _returned_ fwnode.
-
-Do a bit of investigation, please. Thanks.
-
-> unsigned int fwnode_graph_get_endpoint_count(struct fwnode_handle *fwnode,
->                                              unsigned long flags);
-> 
-> Similar story with this, although it uses
-> fwnode_graph_for_each_endpoint(), which seems to mean that "fwnode"
-> can also be const.
-
-Correct.
-
-> My point is that there are several things in the fwnode API that
-> should be made const but that aren't, but which should likely be
-> fixed before requiring const-ness of those fwnode_handle
-> declarations in people's code.
-
-OK.
-
-I started doing something about this as you may easily check with `git log`.
-Now, instead of playing a good citizen of the community you are trying to
-diminish the others' asks.
-
-I think the further continuation of this discussion doesn't make much sense.
-But thank you for your opinion.
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Florian
 
