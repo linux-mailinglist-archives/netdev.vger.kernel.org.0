@@ -2,89 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F0BD6C5F2D
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E48436C5F35
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:54:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbjCWFu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 01:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        id S229889AbjCWFyS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Mar 2023 01:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230305AbjCWFuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:50:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B36A23669
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 22:50:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7FCB623EE
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 05:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1F1E3C433A4;
-        Thu, 23 Mar 2023 05:50:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679550622;
-        bh=DI1TbomJyapKhjcs+RP+MBT82PkfABf3XfPT3dObotA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V15XnQd0JnxyAaJ7ijyBzztkswbFXxdplyfsUQYAiKQXHKajWZIkx2wxgrklVGyoo
-         NtMOaTTt04tyP/J4/P7rWdGWXEdyKKOHilX/ytibLHP1nDdDWWQMKTO4CvPGaegQG6
-         QXpQUfkWxXdqwAtiIMMqRuDX/kYc10gQKMWN3I4qbs764/HEvNhHWI5yBf9/DFzkMS
-         V0JCRmWZtQ5PsRXJV8hNumAOvA+WB1mNusaerhMBlRgBhLseq5UVHyxlIWhNKW877o
-         fLz+V5vas8698JUgPXuFxhW1/u1+2rcmb2LnXdBX5jGgwyOnLZ5jGphSv1d1zfhUFI
-         3NFgT+ZUJ3KYw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 05110E61B89;
-        Thu, 23 Mar 2023 05:50:22 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229600AbjCWFyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:54:17 -0400
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4232312A;
+        Wed, 22 Mar 2023 22:54:16 -0700 (PDT)
+Received: by mail-pf1-f169.google.com with SMTP id s8so12367681pfk.5;
+        Wed, 22 Mar 2023 22:54:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679550855;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VvkZe5fMvc+QjQJk+HjWPueq2IHifVz+Obh3SRDCqRM=;
+        b=3DwwTLFFwfCcOBOGtqdME7vAfZRaUIxHf0gHK1uy/kBOco72py5efqih0pss9YawLC
+         AApwfBuil+OWitBLjou5kxFI59NjrcTiVW2VA4NbEzm8eESTfmhiBB7U2Nn40K4fymtl
+         IwXrdASF0OMox3Imnv/+tpO5e1ME3BiHdQR6CLCEwosGLiUyR5IL8dL5Pn5aLMY9e4ik
+         rOVOVhGhouEI3Boz6UGMUXNS4OTEGiSfSKXtsVoSjrdfsCm1gG/9WsF9QHURAgDVrvzp
+         LuULtE6nN6aSafug9yGDUuBlg3VKXk+lwqYmR5hPWoaTxVEmCzhel3S/1kiHABYtpmzn
+         FNZg==
+X-Gm-Message-State: AO0yUKUHIOLhFkfslddFUEkXeopVMEypRlScBNTG9qM3dhnJk8daotNj
+        mA8JW2VzfhJ9wsjG1Hr4Za+pgO0iKhmL/XRfRW0=
+X-Google-Smtp-Source: AK7set9bwq3zLM/YpnUFGG/EjtMtuhpOODD8PI9563YLv5UHFMf0PYARwNCJDITXu4QbktukmHU3J6PbKhGjqP7mchI=
+X-Received: by 2002:a65:5ccd:0:b0:50b:dcc7:2dc3 with SMTP id
+ b13-20020a655ccd000000b0050bdcc72dc3mr1566282pgt.7.1679550855604; Wed, 22 Mar
+ 2023 22:54:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] net: remove some skb_mac_header assumptions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167955062201.14332.6717179750988330562.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Mar 2023 05:50:22 +0000
-References: <20230321164519.1286357-1-edumazet@google.com>
-In-Reply-To: <20230321164519.1286357-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        simon.horman@corigine.com, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230321081152.26510-1-peter_hong@fintek.com.tw>
+ <CAMZ6RqJWg1H6Yo3nhsa-Kk-WdU=ZH39ecWaE6wiuKRJe1gLMkQ@mail.gmail.com> <f71f1f59-f729-2c8c-f6da-8474be2074b1@fintek.com.tw>
+In-Reply-To: <f71f1f59-f729-2c8c-f6da-8474be2074b1@fintek.com.tw>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 23 Mar 2023 14:54:04 +0900
+Message-ID: <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
+Subject: Re: [PATCH V2] can: usb: f81604: add Fintek F81604 support
+To:     Peter Hong <peter_hong@fintek.com.tw>
+Cc:     wg@grandegger.com, mkl@pengutronix.de,
+        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, frank.jungclaus@esd.eu,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Le jeu. 23 mars 2023 à 14:14, Peter Hong <peter_hong@fintek.com.tw> a écrit :
+>
+> Hi Vincent,
+>
+> Vincent MAILHOL 於 2023/3/21 下午 11:50 寫道:
+> >> +static netdev_tx_t f81604_start_xmit(struct sk_buff *skb,
+> >> +                                    struct net_device *netdev)
+> >> +{
+> >> +       struct can_frame *cf = (struct can_frame *)skb->data;
+> >> +       struct f81604_port_priv *priv = netdev_priv(netdev);
+> >> +       struct net_device_stats *stats = &netdev->stats;
+> >> +       int status;
+> >> +       u8 *ptr;
+> >> +       u32 id;
+> >> +
+> >> +       if (can_dropped_invalid_skb(netdev, skb))
+> >> +               return NETDEV_TX_OK;
+> >> +
+> >> +       netif_stop_queue(netdev);
+> >> +
+> >> +       ptr = priv->bulk_write_buffer;
+> >> +       memset(ptr, 0, F81604_DATA_SIZE);
+> >> +
+> >> +       ptr[0] = F81604_CMD_DATA;
+> >> +       ptr[1] = min_t(u8, cf->can_dlc & 0xf, 8);
+> >> +
+> >> +       if (cf->can_id & CAN_EFF_FLAG) {
+> >> +               id = (cf->can_id & CAN_ERR_MASK) << 3;
+> >> +               ptr[1] |= F81604_EFF_BIT;
+> >> +               ptr[2] = (id >> 24) & 0xff;
+> >> +               ptr[3] = (id >> 16) & 0xff;
+> >> +               ptr[4] = (id >> 8) & 0xff;
+> >> +               ptr[5] = (id >> 0) & 0xff;
+> >> +               memcpy(&ptr[6], cf->data, ptr[1]);
+> > Rather than manipulating an opaque u8 array, please declare a
+> > structure with explicit names.
+>
+> I had try to declare a struct like below and refactoring code :
+>
+> struct f81604_bulk_data {
+>      u8 cmd;
+>      u8 dlc;
+>
+>      union {
+>          struct {
+>              u8 id1, id2;
+>              u8 data[CAN_MAX_DLEN];
+>          } sff;
+>
+>          struct {
+>              u8 id1, id2, id3, id4;
+>              u8 data[CAN_MAX_DLEN];
+>          } eff;
+>      };
+> } __attribute__((packed));
+>
+> This struct can used in TX/RX bulk in/out. Is it ok?
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+That's nearly it. It is better to declare the struct sff and eff
+separately. Also, do not split the id in bytes. Declare it as a little
+endian using the __le16 and __le32 types.
 
-On Tue, 21 Mar 2023 16:45:16 +0000 you wrote:
-> Historically, we tried o maintain skb_mac_header available in most of
-> networking paths.
-> 
-> When reaching ndo_start_xmit() handlers, skb_mac_header() should always
-> be skb->data.
-> 
-> With recent additions of skb_mac_header_was_set() and
-> DEBUG_NET_WARN_ON_ONCE() in skb_mac_header(), we can attempt
-> to remove our reliance on skb_mac_header in TX paths.
-> 
-> [...]
+Something like this (I let you adjust):
 
-Here is the summary with links:
-  - [net-next,1/3] net: do not use skb_mac_header() in qdisc_pkt_len_init()
-    https://git.kernel.org/netdev/net-next/c/f5fca219ad45
-  - [net-next,2/3] sch_cake: do not use skb_mac_header() in cake_overhead()
-    https://git.kernel.org/netdev/net-next/c/e495a9673caf
-  - [net-next,3/3] net/sched: remove two skb_mac_header() uses
-    https://git.kernel.org/netdev/net-next/c/b3be94885af4
+  struct f81604_sff {
+          __le16 id:
+          u8 data[CAN_MAX_DLEN];
+  } __attribute__((packed));
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+  struct f81604_eff {
+          __le32 id;
+          u8 data[CAN_MAX_DLEN];
+  } __attribute__((packed));
+
+  struct f81604_bulk_data {
+          u8 cmd;
+          u8 dlc;
+
+          union {
+                  struct f81604_sff sff;
+                  struct f81604_eff eff;
+           };
+  } __attribute__((packed));
+
+The __le16 field should be manipulated using cpu_to_leXX() and
+leXX_to_cpu() if the field is aligned, if not, it should be
+manipulated using {get|set}_unaligned_leXX() (where XX represents the
+size in bits).
+
+Also, f81604_bulk_data->dlc is not only a DLC but also carries the
+F81604_EFF_BIT flag, right? At least, add documentation to the
+structure to clarify this point.
+
+> > +static int f81604_prepare_urbs(struct net_device *netdev)
+> > +{
+> > +       static const u8 bulk_in_addr[F81604_MAX_DEV] = { 0x82, 0x84 };
+> > +       static const u8 bulk_out_addr[F81604_MAX_DEV] = { 0x01, 0x03 };
+> > +       static const u8 int_in_addr[F81604_MAX_DEV] = { 0x81, 0x83 };
+> > +       struct f81604_port_priv *priv = netdev_priv(netdev);
+> > +       int id = netdev->dev_id;
+> > +       int i;
+> > +
+> > +       /* initialize to NULL for error recovery */
+> > +       for (i = 0; i < F81604_MAX_RX_URBS; ++i)
+> > +               priv->read_urb[i] = NULL;
+> > priv was allocated with devm_kzalloc() so it should already be zeroed,
+> > right? What is the purpose of this loop?
+>
+> This operation due to following condition:
+>      f81604_open() -> f81604_close() -> f81604_open() failed.
+>
+> We had used  devm_kzalloc() in f81604_probe(), so first f81604_open() all
+> pointers are NULL. But after f81604_close() then f81604_open() second
+> times, the URB pointers are not NULLed, it'll makes error on 2nd
+> f81604_open()
+> with fail.
+
+Makes sense, thanks for the clarification.
+
+Then, please replace your loop by a memset(priv->read_urb, 0,
+sizeof(priv->read_urb).
+
+> >> +/* Called by the usb core when driver is unloaded or device is removed */
+> >> +static void f81604_disconnect(struct usb_interface *intf)
+> >> +{
+> >> +       struct f81604_priv *priv = usb_get_intfdata(intf);
+> >> +       int i;
+> >> +
+> >> +       for (i = 0; i < F81604_MAX_DEV; ++i) {
+> >> +               if (!priv->netdev[i])
+> >> +                       continue;
+> >> +
+> >> +               unregister_netdev(priv->netdev[i]);
+> >> +               free_candev(priv->netdev[i]);
+> >> +       }
+> >   i> +}
+>
+> Is typo here?
+
+Yes, please ignore.
 
 
+Yours sincerely,
+Vincent Mailhol
