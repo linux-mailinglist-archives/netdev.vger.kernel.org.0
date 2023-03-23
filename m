@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B8416C61F7
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 09:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C99136C6220
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 09:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbjCWIiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 04:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
+        id S231309AbjCWImK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 04:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbjCWIiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 04:38:01 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFA412F01;
-        Thu, 23 Mar 2023 01:36:47 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32N8aMOr9013097, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32N8aMOr9013097
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Thu, 23 Mar 2023 16:36:22 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Thu, 23 Mar 2023 16:36:37 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Thu, 23 Mar 2023 16:36:37 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Thu, 23 Mar 2023 16:36:37 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Jonas Gorski <jonas.gorski@gmail.com>
-CC:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: RE: [BUG v6.2.7] Hitting BUG_ON() on rtw89 wireless driver startup
-Thread-Topic: [BUG v6.2.7] Hitting BUG_ON() on rtw89 wireless driver startup
-Thread-Index: AQHZXNa3MLbDic+okUWUZsB7esnCtq8GfvKAgABBsICAAMlp0P//h0sAgAD4fxA=
-Date:   Thu, 23 Mar 2023 08:36:37 +0000
-Message-ID: <6d6c51a6e29448eeb5985a59d1875c3a@realtek.com>
-References: <ZBskz06HJdLzhFl5@hyeyoo>
- <55057734-9913-8288-ad88-85c189cbe045@lwfinger.net>
- <CAOiHx=n7EwK2B9CnBR07FVA=sEzFagb8TkS4XC_qBNq8OwcYUg@mail.gmail.com>
- <e4f8e55f843041978098f57ecb7e558b@realtek.com>
- <4c841575-1e02-32f2-b63d-52bc0c063c82@lwfinger.net>
-In-Reply-To: <4c841575-1e02-32f2-b63d-52bc0c063c82@lwfinger.net>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
+        with ESMTP id S231411AbjCWIlj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 04:41:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD7C3801B
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 01:40:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25049624FD
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 08:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 756D3C433D2;
+        Thu, 23 Mar 2023 08:40:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679560820;
+        bh=ib/upVGJxm+b8wmfEgP/JGmSbs6uXw7/knZPsGNXP9E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A1wAunx3VYRxScwYSBx3ZwydU+69bVSQ//JFYTywbSIZ3WzurUtv+rjU3Tv5DLS5o
+         sJPr/7c0hu16QnX746qh7UgZVym5Dh9b8Q5V/gI7yYQdoAsrlgceDk1FY9HuE+G0KT
+         059DYOMnbBWkYAQMSIV/UOgCrtjB87CWm1V12dncpJZt/vhULQ31quHufLG2iNt75x
+         R/bKYF5RzjGe+luGbUsndjpNSu3/RJtxLP+agAo0ZqPYRJEu1x1JB5IbwE3FlR0vh6
+         ieJlgRjXLRpQIhdAq8GODNh4X63xoOS42stdcWXgBwfYFE22x+2LRkAKDEIPe1VIUR
+         hIQ6OqfRlhcHg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5355EE61B86;
+        Thu, 23 Mar 2023 08:40:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] net: Allow changing IPv4 address protocol
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167956082033.32268.14255202723457599070.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Mar 2023 08:40:20 +0000
+References: <cover.1679399108.git.petrm@nvidia.com>
+In-Reply-To: <cover.1679399108.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, dsahern@kernel.org,
+        shuah@kernel.org, idosch@nvidia.com, Jacques.De.Laval@westermo.com
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGFycnkgRmluZ2VyIDxs
-YXJyeS5maW5nZXJAZ21haWwuY29tPiBPbiBCZWhhbGYgT2YgTGFycnkgRmluZ2VyDQo+IFNlbnQ6
-IFRodXJzZGF5LCBNYXJjaCAyMywgMjAyMyA5OjQxIEFNDQo+IFRvOiBQaW5nLUtlIFNoaWggPHBr
-c2hpaEByZWFsdGVrLmNvbT47IEpvbmFzIEdvcnNraSA8am9uYXMuZ29yc2tpQGdtYWlsLmNvbT4N
-Cj4gQ2M6IEh5ZW9uZ2dvbiBZb28gPDQyLmh5ZXlvb0BnbWFpbC5jb20+OyBuZXRkZXZAdmdlci5r
-ZXJuZWwub3JnOyBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6
-IFtCVUcgdjYuMi43XSBIaXR0aW5nIEJVR19PTigpIG9uIHJ0dzg5IHdpcmVsZXNzIGRyaXZlciBz
-dGFydHVwDQo+IA0KPiBQaW5nLUtlLA0KPiANCj4gVGhlIHBhdGNoIHdvcmtzIGZpbmUgaGVyZSwg
-YnV0IEkgZGlkIG5vdCBoYXZlIHRoZSBwcm9ibGVtLg0KPiANCj4gV2hlbiB5b3Ugc3VibWl0IGl0
-LCBhZGQgYSBUZXN0ZWQtYnk6IExhcnJ5IEZpbmdlcjxMYXJyeS5GaW5nZXJAbHdmaW5nZXIubmV0
-PiBhbmQNCj4gYSBSZXZpZXdlZC1ieSBmb3IgdGhlIHNhbWUgYWRkcmVzcy4NCj4gDQoNCkhpIExh
-cnJ5LA0KDQpUaGFua3MgZm9yIHlvdXIgdGVzdC4gSSBoYXZlIHN1Ym1pdHRlZCBwYXRjaCBbMV0g
-d2l0aCB5b3VyIFRlc3RlZC1ieSBhbmQgUmV2aWV3ZWQtYnkuDQpCdXQsIHRoZSBwYXRjaCBpbmNs
-dWRlcyBhZGRpdGlvbmFsIGVycm9yIGhhbmRsaW5nIGFkZHJlc3NlZCBkdXJpbmcgaW50ZXJuYWwN
-CnJldmlldywgc28gdGhlcmUgaXMgYSBsaXR0bGUgZGlmZmVyZW50IGZyb20gdGhlIHBhdGNoIEkg
-cG9zdGVkIGhlcmUuIElmIHlvdQ0KZG9uJ3QgYWdyZWUgY3VycmVudCB2ZXJzaW9uLCBwbGVhc2Ug
-TkFDSyB0aGUgcGF0Y2ggWzFdLiANCg0KVGhhbmsgeW91Lg0KDQpbMV0gaHR0cHM6Ly9sb3JlLmtl
-cm5lbC5vcmcvbGludXgtd2lyZWxlc3MvMjAyMzAzMjMwODI4MzkuMjA0NzQtMS1wa3NoaWhAcmVh
-bHRlay5jb20vVC8jdQ0KDQpQaW5nLUtlDQoNCg==
+Hello:
+
+This series was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
+
+On Tue, 21 Mar 2023 12:51:58 +0100 you wrote:
+> IPv4 and IPv6 addresses can be assigned a protocol value that indicates the
+> provenance of the IP address. The attribute is modeled after ip route
+> protocols, and essentially allows the administrator or userspace stack to
+> tag addresses in some way that makes sense to the actor in question.
+> 
+> When IP address protocol field was added in commit 47f0bd503210 ("net: Add
+> new protocol attribute to IP addresses"), the semantics included the
+> ability to change the protocol for IPv6 addresses, but not for IPv4
+> addresses. It seems this was not deliberate, but rather by accident.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/3] net: ipv4: Allow changing IPv4 address protocol
+    https://git.kernel.org/netdev/net-next/c/5c4a9aa856c7
+  - [net-next,2/3] selftests: rtnetlink: Make the set of tests to run configurable
+    https://git.kernel.org/netdev/net-next/c/ecb3c1e675c7
+  - [net-next,3/3] selftests: rtnetlink: Add an address proto test
+    https://git.kernel.org/netdev/net-next/c/6a414fd77f61
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
