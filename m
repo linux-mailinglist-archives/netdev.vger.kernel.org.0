@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78B456C63D7
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F04DA6C6410
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:53:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbjCWJkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 05:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
+        id S230492AbjCWJxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 05:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231236AbjCWJjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:39:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F39136EF
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:38:46 -0700 (PDT)
+        with ESMTP id S229548AbjCWJwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:52:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960C835ED7
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:50:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679564325;
+        s=mimecast20190719; t=1679565014;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Wv8z0Oa+BNXMxQvoR0WkvQh5FJ+53xDgUpA+wdsZMxA=;
-        b=J/Jwhw6CiDqSm0hrbSCimBkst8dTClMGBzxT63TJLO+vAQaUzHL2yE14ULkHRMbIQK+ep1
-        zeHaXEssyUQJoK3Un0K93YvkeskhMv9hpis9MVy6XATpaP0iDwdIqfz7qL6HVeOAzrJymE
-        fIgch21vmnoCUVER4yrOFTfMRkVjsrE=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=XERu7jFbdY1Uu35G9bxCU6ajLW1FJ5w92clS/0dwz/w=;
+        b=RtmiUK3D8eWXxtflAkIp+HuEP++vacv5GBhagWsycFOSNg189oOeufwdZZt9JUkb+jVj0b
+        jU+Wpvu9pktndQhwIKE8wF19Gd9UwbnM3ekfBJIYwkwPd0CnCec8ScARLsFuNv1f2Cw4xi
+        sWBZ5WEQOIkUm1sxYCe+b0tJwe1vTuk=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-636--jDpCRXoOhWkzB3X_EuDwA-1; Thu, 23 Mar 2023 05:38:43 -0400
-X-MC-Unique: -jDpCRXoOhWkzB3X_EuDwA-1
-Received: by mail-qv1-f71.google.com with SMTP id f3-20020a0cc303000000b005c9966620daso5967114qvi.4
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:38:43 -0700 (PDT)
+ us-mta-261-_xtw-DUmPuiUJYEPm3fJUg-1; Thu, 23 Mar 2023 05:50:12 -0400
+X-MC-Unique: _xtw-DUmPuiUJYEPm3fJUg-1
+Received: by mail-qv1-f69.google.com with SMTP id y19-20020ad445b3000000b005a5123cb627so10583899qvu.20
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:50:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679564323;
+        d=1e100.net; s=20210112; t=1679565012;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Wv8z0Oa+BNXMxQvoR0WkvQh5FJ+53xDgUpA+wdsZMxA=;
-        b=iuEAYpajCVJLy18o74TSo7uRkVU/ZEYqsDk1oHNBTrmeB0SgchkbFOnSwAFqIc7WXX
-         6wXyuBdUFUCCTV7PS1KF92FXLuUXxBoNAFp9rG2E88OPqHe6/mZAQBaHbyy6tUjRye6E
-         1Q+tFgyOd1M2Outj6IG3yHmy8MRQgOzkC+wiAdatH3pDMCFIFyMqb+WRI0vcZBF4V/ck
-         6wNr612LY0kNpGczR0GZOcY+93uo3wXgQE5NaA33+BDfNmFnMfceTKbbTVAd/z0hu5yx
-         tfqm+APxXZ6bsQuPHzT4i/Vr/vAS9d7rYWE3gbaODihRKQwFYkEMpWZ7dAf53SUTVQ9g
-         Rlcw==
-X-Gm-Message-State: AO0yUKX+CKYpieJvHeskCqc0dYaSuOtMGAVe6NPWo+gIibRkWUJ+jhfU
-        1+TqyBw8WXLA/vee462fgqhx6qYAZ/i4/GcoNiLVweEKdC6Hx1q3/keKiYouIbrwP+wOPhv2bAj
-        4oOd27PCt6Q3n7EiC
-X-Received: by 2002:a05:622a:284:b0:3bf:d238:6ca with SMTP id z4-20020a05622a028400b003bfd23806camr8824070qtw.68.1679564323360;
-        Thu, 23 Mar 2023 02:38:43 -0700 (PDT)
-X-Google-Smtp-Source: AK7set99g4T9mj3o49CpahBOOAtxidRMSqg1u94nbjZpIXaZjWImk48PhBoKMemZZJq1z4EVJUoSbQ==
-X-Received: by 2002:a05:622a:284:b0:3bf:d238:6ca with SMTP id z4-20020a05622a028400b003bfd23806camr8824056qtw.68.1679564323068;
-        Thu, 23 Mar 2023 02:38:43 -0700 (PDT)
+        bh=XERu7jFbdY1Uu35G9bxCU6ajLW1FJ5w92clS/0dwz/w=;
+        b=qvRjRmKm05n9VacfVAHfje+ibedXqi/TgGHNOVMmiPJMsZ5x4hMJ91jNsH/xv5zoPv
+         vBgLdVRQtTV2g6bDumEeN0SETWDdL+44Na8T4A9w0WqnLO+eJHN16TLQ0NBKeckFDJv9
+         PClRZiIEf4wHKL0eBoa0KSdk4OwsTR4AXs3A35lhSO4m/j8AqAkNFW67AUKk92DQohuV
+         hd8IeP0pcNdtnV3GtjxigK+RAK6IAUQPnp8hPcXnlu3gFUVpdsqAmH9zl5jL5E+RlaG8
+         oI2zWzacEXOSfmS2P6eoriX0Ff8prOhR/kypapu3wVJFPv2tQXHj518AnI72eJOT51U9
+         ZvoQ==
+X-Gm-Message-State: AO0yUKWNI0XHp2aHZjdYs+as47kX6hzW2SV8ILwhNtSVOMtBor2feiYh
+        B35a6yQNNTe9qiw+cm9Zq4tYoXckiQ46hwqx21RWAnkACOe4K/zqkUS0hSztfV8Zi/A8IhGVVlX
+        Zd93br5ok0a+m0NKX
+X-Received: by 2002:a05:6214:23c7:b0:56e:abb8:b656 with SMTP id hr7-20020a05621423c700b0056eabb8b656mr7134174qvb.7.1679565012267;
+        Thu, 23 Mar 2023 02:50:12 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+QwTH7mkA2d88CDuEA5u4qe58JMiq4f/fwPX1oT/BguD3EV9srXmDNSfnJZru9uKMxtXB43w==
+X-Received: by 2002:a05:6214:23c7:b0:56e:abb8:b656 with SMTP id hr7-20020a05621423c700b0056eabb8b656mr7134160qvb.7.1679565011978;
+        Thu, 23 Mar 2023 02:50:11 -0700 (PDT)
 Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
-        by smtp.gmail.com with ESMTPSA id b21-20020ac85415000000b003995f6513b9sm11310043qtq.95.2023.03.23.02.38.40
+        by smtp.gmail.com with ESMTPSA id 4-20020a05620a048400b007468bf8362esm7179339qkr.66.2023.03.23.02.50.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 02:38:42 -0700 (PDT)
-Date:   Thu, 23 Mar 2023 10:38:37 +0100
+        Thu, 23 Mar 2023 02:50:11 -0700 (PDT)
+Date:   Thu, 23 Mar 2023 10:50:06 +0100
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, stefanha@redhat.com,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        stefanha@redhat.com, linux-kernel@vger.kernel.org,
+        eperezma@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>,
         Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
-        eperezma@redhat.com, netdev@vger.kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/8] vhost-vdpa: use bind_mm/unbind_mm device callbacks
-Message-ID: <20230323093837.xdv7wkhzizgnihcy@sgarzare-redhat>
-References: <20230321154228.182769-1-sgarzare@redhat.com>
- <20230321154228.182769-3-sgarzare@redhat.com>
- <CACGkMEtq8PWL01WBL2Ve-Yr=ZO+su73tKuOh1EBLagkrLdiCaQ@mail.gmail.com>
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 8/8] vdpa_sim: add support for user VA
+Message-ID: <20230323095006.jvbbdjvkdvhzcehz@sgarzare-redhat>
+References: <20230321154804.184577-1-sgarzare@redhat.com>
+ <20230321154804.184577-4-sgarzare@redhat.com>
+ <CACGkMEtbrt3zuqy9YdhNyE90HHUT1R=HF-YRAQ6b4KnW_SdZ-w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEtq8PWL01WBL2Ve-Yr=ZO+su73tKuOh1EBLagkrLdiCaQ@mail.gmail.com>
+In-Reply-To: <CACGkMEtbrt3zuqy9YdhNyE90HHUT1R=HF-YRAQ6b4KnW_SdZ-w@mail.gmail.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -83,84 +83,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 11:01:39AM +0800, Jason Wang wrote:
->On Tue, Mar 21, 2023 at 11:42 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+On Thu, Mar 23, 2023 at 11:42:07AM +0800, Jason Wang wrote:
+>On Tue, Mar 21, 2023 at 11:48 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
 >>
->> When the user call VHOST_SET_OWNER ioctl and the vDPA device
->> has `use_va` set to true, let's call the bind_mm callback.
->> In this way we can bind the device to the user address space
->> and directly use the user VA.
+>> The new "use_va" module parameter (default: true) is used in
+>> vdpa_alloc_device() to inform the vDPA framework that the device
+>> supports VA.
 >>
->> The unbind_mm callback is called during the release after
->> stopping the device.
+>> vringh is initialized to use VA only when "use_va" is true and the
+>> user's mm has been bound. So, only when the bus supports user VA
+>> (e.g. vhost-vdpa).
 >>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> ---
+>> vdpasim_mm_work_fn work is used to serialize the binding to a new
+>> address space when the .bind_mm callback is invoked, and unbinding
+>> when the .unbind_mm callback is invoked.
 >>
->> Notes:
->>     v3:
->>     - added `case VHOST_SET_OWNER` in vhost_vdpa_unlocked_ioctl() [Jason]
->>     v2:
->>     - call the new unbind_mm callback during the release [Jason]
->>     - avoid to call bind_mm callback after the reset, since the device
->>       is not detaching it now during the reset
+>> Call mmget_not_zero()/kthread_use_mm() inside the worker function
+>> to pin the address space only as long as needed, following the
+>> documentation of mmget() in include/linux/sched/mm.h:
 >>
->>  drivers/vhost/vdpa.c | 31 +++++++++++++++++++++++++++++++
->>  1 file changed, 31 insertions(+)
->>
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->> index 7be9d9d8f01c..20250c3418b2 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -219,6 +219,28 @@ static int vhost_vdpa_reset(struct vhost_vdpa *v)
->>         return vdpa_reset(vdpa);
->>  }
->>
->> +static long vhost_vdpa_bind_mm(struct vhost_vdpa *v)
->> +{
->> +       struct vdpa_device *vdpa = v->vdpa;
->> +       const struct vdpa_config_ops *ops = vdpa->config;
->> +
->> +       if (!vdpa->use_va || !ops->bind_mm)
->> +               return 0;
->> +
->> +       return ops->bind_mm(vdpa, v->vdev.mm);
->> +}
->> +
->> +static void vhost_vdpa_unbind_mm(struct vhost_vdpa *v)
->> +{
->> +       struct vdpa_device *vdpa = v->vdpa;
->> +       const struct vdpa_config_ops *ops = vdpa->config;
->> +
->> +       if (!vdpa->use_va || !ops->unbind_mm)
->> +               return;
->> +
->> +       ops->unbind_mm(vdpa);
->> +}
->> +
->>  static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
->>  {
->>         struct vdpa_device *vdpa = v->vdpa;
->> @@ -709,6 +731,14 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
->>         case VHOST_VDPA_RESUME:
->>                 r = vhost_vdpa_resume(v);
->>                 break;
->> +       case VHOST_SET_OWNER:
->> +               r = vhost_dev_set_owner(d);
+>>   * Never use this function to pin this address space for an
+>>   * unbounded/indefinite amount of time.
 >
->Nit:
+>I wonder if everything would be simplified if we just allow the parent
+>to advertise whether or not it requires the address space.
 >
->I'd stick to the current way of passing the cmd, argp to
->vhost_dev_ioctl() and introduce a new switch after the
->vhost_dev_ioctl().
->
->In this way, we are immune to any possible changes of dealing with
->VHOST_SET_OWNER in vhost core.
+>Then when vhost-vDPA probes the device it can simply advertise
+>use_work as true so vhost core can use get_task_mm() in this case?
 
-Good point, I'll change in v4.
+IIUC set user_worker to true, it also creates the kthread in the vhost
+core (but we can add another variable to avoid this).
 
->
->Others look good.
+My biggest concern is the comment in include/linux/sched/mm.h.
+get_task_mm() uses mmget(), but in the documentation they advise against
+pinning the address space indefinitely, so I preferred in keeping
+mmgrab() in the vhost core, then call mmget_not_zero() in the worker
+only when it is running.
+
+In the future maybe mm will be used differently from parent if somehow
+it is supported by iommu, so I would leave it to the parent to handle
+this.
 
 Thanks,
 Stefano
