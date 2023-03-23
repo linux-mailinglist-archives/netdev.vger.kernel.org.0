@@ -2,222 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC346C5F3B
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:58:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 623F36C5F3F
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 07:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229597AbjCWF6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 01:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
+        id S229781AbjCWGAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 02:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbjCWF6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:58:50 -0400
-Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA382410B;
-        Wed, 22 Mar 2023 22:58:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VeTApVT_1679551122;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VeTApVT_1679551122)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Mar 2023 13:58:43 +0800
-Message-ID: <1679551089.625654-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next 1/8] virtio_net: mergeable xdp: put old page immediately
-Date:   Thu, 23 Mar 2023 13:58:09 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
- <20230322030308.16046-2-xuanzhuo@linux.alibaba.com>
- <4bd07874-b1ad-336b-b15e-ba56a10182e9@huawei.com>
- <1679535365.5410192-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEvS7N1tXFD2-2n2upY15JF6=0uaAebewsP8=K+Cwbtgsg@mail.gmail.com>
-In-Reply-To: <CACGkMEvS7N1tXFD2-2n2upY15JF6=0uaAebewsP8=K+Cwbtgsg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229589AbjCWGAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 02:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AF924730
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 23:00:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CECDB81F67
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 11C94C433EF;
+        Thu, 23 Mar 2023 06:00:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679551220;
+        bh=vfa0NPULGebF/rLM/FtX9xzQnwS1fhkD67pK7tuFfp0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=L+EqyXxliQoh06gPCh9e91PmgEW0QfvPwf/cVTZ0A2x2w5CD1zJiuKDsJcXSIMmas
+         Bri3leN0JrjkFXvLWeNRW+ZmpKI71Ai3cR1AT+L2XCJyV9F4sSNguAFDAENY3PuQq6
+         kRMR3LTQqenLzUs7pmjiyGApohCou3zhhvy4wRTY8eDDEnoNMvrzBGgeBQYpSyXGQG
+         0PgkdwARkUVHD2a+aAfOS16BM5gJK3xBbp74DmmqKrSYD5xtvmcewFFV6qp9qOw66/
+         pBihPAl1+dtDdjRZ6xbtXS+T+/4UagmLjbg9xs5O53iAUG+Vc4wsbM7/ckBVbxTDXA
+         Ba0/6Pb044a3A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F0B8CE21ED4;
+        Thu, 23 Mar 2023 06:00:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net 1/7] net/mlx5e: Set uplink rep as NETNS_LOCAL
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167955121998.17973.16248642901272759046.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Mar 2023 06:00:19 +0000
+References: <20230321211135.47711-2-saeed@kernel.org>
+In-Reply-To: <20230321211135.47711-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
+        tariqt@nvidia.com, gavinl@nvidia.com, gavi@nvidia.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Mar 2023 13:38:30 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Thu, Mar 23, 2023 at 9:43=E2=80=AFAM Xuan Zhuo <xuanzhuo@linux.alibaba=
-.com> wrote:
-> >
-> > On Wed, 22 Mar 2023 16:22:18 +0800, Yunsheng Lin <linyunsheng@huawei.co=
-m> wrote:
-> > > On 2023/3/22 11:03, Xuan Zhuo wrote:
-> > > > In the xdp implementation of virtio-net mergeable, it always checks
-> > > > whether two page is used and a page is selected to release. This is
-> > > > complicated for the processing of action, and be careful.
-> > > >
-> > > > In the entire process, we have such principles:
-> > > > * If xdp_page is used (PASS, TX, Redirect), then we release the old
-> > > >   page.
-> > > > * If it is a drop case, we will release two. The old page obtained =
-from
-> > > >   buf is release inside err_xdp, and xdp_page needs be relased by u=
-s.
-> > > >
-> > > > But in fact, when we allocate a new page, we can release the old pa=
-ge
-> > > > immediately. Then just one is using, we just need to release the new
-> > > > page for drop case. On the drop path, err_xdp will release the vari=
-able
-> > > > "page", so we only need to let "page" point to the new xdp_page in
-> > > > advance.
-> > > >
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > ---
-> > > >  drivers/net/virtio_net.c | 15 ++++++---------
-> > > >  1 file changed, 6 insertions(+), 9 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index e2560b6f7980..4d2bf1ce0730 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -1245,6 +1245,9 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                     if (!xdp_page)
-> > > >                             goto err_xdp;
-> > > >                     offset =3D VIRTIO_XDP_HEADROOM;
-> > > > +
-> > > > +                   put_page(page);
-> > >
-> > > the error handling of xdp_linearize_page() does not seems self contai=
-ned.
-> > > Does it not seem better=EF=BC=9A
-> > > 1. if xdp_linearize_page() succesed, call put_page() for first buffer=
- just
-> > >    as put_page() is call for other buffer
-> > > 2. or call virtqueue_get_buf() and put_page() for all the buffer of t=
-he packet
-> > >    so the error handling is not needed outside the virtqueue_get_buf(=
-).
-> > >
-> > > In that case, it seems we can just do below without xdp_page:
-> > > page =3D xdp_linearize_page(rq, num_buf, page, ...);
-> >
-> >
-> > This does look better.
-> >
-> > In fact, we already have vq reset, we can load XDP based on vq reset.
-> > In this way, we can run without xdp_linearize_page.
->
-> The goal is to try our best not to drop packets, so I think it's
-> better to keep it.
+Hello:
+
+This series was applied to netdev/net.git (main)
+by Saeed Mahameed <saeedm@nvidia.com>:
+
+On Tue, 21 Mar 2023 14:11:29 -0700 you wrote:
+> From: Gavin Li <gavinl@nvidia.com>
+> 
+> Previously, NETNS_LOCAL was not set for uplink representors, inconsistent
+> with VF representors, and allowed the uplink representor to be moved
+> between net namespaces and separated from the VF representors it shares
+> the core device with. Such usage would break the isolation model of
+> namespaces, as devices in different namespaces would have access to
+> shared memory.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/7] net/mlx5e: Set uplink rep as NETNS_LOCAL
+    https://git.kernel.org/netdev/net/c/c83172b0639c
+  - [net,2/7] net/mlx5e: Block entering switchdev mode with ns inconsistency
+    https://git.kernel.org/netdev/net/c/662404b24a4c
+  - [net,3/7] net/mlx5: Fix steering rules cleanup
+    https://git.kernel.org/netdev/net/c/922f56e9a795
+  - [net,4/7] net/mlx5e: Initialize link speed to zero
+    https://git.kernel.org/netdev/net/c/6e9d51b1a5cb
+  - [net,5/7] net/mlx5e: Overcome slow response for first macsec ASO WQE
+    https://git.kernel.org/netdev/net/c/7e3fce82d945
+  - [net,6/7] net/mlx5: Read the TC mapping of all priorities on ETS query
+    https://git.kernel.org/netdev/net/c/44d553188c38
+  - [net,7/7] net/mlx5: E-Switch, Fix an Oops in error handling code
+    https://git.kernel.org/netdev/net/c/640fcdbcf27f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Yes. vq reset may drop some packets.
-
-Thanks.
-
->
-> Thanks
->
-> >
-> >
-> > >
-> > >
-> > > > +                   page =3D xdp_page;
-> > > >             } else if (unlikely(headroom < virtnet_get_headroom(vi)=
-)) {
-> > > >                     xdp_room =3D SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM=
- +
-> > > >                                               sizeof(struct skb_sha=
-red_info));
-> > > > @@ -1259,6 +1262,9 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                            page_address(page) + offset, len);
-> > > >                     frame_sz =3D PAGE_SIZE;
-> > > >                     offset =3D VIRTIO_XDP_HEADROOM;
-> > > > +
-> > > > +                   put_page(page);
-> > > > +                   page =3D xdp_page;
-> > >
-> > > It seems we can limit the scope of xdp_page in this "else if" block.
-> > >
-> > > >             } else {
-> > > >                     xdp_page =3D page;
-> > > >             }
-> > >
-> > > It seems the above else block is not needed anymore.
-> >
-> > Yes, the follow-up patch has this optimization.
-> >
-> >
-> > >
-> > > > @@ -1278,8 +1284,6 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                     if (unlikely(!head_skb))
-> > > >                             goto err_xdp_frags;
-> > > >
-> > > > -                   if (unlikely(xdp_page !=3D page))
-> > > > -                           put_page(page);
-> > > >                     rcu_read_unlock();
-> > > >                     return head_skb;
-> > > >             case XDP_TX:
-> > > > @@ -1297,8 +1301,6 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                             goto err_xdp_frags;
-> > > >                     }
-> > > >                     *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > > -                   if (unlikely(xdp_page !=3D page))
-> > > > -                           put_page(page);
-> > > >                     rcu_read_unlock();
-> > > >                     goto xdp_xmit;
-> > > >             case XDP_REDIRECT:
-> > > > @@ -1307,8 +1309,6 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                     if (err)
-> > > >                             goto err_xdp_frags;
-> > > >                     *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > > -                   if (unlikely(xdp_page !=3D page))
-> > > > -                           put_page(page);
-> > > >                     rcu_read_unlock();
-> > > >                     goto xdp_xmit;
-> > > >             default:
-> > > > @@ -1321,9 +1321,6 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >                     goto err_xdp_frags;
-> > > >             }
-> > > >  err_xdp_frags:
-> > > > -           if (unlikely(xdp_page !=3D page))
-> > > > -                   __free_pages(xdp_page, 0);
-> > >
-> > > It seems __free_pages() and put_page() is used interchangeably here.
-> > > Perhaps using __free_pages() have performance reason? As the comment =
-below:
-> > >
-> > > https://elixir.bootlin.com/linux/v6.3-rc3/source/net/core/page_pool.c=
-#L500
-> >
-> >
-> > Yes, but now we don't seem to be very good to distinguish it. But I thi=
-nk
-> > it doesn't matter. This logic is rare under actual situation.
-> >
-> > Thanks.
-> >
-> >
-> > >
-> > > > -
-> > > >             if (xdp_buff_has_frags(&xdp)) {
-> > > >                     shinfo =3D xdp_get_shared_info_from_buff(&xdp);
-> > > >                     for (i =3D 0; i < shinfo->nr_frags; i++) {
-> > > >
-> >
->
