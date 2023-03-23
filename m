@@ -2,444 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A166C6482
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 11:14:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AC56C6506
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 11:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229840AbjCWKOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 06:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S231336AbjCWKaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 06:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbjCWKOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 06:14:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5737193F3
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 03:14:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 586A6625A4
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 10:14:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD32C433D2;
-        Thu, 23 Mar 2023 10:14:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679566442;
-        bh=lk2m9hrzJhYyfKYG7GaFaLMW3wqDIyI8dxic6+vAHMA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CW+KSYHkKPPmCZkookfVgrEX1JUFnlMe0H7I94RjgXJjO8sM6SWFjic0H7z0pT1rz
-         UaFuDPPe9T7W49PakoOarTRBwmoMJTWhqr5N39NfIqHADcq+sgUEAXl+gUTDDAfQtO
-         ivh8XGRt3Z2D4j2mqga5sme7qdP6IM3/zUrj0rEfuJ9PsQFCwQBd68Ad3lUBJkhP1v
-         2ThIawVzJQ8BSp57FbCzWZo/+Xif8ceWmuf35oAta/hAb8JY7LyH/OP7q2lpjYyCuO
-         w6X4GGK8SJbPJ9VCXf003HMZYO6Ki7RDYzAY+N29NnZZgIeGQuUCuYMDh7D7UUsk4b
-         ED99q02p0cm6g==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Patrisious Haddad <phaddad@nvidia.com>,
-        Michael Guralnik <michaelgur@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH rdma-next v1 2/2] RDMA/mlx5: Expand switchdev Q-counters to expose representor statistics
-Date:   Thu, 23 Mar 2023 12:13:52 +0200
-Message-Id: <ea31e1103c125cd27931ba213f307cde30d2eaed.1679566038.git.leon@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1679566038.git.leon@kernel.org>
-References: <cover.1679566038.git.leon@kernel.org>
-MIME-Version: 1.0
+        with ESMTP id S231346AbjCWK3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 06:29:23 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2070.outbound.protection.outlook.com [40.107.7.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9CB1CAE7
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 03:27:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DE+ssfOtEuOOXF0HWwUG9EIhe2YIrzZqwX4438MoxapmhA8BlNn+HqbgUl0/zZ+JnB32MMwY3lsOdWZ3DzdziRpYv8CjRxBb3OTvr/sAWPabKTzOF8cInWM1FDwkijglhjqBCSLL3YNPgaBnIiYDS3qjUHonbExK39kycUoQuZior6zBXz8xrfJShYoDF/GVtQnvwPGt5WvsPabgdEGf3B54YA+v+ARpbGUb7kADvfbb2JWNzOD2zezeihXJPJVi78Ub7CrCeCBlQJXEf2v0JH5cDpvVXDwHEtC61ezCeI4F85ybI8ivseDdcf9V8EZWp2tzkv2XALNJvP4hCazcEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M3M6Wqi9l5yJ9ghNwy/2Q6oLEvTs3croxYbxl7hQHOY=;
+ b=DoIU6Kz0d/hURz1rwphCTwch0qLE/guU/XCto0L//WRaw8CG9E+s3GJkVvayxxIKh3DT342J12Ppsjt1dacJCxl3T5u0qmJzW5hJMP8FMuScdJGuJK2oVwYYcGZVZVw1ArdcI4SsCEDLBCWOkdtHH2B2SiVJEvqoPn2py6iRjr/xuMm4fIPuxuV4biilT2Up7zWQMw6PjZqYMqT6q6yJZlulhJ//n10Q5JG2iS0SMfy3/hkdn8jrqJfESfyohcymA0Snu52ZmWWlu5DwfV0DNBc4dZLSchWhpmPMLh4PRVlTP9wVPDfnK2bIOYcdxkBWdPvavpxOzKxZz4PDCAZqrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=solid-run.com; dmarc=pass action=none
+ header.from=solid-run.com; dkim=pass header.d=solid-run.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solidrn.onmicrosoft.com; s=selector1-solidrn-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M3M6Wqi9l5yJ9ghNwy/2Q6oLEvTs3croxYbxl7hQHOY=;
+ b=FLXjcCEkLjN3eRIBI0PPVTHlXf1JvNV7VmIhwn2gytkfMnrjR/RPAnVUjAApvzS0fVT5N47QKqPArd92s+cKS1mMPSanSNm+aEN+OB93mtY7zeYPWeL+ByZbs+45Vm62mxjah5RWbqkheruhEugl5c6MzyRiY5KXuw5vsEpfR/Y=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=solid-run.com;
+Received: from AS5PR04MB9797.eurprd04.prod.outlook.com (2603:10a6:20b:679::10)
+ by DBBPR04MB7580.eurprd04.prod.outlook.com (2603:10a6:10:1f7::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
+ 2023 10:26:51 +0000
+Received: from AS5PR04MB9797.eurprd04.prod.outlook.com
+ ([fe80::df65:64bc:2219:8ad9]) by AS5PR04MB9797.eurprd04.prod.outlook.com
+ ([fe80::df65:64bc:2219:8ad9%6]) with mapi id 15.20.6178.038; Thu, 23 Mar 2023
+ 10:26:51 +0000
+From:   Josua Mayer <josua@solid-run.com>
+To:     netdev@vger.kernel.org
+Cc:     Josua Mayer <josua@solid-run.com>,
+        Yazan Shhady <yazan.shhady@solid-run.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH] net: phy: dp83869: fix default value for tx-/rx-internal-delay
+Date:   Thu, 23 Mar 2023 12:25:36 +0200
+Message-Id: <20230323102536.31988-1-josua@solid-run.com>
+X-Mailer: git-send-email 2.35.3
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: ZR2P278CA0047.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:53::12) To AS5PR04MB9797.eurprd04.prod.outlook.com
+ (2603:10a6:20b:679::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS5PR04MB9797:EE_|DBBPR04MB7580:EE_
+X-MS-Office365-Filtering-Correlation-Id: daf693e5-1574-4e0f-9da1-08db2b891dcb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Jgzigf8CRdD9KtHsTCPCvPS+jddKo8CC5LN5sMqvcOnwkWBS9cvOdEoMBejebswTBZHUnGWIsaadaTmn2SaP5YYYjRrOeaqwFcsj61j0gkGOfFbeq/FoikpPu+JZvEfGb37xhKeqXBOxQW6NMH7AAmGsO6ZO4Suezan07FLkE/ET8xVFVVXf/UAooVAoBNBCouFeTtGpUkOF1SzulWsL2WPCaxLw46afsTdofmmIH52JA+Y3rVoJRLO3uuvvLPKaM+tTxB3HsbnXnL12TUmaw4KstUgCADgQnGRyI+M3D3qrBzwVtExOAq0OWebWE2LnCjOKuy/Wt+Ci/K1qisPYNcZfmPy2ZdmTDI8jkrA4vTRCaIuMZ9FeSAt86XcUc+reX4q69nn3enSy5nPegYQqED+Ay87dmOPGtwW/+youHuWCM5mhOfFsndngHUA7g/x83UKo8Fq4xvyTgJf/5buuEgzRMHTN8TtfQDZ8Lipytq88pQ9XxxYQjDBwO3rXx6bBGCGr7c7WNglWKmHmqr+8uff9v8QFX+gSCJ3s5GFDmXarjwwzAl5AlWjAvNI6HyFiCFj1M0Hx8pivhpEk/8A973nA+b/FRck4rRdbP6AWXK4b9vWPbkn0PDmrmpterSlE78VczLisrBlkJ9F1fsV5UD/3AGPkzITu9vXaih0N/yrGbA5yZdFA4OeE7JDmxnxkWV1PFF0FNlYu1qAu7g6B4Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS5PR04MB9797.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39840400004)(366004)(376002)(136003)(346002)(396003)(451199018)(4326008)(6916009)(66556008)(66476007)(8676002)(66946007)(316002)(54906003)(5660300002)(41300700001)(8936002)(1076003)(26005)(6512007)(6506007)(6666004)(2616005)(186003)(83380400001)(478600001)(6486002)(52116002)(86362001)(36756003)(38100700002)(2906002)(38350700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BIFPi5xbPE2o+/QH0QLoUPeGROKS/NPObb2dwxsfPU1SLOogf/YSSs4BlncN?=
+ =?us-ascii?Q?kFXVNtHKqwdnbeMjhobHDEIAwRKAchfXQ5qqPbxGGj74Xagkcfq+ZojJuEux?=
+ =?us-ascii?Q?1I6yG/ouddg6AJz/geqk5SeWolCiWoovxLW5JIZ9jM/AJSTgNRyBHoRbN92W?=
+ =?us-ascii?Q?KDXUtTwONJJXxEVm6eap3fzXoXoQQ9UH6ypDYKh2Rtw7SXjjtnSv8d7LVGAP?=
+ =?us-ascii?Q?2C/J4gQod5xeWVCD92UJdgwTUhRWkPmKI/IhRf30FN0QrwLPlTpxWkpbndJf?=
+ =?us-ascii?Q?qHYm/0MzcLD8S5H4AoS7jo2JU65s07n0YNQ9Lb8RY6sZHHadf/3B+NP4kv87?=
+ =?us-ascii?Q?nG/41SgX28bAV/uUSbezk1GtJzKqkj856b/UIUw27ArLA/nTF504BXsCu6yf?=
+ =?us-ascii?Q?0rXEDGrllpPWniL43CMSk4VBMu2dWGZnNF7ljy71t+fCYPBaQ8XW9Vvd/VKd?=
+ =?us-ascii?Q?RccxMdJazT8WksHNyP0rQXAdu6tZ2eA7NOCsqa+rcFMUG1lT0GXBFfxJx4EQ?=
+ =?us-ascii?Q?4mtYiOrp+hZJEq5KggmHOasRdtfQqj5rhDsIQ6vEMrHT/Pc42bjrpA8TI3KQ?=
+ =?us-ascii?Q?poh0qb+mTXNTGWxDPkXtA5wYMRNE3rBVxPNsb68KdeQETg1K5zVzWm8pUbIe?=
+ =?us-ascii?Q?U+yUEqx9gdFi4S1KSZVAqiehSMiqa1NA+jms0v9uYS3NRWS5kK/z3HVT1l49?=
+ =?us-ascii?Q?+R/VQP3ecKAiBZk6HB+mXtSMK6BvAyxLVM/oBJX0so6seIGmPpmtDbKgVK3A?=
+ =?us-ascii?Q?0f4zUn5TYXoP3hog9YmaP19afzS+eAlH+0+Lb+ieuCZ8l6wpNHGFs2Uo04Pl?=
+ =?us-ascii?Q?iNnRrJ94XGHofR2aoq3kDz4XmJzgau58TNtXyazRaLtKAtBtcLEH2vNy8r7f?=
+ =?us-ascii?Q?CriekQE/v22m1UGV0uKsfwFkEP0tYcYXQ14kIyi8TA8JGVoicRJeaByEE+x8?=
+ =?us-ascii?Q?JxAPIvCOgBxHA3OJ53iqnLpZog5XoUNFv2IM/byJZ3imYrw+LBb2j+MmDINJ?=
+ =?us-ascii?Q?LixpRacK0c9oZQiCHZ23FQzUSKPssQBntID1TjexrA1XY9t5zCHGimaB8I+h?=
+ =?us-ascii?Q?sp6pluUBYr+Qsmr/FzhxpzNRbgsZcf5bFCCZDm1SNNTYV8V06wh/bb0T212E?=
+ =?us-ascii?Q?vyIIPb96ZuAqS4uaAw/Va8SoLb9WS5Jq71tL5VNaiKal/3JTIRqBaSzLhQg+?=
+ =?us-ascii?Q?h6MDFNVQ0DYU8AelPWI2KucmoIp6/w1ZqIUqMxJ1Fzj8l2Pwbd18/6ilHV7y?=
+ =?us-ascii?Q?Iq3kCpQMQeOVPSmu2nGviD+StVGGOHvXWFWKuV0RwxQKbUixZg9OYjialn7x?=
+ =?us-ascii?Q?/+TEYlbbhrwij4UXpWwZepNGRMc8cJYW5ZYtmLmLI8qB9qXTbDd7lV6ts3rj?=
+ =?us-ascii?Q?GUaf3aSZE1c/kaQNb2O/LK90Rx+mFHDM2+oMiNRby96lGnXYfoDF64q37vzW?=
+ =?us-ascii?Q?JkciIBy0FUcKaccbGvzUOlYaFnoqj6xpQO5iFx8sMNKI/UyP48wPpVdjMvIu?=
+ =?us-ascii?Q?IZtpg/8mtgWHHDjUgubpP0alXu5ks/dnbjmWf6Het3FQsxPxxa9mxpD7y/aH?=
+ =?us-ascii?Q?I24oNOV4LHwl6Wq7Sp0s4WXP1ODSDnrNKX0AtxZB?=
+X-OriginatorOrg: solid-run.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: daf693e5-1574-4e0f-9da1-08db2b891dcb
+X-MS-Exchange-CrossTenant-AuthSource: AS5PR04MB9797.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 10:26:51.5620
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a4a8aaf3-fd27-4e27-add2-604707ce5b82
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i1F6m9bhgEkEkwRObRH2zIpinr3GhDBa2tZzCLbXPbEUh4M2ifPdf3SYe3dGj/tK1Wb1N1m6gqjg2zcjU7drlw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7580
+X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        T_SPF_PERMERROR autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Patrisious Haddad <phaddad@nvidia.com>
+dp83869 internally uses a look-up table for mapping supported delays in
+nanoseconds to register values.
+When specific delays are defined in device-tree, phy_get_internal_delay
+does the lookup automatically returning an index.
 
-Previously for switchdev only per device counters were supported.
+The default case wrongly assigns the nanoseconds value from the lookup
+table, resulting in numeric value 2000 applied to delay configuration
+register, rather than the expected index values 0-7 (7 for 2000).
+Ultimately this issue broke RX for 1Gbps links.
 
-Currently we allocate counters for switchdev per port, which also
-includes the ports that belong to VF representors in order to expose
-them to users through the rdma tool, allowing the host to track the VFs
-statistics through their representors counters.
+Fix default delay configuration by assigning the intended index value
+directly.
 
-Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Co-developed-by: Yazan Shhady <yazan.shhady@solid-run.com>
+Signed-off-by: Yazan Shhady <yazan.shhady@solid-run.com>
+Signed-off-by: Josua Mayer <josua@solid-run.com>
 ---
- drivers/infiniband/hw/mlx5/counters.c | 171 +++++++++++++++++++++-----
- 1 file changed, 142 insertions(+), 29 deletions(-)
+ drivers/net/phy/dp83869.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/counters.c b/drivers/infiniband/hw/mlx5/counters.c
-index 3e1272695d99..1c06920505d2 100644
---- a/drivers/infiniband/hw/mlx5/counters.c
-+++ b/drivers/infiniband/hw/mlx5/counters.c
-@@ -5,6 +5,7 @@
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index b4ff9c5073a3c..9ab5eff502b71 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -588,15 +588,13 @@ static int dp83869_of_init(struct phy_device *phydev)
+ 						       &dp83869_internal_delay[0],
+ 						       delay_size, true);
+ 	if (dp83869->rx_int_delay < 0)
+-		dp83869->rx_int_delay =
+-				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
++		dp83869->rx_int_delay = DP83869_CLK_DELAY_DEF;
  
- #include "mlx5_ib.h"
- #include <linux/mlx5/eswitch.h>
-+#include <linux/mlx5/vport.h>
- #include "counters.h"
- #include "ib_rep.h"
- #include "qp.h"
-@@ -18,6 +19,10 @@ struct mlx5_ib_counter {
- #define INIT_Q_COUNTER(_name)		\
- 	{ .name = #_name, .offset = MLX5_BYTE_OFF(query_q_counter_out, _name)}
+ 	dp83869->tx_int_delay = phy_get_internal_delay(phydev, dev,
+ 						       &dp83869_internal_delay[0],
+ 						       delay_size, false);
+ 	if (dp83869->tx_int_delay < 0)
+-		dp83869->tx_int_delay =
+-				dp83869_internal_delay[DP83869_CLK_DELAY_DEF];
++		dp83869->tx_int_delay = DP83869_CLK_DELAY_DEF;
  
-+#define INIT_VPORT_Q_COUNTER(_name)		\
-+	{ .name = "vport_" #_name, .offset =	\
-+		MLX5_BYTE_OFF(query_q_counter_out, _name)}
-+
- static const struct mlx5_ib_counter basic_q_cnts[] = {
- 	INIT_Q_COUNTER(rx_write_requests),
- 	INIT_Q_COUNTER(rx_read_requests),
-@@ -37,6 +42,25 @@ static const struct mlx5_ib_counter retrans_q_cnts[] = {
- 	INIT_Q_COUNTER(local_ack_timeout_err),
- };
- 
-+static const struct mlx5_ib_counter vport_basic_q_cnts[] = {
-+	INIT_VPORT_Q_COUNTER(rx_write_requests),
-+	INIT_VPORT_Q_COUNTER(rx_read_requests),
-+	INIT_VPORT_Q_COUNTER(rx_atomic_requests),
-+	INIT_VPORT_Q_COUNTER(out_of_buffer),
-+};
-+
-+static const struct mlx5_ib_counter vport_out_of_seq_q_cnts[] = {
-+	INIT_VPORT_Q_COUNTER(out_of_sequence),
-+};
-+
-+static const struct mlx5_ib_counter vport_retrans_q_cnts[] = {
-+	INIT_VPORT_Q_COUNTER(duplicate_request),
-+	INIT_VPORT_Q_COUNTER(rnr_nak_retry_err),
-+	INIT_VPORT_Q_COUNTER(packet_seq_err),
-+	INIT_VPORT_Q_COUNTER(implied_nak_seq_err),
-+	INIT_VPORT_Q_COUNTER(local_ack_timeout_err),
-+};
-+
- #define INIT_CONG_COUNTER(_name)		\
- 	{ .name = #_name, .offset =	\
- 		MLX5_BYTE_OFF(query_cong_statistics_out, _name ## _high)}
-@@ -67,6 +91,25 @@ static const struct mlx5_ib_counter roce_accl_cnts[] = {
- 	INIT_Q_COUNTER(roce_slow_restart_trans),
- };
- 
-+static const struct mlx5_ib_counter vport_extended_err_cnts[] = {
-+	INIT_VPORT_Q_COUNTER(resp_local_length_error),
-+	INIT_VPORT_Q_COUNTER(resp_cqe_error),
-+	INIT_VPORT_Q_COUNTER(req_cqe_error),
-+	INIT_VPORT_Q_COUNTER(req_remote_invalid_request),
-+	INIT_VPORT_Q_COUNTER(req_remote_access_errors),
-+	INIT_VPORT_Q_COUNTER(resp_remote_access_errors),
-+	INIT_VPORT_Q_COUNTER(resp_cqe_flush_error),
-+	INIT_VPORT_Q_COUNTER(req_cqe_flush_error),
-+};
-+
-+static const struct mlx5_ib_counter vport_roce_accl_cnts[] = {
-+	INIT_VPORT_Q_COUNTER(roce_adp_retrans),
-+	INIT_VPORT_Q_COUNTER(roce_adp_retrans_to),
-+	INIT_VPORT_Q_COUNTER(roce_slow_restart),
-+	INIT_VPORT_Q_COUNTER(roce_slow_restart_cnps),
-+	INIT_VPORT_Q_COUNTER(roce_slow_restart_trans),
-+};
-+
- #define INIT_EXT_PPCNT_COUNTER(_name)		\
- 	{ .name = #_name, .offset =	\
- 	MLX5_BYTE_OFF(ppcnt_reg, \
-@@ -153,12 +196,20 @@ static int mlx5_ib_create_counters(struct ib_counters *counters,
- 	return 0;
- }
- 
-+static bool vport_qcounters_supported(struct mlx5_ib_dev *dev)
-+{
-+	return MLX5_CAP_GEN(dev->mdev, q_counter_other_vport) &&
-+	       MLX5_CAP_GEN(dev->mdev, q_counter_aggregation);
-+}
- 
- static const struct mlx5_ib_counters *get_counters(struct mlx5_ib_dev *dev,
- 						   u32 port_num)
- {
--	return is_mdev_switchdev_mode(dev->mdev) ? &dev->port[0].cnts :
--						   &dev->port[port_num].cnts;
-+	if ((is_mdev_switchdev_mode(dev->mdev) &&
-+	     !vport_qcounters_supported(dev)) || !port_num)
-+		return &dev->port[0].cnts;
-+
-+	return &dev->port[port_num - 1].cnts;
- }
- 
- /**
-@@ -172,7 +223,7 @@ static const struct mlx5_ib_counters *get_counters(struct mlx5_ib_dev *dev,
-  */
- u16 mlx5_ib_get_counters_id(struct mlx5_ib_dev *dev, u32 port_num)
- {
--	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num);
-+	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num + 1);
- 
- 	return cnts->set_id;
- }
-@@ -270,12 +321,44 @@ static int mlx5_ib_query_ext_ppcnt_counters(struct mlx5_ib_dev *dev,
  	return ret;
  }
- 
-+static int mlx5_ib_query_q_counters_vport(struct mlx5_ib_dev *dev,
-+					  u32 port_num,
-+					  const struct mlx5_ib_counters *cnts,
-+					  struct rdma_hw_stats *stats)
-+
-+{
-+	u32 out[MLX5_ST_SZ_DW(query_q_counter_out)] = {};
-+	u32 in[MLX5_ST_SZ_DW(query_q_counter_in)] = {};
-+	__be32 val;
-+	int ret, i;
-+
-+	if (!dev->port[port_num].rep ||
-+	    dev->port[port_num].rep->vport == MLX5_VPORT_UPLINK)
-+		return 0;
-+
-+	MLX5_SET(query_q_counter_in, in, opcode, MLX5_CMD_OP_QUERY_Q_COUNTER);
-+	MLX5_SET(query_q_counter_in, in, other_vport, 1);
-+	MLX5_SET(query_q_counter_in, in, vport_number,
-+		 dev->port[port_num].rep->vport);
-+	MLX5_SET(query_q_counter_in, in, aggregate, 1);
-+	ret = mlx5_cmd_exec_inout(dev->mdev, query_q_counter, in, out);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < cnts->num_q_counters; i++) {
-+		val = *(__be32 *)((void *)out + cnts->offsets[i]);
-+		stats->value[i] = (u64)be32_to_cpu(val);
-+	}
-+
-+	return 0;
-+}
-+
- static int do_get_hw_stats(struct ib_device *ibdev,
- 			   struct rdma_hw_stats *stats,
- 			   u32 port_num, int index)
- {
- 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
--	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num - 1);
-+	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num);
- 	struct mlx5_core_dev *mdev;
- 	int ret, num_counters;
- 
-@@ -286,11 +369,19 @@ static int do_get_hw_stats(struct ib_device *ibdev,
- 		       cnts->num_cong_counters +
- 		       cnts->num_ext_ppcnt_counters;
- 
--	/* q_counters are per IB device, query the master mdev */
--	ret = mlx5_ib_query_q_counters(dev->mdev, cnts, stats, cnts->set_id);
-+	if (is_mdev_switchdev_mode(dev->mdev) && dev->is_rep && port_num != 0)
-+		ret = mlx5_ib_query_q_counters_vport(dev, port_num - 1, cnts,
-+						     stats);
-+	else
-+		ret = mlx5_ib_query_q_counters(dev->mdev, cnts, stats,
-+					       cnts->set_id);
- 	if (ret)
- 		return ret;
- 
-+	/* We don't expose device counters over Vports */
-+	if (is_mdev_switchdev_mode(dev->mdev) && port_num != 0)
-+		goto done;
-+
- 	if (MLX5_CAP_PCAM_FEATURE(dev->mdev, rx_icrc_encapsulated_counter)) {
- 		ret =  mlx5_ib_query_ext_ppcnt_counters(dev, cnts, stats);
- 		if (ret)
-@@ -335,7 +426,8 @@ static int do_get_op_stat(struct ib_device *ibdev,
- 	u32 type;
- 	int ret;
- 
--	cnts = get_counters(dev, port_num - 1);
-+	cnts = get_counters(dev, port_num);
-+
- 	opfcs = cnts->opfcs;
- 	type = *(u32 *)cnts->descs[index].priv;
- 	if (type >= MLX5_IB_OPCOUNTER_MAX)
-@@ -362,7 +454,7 @@ static int do_get_op_stats(struct ib_device *ibdev,
- 	const struct mlx5_ib_counters *cnts;
- 	int index, ret, num_hw_counters;
- 
--	cnts = get_counters(dev, port_num - 1);
-+	cnts = get_counters(dev, port_num);
- 	num_hw_counters = cnts->num_q_counters + cnts->num_cong_counters +
- 			  cnts->num_ext_ppcnt_counters;
- 	for (index = num_hw_counters;
-@@ -383,7 +475,7 @@ static int mlx5_ib_get_hw_stats(struct ib_device *ibdev,
- 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
- 	const struct mlx5_ib_counters *cnts;
- 
--	cnts = get_counters(dev, port_num - 1);
-+	cnts = get_counters(dev, port_num);
- 	num_hw_counters = cnts->num_q_counters + cnts->num_cong_counters +
- 		cnts->num_ext_ppcnt_counters;
- 	num_counters = num_hw_counters + cnts->num_op_counters;
-@@ -410,8 +502,7 @@ static struct rdma_hw_stats *
- mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
- {
- 	struct mlx5_ib_dev *dev = to_mdev(counter->device);
--	const struct mlx5_ib_counters *cnts =
--		get_counters(dev, counter->port - 1);
-+	const struct mlx5_ib_counters *cnts = get_counters(dev, counter->port);
- 
- 	return do_alloc_stats(cnts);
- }
-@@ -419,8 +510,7 @@ mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
- static int mlx5_ib_counter_update_stats(struct rdma_counter *counter)
- {
- 	struct mlx5_ib_dev *dev = to_mdev(counter->device);
--	const struct mlx5_ib_counters *cnts =
--		get_counters(dev, counter->port - 1);
-+	const struct mlx5_ib_counters *cnts = get_counters(dev, counter->port);
- 
- 	return mlx5_ib_query_q_counters(dev->mdev, cnts,
- 					counter->stats, counter->id);
-@@ -479,44 +569,55 @@ static int mlx5_ib_counter_unbind_qp(struct ib_qp *qp)
- }
- 
- static void mlx5_ib_fill_counters(struct mlx5_ib_dev *dev,
--				  struct rdma_stat_desc *descs, size_t *offsets)
-+				  struct rdma_stat_desc *descs, size_t *offsets,
-+				  u32 port_num)
- {
--	int i;
--	int j = 0;
-+	bool is_vport = is_mdev_switchdev_mode(dev->mdev) &&
-+			port_num != MLX5_VPORT_PF;
-+	const struct mlx5_ib_counter *names;
-+	int j = 0, i;
- 
-+	names = is_vport ? vport_basic_q_cnts : basic_q_cnts;
- 	for (i = 0; i < ARRAY_SIZE(basic_q_cnts); i++, j++) {
--		descs[j].name = basic_q_cnts[i].name;
-+		descs[j].name = names[i].name;
- 		offsets[j] = basic_q_cnts[i].offset;
- 	}
- 
-+	names = is_vport ? vport_out_of_seq_q_cnts : out_of_seq_q_cnts;
- 	if (MLX5_CAP_GEN(dev->mdev, out_of_seq_cnt)) {
- 		for (i = 0; i < ARRAY_SIZE(out_of_seq_q_cnts); i++, j++) {
--			descs[j].name = out_of_seq_q_cnts[i].name;
-+			descs[j].name = names[i].name;
- 			offsets[j] = out_of_seq_q_cnts[i].offset;
- 		}
- 	}
- 
-+	names = is_vport ? vport_retrans_q_cnts : retrans_q_cnts;
- 	if (MLX5_CAP_GEN(dev->mdev, retransmission_q_counters)) {
- 		for (i = 0; i < ARRAY_SIZE(retrans_q_cnts); i++, j++) {
--			descs[j].name = retrans_q_cnts[i].name;
-+			descs[j].name = names[i].name;
- 			offsets[j] = retrans_q_cnts[i].offset;
- 		}
- 	}
- 
-+	names = is_vport ? vport_extended_err_cnts : extended_err_cnts;
- 	if (MLX5_CAP_GEN(dev->mdev, enhanced_error_q_counters)) {
- 		for (i = 0; i < ARRAY_SIZE(extended_err_cnts); i++, j++) {
--			descs[j].name = extended_err_cnts[i].name;
-+			descs[j].name = names[i].name;
- 			offsets[j] = extended_err_cnts[i].offset;
- 		}
- 	}
- 
-+	names = is_vport ? vport_roce_accl_cnts : roce_accl_cnts;
- 	if (MLX5_CAP_GEN(dev->mdev, roce_accl)) {
- 		for (i = 0; i < ARRAY_SIZE(roce_accl_cnts); i++, j++) {
--			descs[j].name = roce_accl_cnts[i].name;
-+			descs[j].name = names[i].name;
- 			offsets[j] = roce_accl_cnts[i].offset;
- 		}
- 	}
- 
-+	if (is_vport)
-+		return;
-+
- 	if (MLX5_CAP_GEN(dev->mdev, cc_query_allowed)) {
- 		for (i = 0; i < ARRAY_SIZE(cong_cnts); i++, j++) {
- 			descs[j].name = cong_cnts[i].name;
-@@ -558,9 +659,9 @@ static void mlx5_ib_fill_counters(struct mlx5_ib_dev *dev,
- 
- 
- static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
--				    struct mlx5_ib_counters *cnts)
-+				    struct mlx5_ib_counters *cnts, u32 port_num)
- {
--	u32 num_counters, num_op_counters;
-+	u32 num_counters, num_op_counters = 0;
- 
- 	num_counters = ARRAY_SIZE(basic_q_cnts);
- 
-@@ -578,6 +679,9 @@ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
- 
- 	cnts->num_q_counters = num_counters;
- 
-+	if (is_mdev_switchdev_mode(dev->mdev) && port_num != MLX5_VPORT_PF)
-+		goto skip_non_qcounters;
-+
- 	if (MLX5_CAP_GEN(dev->mdev, cc_query_allowed)) {
- 		cnts->num_cong_counters = ARRAY_SIZE(cong_cnts);
- 		num_counters += ARRAY_SIZE(cong_cnts);
-@@ -597,6 +701,7 @@ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
- 			       ft_field_support_2_nic_transmit_rdma.bth_opcode))
- 		num_op_counters += ARRAY_SIZE(rdmatx_cnp_op_cnts);
- 
-+skip_non_qcounters:
- 	cnts->num_op_counters = num_op_counters;
- 	num_counters += num_op_counters;
- 	cnts->descs = kcalloc(num_counters,
-@@ -623,7 +728,8 @@ static void mlx5_ib_dealloc_counters(struct mlx5_ib_dev *dev)
- 	int num_cnt_ports;
- 	int i, j;
- 
--	num_cnt_ports = is_mdev_switchdev_mode(dev->mdev) ? 1 : dev->num_ports;
-+	num_cnt_ports = (!is_mdev_switchdev_mode(dev->mdev) ||
-+			 vport_qcounters_supported(dev)) ? dev->num_ports : 1;
- 
- 	MLX5_SET(dealloc_q_counter_in, in, opcode,
- 		 MLX5_CMD_OP_DEALLOC_Q_COUNTER);
-@@ -662,15 +768,16 @@ static int mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev)
- 
- 	MLX5_SET(alloc_q_counter_in, in, opcode, MLX5_CMD_OP_ALLOC_Q_COUNTER);
- 	is_shared = MLX5_CAP_GEN(dev->mdev, log_max_uctx) != 0;
--	num_cnt_ports = is_mdev_switchdev_mode(dev->mdev) ? 1 : dev->num_ports;
-+	num_cnt_ports = (!is_mdev_switchdev_mode(dev->mdev) ||
-+			 vport_qcounters_supported(dev)) ? dev->num_ports : 1;
- 
- 	for (i = 0; i < num_cnt_ports; i++) {
--		err = __mlx5_ib_alloc_counters(dev, &dev->port[i].cnts);
-+		err = __mlx5_ib_alloc_counters(dev, &dev->port[i].cnts, i);
- 		if (err)
- 			goto err_alloc;
- 
- 		mlx5_ib_fill_counters(dev, dev->port[i].cnts.descs,
--				      dev->port[i].cnts.offsets);
-+				      dev->port[i].cnts.offsets, i);
- 
- 		MLX5_SET(alloc_q_counter_in, in, uid,
- 			 is_shared ? MLX5_SHARED_RESOURCE_UID : 0);
-@@ -889,6 +996,10 @@ static const struct ib_device_ops hw_stats_ops = {
- 			  mlx5_ib_modify_stat : NULL,
- };
- 
-+static const struct ib_device_ops hw_switchdev_vport_op = {
-+	.alloc_hw_port_stats = mlx5_ib_alloc_hw_port_stats,
-+};
-+
- static const struct ib_device_ops hw_switchdev_stats_ops = {
- 	.alloc_hw_device_stats = mlx5_ib_alloc_hw_device_stats,
- 	.get_hw_stats = mlx5_ib_get_hw_stats,
-@@ -914,9 +1025,11 @@ int mlx5_ib_counters_init(struct mlx5_ib_dev *dev)
- 	if (!MLX5_CAP_GEN(dev->mdev, max_qp_cnt))
- 		return 0;
- 
--	if (is_mdev_switchdev_mode(dev->mdev))
-+	if (is_mdev_switchdev_mode(dev->mdev)) {
- 		ib_set_device_ops(&dev->ib_dev, &hw_switchdev_stats_ops);
--	else
-+		if (vport_qcounters_supported(dev))
-+			ib_set_device_ops(&dev->ib_dev, &hw_switchdev_vport_op);
-+	} else
- 		ib_set_device_ops(&dev->ib_dev, &hw_stats_ops);
- 	return mlx5_ib_alloc_counters(dev);
- }
 -- 
-2.39.2
+2.35.3
 
