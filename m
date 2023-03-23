@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F41046C667A
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 12:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECE46C667E
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 12:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbjCWL0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 07:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
+        id S231480AbjCWL0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 07:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231428AbjCWL00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 07:26:26 -0400
-Received: from out-17.mta1.migadu.com (out-17.mta1.migadu.com [IPv6:2001:41d0:203:375::11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AC12CFD6
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 04:26:24 -0700 (PDT)
+        with ESMTP id S231468AbjCWL0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 07:26:35 -0400
+Received: from out-33.mta0.migadu.com (out-33.mta0.migadu.com [IPv6:2001:41d0:1004:224b::21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6EB2CC6E
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 04:26:31 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1679570783;
+        t=1679570789;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rFrZeFL95bAADeoxTVP7Nzd5sq/6QShfuHH0D38gefI=;
-        b=iieSNHbLTfna/AJWw4ifxYEls++cBF9dlNm9peQh4RNpnr/S41QQfmoR6P1mfO93mmDEm/
-        sUOXphPRjd2lfzh8OKjD0eTzs73xofcjuI6u/1+T2KsrkL9xXCatCQFGOu976gs0BeEbgp
-        oYmUYiuMI5+e3DM0+fDsGgf8JSQ62BM=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tooTxJ1S3+bY95x8JLOzf8Cr/9M9iNd5ycqcB6CNt6g=;
+        b=MPPbcgSRYJtn4/oTx7vmZtr+8RpDlRdnN6QgSqBa/GWRXPjE+iDrG+orCzV826kNoxLPEk
+        WALEbdE/Q9zmZ6Wf/cfnOibc5KyJqwOgKHl8pp8J/W1dC2nV6lP4vNajVT+51eSBQxS3v1
+        paQWnioiLt/iK77rFsMewk9UnlTlWMo=
 From:   Cai Huoqing <cai.huoqing@linux.dev>
 To:     cai.huoqing@linux.dev
 Cc:     Kalle Valo <kvalo@kernel.org>,
@@ -36,9 +37,11 @@ Cc:     Kalle Valo <kvalo@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, ath11k@lists.infradead.org,
         ath12k@lists.infradead.org
-Subject: [PATCH 1/5] wifi: ath11k: Remove redundant pci_clear_master
-Date:   Thu, 23 Mar 2023 19:26:09 +0800
-Message-Id: <20230323112613.7550-1-cai.huoqing@linux.dev>
+Subject: [PATCH 2/5] wifi: ath10k: Remove redundant pci_clear_master
+Date:   Thu, 23 Mar 2023 19:26:10 +0800
+Message-Id: <20230323112613.7550-2-cai.huoqing@linux.dev>
+In-Reply-To: <20230323112613.7550-1-cai.huoqing@linux.dev>
+References: <20230323112613.7550-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -71,39 +74,38 @@ And dev->is_busmaster is set to 0 in pci_disable_device.
 
 Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 ---
- drivers/net/wireless/ath/ath11k/pci.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath10k/pci.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 0aeef2948ff5..522d01e5e11c 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -540,7 +540,7 @@ static int ath11k_pci_claim(struct ath11k_pci *ab_pci, struct pci_dev *pdev)
- 	if (!ab->mem) {
- 		ath11k_err(ab, "failed to map pci bar %d\n", ATH11K_PCI_BAR_NUM);
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index 728d607289c3..a7f44f6335fb 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -3406,15 +3406,12 @@ static int ath10k_pci_claim(struct ath10k *ar)
+ 	if (!ar_pci->mem) {
+ 		ath10k_err(ar, "failed to iomap BAR%d\n", BAR_NUM);
  		ret = -EIO;
--		goto clear_master;
-+		goto release_region;
+-		goto err_master;
++		goto err_region;
  	}
  
- 	ab->mem_ce = ab->mem;
-@@ -548,8 +548,6 @@ static int ath11k_pci_claim(struct ath11k_pci *ab_pci, struct pci_dev *pdev)
- 	ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot pci_mem 0x%pK\n", ab->mem);
+ 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot pci_mem 0x%pK\n", ar_pci->mem);
  	return 0;
  
--clear_master:
+-err_master:
 -	pci_clear_master(pdev);
- release_region:
- 	pci_release_region(pdev, ATH11K_PCI_BAR_NUM);
- disable_device:
-@@ -565,7 +563,6 @@ static void ath11k_pci_free_region(struct ath11k_pci *ab_pci)
+-
+ err_region:
+ 	pci_release_region(pdev, BAR_NUM);
  
- 	pci_iounmap(pci_dev, ab->mem);
- 	ab->mem = NULL;
--	pci_clear_master(pci_dev);
- 	pci_release_region(pci_dev, ATH11K_PCI_BAR_NUM);
- 	if (pci_is_enabled(pci_dev))
- 		pci_disable_device(pci_dev);
+@@ -3431,7 +3428,6 @@ static void ath10k_pci_release(struct ath10k *ar)
+ 
+ 	pci_iounmap(pdev, ar_pci->mem);
+ 	pci_release_region(pdev, BAR_NUM);
+-	pci_clear_master(pdev);
+ 	pci_disable_device(pdev);
+ }
+ 
 -- 
 2.34.1
 
