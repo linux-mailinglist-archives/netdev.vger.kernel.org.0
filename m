@@ -2,172 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 133BE6C7286
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 22:46:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B23E6C7292
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 22:50:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231179AbjCWVqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 17:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
+        id S229962AbjCWVuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 17:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbjCWVqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 17:46:07 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5416AE4;
-        Thu, 23 Mar 2023 14:46:06 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id t13so504702qvn.2;
-        Thu, 23 Mar 2023 14:46:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679607964;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=zxSH+iJCp59mbNx4VuE10L0ZYm9bSYlFTX0WmblXlYQ=;
-        b=DLqoqDICQ9GOuotVlBUh31SIpQy9oP5vA7KCSZsRljF+MtadphfaFfWZX86wpFvxTj
-         4qV2asoVGoXg58MqXK+luDWoPjzFojG+AAUnoX5zZDWrAo8gS3awoTohiVfHw0fPerIQ
-         FnxIskPkKt5KXZiFGAgUO+pQylPQa3/pN3VQ/fHTNmGe8mjW5fIX7lpJMjoQyAc20LuR
-         VoY1LFd1QPKM+FwS6/QtplgT94RcxBf9sljA6BqQTylPiZRTZEWNZVJZzpRZtMnwX2en
-         GUBS32mj1v8+IIeSNEItqsFwFCB9slOixX1HQ3MfpiwK37KKSppppwq5CG2p2AfNCXSv
-         NG8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679607964;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zxSH+iJCp59mbNx4VuE10L0ZYm9bSYlFTX0WmblXlYQ=;
-        b=OOV/W0QraEIiWZvVryqnrc8tLUSG9d7TKrUAZVKvXa9tV1N/UXgiHWgnUBJxZF5v8H
-         7NbnLahbHW6221mUj9LW+WYY2S0y7iHs8dH8HEztRM1bbCkiuDjh5l7UG967xodYUpWd
-         bGWk2I6POrjfKIHiWy1690epC8HFsADhHCJnbeSvNHxMQP/OPvc2EwRo+M6zC/XJF4c0
-         PWqT3HjdKn2d/p8XvKhM4HZTD6OZYxjTo9sAOpO1n/+hSn0NQgK5deyySU7X8CLScq1S
-         jyRuJFhlEp52tuy2++XDsViXdd5M2GnbiMLdZU+aZdcd1K4bbKtPHhAsHcIHSIz0ueuJ
-         S8kg==
-X-Gm-Message-State: AAQBX9fZKM2lUA1JYByPEJWM6L0oBeY9nqGXQNiiDsIzFGqzzbJ9KW83
-        3/WffNM0s7y8LTzzs7fCPVvC8sag/JE=
-X-Google-Smtp-Source: AKy350aJUKTlm48O2hDeiMLRV0uQ3YByml5TvkHGDYoACfYx/phl5YJbt/UUKpcR/efF+fDmD8SfzQ==
-X-Received: by 2002:a05:6214:cc6:b0:5b6:fbc5:fb4f with SMTP id 6-20020a0562140cc600b005b6fbc5fb4fmr1007776qvx.3.1679607964536;
-        Thu, 23 Mar 2023 14:46:04 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j9-20020a0cf9c9000000b005dd8b9345desm176779qvo.118.2023.03.23.14.46.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 14:46:04 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2] net: phy: Improved PHY error reporting in state machine
-Date:   Thu, 23 Mar 2023 14:45:59 -0700
-Message-Id: <20230323214559.3249977-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229739AbjCWVuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 17:50:01 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E20B198B
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 14:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679608200; x=1711144200;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fNaLWXwBB1Qiw2oM0o5jUpTHKR6YtK+qcGXk7SgRkTU=;
+  b=dMeuND0900l5JbhUoqKP0QolEHzX++YxYyP1R9cHv2XPqpRthC9n9c0a
+   q7kEz7LMTMYW8Fbo/r0vyUXHudjvCqN5+QMPD9Mn/Y2AU+Bid5ub8+v0q
+   nDkkNvbh9WVfEQuH82UCFDONrFIX4gZvHpqhOHcm5XwdAfDWFQuaDFQM4
+   5OFXZQr9hs9ty+Jezw/NzUASOUnKusO4YRnyhe4XByrYkzJYna7LKN0nu
+   5Nrg5C5kEcvRtMHQ41Zc+qQXzc1oIEDva5fcuugvwO18L+APg83pmGKqr
+   elnKStT14N6DjvXjJbIHO+KXRpmIiH7GH21nWX8V/yEDorwUrkd+VXjqo
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="323496831"
+X-IronPort-AV: E=Sophos;i="5.98,286,1673942400"; 
+   d="scan'208";a="323496831"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 14:49:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="928394410"
+X-IronPort-AV: E=Sophos;i="5.98,286,1673942400"; 
+   d="scan'208";a="928394410"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 23 Mar 2023 14:49:45 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pfSob-000EjF-01;
+        Thu, 23 Mar 2023 21:49:45 +0000
+Date:   Fri, 24 Mar 2023 05:49:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dima Chumak <dchumak@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     oe-kbuild-all@lists.linux.dev, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Leon Romanovsky <leon@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Dima Chumak <dchumak@nvidia.com>
+Subject: Re: [PATCH net-next 2/4] net/mlx5: Implement devlink port function
+ cmds to control ipsec_crypto
+Message-ID: <202303240548.WDzL68Ny-lkp@intel.com>
+References: <20230323111059.210634-3-dchumak@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230323111059.210634-3-dchumak@nvidia.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the PHY library calls phy_error() something bad has happened, and
-we halt the PHY state machine. Calling phy_error() from the main state
-machine however is not precise enough to know whether the issue is
-reading the link status or starting auto-negotiation.
+Hi Dima,
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v2:
+Thank you for the patch! Yet something to improve:
 
-- only call phy_error_precise() in phy_state_machine
+[auto build test ERROR on next-20230323]
+[cannot apply to net-next/main net/main horms-ipvs/master linus/master v6.3-rc3 v6.3-rc2 v6.3-rc1 v6.3-rc3]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
- drivers/net/phy/phy.c | 33 ++++++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Dima-Chumak/devlink-Expose-port-function-commands-to-control-IPsec-crypto-offloads/20230323-191353
+patch link:    https://lore.kernel.org/r/20230323111059.210634-3-dchumak%40nvidia.com
+patch subject: [PATCH net-next 2/4] net/mlx5: Implement devlink port function cmds to control ipsec_crypto
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20230324/202303240548.WDzL68Ny-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/ca580efef4996834c003bf5e8d6d244fe0550415
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Dima-Chumak/devlink-Expose-port-function-commands-to-control-IPsec-crypto-offloads/20230323-191353
+        git checkout ca580efef4996834c003bf5e8d6d244fe0550415
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mellanox/mlx5/core/
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index b33e55a7364e..bcaf58636199 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -1169,6 +1169,22 @@ void phy_stop_machine(struct phy_device *phydev)
- 	mutex_unlock(&phydev->lock);
- }
- 
-+static void phy_process_error(struct phy_device *phydev)
-+{
-+	mutex_lock(&phydev->lock);
-+	phydev->state = PHY_HALTED;
-+	mutex_unlock(&phydev->lock);
-+
-+	phy_trigger_machine(phydev);
-+}
-+
-+static void phy_error_precise(struct phy_device *phydev,
-+			      const void *func, int err)
-+{
-+	WARN(1, "%pS: returned: %d\n", func, err);
-+	phy_process_error(phydev);
-+}
-+
- /**
-  * phy_error - enter HALTED state for this PHY device
-  * @phydev: target phy_device struct
-@@ -1181,12 +1197,7 @@ void phy_stop_machine(struct phy_device *phydev)
- void phy_error(struct phy_device *phydev)
- {
- 	WARN_ON(1);
--
--	mutex_lock(&phydev->lock);
--	phydev->state = PHY_HALTED;
--	mutex_unlock(&phydev->lock);
--
--	phy_trigger_machine(phydev);
-+	phy_process_error(phydev);
- }
- EXPORT_SYMBOL(phy_error);
- 
-@@ -1378,6 +1389,7 @@ void phy_state_machine(struct work_struct *work)
- 	struct net_device *dev = phydev->attached_dev;
- 	bool needs_aneg = false, do_suspend = false;
- 	enum phy_state old_state;
-+	const void *func = NULL;
- 	bool finished = false;
- 	int err = 0;
- 
-@@ -1396,6 +1408,7 @@ void phy_state_machine(struct work_struct *work)
- 	case PHY_NOLINK:
- 	case PHY_RUNNING:
- 		err = phy_check_link_status(phydev);
-+		func = &phy_check_link_status;
- 		break;
- 	case PHY_CABLETEST:
- 		err = phydev->drv->cable_test_get_status(phydev, &finished);
-@@ -1425,16 +1438,18 @@ void phy_state_machine(struct work_struct *work)
- 
- 	mutex_unlock(&phydev->lock);
- 
--	if (needs_aneg)
-+	if (needs_aneg) {
- 		err = phy_start_aneg(phydev);
--	else if (do_suspend)
-+		func = &phy_start_aneg;
-+	} else if (do_suspend) {
- 		phy_suspend(phydev);
-+	}
- 
- 	if (err == -ENODEV)
- 		return;
- 
- 	if (err < 0)
--		phy_error(phydev);
-+		phy_error_precise(phydev, func, err);
- 
- 	if (old_state != phydev->state) {
- 		phydev_dbg(phydev, "PHY state change %s -> %s\n",
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202303240548.WDzL68Ny-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c: In function 'mlx5_devlink_port_fn_ipsec_crypto_set':
+>> drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:4203:24: error: 'struct net' has no member named 'xfrm'
+    4203 |         mutex_lock(&net->xfrm.xfrm_cfg_mutex);
+         |                        ^~
+   drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:4239:26: error: 'struct net' has no member named 'xfrm'
+    4239 |         mutex_unlock(&net->xfrm.xfrm_cfg_mutex);
+         |                          ^~
+
+
+vim +4203 drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+
+  4173	
+  4174	int mlx5_devlink_port_fn_ipsec_crypto_set(struct devlink_port *port, bool enable,
+  4175						  struct netlink_ext_ack *extack)
+  4176	{
+  4177		struct mlx5_eswitch *esw;
+  4178		struct mlx5_vport *vport;
+  4179		int err = -EOPNOTSUPP;
+  4180		struct net *net;
+  4181	
+  4182		esw = mlx5_devlink_eswitch_get(port->devlink);
+  4183		if (IS_ERR(esw))
+  4184			return PTR_ERR(esw);
+  4185	
+  4186		if (!mlx5_esw_ipsec_vf_offload_supported(esw->dev)) {
+  4187			NL_SET_ERR_MSG_MOD(extack, "Device doesn't support ipsec_crypto");
+  4188			return err;
+  4189		}
+  4190	
+  4191		vport = mlx5_devlink_port_fn_get_vport(port, esw);
+  4192		if (IS_ERR(vport)) {
+  4193			NL_SET_ERR_MSG_MOD(extack, "Invalid port");
+  4194			return PTR_ERR(vport);
+  4195		}
+  4196	
+  4197		/* xfrm_cfg lock is needed to avoid races with XFRM state being added to
+  4198		 * the PF net device. Netlink stack takes this lock for `ip xfrm` user
+  4199		 * commands, so here we need to take it before esw->state_lock to
+  4200		 * preserve the order.
+  4201		 */
+  4202		net = dev_net(esw->dev->mlx5e_res.uplink_netdev);
+> 4203		mutex_lock(&net->xfrm.xfrm_cfg_mutex);
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
