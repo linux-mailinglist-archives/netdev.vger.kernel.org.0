@@ -2,262 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 835616C69A3
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:36:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF1066C69A8
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:37:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbjCWNgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 09:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
+        id S231767AbjCWNhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 09:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbjCWNg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:36:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2811325959
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679578538;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ff++SykD/YodY8PR4QVDPMaGojCM4KwUNB9lPEj60iE=;
-        b=LzZHEWeekwrB7GA5HWNxhQ3Qxhk/1BtaIjiqOZvJarynjH17JSmEDPCz0UbkwhloXY61ye
-        8KP0VnJNof6Jr5PaYUMkua4u9j2xFph+Uyuc577iDkTV/bRerIL9qPmv+C/5ExV3a9uq7T
-        Cd5geeKIYUOtuJdeP3WlXLd3Pu/KrPg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-146-rXSHPi3qPLuzAK5mMLeeJA-1; Thu, 23 Mar 2023 09:35:33 -0400
-X-MC-Unique: rXSHPi3qPLuzAK5mMLeeJA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 81DB71C08799;
-        Thu, 23 Mar 2023 13:35:32 +0000 (UTC)
-Received: from dcaratti.users.ipa.redhat.com (unknown [10.45.225.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 371F81410F1C;
-        Thu, 23 Mar 2023 13:35:31 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ilya Maximets <i.maximets@ovn.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v2 4/4] selftests: forwarding: add tunnel_key "nofrag" test case
-Date:   Thu, 23 Mar 2023 14:34:43 +0100
-Message-Id: <325de21898eb4d12b0ea317296c45a88f5a8f649.1679569719.git.dcaratti@redhat.com>
-In-Reply-To: <cover.1679569719.git.dcaratti@redhat.com>
-References: <cover.1679569719.git.dcaratti@redhat.com>
+        with ESMTP id S231229AbjCWNhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:37:05 -0400
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C7018A9F;
+        Thu, 23 Mar 2023 06:37:01 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4Pj5jc1mmTz9xHM1;
+        Thu, 23 Mar 2023 21:27:16 +0800 (CST)
+Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
+        by APP1 (Coremail) with SMTP id LxC2BwCHCATRVRxk2BbCAQ--.54288S2;
+        Thu, 23 Mar 2023 14:36:34 +0100 (CET)
+Message-ID: <e0b828d994a8427ad48b7b514f75d751ea791b47.camel@huaweicloud.com>
+Subject: Re: [PATCH 0/5] usermode_driver: Add management library and API
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Date:   Thu, 23 Mar 2023 14:36:17 +0100
+In-Reply-To: <CAADnVQJC0h7rtuntt0tqS5BbxWsmyWs3ZSbboZMmUKetMG2VhA@mail.gmail.com>
+References: <20230317145240.363908-1-roberto.sassu@huaweicloud.com>
+         <CAADnVQLKONwKwkJMopRq-dzcV2ZejrjGzyuzW_5QX=0BY=Z4jw@mail.gmail.com>
+         <b5c80613c696818ce89b92dac54e98878ec3ccd0.camel@huaweicloud.com>
+         <CAADnVQJC0h7rtuntt0tqS5BbxWsmyWs3ZSbboZMmUKetMG2VhA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-CM-TRANSID: LxC2BwCHCATRVRxk2BbCAQ--.54288S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3AryktFy7tFyktr48CrWxWFg_yoWxXr4DpF
+        WrCFWjka1DJF17ArZ2vw18Ca409397tw43WrnrGryfZ3Z09FyIkr1I9F4a9FnrGr4Skw1Y
+        qr4jya4293Z8ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkjb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2Ij
+        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE
+        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42
+        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+        c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UAkuxUUUUU=
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQAFBF1jj4sTwwAAsq
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a selftest that configures metadata tunnel encapsulation using the TC
-"tunnel_key" action: it includes a test case for setting "nofrag" flag.
+On Wed, 2023-03-22 at 15:27 -0700, Alexei Starovoitov wrote:
+> On Wed, Mar 22, 2023 at 5:08 AM Roberto Sassu
+> <roberto.sassu@huaweicloud.com> wrote:
+> > On Tue, 2023-03-21 at 19:23 -0700, Alexei Starovoitov wrote:
+> > > On Fri, Mar 17, 2023 at 7:53 AM Roberto Sassu
+> > > <roberto.sassu@huaweicloud.com> wrote:
+> > > > From: Roberto Sassu <roberto.sassu@huawei.com>
+> > > > 
+> > > > A User Mode Driver (UMD) is a specialization of a User Mode Helper (UMH),
+> > > > which runs a user space process from a binary blob, and creates a
+> > > > bidirectional pipe, so that the kernel can make a request to that process,
+> > > > and the latter provides its response. It is currently used by bpfilter,
+> > > > although it does not seem to do any useful work.
+> > > 
+> > > FYI the new home for bpfilter is here:
+> > > https://github.com/facebook/bpfilter
+> > 
+> > Thanks. I just ensured that it worked, by doing:
+> > 
+> > getsockopt(fd, SOL_IP, IPT_SO_GET_INFO, &info, &optlen);
+> > 
+> > and accepting IPT_SO_GET_INFO in main.c.
+> > 
+> > > > The problem is, if other users would like to implement a UMD similar to
+> > > > bpfilter, they would have to duplicate the code. Instead, make an UMD
+> > > > management library and API from the existing bpfilter and sockopt code,
+> > > > and move it to common kernel code.
+> > > > 
+> > > > Also, define the software architecture and the main components of the
+> > > > library: the UMD Manager, running in the kernel, acting as the frontend
+> > > > interface to any user or kernel-originated request; the UMD Loader, also
+> > > > running in the kernel, responsible to load the UMD Handler; the UMD
+> > > > Handler, running in user space, responsible to handle requests from the UMD
+> > > > Manager and to send to it the response.
+> > > 
+> > > That doesn't look like a generic interface for UMD.
+> > 
+> > What would make it more generic? I made the API message format-
+> > independent. It has the capability of starting the user space process
+> > as required, when there is a communication.
+> > 
+> > > It was a quick hack to get bpfilter off the ground, but certainly
+> > > not a generic one.
+> > 
+> > True, it is not generic in the sense that it can accomodate any
+> > possible use case. The main goal is to move something that was running
+> > in the kernel to user space, with the same isolation guarantees as if
+> > the code was executed in the kernel.
+> 
+> They are not the same guarantees.
+> UMD is exactly equivalent to root process running in user space.
+> Meaning it can be killed, ptraced, priority inverted, etc
 
-Example output:
+That is the starting point.
 
- # selftests: net/forwarding: tc_tunnel_key.sh
- # TEST: tunnel_key nofrag (skip_hw)                                   [ OK ]
- # INFO: Could not test offloaded functionality
- ok 1 selftests: net/forwarding: tc_tunnel_key.sh
+I suppose you can remove any privilege from the UMD process, it just
+needs to read/write from/to a pipe (and in my case to use socket() with
+AF_ALG to interact with the Crypto API).
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- .../testing/selftests/net/forwarding/Makefile |   1 +
- .../selftests/net/forwarding/tc_tunnel_key.sh | 161 ++++++++++++++++++
- 2 files changed, 162 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
+Also, as I mentioned, you can enforce a very strict seccomp profile,
+which forces the UMD process to use a very limited number of system
+calls.
 
-diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-index 91201ab3c4fc..236f6b796a52 100644
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@ -85,6 +85,7 @@ TEST_PROGS = bridge_igmp.sh \
- 	tc_mpls_l2vpn.sh \
- 	tc_police.sh \
- 	tc_shblocks.sh \
-+	tc_tunnel_key.sh \
- 	tc_vlan_modify.sh \
- 	vxlan_asymmetric_ipv6.sh \
- 	vxlan_asymmetric.sh \
-diff --git a/tools/testing/selftests/net/forwarding/tc_tunnel_key.sh b/tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
-new file mode 100755
-index 000000000000..5ac184d51809
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/tc_tunnel_key.sh
-@@ -0,0 +1,161 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+ALL_TESTS="tunnel_key_nofrag_test"
-+
-+NUM_NETIFS=4
-+source tc_common.sh
-+source lib.sh
-+
-+tcflags="skip_hw"
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/24
-+	forwarding_enable
-+	mtu_set $h1 1500
-+	tunnel_create h1-et vxlan 192.0.2.1 192.0.2.2 dev $h1 dstport 0 external
-+	tc qdisc add dev h1-et clsact
-+	mtu_set h1-et 1230
-+	mtu_restore $h1
-+	mtu_set $h1 1000
-+}
-+
-+h1_destroy()
-+{
-+	tc qdisc del dev h1-et clsact
-+	tunnel_destroy h1-et
-+	forwarding_restore
-+	mtu_restore $h1
-+	simple_if_fini $h1 192.0.2.1/24
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.2.2/24
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2 192.0.2.2/24
-+}
-+
-+switch_create()
-+{
-+	simple_if_init $swp1 192.0.2.2/24
-+	tc qdisc add dev $swp1 clsact
-+	simple_if_init $swp2 192.0.2.1/24
-+}
-+
-+switch_destroy()
-+{
-+	simple_if_fini $swp2 192.0.2.1/24
-+	tc qdisc del dev $swp1 clsact
-+	simple_if_fini $swp1 192.0.2.2/24
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	swp1=${NETIFS[p2]}
-+
-+	swp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	h1mac=$(mac_get $h1)
-+	h2mac=$(mac_get $h2)
-+
-+	swp1origmac=$(mac_get $swp1)
-+	swp2origmac=$(mac_get $swp2)
-+	ip link set $swp1 address $h2mac
-+	ip link set $swp2 address $h1mac
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+	switch_create
-+
-+	if ! tc action add action tunnel_key help 2>&1 | grep -q nofrag; then
-+		log_test "SKIP: iproute doesn't support nofrag"
-+		exit $ksft_skip
-+	fi
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+
-+	ip link set $swp2 address $swp2origmac
-+	ip link set $swp1 address $swp1origmac
-+}
-+
-+tunnel_key_nofrag_test()
-+{
-+	RET=0
-+	local i
-+
-+	tc filter add dev $swp1 ingress protocol ip pref 100 handle 100 \
-+		flower ip_flags nofrag action drop
-+	tc filter add dev $swp1 ingress protocol ip pref 101 handle 101 \
-+		flower ip_flags firstfrag action drop
-+	tc filter add dev $swp1 ingress protocol ip pref 102 handle 102 \
-+		flower ip_flags nofirstfrag action drop
-+
-+	# test 'nofrag' set
-+	tc filter add dev h1-et egress protocol all pref 1 handle 1 matchall $tcflags \
-+		action tunnel_key set src_ip 192.0.2.1 dst_ip 192.0.2.2 id 42 nofrag index 10
-+	$MZ h1-et -c 1 -p 930 -a 00:aa:bb:cc:dd:ee -b 00:ee:dd:cc:bb:aa -t ip -q
-+	tc_check_packets "dev $swp1 ingress" 100 1
-+	check_err $? "packet smaller than MTU was not tunneled"
-+
-+	$MZ h1-et -c 1 -p 931 -a 00:aa:bb:cc:dd:ee -b 00:ee:dd:cc:bb:aa -t ip -q
-+	tc_check_packets "dev $swp1 ingress" 100 1
-+	check_err $? "packet bigger than MTU matched nofrag (nofrag was set)"
-+	tc_check_packets "dev $swp1 ingress" 101 0
-+	check_err $? "packet bigger than MTU matched firstfrag (nofrag was set)"
-+	tc_check_packets "dev $swp1 ingress" 102 0
-+	check_err $? "packet bigger than MTU matched nofirstfrag (nofrag was set)"
-+
-+	# test 'nofrag' cleared
-+	tc actions change action tunnel_key set src_ip 192.0.2.1 dst_ip 192.0.2.2 id 42 index 10
-+	$MZ h1-et -c 1 -p 931 -a 00:aa:bb:cc:dd:ee -b 00:ee:dd:cc:bb:aa -t ip -q
-+	tc_check_packets "dev $swp1  ingress" 100 1
-+	check_err $? "packet bigger than MTU matched nofrag (nofrag was unset)"
-+	tc_check_packets "dev $swp1  ingress" 101 1
-+	check_err $? "packet bigger than MTU didn't match firstfrag (nofrag was unset) "
-+	tc_check_packets "dev $swp1 ingress" 102 1
-+	check_err $? "packet bigger than MTU didn't match nofirstfrag (nofrag was unset) "
-+
-+	for i in 100 101 102; do
-+		tc filter del dev $swp1 ingress protocol ip pref $i handle $i flower
-+	done
-+	tc filter del dev h1-et egress pref 1 handle 1 matchall
-+
-+	log_test "tunnel_key nofrag ($tcflags)"
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+tc_offload_check
-+if [[ $? -ne 0 ]]; then
-+	log_info "Could not test offloaded functionality"
-+else
-+	tcflags="skip_sw"
-+	tests_run
-+fi
-+
-+exit $EXIT_STATUS
--- 
-2.39.2
+For the interactions of the rest of the system to the UMD process, you
+could deny with an LSM all the operations that you mentioned. The rest
+of the system would not be affected, only operations which have the UMD
+process as target are denied.
+
+> > > > I have two use cases, but for sake of brevity I will propose one.
+> > > > 
+> > > > I would like to add support for PGP keys and signatures in the kernel, so
+> > > > that I can extend secure boot to applications, and allow/deny code
+> > > > execution based on the signed file digests included in RPM headers.
+> > > > 
+> > > > While I proposed a patch set a while ago (based on a previous work of David
+> > > > Howells), the main objection was that the PGP packet parser should not run
+> > > > in the kernel.
+> > > > 
+> > > > That makes a perfect example for using a UMD. If the PGP parser is moved to
+> > > > user space (UMD Handler), and the kernel (UMD Manager) just instantiates
+> > > > the key and verifies the signature on already parsed data, this would
+> > > > address the concern.
+> > > 
+> > > I don't think PGP parser belongs to UMD either.
+> > > Please do it as a normal user space process and define a proper
+> > > protocol for communication between kernel and user space.
+> > 
+> > UMD is better in the sense that it establishes a bidirectional pipe
+> > between the kernel and the user space process. With that, there is no
+> > need to further restrict the access to a sysfs file, for example.
+> 
+> If a simple pipe is good enough then you can have a kernel module
+> that creates it and interacts with the user space process.
+
+Few points I forgot to mention.
+
+With the UMD approach, the binary blob is embedded in the kernel
+module, which means that no external dependencies are needed for
+integrity verification. The binary is statically compiled, and the
+kernel write-protects it at run-time.
+
+Second, since DIGLIM would check the integrity of any executable,
+including init, the PGP signature verification needs to occur before.
+So, the PGP UMD should be already started by then. That is not going to
+be a problem, since the binary is copied to a private tmpfs mount.
+
+> Out-of-tree bpftiler can do that, so can you.
+
+As far as I can see, the out-of-tree bpfilter works exactly in the same
+way as the in-tree counterpart. The binary blob is embedded in the
+kernel module.
+
+> PGP is not suitable for kernel git repo either as kernel code or as UMD.
+
+Well, the asymmetric key type can be extended with new parsers, so this
+possibility was already taken into account. The objection that the PGP
+parser should not run in kernel space is fair, but I think the UMD
+approach fully addresses that.
+
+Also, I agree with you that we should not just take any code and
+pretend that it is part of the kernel. However, in this particular
+case, the purpose of the PGP UMD would be simply to extract very few
+information from the PGP packets. The asymmetric key type and the
+signature verification infrastructure already take care of the rest.
+
+PGP keys and signatures would act as an additional system trust anchor
+for verifying critical system data (for DIGLIM, which executables are
+allowed to run), similarly to how X.509 certificates are used for
+verifying kernel modules. RPM headers, executables digests are taken
+from, are signed with PGP, so there is no other way than adding this
+functionality.
+
+And unfortunately, especially for features impacting the entire system,
+out-of-tree drivers are not really an option:
+
+https://docs.fedoraproject.org/en-US/quick-docs/kernel/overview/#_out_of_tree_drivers
+
+Thanks
+
+Roberto
 
