@@ -2,90 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A70936C5C69
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 02:57:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A06C66C5C74
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 03:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbjCWB51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 21:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
+        id S229766AbjCWCDP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Mar 2023 22:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbjCWB5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 21:57:23 -0400
-Received: from 126.com (m126.mail.126.com [220.181.12.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 532DC21A36
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 18:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-        Message-ID; bh=q545NseQsTRgNhozGkQ9/VJ4Dk+GCAVbo+edHCtxhgQ=; b=I
-        5BrkzH/Oi7afkXva93CPsZyiMf6mjk6ApcSIVokeLjRWExUalG5eBHHRBOKXxp1A
-        sxU0tpmAZ/aDnYrv0PT0E3n+dW082HsBhSVPqImFXM6YT0DxYotwS6FJ/sY7pQpy
-        LUoOKdu/i+naZeWjmwUxhl38McIEFV5W0xa9Jv64Dg=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
- (Coremail) ; Thu, 23 Mar 2023 09:53:57 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Thu, 23 Mar 2023 09:53:57 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Horatiu Vultur" <horatiu.vultur@microchip.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, david.daney@cavium.com
-Subject: Re:Re: [PATCH] net: mdio: thunder: Add missing fwnode_handle_put()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
- Copyright (c) 2002-2023 www.mailtech.cn 126com
-In-Reply-To: <20230322085538.pn57j2b5dyxizb4o@soft-dev3-1>
-References: <20230322062057.1857614-1-windhl@126.com>
- <20230322085538.pn57j2b5dyxizb4o@soft-dev3-1>
-X-NTES-SC: AL_QuycC/mYuUwo4SeYbOkXnkwQhu05Ucq4u/8l1YVVP5E0uCrJ+y8fZ3hAPXbN//CiMRyWtx+2cilU5PZxeLlHRoF5n7+FDo5NbprAdqj8jxbF
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S229436AbjCWCDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 22:03:13 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D42BEC70;
+        Wed, 22 Mar 2023 19:03:11 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32N22ZqG4006509, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32N22ZqG4006509
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Thu, 23 Mar 2023 10:02:35 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Thu, 23 Mar 2023 10:02:50 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 23 Mar 2023 10:02:49 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Thu, 23 Mar 2023 10:02:49 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        "Nitin Gupta" <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Subject: RE: [PATCH v3 1/9] wifi: rtw88: Clear RTW_FLAG_POWERON early in rtw_mac_power_switch()
+Thread-Topic: [PATCH v3 1/9] wifi: rtw88: Clear RTW_FLAG_POWERON early in
+ rtw_mac_power_switch()
+Thread-Index: AQHZW3Pl5rz90MQcTEqX0CJ0+F5So68HoCNA
+Date:   Thu, 23 Mar 2023 02:02:49 +0000
+Message-ID: <49ae4ff68c6642698f9ab4afd08b3c7e@realtek.com>
+References: <20230320213508.2358213-1-martin.blumenstingl@googlemail.com>
+ <20230320213508.2358213-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20230320213508.2358213-2-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2023/3/22_=3F=3F_11:29:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Message-ID: <21d42d91.1283.1870c2c39cf.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: _____wDn72M2sRtkv48AAA--.5101W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/xtbBGg87F1-HarjlhQACsR
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=0.2 required=5.0 tests=DKIM_INVALID,DKIM_SIGNED,
-        FREEMAIL_FROM,SPF_HELO_PASS,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgpBdCAyMDIzLTAzLTIyIDE2OjU1OjM4LCAiSG9yYXRpdSBWdWx0dXIiIDxob3JhdGl1LnZ1bHR1
-ckBtaWNyb2NoaXAuY29tPiB3cm90ZToKPlRoZSAwMy8yMi8yMDIzIDE0OjIwLCBMaWFuZyBIZSB3
-cm90ZToKPj4gCj4+IEluIGRldmljZV9mb3JfZWFjaF9jaGlsZF9ub2RlKCksIHdlIHNob3VsZCBh
-ZGQgZndub2RlX2hhbmRsZV9wdXQoKQo+PiB3aGVuIGJyZWFrIG91dCBvZiB0aGUgaXRlcmF0aW9u
-IGRldmljZV9mb3JfZWFjaF9jaGlsZF9ub2RlKCkKPj4gYXMgaXQgd2lsbCBhdXRvbWF0aWNhbGx5
-IGluY3JlYXNlIGFuZCBkZWNyZWFzZSB0aGUgcmVmY291bnRlci4KPgo+RG9uJ3QgZm9yZ2V0IHRv
-IG1lbnRpb24gdGhlIHRyZWUgd2hpY2ggeW91IGFyZSB0YXJnZXRpbmcuCj5JdCBzaG91ZCBiZSBz
-b21ldGhpbmcgbGlrZToKPiJbUEFUQ0ggbmV0XSBuZXQ6IG1kaW86IHRodW5kZXI6IEFkZCBtaXNz
-aW5nIGZ3bm9kZV9oYW5kbGVfcHV0KCkiIGFuZAo+eW91IGNhbiBhY2hpZXZlIHRoaXMgdXNpbmcg
-b3B0aW9uIC0tc3ViamVjdC1wcmVmaXggd2hlbiB5b3UgY3JlYXRlIHlvdXIKPnBhdGNoOgo+Z2l0
-IGZvcm1hdC1wYXRjaCAuLi4gLS1zdWJqZWN0LXByZWZpeCAiUEFUQ0ggbmV0Igo+CgpUaGFua3Mg
-Zm9yIHlvdXIgcmVwbHkgYW5kIGFkdmlzZSwgSSB3aWxsIGFkZCBpdCBpbiBteSBmdXR1cmUgcGF0
-Y2hlcy4KCj4KPj4gCj4+IEZpeGVzOiAzNzlkN2FjN2NhMzEgKCJwaHk6IG1kaW8tdGh1bmRlcjog
-QWRkIGRyaXZlciBmb3IgQ2F2aXVtIFRodW5kZXIgU29DIE1ESU8gYnVzZXMuIikKPj4gU2lnbmVk
-LW9mZi1ieTogTGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvbmV0
-L21kaW8vbWRpby10aHVuZGVyLmMgfCAxICsKPj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlv
-bigrKQo+PiAKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L21kaW8vbWRpby10aHVuZGVyLmMg
-Yi9kcml2ZXJzL25ldC9tZGlvL21kaW8tdGh1bmRlci5jCj4+IGluZGV4IDgyMmQyY2RkMmYzNS4u
-Mzk0Yjg2NGFhYTM3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL25ldC9tZGlvL21kaW8tdGh1bmRl
-ci5jCj4+ICsrKyBiL2RyaXZlcnMvbmV0L21kaW8vbWRpby10aHVuZGVyLmMKPj4gQEAgLTEwNCw2
-ICsxMDQsNyBAQCBzdGF0aWMgaW50IHRodW5kZXJfbWRpb2J1c19wY2lfcHJvYmUoc3RydWN0IHBj
-aV9kZXYgKnBkZXYsCj4+ICAgICAgICAgICAgICAgICBpZiAoaSA+PSBBUlJBWV9TSVpFKG5leHVz
-LT5idXNlcykpCj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGJyZWFrOwo+PiAgICAgICAgIH0K
-Pj4gKyAgICAgICBmd25vZGVfaGFuZGxlX3B1dChmd24pOwo+Cj5DYW4geW91IGRlY2xhcmUgb25s
-eSAxIG1kaW8gYnVzIGluIHRoZSBEVCB1bmRlciB0aGlzIHBjaSBkZXZpY2U/Cj5CZWNhdXNlIGlu
-IHRoYXQgY2FzZSwgSSBkb24ndCB0aGluayB0aGlzIGlzIGNvcnJlY3QsIGJlY2F1c2UgdGhlbgo+
-J2RldmljZV9mb3JfZWFjaF9jaGlsZF9ub2RlJyB3aWxsIGV4aXQgYmVmb3JlIGFsbCA0IG1kaW8g
-YnVzZXMgYXJlIHByb2JlZC4KPkFuZCBhY2NvcmRpbmcgdG8gdGhlIGNvbW1lbnRzIGZvciAnZndu
-b2RlX2hhbmRsZV9wdXQnIHlvdSBuZWVkIHRvIHVzZQo+d2l0aCBicmVhayBvciByZXR1cm4uCj4K
-CkluIGZhY3QsIHRoZSBmd25vZGVfaGFuZGxlX3B1dChmd24pIGNvbnNpZGVyIHRoZSBOVUxMLWNo
-ZWNrIG9mIGZ3biwgYW5kIAp0aGVyZSBhcmUgb25seSBicmVhaywgbm90IHJldHVybiwgc28gSSB0
-aGluayBpdCBjYW4gd29yayBpbiB0aGlzIGNhc2UuCkhvd2V2ZXIsIGlmIHlvdSBwcmVmZXIgdG8g
-YWRkIGZ3bm9kZV9oYW5kbGVfcHV0IGJlZm9yZSBicmVhaywgSSBjYW4Kc2VuZCBhIG5ldyBwYXRj
-aC4KClRoYW5rcywKTGlhbmcKCj4+ICAgICAgICAgcmV0dXJuIDA7Cj4+IAo+PiAgZXJyX3JlbGVh
-c2VfcmVnaW9uczoKPj4gLS0KPj4gMi4yNS4xCj4+IAo+Cj4tLSAKPi9Ib3JhdGl1Cg==
+
+
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Tuesday, March 21, 2023 5:35 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
+> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> linux-mmc@vger.kernel.org; Chris Morgan <macroalpha82@gmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
+> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Larry Finger <Larry.Finger@lwfinger.net>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v3 1/9] wifi: rtw88: Clear RTW_FLAG_POWERON early in rtw_mac_power_switch()
+> 
+> The SDIO HCI implementation needs to know when the MAC is powered on.
+> This is needed because 32-bit register access has to be split into 4x
+> 8-bit register access when the MAC is not fully powered on or while
+> powering off. When the MAC is powered on 32-bit register access can be
+> used to reduce the number of transfers but splitting into 4x 8-bit
+> register access still works in that case.
+> 
+> During the power on sequence is how RTW_FLAG_POWERON is only set when
+> the power on sequence has completed successfully. During power off
+> however RTW_FLAG_POWERON is set. This means that the upcoming SDIO HCI
+> implementation does not know that it has to use 4x 8-bit register
+> accessors. Clear the RTW_FLAG_POWERON flag early when powering off the
+> MAC so the whole power off sequence is processed with RTW_FLAG_POWERON
+> unset. This will make it possible to use the RTW_FLAG_POWERON flag in
+> the upcoming SDIO HCI implementation.
+> 
+> Note that a failure in rtw_pwr_seq_parser() while applying
+> chip->pwr_off_seq can theoretically result in the RTW_FLAG_POWERON
+> flag being cleared while the chip is still powered on. However,
+> depending on when the failure occurs in the power off sequence the
+> chip may be on or off. Even the original approach of clearing
+> RTW_FLAG_POWERON only when the power off sequence has been applied
+> successfully could end up in some corner case where the chip is
+> powered off but RTW_FLAG_POWERON was not cleared.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+
+> ---
+> Changes since v2:
+> - improve patch description about corner cases when clearing
+>   RTW_FLAG_POWERON
+> 
+> Changes since v1:
+> - This replaces a previous patch called "rtw88: hci: Add an optional
+>   power_switch() callback to rtw_hci_ops" which added a new callback
+>   to the HCI ops.
+> 
+> 
+>  drivers/net/wireless/realtek/rtw88/mac.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/mac.c b/drivers/net/wireless/realtek/rtw88/mac.c
+> index f3a566cf979b..cfdfc8a2c836 100644
+> --- a/drivers/net/wireless/realtek/rtw88/mac.c
+> +++ b/drivers/net/wireless/realtek/rtw88/mac.c
+> @@ -273,6 +273,9 @@ static int rtw_mac_power_switch(struct rtw_dev *rtwdev, bool pwr_on)
+>         if (pwr_on == cur_pwr)
+>                 return -EALREADY;
+> 
+> +       if (!pwr_on)
+> +               clear_bit(RTW_FLAG_POWERON, rtwdev->flags);
+> +
+>         pwr_seq = pwr_on ? chip->pwr_on_seq : chip->pwr_off_seq;
+>         ret = rtw_pwr_seq_parser(rtwdev, pwr_seq);
+>         if (ret)
+> @@ -280,8 +283,6 @@ static int rtw_mac_power_switch(struct rtw_dev *rtwdev, bool pwr_on)
+> 
+>         if (pwr_on)
+>                 set_bit(RTW_FLAG_POWERON, rtwdev->flags);
+> -       else
+> -               clear_bit(RTW_FLAG_POWERON, rtwdev->flags);
+> 
+>         return 0;
+>  }
+> --
+> 2.40.0
+
