@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB686C71D4
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 21:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9EDE6C71D5
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 21:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbjCWUrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 16:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        id S231564AbjCWUrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 16:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbjCWUrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 16:47:42 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2058.outbound.protection.outlook.com [40.107.223.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BB62410E
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 13:47:39 -0700 (PDT)
+        with ESMTP id S231317AbjCWUrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 16:47:45 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2044.outbound.protection.outlook.com [40.107.244.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E2B1ADC1
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 13:47:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ICrvrYC4bByVpW56xEPeKL8hc6y8VkE9og+IPuv0/Hoz+RmSZqv0ZQ0TJKdBTlDWpi9dJjwbmPc83Ewc2ooP/L3L8kiyjvQSJjVDmJBESKckOOiKLKtOEPH9MP7jsgh7IbB2tJJmiiLTQqCgkUo0+MDtqCafjKfbAOL+3JZaTVR66/to6Y4dbr+2HCq4ajV8lRYQf5y8KpYyN+Eh6Sy0xFYPPmQOdi3VkpA3nG9exBXC89zRHDzStIfau5ckxxY6sOTu6POSRIhDTvrSXCNmLadYlzltqk8izZpM+ySabRPPuiMsOy5oYT45/2jeyIRwDYn+xSBdPyCmvtOzFGbGvA==
+ b=C28ZfOx9cR0XvAoTa6OFz1IYv4L0nP1QBC9GDQ7cwJdRq30tKHSvBDEEpuIXjsjw6H04wR7ST/2QdCQF95Aca9pFJZHlPJ3w+gxuO8d5gnOtmcxdrkxIVauupJfLfKgmezn6ug39R8kKwlehwxnyqSv2OsSx8LyE4ySFWpNjFfZr/bPES/YqoZI66W/KkawUuS7dz5HCxk0rMrolM1TQoTyjkhEaS/OxVDX4SsXo8kd63fYemV/6LOA4WLrH5fjjBHDG5PK5RqLNq8Ei+VfScTGbJ3rgUUsHUxZp9KtXmkk5lo/41rQd4Kosl4A3rca7LvyzZsc1HSZNInt/uaQBqw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fwa/NIsHYQ9H6gug9lzp9szykON3V047zOMdltiW+38=;
- b=T/j8QdnjIq2+qWCzv1SehkOV1uep8SaWavEWDCyZWNHXDfxh+2czPvVG+831QhOPQO/dp5b6ZsIiAMNDG1UaQL4qfHUH+XyJqmfLiMNS94LzZ37cx/bq5C/xlUi15IfcJhNczdRkq+fzawH1srVY68zwe0dCStwqLORAOmk+Yo8RRnS9/6Wr748pDsJKvt0cgjnPt6XZB36mHn5USPBGNdsRGqtZ4O1bQf4jsEoRPaR/kJ7YLcLLq3Gi+RHXEymtn03ttpqAOgkJZjCkFikNJFd1QdCeKvP6A9zOzTTXyxoIyneneAIWfPLgJ5TPQVOykLZamePKfbEYFiiRy8PTbA==
+ bh=pdc84NfPUUybC75AggSbPshorNvD8zYyI0Y3CNf4Gu4=;
+ b=A36JYSrRYsG35SESsBxWrS2MsKDgHOhFQfmu1PhkTdLWb9GNhIX2Spbr6yLDQdpyranemJDMPnz1XuLqMLmoONRe9ED7yjkFur/rdEZYb7gqQVheB8L1XuGI6mqHZqP6eAp9ExwGB9gURyfdTpTAeVMUz35ph5NNWbFXobp+n8xSGmK0Zh0KaQV91iFwYKkLoaQVz+Xmmi98tce8N+30E/e7wmXIDgllPDzxy6i1pv08iavpINvOI0tVQBd+Dwuj3l77+l/4mB3Gyj2DC6vpwtHbI1u5/5O0vdobwYmsMkz2ejrbiAjVP02TOcgXAGKzxwtmmWBjVimDbKy1bldVAQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fwa/NIsHYQ9H6gug9lzp9szykON3V047zOMdltiW+38=;
- b=LBD5fe9lIItZ5mpExdgm1z5d+QR59H4dBmdmWmBuwaRwkZb3JzQlOmEx9mSDBRJPkU4UaJALLkdaQqZeihmw+wdzkC1n23fwLYCEsyyHhQm2Ql59n5j8uznwvPlbPEARY+yjZ5hVeGtnphvPpbEdaR78Drgi8Dd2gtM/lXQZb4o=
-Received: from BN8PR04CA0020.namprd04.prod.outlook.com (2603:10b6:408:70::33)
- by DS7PR12MB8372.namprd12.prod.outlook.com (2603:10b6:8:eb::8) with Microsoft
+ bh=pdc84NfPUUybC75AggSbPshorNvD8zYyI0Y3CNf4Gu4=;
+ b=JPPe536QO9Y6LywqJPrYdh7kN87T7wkaZTWhNLzcYPYmvVLpVxWwR/CIrC1QhFEoacMDcjNWRxDbq1B9srPEzsM9ru91qKhmgGgk9ECQvhHwMewSQKwk3hYALYkahlMwBkdYKNMuU9h4Cg2VHriWS/TroDT5aFwy6iEvNdKkMuA=
+Received: from CY5PR13CA0020.namprd13.prod.outlook.com (2603:10b6:930::28) by
+ CH2PR12MB4134.namprd12.prod.outlook.com (2603:10b6:610:a7::15) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.37; Thu, 23 Mar 2023 20:47:37 +0000
-Received: from BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:70:cafe::74) by BN8PR04CA0020.outlook.office365.com
- (2603:10b6:408:70::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38 via Frontend
- Transport; Thu, 23 Mar 2023 20:47:37 +0000
+ 15.20.6178.37; Thu, 23 Mar 2023 20:47:40 +0000
+Received: from CY4PEPF0000C982.namprd02.prod.outlook.com
+ (2603:10b6:930:0:cafe::2a) by CY5PR13CA0020.outlook.office365.com
+ (2603:10b6:930::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.6 via Frontend
+ Transport; Thu, 23 Mar 2023 20:47:40 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT096.mail.protection.outlook.com (10.13.177.195) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6222.22 via Frontend Transport; Thu, 23 Mar 2023 20:47:36 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CY4PEPF0000C982.mail.protection.outlook.com (10.167.241.196) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6178.30 via Frontend Transport; Thu, 23 Mar 2023 20:47:39 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 23 Mar
- 2023 15:47:36 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
+ 2023 15:47:37 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 23 Mar
- 2023 15:47:36 -0500
+ 2023 15:47:37 -0500
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34 via Frontend
- Transport; Thu, 23 Mar 2023 15:47:35 -0500
+ Transport; Thu, 23 Mar 2023 15:47:36 -0500
 From:   <edward.cree@amd.com>
 To:     <linux-net-drivers@amd.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <pabeni@redhat.com>, <edumazet@google.com>
 CC:     Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
         <habetsm.xilinx@gmail.com>, <michal.swiatkowski@linux.intel.com>
-Subject: [PATCH net-next v2 2/6] sfc: add notion of match on enc keys to MAE machinery
-Date:   Thu, 23 Mar 2023 20:45:10 +0000
-Message-ID: <fd5021315abf37e392e432021c6668c52da90dd1.1679603051.git.ecree.xilinx@gmail.com>
+Subject: [PATCH net-next v2 3/6] sfc: handle enc keys in efx_tc_flower_parse_match()
+Date:   Thu, 23 Mar 2023 20:45:11 +0000
+Message-ID: <a90ca2a5723ce95724286847082655f01e2e7997.1679603051.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1679603051.git.ecree.xilinx@gmail.com>
 References: <cover.1679603051.git.ecree.xilinx@gmail.com>
@@ -76,23 +76,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT096:EE_|DS7PR12MB8372:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9647d853-a143-4d52-9e87-08db2bdfd5e5
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000C982:EE_|CH2PR12MB4134:EE_
+X-MS-Office365-Filtering-Correlation-Id: 43f366b3-b400-47cf-2b7d-08db2bdfd797
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aXIntE2AiAgKaqkOEalBATvmWiybbmHIsUYlo9V1yA86lXP7OxesVuv7pgraYXdYZDSa5HixdmYe5IwKLk5YVdnLcCzv0V9Ls0K2v62SwARP6qf7zXgvkl+tJDOI8j3mspCxgj6wooyxQhYfWdMcJmyTNhrUajHJuxpqGJoBUKHrgbJrZzsF3d2F3bmUUhAyCP6indZN8ojtPn1+6FYY0mTAnDAYBSPZZ3aMoR+G6FfHLELgL0ur5NVACu6mee1+TaTgb6aXW+hqWNEl9D4DDr74lFMKGP+um4VFlTCoPrts1Nx/8XG+x8y/Duk0l7i9IrTkiUr0dTUIAHl1Tc/uCeUf2tnSYkXomFP+s8RO9ErD2gY30uThrXhQdt1tqkTzw5ssRihx8ujpgxScaxo2K9NMc9Ts7kh5sFy2eYTZhHGtwJQ6ckeBZHvX9g9OVr4ErQNh0JCu5HtjHyFSqM7a50ZX/Kg2A9s0iPOblpQ/cBjD8xtZmiRkcoMdWSR0H+UO/UNASv29Ow/cUJO4T+GPIHzfGAziEfKxSbykXCvSNsBgtA9D3iiEFjSuNG7OqoUx7j1BO5F8pQDq3UtS7ZXQJDIhvG/Rtc6Gy5wmxyAtUlIfle0ZfhAqXRQZD0HRauPIEl1PHR7/W4HfV1tQM/9FLHljaBT7wmrdvkc8Sdm0fJhpay8tbCOFKC0AryYKuNQ8IOYYF87DYX2u938QKlvkFEIyjp4SUPiRDyGIYGWjb38=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(136003)(376002)(396003)(451199018)(40470700004)(46966006)(36840700001)(36756003)(40460700003)(8676002)(70206006)(54906003)(4326008)(110136005)(36860700001)(70586007)(81166007)(41300700001)(5660300002)(82740400003)(8936002)(426003)(47076005)(316002)(26005)(6666004)(186003)(478600001)(9686003)(83380400001)(336012)(86362001)(82310400005)(55446002)(40480700001)(356005)(2876002)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Z+hZkx0EFrkGNIpbJHiGWGxf0ihWQcxLK672n77+Fcmq1unwjcYjuAFiUwNrT0JL71koJA13zLBX3rq29VE/AVrcyjCyeVFsIL0FisXVv63W2N7DOyhP6nP2UBGFNpqg88Q1s7Eve9WZkAY5lEmKggQ9WIr722GQgXJE/5ql3ho4ZzmV+uKiu4dNwWAlCaKX7DIJYYmt3GiPzaC1G6zO2eZevMzuyB8Sx6SpAydhfq6WfHQZK5nK60QQwxRFJnjdvW+DxDWf75tn0twgqU+d9ShKli+vDKCJQaVEN/ZYPC7X//yT6aMurdunlD4IIXPIamW3dijUizdiCEJ1aqOB2ZUo/vk7p1FDhRlEZuM9XviQjPnq3U2nKbwDc3H3LO/Uto6+ASJPXWNgeXSrSLVmJobOrbEZwoCGa6ahA3K53lsLnY9M8suARUrbkxlVjXXY1guHPQxOw7la8Eex/bceBXTtog33qJHHO9JboCDFGc8RNjfOTzKDe7MRn2gcwTgvDBlqLWSGu8LYLlQlkZfa0e52Gb6begiyjElix5LPGGt0+xXQyNDG5dMDpits6Xtnh2nEXHN5vZmivnB+c+XSlUJfNiWWR9yqq8fI3PSrdOtXRFr9oKL/+S9nwGd0Jrb3subkwmm4W7dBF4Js8mZepKjyBHl3JbnyJqfqbvKZkg634O/S7S7OKe0cv68c1Xe/GFfic1EyH4NoxKRYXP6PsjGBmkJaIEPERFI7iL85HFI=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230025)(4636009)(396003)(136003)(346002)(39860400002)(376002)(451199018)(40470700004)(36840700001)(46966006)(40460700003)(36860700001)(8676002)(4326008)(70586007)(70206006)(54906003)(41300700001)(5660300002)(82740400003)(26005)(47076005)(426003)(81166007)(8936002)(6666004)(316002)(186003)(9686003)(478600001)(336012)(110136005)(36756003)(82310400005)(55446002)(86362001)(40480700001)(2906002)(356005)(2876002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 20:47:36.8885
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 20:47:39.6673
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9647d853-a143-4d52-9e87-08db2bdfd5e5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43f366b3-b400-47cf-2b7d-08db2bdfd797
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT096.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CY4PEPF0000C982.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB8372
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4134
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
@@ -105,221 +105,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-Extend the MAE caps check to validate that the hardware supports used
- outer-header matches.
-Extend efx_mae_populate_match_criteria() to fill in the outer rule ID
- and VNI match fields.
-Nothing yet populates these match fields, nor creates outer rules.
+Translate the fields from flow dissector into struct efx_tc_match.
+In efx_tc_flower_replace(), reject filters that match on them, because
+ only 'foreign' filters (i.e. those for which the ingress dev is not
+ the sfc netdev or any of its representors, e.g. a tunnel netdev) can
+ use them.
 
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
-Changed in v2: efx_mae_check_encap_match_caps now takes a `bool ipv6` rather
- than an `unsigned char ipv`, simplifying the code.
+Changed in v2: removed bogus 'kcompat' ifdefs (spotted by Michal)
 ---
- drivers/net/ethernet/sfc/mae.c | 97 +++++++++++++++++++++++++++++++++-
- drivers/net/ethernet/sfc/mae.h |  3 ++
- drivers/net/ethernet/sfc/tc.h  | 24 +++++++++
- 3 files changed, 122 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sfc/tc.c | 61 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-index c53d354c1fb2..2290a63908c5 100644
---- a/drivers/net/ethernet/sfc/mae.c
-+++ b/drivers/net/ethernet/sfc/mae.c
-@@ -254,13 +254,23 @@ static int efx_mae_get_rule_fields(struct efx_nic *efx, u32 cmd,
- 	size_t outlen;
- 	int rc, i;
- 
-+	/* AR and OR caps MCDIs have identical layout, so we are using the
-+	 * same code for both.
-+	 */
-+	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_LEN(MAE_NUM_FIELDS) <
-+		     MC_CMD_MAE_GET_OR_CAPS_OUT_LEN(MAE_NUM_FIELDS));
- 	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_IN_LEN);
-+	BUILD_BUG_ON(MC_CMD_MAE_GET_OR_CAPS_IN_LEN);
- 
- 	rc = efx_mcdi_rpc(efx, cmd, NULL, 0, outbuf, sizeof(outbuf), &outlen);
- 	if (rc)
- 		return rc;
-+	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_COUNT_OFST !=
-+		     MC_CMD_MAE_GET_OR_CAPS_OUT_COUNT_OFST);
- 	count = MCDI_DWORD(outbuf, MAE_GET_AR_CAPS_OUT_COUNT);
- 	memset(field_support, MAE_FIELD_UNSUPPORTED, MAE_NUM_FIELDS);
-+	BUILD_BUG_ON(MC_CMD_MAE_GET_AR_CAPS_OUT_FIELD_FLAGS_OFST !=
-+		     MC_CMD_MAE_GET_OR_CAPS_OUT_FIELD_FLAGS_OFST);
- 	caps = _MCDI_DWORD(outbuf, MAE_GET_AR_CAPS_OUT_FIELD_FLAGS);
- 	/* We're only interested in the support status enum, not any other
- 	 * flags, so just extract that from each entry.
-@@ -278,8 +288,12 @@ int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps)
- 	rc = efx_mae_get_basic_caps(efx, caps);
- 	if (rc)
- 		return rc;
--	return efx_mae_get_rule_fields(efx, MC_CMD_MAE_GET_AR_CAPS,
--				       caps->action_rule_fields);
-+	rc = efx_mae_get_rule_fields(efx, MC_CMD_MAE_GET_AR_CAPS,
-+				     caps->action_rule_fields);
-+	if (rc)
-+		return rc;
-+	return efx_mae_get_rule_fields(efx, MC_CMD_MAE_GET_OR_CAPS,
-+				       caps->outer_rule_fields);
- }
- 
- /* Bit twiddling:
-@@ -432,11 +446,67 @@ int efx_mae_match_check_caps(struct efx_nic *efx,
- 	    CHECK_BIT(IP_FIRST_FRAG, ip_firstfrag) ||
- 	    CHECK(RECIRC_ID, recirc_id))
- 		return rc;
-+	/* Matches on outer fields are done in a separate hardware table,
-+	 * the Outer Rule table.  Thus the Action Rule merely does an
-+	 * exact match on Outer Rule ID if any outer field matches are
-+	 * present.  The exception is the VNI/VSID (enc_keyid), which is
-+	 * available to the Action Rule match iff the Outer Rule matched
-+	 * (and thus identified the encap protocol to use to extract it).
-+	 */
-+	if (efx_tc_match_is_encap(mask)) {
-+		rc = efx_mae_match_check_cap_typ(
-+				supported_fields[MAE_FIELD_OUTER_RULE_ID],
-+				MASK_ONES);
-+		if (rc) {
-+			NL_SET_ERR_MSG_MOD(extack, "No support for encap rule ID matches");
-+			return rc;
+diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
+index 34c1ff87ba5e..21eb79b20978 100644
+--- a/drivers/net/ethernet/sfc/tc.c
++++ b/drivers/net/ethernet/sfc/tc.c
+@@ -193,6 +193,11 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
+ 	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
++	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_ENC_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_ENC_CONTROL) |
+ 	      BIT(FLOW_DISSECTOR_KEY_TCP) |
+ 	      BIT(FLOW_DISSECTOR_KEY_IP))) {
+ 		NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported flower keys %#x",
+@@ -280,6 +285,57 @@ static int efx_tc_flower_parse_match(struct efx_nic *efx,
+ 	MAP_KEY_AND_MASK(PORTS, ports, src, l4_sport);
+ 	MAP_KEY_AND_MASK(PORTS, ports, dst, l4_dport);
+ 	MAP_KEY_AND_MASK(TCP, tcp, flags, tcp_flags);
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_CONTROL)) {
++		struct flow_match_control fm;
++
++		flow_rule_match_enc_control(rule, &fm);
++		if (fm.mask->flags) {
++			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported match on enc_control.flags %#x",
++					       fm.mask->flags);
++			return -EOPNOTSUPP;
 +		}
-+		if (CHECK(ENC_VNET_ID, enc_keyid))
-+			return rc;
-+	} else if (mask->enc_keyid) {
-+		NL_SET_ERR_MSG_MOD(extack, "Match on enc_keyid requires other encap fields");
-+		return -EINVAL;
-+	}
- 	return 0;
- }
- #undef CHECK_BIT
- #undef CHECK
- 
-+#define CHECK(_mcdi)	({						       \
-+	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_ ## _mcdi],\
-+					 MASK_ONES);			       \
-+	if (rc)								       \
-+		NL_SET_ERR_MSG_FMT_MOD(extack,				       \
-+				       "No support for field %s", #_mcdi);     \
-+	rc;								       \
-+})
-+/* Checks that the fields needed for encap-rule matches are supported by the
-+ * MAE.  All the fields are exact-match.
-+ */
-+int efx_mae_check_encap_match_caps(struct efx_nic *efx, bool ipv6,
-+				   struct netlink_ext_ack *extack)
-+{
-+	u8 *supported_fields = efx->tc->caps->outer_rule_fields;
-+	int rc;
-+
-+	if (CHECK(ENC_ETHER_TYPE))
-+		return rc;
-+	if (ipv6) {
-+		if (CHECK(ENC_SRC_IP6) ||
-+		    CHECK(ENC_DST_IP6))
-+			return rc;
-+	} else {
-+		if (CHECK(ENC_SRC_IP4) ||
-+		    CHECK(ENC_DST_IP4))
-+			return rc;
-+	}
-+	if (CHECK(ENC_L4_DPORT) ||
-+	    CHECK(ENC_IP_PROTO))
-+		return rc;
-+	return 0;
-+}
-+#undef CHECK
-+
- int efx_mae_allocate_counter(struct efx_nic *efx, struct efx_tc_counter *cnt)
- {
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_COUNTER_ALLOC_OUT_LEN(1));
-@@ -941,6 +1011,29 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
- 				match->value.tcp_flags);
- 	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_TCP_FLAGS_BE_MASK,
- 				match->mask.tcp_flags);
-+	/* enc-keys are handled indirectly, through encap_match ID */
-+	if (match->encap) {
-+		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID,
-+				      match->encap->fw_id);
-+		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID_MASK,
-+				      U32_MAX);
-+		/* enc_keyid (VNI/VSID) is not part of the encap_match */
-+		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE,
-+					 match->value.enc_keyid);
-+		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE_MASK,
-+					 match->mask.enc_keyid);
-+	} else if (WARN_ON_ONCE(match->mask.enc_src_ip) ||
-+		   WARN_ON_ONCE(match->mask.enc_dst_ip) ||
-+		   WARN_ON_ONCE(!ipv6_addr_any(&match->mask.enc_src_ip6)) ||
-+		   WARN_ON_ONCE(!ipv6_addr_any(&match->mask.enc_dst_ip6)) ||
-+		   WARN_ON_ONCE(match->mask.enc_ip_tos) ||
-+		   WARN_ON_ONCE(match->mask.enc_ip_ttl) ||
-+		   WARN_ON_ONCE(match->mask.enc_sport) ||
-+		   WARN_ON_ONCE(match->mask.enc_dport) ||
-+		   WARN_ON_ONCE(match->mask.enc_keyid)) {
-+		/* No enc-keys should appear in a rule without an encap_match */
++		if (!IS_ALL_ONES(fm.mask->addr_type)) {
++			NL_SET_ERR_MSG_FMT_MOD(extack, "Unsupported enc addr_type mask %u (key %u)",
++					       fm.mask->addr_type,
++					       fm.key->addr_type);
++			return -EOPNOTSUPP;
++		}
++		switch (fm.key->addr_type) {
++		case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
++			MAP_ENC_KEY_AND_MASK(IPV4_ADDRS, ipv4_addrs, enc_ipv4_addrs,
++					     src, enc_src_ip);
++			MAP_ENC_KEY_AND_MASK(IPV4_ADDRS, ipv4_addrs, enc_ipv4_addrs,
++					     dst, enc_dst_ip);
++			break;
++#ifdef CONFIG_IPV6
++		case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
++			MAP_ENC_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, enc_ipv6_addrs,
++					     src, enc_src_ip6);
++			MAP_ENC_KEY_AND_MASK(IPV6_ADDRS, ipv6_addrs, enc_ipv6_addrs,
++					     dst, enc_dst_ip6);
++			break;
++#endif
++		default:
++			NL_SET_ERR_MSG_FMT_MOD(extack,
++					       "Unsupported enc addr_type %u (supported are IPv4, IPv6)",
++					       fm.key->addr_type);
++			return -EOPNOTSUPP;
++		}
++		MAP_ENC_KEY_AND_MASK(IP, ip, enc_ip, tos, enc_ip_tos);
++		MAP_ENC_KEY_AND_MASK(IP, ip, enc_ip, ttl, enc_ip_ttl);
++		MAP_ENC_KEY_AND_MASK(PORTS, ports, enc_ports, src, enc_sport);
++		MAP_ENC_KEY_AND_MASK(PORTS, ports, enc_ports, dst, enc_dport);
++		MAP_ENC_KEY_AND_MASK(KEYID, enc_keyid, enc_keyid, keyid, enc_keyid);
++	} else if (dissector->used_keys &
++		   (BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
++		    BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS) |
++		    BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS) |
++		    BIT(FLOW_DISSECTOR_KEY_ENC_IP) |
++		    BIT(FLOW_DISSECTOR_KEY_ENC_PORTS))) {
++		NL_SET_ERR_MSG_FMT_MOD(extack, "Flower enc keys require enc_control (keys: %#x)",
++				       dissector->used_keys);
 +		return -EOPNOTSUPP;
 +	}
+ 
  	return 0;
  }
+@@ -373,6 +429,11 @@ static int efx_tc_flower_replace(struct efx_nic *efx,
+ 	rc = efx_tc_flower_parse_match(efx, fr, &match, extack);
+ 	if (rc)
+ 		return rc;
++	if (efx_tc_match_is_encap(&match.mask)) {
++		NL_SET_ERR_MSG_MOD(extack, "Ingress enc_key matches not supported");
++		rc = -EOPNOTSUPP;
++		goto release;
++	}
  
-diff --git a/drivers/net/ethernet/sfc/mae.h b/drivers/net/ethernet/sfc/mae.h
-index bec293a06733..2ccbc62d79b9 100644
---- a/drivers/net/ethernet/sfc/mae.h
-+++ b/drivers/net/ethernet/sfc/mae.h
-@@ -72,6 +72,7 @@ struct mae_caps {
- 	u32 match_field_count;
- 	u32 action_prios;
- 	u8 action_rule_fields[MAE_NUM_FIELDS];
-+	u8 outer_rule_fields[MAE_NUM_FIELDS];
- };
- 
- int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps);
-@@ -79,6 +80,8 @@ int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps);
- int efx_mae_match_check_caps(struct efx_nic *efx,
- 			     const struct efx_tc_match_fields *mask,
- 			     struct netlink_ext_ack *extack);
-+int efx_mae_check_encap_match_caps(struct efx_nic *efx, bool ipv6,
-+				   struct netlink_ext_ack *extack);
- 
- int efx_mae_allocate_counter(struct efx_nic *efx, struct efx_tc_counter *cnt);
- int efx_mae_free_counter(struct efx_nic *efx, struct efx_tc_counter *cnt);
-diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-index 542853f60c2a..c1485679507c 100644
---- a/drivers/net/ethernet/sfc/tc.h
-+++ b/drivers/net/ethernet/sfc/tc.h
-@@ -48,11 +48,35 @@ struct efx_tc_match_fields {
- 	/* L4 */
- 	__be16 l4_sport, l4_dport; /* Ports (UDP, TCP) */
- 	__be16 tcp_flags;
-+	/* Encap.  The following are *outer* fields.  Note that there are no
-+	 * outer eth (L2) fields; this is because TC doesn't have them.
-+	 */
-+	__be32 enc_src_ip, enc_dst_ip;
-+	struct in6_addr enc_src_ip6, enc_dst_ip6;
-+	u8 enc_ip_tos, enc_ip_ttl;
-+	__be16 enc_sport, enc_dport;
-+	__be32 enc_keyid; /* e.g. VNI, VSID */
-+};
-+
-+static inline bool efx_tc_match_is_encap(const struct efx_tc_match_fields *mask)
-+{
-+	return mask->enc_src_ip || mask->enc_dst_ip ||
-+	       !ipv6_addr_any(&mask->enc_src_ip6) ||
-+	       !ipv6_addr_any(&mask->enc_dst_ip6) || mask->enc_ip_tos ||
-+	       mask->enc_ip_ttl || mask->enc_sport || mask->enc_dport;
-+}
-+
-+struct efx_tc_encap_match {
-+	__be32 src_ip, dst_ip;
-+	struct in6_addr src_ip6, dst_ip6;
-+	__be16 udp_dport;
-+	u32 fw_id; /* index of this entry in firmware encap match table */
- };
- 
- struct efx_tc_match {
- 	struct efx_tc_match_fields value;
- 	struct efx_tc_match_fields mask;
-+	struct efx_tc_encap_match *encap;
- };
- 
- struct efx_tc_action_set_list {
+ 	if (tc->common.chain_index) {
+ 		NL_SET_ERR_MSG_MOD(extack, "No support for nonzero chain_index");
