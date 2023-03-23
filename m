@@ -2,80 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A956C5F18
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79D456C5F1F
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 06:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbjCWFlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 01:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
+        id S229992AbjCWFni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 01:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjCWFlp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:41:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3DEEC4F
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 22:40:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679550057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=D8WMSh/aQ+eAzT9IfV/3va57SyXLtifjECFun3hDE68=;
-        b=gsKTOP0UaQhoUJ15mEJTBqQrACmKzKChWrmEqqajR30Yv0VR1mvBLK+6eMlfWD3xLjjwB9
-        7GJG4jhKtxpixJaE+ubC0jTQfhVmmOfhK+bQLSLI8I7D8rBBUfkbZ2cHhtM+1HoHfU56Uj
-        ikiQFpcGTNm6fBiBo2QdC4Pxloo9uGk=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-180-_7P1QrA_N-OHci7Zlb034w-1; Thu, 23 Mar 2023 01:40:55 -0400
-X-MC-Unique: _7P1QrA_N-OHci7Zlb034w-1
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-1777653e2c4so10824573fac.1
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 22:40:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679550054;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=D8WMSh/aQ+eAzT9IfV/3va57SyXLtifjECFun3hDE68=;
-        b=z1hTMoZeh3m21eOWgwJiwgWUPARZROlmn3Kcwa0lFpV5WxtRhdY2puMo655LByNwOt
-         j/vYOBP9bwnEKoz7Z62ET6IO84NrFv3dW8WPN0NyTI5dmsIzDsGYq/p1/+zU53udnCeL
-         yYpE46AP1VsiM9BMsMDkYyZI9fKjBBR8c5o1G1tM1MellrBcfmKO+bUOzLoWBwnj033G
-         GX+ksfK9cSg8NACdmveWKcL5cL5uZpWO2kiGSN182qkpv4mVbvb9MaG8tfKypdDUF/Oz
-         K6LBdqOW27yDU9ZuMDAVAD7Pbo0F6GnN0jjC93CPg/ZNBYComXOhSPUfN9FC+GKG5TXN
-         xLOw==
-X-Gm-Message-State: AAQBX9eSI7PgQ2MPSGZcJiwGvab2NRT+ada9r6WwSD1CdWBUu0j/ZFsT
-        pzs3OYOq7fmpAeFWOWTyQVgTz9BS3ismkcQ4tIavrF0E+Mc2SrVJw/yRl/7Uz4qHkwsImN1dOb/
-        J/vh1GBInSYwhaDyTI8C+Prx5zbF2GUxPDauN2m1fRvfXNQ==
-X-Received: by 2002:a05:6871:8f14:b0:177:83f7:351c with SMTP id zz20-20020a0568718f1400b0017783f7351cmr593753oab.9.1679550054392;
-        Wed, 22 Mar 2023 22:40:54 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9g1YSjMDMQC+7+4yeX/CPsFYBSYAc0A6erI1PPIA4fosMlO2u/x57fcKvYMnvLOFEHYjlSjRzQvBThlEzDl9M=
-X-Received: by 2002:a05:6871:8f14:b0:177:83f7:351c with SMTP id
- zz20-20020a0568718f1400b0017783f7351cmr593745oab.9.1679550054237; Wed, 22 Mar
- 2023 22:40:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
- <20230322030308.16046-3-xuanzhuo@linux.alibaba.com> <c7749936-c154-da51-ccfb-f16150d19c62@huawei.com>
- <1679535924.6219428-2-xuanzhuo@linux.alibaba.com> <215e791d-1802-2419-ff59-49476bcdcd02@huawei.com>
-In-Reply-To: <215e791d-1802-2419-ff59-49476bcdcd02@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 23 Mar 2023 13:40:43 +0800
-Message-ID: <CACGkMEv=0gt6LS0HSgKELQqnWfQ2UdFgAKdvh=CLaAPLeNytww@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/8] virtio_net: mergeable xdp: introduce mergeable_xdp_prepare
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        with ESMTP id S229518AbjCWFnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 01:43:37 -0400
+Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FA62D71;
+        Wed, 22 Mar 2023 22:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:mime-version:content-type;
+    bh=MeIqqU801ek5SkHPjrnacNy+ppXbuSbPHvJgRw8WK+Y=;
+    b=LfRkx0OdmRFc7dNVcJllqPQ2+hTldKa+MPmeSyGMLasHoOwo5N/ZJT2L+Tue2W
+      r8bOEJdanruCbWvwW/1NB58LnYi0evGttv+NN8K2/JQMp7MTC6KANxjZhGKxFM
+      djwvPYSamcluRYvDNT2JAFvsPWOXAeyXdp9gqJnzS1YgdH4=
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
+ 15.1.2375.34; Wed, 22 Mar 2023 22:43:25 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id C1620200AB;
+        Wed, 22 Mar 2023 22:43:27 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id A9FFBA8383; Wed, 22 Mar 2023 22:43:27 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>, <stable@vger.kernel.org>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        Guolin Yang <gyang@vmware.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] vmxnet3: use gro callback when UPT is enabled
+Date:   Wed, 22 Mar 2023 22:43:19 -0700
+Message-ID: <20230323054322.24938-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
+MIME-Version: 1.0
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -84,26 +57,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >
-> >>
-> >> Also, it seems better to split the xdp_linearize_page() to two functions
-> >> as pskb_expand_head() and __skb_linearize() do, one to expand the headroom,
-> >> the other one to do the linearizing.
-> >
-> > No skb here.
->
-> I means following the semantics of pskb_expand_head() and __skb_linearize(),
-> not to combine the headroom expanding and linearizing into one function as
-> xdp_linearize_page() does now if we want a better refoctor result.
+Currently, vmxnet3 uses GRO callback only if LRO is disabled. However,
+on smartNic based setups where UPT is supported, LRO can be enabled
+from guest VM but UPT devicve does not support LRO as of now. In such
+cases, there can be performance degradation as GRO is not being done.
 
-Not sure it's worth it, since the use is very specific unless we could
-find a case that wants only one of them.
+This patch fixes this issue by calling GRO API when UPT is enabled. We
+use updateRxProd to determine if UPT mode is active or not.
 
-Thanks
+To clarify few things discussed over the thread:
+The patch is not neglecting any feature bits nor disabling GRO. It uses
+GRO callback when UPT is active as LRO is not available in UPT.
+GRO callback cannot be used as default for all cases as it degrades
+performance for non-UPT cases or for cases when LRO is already done in
+ESXi.
 
->
-> >
-> >
-> >>
->
+Cc: stable@vger.kernel.org
+Fixes: 6f91f4ba046e ("vmxnet3: add support for capability registers")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 682987040ea8..8f7ac7d85afc 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1688,7 +1688,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			if (unlikely(rcd->ts))
+ 				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), rcd->tci);
+ 
+-			if (adapter->netdev->features & NETIF_F_LRO)
++			/* Use GRO callback if UPT is enabled */
++			if ((adapter->netdev->features & NETIF_F_LRO) && !rq->shared->updateRxProd)
+ 				netif_receive_skb(skb);
+ 			else
+ 				napi_gro_receive(&rq->napi, skb);
+-- 
+2.11.0
 
