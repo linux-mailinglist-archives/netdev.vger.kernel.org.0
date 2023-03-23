@@ -2,130 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 014636C67AD
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 13:09:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8FDA6C6870
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 13:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbjCWMJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 08:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
+        id S231472AbjCWMf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 08:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjCWMI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 08:08:59 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5375A46B6;
-        Thu, 23 Mar 2023 05:08:58 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id s8so27120909lfr.8;
-        Thu, 23 Mar 2023 05:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679573336;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xzgI+B9ASfOGNYBH0IR4jXCQ7CKwmiqjpGUIbZHwnnc=;
-        b=LFKNwiWKSW7Ndn5zWY0V3TIVkQO7LGJoUbnGfHAzF6WG24W5M+VIvRUapx+q+WFgqu
-         SiyZaq1BBzTjpH26yZ1+BD5RLXxCxh8nNjMJnF+CGTYpFdCpXcRkYajpbGkw1zfSivqo
-         5IbuF/edaVAQ5qWwJFUnXpaJhfGHvvtuN3Idj9qkPciVMZV3kF20JpRrP/irEPtV356v
-         YTIncCqa+BiKhDPKRbdtpvbYACV7gZI35YJAvAl+ch2HBhVuntntMdOtTX6Nz6EXUFm7
-         +TzPJp7JG42UcAAjUTqqvbbhAuK3aC9XyJgPsXIeicQ66tAIUXpg+pjastRoG67dkUgj
-         f+vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679573336;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xzgI+B9ASfOGNYBH0IR4jXCQ7CKwmiqjpGUIbZHwnnc=;
-        b=Z8eHpdCJ+GeDWSdryqygS/svudkg4BpbiVZDq82TjfBNaAUZwqVShysGCYKEKDL6ws
-         qcKxLqxfwSIPbPeT74CGfpXRZM8yQL4t0T3VGHD5iO2LX1drPqxW7Spon+3Wv7rAF8NM
-         y0/+t1sBi+P4waR83p24niqw+hdq2PXToWadsMAX9wr4JpiOZh+dbkKjR/BZlMkBTNRv
-         Cl1wd4xv4GlUzRgrE3m8FkMZZLA3XlWtHm3ijlivtiFX8HysNLN4+oxkeb7AafuyZtN5
-         iFq7CvQWKUhcy0yJ9YpMfBtUAt/rg4l83Ne8HtJ03DNN2m9LpkUB35JcHJjO96ePcv3J
-         CNlA==
-X-Gm-Message-State: AO0yUKXQ0v2ZgYR2TEQ6Q75u9e8LL5j2/9iHI5tPXTk6+VZMRup4rLqw
-        20m14uYeK82j5PtqkWw4kWQ=
-X-Google-Smtp-Source: AK7set+84k7eBxJAPoHl2JzEu70ox/d+Ysoy3SdQ5Tz3UrPm6eVSvg55ypTOmhgj5bq6t2O+AVvFgA==
-X-Received: by 2002:a05:6512:249:b0:4b4:e14a:ec7d with SMTP id b9-20020a056512024900b004b4e14aec7dmr3143131lfo.17.1679573336526;
-        Thu, 23 Mar 2023 05:08:56 -0700 (PDT)
-Received: from mobilestation ([95.79.133.202])
-        by smtp.gmail.com with ESMTPSA id p19-20020a19f013000000b004eaf9ef5e7asm422577lfc.226.2023.03.23.05.08.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Mar 2023 05:08:56 -0700 (PDT)
-Date:   Thu, 23 Mar 2023 15:08:53 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 14/16] dt-bindings: net: dwmac: Use flag
- definition instead of booleans
-Message-ID: <20230323120853.wse2pvknvznawxpk@mobilestation>
-References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
- <20230313225103.30512-15-Sergey.Semin@baikalelectronics.ru>
- <faf70823-f87b-ba50-ac72-3552de1cc7e3@linaro.org>
+        with ESMTP id S230078AbjCWMf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 08:35:28 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D0C1B2F8;
+        Thu, 23 Mar 2023 05:35:27 -0700 (PDT)
+Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Pj46f6NSwzKmj9;
+        Thu, 23 Mar 2023 20:15:22 +0800 (CST)
+Received: from [10.174.179.79] (10.174.179.79) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Thu, 23 Mar 2023 20:15:44 +0800
+Subject: Re: [PATCH v2] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, <joro@8bytes.org>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <wangrong68@huawei.com>,
+        Cindy Lu <lulu@redhat.com>
+References: <20230207120843.1580403-1-sunnanyong@huawei.com>
+ <Y+7G+tiBCjKYnxcZ@nvidia.com> <20230217051158-mutt-send-email-mst@kernel.org>
+ <Y+92c9us3HVjO2Zq@nvidia.com>
+ <CACGkMEsVBhxtpUFs7TrQzAecO8kK_NR+b1EvD2H7MjJ+2aEKJw@mail.gmail.com>
+ <20230310034101-mutt-send-email-mst@kernel.org>
+ <CACGkMEsr3xSa=1WtU35CepWSJ8CK9g4nGXgmHS_9D09LHi7H8g@mail.gmail.com>
+ <20230310045100-mutt-send-email-mst@kernel.org> <ZAskNjP3d9ipki4k@nvidia.com>
+ <c6e60ed9-6de2-2f4a-7bd1-52c53ed57a28@huawei.com>
+ <ZBw4hGj8oGARaKhW@nvidia.com>
+From:   Nanyong Sun <sunnanyong@huawei.com>
+Message-ID: <b2c24e31-a708-8556-0029-93c0aa22a6ef@huawei.com>
+Date:   Thu, 23 Mar 2023 20:15:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <faf70823-f87b-ba50-ac72-3552de1cc7e3@linaro.org>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <ZBw4hGj8oGARaKhW@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.79]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 09:09:37AM +0100, Krzysztof Kozlowski wrote:
-> On 13/03/2023 23:51, Serge Semin wrote:
-> > Currently some of the boolean properties defined in the DT-schema are
-> > marked to have the basic boolean type meanwhile the rest referencing the
-> > /schemas/types.yaml#/definitions/flag schema. For the sake of unification
-> > let's convert the first group to referencing the pre-defined flag schema.
-> > Thus bindings will look a bit more coherent and the DT-bindings
-> > maintainers will have a better control over the booleans defined in the
-> > schema (if ever needed).
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  .../devicetree/bindings/net/snps,dwmac.yaml   | 45 ++++++++++++-------
-> >  1 file changed, 30 insertions(+), 15 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > index 69be39d55403..a863b5860566 100644
-> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > @@ -120,11 +120,13 @@ properties:
-> >          maximum: 12
-> >  
-> >        snps,rx-sched-sp:
-> > -        type: boolean
-> > +        $ref: /schemas/types.yaml#/definitions/flag
-> >          description: Strict priority
-> 
+On 2023/3/23 19:31, Jason Gunthorpe wrote:
 
-> If ever touching this, it should be other way -> boolean.
+> On Thu, Mar 23, 2023 at 05:22:36PM +0800, Nanyong Sun wrote:
+>>> A patch to export that function is alread posted:
+>>>
+>>> https://lore.kernel.org/linux-iommu/BN9PR11MB52760E9705F2985EACCD5C4A8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com/T/#u
+>>>
+>>> But I do not want VDPA to mis-use it unless it also implements all the
+>>> ownership stuff properly.
+>>>
+>> I want to confirm if we need to introduce iommu group logic to vdpa, as "all
+>> the ownership stuff" ?
+> You have to call iommu_device_claim_dma_owner()
+>
+> But again, this is all pointless, iommufd takes are of all of this and
+> VDPA should switch to it instead of more hacking.
+>
+> Jason
+> .
+Yeah,  thanks for your suggestion，but as Michael and Jason Wang said, 
+before iommufd is ready, we may need to make vDPA work well on software 
+managed MSI platforms.
+To achieve that, basically we have two ways:
 
-Ok. I'll drop the patch then.
-
--Serge(y)
-
-> 
-> Best regards,
-> Krzysztof
-> 
+1. export iommu_get_resv_regions, and get regions device by device.
+2. introduce iommu group, get regions by iommu_get_group_resv_regions, 
+which already exported.
