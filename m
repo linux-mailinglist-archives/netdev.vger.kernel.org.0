@@ -2,150 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 717DC6C6B5C
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 937D16C6B7C
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:49:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbjCWOoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 10:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
+        id S231882AbjCWOtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 10:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbjCWOox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:44:53 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2062.outbound.protection.outlook.com [40.107.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF3423D93;
-        Thu, 23 Mar 2023 07:44:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IDYuhYg6MbkCXddo+/TM5elJ8XyTMrUFF2n2kgjI0gc=;
- b=Ku0FcyTSUAJHti6C5Qlkq62NFGyBv9mxkruCJzRUe9TzRYbChPij7Jl6WaNChDnb6ODQMmI+vxBNGCr6/89xMnoU1gAUNHki3SmEZUhVSsFoCGRyLLixN1Pj8NdBSTRaWDeJBpltTWvlnMRgRW2Aky4EIE4SIRUcnQJAZj4b3xpcQPbm5iHmLmVqJXBBTX+DAi3t6Ukw2aRcKk7/+U+FiawOt7niQcg+A4WEeqCJ1pC+pYIfR0te6z1n6IckY5agwxY9Zxg91Pf/ocLR4PBIiBLHZJGdQZz+KNnSbrPwyC0wAbIY+jhDANCJS8GCNtBLj20N5nNU+FAAfjRGo7G92w==
-Received: from AM5PR0202CA0012.eurprd02.prod.outlook.com
- (2603:10a6:203:69::22) by AM9PR03MB7542.eurprd03.prod.outlook.com
- (2603:10a6:20b:411::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Thu, 23 Mar
- 2023 14:44:48 +0000
-Received: from AM6EUR05FT049.eop-eur05.prod.protection.outlook.com
- (2603:10a6:203:69:cafe::bc) by AM5PR0202CA0012.outlook.office365.com
- (2603:10a6:203:69::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37 via Frontend
- Transport; Thu, 23 Mar 2023 14:44:48 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.160.56.81)
- smtp.mailfrom=seco.com; dkim=pass (signature was verified)
- header.d=seco.com;dmarc=pass action=none header.from=seco.com;
-Received-SPF: Pass (protection.outlook.com: domain of seco.com designates
- 20.160.56.81 as permitted sender) receiver=protection.outlook.com;
- client-ip=20.160.56.81; helo=inpost-eu.tmcas.trendmicro.com; pr=C
-Received: from inpost-eu.tmcas.trendmicro.com (20.160.56.81) by
- AM6EUR05FT049.mail.protection.outlook.com (10.233.241.157) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6222.17 via Frontend Transport; Thu, 23 Mar 2023 14:44:48 +0000
-Received: from outmta (unknown [192.168.82.132])
-        by inpost-eu.tmcas.trendmicro.com (Trend Micro CAS) with ESMTP id 1EC422008088C;
-        Thu, 23 Mar 2023 14:44:48 +0000 (UTC)
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (unknown [104.47.17.172])
-        by repre.tmcas.trendmicro.com (Trend Micro CAS) with ESMTPS id 8FD9120080075;
-        Thu, 23 Mar 2023 14:34:56 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bmkKzwhDtGe/1IYUHBWDG2n5zX/jnW+x46xpt/JdDtVCOup/NhQCzhacZ80o2hXQ3G2DF/4/9FngnsrGDZTMco/MORgcgB1WabQjg1IYs/v78XUP4JxfkkQtGGLl9H0rsjUveZG3sk3wmHRX2cIZ0azf3qSmlrKbuX4ehZtDuBFWeYBB7VceRUczJetjZ49PmOgJQFWlFo0bhYuDIDYHJL3AStJ4/uXMprV07GiWzLeiFzl6ENryEbfj4Ffg1JvWjCpinSNL52+CIQcrHucb3ftLjj/B7IpQAkrz6Nnubldq032wd4yl2g/0B4va5OIBSNAP1Tj4o1W1LfZzwSzFsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IDYuhYg6MbkCXddo+/TM5elJ8XyTMrUFF2n2kgjI0gc=;
- b=E3d9NMohQ42yhnCvhlnBdy8Qze5jT20rbiZwGnllBDx+XkAAIpumYCEODFG+J2LKgNSNRzaxVYxuYlvIz/L+KfKcr+Ctqwo+o5slyUdBANKz/upHBAvjq/MZY6v0Rk+qVxblX47zLcaA6rjalhIvTIkzftdYKcP1KbLLAyt5KptHPaTeHfg9xPlv2IIyKldz0+9fbjsAhyUV2gaw/pLPDtA9I3DOvUC8RjtEiuyGP3DiBItd0d2qlRDVtLKmMkK7TUIYz0Wsadc7UQ/sS1sqePMwZp8KlI7et6rtlroYbTAlQQT8DNoAQaWDyAVGQmrw7H3WfCAKXDdiN7/ccyB43w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IDYuhYg6MbkCXddo+/TM5elJ8XyTMrUFF2n2kgjI0gc=;
- b=Ku0FcyTSUAJHti6C5Qlkq62NFGyBv9mxkruCJzRUe9TzRYbChPij7Jl6WaNChDnb6ODQMmI+vxBNGCr6/89xMnoU1gAUNHki3SmEZUhVSsFoCGRyLLixN1Pj8NdBSTRaWDeJBpltTWvlnMRgRW2Aky4EIE4SIRUcnQJAZj4b3xpcQPbm5iHmLmVqJXBBTX+DAi3t6Ukw2aRcKk7/+U+FiawOt7niQcg+A4WEeqCJ1pC+pYIfR0te6z1n6IckY5agwxY9Zxg91Pf/ocLR4PBIiBLHZJGdQZz+KNnSbrPwyC0wAbIY+jhDANCJS8GCNtBLj20N5nNU+FAAfjRGo7G92w==
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com (2603:10a6:10:3dd::13)
- by PAWPR03MB9129.eurprd03.prod.outlook.com (2603:10a6:102:33d::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.37; Thu, 23 Mar
- 2023 14:44:39 +0000
-Received: from DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::dbcf:1089:3242:614e]) by DB9PR03MB8847.eurprd03.prod.outlook.com
- ([fe80::dbcf:1089:3242:614e%6]) with mapi id 15.20.6178.037; Thu, 23 Mar 2023
- 14:44:39 +0000
-Message-ID: <c93f3b1d-3fc8-ee1c-7a7b-5d3d4562f5f9@seco.com>
-Date:   Thu, 23 Mar 2023 10:44:34 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH net v2] net: dpaa2-mac: Get serdes only for backplane
- links
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        with ESMTP id S231860AbjCWOtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 10:49:17 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F4C113C0;
+        Thu, 23 Mar 2023 07:49:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kq/ue7wGgTFGUzW69Vf2Bw/C+gOE5WPwtv5TM9ErifE=; b=g+x3wPOcQBmEbr/fo+Ii280r+c
+        a3wpLw1a3jiqC0cxpflxZXhqL0DbumsUQe5xktkglhPjV6OCzcQ6TQ22rmAlUU5AzJKujiKGR1v8M
+        16gbjuu7oP/ySSXvmJYBEysTkVBbZ8ehZRxKn4MeNTZbxdeYgUyogdFUn5ja3HGeCfdOzN++vPN+o
+        U8nkZig0SA9qSelcKomk6jMGMTgu2zCH7oSo0hKY6sMl8BeWzyy/7VESZJIOeqqmUvQKKbGgQrBtg
+        2BX+nNs8VeI22EA4teVmWekNzEs9/pGwBNILtWUFIH8J1/r9fUVlrlOczrV2zRn92ujieX+lqfm6U
+        L6CxiQHw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45254)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pfMFT-0005IM-CQ; Thu, 23 Mar 2023 14:49:03 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pfMFR-0001T9-9Q; Thu, 23 Mar 2023 14:49:01 +0000
+Date:   Thu, 23 Mar 2023 14:49:01 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
-References: <20230304003159.1389573-1-sean.anderson@seco.com>
- <20230306080953.3wbprojol4gs5bel@LXL00007.wbi.nxp.com>
- <4cf5fd5b-cf89-4968-d2ff-f828ca51dd31@seco.com>
- <e17fd247-181f-ab33-d1d7-aafd18e87684@seco.com>
- <20230322161026.5633f8d4@kernel.org>
-From:   Sean Anderson <sean.anderson@seco.com>
-In-Reply-To: <20230322161026.5633f8d4@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0351.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::26) To DB9PR03MB8847.eurprd03.prod.outlook.com
- (2603:10a6:10:3dd::13)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
+ get phy interface mode
+Message-ID: <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
+ <ZBxcGXSVe0dlzKZb@smile.fi.intel.com>
+ <ZBxiqJo470A7bkig@shell.armlinux.org.uk>
+ <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
 MIME-Version: 1.0
-X-MS-TrafficTypeDiagnostic: DB9PR03MB8847:EE_|PAWPR03MB9129:EE_|AM6EUR05FT049:EE_|AM9PR03MB7542:EE_
-X-MS-Office365-Filtering-Correlation-Id: 837b2976-2a3f-4a30-646a-08db2bad26bf
-X-TrendMicro-CAS-OUT-LOOP-IDENTIFIER: 656f966764b7fb185830381c646b41a1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: cSLKGic3bWvBtL5vYQtpboASJrChzN4yrl5i4Hqok2Wc9D1gih1JsCLzi1HHE8rVI1tl4cpu14V6acIj61nFRFEbgwZk9+Tlt3bUemLNOLXjweCoBFwPZL/fhqGn60hqgeS1UCnM463AnBLTLgX5Jl4F6VT2eY6Kfd95EbcOqtEt+CO5rONPugTIJz3yFBrkVs5+1Yls/bX8bRGRpDZyoKDHx7kuWeLASd1yyLn2dfhnQL2/2nmHR7nOE03O5Tx2ewYVclHHY2JNSttfIzMcBSkPIn5Xf9+zKJWW/J0fN9TvIdhUY7VLAbTMWdUs+tpP0OGPS2PgTWSSf/UUKeeNL4FI5vVHF2leZwcBUJm2SyQieYj4tbnXSD9YuzgNRTkEias67ZbD4NQQv4NZfquJH7+w/2ydCAx9x6qQE/SVMU+PXs8AeunG5nqLyTwSuyA+lFeP09IwSBOQu5by2c4rn/gQaOb7szEV2Z5NnlL80s65XpVFVntsRI1ynbv6y9FCgmWB6rfAt3VhRjJh9fPSd6RkWnxsAWEGQOQTuNkGfwxwzzLLVx6lZxBIe3GV2Xrt+vwgHigR4zLeuRe/5vuKJ4RogIhR3EhGCo6rF7KehQryxt27FCOO42F/U8uW6mo/uyWRCwMSt29CNfAAginlrD4kCLT3bAnEz1YrkQ/qh98JCQnb6NnK7FX89HmV72JkxaJO4oRm4bkFcLLynt3xCq+lCK+Uq11X5FG9JIJrT8X6HlRZRiMdkm+FCIVMKWArh8gmyChj+9uwOJxhyELAoQ==
-X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR03MB8847.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39850400004)(366004)(136003)(346002)(376002)(396003)(451199018)(36756003)(6916009)(8676002)(86362001)(4326008)(66946007)(66556008)(8936002)(66476007)(41300700001)(6486002)(478600001)(52116002)(316002)(54906003)(44832011)(5660300002)(2906002)(4744005)(31696002)(26005)(38100700002)(38350700002)(53546011)(6512007)(6506007)(6666004)(186003)(83380400001)(2616005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR03MB9129
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM6EUR05FT049.eop-eur05.prod.protection.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 39f92672-9367-4c45-0ce1-08db2bad2148
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: A5y79+FkzjcOioKTCewkl+6ZnMRI55AbBaU9TyzrUzINDlO+WF43taxOfloZvMaZpq6Wuidpgsd8Bxo5MLg7oU9Id4bfIm3vvJ5JoGISAxrrSfWHlTGAr/t2tj0mm7F8gGs/7sYQWF0x4lf7HHvX8Ccn+CdhYmR8rE1i1r2iqR6Qoq8SjBv13b+6/DR7JSF/mM5PYUw7orggnBmqC3ykqtH9fgbuAotU8w/GWIM4Aa/3uf7p2oYrhiS/9e+DBLzb8ulXqoxF/9o7BaVsxGCXKVUOD4BnpyC2zf3nNOkozyVuzvuL3JyNUoCxYwoI10j0/Os0aC8sRWebHPxmroDsFIMe/MzTj722l3bqY43N6QeF7StVQv2K6RsJSapjlm9tGRSuuRKUuN3wGo2dz4P9z70nXEy0fDW92QAcV7vATi9px0SCt28AVLPFkXLbNUOFMtmAEuPlGv4YP6ZMP5Pc+rlU7UPTQqUUVF72Px4XiZarvvO2wOKA3rko8nihHh7pOkEm+l3E8b/jUUVMq1XlhHoV6koAlA0xZjAr5/eSv0FdHM8Gwe4M0uxMtfCQ/T1JVFaJoCjQm5QEpB1OS+X5mNc/W/LZE6en1DsM1HYkOheXjw78PwtN7syMl7fm2UrYVUkM5CAWGlWRShRbPqFuuDKWyQRZHa38j9qhEHJKDYFZPfUOTevnEcjwswP835aQcOQyEDKfQQFUaaBlDfy61OJD/oYmFy0AwvQMqWi4bdsNE3Y3AjT0mDHPgaZNCMm2Lf6pXhj3R5QHpFVI+dpscg==
-X-Forefront-Antispam-Report: CIP:20.160.56.81;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:inpost-eu.tmcas.trendmicro.com;PTR:inpost-eu.tmcas.trendmicro.com;CAT:NONE;SFS:(13230025)(376002)(136003)(396003)(346002)(39850400004)(451199018)(46966006)(36840700001)(40470700004)(82740400003)(6506007)(6512007)(6666004)(7636003)(7596003)(53546011)(36860700001)(336012)(34020700004)(36756003)(47076005)(83380400001)(40480700001)(2616005)(26005)(186003)(40460700003)(5660300002)(8936002)(44832011)(4744005)(31696002)(54906003)(86362001)(478600001)(41300700001)(31686004)(316002)(6486002)(2906002)(4326008)(8676002)(6916009)(70206006)(82310400005)(356005)(70586007)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2023 14:44:48.2002
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 837b2976-2a3f-4a30-646a-08db2bad26bf
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=bebe97c3-6438-442e-ade3-ff17aa50e733;Ip=[20.160.56.81];Helo=[inpost-eu.tmcas.trendmicro.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM6EUR05FT049.eop-eur05.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR03MB7542
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/22/23 19:10, Jakub Kicinski wrote:
-> On Wed, 22 Mar 2023 15:52:23 -0400 Sean Anderson wrote:
->> I see this is marked as "changes requested" on patchwork. However,
->> as explained above, I do not think that the requested changes are
->> necessary. Please review the patch status.
+On Thu, Mar 23, 2023 at 04:38:29PM +0200, Andy Shevchenko wrote:
+> On Thu, Mar 23, 2023 at 02:31:04PM +0000, Russell King (Oracle) wrote:
+> > On Thu, Mar 23, 2023 at 04:03:05PM +0200, Andy Shevchenko wrote:
+> > > On Wed, Mar 22, 2023 at 12:00:06PM +0000, Russell King (Oracle) wrote:
 > 
-> Let me document this, it keeps coming up. Patch incoming..
+> ...
+> 
+> > > > +	struct fwnode_handle *fwnode;
+> > > 
+> > > > +	fwnode = of_fwnode_handle(dp->dn);
+> > > 
+> > > 	const struct fwnode_handle *fwnode = of_fwnode_handle(dp->dn);
+> > > 
+> > > ?
+> > 
+> > Why const?
+> 
+> Do you modify its content on the fly?
 
-This is documented in the commit message. In fact, I got almost the same
-response from Ioana the last time, made the same explanation, and
-updated the commit message, but he did not respond to any further
-emails. If I resend again, what will prevent that happening again? I am
-doing my best to try and clarify this patch, but I am getting no
-feedback. Nothing like "OK, Sean that makes sense to me, please put it
-in the commit message" or "No, I don't think that's right because of
-XYZ."
+Do you want to litter code with casts to get rid of the const?
 
---Sean
+> For fwnode as a basic object type we want to reduce the scope of the possible
+> modifications. If you don't modify and APIs you call do not require non-const
+> object, use const for fwnode.
+
+Let's start here. We pass this fwnode to fwnode_get_phy_mode():
+
+include/linux/property.h:int fwnode_get_phy_mode(struct fwnode_handle *fwnode);
+
+Does fwnode_get_phy_mode() alter the contents of the fwnode? Probably
+not, but it doesn't take a const pointer. Therefore, to declare my
+fwnode as const, I'd need to cast the const-ness away before calling
+this.
+
+Then there's phylink_create(). Same problem.
+
+So NAK to this const - until such time that we have a concerted effort
+to making functions we call which do not modify the "fwnode" argument
+constify that argument. Otherwise it's just rediculously crazy to
+declare a variable const only to then litter the code with casts to get
+rid of it at every call site.
+
+Please do a bit of research before making suggestions. Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
