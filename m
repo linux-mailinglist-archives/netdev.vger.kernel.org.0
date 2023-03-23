@@ -2,52 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3D36C71CD
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 21:47:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1EF6C71D1
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 21:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbjCWUrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 16:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
+        id S231519AbjCWUrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 16:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbjCWUq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 16:46:58 -0400
-Received: from out-35.mta0.migadu.com (out-35.mta0.migadu.com [IPv6:2001:41d0:1004:224b::23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14DF19C6B
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 13:46:54 -0700 (PDT)
-Message-ID: <366b9486-9a00-6add-d54b-5c3f4d35afe9@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1679604412;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6+GSINJMGgmTxXNiTw2ylsqugVHlWlCO9tBE/Mc8vbA=;
-        b=ini74+NpbGOtOqFBntZhuoiX0dFpv4Z89uAEvQtk6WH0aGrgfrX695wAumDN6qKza8Hs16
-        7FzRFk8+knRwzixoC1qZAbZDU3aHc9vndZjRJ08hcjbvhfMF5qKx5rjETnW7VXBDE71SDa
-        Lm7mNNQyFO+hyEewOCT3HakjkV3pvyU=
-Date:   Thu, 23 Mar 2023 13:46:40 -0700
+        with ESMTP id S231499AbjCWUrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 16:47:18 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D92193EC;
+        Thu, 23 Mar 2023 13:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=eUkdv6Q7/eqKCd6rPmBFDOxJKcz0jZzE3fT0VIR99q4=; b=zPuIimfBQ66Vy5fFRLviudlFfZ
+        a5WdKzqpM8Jsze/rSjK2ng1dUoPsstUiJYsnqepINeCS/QSNMjT9CZWSoDM14lgrTzLNwoqhZ1/t8
+        tNsnOcm9HcVnxKVuo/iw30lxW6yDgwwHS5erx4ByZHPYNcfycvvHHOK6WXDVCpFHvRj3rtjPB7aEE
+        6fVGta9PNtcCYWJQXAUGGa12NCwsgGNXjIDrrqF4IJN+Je7rJqKV0EFAIMqMyyS8qBvuErsaINYAF
+        R+nRlZJC+tZwNiHhv0hls+fIxucuPgCqZ5t/g+jIpRTsg9YmTU9QGmeZi8FHtApvV/nWxsDXABzSL
+        crweK91g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43804)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pfRpn-0005p4-OW; Thu, 23 Mar 2023 20:46:55 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pfRpj-0001ip-Ug; Thu, 23 Mar 2023 20:46:52 +0000
+Date:   Thu, 23 Mar 2023 20:46:51 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
+ get phy interface mode
+Message-ID: <ZBy6u/8HhaPbWXA9@shell.armlinux.org.uk>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
+ <ZBxcGXSVe0dlzKZb@smile.fi.intel.com>
+ <ZBxiqJo470A7bkig@shell.armlinux.org.uk>
+ <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
+ <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
+ <ZBxpeLOmTMzqVTRV@smile.fi.intel.com>
+ <ZBySKoHh25AMMBVg@shell.armlinux.org.uk>
+ <ZByUvVGRhpFUYrVq@smile.fi.intel.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next v2 1/2] net/smc: Introduce BPF injection
- capability for SMC
-Content-Language: en-US
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        bpf@vger.kernel.org, kgraul@linux.ibm.com, wenjia@linux.ibm.com,
-        jaka@linux.ibm.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-References: <1676981919-64884-1-git-send-email-alibuda@linux.alibaba.com>
- <1676981919-64884-2-git-send-email-alibuda@linux.alibaba.com>
- <76e226e6-f3bf-f740-c86c-6ee214aff07d@linux.dev>
- <72030784-451a-2042-cbb7-98e1f9a544d5@linux.alibaba.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <72030784-451a-2042-cbb7-98e1f9a544d5@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZByUvVGRhpFUYrVq@smile.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,49 +76,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/9/23 3:49 AM, D. Wythe wrote:
->>> --- /dev/null
->>> +++ b/net/smc/bpf_smc_struct_ops.c
->>> @@ -0,0 +1,146 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +
->>> +#include <linux/kernel.h>
->>> +#include <linux/bpf_verifier.h>
->>> +#include <linux/btf_ids.h>
->>> +#include <linux/bpf.h>
->>> +#include <linux/btf.h>
->>> +#include <net/sock.h>
->>> +#include <net/smc.h>
->>> +
->>> +extern struct bpf_struct_ops smc_sock_negotiator_ops;
->>> +
->>> +DEFINE_RWLOCK(smc_sock_negotiator_ops_rwlock);
->>> +struct smc_sock_negotiator_ops *negotiator;
->>
->> Is it sure one global negotiator (policy) will work for all smc_sock? or each 
->> sk should have its own negotiator and the negotiator is selected by setsockopt.
->>
-> This is really a good question,  we can really consider adding an independent 
-> negotiator for each sock.
+On Thu, Mar 23, 2023 at 08:04:45PM +0200, Andy Shevchenko wrote:
+> On Thu, Mar 23, 2023 at 05:53:46PM +0000, Russell King (Oracle) wrote:
+> > On Thu, Mar 23, 2023 at 05:00:08PM +0200, Andy Shevchenko wrote:
+> > > On Thu, Mar 23, 2023 at 02:49:01PM +0000, Russell King (Oracle) wrote:
+> > > > Let's start here. We pass this fwnode to fwnode_get_phy_mode():
+> > > > 
+> > > > include/linux/property.h:int fwnode_get_phy_mode(struct fwnode_handle *fwnode);
+> > > > 
+> > > > Does fwnode_get_phy_mode() alter the contents of the fwnode? Probably
+> > > > not, but it doesn't take a const pointer. Therefore, to declare my
+> > > > fwnode as const, I'd need to cast the const-ness away before calling
+> > > > this.
+> > > 
+> > > So, fix the fwnode_get_phy_mode(). Is it a problem?
+> > > 
+> > > > Then there's phylink_create(). Same problem.
+> > > 
+> > > So, fix that. Is it a problem?
+> > 
+> > To do both of these creates a five patch series, because there are so
+> > many things that need to be constified:
+> > 
+> > fwnode_get_phy_mode() is the trivial one.
+> > 
+> > sfp_bus_find_fwnode(), and the sfp-bus internal fwnode uses.
+> > 
+> > fwnode_get_phy_node().
+> > 
+> > phylink_create(), phylink_parse_fixedlink(), phylink_parse_mode(),
+> > phylink_fwnode_phy_connect().
+> > 
+> > Hopefully nothing breaks as a result of changing all those - but that
+> > can hardly be "tacked" on to the start of my series as a trivial
+> > change - and clearly such a change should _not_ be part of this
+> > series.
 > 
-> But just like the TCP congestion control , the global negotiator can be used for 
-> sock without
+> Thank you for doing that!
 > 
-> special requirements.
+> > Those five patches do not include moving fwnode_get_phy_mode(), whose
+> > location remains undecided.
+> 
+> No problem, we like iterative work.
 
-It is different from TCP congestion control (CC). TCP CC has a global default 
-but each sk can select what tcp-cc to use and there can be multiple tcp-cc 
-registered under different names.
+Oh, and what a waste of time that was.
 
-It sounds like smc using tcp_sock should be able to have different negotiator 
-also (eg. based on dst IP or some other tcp connection characteristic). The 
-tcp-cc registration, per-sock selection and the rcu_read_lock+refcnt are well 
-understood and there are other bpf infrastructure to support the per sock tcp-cc 
-selection (like bpf_setsockopt).
+You request that the fwnode should be declared const, but now I
+realise that you never looked at patch 4, where we call
+fwnode_remove_software_node() on this fwnode (so that the swnodes
+returned by ->port_get_fwnode are released).
 
-For the network stack, there is little reason other af_* should not follow at 
-the beginning considering the infrastructure has already been built. The one 
-single global negotiator and reader/writer lock in this patch reads like an 
-effort wanted to give it a try and see if it will be useful before implementing 
-the whole thing. It is better to keep it off the tree for now until it is more 
-ready.
+Since fwnode_remove_software_node() modifies the swnode containing
+the fwnode, and therefore does not take a const fwnode pointer, we
+also can't make _this_ fwnode pointer const - even with all those
+changes.
+
+So, I feel like I've been on a wild goose chase and what a needless
+effort it has been to concoct patches that I don't even need for
+this.
+
+So again, rmk was right! Sigh.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
