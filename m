@@ -2,141 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 924D46C6BBE
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 16:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080856C6BF6
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 16:12:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231935AbjCWPAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 11:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
+        id S232007AbjCWPMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 11:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231923AbjCWPA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 11:00:28 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D851912A;
-        Thu, 23 Mar 2023 08:00:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679583626; x=1711119626;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=p1yP5VaKxRh8aNw09SSnNje/p5ZzINNB14cTYNhYeLc=;
-  b=SNloEObLSCun2Eo6EjENRT8JmSgWjzzslSc8LKjEFgnUNGkJQGgv2ceb
-   Ipu5besLcZUG3NS+SlnxS+oNjGqi8IACvBRYqJXKdzqN9RtXBxnCOBSed
-   GCI8kea4OpwDk3yxgacjJeMWW4oHKGIdx99zi67GMshtHL6UT7/xyx1a+
-   PJ00Jq5KUhw4hLb9w2YGvPQSTLcM2N/b/rHoq8f9TY1B+3/ftX/QNCcEH
-   PjVn+3kLd4uKTXjvJuanmWNI+2W2Ob1K6CMcHRvCHDZypFxHNRm5IdCWo
-   NTh1rppr3MOltBXKMOM+ieZkCwRZwIsiwQt4tT1PdXYwx4hJq2kd5LAcJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="323372199"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="323372199"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 08:00:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10658"; a="746739875"
-X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
-   d="scan'208";a="746739875"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Mar 2023 08:00:11 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1pfMQC-007Y3R-2S;
-        Thu, 23 Mar 2023 17:00:08 +0200
-Date:   Thu, 23 Mar 2023 17:00:08 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Daniel Scally <djrscally@gmail.com>,
+        with ESMTP id S231524AbjCWPMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 11:12:07 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6979319C44;
+        Thu, 23 Mar 2023 08:11:35 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id k37so15252806lfv.0;
+        Thu, 23 Mar 2023 08:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679584291;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=09gF+ci4EZ7xKNHFBN4nQXrjScsnzrqt/YgXpgBpcd0=;
+        b=Mu76RFZOyAfrq9LEOuqynAliFMXq6UNacOyT2uAPTpnq5G3H+re0Cx4K/gGwiBMVIi
+         c/cB37JF5RoQfM4k+LLFb0flTYpNLJD1E9OqFxtJc9XNGb0f6Chyw3Ax/hYXAsgNQEmM
+         hPkLk/8WJgpOVjkfW2By4WK6f18UAW+IynBO9hIT17PcpBC79JaazKDFsOnZr2I104Mh
+         VSB05qI7RSyU3URsvUBR8qornl8zwj0iyQgPOIpbCqaq0vqoPbaClmMYGGUOgLuevuOT
+         kWOtDMygByiviB7puF3lgqpj2y4ovP3fvmPiV2jzjaRFe43U7jLJwRdZycaz7ztObeHH
+         B6Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679584291;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=09gF+ci4EZ7xKNHFBN4nQXrjScsnzrqt/YgXpgBpcd0=;
+        b=jyklPVTD9e1NT+fbnv834QqdaGjqeJhnHEc2IdaXf1f1vThUcHZDqm4lH9ZNByDKuu
+         VGj3BTV5xb6M19zoUsaeLVZEZyz105QuA2Kq6Gtp0p4p8EBWtWqzsQagzUj4NfZV30br
+         FcWLEqjXnqO8nAdje1O5IaL0cG6EWWMhCjO5RT/mwNcs1K0jG1L2lSM/ebZZg4lmR4vQ
+         eGqGO8SHGG3JFDxoUSOqzKND6TiXrqmFQSMy4UHVhLg9cVCDqZo75mMfyxGyDaBq70O6
+         Y4rDLA2L69ImOw05ObZTuPxGqvVyQP13J5AzQMcdh5avxjcoKwKscd0iHucuoAp674DX
+         B92w==
+X-Gm-Message-State: AO0yUKUMh9fCpgAzme4oNJfcStit5L548xwiE3a/jd6xwHeY2zAht21a
+        7R2KYY6MHBNt9xtKpyb8lW8=
+X-Google-Smtp-Source: AK7set8+y6nFsaRhX1UdZartcuOV9lCKqA6Fzy/bfBfHkNjRTDXtDL4DUFOei4x0Jj1AQNWUtFdkzA==
+X-Received: by 2002:ac2:4c39:0:b0:4ea:e688:a04a with SMTP id u25-20020ac24c39000000b004eae688a04amr2864973lfq.66.1679584291452;
+        Thu, 23 Mar 2023 08:11:31 -0700 (PDT)
+Received: from mobilestation ([95.79.133.202])
+        by smtp.gmail.com with ESMTPSA id w19-20020ac24433000000b004eb00c0d417sm150066lfl.130.2023.03.23.08.10.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Mar 2023 08:10:47 -0700 (PDT)
+Date:   Thu, 23 Mar 2023 18:10:22 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 3/7] net: dsa: use fwnode_get_phy_mode() to
- get phy interface mode
-Message-ID: <ZBxpeLOmTMzqVTRV@smile.fi.intel.com>
-References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
- <E1pex8Q-00Dvnr-5y@rmk-PC.armlinux.org.uk>
- <ZBxcGXSVe0dlzKZb@smile.fi.intel.com>
- <ZBxiqJo470A7bkig@shell.armlinux.org.uk>
- <ZBxkZYXrfugz0gYw@smile.fi.intel.com>
- <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 15/16] dt-bindings: net: dwmac: Simplify MTL
+ queue props dependencies
+Message-ID: <20230323151022.q5h6rf3azbncfid3@mobilestation>
+References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
+ <20230313225103.30512-16-Sergey.Semin@baikalelectronics.ru>
+ <20230317205604.GA2723387-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZBxm3XrQAfnmbHoF@shell.armlinux.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230317205604.GA2723387-robh@kernel.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 02:49:01PM +0000, Russell King (Oracle) wrote:
-> On Thu, Mar 23, 2023 at 04:38:29PM +0200, Andy Shevchenko wrote:
-> > On Thu, Mar 23, 2023 at 02:31:04PM +0000, Russell King (Oracle) wrote:
-> > > On Thu, Mar 23, 2023 at 04:03:05PM +0200, Andy Shevchenko wrote:
-> > > > On Wed, Mar 22, 2023 at 12:00:06PM +0000, Russell King (Oracle) wrote:
-
-...
-
-> > > > > +	struct fwnode_handle *fwnode;
-> > > > 
-> > > > > +	fwnode = of_fwnode_handle(dp->dn);
-> > > > 
-> > > > 	const struct fwnode_handle *fwnode = of_fwnode_handle(dp->dn);
-> > > > 
-> > > > ?
-> > > 
-> > > Why const?
+On Fri, Mar 17, 2023 at 03:56:04PM -0500, Rob Herring wrote:
+> On Tue, Mar 14, 2023 at 01:51:02AM +0300, Serge Semin wrote:
+> > Currently the Tx/Rx queues properties interdependencies are described by
+> > means of the pattern: "if: required: X, then: properties: Y: false, Z:
+> > false, etc". Due to very unfortunate MTL Tx/Rx queue DT-node design the
+> > resultant sub-nodes schemas look very bulky and thus hard to read. The
+> > situation can be improved by using the "allOf:/oneOf: required: X,
+> > required: Y, etc" pattern instead thus getting shorter and a bit easier to
+> > comprehend constructions.
 > > 
-> > Do you modify its content on the fly?
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > 
+> > ---
 > 
-> Do you want to litter code with casts to get rid of the const?
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > 
-> > For fwnode as a basic object type we want to reduce the scope of the possible
-> > modifications. If you don't modify and APIs you call do not require non-const
-> > object, use const for fwnode.
+> > 
+> > Note the solution can be shortened out a bit further by replacing the
+> > single-entry allOf statements with just the "not: required: etc" pattern.
+> > But in order to do that the DT-schema validation tool must be fixed like
+> > this:
+> > 
+> > --- a/meta-schemas/nodes.yaml	2021-02-08 14:20:56.732447780 +0300
+> > +++ b/meta-schemas/nodes.yaml	2021-02-08 14:21:00.736492245 +0300
+> > @@ -22,6 +22,7 @@
+> >      - unevaluatedProperties
+> >      - deprecated
+> >      - required
+> > +    - not
+> >      - allOf
+> >      - anyOf
+> >      - oneOf
 > 
-> Let's start here. We pass this fwnode to fwnode_get_phy_mode():
+
+> This should be added regardless. Can you send a patch to devicetree-spec 
+> or a GH PR. But I'd skip using that here for now because then we require 
+> a new version of dtschema.
+
+Ok. I'll send the patch to the devicetree-spec mailing list.
+
+* Note meta-schemas/base.yaml will be fixed in the similar way.
+
+-Serge(y)
+
 > 
-> include/linux/property.h:int fwnode_get_phy_mode(struct fwnode_handle *fwnode);
-> 
-> Does fwnode_get_phy_mode() alter the contents of the fwnode? Probably
-> not, but it doesn't take a const pointer. Therefore, to declare my
-> fwnode as const, I'd need to cast the const-ness away before calling
-> this.
-
-So, fix the fwnode_get_phy_mode(). Is it a problem?
-
-> Then there's phylink_create(). Same problem.
-
-So, fix that. Is it a problem?
-
-> So NAK to this const - until such time that we have a concerted effort
-> to making functions we call which do not modify the "fwnode" argument
-> constify that argument. Otherwise it's just rediculously crazy to
-> declare a variable const only to then litter the code with casts to get
-> rid of it at every call site.
-> 
-> Please do a bit of research before making suggestions. Thanks.
-
-So, MAK to your patch. You can fix that, and you know that.
-
-P.S. Please, move that phy thingy away from property.h, it doesn't belong
-there.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> Rob
