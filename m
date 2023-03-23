@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 419126C5DC1
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 05:06:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A4F6C5DD3
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 05:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229491AbjCWEGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 00:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
+        id S230035AbjCWENE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 00:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbjCWEGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 00:06:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A071BC2
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:05:18 -0700 (PDT)
+        with ESMTP id S229781AbjCWEND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 00:13:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DDE10CA
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:12:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679544317;
+        s=mimecast20190719; t=1679544735;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aOnNIGAilJ7fmmyy5EpSRdCYNuyde6MJKsXQO3HGUMs=;
-        b=IasWpIaL+6ZGiFZ8D2mvReQTFbUImc6+w0G9ztbf7BmmdPRtnoDsrm77vUnWvuWq/0Ulmg
-        B0doe3DEXzi+2/GQI4j2ciLoigAjMqD6syZ4aRnd6axgd7QRHTHV6Qw3I78m1KgOR6zHwB
-        rUusRa48AALX/ODwSaU8tZ7s5GtZO6o=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=P/rEURdgh4BDr+hLgWS6iVZmhSJ0z8sziCYrloAoZJ8=;
+        b=WPj7tYN9lEgIu2k8PfUzhRfPAABiJX4iVTHUvrdpdBzqbUumK4SFfIB5CGGRILquRnSF0S
+        ProzeVTEJ3YiMtE625c63kj5d680+NXN2/52zHYWwb2NgbO0IaYAaPyyUuAFqA0vrK1F9v
+        o3+sMqQZEmYA9foRKGTeFF9FXwY2mKQ=
+Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
+ [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-196-EI-Q976GMjmCEdiFC6FSMg-1; Thu, 23 Mar 2023 00:05:15 -0400
-X-MC-Unique: EI-Q976GMjmCEdiFC6FSMg-1
-Received: by mail-ot1-f72.google.com with SMTP id n19-20020a9d7413000000b0069f913914d8so2530228otk.5
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:05:15 -0700 (PDT)
+ us-mta-549-aFYW7DG2OjepeftRy5UJaw-1; Thu, 23 Mar 2023 00:12:14 -0400
+X-MC-Unique: aFYW7DG2OjepeftRy5UJaw-1
+Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-17ab1d11480so10870754fac.13
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 21:12:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679544315;
+        d=1e100.net; s=20210112; t=1679544732;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=aOnNIGAilJ7fmmyy5EpSRdCYNuyde6MJKsXQO3HGUMs=;
-        b=tcnqyFL9gRIC7iAJc+wE0Hh2uK67NmCPyAlhrCdbIIhNhs7l5Tq6wqdJ7hnIZ63ArO
-         qSQCRxTqrctrVpsGkFHEdng91cyM6Wp0+9UPu4MsZpgO3rYNJkmkiLKdSBU0MHUPnt2K
-         a2Pny8x1r8YJv9xCX+qRlEoHqZPospl+fuyG8kX16x6qmj4Zwg6D5+KO+fglxHpFfeFd
-         VmE5UBEzYJVP94OA56iLiC0P/JL7aaNk9CjVkzCxD9Y2v7oiMuq4Sy4QmIVjovxGbjiw
-         AXpCmVv91lI3gH5gNjUIC9BtSe72jf4AHLr5HXYOhV0wwIoFFODZRPHpOLPjgOCSjVeX
-         Nywg==
-X-Gm-Message-State: AO0yUKX0KgACdkp9F15kK4Lpcwe1JpKR6uZDVsoZmS6MN6l8V7oe3r/u
-        MT0PXMSPLT0AOO61f/6G3bBytoatYcOXlUHiXsPkfjoAMQjq4ZDnqfxXdtm5MVtEFMu8S0b8g14
-        NUDhRBhJCEg0G37ff0LFKKa6b36WrUfjv
-X-Received: by 2002:a05:6871:4d10:b0:17a:d3d2:dc75 with SMTP id ug16-20020a0568714d1000b0017ad3d2dc75mr540507oab.3.1679544315250;
-        Wed, 22 Mar 2023 21:05:15 -0700 (PDT)
-X-Google-Smtp-Source: AK7set8FZEdSFvyHWpm4kjJu22TgDTHMafGQoxV36094gItSoHHuYJ036I/iI+eBjzGXAFHDuZI3p37rdKRjhcjHm+s=
-X-Received: by 2002:a05:6871:4d10:b0:17a:d3d2:dc75 with SMTP id
- ug16-20020a0568714d1000b0017ad3d2dc75mr540500oab.3.1679544315023; Wed, 22 Mar
- 2023 21:05:15 -0700 (PDT)
+        bh=P/rEURdgh4BDr+hLgWS6iVZmhSJ0z8sziCYrloAoZJ8=;
+        b=OcpR1t8VkGLEP+n1PVpTO1Dz0WOjWiHR0G52nwzlcfi8zKmSuoe7hMJV1K9+aU0r8z
+         JPSgul2rCCl6kn1PvXy+1/rNoWjrW7Benyf5BgRSCBMFD22AfFttatnzOlYzzCsDuAqf
+         TjLOU9yoM6EhINR3jaS8vQ/g2qSYRpZpG0fYiwvluj3MJzVMtW/GrAfbcQeOm9TgB0WT
+         dO8wS12Q1YtDGs25jVKpB7B9hhBOganPVhq2sjSrRnk0WgzL6ejM3hMGIOvKTE36Vx6L
+         RRNXOQTCEV8lMgH9xJaleOqbfcl/23p1ubajNqleLeRnMEWN7O2DImdNXxcfYJseQKwT
+         OB/Q==
+X-Gm-Message-State: AO0yUKUfMAPcDEHe4mXsrLndwjg/4oeHQJqxlignZZMTsfJeSjqi1kXp
+        Y0EJwbuMEFj7qcST8qVBfMj6g2eS7V6lx0pALiLbRuGsNLw/OoHZ8/3A9Z53k1uM/9QzxV8XcwI
+        6etav8qYTot45H3ut/rZVN7gIIEvh5i4B
+X-Received: by 2002:a54:4189:0:b0:384:c4a:1b49 with SMTP id 9-20020a544189000000b003840c4a1b49mr1677808oiy.9.1679544732684;
+        Wed, 22 Mar 2023 21:12:12 -0700 (PDT)
+X-Google-Smtp-Source: AK7set9dXESIokZypKTeU6rPDw1zCB9t6hzb9iX9sruRgTHNecmX/0775oZf2BKRn+7pZSFebEG235WB2+zaqAN/QPY=
+X-Received: by 2002:a54:4189:0:b0:384:c4a:1b49 with SMTP id
+ 9-20020a544189000000b003840c4a1b49mr1677801oiy.9.1679544732468; Wed, 22 Mar
+ 2023 21:12:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230322191038.44037-1-shannon.nelson@amd.com> <20230322191038.44037-2-shannon.nelson@amd.com>
-In-Reply-To: <20230322191038.44037-2-shannon.nelson@amd.com>
+References: <20230322191038.44037-1-shannon.nelson@amd.com> <20230322191038.44037-3-shannon.nelson@amd.com>
+In-Reply-To: <20230322191038.44037-3-shannon.nelson@amd.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 23 Mar 2023 12:05:04 +0800
-Message-ID: <CACGkMEvMvd9rwWZYTuc_gU1fSm8XPa=7=EOKjjzy7Mr=qEyqgA@mail.gmail.com>
-Subject: Re: [PATCH v3 virtio 1/8] virtio: allow caller to override device id
- and DMA mask
+Date:   Thu, 23 Mar 2023 12:12:01 +0800
+Message-ID: <CACGkMEvRr968H1_e+bdK-r4ApvJg8g+PTeShNS1tp6Ju_5sP8g@mail.gmail.com>
+Subject: Re: [PATCH v3 virtio 2/8] pds_vdpa: Add new vDPA driver for
+ AMD/Pensando DSC
 To:     Shannon Nelson <shannon.nelson@amd.com>
 Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
         brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
@@ -79,109 +79,246 @@ X-Mailing-List: netdev@vger.kernel.org
 On Thu, Mar 23, 2023 at 3:11=E2=80=AFAM Shannon Nelson <shannon.nelson@amd.=
 com> wrote:
 >
-> To allow a bit of flexibility with various virtio based devices, allow
-> the caller to specify a different device id and DMA mask.  This adds
-> fields to struct XXX to specify an override device id check and a DMA mas=
-k.
+> This is the initial auxiliary driver framework for a new vDPA
+> device driver, an auxiliary_bus client of the pds_core driver.
+> The pds_core driver supplies the PCI services for the VF device
+> and for accessing the adminq in the PF device.
+>
+> This patch adds the very basics of registering for the auxiliary
+> device and setting up debugfs entries.
 >
 > Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-> ---
->  drivers/virtio/virtio_pci_modern_dev.c | 36 +++++++++++++++++---------
->  include/linux/virtio_pci_modern.h      |  6 +++++
->  2 files changed, 30 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virt=
-io_pci_modern_dev.c
-> index 869cb46bef96..6ad1bb9ae8fa 100644
-> --- a/drivers/virtio/virtio_pci_modern_dev.c
-> +++ b/drivers/virtio/virtio_pci_modern_dev.c
-> @@ -221,18 +221,25 @@ int vp_modern_probe(struct virtio_pci_modern_device=
- *mdev)
->
->         check_offsets();
->
-> -       /* We only own devices >=3D 0x1000 and <=3D 0x107f: leave the res=
-t. */
-> -       if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
-> -               return -ENODEV;
-> -
-> -       if (pci_dev->device < 0x1040) {
-> -               /* Transitional devices: use the PCI subsystem device id =
-as
-> -                * virtio device id, same as legacy driver always did.
-> -                */
-> -               mdev->id.device =3D pci_dev->subsystem_device;
-> +       if (mdev->device_id_check_override) {
-> +               err =3D mdev->device_id_check_override(pci_dev);
-> +               if (err)
-> +                       return err;
-> +               mdev->id.device =3D pci_dev->device;
 
-While at this, would it be better to let the device_id_check_override
-to return the mdev->id.device ?
-
-Others look good.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
 Thanks
 
->         } else {
-> -               /* Modern devices: simply use PCI device id, but start fr=
-om 0x1040. */
-> -               mdev->id.device =3D pci_dev->device - 0x1040;
-> +               /* We only own devices >=3D 0x1000 and <=3D 0x107f: leave=
- the rest. */
-> +               if (pci_dev->device < 0x1000 || pci_dev->device > 0x107f)
-> +                       return -ENODEV;
+> ---
+>  drivers/vdpa/Makefile        |  1 +
+>  drivers/vdpa/pds/Makefile    |  8 ++++
+>  drivers/vdpa/pds/aux_drv.c   | 84 ++++++++++++++++++++++++++++++++++++
+>  drivers/vdpa/pds/aux_drv.h   | 15 +++++++
+>  drivers/vdpa/pds/debugfs.c   | 29 +++++++++++++
+>  drivers/vdpa/pds/debugfs.h   | 18 ++++++++
+>  include/linux/pds/pds_vdpa.h | 10 +++++
+>  7 files changed, 165 insertions(+)
+>  create mode 100644 drivers/vdpa/pds/Makefile
+>  create mode 100644 drivers/vdpa/pds/aux_drv.c
+>  create mode 100644 drivers/vdpa/pds/aux_drv.h
+>  create mode 100644 drivers/vdpa/pds/debugfs.c
+>  create mode 100644 drivers/vdpa/pds/debugfs.h
+>  create mode 100644 include/linux/pds/pds_vdpa.h
+>
+> diff --git a/drivers/vdpa/Makefile b/drivers/vdpa/Makefile
+> index 59396ff2a318..8f53c6f3cca7 100644
+> --- a/drivers/vdpa/Makefile
+> +++ b/drivers/vdpa/Makefile
+> @@ -7,3 +7,4 @@ obj-$(CONFIG_MLX5_VDPA) +=3D mlx5/
+>  obj-$(CONFIG_VP_VDPA)    +=3D virtio_pci/
+>  obj-$(CONFIG_ALIBABA_ENI_VDPA) +=3D alibaba/
+>  obj-$(CONFIG_SNET_VDPA) +=3D solidrun/
+> +obj-$(CONFIG_PDS_VDPA) +=3D pds/
+> diff --git a/drivers/vdpa/pds/Makefile b/drivers/vdpa/pds/Makefile
+> new file mode 100644
+> index 000000000000..a9cd2f450ae1
+> --- /dev/null
+> +++ b/drivers/vdpa/pds/Makefile
+> @@ -0,0 +1,8 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +# Copyright(c) 2023 Advanced Micro Devices, Inc
 > +
-> +               if (pci_dev->device < 0x1040) {
-> +                       /* Transitional devices: use the PCI subsystem de=
-vice id as
-> +                        * virtio device id, same as legacy driver always=
- did.
-> +                        */
-> +                       mdev->id.device =3D pci_dev->subsystem_device;
-> +               } else {
-> +                       /* Modern devices: simply use PCI device id, but =
-start from 0x1040. */
-> +                       mdev->id.device =3D pci_dev->device - 0x1040;
-> +               }
->         }
->         mdev->id.vendor =3D pci_dev->subsystem_vendor;
->
-> @@ -260,7 +267,12 @@ int vp_modern_probe(struct virtio_pci_modern_device =
-*mdev)
->                 return -EINVAL;
->         }
->
-> -       err =3D dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(64)=
-);
-> +       if (mdev->dma_mask_override)
-> +               err =3D dma_set_mask_and_coherent(&pci_dev->dev,
-> +                                               mdev->dma_mask_override);
-> +       else
-> +               err =3D dma_set_mask_and_coherent(&pci_dev->dev,
-> +                                               DMA_BIT_MASK(64));
->         if (err)
->                 err =3D dma_set_mask_and_coherent(&pci_dev->dev,
->                                                 DMA_BIT_MASK(32));
-> diff --git a/include/linux/virtio_pci_modern.h b/include/linux/virtio_pci=
-_modern.h
-> index c4eeb79b0139..84765bbd8dc5 100644
-> --- a/include/linux/virtio_pci_modern.h
-> +++ b/include/linux/virtio_pci_modern.h
-> @@ -38,6 +38,12 @@ struct virtio_pci_modern_device {
->         int modern_bars;
->
->         struct virtio_device_id id;
+> +obj-$(CONFIG_PDS_VDPA) :=3D pds_vdpa.o
 > +
-> +       /* alt. check for vendor virtio device, return 0 or -ERRNO */
-> +       int (*device_id_check_override)(struct pci_dev *pdev);
+> +pds_vdpa-y :=3D aux_drv.o
 > +
-> +       /* alt. mask for devices with limited DMA space */
-> +       u64 dma_mask_override;
->  };
->
->  /*
+> +pds_vdpa-$(CONFIG_DEBUG_FS) +=3D debugfs.o
+> diff --git a/drivers/vdpa/pds/aux_drv.c b/drivers/vdpa/pds/aux_drv.c
+> new file mode 100644
+> index 000000000000..39c03f067b77
+> --- /dev/null
+> +++ b/drivers/vdpa/pds/aux_drv.c
+> @@ -0,0 +1,84 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> +
+> +#include <linux/auxiliary_bus.h>
+> +#include <linux/pci.h>
+> +
+> +#include <linux/pds/pds_common.h>
+> +#include <linux/pds/pds_core_if.h>
+> +#include <linux/pds/pds_adminq.h>
+> +#include <linux/pds/pds_auxbus.h>
+> +#include <linux/pds/pds_vdpa.h>
+> +
+> +#include "aux_drv.h"
+> +#include "debugfs.h"
+> +
+> +static const struct auxiliary_device_id pds_vdpa_id_table[] =3D {
+> +       { .name =3D PDS_VDPA_DEV_NAME, },
+> +       {},
+> +};
+> +
+> +static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
+> +                         const struct auxiliary_device_id *id)
+> +
+> +{
+> +       struct pds_auxiliary_dev *padev =3D
+> +               container_of(aux_dev, struct pds_auxiliary_dev, aux_dev);
+> +       struct pds_vdpa_aux *vdpa_aux;
+> +
+> +       vdpa_aux =3D kzalloc(sizeof(*vdpa_aux), GFP_KERNEL);
+> +       if (!vdpa_aux)
+> +               return -ENOMEM;
+> +
+> +       vdpa_aux->padev =3D padev;
+> +       auxiliary_set_drvdata(aux_dev, vdpa_aux);
+> +
+> +       return 0;
+> +}
+> +
+> +static void pds_vdpa_remove(struct auxiliary_device *aux_dev)
+> +{
+> +       struct pds_vdpa_aux *vdpa_aux =3D auxiliary_get_drvdata(aux_dev);
+> +       struct device *dev =3D &aux_dev->dev;
+> +
+> +       kfree(vdpa_aux);
+> +       auxiliary_set_drvdata(aux_dev, NULL);
+> +
+> +       dev_info(dev, "Removed\n");
+> +}
+> +
+> +static struct auxiliary_driver pds_vdpa_driver =3D {
+> +       .name =3D PDS_DEV_TYPE_VDPA_STR,
+> +       .probe =3D pds_vdpa_probe,
+> +       .remove =3D pds_vdpa_remove,
+> +       .id_table =3D pds_vdpa_id_table,
+> +};
+> +
+> +static void __exit pds_vdpa_cleanup(void)
+> +{
+> +       auxiliary_driver_unregister(&pds_vdpa_driver);
+> +
+> +       pds_vdpa_debugfs_destroy();
+> +}
+> +module_exit(pds_vdpa_cleanup);
+> +
+> +static int __init pds_vdpa_init(void)
+> +{
+> +       int err;
+> +
+> +       pds_vdpa_debugfs_create();
+> +
+> +       err =3D auxiliary_driver_register(&pds_vdpa_driver);
+> +       if (err) {
+> +               pr_err("%s: aux driver register failed: %pe\n",
+> +                      PDS_VDPA_DRV_NAME, ERR_PTR(err));
+> +               pds_vdpa_debugfs_destroy();
+> +       }
+> +
+> +       return err;
+> +}
+> +module_init(pds_vdpa_init);
+> +
+> +MODULE_DESCRIPTION(PDS_VDPA_DRV_DESCRIPTION);
+> +MODULE_AUTHOR("Advanced Micro Devices, Inc");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/vdpa/pds/aux_drv.h b/drivers/vdpa/pds/aux_drv.h
+> new file mode 100644
+> index 000000000000..14e465944dfd
+> --- /dev/null
+> +++ b/drivers/vdpa/pds/aux_drv.h
+> @@ -0,0 +1,15 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> +
+> +#ifndef _AUX_DRV_H_
+> +#define _AUX_DRV_H_
+> +
+> +#define PDS_VDPA_DRV_DESCRIPTION    "AMD/Pensando vDPA VF Device Driver"
+> +#define PDS_VDPA_DRV_NAME           "pds_vdpa"
+> +
+> +struct pds_vdpa_aux {
+> +       struct pds_auxiliary_dev *padev;
+> +
+> +       struct dentry *dentry;
+> +};
+> +#endif /* _AUX_DRV_H_ */
+> diff --git a/drivers/vdpa/pds/debugfs.c b/drivers/vdpa/pds/debugfs.c
+> new file mode 100644
+> index 000000000000..12e844f96ccc
+> --- /dev/null
+> +++ b/drivers/vdpa/pds/debugfs.c
+> @@ -0,0 +1,29 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> +
+> +#include <linux/pci.h>
+> +
+> +#include <linux/pds/pds_common.h>
+> +#include <linux/pds/pds_core_if.h>
+> +#include <linux/pds/pds_adminq.h>
+> +#include <linux/pds/pds_auxbus.h>
+> +
+> +#include "aux_drv.h"
+> +#include "debugfs.h"
+> +
+> +#ifdef CONFIG_DEBUG_FS
+> +
+> +static struct dentry *dbfs_dir;
+> +
+> +void pds_vdpa_debugfs_create(void)
+> +{
+> +       dbfs_dir =3D debugfs_create_dir(PDS_VDPA_DRV_NAME, NULL);
+> +}
+> +
+> +void pds_vdpa_debugfs_destroy(void)
+> +{
+> +       debugfs_remove_recursive(dbfs_dir);
+> +       dbfs_dir =3D NULL;
+> +}
+> +
+> +#endif /* CONFIG_DEBUG_FS */
+> diff --git a/drivers/vdpa/pds/debugfs.h b/drivers/vdpa/pds/debugfs.h
+> new file mode 100644
+> index 000000000000..fff078a869e5
+> --- /dev/null
+> +++ b/drivers/vdpa/pds/debugfs.h
+> @@ -0,0 +1,18 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> +
+> +#ifndef _PDS_VDPA_DEBUGFS_H_
+> +#define _PDS_VDPA_DEBUGFS_H_
+> +
+> +#include <linux/debugfs.h>
+> +
+> +#ifdef CONFIG_DEBUG_FS
+> +
+> +void pds_vdpa_debugfs_create(void);
+> +void pds_vdpa_debugfs_destroy(void);
+> +#else
+> +static inline void pds_vdpa_debugfs_create(void) { }
+> +static inline void pds_vdpa_debugfs_destroy(void) { }
+> +#endif
+> +
+> +#endif /* _PDS_VDPA_DEBUGFS_H_ */
+> diff --git a/include/linux/pds/pds_vdpa.h b/include/linux/pds/pds_vdpa.h
+> new file mode 100644
+> index 000000000000..d3414536985d
+> --- /dev/null
+> +++ b/include/linux/pds/pds_vdpa.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> +
+> +#ifndef _PDS_VDPA_H_
+> +#define _PDS_VDPA_H_
+> +
+> +#define PDS_DEV_TYPE_VDPA_STR  "vDPA"
+> +#define PDS_VDPA_DEV_NAME      PDS_CORE_DRV_NAME "." PDS_DEV_TYPE_VDPA_S=
+TR
+> +
+> +#endif /* _PDS_VDPA_H_ */
 > --
 > 2.17.1
 >
