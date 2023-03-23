@@ -2,68 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A05736C6E35
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 17:57:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E75676C6E57
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 18:03:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbjCWQ5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 12:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
+        id S231931AbjCWRDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 13:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231869AbjCWQ5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 12:57:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532F7B5;
-        Thu, 23 Mar 2023 09:57:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C982B812A5;
-        Thu, 23 Mar 2023 16:57:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 771A7C433EF;
-        Thu, 23 Mar 2023 16:57:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679590657;
-        bh=mInJnjBlglGuGfIDOgknpNJ8Ke8sxSP3MjH3m6CZZaw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Qx35hCZFUARJfcBigrOo5+QSFYgorxH9byIi96D7oL1W6PwHnhRFcFOLqvgEZfe6N
-         rsPoqz2ojlfCRz6p+LewOsvFAGzCsbkSJVd8C64Eqvr7rqYeKiLg7mwpgcgIN3frSV
-         x4bzsCImaH39c5dxfLYo0J7yavWkJ4ILiGayHVIqDt2vy6MTVApNJuayU52ONBUHdM
-         Kdtq9R0110dXl8qD4JDb8FZ/Vvc1/Lwg6fIg5YxZuFBfu1pLtlbccKMUvwcl/fgvsx
-         5+BuwFBmuP8SgZsxJv0wjix/umYbK6+Pl0V4jxWBAod7j0JtEQXo5rJ2w38801d3qs
-         ncVoDiXxGCNxw==
-Date:   Thu, 23 Mar 2023 09:57:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Min Li <lnimi@hotmail.com>
-Cc:     richardcochran@gmail.com, lee@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Min Li <min.li.xe@renesas.com>
-Subject: Re: [PATCH mfd-n 2/2] mfd: rsmu: support 32-bit address space
-Message-ID: <20230323095736.38ea1ca8@kernel.org>
-In-Reply-To: <MW5PR03MB69320CC31AB6206419DFF2C9A0879@MW5PR03MB6932.namprd03.prod.outlook.com>
-References: <20230323161518.14907-1-lnimi@hotmail.com>
-        <MW5PR03MB69320CC31AB6206419DFF2C9A0879@MW5PR03MB6932.namprd03.prod.outlook.com>
+        with ESMTP id S231542AbjCWRC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 13:02:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BB3EC;
+        Thu, 23 Mar 2023 10:02:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=EtUf/kME4TTvbhGEmdUh+hcyhm5L0g/SNih4ASarj5A=; b=AF0+Azsrs80rxSKR9Dlg0HUjbE
+        bm+6k+G9gGa1Gci8rzMmgG56qWZVsuyNbqX6OUckEHLm5KssGt0XHggerAG/qcAXBZrbIgZ7Pr4YY
+        nm3soUITXlwTiqWCP5EqTa3czeBNCkWp51ApWTKBvOey56oW8mhx81aGSdAEMaYHYLWo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pfOKh-008Dm8-6N; Thu, 23 Mar 2023 18:02:35 +0100
+Date:   Thu, 23 Mar 2023 18:02:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Lee Jones <lee@kernel.org>, John Crispin <john@phrozen.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [net-next PATCH v5 15/15] arm: mvebu: dt: Add PHY LED support
+ for 370-rd WAN port
+Message-ID: <318f65ef-fd63-446d-bd08-1ba51b1d1f72@lunn.ch>
+References: <20230319191814.22067-1-ansuelsmth@gmail.com>
+ <20230319191814.22067-16-ansuelsmth@gmail.com>
+ <ZBxAZRcEBg4to132@duo.ucw.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZBxAZRcEBg4to132@duo.ucw.cz>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Mar 2023 12:15:18 -0400 Min Li wrote:
-> -	u8 cmd[256] = {0};
-> -	u8 rsp[256] = {0};
-> +	u8 cmd[RSMU_MAX_READ_COUNT + 1] = {0};
-> +	u8 rsp[RSMU_MAX_READ_COUNT + 1] = {0};
->  	int ret;
->  
-> +	if (bytes > RSMU_MAX_READ_COUNT)
-> +		return -EINVAL;
+On Thu, Mar 23, 2023 at 01:04:53PM +0100, Pavel Machek wrote:
+> Hi!
+> 
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > 
+> > The WAN port of the 370-RD has a Marvell PHY, with one LED on
+> > the front panel. List this LED in the device tree.
+> > 
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> 
+> > @@ -135,6 +136,19 @@ &mdio {
+> >  	pinctrl-names = "default";
+> >  	phy0: ethernet-phy@0 {
+> >  		reg = <0>;
+> > +		leds {
+> > +			#address-cells = <1>;
+> > +			#size-cells = <0>;
+> > +
+> > +			led@0 {
+> > +				reg = <0>;
+> > +				label = "WAN";
+> > +				color = <LED_COLOR_ID_WHITE>;
+> > +				function = LED_FUNCTION_LAN;
+> > +				function-enumerator = <1>;
+> > +				linux,default-trigger = "netdev";
+> > +			};
+> > +		};
+> >  	};
+> >  
+> 
+> How will this end up looking in sysfs?
 
-Why is defining the constant to MAX_READ and checking the requested
-size part of this patch, the commit message only talks about addresses
-operation size is not mentioned in any way...
+Hi Pavel
+
+It is just a plain boring LED, so it will look like all other LEDs.
+There is nothing special here.
+
+> Should documentation be added to Documentation/leds/leds-blinkm.rst
+>  ?
+
+This has nothing to do with blinkm, which appears to be an i2c LED
+driver.
+
+	Andrew
