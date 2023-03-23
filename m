@@ -2,149 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E47226C6292
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:02:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C2E6C62D8
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbjCWJCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 05:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38364 "EHLO
+        id S230191AbjCWJJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 05:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231173AbjCWJCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:02:16 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926B419106;
-        Thu, 23 Mar 2023 02:01:59 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Phzlt0tnnz17KMk;
-        Thu, 23 Mar 2023 16:58:50 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 23 Mar
- 2023 17:01:57 +0800
-Subject: Re: [PATCH] rps: process the skb directly if rps cpu not changed
-To:     xu xin <xu.xin.sc@gmail.com>, <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <jiang.xuexin@zte.com.cn>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <xu.xin16@zte.com.cn>,
-        <yang.yang29@zte.com.cn>, <zhang.yunkai@zte.com.cn>
-References: <aadae1c0-9d50-d89d-d0ea-a300fa09682c@huawei.com>
- <20230322072435.32813-1-xu.xin16@zte.com.cn>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <ef94a525-c5f3-fa9f-d66d-d9dc62533e78@huawei.com>
-Date:   Thu, 23 Mar 2023 17:01:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S230236AbjCWJJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:09:18 -0400
+Received: from out-30.mta0.migadu.com (out-30.mta0.migadu.com [IPv6:2001:41d0:1004:224b::1e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DA911B324
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:08:45 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1679562206;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lTe9LISs2pflvSiuzz8njOhESiOpw5ulrZFB1bo8ej0=;
+        b=uYcoUfKDkxNQ6Id+Oa4CLl9EGelbi8sUDea8HTVwAAcsDQDyAVWO1CZOtQpqSBg17uAAXh
+        My6s84gYx4X746OVkTIgmvhoXolDbjHgA9Kkg8EjTb7bRU0la49hQCaCO8BCOTQ//RyOAy
+        KJhdS0oIe2rn0GN5fBK0vtCp5+r/btY=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Dariusz Marcinkiewicz <reksio@newterm.pl>,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Shannon Nelson <shannon.nelson@amd.com>,
+        Brett Creeley <brett.creeley@amd.com>, drivers@pensando.io,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jian Shen <shenjian15@huawei.com>, Hao Lan <lanhao@huawei.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Long Li <longli@microsoft.com>, Jiri Pirko <jiri@resnulli.us>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-hyperv@vger.kernel.org
+Subject: [PATCH 1/8] net: liquidio: Remove redundant pci_clear_master
+Date:   Thu, 23 Mar 2023 17:03:00 +0800
+Message-Id: <20230323090314.22431-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230322072435.32813-1-xu.xin16@zte.com.cn>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,TO_EQ_FM_DIRECT_MX
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/3/22 15:24, xu xin wrote:
-> [So sorry, I made a mistake in the reply title]
-> 
-> On 2023/3/21 20:12, yang.yang29@zte.com.cn wrote:
->>> From: xu xin <xu.xin16@zte.com.cn>
->>>
->>> In the RPS procedure of NAPI receiving, regardless of whether the
->>> rps-calculated CPU of the skb equals to the currently processing CPU, RPS
->>> will always use enqueue_to_backlog to enqueue the skb to per-cpu backlog,
->>> which will trigger a new NET_RX softirq.
->>
->> Does bypassing the backlog cause out of order problem for packet handling?
->> It seems currently the RPS/RFS will ensure order delivery,such as:
->> https://elixir.bootlin.com/linux/v6.3-rc3/source/net/core/dev.c#L4485
->>
->> Also, this is an optimization, it should target the net-next branch:
->> [PATCH net-next] rps: process the skb directly if rps cpu not changed
->>
-> 
-> Well, I thought the patch would't break the effort RFS tried to avoid "Out of
-> Order" packets. But thanks for your reminder, I rethink it again, bypassing the
-> backlog from "netif_receive_skb_list" will mislead RFS's judging if all
-> previous packets for the flow have been dequeued, where RFS thought all packets
-> have been dealed with, but actually they are still in skb lists. Fortunately,
-> bypassing the backlog from "netif_receive_skb" for a single skb is okay and won't
-> cause OOO packets because every skb is processed serially by RPS and sent to the
-> protocol stack as soon as possible.
+Remove pci_clear_master to simplify the code,
+the bus-mastering is also cleared in do_pci_disable_device,
+like this:
+./drivers/pci/pci.c:2197
+static void do_pci_disable_device(struct pci_dev *dev)
+{
+	u16 pci_command;
 
-Suppose a lot of skbs have been queued to the backlog waiting to
-processed and passed to the stack when current_cpu is not the same
-as the target cpu, then current_cpu is changed to be the same as the
-target cpu, with your patch, new skb will be processed and passed to
-the stack immediately, which may bypass the old skb in the backlog.
+	pci_read_config_word(dev, PCI_COMMAND, &pci_command);
+	if (pci_command & PCI_COMMAND_MASTER) {
+		pci_command &= ~PCI_COMMAND_MASTER;
+		pci_write_config_word(dev, PCI_COMMAND, pci_command);
+	}
 
-> 
-> If I'm correct, the code as follws can fix this.
-> 
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5666,8 +5666,9 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
->         if (static_branch_unlikely(&rps_needed)) {
->                 struct rps_dev_flow voidflow, *rflow = &voidflow;
->                 int cpu = get_rps_cpu(skb->dev, skb, &rflow);
-> +               int current_cpu = smp_processor_id();
->  
-> -               if (cpu >= 0) {
-> +               if (cpu >= 0 && cpu != current_cpu) {
->                         ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
->                         rcu_read_unlock();
->                         return ret;
-> @@ -5699,11 +5700,15 @@ void netif_receive_skb_list_internal(struct list_head *head)
->                 list_for_each_entry_safe(skb, next, head, list) {
->                         struct rps_dev_flow voidflow, *rflow = &voidflow;
->                         int cpu = get_rps_cpu(skb->dev, skb, &rflow);
-> +                       int current_cpu = smp_processor_id();
->  
->                         if (cpu >= 0) {
->                                 /* Will be handled, remove from list */
->                                 skb_list_del_init(skb);
-> -                               enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-> +                               if (cpu != current_cpu)
-> +                                       enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-> +                               else
-> +                                       __netif_receive_skb(skb);
->                         }
->                 }
-> 
-> 
-> Thanks.
-> 
->>>
->>> Actually, it's not necessary to enqueue it to backlog when rps-calculated
->>> CPU id equals to the current processing CPU, and we can call
->>> __netif_receive_skb or __netif_receive_skb_list to process the skb directly.
->>> The benefit is that it can reduce the number of softirqs of NET_RX and reduce
->>> the processing delay of skb.
->>>
->>> The measured result shows the patch brings 50% reduction of NET_RX softirqs.
->>> The test was done on the QEMU environment with two-core CPU by iperf3.
->>> taskset 01 iperf3 -c 192.168.2.250 -t 3 -u -R;
->>> taskset 02 iperf3 -c 192.168.2.250 -t 3 -u -R;
->>>
->>> Previous RPS:
->>> 		    	CPU0       CPU1
->>> NET_RX:         45          0    (before iperf3 testing)
->>> NET_RX:        1095         241   (after iperf3 testing)
->>>
->>> Patched RPS:
->>>                 CPU0       CPU1
->>> NET_RX:         28          4    (before iperf3 testing)
->>> NET_RX:         573         32   (after iperf3 testing)
->>
->> Sincerely.
->> Xu Xin
-> .
-> 
+	pcibios_disable_device(dev);
+}.
+And dev->is_busmaster is set to 0 in pci_disable_device.
+
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/net/ethernet/cavium/liquidio/lio_main.c    | 1 -
+ drivers/net/ethernet/cavium/liquidio/lio_vf_main.c | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+index fd7c80edb6e8..9bd1d2d7027d 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+@@ -1129,7 +1129,6 @@ static void octeon_destroy_resources(struct octeon_device *oct)
+ 
+ 		fallthrough;
+ 	case OCT_DEV_PCI_ENABLE_DONE:
+-		pci_clear_master(oct->pci_dev);
+ 		/* Disable the device, releasing the PCI INT */
+ 		pci_disable_device(oct->pci_dev);
+ 
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c b/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
+index ac196883f07e..e2921aec3da0 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
+@@ -577,7 +577,6 @@ static void octeon_destroy_resources(struct octeon_device *oct)
+ 
+ 		fallthrough;
+ 	case OCT_DEV_PCI_ENABLE_DONE:
+-		pci_clear_master(oct->pci_dev);
+ 		/* Disable the device, releasing the PCI INT */
+ 		pci_disable_device(oct->pci_dev);
+ 
+-- 
+2.34.1
+
