@@ -2,190 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 904406C5C3F
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 02:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C21836C5C31
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 02:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbjCWBnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 21:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
+        id S229813AbjCWBhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 21:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbjCWBnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 21:43:17 -0400
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4290649C3;
-        Wed, 22 Mar 2023 18:43:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R481e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VeSP1eG_1679535791;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VeSP1eG_1679535791)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Mar 2023 09:43:12 +0800
-Message-ID: <1679535365.5410192-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next 1/8] virtio_net: mergeable xdp: put old page immediately
-Date:   Thu, 23 Mar 2023 09:36:05 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <virtualization@lists.linux-foundation.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230322030308.16046-1-xuanzhuo@linux.alibaba.com>
- <20230322030308.16046-2-xuanzhuo@linux.alibaba.com>
- <4bd07874-b1ad-336b-b15e-ba56a10182e9@huawei.com>
-In-Reply-To: <4bd07874-b1ad-336b-b15e-ba56a10182e9@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229690AbjCWBhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 21:37:02 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350CF18B38;
+        Wed, 22 Mar 2023 18:37:02 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id bj20so5664500oib.3;
+        Wed, 22 Mar 2023 18:37:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679535421;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=GAeMpc1+nBu4zhLlk549VumAogD8igLZqFxBr9F9Rhk=;
+        b=UWzeiCbSMJw/9/1HYmr+QHHALIfhH8mJ2TSbeA/SSPeM3Dey9/FQC21geYdX8eekb5
+         pK6T5dR2wSavr7JmlkECKeIzirv59xGhA1Xhxq+VxrD6FW0dS7Dk2bhapgBO0dwqLwpL
+         QlRrWWuWXQzDvrzxB5xJMEkJ4hhLIRy2dm6hmvJc1Ob0e4TJAhuAqfNKx7z6dPK8qhy/
+         UbTQP0bl415HIW2AOf7i1pHqvnAt3F1SYBVCym08XmdyV7KsiN/kHmS24nhu/8lrRGUj
+         yUxRVHEHekW3Qz418febKwIV+sAzSNPIEINujzZIYBzcG07xxpE8rvYJlrPwOgYb0pK/
+         besA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679535421;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GAeMpc1+nBu4zhLlk549VumAogD8igLZqFxBr9F9Rhk=;
+        b=JpEE4gE2fXxVQMCzX/RNfEe4mNXRvfbzuWpqpVBDllJpUpszWqJhiiVok0CBueGynZ
+         Y4miJZ6xTGDTsji3eF3Eicvks+aUphrOpm1PJ1CwuLi//yOe+WPYmftUnd/kgTbd85I7
+         1sSe1cQ/8HlSxP1RlXyjni8lX/2HD9sYGOSh4YBNje+sZ+g3r4/Zur7/Pp6TypuJ7Agf
+         B59qCKvHBCkDUwfQSQ4/E+qEkPEDZ5X2tE6zhZdkmXH+qMqZBoPuHr47cWC+kYklA8BR
+         dvL7K8+AZm0lD+MZDs5Ce/K8RNO8Pr7h2+pRDki/YWVuu5PZjDEMyJtxiOqpSjOGoBge
+         wfWg==
+X-Gm-Message-State: AO0yUKVsjPkMncliYGmSWwZmCPSF3uiK6gsZ3IoMuQPmt6cNKdbit19i
+        rqRWZRFLErDzVktRRx0OpIGfGOKcPgo=
+X-Google-Smtp-Source: AK7set9kr7Xo7B3gVewt6gj9VajuyTIciYgxkUxCuXZue7n4VxfE0wm0fjbs8mCYu0V6/wiM5nfWGA==
+X-Received: by 2002:a05:6808:16ac:b0:386:9bf4:4ec6 with SMTP id bb44-20020a05680816ac00b003869bf44ec6mr2869570oib.5.1679535421499;
+        Wed, 22 Mar 2023 18:37:01 -0700 (PDT)
+Received: from [192.168.0.162] ([216.130.59.33])
+        by smtp.gmail.com with ESMTPSA id r2-20020a056808210200b00387160bcd46sm2841654oiw.46.2023.03.22.18.37.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Mar 2023 18:37:01 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <284f6f33-1789-341b-e123-f6b2b706b68b@lwfinger.net>
+Date:   Wed, 22 Mar 2023 20:36:59 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [BUG v6.2.7] Hitting BUG_ON() on rtw89 wireless driver startup
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        Jonas Gorski <jonas.gorski@gmail.com>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+References: <ZBskz06HJdLzhFl5@hyeyoo>
+ <55057734-9913-8288-ad88-85c189cbe045@lwfinger.net>
+ <CAOiHx=n7EwK2B9CnBR07FVA=sEzFagb8TkS4XC_qBNq8OwcYUg@mail.gmail.com>
+ <e4f8e55f843041978098f57ecb7e558b@realtek.com>
+Content-Language: en-US
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <e4f8e55f843041978098f57ecb7e558b@realtek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Mar 2023 16:22:18 +0800, Yunsheng Lin <linyunsheng@huawei.com> w=
-rote:
-> On 2023/3/22 11:03, Xuan Zhuo wrote:
-> > In the xdp implementation of virtio-net mergeable, it always checks
-> > whether two page is used and a page is selected to release. This is
-> > complicated for the processing of action, and be careful.
-> >
-> > In the entire process, we have such principles:
-> > * If xdp_page is used (PASS, TX, Redirect), then we release the old
-> >   page.
-> > * If it is a drop case, we will release two. The old page obtained from
-> >   buf is release inside err_xdp, and xdp_page needs be relased by us.
-> >
-> > But in fact, when we allocate a new page, we can release the old page
-> > immediately. Then just one is using, we just need to release the new
-> > page for drop case. On the drop path, err_xdp will release the variable
-> > "page", so we only need to let "page" point to the new xdp_page in
-> > advance.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >  drivers/net/virtio_net.c | 15 ++++++---------
-> >  1 file changed, 6 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index e2560b6f7980..4d2bf1ce0730 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -1245,6 +1245,9 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
-> >  			if (!xdp_page)
-> >  				goto err_xdp;
-> >  			offset =3D VIRTIO_XDP_HEADROOM;
-> > +
-> > +			put_page(page);
->
-> the error handling of xdp_linearize_page() does not seems self contained.
-> Does it not seem better=EF=BC=9A
-> 1. if xdp_linearize_page() succesed, call put_page() for first buffer just
->    as put_page() is call for other buffer
-> 2. or call virtqueue_get_buf() and put_page() for all the buffer of the p=
-acket
->    so the error handling is not needed outside the virtqueue_get_buf().
->
-> In that case, it seems we can just do below without xdp_page:
-> page =3D xdp_linearize_page(rq, num_buf, page, ...);
+On 3/22/23 19:59, Ping-Ke Shih wrote:
+> diff --git a/pci.c b/pci.c
+> index fe6c0efc..087de2e0 100644
+> --- a/pci.c
+> +++ b/pci.c
+> @@ -3879,25 +3879,26 @@ int rtw89_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>          rtw89_pci_link_cfg(rtwdev);
+>          rtw89_pci_l1ss_cfg(rtwdev);
+> 
+> -       ret = rtw89_core_register(rtwdev);
+> -       if (ret) {
+> -               rtw89_err(rtwdev, "failed to register core\n");
+> -               goto err_clear_resource;
+> -       }
+> -
+>          rtw89_core_napi_init(rtwdev);
+> 
+>          ret = rtw89_pci_request_irq(rtwdev, pdev);
+>          if (ret) {
+>                  rtw89_err(rtwdev, "failed to request pci irq\n");
+> -               goto err_unregister;
+> +               goto err_deinit_napi;
+> +       }
+> +
+> +       ret = rtw89_core_register(rtwdev);
+> +       if (ret) {
+> +               rtw89_err(rtwdev, "failed to register core\n");
+> +               goto err_free_irq;
+>          }
+> 
+>          return 0;
+> 
+> -err_unregister:
+> +err_free_irq:
+> +       rtw89_pci_free_irq(rtwdev, pdev);
+> +err_deinit_napi:
+>          rtw89_core_napi_deinit(rtwdev);
+> -       rtw89_core_unregister(rtwdev);
+>   err_clear_resource:
+>          rtw89_pci_clear_resource(rtwdev, pdev);
+>   err_declaim_pci:
 
+Hyeonggon,
 
-This does look better.
+I have tested the above patch and added it to my GitHub repo that I mentioned 
+earlier. Using the repo, you will be able to get the new code without patching 
+and regenerating an entire new kernel.
 
-In fact, we already have vq reset, we can load XDP based on vq reset.
-In this way, we can run without xdp_linearize_page.
+Larry
 
-
->
->
-> > +			page =3D xdp_page;
-> >  		} else if (unlikely(headroom < virtnet_get_headroom(vi))) {
-> >  			xdp_room =3D SKB_DATA_ALIGN(VIRTIO_XDP_HEADROOM +
-> >  						  sizeof(struct skb_shared_info));
-> > @@ -1259,6 +1262,9 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
-> >  			       page_address(page) + offset, len);
-> >  			frame_sz =3D PAGE_SIZE;
-> >  			offset =3D VIRTIO_XDP_HEADROOM;
-> > +
-> > +			put_page(page);
-> > +			page =3D xdp_page;
->
-> It seems we can limit the scope of xdp_page in this "else if" block.
->
-> >  		} else {
-> >  			xdp_page =3D page;
-> >  		}
->
-> It seems the above else block is not needed anymore.
-
-Yes, the follow-up patch has this optimization.
-
-
->
-> > @@ -1278,8 +1284,6 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
-> >  			if (unlikely(!head_skb))
-> >  				goto err_xdp_frags;
-> >
-> > -			if (unlikely(xdp_page !=3D page))
-> > -				put_page(page);
-> >  			rcu_read_unlock();
-> >  			return head_skb;
-> >  		case XDP_TX:
-> > @@ -1297,8 +1301,6 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
-> >  				goto err_xdp_frags;
-> >  			}
-> >  			*xdp_xmit |=3D VIRTIO_XDP_TX;
-> > -			if (unlikely(xdp_page !=3D page))
-> > -				put_page(page);
-> >  			rcu_read_unlock();
-> >  			goto xdp_xmit;
-> >  		case XDP_REDIRECT:
-> > @@ -1307,8 +1309,6 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
-> >  			if (err)
-> >  				goto err_xdp_frags;
-> >  			*xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > -			if (unlikely(xdp_page !=3D page))
-> > -				put_page(page);
-> >  			rcu_read_unlock();
-> >  			goto xdp_xmit;
-> >  		default:
-> > @@ -1321,9 +1321,6 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
-> >  			goto err_xdp_frags;
-> >  		}
-> >  err_xdp_frags:
-> > -		if (unlikely(xdp_page !=3D page))
-> > -			__free_pages(xdp_page, 0);
->
-> It seems __free_pages() and put_page() is used interchangeably here.
-> Perhaps using __free_pages() have performance reason? As the comment belo=
-w:
->
-> https://elixir.bootlin.com/linux/v6.3-rc3/source/net/core/page_pool.c#L500
-
-
-Yes, but now we don't seem to be very good to distinguish it. But I think
-it doesn't matter. This logic is rare under actual situation.
-
-Thanks.
-
-
->
-> > -
-> >  		if (xdp_buff_has_frags(&xdp)) {
-> >  			shinfo =3D xdp_get_shared_info_from_buff(&xdp);
-> >  			for (i =3D 0; i < shinfo->nr_frags; i++) {
-> >
