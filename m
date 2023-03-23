@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DEF26C5D83
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 04:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE9F6C5D89
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 04:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbjCWDuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Mar 2023 23:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40962 "EHLO
+        id S230385AbjCWDvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Mar 2023 23:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbjCWDua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 23:50:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB68B302A9
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 20:50:19 -0700 (PDT)
+        with ESMTP id S230248AbjCWDue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Mar 2023 23:50:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33CB30296;
+        Wed, 22 Mar 2023 20:50:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F1D061179
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 03:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8BD5FC4339C;
-        Thu, 23 Mar 2023 03:50:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2125CB81EDE;
+        Thu, 23 Mar 2023 03:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D4F15C4339C;
+        Thu, 23 Mar 2023 03:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679543418;
-        bh=Dp/fl79L3boSezM/951Ro/93OIyAgnzxZL2/oLT5joE=;
+        s=k20201202; t=1679543419;
+        bh=rJHuAmc6zW3jrRyme6qDkmwRksSKBXtraiFpAQLkVcI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GuzT8J8+voiDsjSv1tU2PBNWS8XARH/wVB2y3oIbGVbPYZptOmt5p4ysYEk8RSj8V
-         WTsnPfSdU86wrI/LdrS7Bp+Figf4+TZM+/tE0L/8sRdQoM6zv1Sj5fas4xH5YMcax6
-         yaGM7fyVHux41851x4a2Fk/Ta9B0zpVVQ10Oq+G/DbXfFHLOzSIlAoBtLiF2Dg3EBf
-         EmKIxd6Ejz7KQRlcgEmbRjeDBwf0E0SUZqys3j7h5XRwhGGFm8oCjnB1vXjvlr/8c4
-         JheDeBa4ssHSHALMt1+h1ZHctkTv2QZDBx77LT8TT196X2F/PZGVVGXlG8kNWnaAAV
-         sTKvjExgHPPWQ==
+        b=YSbU/LTbRVMvxVPXzb9jIO3ZiJIT8a+cdYTH1XxeaMMALkYACmKq9VG97aoQtq7Gn
+         0FtxfA9kEVuJ9YlTNvfaFNgmjsi4DSX74M13m4ZfLYAqJj7D/6nJK93+Hm1RBJp/5D
+         Cjg8YkU6E2mAKsY41O9tr37+47JFsWLQWTcUYQhZ/2zXCG4kUtZOmEtBKaccnWGw6b
+         kX4QjJxMdcAqsE5YZEJ3J9okbNttkNPQpx44E+rzEHU4CVIxTvk+49eFdjwoaLTRa4
+         uFOGKPNLW5DQXlDtnInhoz/8Xs0OKBgmvR3cRgGqBsDOCoVNjFivYUhwqvyaEfsqFl
+         wX8rOp8xWXJTA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6BECEE4F0D7;
-        Thu, 23 Mar 2023 03:50:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BE309E61B85;
+        Thu, 23 Mar 2023 03:50:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/6] ynl: add support for user headers and struct
- attrs
+Subject: Re: [PATCH net-next] ethernet: remove superfluous clearing of phydev
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167954341843.25225.317267332666975407.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Mar 2023 03:50:18 +0000
-References: <20230319193803.97453-1-donald.hunter@gmail.com>
-In-Reply-To: <20230319193803.97453-1-donald.hunter@gmail.com>
-To:     Donald Hunter <donald.hunter@gmail.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, donald.hunter@redhat.com
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Message-Id: <167954341977.25225.18115905637742763072.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Mar 2023 03:50:19 +0000
+References: <20230321131745.27688-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20230321131745.27688-1-wsa+renesas@sang-engineering.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, bryan.whitehead@microchip.com,
+        UNGLinuxDriver@microchip.com, s.shtylyov@omp.ru,
+        steve.glendinning@shawell.net, wellslutw@gmail.com,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,33 +61,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This patch was applied to netdev/net-next.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun, 19 Mar 2023 19:37:57 +0000 you wrote:
-> Add support for user headers and struct attrs to YNL. This patchset adds
-> features to ynl and add a partial spec for openvswitch that demonstrates
-> use of the features.
+On Tue, 21 Mar 2023 14:17:45 +0100 you wrote:
+> phy_disconnect() calls phy_detach() which already clears 'phydev' if it
+> is attached to a struct net_device.
 > 
-> Patch 1 fixes a trivial signedness mismatch with struct genlmsghdr
-> Patch 2-5 add features to ynl
-> Patch 6 adds partial openvswitch specs that demonstrate the new features
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+> 
+> Tested with an Renesas APE6-EK (SMSC911x). Because this is more of a
+> mechanical change, I opted to put all occurences into one patch. I can
+> break out, of course, if this is preferred.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/6] tools: ynl: Fix genlmsg header encoding formats
-    https://git.kernel.org/netdev/net/c/758d29fb3a8b
-  - [net-next,v2,2/6] tools: ynl: Add struct parsing to nlspec
-    (no matching commit)
-  - [net-next,v2,3/6] tools: ynl: Add array-nest attr decoding to ynl
-    (no matching commit)
-  - [net-next,v2,4/6] tools: ynl: Add struct attr decoding to ynl
-    (no matching commit)
-  - [net-next,v2,5/6] tools: ynl: Add fixed-header support to ynl
-    (no matching commit)
-  - [net-next,v2,6/6] netlink: specs: add partial specification for openvswitch
-    (no matching commit)
+  - [net-next] ethernet: remove superfluous clearing of phydev
+    https://git.kernel.org/netdev/net-next/c/22f5c234141d
 
 You are awesome, thank you!
 -- 
