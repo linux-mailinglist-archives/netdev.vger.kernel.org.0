@@ -2,92 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 860AF6C66AA
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 12:33:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 955FC6C66CA
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 12:38:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231192AbjCWLdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 07:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52612 "EHLO
+        id S231292AbjCWLiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 07:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbjCWLdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 07:33:40 -0400
-Received: from out-10.mta1.migadu.com (out-10.mta1.migadu.com [95.215.58.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4159D2DE49
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 04:33:36 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1679571214;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sPZcqQ6jZu5o2Ndux434TvzXwFz3PedsAkujCq96hR8=;
-        b=ecVPWu74WuL7+2PFUH7Yggg/nVH9pne8RIE1QVe5CJ+8Xq4ZFdLn1V0HqFE3lvuurDQtZj
-        /9G2oowpgCtB9bnA1OZtIzXZ/mEtIi6N/0cFs0iop49hOy/BVtJe0XEfC2c1yomRzxucxt
-        uUZZMapq1zx2JabFkDwGGQpqmfGYxL4=
-From:   Cai Huoqing <cai.huoqing@linux.dev>
-To:     cai.huoqing@linux.dev
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S229518AbjCWLiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 07:38:09 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D77193F0;
+        Thu, 23 Mar 2023 04:38:04 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 277F75FD0A;
+        Thu, 23 Mar 2023 14:38:02 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1679571482;
+        bh=7lZi752yaidVYn1I7MsqCySIdC2Vy7xBMR/W3J+6ogU=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=c8GcqIsVoN/ou8o+y4TgdM7++0urDlRBiw8kOscr5GSl8eIYcuk5nFyEA9a4uChQ2
+         FV6LBxYoJp0c4J0hBBJgOzc+/rbMpNV+3rrSleFjPtE5BEt6mdctkRspkHXqSPlDqZ
+         0G7gEOqGr/RagIdwUCaKkrforW/YpRAQtE7l+EYmy9y2la1h1SJBzLjn5QoZ41LoAl
+         75VNB+glS1T8kknmxsEJ3uqNb4lgnERFwBH2GjXt25lltEGSm1v63T2JxU9cBWZNPN
+         kPUpn0RQTMjfFb/xSTKLvXiTycNGO6kTgmMeQ3r9W1JWh6WPfQcZDVAzafYjGr6mCv
+         n2xbMCeU/374w==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 23 Mar 2023 14:37:56 +0300 (MSK)
+Message-ID: <11b36ca2-4f0a-5fe4-bd84-d93eb0fa34c5@sberdevices.ru>
+Date:   Thu, 23 Mar 2023 14:34:44 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v5 0/2] allocate multiple skbuffs on tx
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Ondrej Ille <ondrej.ille@gmail.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] can: kvaser_pciefd: Remove redundant pci_clear_master
-Date:   Thu, 23 Mar 2023 19:33:17 +0800
-Message-Id: <20230323113318.9473-3-cai.huoqing@linux.dev>
-In-Reply-To: <20230323113318.9473-1-cai.huoqing@linux.dev>
-References: <20230323113318.9473-1-cai.huoqing@linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,TO_EQ_FM_DIRECT_MX
-        autolearn=no autolearn_force=no version=3.4.6
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
+References: <f0b283a1-cc63-dc3d-cc0c-0da7f684d4d2@sberdevices.ru>
+ <2e06387d-036b-dde2-5ddc-734c65a2f50d@sberdevices.ru>
+ <20230323104800.odrkkiuxi3o2l37q@sgarzare-redhat>
+ <15e9ac56-bedc-b444-6d9a-8a1355e32eaf@sberdevices.ru>
+ <20230323111110.gb4vlaqaf7icymv3@sgarzare-redhat>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <20230323111110.gb4vlaqaf7icymv3@sgarzare-redhat>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/23 09:00:00 #20997914
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove pci_clear_master to simplify the code,
-the bus-mastering is also cleared in do_pci_disable_device,
-like this:
-./drivers/pci/pci.c:2197
-static void do_pci_disable_device(struct pci_dev *dev)
-{
-	u16 pci_command;
 
-	pci_read_config_word(dev, PCI_COMMAND, &pci_command);
-	if (pci_command & PCI_COMMAND_MASTER) {
-		pci_command &= ~PCI_COMMAND_MASTER;
-		pci_write_config_word(dev, PCI_COMMAND, pci_command);
-	}
 
-	pcibios_disable_device(dev);
-}.
-And dev->is_busmaster is set to 0 in pci_disable_device.
+On 23.03.2023 14:11, Stefano Garzarella wrote:
+> On Thu, Mar 23, 2023 at 01:53:40PM +0300, Arseniy Krasnov wrote:
+>>
+>>
+>> On 23.03.2023 13:48, Stefano Garzarella wrote:
+>>> On Thu, Mar 23, 2023 at 01:01:40PM +0300, Arseniy Krasnov wrote:
+>>>> Hello Stefano,
+>>>>
+>>>> thanks for review!
+>>>
+>>> You're welcome!
+>>>
+>>>>
+>>>> Since both patches are R-b, i can wait for a few days, then send this
+>>>> as 'net-next'?
+>>>
+>>> Yep, maybe even this series could have been directly without RFC ;-)
+>>
+>> "directly", You mean 'net' tag? Of just without RFC, like [PATCH v5]. In this case
+>> it will be merged to 'net' right?
+> 
+> Sorry for the confusion. I meant without RFC but with net-next.
+> 
+> Being enhancements and not fixes this is definitely net-next material,
+> so even in RFCs you can already use the net-next tag, so the reviewer
+> knows which branch to apply them to. (It's not super important since
+> being RFCs it's expected that it's not complete, but it's definitely an
+> help for the reviewer).
+> 
+> Speaking of the RFC, we usually use it for patches that we don't think
+> are ready to be merged. But when they reach a good state (like this
+> series for example), we can start publishing them already without the
+> RFC tag.
+> 
+> Anyway, if you are not sure, use RFC and then when a maintainer has
+> reviewed them all, surely you can remove the RFC tag.
+> 
+> Hope this helps, at least that's what I usually do, so don't take that
+> as a strict rule ;-)
 
-Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
----
- drivers/net/can/kvaser_pciefd.c | 1 -
- 1 file changed, 1 deletion(-)
+Ah ok, I see now, thanks for details
 
-diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_pciefd.c
-index bcad11709bc9..53e8a914c88b 100644
---- a/drivers/net/can/kvaser_pciefd.c
-+++ b/drivers/net/can/kvaser_pciefd.c
-@@ -1907,7 +1907,6 @@ static void kvaser_pciefd_remove(struct pci_dev *pdev)
- 
- 	free_irq(pcie->pci->irq, pcie);
- 
--	pci_clear_master(pdev);
- 	pci_iounmap(pdev, pcie->reg_base);
- 	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
--- 
-2.34.1
+Thanks, Arseniy
 
+> 
+> Thanks,
+> Stefano
+> 
