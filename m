@@ -2,126 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 955FC6C66CA
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 12:38:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94B266C66C7
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 12:38:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbjCWLiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 07:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        id S231176AbjCWLh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 07:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjCWLiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 07:38:09 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D77193F0;
-        Thu, 23 Mar 2023 04:38:04 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 277F75FD0A;
-        Thu, 23 Mar 2023 14:38:02 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1679571482;
-        bh=7lZi752yaidVYn1I7MsqCySIdC2Vy7xBMR/W3J+6ogU=;
-        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-        b=c8GcqIsVoN/ou8o+y4TgdM7++0urDlRBiw8kOscr5GSl8eIYcuk5nFyEA9a4uChQ2
-         FV6LBxYoJp0c4J0hBBJgOzc+/rbMpNV+3rrSleFjPtE5BEt6mdctkRspkHXqSPlDqZ
-         0G7gEOqGr/RagIdwUCaKkrforW/YpRAQtE7l+EYmy9y2la1h1SJBzLjn5QoZ41LoAl
-         75VNB+glS1T8kknmxsEJ3uqNb4lgnERFwBH2GjXt25lltEGSm1v63T2JxU9cBWZNPN
-         kPUpn0RQTMjfFb/xSTKLvXiTycNGO6kTgmMeQ3r9W1JWh6WPfQcZDVAzafYjGr6mCv
-         n2xbMCeU/374w==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 23 Mar 2023 14:37:56 +0300 (MSK)
-Message-ID: <11b36ca2-4f0a-5fe4-bd84-d93eb0fa34c5@sberdevices.ru>
-Date:   Thu, 23 Mar 2023 14:34:44 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Subject: Re: [RFC PATCH v5 0/2] allocate multiple skbuffs on tx
-Content-Language: en-US
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        with ESMTP id S230165AbjCWLh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 07:37:56 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215DD12BDE;
+        Thu, 23 Mar 2023 04:37:54 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id j11so27237078lfg.13;
+        Thu, 23 Mar 2023 04:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679571472;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9wqfCTQu6TpSkQBuufTN+FDVnW3u9zukJQMSdPwg2XI=;
+        b=Op0RbaHTvg7xYxUMJ5x37/ssOSmmCk314Ar6tZMsow7cQf4VpukR5WbwpoKvNPlu2w
+         qpLueWiBUoznP+bidlh55yerR8HD4zeejtChefwtTSe1QazWFMbdyGnY7mUCCXIN+C5p
+         UtnU1MO4sn6fjSneBxTpdUUWbf/OTjbDO2fQyhJFMTedWk4Q8Hz0fa2g4qKvUuPB0R0L
+         pOA5cNoFm5zLcVhgdJ0m8/KbohJNPJzBwmiyVYWwPrA/h+CvdZpyS1elXEd1H4aTKx2K
+         M5V9cImzOfpBDW+UvHUuaXJGB+wAOK6qAO5qwuxxINZy8nyW6mJW1jCqvnH/gYAcr4fB
+         81Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679571472;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9wqfCTQu6TpSkQBuufTN+FDVnW3u9zukJQMSdPwg2XI=;
+        b=Unbvszsm7eLglGA1LnP6fJu/N3jEBKeqP5T62uf83AX/NevSgXKkZgXRB70MSXoNLa
+         g6TkGur8DRXD2ZstJGHX/H9hSd2J96izAZVK46J+8sji6m6W44kO1LIOsMYTIvgiwDn9
+         N6Ku4cjlll3GwwIu/j9YOGTkDXbv7fUCOPXYfY1waxZzRKoweFsr4Gec1syTewcX23L5
+         O+ien4cHkO9n/UdYxjHYXBfAXr5xCyTCLUIaqQGK1CCOr16XSaiS9vid7Pk7j1HhTQQh
+         RrawrcCylXj3FcNDDdqasi4DcO6ImLmVtM3zHZdV8+OdIhltkQNX3U/Xj4/igpsUkcl+
+         Ma5Q==
+X-Gm-Message-State: AO0yUKUaKjsD5nuAIGWcDApTUoeyL5CevFZg3JC5uYBsyG/r/w4YMpUj
+        NHicp+w2woNCATJVLNoO1Yc=
+X-Google-Smtp-Source: AK7set/GwotgsUGGJrT8NBvp53IUC4qj6qO7Ly+8+IGCS8e+OHcK+s+ODAxaZ68ZV4PenA/B0IUpqw==
+X-Received: by 2002:a05:6512:102d:b0:4e7:fa8a:886e with SMTP id r13-20020a056512102d00b004e7fa8a886emr2704920lfr.51.1679571472098;
+        Thu, 23 Mar 2023 04:37:52 -0700 (PDT)
+Received: from mobilestation ([95.79.133.202])
+        by smtp.gmail.com with ESMTPSA id w9-20020ac254a9000000b004e845b49d81sm2898087lfk.140.2023.03.23.04.37.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Mar 2023 04:37:51 -0700 (PDT)
+Date:   Thu, 23 Mar 2023 14:37:48 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>
-References: <f0b283a1-cc63-dc3d-cc0c-0da7f684d4d2@sberdevices.ru>
- <2e06387d-036b-dde2-5ddc-734c65a2f50d@sberdevices.ru>
- <20230323104800.odrkkiuxi3o2l37q@sgarzare-redhat>
- <15e9ac56-bedc-b444-6d9a-8a1355e32eaf@sberdevices.ru>
- <20230323111110.gb4vlaqaf7icymv3@sgarzare-redhat>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-In-Reply-To: <20230323111110.gb4vlaqaf7icymv3@sgarzare-redhat>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/23 09:00:00 #20997914
-X-KSMG-AntiVirus-Status: Clean, skipped
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 09/16] dt-bindings: net: dwmac: Prohibit
+ additional props in AXI-config
+Message-ID: <20230323113748.bj45qbvut2cthvyr@mobilestation>
+References: <20230313225103.30512-1-Sergey.Semin@baikalelectronics.ru>
+ <20230313225103.30512-10-Sergey.Semin@baikalelectronics.ru>
+ <78224241-00a3-2e8e-4763-603b27ac3b83@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78224241-00a3-2e8e-4763-603b27ac3b83@linaro.org>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 16, 2023 at 09:06:04AM +0100, Krzysztof Kozlowski wrote:
+> On 13/03/2023 23:50, Serge Semin wrote:
+> > Currently DT-schema of the AXI-bus config sub-node prohibits to have
+> > unknown properties by using the unevaluatedProperties property. It's
+> > overkill for the sub-node which doesn't use any combining schemas
+> > keywords (allOf, anyOf, etc). Instead more natural is to use
+> > additionalProperties to prohibit for that.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index 89be67e55c3e..d1b2910b799b 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -466,7 +466,6 @@ properties:
+> >  
+> >    stmmac-axi-config:
+> >      type: object
+> > -    unevaluatedProperties: false
+> >      description:
+> >        AXI BUS Mode parameters.
+> >  
+> > @@ -518,6 +517,8 @@ properties:
+> >          description:
+> >            rebuild INCRx Burst
+> >  
+> > +    additionalProperties: false
+> 
+> But why moving it? Keep the same placement.
 
+No firm justification except that vast majority of DT bindings have
+that keyword placed at the tail of the schema body. Anyway I'll get
+the it back to the original line.
 
-On 23.03.2023 14:11, Stefano Garzarella wrote:
-> On Thu, Mar 23, 2023 at 01:53:40PM +0300, Arseniy Krasnov wrote:
->>
->>
->> On 23.03.2023 13:48, Stefano Garzarella wrote:
->>> On Thu, Mar 23, 2023 at 01:01:40PM +0300, Arseniy Krasnov wrote:
->>>> Hello Stefano,
->>>>
->>>> thanks for review!
->>>
->>> You're welcome!
->>>
->>>>
->>>> Since both patches are R-b, i can wait for a few days, then send this
->>>> as 'net-next'?
->>>
->>> Yep, maybe even this series could have been directly without RFC ;-)
->>
->> "directly", You mean 'net' tag? Of just without RFC, like [PATCH v5]. In this case
->> it will be merged to 'net' right?
-> 
-> Sorry for the confusion. I meant without RFC but with net-next.
-> 
-> Being enhancements and not fixes this is definitely net-next material,
-> so even in RFCs you can already use the net-next tag, so the reviewer
-> knows which branch to apply them to. (It's not super important since
-> being RFCs it's expected that it's not complete, but it's definitely an
-> help for the reviewer).
-> 
-> Speaking of the RFC, we usually use it for patches that we don't think
-> are ready to be merged. But when they reach a good state (like this
-> series for example), we can start publishing them already without the
-> RFC tag.
-> 
-> Anyway, if you are not sure, use RFC and then when a maintainer has
-> reviewed them all, surely you can remove the RFC tag.
-> 
-> Hope this helps, at least that's what I usually do, so don't take that
-> as a strict rule ;-)
-
-Ah ok, I see now, thanks for details
-
-Thanks, Arseniy
+-Serge(y)
 
 > 
-> Thanks,
-> Stefano
+> Best regards,
+> Krzysztof
 > 
