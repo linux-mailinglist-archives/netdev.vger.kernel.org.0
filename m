@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ABC46C62CD
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:08:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B696C62E6
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 10:10:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbjCWJIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 05:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44312 "EHLO
+        id S230415AbjCWJJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 05:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbjCWJHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:07:53 -0400
-X-Greylist: delayed 211 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Mar 2023 02:06:59 PDT
-Received: from out-46.mta0.migadu.com (out-46.mta0.migadu.com [91.218.175.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FE3222FB
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:06:58 -0700 (PDT)
+        with ESMTP id S229642AbjCWJJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 05:09:25 -0400
+Received: from out-27.mta1.migadu.com (out-27.mta1.migadu.com [95.215.58.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976C4193F0
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 02:09:24 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1679562233;
+        t=1679562245;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=E9VZuBBTp04BDbs+ncOrUcdGIr1MtZeBvyGlNQPB6Mg=;
-        b=tOF2mLSO0gVV24esZPsvixYPG2lfpE5Hm5zHYAZRFK2gto6p6aSp+hW5wQljUvze36l6bP
-        8LdDEhzDomKyHbkjwkzxc7WR2PW9y+SMqiHHA84djwZzJx9VFMvsOUFNfH/Jerlg296PEW
-        5oBHFfiGkj39SEXCIR/boRnxE77C0Yg=
+        bh=8heerTHq9kX+O1AlscOnshCW0sl+3t4ySnbmUTH08/4=;
+        b=SBkUHkqWpaPjzum4QPIb4aVPODL0367StZD4I/ykW1mdvDqjmZKLrtcVWcxHZmnwXzgUhv
+        bbWsFsyl4IJ1R7f3c1XobImqKoy7BJ5q4Gtk8mfeAEUBQdilhkez2KCxOAYPZPgp7eKK+F
+        3r3urHWu+kTYihhYWuvmFVg9xYTwbjE=
 From:   Cai Huoqing <cai.huoqing@linux.dev>
 To:     cai.huoqing@linux.dev
 Cc:     Derek Chickles <dchickles@marvell.com>,
@@ -55,9 +54,9 @@ Cc:     Derek Chickles <dchickles@marvell.com>,
         Long Li <longli@microsoft.com>, Jiri Pirko <jiri@resnulli.us>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-hyperv@vger.kernel.org
-Subject: [PATCH 3/8] net: cxgb4vf: Remove redundant pci_clear_master
-Date:   Thu, 23 Mar 2023 17:03:02 +0800
-Message-Id: <20230323090314.22431-3-cai.huoqing@linux.dev>
+Subject: [PATCH 4/8] net/fungible: Remove redundant pci_clear_master
+Date:   Thu, 23 Mar 2023 17:03:03 +0800
+Message-Id: <20230323090314.22431-4-cai.huoqing@linux.dev>
 In-Reply-To: <20230323090314.22431-1-cai.huoqing@linux.dev>
 References: <20230323090314.22431-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
@@ -92,29 +91,29 @@ And dev->is_busmaster is set to 0 in pci_disable_device.
 
 Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 ---
- drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c | 2 --
+ drivers/net/ethernet/fungible/funcore/fun_dev.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-index 63b2bd084130..9ba0864592e8 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/cxgb4vf_main.c
-@@ -3258,7 +3258,6 @@ static int cxgb4vf_pci_probe(struct pci_dev *pdev,
+diff --git a/drivers/net/ethernet/fungible/funcore/fun_dev.c b/drivers/net/ethernet/fungible/funcore/fun_dev.c
+index 3680f83feba2..a7fbd4cd560a 100644
+--- a/drivers/net/ethernet/fungible/funcore/fun_dev.c
++++ b/drivers/net/ethernet/fungible/funcore/fun_dev.c
+@@ -746,7 +746,6 @@ void fun_dev_disable(struct fun_dev *fdev)
+ 	bitmap_free(fdev->irq_map);
+ 	pci_free_irq_vectors(pdev);
  
- err_release_regions:
- 	pci_release_regions(pdev);
 -	pci_clear_master(pdev);
+ 	pci_disable_device(pdev);
  
- err_disable_device:
- 	pci_disable_device(pdev);
-@@ -3338,7 +3337,6 @@ static void cxgb4vf_pci_remove(struct pci_dev *pdev)
- 	 * Disable the device and release its PCI resources.
- 	 */
- 	pci_disable_device(pdev);
+ 	fun_unmap_bars(fdev);
+@@ -821,7 +820,6 @@ int fun_dev_enable(struct fun_dev *fdev, struct pci_dev *pdev,
+ disable_admin:
+ 	fun_disable_admin_queue(fdev);
+ free_irq_mgr:
 -	pci_clear_master(pdev);
- 	pci_release_regions(pdev);
- }
- 
+ 	bitmap_free(fdev->irq_map);
+ free_irqs:
+ 	pci_free_irq_vectors(pdev);
 -- 
 2.34.1
 
