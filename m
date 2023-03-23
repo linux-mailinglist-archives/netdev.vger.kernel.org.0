@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCAA66C650B
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 11:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E866B6C6512
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 11:31:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbjCWKaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 06:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
+        id S231474AbjCWKbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 06:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbjCWK31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 06:29:27 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CDF1D921;
-        Thu, 23 Mar 2023 03:27:12 -0700 (PDT)
+        with ESMTP id S231400AbjCWK3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 06:29:43 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78823803A;
+        Thu, 23 Mar 2023 03:27:22 -0700 (PDT)
 Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id A73F54000D;
-        Thu, 23 Mar 2023 10:27:09 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPA id C98CB40007;
+        Thu, 23 Mar 2023 10:27:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1679567230;
+        t=1679567231;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=kyML+Tb93DHPPScUmVGGn4WAujJ7ZGz0ZkmMwXFTevo=;
-        b=ku071i7LJ8rvNRXn5+UuUmJjJUTNHt2DL7CpY1RzDLW4+KMjB269x5a/aXRqdufujE2gHE
-        op5LDLr1Ihn2VuBTz4nbLH61vD6dPqJvwLbtvwwctLUMmKc1LX2J8ZNWn39tSep0iJLbpe
-        rP06NybLxi1FSzllWSoFSrvjrJczg1zlutoPLEavfwGzIMUYLF1eLO99cL/7A2vxlNbIzS
-        FX4V8Okf6GMDBZd5qf8UJkXahyPDlmjwN6T259M5fvCufpkSQSHSJmosWcT5TxoMOu2CCQ
-        UD9F0Mhij/ldt6JgWq6w73p0AlCqwn53ZvZoYBqSrjmlqqjZQb7yYoE1I4HYeQ==
+        bh=ZXghyFKbkBEH9/EKzDk+5w9Pp/aMwqnL/aCTRT1Laoo=;
+        b=LJTLbTwGPnQSRj8spEu6q0fcfKe1kXQvZU5lYdeDWKD6iV27Fom4Zonxo1imQoDv0rd5uq
+        claLSkqz5Om9N7BsV18vNOjhZeezZ7JBTNTdK6VUzQfkCsHKzSBcNFgdicF2SvAvfiof2b
+        zA59gj8Qm0h/wvaNVklyIL+cCSu/Uynyu7m/mCiyykcUXoA5OHAKgar82eUKb7H+DGlqMV
+        pjeCDKQ8us6XZPOeg+6efzlmiVn4ev0w06sYugUT7H7mHkXFqvVWL15xsh1powdkuCW7bF
+        4dQKnNjXDzoeAm8rjH7+CV+wtNN7rlCi1eBM3XuXTU+kOg8GyYusK8BEGCVn8w==
 From:   Herve Codina <herve.codina@bootlin.com>
 To:     Herve Codina <herve.codina@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -40,323 +40,254 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-phy@lists.infradead.org,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [RFC PATCH 2/4] phy: Extend API to support 'status' get and notification
-Date:   Thu, 23 Mar 2023 11:26:53 +0100
-Message-Id: <20230323102655.264115-3-herve.codina@bootlin.com>
+Subject: [RFC PATCH 3/4] net: wan: fsl_qmc_hdlc: Add PHY support
+Date:   Thu, 23 Mar 2023 11:26:54 +0100
+Message-Id: <20230323102655.264115-4-herve.codina@bootlin.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230323102655.264115-1-herve.codina@bootlin.com>
 References: <20230323102655.264115-1-herve.codina@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PHY API provides functions to control and pass information from the
-PHY consumer to the PHY provider.
-There is no way for the consumer to get direct information from the PHY
-or be notified by the PHY.
-
-To fill this hole, two API function are provided:
-
-- phy_get_status()
-  This function can be used to get a "status" from the PHY. It is built
-  as the same ways as the configure() function. The status information
-  present in the status retrieved depends on the PHY's phy_mode.
-  This allows to get a "status" depending on the kind of PHY.
-
-- phy_atomic_notifier_(un)register()
-  These functions can be used to register/unregister an atomic notifier
-  block. The event available at this time is the PHY_EVENT_STATUS status
-  event which purpose is to signal some changes in the status available
-  using phy_get_status().
-
-An new kind of PHY is added: PHY_MODE_BASIC.
-This new kind of PHY represents a basic PHY offering a basic status This
-status contains a link state indication.
-With the new API, a link state indication can be retrieve using
-phy_get_status() and link state changes can be notified.
+Add PHY support in the fsl_qmc_hdlc driver in order to be able to
+signal carrier changes to the network stack based on the PHY status.
 
 Signed-off-by: Herve Codina <herve.codina@bootlin.com>
 ---
- drivers/phy/phy-core.c        | 88 ++++++++++++++++++++++++++++++++++
- include/linux/phy/phy-basic.h | 27 +++++++++++
- include/linux/phy/phy.h       | 89 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 203 insertions(+), 1 deletion(-)
- create mode 100644 include/linux/phy/phy-basic.h
+ drivers/net/wan/fsl_qmc_hdlc.c | 152 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 151 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
-index 9951efc03eaa..c7b568b99dce 100644
---- a/drivers/phy/phy-core.c
-+++ b/drivers/phy/phy-core.c
-@@ -551,6 +551,94 @@ int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
- }
- EXPORT_SYMBOL_GPL(phy_validate);
- 
-+/**
-+ * phy_get_status() - Gets the phy status
-+ * @phy: the phy returned by phy_get()
-+ * @status: the status to retrieve
-+ *
-+ * Used to get the PHY status. phy_init() must have been called
-+ * on the phy. The status will be retrieved from the current phy mode,
-+ * that can be changed using phy_set_mode().
-+ *
-+ * Return: %0 if successful, a negative error code otherwise
-+ */
-+int phy_get_status(struct phy *phy, union phy_status *status)
-+{
-+	int ret;
-+
-+	if (!phy)
-+		return -EINVAL;
-+
-+	if (!phy->ops->get_status)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&phy->mutex);
-+	ret = phy->ops->get_status(phy, status);
-+	mutex_unlock(&phy->mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(phy_get_status);
-+
-+/**
-+ * phy_atomic_notifier_register() - Registers an atomic notifier
-+ * @phy: the phy returned by phy_get()
-+ * @nb: the notifier block to register
-+ *
-+ * Used to register a notifier block on PHY events. phy_init() must have
-+ * been called on the phy.
-+ * The notifier function given in the notifier_block must not sleep.
-+ * The available PHY events are present in enum phy_events
-+ *
-+ * Return: %0 if successful, a negative error code otherwise
-+ */
-+int phy_atomic_notifier_register(struct phy *phy, struct notifier_block *nb)
-+{
-+	int ret;
-+
-+	if (!phy)
-+		return -EINVAL;
-+
-+	if (!phy->ops->atomic_notifier_register ||
-+	    !phy->ops->atomic_notifier_unregister)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&phy->mutex);
-+	ret = phy->ops->atomic_notifier_register(phy, nb);
-+	mutex_unlock(&phy->mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(phy_atomic_notifier_register);
-+
-+/**
-+ * phy_atomic_notifier_unregister() - Unregisters an atomic notifier
-+ * @phy: the phy returned by phy_get()
-+ * @nb: the notifier block to unregister
-+ *
-+ * Used to unregister a notifier block. phy_init() must have
-+ * been called on the phy.
-+ *
-+ * Return: %0 if successful, a negative error code otherwise
-+ */
-+int phy_atomic_notifier_unregister(struct phy *phy, struct notifier_block *nb)
-+{
-+	int ret;
-+
-+	if (!phy)
-+		return -EINVAL;
-+
-+	if (!phy->ops->atomic_notifier_unregister)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&phy->mutex);
-+	ret = phy->ops->atomic_notifier_unregister(phy, nb);
-+	mutex_unlock(&phy->mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(phy_atomic_notifier_unregister);
-+
- /**
-  * _of_phy_get() - lookup and obtain a reference to a phy by phandle
-  * @np: device_node for which to get the phy
-diff --git a/include/linux/phy/phy-basic.h b/include/linux/phy/phy-basic.h
-new file mode 100644
-index 000000000000..95668c610c78
---- /dev/null
-+++ b/include/linux/phy/phy-basic.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright 2023 CS GROUP France
-+ *
-+ * Author: Herve Codina <herve.codina@bootlin.com>
-+ */
-+
-+#ifndef __PHY_BASIC_H_
-+#define __PHY_BASIC_H_
-+
-+#include <linux/types.h>
-+
-+/**
-+ * struct phy_status_basic - Basic PHY status
-+ *
-+ * This structure is used to represent the status of a Basic phy.
-+ */
-+struct phy_status_basic {
-+	/**
-+	 * @link_state:
-+	 *
-+	 * Link state. true, the link is on, false, the link is off.
-+	 */
-+	bool link_is_on;
-+};
-+
-+#endif /* __PHY_DP_H_ */
-diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-index 3a570bc59fc7..40370d41012b 100644
---- a/include/linux/phy/phy.h
-+++ b/include/linux/phy/phy.h
-@@ -16,6 +16,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
- 
-+#include <linux/phy/phy-basic.h>
- #include <linux/phy/phy-dp.h>
- #include <linux/phy/phy-lvds.h>
- #include <linux/phy/phy-mipi-dphy.h>
-@@ -42,7 +43,8 @@ enum phy_mode {
- 	PHY_MODE_MIPI_DPHY,
- 	PHY_MODE_SATA,
- 	PHY_MODE_LVDS,
--	PHY_MODE_DP
-+	PHY_MODE_DP,
-+	PHY_MODE_BASIC,
- };
- 
- enum phy_media {
-@@ -67,6 +69,22 @@ union phy_configure_opts {
- 	struct phy_configure_opts_lvds		lvds;
- };
- 
-+/**
-+ * union phy_status - Opaque generic phy status
-+ *
-+ * @basic:	Status availbale phys supporting the Basic phy mode.
-+ */
-+union phy_status {
-+	struct phy_status_basic		basic;
-+};
-+
-+/**
-+ * phy_event - event available for notification
-+ */
-+enum phy_event {
-+	PHY_EVENT_STATUS,	/* Event notified on phy_status changes */
-+};
-+
- /**
-  * struct phy_ops - set of function pointers for performing phy operations
-  * @init: operation to be performed for initializing phy
-@@ -120,6 +138,45 @@ struct phy_ops {
- 	 */
- 	int	(*validate)(struct phy *phy, enum phy_mode mode, int submode,
- 			    union phy_configure_opts *opts);
-+
-+	/**
-+	 * @get_status:
-+	 *
-+	 * Optional.
-+	 *
-+	 * Used to get the PHY status. phy_init() must have
-+	 * been called on the phy.
-+	 *
-+	 * Returns: 0 if successful, an negative error code otherwise
-+	 */
-+	int	(*get_status)(struct phy *phy, union phy_status *status);
-+
-+	/**
-+	 * @atomic_notifier_register:
-+	 *
-+	 * Optional.
-+	 *
-+	 * Used to register a notifier block on PHY events. phy_init() must have
-+	 * been called on the phy.
-+	 * The notifier function given in the notifier_block must not sleep.
-+	 * The available PHY events are present in enum phy_events
-+	 *
-+	 * Returns: 0 if successful, an negative error code otherwise
-+	 */
-+	int	(*atomic_notifier_register)(struct phy *phy, struct notifier_block *nb);
-+
-+	/**
-+	 * @atomic_notifier_unregister:
-+	 *
-+	 * Mandatoty if @atomic_notifier_register is set.
-+	 *
-+	 * Used to unregister a notifier block on PHY events. phy_init() must have
-+	 * been called on the phy.
-+	 *
-+	 * Returns: 0 if successful, an negative error code otherwise
-+	 */
-+	int	(*atomic_notifier_unregister)(struct phy *phy, struct notifier_block *nb);
-+
- 	int	(*reset)(struct phy *phy);
- 	int	(*calibrate)(struct phy *phy);
- 	void	(*release)(struct phy *phy);
-@@ -234,6 +291,10 @@ int phy_set_speed(struct phy *phy, int speed);
- int phy_configure(struct phy *phy, union phy_configure_opts *opts);
- int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
- 		 union phy_configure_opts *opts);
-+int phy_get_status(struct phy *phy, union phy_status *status);
-+int phy_atomic_notifier_register(struct phy *phy, struct notifier_block *nb);
-+int phy_atomic_notifier_unregister(struct phy *phy, struct notifier_block *nb);
-+
- 
- static inline enum phy_mode phy_get_mode(struct phy *phy)
- {
-@@ -412,6 +473,32 @@ static inline int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
- 	return -ENOSYS;
+diff --git a/drivers/net/wan/fsl_qmc_hdlc.c b/drivers/net/wan/fsl_qmc_hdlc.c
+index f12d00c78497..edea0f678ffe 100644
+--- a/drivers/net/wan/fsl_qmc_hdlc.c
++++ b/drivers/net/wan/fsl_qmc_hdlc.c
+@@ -12,6 +12,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
++#include <linux/phy/phy.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <soc/fsl/qe/qmc.h>
+@@ -27,6 +28,11 @@ struct qmc_hdlc {
+ 	struct device *dev;
+ 	struct qmc_chan *qmc_chan;
+ 	struct net_device *netdev;
++	struct phy *phy;
++	spinlock_t carrier_lock; /* Protect carrier detection */
++	struct notifier_block nb;
++	bool is_phy_notifier;
++	struct delayed_work phy_poll_task;
+ 	bool is_crc32;
+ 	spinlock_t tx_lock; /* Protect tx descriptors */
+ 	struct qmc_hdlc_desc tx_descs[8];
+@@ -39,6 +45,126 @@ static inline struct qmc_hdlc *netdev_to_qmc_hdlc(struct net_device *netdev)
+ 	return (struct qmc_hdlc *)dev_to_hdlc(netdev)->priv;
  }
  
-+static inline int phy_get_status(struct phy *phy, union phy_status *status)
++static int qmc_hdlc_phy_set_carrier(struct qmc_hdlc *qmc_hdlc)
 +{
-+	if (!phy)
++	union phy_status phy_status;
++	unsigned long flags;
++	int ret;
++
++	if (!qmc_hdlc->phy)
 +		return 0;
 +
-+	return -ENOSYS;
++	spin_lock_irqsave(&qmc_hdlc->carrier_lock, flags);
++
++	ret = phy_get_status(qmc_hdlc->phy, &phy_status);
++	if (ret) {
++		dev_err(qmc_hdlc->dev, "get PHY status failed (%d)\n", ret);
++		goto end;
++	}
++	if (phy_status.basic.link_is_on)
++		netif_carrier_on(qmc_hdlc->netdev);
++	else
++		netif_carrier_off(qmc_hdlc->netdev);
++
++end:
++	spin_unlock_irqrestore(&qmc_hdlc->carrier_lock, flags);
++	return ret;
 +}
 +
-+static inline int phy_atomic_notifier_register(struct phy *phy,
-+					       struct notifier_block *nb)
++static int qmc_hdlc_phy_notifier(struct notifier_block *nb, unsigned long action,
++				 void *data)
 +{
-+	if (!phy)
++	struct qmc_hdlc *qmc_hdlc = container_of(nb, struct qmc_hdlc, nb);
++	int ret;
++
++	if (action != PHY_EVENT_STATUS)
++		return NOTIFY_DONE;
++
++	ret = qmc_hdlc_phy_set_carrier(qmc_hdlc);
++	return ret ? NOTIFY_DONE : NOTIFY_OK;
++}
++
++static void qmc_hdlc_phy_poll_task(struct work_struct *work)
++{
++	struct qmc_hdlc *qmc_hdlc = container_of(work, struct qmc_hdlc, phy_poll_task.work);
++	int ret;
++
++	ret = qmc_hdlc_phy_set_carrier(qmc_hdlc);
++	if (ret) {
++		/* Should not happened but ...
++		 * On error, force carrier on and stop scheduling this task
++		 */
++		dev_err(qmc_hdlc->dev, "set carrier failed (%d) -> force carrier on\n",
++			ret);
++		netif_carrier_on(qmc_hdlc->netdev);
++		return;
++	}
++
++	/* Re-schedule task in 1 sec */
++	queue_delayed_work(system_power_efficient_wq, &qmc_hdlc->phy_poll_task, 1 * HZ);
++}
++
++static int qmc_hdlc_phy_init(struct qmc_hdlc *qmc_hdlc)
++{
++	union phy_status phy_status;
++	int ret;
++
++	if (!qmc_hdlc->phy)
 +		return 0;
 +
-+	return -ENOSYS;
++	ret = phy_init(qmc_hdlc->phy);
++	if (ret) {
++		dev_err(qmc_hdlc->dev, "PHY init failed (%d)\n", ret);
++		return ret;
++	}
++
++	ret = phy_power_on(qmc_hdlc->phy);
++	if (ret) {
++		dev_err(qmc_hdlc->dev, "PHY power-on failed (%d)\n", ret);
++		goto phy_exit;
++	}
++
++	/* Be sure that get_status is supported */
++	ret = phy_get_status(qmc_hdlc->phy, &phy_status);
++	if (ret) {
++		dev_err(qmc_hdlc->dev, "get PHY status failed (%d)\n", ret);
++		goto phy_power_off;
++	}
++
++	qmc_hdlc->nb.notifier_call = qmc_hdlc_phy_notifier;
++	ret = phy_atomic_notifier_register(qmc_hdlc->phy, &qmc_hdlc->nb);
++	if (ret) {
++		qmc_hdlc->is_phy_notifier = false;
++
++		/* Cannot register a PHY notifier -> Use polling */
++		INIT_DELAYED_WORK(&qmc_hdlc->phy_poll_task, qmc_hdlc_phy_poll_task);
++		queue_delayed_work(system_power_efficient_wq, &qmc_hdlc->phy_poll_task, 1 * HZ);
++	} else {
++		qmc_hdlc->is_phy_notifier = true;
++	}
++
++	return 0;
++
++phy_power_off:
++	phy_power_off(qmc_hdlc->phy);
++phy_exit:
++	phy_exit(qmc_hdlc->phy);
++	return ret;
 +}
 +
-+static inline int phy_atomic_notifier_unregister(struct phy *phy,
-+						 struct notifier_block *nb)
++static void qmc_hdlc_phy_exit(struct qmc_hdlc *qmc_hdlc)
 +{
-+	if (!phy)
-+		return 0;
++	if (!qmc_hdlc->phy)
++		return;
 +
-+	return -ENOSYS;
++	if (qmc_hdlc->is_phy_notifier)
++		phy_atomic_notifier_unregister(qmc_hdlc->phy, &qmc_hdlc->nb);
++	else
++		cancel_delayed_work_sync(&qmc_hdlc->phy_poll_task);
++	phy_power_off(qmc_hdlc->phy);
++	phy_exit(qmc_hdlc->phy);
 +}
 +
- static inline int phy_get_bus_width(struct phy *phy)
- {
- 	return -ENOSYS;
+ static int qmc_hdlc_recv_queue(struct qmc_hdlc *qmc_hdlc, struct qmc_hdlc_desc *desc, size_t size);
+ 
+ static void qmc_hcld_recv_complete(void *context, size_t length)
+@@ -192,10 +318,17 @@ static int qmc_hdlc_open(struct net_device *netdev)
+ 	int ret;
+ 	int i;
+ 
+-	ret = hdlc_open(netdev);
++	ret = qmc_hdlc_phy_init(qmc_hdlc);
+ 	if (ret)
+ 		return ret;
+ 
++	ret = hdlc_open(netdev);
++	if (ret)
++		goto phy_exit;
++
++	/* Update carrier */
++	qmc_hdlc_phy_set_carrier(qmc_hdlc);
++
+ 	chan_param.mode = QMC_HDLC;
+ 	/* HDLC_MAX_MRU + 4 for the CRC
+ 	 * HDLC_MAX_MRU + 4 + 8 for the CRC and some extraspace needed by the QMC
+@@ -245,6 +378,8 @@ static int qmc_hdlc_open(struct net_device *netdev)
+ 	}
+ hdlc_close:
+ 	hdlc_close(netdev);
++phy_exit:
++	qmc_hdlc_phy_exit(qmc_hdlc);
+ 	return ret;
+ }
+ 
+@@ -280,6 +415,7 @@ static int qmc_hdlc_close(struct net_device *netdev)
+ 	}
+ 
+ 	hdlc_close(netdev);
++	qmc_hdlc_phy_exit(qmc_hdlc);
+ 	return 0;
+ }
+ 
+@@ -318,6 +454,7 @@ static int qmc_hdlc_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct qmc_hdlc *qmc_hdlc;
+ 	struct qmc_chan_info info;
++	enum phy_mode phy_mode;
+ 	hdlc_device *hdlc;
+ 	int ret;
+ 
+@@ -327,6 +464,7 @@ static int qmc_hdlc_probe(struct platform_device *pdev)
+ 
+ 	qmc_hdlc->dev = &pdev->dev;
+ 	spin_lock_init(&qmc_hdlc->tx_lock);
++	spin_lock_init(&qmc_hdlc->carrier_lock);
+ 
+ 	qmc_hdlc->qmc_chan = devm_qmc_chan_get_byphandle(qmc_hdlc->dev, np, "fsl,qmc-chan");
+ 	if (IS_ERR(qmc_hdlc->qmc_chan)) {
+@@ -348,6 +486,18 @@ static int qmc_hdlc_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
++	qmc_hdlc->phy = devm_of_phy_optional_get(qmc_hdlc->dev, np, NULL);
++	if (IS_ERR(qmc_hdlc->phy))
++		return PTR_ERR(qmc_hdlc->phy);
++	if (qmc_hdlc->phy) {
++		phy_mode = phy_get_mode(qmc_hdlc->phy);
++		if (phy_mode != PHY_MODE_BASIC) {
++			dev_err(qmc_hdlc->dev, "Unsupported PHY mode (%d)\n",
++				phy_mode);
++			return -EINVAL;
++		}
++	}
++
+ 	qmc_hdlc->netdev = alloc_hdlcdev(qmc_hdlc);
+ 	if (!qmc_hdlc->netdev) {
+ 		dev_err(qmc_hdlc->dev, "failed to alloc hdlc dev\n");
 -- 
 2.39.2
 
