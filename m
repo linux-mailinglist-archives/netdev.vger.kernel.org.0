@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7206C6A2C
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 14:58:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1B376C6A4C
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 15:00:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229461AbjCWN60 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Mar 2023 09:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
+        id S231586AbjCWOAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 10:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229891AbjCWN6S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:58:18 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0EE9001
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:58:12 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32NDvZbwD010508, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32NDvZbwD010508
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Thu, 23 Mar 2023 21:57:35 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.32; Thu, 23 Mar 2023 21:57:50 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 23 Mar 2023 21:57:49 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Thu, 23 Mar 2023 21:57:49 +0800
-From:   Hau <hau@realtek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [PATCH net] r8169: fix rtl8168h rx crc error
-Thread-Topic: [PATCH net] r8169: fix rtl8168h rx crc error
-Thread-Index: AQHZXIn13gnxa8cqaECWm4Ww3lcREq8F70wAgADCfmCAAACrAIABsdmQ
-Date:   Thu, 23 Mar 2023 13:57:48 +0000
-Message-ID: <681a087e08f646ceb22f7febcae75332@realtek.com>
-References: <20230322064550.2378-1-hau@realtek.com>
-        <20230322082104.y6pz7ewu3ojd3esh@soft-dev3-1>
-        <3892d440f0194b30aa32ccd93f661dd2@realtek.com>
- <20230322125934.102876c1@kernel.org>
-In-Reply-To: <20230322125934.102876c1@kernel.org>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.228.56]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S231470AbjCWN7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 09:59:44 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E542A994;
+        Thu, 23 Mar 2023 06:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679579957; x=1711115957;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ol1bIa7wEV9vbITom6nkTdY3Vf2gYZ26qp63G/qf9uw=;
+  b=WoH6Q8vOac/q7/YRgSYATOukaynsQRcNyl97uCfwovTogF1ZBYBw1EUn
+   y94hUOdJ+MIO6yI4gaAmHPAiMMonOfA2cu1E4jXTAaODkp4ITlwzl7BRH
+   uob7l6LJmRs4QE6ifdABWEh9GLN4SEoAG92YPlO+voBNoK39KhZx715Qr
+   g43/qYeH0ATLaPbfrtHl9o/KPGzEy8mUK0vY3ep3sgk6iwOw8PSBUfze0
+   tYFYsTTw1POBagNJIouKNCYLfmolWJ3QhueYH24aNdduapmYQblFuuGKr
+   U0rrLibTrpeK0sYhDkrjPeRhS8VywHptFQqXA///XzVSLzCphA4Xc6tVV
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="425772877"
+X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
+   d="scan'208";a="425772877"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2023 06:59:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10657"; a="675717822"
+X-IronPort-AV: E=Sophos;i="5.98,285,1673942400"; 
+   d="scan'208";a="675717822"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007.jf.intel.com with ESMTP; 23 Mar 2023 06:59:10 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1pfLTA-007WzI-0c;
+        Thu, 23 Mar 2023 15:59:08 +0200
+Date:   Thu, 23 Mar 2023 15:59:07 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 1/7] software node: allow named software
+ node to be created
+Message-ID: <ZBxbKxAcAKznIVJ2@smile.fi.intel.com>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8F-00Dvnf-Sm@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1pex8F-00Dvnf-Sm@rmk-PC.armlinux.org.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,22 +77,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Wed, 22 Mar 2023 12:13:12 +0000 Hau wrote:
-> > > Don't forget to add the fixes tag.
-> > > Another comment that I usually get is to replace hardcoded values
-> > > with defines, but on the other side I can see that this file already
-> > > has plently of hardcoded values.
-> >
-> > It is not a fix for a specific commit. PHY 10m pll off is an power
-> > saving feature which is enabled by H/W default. This issue can be
-> > fixed by disable PHY 10m pll off.
+On Wed, Mar 22, 2023 at 11:59:55AM +0000, Russell King wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> How far back can the issue be reproduced? Is it only possible with certain
-> device types? Then the Fixes tag should point at the commit which added
-> support for the devices. Was it always present since 2.6 kernels? Put the first
-> commit in the git history as Fixes.
-> 
-RTL8168H is the only chip we know that has this issue. This issue is related to the H/W default setting.
-So I will add a Fixes tag to the commit which added support for this chip and submit the patch again.
+> Allow a named software node to be created, which is needed for software
+> nodes for a fixed-link specification for DSA.
 
-------Please consider the environment before printing this e-mail.
+...
+
+> +fwnode_create_named_software_node(const struct property_entry *properties,
+> +				  const struct fwnode_handle *parent,
+> +				  const char *name)
+>  {
+>  	struct fwnode_handle *fwnode;
+>  	struct software_node *node;
+> @@ -930,6 +931,7 @@ fwnode_create_software_node(const struct property_entry *properties,
+>  		return ERR_CAST(node);
+>  
+>  	node->parent = p ? p->node : NULL;
+> +	node->name = name;
+
+The same question stays as before: how can we be sure that the name is unique
+and we won't have a collision?
+
+>  	fwnode = swnode_register(node, p, 1);
+>  	if (IS_ERR(fwnode))
+> @@ -937,6 +939,14 @@ fwnode_create_software_node(const struct property_entry *properties,
+>  
+>  	return fwnode;
+>  }
+> +EXPORT_SYMBOL_GPL(fwnode_create_named_software_node);
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
