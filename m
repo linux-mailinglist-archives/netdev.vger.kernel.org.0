@@ -2,81 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AF16C60EB
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 08:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7F76C6122
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 08:50:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbjCWHj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 03:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
+        id S230356AbjCWHu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 03:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjCWHj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 03:39:57 -0400
-Received: from mail-m312.qiye.163.com (mail-m312.qiye.163.com [103.74.31.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2CA10CE;
-        Thu, 23 Mar 2023 00:39:55 -0700 (PDT)
-Received: from ucloud.cn (unknown [127.0.0.1])
-        by mail-m312.qiye.163.com (Hmail) with ESMTP id C3F7480354;
-        Thu, 23 Mar 2023 15:39:15 +0800 (CST)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Message-ID: <AM6AJgA1I0agUTVKvSmG4qrN.3.1679557155794.Hmail.mocan@ucloud.cn>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: =?UTF-8?B?UmU6UmU6IFtQQVRDSF0gbmV0L25ldF9mYWlsb3ZlcjogZml4IHF1ZXVlIGV4Y2VlZGluZyB3YXJuaW5n?=
-X-Priority: 3
-X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2015-163.com
-X-Originating-IP: 106.75.220.2
-In-Reply-To: <7755c026ea1f2c5f6d00aa4ba17233eb511ce3dd.camel@redhat.com>
-References: <7755c026ea1f2c5f6d00aa4ba17233eb511ce3dd.camel@redhat.com>
+        with ESMTP id S230393AbjCWHuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 03:50:25 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8531B324
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 00:50:24 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id s8so26298134lfr.8
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 00:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679557822;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=IlLAgQAMrY+Qapa3HyIEMrrk5zkFmAKmKhKxYGqlRfA=;
+        b=X2pZvw8F39X1gqKZVD2n/DZSu2hANXRU4xGF6wdBeoJrF60vbYwLuvWcCYMSoO2/cG
+         WvIgjsqj11antMece7AYvd1g6iaS1ccg/JUzkslCbjCmGTVF4r6gOBb+PcH5ERzCwtgz
+         MWTPXJ8Dh5ucwqM4NrcyqgBdQwvpqE7zdKxsAyzxmZJ6smmqAOAGJ/pPCGfonij0pYoS
+         3uAB9OgAnYlWap7grV8I3amlHxJFJOF56WnlVnyGXJvAAky6axmybPjLu/tXYwyQvFuH
+         51bA0q7T953hvaeB6RVCPY8ZUbbA2KiLTIwfwrbhoBzuHYcI+ELJWjqlMGe6CAuk7raF
+         +ucQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679557822;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IlLAgQAMrY+Qapa3HyIEMrrk5zkFmAKmKhKxYGqlRfA=;
+        b=UVYblTyVbD525H1afx1OPECEfmChCfHYJ4qAzEMgfh0ec4GUbIGXXbw+L4iQqtYGcP
+         Hr/dLC9KppjZuc4vqoX3ax9TVMUzxYr9+XrDoB0y1S8A8aKUveb6Izom+EF2VRaTTgEc
+         /4j38FV+S4hxEcnn57K2RP7YhzqyWLZYzMm2IpzjUxMwMpZGbIAflfv12q2NwuKH1RG3
+         zT0SWaTPogUnm0aNqLjUF3XWZN9jVfNPfDnNNVUFb3Ufj2Ve9JG7QD7TQK8AoD3Sl1Zr
+         nCEUXfKyi+gG5jCI9/qqcvqk2Ie4hPVPlIF7iheubGcj2XdFkmOq0jZnqewL/gpDYEWs
+         sSdw==
+X-Gm-Message-State: AO0yUKVGTa1RHM2MBs+CXzB7RQOS37I8loSNTope2cS1v6v9YWx7hjcZ
+        RcKo/KZX9ERC5+7/nOIfoe8vyxEVhvKEv1E16Rj5sg==
+X-Google-Smtp-Source: AK7set+AZnZ7RpTuuN1sbeWai2Zv6NPiiOXrLxauD56bQOThNui9RIOxVfAjNA3Zd4PBGiqVBF7PkHS6aCBTMvredJo=
+X-Received: by 2002:ac2:5607:0:b0:4dc:807a:d147 with SMTP id
+ v7-20020ac25607000000b004dc807ad147mr2820080lfd.6.1679557822371; Thu, 23 Mar
+ 2023 00:50:22 -0700 (PDT)
 MIME-Version: 1.0
-Received: from mocan@ucloud.cn( [106.75.220.2) ] by ajax-webmail ( [127.0.0.1] ) ; Thu, 23 Mar 2023 15:39:15 +0800 (GMT+08:00)
-From:   Faicker Mo <faicker.mo@ucloud.cn>
-Date:   Thu, 23 Mar 2023 15:39:15 +0800 (GMT+08:00)
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVlCHkkeVhpITUhOSkgdGB9NS1UZERMWGhIXJBQOD1
-        lXWRgSC1lBWUpLTVVMTlVJSUtVSVlXWRYaDxIVHRRZQVlPS0hVSkpLSEpMVUpLS1VLWQY+
-X-HM-Sender-Digest: e1kJHlYWEh9ZQUpOSUJCSExPS0NKSjdXWQweGVlBDwkOHldZEh8eFQ9Z
-        QVlHOjZNOjEcOkoySxocLi8tMA0oFjxPCgk1VUhVSk1MQk5OTEpOTU5CS1UzFhoSF1UdGhIYEB4J
-        VRYUOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVMTlVJSUtVSVlXWQgBWUFPSU5KN1dZFAsPEhQVCFlB
-        SzcG
-X-HM-Tid: 0a870d0acc0900d2kurm186c125ca63
-X-HM-MType: 1
-X-Spam-Status: No, score=0.0 required=5.0 tests=MSGID_FROM_MTA_HEADER,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <0000000000006294c805e106db34@google.com> <000000000000690cbc05f779cba8@google.com>
+In-Reply-To: <000000000000690cbc05f779cba8@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 23 Mar 2023 08:50:10 +0100
+Message-ID: <CACT4Y+Z1Vm+ci43qnoZiF89mo_R1eQV0Cd9Y_MUNoXD1FytR2A@mail.gmail.com>
+Subject: Re: [syzbot] [bpf?] [trace?] possible deadlock in bpf_trace_printk
+To:     syzbot <syzbot+c49e17557ddb5725583d@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, boqun.feng@gmail.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        fgheet255t@gmail.com, haoluo@google.com, hawk@kernel.org,
+        hdanton@sina.com, john.fastabend@gmail.com, jolsa@kernel.org,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+        longman@redhat.com, martin.lau@linux.dev, mingo@redhat.com,
+        netdev@vger.kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        sdf@google.com, song@kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, will@kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzLiBJIHdpbGwgc2VuZCB0aGUgdjIgZml4IGxhdGVyLgoKWWVzLCB0aGUgYmV0dGVyIG1l
-dGhvZCBpcyB0byBsZXQgdGhlIGZhaWxvdmVyIGRldmljZSBmb2xsbG93cyB0aGUgcHJpbWFyeSBk
-ZXYKYW5kIHJlbW92ZSB0aGUgd2FybmluZywgYnV0IG1vcmUgd29yayBuZWVkIHRvIGJlIGRvbmUu
-CgoKRnJvbTogUGFvbG8gQWJlbmkgPHBhYmVuaUByZWRoYXQuY29tPgpEYXRlOiAyMDIzLTAzLTIy
-IDE5OjQwOjQ0ClRvOiAgRmFpY2tlciBNbyA8ZmFpY2tlci5tb0B1Y2xvdWQuY24+CkNjOiAgU3Jp
-ZGhhciBTYW11ZHJhbGEgPHNyaWRoYXIuc2FtdWRyYWxhQGludGVsLmNvbT4sIkRhdmlkIFMuIE1p
-bGxlciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+LEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAZ29vZ2xl
-LmNvbT4sSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz4sbmV0ZGV2QHZnZXIua2VybmVs
-Lm9yZyxsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnClN1YmplY3Q6IFJlOiBbUEFUQ0hdIG5l
-dC9uZXRfZmFpbG92ZXI6IGZpeCBxdWV1ZSBleGNlZWRpbmcgd2FybmluZz5PbiBUdWUsIDIwMjMt
-MDMtMjEgYXQgMTA6MjkgKzA4MDAsIEZhaWNrZXIgTW8gd3JvdGU6Cj4+IElmIHRoZSBwcmltYXJ5
-IGRldmljZSBxdWV1ZSBudW1iZXIgaXMgYmlnZ2VyIHRoYW4gdGhlIGRlZmF1bHQgMTYsCj4+IHRo
-ZXJlIGlzIGEgd2FybmluZyBhYm91dCB0aGUgcXVldWUgZXhjZWVkaW5nIHdoZW4gdHggZnJvbSB0
-aGUKPj4gbmV0X2ZhaWxvdmVyIGRldmljZS4KPj4gCj4+IFNpZ25lZC1vZmYtYnk6IEZhaWNrZXIg
-TW8gPGZhaWNrZXIubW9AdWNsb3VkLmNuPgo+Cj5UaGlzIGxvb2tzIGxpa2UgYSBmaXhlcywgc28g
-aXQgc2hvdWxkIGluY2x1ZGUgYXQgbGVhc3QgYSBmaXhlcyB0YWcuCj4KPk1vcmUgaW1wb3J0YW50
-bHkgYSBsb25nZXIvY2xlYXJlciBkZXNjcmlwdGlvbiBvZiB0aGUgaXNzdWUgaXMgbmVlZGVkLAo+
-aW5jbHVkaW5nIHRoZSB3YXJuaW5nIGJhY2t0cmFjZS4KPgo+SSB0aGluayB0aGlzIHdhcm5pbmc6
-Cj4KPmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L2xhdGVzdC9zb3VyY2UvaW5jbHVk
-ZS9saW51eC9uZXRkZXZpY2UuaCNMMzU0Mgo+Cj5zaG91bGQgbm90IGJlIGlnbm9yZWQvc2lsZW5j
-ZWQ6IGl0J3MgdGVsbGluZyB0aGF0IHRoZSBydW5uaW5nCj5jb25maWd1cmF0aW9uIGlzIG5vdCB1
-c2luZyBhIG51bWJlciBvZiB0aGUgYXZhaWxhYmxlIHR4IHF1ZXVlcywgd2hpY2gKPmlzIHBvc3Np
-Ymx5IG5vdCB0aGUgdGhpbmcgeW91IHdhbnQuCj4KPkluc3RlYWQgdGhlIGZhaWxvdmVyIGRldmlj
-ZSBjb3VsZCB1c2UgYW4gaGlnaGVyIG51bWJlciBvZiB0eCBxdWV1ZXMgYW5kCj5ldmVudHVhbGx5
-IHNldCByZWFsX251bV90eF9xdWV1ZXMgZXF1YWwgdG8gdGhlIHByaW1hcnlfZGV2IHdoZW4gdGhl
-Cj5sYXR0ZXIgaXMgZW5zbGF2ZWQuCj4KPlRoYW5rcywKPgo+UGFvbG8KPgo+Cj4KDQoNCg==
+On Wed, 22 Mar 2023 at 10:29, syzbot
+<syzbot+c49e17557ddb5725583d@syzkaller.appspotmail.com> wrote:
+>
+> syzbot suspects this issue was fixed by commit:
+>
+> commit 05b24ff9b2cfabfcfd951daaa915a036ab53c9e1
+> Author: Jiri Olsa <jolsa@kernel.org>
+> Date:   Fri Sep 16 07:19:14 2022 +0000
+>
+>     bpf: Prevent bpf program recursion for raw tracepoint probes
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10a653d6c80000
+> start commit:   a335366bad13 Merge tag 'gpio-fixes-for-v6.0-rc6' of git://..
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=9e66520f224211a2
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c49e17557ddb5725583d
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16e27480880000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12737fbf080000
+>
+> If the result looks correct, please mark the issue as fixed by replying with:
+>
+> #syz fix: bpf: Prevent bpf program recursion for raw tracepoint probes
+>
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+Looks reasonable:
+
+#syz fix: bpf: Prevent bpf program recursion for raw tracepoint probes
