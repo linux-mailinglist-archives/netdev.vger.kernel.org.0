@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D5346C6483
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 11:14:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A166C6482
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 11:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbjCWKOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 06:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55086 "EHLO
+        id S229840AbjCWKOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 06:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbjCWKOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 06:14:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE14C19C49
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 03:14:10 -0700 (PDT)
+        with ESMTP id S229846AbjCWKOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 06:14:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5737193F3
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 03:14:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B0632CE2123
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 10:14:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66209C433D2;
-        Thu, 23 Mar 2023 10:14:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 586A6625A4
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 10:14:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD32C433D2;
+        Thu, 23 Mar 2023 10:14:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679566446;
-        bh=Fmmv6XOvnnnXdnxatsEAEv+vY0M1SMELUjcXrHsyQoQ=;
+        s=k20201202; t=1679566442;
+        bh=lk2m9hrzJhYyfKYG7GaFaLMW3wqDIyI8dxic6+vAHMA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BK9HJYN7YKcncfMJmWDmLACVaxFx2pKdOumZoNPd/hx7ARRfFTBNAGLAd/2GET0T2
-         K0Axs3Lhd5kuel/IXthGiCEorIgO1Us1NfbhnUnYj1t/1x+sv0Vospd2GhVY2OIW+N
-         TkbuO30jLYCQCpra9lpqjPOHbk+lYQA2/obQ0XxpmeHUD4+FGV4bpvutukpvs2ZZc9
-         0RUkpsyIMYwR0++xIT4iTiN7AdJHSqHQGoFuldVaM67UNaIN39bLTJiWF4YoKMjrOr
-         ea329y62usPEvDVQgGPrQqpdR8mp4jXJqcj6N/kBLqudn2C0ddWwmN5fFMUkNKX+I3
-         OxbsdSKb0gIsA==
+        b=CW+KSYHkKPPmCZkookfVgrEX1JUFnlMe0H7I94RjgXJjO8sM6SWFjic0H7z0pT1rz
+         UaFuDPPe9T7W49PakoOarTRBwmoMJTWhqr5N39NfIqHADcq+sgUEAXl+gUTDDAfQtO
+         ivh8XGRt3Z2D4j2mqga5sme7qdP6IM3/zUrj0rEfuJ9PsQFCwQBd68Ad3lUBJkhP1v
+         2ThIawVzJQ8BSp57FbCzWZo/+Xif8ceWmuf35oAta/hAb8JY7LyH/OP7q2lpjYyCuO
+         w6X4GGK8SJbPJ9VCXf003HMZYO6Ki7RDYzAY+N29NnZZgIeGQuUCuYMDh7D7UUsk4b
+         ED99q02p0cm6g==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Patrisious Haddad <phaddad@nvidia.com>,
         Michael Guralnik <michaelgur@nvidia.com>,
         netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH mlx5-next v1 1/2] net/mlx5: Introduce other vport query for Q-counters
-Date:   Thu, 23 Mar 2023 12:13:51 +0200
-Message-Id: <75c73a4a0e60f18c37b35a4a11ca2e2415e4a6f3.1679566038.git.leon@kernel.org>
+Subject: [PATCH rdma-next v1 2/2] RDMA/mlx5: Expand switchdev Q-counters to expose representor statistics
+Date:   Thu, 23 Mar 2023 12:13:52 +0200
+Message-Id: <ea31e1103c125cd27931ba213f307cde30d2eaed.1679566038.git.leon@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1679566038.git.leon@kernel.org>
 References: <cover.1679566038.git.leon@kernel.org>
@@ -55,53 +55,391 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Patrisious Haddad <phaddad@nvidia.com>
 
-These new fields in QUERY_Q_COUNTER command allow us to access
-another vport counters during the query command, which is specially
-useful to query representor vports.
+Previously for switchdev only per device counters were supported.
 
-In addition also add the required caps to check if this capability
-is actually supported.
+Currently we allocate counters for switchdev per port, which also
+includes the ports that belong to VF representors in order to expose
+them to users through the rdma tool, allowing the host to track the VFs
+statistics through their representors counters.
 
 Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
-Reviewed-by: Michael Guralnik <michaelgur@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/infiniband/hw/mlx5/counters.c | 171 +++++++++++++++++++++-----
+ 1 file changed, 142 insertions(+), 29 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 62039b147432..e4306cd87cd7 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1729,7 +1729,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         log_max_transport_domain[0x5];
- 	u8         reserved_at_328[0x3];
- 	u8         log_max_pd[0x5];
--	u8         reserved_at_330[0xb];
-+	u8         reserved_at_330[0x9];
-+	u8         q_counter_aggregation[0x1];
-+	u8         q_counter_other_vport[0x1];
- 	u8         log_max_xrcd[0x5];
+diff --git a/drivers/infiniband/hw/mlx5/counters.c b/drivers/infiniband/hw/mlx5/counters.c
+index 3e1272695d99..1c06920505d2 100644
+--- a/drivers/infiniband/hw/mlx5/counters.c
++++ b/drivers/infiniband/hw/mlx5/counters.c
+@@ -5,6 +5,7 @@
  
- 	u8         nic_receive_steering_discard[0x1];
-@@ -5603,10 +5605,15 @@ struct mlx5_ifc_query_q_counter_in_bits {
- 	u8         reserved_at_20[0x10];
- 	u8         op_mod[0x10];
+ #include "mlx5_ib.h"
+ #include <linux/mlx5/eswitch.h>
++#include <linux/mlx5/vport.h>
+ #include "counters.h"
+ #include "ib_rep.h"
+ #include "qp.h"
+@@ -18,6 +19,10 @@ struct mlx5_ib_counter {
+ #define INIT_Q_COUNTER(_name)		\
+ 	{ .name = #_name, .offset = MLX5_BYTE_OFF(query_q_counter_out, _name)}
  
--	u8         reserved_at_40[0x80];
-+	u8         other_vport[0x1];
-+	u8         reserved_at_41[0xf];
-+	u8         vport_number[0x10];
++#define INIT_VPORT_Q_COUNTER(_name)		\
++	{ .name = "vport_" #_name, .offset =	\
++		MLX5_BYTE_OFF(query_q_counter_out, _name)}
 +
-+	u8         reserved_at_60[0x60];
+ static const struct mlx5_ib_counter basic_q_cnts[] = {
+ 	INIT_Q_COUNTER(rx_write_requests),
+ 	INIT_Q_COUNTER(rx_read_requests),
+@@ -37,6 +42,25 @@ static const struct mlx5_ib_counter retrans_q_cnts[] = {
+ 	INIT_Q_COUNTER(local_ack_timeout_err),
+ };
  
- 	u8         clear[0x1];
--	u8         reserved_at_c1[0x1f];
-+	u8         aggregate[0x1];
-+	u8         reserved_at_c2[0x1e];
++static const struct mlx5_ib_counter vport_basic_q_cnts[] = {
++	INIT_VPORT_Q_COUNTER(rx_write_requests),
++	INIT_VPORT_Q_COUNTER(rx_read_requests),
++	INIT_VPORT_Q_COUNTER(rx_atomic_requests),
++	INIT_VPORT_Q_COUNTER(out_of_buffer),
++};
++
++static const struct mlx5_ib_counter vport_out_of_seq_q_cnts[] = {
++	INIT_VPORT_Q_COUNTER(out_of_sequence),
++};
++
++static const struct mlx5_ib_counter vport_retrans_q_cnts[] = {
++	INIT_VPORT_Q_COUNTER(duplicate_request),
++	INIT_VPORT_Q_COUNTER(rnr_nak_retry_err),
++	INIT_VPORT_Q_COUNTER(packet_seq_err),
++	INIT_VPORT_Q_COUNTER(implied_nak_seq_err),
++	INIT_VPORT_Q_COUNTER(local_ack_timeout_err),
++};
++
+ #define INIT_CONG_COUNTER(_name)		\
+ 	{ .name = #_name, .offset =	\
+ 		MLX5_BYTE_OFF(query_cong_statistics_out, _name ## _high)}
+@@ -67,6 +91,25 @@ static const struct mlx5_ib_counter roce_accl_cnts[] = {
+ 	INIT_Q_COUNTER(roce_slow_restart_trans),
+ };
  
- 	u8         reserved_at_e0[0x18];
- 	u8         counter_set_id[0x8];
++static const struct mlx5_ib_counter vport_extended_err_cnts[] = {
++	INIT_VPORT_Q_COUNTER(resp_local_length_error),
++	INIT_VPORT_Q_COUNTER(resp_cqe_error),
++	INIT_VPORT_Q_COUNTER(req_cqe_error),
++	INIT_VPORT_Q_COUNTER(req_remote_invalid_request),
++	INIT_VPORT_Q_COUNTER(req_remote_access_errors),
++	INIT_VPORT_Q_COUNTER(resp_remote_access_errors),
++	INIT_VPORT_Q_COUNTER(resp_cqe_flush_error),
++	INIT_VPORT_Q_COUNTER(req_cqe_flush_error),
++};
++
++static const struct mlx5_ib_counter vport_roce_accl_cnts[] = {
++	INIT_VPORT_Q_COUNTER(roce_adp_retrans),
++	INIT_VPORT_Q_COUNTER(roce_adp_retrans_to),
++	INIT_VPORT_Q_COUNTER(roce_slow_restart),
++	INIT_VPORT_Q_COUNTER(roce_slow_restart_cnps),
++	INIT_VPORT_Q_COUNTER(roce_slow_restart_trans),
++};
++
+ #define INIT_EXT_PPCNT_COUNTER(_name)		\
+ 	{ .name = #_name, .offset =	\
+ 	MLX5_BYTE_OFF(ppcnt_reg, \
+@@ -153,12 +196,20 @@ static int mlx5_ib_create_counters(struct ib_counters *counters,
+ 	return 0;
+ }
+ 
++static bool vport_qcounters_supported(struct mlx5_ib_dev *dev)
++{
++	return MLX5_CAP_GEN(dev->mdev, q_counter_other_vport) &&
++	       MLX5_CAP_GEN(dev->mdev, q_counter_aggregation);
++}
+ 
+ static const struct mlx5_ib_counters *get_counters(struct mlx5_ib_dev *dev,
+ 						   u32 port_num)
+ {
+-	return is_mdev_switchdev_mode(dev->mdev) ? &dev->port[0].cnts :
+-						   &dev->port[port_num].cnts;
++	if ((is_mdev_switchdev_mode(dev->mdev) &&
++	     !vport_qcounters_supported(dev)) || !port_num)
++		return &dev->port[0].cnts;
++
++	return &dev->port[port_num - 1].cnts;
+ }
+ 
+ /**
+@@ -172,7 +223,7 @@ static const struct mlx5_ib_counters *get_counters(struct mlx5_ib_dev *dev,
+  */
+ u16 mlx5_ib_get_counters_id(struct mlx5_ib_dev *dev, u32 port_num)
+ {
+-	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num);
++	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num + 1);
+ 
+ 	return cnts->set_id;
+ }
+@@ -270,12 +321,44 @@ static int mlx5_ib_query_ext_ppcnt_counters(struct mlx5_ib_dev *dev,
+ 	return ret;
+ }
+ 
++static int mlx5_ib_query_q_counters_vport(struct mlx5_ib_dev *dev,
++					  u32 port_num,
++					  const struct mlx5_ib_counters *cnts,
++					  struct rdma_hw_stats *stats)
++
++{
++	u32 out[MLX5_ST_SZ_DW(query_q_counter_out)] = {};
++	u32 in[MLX5_ST_SZ_DW(query_q_counter_in)] = {};
++	__be32 val;
++	int ret, i;
++
++	if (!dev->port[port_num].rep ||
++	    dev->port[port_num].rep->vport == MLX5_VPORT_UPLINK)
++		return 0;
++
++	MLX5_SET(query_q_counter_in, in, opcode, MLX5_CMD_OP_QUERY_Q_COUNTER);
++	MLX5_SET(query_q_counter_in, in, other_vport, 1);
++	MLX5_SET(query_q_counter_in, in, vport_number,
++		 dev->port[port_num].rep->vport);
++	MLX5_SET(query_q_counter_in, in, aggregate, 1);
++	ret = mlx5_cmd_exec_inout(dev->mdev, query_q_counter, in, out);
++	if (ret)
++		return ret;
++
++	for (i = 0; i < cnts->num_q_counters; i++) {
++		val = *(__be32 *)((void *)out + cnts->offsets[i]);
++		stats->value[i] = (u64)be32_to_cpu(val);
++	}
++
++	return 0;
++}
++
+ static int do_get_hw_stats(struct ib_device *ibdev,
+ 			   struct rdma_hw_stats *stats,
+ 			   u32 port_num, int index)
+ {
+ 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+-	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num - 1);
++	const struct mlx5_ib_counters *cnts = get_counters(dev, port_num);
+ 	struct mlx5_core_dev *mdev;
+ 	int ret, num_counters;
+ 
+@@ -286,11 +369,19 @@ static int do_get_hw_stats(struct ib_device *ibdev,
+ 		       cnts->num_cong_counters +
+ 		       cnts->num_ext_ppcnt_counters;
+ 
+-	/* q_counters are per IB device, query the master mdev */
+-	ret = mlx5_ib_query_q_counters(dev->mdev, cnts, stats, cnts->set_id);
++	if (is_mdev_switchdev_mode(dev->mdev) && dev->is_rep && port_num != 0)
++		ret = mlx5_ib_query_q_counters_vport(dev, port_num - 1, cnts,
++						     stats);
++	else
++		ret = mlx5_ib_query_q_counters(dev->mdev, cnts, stats,
++					       cnts->set_id);
+ 	if (ret)
+ 		return ret;
+ 
++	/* We don't expose device counters over Vports */
++	if (is_mdev_switchdev_mode(dev->mdev) && port_num != 0)
++		goto done;
++
+ 	if (MLX5_CAP_PCAM_FEATURE(dev->mdev, rx_icrc_encapsulated_counter)) {
+ 		ret =  mlx5_ib_query_ext_ppcnt_counters(dev, cnts, stats);
+ 		if (ret)
+@@ -335,7 +426,8 @@ static int do_get_op_stat(struct ib_device *ibdev,
+ 	u32 type;
+ 	int ret;
+ 
+-	cnts = get_counters(dev, port_num - 1);
++	cnts = get_counters(dev, port_num);
++
+ 	opfcs = cnts->opfcs;
+ 	type = *(u32 *)cnts->descs[index].priv;
+ 	if (type >= MLX5_IB_OPCOUNTER_MAX)
+@@ -362,7 +454,7 @@ static int do_get_op_stats(struct ib_device *ibdev,
+ 	const struct mlx5_ib_counters *cnts;
+ 	int index, ret, num_hw_counters;
+ 
+-	cnts = get_counters(dev, port_num - 1);
++	cnts = get_counters(dev, port_num);
+ 	num_hw_counters = cnts->num_q_counters + cnts->num_cong_counters +
+ 			  cnts->num_ext_ppcnt_counters;
+ 	for (index = num_hw_counters;
+@@ -383,7 +475,7 @@ static int mlx5_ib_get_hw_stats(struct ib_device *ibdev,
+ 	struct mlx5_ib_dev *dev = to_mdev(ibdev);
+ 	const struct mlx5_ib_counters *cnts;
+ 
+-	cnts = get_counters(dev, port_num - 1);
++	cnts = get_counters(dev, port_num);
+ 	num_hw_counters = cnts->num_q_counters + cnts->num_cong_counters +
+ 		cnts->num_ext_ppcnt_counters;
+ 	num_counters = num_hw_counters + cnts->num_op_counters;
+@@ -410,8 +502,7 @@ static struct rdma_hw_stats *
+ mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
+ {
+ 	struct mlx5_ib_dev *dev = to_mdev(counter->device);
+-	const struct mlx5_ib_counters *cnts =
+-		get_counters(dev, counter->port - 1);
++	const struct mlx5_ib_counters *cnts = get_counters(dev, counter->port);
+ 
+ 	return do_alloc_stats(cnts);
+ }
+@@ -419,8 +510,7 @@ mlx5_ib_counter_alloc_stats(struct rdma_counter *counter)
+ static int mlx5_ib_counter_update_stats(struct rdma_counter *counter)
+ {
+ 	struct mlx5_ib_dev *dev = to_mdev(counter->device);
+-	const struct mlx5_ib_counters *cnts =
+-		get_counters(dev, counter->port - 1);
++	const struct mlx5_ib_counters *cnts = get_counters(dev, counter->port);
+ 
+ 	return mlx5_ib_query_q_counters(dev->mdev, cnts,
+ 					counter->stats, counter->id);
+@@ -479,44 +569,55 @@ static int mlx5_ib_counter_unbind_qp(struct ib_qp *qp)
+ }
+ 
+ static void mlx5_ib_fill_counters(struct mlx5_ib_dev *dev,
+-				  struct rdma_stat_desc *descs, size_t *offsets)
++				  struct rdma_stat_desc *descs, size_t *offsets,
++				  u32 port_num)
+ {
+-	int i;
+-	int j = 0;
++	bool is_vport = is_mdev_switchdev_mode(dev->mdev) &&
++			port_num != MLX5_VPORT_PF;
++	const struct mlx5_ib_counter *names;
++	int j = 0, i;
+ 
++	names = is_vport ? vport_basic_q_cnts : basic_q_cnts;
+ 	for (i = 0; i < ARRAY_SIZE(basic_q_cnts); i++, j++) {
+-		descs[j].name = basic_q_cnts[i].name;
++		descs[j].name = names[i].name;
+ 		offsets[j] = basic_q_cnts[i].offset;
+ 	}
+ 
++	names = is_vport ? vport_out_of_seq_q_cnts : out_of_seq_q_cnts;
+ 	if (MLX5_CAP_GEN(dev->mdev, out_of_seq_cnt)) {
+ 		for (i = 0; i < ARRAY_SIZE(out_of_seq_q_cnts); i++, j++) {
+-			descs[j].name = out_of_seq_q_cnts[i].name;
++			descs[j].name = names[i].name;
+ 			offsets[j] = out_of_seq_q_cnts[i].offset;
+ 		}
+ 	}
+ 
++	names = is_vport ? vport_retrans_q_cnts : retrans_q_cnts;
+ 	if (MLX5_CAP_GEN(dev->mdev, retransmission_q_counters)) {
+ 		for (i = 0; i < ARRAY_SIZE(retrans_q_cnts); i++, j++) {
+-			descs[j].name = retrans_q_cnts[i].name;
++			descs[j].name = names[i].name;
+ 			offsets[j] = retrans_q_cnts[i].offset;
+ 		}
+ 	}
+ 
++	names = is_vport ? vport_extended_err_cnts : extended_err_cnts;
+ 	if (MLX5_CAP_GEN(dev->mdev, enhanced_error_q_counters)) {
+ 		for (i = 0; i < ARRAY_SIZE(extended_err_cnts); i++, j++) {
+-			descs[j].name = extended_err_cnts[i].name;
++			descs[j].name = names[i].name;
+ 			offsets[j] = extended_err_cnts[i].offset;
+ 		}
+ 	}
+ 
++	names = is_vport ? vport_roce_accl_cnts : roce_accl_cnts;
+ 	if (MLX5_CAP_GEN(dev->mdev, roce_accl)) {
+ 		for (i = 0; i < ARRAY_SIZE(roce_accl_cnts); i++, j++) {
+-			descs[j].name = roce_accl_cnts[i].name;
++			descs[j].name = names[i].name;
+ 			offsets[j] = roce_accl_cnts[i].offset;
+ 		}
+ 	}
+ 
++	if (is_vport)
++		return;
++
+ 	if (MLX5_CAP_GEN(dev->mdev, cc_query_allowed)) {
+ 		for (i = 0; i < ARRAY_SIZE(cong_cnts); i++, j++) {
+ 			descs[j].name = cong_cnts[i].name;
+@@ -558,9 +659,9 @@ static void mlx5_ib_fill_counters(struct mlx5_ib_dev *dev,
+ 
+ 
+ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
+-				    struct mlx5_ib_counters *cnts)
++				    struct mlx5_ib_counters *cnts, u32 port_num)
+ {
+-	u32 num_counters, num_op_counters;
++	u32 num_counters, num_op_counters = 0;
+ 
+ 	num_counters = ARRAY_SIZE(basic_q_cnts);
+ 
+@@ -578,6 +679,9 @@ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
+ 
+ 	cnts->num_q_counters = num_counters;
+ 
++	if (is_mdev_switchdev_mode(dev->mdev) && port_num != MLX5_VPORT_PF)
++		goto skip_non_qcounters;
++
+ 	if (MLX5_CAP_GEN(dev->mdev, cc_query_allowed)) {
+ 		cnts->num_cong_counters = ARRAY_SIZE(cong_cnts);
+ 		num_counters += ARRAY_SIZE(cong_cnts);
+@@ -597,6 +701,7 @@ static int __mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev,
+ 			       ft_field_support_2_nic_transmit_rdma.bth_opcode))
+ 		num_op_counters += ARRAY_SIZE(rdmatx_cnp_op_cnts);
+ 
++skip_non_qcounters:
+ 	cnts->num_op_counters = num_op_counters;
+ 	num_counters += num_op_counters;
+ 	cnts->descs = kcalloc(num_counters,
+@@ -623,7 +728,8 @@ static void mlx5_ib_dealloc_counters(struct mlx5_ib_dev *dev)
+ 	int num_cnt_ports;
+ 	int i, j;
+ 
+-	num_cnt_ports = is_mdev_switchdev_mode(dev->mdev) ? 1 : dev->num_ports;
++	num_cnt_ports = (!is_mdev_switchdev_mode(dev->mdev) ||
++			 vport_qcounters_supported(dev)) ? dev->num_ports : 1;
+ 
+ 	MLX5_SET(dealloc_q_counter_in, in, opcode,
+ 		 MLX5_CMD_OP_DEALLOC_Q_COUNTER);
+@@ -662,15 +768,16 @@ static int mlx5_ib_alloc_counters(struct mlx5_ib_dev *dev)
+ 
+ 	MLX5_SET(alloc_q_counter_in, in, opcode, MLX5_CMD_OP_ALLOC_Q_COUNTER);
+ 	is_shared = MLX5_CAP_GEN(dev->mdev, log_max_uctx) != 0;
+-	num_cnt_ports = is_mdev_switchdev_mode(dev->mdev) ? 1 : dev->num_ports;
++	num_cnt_ports = (!is_mdev_switchdev_mode(dev->mdev) ||
++			 vport_qcounters_supported(dev)) ? dev->num_ports : 1;
+ 
+ 	for (i = 0; i < num_cnt_ports; i++) {
+-		err = __mlx5_ib_alloc_counters(dev, &dev->port[i].cnts);
++		err = __mlx5_ib_alloc_counters(dev, &dev->port[i].cnts, i);
+ 		if (err)
+ 			goto err_alloc;
+ 
+ 		mlx5_ib_fill_counters(dev, dev->port[i].cnts.descs,
+-				      dev->port[i].cnts.offsets);
++				      dev->port[i].cnts.offsets, i);
+ 
+ 		MLX5_SET(alloc_q_counter_in, in, uid,
+ 			 is_shared ? MLX5_SHARED_RESOURCE_UID : 0);
+@@ -889,6 +996,10 @@ static const struct ib_device_ops hw_stats_ops = {
+ 			  mlx5_ib_modify_stat : NULL,
+ };
+ 
++static const struct ib_device_ops hw_switchdev_vport_op = {
++	.alloc_hw_port_stats = mlx5_ib_alloc_hw_port_stats,
++};
++
+ static const struct ib_device_ops hw_switchdev_stats_ops = {
+ 	.alloc_hw_device_stats = mlx5_ib_alloc_hw_device_stats,
+ 	.get_hw_stats = mlx5_ib_get_hw_stats,
+@@ -914,9 +1025,11 @@ int mlx5_ib_counters_init(struct mlx5_ib_dev *dev)
+ 	if (!MLX5_CAP_GEN(dev->mdev, max_qp_cnt))
+ 		return 0;
+ 
+-	if (is_mdev_switchdev_mode(dev->mdev))
++	if (is_mdev_switchdev_mode(dev->mdev)) {
+ 		ib_set_device_ops(&dev->ib_dev, &hw_switchdev_stats_ops);
+-	else
++		if (vport_qcounters_supported(dev))
++			ib_set_device_ops(&dev->ib_dev, &hw_switchdev_vport_op);
++	} else
+ 		ib_set_device_ops(&dev->ib_dev, &hw_stats_ops);
+ 	return mlx5_ib_alloc_counters(dev);
+ }
 -- 
 2.39.2
 
