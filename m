@@ -2,96 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 623F36C5F3F
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 07:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 493B06C5F40
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 07:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbjCWGAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 02:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
+        id S229839AbjCWGAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 02:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbjCWGAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 02:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AF924730
-        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 23:00:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CECDB81F67
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 06:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 11C94C433EF;
-        Thu, 23 Mar 2023 06:00:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679551220;
-        bh=vfa0NPULGebF/rLM/FtX9xzQnwS1fhkD67pK7tuFfp0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L+EqyXxliQoh06gPCh9e91PmgEW0QfvPwf/cVTZ0A2x2w5CD1zJiuKDsJcXSIMmas
-         Bri3leN0JrjkFXvLWeNRW+ZmpKI71Ai3cR1AT+L2XCJyV9F4sSNguAFDAENY3PuQq6
-         kRMR3LTQqenLzUs7pmjiyGApohCou3zhhvy4wRTY8eDDEnoNMvrzBGgeBQYpSyXGQG
-         0PgkdwARkUVHD2a+aAfOS16BM5gJK3xBbp74DmmqKrSYD5xtvmcewFFV6qp9qOw66/
-         pBihPAl1+dtDdjRZ6xbtXS+T+/4UagmLjbg9xs5O53iAUG+Vc4wsbM7/ckBVbxTDXA
-         Ba0/6Pb044a3A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F0B8CE21ED4;
-        Thu, 23 Mar 2023 06:00:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229672AbjCWGAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 02:00:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF7324BD0
+        for <netdev@vger.kernel.org>; Wed, 22 Mar 2023 23:00:49 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pfE04-0001NC-1K; Thu, 23 Mar 2023 07:00:36 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pfE02-0004PC-Hv; Thu, 23 Mar 2023 07:00:34 +0100
+Date:   Thu, 23 Mar 2023 07:00:34 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>
+Cc:     UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org
+Subject: Re: [PATCH net v1 6/6] net: dsa: microchip: ksz8: fix MDF
+ configuration with non-zero VID
+Message-ID: <20230323060034.GF23237@pengutronix.de>
+References: <20230322143130.1432106-1-o.rempel@pengutronix.de>
+ <20230322143130.1432106-7-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net 1/7] net/mlx5e: Set uplink rep as NETNS_LOCAL
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167955121998.17973.16248642901272759046.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Mar 2023 06:00:19 +0000
-References: <20230321211135.47711-2-saeed@kernel.org>
-In-Reply-To: <20230321211135.47711-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
-        tariqt@nvidia.com, gavinl@nvidia.com, gavi@nvidia.com
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230322143130.1432106-7-o.rempel@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+A typo in subject s/MDF/MDB
 
-This series was applied to netdev/net.git (main)
-by Saeed Mahameed <saeedm@nvidia.com>:
-
-On Tue, 21 Mar 2023 14:11:29 -0700 you wrote:
-> From: Gavin Li <gavinl@nvidia.com>
+On Wed, Mar 22, 2023 at 03:31:30PM +0100, Oleksij Rempel wrote:
+> FID is directly mapped to VID. However, configuring a MAC address with a
+> VID != 0 resulted in incorrect configuration due to an incorrect bit
+> mask. This kernel commit fixed the issue by correcting the bit mask and
+> ensuring proper configuration of MAC addresses with non-zero VID.
 > 
-> Previously, NETNS_LOCAL was not set for uplink representors, inconsistent
-> with VF representors, and allowed the uplink representor to be moved
-> between net namespaces and separated from the VF representors it shares
-> the core device with. Such usage would break the isolation model of
-> namespaces, as devices in different namespaces would have access to
-> shared memory.
+> Fixes: d23a5e18606c ("net: dsa: microchip: move ksz8->masks to ksz_common")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/dsa/microchip/ksz_common.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> [...]
+> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> index 4929fb29ed06..74c56d05ab0b 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.c
+> +++ b/drivers/net/dsa/microchip/ksz_common.c
+> @@ -404,7 +404,7 @@ static const u32 ksz8863_masks[] = {
+>  	[VLAN_TABLE_VALID]		= BIT(19),
+>  	[STATIC_MAC_TABLE_VALID]	= BIT(19),
+>  	[STATIC_MAC_TABLE_USE_FID]	= BIT(21),
+> -	[STATIC_MAC_TABLE_FID]		= GENMASK(29, 26),
+> +	[STATIC_MAC_TABLE_FID]		= GENMASK(25, 22),
+>  	[STATIC_MAC_TABLE_OVERRIDE]	= BIT(20),
+>  	[STATIC_MAC_TABLE_FWD_PORTS]	= GENMASK(18, 16),
+>  	[DYNAMIC_MAC_TABLE_ENTRIES_H]	= GENMASK(1, 0),
+> -- 
+> 2.30.2
+> 
+> 
+> 
 
-Here is the summary with links:
-  - [net,1/7] net/mlx5e: Set uplink rep as NETNS_LOCAL
-    https://git.kernel.org/netdev/net/c/c83172b0639c
-  - [net,2/7] net/mlx5e: Block entering switchdev mode with ns inconsistency
-    https://git.kernel.org/netdev/net/c/662404b24a4c
-  - [net,3/7] net/mlx5: Fix steering rules cleanup
-    https://git.kernel.org/netdev/net/c/922f56e9a795
-  - [net,4/7] net/mlx5e: Initialize link speed to zero
-    https://git.kernel.org/netdev/net/c/6e9d51b1a5cb
-  - [net,5/7] net/mlx5e: Overcome slow response for first macsec ASO WQE
-    https://git.kernel.org/netdev/net/c/7e3fce82d945
-  - [net,6/7] net/mlx5: Read the TC mapping of all priorities on ETS query
-    https://git.kernel.org/netdev/net/c/44d553188c38
-  - [net,7/7] net/mlx5: E-Switch, Fix an Oops in error handling code
-    https://git.kernel.org/netdev/net/c/640fcdbcf27f
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
