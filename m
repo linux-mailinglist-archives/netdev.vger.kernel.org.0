@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FFCF6C6221
-	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 09:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 662D26C621F
+	for <lists+netdev@lfdr.de>; Thu, 23 Mar 2023 09:42:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbjCWImI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 04:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        id S231482AbjCWImG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 04:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbjCWIlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 04:41:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7805937F1A
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 01:40:25 -0700 (PDT)
+        with ESMTP id S231512AbjCWIlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 04:41:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27391A49A
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 01:40:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C1896250C
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF2AEB81FE7
         for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 08:40:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 78327C4339B;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 82D89C433A1;
         Thu, 23 Mar 2023 08:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1679560820;
-        bh=XCkg0g+KU39WNstXFubw0HDy/c70Q+nidWL35Hw3Zv4=;
+        bh=BkgkqhpiUMyLlYU7TqdOmrhP1hQxGHQQZwIkf8I1aLg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kE/euMY2UbI81BaILsf2qQj9fTE4JPk9SGHqNzB9/4gT72CWfDASLo15vC5tqxVYb
-         k/LPq63q5uP3kPbyfUaL1+k8AbN2Vs916Wv1KTQSer3eoPkyqU98Vs+rUEFPYgRFZ7
-         Q0rpcPNZNMp7JQFKbPXaSzIWUsmWRZH8PKOY66NiAma/RnHWQ3UZ5m7GbTfMsomcHP
-         bIKXlVJnuSRh17cqEhf0LrIt3SsLoxdLu4Z9PJsIjXLcXpOPv60lrEIp8Q3feoYVKQ
-         hxewTxMWPG+H7WGDHvF2eP9Gg7gE19x61fflDClXNX6asq3pfbKEwq9oQESlw69uAH
-         OFEH0TXArq6HA==
+        b=unECyf7M+nkeLZdfRWsDm3hp8iy749WmAdiOFJ+mIu3iTJC0MYy9iTJW/GTD6kcLi
+         z8Um/0Fku4rDhSZ8zi+4HvPFKMfwqet431gp4sH7jY5sh1MaiJklWsYEbIRl66VByg
+         HRW70dOKPqZthx9NCLJEppUm46U7hd84BIjqlnHHxplwnNuT67YIER61F3vDV/PITk
+         BgioW554Uhtxs4c5LoS250sAitrNcQKkqfh6jDgsf3zKQT7cUWyt1kV9QeGi7NjXuN
+         B9ZNVxmiVeKdeLmUYyjxjYyqtqw92NaDW66vFXHvUbtAgk40xDbiQGh+9DSDvj52g2
+         8czVJF/Rrl73w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5E514E21ED4;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 686D9E61B88;
         Thu, 23 Mar 2023 08:40:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3][pull request] Intel Wired LAN Driver Updates
- 2023-03-21 (igb, igbvf, igc)
+Subject: Re: [PATCH net-next v3] net/sched: act_api: use the correct TCA_ACT
+ attributes in dump
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167956082038.32268.11572468873567180690.git-patchwork-notify@kernel.org>
+Message-Id: <167956082042.32268.16682063594078687002.git-patchwork-notify@kernel.org>
 Date:   Thu, 23 Mar 2023 08:40:20 +0000
-References: <20230321200013.2866582-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20230321200013.2866582-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+References: <20230321223345.1369859-1-pctammela@mojatatu.com>
+In-Reply-To: <20230321223345.1369859-1-pctammela@mojatatu.com>
+To:     Pedro Tammela <pctammela@mojatatu.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, simon.horman@corigine.com,
+        haliu@redhat.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,27 +60,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This patch was applied to netdev/net-next.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-On Tue, 21 Mar 2023 13:00:10 -0700 you wrote:
-> This series contains updates to igb, igbvf, and igc drivers.
+On Tue, 21 Mar 2023 19:33:45 -0300 you wrote:
+> 4 places in the act api code are using 'TCA_' definitions where they
+> should be using 'TCA_ACT_', which is confusing for the reader, although
+> functionally they are equivalent.
 > 
-> Andrii changes igb driver to utilize diff_by_scaled_ppm() implementation
-> over an open-coded version.
-> 
-> Dawid adds pci_error_handlers for reset_prepare and reset_done for
-> igbvf.
+> Cc: Hangbin Liu <haliu@redhat.com>
+> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+> Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] igb: refactor igb_ptp_adjfine_82580 to use diff_by_scaled_ppm
-    https://git.kernel.org/netdev/net-next/c/d71980d47e27
-  - [net-next,2/3] igbvf: add PCI reset handler functions
-    https://git.kernel.org/netdev/net-next/c/5a9b7bfb0d15
-  - [net-next,3/3] igc: Remove obsolete DMA coalescing code
-    https://git.kernel.org/netdev/net-next/c/65364bbe0b02
+  - [net-next,v3] net/sched: act_api: use the correct TCA_ACT attributes in dump
+    https://git.kernel.org/netdev/net-next/c/fcb3a4653bc5
 
 You are awesome, thank you!
 -- 
