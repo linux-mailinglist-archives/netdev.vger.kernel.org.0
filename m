@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4970D6C7AE9
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:12:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1FF6C7AEF
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbjCXJMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 05:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37806 "EHLO
+        id S231635AbjCXJNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 05:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbjCXJMU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:12:20 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5891DBAD
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:12:19 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id i7-20020a056e021b0700b0031dc4cdc47cso840307ilv.23
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:12:19 -0700 (PDT)
+        with ESMTP id S231470AbjCXJNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:13:33 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101391EFCA
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:13:32 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id a21-20020a5d9595000000b0074c9dc19e16so789071ioo.15
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:13:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679649139;
+        d=1e100.net; s=20210112; t=1679649211;
         h=to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xa6cPJxdtQSnna0xqHCmCayWpi2ePeYQchAotaGPYRc=;
-        b=2g9bMQFUyejMNAJi7QlM0QDDcM3aetpf/fHt3CsIWerZVbO/Lm2WtulvJ8YWBLF5sl
-         yjg7GElk8ZUtOuIQQ3qclBzFHDK534sRVHrWbBxkwhl8DrHbr55HA9ZkO6IPBoArPjmf
-         ZxyvrXXB43C+Cqr3K9NX0QatNFmwxXYRLBso2bcpLyeijndX3iOYO7UBjnqLUbhoEZNV
-         XFRR8RZMlUW25tcHkms8EbFV4ERIBa/kaYhc23304+NeqUpFjOUm2lPYBge7/gm5MBAF
-         COIJ9VmFl4VxdB821i11VR0GXIZXpFOpQGvpXF5vulqF+rylB1CkcNYMdVidTaOUU42J
-         CKUA==
-X-Gm-Message-State: AO0yUKW37bZQdeFhOZuBKEJ6q+/S8UQCW8wvKdsoxiTk3oFWeCZt9oXP
-        /krH6QTRg/yEbZBc+trJ/DxnfVbepn6lsiEfwu0lEFLKxjuQ
-X-Google-Smtp-Source: AK7set+YVLkN81/TSa+kOl9UXO+R6l+gdava5D+ne0NuX1VS6u8zvSz21vB9lr4PCjBdOEUNrT0FZLCf8cGF6F92Dojr1D8nj6WD
+        bh=QExb/T1F8/XoorTxuEKbTqt2ECV6VnSe+3ISxG21XUQ=;
+        b=3FqF3FyY3xF/v8IMMFf5qJ0S5IS9f+bg9uCXxUl+PZAIffbOPA3F4mRCNjbwV9HEmo
+         c55+Xd8uUXONBpKmnogWZJPNR9nByCIlgBpz83CHb6fYTxbU71oxr0A+Yvi75/5dKdFC
+         Y/JmbpAAfDn2UXr48uPMmcJ7OOcuxwLv/0blariShmhr1h6jhyM75LbekldjLf+ccZ5U
+         mrCGnN2/UVIHzmWtSH0illbgjQFHkqPJrbNYjO5QbjiU8SEMPq6/kpLO93/5ibLjwfXE
+         6Kukr7G1Xr2riNHWH9k5Ffz8ymFlSPDdBlQ5qBibOB+5A7osvsj0SV+oAH98SdQWDzhQ
+         kB6A==
+X-Gm-Message-State: AO0yUKX2gdGHbm8RbNhH6/RzJ2l+4wVlQKjF3WMCNm7BRE4Q93c+aCBi
+        5rM4QCYR32CiaA7iR5P36+tVEp5W/h4oxhKFgUZP3xufslOA
+X-Google-Smtp-Source: AK7set+u9V3h/lFnpss+6vSzDvV1hDPTiWdu/52VHEtBts1JBVTxyLHO1pbJZyyllLB5e3fSkCqgmE/v2lcGcZ6C+6WU1l4vDvHu
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9446:0:b0:753:2ab8:aff7 with SMTP id
- x6-20020a5d9446000000b007532ab8aff7mr789747ior.1.1679649139064; Fri, 24 Mar
- 2023 02:12:19 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 02:12:19 -0700
-In-Reply-To: <CAGxU2F6m4KWXwOF8StjWbb=S6HRx=GhV_ONDcZxCZsDkvuaeUg@mail.gmail.com>
+X-Received: by 2002:a02:a189:0:b0:3c5:14cb:a83a with SMTP id
+ n9-20020a02a189000000b003c514cba83amr639266jah.2.1679649211430; Fri, 24 Mar
+ 2023 02:13:31 -0700 (PDT)
+Date:   Fri, 24 Mar 2023 02:13:31 -0700
+In-Reply-To: <CAGxU2F7XjdKgdKwfZMT-sdJ+JK10p_2zNdaQeGBwm3jpEe1Xaw@mail.gmail.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000480a6c05f7a1ca68@google.com>
+Message-ID: <00000000000098457705f7a1ce42@google.com>
 Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in virtio_transport_purge_skbs
 From:   syzbot <syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com>
 To:     avkrasnov@sberdevices.ru, bobby.eshleman@bytedance.com,
@@ -64,8 +64,10 @@ Hello,
 
 syzbot tried to test the proposed patch but the build/boot failed:
 
-net/vmw_vsock/vsock_loopback.c:155:21: error: 'struct vsock_loopback' has no member named 'pkt_list_lock'
-net/vmw_vsock/vsock_loopback.c:157:23: error: 'struct vsock_loopback' has no member named 'pkt_list_lock'
+failed to apply patch:
+checking file net/vmw_vsock/vsock_loopback.c
+patch: **** unexpected end of file in patch
+
 
 
 Tested on:
@@ -73,6 +75,6 @@ Tested on:
 commit:         fff5a5e7 Merge tag 'for-linus' of git://git.armlinux.o..
 git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 dashboard link: https://syzkaller.appspot.com/bug?extid=befff0a9536049e7902e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=15ed6191c80000
+compiler:       
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=16b4bba1c80000
 
