@@ -2,183 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C42596C82D2
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:04:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AD66C82F5
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:10:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbjCXREr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 13:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
+        id S232005AbjCXRKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 13:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbjCXREp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:04:45 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97A51815C;
-        Fri, 24 Mar 2023 10:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=YZTvo4re7ukycagR5LNjBgnmgr5GpRxpdGMsq3Xv67c=; b=kh34JUjDbQxLs/xBxq75Puf/ts
-        f8PxI4lo6IOWLC9CMbESFCU5XCfy6v3vEV/lZlmJtdqZTSjXilgLgrhhB+Mhw10yS1xIS5lVclD4O
-        oUokrCd+URgeTHQq5ClBKQbwB0Xjom7NbHfTwIQOrnwnk0hwPvCH71blIk5ySCyDwuDQlmZEzTgyZ
-        Nnk5hpAs5TAvyDkIRJ8qQ22D02ayeRn/LJhGE19um9f0pVCNog6VwpXDKLJg8vDD9RDEAsAoAh8IP
-        yyhfj2KKqPLW8VntEKEaGVFIIJm4RcecYbaZW9UGbN1ZtJzY980bvMss1Tss4/8ZGT9M8ScBSRyzD
-        rJAEy9bw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39534)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pfkq5-0007Ra-5C; Fri, 24 Mar 2023 17:04:29 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pfkq1-0002av-Ns; Fri, 24 Mar 2023 17:04:25 +0000
-Date:   Fri, 24 Mar 2023 17:04:25 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
- node for default settings
-Message-ID: <ZB3YGWTWLYyecgw7@shell.armlinux.org.uk>
-References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
- <E1pex8f-00Dvo9-KT@rmk-PC.armlinux.org.uk>
- <ZB24fDEqwx53Rthm@kuha.fi.intel.com>
+        with ESMTP id S231992AbjCXRKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:10:34 -0400
+Received: from BN6PR00CU002.outbound.protection.outlook.com (mail-eastus2azon11021014.outbound.protection.outlook.com [52.101.57.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0AA21966;
+        Fri, 24 Mar 2023 10:10:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B//V/pAoXrnB4n4DjqjWMI1vo4xD5cdBim+AaHQ7CdxPC42wHzOVDywxKCY7pH9DtIC6qhc0isM05Wot+almgi/h8+tPDKggnJ7Ts3GkpSZ8JItJiekoWTnRW/j9QByt190MPsqsd4sYnk0SDnCl5GmN3Tw5dUBaLQeldrIXC9Llz5Z63pu4CqPu39u9KxBxtINxlSUR4vxKLTsj6bBziv7UBJATn6oIvz/6vt17ufpmBSx481lUS1knQv9ccO5AaCvwL5xzKsil1HkM3/BmBXh6ww0ngSQcr4B4KMPLHuQD0KV7bncYNO5XAIz/w0X65AS6nxrEgeE1gluT6+9tpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uowLIybn2D8Vibiy/QHd14+sP470plt8QIxjJvG8onE=;
+ b=EWcDeDrfIE2D27q/ARVnk7Vd4M8UCwJI+wXeZwj9SSsfpFehLusdTbOLPtUyKv7aPfx/2WA1mZNHEBYlnW7qV6ctLesdgKSqpPJ+nF7YLHicUOTe7rFo8NV+iZzmvv9ZAqyuIpvNpYO3a0RT2gCzNo5lH1np6Mp2KBCTQRdHaHk67rB/iFNDJ83wmYFs03N1rLTGSW0gB24RotguOSbPJ64zrgljLmJxs8zvn869Dh1R6RKArl3YbXJHZK5LR03NH++actFajyrTG07Z4iJjlPhaPHAvgfxhZgWTI+r+xxlsIHbZuXhmtEDbhS1mZ6ZTsysrYi7m3AeyPelMD7jlCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uowLIybn2D8Vibiy/QHd14+sP470plt8QIxjJvG8onE=;
+ b=Us7ivAqHWOYzQ1Z+Q0gfNeE2QWFQt0k8IUBv4iAyc24VwpKazgWo7bu3+h0cMqpdlShbGQVVEIrbEo8KscrZriGS0h8lSKcmaPHsjzhfHbw641aE14WJkHutTBscCzqUkZFtHL1y0Ye5QEbLqBkJX2u4SG2yvNE2/SD8cZ1RJlk=
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
+ by DM6PR21MB1468.namprd21.prod.outlook.com (2603:10b6:5:25b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.9; Fri, 24 Mar
+ 2023 17:10:26 +0000
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::2e52:d6aa:9a99:500a]) by SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::2e52:d6aa:9a99:500a%5]) with mapi id 15.20.6254.011; Fri, 24 Mar 2023
+ 17:10:26 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Borislav Petkov <bp@alien8.de>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+CC:     "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
+        "jane.chu@oracle.com" <jane.chu@oracle.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
+Thread-Topic: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Thread-Index: AQHZXmgw+OdhZXSmY06XlWsFUPOSLa8KKbWw
+Date:   Fri, 24 Mar 2023 17:10:26 +0000
+Message-ID: <SA1PR21MB1335023500AE3E7C8AE6F867BF849@SA1PR21MB1335.namprd21.prod.outlook.com>
+References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
+ <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
+ <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
+ <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
+ <BYAPR21MB1688DF161ACE142DEA721DA1D7809@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <20230323134306.GEZBxXahNkFIx1vyzN@fat_crate.local>
+ <20230324154856.GDZB3GaHG/3L0Q1x47@fat_crate.local>
+In-Reply-To: <20230324154856.GDZB3GaHG/3L0Q1x47@fat_crate.local>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=2bd99fea-2fe3-4f34-8b9b-fa2b2fc0f56e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-24T17:08:31Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|DM6PR21MB1468:EE_
+x-ms-office365-filtering-correlation-id: a6b59117-7b26-4b3b-d39c-08db2c8aa965
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: EculslW8KpiexXf8Yy7+hBJy2JaaNKCCMA/TxhkfHCDZEhA2H2psHCGjGjOgTdHuqK9RmTIWWABX/zq5xZOIO44y0y8Q64r7lbP0R4am9Bzk4UFKdWeDtEOgynQHfnslVU5LqtPWeyKYSlQEMPsSveRWuSuO2WF0f6t6qyCialfnJM1rEpP5zStlUvBRb62YZUrsO1HAR3uGS5vWuaJxCRm7WInJDok/v6JB2iDrPSj78/LSc0F+TMI/KSHxZaCcpbw8aZ1qhjwzWofN8RzZ0HYyw0JbkhArgmn7XP+qfQKl6uFXu2qn0lse5+pd/hVDImQFtMe1WZGzLxLjX+h6zwo0lFTYioDDAbxbjSmHrlwacEeH8pF7PIDWizPaPs+jRQO1aQaiPGs9MVeeoaBkxjwI91mVfSLt4GT1VxfWssDwZyQvRWDh5rjScIWVI3W5qYjEuC5DdzS6BNwlrW/bGpE4J+Lm2vomg2IKRGxWaOAp+mUfBjlV394DLqmbd0PAT7MgMPqsWEEvCaVmN3p4r04FUeyTsCAum2V3/y8bg1IXMhZi7aZL2L/O8TSS2ob6kDlc60wXf70Urz+TCC0IzWovVYN195ebXzZ7fXrUSZ6ISLCfqEH4Dj9aMQDuF5Pnrs83pCV/R3Hf0WRVqxr8tvRFQnPBqkfIpofO6vbd6fI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(39860400002)(346002)(396003)(366004)(451199018)(4744005)(52536014)(8936002)(8990500004)(2906002)(86362001)(38070700005)(478600001)(33656002)(82950400001)(82960400001)(38100700002)(122000001)(41300700001)(10290500003)(7696005)(66946007)(6636002)(8676002)(54906003)(4326008)(66476007)(66556008)(76116006)(71200400001)(316002)(66446008)(64756008)(7406005)(5660300002)(7416002)(55016003)(110136005)(9686003)(6506007)(26005)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?B2w3L3240UWCFERXv05KoCSk31zPaA+GSUHjw7j7BK6r3XJB9Xtu576GVTGP?=
+ =?us-ascii?Q?w+uH7IQTKCKQwMnULVi+rLowfB7fmHbAUtWIZ4w7jRUTGJtjtP/emMdZIDwe?=
+ =?us-ascii?Q?E67Z0XYN+BK/A+6DZnqC9+8VAPMp76w9fpbsdWrfislwzCvUeoZh22id68Zk?=
+ =?us-ascii?Q?/zId6lTvVBEHXguuG5kBD1AoHOpjSs9m+OWl/3uWmYLa+MzCuJsstCvxAD65?=
+ =?us-ascii?Q?9zX+7GVaFEJeufYAzpSrJjQmC7Q7JbiVzuRrSSC/To9Az7ZBCf6gC/TyVx3N?=
+ =?us-ascii?Q?LdSz2qZyXYJQwiV0FWkanEotLxjZzqy83GV8lUrV/S0Al/PV3PkBB+p8ZtC1?=
+ =?us-ascii?Q?tehquiDwoN3XPg5e4iGcwEJFIn66W+5BUXYrS26r4NQaZ0QQSewihq/R2Lpz?=
+ =?us-ascii?Q?kCtZvkYyCFuRBh5j1ty9PPjUOmXV/tVoKmJ2pVKaNocuzCsuqX5eEuUELnTC?=
+ =?us-ascii?Q?PM77H+Xq5ImAZl5J82vVvOh5AP7nh4HH0uzn6NGrGyGekzAtw6nmzzx7ldf7?=
+ =?us-ascii?Q?eGr8lfkil1NBuN0TXCi0dc4bYXnykvbLH37C15NEnluq4PDgSYVoVbdKVXi0?=
+ =?us-ascii?Q?rjSmeCXBk0fqhJxwSRkrlFymyMlLqjxolxKmBbHKoLSOTaAluMeA99ROyfwV?=
+ =?us-ascii?Q?f/8mrgC5KeLISQTTZyWLzCcwtSQKjNfGDma9X2eqTIrgk8mCzZOmrNRfGGnX?=
+ =?us-ascii?Q?hCHlP8HxDG134+ukNVS68/SdGF0gRYJ7DhTVai98UKcpfaV1LDUgfA8PhRNP?=
+ =?us-ascii?Q?x+Pg3C1F3L+mVm4Ckow+5/b5LYEHQ68fxWF4YVsThDVbhsBwona02DUkbdXx?=
+ =?us-ascii?Q?Lw/HAjNc6KqipQOY3mIqX/GDjBvghCKTh+aX3WPoR7qz127fBI9kK2C2D+3R?=
+ =?us-ascii?Q?TakH/TMqdEHxoQp2Nv9iVHOrRLyu6ouYkA+Juhggcew5aVquWNOiapjtj4Fa?=
+ =?us-ascii?Q?sb9Li3cZGoufelGegtvdmgURK2yiFz9576GjYm7r1zvktI+MV0Ge4Z2iVolU?=
+ =?us-ascii?Q?sroZFjSzQgD4jPdXTmsrFp948BvYgkMwIXzKLn2hTDlWL6CpOYOB5qNIJQ7p?=
+ =?us-ascii?Q?5HjuIypeaG/zS60BQUl2e599WsFVS6sPY51UjlAY3m44+PwnsxyU4wvTzuhf?=
+ =?us-ascii?Q?vWy6f0qtWyj+sbdgIiNKQcUDqPGjl5nB1UzH4FWLOz64QlHCgjL2VTzg2upk?=
+ =?us-ascii?Q?DdOnTAAD9M6j6BRoZXb4AmNRYGz2mZwDwsBHrtcjsRx6ChPzaXB0fLJOn5aV?=
+ =?us-ascii?Q?dJo9O0OPdFAMRTgpfn1EE7+oQsMALR8r/+3ibGk2mlePYxIyPXiQXYC6nuEK?=
+ =?us-ascii?Q?42PAp0UP5qjqUNRtiKKec9Oi02ffIytzIj69oj8fv7CqzTngiDJGr9NAFbdM?=
+ =?us-ascii?Q?RVA3h0UTWMy2hULkLHPMxxImHUeT1cih6ROfkT8D/X5DcRgIzHA2KlFpXr0d?=
+ =?us-ascii?Q?OPjmzuSGnbqLFLdiWvs6YHBC3acjJ/8UE8Mj3qrfMe6iJ8j9WqVI2+HgkosT?=
+ =?us-ascii?Q?ApyD18PhyjpFVhFRHm30JjRggCo+7kG8cvi7Ics6lmFI6MFX0oVE4FBIqMvO?=
+ =?us-ascii?Q?Rots6vCbeuAAOnwAhPsbF2yZCbMoXEwiLMrgNQA4?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZB24fDEqwx53Rthm@kuha.fi.intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6b59117-7b26-4b3b-d39c-08db2c8aa965
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Mar 2023 17:10:26.1924
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Utks9mHhFnhXAFsHfTdgMEJM6dH1S4snBIlU9VeGhTcBGoHQa9pZTDDIUp8V5RlQaz5xWDPaqbTtHF5W/ZhkhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1468
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 04:49:32PM +0200, Heikki Krogerus wrote:
-> Hi Russell,
-> 
-> On Wed, Mar 22, 2023 at 12:00:21PM +0000, Russell King (Oracle) wrote:
-> > +static struct fwnode_handle *mv88e6xxx_create_fixed_swnode(struct fwnode_handle *parent,
-> > +							   int speed,
-> > +							   int duplex)
-> > +{
-> > +	struct property_entry fixed_link_props[3] = { };
-> > +
-> > +	fixed_link_props[0] = PROPERTY_ENTRY_U32("speed", speed);
-> > +	if (duplex == DUPLEX_FULL)
-> > +		fixed_link_props[1] = PROPERTY_ENTRY_BOOL("full-duplex");
-> > +
-> > +	return fwnode_create_named_software_node(fixed_link_props, parent,
-> > +						 "fixed-link");
-> > +}
-> > +
-> > +static struct fwnode_handle *mv88e6xxx_create_port_swnode(phy_interface_t mode,
-> > +							  int speed,
-> > +							  int duplex)
-> > +{
-> > +	struct property_entry port_props[2] = {};
-> > +	struct fwnode_handle *fixed_link_fwnode;
-> > +	struct fwnode_handle *new_port_fwnode;
-> > +
-> > +	port_props[0] = PROPERTY_ENTRY_STRING("phy-mode", phy_modes(mode));
-> > +	new_port_fwnode = fwnode_create_software_node(port_props, NULL);
-> > +	if (IS_ERR(new_port_fwnode))
-> > +		return new_port_fwnode;
-> > +
-> > +	fixed_link_fwnode = mv88e6xxx_create_fixed_swnode(new_port_fwnode,
-> > +							  speed, duplex);
-> > +	if (IS_ERR(fixed_link_fwnode)) {
-> > +		fwnode_remove_software_node(new_port_fwnode);
-> > +		return fixed_link_fwnode;
-> > +	}
-> > +
-> > +	return new_port_fwnode;
-> > +}
-> 
-> That new fwnode_create_named_software_node() function looks like a
-> conflict waiting to happen - if a driver adds a node to the root level
-> (does not have to be root level), all the tests will pass because
-> there is only a single device, but when a user later tries the driver
-> with two devices, it fails, because the node already exist. But you
-> don't need that function at all.
+> From: Borislav Petkov <bp@alien8.de>
+> Sent: Friday, March 24, 2023 8:49 AM
+> ...
+> With first six applied:
+>=20
+> arch/x86/coco/core.c:123:7: error: use of undeclared identifier 'sev_stat=
+us'
+>                 if (sev_status & MSR_AMD64_SNP_VTOM)
+>                     ^
 
-I think you're totally failing to explain how this can fail.
-
-Let me reiterate what thestructure of the swnodes here is:
-
-	root
-	`- node%d (%d allocated by root IDA)
-	   +- phy-mode property
-	   `- fixed-link
-	      +- speed property
-	      `- optional full-duplex property
-
-If we have two different devices creating these nodes, then at the
-root level, they will end up having different root names. The
-"fixed-link" is a child of this node.
-
-swnode already allows multiple identical names at the sub-node
-level - each node ends up with its own IDA to allocate the generic
-"node%d" names from. So as soon as we have multiple nodes, they
-end up as this:
-
-	root
-	+- node0
-	|  `- node 0
-	+- node1
-	|  `- node 0
-	+- node2
-	|  `- node 0
-	etc
-
-So, if we end up with two devices creating these at the same time,
-we end up with:
-
-	root
-	+- nodeA (A allocated by root IDA)
-	|  +- phy-mode property
-	|  `- fixed-link
-	|     +- speed property
-	|     `- optional full-duplex property
-	`- nodeB (B allocated by root IDA, different from above)
-	   +- phy-mode property
-	   `- fixed-link
-	      +- speed property
-	      `- optional full-duplex property
-
-Since the kobject is parented to the parent's kobject, what we
-end up with in sysfs is:
-
-	.../nodeA/fixed-link/speed
-	.../nodeB/fixed-link/speed
-
-Thus, the "fixed-link" ndoes can _not_ conflict.
-
-Please explain in detail where you think the conflict is, because
-so far no one has been able to counter my assertions that this is
-_safe_ with a proper full technical description of the problem.
-All I get is hand-wavey "this conflicts".
-
-Honestly, I'm getting sick of poor quality reviews... the next
-poor review that claims there's a conflict here without properly
-explain it will be told where to go.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Your config doesn't define CONFIG_AMD_MEM_ENCRYPT:
+# CONFIG_AMD_MEM_ENCRYPT is not set
