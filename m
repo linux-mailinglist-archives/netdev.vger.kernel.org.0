@@ -2,119 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 605896C8231
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 17:13:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4466C8247
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 17:22:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231442AbjCXQNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 12:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
+        id S231684AbjCXQWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 12:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbjCXQNt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 12:13:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077B8196AD
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 09:13:48 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pfk2j-0006RS-R7; Fri, 24 Mar 2023 17:13:29 +0100
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6AD9119BA18;
-        Fri, 24 Mar 2023 16:13:21 +0000 (UTC)
-Date:   Fri, 24 Mar 2023 17:13:20 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     "Ji-Ze Hong (Peter Hong)" <peter_hong@fintek.com.tw>,
-        wg@grandegger.com, michal.swiatkowski@linux.intel.com,
-        Steen.Hegelund@microchip.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        frank.jungclaus@esd.eu, linux-kernel@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        hpeter+linux_kernel@gmail.com
-Subject: Re: [PATCH V2] can: usb: f81604: add Fintek F81604 support
-Message-ID: <20230324161320.jutuyor7jrbqu37p@pengutronix.de>
-References: <20230321081152.26510-1-peter_hong@fintek.com.tw>
- <CAMZ6RqJWg1H6Yo3nhsa-Kk-WdU=ZH39ecWaE6wiuKRJe1gLMkQ@mail.gmail.com>
+        with ESMTP id S231704AbjCXQWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 12:22:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31374C170
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 09:21:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679674893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lkiPxXmaIAIQ73FKuviHWwhc2ZQOAgEOBxJpkNCQ9+U=;
+        b=gSTGQDv+k5fEYLKjtNF0uVEU9m0aIGUFzU7+fiW9w2slhAG4TPhGjJxIh/jNTzc38Yx1qG
+        TaqDBh3Q5+tmsCcRuFNChTfvRRD9Z4/PnYpkGyGPgw05vrniwYPohd2CAh48egy3t3jwiA
+        9T+6s5t7am7s7lg4dVLvOxPn4kU+EO0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-371-L2wuA3I4Mb-PyGEK2934pQ-1; Fri, 24 Mar 2023 12:21:27 -0400
+X-MC-Unique: L2wuA3I4Mb-PyGEK2934pQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DD886185A790;
+        Fri, 24 Mar 2023 16:21:26 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-192-9.brq.redhat.com [10.40.192.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 224962027040;
+        Fri, 24 Mar 2023 16:21:24 +0000 (UTC)
+From:   Michal Schmidt <mschmidt@redhat.com>
+To:     Karol Kolacinski <karol.kolacinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Cc:     Petr Oros <poros@redhat.com>, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net] ice: make writes to /dev/gnssX synchronous
+Date:   Fri, 24 Mar 2023 17:20:56 +0100
+Message-Id: <20230324162056.200752-1-mschmidt@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ul6oruy6cmrmas5h"
-Content-Disposition: inline
-In-Reply-To: <CAMZ6RqJWg1H6Yo3nhsa-Kk-WdU=ZH39ecWaE6wiuKRJe1gLMkQ@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The current ice driver's GNSS write implementation buffers writes and
+works through them asynchronously in a kthread. That's bad because:
+ - The GNSS write_raw operation is supposed to be synchronous[1][2].
+ - There is no upper bound on the number of pending writes.
+   Userspace can submit writes much faster than the driver can process,
+   consuming unlimited amounts of kernel memory.
 
---ul6oruy6cmrmas5h
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A patch that's currently on review[3] ("[v3,net] ice: Write all GNSS
+buffers instead of first one") would add one more problem:
+ - The possibility of waiting for a very long time to flush the write
+   work when doing rmmod, softlockups.
 
-On 22.03.2023 00:50:20, Vincent MAILHOL wrote:
-> Hi Peter,
->=20
-> Welcome to the linux-can mailing list.
-> This is my first review, I will wait for the next version to give a
-> more thorough look.
->=20
-> On Tue. 21 Mar 2023 at 17:14, Ji-Ze Hong (Peter Hong)
-> <peter_hong@fintek.com.tw> wrote:
->=20
-> From your email header:
-> > Content-Type: text/plain; charset=3D"y"
->=20
-> It gives me below error when applying:
->=20
->   $ wget -o f81604.patch
-> https://lore.kernel.org/linux-can/20230321081152.26510-1-peter_hong@finte=
-k.com.tw/raw
->   $ git am f81604.patch
->   error : cannot convert from y to UTF-8
->   fatal : could not parse patch
+To fix these issues, simplify the implementation: Drop the buffering,
+the write_work, and make the writes synchronous.
 
-I'm using b4 [1] for this:
+I tested this with gpsd and ubxtool.
 
-$ b4 shazam -l -s 20230321081152.26510-1-peter_hong@fintek.com.tw
+[1] https://events19.linuxfoundation.org/wp-content/uploads/2017/12/The-GNSS-Subsystem-Johan-Hovold-Hovold-Consulting-AB.pdf
+    "User interface" slide.
+[2] A comment in drivers/gnss/core.c:gnss_write():
+        /* Ignoring O_NONBLOCK, write_raw() is synchronous. */
+[3] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20230217120541.16745-1-karol.kolacinski@intel.com/
 
-and it works.
+Fixes: d6b98c8d242a ("ice: add write functionality for GNSS TTY")
+Signed-off-by: Michal Schmidt <mschmidt@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice_common.c |  2 +-
+ drivers/net/ethernet/intel/ice/ice_common.h |  2 +-
+ drivers/net/ethernet/intel/ice/ice_gnss.c   | 64 ++-------------------
+ drivers/net/ethernet/intel/ice/ice_gnss.h   | 10 ----
+ 4 files changed, 6 insertions(+), 72 deletions(-)
 
-Marc
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index c2fda4fa4188..b534d7726d3e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -5169,7 +5169,7 @@ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+  */
+ int
+ ice_aq_write_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+-		 u16 bus_addr, __le16 addr, u8 params, u8 *data,
++		 u16 bus_addr, __le16 addr, u8 params, const u8 *data,
+ 		 struct ice_sq_cd *cd)
+ {
+ 	struct ice_aq_desc desc = { 0 };
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 8ba5f935a092..81961a7d6598 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -229,7 +229,7 @@ ice_aq_read_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+ 		struct ice_sq_cd *cd);
+ int
+ ice_aq_write_i2c(struct ice_hw *hw, struct ice_aqc_link_topo_addr topo_addr,
+-		 u16 bus_addr, __le16 addr, u8 params, u8 *data,
++		 u16 bus_addr, __le16 addr, u8 params, const u8 *data,
+ 		 struct ice_sq_cd *cd);
+ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw);
+ #endif /* _ICE_COMMON_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.c b/drivers/net/ethernet/intel/ice/ice_gnss.c
+index 8dec748bb53a..12086aafb42f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.c
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.c
+@@ -16,8 +16,8 @@
+  * * number of bytes written - success
+  * * negative - error code
+  */
+-static unsigned int
+-ice_gnss_do_write(struct ice_pf *pf, unsigned char *buf, unsigned int size)
++static int
++ice_gnss_do_write(struct ice_pf *pf, const unsigned char *buf, unsigned int size)
+ {
+ 	struct ice_aqc_link_topo_addr link_topo;
+ 	struct ice_hw *hw = &pf->hw;
+@@ -72,39 +72,7 @@ ice_gnss_do_write(struct ice_pf *pf, unsigned char *buf, unsigned int size)
+ 	dev_err(ice_pf_to_dev(pf), "GNSS failed to write, offset=%u, size=%u, err=%d\n",
+ 		offset, size, err);
+ 
+-	return offset;
+-}
+-
+-/**
+- * ice_gnss_write_pending - Write all pending data to internal GNSS
+- * @work: GNSS write work structure
+- */
+-static void ice_gnss_write_pending(struct kthread_work *work)
+-{
+-	struct gnss_serial *gnss = container_of(work, struct gnss_serial,
+-						write_work);
+-	struct ice_pf *pf = gnss->back;
+-
+-	if (!pf)
+-		return;
+-
+-	if (!test_bit(ICE_FLAG_GNSS, pf->flags))
+-		return;
+-
+-	if (!list_empty(&gnss->queue)) {
+-		struct gnss_write_buf *write_buf = NULL;
+-		unsigned int bytes;
+-
+-		write_buf = list_first_entry(&gnss->queue,
+-					     struct gnss_write_buf, queue);
+-
+-		bytes = ice_gnss_do_write(pf, write_buf->buf, write_buf->size);
+-		dev_dbg(ice_pf_to_dev(pf), "%u bytes written to GNSS\n", bytes);
+-
+-		list_del(&write_buf->queue);
+-		kfree(write_buf->buf);
+-		kfree(write_buf);
+-	}
++	return err;
+ }
+ 
+ /**
+@@ -224,8 +192,6 @@ static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
+ 	pf->gnss_serial = gnss;
+ 
+ 	kthread_init_delayed_work(&gnss->read_work, ice_gnss_read);
+-	INIT_LIST_HEAD(&gnss->queue);
+-	kthread_init_work(&gnss->write_work, ice_gnss_write_pending);
+ 	kworker = kthread_create_worker(0, "ice-gnss-%s", dev_name(dev));
+ 	if (IS_ERR(kworker)) {
+ 		kfree(gnss);
+@@ -285,7 +251,6 @@ static void ice_gnss_close(struct gnss_device *gdev)
+ 	if (!gnss)
+ 		return;
+ 
+-	kthread_cancel_work_sync(&gnss->write_work);
+ 	kthread_cancel_delayed_work_sync(&gnss->read_work);
+ }
+ 
+@@ -304,10 +269,7 @@ ice_gnss_write(struct gnss_device *gdev, const unsigned char *buf,
+ 	       size_t count)
+ {
+ 	struct ice_pf *pf = gnss_get_drvdata(gdev);
+-	struct gnss_write_buf *write_buf;
+ 	struct gnss_serial *gnss;
+-	unsigned char *cmd_buf;
+-	int err = count;
+ 
+ 	/* We cannot write a single byte using our I2C implementation. */
+ 	if (count <= 1 || count > ICE_GNSS_TTY_WRITE_BUF)
+@@ -323,24 +285,7 @@ ice_gnss_write(struct gnss_device *gdev, const unsigned char *buf,
+ 	if (!gnss)
+ 		return -ENODEV;
+ 
+-	cmd_buf = kcalloc(count, sizeof(*buf), GFP_KERNEL);
+-	if (!cmd_buf)
+-		return -ENOMEM;
+-
+-	memcpy(cmd_buf, buf, count);
+-	write_buf = kzalloc(sizeof(*write_buf), GFP_KERNEL);
+-	if (!write_buf) {
+-		kfree(cmd_buf);
+-		return -ENOMEM;
+-	}
+-
+-	write_buf->buf = cmd_buf;
+-	write_buf->size = count;
+-	INIT_LIST_HEAD(&write_buf->queue);
+-	list_add_tail(&write_buf->queue, &gnss->queue);
+-	kthread_queue_work(gnss->kworker, &gnss->write_work);
+-
+-	return err;
++	return ice_gnss_do_write(pf, buf, count);
+ }
+ 
+ static const struct gnss_operations ice_gnss_ops = {
+@@ -436,7 +381,6 @@ void ice_gnss_exit(struct ice_pf *pf)
+ 	if (pf->gnss_serial) {
+ 		struct gnss_serial *gnss = pf->gnss_serial;
+ 
+-		kthread_cancel_work_sync(&gnss->write_work);
+ 		kthread_cancel_delayed_work_sync(&gnss->read_work);
+ 		kthread_destroy_worker(gnss->kworker);
+ 		gnss->kworker = NULL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_gnss.h b/drivers/net/ethernet/intel/ice/ice_gnss.h
+index 4d49e5b0b4b8..d95ca3928b2e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_gnss.h
++++ b/drivers/net/ethernet/intel/ice/ice_gnss.h
+@@ -23,26 +23,16 @@
+ #define ICE_MAX_UBX_READ_TRIES		255
+ #define ICE_MAX_UBX_ACK_READ_TRIES	4095
+ 
+-struct gnss_write_buf {
+-	struct list_head queue;
+-	unsigned int size;
+-	unsigned char *buf;
+-};
+-
+ /**
+  * struct gnss_serial - data used to initialize GNSS TTY port
+  * @back: back pointer to PF
+  * @kworker: kwork thread for handling periodic work
+  * @read_work: read_work function for handling GNSS reads
+- * @write_work: write_work function for handling GNSS writes
+- * @queue: write buffers queue
+  */
+ struct gnss_serial {
+ 	struct ice_pf *back;
+ 	struct kthread_worker *kworker;
+ 	struct kthread_delayed_work read_work;
+-	struct kthread_work write_work;
+-	struct list_head queue;
+ };
+ 
+ #if IS_ENABLED(CONFIG_GNSS)
+-- 
+2.39.2
 
-[1] https://github.com/mricon/b4
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---ul6oruy6cmrmas5h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQdzB0ACgkQvlAcSiqK
-BOhOLwf+IA/6cxPWXp0P3mZ8oxuZk5hBKe0zEC4xRcOqLECtcb98HHwDN8aSPO/h
-KwTSer7luMLSI1XOp7Z5xzI4unZIFcoJs+8ARJ1qSZU8BpxJk3wWkgNQKs4Uof1b
-whX5N+0pl+dgZE5KujUiC01shK7kJs52a/JvEIZVgL2KHVYv8jiHbrhcpM1gD/FO
-06jhufbklHOMDVBoNsi2CqWU915diRGYtT4DRJVQgm0yuNfcNbdUXf/H/grwtmoU
-bHcFlLs1sMiJo/SnuTPFa8YmK0T0v1XUwtCM/fYRaGiulC6BjggaU7Ck9extZiZt
-d3kIeCl5NjpTgYGhOkrhT1V+b+/dIA==
-=kfUO
------END PGP SIGNATURE-----
-
---ul6oruy6cmrmas5h--
