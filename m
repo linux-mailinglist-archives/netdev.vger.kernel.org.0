@@ -2,172 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B326C8823
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C10C6C882B
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbjCXWLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 18:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
+        id S232171AbjCXWMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 18:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbjCXWLG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:11:06 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1202A2007B;
-        Fri, 24 Mar 2023 15:10:36 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id er18so2028056edb.9;
-        Fri, 24 Mar 2023 15:10:35 -0700 (PDT)
+        with ESMTP id S232187AbjCXWMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:12:24 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6D31EFE5
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:11:57 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id l27so3165698wrb.2
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:11:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679695833;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=fxVZl65ppaYPFIKyRPyYl3dX0Inh16J0pYuSo0cJb7E=;
-        b=UyazcQbd8gG65l601C3UsTA6yL+rW6fegRVIGG4AR5MPSmoOclYwoBIaUEfB5tP+Uq
-         rCu2JU7emy41Ux5nokIxhqKI5J1MGBgzKiq59ICmxWzijxH6n7rvHon8VrCs2qGXCicn
-         JeqQiuK3D9ZuZyfpl0GBuy/yq8CU89U5ELCSuZQs+aw/Ps4IOV2HwBPdyT6LPbiS1pn7
-         3PubVrbdoPmEfaR6Ovkt1oQOvtuaDtYIZ6GjzPP+7eVM4U//NyJIpaKNfvQO6zzPjx1d
-         HVVZ+l+j6rzCGOd9/ldOqhUDCiLkGPFnn4LRKAeKEvd0MU/t9Ta22+paV1ILG80q1y0M
-         L/XQ==
+        d=gmail.com; s=20210112; t=1679695916;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ApuYhHltL3P4kJCak3V2beJhMKfcbgvUnwHon+V0FyM=;
+        b=hkH4x8ib/xgdrl1AVgBld8wM3Hby/9KZNZNxmCUpA90/EWHspZUGewV90ytK9Ow4Zn
+         oykRr3MPgOQC6EwBKbDyWBs4HyqNFaWEjKrYl4JjGE0krigu0t0qYzL1/AR6DU9g79lH
+         e/T8kb9QSmHrLY72nChyYLkQ0Z1lKgffjXNjaGt5lBWIkoYLKxPUVHOlCpTz8iPrJrHr
+         OqSUfN1JCt0V1KWzWTSkJ5+9KfOQXStGLkqTiKGtnNUhTQzt1Yr5b4pWdJfqYtp1j1IT
+         mGaOXY4oyLVeU16sYSsROxanRERzFpla3drtvbcecLaipRXrIwP8N+kjJKLVFkuy9zzO
+         zKFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679695833;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fxVZl65ppaYPFIKyRPyYl3dX0Inh16J0pYuSo0cJb7E=;
-        b=MiriGYTqrJSiZTSxpujIf4M/UrpYl89PUsiyCVqcXKxkrpWf5oJ4VlKqpVk6X9/fS7
-         2j/zxJULp265tn9S1tmHSgxakiLSuXSSzhBO3S5KW03GMpkmNGR3cz4i9FjAbYhlzpgM
-         il0b/MEWdF1zX4OvbiKGnQLQmjsb92cRcdLQiIjeRm8br3KP/N4dyGA2Xlhb8QtD/vMJ
-         0qnBbcp5aoCDiIU4sZ+CnGlUDIoUDXWcNZc2kaPCV/FuD6AeugoSI/Dfcv0Ze5BLr9+o
-         m/WS8aa21VUBFMqAIz63Jt13sEXXYYgWYpmg099Q4pfHf9DZiM8WNi7w1Lmjq8uymhcw
-         DJQA==
-X-Gm-Message-State: AAQBX9eNsOlb0+bBaqateqb3ZsqoKhloXFpLwzbtG76UiYr0h/gsQ96e
-        oK56XVskW+ZpOp6hZXALwqE=
-X-Google-Smtp-Source: AKy350bbbGxK21mLlRapiV4hrzxYhWbys8g59LNpWrccXWhmcAIuU/uIm4ympucH+j396toCfj8JlA==
-X-Received: by 2002:a17:907:d09:b0:930:e634:3d52 with SMTP id gn9-20020a1709070d0900b00930e6343d52mr5565312ejc.24.1679695833228;
-        Fri, 24 Mar 2023 15:10:33 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id zc14-20020a170906988e00b00927f6c799e6sm10931958ejb.132.2023.03.24.15.10.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 15:10:32 -0700 (PDT)
-Date:   Sat, 25 Mar 2023 00:10:30 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Arun Ramadoss <Arun.Ramadoss@microchip.com>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexis =?utf-8?Q?Lothor=C3=A9?= <alexis.lothore@bootlin.com>
-Subject: Re: [PATCH RESEND net-next v4 2/3] net: dsa: rzn1-a5psw: add support
- for .port_bridge_flags
-Message-ID: <20230324221030.eps7xsbapwfzjxez@skbuf>
-References: <20230314163651.242259-1-clement.leger@bootlin.com>
- <20230314163651.242259-3-clement.leger@bootlin.com>
- <20230314230821.kjiyseiqhat4apqb@skbuf>
- <20230316125329.75b290d4@fixe.home>
+        d=1e100.net; s=20210112; t=1679695916;
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ApuYhHltL3P4kJCak3V2beJhMKfcbgvUnwHon+V0FyM=;
+        b=W9GYl1hrg2pD9Jk2swOsK1peldShmckpq/XFJTmCZye+h9tw7r8YWA0Sy7mlOrrNwp
+         528kjROjQvSBnqRSo36ABAMOzoIw9QWELcgy5oI5CYzVpCbXpPRGmnqwaQbJRLUR+KTb
+         fWKOaasHxxKtOA6PAv6nz2n6yEyG58c7OiZxau95O6xcTYNnbTwyhtVuGywhQ4IWlT9c
+         kyMlIFHplcTbgsIc/S7n5bjww3aKrny9wJ7yImLkhlOowKnB0myeAYhbX6QrSz6xhQ1S
+         thvqq/XJuiy6poYVlA2Jc+ShZPoA7XvO/D2E7n6i4yvvNVJoaGT1aty6YKVfLcjtcuRV
+         GcZQ==
+X-Gm-Message-State: AAQBX9fV0ywXpZSADzvPYzFWKTMBAeA/a4LBma4By1Ij0p87VO2WOrJl
+        yeGybV1fCA30+eoP98NiwK4=
+X-Google-Smtp-Source: AKy350b1oy4T5jGXZ92yE4mAirscoHJDz/sHGxWB69bRpRpYThp1QnTyIkpKWG9AZA2WZnxP3AIlLw==
+X-Received: by 2002:adf:e40d:0:b0:2cf:e6de:c6ab with SMTP id g13-20020adfe40d000000b002cfe6dec6abmr3311136wrm.11.1679695916039;
+        Fri, 24 Mar 2023 15:11:56 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:b926:df00:a161:16e2:f237:a7d4? (dynamic-2a01-0c23-b926-df00-a161-16e2-f237-a7d4.c23.pool.telefonica.de. [2a01:c23:b926:df00:a161:16e2:f237:a7d4])
+        by smtp.googlemail.com with ESMTPSA id m9-20020adffa09000000b002c70d97af78sm19347028wrr.85.2023.03.24.15.11.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Mar 2023 15:11:55 -0700 (PDT)
+Message-ID: <d4a549bc-062c-e6cb-fb2f-75f32f8b3964@gmail.com>
+Date:   Fri, 24 Mar 2023 23:11:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230316125329.75b290d4@fixe.home>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] dev_ioctl: fix a W=1 warning
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 16, 2023 at 12:53:29PM +0100, Clément Léger wrote:
-> Le Wed, 15 Mar 2023 01:08:21 +0200,
-> Vladimir Oltean <olteanv@gmail.com> a écrit :
-> 
-> > On Tue, Mar 14, 2023 at 05:36:50PM +0100, Clément Léger wrote:
-> > > +static int a5psw_port_pre_bridge_flags(struct dsa_switch *ds, int port,
-> > > +				       struct switchdev_brport_flags flags,
-> > > +				       struct netlink_ext_ack *extack)
-> > > +{
-> > > +	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
-> > > +			   BR_BCAST_FLOOD))
-> > > +		return -EINVAL;
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static int
-> > > +a5psw_port_bridge_flags(struct dsa_switch *ds, int port,
-> > > +			struct switchdev_brport_flags flags,
-> > > +			struct netlink_ext_ack *extack)
-> > > +{
-> > > +	struct a5psw *a5psw = ds->priv;
-> > > +	u32 val;
-> > > +
-> > > +	if (flags.mask & BR_LEARNING) {
-> > > +		val = flags.val & BR_LEARNING ? 0 : A5PSW_INPUT_LEARN_DIS(port);
-> > > +		a5psw_reg_rmw(a5psw, A5PSW_INPUT_LEARN,
-> > > +			      A5PSW_INPUT_LEARN_DIS(port), val);
-> > > +	}  
-> > 
-> > 2 issues.
-> > 
-> > 1: does this not get overwritten by a5psw_port_stp_state_set()?
-> 
-> Hum indeed. How is this kind of thing supposed to be handled ? Should I
-> remove the handling of BR_LEARNING to forbid modifying it ? Ot should I
-> allow it only if STP isn't enabled (which I'm not sure how to do it) ?
+This fixes the following warning when compiled with GCC 12.2.0 and W=1.
 
-It's handled correctly by only enabling learning in port_stp_state_set()
-if dp->learning allows it. See sja1105_bridge_stp_state_set():
+net/core/dev_ioctl.c:475: warning: Function parameter or member 'data'
+not described in 'dev_ioctl'
 
-	case BR_STATE_LEARNING:
-		mac[port].dyn_learn = dp->learning;
-		break;
-	case BR_STATE_FORWARDING:
-		mac[port].dyn_learn = dp->learning;
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ net/core/dev_ioctl.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-ocelot_bridge_stp_state_set():
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 5cdbfbf9a..846669426 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -462,6 +462,7 @@ EXPORT_SYMBOL(dev_load);
+  *	@net: the applicable net namespace
+  *	@cmd: command to issue
+  *	@ifr: pointer to a struct ifreq in user space
++ *	@data: data exchanged with userspace
+  *	@need_copyout: whether or not copy_to_user() should be called
+  *
+  *	Issue ioctl functions to devices. This is normally called by the
+-- 
+2.40.0
 
-	if ((state == BR_STATE_LEARNING || state == BR_STATE_FORWARDING) &&
-	    ocelot_port->learn_ena)
-		learn_ena = ANA_PORT_PORT_CFG_LEARN_ENA;
-
-ksz_port_stp_state_set():
-
-	case BR_STATE_LEARNING:
-		if (!p->learning)
-			data |= PORT_LEARN_DISABLE;
-		break;
-	case BR_STATE_FORWARDING:
-		if (!p->learning)
-			data |= PORT_LEARN_DISABLE;
-
-> > enables flooding on the port after calling a5psw_port_bridge_leave().
-> > So the port which has left a bridge is standalone, but it still forwards
-> > packets to the other bridged ports!
-> 
-> Actually not this way because the port is configured in a specific mode
-> which only forward packet to the CPU ports. Indeed, we set a specific
-> rule using the PATTERN_CTRL register with the MGMTFWD bit set:
-> When set, the frame is forwarded to the management port only
-> (suppressing destination address lookup).
-
-Ah, cool, this answers one of my issues in the other thread.
-
-> However, the port will received packets *from* the other ports (which is
-> wrong... I can handle that by not setting the flooding attributes if
-> the port is not in bridge. Doing so would definitely fix the various
-> problems that could happen.
-
-hmm.. I guess that could work?
