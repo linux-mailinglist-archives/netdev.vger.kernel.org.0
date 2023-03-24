@@ -2,101 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D34966C8531
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 19:34:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE5E6C850D
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 19:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231952AbjCXSeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 14:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
+        id S231545AbjCXSbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 14:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231908AbjCXSd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 14:33:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1388821A0C
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 11:33:35 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pfmDk-0000Jh-3A; Fri, 24 Mar 2023 19:33:00 +0100
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C68F919BB99;
-        Fri, 24 Mar 2023 18:32:58 +0000 (UTC)
-Date:   Fri, 24 Mar 2023 19:32:57 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Markus Schneider-Pargmann <msp@baylibre.com>
-Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Simon Horman <simon.horman@corigine.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/16] can: m_can: Optimizations for m_can/tcan part 2
-Message-ID: <20230324183257.qpis4cip5cp4gebu@pengutronix.de>
-References: <20230315110546.2518305-1-msp@baylibre.com>
+        with ESMTP id S231444AbjCXSbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 14:31:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F86716AE5;
+        Fri, 24 Mar 2023 11:31:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1DEDB82565;
+        Fri, 24 Mar 2023 18:31:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BD02C433A7;
+        Fri, 24 Mar 2023 18:31:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679682688;
+        bh=EyfY0rlchlhdbsx6lA17xyjUo29eM3oqgBh+IZ8tAk8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HyNQ3xpqWyFxqVmTf/X/1Q/x9pbfYQs36lb0l2P4yIqamq5FeV3aUI02SKz+cmZcE
+         fsdu8Cs2XEqDzMM9otoTQqpbGlUr6cNRHoLkMNTLHORkROY51/53c3hbAxyi/lMPWm
+         E/6TRP3ONxbBX3aYWMSOKLc6NIbGnxwDe5HrIEcKJP3F+XKWqXd+iVmxbjbnXhE2xF
+         T8vWKUSidnjcCKkrSVYvIIHIen5XB4mBz8zPu6CaFCBa/aUGs4Tdwpx9p8WZ7e6lXs
+         7ih0Lj/Yjp4DFG4b6QO8n5H2sjSpx2MwwMGdHJGhd3AwXet88kDp6tb4N/dR0XxZih
+         HD1f8GqiCL2tg==
+From:   Bjorn Andersson <andersson@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath11k@lists.infradead.org, Steev Klimaszewski <steev@kali.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, Andy Gross <agross@kernel.org>
+Subject: Re: (subset) [PATCH v2 0/2] arm64: dts: qcom: sc8280xp-x13s: add wifi calibration variant
+Date:   Fri, 24 Mar 2023 11:34:28 -0700
+Message-Id: <167968287203.2233401.18027204097957860016.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230321094011.9759-1-johan+linaro@kernel.org>
+References: <20230321094011.9759-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="maei3lwmc22rxdz5"
-Content-Disposition: inline
-In-Reply-To: <20230315110546.2518305-1-msp@baylibre.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 21 Mar 2023 10:40:09 +0100, Johan Hovold wrote:
+> This series adds the missing calibration variant devicetree property
+> which is needed to load the (just released) calibration data and use the
+> ath11k wifi on the Lenovo Thinkpad X13s.
+> 
+> Kalle, can you take the binding through your tree and then Bjorn can
+> take the devicetree update through the qcom tree?
+> 
+> [...]
 
---maei3lwmc22rxdz5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied, thanks!
 
-On 15.03.2023 12:05:30, Markus Schneider-Pargmann wrote:
-> Hi Marc and everyone,
->=20
-> third version part 2, functionally I had to move from spin_lock to
-> spin_lock_irqsave because of an interrupt that was calling start_xmit,
-> see attached stack. This is tested on tcan455x but I don't have the
-> integrated hardware myself so any testing is appreciated.
->=20
-> The series implements many small and bigger throughput improvements and
-> adds rx/tx coalescing at the end.
+[2/2] arm64: dts: qcom: sc8280xp-x13s: add wifi calibration variant
+      commit: 2702f54f400ad3979632cdb76553772414f4c5e3
 
-I've applied patches 1...5 to can-next.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---maei3lwmc22rxdz5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQd7NcACgkQvlAcSiqK
-BOho7Af/W+9fuaKIaN99W/mZF0Xe48ZngWQMU7/COYFSUIWFiX6RcLORYZRRPrxK
-zMp/1uFYmTK9VBxQPd/dyHA7IA1Fa1Yf7xaRRw+XdmIxzQgfGSpQDg0gnyRc/fty
-7tBr5RElXS9E2pFyuza48H+lkejkwFO9W5w+KhUjfF9FX9WkeUhMOMBbVzC6XLMT
-tQTbmpD4pN53ov8JpeQYFjSGGmsPrp8e6HP2yRJxXEOX15ac+tGypBjOh52769k0
-eERaA3LMXAQmYZezfDsvZkFHjD+Xe4EChmcUjQ0iqOReDxYoHjzTNjrcaPVyckYy
-JhIyZVKbGp0cHEnAA915bVBI7cxscA==
-=YQla
------END PGP SIGNATURE-----
-
---maei3lwmc22rxdz5--
+Best regards,
+-- 
+Bjorn Andersson <andersson@kernel.org>
