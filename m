@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A9E6C83BB
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:52:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2206D6C83BD
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:52:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231811AbjCXRwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 13:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50486 "EHLO
+        id S231558AbjCXRwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 13:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbjCXRwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:52:01 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6101ABFF;
-        Fri, 24 Mar 2023 10:51:42 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id w25so2195796qtc.5;
-        Fri, 24 Mar 2023 10:51:42 -0700 (PDT)
+        with ESMTP id S231687AbjCXRwC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:52:02 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B771A942;
+        Fri, 24 Mar 2023 10:51:43 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id g19so2177938qts.9;
+        Fri, 24 Mar 2023 10:51:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679680301;
+        d=gmail.com; s=20210112; t=1679680302;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QLbggjUBWDhCFAFfhTFn/HC3bA9ftKuc9kzs8SaypEw=;
-        b=Km3u7U/hWu1WfQRVv0wtAQowQt7VdHwtGoQunxxrZFiarxq356cArSlobk6vhFnpYO
-         B6BhpOUxqEgcnQwASKGXfhhloYvfQM16aNYaCQBM2jf7AEWaUGS4dzlF+L1JrSZYOHRm
-         Er8M7l8P2Icj9U0Z5pO9gMbDn0fxnwWGl8vfq+Ck2B74llmXEq+QUkkMGeqIj40ENyHm
-         Lh0cTQkqOrtFWxVSuPdaQLPHw09sCv71Z+78Oss1qbUXkART1z1utc0CrvZQp6k5J7hY
-         CZ91kRJHNibQxOQm4ocWeE4tOUvOtxVBOokW/eZ/0kyK0vKqhY6G6YooJkzecaEG8E2g
-         RslA==
+        bh=RUPIpsZjxKo1VufU8w58+RDz1sXH3grk0wMm+nJeAoE=;
+        b=VZi/GPJvrFgaOaLTTnyuz85TjM+RyDUnaZ90AV3cZarYgxTfe9E+TO17Kk6BGzDGtQ
+         BoI7fWpxUxFKsSAHzNMlnA76iJBLPwYgYS9h2U5xNZdw9a2ZMl5nzp9B/b/cq++iA04x
+         mmkBpHLDDN7f+B33GjG9Btyh1/sUYlXuEPR/cxMTDiJ+72jIvuOgAPiWw+cIZvRC2I60
+         KjSqdW32by7oflh1B2klQHDjfIuHMmQZMoWtvq9FW1YQgsyZwGRlQgiYjlXojFEUpjbK
+         t76R8uiqAxj03ohVc3z/oENRrQvPkyETJlioPGFhlXjtNMoAS9h3HUNnPdy3aVcm189d
+         GsEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679680301;
+        d=1e100.net; s=20210112; t=1679680302;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QLbggjUBWDhCFAFfhTFn/HC3bA9ftKuc9kzs8SaypEw=;
-        b=lKHdNfX+GETCPeQxZSA9tILIx2DFNT2OBy62oKg7RJRayLUa4HiGv/5utNMHXGVfvf
-         PUfHPGbHN5AQY6AfJ6Wu3QBLIyk6Kby1W7HAJt6mfZon41icwX1XnrxAvcpwPzI/j820
-         8vMo+4fE8GqEDwkRkd+WrgAS2XgAExCb5i+SkA2Fq0f2B0obVsoj6OwOk0flxh1SSUYR
-         VdU60IMnKbVkpwulxxuPfg5ahxacvu4CBRLiKAqbyZ6F/Z4GE+YTUX6OoTcq0hzBcjAn
-         IAVgPDbkFtR+BxM8Wqhf1F163lVldlewBWBSYMXWUSVPvhqPH0vCtfWNZaYNuht9xsFC
-         +ZCA==
-X-Gm-Message-State: AO0yUKXljfrXMutFwOo/rXeeMXB2AH8wQrlavHXbzou8/4DY41vDF7to
-        JWz7lg4l7UK5kjL1G7gaQZU=
-X-Google-Smtp-Source: AK7set+46/9A5AmXsNxTBiyOANyCPNhdwWXAZCRZgfC8v/PcsDn4TwwuwEH5uK1W6w7qVveRiT/JQA==
-X-Received: by 2002:a05:622a:206:b0:3da:cef1:79b5 with SMTP id b6-20020a05622a020600b003dacef179b5mr5070647qtx.26.1679680300788;
-        Fri, 24 Mar 2023 10:51:40 -0700 (PDT)
+        bh=RUPIpsZjxKo1VufU8w58+RDz1sXH3grk0wMm+nJeAoE=;
+        b=QfKMcXnBHIpQcEY6QPzt4aGogEjWW2nRc5lOgueCGTdRekX5diSGBYjyf501lZiBtc
+         Mku48Dfva74v9RgcXHMTI5YZy+c1B8x+WBZVncudFtleku9JmhBjxL6/K7c+AOQ7Z+gp
+         y0JNxJ10Q7qsNc6pOxxwS7HuYguytunJh6BgsBfNo+jjUL8YBE97OQuRp0+Xw1oZufNL
+         XhKwOUMCDpADkv4WIiUDiVc5S3gZ0lfk4AiylJOgZKUiUcz5UlpRPj3Cc18Dy3I1+DpI
+         bey+Ch4KNyMfJOEWi3WR+PgaYvDM8PJ+cYyP1zYxW63NRrp2pfd5RPjaSAgU9V5rV5a0
+         r3cw==
+X-Gm-Message-State: AO0yUKWqmAeF9qbwqq3wfa7MJZ8zBmVHSA8Ojlx/LQFdEErsmAJddI/U
+        rWAzfjf3nTuD6KZ9YPj0d2w=
+X-Google-Smtp-Source: AK7set8pi//swGrHRCdgO207gkQQCdQqTi4zkOvAKI2LfqN6BBcN9Cq0NPpjVL6F2NSLxtveFc9UCw==
+X-Received: by 2002:a05:622a:1a01:b0:3d8:8d4b:c7cc with SMTP id f1-20020a05622a1a0100b003d88d4bc7ccmr6563074qtb.46.1679680301846;
+        Fri, 24 Mar 2023 10:51:41 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id o5-20020a375a05000000b007464fcca543sm14421460qkb.50.2023.03.24.10.51.40
+        by smtp.gmail.com with UTF8SMTPSA id t21-20020ac87615000000b003e0945575dasm8875232qtq.1.2023.03.24.10.51.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Mar 2023 10:51:40 -0700 (PDT)
+        Fri, 24 Mar 2023 10:51:41 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,9 +56,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Cc:     Simon Horman <simon.horman@corigine.com>,
         linux-kernel@vger.kernel.org, Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next v4 02/10] net: sunhme: Just restart autonegotiation if we can't bring the link up
-Date:   Fri, 24 Mar 2023 13:51:28 -0400
-Message-Id: <20230324175136.321588-3-seanga2@gmail.com>
+Subject: [PATCH net-next v4 03/10] net: sunhme: Remove residual polling code
+Date:   Fri, 24 Mar 2023 13:51:29 -0400
+Message-Id: <20230324175136.321588-4-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230324175136.321588-1-seanga2@gmail.com>
 References: <20230324175136.321588-1-seanga2@gmail.com>
@@ -74,298 +74,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we've tried regular autonegotiation and forcing the link mode, just
-restart autonegotiation instead of reinitializing the whole NIC.
+The sunhme driver never used the hardware MII polling feature. Even the
+if-def'd out happy_meal_poll_start was removed by 2002 [1]. Remove the
+various places in the driver which needlessly guard against MII interrupts
+which will never be enabled.
+
+[1] https://lwn.net/2002/0411/a/2.5.8-pre3.php3
 
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
 
-(no changes since v2)
+(no changes since v1)
 
-Changes in v2:
-- Move happy_meal_begin_auto_negotiation earlier and remove forward declaration
-
- drivers/net/ethernet/sun/sunhme.c | 245 +++++++++++++++---------------
- 1 file changed, 119 insertions(+), 126 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 134 ++++--------------------------
+ drivers/net/ethernet/sun/sunhme.h |   6 +-
+ 2 files changed, 18 insertions(+), 122 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 7cf8210ebbec..e52f2d9305bc 100644
+index e52f2d9305bc..b02cb0b493ae 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -589,8 +589,6 @@ static int set_happy_link_modes(struct happy_meal *hp, void __iomem *tregs)
- 	return 1;
- }
- 
--static int happy_meal_init(struct happy_meal *hp);
--
- static int is_lucent_phy(struct happy_meal *hp)
- {
- 	void __iomem *tregs = hp->tcvregs;
-@@ -606,6 +604,124 @@ static int is_lucent_phy(struct happy_meal *hp)
- 	return ret;
- }
- 
-+/* hp->happy_lock must be held */
-+static void
-+happy_meal_begin_auto_negotiation(struct happy_meal *hp,
-+				  void __iomem *tregs,
-+				  const struct ethtool_link_ksettings *ep)
-+{
-+	int timeout;
-+
-+	/* Read all of the registers we are interested in now. */
-+	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
-+	hp->sw_bmcr      = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
-+	hp->sw_physid1   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID1);
-+	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
-+
-+	/* XXX Check BMSR_ANEGCAPABLE, should not be necessary though. */
-+
-+	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
-+	if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
-+		/* Advertise everything we can support. */
-+		if (hp->sw_bmsr & BMSR_10HALF)
-+			hp->sw_advertise |= (ADVERTISE_10HALF);
-+		else
-+			hp->sw_advertise &= ~(ADVERTISE_10HALF);
-+
-+		if (hp->sw_bmsr & BMSR_10FULL)
-+			hp->sw_advertise |= (ADVERTISE_10FULL);
-+		else
-+			hp->sw_advertise &= ~(ADVERTISE_10FULL);
-+		if (hp->sw_bmsr & BMSR_100HALF)
-+			hp->sw_advertise |= (ADVERTISE_100HALF);
-+		else
-+			hp->sw_advertise &= ~(ADVERTISE_100HALF);
-+		if (hp->sw_bmsr & BMSR_100FULL)
-+			hp->sw_advertise |= (ADVERTISE_100FULL);
-+		else
-+			hp->sw_advertise &= ~(ADVERTISE_100FULL);
-+		happy_meal_tcvr_write(hp, tregs, MII_ADVERTISE, hp->sw_advertise);
-+
-+		/* XXX Currently no Happy Meal cards I know off support 100BaseT4,
-+		 * XXX and this is because the DP83840 does not support it, changes
-+		 * XXX would need to be made to the tx/rx logic in the driver as well
-+		 * XXX so I completely skip checking for it in the BMSR for now.
-+		 */
-+
-+		ASD("Advertising [ %s%s%s%s]\n",
-+		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
-+		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
-+		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
-+		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " : "");
-+
-+		/* Enable Auto-Negotiation, this is usually on already... */
-+		hp->sw_bmcr |= BMCR_ANENABLE;
-+		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
-+
-+		/* Restart it to make sure it is going. */
-+		hp->sw_bmcr |= BMCR_ANRESTART;
-+		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
-+
-+		/* BMCR_ANRESTART self clears when the process has begun. */
-+
-+		timeout = 64;  /* More than enough. */
-+		while (--timeout) {
-+			hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
-+			if (!(hp->sw_bmcr & BMCR_ANRESTART))
-+				break; /* got it. */
-+			udelay(10);
-+		}
-+		if (!timeout) {
-+			netdev_err(hp->dev,
-+				   "Happy Meal would not start auto negotiation BMCR=0x%04x\n",
-+				   hp->sw_bmcr);
-+			netdev_notice(hp->dev,
-+				      "Performing force link detection.\n");
-+			goto force_link;
-+		} else {
-+			hp->timer_state = arbwait;
-+		}
-+	} else {
-+force_link:
-+		/* Force the link up, trying first a particular mode.
-+		 * Either we are here at the request of ethtool or
-+		 * because the Happy Meal would not start to autoneg.
-+		 */
-+
-+		/* Disable auto-negotiation in BMCR, enable the duplex and
-+		 * speed setting, init the timer state machine, and fire it off.
-+		 */
-+		if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
-+			hp->sw_bmcr = BMCR_SPEED100;
-+		} else {
-+			if (ep->base.speed == SPEED_100)
-+				hp->sw_bmcr = BMCR_SPEED100;
-+			else
-+				hp->sw_bmcr = 0;
-+			if (ep->base.duplex == DUPLEX_FULL)
-+				hp->sw_bmcr |= BMCR_FULLDPLX;
-+		}
-+		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
-+
-+		if (!is_lucent_phy(hp)) {
-+			/* OK, seems we need do disable the transceiver for the first
-+			 * tick to make sure we get an accurate link state at the
-+			 * second tick.
-+			 */
-+			hp->sw_csconfig = happy_meal_tcvr_read(hp, tregs,
-+							       DP83840_CSCONFIG);
-+			hp->sw_csconfig &= ~(CSCONFIG_TCVDISAB);
-+			happy_meal_tcvr_write(hp, tregs, DP83840_CSCONFIG,
-+					      hp->sw_csconfig);
-+		}
-+		hp->timer_state = ltrywait;
-+	}
-+
-+	hp->timer_ticks = 0;
-+	hp->happy_timer.expires = jiffies + (12 * HZ)/10;  /* 1.2 sec. */
-+	add_timer(&hp->happy_timer);
-+}
-+
- static void happy_meal_timer(struct timer_list *t)
- {
- 	struct happy_meal *hp = from_timer(hp, t, happy_timer);
-@@ -743,12 +859,7 @@ static void happy_meal_timer(struct timer_list *t)
- 					netdev_notice(hp->dev,
- 						      "Link down, cable problem?\n");
- 
--					ret = happy_meal_init(hp);
--					if (ret) {
--						/* ho hum... */
--						netdev_err(hp->dev,
--							   "Error, cannot re-init the Happy Meal.\n");
--					}
-+					happy_meal_begin_auto_negotiation(hp, tregs, NULL);
- 					goto out;
- 				}
- 				if (!is_lucent_phy(hp)) {
-@@ -1201,124 +1312,6 @@ static void happy_meal_init_rings(struct happy_meal *hp)
- 	HMD("done\n");
+@@ -985,32 +985,6 @@ static void happy_meal_get_counters(struct happy_meal *hp, void __iomem *bregs)
+ 	hme_write32(hp, bregs + BMAC_LTCTR, 0);
  }
  
 -/* hp->happy_lock must be held */
--static void
--happy_meal_begin_auto_negotiation(struct happy_meal *hp,
--				  void __iomem *tregs,
--				  const struct ethtool_link_ksettings *ep)
+-static void happy_meal_poll_stop(struct happy_meal *hp, void __iomem *tregs)
 -{
--	int timeout;
--
--	/* Read all of the registers we are interested in now. */
--	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
--	hp->sw_bmcr      = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
--	hp->sw_physid1   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID1);
--	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
--
--	/* XXX Check BMSR_ANEGCAPABLE, should not be necessary though. */
--
--	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
--	if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
--		/* Advertise everything we can support. */
--		if (hp->sw_bmsr & BMSR_10HALF)
--			hp->sw_advertise |= (ADVERTISE_10HALF);
--		else
--			hp->sw_advertise &= ~(ADVERTISE_10HALF);
--
--		if (hp->sw_bmsr & BMSR_10FULL)
--			hp->sw_advertise |= (ADVERTISE_10FULL);
--		else
--			hp->sw_advertise &= ~(ADVERTISE_10FULL);
--		if (hp->sw_bmsr & BMSR_100HALF)
--			hp->sw_advertise |= (ADVERTISE_100HALF);
--		else
--			hp->sw_advertise &= ~(ADVERTISE_100HALF);
--		if (hp->sw_bmsr & BMSR_100FULL)
--			hp->sw_advertise |= (ADVERTISE_100FULL);
--		else
--			hp->sw_advertise &= ~(ADVERTISE_100FULL);
--		happy_meal_tcvr_write(hp, tregs, MII_ADVERTISE, hp->sw_advertise);
--
--		/* XXX Currently no Happy Meal cards I know off support 100BaseT4,
--		 * XXX and this is because the DP83840 does not support it, changes
--		 * XXX would need to be made to the tx/rx logic in the driver as well
--		 * XXX so I completely skip checking for it in the BMSR for now.
--		 */
--
--		ASD("Advertising [ %s%s%s%s]\n",
--		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
--		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
--		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
--		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " : "");
--
--		/* Enable Auto-Negotiation, this is usually on already... */
--		hp->sw_bmcr |= BMCR_ANENABLE;
--		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
--
--		/* Restart it to make sure it is going. */
--		hp->sw_bmcr |= BMCR_ANRESTART;
--		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
--
--		/* BMCR_ANRESTART self clears when the process has begun. */
--
--		timeout = 64;  /* More than enough. */
--		while (--timeout) {
--			hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
--			if (!(hp->sw_bmcr & BMCR_ANRESTART))
--				break; /* got it. */
--			udelay(10);
--		}
--		if (!timeout) {
--			netdev_err(hp->dev,
--				   "Happy Meal would not start auto negotiation BMCR=0x%04x\n",
--				   hp->sw_bmcr);
--			netdev_notice(hp->dev,
--				      "Performing force link detection.\n");
--			goto force_link;
--		} else {
--			hp->timer_state = arbwait;
--		}
--	} else {
--force_link:
--		/* Force the link up, trying first a particular mode.
--		 * Either we are here at the request of ethtool or
--		 * because the Happy Meal would not start to autoneg.
--		 */
--
--		/* Disable auto-negotiation in BMCR, enable the duplex and
--		 * speed setting, init the timer state machine, and fire it off.
--		 */
--		if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
--			hp->sw_bmcr = BMCR_SPEED100;
--		} else {
--			if (ep->base.speed == SPEED_100)
--				hp->sw_bmcr = BMCR_SPEED100;
--			else
--				hp->sw_bmcr = 0;
--			if (ep->base.duplex == DUPLEX_FULL)
--				hp->sw_bmcr |= BMCR_FULLDPLX;
--		}
--		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
--
--		if (!is_lucent_phy(hp)) {
--			/* OK, seems we need do disable the transceiver for the first
--			 * tick to make sure we get an accurate link state at the
--			 * second tick.
--			 */
--			hp->sw_csconfig = happy_meal_tcvr_read(hp, tregs,
--							       DP83840_CSCONFIG);
--			hp->sw_csconfig &= ~(CSCONFIG_TCVDISAB);
--			happy_meal_tcvr_write(hp, tregs, DP83840_CSCONFIG,
--					      hp->sw_csconfig);
--		}
--		hp->timer_state = ltrywait;
+-	/* If polling disabled or not polling already, nothing to do. */
+-	if ((hp->happy_flags & (HFLAG_POLLENABLE | HFLAG_POLL)) !=
+-	   (HFLAG_POLLENABLE | HFLAG_POLL)) {
+-		ASD("not polling, return\n");
+-		return;
 -	}
 -
--	hp->timer_ticks = 0;
--	hp->happy_timer.expires = jiffies + (12 * HZ)/10;  /* 1.2 sec. */
--	add_timer(&hp->happy_timer);
+-	/* Shut up the MIF. */
+-	ASD("were polling, mif ints off, polling off\n");
+-	hme_write32(hp, tregs + TCVR_IMASK, 0xffff);
+-
+-	/* Turn off polling. */
+-	hme_write32(hp, tregs + TCVR_CFG,
+-		    hme_read32(hp, tregs + TCVR_CFG) & ~(TCV_CFG_PENABLE));
+-
+-	/* We are no longer polling. */
+-	hp->happy_flags &= ~(HFLAG_POLL);
+-
+-	/* Let the bits set. */
+-	udelay(200);
+-	ASD("done\n");
+-}
+-
+ /* Only Sun can take such nice parts and fuck up the programming interface
+  * like this.  Good job guys...
+  */
+@@ -1115,57 +1089,26 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
+ static void happy_meal_transceiver_check(struct happy_meal *hp, void __iomem *tregs)
+ {
+ 	unsigned long tconfig = hme_read32(hp, tregs + TCVR_CFG);
++	u32 reread = hme_read32(hp, tregs + TCVR_CFG);
+ 
+ 	ASD("tcfg=%08lx\n", tconfig);
+-	if (hp->happy_flags & HFLAG_POLL) {
+-		/* If we are polling, we must stop to get the transceiver type. */
+-		if (hp->tcvr_type == internal) {
+-			if (tconfig & TCV_CFG_MDIO1) {
+-				happy_meal_poll_stop(hp, tregs);
+-				hp->paddr = TCV_PADDR_ETX;
+-				hp->tcvr_type = external;
+-				tconfig &= ~(TCV_CFG_PENABLE);
+-				tconfig |= TCV_CFG_PSELECT;
+-				hme_write32(hp, tregs + TCVR_CFG, tconfig);
+-				ASD("poll stop, internal->external\n");
+-			}
+-		} else {
+-			if (hp->tcvr_type == external) {
+-				if (!(hme_read32(hp, tregs + TCVR_STATUS) >> 16)) {
+-					happy_meal_poll_stop(hp, tregs);
+-					hp->paddr = TCV_PADDR_ITX;
+-					hp->tcvr_type = internal;
+-					hme_write32(hp, tregs + TCVR_CFG,
+-						    hme_read32(hp, tregs + TCVR_CFG) &
+-						    ~(TCV_CFG_PSELECT));
+-					ASD("poll stop, external->internal\n");
+-				}
+-			} else {
+-				ASD("polling, none\n");
+-			}
+-		}
++	if (reread & TCV_CFG_MDIO1) {
++		hme_write32(hp, tregs + TCVR_CFG, tconfig | TCV_CFG_PSELECT);
++		hp->paddr = TCV_PADDR_ETX;
++		hp->tcvr_type = external;
++		ASD("not polling, external\n");
+ 	} else {
+-		u32 reread = hme_read32(hp, tregs + TCVR_CFG);
+-
+-		/* Else we can just work off of the MDIO bits. */
+-		if (reread & TCV_CFG_MDIO1) {
+-			hme_write32(hp, tregs + TCVR_CFG, tconfig | TCV_CFG_PSELECT);
+-			hp->paddr = TCV_PADDR_ETX;
+-			hp->tcvr_type = external;
+-			ASD("not polling, external\n");
++		if (reread & TCV_CFG_MDIO0) {
++			hme_write32(hp, tregs + TCVR_CFG,
++				    tconfig & ~(TCV_CFG_PSELECT));
++			hp->paddr = TCV_PADDR_ITX;
++			hp->tcvr_type = internal;
++			ASD("not polling, internal\n");
+ 		} else {
+-			if (reread & TCV_CFG_MDIO0) {
+-				hme_write32(hp, tregs + TCVR_CFG,
+-					    tconfig & ~(TCV_CFG_PSELECT));
+-				hp->paddr = TCV_PADDR_ITX;
+-				hp->tcvr_type = internal;
+-				ASD("not polling, internal\n");
+-			} else {
+-				netdev_err(hp->dev,
+-					   "Transceiver and a coke please.");
+-				hp->tcvr_type = none; /* Grrr... */
+-				ASD("not polling, none\n");
+-			}
++			netdev_err(hp->dev,
++				   "Transceiver and a coke please.");
++			hp->tcvr_type = none; /* Grrr... */
++			ASD("not polling, none\n");
+ 		}
+ 	}
+ }
+@@ -1334,10 +1277,6 @@ static int happy_meal_init(struct happy_meal *hp)
+ 		happy_meal_get_counters(hp, bregs);
+ 	}
+ 
+-	/* Stop polling. */
+-	HMD("to happy_meal_poll_stop\n");
+-	happy_meal_poll_stop(hp, tregs);
+-
+ 	/* Stop transmitter and receiver. */
+ 	HMD("to happy_meal_stop\n");
+ 	happy_meal_stop(hp, gregs);
+@@ -1346,11 +1285,6 @@ static int happy_meal_init(struct happy_meal *hp)
+ 	HMD("to happy_meal_init_rings\n");
+ 	happy_meal_init_rings(hp);
+ 
+-	/* Shut up the MIF. */
+-	HMD("Disable all MIF irqs (old[%08x])\n",
+-	    hme_read32(hp, tregs + TCVR_IMASK));
+-	hme_write32(hp, tregs + TCVR_IMASK, 0xffff);
+-
+ 	/* See if we can enable the MIF frame on this card to speak to the DP83840. */
+ 	if (hp->happy_flags & HFLAG_FENABLE) {
+ 		HMD("use frame old[%08x]\n",
+@@ -1605,7 +1539,6 @@ static void happy_meal_set_initial_advertisement(struct happy_meal *hp)
+ 	void __iomem *gregs	= hp->gregs;
+ 
+ 	happy_meal_stop(hp, gregs);
+-	hme_write32(hp, tregs + TCVR_IMASK, 0xffff);
+ 	if (hp->happy_flags & HFLAG_FENABLE)
+ 		hme_write32(hp, tregs + TCVR_CFG,
+ 			    hme_read32(hp, tregs + TCVR_CFG) & ~(TCV_CFG_BENABLE));
+@@ -1762,34 +1695,6 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
+ 	return 0;
+ }
+ 
+-/* hp->happy_lock must be held */
+-static void happy_meal_mif_interrupt(struct happy_meal *hp)
+-{
+-	void __iomem *tregs = hp->tcvregs;
+-
+-	netdev_info(hp->dev, "Link status change.\n");
+-	hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+-	hp->sw_lpa = happy_meal_tcvr_read(hp, tregs, MII_LPA);
+-
+-	/* Use the fastest transmission protocol possible. */
+-	if (hp->sw_lpa & LPA_100FULL) {
+-		netdev_info(hp->dev, "Switching to 100Mbps at full duplex.\n");
+-		hp->sw_bmcr |= (BMCR_FULLDPLX | BMCR_SPEED100);
+-	} else if (hp->sw_lpa & LPA_100HALF) {
+-		netdev_info(hp->dev, "Switching to 100MBps at half duplex.\n");
+-		hp->sw_bmcr |= BMCR_SPEED100;
+-	} else if (hp->sw_lpa & LPA_10FULL) {
+-		netdev_info(hp->dev, "Switching to 10MBps at full duplex.\n");
+-		hp->sw_bmcr |= BMCR_FULLDPLX;
+-	} else {
+-		netdev_info(hp->dev, "Using 10Mbps at half duplex.\n");
+-	}
+-	happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
+-
+-	/* Finally stop polling and shut up the MIF. */
+-	happy_meal_poll_stop(hp, tregs);
 -}
 -
  /* hp->happy_lock must be held */
- static int happy_meal_init(struct happy_meal *hp)
+ static void happy_meal_tx(struct happy_meal *hp)
  {
+@@ -1973,9 +1878,6 @@ static irqreturn_t happy_meal_interrupt(int irq, void *dev_id)
+ 			goto out;
+ 	}
+ 
+-	if (happy_status & GREG_STAT_MIFIRQ)
+-		happy_meal_mif_interrupt(hp);
+-
+ 	if (happy_status & GREG_STAT_TXALL)
+ 		happy_meal_tx(hp);
+ 
+@@ -2003,7 +1905,6 @@ static irqreturn_t quattro_sbus_interrupt(int irq, void *cookie)
+ 		HMD("status=%08x\n", happy_status);
+ 
+ 		if (!(happy_status & (GREG_STAT_ERRORS |
+-				      GREG_STAT_MIFIRQ |
+ 				      GREG_STAT_TXALL |
+ 				      GREG_STAT_RXTOHOST)))
+ 			continue;
+@@ -2014,9 +1915,6 @@ static irqreturn_t quattro_sbus_interrupt(int irq, void *cookie)
+ 			if (happy_meal_is_not_so_happy(hp, happy_status))
+ 				goto next;
+ 
+-		if (happy_status & GREG_STAT_MIFIRQ)
+-			happy_meal_mif_interrupt(hp);
+-
+ 		if (happy_status & GREG_STAT_TXALL)
+ 			happy_meal_tx(hp);
+ 
+diff --git a/drivers/net/ethernet/sun/sunhme.h b/drivers/net/ethernet/sun/sunhme.h
+index 9118c60c9426..258b4c7fe962 100644
+--- a/drivers/net/ethernet/sun/sunhme.h
++++ b/drivers/net/ethernet/sun/sunhme.h
+@@ -462,22 +462,20 @@ struct happy_meal {
+ };
+ 
+ /* Here are the happy flags. */
+-#define HFLAG_POLL                0x00000001      /* We are doing MIF polling          */
+ #define HFLAG_FENABLE             0x00000002      /* The MII frame is enabled          */
+ #define HFLAG_LANCE               0x00000004      /* We are using lance-mode           */
+ #define HFLAG_RXENABLE            0x00000008      /* Receiver is enabled               */
+ #define HFLAG_AUTO                0x00000010      /* Using auto-negotiation, 0 = force */
+ #define HFLAG_FULL                0x00000020      /* Full duplex enable                */
+ #define HFLAG_MACFULL             0x00000040      /* Using full duplex in the MAC      */
+-#define HFLAG_POLLENABLE          0x00000080      /* Actually try MIF polling          */
+ #define HFLAG_RXCV                0x00000100      /* XXX RXCV ENABLE                   */
+ #define HFLAG_INIT                0x00000200      /* Init called at least once         */
+ #define HFLAG_LINKUP              0x00000400      /* 1 = Link is up                    */
+ #define HFLAG_PCI                 0x00000800      /* PCI based Happy Meal              */
+ #define HFLAG_QUATTRO		  0x00001000      /* On QFE/Quattro card	       */
+ 
+-#define HFLAG_20_21  (HFLAG_POLLENABLE | HFLAG_FENABLE)
+-#define HFLAG_NOT_A0 (HFLAG_POLLENABLE | HFLAG_FENABLE | HFLAG_LANCE | HFLAG_RXCV)
++#define HFLAG_20_21  HFLAG_FENABLE
++#define HFLAG_NOT_A0 (HFLAG_FENABLE | HFLAG_LANCE | HFLAG_RXCV)
+ 
+ /* Support for QFE/Quattro cards. */
+ struct quattro {
 -- 
 2.37.1
 
