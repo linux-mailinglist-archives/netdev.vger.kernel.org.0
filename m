@@ -2,247 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 689346C81B2
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 16:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85F766C81BF
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 16:48:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbjCXPpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 11:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
+        id S232182AbjCXPs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 11:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbjCXPph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 11:45:37 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B612C92
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:45:36 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id z11so1527056pfh.4
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:45:36 -0700 (PDT)
+        with ESMTP id S229472AbjCXPs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 11:48:27 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAD3420E;
+        Fri, 24 Mar 2023 08:48:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aVcrghQ+ch5y5pYgYkpe+1AlbigfHFxcy1zt4BWg0MBnBoE5m1oL3cTeO/rveJTqm5qcMZKYmPbwfFlb2r/rlwDsGCaslB4YyzdfzPzddbN1tYDRUELH6PCA33+Y0rinKVIBvfavq8JrT1VxT8836i6LQR5RKf9wUfBG2Yj5Ut8uZktqGaRgIwiVcYzZvB6KQSS4HW5RfDi+vq6N/ArAbmbjujbd/UqIlvxgvbaszZWNj+2825ASSsLirMrlUXoTQyUYjBVJ/WG8IywCwQMoESzRX7Sf4kChtkautl+pjwPrMnB9L5/RVT412tbI9q3bnsXklNUpnvCnnoyYaDHR0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ivd+Mz6/E8kVGKy52Sc2XUcOBx100CaMcMWYoD9q49o=;
+ b=PiUHB6buG8gtuQuA9j7nUfSe2WMCgN/idrMfke4DF+Hyvs7+WTp/rnf/6i/Rk2vKDafW2F1LhqyWFzN742V/uyAok1i50ZezwKM5z9qqW0KFEwp2zy3pODtDozs3FOzcSqKhoosdKmV1EE7jQBqZa/ah7bAqYgxg49OCxHwf0CmPSuJ5iRojrVQKr2569vnVAgRanfUG8azrnrhXMadRd6UGrZtXQMK0bgewxaYKvIaQcO2Bd4XM2rFWLeXQqAE7E1dR7O+Sgi6KVCHet4pvZufIxAyjFtVTCsrXMP3W/OhpZm3o5ecTyS/fJAIkwxpJaXUZ6rSVI53j46bNGHztsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679672736;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sZj0Vs3wh2/rgn+xmm+lkXUj+Qn97soLIs75BzCzAsw=;
-        b=gmu7Vy/THAKSmJUWnfATXSpx8duLtaCLzfIbWMjOehkl4PNZ+dg2PBGI0mGeJGhL8/
-         6syoXpo5B/rs9/R4fojDnkcT8FWZreiDf6S4cTCbUHHLgGt2ifkI1o3qpm25iWsQb1X1
-         u8F6jCcLZ9cOgYIak1lptUP1LZoVaHr35thgqwxLGTPtG2hjDq+IO0kQHNu3Vu933yKm
-         oxSgHxH9Hdg/JxqpUyRYVW3cih+va0gKnxpTGeXsncY8/7Myc0L3zDY5F0s9mr6uA+Aq
-         AQ8lSUGqHjAOb7tjijxnaZGXtXj7rjzhQIZDIwQelgkaxM0HsyYs6x60Ytv1UZwddVZw
-         irEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679672736;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sZj0Vs3wh2/rgn+xmm+lkXUj+Qn97soLIs75BzCzAsw=;
-        b=xsa5NL44WwHoFns9KXgUUYDhnKtBnAmxAcupvK4xf2HBA2rUMl7qB1OF/d6b0ZG4m1
-         Hfm/h8j0X+qu8XPMkDH6FgW8Bx478SitSTuh/gnXTu5Of96tfACy0U27P3uLkRqz3U3i
-         JZRSc6i28pQQbkleUDPNILtO3DFAmRDd5HKSW193h30d51rojpBUPgvVYD5dULgpuSdC
-         HB9mD4fglEosqWaMVnql8+WuocjuZIqttrSBcq0VrYLvM6icbU4KXeDd29zdRMB1SR5p
-         8+6be8XZ6Xccsd6DdxjPFwGif8vzzmBdPCE4LTQxSZ1ElEsrXn8U/m3lizzQS3mKRYyU
-         42HQ==
-X-Gm-Message-State: AAQBX9d90n6cdKx9rX7iCX9eSDbq4oN7Ve+i1o2n99JKy2PQvR/dVnmk
-        ayMFYVDp/fH5lU0UyOh5wJu4caqt8XIINURlJTG73H1g
-X-Google-Smtp-Source: AKy350ZsP+Kf+k6irlhNfGJWtNaEfBPEsveB0VxDL5w7DFs7sAxHDQxKe15FewOn+0pz8cX6RBaFF242ZbexcOBaEwY=
-X-Received: by 2002:a05:6a00:2e9f:b0:628:1e57:afd7 with SMTP id
- fd31-20020a056a002e9f00b006281e57afd7mr1833835pfb.0.1679672736026; Fri, 24
- Mar 2023 08:45:36 -0700 (PDT)
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ivd+Mz6/E8kVGKy52Sc2XUcOBx100CaMcMWYoD9q49o=;
+ b=guhrvQgEjr5Z6qc9MGsKNV991ldRdZdep0lb3utFwSfGMosupqrbzFY4xs1u/HGSymkTiG93wTexRabCi2Ym75+PwBBdKm3z0dsA35kYOBP0a2JH1ycmYIJ6yiMefymimSam3LnQZUb2syxXRY3F4HfyaEHfYnM85c3XOuxUtq0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM4PR10MB7506.namprd10.prod.outlook.com
+ (2603:10b6:8:18b::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.39; Fri, 24 Mar
+ 2023 15:48:23 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::1897:6663:87ba:c8fa%4]) with mapi id 15.20.6178.038; Fri, 24 Mar 2023
+ 15:48:23 +0000
+Date:   Fri, 24 Mar 2023 08:48:18 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rafael@kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee@kernel.org>, davem@davemloft.net,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com
+Subject: Re: [RFC 4/7] mfd: ocelot-spi: Change the regmap stride to reflect
+ the real one
+Message-ID: <ZB3GQpdd/AicB84K@euler>
+References: <20230324093644.464704-1-maxime.chevallier@bootlin.com>
+ <20230324093644.464704-5-maxime.chevallier@bootlin.com>
+ <c87cd0b0-9ea4-493d-819d-217334c299dd@lunn.ch>
+ <20230324134817.50358271@pc-7.home>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230324134817.50358271@pc-7.home>
+X-ClientProxiedBy: SJ2PR07CA0006.namprd07.prod.outlook.com
+ (2603:10b6:a03:505::18) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-References: <20230322233028.269410-1-kuba@kernel.org> <5060c11df10c66f56b5ca7ec2ec92333252b084b.camel@gmail.com>
- <20230323200932.7cf30af5@kernel.org>
-In-Reply-To: <20230323200932.7cf30af5@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 24 Mar 2023 08:45:23 -0700
-Message-ID: <CAKgT0Ufv5Te668Y_tszQfuH0g_Zsn=oErQ8gAfX6FwHRUm+H3A@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
- lockless queue stop/wake code
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, willemb@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|DM4PR10MB7506:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5e36c2b0-b72b-4657-0203-08db2c7f32ba
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K3HiGTMjbhJcZqgVUMAPCgNy2td/to9ba5iHnDNa71A8yRhKog7AMnaEoWizXtG9Ap2nPK+LzmoEAIFO1iSYl3d0IZm8HgJN7e6cYT8wYFqNRsO1o2v0386D+XunA+eKGdrlxuqFhmbXDt0ofpiLuqKDevS61hcG1s5IX2brlSDCmglBkL3Y81V1SdGyuyPnw9mybcEacPG3Yli0NCUaaN6oBALGdVzPaK+vkUk37L3v7a7VD7VepzyNvJNR73lXp+VyPNPMrAh4ndvioVo3pMqNjZO4Y4+Hk1ONx8++YYKWTybMV7kE1AZjL/rZLb1JFFNFwE00W9+znGZmlty76UfUxWN9TENlt4EbNwf/gpOLpaAJYB87zJFMzZU4yqm6Iwj1NoXuNKycZdxLRnUQGSMNbPgmqr8XiJppeglzdExpGAVzNzugOOVDozhXd9BMMdEpIJmWo+9ySIxrMtY9gJDKjbg5NPx8Dv4zeDSXVje4ciBG/VIk3lB+qtOCjrrqckrkr4/Y/TPBr5ic6Lciy3Men6rghqrdDV25UCymDhefWHwJErrqntPyvmKYP6JHdbLWeslz0Gpai0Fvs8g5VSbkJna2/ZGji4O2vr3SfEM51VsmRUNyOFTW6AMVxrdK43ZWWQTz1/FQsyj1tABZQQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(7916004)(136003)(376002)(396003)(39830400003)(366004)(346002)(451199018)(8676002)(6916009)(4326008)(66946007)(66556008)(41300700001)(8936002)(66476007)(38100700002)(9686003)(6512007)(6506007)(86362001)(83380400001)(186003)(26005)(6666004)(54906003)(6486002)(33716001)(316002)(478600001)(2906002)(7416002)(44832011)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UjR/Ds/M/gYIEjkxiUCcwbrTLDoVZ5gbXSyYAx71nfoQnEHuIY5PO3IM0K8a?=
+ =?us-ascii?Q?7lIH0cZVUuZ40KGr7eHy3QXveHNQo7SQO3Tru4+UBv0gVPdf+4N0Zajp16HN?=
+ =?us-ascii?Q?25GybsAFtBgW74hPZKoa4k+SzRspxnWNjiua0ZvZYz7yeHXA9m+OGbTd0woj?=
+ =?us-ascii?Q?EQWuOM2prqGg/RMDcm7j2RF6PvHfWf08Q79JnXHTK9E53etB/UTWQTs8z5PG?=
+ =?us-ascii?Q?pbVI6g+Q/YuE7HKir86TVT325L7Vbu08NZQKpz9IxpK4BjarUqpGDEoY1+JY?=
+ =?us-ascii?Q?4193YHMmhLUBBiY4xEwz714FoIkqHtmqMpeYNE/WzyKys2n4l0sDTiL7xmCU?=
+ =?us-ascii?Q?XdQUFC0gEYlokS0STSAmCr53HubQZ9FZSL+QAbwXfyoe+LA7J8S8II+L4J2l?=
+ =?us-ascii?Q?HMs33IWsOrrnoqiH7XnBqULZ1I3iGnTJrOLgmwtRAaDpquXx3YzOvT0k/VWk?=
+ =?us-ascii?Q?FpH9hrBms0ZXnht6jk5piKNy7WeuGhwvdsdNUq2S4+YbZcUaMfsITBETnkXN?=
+ =?us-ascii?Q?37OWvmwESoUUxU05aHnOOeNaUuVAl0IjkQS3akDyUeVA3uKfNDsILrcxHp0W?=
+ =?us-ascii?Q?+nE3kOXQoWruP7cADlaihFsbfUTJsjfsfcAwPnKU86XlOt+IddLPPqpBimit?=
+ =?us-ascii?Q?MYp+mFMDC3r9URQJizioKjSddkkZ7suCjU/oKrcTYArWiDtABSwfmX8FzJgK?=
+ =?us-ascii?Q?d2x+tZzJv1GJWPjf2S1XjZZB8G7qLk/zYf4GaFZnsrjfJUxCF/UzpgmisV2f?=
+ =?us-ascii?Q?bHvNyfDbFHkgBZOejCDVy/3W+JY99PFMUVHSvGGNNB70EnXVlT5zOXZ5VQiJ?=
+ =?us-ascii?Q?qTALnnEwIuihRaK/iPRG9xr9YsTLqXePcd0RLRCxlFz2yeWwJs8JV9ZrK7c3?=
+ =?us-ascii?Q?srVt3o/LPysqKqgvg+F4/LngMIAV7fUIyaMqS2XuN8zJVHDhaJR/To/DyupF?=
+ =?us-ascii?Q?KNwPz3UlJCqchMUG6dnUNiULhJkQjZWQuLW+yxvBGBgQhH5lm6HfXReRM87C?=
+ =?us-ascii?Q?3taXFp8XkY+0hmiiZnTiIQJge8jkKHKBTVs20041SMwflEU9/wccC3Tt4Q1c?=
+ =?us-ascii?Q?v21yyGI4SkCw963NOT1j7pZbsUItMtW/ptbjQPKnPpBCuZy4MWB7xMqtZYuM?=
+ =?us-ascii?Q?DOMjG0vY8EaU50K3qw7yAor9rCgqpSrTvzh34T/CGUsW0S9L7ENSbRba1GGk?=
+ =?us-ascii?Q?Uekpo3cV5zl1HSqxk/ZWiAxQ0L/4vZMs2AvQKMf4SxL4M9XttQiCYG7LJoF8?=
+ =?us-ascii?Q?nrIq5ekWOi+LjTUyEELY3ZjXs6UHEDX3NLlwmAFPq4Df+BqEl9AptQjAlMd6?=
+ =?us-ascii?Q?+Pr04dtzlC2ahpKt77oErnKazEO9woFFkZ6/cPgSAsJvFxywyfSxa/rUZ2QE?=
+ =?us-ascii?Q?3FtYMQoePLa/7ucTmDlXL+LjXheVcsiBcGFAMl7/8deOdvYltGecq3jRIWG6?=
+ =?us-ascii?Q?ybcCFTWMOyjlR9AAf1wqEh2VGG5oo+XCT4ZVWftrzGeRdEGQ+VUOBVVZt/1u?=
+ =?us-ascii?Q?MoGoSB++eTYZUeZkC8ARRc1bm4BZ20snN1oM61uMRmavOzkY3oRIjybMj/Yi?=
+ =?us-ascii?Q?qWJGSACbLyHFtvN7an21xoHoYJx1PopEq1FRZU2lkm2cqo0tYC0fJoI3dDm+?=
+ =?us-ascii?Q?rdpfyGkWA6ueVJpPFwbivxI=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e36c2b0-b72b-4657-0203-08db2c7f32ba
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 15:48:22.9232
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tmYnBx8gPOilGL0Rsn3ClyhxzzwkDqRdvIuCNjpw54QI+RuoKwLgLL2qXcMQsNLYZw6rNPhhFutco04yzDjs3YGb5DIugvmeEMc199HDJRg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR10MB7506
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 8:09=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Thu, 23 Mar 2023 09:05:35 -0700 Alexander H Duyck wrote:
-> > > +#define netif_tx_queue_try_stop(txq, get_desc, start_thrs)         \
-> > > +   ({                                                              \
-> > > +           int _res;                                               \
-> > > +                                                                   \
-> > > +           netif_tx_stop_queue(txq);                               \
-> > > +                                                                   \
-> > > +           smp_mb();                                               \
-> > > +                                                                   \
-> > > +           /* We need to check again in a case another             \
-> > > +            * CPU has just made room available.                    \
-> > > +            */                                                     \
-> > > +           if (likely(get_desc < start_thrs)) {                    \
-> > > +                   _res =3D 0;                                      =
- \
-> > > +           } else {                                                \
-> > > +                   netif_tx_start_queue(txq);                      \
-> > > +                   _res =3D -1;                                     =
- \
-> > > +           }                                                       \
-> > > +           _res;                                                   \
-> > > +   })                                                              \
-> > > +
-> >
-> > The issue I see here is that with this being a macro it abstracts away
-> > the relationship between get_desc and the memory barrier. At a minimum
-> > I think we should be treating get_desc as a function instead of just
-> > passing it and its arguments as a single value. Maybe something more
-> > like how read_poll_timeout passes the "op" and then uses it as a
-> > function with args passed seperately. What we want to avoid is passing
-> > a precomuted value to this function as get_desc.
->
-> The kdocs hopefully have enough warnings. The issue I see with
-> read_poll_timeout() is that I always have to have the definition
-> open side by side to match up the arguments. I wish there was
-> a way the test that something is not an lval, but I couldn't
-> find it :(
->
-> Let's see if anyone gets this wrong, you can tell me "I told you so"?
+Hi Maxime,
 
-The setup for it makes me really uncomfortable. Passing a function w/
-arguments as an argument itself usually implies that it is called
-first, not during.
+On Fri, Mar 24, 2023 at 01:48:17PM +0100, Maxime Chevallier wrote:
+> Hello Andrew,
+> 
+> On Fri, 24 Mar 2023 13:11:07 +0100
+> Andrew Lunn <andrew@lunn.ch> wrote:
+> 
+> > On Fri, Mar 24, 2023 at 10:36:41AM +0100, Maxime Chevallier wrote:
+> > > When used over SPI, the register addresses needs to be translated,
+> > > compared to when used over MMIO. The translation consists in
+> > > applying an offset with reg_base, then downshifting the registers
+> > > by 2. This actually changes the register stride from 4 to 1.
+> > > 
+> > > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> > > ---
+> > >  drivers/mfd/ocelot-spi.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/mfd/ocelot-spi.c b/drivers/mfd/ocelot-spi.c
+> > > index 2d1349a10ca9..107cda0544aa 100644
+> > > --- a/drivers/mfd/ocelot-spi.c
+> > > +++ b/drivers/mfd/ocelot-spi.c
+> > > @@ -124,7 +124,7 @@ static int ocelot_spi_initialize(struct device
+> > > *dev) 
+> > >  static const struct regmap_config ocelot_spi_regmap_config = {
+> > >  	.reg_bits = 24,
+> > > -	.reg_stride = 4,
+> > > +	.reg_stride = 1,
+> > >  	.reg_shift = REGMAP_DOWNSHIFT(2),
+> > >  	.val_bits = 32,  
+> > 
+> > This does not look like a bisectable change? Or did it never work
+> > before?
+> 
+> Actually this works in all cases because of "regmap: check for alignment
+> on translated register addresses" in this series. Before this series,
+> I think using a stride of 1 would have worked too, as any 4-byte-aligned
+> accesses are also 1-byte aligned.
+> 
+> But that's also why I need review on this, my understanding is that
+> reg_stride is used just as a check for alignment, and I couldn't test
+> this ocelot-related patch on the real HW, so please take it with a
+> grain of salt :(
 
-> > In addition I think I would prefer to see _res initialized to the
-> > likely value so that we can drop this to one case instead of having to
-> > have two. Same thing for the macros below.
->
-> Alright.
->
-> > > +/**
-> > > + * netif_tx_queue_maybe_stop() - locklessly stop a Tx queue, if need=
-ed
-> > > + * @txq:   struct netdev_queue to stop/start
-> > > + * @get_desc:      get current number of free descriptors (see requi=
-rements below!)
-> > > + * @stop_thrs:     minimal number of available descriptors for queue=
- to be left
-> > > + *         enabled
-> > > + * @start_thrs:    minimal number of descriptors to re-enable the qu=
-eue, can be
-> > > + *         equal to @stop_thrs or higher to avoid frequent waking
-> > > + *
-> > > + * All arguments may be evaluated multiple times, beware of side eff=
-ects.
-> > > + * @get_desc must be a formula or a function call, it must always
-> > > + * return up-to-date information when evaluated!
-> > > + * Expected to be used from ndo_start_xmit, see the comment on top o=
-f the file.
-> > > + *
-> > > + * Returns:
-> > > + *  0 if the queue was stopped
-> > > + *  1 if the queue was left enabled
-> > > + * -1 if the queue was re-enabled (raced with waking)
-> > > + */
-> >
-> > We may want to change the values here. The most likely case is "left
-> > enabled" with that being the case we probably want to make that the 0
-> > case. I would then probably make 1 the re-enabled case and -1 the
-> > stopped case.
->
-> I chose the return values this way because the important information is
-> whether the queue was in fact stopped (in case the macro is used at the
-> start of .xmit as a safety check). If stopped is zero caller can check
-> !ret vs !!ret.
->
-> Seems pretty normal for the kernel function called stop() to return 0
-> if it did stop.
+You're exactly right. reg_stride wasn't used anywhere in the
+ocelot-spi path before this patch series. When I build against patch 3
+("regmap: allow upshifting register addresses before performing
+operations") ocelot-spi breaks.
 
-Except this isn't "stop", this is "maybe stop". Maybe we should just
-do away with the stop/wake messaging and go with something such as a
-RTS/CTS type setup. Basically this function is acting as a RTS to
-verify that we have room on the ring to place the frame. If we don't
-we are stopped. The "wake" function is on what is essentially the
-receiving end on the other side of the hardware after it has DMAed the
-frames and is providing the CTS signal back.
+[    3.207711] ocelot-soc spi0.0: error -EINVAL: Error initializing SPI bus
 
-> > With that the decision tree becomes more straightforward as we would do
-> > something like:
-> >       if (result) {
-> >               if (result < 0)
-> >                       Increment stopped stat
-> >                       return
-> >               else
-> >                       Increment restarted stat
-> >       }
->
-> Do you see a driver where it matters? ixgbe and co. use
-> netif_tx_queue_try_stop() and again they just test stopped vs not stopped=
-.
+When I build against the whole series, or even just up to patch 4 ("mfd:
+ocelot-spi: Change the regmap stride to reflect the real one")
+functionality returns.
 
-The thing is in order to make this work for the ixgbe patch you didn't
-use the maybe_stop instead you went with the try_stop. If you replaced
-the ixgbe_maybe_stop_tx with your maybe stop would have to do
-something such as the code above to make it work. That is what I am
-getting at. From what I can tell the only real difference between
-ixgbe_maybe_stop_tx and your maybe_stop is that you avoided having to
-move the restart_queue stat increment out.
+If you keep patch 4 and apply it before patch 2, everything should
+work.
 
-The general thought is I would prefer to keep it so that 0 is the
-default most likely case in both where the queue is enabled and is
-still enabled. By moving the "take action" items into the 1/-1 values
-then it becomes much easier to sort them out with 1 being a stat
-increment and -1 being an indication to stop transmitting and prep for
-watchdog hang if we don't clear this in the next watchdog period.
+Sorry for the bug. Thanks for the fix. And I'm glad I'm not the only one
+taking advantage of the "reg_shift" regmap operation! I thought I'd be
+the only one.
 
-Also in general it makes it easier to understand if these all work
-with the same logic.
 
-> > In addition for readability we may want consider adding an enum simliar
-> > to the netdev_tx enum as then we have the return types locked and
-> > usable should we want to specifically pick out one.
->
-> Hm, I thought people generally dislike the netdev_tx enum.
-> Maybe it's just me.
+Let me know if you want me to take any action on this fix.
 
-The thought I had with the enum is to more easily connect the outcomes
-with the sources. It would also help to prevent any confusion on what
-is what. Having the two stop/wake functions return different values is
-a potential source for errors since 0/1 means different things in the
-different functions. Basically since we have 3 possible outcomes using
-the enum would make it very clear what the mapping is between the two.
 
-> > > +#define __netif_tx_queue_maybe_wake(txq, get_desc, start_thrs, down_=
-cond) \
-> > > +   ({                                                              \
-> > > +           int _res;                                               \
-> > > +                                                                   \
-> > > +           if (likely(get_desc < start_thrs))                      \
-> > > +                   _res =3D -1;                                     =
- \
-> > > +           else                                                    \
-> > > +                   _res =3D __netif_tx_queue_try_wake(txq, get_desc,=
- \
-> > > +                                                    start_thrs,    \
-> > > +                                                    down_cond);    \
-> > > +           _res;                                                   \
-> > > +   })
-> > > +
-> >
-> > The likely here is probably not correct. In most cases the queue will
-> > likely have enough descriptors to enable waking since Tx cleanup can
-> > usually run pretty fast compared to the transmit path itself since it
-> > can run without needing to take locks.
->
-> Good catch, must be a copy paste from the other direction without
-> inverting the likely.
-
-Actually the original code had it there in ixgbe although the check
-also included total_packets in it which implies that maybe the
-assumption was that Tx cleanup wasn't occurring as often as Rx? Either
-that or it was a carry-over and had a check for
-__netif_subqueue_stopped included in there previously.
+Colin
