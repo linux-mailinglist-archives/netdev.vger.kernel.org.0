@@ -2,44 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB29F6C78D5
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 08:27:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEBF6C78E7
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 08:33:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231695AbjCXH1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 03:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
+        id S231680AbjCXHda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 03:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbjCXH1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 03:27:04 -0400
-Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D34C14227;
-        Fri, 24 Mar 2023 00:27:01 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VeWlpf8_1679642804;
-Received: from 30.221.112.234(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VeWlpf8_1679642804)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Mar 2023 15:26:58 +0800
-Message-ID: <7fa69883-9af5-4b2a-7853-9697ff30beba@linux.alibaba.com>
-Date:   Fri, 24 Mar 2023 15:26:44 +0800
+        with ESMTP id S231669AbjCXHd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 03:33:27 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B796F1DB84
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 00:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=UMmp/4EUKVt/cI0P7zFZbonTYH6N
+        d78n8J7R0k7kAis=; b=XfF2TL6fJLwTKEZ5tQLscuX9Nscgb0lrA6M/tz6axdQV
+        eKXuMN99HhbEZLI9wJBFdVTv75cSv9wbKhfSkWXFcXb6GFSnvvHCEK176Pfjl+Uo
+        ekTtatL5st72fuCaFegIEurCuQ/ORs4jGtha1vQaNw9fbJaYRM1LW/eanHR6GNg=
+Received: (qmail 2199740 invoked from network); 24 Mar 2023 08:33:21 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 24 Mar 2023 08:33:21 +0100
+X-UD-Smtp-Session: l3s3148p1@qvRZaKD3susujnv6
+Date:   Fri, 24 Mar 2023 08:33:20 +0100
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Simon Horman <simon.horman@corigine.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net v3 1/2] smsc911x: only update stats when interface is
+ up
+Message-ID: <ZB1SQCOpLp0kDkm3@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Simon Horman <simon.horman@corigine.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <20230322071959.9101-1-wsa+renesas@sang-engineering.com>
+ <20230322071959.9101-2-wsa+renesas@sang-engineering.com>
+ <20230323113945.0915029d@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-From:   Kai <KaiShen@linux.alibaba.com>
-Subject: Re: [PATCH net-next] net/smc: introduce shadow sockets for fallback
- connections
-To:     Wenjia Zhang <wenjia@linux.ibm.com>, kgraul@linux.ibm.com,
-        jaka@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <20230321071959.87786-1-KaiShen@linux.alibaba.com>
- <170b35d9-2071-caf3-094e-6abfb7cefa75@linux.ibm.com>
-Content-Language: en-US
-In-Reply-To: <170b35d9-2071-caf3-094e-6abfb7cefa75@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ppsRxTzobnLW8AvR"
+Content-Disposition: inline
+In-Reply-To: <20230323113945.0915029d@kernel.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,77 +68,73 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--ppsRxTzobnLW8AvR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 3/23/23 1:09 AM, Wenjia Zhang wrote:
-> 
-> 
-> On 21.03.23 08:19, Kai Shen wrote:
->> SMC-R performs not so well on fallback situations right now,
->> especially on short link server fallback occasions. We are planning
->> to make SMC-R widely used and handling this fallback performance
->> issue is really crucial to us. Here we introduce a shadow socket
->> method to try to relief this problem.
->>
-> Could you please elaborate the problem?
+Hi Jakub,
 
-Here is the background. We are using SMC-R to accelerate server-client 
-applications by using SMC-R on server side, but not all clients use 
-SMC-R. So in these occasions we hope that the clients using SMC-R get 
-acceleration while the clients that fallback to TCP will get the 
-performance no worse than TCP.
-What's more, in short link scenario we may use fallback on purpose for
-SMC-R perform badly with its highly cost connection establishing path.
-So it is very important that SMC-R perform similarly as TCP on fallback 
-occasions since we use SMC-R as a acceleration method and performance 
-compromising should not happen when user use TCP client to connect a 
-SMC-R server.
-In our tests, fallback SMC-R accepting path on server-side contribute to 
-the performance gap compared to TCP a lot as mentioned in the patch and 
-we are trying to solve this problem.
+> Maybe we should add a false-negative version of netif_running() ?
+> __LINK_STATE_START*ED* ?
 
-> 
-> Generally, I don't have a good feeling about the two non-listenning 
-> sockets, and I can not see why it is necessary to introduce the socket 
-> actsock instead of using the clcsock itself. Maybe you can convince me 
-> with a good reason.
->
-First let me explain why we use two sockets here.
-We want the fallback accept path to be similar as TCP so all the 
-fallback connection requests should go to the fallback sock(accept 
-queue) and go a shorter path (bypass tcp_listen_work) while clcsock 
-contains both requests with syn_smc and fallback requests. So we pick 
-requests with syn_smc to actsock and fallback requests to fbsock.
-I think it is the right strategy that we have two queues for two types 
-of incoming requests (which will lead to good performance too).
-On the other hand, the implementation of this strategy is worth discussing.
-As Paolo said, in this implementation only the shadow socket's receive 
-queue is needed. I use this two non-listenning sockets for these 
-following reasons.
-1. If we implement a custom accept, some of the symbols are not 
-accessible since they are not exported(like mem_cgroup_charge_skmem).
-2. Here we reuse the accept path of TCP so that the future update of TCP
-may not lead to problems caused by the difference between the custom 
-accept and future TCP accept.
-3. SMC-R is trying to behave like TCP and if we implement custom accept, 
-there may be repeated code and looks not cool.
+Sounds very reasonable, yet I am missing subsystem details to really
+judge it. I just hacked a quick coccinelle script and 14 more drivers
+could be happy about such a change:
 
-Well, i think two queues is the right strategy but I am not so sure 
-about which implement is better and we really want to solve this 
-problem. Please give advice.
+ drivers/net/ethernet/3com/3c515.c            | 2 +-
+ drivers/net/ethernet/8390/axnet_cs.c         | 2 +-
+ drivers/net/ethernet/8390/lib8390.c          | 2 +-
+ drivers/net/ethernet/dec/tulip/de2104x.c     | 2 +-
+ drivers/net/ethernet/dec/tulip/tulip_core.c  | 2 +-
+ drivers/net/ethernet/dec/tulip/winbond-840.c | 2 +-
+ drivers/net/ethernet/fealnx.c                | 2 +-
+ drivers/net/ethernet/natsemi/natsemi.c       | 2 +-
+ drivers/net/ethernet/realtek/8139cp.c        | 2 +-
+ drivers/net/ethernet/silan/sc92031.c         | 2 +-
+ drivers/net/ethernet/smsc/epic100.c          | 2 +-
+ drivers/net/ethernet/sun/sungem.c            | 2 +-
+ drivers/net/ethernet/toshiba/tc35815.c       | 2 +-
+ drivers/net/ethernet/via/via-velocity.c      | 2 +-
+ 14 files changed, 14 insertions(+), 14 deletions(-)
 
->> +static inline bool tcp_reqsk_queue_empty(struct sock *sk)
->> +{
->> +    struct inet_connection_sock *icsk = inet_csk(sk);
->> +    struct request_sock_queue *queue = &icsk->icsk_accept_queue;
->> +
->> +    return reqsk_queue_empty(queue);
->> +}
->> +
-> Since this is only used by smc, I'd like to suggest to use 
-> smc_tcp_reqsk_queue_empty instead of tcp_reqsk_queue_empty.
->
-Will do.
+The script:
 
-Thanks
+@@
+identifier name, args;
+@@
 
-Kai
+	static struct net_device_stats *name(struct net_device *args)
+	{
+		...
+-		netif_running
++		netif_opened
+		...
+	}
+
+
+Thanks and happy hacking,
+
+   Wolfram
+
+
+--ppsRxTzobnLW8AvR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQdUkAACgkQFA3kzBSg
+KbYhLBAAksx0IU69Au8T6ye1eIY4TAy0Lbe5V2uTgeWUVXx27ad0qp05EIutXb1R
+iO4D3ZoJwOeKl9E+tWfqBvYB2tLLJpfH7hMpF+KG99HFvU3Vbxq+P/hHDG9Dlhxq
+4H0GyrPZgLblQWB7afJERBE9jrdkMhxFDPcumtahzvAWh7JeztLQrlzRjQeyE5Hj
+LNhPE8Xs4IIXsxNFq0i07UIoSPfAoW00gu6Ja3+lqCyf3MlT3xs3BZiJ7u7Uy85M
+Hsh99irH3FBhTLO6fePRUUgrsF3tYrtQA1Lj9Og9PlbU7+IIErZ4Fpx7agcDi9iy
+YvhjwJCcEFyYsLYHMo5YCcZrw22iUivAh8zaxMd68Thre///kqgCgNYLFIu9TLgu
+QI/9fm/LoWuHf15WLV7SGhMeRIfQhnEr2BHpiWqAvhs5eHdmFGI1Rf2L8lw/+ALq
+vbxcwi7trQMR2jrdKyaUNB5dkWoehEzjIIM56DeEKBzfLuTRTWnMBJ7o6yofFD4S
+kAJSnkc4X9In09zD7ByXlNeOeC/RGIGuycoewqhckfa445GM9RqyH6o8w57wEmho
++JWA9tW0bACYfcr9b3qeidKTo8uTKKLzAncam/GDHP/hsEFB7Mzi+rZcdZF0HGlG
+S1n2E/HBzXG+MgtkPaHZkKiywgv5TF6g5LUeI35dQMoAKLsPusc=
+=lDO1
+-----END PGP SIGNATURE-----
+
+--ppsRxTzobnLW8AvR--
