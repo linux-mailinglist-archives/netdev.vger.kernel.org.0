@@ -2,74 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A12A6C7B67
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:29:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7596C7B72
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232165AbjCXJ31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 05:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
+        id S231362AbjCXJbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 05:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232132AbjCXJ3Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:29:16 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C0A18AB9
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:29:04 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id eh3so5188603edb.11
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:29:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112; t=1679650143;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RXJ1YNbcC6sxgPer8ae1FszGABSLQrMdlXHnXNm+WPE=;
-        b=FjoPg5qeIqGeU/oBTXgxVJ9niW0CzJwZ8jIubenpszHugo9uwYCcLWH+0Jt+iU7CiZ
-         +c4htM12XFHfXR3ZlXkKSWyN2XBvy2TrbNTLl6t1G8qv+wcPWd+XSuyAinIkQRi7BhyC
-         6KYNzlW+BkJAWOetzY5BXNluhWp1ZPj8LVl+lpxtlurajvmXMmS1reN8pmDmtKa/Pwg4
-         tZAZugGThN+niFOcz/bA9ZlGLueLKMNu+gXRT4+gcMKA3GotKbj9oWvm7LlJnXfiosit
-         KOsnSeWqf8KG+wBCJysD+BsuqtHFOBLHKaOnwKaFfRTsoFZDgDwH6FlIxBmxEPYLYxgp
-         2bLA==
+        with ESMTP id S230259AbjCXJbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:31:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6850423A54
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:31:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679650261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KJlH9otWhMZcJiElSwL7jmGaIVB1DaHJ04Oz3GP+kqo=;
+        b=cI5ri+wH7lxStIcS8vyJUNht+WFJZnU6JmKkB1MhEKSUQqeUVDvDsQh/KzmW7/tiqZwRUf
+        cvdbo2ocowdDmJYZ5UVsh1ZzJToiTrOpnBcbFiAwNCaBt0RTphpWRZDLRs9Y3+qAYJIUB+
+        VkjYW5bpTa/jBtQ3l7CIOyRQ1Z2a2Oc=
+Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
+ [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-26-jM3ElrtwMkyh1AErvMJG3Q-1; Fri, 24 Mar 2023 05:31:00 -0400
+X-MC-Unique: jM3ElrtwMkyh1AErvMJG3Q-1
+Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-541942bfdccso13105837b3.14
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:31:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679650143;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RXJ1YNbcC6sxgPer8ae1FszGABSLQrMdlXHnXNm+WPE=;
-        b=5fA1B96R+bt8Cvv3cU4Ejnj82OGhHttwN4Q/50LYosh+bepbTj11palyMAkHAuzMpf
-         LcW5DdKVK8rMRw9+KDBB7U6fwBWLauh+/plhNGE5ArIIzXSUn3yk7iO7s0G2QW+vc7iq
-         p+yaNokqScKOIdTHRHczCxpJP2WAQUZGwMXkAZ0jjXLGK1GNeLlksSUFHfG5SZ6lxfj1
-         0iS9wcWkm/B90R7DxWAcEDRE5EzQ1WN2ctQHhGLU45MTHGzJnrp6grOoRqfjvT3HmUzu
-         qRPr2WY4EX+5oIX7Ao3TVPuKoyeX/9w4pN8sPhd+5D7OU/tr1bPs8D0Qcsfcuxcm/TTD
-         C8bA==
-X-Gm-Message-State: AAQBX9cKSgFoz3AY1GSz+CR2sueSmoPNsQJlkwmLdQZj5HGDyEgrut9/
-        mfogvmfX6lklRty9Qkm171cpGg==
-X-Google-Smtp-Source: AKy350YHIauhajDhC/4NuJPejujuV/yRpYwlD7rIGrAi2xdw0atMEnHnUWicJHGrCkmTZ2PLnlp6pA==
-X-Received: by 2002:a50:ef01:0:b0:4fb:de7d:b05a with SMTP id m1-20020a50ef01000000b004fbde7db05amr1764298eds.40.1679650143228;
-        Fri, 24 Mar 2023 02:29:03 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id o2-20020a509b02000000b004faa1636758sm10376879edi.68.2023.03.24.02.29.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 02:29:02 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 10:29:01 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vadim Fedorenko <vadfed@meta.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vadim Fedorenko <vadim.fedorenko@linux.dev>, poros@redhat.com,
-        mschmidt@redhat.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        Milena Olech <milena.olech@intel.com>,
-        Michal Michalik <michal.michalik@intel.com>
-Subject: Re: [PATCH RFC v6 2/6] dpll: Add DPLL framework base functions
-Message-ID: <ZB1tXZZp+g5o7wRM@nanopsycho>
-References: <20230312022807.278528-1-vadfed@meta.com>
- <20230312022807.278528-3-vadfed@meta.com>
+        d=1e100.net; s=20210112; t=1679650260;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KJlH9otWhMZcJiElSwL7jmGaIVB1DaHJ04Oz3GP+kqo=;
+        b=7ZbNDD7vyRgUQ2TaxJUiQQy27UT2N5A3LDNELcNb6h3vuwqZ0PG4fi5JV4icUvnGxa
+         UBZp3jlzXUiFL9Uy2mB0klIjOgHhR25kWu3urx01Ble+L1SuR+NljIoE0pBqxV/AQ+Av
+         pX6yqbEm7MMmLDJIzVUFdsw82/DnhCzQmz8v9vf1/v3Lby1uqQivoNXnejK/z9QPVuXJ
+         JdgG2B3olEGwV1T3toJWRk7YvGPHgSmSQQugUrQbn7idagwCltelCvrmXDXQ7iUnSx5Q
+         /7+V6altIYT26mkxZ1/FJXn01meafqC7jQ3rNvMBOtamID2Q84q7eT4elCqFeP34FI9S
+         rpJw==
+X-Gm-Message-State: AAQBX9dJtKnL3G8VUJKScX/NG3O/rH7tIQOOTPCTVp/3bV8/7lVNVcGt
+        mibgy7VbgNpFp1MYGR1RK50k7WNxApb1ceGAEfvnbAh9uiL4sYpjKvDeP1H/XiqkSy0RV/tyj2n
+        h6iN8ImQalzIKJdPqG19kj6ICwxyn8H1u
+X-Received: by 2002:a81:c444:0:b0:544:a67b:8be0 with SMTP id s4-20020a81c444000000b00544a67b8be0mr724229ywj.3.1679650260056;
+        Fri, 24 Mar 2023 02:31:00 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YVXApSr3DKRq01E/v59zifPTYg5WRHMqtsDqWatxGa/N8zzftHhpu9f8TwhoduQDEp4ASSab/oYJN7kHsE3ZU=
+X-Received: by 2002:a81:c444:0:b0:544:a67b:8be0 with SMTP id
+ s4-20020a81c444000000b00544a67b8be0mr724222ywj.3.1679650259851; Fri, 24 Mar
+ 2023 02:30:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230312022807.278528-3-vadfed@meta.com>
-X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+References: <000000000000708b1005f79acf5c@google.com> <CAGxU2F4ZiNEyrZzEJnYjYDz6CxniPGNW7AwyMLPLTxA2UbBWhA@mail.gmail.com>
+ <CAGxU2F6m4KWXwOF8StjWbb=S6HRx=GhV_ONDcZxCZsDkvuaeUg@mail.gmail.com>
+ <CAGxU2F7XjdKgdKwfZMT-sdJ+JK10p_2zNdaQeGBwm3jpEe1Xaw@mail.gmail.com> <46ba9b55-c6ff-925c-d51a-8da9d1abd2f2@sberdevices.ru>
+In-Reply-To: <46ba9b55-c6ff-925c-d51a-8da9d1abd2f2@sberdevices.ru>
+From:   Stefano Garzarella <sgarzare@redhat.com>
+Date:   Fri, 24 Mar 2023 10:30:48 +0100
+Message-ID: <CAGxU2F4KF=YGQkGJygurNyK=KU-pxPomAbr_v3eNvgMmwKQxmQ@mail.gmail.com>
+Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in virtio_transport_purge_skbs
+To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Cc:     syzbot <syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, stefanha@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,186 +83,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Mar 12, 2023 at 03:28:03AM CET, vadfed@meta.com wrote:
+On Fri, Mar 24, 2023 at 10:10=E2=80=AFAM Arseniy Krasnov
+<avkrasnov@sberdevices.ru> wrote:
+> On 24.03.2023 12:06, Stefano Garzarella wrote:
+> > On Fri, Mar 24, 2023 at 9:55=E2=80=AFAM Stefano Garzarella <sgarzare@re=
+dhat.com> wrote:
+> >>
+> >> On Fri, Mar 24, 2023 at 9:31=E2=80=AFAM Stefano Garzarella <sgarzare@r=
+edhat.com> wrote:
+> >>>
+> >>> Hi Bobby,
+> >>> can you take a look at this report?
+> >>>
+> >>> It seems related to the changes we made to support skbuff.
+> >>
+> >> Could it be a problem of concurrent access to pkt_queue ?
+> >>
+> >> IIUC we should hold pkt_queue.lock when we call skb_queue_splice_init(=
+)
+> >> and remove pkt_list_lock. (or hold pkt_list_lock when calling
+> >> virtio_transport_purge_skbs, but pkt_list_lock seems useless now that
+> >> we use skbuff)
+> >>
+> >
+> > In the previous patch was missing a hunk, new one attached:
+> >
+> > #syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linu=
+x.git fff5a5e7f528
+> >
+> > --- a/net/vmw_vsock/vsock_loopback.c
+> > +++ b/net/vmw_vsock/vsock_loopback.c
+> > @@ -15,7 +15,6 @@
+> >  struct vsock_loopback {
+> >         struct workqueue_struct *workqueue;
+> >
+> > -       spinlock_t pkt_list_lock; /* protects pkt_list */
+> >         struct sk_buff_head pkt_queue;
+> >         struct work_struct pkt_work;
+> >  };
+> > @@ -32,9 +31,7 @@ static int vsock_loopback_send_pkt(struct sk_buff *sk=
+b)
+> >         struct vsock_loopback *vsock =3D &the_vsock_loopback;
+> >         int len =3D skb->len;
+> >
+> > -       spin_lock_bh(&vsock->pkt_list_lock);
+> >         skb_queue_tail(&vsock->pkt_queue, skb);
+> Hello Stefano and Bobby,
+>
+> Small remark, may be here we can use virtio_vsock_skb_queue_tail() instea=
+d of skb_queue_tail().
+> skb_queue_tail() disables irqs during spinlock access, while  virtio_vsoc=
+k_skb_queue_tail()
+> uses spin_lock_bh(). vhost and virtio transports use virtio_vsock_skb_que=
+ue_tail().
+>
 
-[...]
+Yep, but this shouldn't be related.
+I would make this change in a separate patch. ;-)
 
+Thanks,
+Stefano
 
->+static int
->+dpll_msg_add_pin_direction(struct sk_buff *msg, const struct dpll_pin *pin,
->+			   struct netlink_ext_ack *extack)
->+{
->+	enum dpll_pin_direction direction;
->+	struct dpll_pin_ref *ref;
->+	unsigned long i;
->+
->+	xa_for_each((struct xarray *)&pin->dpll_refs, i, ref) {
->+		if (ref && ref->ops && ref->dpll)
->+			break;
->+	}
->+	if (!ref || !ref->ops || !ref->dpll)
->+		return -ENODEV;
->+	if (!ref->ops->direction_get)
->+		return -EOPNOTSUPP;
->+	if (ref->ops->direction_get(pin, ref->dpll, &direction, extack))
->+		return -EFAULT;
->+	if (nla_put_u8(msg, DPLL_A_PIN_DIRECTION, direction))
->+		return -EMSGSIZE;
->+
->+	return 0;
->+}
->+
->+static int
->+dpll_msg_add_pin_freq(struct sk_buff *msg, const struct dpll_pin *pin,
->+		      struct netlink_ext_ack *extack, bool dump_any_freq)
->+{
->+	enum dpll_pin_freq_supp fs;
->+	struct dpll_pin_ref *ref;
->+	unsigned long i;
->+	u32 freq;
->+
->+	xa_for_each((struct xarray *)&pin->dpll_refs, i, ref) {
->+		if (ref && ref->ops && ref->dpll)
-
-Checking for "ref" is nonsense here, as xa_for_each fills it up
-for every iteration.
-
-ref->dpll is always filled. Also pointless check.
-
-Does it make sense to register with ops==NULL? I think we should
-forbid it and make this just xa_find(0) to get the first item in the
-xarray.
-
-I'm doing this in my patch, as it is dependency on some other patch I do
-in this area.
-
-
->+			break;
->+	}
->+	if (!ref || !ref->ops || !ref->dpll)
->+		return -ENODEV;
->+	if (!ref->ops->frequency_get)
->+		return -EOPNOTSUPP;
->+	if (ref->ops->frequency_get(pin, ref->dpll, &freq, extack))
->+		return -EFAULT;
->+	if (nla_put_u32(msg, DPLL_A_PIN_FREQUENCY, freq))
->+		return -EMSGSIZE;
->+	if (!dump_any_freq)
->+		return 0;
->+	for (fs = DPLL_PIN_FREQ_SUPP_UNSPEC + 1;
->+	     fs <= DPLL_PIN_FREQ_SUPP_MAX; fs++) {
->+		if (test_bit(fs, &pin->prop.freq_supported)) {
->+			if (nla_put_u32(msg, DPLL_A_PIN_FREQUENCY_SUPPORTED,
->+			    dpll_pin_freq_value[fs]))
->+				return -EMSGSIZE;
->+		}
->+	}
->+	if (pin->prop.any_freq_min && pin->prop.any_freq_max) {
->+		if (nla_put_u32(msg, DPLL_A_PIN_ANY_FREQUENCY_MIN,
->+				pin->prop.any_freq_min))
->+			return -EMSGSIZE;
->+		if (nla_put_u32(msg, DPLL_A_PIN_ANY_FREQUENCY_MAX,
->+				pin->prop.any_freq_max))
->+			return -EMSGSIZE;
->+	}
->+
->+	return 0;
->+}
->+
-
-[...]
-
-
->+static int
->+dpll_cmd_pin_on_dpll_get(struct sk_buff *msg, struct dpll_pin *pin,
->+			 struct dpll_device *dpll,
->+			 struct netlink_ext_ack *extack)
->+{
->+	struct dpll_pin_ref *ref;
->+	int ret;
->+
->+	if (nla_put_u32(msg, DPLL_A_PIN_IDX, pin->dev_driver_id))
->+		return -EMSGSIZE;
->+	if (nla_put_string(msg, DPLL_A_PIN_DESCRIPTION, pin->prop.description))
->+		return -EMSGSIZE;
->+	if (nla_put_u8(msg, DPLL_A_PIN_TYPE, pin->prop.type))
->+		return -EMSGSIZE;
->+	if (nla_put_u32(msg, DPLL_A_PIN_DPLL_CAPS, pin->prop.capabilities))
->+		return -EMSGSIZE;
->+	ret = dpll_msg_add_pin_direction(msg, pin, extack);
->+	if (ret)
-
-Why -EOPNOTSUPP here is not ok, as for the others below?
-
-
->+		return ret;
->+	ret = dpll_msg_add_pin_freq(msg, pin, extack, true);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ref = dpll_xa_ref_dpll_find(&pin->dpll_refs, dpll);
->+	if (!ref)
-
-How this can happen? I don't think it could.
-
-
->+		return -EFAULT;
->+	ret = dpll_msg_add_pin_prio(msg, pin, ref, extack);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ret = dpll_msg_add_pin_on_dpll_state(msg, pin, ref, extack);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ret = dpll_msg_add_pin_parents(msg, pin, extack);
->+	if (ret)
->+		return ret;
->+	if (pin->rclk_dev_name)
->+		if (nla_put_string(msg, DPLL_A_PIN_RCLK_DEVICE,
->+				   pin->rclk_dev_name))
->+			return -EMSGSIZE;
->+
->+	return 0;
->+}
->+
->+static int
->+__dpll_cmd_pin_dump_one(struct sk_buff *msg, struct dpll_pin *pin,
->+			struct netlink_ext_ack *extack, bool dump_dpll)
->+{
->+	int ret;
->+
->+	if (nla_put_u32(msg, DPLL_A_PIN_IDX, pin->dev_driver_id))
->+		return -EMSGSIZE;
->+	if (nla_put_string(msg, DPLL_A_PIN_DESCRIPTION, pin->prop.description))
->+		return -EMSGSIZE;
->+	if (nla_put_u8(msg, DPLL_A_PIN_TYPE, pin->prop.type))
->+		return -EMSGSIZE;
->+	ret = dpll_msg_add_pin_direction(msg, pin, extack);
->+	if (ret)
->+		return ret;
->+	ret = dpll_msg_add_pin_freq(msg, pin, extack, true);
->+	if (ret && ret != -EOPNOTSUPP)
->+		return ret;
->+	ret = dpll_msg_add_pins_on_pin(msg, pin, extack);
->+	if (ret)
->+		return ret;
->+	if (!xa_empty(&pin->dpll_refs) && dump_dpll) {
-
-How dpll refs could be empty? I don't think it is possible.
-
-Overall, whole the code has very odd habit of checking for conditions
-that are obviously impossible to happen. Only confuses reader as he
-naturally expects that the check is there for a reason.
-
-
-
->+		ret = dpll_msg_add_pin_dplls(msg, pin, extack);
->+		if (ret)
->+			return ret;
->+	}
->+	if (pin->rclk_dev_name)
->+		if (nla_put_string(msg, DPLL_A_PIN_RCLK_DEVICE,
->+				   pin->rclk_dev_name))
->+			return -EMSGSIZE;
->+
->+	return 0;
->+}
->+
