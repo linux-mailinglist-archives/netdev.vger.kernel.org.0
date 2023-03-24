@@ -2,91 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D86FC6C7CC2
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 11:38:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC52F6C7CFB
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 12:06:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231715AbjCXKim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 06:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
+        id S231514AbjCXLGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 07:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbjCXKik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 06:38:40 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CA9199DC
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 03:38:39 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id 9-20020a5ea509000000b0074ca36737d2so890033iog.7
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 03:38:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679654319;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G9TOw2H2TDDn1VQzhH7iezPzkkf4u+p1oMfgUm2gH4s=;
-        b=hq/m5GuzNvq25sNmpuBYrF4GPr6MIiLFLkXi53EwYcYhqJeefxp4iF9XwSODbYbUS8
-         gVxRlLFzAzCD4upDCQsUimdIlVYiSLfc2m/EoCnCSFFUAg1m2kLmml4V3hy3Qdg5b5/Z
-         e21TVT6en51Ho+X1G9M1e/36H/PAk3HuNi2syJJ8P9EFz+hNMvV9KWcJazjkAAaVN36o
-         euIIlLjmKFY0rrGJZs5rWObWU4Y2Ro7g0mtNGTtIGnLtPgOdB2yqd/TrAMcTbnOnpmPr
-         C1CWf84XuEYWfdZPSVtaQQCsyBeG9awm9U8A7ssEnzPSDSxcND4qDUa4XYRydf7MqkMf
-         ZH3Q==
-X-Gm-Message-State: AAQBX9fjnZv54k3mHTmpdihskKFNRY676KmCb29VglLmLRhgVPjfsLpR
-        Qp5UlM3pZn4gt6U/w2qE8fYD9el+F5xToAtplhQNWmBQ1djQ
-X-Google-Smtp-Source: AKy350bb9yMrtffJAvLki7tYYCcWem0k/K70GZplke3f49eMW0hXZztTj+oio5VmCMIBcoaDwalID7gbPTXUfVKbDFxheDkn0Rw2
+        with ESMTP id S230131AbjCXLGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 07:06:06 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73101F4A3;
+        Fri, 24 Mar 2023 04:06:03 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ABE8E1C0005;
+        Fri, 24 Mar 2023 11:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1679655962;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jLvVIFKHhdFYQm5gzIRuT+iG4SFwU4maOCdMYLv9IZQ=;
+        b=aUSL3P8MFwercyjL/z9RCeEcNx0IEG/OdfYIoe0pVweMT8vPXNq/qnmTzHTeSxQhX21nxa
+        qkNuCS7sDvcg93SRzY9EYnre/0+zenV1qOqxaZ0sUnkUYVAQD8luMNeJvhXRqjNhD0Ion/
+        ypRV0YgfTpoeWwgH++RXBAa+UKXt4zrJC44kUjA4S1uMj0dELg+P2ppboE3e0zLsFmYcSi
+        mZcibcjFyQWZKrmdHn81CVFUOeXJQ+Q/JIcp/Iy0k+jLWxwrpzsHfwNntq3FevKMT0i8Uf
+        nZzon3QPB+c+B+B1j39+CkoLVu5u+AYvaJZEJr3i70Q6/0fjUk5u71rKMv68/w==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Guilhem Imberton <guilhem.imberton@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next 0/2] ieee802154: Handle imited devices
+Date:   Fri, 24 Mar 2023 12:05:56 +0100
+Message-Id: <20230324110558.90707-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:12ec:b0:310:a24c:4231 with SMTP id
- l12-20020a056e0212ec00b00310a24c4231mr1538942iln.6.1679654318955; Fri, 24 Mar
- 2023 03:38:38 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 03:38:38 -0700
-In-Reply-To: <00000000000015ac7905e97ebaed@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000006e5d105f7a2ffe8@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in rdma_close
-From:   syzbot <syzbot+67d13108d855f451cafc@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, dan.carpenter@oracle.com,
-        davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
-        kuba@kernel.org, leon@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ***
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bug is marked as fixed by commit:
-9p: client_create/destroy: only call trans_mod->close after create
+As rightly pointed out by Alexander a few months ago, ca8210 devices
+will not support sending frames which are not pure datagrams (hardMAC
+wired to the softMAC layer). In order to not confuse users and clarify
+that scanning and beaconing is not supported on these devices, let's add
+a flag to prevent them to be used with the new APIs.
 
-But I can't find it in the tested trees[1] for more than 90 days.
-Is it a correct commit? Please update it by replying:
+Miquel Raynal (2):
+  net: ieee802154: Handle limited devices with only datagram support
+  ieee802154: ca8210: Flag the driver as being limited
 
-#syz fix: exact-commit-title
+ drivers/net/ieee802154/ca8210.c |  3 ++-
+ include/net/cfg802154.h         |  3 +++
+ net/ieee802154/nl802154.c       | 10 ++++++++++
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
-Until then the bug is still considered open and new crashes with
-the same signature are ignored.
+-- 
+2.34.1
 
-Kernel: Linux
-Dashboard link: https://syzkaller.appspot.com/bug?extid=67d13108d855f451cafc
-
----
-[1] I expect the commit to be present in:
-
-1. for-kernelci branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git
-
-2. master branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-3. master branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-4. main branch of
-git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-
-The full list of 10 trees can be found at
-https://syzkaller.appspot.com/upstream/repos
