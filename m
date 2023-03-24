@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26E0C6C8891
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 568CD6C88A2
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbjCXWsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 18:48:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
+        id S231460AbjCXW5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 18:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbjCXWsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:48:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98553199FF
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:47:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679698036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IAep4zsB8TYNwCqw3Lk1IWlGUAaOVIb9FTzTKApZ2oM=;
-        b=U8V3uy7v8Mw3lgcWlbw/FBtRrMCidwW7yo9tYflcUGBwdRFMFgqWYp4dNZIQUaAgmIev9F
-        hrniECOdHy9/abZAMQBs+iNFCAemNOGY8DIx4BOY6IocXROxmo6mWF11JVIjc0an0Eyb3J
-        G51IkXuAvEUWg2CLTw73blVc9tDCNOE=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-550-80HvkXNcOyicRLN0eRTj2Q-1; Fri, 24 Mar 2023 18:47:15 -0400
-X-MC-Unique: 80HvkXNcOyicRLN0eRTj2Q-1
-Received: by mail-io1-f72.google.com with SMTP id 9-20020a5ea509000000b0074ca36737d2so1964659iog.7
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:47:15 -0700 (PDT)
+        with ESMTP id S229729AbjCXW5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:57:00 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB6D1B2D0
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:56:59 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id p12-20020a25420c000000b00b6eb3c67574so3124178yba.11
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679698618;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kZAkkHzGMoIJFtWhBkYIh171hAK+DBsv6YkBiRK6dsE=;
+        b=eDMKJkjlr+4hgtHYzbNZi9njmdb5i4gBycnGpFVbfEv79PHA3ZixRDLH8dEakkDkkv
+         b0eVx4O7bO84IA5OaopmO0p9k3LkMRXSqSbleTih0jZCS1WvDbE4zF4V4p7lHjbj2cOM
+         ILPWTEG1JqefL+khHyIE+gX0IHS4aDFYyke54zRtignPaojYvGW9k+w/QSrwXRSt/Wpf
+         7O1Vb+oPV6SIhikz/TX7VUcuI1tNK6x7VMLFe68IzjkVk8zJP/Fbcw0CgqK/BSpGOKbi
+         zgEd7c0Fd6I0cHX3Rdf2zG34pARu9g28LXPbM+vUVhBKFcTY4kjDKNzNxFvHFdnwkzHC
+         z9dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679698034;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=IAep4zsB8TYNwCqw3Lk1IWlGUAaOVIb9FTzTKApZ2oM=;
-        b=KUK0de+vH8K9j4egWc33GLGbnmKgm9cGw6kM02ayHhDhDO81xd8PZ6dk0vhzOeWcmN
-         vLRWSjRP7X2s3hU9E9Z8Ek3CY6MsZaEJLpOAbDOtWR6llsoeHab874tZIQxEhSwW/A2w
-         hV53a8GKNPTxLALMVefLJRGoVYitH8Wmfg2VQ6PjdK7nTdIqbktLDMLKkmWBQJ5XaWXN
-         iahfJ5pbT9lB+PBsaW3af50nhCvcP0byIf5IwqG+aYpFd3WsG5hcDG6oMuin5/Q6S3KB
-         vZXKfTlodPSzrrBPrQuxvmR65mLhxEY/+G1R+UJMb6getm5UOWjWTuYCZXLaNXV9Gsx2
-         RGeA==
-X-Gm-Message-State: AAQBX9f/Plg67YGhXoJaYGynfDYGLhLMxT2hgah/vtYV5K0L2jMBuM0Q
-        XAO5Y+BT5AMt49LmSZy55J5Gu5o5UrrJvJsYHxnni28g0VeBd5orBYQAXU7PexYsMK+VbXBaBVB
-        MEbH+KAzWQA5+0MOq
-X-Received: by 2002:a92:d58c:0:b0:323:833:91e7 with SMTP id a12-20020a92d58c000000b00323083391e7mr3316174iln.23.1679698033855;
-        Fri, 24 Mar 2023 15:47:13 -0700 (PDT)
-X-Google-Smtp-Source: AKy350buRN6jrtZ5imHx4hAoUzyDyWxTtauRkK6WIplQNgvoCe6NJFFou9gOhqv62c7sxCqc0Lf+lw==
-X-Received: by 2002:a92:d58c:0:b0:323:833:91e7 with SMTP id a12-20020a92d58c000000b00323083391e7mr3316156iln.23.1679698033589;
-        Fri, 24 Mar 2023 15:47:13 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id x25-20020a6bda19000000b00758facb11fdsm1441858iob.17.2023.03.24.15.47.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 15:47:13 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 16:47:11 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Brett Creeley <bcreeley@amd.com>
-Cc:     Brett Creeley <brett.creeley@amd.com>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, jgg@nvidia.com, yishaih@nvidia.com,
-        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
-        shannon.nelson@amd.com, drviers@pensando.io
-Subject: Re: [PATCH v5 vfio 3/7] vfio/pds: register with the pds_core PF
-Message-ID: <20230324164711.6aeb40b2.alex.williamson@redhat.com>
-In-Reply-To: <57f5d678-a3f9-d812-9900-d8435a44eb23@amd.com>
-References: <20230322203442.56169-1-brett.creeley@amd.com>
-        <20230322203442.56169-4-brett.creeley@amd.com>
-        <20230324160251.4014b4e5.alex.williamson@redhat.com>
-        <57f5d678-a3f9-d812-9900-d8435a44eb23@amd.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        d=1e100.net; s=20210112; t=1679698618;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kZAkkHzGMoIJFtWhBkYIh171hAK+DBsv6YkBiRK6dsE=;
+        b=oWCGe7OffoO7RNKcCzIxq4sF5Ac2BG6AArvZtPKhmJQ6SfT6EL5wh5EEhih75vys6Y
+         91KoblQ6CukG6i568qf9Cy0bDvjwphezxDCqj886I9e33ISUi+F3CbeuROd5/PTub9hz
+         9NuLttcxAkCkEi32wKv9xy+pjYD6/bC/+qEe4SpsLWfKcSDo5i6ELEFk2cefTOb+WBLV
+         DkV51z2GUsZiS5LupWY/5vmR3osZObcOdFegFTWFpKBKZHt5eNlfgwdE2rZ+h/iCZPZs
+         Vb+209gk6FMt9xQ5PvOeRyE1WieNvN4nhVdf4SLr09tEat+ROmlQALFuByS3xLVGuuNj
+         fm6A==
+X-Gm-Message-State: AAQBX9e0so/TGvXSMoTXzPh7pObMDbqBEpoOvDfzb5Vdr+FNqLpCZNu/
+        ExYI8qfiRFlBh6YjQeq3MTwCnY1LNJ8NGf9RLw+8NfpAs3hoblZ9Q110B9TO66LLb6bR+itvokD
+        hUmPL9+q8cUVFH0YjGq+tv/IIqGXb4t3flK93RFu2+0j1j4SNMQmD/A==
+X-Google-Smtp-Source: AKy350aiO/mULwt+SCmux9OLubD8vzOTssUVYRnw2aOhV+wBMMIhf5bx/BBLXv0+pYHqgl/S37sF8DY=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a05:6902:168d:b0:98e:6280:90e7 with SMTP id
+ bx13-20020a056902168d00b0098e628090e7mr2362726ybb.13.1679698618375; Fri, 24
+ Mar 2023 15:56:58 -0700 (PDT)
+Date:   Fri, 24 Mar 2023 15:56:52 -0700
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
+Message-ID: <20230324225656.3999785-1-sdf@google.com>
+Subject: [PATCH net-next v2 0/4] tools: ynl: fill in some gaps of ethtool spec
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,104 +66,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Mar 2023 15:36:57 -0700
-Brett Creeley <bcreeley@amd.com> wrote:
+I was trying to fill in the spec while exploring ethtool API for some
+related work. I don't think I'll have the patience to fill in the rest,
+so decided to share whatever I currently have.
 
-> On 3/24/2023 3:02 PM, Alex Williamson wrote:
-> > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> > 
-> > 
-> > On Wed, 22 Mar 2023 13:34:38 -0700
-> > Brett Creeley <brett.creeley@amd.com> wrote:
-> >   
-> >> The pds_core driver will supply adminq services, so find the PF
-> >> and register with the DSC services.
-> >>
-> >> Use the following commands to enable a VF:
-> >> echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
-> >>
-> >> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
-> >> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-> >> ---
-> >>   drivers/vfio/pci/pds/Makefile   |  1 +
-> >>   drivers/vfio/pci/pds/cmds.c     | 67 +++++++++++++++++++++++++++++++++
-> >>   drivers/vfio/pci/pds/cmds.h     | 12 ++++++
-> >>   drivers/vfio/pci/pds/pci_drv.c  | 16 +++++++-
-> >>   drivers/vfio/pci/pds/pci_drv.h  |  9 +++++
-> >>   drivers/vfio/pci/pds/vfio_dev.c |  5 +++
-> >>   drivers/vfio/pci/pds/vfio_dev.h |  2 +
-> >>   include/linux/pds/pds_lm.h      | 12 ++++++
-> >>   8 files changed, 123 insertions(+), 1 deletion(-)
-> >>   create mode 100644 drivers/vfio/pci/pds/cmds.c
-> >>   create mode 100644 drivers/vfio/pci/pds/cmds.h
-> >>   create mode 100644 drivers/vfio/pci/pds/pci_drv.h
-> >>   create mode 100644 include/linux/pds/pds_lm.h
-> >>
-> >> diff --git a/drivers/vfio/pci/pds/Makefile b/drivers/vfio/pci/pds/Makefile
-> >> index e1a55ae0f079..87581111fa17 100644
-> >> --- a/drivers/vfio/pci/pds/Makefile
-> >> +++ b/drivers/vfio/pci/pds/Makefile
-> >> @@ -4,5 +4,6 @@
-> >>   obj-$(CONFIG_PDS_VFIO_PCI) += pds_vfio.o
-> >>
-> >>   pds_vfio-y := \
-> >> +     cmds.o          \
-> >>        pci_drv.o       \
-> >>        vfio_dev.o
-> >> diff --git a/drivers/vfio/pci/pds/cmds.c b/drivers/vfio/pci/pds/cmds.c
-> >> new file mode 100644
-> >> index 000000000000..26e383ec4544
-> >> --- /dev/null
-> >> +++ b/drivers/vfio/pci/pds/cmds.c
-> >> @@ -0,0 +1,67 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
-> >> +
-> >> +#include <linux/io.h>
-> >> +#include <linux/types.h>
-> >> +
-> >> +#include <linux/pds/pds_common.h>
-> >> +#include <linux/pds/pds_core_if.h>
-> >> +#include <linux/pds/pds_adminq.h>
-> >> +#include <linux/pds/pds_lm.h>
-> >> +
-> >> +#include "vfio_dev.h"
-> >> +#include "cmds.h"
-> >> +
-> >> +int
-> >> +pds_vfio_register_client_cmd(struct pds_vfio_pci_device *pds_vfio)
-> >> +{
-> >> +     union pds_core_adminq_comp comp = { 0 };
-> >> +     union pds_core_adminq_cmd cmd = { 0 };
-> >> +     struct device *dev;
-> >> +     int err, id;
-> >> +     u16 ci;
-> >> +
-> >> +     id = PCI_DEVID(pds_vfio->pdev->bus->number,
-> >> +                    pci_iov_virtfn_devfn(pds_vfio->pdev, pds_vfio->vf_id));
-> >> +
-> >> +     dev = &pds_vfio->pdev->dev;
-> >> +     cmd.client_reg.opcode = PDS_AQ_CMD_CLIENT_REG;
-> >> +     snprintf(cmd.client_reg.devname, sizeof(cmd.client_reg.devname),
-> >> +              "%s.%d", PDS_LM_DEV_NAME, id);  
-> > 
-> > Does this devname need to be unique, and if so should it factor in
-> > pci_domain_nr()?  The array seems to be wide enough to easily hold the
-> > VF dev_name() but I haven't followed if there are additional
-> > constraints.  Thanks,
-> > 
-> > Alex
-> >   
-> >> +  
-> 
-> Hey Alex,
-> 
-> We used the PCI_DEVID (id) as the suffix, which should be good enough to 
-> provide uniqueness for each devname.
+Patches 1-2 add the be16 + spec.
+Patches 3-4 implement an ethtool-like python tool to test the spec.
 
-But PCI_DEVID is not unique unless this device is guaranteed never to
-run on a system with multiple PCI segments, including cases where these
-PFs and VFs might be assigned to multi-segment VMs.  Thanks,
+Patches 3-4 are there because it felt more fun do the tool instead
+of writing the actual tests; feel free to drop it; sharing mostly
+to show that the spec is not a complete nonsense.
 
-Alex
+The spec is not 100% complete, see patch 2 for what's missing.
+I was hoping to finish the stats-get message, but I'm too dump
+to implement bitmask marshaling (multi-attr).
+
+Note, this is on top of net-next plus the following patch:
+[PATCH net-next v4] tools: ynl: Add missing types to encode/decode
+
+v2:
+- be16 -> byte-order
+- remove header in ethtool, not the lib
+- NlError two spaces after
+- s/_/-/ in ethtool spec
+- add missing - for s32-array
+- remove "value: 13" hard-code for features-ntf (empty reply instead)
+- updated output of the sample run in the last patch (I was actually
+  using real ethtool, lol)
+
+Stanislav Fomichev (4):
+  tools: ynl: support byte-order in cli
+  tools: ynl: populate most of the ethtool spec
+  tools: ynl: replace print with NlError
+  tools: ynl: ethtool testing tool
+
+ Documentation/netlink/specs/ethtool.yaml | 1476 ++++++++++++++++++++--
+ tools/net/ynl/ethtool                    |  424 +++++++
+ tools/net/ynl/lib/nlspec.py              |    9 +
+ tools/net/ynl/lib/ynl.py                 |   70 +-
+ 4 files changed, 1847 insertions(+), 132 deletions(-)
+ create mode 100755 tools/net/ynl/ethtool
+
+-- 
+2.40.0.348.gf938b09366-goog
 
