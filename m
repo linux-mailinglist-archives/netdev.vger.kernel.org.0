@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DE886C853D
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 19:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E57306C8559
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 19:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbjCXShU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 14:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        id S231254AbjCXSv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 14:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbjCXShR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 14:37:17 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E161BD
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 11:37:16 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id p12-20020a05600c468c00b003ef5e6c39cdso560348wmo.3
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 11:37:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679683035;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=J+a3Hh679tGu1C1YnxbuSVPiRKUn6OIbVnoUNA/SjqA=;
-        b=a5qQJQcdggQCOPLdIhC01pK7wYoQiRKjLuDg0ZLXdrB2EbyQL2G3nFGu2/z8Z+ATKy
-         m0/bii78T5IoDBuTfD+MqiByzW1IIJnVp7JOI0T547EbCnK/IUAyuq9Xctoohmi1Cqgf
-         jiD/rOgKH9Vq/24GPrY4ecJ9jP36tBh6RPUxHHzS8RPdkPYEY/ZPKyA95FBvPfb5h9an
-         9kTkJxROdoq60mayJU7x6MvubQI5NbQdzx64TlM+m2mheODyXIqNLsGF5PwZMNlYpi89
-         gkVzLfwQwy07efwRDOYLZNC8x1xWmPEYQY8PyD/smoBTKQCzSkFyQiF67tXhDwslCF6H
-         OeHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679683035;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J+a3Hh679tGu1C1YnxbuSVPiRKUn6OIbVnoUNA/SjqA=;
-        b=adtN1buVK+kFQ9r5hJl/27sCJmpfdmxrjN3YI+iAzf9h7HbxJog06ZX5d3BejdsKB+
-         QNSgKgl4e5AmQ4393+qf7L0EtOKFy6XePi/i+WP8QG5adDuqUdaRQ9M5grThrwlAeRta
-         mOOdEAW/+0lLFGsDn+LJpVzj+8bnLMxGa4t8NitWdeQmSEXKbda9bFg0+ERDMuMm5hnW
-         7Xe2/+wsfLZjAZ7rdNMWSTX+yaLzWDyO1GoSoP6ZDJDX1af7agsw8ork0STRuLbhJ7rI
-         Gz0Fim3WzuoLfAn+IGZQQXr6I+exzVbP9tPqJl/+uLhHi47gGeGcR0yJKrg5/s6pvMQn
-         j09w==
-X-Gm-Message-State: AO0yUKVG7MeCD8eH41N8j9o1qrb0kg4iKIe1sv35lSIbt77BcCqbzW82
-        /q8Jm9Kvj6em+6z7I8nNHPI=
-X-Google-Smtp-Source: AK7set8ivagcS4oYABfskDtTCXzkxt5vN/+7EgytoBJIlb0WNe4yKhIMyOVDOdzGRAQR+Ua/GIHHsg==
-X-Received: by 2002:a7b:cbd2:0:b0:3ed:2619:6485 with SMTP id n18-20020a7bcbd2000000b003ed26196485mr3445266wmi.3.1679683035050;
-        Fri, 24 Mar 2023 11:37:15 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id h5-20020a05600c350500b003ee9c8cc631sm549432wmq.23.2023.03.24.11.37.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Mar 2023 11:37:14 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 5/6] sfc: add code to register and unregister
- encap matches
-To:     edward.cree@amd.com, linux-net-drivers@amd.com,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org, michal.swiatkowski@linux.intel.com,
-        Jakub Kicinski <kuba@kernel.org>
-References: <cover.1679603051.git.ecree.xilinx@gmail.com>
- <57c4e599df3fff7bf678c1813445bd6016c6db79.1679603051.git.ecree.xilinx@gmail.com>
- <20230323220530.0d979b62@kernel.org> <ZB1pEVNGn1fKTGDG@gmail.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <4a19d213-7687-c9bf-739a-a2b783aa3e87@gmail.com>
-Date:   Fri, 24 Mar 2023 18:37:13 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S229729AbjCXSvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 14:51:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABD82711;
+        Fri, 24 Mar 2023 11:51:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDBD562C17;
+        Fri, 24 Mar 2023 18:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CA2DC433D2;
+        Fri, 24 Mar 2023 18:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679683883;
+        bh=QI5iYgTsM1ofAY1J/uBq41C90EbbFq4z92TpmdnFVc4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tNCjlyW8f7VaTbSCdPD6yo9vJvr8VRMo9JXdO+aZZXqe6Am1BcQwreIJU3qHP3Ois
+         B/Rv6t/v/mWitdZlIBc5xEYDH++hMpx9g+yjdR8eS/vopd7aGDcRh6529bmD5/oHLu
+         FjCyCTZ0O5ykbfXbVJOiRe33MJpwoDkc00hp9H+sw3anVTUpJtNS8WlAiffYIzvO88
+         fotJpp5xnnLEf+dvSVw8E+WPQYNwXW+xE194ASOkkfgB173lWHN7s3H+anebxssULH
+         sVznSmacOj2lrd527KFOcplTJV344/iUG2f0DleiGk/gjG/8BNSg1FAQG5ErMivnKM
+         1GtceNZJr//vQ==
+Date:   Fri, 24 Mar 2023 18:51:19 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee@kernel.org>, davem@davemloft.net,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        thomas.petazzoni@bootlin.com
+Subject: Re: [RFC 2/7] regmap: check for alignment on translated register
+ addresses
+Message-ID: <ZB3xJ4/FTEwHyVyY@sirena.org.uk>
+References: <20230324093644.464704-1-maxime.chevallier@bootlin.com>
+ <20230324093644.464704-3-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-In-Reply-To: <ZB1pEVNGn1fKTGDG@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="R3QyACzrFnj0ObNQ"
+Content-Disposition: inline
+In-Reply-To: <20230324093644.464704-3-maxime.chevallier@bootlin.com>
+X-Cookie: Single tasking: Just Say No.
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/03/2023 09:10, Martin Habets wrote:
-> On Thu, Mar 23, 2023 at 10:05:30PM -0700, Jakub Kicinski wrote:
->> clang sayeth 
->>
->> drivers/net/ethernet/sfc/tc.c:414:43: warning: variable 'ipv6' is uninitialized when used here [-Wuninitialized]
->>         rc = efx_mae_check_encap_match_caps(efx, ipv6, extack);
-> 
-> If CONFIG_IPV6 is unset it is never used, to is needs a __maybe_unused
-> as well.
 
-efx_mae_check_encap_match_caps() uses it regardless of the CONFIG,
- as does the extack setting just below it.
-So it just needs initialising to `false`, will fix in v3.
-(No idea why gcc doesn't warn about it, not even on W=1.)
+--R3QyACzrFnj0ObNQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Mar 24, 2023 at 10:36:39AM +0100, Maxime Chevallier wrote:
+> With regmap->reg_base and regmap->reg_downshift, the actual register
+> address that is going to be used for the next operation might not be the
+> same as the one we have as an input. Addresses can be offset with
+> reg_base and shifted, which will affect alignment.
+>=20
+> Check for alignment on the real register address.
+
+It is not at all clear to me that the combination of stride and
+downshift particularly makes sense, and especially not that the
+stride should be applied after downshifting rather than to what
+the user is passing in.
+
+--R3QyACzrFnj0ObNQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmQd8ScACgkQJNaLcl1U
+h9APUgf/VgS2RAgGVn3JfSBIqYVhOLgeS+YFm9Azjphm9lH6hDY6lyib+hAJFQ1H
+3uOqbJBWJ/v6SSeYTAdA4jwZhiiaPQ+b1NRz/cNmbouD8aEmQp4mDm8Py8NYPTKO
+JWs8tF0UBVsllIO/bh5wRgG3tFLP+wivFYHB3QBm2bP4NcLC60U2w3hxvfpFEUb3
+cLZQS5SYznLhwaunrpI9XfQbKzDRT3eb2WN9vrb6MnhPzON/8/OOHUtOT8sOo2+s
+4NiBtYCjzh4gz4EGG4ywH2VCEGMU5qjOEd0qyOXGjOgH9pTCSnVB1c06MS1EhqJm
+yGxEi1ATCsgcXaPEEZ1urEwFhPqzjg==
+=cfQS
+-----END PGP SIGNATURE-----
+
+--R3QyACzrFnj0ObNQ--
