@@ -2,77 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A01846C76CC
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 06:05:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6056A6C776D
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 06:35:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbjCXFFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 01:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47244 "EHLO
+        id S230489AbjCXFfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 01:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjCXFFd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 01:05:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F102886C
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 22:05:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEADB6294E
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 05:05:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D783DC433EF;
-        Fri, 24 Mar 2023 05:05:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679634332;
-        bh=jk/AQqczroYcj/NV4MqSPCNlKLfRWVCq+u3EsCW03zc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ck6SkR7LkB8Jn+gQjlss5n3N1Dg80xrknXYy8FMHQCz3Uy5Pfot47QgO+PggN1ohO
-         0v8vQNlL2reaFt9po+pWqxXZwGwL0CT1mIjpURfhAsl3/Y95I3EoL5erR3+2+en5lo
-         o8WSTJHwL20gDOcLDftl85B5prWpZlHwFiMtdudrFggkYYbU8AtPjYN9olOZGFt7PL
-         IY879NHh1NvFB/i0cfrZ9rhWip6JyYVUQxvz8J4TLOqQzoYT1R9Lo/bfwefIDjv24a
-         442EPM7FdQiX4eIYw33xTeokAAhhIO9Vs7S0wE7mJlN8lWEW1CSw7DIZzHpn8ZInAY
-         O44jUh0pdi1wQ==
-Date:   Thu, 23 Mar 2023 22:05:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <edward.cree@amd.com>
-Cc:     <linux-net-drivers@amd.com>, <davem@davemloft.net>,
-        <pabeni@redhat.com>, <edumazet@google.com>,
-        Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
-        <habetsm.xilinx@gmail.com>, <michal.swiatkowski@linux.intel.com>
-Subject: Re: [PATCH net-next v2 5/6] sfc: add code to register and
- unregister encap matches
-Message-ID: <20230323220530.0d979b62@kernel.org>
-In-Reply-To: <57c4e599df3fff7bf678c1813445bd6016c6db79.1679603051.git.ecree.xilinx@gmail.com>
-References: <cover.1679603051.git.ecree.xilinx@gmail.com>
-        <57c4e599df3fff7bf678c1813445bd6016c6db79.1679603051.git.ecree.xilinx@gmail.com>
+        with ESMTP id S229623AbjCXFfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 01:35:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E485E113C6
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 22:35:16 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pfa54-0006qX-8b; Fri, 24 Mar 2023 06:35:14 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pfa52-0003Du-9R; Fri, 24 Mar 2023 06:35:12 +0100
+Date:   Fri, 24 Mar 2023 06:35:12 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <olteanv@gmail.com>, kernel@pengutronix.de,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net v1 2/6] net: dsa: microchip: ksz8: fix
+ ksz8_fdb_dump() to extract all 1024 entries
+Message-ID: <20230324053512.GG23237@pengutronix.de>
+References: <20230322143130.1432106-1-o.rempel@pengutronix.de>
+ <20230322143130.1432106-3-o.rempel@pengutronix.de>
+ <20230323154101.1afd0081@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230323154101.1afd0081@kernel.org>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Mar 2023 20:45:13 +0000 edward.cree@amd.com wrote:
-> +__always_unused
-> +static int efx_tc_flower_record_encap_match(struct efx_nic *efx,
-> +					    struct efx_tc_match *match,
-> +					    enum efx_encap_type type,
-> +					    struct netlink_ext_ack *extack)
-> +{
-> +	struct efx_tc_encap_match *encap, *old;
-> +	bool ipv6;
-> +	int rc;
+On Thu, Mar 23, 2023 at 03:41:01PM -0700, Jakub Kicinski wrote:
+> On Wed, 22 Mar 2023 15:31:26 +0100 Oleksij Rempel wrote:
+> > Fixes: d23a5e18606c ("net: dsa: microchip: move ksz8->masks to ksz_common")
+> 
+> The code move broke it? Looks like it was 5,0 before and 5,0 after 
+> the change? We need a real tag, pointing to where the code was first
+> added.
 
-clang sayeth 
+ack. will fix it.
 
-drivers/net/ethernet/sfc/tc.c:414:43: warning: variable 'ipv6' is uninitialized when used here [-Wuninitialized]
-        rc = efx_mae_check_encap_match_caps(efx, ipv6, extack);
-                                                 ^~~~
-drivers/net/ethernet/sfc/tc.c:356:11: note: initialize the variable 'ipv6' to silence this warning
-        bool ipv6;
-                 ^
-                  = 0
+> Any reason you didn't CC Arun, just an omission or they're no longer
+> @microchip?
+
+He is not in MAINTAINERS for drivers/net/dsa/microchip/* even if he is
+practically maintaining it  .. :)
+
+> Arun, would you be able to review this series?
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
