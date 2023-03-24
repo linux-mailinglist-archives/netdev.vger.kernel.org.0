@@ -2,141 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C0A6C8026
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 15:44:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5176C803C
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 15:48:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbjCXOoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 10:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59906 "EHLO
+        id S232203AbjCXOr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 10:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231933AbjCXOn6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 10:43:58 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D195D12051;
-        Fri, 24 Mar 2023 07:43:56 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id x3so8722950edb.10;
-        Fri, 24 Mar 2023 07:43:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679669035;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=C21jvyZVXMZAcNncraIer8AUyEAdXPxhhiclNufk6dM=;
-        b=OI/NV6HZnkGU+Z1W7MqzD4PVmaiqNR43yWSKyXm5HcHjljLi09QfGuChCC4Cop3Mq6
-         cgALULB7vvDenLhbzYcUEL23+pKpStq5Yd0VbuQqa9Zvv/WBI9GxVOmr1vSxq94eLf71
-         I2kmdjaufmyHf8aA9L0U6XZaZlP3xIikWgZ68jo1KRz2jMuvUdlTnIqWBWoXYV+clbBW
-         fJ2sY/TLR0IurmpL2YUnxMyuNnlIJrqqvQaNifHbf886QZiS8UzSEX68nZvyzrNit25n
-         VZfucIry1S4PXUeYglFZaWuLbSiv0ne4JMzzdiOU/I2ziWBbBAc1lkR/U1RtqCLh9mHT
-         +Nqg==
+        with ESMTP id S232220AbjCXOrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 10:47:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB30718AB8
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 07:47:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679669223;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AuOjQOzMJu7jhalrvIVzIXLam0VRoOPHkDU+QEY7YhI=;
+        b=gkmf1zbq6bQV7ABVdmpbP65Iu3Fdif3EFYsApnmGRHdgUMqnQ4HIAXbzyQLRiAqo75bKGd
+        WsX0Mc/WMn2AwEhmQl2Vfsb9RAD0RF5qQqEdLba7UZiKj2yHdQe1BedYwN2v2+Du3ErewG
+        X7onXIQTbSUfq+D5tI1XhkZqRBBenoc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-216-NKjWIPwbPqqlzUsPAlKvuQ-1; Fri, 24 Mar 2023 10:47:01 -0400
+X-MC-Unique: NKjWIPwbPqqlzUsPAlKvuQ-1
+Received: by mail-ed1-f72.google.com with SMTP id c1-20020a0564021f8100b004acbe232c03so3480368edc.9
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 07:47:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679669035;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=C21jvyZVXMZAcNncraIer8AUyEAdXPxhhiclNufk6dM=;
-        b=N51bpIu7Mk/PAUu5nMtUShUY7lMe3D+R7Lkx9ybs/G9+8p78jx9a68kyYbFVYvb8Yu
-         wk+Xz7yTTTZQsGnJTIeUjus6PNUpbpVGItSnSTuiIk+Y6dfgVcV/qL+Ydn7dNQ8HO6SP
-         +4WLzb0D2YU3QCnBPFKKUM/8+3LB/PZk+zcP2FEoQKjBxJCj0cuDJwktPFf8BLFtXQ9q
-         4J6s4l9RVoUFJxFOBhvUXesO2jfpz+f/2M/rBxFcSSN/KK/aS0mQZXgVpWSgSZZkzydD
-         of6179rvaCC5XQnpGMArMn9hddT/fRuoo9TEPgg3QaL/21dTJz5vmphtyR1julVzhmy4
-         JvDQ==
-X-Gm-Message-State: AAQBX9dnuQBdkK5xWfAsnFhZLqS9ifqI5VJ2XygswpbvF533vFGz0tsM
-        NN3ezSEGRsruVBm6qpuw/RV+7EzWUW89yQ==
-X-Google-Smtp-Source: AKy350b1GPFgS+RKuJjs0iGqrLrD974ShBQf060WLsGpWMVUNlyChRn1VtNaPk1K85VinJZt1i33Cw==
-X-Received: by 2002:a17:906:329b:b0:8e3:74ad:94ce with SMTP id 27-20020a170906329b00b008e374ad94cemr2746328ejw.8.1679669034424;
-        Fri, 24 Mar 2023 07:43:54 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id lj24-20020a170906f9d800b00932ba722482sm9534542ejb.149.2023.03.24.07.43.53
+        d=1e100.net; s=20210112; t=1679669220;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AuOjQOzMJu7jhalrvIVzIXLam0VRoOPHkDU+QEY7YhI=;
+        b=Ak5FREw9bMVXb2LdCZ8EWOWkU57jYv9Z6KBqwBY1V9QEV/wfgOZP7d+veDhJgyaCv1
+         fGwKZg92Vu8AGjn6kNfcZb1wtCBRut/9hdEklE1UIURRx4MS5WtVmQ313hsMWEW6nJ6n
+         KGczhAFjsa/B3/MQcQHgshq8mTDGdas36ktYT27DrGbZ2gRp59yp6yWcPmntzIqV9PTd
+         G063ynWcOTmDHEP8jnZ44A21Hk5Gm91vyGQ9DmnzrbAL32yklUeDXS01DsxQLl/oda3c
+         BcgIwPo495bgzKg6OTC4tILkQnAzVdBY1f7Xsd7Cp56Wc48Q345SvZVbGZ+Za0hNRIul
+         Eeig==
+X-Gm-Message-State: AAQBX9e888Z70VGx8sDN7hm+FkG+FyXDAfdofpp5aeSURc+a7SNAV02T
+        aqu96Su4knu5IjqXD4nOSraZx7WFrkpaABeRQbjILcafNVIu2h/Mda3NqLHBOc59kfwuTlud8ei
+        X3EUZDtuhkVHga2pS
+X-Received: by 2002:a17:906:fa1b:b0:922:2ba3:2348 with SMTP id lo27-20020a170906fa1b00b009222ba32348mr2995760ejb.7.1679669220707;
+        Fri, 24 Mar 2023 07:47:00 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZmfFJPCyGmiPR7O9KckKD9I87Kx7AyWLHRPUqCBRX1gMg+6qZWwdI6wSPtk2G3zOFrDNdJyA==
+X-Received: by 2002:a17:906:fa1b:b0:922:2ba3:2348 with SMTP id lo27-20020a170906fa1b00b009222ba32348mr2995743ejb.7.1679669220454;
+        Fri, 24 Mar 2023 07:47:00 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id c14-20020a509f8e000000b005003fd12eafsm10711203edf.63.2023.03.24.07.46.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 07:43:54 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 16:43:51 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: What is the best way to provide FDB related metrics to user
- space?
-Message-ID: <20230324144351.54kyejvgqvkozuvp@skbuf>
-References: <20230324140622.GB28424@pengutronix.de>
+        Fri, 24 Mar 2023 07:46:59 -0700 (PDT)
+Date:   Fri, 24 Mar 2023 15:46:57 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        stefanha@redhat.com, linux-kernel@vger.kernel.org,
+        eperezma@redhat.com, "Michael S. Tsirkin" <mst@redhat.com>,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 8/8] vdpa_sim: add support for user VA
+Message-ID: <qrnz6o73374x5hio4jkgpj7et4ihym2wniob25so2zbsyjxagp@lwprqyc5xp7n>
+References: <20230321154228.182769-1-sgarzare@redhat.com>
+ <20230321154804.184577-1-sgarzare@redhat.com>
+ <20230321154804.184577-4-sgarzare@redhat.com>
+ <78c7511a-deab-7e95-fde1-5317a568cf97@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20230324140622.GB28424@pengutronix.de>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <78c7511a-deab-7e95-fde1-5317a568cf97@redhat.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+On Fri, Mar 24, 2023 at 11:49:32AM +0800, Jason Wang wrote:
+>
+>在 2023/3/21 23:48, Stefano Garzarella 写道:
+>>The new "use_va" module parameter (default: true) is used in
+>>vdpa_alloc_device() to inform the vDPA framework that the device
+>>supports VA.
+>>
+>>vringh is initialized to use VA only when "use_va" is true and the
+>>user's mm has been bound. So, only when the bus supports user VA
+>>(e.g. vhost-vdpa).
+>>
+>>vdpasim_mm_work_fn work is used to serialize the binding to a new
+>>address space when the .bind_mm callback is invoked, and unbinding
+>>when the .unbind_mm callback is invoked.
+>>
+>>Call mmget_not_zero()/kthread_use_mm() inside the worker function
+>>to pin the address space only as long as needed, following the
+>>documentation of mmget() in include/linux/sched/mm.h:
+>>
+>>   * Never use this function to pin this address space for an
+>>   * unbounded/indefinite amount of time.
+>>
+>>Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>>---
+>>
+>>Notes:
+>>     v3:
+>>     - called mmget_not_zero() before kthread_use_mm() [Jason]
+>>       As the documentation of mmget() in include/linux/sched/mm.h says:
+>>       * Never use this function to pin this address space for an
+>>       * unbounded/indefinite amount of time.
+>>       I moved mmget_not_zero/kthread_use_mm inside the worker function,
+>>       this way we pin the address space only as long as needed.
+>>       This is similar to what vfio_iommu_type1_dma_rw_chunk() does in
+>>       drivers/vfio/vfio_iommu_type1.c
+>>     - simplified the mm bind/unbind [Jason]
+>>     - renamed vdpasim_worker_change_mm_sync() [Jason]
+>>     - fix commit message (s/default: false/default: true)
+>>     v2:
+>>     - `use_va` set to true by default [Eugenio]
+>>     - supported the new unbind_mm callback [Jason]
+>>     - removed the unbind_mm call in vdpasim_do_reset() [Jason]
+>>     - avoided to release the lock while call kthread_flush_work() since we
+>>       are now using a mutex to protect the device state
+>>
+>>  drivers/vdpa/vdpa_sim/vdpa_sim.h |  1 +
+>>  drivers/vdpa/vdpa_sim/vdpa_sim.c | 80 +++++++++++++++++++++++++++++++-
+>>  2 files changed, 79 insertions(+), 2 deletions(-)
+>>
+>>diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+>>index 4774292fba8c..3a42887d05d9 100644
+>>--- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
+>>+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
+>>@@ -59,6 +59,7 @@ struct vdpasim {
+>>  	struct vdpasim_virtqueue *vqs;
+>>  	struct kthread_worker *worker;
+>>  	struct kthread_work work;
+>>+	struct mm_struct *mm_bound;
+>>  	struct vdpasim_dev_attr dev_attr;
+>>  	/* mutex to synchronize virtqueue state */
+>>  	struct mutex mutex;
+>>diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>>index ab4cfb82c237..23c891cdcd54 100644
+>>--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>>+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>>@@ -35,10 +35,44 @@ module_param(max_iotlb_entries, int, 0444);
+>>  MODULE_PARM_DESC(max_iotlb_entries,
+>>  		 "Maximum number of iotlb entries for each address space. 0 means unlimited. (default: 2048)");
+>>+static bool use_va = true;
+>>+module_param(use_va, bool, 0444);
+>>+MODULE_PARM_DESC(use_va, "Enable/disable the device's ability to use VA");
+>>+
+>>  #define VDPASIM_QUEUE_ALIGN PAGE_SIZE
+>>  #define VDPASIM_QUEUE_MAX 256
+>>  #define VDPASIM_VENDOR_ID 0
+>>+struct vdpasim_mm_work {
+>>+	struct kthread_work work;
+>>+	struct vdpasim *vdpasim;
+>>+	struct mm_struct *mm_to_bind;
+>>+	int ret;
+>>+};
+>>+
+>>+static void vdpasim_mm_work_fn(struct kthread_work *work)
+>>+{
+>>+	struct vdpasim_mm_work *mm_work =
+>>+		container_of(work, struct vdpasim_mm_work, work);
+>>+	struct vdpasim *vdpasim = mm_work->vdpasim;
+>>+
+>>+	mm_work->ret = 0;
+>>+
+>>+	//TODO: should we attach the cgroup of the mm owner?
+>>+	vdpasim->mm_bound = mm_work->mm_to_bind;
+>>+}
+>>+
+>>+static void vdpasim_worker_change_mm_sync(struct vdpasim *vdpasim,
+>>+					  struct vdpasim_mm_work *mm_work)
+>>+{
+>>+	struct kthread_work *work = &mm_work->work;
+>>+
+>>+	kthread_init_work(work, vdpasim_mm_work_fn);
+>>+	kthread_queue_work(vdpasim->worker, work);
+>>+
+>>+	kthread_flush_work(work);
+>>+}
+>>+
+>>  static struct vdpasim *vdpa_to_sim(struct vdpa_device *vdpa)
+>>  {
+>>  	return container_of(vdpa, struct vdpasim, vdpa);
+>>@@ -59,8 +93,10 @@ static void vdpasim_queue_ready(struct vdpasim *vdpasim, unsigned int idx)
+>>  {
+>>  	struct vdpasim_virtqueue *vq = &vdpasim->vqs[idx];
+>>  	uint16_t last_avail_idx = vq->vring.last_avail_idx;
+>>+	bool va_enabled = use_va && vdpasim->mm_bound;
+>>-	vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true, false,
+>>+	vringh_init_iotlb(&vq->vring, vdpasim->features, vq->num, true,
+>>+			  va_enabled,
+>>  			  (struct vring_desc *)(uintptr_t)vq->desc_addr,
+>>  			  (struct vring_avail *)
+>>  			  (uintptr_t)vq->driver_addr,
+>>@@ -130,8 +166,20 @@ static const struct vdpa_config_ops vdpasim_batch_config_ops;
+>>  static void vdpasim_work_fn(struct kthread_work *work)
+>>  {
+>>  	struct vdpasim *vdpasim = container_of(work, struct vdpasim, work);
+>>+	struct mm_struct *mm = vdpasim->mm_bound;
+>>+
+>>+	if (mm) {
+>>+		if (!mmget_not_zero(mm))
+>>+			return;
+>
+>
+>Do we need to check use_va here.
 
-On Fri, Mar 24, 2023 at 03:06:22PM +0100, Oleksij Rempel wrote:
-> Hello all,
-> 
-> I am currently working on implementing an interface to provide
-> FDB-related metrics to user space, such as the size of the FDB, the
-> count of objects, and so on. The IEEE 802.1Q-2018 standard offers some
-> guidance on this topic. For instance, section "17.2.4 Structure of the
-> IEEE8021-Q-BRIDGE-MIB" defines the ieee8021QBridgeFdbDynamicCount
-> object, and section "12.7.1.1.3 Outputs" provides additional outputs
-> that can be utilized for proper bridge management.
-> 
-> I've noticed that some DSA drivers implement devlink raw access to the
-> FDB. I am wondering if it would be acceptable to provide a generic
-> interface for all DSA switches for these kinds of metrics. What would be
-> the best interface to use for this purpose - devlink, sysfs, or
-> something else?
+Yep, right!
 
-It's not an easy question. It probably depends on what exactly you need
-it for.
+>
+>Other than this
+>
+>Acked-by: Jason Wang <jasowang@redhat.com>
 
-At a first glance, I'd say that the bridge's netlink interface should
-probably report these, based on information collected and aggregated
-from its bridge ports. But it becomes quite complicated to aggregate
-info from switchdev and non-switchdev (Wi-Fi, plain Ethernet) ports into
-a single meaningful number. Also, the software bridge does not have a
-hard limit per se when it comes to the number of FDB entries (although
-maybe it wouldn't be such a bad idea).
+Thanks for the reviews,
+Stefano
 
-ieee8021QBridgeFdbDynamicCount seems defined as "The current number of
-dynamic entries in this Filtering Database." So we're already outside
-the territory of statically defined "maximums" and we're now talking
-about the degree of occupancy of certain tables. That will be a lot
-harder for the software bridge to aggregate coherently, and it can't
-just count its own dynamic FDB entries. Things like dynamic address
-learning of FDB entries learned on foreign interfaces would make that
-utilization figure quite imprecise. Also, some DSA switches have a
-VLAN-unaware FDB, and if the bridge is VLAN-aware, it will have one FDB
-entry per each VLAN, whereas the hardware table will have a single FDB
-entry. Also, DSA in general does not attempt to sync the software FDB
-with the hardware FDB.
-
-So, while we could in theory make the bridge forward this information
-from drivers to user space in a unified form, it seems that the device
-specific information is hard to convert in a lossless form to generic
-information.
-
-Which is exactly the reason why we have what we have now, I guess.
-
-What do you mean by "devlink raw access"? In Documentation/networking/dsa/dsa.rst
-we say:
-
-| - Resources: a monitoring feature which enables users to see the degree of
-|   utilization of certain hardware tables in the device, such as FDB, VLAN, etc.
-
-If you search for dsa_devlink_resource_register(), you'll see the
-current state of things. What is reported there as device-specific
-resources seems to be the kind of thing you would be interested in.
