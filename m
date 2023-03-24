@@ -2,84 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A11F6C7A9D
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:00:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FCD76C7AC3
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:07:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231994AbjCXJA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 05:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        id S231938AbjCXJHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 05:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231987AbjCXJAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:00:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010DD10F9
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:00:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90936629C4
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 09:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DD563C433D2;
-        Fri, 24 Mar 2023 09:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679648417;
-        bh=8WjUkVCxv20ohschq7cmonRNvxtHEImYIntPN+2ukdA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uJFIqni5aSzToQz9O+1b3zSTLjZ+bJBh3On2c6iDRkt9kxhbqQ8WB5OwzNTk/Bzpc
-         qChjGeV1/jXpp6PtmEUYgsG/eXBCWq/hs6NV/dsfDA9GB6eh0d124y4L9yTfEarOL0
-         tugrWKymxiayohZvICyqlGzcYVvvS0w0CjoLV+ci63JD2cZMBzCqgb++WLAtmFlt+m
-         rq+VvN7Dd1sYkiGD3d8BE5+DKvOHS2j0D+Nu23klArJ7aQZil2c4zLVkXQCKqhKDbY
-         zh/kwt6wolx3wukXmZxeoBeaYI9E5fOu8rgkvXuMqBodzGEIDKKSyDWO62a/gJ8AAu
-         ZaB+RX+K4kc3Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BFA70E2A039;
-        Fri, 24 Mar 2023 09:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231887AbjCXJHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:07:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAABA1420A
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:06:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679648787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QVH2oh9fpzLQkJXdwpUJ4533V1wJBPoDSclzcYbqRDs=;
+        b=JcfmRJa7JAl5IOGs2Fi9/qCxnQQ19wBLpDhTmjjKU5JTespDVA6uTxkURoa2+8HWbmc+4x
+        UhnF91etkOQqfB9UFp0awr9/BIlosexl1ChfIAqR1nAL/x594wG0KkgL8CtulEb0SIoifp
+        MusLvpxQAtKIVpDurxRRwy5vE4ucgQY=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-611-OeIvHGg6Orq02nhlZQqykw-1; Fri, 24 Mar 2023 05:06:26 -0400
+X-MC-Unique: OeIvHGg6Orq02nhlZQqykw-1
+Received: by mail-ed1-f71.google.com with SMTP id t14-20020a056402240e00b004fb36e6d670so2268117eda.5
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:06:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679648785;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QVH2oh9fpzLQkJXdwpUJ4533V1wJBPoDSclzcYbqRDs=;
+        b=MlzOSZrO5oGGyFbKD1pa7VitJv5dznHDqsclKvZ/aed/qenyE6EC4FxIQ50DwFKh9F
+         bMH+Zd16TmU9cbVxhtSF4LYr9NCvJNQRdnXYgzGMpEdWA3iGyJGhjIBKlDwfZXKWO6Kh
+         InuGgsm5FtibQnCoc5Ol78y+wciEh+sVC8ZEQw4IKZDSdRujET9/4iewkosLbN65VSE7
+         kO4vuaiqKsECCFyIk4YmQ6Co/lBtUF07kDY5xDZsPwq7V0pC6HsNNwUcou4UOtrjlz4j
+         ZW8cQ1H/utXvydal2AR0aQaxRg5L0uN+zS3DNWeZ/9kOZA/nyl53r2QS9Twtn8yJGowe
+         6yMg==
+X-Gm-Message-State: AAQBX9fLnLgHk+YsbPb/2ao1aDRei56YF3jO/+C1ShdXtWqpuBTxuZWQ
+        xtLySu1q1DI0CVnROLBA0UbjxKcCQKOhhgzAoyIN3BgegeT4EyPpJmQfir6Bka9SpmDMa8O8mPk
+        +41ANTXtRIBntYk+t
+X-Received: by 2002:a17:906:fb08:b0:8b1:2d0e:281 with SMTP id lz8-20020a170906fb0800b008b12d0e0281mr2290905ejb.18.1679648784738;
+        Fri, 24 Mar 2023 02:06:24 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bQ/0qtXsSzTfWFpJpLAd1O/C8EC/FjGUKHYcG4gtT7IHcXKxrUdWfr7rE+d1abTlAFPGEy4w==
+X-Received: by 2002:a17:906:fb08:b0:8b1:2d0e:281 with SMTP id lz8-20020a170906fb0800b008b12d0e0281mr2290873ejb.18.1679648784448;
+        Fri, 24 Mar 2023 02:06:24 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id g8-20020a1709061e0800b0093bd173baa6sm3300977ejj.202.2023.03.24.02.06.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Mar 2023 02:06:23 -0700 (PDT)
+Date:   Fri, 24 Mar 2023 10:06:21 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     syzbot <syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, stefanha@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        virtualization@lists.linux-foundation.org,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in
+ virtio_transport_purge_skbs
+Message-ID: <CAGxU2F7XjdKgdKwfZMT-sdJ+JK10p_2zNdaQeGBwm3jpEe1Xaw@mail.gmail.com>
+References: <000000000000708b1005f79acf5c@google.com>
+ <CAGxU2F4ZiNEyrZzEJnYjYDz6CxniPGNW7AwyMLPLTxA2UbBWhA@mail.gmail.com>
+ <CAGxU2F6m4KWXwOF8StjWbb=S6HRx=GhV_ONDcZxCZsDkvuaeUg@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ipv6: prevent router_solicitations for team port
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167964841778.27836.1645024158050945471.git-patchwork-notify@kernel.org>
-Date:   Fri, 24 Mar 2023 09:00:17 +0000
-References: <7c052c3bdf8c1ac48833ace66725adf1f9794711.1679528141.git.lucien.xin@gmail.com>
-In-Reply-To: <7c052c3bdf8c1ac48833ace66725adf1f9794711.1679528141.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, dsahern@gmail.com,
-        yoshfuji@linux-ipv6.org, jiri@resnulli.us
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <CAGxU2F6m4KWXwOF8StjWbb=S6HRx=GhV_ONDcZxCZsDkvuaeUg@mail.gmail.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Mar 24, 2023 at 9:55 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>
+> On Fri, Mar 24, 2023 at 9:31 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> >
+> > Hi Bobby,
+> > can you take a look at this report?
+> >
+> > It seems related to the changes we made to support skbuff.
+>
+> Could it be a problem of concurrent access to pkt_queue ?
+>
+> IIUC we should hold pkt_queue.lock when we call skb_queue_splice_init()
+> and remove pkt_list_lock. (or hold pkt_list_lock when calling
+> virtio_transport_purge_skbs, but pkt_list_lock seems useless now that
+> we use skbuff)
+>
 
-This patch was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
+In the previous patch was missing a hunk, new one attached:
 
-On Wed, 22 Mar 2023 19:35:41 -0400 you wrote:
-> The issue fixed for bonding in commit c2edacf80e15 ("bonding / ipv6: no
-> addrconf for slaves separately from master") also exists in team driver.
-> However, we can't just disable ipv6 addrconf for team ports, as 'teamd'
-> will need it when nsns_ping watch is used in the user space.
-> 
-> Instead of preventing ipv6 addrconf, this patch only prevents RS packets
-> for team ports, as it did in commit b52e1cce31ca ("ipv6: Don't send rs
-> packets to the interface of ARPHRD_TUNNEL").
-> 
-> [...]
+#syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git fff5a5e7f528
 
-Here is the summary with links:
-  - [net-next] ipv6: prevent router_solicitations for team port
-    https://git.kernel.org/netdev/net-next/c/2df9bf4d04d2
+--- a/net/vmw_vsock/vsock_loopback.c
++++ b/net/vmw_vsock/vsock_loopback.c
+@@ -15,7 +15,6 @@
+ struct vsock_loopback {
+        struct workqueue_struct *workqueue;
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+-       spinlock_t pkt_list_lock; /* protects pkt_list */
+        struct sk_buff_head pkt_queue;
+        struct work_struct pkt_work;
+ };
+@@ -32,9 +31,7 @@ static int vsock_loopback_send_pkt(struct sk_buff *skb)
+        struct vsock_loopback *vsock = &the_vsock_loopback;
+        int len = skb->len;
 
+-       spin_lock_bh(&vsock->pkt_list_lock);
+        skb_queue_tail(&vsock->pkt_queue, skb);
+-       spin_unlock_bh(&vsock->pkt_list_lock);
+
+        queue_work(vsock->workqueue, &vsock->pkt_work);
+
+@@ -113,9 +110,9 @@ static void vsock_loopback_work(struct work_struct *work)
+
+        skb_queue_head_init(&pkts);
+
+-       spin_lock_bh(&vsock->pkt_list_lock);
++       spin_lock_bh(&vsock->pkt_queue.lock);
+        skb_queue_splice_init(&vsock->pkt_queue, &pkts);
+-       spin_unlock_bh(&vsock->pkt_list_lock);
++       spin_unlock_bh(&vsock->pkt_queue.lock);
+
+        while ((skb = __skb_dequeue(&pkts))) {
+                virtio_transport_deliver_tap_pkt(skb);
+@@ -132,7 +129,6 @@ static int __init vsock_loopback_init(void)
+        if (!vsock->workqueue)
+                return -ENOMEM;
+
+-       spin_lock_init(&vsock->pkt_list_lock);
+        skb_queue_head_init(&vsock->pkt_queue);
+        INIT_WORK(&vsock->pkt_work, vsock_loopback_work);
+
+@@ -156,9 +152,7 @@ static void __exit vsock_loopback_exit(void)
+
+        flush_work(&vsock->pkt_work);
+
+-       spin_lock_bh(&vsock->pkt_list_lock);
+        virtio_vsock_skb_queue_purge(&vsock->pkt_queue);
+-       spin_unlock_bh(&vsock->pkt_list_lock);
+
+        destroy_workqueue(vsock->workqueue);
+ }
 
