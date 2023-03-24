@@ -2,52 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE3B86C884E
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:27:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 543736C8868
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 23:33:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231796AbjCXW1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 18:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S232257AbjCXWdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 18:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbjCXW1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:27:39 -0400
+        with ESMTP id S231843AbjCXWdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 18:33:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C808F15148;
-        Fri, 24 Mar 2023 15:27:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB831F4A6
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 15:32:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81D9DB8263B;
-        Fri, 24 Mar 2023 22:27:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B21A3C433D2;
-        Fri, 24 Mar 2023 22:27:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 774A9B82424
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 22:31:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAABEC4339C;
+        Fri, 24 Mar 2023 22:31:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679696856;
-        bh=XHjxbosZn+j7wGljSl4bxw6luplVWMdt0qCtSaiDRJ8=;
+        s=k20201202; t=1679697085;
+        bh=C41qwfrxgEuNcpWCRiPXdnNBQFw4UQp0E7Kptl7l5Ro=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qZfRdcRdFg4thtCH7gR8ms/yI/dB3X4hTJO8DgEhclWpEiJVv12dK+ifSlijSot30
-         /ZOewsL8w/Ud+HJ9SOQrl5H6Aq19nM99KSJjFHlj2iS1kX2zfhz0+HaMmjoAHbwBM8
-         UASgM3GOARfdJfFiNlhGPMuTWPJQAZm8L6k734P7DXqfQyNCZ9pb1DNMQewqPN9Siv
-         bz8pmOFD0iG9i4wgwzYn4hzMxbO9p8AHr0tMm14puz48xvcA3i1pfVx/im0ShAZDqD
-         mlkvqnZ8hsrK9q1aF9VjCZ9zzUbdoyUYOpHxS2YL11MQlCIpO1IyFgIy5SRqMEtHwG
-         CREYm3U25F3wQ==
-Date:   Fri, 24 Mar 2023 15:27:34 -0700
+        b=GaKtpbawiDhf7nO0gb0YAxNuWfkiCWaf7BaMPQaMVRpHzGEMnsrN+dfiRxU7H/NWx
+         p1l3sSnJzFN6hOnBJ8YzAlmSIATlmVNJRiIPiCWhvRV+2jmSf2RPqAN8ZCoEOhGhaW
+         ntLrto4PoRBoMFkT6mq52jwUo3nCS1jVMCCD5jVdzah03hcxl9dHflnKsQSEBjvoK9
+         NdXnbqCbOeYbFQduwyz4a4xvIom1OHjJQ0p1K23b5pPcg1POz1BLXUNQlXF1obEudX
+         LcFcobLW8UXA1Co7UktxsRUnVzTg+a+E+cMntXgBsTHhPfXnqlS/b6ZOB5s276es6X
+         ZwIx28s+4SkYg==
+Date:   Fri, 24 Mar 2023 15:31:23 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniil Dulov <D.Dulov@aladdin.ru>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lvc-patches@linuxtesting.org" <lvc-patches@linuxtesting.org>
-Subject: Re: [PATCH] media: dib7000p: Fix potential division by zero
-Message-ID: <20230324152734.1a2f0e90@kernel.org>
-In-Reply-To: <2953a53dd08247ca8b762cc9d3782c81@aladdin.ru>
-References: <20230324131209.651475-1-d.dulov@aladdin.ru>
-        <20230324131445.g42kvq5wzj2z3qil@skbuf>
-        <2953a53dd08247ca8b762cc9d3782c81@aladdin.ru>
+To:     Michal Michalik <michal.michalik@intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com
+Subject: Re: [PATCH net-next v4] tools: ynl: Add missing types to
+ encode/decode
+Message-ID: <20230324153123.0907c3cf@kernel.org>
+In-Reply-To: <20230324175258.25145-1-michal.michalik@intel.com>
+References: <20230324175258.25145-1-michal.michalik@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,7 +53,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Mar 2023 13:26:13 +0000 Daniil Dulov wrote:
-> Sorry, I used a script with a wrong module, my fault.
+On Fri, 24 Mar 2023 18:52:58 +0100 Michal Michalik wrote:
+> While testing the tool I noticed we miss the u16 type on payload create.
+> On the code inspection it turned out we miss also u64 - add them.
+> 
+> We also miss the decoding of u16 despite the fact `NlAttr` class
+> supports it - add it.
+> 
+> Signed-off-by: Michal Michalik <michal.michalik@intel.com>
 
-Always run the script on the patch itself, not on a file path.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
