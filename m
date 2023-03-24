@@ -2,187 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4B36C8147
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 16:34:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C426C8143
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 16:34:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232430AbjCXPeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 11:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
+        id S232421AbjCXPd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 11:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232434AbjCXPeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 11:34:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C841B10279
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679672002;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1nwmpDcIRdezP7czdw9rZEPq2A0ddkt+6nhj7OJ5xz8=;
-        b=QugOjyK2WrQWqEcrxEWVHVpQBUoWyOtfIWpL6V23cWi6zANpA1iCQuXOU2Ev5002g5y8TF
-        myCVYnwFuU0+3+L/mlXQ5/HignqR997N3udYV4Fd53XDlf8gqgE4y2qtVcEGe9/u+hPFNw
-        xmp40jfNJiQusxu34v/jDf3MtYE52+c=
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
- [209.85.219.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-561-VlS8qpaXNvKhtagkSHGwkw-1; Fri, 24 Mar 2023 11:33:20 -0400
-X-MC-Unique: VlS8qpaXNvKhtagkSHGwkw-1
-Received: by mail-yb1-f197.google.com with SMTP id z31-20020a25a122000000b00b38d2b9a2e9so2116258ybh.3
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:33:19 -0700 (PDT)
+        with ESMTP id S232362AbjCXPd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 11:33:57 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A10FF22
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:33:54 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id h136-20020a6bb78e000000b00758b105cdd3so1346818iof.23
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:33:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679671997;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1nwmpDcIRdezP7czdw9rZEPq2A0ddkt+6nhj7OJ5xz8=;
-        b=lvFZXyEtA2JkzW2yeqIYKknwqJFPoBFCOE3jB2gkTxq0JLsOWibrbjOP0/vjITexjR
-         GTU7rQYU58mqvnabcoOEPj8GRI7khrRXcnzgCHMKPgX7olWl0yjEN/V41KIq2ZDz8YcG
-         dse3ftkIguRtQbJ3JPeMI5N4I97DASfGIV0R3q3hu9ufC/ZyGZBKMbrmsFleGfA72eW5
-         f01f696lkiHIOvBN2FLB/8lbfqvDEpi6k50+gU8l7aOfkjpKRWwSd2ibp1foK8WSOSSk
-         eZ4qDhzwTpQFEKXDTu3IR3jC2XSah/82uz7SPLhXbfxEEmb9Plf9ZFrVIEKldOYeUZ2p
-         B99g==
-X-Gm-Message-State: AAQBX9doleC217SFYH2W84sjlPi4zdlThHVzeQEU8phjnsh1TyrHY/0i
-        n99m9fIyZI6fEunYi3YD546nXRPo01rch5zhdKCCBikOSDQuLyRCM0PpndSGn32CGVqn1tw/GNs
-        AYZ87A1mHnukHfTVHUJpRMWxCm+sws9AU
-X-Received: by 2002:a05:690c:298d:b0:542:927b:1c79 with SMTP id eh13-20020a05690c298d00b00542927b1c79mr4493863ywb.3.1679671997283;
-        Fri, 24 Mar 2023 08:33:17 -0700 (PDT)
-X-Google-Smtp-Source: AKy350axSseOYGZVaoae4ffdh9HEDtW8lZ2RalvnCpXRfyuMSMHUSaaLIhse5Fh/4JSBAkJ+6QXkQ8DPJpDEIMOl87o=
-X-Received: by 2002:a05:690c:298d:b0:542:927b:1c79 with SMTP id
- eh13-20020a05690c298d00b00542927b1c79mr4493846ywb.3.1679671997029; Fri, 24
- Mar 2023 08:33:17 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679672034;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=eLycQxPJh5ctdiAHM+TFhyOKcExHz+mFKF6NIvcUHOA=;
+        b=LhNuC1VIJeuQrDvdbT0KSizZ1OHaTIsJTJQk8JzweXld2zOM9rq1VWn6wbcVd7NYQk
+         k9vax/M0i4dON7z7Ub6MqJIm0B5NESZ5gAfHue0u/bsvQIsIoTJ3abgLwRy5yzPHF217
+         Q/CPQsvAXyTZdR4XcQxfi2hsjd16IhqnMIFcbyQ2l8mbCUGKmc8v47UUbgckW+HcfsAW
+         0KD7MN0yfYXahHXnh9S1WvLEs42Dt2PCIjTsTQ+AnZMOQSfrTP8xI/9G1BVHrk65iS4b
+         iTvyOX0VcHUX5e/S+8yM5mEHSK7S3vPlDB+CN1uRIYfegmZUZbznkqkkZMXSqQ6PWAfq
+         psTg==
+X-Gm-Message-State: AO0yUKWxV7L4vllplc5Xxty0EJ2K8qCdzzZGxFPLJYKTYwTGvUrx6xyX
+        skWaN8NDeyOqNkImSYBra7dkWMpPAbCCC2U/fFVk9YYBKMaH
+X-Google-Smtp-Source: AK7set8UfRAmUJZ9Pdv22DQTYvQa4B67nyUY5YX08xzcbn8+rNZj62ZJYHmhaEpOsXfVcdvNZq5UIPZ8gpDieG2iTXihb54QJ+SK
 MIME-Version: 1.0
-References: <00000000000075bebb05f79acfde@google.com>
-In-Reply-To: <00000000000075bebb05f79acfde@google.com>
-From:   Stefano Garzarella <sgarzare@redhat.com>
-Date:   Fri, 24 Mar 2023 16:33:05 +0100
-Message-ID: <CAGxU2F7L-EJAVwCivJ3MsY8E6w909ebWhz-s8qtP4NmN7h6gpQ@mail.gmail.com>
-Subject: Re: [syzbot] [net?] [virt?] [io-uring?] [kvm?] BUG: soft lockup in vsock_connect
-To:     syzbot <syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com>
-Cc:     axboe@kernel.dk, davem@davemloft.net, edumazet@google.com,
-        io-uring@vger.kernel.org, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, stefanha@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
+X-Received: by 2002:a02:95c4:0:b0:406:2a80:467a with SMTP id
+ b62-20020a0295c4000000b004062a80467amr1109851jai.0.1679672033950; Fri, 24 Mar
+ 2023 08:33:53 -0700 (PDT)
+Date:   Fri, 24 Mar 2023 08:33:53 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ec461d05f7a71e38@google.com>
+Subject: [syzbot] [wireless] Monthly Report
+From:   syzbot <syzbot+listd50b9cb19229e38c60c8@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=2.3 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: **
+X-Spam-Status: No, score=0.6 required=5.0 tests=FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz dup general protection fault in virtio_transport_purge_skbs
+Hello wireless maintainers/developers,
 
-On Fri, Mar 24, 2023 at 1:52=E2=80=AFAM syzbot
-<syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    fe15c26ee26e Linux 6.3-rc1
-> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux=
-.git for-kernelci
-> console output: https://syzkaller.appspot.com/x/log.txt?x=3D1577c97ec8000=
-0
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D7573cbcd881a8=
-8c9
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3D0bc015ebddc291a=
-97116
-> compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Deb=
-ian) 2.35.2
-> userspace arch: arm64
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D1077c996c80=
-000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D17e38929c8000=
-0
->
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/89d41abd07bd/dis=
-k-fe15c26e.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/fa75f5030ade/vmlinu=
-x-fe15c26e.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/590d0f5903ee/I=
-mage-fe15c26e.gz.xz
->
-> IMPORTANT: if you fix the issue, please add the following tag to the comm=
-it:
-> Reported-by: syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com
->
-> watchdog: BUG: soft lockup - CPU#0 stuck for 27s! [syz-executor244:6747]
-> Modules linked in:
-> irq event stamp: 6033
-> hardirqs last  enabled at (6032): [<ffff8000124604ac>] __exit_to_kernel_m=
-ode arch/arm64/kernel/entry-common.c:84 [inline]
-> hardirqs last  enabled at (6032): [<ffff8000124604ac>] exit_to_kernel_mod=
-e+0xe8/0x118 arch/arm64/kernel/entry-common.c:94
-> hardirqs last disabled at (6033): [<ffff80001245e188>] __el1_irq arch/arm=
-64/kernel/entry-common.c:468 [inline]
-> hardirqs last disabled at (6033): [<ffff80001245e188>] el1_interrupt+0x24=
-/0x68 arch/arm64/kernel/entry-common.c:486
-> softirqs last  enabled at (616): [<ffff80001066ca80>] spin_unlock_bh incl=
-ude/linux/spinlock.h:395 [inline]
-> softirqs last  enabled at (616): [<ffff80001066ca80>] lock_sock_nested+0x=
-e8/0x138 net/core/sock.c:3480
-> softirqs last disabled at (618): [<ffff8000122dbcfc>] spin_lock_bh includ=
-e/linux/spinlock.h:355 [inline]
-> softirqs last disabled at (618): [<ffff8000122dbcfc>] virtio_transport_pu=
-rge_skbs+0x11c/0x500 net/vmw_vsock/virtio_transport_common.c:1372
-> CPU: 0 PID: 6747 Comm: syz-executor244 Not tainted 6.3.0-rc1-syzkaller-gf=
-e15c26ee26e #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
-oogle 03/02/2023
-> pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
-> pc : __sanitizer_cov_trace_pc+0xc/0x8c kernel/kcov.c:203
-> lr : virtio_transport_purge_skbs+0x19c/0x500 net/vmw_vsock/virtio_transpo=
-rt_common.c:1374
-> sp : ffff80001e787890
-> x29: ffff80001e7879e0 x28: 1ffff00003cf0f2a x27: ffff80001a487a60
-> x26: ffff80001e787950 x25: ffff0000ce2d3b80 x24: ffff80001a487a78
-> x23: 1ffff00003490f4c x22: ffff80001a29c1a8 x21: dfff800000000000
-> x20: ffff80001a487a60 x19: ffff80001e787940 x18: 1fffe000368951b6
-> x17: ffff800015cdd000 x16: ffff8000085110b0 x15: 0000000000000000
-> x14: 1ffff00002b9c0b2 x13: dfff800000000000 x12: ffff700003cf0efc
-> x11: ff808000122dbee8 x10: 0000000000000000 x9 : ffff8000122dbee8
-> x8 : ffff0000ce511b40 x7 : ffff8000122dbcfc x6 : 0000000000000000
-> x5 : 0000000000000000 x4 : 0000000000000001 x3 : ffff80000832d758
-> x2 : 0000000000000001 x1 : 0000000000000000 x0 : 0000000000000000
-> Call trace:
->  get_current arch/arm64/include/asm/current.h:19 [inline]
->  __sanitizer_cov_trace_pc+0xc/0x8c kernel/kcov.c:206
->  vsock_loopback_cancel_pkt+0x28/0x3c net/vmw_vsock/vsock_loopback.c:48
->  vsock_transport_cancel_pkt net/vmw_vsock/af_vsock.c:1284 [inline]
->  vsock_connect+0x6b8/0xaec net/vmw_vsock/af_vsock.c:1426
->  __sys_connect_file net/socket.c:2004 [inline]
->  __sys_connect+0x268/0x290 net/socket.c:2021
->  __do_sys_connect net/socket.c:2031 [inline]
->  __se_sys_connect net/socket.c:2028 [inline]
->  __arm64_sys_connect+0x7c/0x94 net/socket.c:2028
->  __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
->  invoke_syscall+0x98/0x2c0 arch/arm64/kernel/syscall.c:52
->  el0_svc_common+0x138/0x258 arch/arm64/kernel/syscall.c:142
->  do_el0_svc+0x64/0x198 arch/arm64/kernel/syscall.c:193
->  el0_svc+0x58/0x168 arch/arm64/kernel/entry-common.c:637
->  el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
->  el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:591
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
->
+This is a 30-day syzbot report for wireless subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/wireless
 
+During the period, 6 new issues were detected and 0 were fixed.
+In total, 45 issues are still open and 102 have been fixed so far.
+
+Some of the still happening issues:
+
+Crashes Repro Title
+6721    Yes   KMSAN: uninit-value in hwsim_cloned_frame_received_nl
+              https://syzkaller.appspot.com/bug?extid=b2645b5bf1512b81fa22
+4059    Yes   WARNING in __cfg80211_ibss_joined (2)
+              https://syzkaller.appspot.com/bug?extid=7f064ba1704c2466e36d
+3067    Yes   WARNING in __ieee80211_beacon_get
+              https://syzkaller.appspot.com/bug?extid=18c783c5cf6a781e3e2c
+806     Yes   INFO: task hung in switchdev_deferred_process_work (2)
+              https://syzkaller.appspot.com/bug?extid=8ecc009e206a956ab317
+558     Yes   WARNING in __rate_control_send_low
+              https://syzkaller.appspot.com/bug?extid=fdc5123366fb9c3fdc6d
+517     Yes   WARNING in ieee80211_start_next_roc
+              https://syzkaller.appspot.com/bug?extid=c3a167b5615df4ccd7fb
+245     Yes   INFO: task hung in rfkill_global_led_trigger_worker (2)
+              https://syzkaller.appspot.com/bug?extid=2e39bc6569d281acbcfb
+232     Yes   WARNING in ieee80211_link_info_change_notify (2)
+              https://syzkaller.appspot.com/bug?extid=de87c09cc7b964ea2e23
+196     No    WARNING in ieee80211_ibss_csa_beacon (2)
+              https://syzkaller.appspot.com/bug?extid=b10a54cb0355d83fd75c
+10      Yes   KMSAN: uninit-value in ath9k_wmi_ctrl_rx
+              https://syzkaller.appspot.com/bug?extid=f2cb6e0ffdb961921e4d
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
