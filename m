@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 256096C7CFC
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 12:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AADEF6C7CFE
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 12:06:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbjCXLGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 07:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55578 "EHLO
+        id S231628AbjCXLGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 07:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbjCXLGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 07:06:06 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F6B23653;
-        Fri, 24 Mar 2023 04:06:05 -0700 (PDT)
+        with ESMTP id S229522AbjCXLGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 07:06:10 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65692471A;
+        Fri, 24 Mar 2023 04:06:08 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 822801C0019;
-        Fri, 24 Mar 2023 11:06:02 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3F3CB1C0004;
+        Fri, 24 Mar 2023 11:06:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1679655964;
+        t=1679655966;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xpm9J1//h3pf1KRFo8vfe6W7cNzA/ZMeIybRxIKCmLs=;
-        b=HNgt+9vjZ7rczNcxNcDA1sudpjxIgPVFLRga7uxvJvkNhqR7+dneVSo8HiAGEwGhkWw9r5
-        v2Pag+JLkeXR6GVfxWFARTJMnmh8NCl/5MzisPnziw6eIUlwz3zTxSbkCFAy6g6xL4y62p
-        I+vD0MyHUTIBNO38vTyaMI9WJSDDJIA6Wc6Qr44ObzMxgA2FJvJv8iggxqDtqKDbW7eOMq
-        ebIE+t/T4L+XDw1rUIt3lBa8nBQw3VKBSIIc0nerUWsiWEtF2GD0USTeQ+yQ3H4VB1j+ev
-        E8iYTgWg8WiOu5WnquWgJGEK4aU3USwdTFLCSUnX7BwbBE7nx2q2Vs5MaW4b/Q==
+        bh=MUwKIUMVcH6NEMxhxlTDFnrPGXUpI+fLMcYc8IqnvIA=;
+        b=PJw/zhFUKmHkSlgVpj6VFjXRe5jVPHC06lgHTKGogCFk/IKedOv0oYzHNsMzbXf+bzTKw8
+        dO+VQWMXkZftOPkd9RCsap9wcfdvfItsQmvlDKMxYW9pRxjelOcbY21+5toMqehi5LOp7M
+        hMAYDIulSIRuoRt62UReAnwaq26zbGRT1fElwVA62gsJumk1/v9HpyZRKMqHg4Gqa/221t
+        X6Y5yAkn56C42x5lmmwSOM+gchLbziUFuaGYMrZHjhm5v9R/6rC8ZuyQ3QuevWaMFV9ITN
+        15jwWGMF3TerNZWl0R+DrDrbPr5stoBHb8cUDk7tMU8YEttellxGIueCFD/8Xg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Guilhem Imberton <guilhem.imberton@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next 1/2] net: ieee802154: Handle limited devices with only datagram support
-Date:   Fri, 24 Mar 2023 12:05:57 +0100
-Message-Id: <20230324110558.90707-2-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next 2/2] ieee802154: ca8210: Flag the driver as being limited
+Date:   Fri, 24 Mar 2023 12:05:58 +0100
+Message-Id: <20230324110558.90707-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230324110558.90707-1-miquel.raynal@bootlin.com>
 References: <20230324110558.90707-1-miquel.raynal@bootlin.com>
@@ -61,67 +61,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some devices, like HardMAC ones can be a bit limited in the way they
-handle mac commands. In particular, they might just not support it at
-all and instead only be able to transmit and receive regular data
-packets. In this case, they cannot be used for any of the internal
-management commands that we have introduced so far and must be flagged
-accordingly.
+This is a hardMAC device wired to Linux 802154 softMAC
+implementation. It is a bit limited in the sense that it cannot handle
+anything else that datagrams. Let's flag it like this to prevent using
+unsupported features such as scan/beacons handling.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/cfg802154.h   |  3 +++
- net/ieee802154/nl802154.c | 10 ++++++++++
- 2 files changed, 13 insertions(+)
+ drivers/net/ieee802154/ca8210.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 0c2778a836db..e00057984489 100644
---- a/include/net/cfg802154.h
-+++ b/include/net/cfg802154.h
-@@ -178,12 +178,15 @@ wpan_phy_cca_cmp(const struct wpan_phy_cca *a, const struct wpan_phy_cca *b)
-  *	setting.
-  * @WPAN_PHY_FLAG_STATE_QUEUE_STOPPED: Indicates that the transmit queue was
-  *	temporarily stopped.
-+ * @WPAN_PHY_FLAG_DATAGRAMS_ONLY: Indicates that transceiver is only able to
-+ *	send/receive datagrams.
-  */
- enum wpan_phy_flags {
- 	WPAN_PHY_FLAG_TXPOWER		= BIT(1),
- 	WPAN_PHY_FLAG_CCA_ED_LEVEL	= BIT(2),
- 	WPAN_PHY_FLAG_CCA_MODE		= BIT(3),
- 	WPAN_PHY_FLAG_STATE_QUEUE_STOPPED = BIT(4),
-+	WPAN_PHY_FLAG_DATAGRAMS_ONLY	= BIT(5),
- };
+diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+index 450b16ad40a4..bd5eeccc2fd2 100644
+--- a/drivers/net/ieee802154/ca8210.c
++++ b/drivers/net/ieee802154/ca8210.c
+@@ -2943,7 +2943,8 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
+ 	ca8210_hw->phy->flags =
+ 		WPAN_PHY_FLAG_TXPOWER |
+ 		WPAN_PHY_FLAG_CCA_ED_LEVEL |
+-		WPAN_PHY_FLAG_CCA_MODE;
++		WPAN_PHY_FLAG_CCA_MODE |
++		WPAN_PHY_FLAG_DATAGRAMS_ONLY;
+ }
  
- struct wpan_phy {
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index 0ecc49d9c8c9..052c1ecfa300 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -1417,6 +1417,11 @@ static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
- 		return -EINVAL;
- 	}
- 
-+	if (wpan_phy->flags & WPAN_PHY_FLAG_DATAGRAMS_ONLY) {
-+		NL_SET_ERR_MSG(info->extack, "PHY only supports datagrams");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	request = kzalloc(sizeof(*request), GFP_KERNEL);
- 	if (!request)
- 		return -ENOMEM;
-@@ -1584,6 +1589,11 @@ nl802154_send_beacons(struct sk_buff *skb, struct genl_info *info)
- 		return -EPERM;
- 	}
- 
-+	if (wpan_phy->flags & WPAN_PHY_FLAG_DATAGRAMS_ONLY) {
-+		NL_SET_ERR_MSG(info->extack, "PHY only supports datagrams");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	request = kzalloc(sizeof(*request), GFP_KERNEL);
- 	if (!request)
- 		return -ENOMEM;
+ /**
 -- 
 2.34.1
 
