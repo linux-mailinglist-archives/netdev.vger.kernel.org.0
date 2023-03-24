@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B176C83B8
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:51:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC8E6C83BA
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:52:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbjCXRvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 13:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        id S231742AbjCXRwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 13:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231215AbjCXRvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:51:51 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52F91B578;
-        Fri, 24 Mar 2023 10:51:39 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id n2so2227523qtp.0;
-        Fri, 24 Mar 2023 10:51:39 -0700 (PDT)
+        with ESMTP id S231561AbjCXRwA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:52:00 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F8B11164;
+        Fri, 24 Mar 2023 10:51:41 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id 31so2191789qvc.1;
+        Fri, 24 Mar 2023 10:51:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679680299;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ObJfsWBwfdyISOqoBrwJanxDZpkj5q/KTkNU2QoZ86U=;
-        b=Xhval9kubc80Z+IQp+6r+OCFaTSwYYQPJ2P1VL5eFWRZmCVJtmjfTJU2sD+ALyb3OP
-         6Cv+7g79/61SkksLs4OpFczc7uGk7qxYjiO2o6FmUK7P6TP02nAWzct5e4mI944obzQW
-         bFhPAmkwzruaU9lcREc/Euv2hOpCMrXo0IuLTF29raDaes9CpNkLQOe0WFS6RKcY0sQG
-         V3jZzsu9lFi2VueCSeEK8dxtJvXgdEHwCwIXhFnoBV+KrXujqK9uQDaFtjleel1njPDs
-         d8yagcQdnpmdP4DREFscLODtuckyNnDokLeWMbmFEXDGmlLA+Nub7TPdVv2NtGs8Vv3o
-         FUqQ==
+        d=gmail.com; s=20210112; t=1679680300;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HEKl1KK7ZlF8f1b0XHNy3aS7ALtOEGTZ1dh0r4qD514=;
+        b=Y2KjvMxOjZnEjfu6VJ64oKgo0ZlCt2qKQz3IpvqttbRfllzpRD0i4q08cjo5VvCBtd
+         4P2pEdbcvSwGkPt5DuoTeAXJ1Fjkz3ChUCImIPREFAxs71VRRq8lnSuFWJ6c6o87kfnb
+         sSclbHa8kjHUnXDnoL6tdNjMX7LtfkjsZ5bAZ4ibBxwYJ9Y32e0NWaIfUF70qUk6YyBD
+         d139F1zWqVEPFBqn5AS47f1rQAvR9eAcyFa/JAQVLUSjpJ4M2rLYebjaREeJ1GW8HEm+
+         LHRMHgMQQvXCNKoQwtywSgqGSdd9cn/YVjfkYzu4zdZKxCRUbXX5HWgoTCheJrRy5a1x
+         /1rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679680299;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ObJfsWBwfdyISOqoBrwJanxDZpkj5q/KTkNU2QoZ86U=;
-        b=YfccQrQ9EBd3ySVTHbHsblqvknvuV2nZqG04m8fHKXOOCaaqMt7WzqC42NSUzX2Ryw
-         HtFhy1T/8NwXuhjaul4WvKCvf0We/80KpANCr1DbGOXABAyMy6TUKQZr76/nhIngep8s
-         j4Eb2zNSYxmKwgZmwsG2BbHDlpwILeNTXgkOK9vmPotiRXYZXCljOkUWRUbtsndBauHq
-         R40PkR728ukCXCjckm5F3FuaHcOsL/3+qF8zoM5lB+jiDkE1alQTq923M2n2ajg5HZHE
-         ZWLD5aDCGFRkIxEcR+H0TbS9Wg7qGlYuJxpWGiQh5evrHyXV3ym+8AnBi4xCTrtoggas
-         Yu1w==
-X-Gm-Message-State: AO0yUKV4WnD1Eo31fXUAvJlKNLnUu10U1WNDcS6n6Vg4zhcHJFXeG69B
-        x0esoao003vwmv68gPyfeGM=
-X-Google-Smtp-Source: AK7set9e9Z1VFwvskps8gPWHmu5B2v9idw7BvrjAbvcikUPWSS7vRI8fVd2ooGV7s4mdNZdi0xWn+A==
-X-Received: by 2002:a05:622a:c6:b0:3b6:3995:2ec2 with SMTP id p6-20020a05622a00c600b003b639952ec2mr6891846qtw.19.1679680298756;
-        Fri, 24 Mar 2023 10:51:38 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679680300;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HEKl1KK7ZlF8f1b0XHNy3aS7ALtOEGTZ1dh0r4qD514=;
+        b=7vHc53bHNxewJjP2Kn8QZMwADqJaxNY5yQbCNnB78AVueAbWFAJ8mvj0Oj18gJaRON
+         eRj7WZsX42XhImX2Bf+Ka1keP5kNNCllJ/EzTdY/422K3WaESqN1Rn/czpQwhE4OrLWj
+         EO9EbRVULKjkJ0FTVzdOftgqo4S0QTnPyzfSdvnb8vd/hN0HABA0WzlSZht/RBk/N9cs
+         JKB+QjvHtF2FUEmy3eK2MkwA5e74f955WIg/0VYeUbE45IfGcKlj1bgEeZfyjUS0lhk1
+         WcoToqnhPF7QGbNZVMsEnQuJRWNDqc/eZrsMmB6rBDp5/gG24IYeLql3g7klATcN5Hic
+         OWVQ==
+X-Gm-Message-State: AAQBX9cLJ5+nVhmEoRf7mwbfK7rEekD9oKkQCsDXTZgKdLmNwP5ynu8+
+        vlswEH9rfSj99ovmIi6b5A0=
+X-Google-Smtp-Source: AKy350YlgAF9hhE4PNRtjuZ7kiZQdD4E7aXLESIfB24AIm65l1ex8gz626fPyihD4LxZBXgo2qBiCg==
+X-Received: by 2002:a05:6214:2a8f:b0:5b4:55d3:90bc with SMTP id jr15-20020a0562142a8f00b005b455d390bcmr5384276qvb.35.1679680299813;
+        Fri, 24 Mar 2023 10:51:39 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id 11-20020a37030b000000b00745a55db5a3sm8697645qkd.24.2023.03.24.10.51.37
+        by smtp.gmail.com with UTF8SMTPSA id bp5-20020a05621407e500b005dd8b9345dcsm849889qvb.116.2023.03.24.10.51.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Mar 2023 10:51:38 -0700 (PDT)
+        Fri, 24 Mar 2023 10:51:39 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -55,11 +56,14 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Cc:     Simon Horman <simon.horman@corigine.com>,
         linux-kernel@vger.kernel.org, Sean Anderson <seanga2@gmail.com>,
-        debian-sparc@lists.debian.org, rescue@sunhelp.org, sparc@gentoo.org
-Subject: [PATCH net-next v4 00/10] net: sunhme: Probe/IRQ cleanups
-Date:   Fri, 24 Mar 2023 13:51:26 -0400
-Message-Id: <20230324175136.321588-1-seanga2@gmail.com>
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <error27@gmail.com>
+Subject: [PATCH net-next v4 01/10] net: sunhme: Fix uninitialized return code
+Date:   Fri, 24 Mar 2023 13:51:27 -0400
+Message-Id: <20230324175136.321588-2-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20230324175136.321588-1-seanga2@gmail.com>
+References: <20230324175136.321588-1-seanga2@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -72,47 +76,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Well, I've had these patches kicking around in my tree since last October, so I
-guess I had better get around to posting them. This series is mainly a
-cleanup/consolidation of the probe process, with some interrupt changes as well.
-Some of these changes are SBUS- (AKA SPARC-) specific, so this should really get
-some testing there as well to ensure nothing breaks. I've CC'd a few SPARC
-mailing lists in hopes that someone there can try this out. I also have an SBUS
-card I ordered by mistake if anyone has a SPARC computer but lacks this card.
+Fix an uninitialized return code if we never found a qfe slot. It would be
+a bug if we ever got into this situation, but it's good to return something
+tracable.
+
+Fixes: acb3f35f920b ("sunhme: forward the error code from pci_enable_device()")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <error27@gmail.com>
+Signed-off-by: Sean Anderson <seanga2@gmail.com>
+---
 
 Changes in v4:
-- Tweak variable order for yuletide
-- Move uninitialized return to its own commit
-- Use correct SBUS/PCI accessors
-- Rework hme_version to set the default in pci/sbus_probe and override it (if
-  necessary) in common_probe
+- Move this fix to its own commit
 
-Changes in v3:
-- Incorperate a fix from another series into this commit
+ drivers/net/ethernet/sun/sunhme.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v2:
-- Move happy_meal_begin_auto_negotiation earlier and remove forward declaration
-- Make some more includes common
-- Clean up mac address init
-- Inline error returns
-
-Sean Anderson (10):
-  net: sunhme: Fix uninitialized return code
-  net: sunhme: Just restart autonegotiation if we can't bring the link
-    up
-  net: sunhme: Remove residual polling code
-  net: sunhme: Unify IRQ requesting
-  net: sunhme: Alphabetize includes
-  net: sunhme: Switch SBUS to devres
-  net: sunhme: Consolidate mac address initialization
-  net: sunhme: Clean up mac address init
-  net: sunhme: Inline error returns
-  net: sunhme: Consolidate common probe tasks
-
- drivers/net/ethernet/sun/sunhme.c | 1155 +++++++++++------------------
- drivers/net/ethernet/sun/sunhme.h |    6 +-
- 2 files changed, 418 insertions(+), 743 deletions(-)
-
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index b0c7ab74a82e..7cf8210ebbec 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -2834,7 +2834,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	int i, qfe_slot = -1;
+ 	char prom_name[64];
+ 	u8 addr[ETH_ALEN];
+-	int err;
++	int err = -ENODEV;
+ 
+ 	/* Now make sure pci_dev cookie is there. */
+ #ifdef CONFIG_SPARC
 -- 
 2.37.1
 
