@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AED186C8587
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 20:03:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5F96C8588
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 20:04:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230117AbjCXTDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 15:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
+        id S231311AbjCXTD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 15:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbjCXTDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 15:03:20 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2063.outbound.protection.outlook.com [40.107.102.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E74B15153
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 12:03:19 -0700 (PDT)
+        with ESMTP id S231161AbjCXTD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 15:03:26 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2064.outbound.protection.outlook.com [40.107.243.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7D41B563
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 12:03:20 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FtBd+pkzggOocay4s8c0H5h+8I//R2ZeY7D+W4ts6PoWVWU05iMQlCfQU2AQtFs4JRnjAvOHJUwBy2xWLV0yAyzh6O+TK48qsIDLQNKKI0xxwiMVCZ+oz15uvM0fjGwjS2in4mEn1DvGK30EkzCLJzRl2XvvZDrXqypFQoVNjaA7VKvZPtMpNfJCLl1W7bLMg3w6ntAVMd+p4DaiEPrsIvaGlvoUk7C1soxYmqkfxdo79QA5HgTRxVpPq3cWhbvrXMuDgVk/tc1EfFGnxqoifnlI1FawyxYJzYx0VPmKyTp+wlQsQYzDvhG1btEOoN/F0QmvveL8iAFP1o4ZKjq2EA==
+ b=J2N1Gf7SYSE45NwyBVOpJ3BS+rxnxFuenE+xrR7Yb1J5y8KnQobrVncyRxDJGkM//JBALTAPPWBNEL5o627Of4GIv9CVt4lB0qFzjYer6drJxwX5gfg5JwWi+0DOMfArlzdh8tjXFA3afHKIgWmCK2BAomp2IsoWhiN+IkEM4xi+4hNzafweJlNixL7ZlPceOIAPpMyz3qb0mGGu8MrFPfddAQX2h6n0nw459cVtQkxjD1YJUK5E+K/jjw3vwKcntlvISDXHovVH5aJRr3vqCMy0aNXTZjvst71WQoHYDX6YItgF96X69SiY4M2Dk4fnRHKKI88EfPMXwxFPjVFN7w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Dq1go+W0quN8cOTTEYVy3ERge755/St0cDgbXKH6hP0=;
- b=XnTSXSifA1bDmOgFux1E/O+kjmlR3OxbDTHooAlhSwwXtPPw2aDaI6RrzFVMivLRP6Djua/bubBXzx64oFLArz8JW2lVU+DTg0RWAo96WF8kkU3idqeYOICBlNIYsONhI2R4OYbMDjZ/P6sTQkzBAJ65bbVDCr2Ypzt4Dcu1RxOkavVH3cBJFfXy/AsA2wBp+zPP38N/0cff3aDJ8hoSmCltjoNh+K4p4147HiNzUsd2g6cYZFrfH5UlH+A/orNRlKeDABW7N1Sn/pxkL3c84Ll9QJ+I/Spj/OT6wp+SHxo3BpBjg6iiqA39kSGZfgUkoVukz0Br0jUc1fqr1mklCg==
+ bh=p1WldjbPuxUCrf+0oriBcxdplJsyKWQ4PelOp1drGz8=;
+ b=MG72p5RzcVrLzL5DAXW20TBUKM9oBFXas4CkKMqLv5w6DqUiezV2B7hiA3H+cn7ThbsErJdWhdBN7swI1+NaBkoYFGo1EraTToslQb5HA94JGn8mCN5wvAU1n6+ctXCXFaNG8CL8sOvQvfT/QC+yg3qxbMLP6Uqdj6kTGRJ1KjEqfWAqjHVlTqj1cdzPlvwH7PQGUwVT7Kg8205S/pF9DletuANeeOvXTo+ahRaaqDWfvBn1gH+oCEmMngkX5XpEhnW6jmcdavZ5kSLWkwOulRBedOhncEoT4++A7Sr83XV3BKJ5HzLmzg9kCOrY6lRUbIoTkhp6KuQoZRyf2/C45g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dq1go+W0quN8cOTTEYVy3ERge755/St0cDgbXKH6hP0=;
- b=Lt8MlwQZ9P7M8AErw0lE2DtCIYPpuxjtfDt/D53ZD2JaHW98qBp7PI5/a4XLn4WL39Y96gW8dLoibgVb9veSFvJ37ujPA/tkxYGNwx1e0l8N+U2pKm75DL2Km0erd6ThhVmpihmTABIhz2rfTNwS6qJDa1RiojVWIulSG9YFXW8=
-Received: from DM6PR21CA0016.namprd21.prod.outlook.com (2603:10b6:5:174::26)
- by PH7PR12MB5620.namprd12.prod.outlook.com (2603:10b6:510:137::5) with
+ bh=p1WldjbPuxUCrf+0oriBcxdplJsyKWQ4PelOp1drGz8=;
+ b=SrY5TXqkRjJA1NlTR22cz+onck80wz96vpO8dMygbzZTia2G4Jb7hTVgaqfuZcDEafjyb1RwU4aPnLAeCPyxrQ+pJKVrdEfwEUL5cWE0xYkweEqtGj8weqVHX4tjc9AIIpPjtLsyANuJ3GZuvujpChqarpF0ozFCCcOtZLbHqgs=
+Received: from DM6PR17CA0014.namprd17.prod.outlook.com (2603:10b6:5:1b3::27)
+ by SA0PR12MB4350.namprd12.prod.outlook.com (2603:10b6:806:92::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Fri, 24 Mar
- 2023 19:03:15 +0000
-Received: from DM6NAM11FT076.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:174:cafe::c1) by DM6PR21CA0016.outlook.office365.com
- (2603:10b6:5:174::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.9 via Frontend
- Transport; Fri, 24 Mar 2023 19:03:15 +0000
+ 2023 19:03:17 +0000
+Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1b3::4) by DM6PR17CA0014.outlook.office365.com
+ (2603:10b6:5:1b3::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38 via Frontend
+ Transport; Fri, 24 Mar 2023 19:03:17 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +46,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT076.mail.protection.outlook.com (10.13.173.204) with Microsoft SMTP
+ DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6254.9 via Frontend Transport; Fri, 24 Mar 2023 19:03:15 +0000
+ 15.20.6254.9 via Frontend Transport; Fri, 24 Mar 2023 19:03:16 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 24 Mar
- 2023 14:03:14 -0500
+ 2023 14:03:15 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH v6 net-next 11/14] pds_core: devlink params for enabling VIF support
-Date:   Fri, 24 Mar 2023 12:02:40 -0700
-Message-ID: <20230324190243.27722-12-shannon.nelson@amd.com>
+Subject: [PATCH v6 net-next 12/14] pds_core: add the aux client API
+Date:   Fri, 24 Mar 2023 12:02:41 -0700
+Message-ID: <20230324190243.27722-13-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230324190243.27722-1-shannon.nelson@amd.com>
 References: <20230324190243.27722-1-shannon.nelson@amd.com>
@@ -70,23 +70,23 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT076:EE_|PH7PR12MB5620:EE_
-X-MS-Office365-Filtering-Correlation-Id: 142bfdbe-9f22-41d0-3986-08db2c9a6c6a
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT035:EE_|SA0PR12MB4350:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0b63cbb6-2599-4e82-2a2d-08db2c9a6d02
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rvejUm2r2uq4+DlFW4w6rb2r1WiRfqJ3CSmHvvL0T4FfQLAavy3XMWc3vPdAzis3MNkj7yrXdd4cSuRIOzKyuYY6L2VLGo/8w8PYuffVOUuTCZ0x1aYC2nU5x3YGISa+Xk6sOuiqGhQHg7IaAjNF2BKdZEjqC2jMiSMUYPmYuRCrIQeNjRG5aRSJOwNBqhGk6bE6ZBHNeeHViLfYzFHxZHmjNe4dbTkUNBjKauU/slmDCCvJiObKz2NMUMTKxRdbt8pPPFoHtTT9/d3ttoFzsuRKxzXVSN2DefKASZwoEmMhpO1biXOFYpzlgbWbEi1WJO2fWaNIuUmOO3kqihMxTSaDro0xyUZvZdpBytsxDBbdZ2lxJA4z6k/4dGoaac3rJmqJVevv5tc3f4WVJdzA0yYGfWPcT/hWOlQAoKu53tH0fZQiC2GGTnZcrCJMLCHmjOmuXzXRxabnwHE+1bh3bUJcXVcnGvI3KeIvlVX0g6i2auIS4/LqwS4mVAlUoc77aQ0Ju7ZVJbonuVD5ZbN+mCos/WEqMYJIwidKdHxvVXiz3pvEFQA8/DyORk2tRJhKEslsXDuICbG7PQmQeNUDqLeEfDGJdQfCmaTGSNoamkL1K5loYMdJuTfVBOe+o8eHXmRmeZWV+s8k/qG9wrqzyzV0N6F49bj7r4srvhTdI+7OEoNB4elM/VWASFlANYgDLQ9aUnR1U42aJPOvlFggv3NEKsZzQ5EUJ/8By33Wnxo=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(44832011)(2906002)(4326008)(41300700001)(83380400001)(36756003)(40460700003)(70206006)(336012)(478600001)(70586007)(186003)(40480700001)(36860700001)(16526019)(1076003)(2616005)(81166007)(426003)(54906003)(82310400005)(47076005)(26005)(8936002)(8676002)(110136005)(6666004)(5660300002)(316002)(356005)(86362001)(82740400003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: xrXXW0gd9QV2MS1eDHVcWuyQ3R0RBW7JMyZIhTOLjPfZaOlmoIilXOgxp6r+wYe8s6qfHT6PzGJJj3YLgNhczzkQnTt9z5SuPsr0ROmKmXqDTJ0af/A1WAw+4Vvf00ZLt6NZZUugs85t5Z+0kUOMHy8+1fP/jacyfhFN1Sudluih/p2tx0LiPlT0WREtPqJ+zibXbirhKH96zByxqMylqAg00sH/DEwrG+j/lFjY64XXn5boLA/9zth/oCNipVS5soPq155xknz/d4MQmnlZs2FFLicXlwJsPHXB/3MAnT8MtKOz0vb8Fj9/leDeBreVQdpMJQ9raxkyF1Lusz+Zj52i/OO6mK+QkA/DL1w0W+uWnOAL3oF5zMDXxEZRykkIQXGi891wEjFKDmC/dvefXqqtfa4+G+seijUaw5iVX0P9wbkhlsQKA1Q+XRROQVliqNbMcq0MbY6Zys/9OX/+bAfUlP++BdzJsUiCHY5AUBUE+ke4sWEpei5tDpY3oojQCuuHrLy6oDxETBROJZQV7iIX20Ih/3kmFUW+QUctKLd18CjdwyE72m8J8RmhLIkK76soEq3/ny4VJI0z+4EHZvHPXwN2qvqBau9ak2i57qX+KKV7BbZr8m12BIF0LJbBKdxmBbtoB39bnll4IbM6fHMiCVPb6qSjVTImsmqOZxfoI3FzvcXd4sg2+YsZmgrTzU9QYQ4g5Weqo+/zCB21Amv1AuWWUW3/0t6T2svRKcg=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(376002)(136003)(451199021)(46966006)(40470700004)(36840700001)(2906002)(356005)(40480700001)(4326008)(426003)(70586007)(83380400001)(54906003)(41300700001)(5660300002)(36860700001)(6666004)(81166007)(82740400003)(70206006)(110136005)(8936002)(1076003)(26005)(16526019)(44832011)(47076005)(478600001)(40460700003)(82310400005)(36756003)(8676002)(86362001)(316002)(2616005)(336012)(186003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 19:03:15.7606
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 19:03:16.7720
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 142bfdbe-9f22-41d0-3986-08db2c9a6c6a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b63cbb6-2599-4e82-2a2d-08db2c9a6d02
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT076.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5620
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4350
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
@@ -97,124 +97,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the devlink parameter switches so the user can enable
-the features supported by the VFs.
+Add the client API operations for running adminq commands.
+The core registers the client with the FW, then the client
+has a context for requesting adminq services.  We expect
+to add additional operations for other clients, including
+requesting additional private adminqs and IRQs, but don't have
+the need yet,
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/net/ethernet/amd/pds_core/devlink.c | 90 ++++++++++++++++++++-
- 1 file changed, 89 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/amd/pds_core/auxbus.c | 135 ++++++++++++++++++++-
+ include/linux/pds/pds_auxbus.h             |  28 +++++
+ 2 files changed, 160 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/pds_core/devlink.c b/drivers/net/ethernet/amd/pds_core/devlink.c
-index 17464b063009..45ab7e2e6528 100644
---- a/drivers/net/ethernet/amd/pds_core/devlink.c
-+++ b/drivers/net/ethernet/amd/pds_core/devlink.c
-@@ -7,6 +7,87 @@
- #include <linux/pci.h>
- 
+diff --git a/drivers/net/ethernet/amd/pds_core/auxbus.c b/drivers/net/ethernet/amd/pds_core/auxbus.c
+index 7c6a84009558..2443339f73de 100644
+--- a/drivers/net/ethernet/amd/pds_core/auxbus.c
++++ b/drivers/net/ethernet/amd/pds_core/auxbus.c
+@@ -6,6 +6,115 @@
  #include "core.h"
-+#include <linux/pds/pds_auxbus.h>
-+
-+static struct
-+pdsc_viftype *pdsc_dl_find_viftype_by_id(struct pdsc *pdsc,
-+					 enum devlink_param_type dl_id)
+ #include <linux/pds/pds_auxbus.h>
+ 
++static int pds_client_register(struct pdsc *vf, struct pdsc *pf, char *name)
 +{
-+	int vt;
++	union pds_core_adminq_comp comp = { 0 };
++	union pds_core_adminq_cmd cmd = { 0 };
++	int err;
++	u16 ci;
 +
-+	for (vt = 0; vt < PDS_DEV_TYPE_MAX; vt++) {
-+		if (pdsc->viftype_status[vt].dl_id == dl_id)
-+			return &pdsc->viftype_status[vt];
++	if (pf->state)
++		return -ENXIO;
++
++	cmd.client_reg.opcode = PDS_AQ_CMD_CLIENT_REG;
++	snprintf(cmd.client_reg.devname, sizeof(cmd.client_reg.devname),
++		 "%s.%s.%d", PDS_CORE_DRV_NAME, name, vf->id);
++
++	err = pdsc_adminq_post(pf, &cmd, &comp, false);
++	if (err) {
++		dev_info(pf->dev, "register dev_name %s with DSC failed, status %d: %pe\n",
++			 name, comp.status, ERR_PTR(err));
++		return err;
 +	}
 +
-+	return NULL;
-+}
-+
-+static int pdsc_dl_enable_get(struct devlink *dl, u32 id,
-+			      struct devlink_param_gset_ctx *ctx)
-+{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	struct pdsc_viftype *vt_entry;
-+
-+	vt_entry = pdsc_dl_find_viftype_by_id(pdsc, id);
-+	if (!vt_entry)
-+		return -ENOENT;
-+
-+	ctx->val.vbool = vt_entry->enabled;
-+
-+	return 0;
-+}
-+
-+static int pdsc_dl_enable_set(struct devlink *dl, u32 id,
-+			      struct devlink_param_gset_ctx *ctx)
-+{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	struct pdsc_viftype *vt_entry;
-+	int err = 0;
-+	int vf_id;
-+
-+	vt_entry = pdsc_dl_find_viftype_by_id(pdsc, id);
-+	if (!vt_entry || !vt_entry->supported)
-+		return -EOPNOTSUPP;
-+
-+	if (vt_entry->enabled == ctx->val.vbool)
-+		return 0;
-+
-+	vt_entry->enabled = ctx->val.vbool;
-+	for (vf_id = 0; vf_id < pdsc->num_vfs; vf_id++) {
-+		struct pdsc *vf = pdsc->vfs[vf_id].vf;
-+
-+		err = ctx->val.vbool ? pdsc_auxbus_dev_add_vf(vf, pdsc) :
-+				       pdsc_auxbus_dev_del_vf(vf, pdsc);
++	ci = le16_to_cpu(comp.client_reg.client_id);
++	if (!ci) {
++		dev_err(pf->dev, "%s: device returned null client_id\n",
++			__func__);
++		return -EIO;
 +	}
++
++	dev_dbg(pf->dev, "%s: device returned client_id %d for %s\n",
++		__func__, ci, cmd.client_reg.devname);
++
++	return ci;
++}
++
++static int pds_client_unregister(struct pdsc *pf, u16 client_id)
++{
++	union pds_core_adminq_comp comp = { 0 };
++	union pds_core_adminq_cmd cmd = { 0 };
++	int err;
++
++	if (pf->state)
++		return -ENXIO;
++
++	cmd.client_unreg.opcode = PDS_AQ_CMD_CLIENT_UNREG;
++	cmd.client_unreg.client_id = cpu_to_le16(client_id);
++
++	err = pdsc_adminq_post(pf, &cmd, &comp, false);
++	if (err)
++		dev_info(pf->dev, "unregister client_id %d failed, status %d: %pe\n",
++			 client_id, comp.status, ERR_PTR(err));
 +
 +	return err;
 +}
 +
-+static int pdsc_dl_enable_validate(struct devlink *dl, u32 id,
-+				   union devlink_param_value val,
-+				   struct netlink_ext_ack *extack)
++/**
++ * pds_client_adminq_cmd - Process an adminq request for the client
++ * @padev:   ptr to the client device
++ * @req:     ptr to buffer with request
++ * @req_len: length of actual struct used for request
++ * @resp:    ptr to buffer where answer is to be copied
++ * @flags:   optional flags from pds_core_adminq_flags
++ *
++ * Return: 0 on success, or
++ *         negative for error
++ *
++ * Client sends pointers to request and response buffers
++ * Core copies request data into pds_core_client_request_cmd
++ * Core sets other fields as needed
++ * Core posts to AdminQ
++ * Core copies completion data into response buffer
++ */
++static int pds_client_adminq_cmd(struct pds_auxiliary_dev *padev,
++				 union pds_core_adminq_cmd *req,
++				 size_t req_len,
++				 union pds_core_adminq_comp *resp,
++				 u64 flags)
 +{
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	struct pdsc_viftype *vt_entry;
-+
-+	vt_entry = pdsc_dl_find_viftype_by_id(pdsc, id);
-+	if (!vt_entry || !vt_entry->supported)
-+		return -EOPNOTSUPP;
-+
-+	if (!pdsc->viftype_status[vt_entry->vif_id].supported)
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+
-+static const struct devlink_param pdsc_dl_params[] = {
-+	DEVLINK_PARAM_GENERIC(ENABLE_VNET,
-+			      BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			      pdsc_dl_enable_get,
-+			      pdsc_dl_enable_set,
-+			      pdsc_dl_enable_validate),
-+};
- 
- static int pdsc_dl_flash_update(struct devlink *dl,
- 				struct devlink_flash_update_params *params,
-@@ -162,9 +243,16 @@ void pdsc_dl_free(struct pdsc *pdsc)
- int pdsc_dl_register(struct pdsc *pdsc)
- {
- 	struct devlink *dl = priv_to_devlink(pdsc);
++	union pds_core_adminq_cmd cmd = { 0 };
++	struct pdsc *pf;
++	size_t cp_len;
 +	int err;
 +
-+	if (!pdsc->pdev->is_virtfn) {
-+		err = devlink_params_register(dl, pdsc_dl_params,
-+					      ARRAY_SIZE(pdsc_dl_params));
-+		if (err)
-+			return err;
++	pf = pci_get_drvdata(padev->pf_pdev);
++
++	dev_dbg(pf->dev, "%s: %s opcode %d\n",
++		__func__, dev_name(&padev->aux_dev.dev), req->opcode);
++
++	if (pf->state)
++		return -ENXIO;
++
++	/* Wrap the client's request */
++	cmd.client_request.opcode = PDS_AQ_CMD_CLIENT_CMD;
++	cmd.client_request.client_id = cpu_to_le16(padev->client_id);
++	cp_len = min_t(size_t, req_len, sizeof(cmd.client_request.client_cmd));
++	memcpy(cmd.client_request.client_cmd, req, cp_len);
++
++	err = pdsc_adminq_post(pf, &cmd, resp,
++			       !!(flags & PDS_AQ_FLAG_FASTPOLL));
++	if (err && err != -EAGAIN)
++		dev_info(pf->dev, "client admin cmd failed: %pe\n",
++			 ERR_PTR(err));
++
++	return err;
++}
++
++static struct pds_core_ops pds_core_ops = {
++	.adminq_cmd = pds_client_adminq_cmd,
++};
++
+ static void pdsc_auxbus_dev_release(struct device *dev)
+ {
+ 	struct pds_auxiliary_dev *padev =
+@@ -16,7 +125,9 @@ static void pdsc_auxbus_dev_release(struct device *dev)
  
--	if (!pdsc->pdev->is_virtfn)
- 		pdsc_dl_reporters_create(pdsc);
-+	}
+ static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *vf,
+ 							  struct pdsc *pf,
+-							  char *name)
++							  u16 client_id,
++							  char *name,
++							  struct pds_core_ops *ops)
+ {
+ 	struct auxiliary_device *aux_dev;
+ 	struct pds_auxiliary_dev *padev;
+@@ -28,6 +139,8 @@ static struct pds_auxiliary_dev *pdsc_auxbus_dev_register(struct pdsc *vf,
  
- 	devlink_register(dl);
+ 	padev->vf_pdev = vf->pdev;
+ 	padev->pf_pdev = pf->pdev;
++	padev->ops = ops;
++	padev->client_id = client_id;
  
+ 	aux_dev = &padev->aux_dev;
+ 	aux_dev->name = name;
+@@ -77,6 +190,8 @@ int pdsc_auxbus_dev_del_vf(struct pdsc *vf, struct pdsc *pf)
+ 
+ 	padev = pf->vfs[vf->vf_id].padev;
+ 	if (padev) {
++		pds_client_unregister(pf, padev->client_id);
++		padev->client_id = 0;
+ 		auxiliary_device_delete(&padev->aux_dev);
+ 		auxiliary_device_uninit(&padev->aux_dev);
+ 	}
+@@ -91,6 +206,7 @@ int pdsc_auxbus_dev_add_vf(struct pdsc *vf, struct pdsc *pf)
+ {
+ 	struct pds_auxiliary_dev *padev;
+ 	enum pds_core_vif_types vt;
++	int client_id;
+ 	int err = 0;
+ 
+ 	mutex_lock(&pf->config_lock);
+@@ -124,9 +240,22 @@ int pdsc_auxbus_dev_add_vf(struct pdsc *vf, struct pdsc *pf)
+ 		      pf->viftype_status[vt].enabled))
+ 			continue;
+ 
+-		padev = pdsc_auxbus_dev_register(vf, pf,
+-						 pf->viftype_status[vt].name);
++		/* need to register with FW and get the client_id before
++		 * creating the aux device so that the aux client can run
++		 * adminq commands as part its probe
++		 */
++		client_id = pds_client_register(vf, pf,
++						pf->viftype_status[vt].name);
++		if (client_id < 0) {
++			err = client_id;
++			goto out_unlock;
++		}
++
++		padev = pdsc_auxbus_dev_register(vf, pf, client_id,
++						 pf->viftype_status[vt].name,
++						 &pds_core_ops);
+ 		if (IS_ERR(padev)) {
++			pds_client_unregister(pf, client_id);
+ 			err = PTR_ERR(padev);
+ 			goto out_unlock;
+ 		}
+diff --git a/include/linux/pds/pds_auxbus.h b/include/linux/pds/pds_auxbus.h
+index aa0192af4a29..f98efd578e1c 100644
+--- a/include/linux/pds/pds_auxbus.h
++++ b/include/linux/pds/pds_auxbus.h
+@@ -10,7 +10,35 @@ struct pds_auxiliary_dev {
+ 	struct auxiliary_device aux_dev;
+ 	struct pci_dev *vf_pdev;
+ 	struct pci_dev *pf_pdev;
++	struct pds_core_ops *ops;
+ 	u16 client_id;
+ 	void *priv;
+ };
++
++/*
++ *   ptrs to functions to be used by the client for core services
++ */
++struct pds_core_ops {
++	/* .adminq_cmd() - process an adminq request for the client
++	 * padev:  ptr to the client device
++	 * req:     ptr to buffer with request
++	 * req_len: length of actual struct used for request
++	 * resp:    ptr to buffer where answer is to be copied
++	 * flags:   optional flags defined by enum pds_core_adminq_flags
++	 *	    and used for more flexible adminq behvior
++	 *
++	 * returns 0 on success, or
++	 *         negative for error
++	 * Client sends pointers to request and response buffers
++	 * Core copies request data into pds_core_client_request_cmd
++	 * Core sets other fields as needed
++	 * Core posts to AdminQ
++	 * Core copies completion data into response buffer
++	 */
++	int (*adminq_cmd)(struct pds_auxiliary_dev *padev,
++			  union pds_core_adminq_cmd *req,
++			  size_t req_len,
++			  union pds_core_adminq_comp *resp,
++			  u64 flags);
++};
+ #endif /* _PDSC_AUXBUS_H_ */
 -- 
 2.17.1
 
