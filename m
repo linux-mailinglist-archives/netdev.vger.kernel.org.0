@@ -2,90 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C426C8143
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 16:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24C096C8164
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 16:37:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbjCXPd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 11:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S231723AbjCXPhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 11:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232362AbjCXPd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 11:33:57 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A10FF22
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:33:54 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id h136-20020a6bb78e000000b00758b105cdd3so1346818iof.23
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:33:54 -0700 (PDT)
+        with ESMTP id S231596AbjCXPha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 11:37:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955FA1ACC8
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:36:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679672180;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Z/Kz7kV+UiInmN3q36fZWIJQ0sjJV/FHyS/DppuKTvQ=;
+        b=eW4Ah/mrfC7pv7ma80zN3R370PX2euPb2qm2LBIa7wvv6x5uO3pmBg3NkMxdDTKGZE3Nnp
+        JvDzCj8v452/k3jZBECeQ9pEXoDMUW3zE4VfnjASEakS83drUi1oVvldt5xr1K4MbsVRVC
+        xlyuTkZeGLqAEDVQAL9Cr0f+GGsFsBA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-418-Nw5GEuXuOlWtVifM9DU_fA-1; Fri, 24 Mar 2023 11:36:18 -0400
+X-MC-Unique: Nw5GEuXuOlWtVifM9DU_fA-1
+Received: by mail-ed1-f71.google.com with SMTP id h11-20020a0564020e8b00b004e59d4722a3so3744176eda.6
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 08:36:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679672034;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=eLycQxPJh5ctdiAHM+TFhyOKcExHz+mFKF6NIvcUHOA=;
-        b=LhNuC1VIJeuQrDvdbT0KSizZ1OHaTIsJTJQk8JzweXld2zOM9rq1VWn6wbcVd7NYQk
-         k9vax/M0i4dON7z7Ub6MqJIm0B5NESZ5gAfHue0u/bsvQIsIoTJ3abgLwRy5yzPHF217
-         Q/CPQsvAXyTZdR4XcQxfi2hsjd16IhqnMIFcbyQ2l8mbCUGKmc8v47UUbgckW+HcfsAW
-         0KD7MN0yfYXahHXnh9S1WvLEs42Dt2PCIjTsTQ+AnZMOQSfrTP8xI/9G1BVHrk65iS4b
-         iTvyOX0VcHUX5e/S+8yM5mEHSK7S3vPlDB+CN1uRIYfegmZUZbznkqkkZMXSqQ6PWAfq
-         psTg==
-X-Gm-Message-State: AO0yUKWxV7L4vllplc5Xxty0EJ2K8qCdzzZGxFPLJYKTYwTGvUrx6xyX
-        skWaN8NDeyOqNkImSYBra7dkWMpPAbCCC2U/fFVk9YYBKMaH
-X-Google-Smtp-Source: AK7set8UfRAmUJZ9Pdv22DQTYvQa4B67nyUY5YX08xzcbn8+rNZj62ZJYHmhaEpOsXfVcdvNZq5UIPZ8gpDieG2iTXihb54QJ+SK
+        d=1e100.net; s=20210112; t=1679672177;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Z/Kz7kV+UiInmN3q36fZWIJQ0sjJV/FHyS/DppuKTvQ=;
+        b=2Z+ISLIv5Ud8UMx0YYkuu38B0ybnd3MfzViqRo67S171LH+h9GYjbbShQTU8pMO1Xv
+         EMvo2ZoGeqKtJ6OZ4lDE9XnhBRYRcjY8Qe1qy4V8WxB36nqNi7UYVBGqF9Ff6iAOt1bf
+         B6A+wvXjwvJOswxhyRarfn55ZcPv7Ll4K3Inpj1pnrX55S+cqtolnDRif/MQiAgTYZg2
+         4MNBBhSGHsqd6T+9vk4Ume5vdjXq0CyiaS+5VZXq3g9xBTj15xlD4wk0t9so1xjQ8XEF
+         weOBomE3WL/Th27cXapdQUEC8u7bFWjWBas29CttqkZIWN9ZIgugfPpvYFAQlbbUX33n
+         GMzA==
+X-Gm-Message-State: AAQBX9dw2gAfy928LHvjH/JnLK0vLrFv1c9o4Dl/SOAMs5gxJd0CN5Cq
+        p9ySn89yLbXMALs7VFrLpwD2kNkWPLdXgR9TrgMQz34jDRTBjNsUTl6nyH5U+BNC+KXP7XGqIMH
+        Z8aBguDX9NbBc9jGC
+X-Received: by 2002:aa7:c6c8:0:b0:4f9:deb4:b986 with SMTP id b8-20020aa7c6c8000000b004f9deb4b986mr2885732eds.7.1679672177755;
+        Fri, 24 Mar 2023 08:36:17 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ay1iv3SvkhVkCpZgFjlrGDYTHaf4l+WBI3Lkacaxfq08vNdhGScQ/rdLUDCOdmvue3dyREYA==
+X-Received: by 2002:aa7:c6c8:0:b0:4f9:deb4:b986 with SMTP id b8-20020aa7c6c8000000b004f9deb4b986mr2885714eds.7.1679672177492;
+        Fri, 24 Mar 2023 08:36:17 -0700 (PDT)
+Received: from localhost.localdomain (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id a27-20020a509b5b000000b00501dd53dbfbsm5468613edj.75.2023.03.24.08.36.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Mar 2023 08:36:16 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     stefanha@redhat.com, Jason Wang <jasowang@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, eperezma@redhat.com,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH v4 0/9] vdpa_sim: add support for user VA
+Date:   Fri, 24 Mar 2023 16:35:58 +0100
+Message-Id: <20230324153607.46836-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-X-Received: by 2002:a02:95c4:0:b0:406:2a80:467a with SMTP id
- b62-20020a0295c4000000b004062a80467amr1109851jai.0.1679672033950; Fri, 24 Mar
- 2023 08:33:53 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 08:33:53 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ec461d05f7a71e38@google.com>
-Subject: [syzbot] [wireless] Monthly Report
-From:   syzbot <syzbot+listd50b9cb19229e38c60c8@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.6 required=5.0 tests=FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello wireless maintainers/developers,
+This series adds support for the use of user virtual addresses in the
+vDPA simulator devices.
 
-This is a 30-day syzbot report for wireless subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/wireless
+The main reason for this change is to lift the pinning of all guest memory.
+Especially with virtio devices implemented in software.
 
-During the period, 6 new issues were detected and 0 were fixed.
-In total, 45 issues are still open and 102 have been fixed so far.
+The next step would be to generalize the code in vdpa-sim to allow the
+implementation of in-kernel software devices. Similar to vhost, but using vDPA
+so we can reuse the same software stack (e.g. in QEMU) for both HW and SW
+devices.
 
-Some of the still happening issues:
+For example, we have never merged vhost-blk, and lately there has been interest.
+So it would be nice to do it directly with vDPA to reuse the same code in the
+VMM for both HW and SW vDPA block devices.
 
-Crashes Repro Title
-6721    Yes   KMSAN: uninit-value in hwsim_cloned_frame_received_nl
-              https://syzkaller.appspot.com/bug?extid=b2645b5bf1512b81fa22
-4059    Yes   WARNING in __cfg80211_ibss_joined (2)
-              https://syzkaller.appspot.com/bug?extid=7f064ba1704c2466e36d
-3067    Yes   WARNING in __ieee80211_beacon_get
-              https://syzkaller.appspot.com/bug?extid=18c783c5cf6a781e3e2c
-806     Yes   INFO: task hung in switchdev_deferred_process_work (2)
-              https://syzkaller.appspot.com/bug?extid=8ecc009e206a956ab317
-558     Yes   WARNING in __rate_control_send_low
-              https://syzkaller.appspot.com/bug?extid=fdc5123366fb9c3fdc6d
-517     Yes   WARNING in ieee80211_start_next_roc
-              https://syzkaller.appspot.com/bug?extid=c3a167b5615df4ccd7fb
-245     Yes   INFO: task hung in rfkill_global_led_trigger_worker (2)
-              https://syzkaller.appspot.com/bug?extid=2e39bc6569d281acbcfb
-232     Yes   WARNING in ieee80211_link_info_change_notify (2)
-              https://syzkaller.appspot.com/bug?extid=de87c09cc7b964ea2e23
-196     No    WARNING in ieee80211_ibss_csa_beacon (2)
-              https://syzkaller.appspot.com/bug?extid=b10a54cb0355d83fd75c
-10      Yes   KMSAN: uninit-value in ath9k_wmi_ctrl_rx
-              https://syzkaller.appspot.com/bug?extid=f2cb6e0ffdb961921e4d
+The main problem (addressed by this series) was due to the pinning of all
+guest memory, which thus prevented the overcommit of guest memory.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Thanks,
+Stefano
+
+Changelog listed in each patch.
+v3: https://lore.kernel.org/lkml/20230321154228.182769-1-sgarzare@redhat.com/
+v2: https://lore.kernel.org/lkml/20230302113421.174582-1-sgarzare@redhat.com/
+RFC v1: https://lore.kernel.org/lkml/20221214163025.103075-1-sgarzare@redhat.com/
+
+Stefano Garzarella (9):
+  vdpa: add bind_mm/unbind_mm callbacks
+  vhost-vdpa: use bind_mm/unbind_mm device callbacks
+  vringh: replace kmap_atomic() with kmap_local_page()
+  vringh: define the stride used for translation
+  vringh: support VA with iotlb
+  vdpa_sim: make devices agnostic for work management
+  vdpa_sim: use kthread worker
+  vdpa_sim: replace the spinlock with a mutex to protect the state
+  vdpa_sim: add support for user VA
+
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |  11 +-
+ include/linux/vdpa.h                 |  10 ++
+ include/linux/vringh.h               |   9 ++
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     | 161 ++++++++++++++++++++-----
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  10 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  10 +-
+ drivers/vhost/vdpa.c                 |  34 ++++++
+ drivers/vhost/vringh.c               | 173 ++++++++++++++++++++++-----
+ 8 files changed, 340 insertions(+), 78 deletions(-)
+
+-- 
+2.39.2
+
