@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B834A6C891E
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 00:14:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B49B6C891D
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 00:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231384AbjCXXOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 19:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S231789AbjCXXO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 19:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232191AbjCXXOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 19:14:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82B81E1D6
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 16:14:03 -0700 (PDT)
+        with ESMTP id S232315AbjCXXOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 19:14:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA6B1A653
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 16:14:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58D81B82666
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B00C62D07
         for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 23:14:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 128E5C433D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D447EC4339C;
         Fri, 24 Mar 2023 23:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1679699640;
-        bh=JWb5GQZsOCRN1HktGF1owvEf3pzBAba/VBDnahGvzwg=;
+        bh=rJ3CGBEgQkrokSNwe+6qO/zUUZPvcz1/drc2glxXNl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jH6J2hkddlcIJOrF9Ont5/BaIYPD50vfr+c/F2AaJRTuJOQkqK5XMF7pGxq/ZtZ3/
-         K74Vy72y691n0SWCJ0jyNYOIYfa+gZXJKAwTqEECJIeLeS5AmJxqG9Def/mQPAGIwv
-         U3lRo0U2iIMhEXy5aPcfsCydEv9W+Uqi3VG5PBC4sBZUMffyrX1hQBRlfmmPnUYzKl
-         80M0t2me+O41kVD4Ogge78QCpsX9eutaPGS7zYowjyicJ9Wxu+wrh7E8NUOUcapL05
-         LbqL8yvWKxXYep4eQojPtsQZiZLDgb/gvhjKn6cBXNaPRRLYNmqyhWBRVFa5nsMVQF
-         CIVd4E4wttjpQ==
+        b=ofM6g82c84rzqKALuqVF0MOplkLxtZGletiNgtbmIrgOWDAbfRMxSTmJt3EaJ3t+n
+         OSTrSpcsvnsNcJqhnp15UuXzm+5FWhlY4AdmQxmOc9KWox+taiaaOD/JvE+uT6jl6Z
+         m7lhGtMW+WndBAMJeLJ3IPcE7Mqh5oR7x6VGC8oIwwmCZ2ajHxUGvCMyvoDfJllrAT
+         8wJRwA8HqR0VknexkcIBQ/OzU6ptykMSj6VBQGDAzkDtB+IrHdEaKVix60aBJvo9KI
+         hBrNoU9Xq8qUlgU563UzCmV6+trdZISsNGPyz9DRKr7xrrnIG5LxAsPbyheIEaMEIC
+         LudvJF+VktXqg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -41,16 +41,16 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
         Eli Cohen <elic@nvidia.com>, Shay Drory <shayd@nvidia.com>,
         Jacob Keller <jacob.e.keller@intel.com>
-Subject: [net-next V2 11/15] net/mlx5: Move devlink registration before mlx5_load
-Date:   Fri, 24 Mar 2023 16:13:37 -0700
-Message-Id: <20230324231341.29808-12-saeed@kernel.org>
+Subject: [net-next V2 12/15] net/mlx5: Refactor calculation of required completion vectors
+Date:   Fri, 24 Mar 2023 16:13:38 -0700
+Message-Id: <20230324231341.29808-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230324231341.29808-1-saeed@kernel.org>
 References: <20230324231341.29808-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,74 +60,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eli Cohen <elic@nvidia.com>
 
-In order to allow reference to devlink parameters during driver load,
-move the devlink registration before mlx5_load. Subsequent patch will
-use it to control the number of completion vectors required based on
-whether eth is enabled or not.
+Move the calculation to a separate function. We will add more
+functionality to it in a follow up patch.
 
 Signed-off-by: Eli Cohen <elic@nvidia.com>
 Reviewed-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 28 +++++++++++++-------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index bbc9b4188212..fb9ac7da6e4c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1399,16 +1399,16 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
- 		goto function_teardown;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 888ccfcbcce6..66696c935cc5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -1113,26 +1113,34 @@ void mlx5_core_eq_free_irqs(struct mlx5_core_dev *dev)
+ #define MLX5_MAX_ASYNC_EQS 3
+ #endif
+ 
+-int mlx5_eq_table_create(struct mlx5_core_dev *dev)
++static int get_num_eqs(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_eq_table *eq_table = dev->priv.eq_table;
+-	int num_eqs = MLX5_CAP_GEN(dev, max_num_eqs) ?
++	int max_dev_eqs;
++	int max_eqs_sf;
++	int num_eqs;
++
++	max_dev_eqs = MLX5_CAP_GEN(dev, max_num_eqs) ?
+ 		      MLX5_CAP_GEN(dev, max_num_eqs) :
+ 		      1 << MLX5_CAP_GEN(dev, log_max_eq);
+-	int max_eqs_sf;
+-	int err;
+ 
+-	eq_table->num_comp_eqs =
+-		min_t(int,
+-		      mlx5_irq_table_get_num_comp(eq_table->irq_table),
+-		      num_eqs - MLX5_MAX_ASYNC_EQS);
++	num_eqs = min_t(int, mlx5_irq_table_get_num_comp(eq_table->irq_table),
++			max_dev_eqs - MLX5_MAX_ASYNC_EQS);
+ 	if (mlx5_core_is_sf(dev)) {
+ 		max_eqs_sf = min_t(int, MLX5_COMP_EQS_PER_SF,
+ 				   mlx5_irq_table_get_sfs_vec(eq_table->irq_table));
+-		eq_table->num_comp_eqs = min_t(int, eq_table->num_comp_eqs,
+-					       max_eqs_sf);
++		num_eqs = min_t(int, num_eqs, max_eqs_sf);
  	}
  
-+	err = mlx5_devlink_params_register(priv_to_devlink(dev));
-+	if (err)
-+		goto err_devlink_params_reg;
++	return num_eqs;
++}
 +
- 	err = mlx5_load(dev);
- 	if (err)
- 		goto err_load;
- 
- 	set_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state);
- 
--	err = mlx5_devlink_params_register(priv_to_devlink(dev));
--	if (err)
--		goto err_devlink_params_reg;
--
- 	err = mlx5_register_device(dev);
- 	if (err)
- 		goto err_register;
-@@ -1418,11 +1418,11 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
- 	return 0;
- 
- err_register:
--	mlx5_devlink_params_unregister(priv_to_devlink(dev));
--err_devlink_params_reg:
- 	clear_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state);
- 	mlx5_unload(dev);
- err_load:
-+	mlx5_devlink_params_unregister(priv_to_devlink(dev));
-+err_devlink_params_reg:
- 	mlx5_cleanup_once(dev);
- function_teardown:
- 	mlx5_function_teardown(dev, true);
-@@ -1441,7 +1441,6 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
- 	mutex_lock(&dev->intf_state_mutex);
- 
- 	mlx5_unregister_device(dev);
--	mlx5_devlink_params_unregister(priv_to_devlink(dev));
- 
- 	if (!test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
- 		mlx5_core_warn(dev, "%s: interface is down, NOP\n",
-@@ -1452,6 +1451,7 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
- 
- 	clear_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state);
- 	mlx5_unload(dev);
-+	mlx5_devlink_params_unregister(priv_to_devlink(dev));
- 	mlx5_cleanup_once(dev);
- 	mlx5_function_teardown(dev, true);
- out:
++int mlx5_eq_table_create(struct mlx5_core_dev *dev)
++{
++	struct mlx5_eq_table *eq_table = dev->priv.eq_table;
++	int err;
++
++	eq_table->num_comp_eqs = get_num_eqs(dev);
+ 	err = create_async_eqs(dev);
+ 	if (err) {
+ 		mlx5_core_err(dev, "Failed to create async EQs\n");
 -- 
 2.39.2
 
