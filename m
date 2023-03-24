@@ -2,79 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1FF6C7AEF
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:13:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB04D6C7B04
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 10:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231635AbjCXJNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 05:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
+        id S231364AbjCXJT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 05:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231470AbjCXJNd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:13:33 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101391EFCA
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:13:32 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id a21-20020a5d9595000000b0074c9dc19e16so789071ioo.15
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:13:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679649211;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QExb/T1F8/XoorTxuEKbTqt2ECV6VnSe+3ISxG21XUQ=;
-        b=3FqF3FyY3xF/v8IMMFf5qJ0S5IS9f+bg9uCXxUl+PZAIffbOPA3F4mRCNjbwV9HEmo
-         c55+Xd8uUXONBpKmnogWZJPNR9nByCIlgBpz83CHb6fYTxbU71oxr0A+Yvi75/5dKdFC
-         Y/JmbpAAfDn2UXr48uPMmcJ7OOcuxwLv/0blariShmhr1h6jhyM75LbekldjLf+ccZ5U
-         mrCGnN2/UVIHzmWtSH0illbgjQFHkqPJrbNYjO5QbjiU8SEMPq6/kpLO93/5ibLjwfXE
-         6Kukr7G1Xr2riNHWH9k5Ffz8ymFlSPDdBlQ5qBibOB+5A7osvsj0SV+oAH98SdQWDzhQ
-         kB6A==
-X-Gm-Message-State: AO0yUKX2gdGHbm8RbNhH6/RzJ2l+4wVlQKjF3WMCNm7BRE4Q93c+aCBi
-        5rM4QCYR32CiaA7iR5P36+tVEp5W/h4oxhKFgUZP3xufslOA
-X-Google-Smtp-Source: AK7set+u9V3h/lFnpss+6vSzDvV1hDPTiWdu/52VHEtBts1JBVTxyLHO1pbJZyyllLB5e3fSkCqgmE/v2lcGcZ6C+6WU1l4vDvHu
+        with ESMTP id S231898AbjCXJT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 05:19:56 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814C95B90
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 02:19:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Prgo4NDdx4nlCOa+QUywNeT7cuz4uqB8izK1lycHlLg=; b=r954ZMTaP8I10AQrHuYSte/dod
+        NeFQhKuI+aUfAs4NikfiYNaNSTzWLYBMKvz9/eUkU0umYfeewjsQq9H83Nh+homWu6NvDNu2r08nc
+        KBDX5NZs1R3RGmhyDWW2nKXipO4TVdNU72uaCOHKAwJL16ciYKyccbrXA/wHKIOKyKA89mRbzm6Fr
+        pEYvatwOHZ4kWbnXxkcmT+ZDobJh2n9373lixWsDa9xEOkNwIGhEc4ztXebjiABW1kc6THm9C/bkw
+        GNzwfhfLKmlH71OyshD4VFxwabnmn9gUIZZimbufkssplcnqXcyv/2N8TO/tSrQq99xubku8AAPFU
+        XcOazb6g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42548)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pfdaQ-0006hG-D3; Fri, 24 Mar 2023 09:19:50 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pfdaO-0002Jg-1c; Fri, 24 Mar 2023 09:19:48 +0000
+Date:   Fri, 24 Mar 2023 09:19:48 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next 0/3] Constify a few sfp/phy fwnodes
+Message-ID: <ZB1rNMAJ9oLr8myx@shell.armlinux.org.uk>
 MIME-Version: 1.0
-X-Received: by 2002:a02:a189:0:b0:3c5:14cb:a83a with SMTP id
- n9-20020a02a189000000b003c514cba83amr639266jah.2.1679649211430; Fri, 24 Mar
- 2023 02:13:31 -0700 (PDT)
-Date:   Fri, 24 Mar 2023 02:13:31 -0700
-In-Reply-To: <CAGxU2F7XjdKgdKwfZMT-sdJ+JK10p_2zNdaQeGBwm3jpEe1Xaw@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000098457705f7a1ce42@google.com>
-Subject: Re: [syzbot] [kvm?] [net?] [virt?] general protection fault in virtio_transport_purge_skbs
-From:   syzbot <syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com>
-To:     avkrasnov@sberdevices.ru, bobby.eshleman@bytedance.com,
-        bobby.eshleman@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, oxffffaa@gmail.com, pabeni@redhat.com,
-        sgarzare@redhat.com, stefanha@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ***
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot tried to test the proposed patch but the build/boot failed:
+This series constifies a bunch of fwnode_handle pointers that are only
+used to refer to but not modify the contents of the fwnode structures.
 
-failed to apply patch:
-checking file net/vmw_vsock/vsock_loopback.c
-patch: **** unexpected end of file in patch
+ drivers/net/phy/phy_device.c | 2 +-
+ drivers/net/phy/sfp-bus.c    | 6 +++---
+ include/linux/phy.h          | 2 +-
+ include/linux/sfp.h          | 5 +++--
+ 4 files changed, 8 insertions(+), 7 deletions(-)
 
-
-
-Tested on:
-
-commit:         fff5a5e7 Merge tag 'for-linus' of git://git.armlinux.o..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-dashboard link: https://syzkaller.appspot.com/bug?extid=befff0a9536049e7902e
-compiler:       
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=16b4bba1c80000
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
