@@ -2,92 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DBC46C8257
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 17:29:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6206C6C825B
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 17:31:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231298AbjCXQ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 12:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
+        id S229468AbjCXQbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 12:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbjCXQ3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 12:29:19 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8823B2D4F
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 09:29:18 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id s13so1484142wmr.4
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 09:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=avride-ai.20210112.gappssmtp.com; s=20210112; t=1679675357;
-        h=to:date:message-id:subject:mime-version:content-transfer-encoding
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vQXdzREpNC82aYwfc8tVXYz0QLDEIupXUCEjM5LGLfs=;
-        b=BSMa6/FcGG3BqV2L4oFydmdvPeRSOZha4DUcOFC9pJl+xw6zQCG6NWxT1yxPKAnkYZ
-         NSCwv+2f///ZaUX+HHm+m+/aX6VtWu1MpGhFHDLoNWOfpq2AKOmuX4FK1UtbCltNXHf9
-         oRDmbb7yv7bdX7+qbY/MGZh7HMsOgLDW3W8OahMYV7EvYI/ZUOL14+2cIaZVAXL/ZesU
-         7fPIvcaykbIa+/wx/wZfiRr53QPrxb4tk2CMLHl+rypffMRmGcoZyq4Wd8xTpDtwAHII
-         D4jcumNmO74hxqTkHH1QDMwCKiHT+iN1qSmSFRX06moHqPz4RUNwrIAqz4bCD1Fh6yfm
-         a5mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679675357;
-        h=to:date:message-id:subject:mime-version:content-transfer-encoding
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vQXdzREpNC82aYwfc8tVXYz0QLDEIupXUCEjM5LGLfs=;
-        b=QhkSW8hBJ2t0SxTDtpeCtPsLFTINOMk5rLhu6VDjcZdJswI+twOu8Qvt7+g5q0S44W
-         o4mi22GfAciW/wRZlnPowniOFl1Bb/V2CZt3SboiVnS/KIgLvJ0aGzImqJ69v1hRXlqW
-         SZNhYER10w8a0jlf89t2+G2E0NvZqnwLoiFDuwUxyIgpSBtiVwPgwGJbyQc+tsiT/ldc
-         3XuvVRS3POJ3iGWO0PAQTRbJfgo8F66OLMDlFLjQeH1v/cX6Y1QzEdDT9ayesLJnfvBe
-         872T1VVSP1XLaoawn106XHh32C1e5O+76xtVqhUwcgEOCDqkxWughr37OvLyVAYgyZCH
-         pmbA==
-X-Gm-Message-State: AO0yUKU9T0zdU1bUhpWd0vDGGctenZ5yzWllNkh+5ZWtrrkYaHhApkP0
-        JZX1wkFeuJUnCXq9WXU47xMhqg==
-X-Google-Smtp-Source: AK7set/c+uH5wmSAGpa4jPOylG90xtB0qEfwoDO4wvdhv7BPaFdnNB9bQWlmZbJJWFkmULV0p366Ng==
-X-Received: by 2002:a05:600c:2101:b0:3ee:7e12:f50 with SMTP id u1-20020a05600c210100b003ee7e120f50mr2604794wml.8.1679675357040;
-        Fri, 24 Mar 2023 09:29:17 -0700 (PDT)
-Received: from smtpclient.apple ([2001:40a8:400:600:fccd:d2cd:4b16:abe7])
-        by smtp.gmail.com with ESMTPSA id z5-20020a05600c0a0500b003ee5fa61f45sm290704wmp.3.2023.03.24.09.29.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 24 Mar 2023 09:29:16 -0700 (PDT)
-From:   Kamil Zaripov <zaripov-kamil@avride.ai>
-Content-Type: text/plain;
-        charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Network RX per process per interface statistics 
-Message-Id: <F75020C7-9247-4F15-96CC-C3E6F11C0429@avride.ai>
-Date:   Fri, 24 Mar 2023 19:29:15 +0300
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
-X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231824AbjCXQbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 12:31:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C55CDDA;
+        Fri, 24 Mar 2023 09:31:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A9FB62BD5;
+        Fri, 24 Mar 2023 16:31:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C3DCBC4339B;
+        Fri, 24 Mar 2023 16:31:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679675467;
+        bh=pAiFB5Z0Tuotiqc9S603vt9Nz6mo1xgJ44TmalUFbfw=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=VEMjwcIX9vchXSnrpt/HHobVn0IKw4fERVH3S4SJ77eJrhvwiK8U5wn3oorTTvTnZ
+         sn5xUwOQkw3Qv1zHmdfGMo3PtvAGkiLhBS51hivxuiFGDjl6c5BUDRIdIbzm4erifh
+         VeZ+LAQ18vjtRqcDwkD2SIAGsqBnGaQVKMvnIqNn1UkzeUCAhmtOn3qalWyLQeNdL5
+         YXvMPflCKG90RIaoKwFB6DZfQ0x2KFdg059rk+OkkqPAaIhU/y5oKuK5DCk4L7Bbcd
+         ytr075/siUL4AhhVk3y7rCzdKznOh3VcAHpH0gxoSl2DTawDa/plZY3VxuQitS0ebj
+         +IKRifnHKthJg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AEA57E43EFD;
+        Fri, 24 Mar 2023 16:31:07 +0000 (UTC)
+Subject: Re: [PULL] Networking for v6.3-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20230323235106.51289-1-kuba@kernel.org>
+References: <20230323235106.51289-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20230323235106.51289-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.3-rc4
+X-PR-Tracked-Commit-Id: 1b4ae19e432dfec785d980993c09593cbb182754
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 608f1b136616ff09d717776922c9ea9e9f9f3947
+Message-Id: <167967546770.8924.10338385995177495241.pr-tracker-bot@kernel.org>
+Date:   Fri, 24 Mar 2023 16:31:07 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+The pull request you sent on Thu, 23 Mar 2023 16:51:06 -0700:
 
-I trying to make a BPF program that can collect per process per =
-interface statistics of network data consumption. Right now most =
-difficult part for me is RX traffic.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.3-rc4
 
-I have tried to find some point in the sk_buff's way up to network stack =
-where I can extract info both about the network interface which captured =
-package and the process that will consume this data but failed. So I =
-have to listen events in several points and somehow merge collected =
-data.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/608f1b136616ff09d717776922c9ea9e9f9f3947
 
-The last point I found at which sk_buff still contains information about =
-network device that captured this sk_buff is netif_receive_skb =
-tracepoint. The first point where I can found information about process =
-is protocol's rcv handlers (like tcp_v4_do_rcv). But I have some =
-questions, to finish my program:
+Thank you!
 
-1. It seems that sk_buff modifies during handling, so how can I "match" =
-sk_buff with same data in netif_receive_skb and in tcp_v4_do_rcv?
-2. Maybe there is some good point where I can attach listener and where =
-I can extract both process and interface info for each package?
-
-Regards
-Zaripov Kamil.=
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
