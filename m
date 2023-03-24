@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 151B66C83C6
+	by mail.lfdr.de (Postfix) with ESMTP id B893D6C83C8
 	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbjCXRwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 13:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
+        id S232184AbjCXRwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 13:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231953AbjCXRwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:52:14 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34924CDD3;
+        with ESMTP id S229674AbjCXRwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:52:23 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361CEFF31;
         Fri, 24 Mar 2023 10:51:50 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id n2so2227891qtp.0;
+Received: by mail-qv1-xf2d.google.com with SMTP id g9so2106495qvt.8;
         Fri, 24 Mar 2023 10:51:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679680307;
+        d=gmail.com; s=20210112; t=1679680308;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=PuV3IriHAW7aZC8rFN25zhcR9dc8l3Vh+GPx6NtpMpU=;
-        b=eRtC81NEQErSKAXM26X0ZVcHMgVlSXptqsLo2uzPa5TVXpleoAySQirq87pHRV45tp
-         qhk7ybka5bI+FSZDmoM9luXnUusiHRVXtNiZDaa9c/qAKKoY5AM+UxHMqIFu1WBaF3ig
-         zlGXH2dtZixOq4IsBr+FIkJ5B5HrocEnaGb2kfDOHVzVsOpTk2r+hYWrWSVHTQjKYnaL
-         NKVjBJIvOM2YONGm+6vA9JTRdgDJMkpZfz99oSUJPpdIZfkviYUyL3o3Gf68j4QpRdhM
-         9uiGucM9E+Cx+jzN5pEJV8pnMytFoMvCOEitO056sfXELl/KJ9xvVE2x5Wr+3BysQRLo
-         WV9w==
+        bh=Vrlw2rRFPR/eSSIFUVW3e377Xx72Gk415j7uJGfCXws=;
+        b=qgEtp8vc+L5rmjlL9msnQ7wlRAgsFhZqspaoi7vXObSu4q23r7NawU/mukvwmEsRfm
+         3MYquyphkbvLjwoYkGoB4/WPKNPoyZlFj6Pubtxuji//dEjj6VY7ORyrgHoLnKqbPjTk
+         rIaoTwIRZPxF2gJXT0nXIrjTAUp5Q5h2KTmqt+CWsVj6cU2WMGfU5YlGGhPHeOdorI1f
+         xhr0lsVq7AvVhE7cJUKJ/r4WiBTaWSaOKdCZIxo1KFNdwc345/l1edmxgG5N4GBp3A3+
+         Tt5xKvvdVFjiw2lXa0JDyZpZZdFmJxrVKiMOKYegWF3U0AwbXvVJBXpKx5f/OimflCUw
+         h5NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679680307;
+        d=1e100.net; s=20210112; t=1679680308;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PuV3IriHAW7aZC8rFN25zhcR9dc8l3Vh+GPx6NtpMpU=;
-        b=KMCBKb2FdH6GWwfVmMjSaE8ka56mrZl9g120gvIUuG41+Hbrm+sWXG5t729zdMeUpT
-         JY7LULIEiaJk6FPYyR06jEUbBP44tE6hX4Xe0k0lYiI9weoLZiV6vdDWXzw8cn54Xyml
-         BTHkZK1tuy0tFkHc1jCa5HJxEaHVm5rvZM/LbrIehvnZ89gMG3UWTvfDByyqSLeIUNs5
-         y23yDmQ5CExrGZoe2sLDKjWZ3Y8hUjjULrFbLk7Q7/D5nAImbLzbLzHigMbkiN6Q54Al
-         cXfsBMk5BcLN+woXEZ+Ukr3ARzZ9qVD5l+kt0jFLn4lamIjWxQ66Meq3J+bv61JD0FDA
-         6Jgw==
-X-Gm-Message-State: AO0yUKXdUXuCk3SWbnuaJinhRmklzo1de92uMRTi5K4VfNmwVnKNqgwD
-        0jUrzPx62q0i9fl2W0f68Ue7PPcLuXMGqQ==
-X-Google-Smtp-Source: AK7set+r8l/F2yXLaXu5mH+cnXIvEz7HmBX4IEYNffVIBg2BQhTHV3haOyGSS/io9TY7B/4tpSVCWQ==
-X-Received: by 2002:ac8:5802:0:b0:3db:fba6:53f8 with SMTP id g2-20020ac85802000000b003dbfba653f8mr6667662qtg.25.1679680307357;
-        Fri, 24 Mar 2023 10:51:47 -0700 (PDT)
+        bh=Vrlw2rRFPR/eSSIFUVW3e377Xx72Gk415j7uJGfCXws=;
+        b=KJRCA6ionw1MGutPzPIg5yCV7GJKeJom5KMnMEELjDM2MY8Mr7/n9sRQV64zkcixIw
+         AckM9Z6//Gak6JoUpfhUzi4ornKolXfwPOiUZtu1Qt44Gw9t/+dyLUitUXKj/fgMWSIN
+         P/HRshc3NWiLz2HpMg72FIiKi4UeQWDOMw1AUfX2heoDkeoztgX5vH5n0CGwf6Qr/jMV
+         jKAsYmKaTf/gzV13B+Ks+Sn0Scol/picLQWTD6rQH9cyXXzxHfs9QDojyKSm7Ceuo6qD
+         dZzoMs26Qv7ClXaWvaKuVd9tl73CTwrqv0wLJOGyELPFcMriVycUBlR8ft1ZkxqHxQ6F
+         rbJg==
+X-Gm-Message-State: AAQBX9e9k+rFkQiZmBQKG9coxiuz5DVugrp0t5BZCoUlGN+IXyNweVei
+        vF+CenErWhaxFV93ELr2y80=
+X-Google-Smtp-Source: AKy350agO0lFA3WOrJ94Nri5uWAMh4cV25PyeNM4L60yW+tCAd+U5jRUfMJOr2yG/SOoFsVcMlETHA==
+X-Received: by 2002:a05:6214:f67:b0:5a9:d6dd:271e with SMTP id iy7-20020a0562140f6700b005a9d6dd271emr7471074qvb.18.1679680308530;
+        Fri, 24 Mar 2023 10:51:48 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id bk12-20020a05620a1a0c00b0074357a6529asm14512289qkb.105.2023.03.24.10.51.46
+        by smtp.gmail.com with UTF8SMTPSA id mk5-20020a056214580500b005dd8b93459csm846081qvb.52.2023.03.24.10.51.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Mar 2023 10:51:46 -0700 (PDT)
+        Fri, 24 Mar 2023 10:51:48 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -56,9 +56,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Cc:     Simon Horman <simon.horman@corigine.com>,
         linux-kernel@vger.kernel.org, Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next v4 08/10] net: sunhme: Clean up mac address init
-Date:   Fri, 24 Mar 2023 13:51:34 -0400
-Message-Id: <20230324175136.321588-9-seanga2@gmail.com>
+Subject: [PATCH net-next v4 09/10] net: sunhme: Inline error returns
+Date:   Fri, 24 Mar 2023 13:51:35 -0400
+Message-Id: <20230324175136.321588-10-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20230324175136.321588-1-seanga2@gmail.com>
 References: <20230324175136.321588-1-seanga2@gmail.com>
@@ -74,56 +74,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clean up some oddities suggested during review.
+The err_out label used to have cleanup. Now that it just returns, inline it
+everywhere.
 
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
 
-(no changes since v2)
+Changes in v4:
+- Move uninitialized return to its own commit
+
+Changes in v3:
+- Incorperate a fix from another series into this commit
 
 Changes in v2:
 - New
 
- drivers/net/ethernet/sun/sunhme.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 4fe67623b924..b51b8930bef1 100644
+index b51b8930bef1..bd1925f575c4 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -2348,9 +2348,7 @@ static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsi
- 		p += 6;
+@@ -2622,29 +2622,25 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
  
- 		if (index == 0) {
--			int i;
+ 	err = pcim_enable_device(pdev);
+ 	if (err)
+-		goto err_out;
++		return err;
+ 	pci_set_master(pdev);
+ 
+ 	if (!strcmp(prom_name, "SUNW,qfe") || !strcmp(prom_name, "qfe")) {
+ 		qp = quattro_pci_find(pdev);
+-		if (IS_ERR(qp)) {
+-			err = PTR_ERR(qp);
+-			goto err_out;
+-		}
++		if (IS_ERR(qp))
++			return PTR_ERR(qp);
+ 
+ 		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
+ 			if (!qp->happy_meals[qfe_slot])
+ 				break;
+ 
+ 		if (qfe_slot == 4)
+-			goto err_out;
++			return -ENODEV;
+ 	}
+ 
+ 	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
+-	if (!dev) {
+-		err = -ENOMEM;
+-		goto err_out;
+-	}
++	if (!dev)
++		return -ENOMEM;
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 
+ 	hp = netdev_priv(dev);
+@@ -2792,8 +2788,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ err_out_clear_quattro:
+ 	if (qp != NULL)
+ 		qp->happy_meals[qfe_slot] = NULL;
 -
--			for (i = 0; i < 6; i++)
-+			for (int i = 0; i < 6; i++)
- 				dev_addr[i] = readb(p + i);
- 			return 1;
- 		}
-@@ -2362,9 +2360,10 @@ static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsi
- static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
- 						unsigned char *dev_addr)
- {
-+	void __iomem *p;
- 	size_t size;
--	void __iomem *p = pci_map_rom(pdev, &size);
- 
-+	p = pci_map_rom(pdev, &size);
- 	if (p) {
- 		int index = 0;
- 		int found;
-@@ -2386,7 +2385,7 @@ static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
- 	dev_addr[2] = 0x20;
- 	get_random_bytes(&dev_addr[3], 3);
+-err_out:
+ 	return err;
  }
--#endif /* !(CONFIG_SPARC) */
-+#endif
  
- static void happy_meal_addr_init(struct happy_meal *hp,
- 				 struct device_node *dp, int qfe_slot)
 -- 
 2.37.1
 
