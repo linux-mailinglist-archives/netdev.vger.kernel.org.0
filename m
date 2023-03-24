@@ -2,158 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A92146C75D7
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 03:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F36B16C75F9
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 03:42:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231638AbjCXC2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Mar 2023 22:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
+        id S231202AbjCXCmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Mar 2023 22:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbjCXC2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 22:28:36 -0400
-Received: from ex01.ufhost.com (ex01.ufhost.com [61.152.239.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806182D55;
-        Thu, 23 Mar 2023 19:28:29 -0700 (PDT)
-Received: from EXMBX165.cuchost.com (unknown [175.102.18.54])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (Client CN "EXMBX165", Issuer "EXMBX165" (not verified))
-        by ex01.ufhost.com (Postfix) with ESMTP id 4A05524E1E1;
-        Fri, 24 Mar 2023 10:28:28 +0800 (CST)
-Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX165.cuchost.com
- (172.16.6.75) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Fri, 24 Mar
- 2023 10:28:28 +0800
-Received: from starfive-sdk.starfivetech.com (171.223.208.138) by
- EXMBX162.cuchost.com (172.16.6.72) with Microsoft SMTP Server (TLS) id
- 15.0.1497.42; Fri, 24 Mar 2023 10:28:27 +0800
-From:   Samin Guo <samin.guo@starfivetech.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Conor Dooley <conor@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Samin Guo <samin.guo@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-Subject: [PATCH v8 6/6] net: stmmac: starfive_dmac: Add phy interface settings
-Date:   Fri, 24 Mar 2023 10:28:19 +0800
-Message-ID: <20230324022819.2324-7-samin.guo@starfivetech.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230324022819.2324-1-samin.guo@starfivetech.com>
-References: <20230324022819.2324-1-samin.guo@starfivetech.com>
+        with ESMTP id S229672AbjCXCml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Mar 2023 22:42:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6AC12F;
+        Thu, 23 Mar 2023 19:42:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6B95B82202;
+        Fri, 24 Mar 2023 02:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD33CC433D2;
+        Fri, 24 Mar 2023 02:42:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679625757;
+        bh=qr/I2rq/Nk6IhI6pHC1NrcrtV8HlhwtbKRcChWmSJAk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i7ZgLTDncgSj6MuZwPZpK6jvP/ir4837GNSnuNM303s77SIhw7GmHExDwnSx7NJUT
+         DugUv8Z7nYQipWLta7+61CgmOgAZSwPLUTw7APf7wRJEs2H0q42QV/93GE1aV1ezyB
+         uijs/xkuIW1T1OhTL0mC9sZwMtBxmdOpARegjLHL32To9mMiiFlu0KR9W6MVa5noDJ
+         8h8h2+VaSK2a3HEDrVOVNialA05ebObJo1pCkd/0b2zQ3y8e2nHljx4gsq2WyGnjZy
+         L6+64CqbwLyfbABtFXsM+1QEt2e8hAP6fni5hg06V4684SF2svKz3RZ0iQVDcBapZ2
+         cT9wcDReGuDZg==
+Date:   Thu, 23 Mar 2023 19:42:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Bagas Sanjaya <bagasdotme@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, corbet@lwn.net,
+        jesse.brandeburg@intel.com, mkl@pengutronix.de,
+        linux-doc@vger.kernel.org, stephen@networkplumber.org,
+        romieu@fr.zoreil.com
+Subject: Re: [PATCH net-next v3] docs: networking: document NAPI
+Message-ID: <20230323194235.66fbd368@kernel.org>
+In-Reply-To: <e9caa256-482d-1cc0-4244-e9d4c5615f01@blackwall.org>
+References: <20230322053848.198452-1-kuba@kernel.org>
+        <e9caa256-482d-1cc0-4244-e9d4c5615f01@blackwall.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [171.223.208.138]
-X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
- (172.16.6.72)
-X-YovoleRuleAgent: yovoleflag
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dwmac supports multiple modess. When working under rmii and rgmii,
-you need to set different phy interfaces.
+On Wed, 22 Mar 2023 12:39:59 +0200 Nikolay Aleksandrov wrote:
+> > +It is recommended to pin each kernel thread to a single CPU, the same
+> > +CPU as services the interrupt. Note that the mapping between IRQs and  
+> 
+> "... the same CPU as services the interrupt ...", should it be
+> "the same CPU that services the interrupt" ?
 
-According to the dwmac document, when working in rmii, it needs to be
-set to 0x4, and rgmii needs to be set to 0x1.
+"the same as" is a very common idiom.
+There's a slight ellipsis there, perhaps, the full sentence is:
 
-The phy interface needs to be set in syscon, the format is as follows:
-starfive,syscon: <&syscon, offset, shift>
+| It is recommended to pin each kernel thread to a single CPU, the same
+| CPU as [the CPU which] services the interrupt.
 
-Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
-Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
----
- .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
-index ef5a769b1c75..84690c8f0250 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
-@@ -13,6 +13,10 @@
- 
- #include "stmmac_platform.h"
- 
-+#define STARFIVE_DWMAC_PHY_INFT_RGMII	0x1
-+#define STARFIVE_DWMAC_PHY_INFT_RMII	0x4
-+#define STARFIVE_DWMAC_PHY_INFT_FIELD	0x7U
-+
- struct starfive_dwmac {
- 	struct device *dev;
- 	struct clk *clk_tx;
-@@ -44,6 +48,43 @@ static void starfive_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- 		dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
- }
- 
-+static int starfive_dwmac_set_mode(struct plat_stmmacenet_data *plat_dat)
-+{
-+	struct starfive_dwmac *dwmac = plat_dat->bsp_priv;
-+	struct regmap *regmap;
-+	unsigned int args[2];
-+	unsigned int mode;
-+
-+	switch (plat_dat->interface) {
-+	case PHY_INTERFACE_MODE_RMII:
-+		mode = STARFIVE_DWMAC_PHY_INFT_RMII;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		mode = STARFIVE_DWMAC_PHY_INFT_RGMII;
-+		break;
-+
-+	default:
-+		dev_err(dwmac->dev, "unsupported interface %d\n",
-+			plat_dat->interface);
-+		return -EINVAL;
-+	}
-+
-+	regmap = syscon_regmap_lookup_by_phandle_args(dwmac->dev->of_node,
-+						      "starfive,syscon",
-+						      2, args);
-+	if (IS_ERR(regmap)) {
-+		dev_err(dwmac->dev, "syscon regmap failed.\n");
-+		return -ENXIO;
-+	}
-+
-+	/* args[0]:offset  args[1]: shift */
-+	return regmap_update_bits(regmap, args[0],
-+				  STARFIVE_DWMAC_PHY_INFT_FIELD << args[1],
-+				  mode << args[1]);
-+}
-+
- static int starfive_dwmac_probe(struct platform_device *pdev)
- {
- 	struct plat_stmmacenet_data *plat_dat;
-@@ -89,6 +130,12 @@ static int starfive_dwmac_probe(struct platform_device *pdev)
- 	plat_dat->bsp_priv = dwmac;
- 	plat_dat->dma_cfg->dche = true;
- 
-+	err = starfive_dwmac_set_mode(plat_dat);
-+	if (err) {
-+		dev_err(&pdev->dev, "dwmac set mode failed.\n");
-+		return err;
-+	}
-+
- 	err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
- 	if (err) {
- 		stmmac_remove_config_dt(pdev, plat_dat);
--- 
-2.17.1
-
+Let me add the missing part.
