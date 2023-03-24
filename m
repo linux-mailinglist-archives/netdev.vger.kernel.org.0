@@ -2,88 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E52F6C83AC
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0EA76C83B4
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbjCXRss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 13:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
+        id S231645AbjCXRul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 13:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbjCXRsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:48:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094081ADE9;
-        Fri, 24 Mar 2023 10:47:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3337AB825B3;
-        Fri, 24 Mar 2023 17:47:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97B00C4339B;
-        Fri, 24 Mar 2023 17:47:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679680055;
-        bh=9mpW5nNH33HBdDHmPpaf/9jlnUTMEX+hMt5i4zry0pw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n5yKzIM2cIpqO1pDr29Y3lp2qP6pEI0q2CIQgbUmp1z80QEfCUQecxV+5dRyeXs0R
-         DRnENjI7Bp75+XSua74l6eSX3FVJw0FKRJ9xXs8+Z+KvG70o3twUeLbLYsUzXY8IZX
-         C/mtKd+BFVKS6mCbviJNd2I/8Mj/oQgcbEnsOk+q/o9TVJwXqjNVrKDO3dsrM3IQ16
-         ZKUMTbbMdeABtcoIxS0p+l5OKdCrgP5AQiGK0jeXgQ9ijUS8qPHOhCcBCM91vDA0yx
-         fW/+gQS3urEDcMe4xqULPyRhou8OHsQP+n5UQe5ZfzsPYYkjsbJrw1CSe457V0nCG3
-         AXjkh9rssLP3A==
-Date:   Fri, 24 Mar 2023 10:47:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net/core: add optional threading for backlog
- processing
-Message-ID: <20230324104733.571466bc@kernel.org>
-In-Reply-To: <2d251879-1cf4-237d-8e62-c42bb4feb047@nbd.name>
-References: <20230324171314.73537-1-nbd@nbd.name>
-        <20230324102038.7d91355c@kernel.org>
-        <2d251879-1cf4-237d-8e62-c42bb4feb047@nbd.name>
+        with ESMTP id S231671AbjCXRub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:50:31 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DE11A67B
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 10:50:00 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pflWy-0001Xe-J2; Fri, 24 Mar 2023 18:48:48 +0100
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F120019BAE9;
+        Fri, 24 Mar 2023 17:48:46 +0000 (UTC)
+Date:   Fri, 24 Mar 2023 18:48:46 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Frank Jungclaus <frank.jungclaus@esd.eu>
+Cc:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: esd_usb: Improve code readability by means of
+ replacing struct esd_usb_msg with a union
+Message-ID: <20230324174846.izruwh6evo2yvn7j@pengutronix.de>
+References: <20230222163754.3711766-1-frank.jungclaus@esd.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bvdrty76npd6pz24"
+Content-Disposition: inline
+In-Reply-To: <20230222163754.3711766-1-frank.jungclaus@esd.eu>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Mar 2023 18:35:00 +0100 Felix Fietkau wrote:
-> I'm primarily testing this on routers with 2 or 4 CPUs and limited 
-> processing power, handling routing/NAT. RPS is typically needed to 
-> properly distribute the load across all available CPUs. When there is 
-> only a small number of flows that are pushing a lot of traffic, a static 
-> RPS assignment often leaves some CPUs idle, whereas others become a 
-> bottleneck by being fully loaded. Threaded NAPI reduces this a bit, but 
-> CPUs can become bottlenecked and fully loaded by a NAPI thread alone.
 
-The NAPI thread becomes a bottleneck with RPS enabled?
+--bvdrty76npd6pz24
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Making backlog processing threaded helps split up the processing work 
-> even more and distribute it onto remaining idle CPUs.
+On 22.02.2023 17:37:54, Frank Jungclaus wrote:
+> As suggested by Vincent Mailhol, declare struct esd_usb_msg as a union
+> instead of a struct. Then replace all msg->msg.something constructs,
+> that make use of esd_usb_msg, with simpler and prettier looking
+> msg->something variants.
+>=20
+> Link: https://lore.kernel.org/all/CAMZ6RqKRzJwmMShVT9QKwiQ5LJaQupYqkPkKjh=
+RBsP=3D12QYpfA@mail.gmail.com/
+> Suggested-by: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
 
-You'd want to have both threaded NAPI and threaded backlog enabled?
+Applied to linux-can-next.
 
-> It can basically be used to make RPS a bit more dynamic and 
-> configurable, because you can assign multiple backlog threads to a set 
-> of CPUs and selectively steer packets from specific devices / rx queues 
+regards,
+Marc
 
-Can you give an example?
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-With the 4 CPU example, in case 2 queues are very busy - you're trying
-to make sure that the RPS does not end up landing on the same CPU as
-the other busy queue?
+--bvdrty76npd6pz24
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> to them and allow the scheduler to take care of the rest.
+-----BEGIN PGP SIGNATURE-----
 
-You trust the scheduler much more than I do, I think :)
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQd4nsACgkQvlAcSiqK
+BOh5CQgArhe7G5ZaiycZsxZx7Oq7wIPTZUb/Vc9ALgHmWuun4UfFWv7vyG9hJ5FE
+Nyx/4pleb8dtRQcEZFjjaVze1lLQP0zk686k3YMGHfqvSyHGZnPUID9YDc67aN55
+FLaO3pL1P0Rnp56+yKKSIkQzGbB11+Vf2KFnjIilchfoM8jGXdnyrscbNRlj1Z5A
+5S3BiLVhV8ZlufYh5WLyjL7mIdV3UFJy2EypDfnGK9NjpD1KGHreRiKUeLOqgeKI
+gctb7vSV3+RNwi9xGmLoTEIxhbgNfhDAGP0dDEoi1ysIsyTdfwbfhxt/dkPpws4b
+c91YHigS0OSF9VGm9KheQbUJ+bN+GQ==
+=KgKF
+-----END PGP SIGNATURE-----
+
+--bvdrty76npd6pz24--
