@@ -2,110 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B5FB6C769A
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 05:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7406C76AE
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 05:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbjCXEhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 00:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
+        id S231305AbjCXEuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 00:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbjCXEhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 00:37:47 -0400
-Received: from out0-199.mail.aliyun.com (out0-199.mail.aliyun.com [140.205.0.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CB728236
-        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 21:37:45 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047205;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---.Rypk6nD_1679632661;
-Received: from 30.230.61.85(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.Rypk6nD_1679632661)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Mar 2023 12:37:42 +0800
-Message-ID: <6fc5ed03-5872-0d9f-ea5a-48857b5cc7c1@antgroup.com>
-Date:   Fri, 24 Mar 2023 12:37:41 +0800
+        with ESMTP id S229589AbjCXEuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 00:50:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5CE7A80
+        for <netdev@vger.kernel.org>; Thu, 23 Mar 2023 21:50:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C819FB822DA
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 04:50:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7CACDC433EF;
+        Fri, 24 Mar 2023 04:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679633419;
+        bh=V/vqCeb3RbgmvX2bnF4HvOb2pb2BDpG+AfkyZn/6l7Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cNsWgxR+BBstW9b8fk8feGehNBcKgdbFPE+8xS1SSm55McwsBBlCp40fw28lwqpFP
+         mCu60LPUxdoEipLnoJOw4p6gGmz4NocHya1NFQwiO0InG6gaGdze7sJ7XtMohe7cc+
+         r+PpxsjcN/5UfFJtwevCUi0hLJ0kCwwKzDgsDEF+x4F9zQk8I0P4PqYLtaTo1MLrgZ
+         CddJ8EuwgQVopVv6RdHzsEp4qCidkg73YgDXKmdTogV3P3RxX6n30K8R6Sm9FyMV4k
+         0B4LQm/I6Yde5VE+XYegdXLEQZBxEUBCVVPtahwpS3AfvFnmcx1nUk8dhQj2mdBDAk
+         m5jc7C+2ouLXg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 58EACE21ED4;
+        Fri, 24 Mar 2023 04:50:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.8.0
-Subject: Re: [PATCH v5] net/packet: support mergeable feature of virtio
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     <mst@redhat.com>, <davem@davemloft.net>, <jasowang@redhat.com>,
-        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>
-References: <20230317074304.275598-1-amy.saq@antgroup.com>
- <641474b7cf005_36045220894@willemb.c.googlers.com.notmuch>
-From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
-In-Reply-To: <641474b7cf005_36045220894@willemb.c.googlers.com.notmuch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.0 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,UNPARSEABLE_RELAY autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Subject: Re: [patch net-next] ynl: allow to encode u8 attr
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167963341934.15621.1845708945689435953.git-patchwork-notify@kernel.org>
+Date:   Fri, 24 Mar 2023 04:50:19 +0000
+References: <20230322154242.1739136-1-jiri@resnulli.us>
+In-Reply-To: <20230322154242.1739136-1-jiri@resnulli.us>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, sdf@google.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-在 2023/3/17 下午10:09, Willem de Bruijn 写道:
-> 沈安琪(凛玥) wrote:
->> From: Jianfeng Tan <henry.tjf@antgroup.com>
->>
->> Packet sockets, like tap, can be used as the backend for kernel vhost.
->> In packet sockets, virtio net header size is currently hardcoded to be
->> the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
->> always the case: some virtio features, such as mrg_rxbuf, need virtio
->> net header to be 12-byte long.
->>
->> Mergeable buffers, as a virtio feature, is worthy of supporting: packets
->> that are larger than one-mbuf size will be dropped in vhost worker's
->> handle_rx if mrg_rxbuf feature is not used, but large packets
->> cannot be avoided and increasing mbuf's size is not economical.
->>
->> With this virtio feature enabled by virtio-user, packet sockets with
->> hardcoded 10-byte virtio net header will parse mac head incorrectly in
->> packet_snd by taking the last two bytes of virtio net header as part of
->> mac header.
->> This incorrect mac header parsing will cause packet to be dropped due to
->> invalid ether head checking in later under-layer device packet receiving.
->>
->> By adding extra field vnet_hdr_sz with utilizing holes in struct
->> packet_sock to record currently used virtio net header size and supporting
->> extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
->> sockets can know the exact length of virtio net header that virtio user
->> gives.
->> In packet_snd, tpacket_snd and packet_recvmsg, instead of using
->> hardcoded virtio net header size, it can get the exact vnet_hdr_sz from
->> corresponding packet_sock, and parse mac header correctly based on this
->> information to avoid the packets being mistakenly dropped.
->>
->> Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
->> Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
->> Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
-> Another patch set was just merged that this will have merge conflicts
-> with. Please respin.
->
-> https://lore.kernel.org/netdev/20230316011014.992179-4-edumazet@google.com/T/
+This patch was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
 
+On Wed, 22 Mar 2023 16:42:42 +0100 you wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> Playing with dpll netlink, I came across following issue:
+> $ sudo ./tools/net/ynl/cli.py --spec Documentation/netlink/specs/dpll.yaml --do pin-set --json '{"id": 0, "pin-idx": 1, "pin-state": 1}'
+> Traceback (most recent call last):
+>   File "tools/net/ynl/cli.py", line 52, in <module>
+>     main()
+>   File "tools/net/ynl/cli.py", line 40, in main
+>     reply = ynl.do(args.do, attrs)
+>   File "tools/net/ynl/lib/ynl.py", line 520, in do
+>     return self._op(method, vals)
+>   File "tools/net/ynl/lib/ynl.py", line 476, in _op
+>     msg += self._add_attr(op.attr_set.name, name, value)
+>   File "tools/net/ynl/lib/ynl.py", line 344, in _add_attr
+>     raise Exception(f'Unknown type at {space} {name} {value} {attr["type"]}')
+> Exception: Unknown type at dpll pin-state 1 u8
+> 
+> [...]
 
-Sure thing. We are going to rebase it. The recently-merged patch 
-compacted all bit flags into one long flags field and getting the bit 
-information through the helper function.
+Here is the summary with links:
+  - [net-next] ynl: allow to encode u8 attr
+    https://git.kernel.org/netdev/net-next/c/8da3a5598f75
 
-Since our patch removes has_vnet_hdr bit and uses vnet_hdr_sz, which 
-cannot fit in one bit, to indicate whether the packet sock has vnet 
-header or not, we plan to remove PACKET_SOCK_HAS_VNET_HDR from 
-packet_sock_flags and keep the u8 field vnet_hdr_sz in struct 
-packet_sock. After modification, the packet_sock struct will be following:
-
-@@ -119,9 +119,9 @@ struct packet_sock {
-  	unsigned long		flags;
-  	int			ifindex;	/* bound device		*/
-+	u8			vnet_hdr_sz;
-  	__be16			num;
-
-
-I wonder whether this rebase plan looks appropriate for you and am 
-looking forward to your advice here.
-
-If we are good on the rebasing plan, we will soon send out next version 
-with conflicts resolved. :) Thanks a lot.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
