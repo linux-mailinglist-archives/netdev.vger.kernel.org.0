@@ -2,142 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 048916C7D80
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 12:52:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C2B86C7D86
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 12:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbjCXLwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 07:52:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59136 "EHLO
+        id S231625AbjCXLzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 07:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbjCXLwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 07:52:33 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2462332C
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 04:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=gvt5DL6fQG6Plq4wISGGK/VENRuOiPuD8pNsuXpIl+8=; b=sA6C8V9ZJy8Cw9Z97ezmTW/sgH
-        NmTBPFOw0MRkJwOOUGXbDPQwA30CKckbI6PcIeCyNvuKIx0mRkXcwDEK8oteS0mO0ThDPfvvgX6UQ
-        r99XB6VGPJQ90DCglcNMxZp0AMUiaZxKkcT9xz/I4Hl407hR2wR6MiR18BcYBvTU2r4U=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pffxq-006LMe-2v; Fri, 24 Mar 2023 12:52:10 +0100
-Message-ID: <4462a0c2-f7ea-c81c-e12f-ec629113fc40@nbd.name>
-Date:   Fri, 24 Mar 2023 12:52:09 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: Aw: Re: [BUG] MTK SoC Ethernet throughput TX only ~620Mbit/s
- since 6.2-rc1
-Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Daniel Golle <daniel@makrotopia.org>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
+        with ESMTP id S230071AbjCXLzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 07:55:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F151F14235
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 04:55:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679658901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=o+NGktWMseNGfUqMMOZXVUXPZfRBI2cuMMXpzSQXhTs=;
+        b=VFDdgEPoSo0J4yWmTSYWzQ+9v/3sqc14DlqZ6HEOWDwwalyRQTlQOUHnlVYr8G43c33zal
+        CB70MeZpsh14zR2oEdqaAydpKuHXJF9T6IBuHdiiQ9TTFxXFT4avmlWsvbe6DL98ZSOk17
+        DXxPlJL2KlOCRHRQRmu/8cZlCt1ojzc=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-171-8efI3QI_OoO3XaRFlqJKng-1; Fri, 24 Mar 2023 07:54:59 -0400
+X-MC-Unique: 8efI3QI_OoO3XaRFlqJKng-1
+Received: by mail-ed1-f72.google.com with SMTP id b1-20020aa7dc01000000b004ad062fee5eso2795881edu.17
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 04:54:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679658898;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=o+NGktWMseNGfUqMMOZXVUXPZfRBI2cuMMXpzSQXhTs=;
+        b=iL0qO46qvf6MukY3stjs9I6UBTT5qapJp9ryfpya4Q/Ui8/3esNBclLMwNwf8zZE1y
+         t/tB/4m8rBcm2/5Hk6z/ChHF7yFmMNC+p6ohk+ySpkQz92AK3qalwiIZw/vW11P1OkQj
+         JdaR89G9WPIVBmu4yDbL93Cqns/TjxiJTcGLGTexotxAMBMmL4jVVT2mLBXalavVfGo8
+         ilYXpUxZERxMzfz7Kb/ER0PLZVxfEeVT44Nrgm6WwRSreTCEZ9twHAtH+SCxVKJdK61L
+         PZViJrWOWgmZWPw6QN+sLljRWdawki4dz7j/FRnGEeczwQLNhuQIYzuYkeyiRPQGl8Gh
+         4YbQ==
+X-Gm-Message-State: AAQBX9fF+Zhs9EKztTktOV8Smit/M2LsQnVXy862hQe/2ypuquPiJusG
+        yLIQtZskPth8ysVybWRzHKxoQiPa1GnDigjMAlWIJNzGiKA0ZthLJ6PryDPQi0EJ5BFDhysqzx/
+        bGabw4nv3jFcmwcjWSM2L5V1O7nTg8voe9ORiQdIUtntdroEaphe4KghLlqpZ/hZjTURxgyIkX1
+        SU
+X-Received: by 2002:aa7:da82:0:b0:502:100c:53a with SMTP id q2-20020aa7da82000000b00502100c053amr3077961eds.41.1679658898354;
+        Fri, 24 Mar 2023 04:54:58 -0700 (PDT)
+X-Google-Smtp-Source: AKy350a2BftDLdHSiXK8s1hrtYYBfNg5thmCdq/Nta4rzlvwQHmMyC+RKWswAjDMk6HYVn/7+xcAeA==
+X-Received: by 2002:aa7:da82:0:b0:502:100c:53a with SMTP id q2-20020aa7da82000000b00502100c053amr3077932eds.41.1679658897990;
+        Fri, 24 Mar 2023 04:54:57 -0700 (PDT)
+Received: from localhost.localdomain (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id v30-20020a50a45e000000b005021d17d896sm1153485edb.21.2023.03.24.04.54.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Mar 2023 04:54:57 -0700 (PDT)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        John Crispin <john@phrozen.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-References: <trinity-92c3826f-c2c8-40af-8339-bc6d0d3ffea4-1678213958520@3c-app-gmx-bs16>
- <4a229d53-f058-115a-afc6-dd544a0dedf2@nbd.name>
- <ZBBs/xE0+ULtJNIJ@makrotopia.org>
- <trinity-b2506855-d27f-4e5c-bd20-d3768fa7505d-1679077409691@3c-app-gmx-bap25>
- <trinity-e199fc72-77d9-47f3-acb6-e11fbf66360b-1679144877213@3c-app-gmx-bs63>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <trinity-e199fc72-77d9-47f3-acb6-e11fbf66360b-1679144877213@3c-app-gmx-bs63>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, avkrasnov@sberdevices.ru,
+        Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
+Subject: [PATCH net] vsock/loopback: use only sk_buff_head.lock to protect the packet queue
+Date:   Fri, 24 Mar 2023 12:54:50 +0100
+Message-Id: <20230324115450.11268-1-sgarzare@redhat.com>
+X-Mailer: git-send-email 2.39.2
+MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.03.23 14:07, Frank Wunderlich wrote:
->> Gesendet: Freitag, 17. März 2023 um 19:23 Uhr
->> Von: "Frank Wunderlich" <frank-w@public-files.de>
->> An: "Daniel Golle" <daniel@makrotopia.org>
->> Cc: "Felix Fietkau" <nbd@nbd.name>, "Mark Lee" <Mark-MC.Lee@mediatek.com>, "Sean Wang" <sean.wang@mediatek.com>, "Lorenzo Bianconi" <lorenzo@kernel.org>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Matthias Brugger" <matthias.bgg@gmail.com>, "John Crispin" <john@phrozen.org>, "AngeloGioacchino Del Regno" <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
->> Betreff: Aw: Re: [BUG] MTK SoC Ethernet throughput TX only ~620Mbit/s since 6.2-rc1
->>
->> Hi,
->> > Gesendet: Dienstag, 14. März 2023 um 13:47 Uhr
->> > Von: "Daniel Golle" <daniel@makrotopia.org>
->> > An: "Felix Fietkau" <nbd@nbd.name>
->> > Cc: "Frank Wunderlich" <frank-w@public-files.de>, "Mark Lee" <Mark-MC.Lee@mediatek.com>, "Sean Wang" <sean.wang@mediatek.com>, "Lorenzo Bianconi" <lorenzo@kernel.org>, "David S. Miller" <davem@davemloft.net>, "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>, "Matthias Brugger" <matthias.bgg@gmail.com>, "John Crispin" <john@phrozen.org>, "AngeloGioacchino Del Regno" <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
->> > Betreff: Re: [BUG] MTK SoC Ethernet throughput TX only ~620Mbit/s since 6.2-rc1
->> >
->> > Hi Felix,
->> > 
->> > On Tue, Mar 14, 2023 at 11:30:53AM +0100, Felix Fietkau wrote:
->> > > On 07.03.23 19:32, Frank Wunderlich wrote:
->> > > > Hi,
->> > > > 
->> > > > i've noticed that beginning on 6.2-rc1 the throughput on my Bananapi-R2 and Bananapi-R3 goes from 940Mbit/s down do 620Mbit/s since 6.2-rc1.
->> > > > Only TX (from SBC PoV) is affected, RX is still 940Mbit/s.
->> > > > 
->> > > > i bisected this to this commit:
->> > > > 
->> > > > f63959c7eec3151c30a2ee0d351827b62e742dcb ("net: ethernet: mtk_eth_soc: implement multi-queue support for per-port queues")
->> > > > 
->> > > > Daniel reported me that this is known so far and they need assistance from MTK and i should report it officially.
->> > > > 
->> > > > As far as i understand it the commit should fix problems with clients using non-GBE speeds (10/100 Mbit/s) on the Gbit-capable dsa
->> > > > interfaces (mt753x connected) behind the mac, but now the Gigabit speed is no more reached.
->> > > > I see no CRC/dropped packets, retransmitts or similar.
->> > > > 
->> > > > after reverting the commit above i get 940Mbit like in rx direction, but this will introduce the problems mentioned above so this not a complete fix.
->> > > I don't have a BPI-R2, but I tested on BPI-R3 and can't reproduce this
->> > > issue. Do you see it on all ports, or only on specific ones?
->> > 
->> > I also can't reproduce this if unsing any of the gigE ports wired via
->> > MT7531 on the R3. However, I can reproduce the issue if using a 1 GBit/s
->> > SFP module in slot SFP1 of the R3 (connected directly to GMAC2/eth1).
->> > 
->> > Users have reported this also to be a problem also on MT7622 on devices
->> > directly connecting a PHY (and not using MT7531).
->> > 
->> > In all cases, reverting the commit above fixes the issue.
->> 
->> 
->> made quick test with 6.3-rc1 on r3 without reverting the patch above and can confirm daniels test
->> 
->> it seems the problem is no more on switch-ports, but on eth1 i have massive packet loss...seems this caused by the same patch because i tested with reverted version and have no issue there.
-> 
-> on BPI-R2 the eth0/gmac0 (tested with wan-port) is affected. here i have in TX-Direction only 620Mbit.
-> 
-> I have no idea yet why there the gmac0 is affected and on r3 only gmac1.
-> 
-> But it looks differently...on r3 the gmac1 is nearly completely broken.
-Please try this patch and let me know if it resolves the regression:
+pkt_list_lock was used before commit 71dc9ec9ac7d ("virtio/vsock:
+replace virtio_vsock_pkt with sk_buff") to protect the packet queue.
+After that commit we switched to sk_buff and we are using
+sk_buff_head.lock in almost every place to protect the packet queue
+except in vsock_loopback_work() when we call skb_queue_splice_init().
 
+As reported by syzbot, this caused unlocked concurrent access to the
+packet queue between vsock_loopback_work() and
+vsock_loopback_cancel_pkt() since it is not holding pkt_list_lock.
+
+With the introduction of sk_buff_head, pkt_list_lock is redundant and
+can cause confusion, so let's remove it and use sk_buff_head.lock
+everywhere to protect the packet queue access.
+
+Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+Cc: bobby.eshleman@bytedance.com
+Reported-and-tested-by: syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -718,8 +718,6 @@ static void mtk_mac_link_up(struct phyli
-  		break;
-  	}
-  
--	mtk_set_queue_speed(mac->hw, mac->id, speed);
--
-  	/* Configure duplex */
-  	if (duplex == DUPLEX_FULL)
-  		mcr |= MAC_MCR_FORCE_DPX;
+ net/vmw_vsock/vsock_loopback.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
+diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loopback.c
+index 671e03240fc5..89905c092645 100644
+--- a/net/vmw_vsock/vsock_loopback.c
++++ b/net/vmw_vsock/vsock_loopback.c
+@@ -15,7 +15,6 @@
+ struct vsock_loopback {
+ 	struct workqueue_struct *workqueue;
+ 
+-	spinlock_t pkt_list_lock; /* protects pkt_list */
+ 	struct sk_buff_head pkt_queue;
+ 	struct work_struct pkt_work;
+ };
+@@ -32,9 +31,7 @@ static int vsock_loopback_send_pkt(struct sk_buff *skb)
+ 	struct vsock_loopback *vsock = &the_vsock_loopback;
+ 	int len = skb->len;
+ 
+-	spin_lock_bh(&vsock->pkt_list_lock);
+ 	skb_queue_tail(&vsock->pkt_queue, skb);
+-	spin_unlock_bh(&vsock->pkt_list_lock);
+ 
+ 	queue_work(vsock->workqueue, &vsock->pkt_work);
+ 
+@@ -113,9 +110,9 @@ static void vsock_loopback_work(struct work_struct *work)
+ 
+ 	skb_queue_head_init(&pkts);
+ 
+-	spin_lock_bh(&vsock->pkt_list_lock);
++	spin_lock_bh(&vsock->pkt_queue.lock);
+ 	skb_queue_splice_init(&vsock->pkt_queue, &pkts);
+-	spin_unlock_bh(&vsock->pkt_list_lock);
++	spin_unlock_bh(&vsock->pkt_queue.lock);
+ 
+ 	while ((skb = __skb_dequeue(&pkts))) {
+ 		virtio_transport_deliver_tap_pkt(skb);
+@@ -132,7 +129,6 @@ static int __init vsock_loopback_init(void)
+ 	if (!vsock->workqueue)
+ 		return -ENOMEM;
+ 
+-	spin_lock_init(&vsock->pkt_list_lock);
+ 	skb_queue_head_init(&vsock->pkt_queue);
+ 	INIT_WORK(&vsock->pkt_work, vsock_loopback_work);
+ 
+@@ -156,9 +152,7 @@ static void __exit vsock_loopback_exit(void)
+ 
+ 	flush_work(&vsock->pkt_work);
+ 
+-	spin_lock_bh(&vsock->pkt_list_lock);
+ 	virtio_vsock_skb_queue_purge(&vsock->pkt_queue);
+-	spin_unlock_bh(&vsock->pkt_list_lock);
+ 
+ 	destroy_workqueue(vsock->workqueue);
+ }
+-- 
+2.39.2
 
