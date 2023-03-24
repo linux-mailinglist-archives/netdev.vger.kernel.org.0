@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 631046C7C7E
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 11:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39AB16C7C84
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 11:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbjCXK1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 06:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
+        id S231454AbjCXK22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 06:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbjCXK1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 06:27:36 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A912069C;
-        Fri, 24 Mar 2023 03:27:29 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32OAJkD3020789;
-        Fri, 24 Mar 2023 10:27:25 GMT
+        with ESMTP id S229752AbjCXK21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 06:28:27 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8263B131;
+        Fri, 24 Mar 2023 03:28:26 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32OAM7rn020237;
+        Fri, 24 Mar 2023 10:28:23 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=WCZj8fkLpV6B/E0SktbDjflW6HsyUGf8NcE0gb44d6M=;
- b=gqIUavT/+xLkHBn8GKVH02W4sGSgtDyAiwf3sboA8UGF2q8rFHg79XI/2X3xykUxJord
- NIV9nXJuWZQ21RdjNfFIa4SbWGqBDzY1iOYb2Dk01OgdjhjS4u0CP5BJK7QTInAIE4PY
- XcyqYlg/T5Ieqz9OCnT41iCUv+JaUaJrkBdg8PFqyr3yysYjZxtpC0cHe4dmEbWUugro
- M3qUr2dWCVCExaeu6Qg6pZDlXMktCcztEzwTsOPIuiMx7ePOTncRKnpUCYLcPJY+Uu/X
- egZhIy+ESzaLRQ+XGFX7HxwRfLOhXjxLLQherN9gZ86MbO9cSAtlWkjRfCBYtSMpkv9Q 2w== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pha0pg0gv-1
+ s=corp-2022-7-12; bh=jNTqeif0Dvn+usuqlDHumvk7slWDmfD/bcaEya0Q10o=;
+ b=z21i/d0mlrN3TZs5J7Pi0rEPFokCGakJW5AFstykEdVFugbKJKWZfYCOWsZEFO4JVlUG
+ eIx0GLk/3wEDMO4jxKhRJXsY6B9FJqCD0FYImRyUhdWkpVSPARF73bR6wKWtms7mKKTS
+ G7dvU4cdFLbiubSpUda7Cq9klaiRlbF09y9Klbq1gH3LmhP8hh5EXkpLuBxYXvfSDKpx
+ GsavSROwrRU47LHvcLjKDWAE3eZubIai2F+s/St5Hy0/cG0AbrOtNdVf/0sytb9+Y5LL
+ ofBe26iw3EAXs/mvp1BZ1RPKYxpgP0pav9GL5lKNRyGa7gs3BswQEWCBELTLqhcq9oCB Lg== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pha1p00de-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Mar 2023 10:27:24 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32O90vCg002260;
-        Fri, 24 Mar 2023 10:27:23 GMT
+        Fri, 24 Mar 2023 10:28:22 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32OANWq8027874;
+        Fri, 24 Mar 2023 10:28:21 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3pgy5du5am-1
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pgxk44d51-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 24 Mar 2023 10:27:23 +0000
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32OAOvrD018834;
-        Fri, 24 Mar 2023 10:27:23 GMT
+        Fri, 24 Mar 2023 10:28:21 +0000
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32OAOvlY035049;
+        Fri, 24 Mar 2023 10:28:20 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3pgy5du5ac-1;
-        Fri, 24 Mar 2023 10:27:23 +0000
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3pgxk44d3b-1;
+        Fri, 24 Mar 2023 10:28:20 +0000
 From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 To:     stable@vger.kernel.org
 Cc:     vegard.nossum@oracle.com, Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -51,21 +51,21 @@ Cc:     vegard.nossum@oracle.com, Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 4.19.y] net: sched: cbq: dont intepret cls results when asked to drop
-Date:   Fri, 24 Mar 2023 03:27:20 -0700
-Message-Id: <20230324102720.3888082-1-harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 4.14.y] net: sched: cbq: dont intepret cls results when asked to drop
+Date:   Fri, 24 Mar 2023 03:28:16 -0700
+Message-Id: <20230324102816.3888235-1-harshit.m.mogalapalli@oracle.com>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-03-24_06,2023-03-24_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 spamscore=0
- phishscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
- definitions=main-2303240085
-X-Proofpoint-GUID: GHrd69Vaz5FAsxHKcVq4lfYyQHfaqC_S
-X-Proofpoint-ORIG-GUID: GHrd69Vaz5FAsxHKcVq4lfYyQHfaqC_S
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=999 adultscore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2303240086
+X-Proofpoint-GUID: J6LqPFF5YceaB2ayn-FLLGk3hpb4D8uW
+X-Proofpoint-ORIG-GUID: J6LqPFF5YceaB2ayn-FLLGk3hpb4D8uW
 X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -188,18 +188,19 @@ Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Reported-by: Kyle Zeng <zengyhkyle@gmail.com>
 Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-[Harshit: backport to 4.19.y]
+[Harshit: backport for 4.14.y]
 Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 ---
-Compile and boot tested.
+Only compile and boot tested.
 This is marked as Fix for CVE-2023-23454.
+
 Would be nice if any net developer review this before merging this to stable.
 ---
  net/sched/sch_cbq.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index 0a76ad05e5ae..2974f7262f88 100644
+index dea125d8aac7..8b75a9572d1f 100644
 --- a/net/sched/sch_cbq.c
 +++ b/net/sched/sch_cbq.c
 @@ -236,6 +236,8 @@ cbq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
@@ -211,10 +212,10 @@ index 0a76ad05e5ae..2974f7262f88 100644
  
  		cl = (void *)res.class;
  		if (!cl) {
-@@ -256,8 +258,6 @@ cbq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+@@ -255,8 +257,6 @@ cbq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 		case TC_ACT_STOLEN:
  		case TC_ACT_TRAP:
  			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
- 			/* fall through */
 -		case TC_ACT_SHOT:
 -			return NULL;
  		case TC_ACT_RECLASSIFY:
