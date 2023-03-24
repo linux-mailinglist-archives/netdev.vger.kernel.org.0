@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3D796C8589
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 20:04:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 367846C858A
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 20:04:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbjCXTEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 15:04:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
+        id S231402AbjCXTEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 15:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbjCXTDw (ORCPT
+        with ESMTP id S231394AbjCXTDw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 15:03:52 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2074.outbound.protection.outlook.com [40.107.220.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6461C5BA
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 12:03:22 -0700 (PDT)
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2069.outbound.protection.outlook.com [40.107.101.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B989321295
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 12:03:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ObMl3v+NZkMaA6E8Rz3eE528wtD/tt/6QswAaxfd/tgFYqaJOXvbvHGfIhwws02OHj/o594SH2Ly97JO652q0Erc2l1iWd0PRstdenXK3w58oai87PfESQXdL1x6oFVIM7zUTWhxjwQa9Y7EmaSrfM16UKDbCczPK0gWkI3dt+geoOQ8Ikk8NQCUkPU/0ype3L8Z9nB12Q9bLGOOUFsjKi3g/JJ/oSqI1rgUQUfrPAqSHOkzk4DXwicw4WAnPyau25tBenDjx0IwpF/wTi9K7GpJ6AECjtriPnAFnhn4VbaSKjicELrtqG9NdOERsvMlVAtHRq99pPXhyO+AKDfL6Q==
+ b=CiaRSut72uvxN//MUIGzJAVBhThN1CrDfk1tHvnYbN2tTAWGq3U7n9rMCitjvVB/hLQ3rKYWsIq7Kxhs5PCaWd0dQB8bWZUiARgAii6EVHGyhiyjFPgCDq+bFoYCi89Q8NxYxu7ue8KmhevpNAcMauJnfejcMkDfvSxuDvTTTxXiyOlwMRcVIL+s/RD/dmO37M8p8r8AnoU84Lxg3WJEDxeAWB00yCfZvQDijuJfihWG3UimcD7KzLgw2gm/esHQXPOYtoZ9kvs2moXTpFSouh5G5EQyNDHK5LXX4ji1eeeB/CP28IQ+zP+ei4Z0WAMrl04LLEycdJYer13LNyzXaA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oxX6rTGoD4qf29/wIcjRiycQ67QaDTWQkGeCOz/4SKg=;
- b=DHcx2mh0BKgI7dhIgXOj2hLbGwHTvjo3Ws9fN0p0ZqgzCjugO8MHZukp57vYY8+NeMw2Xw38qseYfBPU1O+mmCedrP1kmj2h4OsOvm//mJXM+M8u2ZlzRi0mUMfCzm5GOD8dSHf8Su+M9ub09Iu9nQIqm01OQnvXmEH5zqJENvi3e2uUszqlnDIT/UlWYLwqKWc2n+Yf7rlwoIK1KqRWQ5f2nrpHbkWbt8xkBYMtTvH4lnmmlHndmrKsJPYMQ6mohp17vbgSOBSGafOH7biLxDs8WrB9a/GSKvTynHd3X7sDnZIZUt8J8vILjKpXoKigBPH3IMOFdm08LIs7toakrA==
+ bh=GdauOXbNxYEr+krtuT0i7yJtOeJ6mi7166LfZ6jUSks=;
+ b=n3xsRbv+WB1/LbJye+wa6sWGBuPDoNPOdjZzmi0zh5W+Rz0S9C82jNHkKa1+qaCqdVgfQBPJtqC2qvYwxcSDnJodz9PbFX4JwcSKfl+QQCidElu6PvwBc0sP3s12PjyXkDR2RprTbRJlOUHl1hiejZaBjA6fUYy7jC4yU1a47/lY85OUN/E+SDgCNJRj9nq7Iczh+mSZR7OCEkxEeA+h5MWu85sZKw5MqKzSlN1gdHizAcTGhNd6qKKAlyZKxMaGHpWekCA7SxeqXBs19l3eOLezx9hCWebKhawFnxB66jDuVcgsCfFkhXbr3g6OpGItwgFuQOvoJ8lzuRraUBE1Jw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oxX6rTGoD4qf29/wIcjRiycQ67QaDTWQkGeCOz/4SKg=;
- b=EHxh+5eTX4lG6tl7qc8tD5BfWncoUQ2EUoSEqcmE+nRXjiHkk4e+/av7+unWhNWEG0TXGVrzqAWT46qcBtL3eNPMxzcSU6PJN6uUFwxFuMunRf5iY7VekK/Ccrq8G5GjY9Pybni6KnsO5/oxetKS8mp2MKpYInlyjZIS8ydbxzA=
-Received: from DM6PR17CA0030.namprd17.prod.outlook.com (2603:10b6:5:1b3::43)
- by DS0PR12MB8528.namprd12.prod.outlook.com (2603:10b6:8:160::6) with
+ bh=GdauOXbNxYEr+krtuT0i7yJtOeJ6mi7166LfZ6jUSks=;
+ b=qSuMGGpBeF+25CA+vFqrp9fh4/uQiOS8+dw3gRmNNpVjrMfS6Rqu0zflIXUPqHk9UDCEwrmg4gR/85M66Z3X9PN78nzfJQ17nnjZPd3XtTV2X+C4urCJC7M4YtkYewaD8ynSvZbbD+bqwoct8WwnA0jMHEhDzWeksy7lsaqxpLo=
+Received: from DM6PR17CA0002.namprd17.prod.outlook.com (2603:10b6:5:1b3::15)
+ by PH0PR12MB8008.namprd12.prod.outlook.com (2603:10b6:510:26f::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Fri, 24 Mar
  2023 19:03:18 +0000
 Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b3:cafe::aa) by DM6PR17CA0030.outlook.office365.com
- (2603:10b6:5:1b3::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.39 via Frontend
+ (2603:10b6:5:1b3:cafe::62) by DM6PR17CA0002.outlook.office365.com
+ (2603:10b6:5:1b3::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.40 via Frontend
  Transport; Fri, 24 Mar 2023 19:03:18 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
@@ -52,14 +52,14 @@ Received: from SATLEXMB04.amd.com (165.204.84.17) by
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Fri, 24 Mar
- 2023 14:03:16 -0500
+ 2023 14:03:17 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH v6 net-next 13/14] pds_core: publish events to the clients
-Date:   Fri, 24 Mar 2023 12:02:42 -0700
-Message-ID: <20230324190243.27722-14-shannon.nelson@amd.com>
+Subject: [PATCH v6 net-next 14/14] pds_core: Kconfig and pds_core.rst
+Date:   Fri, 24 Mar 2023 12:02:43 -0700
+Message-ID: <20230324190243.27722-15-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230324190243.27722-1-shannon.nelson@amd.com>
 References: <20230324190243.27722-1-shannon.nelson@amd.com>
@@ -70,23 +70,23 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT035:EE_|DS0PR12MB8528:EE_
-X-MS-Office365-Filtering-Correlation-Id: e5ecbf42-cfb9-4e61-7eb7-08db2c9a6ddd
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT035:EE_|PH0PR12MB8008:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8e669228-3a51-4166-05fa-08db2c9a6e06
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CwWRFlNT1vSxnfPcqCbR97YUenUezWlGnkcDq9ocOCOvieYgkQsFaKC9FEnHAFeDl0539W5TqQcsINURQsGTG7f8iGC+ghQ9MT1RUqk6kO8tHjHhVDqom/v82kqFa1pLVG0z8yY6+5DyfRYCp9P4F7duUseY5laouMhDB4neiGSpXW9amw+axuDVzA3f5/ovS3bcAFWC96rrSdXU+bgxBKVBAATPnbTCrlrxWpcrgVjZWq1aXXiyXf3ezOnddL7/i4YD7Ch9ttM4lXi5iMHeallAyWr10QtjS/cVXFluJBF8A27HMB57IsjQPvoWuevXtAMSR0EOjDDxwhztdZ3Zcnq4wTHGbhTgxTlrNZ0bcRMqTFV4JY+Ef6QN7gBrCb4AabOBMkjASjfinnljGvkFPwn0pZTI0IT6odjtEE0hFCKL6yNO4DCHaekYb6ZD1ALCl8DxFCB3qaImGlPIZnml5AsJkOol95LzbB1tfWveh6R3JubAVVtEm7IEXRneCyYIHxHk0lsl9NGrPxXhG3f5/yMJ+WhXnIygqD6klFQCnMex0GSWN0FftOCUzOMyV2IrYV6k8oKkn1IJPRpHp7Xcy2BcvJ9XR4hZoABcKro7Z5+RottSSy1ti8jBkbYicyihH1oMsTewUIWtU/zuT0qtrS+K9j7aw3sgk2utgw5xFLR4pgyQ5xcLN1BJu7Q5z7RrQGNWQJ3X1iRNVDaMqdhMPY6DQLpyx7MtGMYS1/B0Scs=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(376002)(346002)(396003)(451199021)(46966006)(36840700001)(40470700004)(4326008)(86362001)(41300700001)(70586007)(8936002)(70206006)(8676002)(478600001)(110136005)(16526019)(82310400005)(5660300002)(44832011)(82740400003)(54906003)(316002)(40460700003)(81166007)(356005)(2906002)(36756003)(1076003)(2616005)(336012)(6666004)(186003)(26005)(47076005)(83380400001)(426003)(40480700001)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: IUmCRBUj2TsSATxxh6R82T3ri/ZMlPop6BIHV5/NtNOsZw+Xx0xZdFLkK89w+3Gd87pjh+uNNO/mSmCxIPcfMFpq1jMLEKQI0690jtgYFVFGdGa5oPRyT2yJfWmtEOPrsm8fvL1vBOY5faXRCVJ9IICWbWuQxA2yBaI7aYPsJ+3vUlW7dv2EJ/JAmnYHRNRLALvHE3XgcMYLA5NHE0zvpqbw+5/SJH55/n1JlYwhoSyIQ+aRCrEbd0WbUE6vFjNQ4hUn6kCNhPe5XG+QIPDZMPDdsvbXt2YxBWMeFqrXvQ8DIl+J0MEtR4uZSlEx6vRW+xa6B0/cggwyhHi4DK6J8DDoc6JRO7FPysmeQ0i6qVQYcb0Dz1+4A53bQdRJMbHapXI0vuVHx6+eL73WcNoCbnMMLgYvrslFr/Q0vnbt8Q1M+KItOy6+MqH5C/2njOVFPzVlDw/yx/AGsulM3t8FwtmIAh1+9ZugTXx7AbQpHZTlgOqN0UinL/vR0DpwfyQ3kBCu+qPmkrMQ1YCdD03T7aF0wHk8vHD2i/+Z1Gk55bk1kNrAptVFT0RR4ExofBGRB5Q7ISJ0zqnP4xKHRQL3h2/h/KgFtDrk8JFFK+aCuoCDJLEdWqSapfGLsUPbSwY+qdZI5A8lpHhtot+Bqly/9gCxRC1aw/5AX64l0oyMQwGdil7hOEfr/Bx2pq3kyKrjL3jQeMasAQ++UYjSb181cS9IjE96CQx1tZPFq8nADAHUw4FZnGJhhs8+3G87ExEyCtzFkf1sAHVo8kuIeqFNbw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(376002)(39860400002)(396003)(136003)(451199021)(40470700004)(36840700001)(46966006)(8676002)(4326008)(86362001)(83380400001)(41300700001)(40460700003)(110136005)(336012)(1076003)(26005)(43170500006)(40480700001)(16526019)(81166007)(426003)(82310400005)(36860700001)(2616005)(47076005)(36756003)(6666004)(2906002)(54906003)(356005)(8936002)(70586007)(316002)(186003)(70206006)(82740400003)(478600001)(5660300002)(44832011)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 19:03:18.2094
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2023 19:03:18.4750
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5ecbf42-cfb9-4e61-7eb7-08db2c9a6ddd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e669228-3a51-4166-05fa-08db2c9a6e06
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8528
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8008
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
@@ -97,138 +97,229 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the Core device gets an event from the device, or notices
-the device FW to be up or down, it needs to send those events
-on to the clients that have an event handler.  Add the code to
-pass along the events to the clients.
+Documentation and Kconfig hook for building the driver.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/net/ethernet/amd/pds_core/adminq.c |  2 ++
- drivers/net/ethernet/amd/pds_core/core.c   | 32 ++++++++++++++++++++++
- drivers/net/ethernet/amd/pds_core/core.h   |  3 ++
- include/linux/pds/pds_common.h             |  2 ++
- 4 files changed, 39 insertions(+)
+ .../device_drivers/ethernet/amd/pds_core.rst  | 143 ++++++++++++++++++
+ .../device_drivers/ethernet/index.rst         |   1 +
+ MAINTAINERS                                   |   9 ++
+ drivers/net/ethernet/amd/Kconfig              |  12 ++
+ drivers/net/ethernet/amd/Makefile             |   1 +
+ 5 files changed, 166 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
 
-diff --git a/drivers/net/ethernet/amd/pds_core/adminq.c b/drivers/net/ethernet/amd/pds_core/adminq.c
-index f9fb04308eff..4f86d1a917c1 100644
---- a/drivers/net/ethernet/amd/pds_core/adminq.c
-+++ b/drivers/net/ethernet/amd/pds_core/adminq.c
-@@ -27,11 +27,13 @@ static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
- 		case PDS_EVENT_LINK_CHANGE:
- 			dev_info(pdsc->dev, "NotifyQ LINK_CHANGE ecode %d eid %lld\n",
- 				 ecode, eid);
-+			pdsc_notify(PDS_EVENT_LINK_CHANGE, comp);
- 			break;
- 
- 		case PDS_EVENT_RESET:
- 			dev_info(pdsc->dev, "NotifyQ RESET ecode %d eid %lld\n",
- 				 ecode, eid);
-+			pdsc_notify(PDS_EVENT_RESET, comp);
- 			break;
- 
- 		case PDS_EVENT_XCVR:
-diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
-index 6b2884f64419..5322caa780f1 100644
---- a/drivers/net/ethernet/amd/pds_core/core.c
-+++ b/drivers/net/ethernet/amd/pds_core/core.c
-@@ -5,6 +5,25 @@
- 
- #include "core.h"
- 
-+static BLOCKING_NOTIFIER_HEAD(pds_notify_chain);
+diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+new file mode 100644
+index 000000000000..16ed45baa81b
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+@@ -0,0 +1,143 @@
++.. SPDX-License-Identifier: GPL-2.0+
 +
-+int pdsc_register_notify(struct notifier_block *nb)
-+{
-+	return blocking_notifier_chain_register(&pds_notify_chain, nb);
-+}
-+EXPORT_SYMBOL_GPL(pdsc_register_notify);
++========================================================
++Linux Driver for the AMD/Pensando(R) DSC adapter family
++========================================================
 +
-+void pdsc_unregister_notify(struct notifier_block *nb)
-+{
-+	blocking_notifier_chain_unregister(&pds_notify_chain, nb);
-+}
-+EXPORT_SYMBOL_GPL(pdsc_unregister_notify);
++Copyright(c) 2023 Advanced Micro Devices, Inc
 +
-+void pdsc_notify(unsigned long event, void *data)
-+{
-+	blocking_notifier_call_chain(&pds_notify_chain, event, data);
-+}
++Identifying the Adapter
++=======================
 +
- void pdsc_intr_free(struct pdsc *pdsc, int index)
- {
- 	struct pdsc_intr_info *intr_info;
-@@ -506,6 +525,11 @@ void pdsc_stop(struct pdsc *pdsc)
- 
- static void pdsc_fw_down(struct pdsc *pdsc)
- {
-+	union pds_core_notifyq_comp reset_event = {
-+		.reset.ecode = cpu_to_le16(PDS_EVENT_RESET),
-+		.reset.state = 0,
-+	};
++To find if one or more AMD/Pensando PCI Core devices are installed on the
++host, check for the PCI devices::
 +
- 	mutex_lock(&pdsc->config_lock);
++  # lspci -d 1dd8:100c
++  b5:00.0 Processing accelerators: Pensando Systems Device 100c
++  b6:00.0 Processing accelerators: Pensando Systems Device 100c
++
++If such devices are listed as above, then the pds_core.ko driver should find
++and configure them for use.  There should be log entries in the kernel
++messages such as these::
++
++  $ dmesg | grep pds_core
++  pds_core 0000:b5:00.0: 252.048 Gb/s available PCIe bandwidth (16.0 GT/s PCIe x16 link)
++  pds_core 0000:b5:00.0: FW: 1.60.0-73
++  pds_core 0000:b6:00.0: 252.048 Gb/s available PCIe bandwidth (16.0 GT/s PCIe x16 link)
++  pds_core 0000:b6:00.0: FW: 1.60.0-73
++
++Driver and firmware version information can be gathered with devlink::
++
++  $ devlink dev info pci/0000:b5:00.0
++  pci/0000:b5:00.0:
++    driver pds_core
++    serial_number FLM18420073
++    versions:
++        fixed:
++          asic.id 0x0
++          asic.rev 0x0
++        running:
++          fw 1.51.0-73
++        stored:
++          fw.goldfw 1.15.9-C-22
++          fw.mainfwa 1.60.0-73
++          fw.mainfwb 1.60.0-57
++
++
++Info versions
++=============
++
++The ``pds_core`` driver reports the following versions
++
++.. list-table:: devlink info versions implemented
++   :widths: 5 5 90
++
++   * - Name
++     - Type
++     - Description
++   * - ``fw``
++     - running
++     - Version of firmware running on the device
++   * - ``fw.goldfw``
++     - stored
++     - Version of firmware stored in the goldfw slot
++   * - ``fw.mainfwa``
++     - stored
++     - Version of firmware stored in the mainfwa slot
++   * - ``fw.mainfwb``
++     - stored
++     - Version of firmware stored in the mainfwb slot
++   * - ``asic.id``
++     - fixed
++     - The ASIC type for this device
++   * - ``asic.rev``
++     - fixed
++     - The revision of the ASIC for this device
++
++
++Parameters
++==========
++
++The ``pds_core`` driver implements the following generic
++parameters for controlling the functionality to be made available
++as auxiliary_bus devices.
++
++.. list-table:: Generic parameters implemented
++   :widths: 5 5 8 82
++
++   * - Name
++     - Mode
++     - Type
++     - Description
++   * - ``enable_vnet``
++     - runtime
++     - Boolean
++     - Enables vDPA functionality through an auxiliary_bus device
++
++
++Firmware Management
++===================
++
++The ``flash`` command can update a the DSC firmware.  The downloaded firmware
++will be saved into either of firmware bank 1 or bank 2, whichever is not
++currrently in use, and that bank will be then selected for the next boot.
++
++Health Reporters
++================
++
++The driver supports a devlink health reporter for FW status::
++
++  # devlink health show pci/0000:2b:00.0 reporter fw
++  pci/0000:2b:00.0:
++    reporter fw
++      state healthy error 0 recover 0
++
++
++Enabling the driver
++===================
++
++The driver is enabled via the standard kernel configuration system,
++using the make command::
++
++  make oldconfig/menuconfig/etc.
++
++The driver is located in the menu structure at:
++
++  -> Device Drivers
++    -> Network device support (NETDEVICES [=y])
++      -> Ethernet driver support
++        -> AMD devices
++          -> AMD/Pensando Ethernet PDS_CORE Support
++
++Support
++=======
++
++For general Linux networking support, please use the netdev mailing
++list, which is monitored by AMD/Pensando personnel::
++
++  netdev@vger.kernel.org
++
++For more specific support needs, please use the AMD/Pensando driver support
++email::
++
++  drivers@pensando.io
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
+index 6e9e7012d000..eaaf284e69e6 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -13,6 +13,7 @@ Contents:
+    3com/3c509
+    3com/vortex
+    amazon/ena
++   amd/pds_core
+    altera/altera_tse
+    aquantia/atlantic
+    chelsio/cxgb
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 30ca644d704f..95b5f25a2c06 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1041,6 +1041,15 @@ F:	drivers/gpu/drm/amd/include/vi_structs.h
+ F:	include/uapi/linux/kfd_ioctl.h
+ F:	include/uapi/linux/kfd_sysfs.h
  
- 	if (test_and_set_bit(PDSC_S_FW_DEAD, &pdsc->state)) {
-@@ -514,7 +538,9 @@ static void pdsc_fw_down(struct pdsc *pdsc)
- 		return;
- 	}
++AMD PDS CORE DRIVER
++M:	Shannon Nelson <shannon.nelson@amd.com>
++M:	Brett Creeley <brett.creeley@amd.com>
++M:	drivers@pensando.io
++L:	netdev@vger.kernel.org
++S:	Supported
++F:	Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
++F:	drivers/net/ethernet/amd/pds_core/
++
+ AMD SPI DRIVER
+ M:	Sanjay R Mehta <sanju.mehta@amd.com>
+ S:	Maintained
+diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
+index ab42f75b9413..235fcacef5c5 100644
+--- a/drivers/net/ethernet/amd/Kconfig
++++ b/drivers/net/ethernet/amd/Kconfig
+@@ -186,4 +186,16 @@ config AMD_XGBE_HAVE_ECC
+ 	bool
+ 	default n
  
-+	/* Notify clients of fw_down */
- 	devlink_health_report(pdsc->fw_reporter, "FW down reported", pdsc);
-+	pdsc_notify(PDS_EVENT_RESET, &reset_event);
- 
- 	pdsc_mask_interrupts(pdsc);
- 	pdsc_teardown(pdsc, PDSC_TEARDOWN_RECOVERY);
-@@ -524,6 +550,10 @@ static void pdsc_fw_down(struct pdsc *pdsc)
- 
- static void pdsc_fw_up(struct pdsc *pdsc)
- {
-+	union pds_core_notifyq_comp reset_event = {
-+		.reset.ecode = cpu_to_le16(PDS_EVENT_RESET),
-+		.reset.state = 1,
-+	};
- 	int err;
- 
- 	mutex_lock(&pdsc->config_lock);
-@@ -544,9 +574,11 @@ static void pdsc_fw_up(struct pdsc *pdsc)
- 
- 	mutex_unlock(&pdsc->config_lock);
- 
-+	/* Notify clients of fw_up */
- 	pdsc->fw_recoveries++;
- 	devlink_health_reporter_state_update(pdsc->fw_reporter,
- 					     DEVLINK_HEALTH_REPORTER_STATE_HEALTHY);
-+	pdsc_notify(PDS_EVENT_RESET, &reset_event);
- 
- 	return;
- 
-diff --git a/drivers/net/ethernet/amd/pds_core/core.h b/drivers/net/ethernet/amd/pds_core/core.h
-index ce3598cf8de1..5ec31cc12b1d 100644
---- a/drivers/net/ethernet/amd/pds_core/core.h
-+++ b/drivers/net/ethernet/amd/pds_core/core.h
-@@ -302,6 +302,9 @@ int pdsc_start(struct pdsc *pdsc);
- void pdsc_stop(struct pdsc *pdsc);
- void pdsc_health_thread(struct work_struct *work);
- 
-+int pdsc_register_notify(struct notifier_block *nb);
-+void pdsc_unregister_notify(struct notifier_block *nb);
-+void pdsc_notify(unsigned long event, void *data);
- int pdsc_auxbus_dev_add_vf(struct pdsc *vf, struct pdsc *pf);
- int pdsc_auxbus_dev_del_vf(struct pdsc *vf, struct pdsc *pf);
- 
-diff --git a/include/linux/pds/pds_common.h b/include/linux/pds/pds_common.h
-index 898f3c7b14b7..17708a142349 100644
---- a/include/linux/pds/pds_common.h
-+++ b/include/linux/pds/pds_common.h
-@@ -91,5 +91,7 @@ enum pds_core_logical_qtype {
- 	PDS_CORE_QTYPE_MAX     = 16   /* don't change - used in struct size */
- };
- 
-+int pdsc_register_notify(struct notifier_block *nb);
-+void pdsc_unregister_notify(struct notifier_block *nb);
- void *pdsc_get_pf_struct(struct pci_dev *vf_pdev);
- #endif /* _PDS_COMMON_H_ */
++config PDS_CORE
++	tristate "AMD/Pensando Data Systems Core Device Support"
++	depends on 64BIT && PCI
++	help
++	  This enables the support for the AMD/Pensando Core device family of
++	  adapters.  More specific information on this driver can be
++	  found in
++	  <file:Documentation/networking/device_drivers/ethernet/amd/pds_core.rst>.
++
++	  To compile this driver as a module, choose M here. The module
++	  will be called pds_core.
++
+ endif # NET_VENDOR_AMD
+diff --git a/drivers/net/ethernet/amd/Makefile b/drivers/net/ethernet/amd/Makefile
+index 42742afe9115..2dcfb84731e1 100644
+--- a/drivers/net/ethernet/amd/Makefile
++++ b/drivers/net/ethernet/amd/Makefile
+@@ -17,3 +17,4 @@ obj-$(CONFIG_PCNET32) += pcnet32.o
+ obj-$(CONFIG_SUN3LANCE) += sun3lance.o
+ obj-$(CONFIG_SUNLANCE) += sunlance.o
+ obj-$(CONFIG_AMD_XGBE) += xgbe/
++obj-$(CONFIG_PDS_CORE) += pds_core/
 -- 
 2.17.1
 
