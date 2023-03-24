@@ -2,183 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEAC6C89B5
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 01:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 319806C8912
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 00:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231626AbjCYAou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 20:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
+        id S231859AbjCXXN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 19:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbjCYAot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 20:44:49 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93D312B;
-        Fri, 24 Mar 2023 17:44:48 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id f6-20020a17090ac28600b0023b9bf9eb63so3189159pjt.5;
-        Fri, 24 Mar 2023 17:44:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679705088;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=gGri5zgrpwBNQccX2+WkAia7t3Mp6NEARVbrGgzBR38=;
-        b=qvjtVlA1JomFexRyZAphQnfjJBoWJXtxI2qUFCU/BSgLRCCotn6ZPGvyUQOH/CqsmS
-         g7bZHhqDPvTr1VYUzmMojTvQCtwbh0aFbJMGofl79xcvos7cARW6Ay7dNVBAYDUZPdli
-         9CRbjXVmN1YKuv229yEdQ8cmG9x/aIkLJEXmFFrbGD3+B8KKfr3id8fIafBhscyvzYM6
-         Qfz1HdPhRdT35NBkpOuJ1uipaJ72Puc3943GhebYINHoVBxfVPR8XkSVZJyty42p1rhM
-         +G4hgMhQI+dL3kQ3F7Fbl3fVA6ngL3G0PfTk/BVWHNiHWZnv/e6Q7Gkh6Mxk7S889c9W
-         qimw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679705088;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gGri5zgrpwBNQccX2+WkAia7t3Mp6NEARVbrGgzBR38=;
-        b=oDcva3BfQEEaatSrIihJW9chRSyMI8eOT32tvbaGlxVmqzpVdSlEfY3/NVi9/c+ijd
-         fF+ev/zelMNNhtuJKZd4ofHDTvKM31+HWu4stSs690/ewIvg94rQzZp3WjfnZFK+G5Dm
-         oUWNbTMmOCI1id/rpX/oKpqLEj12H8nPfBv9qJJ3BLuDMBZ2i4Bx5zkHibBqEnK3/Zp8
-         SDf53ybSNqssXLN1mtnT7XM5bbwgCb0bei6lGh3d98n6QZAKNDPxuh851+lwiJnwZcPt
-         snOinQPDrDRW6ka4eI2emiWT/gvGGTw5M37uqC3WD239n7XjMw2MPUWhkcPDtUQ6Xw/p
-         GXrQ==
-X-Gm-Message-State: AAQBX9cwelrmiVaZ4fIA4MI4qFtbXi8RTSyiHethdqfmGrv+uamhfPuj
-        kOEz+QKD4lI7PNyATXJ4cb2JX9hBxtfLM06u
-X-Google-Smtp-Source: AKy350YWt+yEd85LHuiaoONJDjSIB5/4b2nw6M9WRVg4rD9lE3/1YSyYOvYWxAy33c/kgH1GlMu7Yg==
-X-Received: by 2002:a17:902:e30b:b0:1a1:7c2b:4aea with SMTP id q11-20020a170902e30b00b001a17c2b4aeamr3593928plc.0.1679705088042;
-        Fri, 24 Mar 2023 17:44:48 -0700 (PDT)
-Received: from localhost (ec2-54-67-115-33.us-west-1.compute.amazonaws.com. [54.67.115.33])
-        by smtp.gmail.com with ESMTPSA id m6-20020a1709026bc600b001a049441fc8sm3584749plt.193.2023.03.24.17.44.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Mar 2023 17:44:47 -0700 (PDT)
-Date:   Sat, 18 Mar 2023 00:32:39 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        syzbot <syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com>,
-        axboe@kernel.dk, davem@davemloft.net, edumazet@google.com,
-        io-uring@vger.kernel.org, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, stefanha@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Subject: Re: [syzbot] [net?] [virt?] [io-uring?] [kvm?] BUG: soft lockup in
- vsock_connect
-Message-ID: <ZBUGp5bvNuE3sK5g@bullseye>
-References: <00000000000075bebb05f79acfde@google.com>
- <CAGxU2F4jxdzK8Y-jaoKRaX_bDhoMtomOT6TyMek+un-Bp8RX3g@mail.gmail.com>
+        with ESMTP id S232154AbjCXXNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 19:13:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFDD166FD
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 16:13:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4C5162CEC
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 23:13:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 119A0C433D2;
+        Fri, 24 Mar 2023 23:13:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679699631;
+        bh=6HmQ0MXtkq2sPgoSfoYF2hCERjTBjV2qzufVHZ29GNk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VGlCueoDV6BjxZoa3HagaiurojLiice4XvY0S6SFEhSgvO9+eJoDwNb5gp7j2oSkP
+         zQ4zJnF1hPTsqeBP4AJMwWSjCuyHeodGQM0V/S706CN6ATsynEJnDg7TkBDZ2S1dyX
+         ijmMOvxvYLhC04HYe9zq3cln2VgnyeNHabSbxoGj7otRDAPzG++suS1qDBKequqBvp
+         CWTLmQrQjuZ17iWbQny/y8NfRP8EGdeWtOd3wjFO9+YCiB1wFIr26TwIfFeLvB0eqr
+         zmRKzxe4ZgRmrf10/3uKsjdaep3rSqIkUYOK4mEOof2N/d+9P4j+9cu5DCYWjOiqgy
+         SA8uGZBfTxRnQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [pull request][net-next V2 00/15] mlx5 updates 2023-03-20
+Date:   Fri, 24 Mar 2023 16:13:26 -0700
+Message-Id: <20230324231341.29808-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAGxU2F4jxdzK8Y-jaoKRaX_bDhoMtomOT6TyMek+un-Bp8RX3g@mail.gmail.com>
-X-Spam-Status: No, score=1.9 required=5.0 tests=DATE_IN_PAST_96_XX,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 09:38:38AM +0100, Stefano Garzarella wrote:
-> Hi Bobby,
-> FYI we have also this one, but it seems related to
-> syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
-> 
-> Thanks,
-> Stefano
-> 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Got it, I'll look into it.
+v1->v2:
+  1) Improved commit messages
+  2) Added reviewed by Jacob Keller 
+  3) handled Checkpatch errors
+  4) CC Thomas
+  5) Proper errno return values
+  6) Avoid "glue" leakage.
+  7) Removed unnecessary Fixes tag.
 
-Best,
-Bobby
+This series from Eli, adds the support for dynamic msix and irq vector
+allocation in mlx5, required for mlx5 vdpa posted interrupt feature [1].
 
-> 
-> On Fri, Mar 24, 2023 at 1:52 AM syzbot
-> <syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    fe15c26ee26e Linux 6.3-rc1
-> > git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1577c97ec80000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=7573cbcd881a88c9
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=0bc015ebddc291a97116
-> > compiler:       Debian clang version 15.0.7, GNU ld (GNU Binutils for Debian) 2.35.2
-> > userspace arch: arm64
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1077c996c80000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17e38929c80000
-> >
-> > Downloadable assets:
-> > disk image: https://storage.googleapis.com/syzbot-assets/89d41abd07bd/disk-fe15c26e.raw.xz
-> > vmlinux: https://storage.googleapis.com/syzbot-assets/fa75f5030ade/vmlinux-fe15c26e.xz
-> > kernel image: https://storage.googleapis.com/syzbot-assets/590d0f5903ee/Image-fe15c26e.gz.xz
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com
-> >
-> > watchdog: BUG: soft lockup - CPU#0 stuck for 27s! [syz-executor244:6747]
-> > Modules linked in:
-> > irq event stamp: 6033
-> > hardirqs last  enabled at (6032): [<ffff8000124604ac>] __exit_to_kernel_mode arch/arm64/kernel/entry-common.c:84 [inline]
-> > hardirqs last  enabled at (6032): [<ffff8000124604ac>] exit_to_kernel_mode+0xe8/0x118 arch/arm64/kernel/entry-common.c:94
-> > hardirqs last disabled at (6033): [<ffff80001245e188>] __el1_irq arch/arm64/kernel/entry-common.c:468 [inline]
-> > hardirqs last disabled at (6033): [<ffff80001245e188>] el1_interrupt+0x24/0x68 arch/arm64/kernel/entry-common.c:486
-> > softirqs last  enabled at (616): [<ffff80001066ca80>] spin_unlock_bh include/linux/spinlock.h:395 [inline]
-> > softirqs last  enabled at (616): [<ffff80001066ca80>] lock_sock_nested+0xe8/0x138 net/core/sock.c:3480
-> > softirqs last disabled at (618): [<ffff8000122dbcfc>] spin_lock_bh include/linux/spinlock.h:355 [inline]
-> > softirqs last disabled at (618): [<ffff8000122dbcfc>] virtio_transport_purge_skbs+0x11c/0x500 net/vmw_vsock/virtio_transport_common.c:1372
-> > CPU: 0 PID: 6747 Comm: syz-executor244 Not tainted 6.3.0-rc1-syzkaller-gfe15c26ee26e #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-> > pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > pc : __sanitizer_cov_trace_pc+0xc/0x8c kernel/kcov.c:203
-> > lr : virtio_transport_purge_skbs+0x19c/0x500 net/vmw_vsock/virtio_transport_common.c:1374
-> > sp : ffff80001e787890
-> > x29: ffff80001e7879e0 x28: 1ffff00003cf0f2a x27: ffff80001a487a60
-> > x26: ffff80001e787950 x25: ffff0000ce2d3b80 x24: ffff80001a487a78
-> > x23: 1ffff00003490f4c x22: ffff80001a29c1a8 x21: dfff800000000000
-> > x20: ffff80001a487a60 x19: ffff80001e787940 x18: 1fffe000368951b6
-> > x17: ffff800015cdd000 x16: ffff8000085110b0 x15: 0000000000000000
-> > x14: 1ffff00002b9c0b2 x13: dfff800000000000 x12: ffff700003cf0efc
-> > x11: ff808000122dbee8 x10: 0000000000000000 x9 : ffff8000122dbee8
-> > x8 : ffff0000ce511b40 x7 : ffff8000122dbcfc x6 : 0000000000000000
-> > x5 : 0000000000000000 x4 : 0000000000000001 x3 : ffff80000832d758
-> > x2 : 0000000000000001 x1 : 0000000000000000 x0 : 0000000000000000
-> > Call trace:
-> >  get_current arch/arm64/include/asm/current.h:19 [inline]
-> >  __sanitizer_cov_trace_pc+0xc/0x8c kernel/kcov.c:206
-> >  vsock_loopback_cancel_pkt+0x28/0x3c net/vmw_vsock/vsock_loopback.c:48
-> >  vsock_transport_cancel_pkt net/vmw_vsock/af_vsock.c:1284 [inline]
-> >  vsock_connect+0x6b8/0xaec net/vmw_vsock/af_vsock.c:1426
-> >  __sys_connect_file net/socket.c:2004 [inline]
-> >  __sys_connect+0x268/0x290 net/socket.c:2021
-> >  __do_sys_connect net/socket.c:2031 [inline]
-> >  __se_sys_connect net/socket.c:2028 [inline]
-> >  __arm64_sys_connect+0x7c/0x94 net/socket.c:2028
-> >  __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
-> >  invoke_syscall+0x98/0x2c0 arch/arm64/kernel/syscall.c:52
-> >  el0_svc_common+0x138/0x258 arch/arm64/kernel/syscall.c:142
-> >  do_el0_svc+0x64/0x198 arch/arm64/kernel/syscall.c:193
-> >  el0_svc+0x58/0x168 arch/arm64/kernel/entry-common.c:637
-> >  el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:655
-> >  el0t_64_sync+0x190/0x194 arch/arm64/kernel/entry.S:591
-> >
-> >
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > syzbot can test patches for this issue, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
-> >
-> 
+For more information please see tag log below.
+Please pull and let me know if there is any problem.
+
+The following changes since commit e8d018dd0257f744ca50a729e3d042cf2ec9da65:
+
+  Linux 6.3-rc3 (2023-03-19 13:27:55 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-03-20
+
+for you to fetch changes up to 2e21ab28e230fd8333ac0586901431132cc308d7:
+
+  vdpa/mlx5: Support interrupt bypassing (2023-03-24 16:08:40 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2023-03-20
+
+mlx5 dynamic msix
+
+This patch series adds support for dynamic msix vectors allocation in mlx5.
+
+Eli Cohen Says:
+
+================
+
+The following series of patches modifies mlx5_core to work with the
+dynamic MSIX API. Currently, mlx5_core allocates all the interrupt
+vectors it needs and distributes them amongst the consumers. With the
+introduction of dynamic MSIX support, which allows for allocation of
+interrupts more than once, we now allocate vectors as we need them.
+This allows other drivers running on top of mlx5_core to allocate
+interrupt vectors for their own use. An example for this is mlx5_vdpa,
+which uses these vectors to propagate interrupts directly from the
+hardware to the vCPU [1].
+
+As a preparation for using this series, a use after free issue is fixed
+in lib/cpu_rmap.c and the allocator for rmap entries has been modified.
+A complementary API for irq_cpu_rmap_add() has also been introduced.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/patch/?id=0f2bf1fcae96a83b8c5581854713c9fc3407556e
+
+================
+
+----------------------------------------------------------------
+Eli Cohen (15):
+      lib: cpu_rmap: Avoid use after free on rmap->obj array entries
+      lib: cpu_rmap: Use allocator for rmap entries
+      lib: cpu_rmap: Add irq_cpu_rmap_remove to complement irq_cpu_rmap_add
+      net/mlx5e: Coding style fix, add empty line
+      net/mlx5: Fix wrong comment
+      net/mlx5: Modify struct mlx5_irq to use struct msi_map
+      net/mlx5: Use newer affinity descriptor
+      net/mlx5: Improve naming of pci function vectors
+      net/mlx5: Refactor completion irq request/release code
+      net/mlx5: Use dynamic msix vectors allocation
+      net/mlx5: Move devlink registration before mlx5_load
+      net/mlx5: Refactor calculation of required completion vectors
+      net/mlx5: Use one completion vector if eth is disabled
+      net/mlx5: Provide external API for allocating vectors
+      vdpa/mlx5: Support interrupt bypassing
+
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      |  14 +-
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.h  |  11 +
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       | 220 ++++++++++--------
+ .../net/ethernet/mellanox/mlx5/core/irq_affinity.c |  42 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  17 +-
+ drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h |  10 +-
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  | 248 +++++++++++++++------
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.h  |   4 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                  | 139 +++++++++++-
+ drivers/vdpa/mlx5/net/mlx5_vnet.h                  |  14 ++
+ include/linux/cpu_rmap.h                           |   4 +-
+ include/linux/mlx5/driver.h                        |   6 +
+ lib/cpu_rmap.c                                     |  57 ++++-
+ 13 files changed, 542 insertions(+), 244 deletions(-)
