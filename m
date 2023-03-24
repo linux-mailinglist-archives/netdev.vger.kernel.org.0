@@ -2,107 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9DC6C84FB
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 19:30:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5816C852C
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 19:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230369AbjCXSak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 14:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S231655AbjCXSd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 14:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbjCXSah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 14:30:37 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3290315C8C;
-        Fri, 24 Mar 2023 11:30:33 -0700 (PDT)
-Received: from zn.tnic (p5de8e687.dip0.t-ipconnect.de [93.232.230.135])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BD83D1EC0716;
-        Fri, 24 Mar 2023 19:30:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1679682631;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=sHun1oGHH8O5Oy1wjO7R52PBoEv7GKrcxJqK78tAU/Q=;
-        b=FNMhqMnZ3kNZQCyR7Zb+e6hiIPmmJRFjNK9olDAh6BnMrzqFqY1q3jbMmYIihPRFupssLN
-        D/f8dNIhxDQXOV9Gq8oq313eMUPphWJwg90hq3QbQWSRwMT4pW9+SM3PGUAMcSrKBfyfZB
-        NwCCafpy+UD4nDS4tQzucbA9AZeGhdo=
-Date:   Fri, 24 Mar 2023 19:30:22 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "jane.chu@oracle.com" <jane.chu@oracle.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v6 06/13] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <20230324183022.GFZB3sPiaX+d1Qh9cA@fat_crate.local>
-References: <1678329614-3482-1-git-send-email-mikelley@microsoft.com>
- <1678329614-3482-7-git-send-email-mikelley@microsoft.com>
- <20230320112258.GCZBhCEpNAIk0rUDnx@fat_crate.local>
- <BYAPR21MB16880C855EDB5AD3AECA473DD7809@BYAPR21MB1688.namprd21.prod.outlook.com>
- <20230320181646.GAZBijDiAckZ9WOmhU@fat_crate.local>
- <BYAPR21MB1688DF161ACE142DEA721DA1D7809@BYAPR21MB1688.namprd21.prod.outlook.com>
- <20230323134306.GEZBxXahNkFIx1vyzN@fat_crate.local>
- <20230324154856.GDZB3GaHG/3L0Q1x47@fat_crate.local>
- <SA1PR21MB1335023500AE3E7C8AE6F867BF849@SA1PR21MB1335.namprd21.prod.outlook.com>
+        with ESMTP id S231810AbjCXSdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 14:33:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D24C16AE8
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 11:33:16 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pfmDG-0000Ih-N4; Fri, 24 Mar 2023 19:32:30 +0100
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 2648C19BB98;
+        Fri, 24 Mar 2023 18:32:27 +0000 (UTC)
+Date:   Fri, 24 Mar 2023 19:32:25 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Markus Schneider-Pargmann <msp@baylibre.com>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Simon Horman <simon.horman@corigine.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 06/16] can: m_can: Write transmit header and data in
+ one transaction
+Message-ID: <20230324183225.wydiuvs3ibdmnxqq@pengutronix.de>
+References: <20230315110546.2518305-1-msp@baylibre.com>
+ <20230315110546.2518305-7-msp@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kosqnrl7qx2j7t4l"
 Content-Disposition: inline
-In-Reply-To: <SA1PR21MB1335023500AE3E7C8AE6F867BF849@SA1PR21MB1335.namprd21.prod.outlook.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230315110546.2518305-7-msp@baylibre.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 05:10:26PM +0000, Dexuan Cui wrote:
-> Your config doesn't define CONFIG_AMD_MEM_ENCRYPT:
-> # CONFIG_AMD_MEM_ENCRYPT is not set
 
-That's why it is called randconfig builds. That doesn't mean that they
-should not build properly.
+--kosqnrl7qx2j7t4l
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Regards/Gruss,
-    Boris.
+On 15.03.2023 12:05:36, Markus Schneider-Pargmann wrote:
+> Combine header and data before writing to the transmit fifo to reduce
+> the overhead for peripheral chips.
+>=20
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> ---
+>  drivers/net/can/m_can/m_can.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+> index a5003435802b..35a2332464e5 100644
+> --- a/drivers/net/can/m_can/m_can.c
+> +++ b/drivers/net/can/m_can/m_can.c
+> @@ -1681,6 +1681,8 @@ static netdev_tx_t m_can_tx_handler(struct m_can_cl=
+assdev *cdev)
+>  		m_can_write(cdev, M_CAN_TXBAR, 0x1);
+>  		/* End of xmit function for version 3.0.x */
+>  	} else {
+> +		char buf[TXB_ELEMENT_SIZE];
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Can you create a proper struct that describes a single FIFO entry (id,
+dlc, data)? Use that struct instead of the struct id_and_dlc
+fifo_header.
+
+> +		u8 len_padded =3D DIV_ROUND_UP(cf->len, 4);
+>  		/* Transmit routine for version >=3D v3.1.x */
+> =20
+>  		txfqs =3D m_can_read(cdev, M_CAN_TXFQS);
+> @@ -1720,12 +1722,11 @@ static netdev_tx_t m_can_tx_handler(struct m_can_=
+classdev *cdev)
+>  		fifo_header.dlc =3D FIELD_PREP(TX_BUF_MM_MASK, putidx) |
+>  			FIELD_PREP(TX_BUF_DLC_MASK, can_fd_len2dlc(cf->len)) |
+>  			fdflags | TX_BUF_EFC;
+> -		err =3D m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID, &fifo_header, 2);
+> -		if (err)
+> -			goto out_fail;
+> +		memcpy(buf, &fifo_header, 8);
+> +		memcpy_and_pad(&buf[8], len_padded, &cf->data, cf->len, 0);
+> =20
+> -		err =3D m_can_fifo_write(cdev, putidx, M_CAN_FIFO_DATA,
+> -				       cf->data, DIV_ROUND_UP(cf->len, 4));
+> +		err =3D m_can_fifo_write(cdev, putidx, M_CAN_FIFO_ID,
+> +				       buf, 2 + len_padded);
+>  		if (err)
+>  			goto out_fail;
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--kosqnrl7qx2j7t4l
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQd7LYACgkQvlAcSiqK
+BOjHiQf+KWfgNwMny4MGohV5bLDNSGWL0X4eOcmNj8QPM3TMHO0WxNeAmPtEzmca
+P3HNV0o1SPM2VapKAIM0qGmxrdotwBmCWZ/6MvbrAAC2dR5auimY5ujfzRXGjSbd
+sCfQDgm2AeTF1cZH48O/1+0NfSAoPH6Cj1K+/wmflTRCIg6HcGQgX9LzgVbjf0mB
+QfI6acVZV0qJmksfRd3eVL68e9kSOXhjbrsZTwlVfbkIP0vY8agsfXA0ES4UqT1t
+oGVYY2DjkYl9ZIMGqiwfjSE6oZaO8AGBU2hlOUJlfhcvR7u3JLb1ajKGcf3/QpoK
+P0OE2B7FTYYUMvvHSggV3jO+FTDOsg==
+=WDZ0
+-----END PGP SIGNATURE-----
+
+--kosqnrl7qx2j7t4l--
