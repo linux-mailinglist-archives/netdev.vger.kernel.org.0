@@ -2,81 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98CE06C7F7A
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 15:05:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E866C7F82
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 15:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbjCXOF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 10:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
+        id S231703AbjCXOHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 10:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231878AbjCXOFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 10:05:11 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FCD1555A
-        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 07:04:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ztXlxHs4JrMfjTjOUaJAK0fkNDCSnxZYyZoHRuBalrw=; b=PWQAFqoLvvL8xKpm99dvmIADh4
-        VjVvMQPdBR1R+NX0bK/bZILl1+N3tiGZJQ2OYUEicwmBfctUcCQSYz/8vr4mt/LvHZTib7GBAr94v
-        aLzqCS22lzF5g3Y9IQi6Y1GnVsaJIgppFQ08r2T62YmF2xukSB1r92cCP6dlrcJWlvbg=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=localhost.localdomain)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pfi1V-006ORu-Bf; Fri, 24 Mar 2023 15:04:05 +0100
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
-Date:   Fri, 24 Mar 2023 15:04:04 +0100
-Message-Id: <20230324140404.95745-1-nbd@nbd.name>
-X-Mailer: git-send-email 2.39.0
+        with ESMTP id S231933AbjCXOGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 10:06:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E011C58B
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 07:06:32 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pfi3j-0002p3-1V; Fri, 24 Mar 2023 15:06:23 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1pfi3i-00064T-Dw; Fri, 24 Mar 2023 15:06:22 +0100
+Date:   Fri, 24 Mar 2023 15:06:22 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Woojung Huh <woojung.huh@microchip.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+Subject: What is the best way to provide FDB related metrics to user space?
+Message-ID: <20230324140622.GB28424@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using the QDMA tx scheduler to throttle tx to line speed works fine for
-switch ports, but apparently caused a regression on non-switch ports.
+Hello all,
 
-Based on a number of tests, it seems that this throttling can be safely
-dropped without re-introducing the issues on switch ports that the
-tx scheduling changes resolved.
+I am currently working on implementing an interface to provide
+FDB-related metrics to user space, such as the size of the FDB, the
+count of objects, and so on. The IEEE 802.1Q-2018 standard offers some
+guidance on this topic. For instance, section "17.2.4 Structure of the
+IEEE8021-Q-BRIDGE-MIB" defines the ieee8021QBridgeFdbDynamicCount
+object, and section "12.7.1.1.3 Outputs" provides additional outputs
+that can be utilized for proper bridge management.
 
-Link: https://lore.kernel.org/netdev/trinity-92c3826f-c2c8-40af-8339-bc6d0d3ffea4-1678213958520@3c-app-gmx-bs16/
-Fixes: f63959c7eec3 ("net: ethernet: mtk_eth_soc: implement multi-queue support for per-port queues")
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Reported-by: Daniel Golle <daniel@makrotopia.org>
-Tested-by: Daniel Golle <daniel@makrotopia.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 --
- 1 file changed, 2 deletions(-)
+I've noticed that some DSA drivers implement devlink raw access to the
+FDB. I am wondering if it would be acceptable to provide a generic
+interface for all DSA switches for these kinds of metrics. What would be
+the best interface to use for this purpose - devlink, sysfs, or
+something else?
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index a94aa08515af..282f9435d5ff 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -763,8 +763,6 @@ static void mtk_mac_link_up(struct phylink_config *config,
- 		break;
- 	}
- 
--	mtk_set_queue_speed(mac->hw, mac->id, speed);
--
- 	/* Configure duplex */
- 	if (duplex == DUPLEX_FULL)
- 		mcr |= MAC_MCR_FORCE_DPX;
+Best regards,
+Oleskij
 -- 
-2.39.0
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
