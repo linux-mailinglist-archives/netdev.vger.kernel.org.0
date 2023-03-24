@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5446C836E
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7896C8375
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 18:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbjCXRfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 13:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
+        id S230471AbjCXRjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 13:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229649AbjCXRfJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:35:09 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD83DC64C;
-        Fri, 24 Mar 2023 10:35:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:From
-        :References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=miGmwI1bTGkIjWnSC43LX/N+9isfAegXHNpz6mp4Veg=; b=myXgInc3xx8PMiPFGMZq3OGoHm
-        ZLnQv4NmgXzemL98aFuh6/2u4qpW7QGvhTTTAxoi+QH4U2t3U6biOks9dNPgc0koyO3B1cta6kLct
-        TPulu/bIE//tDM3Lw+Vr+4AiLUeKVslDfbkfB2qtTy1lwSfdOb+llXeHtEIr7IsMWZ1I=;
-Received: from p200300daa7147b00f53b1e71cf2162bd.dip0.t-ipconnect.de ([2003:da:a714:7b00:f53b:1e71:cf21:62bd] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pflJc-006Rgm-PY; Fri, 24 Mar 2023 18:35:00 +0100
-Message-ID: <2d251879-1cf4-237d-8e62-c42bb4feb047@nbd.name>
-Date:   Fri, 24 Mar 2023 18:35:00 +0100
+        with ESMTP id S229649AbjCXRjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 13:39:40 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0565C170;
+        Fri, 24 Mar 2023 10:39:38 -0700 (PDT)
+Received: from localhost.localdomain.datenfreihafen.local (p200300e9d7115f8f7b5e613a60e47837.dip0.t-ipconnect.de [IPv6:2003:e9:d711:5f8f:7b5e:613a:60e4:7837])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@sostec.de)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id E9908C0871;
+        Fri, 24 Mar 2023 18:39:35 +0100 (CET)
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
+        miquel.raynal@bootlin.com, netdev@vger.kernel.org
+Subject: pull-request: ieee802154 for net 2023-03-24
+Date:   Fri, 24 Mar 2023 18:39:31 +0100
+Message-Id: <20230324173931.1812694-1-stefan@datenfreihafen.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230324171314.73537-1-nbd@nbd.name>
- <20230324102038.7d91355c@kernel.org>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH net-next] net/core: add optional threading for backlog
- processing
-In-Reply-To: <20230324102038.7d91355c@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.03.23 18:20, Jakub Kicinski wrote:
-> On Fri, 24 Mar 2023 18:13:14 +0100 Felix Fietkau wrote:
->> When dealing with few flows or an imbalance on CPU utilization, static RPS
->> CPU assignment can be too inflexible. Add support for enabling threaded NAPI
->> for backlog processing in order to allow the scheduler to better balance
->> processing. This helps better spread the load across idle CPUs.
-> 
-> Can you explain the use case a little bit more?
+Hello Dave, Jakub, Paolo.
 
-I'm primarily testing this on routers with 2 or 4 CPUs and limited 
-processing power, handling routing/NAT. RPS is typically needed to 
-properly distribute the load across all available CPUs. When there is 
-only a small number of flows that are pushing a lot of traffic, a static 
-RPS assignment often leaves some CPUs idle, whereas others become a 
-bottleneck by being fully loaded. Threaded NAPI reduces this a bit, but 
-CPUs can become bottlenecked and fully loaded by a NAPI thread alone.
+An update from ieee802154 for your *net* tree:
 
-Making backlog processing threaded helps split up the processing work 
-even more and distribute it onto remaining idle CPUs.
+Two small fixes this time.
 
-It can basically be used to make RPS a bit more dynamic and 
-configurable, because you can assign multiple backlog threads to a set 
-of CPUs and selectively steer packets from specific devices / rx queues 
-to them and allow the scheduler to take care of the rest.
+Dongliang Mu removed an unnecessary null pointer check.
 
-- Felix
+Harshit Mogalapalli fixed an int comparison unsigned against signed from a
+recent other fix in the ca8210 driver.
+
+regards
+Stefan Schmidt
+
+The following changes since commit cd356010ce4c69ac7e1a40586112df24d22c6a4b:
+
+  net: phy: mscc: fix deadlock in phy_ethtool_{get,set}_wol() (2023-03-15 21:33:22 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/wpan/wpan.git tags/ieee802154-for-net-2023-03-24
+
+for you to fetch changes up to 984cfd55e0c99e80b2e5b1dc6b2bf98608af7ff9:
+
+  net: ieee802154: remove an unnecessary null pointer check (2023-03-17 09:13:53 +0100)
+
+----------------------------------------------------------------
+Dongliang Mu (1):
+      net: ieee802154: remove an unnecessary null pointer check
+
+Harshit Mogalapalli (1):
+      ca8210: Fix unsigned mac_len comparison with zero in ca8210_skb_tx()
+
+ drivers/net/ieee802154/ca8210.c | 3 +--
+ net/ieee802154/nl802154.c       | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
