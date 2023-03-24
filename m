@@ -2,141 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BBFB6C7C77
-	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 11:25:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 631046C7C7E
+	for <lists+netdev@lfdr.de>; Fri, 24 Mar 2023 11:27:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbjCXKZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 06:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
+        id S231146AbjCXK1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 06:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbjCXKZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 06:25:51 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E64F1E1DF;
-        Fri, 24 Mar 2023 03:25:48 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4FC82C0008;
-        Fri, 24 Mar 2023 10:25:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1679653546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xv+ASSzcWiUf7WB1UddjxDgaUpS6QjUv6DsxIIFvx1w=;
-        b=hl9OoFksAO9preOhRLTIo0SONnDHJIuXFwghucu/pBPo3zaA7osCDq9AyGtyOmgSyN7XUF
-        +XYru/MB6/vken94g5WLx5HB/V8xxCe3VeE7twcYrsqfHkcaExDaS26KALR2XI1mpvsl/K
-        SnbXosRs/KVijDPH3N1QMSg2pOhC7DPj3HIlBnPwiFoIWtrP5g58l/sQDDWQoizMoh5KIi
-        ZR+e4ZLGcvkR/rEbhkRnVjQ+p8dYyd8KHF0BnkvCJYfPy4TtSGtUPiuEEQA54LKByF3RwN
-        GHmrTJo2TrFW5uU0uHvpJUykvz4siTYpY1Ro4ty8npHV9HAV+5PvnZptqZg1pg==
-Date:   Fri, 24 Mar 2023 11:25:41 +0100
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     =?UTF-8?B?S8O2cnk=?= Maincent <kory.maincent@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-omap@vger.kernel.org,
-        Michael Walle <michael@walle.cc>,
-        Richard Cochran <richardcochran@gmail.com>,
-        thomas.petazzoni@bootlin.com, Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Minghao Chi <chi.minghao@zte.com.cn>,
-        Jie Wang <wangjie125@huawei.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Sean Anderson <sean.anderson@seco.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Marco Bonelli <marco@mebeim.net>
-Subject: Re: [PATCH v3 3/5] net: Let the active time stamping layer be
- selectable.
-Message-ID: <20230324112541.0b3dd38a@pc-7.home>
-In-Reply-To: <20230310113533.l7flaoli7y3bmlnr@skbuf>
-References: <20230308135936.761794-1-kory.maincent@bootlin.com>
-        <20230308135936.761794-1-kory.maincent@bootlin.com>
-        <20230308135936.761794-4-kory.maincent@bootlin.com>
-        <20230308135936.761794-4-kory.maincent@bootlin.com>
-        <20230308230321.liw3v255okrhxg6s@skbuf>
-        <20230310114852.3cef643d@kmaincent-XPS-13-7390>
-        <20230310113533.l7flaoli7y3bmlnr@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-redhat-linux-gnu)
+        with ESMTP id S229752AbjCXK1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 06:27:36 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A912069C;
+        Fri, 24 Mar 2023 03:27:29 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32OAJkD3020789;
+        Fri, 24 Mar 2023 10:27:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2022-7-12; bh=WCZj8fkLpV6B/E0SktbDjflW6HsyUGf8NcE0gb44d6M=;
+ b=gqIUavT/+xLkHBn8GKVH02W4sGSgtDyAiwf3sboA8UGF2q8rFHg79XI/2X3xykUxJord
+ NIV9nXJuWZQ21RdjNfFIa4SbWGqBDzY1iOYb2Dk01OgdjhjS4u0CP5BJK7QTInAIE4PY
+ XcyqYlg/T5Ieqz9OCnT41iCUv+JaUaJrkBdg8PFqyr3yysYjZxtpC0cHe4dmEbWUugro
+ M3qUr2dWCVCExaeu6Qg6pZDlXMktCcztEzwTsOPIuiMx7ePOTncRKnpUCYLcPJY+Uu/X
+ egZhIy+ESzaLRQ+XGFX7HxwRfLOhXjxLLQherN9gZ86MbO9cSAtlWkjRfCBYtSMpkv9Q 2w== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pha0pg0gv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 24 Mar 2023 10:27:24 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32O90vCg002260;
+        Fri, 24 Mar 2023 10:27:23 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3pgy5du5am-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 24 Mar 2023 10:27:23 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32OAOvrD018834;
+        Fri, 24 Mar 2023 10:27:23 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3pgy5du5ac-1;
+        Fri, 24 Mar 2023 10:27:23 +0000
+From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+To:     stable@vger.kernel.org
+Cc:     vegard.nossum@oracle.com, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Kyle Zeng <zengyhkyle@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4.19.y] net: sched: cbq: dont intepret cls results when asked to drop
+Date:   Fri, 24 Mar 2023 03:27:20 -0700
+Message-Id: <20230324102720.3888082-1-harshit.m.mogalapalli@oracle.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-24_06,2023-03-24_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 spamscore=0
+ phishscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
+ definitions=main-2303240085
+X-Proofpoint-GUID: GHrd69Vaz5FAsxHKcVq4lfYyQHfaqC_S
+X-Proofpoint-ORIG-GUID: GHrd69Vaz5FAsxHKcVq4lfYyQHfaqC_S
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello everyone,
+From: Jamal Hadi Salim <jhs@mojatatu.com>
 
-I'm sorry to intervene late in this discussion, but since it looks like
-the discussion is converging towards the creation of a new API (though
-NDOs internally, and through netlink for userspace), I'd like to add a
-small other use-case to consider. Of course, this can be addressed
-later on.
+[ Upstream commit caa4b35b4317d5147b3ab0fbdc9c075c7d2e9c12 ]
 
-On Fri, 10 Mar 2023 13:35:33 +0200
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+If asked to drop a packet via TC_ACT_SHOT it is unsafe to assume that
+res.class contains a valid pointer
 
-> On Fri, Mar 10, 2023 at 11:48:52AM +0100, K=C3=B6ry Maincent wrote:
-> > > From previous discussions, I believe that a device tree property
-> > > was added in order to prevent perceived performance regressions
-> > > when timestamping support is added to a PHY driver, correct? =20
-> >=20
-> > Yes, i.e. to select the default and better timestamp on a board. =20
->=20
-> Is there a way to unambiguously determine the "better" timestamping
-> on a board?
+Sample splat reported by Kyle Zeng
 
-I'd like to point out a series sent a while ago :
+[    5.405624] 0: reclassify loop, rule prio 0, protocol 800
+[    5.406326] ==================================================================
+[    5.407240] BUG: KASAN: slab-out-of-bounds in cbq_enqueue+0x54b/0xea0
+[    5.407987] Read of size 1 at addr ffff88800e3122aa by task poc/299
+[    5.408731]
+[    5.408897] CPU: 0 PID: 299 Comm: poc Not tainted 5.10.155+ #15
+[    5.409516] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS 1.15.0-1 04/01/2014
+[    5.410439] Call Trace:
+[    5.410764]  dump_stack+0x87/0xcd
+[    5.411153]  print_address_description+0x7a/0x6b0
+[    5.411687]  ? vprintk_func+0xb9/0xc0
+[    5.411905]  ? printk+0x76/0x96
+[    5.412110]  ? cbq_enqueue+0x54b/0xea0
+[    5.412323]  kasan_report+0x17d/0x220
+[    5.412591]  ? cbq_enqueue+0x54b/0xea0
+[    5.412803]  __asan_report_load1_noabort+0x10/0x20
+[    5.413119]  cbq_enqueue+0x54b/0xea0
+[    5.413400]  ? __kasan_check_write+0x10/0x20
+[    5.413679]  __dev_queue_xmit+0x9c0/0x1db0
+[    5.413922]  dev_queue_xmit+0xc/0x10
+[    5.414136]  ip_finish_output2+0x8bc/0xcd0
+[    5.414436]  __ip_finish_output+0x472/0x7a0
+[    5.414692]  ip_finish_output+0x5c/0x190
+[    5.414940]  ip_output+0x2d8/0x3c0
+[    5.415150]  ? ip_mc_finish_output+0x320/0x320
+[    5.415429]  __ip_queue_xmit+0x753/0x1760
+[    5.415664]  ip_queue_xmit+0x47/0x60
+[    5.415874]  __tcp_transmit_skb+0x1ef9/0x34c0
+[    5.416129]  tcp_connect+0x1f5e/0x4cb0
+[    5.416347]  tcp_v4_connect+0xc8d/0x18c0
+[    5.416577]  __inet_stream_connect+0x1ae/0xb40
+[    5.416836]  ? local_bh_enable+0x11/0x20
+[    5.417066]  ? lock_sock_nested+0x175/0x1d0
+[    5.417309]  inet_stream_connect+0x5d/0x90
+[    5.417548]  ? __inet_stream_connect+0xb40/0xb40
+[    5.417817]  __sys_connect+0x260/0x2b0
+[    5.418037]  __x64_sys_connect+0x76/0x80
+[    5.418267]  do_syscall_64+0x31/0x50
+[    5.418477]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
+[    5.418770] RIP: 0033:0x473bb7
+[    5.418952] Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00
+00 00 90 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2a 00 00
+00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 18 89 54 24 0c 48 89 34
+24 89
+[    5.420046] RSP: 002b:00007fffd20eb0f8 EFLAGS: 00000246 ORIG_RAX:
+000000000000002a
+[    5.420472] RAX: ffffffffffffffda RBX: 00007fffd20eb578 RCX: 0000000000473bb7
+[    5.420872] RDX: 0000000000000010 RSI: 00007fffd20eb110 RDI: 0000000000000007
+[    5.421271] RBP: 00007fffd20eb150 R08: 0000000000000001 R09: 0000000000000004
+[    5.421671] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+[    5.422071] R13: 00007fffd20eb568 R14: 00000000004fc740 R15: 0000000000000002
+[    5.422471]
+[    5.422562] Allocated by task 299:
+[    5.422782]  __kasan_kmalloc+0x12d/0x160
+[    5.423007]  kasan_kmalloc+0x5/0x10
+[    5.423208]  kmem_cache_alloc_trace+0x201/0x2e0
+[    5.423492]  tcf_proto_create+0x65/0x290
+[    5.423721]  tc_new_tfilter+0x137e/0x1830
+[    5.423957]  rtnetlink_rcv_msg+0x730/0x9f0
+[    5.424197]  netlink_rcv_skb+0x166/0x300
+[    5.424428]  rtnetlink_rcv+0x11/0x20
+[    5.424639]  netlink_unicast+0x673/0x860
+[    5.424870]  netlink_sendmsg+0x6af/0x9f0
+[    5.425100]  __sys_sendto+0x58d/0x5a0
+[    5.425315]  __x64_sys_sendto+0xda/0xf0
+[    5.425539]  do_syscall_64+0x31/0x50
+[    5.425764]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
+[    5.426065]
+[    5.426157] The buggy address belongs to the object at ffff88800e312200
+[    5.426157]  which belongs to the cache kmalloc-128 of size 128
+[    5.426955] The buggy address is located 42 bytes to the right of
+[    5.426955]  128-byte region [ffff88800e312200, ffff88800e312280)
+[    5.427688] The buggy address belongs to the page:
+[    5.427992] page:000000009875fabc refcount:1 mapcount:0
+mapping:0000000000000000 index:0x0 pfn:0xe312
+[    5.428562] flags: 0x100000000000200(slab)
+[    5.428812] raw: 0100000000000200 dead000000000100 dead000000000122
+ffff888007843680
+[    5.429325] raw: 0000000000000000 0000000000100010 00000001ffffffff
+ffff88800e312401
+[    5.429875] page dumped because: kasan: bad access detected
+[    5.430214] page->mem_cgroup:ffff88800e312401
+[    5.430471]
+[    5.430564] Memory state around the buggy address:
+[    5.430846]  ffff88800e312180: fc fc fc fc fc fc fc fc fc fc fc fc
+fc fc fc fc
+[    5.431267]  ffff88800e312200: 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 fc
+[    5.431705] >ffff88800e312280: fc fc fc fc fc fc fc fc fc fc fc fc
+fc fc fc fc
+[    5.432123]                                   ^
+[    5.432391]  ffff88800e312300: 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 fc
+[    5.432810]  ffff88800e312380: fc fc fc fc fc fc fc fc fc fc fc fc
+fc fc fc fc
+[    5.433229] ==================================================================
+[    5.433648] Disabling lock debugging due to kernel taint
 
-https://lore.kernel.org/netdev/3a14f417-1ae1-9434-5532-4b3387f25d18@orolia.=
-com/
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Kyle Zeng <zengyhkyle@gmail.com>
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[Harshit: backport to 4.19.y]
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+---
+Compile and boot tested.
+This is marked as Fix for CVE-2023-23454.
+Would be nice if any net developer review this before merging this to stable.
+---
+ net/sched/sch_cbq.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Here, the MAC's timestamping unit can be configured in 2 ways, which
-boils down to either more accurate timestamps, or better accuracy in
-frequency adjustments for the clock.
+diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+index 0a76ad05e5ae..2974f7262f88 100644
+--- a/net/sched/sch_cbq.c
++++ b/net/sched/sch_cbq.c
+@@ -236,6 +236,8 @@ cbq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 		result = tcf_classify(skb, fl, &res, true);
+ 		if (!fl || result < 0)
+ 			goto fallback;
++		if (result == TC_ACT_SHOT)
++			return NULL;
+ 
+ 		cl = (void *)res.class;
+ 		if (!cl) {
+@@ -256,8 +258,6 @@ cbq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 		case TC_ACT_TRAP:
+ 			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
+ 			/* fall through */
+-		case TC_ACT_SHOT:
+-			return NULL;
+ 		case TC_ACT_RECLASSIFY:
+ 			return cbq_reclassify(skb, cl);
+ 		}
+-- 
+2.38.1
 
-The need is to be able to change this mode at runtime, as we can change
-the clock source for the timestamping unit to a very precise-one,
-therefore using the "accurate timestamps mode" working as a
-grand-master, or switching to slave mode, where we would sacrifice a
-little bit the timestamping precision to get better frequency
-precision.
-
-So, we can consider here that not only the MAC's timestamping unit has
-a non-fixed precision, but if we go through the route a a new API,
-maybe we can also take this case into account, allowing for a bit of
-configuration of the timestamping unit from userspace?=20
-
-> Is it plausible that over time, when PTP timestamping matures and,
-> for example, MDIO devices get support for PTP_SYS_OFFSET_EXTENDED
-> (an attempt was here: https://lkml.org/lkml/2019/8/16/638), the
-> relationship between PTP clock qualities changes, and so does the
-> preference change?
-
-I'm not exactly familiar with PTP_SYS_OFFSET_EXTENDED, but it looks a
-bit similar in purpose to the above-mentionned use-case.
-
-Thanks,
-
-Maxime
