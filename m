@@ -2,93 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4FA6C8EB9
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 15:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BA9B6C8EBE
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 15:06:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbjCYOBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 10:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
+        id S230336AbjCYOGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 10:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjCYOBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 10:01:21 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A350F956
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 07:01:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1679752881; x=1711288881;
-  h=references:from:to:cc:date:in-reply-to:message-id:
-   mime-version:subject;
-  bh=1vqA8dMlZ5zFb95+eL0LVK9gZwTBtiIp0LR1uLxMyB8=;
-  b=GeJj6S8TsWdwP/b2+e1WvnoO1hYZChnBlX9uvud8xu4EprKaYKcQSmNZ
-   vP5MnVI7RgGFXn7pHbz13Eu+aLALOkB+qDIDyNq2RdJBVZrqSt80ahgib
-   lqwQn3LKchFp1FMXjpahyCWUmOG1odKqMzDicaWBwOGam8GPwyh/0OEzp
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.98,290,1673913600"; 
-   d="scan'208";a="313225471"
-Subject: Re: [PATCH v6 net-next 1/7] netlink: Add a macro to set policy message with
- format string
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2023 14:01:17 +0000
-Received: from EX19D012EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id EA7F980F95;
-        Sat, 25 Mar 2023 14:01:15 +0000 (UTC)
-Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
- EX19D012EUA003.ant.amazon.com (10.252.50.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Sat, 25 Mar 2023 14:01:14 +0000
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.85.143.174) by
- EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Sat, 25 Mar 2023 14:01:04 +0000
-References: <20230320132523.3203254-1-shayagr@amazon.com>
- <20230320132523.3203254-2-shayagr@amazon.com>
- <ed1b26c32307ecfc39da3eaba474645280809dec.camel@redhat.com>
- <pj41zlsfdxymx0.fsf@u570694869fb251.ant.amazon.com>
- <20230322114041.71df75d1@kernel.org>
- <pj41zlmt432zea.fsf@u570694869fb251.ant.amazon.com>
- <20230323095454.048d7130@kernel.org>
- <pj41zla6032qn4.fsf@u570694869fb251.ant.amazon.com>
- <20230323133422.110d6cab@kernel.org>
-User-agent: mu4e 1.7.5; emacs 28.0.91
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Paolo Abeni <pabeni@redhat.com>,
-        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Saeed Bshara" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>,
+        with ESMTP id S229446AbjCYOGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 10:06:10 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF24112BF6
+        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 07:06:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=p1PH+7g64HUJvwAOXYLjzY9dtldAbufioG+exBJz+2M=; b=fGAq34GCh4Rl3hWD8EvAqiz6yR
+        nZ/cPr6qimv7x4/c6ZftefT5C7CiOxtRMyi895xabJmyMhBkfiwJWkE19zM14IBpPrBbrMj265lJn
+        wQLypC/hOHKr8mV5dlr2laz7O36kIXCM88lNbd1T49cOBWC9nzLG0hWUUmSzY/RUBmxBtrsj7IolJ
+        Q2AU3n4L4n4cDR1j7J81IqsdpELUzgKt0zEGXBqgWS0NP7eWCaOtKg/SfRvIjH941mapz7nWbFA7D
+        vvljBFnnRlB4DIIWTgwKiaxnTuHKkrBMK+9oK2bDbPv4M2J+IMnuUnZMCsBCGMuszCVHek7j2iDsy
+        NwHlplRw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54994)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pg4Wp-0000Z9-NZ; Sat, 25 Mar 2023 14:05:55 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pg4Wl-0003V8-4f; Sat, 25 Mar 2023 14:05:51 +0000
+Date:   Sat, 25 Mar 2023 14:05:51 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Jie Wang <wangjie125@huawei.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "Florian Westphal" <fw@strlen.de>
-Date:   Sat, 25 Mar 2023 16:49:34 +0300
-In-Reply-To: <20230323133422.110d6cab@kernel.org>
-Message-ID: <pj41zlr0tdaq1w.fsf@u570694869fb251.ant.amazon.com>
+        Frank Wunderlich <frank-w@public-files.de>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 2/2] net: sfp: add quirk for 2.5G copper SFP
+Message-ID: <ZB7/v8oUu3lkO4yC@shell.armlinux.org.uk>
+References: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
+ <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
+ <ZB5YgPiZYwbf/G2u@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.85.143.174]
-X-ClientProxiedBy: EX19D046UWB003.ant.amazon.com (10.13.139.174) To
- EX19D028EUB003.ant.amazon.com (10.252.61.31)
-X-Spam-Status: No, score=-10.0 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZB5YgPiZYwbf/G2u@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -96,71 +63,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Mar 25, 2023 at 02:12:16AM +0000, Daniel Golle wrote:
+> Hi Russell,
+> 
+> On Tue, Mar 21, 2023 at 04:58:51PM +0000, Russell King (Oracle) wrote:
+> > Add a quirk for a copper SFP that identifies itself as "OEM"
+> > "SFP-2.5G-T". This module's PHY is inaccessible, and can only run
+> > at 2500base-X with the host without negotiation. Add a quirk to
+> > enable the 2500base-X interface mode with 2500base-T support, and
+> > disable autonegotiation.
+> > 
+> > Reported-by: Frank Wunderlich <frank-w@public-files.de>
+> > Tested-by: Frank Wunderlich <frank-w@public-files.de>
+> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> 
+> I've tried the same fix also with my 2500Base-T SFP module:
+> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> index 4223c9fa6902..c7a18a72d2c5 100644
+> --- a/drivers/net/phy/sfp.c
+> +++ b/drivers/net/phy/sfp.c
+> @@ -424,6 +424,7 @@ static const struct sfp_quirk sfp_quirks[] = {
+>         SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
+>         SFP_QUIRK_F("Turris", "RTSFP-10G", sfp_fixup_rollball),
+>         SFP_QUIRK_F("OEM", "SFP-GE-T", sfp_fixup_ignore_tx_fault),
+> +       SFP_QUIRK_M("TP-LINK", "TL-SM410U", sfp_quirk_oem_2_5g),
+>  };
+> 
+>  static size_t sfp_strlen(const char *str, size_t maxlen)
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Thanks for testing.
 
-> CAUTION: This email originated from outside of the 
-> organization. Do not click links or open attachments unless you 
-> can confirm the sender and know the content is safe.
->
->
->
-> On Thu, 23 Mar 2023 21:44:52 +0200 Shay Agroskin wrote:
->> > That's why we have the local variable called __extack, that 
->> > we
->> > *can*
->> > use multiple times, because it's a separate variable, 
->> > (extack)
->> > is
->> > evaluated only once, to initialize it...
->> >
->> > We don't need to copy the string formatting, unless I'm 
->> > missing
->> > something. Paolo was just asking for:
->>
->> There is an issue with shadowing __extack by NL_SET_ERR_MSG_FMT
->> causing the changes to __extack not to be propagated back to 
->> the
->> caller.
->> I'm not that big of an expert in C but changing __extack ->
->> _extack fixes the shadowing issue.
->>
->> Might not be the most robust solution, though it might suffice 
->> for
->> this use case.
->
-> TBH the hierarchy should be the other way around, 
-> NL_SET_ERR_MSG_FMT()
-> should be converted to be:
->
-> #define NL_SET_ERR_MSG_FMT(extack, attr, msg, args...) \
->         NL_SET_ERR_MSG_ATTR_POL_FMT(extack, NULL, NULL, msg, 
->         ##args)
->
-> and that'd fix the shadowing, right?
+> However, the results are a bit of a mixed bag. The link now does come up
+> without having to manually disable autonegotiation. However, I see this
+> new warning in the bootlog:
+> [   17.344155] sfp sfp2: module TP-LINK          TL-SM410U        rev 1.0  sn 12154J6000864    dc 210606  
+> ...
+> [   21.653812] mt7530 mdio-bus:1f sfp2: selection of interface failed, advertisement 00,00000000,00000000,00006440
 
-Well ... It will but it will contradict the current order of calls 
-as I see it.
+This will be the result of issuing an ethtool command, and phylink
+doesn't know what to do with the advertising mask - which is saying:
 
-NL_SET_ERR_MSG_FMT_MOD calls NL_SET_ERR_MSG_FMT which can be 
-described as 'the former extends the latter'.
+   Autoneg, Fibre, Pause, AsymPause
 
-On the other hand NL_SET_ERR_MSG_ATTR_POL implements the message 
-setting by itself and doesn't use NL_SET_ERR_MSG to set the 
-message.
+In other words, there are no capabilities to be advertised, which is
+invalid, and suggests user error. What ethtool command was being
+issued?
 
-So it seems like we already have two approaches for macro ordering 
-here and following your suggestion would create another type of 
-call direction of 'the former shrinks the latter by setting to 
-NULL its attributes'.
-Overall given the nature of C macros and the weird issues arise by 
-shadowing variables (ending up for some reason in not modifying 
-the pointer at all..) I'd say I mostly prefer V7 version which 
-re-implements the message setting and avoids creating such very 
-hard to find issues later.
+> Also link speed and status appears unknown, though we do know at least
+> that the speed is 2500M, and also full duplex will always be true for
+> 2500Base-T:
+> [   56.004937] mt7530 mdio-bus:1f sfp2: Link is Up - Unknown/Unknown - flow control off
 
-Then again I'd follow your implementation suggestion if you still 
-prefer it (also I can modify the macro NL_SET_ERR_MSG to call 
-NL_SET_ERR_MSG_ATTR_POL to be consistent with the other change)
+I would guess this is because we set the advertising mask to be 2.5bT
+FD, and the PCS resolution (being all that we have) reports that we
+got 2.5bX FD - and when we try to convert those to a speed/duplex we
+fail because there appears to be no mutual ethtool capabilities that
+can be agreed.
 
-Shay
+However, given that the media may be doing 2.5G, 1G or 100M with this
+module, and we have no idea what the media may be doing because we
+can't access the PHY, it seems to me that reporting "Unknown" speed
+and "Unknown" duplex is entirely appropriate and correct, if a little
+odd.
+
+The solution... obviously is to have access to the PHY so we know
+what the media is doing.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
