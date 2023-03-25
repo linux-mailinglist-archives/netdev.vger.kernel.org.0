@@ -2,145 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 919CE6C8D9A
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 12:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DEC6C8DC1
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 13:03:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230357AbjCYLv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 07:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        id S231707AbjCYMDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 08:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbjCYLvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 07:51:25 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9154714980
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 04:51:23 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id z42so4211974ljq.13
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 04:51:23 -0700 (PDT)
+        with ESMTP id S231569AbjCYMDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 08:03:32 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2108.outbound.protection.outlook.com [40.107.220.108])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17B25B8D
+        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 05:03:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bAjWE4gycRLI/XdFptVOCRh6vhq4yft8TxPGk6aKBfEs7HuukBhrh8e5jOk+7x7mfPtbIAOwrsoNpBhzP0Y+m/Om8nsvllo668brUBrvKmZEFrUYCgNbHfK3Mo+1/kBp+R7p1nR5dsRW+0//fZqxgRYX4vbC9uIt/3xks8KxjySLHVULS4A6nwaoFQsYDfJogD7Z1cx0GDDNfJTEGR6dVAes5aF6KGPHZxuQBth45nxJgD5yMK0Z/MiAqzKm+a38nqkJAPqJ3snbJK9cYPZRvwCsX2I56viAEvfTYoAAVEodOLsiC5NdwO2xmF0D0igSBwVjAAuR+B+HwZhBL80Png==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0IhDsNJDjJCKQK9wkxMvQPO0tZ0hUfA5BvCoEL6LPDY=;
+ b=OmfGmz9MYpxUlO94s3laZ6r/JNMpvGXhgQMv9hfMvyXg3AdUXVySbPW5+BYHyoks5zNZvpIIB2kxAkw6dOcXKhWIiW411/Cf8qU7BjOT41OeMHY2XKRuPMSQa7JyZ3D++9BvkrZgiSUYicxU9BPc1zWtZdUlg9U7MbDQVIC1UD2zcJgpQCQG8OzGaeptd5X2HmqPr3tRda2eMMtMwDSbpgKfJ8DNaxRS6DSisZFCUZ2yy0p7VJ+qiGJmugQWcZtE/BeZ7fjiqs11RVrSwx5NAzDPSBIYQGF++jGr3STA3YAHglDy+vIzdAWK0DrnQ7QQvr6kric6UB1E2F2AgybgIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679745082;
-        h=content-transfer-encoding:to:subject:message-id:date:from:sender
-         :reply-to:mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FZRXrrCyhC/asJwSLOsOxy0dUDn7uJ0nZ8VEzBDUmgw=;
-        b=GfakZUT2iT+rFsRV7aP4iN7ggHJ5ZjtKRLrq4OB1Mfgqw2HVS0o7/N4ZWUdAeuftl3
-         ow0TjqznhTlN/u3IrjXD5ysTjdCDkQpY4VXwo/WnEGQTLK6DrW8lL9Fz7pqddpbuRrmw
-         6LQ3Q93g+yqWoFJXv2lgN9jn/MaSAGrdL6OW20I6193/9M7EUggGqpwMJ3FspOnWROHs
-         bkHwTHOT3ALjhn3RaEwSi3xrRWKU3fk5K41KWkxJBf7y/ato+ZLfKjhYxn6DoV1iuzw1
-         v89eYo4HT/nUfjFflUsOCRjs6I1jjzC+EjZxSxaHGDUrvGIaxFmJ3xdnx4h4LL2Y8m3z
-         Jf5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679745082;
-        h=content-transfer-encoding:to:subject:message-id:date:from:sender
-         :reply-to:mime-version:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FZRXrrCyhC/asJwSLOsOxy0dUDn7uJ0nZ8VEzBDUmgw=;
-        b=AAhJ4UNMGi4/LQAgRuIWYHda5GyC2WvfsacWBAJ6yCfqShqTFiQ3jLEM5of3pW2g1K
-         ALdHiPzSRcOVEYJHyzbXxnpXlJ6n4Gg5NaQbVvIr1eWGSuSRlHKszqEL0eNJ9Ug9kCc3
-         GC607TqS/uMnocKuREG+6HDM34izQtQCrLkbw80Jqajn7weiCU4GWUqkYBO/apr/FRCy
-         x4dAHbBVHcQRqY/MHJyJiYzXPOwJt408z8Uak20WaXSt9pvN2U4rHUZPfJPpz9NbtIhj
-         y67N1+KvpsoOXII14XWXBKYa5Qx75OYdwoPoCv3xbKfnkNfRmks5jbqIuqYIKxT2KQLV
-         Aw8w==
-X-Gm-Message-State: AAQBX9czx0Mt0qZPrEwX3+HQmnjZ7JQmUzkuDMueWGVyVZ780Da8eDys
-        dNaAPQPsZc2UGCdtTAhnqIEqDYPA1gBbsDl/IMc=
-X-Google-Smtp-Source: AKy350Z+i8NuNzzdGjjzjG29+U5j+NthUM7xm5j4zaHeYDC37A8chd0RG7iBoJtgAll8JlYz2XJPgwTcHzKU06pcFr4=
-X-Received: by 2002:a05:651c:113:b0:299:a9db:95 with SMTP id
- a19-20020a05651c011300b00299a9db0095mr1756889ljb.1.1679745081677; Sat, 25 Mar
- 2023 04:51:21 -0700 (PDT)
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0IhDsNJDjJCKQK9wkxMvQPO0tZ0hUfA5BvCoEL6LPDY=;
+ b=CzrdpyX+8zz+D1Fq/SxqZUxVx0SpIGGqEaH52og/QvANRDStKsne9KVVZE2oz5Lw/TWRzfRy8OOGv1kHXe80JT4QmB3YS0POexwba6XlUtDx65PaRpsl5Y1HyeNJOrDpV6UTP41HcNi/+LpOO1VOodu4NGYXo+5pUPtWsk4hgUA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by DM6PR13MB3938.namprd13.prod.outlook.com (2603:10b6:5:2af::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Sat, 25 Mar
+ 2023 12:03:21 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.041; Sat, 25 Mar 2023
+ 12:03:21 +0000
+Date:   Sat, 25 Mar 2023 13:03:14 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     edward.cree@amd.com
+Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
+        habetsm.xilinx@gmail.com, michal.swiatkowski@linux.intel.com
+Subject: Re: [PATCH net-next v2 2/6] sfc: add notion of match on enc keys to
+ MAE machinery
+Message-ID: <ZB7jApAGT9q3ntjL@corigine.com>
+References: <cover.1679603051.git.ecree.xilinx@gmail.com>
+ <fd5021315abf37e392e432021c6668c52da90dd1.1679603051.git.ecree.xilinx@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fd5021315abf37e392e432021c6668c52da90dd1.1679603051.git.ecree.xilinx@gmail.com>
+X-ClientProxiedBy: AM3PR07CA0110.eurprd07.prod.outlook.com
+ (2603:10a6:207:7::20) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Reply-To: mkwesogo@gmail.com
-Sender: graolvin@gmail.com
-Received: by 2002:a05:6520:2f8f:b0:254:c676:23d7 with HTTP; Sat, 25 Mar 2023
- 04:51:21 -0700 (PDT)
-From:   "Mr. Muskwe Sanogo" <sanogokwe@gmail.com>
-Date:   Sat, 25 Mar 2023 11:51:21 +0000
-X-Google-Sender-Auth: _s0FcWK3Vy1CzXwxoIeVfyET58k
-Message-ID: <CAF-GeyPcMcVjoWL74rE3FonPHc77=WeRzSGxXxOC-QvFg-5+ug@mail.gmail.com>
-Subject: Greetings and articulate salutations.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.5 required=5.0 tests=ADVANCE_FEE_5_NEW,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        LOTTO_DEPT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_HK_NAME_FM_MR_MRS,UNDISC_FREEM,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:234 listed in]
-        [list.dnswl.org]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [sanogokwe[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  0.0 LOTTO_DEPT Claims Department
-        *  0.8 ADVANCE_FEE_5_NEW Appears to be advance fee fraud (Nigerian
-        *      419)
-        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB3938:EE_
+X-MS-Office365-Filtering-Correlation-Id: df5d75a4-c075-4998-72fa-08db2d28ed9a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: duiZhHRCvyVihtj3OgIhHcF4rDrGpRy5CDTg1RKDdDklzaEC9Sy+ke/zt4sx4LQPWg1Y9mIQQc8NItcvpmrUGwfqWkvbSI3zyrGeldV3GWYlNNZjDepiLZrzQ9HNB72lLRGdU/ZHow4zGVr9UEeDfDZI3zaXD5EPOn0QgVdsOXVgnwkP3vMZUC2iHdzoY4DaBvz3e0SiGKAO2OHCOarXRj/BhVr/4z05dEfvoJ+bYnAQFgLtVGfTw62a9YpqqeLz7TOtfkjckRI05qEz6JoczPlek3j3xkEzUdGMiKnT6nSGwSviavoevoLs9wErW+yV8IFY9TrzIPlr6To7yFWfQsKYWTd7ASzRG8eqwFE82CwA/kLdnd82wXQSCUoKiez0JAmaSW1SvGiEVKyXnZH0V3lTtEQ7B44srFoaCd1xUl+Ek9Em/z+rbt4tZ8BpzGTXUibi+mzqtbSgc0GHSQTX5MloDNKeonJ5dZ+ta5qMLl2CLMpAsg4A748m2QNrxYDm6kheDxUJRYjJ7NEBh97UsIGu1DVCiQXmCxpfkVD02u3dP0V8HEQocmcJhyAm89+C
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(39830400003)(136003)(366004)(396003)(451199021)(186003)(6666004)(36756003)(7416002)(83380400001)(2906002)(38100700002)(66556008)(8676002)(6512007)(4326008)(6486002)(6916009)(6506007)(66946007)(478600001)(316002)(66476007)(8936002)(5660300002)(41300700001)(86362001)(44832011)(2616005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wNovEfWSpZb40fcyVbXSk4L4KCIzio8mSLJy7cyZg3hkOX9lS335t+QaGKwA?=
+ =?us-ascii?Q?6SvXRdb6t/PDBWp/a8T5eV0qbv8x0KLV31Tc7HbiI7S8Nq6ZjGZjLFpG/ccq?=
+ =?us-ascii?Q?mN303BVBSBU40pO1pHQKu0atDRiarfr/rxrFxk9jB3PDHVOtzGWC6Guum8M+?=
+ =?us-ascii?Q?tgt6uRAevaRakQYceTWvnGbssiMq6DvqW/YamPsqcde1qSHuf/YN0Ds+zAWR?=
+ =?us-ascii?Q?6gCf22HCw349YZXKnCD5OHGO8dd1paDOnCp3JzX5AGCQ4EFrrYICa29kD6G5?=
+ =?us-ascii?Q?S/FtptnXRFDeT2tbCwqrTNNsc/XcW3cM4f7xag2+olsKgD3JDgwSfjF3AJXu?=
+ =?us-ascii?Q?jSK/MpDqimhhRFX9lc4caIRffMaXheMOpo54ifqkycCjs+YYmHpp8XizUffv?=
+ =?us-ascii?Q?0BA0KaBfUNM+ndDDgl+kKP/kETTMVy3PkoytWeWy/72cf0nKLQoqMIBGeph7?=
+ =?us-ascii?Q?HZpKTskCsjKHNM5mk/MpFpM+UYx1oS48CRDV8rlSvSUBt18sH/WtDsIK4dbr?=
+ =?us-ascii?Q?c+UXwUasCh7kWP4MWZgcpXgzPUFlbuPKvF0IDvI3JA9woA1KfnoI0V6R5Wkj?=
+ =?us-ascii?Q?3Ymwi9Hgrf/b4YJiyZxNmJXl4FKn9snYPfTxaXf+y0pu/6q/ba4agJ3TExAG?=
+ =?us-ascii?Q?j8+cdYIF08F44tzUCngd/DexCBNwbQJ3bJLCBKv4Mox0wBb5cKBGVEJmIDxb?=
+ =?us-ascii?Q?roIOGqWDsl7feinr7x/p3hGbz7+JdyxTLv42az9wxOUhcmXdDHKlNObV9Gtq?=
+ =?us-ascii?Q?8MJ/2a068MwkhltOGDCuigX9Nohu0d4EX9Si73xPHcVxHPH4uwCOmigKYTLq?=
+ =?us-ascii?Q?q6RyTcmCqG5V0p5Kd40smvz1vA4JVHT75mAq2WFXKNt/MyAwYpyfZYV4oSsY?=
+ =?us-ascii?Q?uTKQdgV51zrgvQ0h+J4KU5Uz+LdjMhcdf4FSH4FPymkqHpPthSXDEA1kkTYA?=
+ =?us-ascii?Q?C6RRWF+EqtMpIjcISVUmdhsDRLwV96AsVBvf8se2CeOm6zIgujF41GXmsNDj?=
+ =?us-ascii?Q?mxCZo5l4IVCfF6QWZHUCNIbcLgFkGZt9NqF6rJ+yIJyh2cRI7rJtZGFKY3oe?=
+ =?us-ascii?Q?OizhL0pPfjIV4XyU6Th/UzzKfsKXpl5AnZ6ibzirucX+j0TlHl4AepAlkm4y?=
+ =?us-ascii?Q?rExuesEv6jx2fLgVwMAp4fpQmZRnOH/FjisjALIcBGKwpoFRzfChhzh0R9DK?=
+ =?us-ascii?Q?m44MzDnUa+/CzPWzJeC/IS0QEEl6dcQ3BJK3FyhFsaqir9FRTxuSruf0uL4Z?=
+ =?us-ascii?Q?RZ+E3WP794IHkJaKXgpZmPu6woYc9epfX/go85UJG0Jpgf2YDcy4C04tFa2t?=
+ =?us-ascii?Q?n7Sm2qEZM+Hws8mTLrmQdUnJiznTzSSDki0SBFl66QesL2FIPFggbZHH+FYF?=
+ =?us-ascii?Q?r103THcEeH6/RjGJDJw9pEo0Mr91FIkuAWDtcbf1YbMvzJZo3VEcPDY96AKS?=
+ =?us-ascii?Q?UmtSCsp3e3oLUqjnZyNAiIb9FDREReFcj82OD5AR8a4410Gx3pzVALFCNSz/?=
+ =?us-ascii?Q?FXDtEUbBV/zSGmL/nRz3ZF4/rl2Q/A7JhBmsDaFXR7GwH/70P75MZmmWw6lu?=
+ =?us-ascii?Q?Y/OpAELKWfUI7DdnVkBOa/qJC//NBESG90fT7U8Ne6NaqSVkfonTD2+jCAq3?=
+ =?us-ascii?Q?jNkb+4OPsaHBp1LbWCpVFicaR7Ba9FIDKaZY1hZrKdt7I4TiVxEgjMnMllpd?=
+ =?us-ascii?Q?LkZFQA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: df5d75a4-c075-4998-72fa-08db2d28ed9a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2023 12:03:21.3351
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gBxM/jOjbiKeix74FSIkRbjpf8Nb9oZDrs2Am8Wdr7c5kZ9g+VHTzXKVMTnGelCkQfRg6m8M2oKxjJbyBfjVIqjxoIjtkbpugtY45ZbzY3c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB3938
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I bestow upon you a serendipitous and euphoric afternoon, With due
-respect to your personality and much sincerity of this purpose, I make
-this contact with you believing that you can be of great assistance to
-me. I'm Mr. Muskwe Sanogo,  I'm the Chairman of FOREIGN PAYMENTS
-CONTRACT AWARD COMMITTEE and also I currently hold the post of
-Internal Audit Manager of our bank, Please see this as a confidential
-message and do not reveal it to another person because it=E2=80=99s a top
-secret.
+Hi Edward,
 
-It may surprise you to receive this letter from me, since there has
-been no previous correspondence between us.  I will also like to make
-it clear here that l know that the internet has been grossly abused by
-criminal minded people making it difficult for people with genuine
-intention to correspond and exchange views without skepticism.
+Looks good to me.
+A few minor comments inline.
 
-We are imposition to reclaim and inherit the sum of US $(28,850,000
-Million ) without any trouble, from a dormant account which remains
-unclaimed since 10 years the owner died. This is a U.S Dollars account
-and the beneficiary died without trace of his family to claim the
-fund.
+On Thu, Mar 23, 2023 at 08:45:10PM +0000, edward.cree@amd.com wrote:
+> From: Edward Cree <ecree.xilinx@gmail.com>
+> 
+> Extend the MAE caps check to validate that the hardware supports used
+>  outer-header matches.
 
-Upon my personal audit investigation into the details of the account,
-I find out that the deceased is a foreigner, which makes it possible
-for you as a foreigner no matter your country to lay claim on the
-balance as the Foreign Business Partner or Extended Relative to the
-deceased, provided you are not from here.
+s/used// ?
 
-Your integrity and trustworthiness will make us succeed without any
-risk. Please if you think that the amount is too much to be
-transferred into your account, you have the right to ask our bank to
-transfer the fund into your account bit by bit after approval or you
-double the account. Once this fund is transferred into your account,
-we will share the fund accordingly. 45%, for you, 45%, for me, 5%, had
-been mapped out for the expense made in this transaction, 5% as a free
-will donation to charity and motherless babies homes in both our
-countries as sign of breakthrough and more blessings.
+> Extend efx_mae_populate_match_criteria() to fill in the outer rule ID
+>  and VNI match fields.
+> Nothing yet populates these match fields, nor creates outer rules.
+> 
+> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 
+...
 
-If you are interested to help without disappointment or breach of
-trust, reply me, so that I will guide you on the proper banking
-guidelines to follow for the claim. After the transfer, I will fly to
-your country for sharing of funds according to our agreement.
+>  int efx_mae_allocate_counter(struct efx_nic *efx, struct efx_tc_counter *cnt)
+>  {
+>  	MCDI_DECLARE_BUF(outbuf, MC_CMD_MAE_COUNTER_ALLOC_OUT_LEN(1));
+> @@ -941,6 +1011,29 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
+>  				match->value.tcp_flags);
+>  	MCDI_STRUCT_SET_WORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_TCP_FLAGS_BE_MASK,
+>  				match->mask.tcp_flags);
+> +	/* enc-keys are handled indirectly, through encap_match ID */
+> +	if (match->encap) {
+> +		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID,
+> +				      match->encap->fw_id);
+> +		MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_OUTER_RULE_ID_MASK,
+> +				      U32_MAX);
+> +		/* enc_keyid (VNI/VSID) is not part of the encap_match */
+> +		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE,
+> +					 match->value.enc_keyid);
+> +		MCDI_STRUCT_SET_DWORD_BE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_ENC_VNET_ID_BE_MASK,
+> +					 match->mask.enc_keyid);
 
-Assurance: Note that this transaction will never in any way harm or
-foiled your good post or reputation in your country, because
-everything will follow legal process.
+Is it intentional that value.enc_keyid is used as the mask.
+Perhaps naively I would have expected something more like U32_MAX.
 
-I am looking forward to hear from you soonest.
-Yours faithfully,
-Mr. Muskwe Sanogo
+> +	} else if (WARN_ON_ONCE(match->mask.enc_src_ip) ||
+> +		   WARN_ON_ONCE(match->mask.enc_dst_ip) ||
+> +		   WARN_ON_ONCE(!ipv6_addr_any(&match->mask.enc_src_ip6)) ||
+> +		   WARN_ON_ONCE(!ipv6_addr_any(&match->mask.enc_dst_ip6)) ||
+> +		   WARN_ON_ONCE(match->mask.enc_ip_tos) ||
+> +		   WARN_ON_ONCE(match->mask.enc_ip_ttl) ||
+> +		   WARN_ON_ONCE(match->mask.enc_sport) ||
+> +		   WARN_ON_ONCE(match->mask.enc_dport) ||
+> +		   WARN_ON_ONCE(match->mask.enc_keyid)) {
+> +		/* No enc-keys should appear in a rule without an encap_match */
+> +		return -EOPNOTSUPP;
+> +	}
+>  	return 0;
+>  }
