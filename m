@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F4A6C903A
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 19:55:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 238986C903E
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 19:55:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbjCYSzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 14:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        id S231719AbjCYSzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 14:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbjCYSz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 14:55:29 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C19A276;
-        Sat, 25 Mar 2023 11:55:28 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-17aaa51a911so5193774fac.5;
-        Sat, 25 Mar 2023 11:55:28 -0700 (PDT)
+        with ESMTP id S231248AbjCYSze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 14:55:34 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5219CA5E5;
+        Sat, 25 Mar 2023 11:55:30 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-177b78067ffso5184860fac.7;
+        Sat, 25 Mar 2023 11:55:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679770528;
+        d=gmail.com; s=20210112; t=1679770529;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1zfxWgKB5aCk68T/R6TGeUwEdD4lRWRfSSIJlLsnGFw=;
-        b=BAienO2/ibUVO0Z4YAFHfx3M2quWfEawbFJ+DXnct1BU2jsgxyypiaF2BfYRgCTSeR
-         W21P5x+4dfJ+IZNC45wf6AzDKwp+PjNmhe/CQLANkfBiSBe51uugMEhr1hyi/N6hrsn0
-         Ld955euqWFwDW5o35hwcavZ8r2LDCkt+hxjysTLrEF7GqZ8esft14n9eaghfKiZj5CaM
-         7QQ/bjd4r0sbnWr+4kRG9/CeKTqTDuQteHdd7DdwROpxZH0zwHVxHFFU07kvqgdQ4yq6
-         fFUUNcNWFQH41meSzVGMMuJ/CMutrpn6v/Ddq5Ivd+kpYXifQ5aT2/AxcUSoAabt1Wvw
-         yg0w==
+        bh=owQqtMurqm2qI+24ndEGs/qWEaDzKKQeglmv6UMu1sw=;
+        b=CyTkRcKyeCvHukeGZUb4EgoTMd6scDuf5XkWBsZ5Xoj3o1Fis9RgqD2p3HM3ksyjQV
+         18iVk82ZJHo6+dn14ukQS0wClpxYkDUsffKEuU8zwuWA3mKkFaOa2B+KSWgTD34oCX+n
+         OKwp9AaawRw9VpgolapOtgK2tO1ald8AQqzD9uFo3gP2Z5HjCOWtGdAaltv5/aZh2BaZ
+         UF2W6B7MvTK4j1vP8FvJ4brIFGtsCHHxp6ndHNIFBRq7cgQ8CtFNQmpCbjyMAL5NKPmB
+         nUg1OUP0cJBLGiS4njWpN6yHp2PYQqcxnb2g1SpoaFJhRX0Y8+PQ/VYqE6SEnoDAKMQ2
+         kMJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679770528;
+        d=1e100.net; s=20210112; t=1679770529;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1zfxWgKB5aCk68T/R6TGeUwEdD4lRWRfSSIJlLsnGFw=;
-        b=FVVKLU7sqjO6J9ZF+jCPZcjj01IjBhi3EIuka2cZEBw6xzbhq+PCXTHi/akwyrQotL
-         SxNHfUeR9BDVQwFZqeCSvjpYJbhQBPjGDd8z+4qAZE/Rg1SHVVnd/HXwpagaSmpLp3zl
-         h3oH8FIcVF/8aRThiHZHVF30RB8weJXMdVZb9O4YA0zOxOySl7k5yqa7Espf3VILMRKi
-         PGz2jmZAUan4aoCp1YEgzTvveIxu5+XH91wfZnOo/dpJxynIyYsMiKg92GynBYUu3F0A
-         NNBA9UBjAywaM8naWPsh3PhQRLrKfNyPadGebi3Y9f7bOk5Pu4cgSNIGUXo/hE8k2MUB
-         mryw==
-X-Gm-Message-State: AAQBX9cafsHFhJA0vl7hguVYJQ3xhWmYWSsPj0DHK2dVtwep33fK0IVy
-        1nBSEGe1rjLsmwiSjjZZfAU=
-X-Google-Smtp-Source: AKy350ZUylzgZXJP+/bps9ubG4lTHaj53Ti/SBgH1G/IyOBLrh7qovnwSLf+0BT8AMiwuDG3n3oBMA==
-X-Received: by 2002:a05:6871:401:b0:17e:a4d6:5e18 with SMTP id d1-20020a056871040100b0017ea4d65e18mr5316693oag.45.1679770527848;
-        Sat, 25 Mar 2023 11:55:27 -0700 (PDT)
+        bh=owQqtMurqm2qI+24ndEGs/qWEaDzKKQeglmv6UMu1sw=;
+        b=McqSa8r1Cv40Di09d+N7xWTDNp4EfMqrplldz7v1d+RngHAHarENIsnnhFyy8q7bhN
+         NYogltvp4lxZPSD9a/efJJu0w5nEkRza1qb7hobo9gbqb8rDFpm2qBSKGO85qlFPO4+Q
+         tZ2soSRNsYNKnL+mDPHMmXdDLgB3hli30Gx2ViDEYrjLyiRK/3OqCZcHmVROquSXG/DO
+         zKgAGc4DtKNC2orQdHKntcPm82OfaRKjpLpM7mPNCZe/ed+sGWEG6ApXBp8vNlXWi/47
+         H9P41zkviiQv+mwG03eujcdZxcfR5t812Lk9ZuLHOYYJk+ztsBtKCrqQ0V/2eDnEjmkC
+         Vofw==
+X-Gm-Message-State: AAQBX9e00w6SMztbyO7RYCN74KlwtcsG/0AEcUXWnavoN9F2TRBsZ7z4
+        otwj7HlgjXAfMJgI2SIgvYM=
+X-Google-Smtp-Source: AKy350YzaBpxv8S1DyMSbE8BfbzwOluEWimBlPVsmxBI48AxRWDEh3uryOJykSUgwOkLM5yiZprepQ==
+X-Received: by 2002:a05:6871:a5:b0:177:956c:36d5 with SMTP id u37-20020a05687100a500b00177956c36d5mr5680776oaa.29.1679770529568;
+        Sat, 25 Mar 2023 11:55:29 -0700 (PDT)
 Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id o9-20020a9d7649000000b00697be532609sm9978293otl.73.2023.03.25.11.55.27
+        by smtp.gmail.com with ESMTPSA id q130-20020acaf288000000b00383ef567cfdsm9417909oih.21.2023.03.25.11.55.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Mar 2023 11:55:27 -0700 (PDT)
+        Sat, 25 Mar 2023 11:55:29 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -75,9 +75,9 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH 3/8] sched/topology: add for_each_numa_cpu() macro
-Date:   Sat, 25 Mar 2023 11:55:09 -0700
-Message-Id: <20230325185514.425745-4-yury.norov@gmail.com>
+Subject: [PATCH 4/8] net: mlx5: switch comp_irqs_request() to using for_each_numa_cpu
+Date:   Sat, 25 Mar 2023 11:55:10 -0700
+Message-Id: <20230325185514.425745-5-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230325185514.425745-1-yury.norov@gmail.com>
 References: <20230325185514.425745-1-yury.norov@gmail.com>
@@ -93,107 +93,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-for_each_cpu() is widely used in the kernel, and it's beneficial to
-create a NUMA-aware version of the macro.
-
-Recently added for_each_numa_hop_mask() works, but switching existing
-codebase to it is not an easy process.
-
-New for_each_numa_cpu() is designed to be similar to the for_each_cpu().
-It allows to convert existing code to NUMA-aware as simple as adding a
-hop iterator variable and passing it inside new macro. for_each_numa_cpu()
-takes care of the rest.
-
-At the moment, we have 2 users of NUMA-aware enumerators. One is
-Melanox's in-tree driver, and another is Intel's in-review driver:
-
-https://lore.kernel.org/lkml/20230216145455.661709-1-pawel.chmielewski@intel.com/
-
-Both real-life examples follow the same pattern:
-
-	for_each_numa_hop_mask(cpus, prev, node) {
- 		for_each_cpu_andnot(cpu, cpus, prev) {
- 			if (cnt++ == max_num)
- 				goto out;
- 			do_something(cpu);
- 		}
-		prev = cpus;
- 	}
-
-With the new macro, it would look like this:
-
-	for_each_numa_cpu(cpu, hop, node, cpu_possible_mask) {
-		if (cnt++ == max_num)
-			break;
-		do_something(cpu);
- 	}
-
-Straight conversion of existing for_each_cpu() codebase to NUMA-aware
-version with for_each_numa_hop_mask() is difficult because it doesn't
-take a user-provided cpu mask, and eventually ends up with open-coded
-double loop. With for_each_numa_cpu() it shouldn't be a brainteaser.
-Consider the NUMA-ignorant example:
-
-	cpumask_t cpus = get_mask();
-	int cnt = 0, cpu;
-
-	for_each_cpu(cpu, cpus) {
-		if (cnt++ == max_num)
-			break;
-		do_something(cpu);
- 	}
-
-Converting it to NUMA-aware version would be as simple as:
-
-	cpumask_t cpus = get_mask();
-	int node = get_node();
-	int cnt = 0, hop, cpu;
-
-	for_each_numa_cpu(cpu, hop, node, cpus) {
-		if (cnt++ == max_num)
-			break;
-		do_something(cpu);
- 	}
-
-The latter looks more verbose and avoids from open-coding that annoying
-double loop. Another advantage is that it works with a 'hop' parameter with
-the clear meaning of NUMA distance, and doesn't make people not familiar
-to enumerator internals bothering with current and previous masks machinery.
+for_each_numa_cpu() is a more straightforward alternative to
+for_each_numa_hop_mask() + for_each_cpu_andnot().
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/topology.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/topology.h b/include/linux/topology.h
-index 4a63154fa036..62a9dd8edd77 100644
---- a/include/linux/topology.h
-+++ b/include/linux/topology.h
-@@ -286,4 +286,24 @@ sched_numa_hop_mask(unsigned int node, unsigned int hops)
- 	     !IS_ERR_OR_NULL(mask);					       \
- 	     __hops++)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 38b32e98f3bd..80368952e9b1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -817,12 +817,10 @@ static void comp_irqs_release(struct mlx5_core_dev *dev)
+ static int comp_irqs_request(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_eq_table *table = dev->priv.eq_table;
+-	const struct cpumask *prev = cpu_none_mask;
+-	const struct cpumask *mask;
+ 	int ncomp_eqs = table->num_comp_eqs;
+ 	u16 *cpus;
+ 	int ret;
+-	int cpu;
++	int cpu, hop;
+ 	int i;
  
-+/**
-+ * for_each_numa_cpu - iterate over cpus in increasing order taking into account
-+ *		       NUMA distances from a given node.
-+ * @cpu: the (optionally unsigned) integer iterator
-+ * @hop: the iterator variable, must be initialized to a desired minimal hop.
-+ * @node: the NUMA node to start the search from.
-+ *
-+ * Requires rcu_lock to be held.
-+ *
-+ * Because it's implemented as double-loop, using 'break' inside the body of
-+ * iterator may lead to undefined behaviour. Use 'goto' instead.
-+ *
-+ * Yields intersection of @mask and cpu_online_mask if @node == NUMA_NO_NODE.
-+ */
-+#define for_each_numa_cpu(cpu, hop, node, mask)					\
-+	for ((cpu) = 0, (hop) = 0;						\
-+		(cpu) = sched_numa_find_next_cpu((mask), (cpu), (node), &(hop)),\
-+		(cpu) < nr_cpu_ids;						\
-+		(cpu)++)
-+
- #endif /* _LINUX_TOPOLOGY_H */
+ 	ncomp_eqs = table->num_comp_eqs;
+@@ -844,15 +842,11 @@ static int comp_irqs_request(struct mlx5_core_dev *dev)
+ 
+ 	i = 0;
+ 	rcu_read_lock();
+-	for_each_numa_hop_mask(mask, dev->priv.numa_node) {
+-		for_each_cpu_andnot(cpu, mask, prev) {
+-			cpus[i] = cpu;
+-			if (++i == ncomp_eqs)
+-				goto spread_done;
+-		}
+-		prev = mask;
++	for_each_numa_cpu(cpu, hop, dev->priv.numa_node, cpu_possible_mask) {
++		cpus[i] = cpu;
++		if (++i == ncomp_eqs)
++			break;
+ 	}
+-spread_done:
+ 	rcu_read_unlock();
+ 	ret = mlx5_irqs_request_vectors(dev, cpus, ncomp_eqs, table->comp_irqs);
+ 	kfree(cpus);
 -- 
 2.34.1
 
