@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3154E6C9136
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 23:16:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D586C913A
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 23:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231866AbjCYWQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 18:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S231623AbjCYWRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 18:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjCYWQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 18:16:31 -0400
+        with ESMTP id S229460AbjCYWRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 18:17:20 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB97CC30;
-        Sat, 25 Mar 2023 15:16:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A45BCDC4;
+        Sat, 25 Mar 2023 15:17:19 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 8FCD45FD02;
-        Sun, 26 Mar 2023 01:16:28 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id AFF515FD02;
+        Sun, 26 Mar 2023 01:17:17 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1679782588;
-        bh=bkc6d1yYqgIUYawce1wHqHL23hRQ4dzBaaa6S+OuT/c=;
+        s=mail; t=1679782637;
+        bh=1oACndxCCde0aJy+xLw/9NS5XuY78gvhoxVybxqB3oo=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=eyVwZfIRi1ANQNCylXloNg95A3u5qjMOKvXJQlTt++/OSkQfTS34zrtLO+UUjWsXU
-         gnvUT11dd7l+O6EZTNHBU2PJrAWk/pN+mQ37xSUQuA7U1HRkF8Ntv/cFomi96UwR2S
-         87SAOv5/eS5nIJc1iGeaNFHY5Xk5kJEUJHJTrcMre8uF7ffN7L3PCCBHnVyzyXCLcz
-         JyxOXbpkCvJCIPWDmUCctdKpfwk/t2CTqQQ6Xp4qs9BtR13ZV98ZtbxdWsp644dN5n
-         EuEw+si670/5qpFin/owGhU69ddY6OjXquroBphysgiUzdk3GTRZqeHtl6D7SyOlBw
-         jaFPVFatlXmDQ==
+        b=a7LEw/XzC36S/rkCWBxjy3X14M/lU2wLOXDrEgMg7A6QzUtOqlOXZrPeLSXCO2eIO
+         7YDiCSIUUckEI1f6F8i+/AUDxmo/a1Tpaw3FxkFKzVstc1U4rk6hd9zbf3Xb4Q3kCC
+         fC/jJ4NzVWkAbWCrqOSa5Gssq2k7MzFviLDSsNBfx/e1IqVN+6++QGguPNbDIy6Ari
+         U7CFIuhNdvCUJXvFA2A7nX3DgWLMXpqwBgvSer7gpbinQ5LmUVs3iAsAiu+/zEjMrj
+         hktjdq+LC0vCudqUYMXafgmQeHDHyk+9HO8kLeAQds9QAz5S3O9ZwewQ3Gg8efzbAE
+         9li1VSMJuysuw==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun, 26 Mar 2023 01:16:27 +0300 (MSK)
-Message-ID: <99da938b-3e67-150c-2f74-41d917a95950@sberdevices.ru>
-Date:   Sun, 26 Mar 2023 01:13:11 +0300
+        Sun, 26 Mar 2023 01:17:17 +0300 (MSK)
+Message-ID: <f302d3de-28aa-e0b1-1fed-88d3c3bd606a@sberdevices.ru>
+Date:   Sun, 26 Mar 2023 01:14:01 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
@@ -49,11 +49,11 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v1 1/2] vsock: return errors other than -ENOMEM to socket
+Subject: [RFC PATCH v1 2/2] vsock/test: update expected return values
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
  S-MS-EXCH01.sberdevices.ru (172.16.1.4)
 X-KSMG-Rule-ID: 4
 X-KSMG-Message-Action: clean
@@ -71,38 +71,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This removes behaviour, where error code returned from any transport
-was always switched to ENOMEM. This works in the same way as:
-commit
-c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
-but for receive calls.
+This updates expected return values for invalid buffer test. Now such
+values are returned from transport, not from af_vsock.c.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 ---
- net/vmw_vsock/af_vsock.c | 4 ++--
+ tools/testing/vsock/vsock_test.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 19aea7cba26e..9262e0b77d47 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -2007,7 +2007,7 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
- 
- 		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
- 		if (read < 0) {
--			err = -ENOMEM;
-+			err = read;
- 			break;
- 		}
- 
-@@ -2058,7 +2058,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
- 	msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
- 
- 	if (msg_len < 0) {
--		err = -ENOMEM;
-+		err = msg_len;
- 		goto out;
+diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+index 3de10dbb50f5..a91d0ef963be 100644
+--- a/tools/testing/vsock/vsock_test.c
++++ b/tools/testing/vsock/vsock_test.c
+@@ -723,7 +723,7 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
+ 		exit(EXIT_FAILURE);
  	}
  
+-	if (errno != ENOMEM) {
++	if (errno != EFAULT) {
+ 		perror("unexpected errno of 'broken_buf'");
+ 		exit(EXIT_FAILURE);
+ 	}
+@@ -887,7 +887,7 @@ static void test_inv_buf_client(const struct test_opts *opts, bool stream)
+ 		exit(EXIT_FAILURE);
+ 	}
+ 
+-	if (errno != ENOMEM) {
++	if (errno != EFAULT) {
+ 		fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
+ 		exit(EXIT_FAILURE);
+ 	}
 -- 
 2.25.1
