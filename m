@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5D06C9049
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 19:56:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6FD56C9046
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 19:56:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbjCYS4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 14:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        id S231940AbjCYS4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 14:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231801AbjCYSzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 14:55:46 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B07DAF28;
-        Sat, 25 Mar 2023 11:55:34 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-17ec8963db8so5181768fac.8;
-        Sat, 25 Mar 2023 11:55:34 -0700 (PDT)
+        with ESMTP id S229997AbjCYSz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 14:55:56 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CE6AD30;
+        Sat, 25 Mar 2023 11:55:35 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-17683b570b8so5155964fac.13;
+        Sat, 25 Mar 2023 11:55:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679770533;
+        d=gmail.com; s=20210112; t=1679770535;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=80EoVBEKXGhEC7DVbLvz7+NhEf3OhSH5JGMlSI/ra5A=;
-        b=c8WsDxlz69yIcMrnWmunFeF8il5WqHtJorGM/XyYJMs70iYPpv46nPF3dBqd99BpdJ
-         W0tVNf8ydUgVClyx+RzGKWpnA6plQ0v92jsxCYGYKtfurnBrzy5HIx8GTebIM5UvKc8K
-         cPEj5R/aDqPk8/ipAO563cTqT+9eZa2AkYCykRNQ681RoYk+C+rB35p4Jo+fP5r3/gkk
-         Yu8YNxArGyyOn5B92nmuhn4yeTOIWzghjpMJhbhxZudr9uE/XLR7rBrEWZ5zOdic6DEi
-         OV6kMH1AZMifMfTcdPIObyunInhhcxBJrgGmzTkzlNB/LQ8CSTi+uLeLh89tAle6fdf7
-         n6rA==
+        bh=OSjdqRXXXgYSdBLqK0Rzny0ztxBdvMaFW0s7IjJDzbk=;
+        b=P0feuUUjKXAKyCstuEoHOPmhO4TyK3/vV/+voVXCmvE98E9bJn0tcyJ4lFEM41GqWl
+         liyARWM0j8ao5ZXutP/8tLQKaz69ng+85A+OqBFDQ9ElMUgFxHXQn4jzbadMPnUwoDUX
+         ququAYjw8kmAsrxnSFcJY7XnAjkAAPUf/aG5n8dPY4erG+XY+0421iKjllXct/gcjOjJ
+         iGUoSQECFIAMYnzCgTuaA7e4a9ZmSYDrBQMgd6rNVP55ZZZQpGngFX3DPiTDdJ8u5dWb
+         ibkvbTg95xydqhVH59WKkWSVhiGGVseIW+Qc0RJWm0cAaQlHtbicU8Rs5mHZzDAdfiti
+         aSwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679770533;
+        d=1e100.net; s=20210112; t=1679770535;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=80EoVBEKXGhEC7DVbLvz7+NhEf3OhSH5JGMlSI/ra5A=;
-        b=qkzIjblQ7V0ns/lACgQ9p19HeUQG8NDYdtxP1zqu37VRNvr922pzNQ3YOvyOx/t5eO
-         3ladYl2JVUCA4RQXsdZB0iK29bjg4qwVam9LbxG79kaoAkdDDM3imQaDbJak6HWwEmtw
-         /yo8NNh3mQcmvNG1svQhEv43j5IR2bfOtsqpro8PYWuRgI9q/PQrHdhsyO0zRH/88cFU
-         LMxnRQzvq64Lpm2LqTx+nR0d7vR0mD6Xr3vLfD2XlCEpPcly8tOVecjdPp3Q18SW8JLn
-         /GD04BHMrTp0jv3MdK8wbxpXuwl49sAul2LtnlgRdLgiyylsVfhOIWchTFjyHqjGeota
-         1hnQ==
-X-Gm-Message-State: AAQBX9eN7BeMU5p/KpXaPfIxPI3au3GqqfGhFQHaowedlyT7Wyq4fhVk
-        Nsq/LZGbyV3dfqMw3v5VOJ0=
-X-Google-Smtp-Source: AK7set+O8JFz+domrA0SIlDcc8yGfcVInje+7s5pfnwITfnb0uJTS8w6y359YhsEL4fO176jhWxetw==
-X-Received: by 2002:a05:6870:9a14:b0:17e:e1ac:2f09 with SMTP id fo20-20020a0568709a1400b0017ee1ac2f09mr3772222oab.47.1679770533215;
-        Sat, 25 Mar 2023 11:55:33 -0700 (PDT)
+        bh=OSjdqRXXXgYSdBLqK0Rzny0ztxBdvMaFW0s7IjJDzbk=;
+        b=iW2OoeDw8MY7iBOb62SE2T4humg8W0f+nP4hktYesuCRd8/LsvsviJHZEDAvCm4oVK
+         4pLVkuidqotx1SWZfFxfkdJnrFwl/I4fKDHjKyhFBE/XzwGfOX63ykIenRaTtNkmLhWt
+         DNJe5R4BhBSYgd/UxwzX2PC79Lj6mRFmXQa1q89bh9BA2SpcWsEjuQcWSzHio+r7eNqc
+         e/f7LC1wzLSewjSOMPJ1tM/rcOquCqgdjwUvyI1hBjpInbUJQzJ5kxnATkPJz/Hu1Oaq
+         1qr9njjcU2tx1wX6XL/ZNpS5A8+sZs5hynF/0j+Z62FClHu4Qjxx8rgRoBjKUU3/7CV9
+         nxYg==
+X-Gm-Message-State: AAQBX9evpSwv7RrVUCPhcdV9MsRBQ7tyF0HDqDnhVJnz6hg71Im+A+Ow
+        YO2++LlMzZQ7+oKd7Tk5UE4=
+X-Google-Smtp-Source: AKy350Z6M853diS04Xe9me7UO7RJvAwcsEeyUiJUMN/0kO5tO5IbkBrRFlPWIEmyOYFhSTLMzz+C4g==
+X-Received: by 2002:a05:6870:e255:b0:17e:9f4c:713 with SMTP id d21-20020a056870e25500b0017e9f4c0713mr5212461oac.25.1679770534976;
+        Sat, 25 Mar 2023 11:55:34 -0700 (PDT)
 Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id q132-20020acac08a000000b0037fa035f4f3sm9542212oif.53.2023.03.25.11.55.32
+        by smtp.gmail.com with ESMTPSA id ug21-20020a0568714d1500b0017af6149e61sm8418379oab.21.2023.03.25.11.55.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Mar 2023 11:55:32 -0700 (PDT)
+        Sat, 25 Mar 2023 11:55:34 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -75,9 +75,9 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH 6/8] sched/topology: export sched_domains_numa_levels
-Date:   Sat, 25 Mar 2023 11:55:12 -0700
-Message-Id: <20230325185514.425745-7-yury.norov@gmail.com>
+Subject: [PATCH 7/8] lib: add test for for_each_numa_{cpu,hop_mask}()
+Date:   Sat, 25 Mar 2023 11:55:13 -0700
+Message-Id: <20230325185514.425745-8-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230325185514.425745-1-yury.norov@gmail.com>
 References: <20230325185514.425745-1-yury.norov@gmail.com>
@@ -93,75 +93,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following patch adds a test for NUMA-aware CPU enumerators, and it
-requires an access to sched_domains_numa_levels.
+The test ensures that enumerators' output is consistent with
+cpumask_local_spread().
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/topology.h |  7 +++++++
- kernel/sched/topology.c  | 10 ++++++----
- 2 files changed, 13 insertions(+), 4 deletions(-)
+ lib/test_bitmap.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/include/linux/topology.h b/include/linux/topology.h
-index 62a9dd8edd77..3d8d486c817d 100644
---- a/include/linux/topology.h
-+++ b/include/linux/topology.h
-@@ -43,6 +43,13 @@
- 	for_each_online_node(node)			\
- 		if (nr_cpus_node(node))
+diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
+index a8005ad3bd58..1b5f805f6879 100644
+--- a/lib/test_bitmap.c
++++ b/lib/test_bitmap.c
+@@ -12,6 +12,7 @@
+ #include <linux/printk.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
++#include <linux/topology.h>
+ #include <linux/uaccess.h>
  
-+#ifdef CONFIG_NUMA
-+extern int __sched_domains_numa_levels;
-+#define sched_domains_numa_levels ((const int)__sched_domains_numa_levels)
-+#else
-+#define sched_domains_numa_levels (1)
-+#endif
+ #include "../tools/testing/selftests/kselftest_module.h"
+@@ -751,6 +752,33 @@ static void __init test_for_each_set_bit_wrap(void)
+ 	}
+ }
+ 
++static void __init test_for_each_numa(void)
++{
++	unsigned int cpu, node;
 +
- int arch_update_cpu_topology(void);
- 
- /* Conform to ACPI 2.0 SLIT distance definitions */
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index 1860d9487fe1..5f5f994a56da 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1508,7 +1508,9 @@ static void claim_allocations(int cpu, struct sched_domain *sd)
- #ifdef CONFIG_NUMA
- enum numa_topology_type sched_numa_topology_type;
- 
--static int			sched_domains_numa_levels;
-+int				__sched_domains_numa_levels;
-+EXPORT_SYMBOL_GPL(__sched_domains_numa_levels);
++	for (node = 0; node < sched_domains_numa_levels; node++) {
++		const struct cpumask *m, *p = cpu_none_mask;
++		unsigned int c = 0;
 +
- static int			sched_domains_curr_level;
++		rcu_read_lock();
++		for_each_numa_hop_mask(m, node) {
++			for_each_cpu_andnot(cpu, m, p)
++				expect_eq_uint(cpumask_local_spread(c++, node), cpu);
++			p = m;
++		}
++		rcu_read_unlock();
++	}
++
++	for (node = 0; node < sched_domains_numa_levels; node++) {
++		unsigned int hop, c = 0;
++
++		rcu_read_lock();
++		for_each_numa_cpu(cpu, hop, node, cpu_online_mask)
++			expect_eq_uint(cpumask_local_spread(c++, node), cpu);
++		rcu_read_unlock();
++	}
++}
++
+ static void __init test_for_each_set_bit(void)
+ {
+ 	DECLARE_BITMAP(orig, 500);
+@@ -1237,6 +1265,7 @@ static void __init selftest(void)
+ 	test_for_each_clear_bitrange_from();
+ 	test_for_each_set_clump8();
+ 	test_for_each_set_bit_wrap();
++	test_for_each_numa();
+ }
  
- int				sched_max_numa_distance;
-@@ -1872,7 +1874,7 @@ void sched_init_numa(int offline_node)
- 	 *
- 	 * We reset it to 'nr_levels' at the end of this function.
- 	 */
--	sched_domains_numa_levels = 0;
-+	__sched_domains_numa_levels = 0;
- 
- 	masks = kzalloc(sizeof(void *) * nr_levels, GFP_KERNEL);
- 	if (!masks)
-@@ -1948,7 +1950,7 @@ void sched_init_numa(int offline_node)
- 	sched_domain_topology_saved = sched_domain_topology;
- 	sched_domain_topology = tl;
- 
--	sched_domains_numa_levels = nr_levels;
-+	__sched_domains_numa_levels = nr_levels;
- 	WRITE_ONCE(sched_max_numa_distance, sched_domains_numa_distance[nr_levels - 1]);
- 
- 	init_numa_topology_type(offline_node);
-@@ -1961,7 +1963,7 @@ static void sched_reset_numa(void)
- 	struct cpumask ***masks;
- 
- 	nr_levels = sched_domains_numa_levels;
--	sched_domains_numa_levels = 0;
-+	__sched_domains_numa_levels = 0;
- 	sched_max_numa_distance = 0;
- 	sched_numa_topology_type = NUMA_DIRECT;
- 	distances = sched_domains_numa_distance;
+ KSTM_MODULE_LOADERS(test_bitmap);
 -- 
 2.34.1
 
