@@ -2,127 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E58DC6C8C9E
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 09:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 278756C8CA7
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 09:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbjCYI3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 04:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
+        id S232045AbjCYIei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 04:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbjCYI3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 04:29:21 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A4A132FF;
-        Sat, 25 Mar 2023 01:29:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K6Q70zcrBh/w3YPEf2Lr0GZR9yl9HhJbHaQuQkGExFiC2LxjOSSEKtYx/indsq4wfZlijvUrSV+FrCCCP5Z3q4mU0COJT/98iEh0aafMDVIQYZ7OyyBWRTUnEE5c/x/Cwjzkbd6KvdMViKER7+eMUFyT86AiNsB137Fp6K71AYcoyeDEAZB6iLgFi8L1yOhxuek+O3BS9Orgd6R3W54b3WdPsXeUNOLOQVX0/aQ8cFVoaVfgqogkOBw2DpCvYhs1W7QViJBTjUX/NATklI5wG2ZzgmVyYaIdCDjAlTTlUfkcJjoY0aj1bottkDepEJ3W6pqt3+o8UuuMyCXjdavDvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FIEpkknAula/2tkcYtrMEFmwnuL6tdv2pxL0e3IdOIs=;
- b=hffI6Z7b+sCS6VwCxzN9mrxgGLDcmTJQz87cFBihR9CnKByHzk2k5/9fFLqXlUkf9nT48IWnNj/yg+it41dV/8k2HXlH1S8EEhdG8qkzeseuZbiNA4awsYvCc3++Wf8bBO87hJO41t7t3bFbLc80XgfoSp4Elj0z9CQQkxdGpASAAZ5t4fotu/wcMJINIE9lRoeZrjrhP9WcCQNhw+5C96iLoSXgO8n+UryleAqGpUQWBrK7vpSpwBneVup+qR6Na50jdOyI6OLB3otInGUd/XvMWqp6r29CyB7zyChJ9+60RlbCZRditrRS/30ZjZC4PFGvH8JDZdMmsqF6pFtUUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S231704AbjCYIeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 04:34:37 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D9018173;
+        Sat, 25 Mar 2023 01:34:36 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id f17so2927872oiw.10;
+        Sat, 25 Mar 2023 01:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FIEpkknAula/2tkcYtrMEFmwnuL6tdv2pxL0e3IdOIs=;
- b=TQ34O0aY4DSOD+Fydsc1JC/iEm2+r+rb1QfVlTaRfhFLQxmCk4+s/PsFB7iL10uQM16vPugCTO7hsUgNNqMcaqSJf4IRpr/kLMALSd6fxNEVkJZ6MUHM8/4TFo/odln5zhib4PCF/O3j58n7sdMXLRu0KhG03LdyVdnopHbZYf8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM4PR13MB5834.namprd13.prod.outlook.com (2603:10b6:8:41::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.41; Sat, 25 Mar 2023 08:29:18 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.041; Sat, 25 Mar 2023
- 08:29:18 +0000
-Date:   Sat, 25 Mar 2023 09:29:11 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sean Anderson <seanga2@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 09/10] net: sunhme: Inline error returns
-Message-ID: <ZB6w14Z88yA7Hdp/@corigine.com>
-References: <20230324175136.321588-1-seanga2@gmail.com>
- <20230324175136.321588-10-seanga2@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230324175136.321588-10-seanga2@gmail.com>
-X-ClientProxiedBy: AM0PR01CA0168.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::37) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112; t=1679733276;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TC1VviM7kJDuwC/+3CMrSgl8Bi7rZU2Q6IqzYrz0DpI=;
+        b=Ghnvyg7aycOtgQ6MkB2h4AzEv+KZcO4mvdIb6sFX5SWQD5BGVTS4ogaOqpmBJQrHvh
+         50CPoyWg4Jp8PBqBdpougNl96VLCvzKEt/fw2Kw+miIMoFkjkNLYtEr3KCeiqupqC3kL
+         8eTlJBpkgbf1XGNrXDrfL3BQdwq7fl0+CQ3o2T1vvn7H2BHTldKBHfE7D6uhAyJIbnAZ
+         Yxk+bi1GWICMu/0ER7T8BtqFyfmwvVpppo0l+O3dEuw9wxA/atEHsjptuCj0bgw4J4kW
+         cJKg4gxHUPBQYtmtbYZLVDd54EOtxenO0crt+vgdRj7SDnqF6iE/n1spGN5m2vJHZg2F
+         0KHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679733276;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TC1VviM7kJDuwC/+3CMrSgl8Bi7rZU2Q6IqzYrz0DpI=;
+        b=RHUUS39pX9K16D8lhC0KYLQAotSDYjDlcHCSirHzTFtNStsoyXdZvEOCZrjuSK7PwI
+         GGJtnQ0MYFH80Eh5GtJxWycpmdV/PahDvCyh/EqIrBh/Dq08founZValBYHVP6PmbL0y
+         dxUnOC8+7Xs9pNTwAX+L6ZOl2lJfoA2qnwIf34+Fxzs6DWlh2LdZx6GTBlNVwWnv3Q1x
+         uSlmN5PuExa6E8MRxkZTUjfLrdhqaxma7DPcPa9UbMJ7NAd4ddgeIeNMTvNcz79w1jUn
+         YV5qSR/l5GYmk6/N1I0xi/3oPth8VQ+EHLLuuf1PFtJopzG9zXKG5fXLrddYmctq9JQb
+         hsrw==
+X-Gm-Message-State: AO0yUKUw5xkbQ8DLVWfhy7q6Q0Q/xbVqlHgGyffWI2ecEh1+MjhkPqhl
+        rHk587OfMXvp3R1dNx/FRUY=
+X-Google-Smtp-Source: AK7set9bQM0ODRq2OSSCH9JYneSRL/IROaVz4SRcvzDdcnYBZq2VtVjbiXvwjyYGtNnmdl/aLFlC1g==
+X-Received: by 2002:aca:2102:0:b0:387:3a49:472b with SMTP id 2-20020aca2102000000b003873a49472bmr2513878oiz.19.1679733276216;
+        Sat, 25 Mar 2023 01:34:36 -0700 (PDT)
+Received: from chcpu13.cse.ust.hk (191host119.mobilenet.cse.ust.hk. [143.89.191.119])
+        by smtp.gmail.com with ESMTPSA id u47-20020a4a8c32000000b0053bb2ae3a78sm2206173ooj.24.2023.03.25.01.34.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Mar 2023 01:34:35 -0700 (PDT)
+From:   Wei Chen <harperchen1110@gmail.com>
+To:     pkshih@realtek.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wei Chen <harperchen1110@gmail.com>
+Subject: [PATCH] wireless: rtlwifi: fix incorrect error codes in rtl_debugfs_set_write_rfreg()
+Date:   Sat, 25 Mar 2023 08:34:29 +0000
+Message-Id: <20230325083429.3571917-1-harperchen1110@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM4PR13MB5834:EE_
-X-MS-Office365-Filtering-Correlation-Id: 282c021a-4e18-44c6-4990-08db2d0b0663
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3fDIfTl8ru3wRFTQ/n3BIZLGzQrhyBSCuk5TrOmbMJdCu3QI+4h6ymXTDu1kxsqJ2enYQWqlkw3lwLxHX0tEVjJACh56HjEBNOvPJXfIScjVu4/NoP6PytOcCKG5gpnMpdE4z9QmqPGrIDIWfMYs+pKA1d2W2KFsNDZ6PtFlqnOo7CckxZLldV9viEGqAAeGrnuRmqhTojrxPzGFW23F9JAocHwINM6DX/r0X7MKVKcZmQv22COEw07Wz+UC3bFszrtVJqzkb45c1nOyK2ldbWXyzKzmlTyizpLvr1LGZzl3IkwMo/UYVrBAHIQbobh4UNxCA/mXxY3h9Tez2s284/DrpCBmJxBpUkmeOyx00LcNAdpMvS7TEWmmDkNygOLD/6245ja56M0MhDmwmcMFNANmnwpP/K92rqeU6x3CNpqPJcIC/DNMx6sin9L8dr39KW+lqhP4pK10JmLG4B+I03/ejS5xk4T7ZWr8fTJYGABb6M56gQSBAocu1V7/h8jAa8oXoMbPSWXRALHh9JfKJQEDn+hkMdOM03A6JaxRcJNY0EbhJD29GqmpEXO4baFG
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39840400004)(376002)(136003)(346002)(396003)(451199021)(8676002)(6916009)(4326008)(2906002)(6486002)(66476007)(66556008)(44832011)(66946007)(186003)(6506007)(6512007)(5660300002)(4744005)(86362001)(316002)(41300700001)(8936002)(54906003)(6666004)(38100700002)(478600001)(36756003)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tsWDudFTvYk542Q6+pQSf5olacrk+X/TUGZ9XCsNYxPPDrAHjy4atCKh4Chu?=
- =?us-ascii?Q?9bq9cgsnHXx12z8DGzJ0SUHcyXTzRriU4y2kBeXAEeFy1vRFGICm+r7tTAAN?=
- =?us-ascii?Q?ROkozcXvVfAIXnf7QBRZiCp7vVXimw8A/5aWJy6J2pXN6DAE7s/7pkh5Hdvr?=
- =?us-ascii?Q?qfjp4mZBd37cmOBlJ/3kFJ3iOmZw0WT/oaMBwfIRy6x9jNeCjOdY743UR2yJ?=
- =?us-ascii?Q?/B/BPEq2uMhx6EJY5lkKBm43NwJ42chaSU+xLFv7YIiEgiixk0kCdL4yHRAn?=
- =?us-ascii?Q?59af7k6NNMg9jVwz4EACu2oYeV/6+PBZy/I8fjzqWA8x6B0pJTrJalCQhHGq?=
- =?us-ascii?Q?8yIf54rKtym+XNUSKNY8yx3JacTruSuFVwfUkiSUJpsdDZ0sq+DjAsyYhIpn?=
- =?us-ascii?Q?HKtV/tpYzmhAo/FkyVZu3ewXE0AuyOKywvDw+crukZotdJeNjQWeV0zoDUHM?=
- =?us-ascii?Q?KlmvDcOeav8Z/xuISLWzbE0+Um74eodCEp+bpt1klI6Uv6+ox49rHpmNsyuI?=
- =?us-ascii?Q?G0jtgUjs7kTU/EH5QNvAMkh2fFNdNZT5Y9EJN215Qu2HbwDbCoSFm+VbtV3l?=
- =?us-ascii?Q?QC+aosBUaHWqsxj+GTVyfBL4CZsBaG6SJtUE3Tjbw2SVoPp/FQNai/CFGxVT?=
- =?us-ascii?Q?Tq7VOJ7S+tf+gamVh23Sx5/cSHoFKj/Txv1ujl8HBkjPVjwsBtcD4EJoXCdU?=
- =?us-ascii?Q?X3wuR4cqkkq9siCK9MDjplyzclc3Uv6gCE0cTyl7MSQ/hxesh7ls4+Vi6N/e?=
- =?us-ascii?Q?h1h6q8fNuk1CznuPih4dHGddJXg/dKs3mGbw1+d+ZFHFDC+wZZhtqNVGZm6P?=
- =?us-ascii?Q?nYdSs0U+xqkkruLQzrQOVIDhA69i/Sj2H1BfLrR0HGT4CAO92fp7HVPKSuab?=
- =?us-ascii?Q?DKwoPdAyS7GFwQns52uqxwnayodOFpCmhqnaw7FV111wEDzVqLwgnOxdW1ZB?=
- =?us-ascii?Q?8d5lLl75oqLHIstnXzOIntyZb3LFczV+/hRBkGihuzdw6nBiBK40T9d9GX34?=
- =?us-ascii?Q?hGSrXUoBjovt1g1ojBbLF/YOmKBle5xC5BsBlYduvXnHYeI3i+fWlf4l3Twl?=
- =?us-ascii?Q?Pmpje0coy2zxPNdDiJpKo3lL2ON6pEQY20Yp9f87rY53q0NmBGBudxpPNCTa?=
- =?us-ascii?Q?F5hhYrpcCGBa7Vm+rdtnZtGMhnf8yCmve8BVeevSQcnB9K6uSF9jqKpMMdST?=
- =?us-ascii?Q?k4VQlVdNyq+yuvpiNpUtdInwRkd+u5BgzXmNHc7EGClmZvrFUlk2O5pZDddq?=
- =?us-ascii?Q?vBcO6o0qnJpyrzPUHi2wQsVtNaVEeIqPCL15hHDRiXOO80GchKFqD6m/tQXc?=
- =?us-ascii?Q?cmXLXgNA7hclhdD+EeT0TQZIRiUCGZFQbjYhoDLbD2pgwswtEgj+vmPHUUIb?=
- =?us-ascii?Q?80b/1trlucvZzWtLJQ2n5to6I3XcNvICU/mUxtK+xxdbLOfgT51o1ZVG0iw0?=
- =?us-ascii?Q?rfGZ0TehPSbzgo3I/meYPrh96XmwM06ZK4d0+Jx422rQ5tQKzw5Xi4mQMNKx?=
- =?us-ascii?Q?7IEntKvb2K3I93vEI6fGGlJiRzEVdcn4ubSH2CO0PuVsmkryYzPhWU12f9SX?=
- =?us-ascii?Q?0aaHGYlsn+sY3/v/bECrNbrCDMfT9WY5oV88RQbRLuv+QS2fUdYY/W47g2AO?=
- =?us-ascii?Q?5F8nGtQvI3b+8rfeMBDi7DrElyGwYlN4RcQsG4gn8UDs1tn+rVQCcuw5LQVc?=
- =?us-ascii?Q?vtcTdA=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 282c021a-4e18-44c6-4990-08db2d0b0663
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2023 08:29:17.9523
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iOFVFxOrctv8jr/AvNWPqAC8TP3e6l2eWwyuv8yHpUw0kFcqhB8ADgsyx5QiyyXP8XwTyAzr7ssQY3K8XKJ6ABJqG/GcDDHpuDnz/ciazdw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR13MB5834
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 01:51:35PM -0400, Sean Anderson wrote:
-> The err_out label used to have cleanup. Now that it just returns, inline it
-> everywhere.
-> 
-> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+If there is a failure during copy_from_user or user-provided data buffer
+is invalid, rtl_debugfs_set_write_rfreg should return negative error code
+instead of a positive value count.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Fix this bug by returning correct error code. Moreover, the check of buffer
+against null is removed since it will be handled by copy_from_user.
 
-Sorry for the duplicate, I previously responded with
-a different email address, which wasn't what I intended.
+Signed-off-by: Wei Chen <harperchen1110@gmail.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/debug.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
+index 3e7f9b4f1f19..9eb26dfe4ca9 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/debug.c
++++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
+@@ -375,8 +375,8 @@ static ssize_t rtl_debugfs_set_write_rfreg(struct file *filp,
+ 
+ 	tmp_len = (count > sizeof(tmp) - 1 ? sizeof(tmp) - 1 : count);
+ 
+-	if (!buffer || copy_from_user(tmp, buffer, tmp_len))
+-		return count;
++	if (copy_from_user(tmp, buffer, tmp_len))
++		return -EFAULT;
+ 
+ 	tmp[tmp_len] = '\0';
+ 
+@@ -386,7 +386,7 @@ static ssize_t rtl_debugfs_set_write_rfreg(struct file *filp,
+ 	if (num != 4) {
+ 		rtl_dbg(rtlpriv, COMP_ERR, DBG_DMESG,
+ 			"Format is <path> <addr> <mask> <data>\n");
+-		return count;
++		return -EINVAL;
+ 	}
+ 
+ 	rtl_set_rfreg(hw, path, addr, bitmask, data);
+-- 
+2.25.1
+
