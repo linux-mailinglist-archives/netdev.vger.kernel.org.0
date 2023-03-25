@@ -2,145 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4A76C90D5
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 21:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 195D16C9117
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 23:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbjCYU4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 16:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S229994AbjCYWGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 18:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbjCYU4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 16:56:20 -0400
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B60A5CB;
-        Sat, 25 Mar 2023 13:56:18 -0700 (PDT)
-Received: from [192.168.1.103] (178.176.79.104) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Sat, 25 Mar
- 2023 23:56:10 +0300
-Subject: Re: [PATCH net-next] sh_eth: remove open coded netif_running()
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        with ESMTP id S229488AbjCYWGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 18:06:10 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F99555A8;
+        Sat, 25 Mar 2023 15:06:07 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 251A85FD02;
+        Sun, 26 Mar 2023 01:06:04 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1679781964;
+        bh=COjmnQ0Wk0XlisNwkVt0MBAIKEpqB54cYItuwSog830=;
+        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
+        b=XttBPZvUI3OKLhyW5Whx9oC7CJnSp4iGn5v8WzQkII1U6QqxaklfugRIqfcK5qnKU
+         BZ0mrm6kcGviWYHpjb0XX45rSlOm8Bq8BzQn+PLVf+K/lEaktq98E5g+yZDJ8mVr2r
+         9GcEDNp3GltJqEXHZOLPQs3Z6+IKHZrBVjjoY0pdS1pBAkCJyhCDIfkW5+nOw+Eub3
+         ysx+JZTkcNpdjww7MvxpKPn5OwI9swUS9lc/Np7gINSE5p0isBXRAz8/fpQxtqQvX8
+         6c6zsb7ND4rF2s8PTNK6T4C3o6qGM6NV22UK7iXNEJk+4d2/Ydz9mVNYZK/FkwepzZ
+         7/D3SP9KcroRA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Sun, 26 Mar 2023 01:05:58 +0300 (MSK)
+Message-ID: <b0d15942-65ba-3a32-ba8d-fed64332d8f6@sberdevices.ru>
+Date:   Sun, 26 Mar 2023 01:02:43 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Content-Language: en-US
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>
-References: <20230321065826.2044-1-wsa+renesas@sang-engineering.com>
- <79d945a4-e105-4bc4-3e73-64971731660e@omp.ru>
- <CAMuHMdUt_kTH3tnrdF=oKBLyjrstei8PLsyr+dFXVoPEyxTLAA@mail.gmail.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <346b2451-6862-011e-9842-284a43fcf337@omp.ru>
-Date:   Sat, 25 Mar 2023 23:56:09 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <CAMuHMdUt_kTH3tnrdF=oKBLyjrstei8PLsyr+dFXVoPEyxTLAA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
+        <avkrasnov@sberdevices.ru>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Subject: [PATCH net-next v5 0/2] allocate multiple skbuffs on tx
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [178.176.79.104]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 03/25/2023 20:40:46
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 176289 [Mar 24 2023]
-X-KSE-AntiSpam-Info: Version: 5.9.59.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 507 507 08d345461d9bcca7095738422a5279ab257bb65a
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.79.104 in (user)
- dbl.spamhaus.org}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;178.176.79.104:7.4.1,7.7.3;omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: {iprep_blacklist}
-X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.79.104
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 03/25/2023 20:43:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 3/25/2023 6:14:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-Spam-Status: No, score=-0.0 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/25 18:14:00 #21009230
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+This adds small optimization for tx path: instead of allocating single
+skbuff on every call to transport, allocate multiple skbuff's until
+credit space allows, thus trying to send as much as possible data without
+return to af_vsock.c.
 
-On 3/23/23 11:32 AM, Geert Uytterhoeven wrote:
-[...]
->>> It had a purpose back in the days, but today we have a handy helper.
->>
->>    Well, the is_opened flag doesn't get set/cleared at the same time as
->> __LINK_STATE_START. I'm not sure they are interchangeable...
->>
->>> Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
->>> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> 
->>> --- a/drivers/net/ethernet/renesas/sh_eth.c
->>> +++ b/drivers/net/ethernet/renesas/sh_eth.c
->>> @@ -2441,8 +2441,6 @@ static int sh_eth_open(struct net_device *ndev)
->>>
->>>       netif_start_queue(ndev);
->>>
->>> -     mdp->is_opened = 1;
->>> -
->>
->>    __LINK_STATE_START gets set before the ndo_open() method call, so
->> before the RPM call that enbales the clocks...
->>
->>>       return ret;
->>>
->>>  out_free_irq:
->>> @@ -2565,7 +2563,7 @@ static struct net_device_stats *sh_eth_get_stats(struct net_device *ndev)
->>>       if (mdp->cd->no_tx_cntrs)
->>>               return &ndev->stats;
->>>
->>> -     if (!mdp->is_opened)
->>> +     if (!netif_running(ndev))
->>>               return &ndev->stats;
->>
->>    I guess mdp->is_opened is checked here to avoid reading the counter
->> regs when RPM hasn't been called yet to enable the clocks...
-> 
-> Exactly, cfr. commit 7fa2955ff70ce453 ("sh_eth: Fix sleeping function
-> called from invalid context").
+Also this patchset includes second patch which adds check and return from
+'virtio_transport_get_credit()' and 'virtio_transport_put_credit()' when
+these functions are called with 0 argument. This is needed, because zero
+argument makes both functions to behave as no-effect, but both of them
+always tries to acquire spinlock. Moreover, first patch always calls
+function 'virtio_transport_put_credit()' with zero argument in case of
+successful packet transmission.
 
-   Yeah, pm_runtime_get_sync() couldn't be called in this case as
-netstat_show() invoked read_lock() that ensued calling preempt_disable()...
+ Link to v1:
+ https://lore.kernel.org/netdev/2c52aa26-8181-d37a-bccd-a86bd3cbc6e1@sberdevices.ru/
+ Link to v2:
+ https://lore.kernel.org/netdev/ea5725eb-6cb5-cf15-2938-34e335a442fa@sberdevices.ru/
+ Link to v3:
+ https://lore.kernel.org/netdev/f33ef593-982e-2b3f-0986-6d537a3aaf08@sberdevices.ru/
+ Link to v4:
+ https://lore.kernel.org/netdev/0e0c1421-7cdc-2582-b120-cad6f42824bb@sberdevices.ru/
+ Link to v5:
+ https://lore.kernel.org/netdev/f0b283a1-cc63-dc3d-cc0c-0da7f684d4d2@sberdevices.ru/
 
-> So you mean sh_eth_get_stats() can now be called after setting
-> __LINK_STATE_START, but before RPM has enabled the clocks?
+ Changelog:
+ v1 -> v2:
+ - If sent something, return number of bytes sent (even in
+   case of error). Return error only if failed to sent first
+   skbuff.
 
-   Yes, probably...
+ v2 -> v3:
+ - Handle case when transport callback returns unexpected value which
+   is not equal to 'skb->len'. Break loop.
+ - Don't check for zero value of 'rest_len' before calling
+   'virtio_transport_put_credit()'. Decided to add this check directly
+   to 'virtio_transport_put_credit()' in separate patch.
 
-> Is there some protection against parallel execution of ndo_open()
-> and get_stats()?
+ v3 -> v4:
+ - Use WARN_ONCE() to handle case when transport callback returns
+   unexpected value.
+ - Remove useless 'ret = -EFAULT;' assignment for case above.
 
-   Haven't seen it (yet?)...
+ v4 -> v5:
+ - Remove extra 'ret' initialization.
+ - Remove empty extra line before 'if (ret < 0)'.
+ - Add R-b tag for the first patch.
+ - Add second patch, thus creating patchset of 2 patches.
 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
+Arseniy Krasnov (2):
+  virtio/vsock: allocate multiple skbuffs on tx
+  virtio/vsock: check argument to avoid no effect call
 
-MBR, Sergey
+ net/vmw_vsock/virtio_transport_common.c | 63 +++++++++++++++++++------
+ 1 file changed, 49 insertions(+), 14 deletions(-)
+
+-- 
+2.25.1
