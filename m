@@ -2,124 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 974D96C8E7C
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 14:27:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4FA6C8EB9
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 15:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbjCYN1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 09:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        id S229787AbjCYOBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 10:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbjCYN1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 09:27:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF9C55AD
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 06:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679750776;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Iii/UTDXaMnO4Wo0x/DUKmtgVb8N0aI08+TcTOIFrv0=;
-        b=Fu2OvQQznxcuCLF5rS8h+BlOW76lYNAwwDEc9o6MbARtwWmZDs0YMwgZ8y5ivK2ujyGCT1
-        LwQgBy2wrbbzOdcYKzUCI5Lzbw0vL9QCvES+wQyGTxkOrKO/G1IWI7VfaZxdWygNrMg5Uf
-        YZRPRc3+g/RAJ/XYOpDmXfSVD74eyJ4=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-53-yfjcdIDvNz2EmvTtuR0icQ-1; Sat, 25 Mar 2023 09:26:14 -0400
-X-MC-Unique: yfjcdIDvNz2EmvTtuR0icQ-1
-Received: by mail-qt1-f200.google.com with SMTP id i24-20020ac84f58000000b003bfe3358691so2756092qtw.21
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 06:26:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679750773;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Iii/UTDXaMnO4Wo0x/DUKmtgVb8N0aI08+TcTOIFrv0=;
-        b=n9nshkfnbfwBvDhflgcySI6t6K/jONWiNnLyJXtRvQBaJ0SXU8wIgXaX2whKBYFLBP
-         I0pfoz2BAUj6kBpOoaFZcy/3wYtM2SS44p0DIf6IISuJ1MtTcXLL6nSw5DN1SWVruar8
-         k5bWOSX2/zZGhIWlW2hfird6XjKDoLgAW+3JL5/UdoGT5LxypzzJPXJg8e+YEbDpXh7u
-         jHVoNi5zxv2J/315CDtnVHusxr4q8sUqh3AXFOySNdl0BX8Wd5mGIONViqmXZjIu8ImM
-         fRYI9SL7ucZjNL//dkDia+sCnqQEcF0kJNShKsw6uLQ9zZtMkEx+CJpLKtml7HfqaniR
-         bdXg==
-X-Gm-Message-State: AAQBX9fcfA/its1mu7uOOBxxL4KYa3JXazC2u0glzj6vXzZ1xnuT1HbS
-        Xri4Qx3Y7s4Ofj2zYSG1oL2QFA+RgpIF5jUKBl05JWrp9Zeif90gwoMrJIj/ELX/jN8dHycLf0z
-        UIOAqQ2C9hxpMecNO
-X-Received: by 2002:ad4:5bca:0:b0:5db:4d15:524d with SMTP id t10-20020ad45bca000000b005db4d15524dmr9054496qvt.52.1679750773655;
-        Sat, 25 Mar 2023 06:26:13 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZlSGE95XTMsRO2eDXbclLRJ4kBq2KCSDNceqlNvQKjXpkqvXFlqtmH3evRGVGbNTwKl3s28w==
-X-Received: by 2002:ad4:5bca:0:b0:5db:4d15:524d with SMTP id t10-20020ad45bca000000b005db4d15524dmr9054475qvt.52.1679750773419;
-        Sat, 25 Mar 2023 06:26:13 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05620a040b00b007468733cd1fsm4212329qkp.58.2023.03.25.06.26.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Mar 2023 06:26:13 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        nathan@kernel.org, ndesaulniers@google.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] mac80211: minstrel_ht: remove unused n_supported variable
-Date:   Sat, 25 Mar 2023 09:26:10 -0400
-Message-Id: <20230325132610.1334820-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229460AbjCYOBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 10:01:21 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A350F956
+        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 07:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1679752881; x=1711288881;
+  h=references:from:to:cc:date:in-reply-to:message-id:
+   mime-version:subject;
+  bh=1vqA8dMlZ5zFb95+eL0LVK9gZwTBtiIp0LR1uLxMyB8=;
+  b=GeJj6S8TsWdwP/b2+e1WvnoO1hYZChnBlX9uvud8xu4EprKaYKcQSmNZ
+   vP5MnVI7RgGFXn7pHbz13Eu+aLALOkB+qDIDyNq2RdJBVZrqSt80ahgib
+   lqwQn3LKchFp1FMXjpahyCWUmOG1odKqMzDicaWBwOGam8GPwyh/0OEzp
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.98,290,1673913600"; 
+   d="scan'208";a="313225471"
+Subject: Re: [PATCH v6 net-next 1/7] netlink: Add a macro to set policy message with
+ format string
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2023 14:01:17 +0000
+Received: from EX19D012EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-1box-2bm6-32cf6363.us-west-2.amazon.com (Postfix) with ESMTPS id EA7F980F95;
+        Sat, 25 Mar 2023 14:01:15 +0000 (UTC)
+Received: from EX19D028EUB003.ant.amazon.com (10.252.61.31) by
+ EX19D012EUA003.ant.amazon.com (10.252.50.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Sat, 25 Mar 2023 14:01:14 +0000
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.85.143.174) by
+ EX19D028EUB003.ant.amazon.com (10.252.61.31) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Sat, 25 Mar 2023 14:01:04 +0000
+References: <20230320132523.3203254-1-shayagr@amazon.com>
+ <20230320132523.3203254-2-shayagr@amazon.com>
+ <ed1b26c32307ecfc39da3eaba474645280809dec.camel@redhat.com>
+ <pj41zlsfdxymx0.fsf@u570694869fb251.ant.amazon.com>
+ <20230322114041.71df75d1@kernel.org>
+ <pj41zlmt432zea.fsf@u570694869fb251.ant.amazon.com>
+ <20230323095454.048d7130@kernel.org>
+ <pj41zla6032qn4.fsf@u570694869fb251.ant.amazon.com>
+ <20230323133422.110d6cab@kernel.org>
+User-agent: mu4e 1.7.5; emacs 28.0.91
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Saeed Bshara" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>,
+        "Itzko, Shahar" <itzko@amazon.com>,
+        "Abboud, Osama" <osamaabb@amazon.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "Florian Westphal" <fw@strlen.de>
+Date:   Sat, 25 Mar 2023 16:49:34 +0300
+In-Reply-To: <20230323133422.110d6cab@kernel.org>
+Message-ID: <pj41zlr0tdaq1w.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.85.143.174]
+X-ClientProxiedBy: EX19D046UWB003.ant.amazon.com (10.13.139.174) To
+ EX19D028EUB003.ant.amazon.com (10.252.61.31)
+X-Spam-Status: No, score=-10.0 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang with W=1 reports
-net/mac80211/rc80211_minstrel_ht.c:1711:6: error: variable
-  'n_supported' set but not used [-Werror,-Wunused-but-set-variable]
-        int n_supported = 0;
-            ^
-This variable is not used so remove it.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- net/mac80211/rc80211_minstrel_ht.c | 6 ------
- 1 file changed, 6 deletions(-)
+Jakub Kicinski <kuba@kernel.org> writes:
 
-diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
-index 762346598338..b34c80522047 100644
---- a/net/mac80211/rc80211_minstrel_ht.c
-+++ b/net/mac80211/rc80211_minstrel_ht.c
-@@ -1708,7 +1708,6 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
- 	struct sta_info *sta_info;
- 	bool ldpc, erp;
- 	int use_vht;
--	int n_supported = 0;
- 	int ack_dur;
- 	int stbc;
- 	int i;
-@@ -1791,8 +1790,6 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
- 				continue;
- 
- 			mi->supported[i] = mcs->rx_mask[nss - 1];
--			if (mi->supported[i])
--				n_supported++;
- 			continue;
- 		}
- 
-@@ -1819,9 +1816,6 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
- 
- 		mi->supported[i] = minstrel_get_valid_vht_rates(bw, nss,
- 				vht_cap->vht_mcs.tx_mcs_map);
--
--		if (mi->supported[i])
--			n_supported++;
- 	}
- 
- 	sta_info = container_of(sta, struct sta_info, sta);
--- 
-2.27.0
+> CAUTION: This email originated from outside of the 
+> organization. Do not click links or open attachments unless you 
+> can confirm the sender and know the content is safe.
+>
+>
+>
+> On Thu, 23 Mar 2023 21:44:52 +0200 Shay Agroskin wrote:
+>> > That's why we have the local variable called __extack, that 
+>> > we
+>> > *can*
+>> > use multiple times, because it's a separate variable, 
+>> > (extack)
+>> > is
+>> > evaluated only once, to initialize it...
+>> >
+>> > We don't need to copy the string formatting, unless I'm 
+>> > missing
+>> > something. Paolo was just asking for:
+>>
+>> There is an issue with shadowing __extack by NL_SET_ERR_MSG_FMT
+>> causing the changes to __extack not to be propagated back to 
+>> the
+>> caller.
+>> I'm not that big of an expert in C but changing __extack ->
+>> _extack fixes the shadowing issue.
+>>
+>> Might not be the most robust solution, though it might suffice 
+>> for
+>> this use case.
+>
+> TBH the hierarchy should be the other way around, 
+> NL_SET_ERR_MSG_FMT()
+> should be converted to be:
+>
+> #define NL_SET_ERR_MSG_FMT(extack, attr, msg, args...) \
+>         NL_SET_ERR_MSG_ATTR_POL_FMT(extack, NULL, NULL, msg, 
+>         ##args)
+>
+> and that'd fix the shadowing, right?
 
+Well ... It will but it will contradict the current order of calls 
+as I see it.
+
+NL_SET_ERR_MSG_FMT_MOD calls NL_SET_ERR_MSG_FMT which can be 
+described as 'the former extends the latter'.
+
+On the other hand NL_SET_ERR_MSG_ATTR_POL implements the message 
+setting by itself and doesn't use NL_SET_ERR_MSG to set the 
+message.
+
+So it seems like we already have two approaches for macro ordering 
+here and following your suggestion would create another type of 
+call direction of 'the former shrinks the latter by setting to 
+NULL its attributes'.
+Overall given the nature of C macros and the weird issues arise by 
+shadowing variables (ending up for some reason in not modifying 
+the pointer at all..) I'd say I mostly prefer V7 version which 
+re-implements the message setting and avoids creating such very 
+hard to find issues later.
+
+Then again I'd follow your implementation suggestion if you still 
+prefer it (also I can modify the macro NL_SET_ERR_MSG to call 
+NL_SET_ERR_MSG_ATTR_POL to be consistent with the other change)
+
+Shay
