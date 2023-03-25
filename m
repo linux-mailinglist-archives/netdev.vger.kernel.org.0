@@ -2,90 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 304776C8A24
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 03:12:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 569C86C8A28
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 03:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231997AbjCYCKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Mar 2023 22:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
+        id S231282AbjCYCOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Mar 2023 22:14:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbjCYCKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 22:10:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E80E15577;
-        Fri, 24 Mar 2023 19:10:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09089B82661;
-        Sat, 25 Mar 2023 02:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C0F2DC433EF;
-        Sat, 25 Mar 2023 02:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679710217;
-        bh=LuNYj1EqVPg7MtM0L5VBp1l9g/DSZFniixqdUVZdXbg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X0WRsZBQfomA8fsx2D+pKRb+ubhfiBE1Z2bwMbQ7s9QeGsd/NfrjQhbHkjZeEkCB1
-         yv4Tb1Ne5PT7CNNkEkzX7q7StIISlp5slhwlQJCvF0VqmNwsiTb1wY+qMhEDK+URiw
-         o+RImi5mfLg2enEnlvIhqi/PCz5m1U4+cd1Oj4KZ7MQ3QCsb6DnOD0wpywGByQaM0W
-         iB/CZBsZ/P5oG6i9LF4gCvzQQCVAyQicMns7rzFLs/6UIdpQ6p2Cr50xdDzmNowFtj
-         U1mcz2l8NyU+DKAjv01lBSwMqrH+JqkrbB0vH2c35Ge4bEayj0yyBZRiMXI2j4bHrp
-         0m4GjiTVxRrsg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A23B0C41612;
-        Sat, 25 Mar 2023 02:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231228AbjCYCOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Mar 2023 22:14:24 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8F9166ED
+        for <netdev@vger.kernel.org>; Fri, 24 Mar 2023 19:14:23 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1pftPq-0003TX-1f;
+        Sat, 25 Mar 2023 03:13:58 +0100
+Date:   Sat, 25 Mar 2023 02:12:16 +0000
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 2/2] net: sfp: add quirk for 2.5G copper SFP
+Message-ID: <ZB5YgPiZYwbf/G2u@makrotopia.org>
+References: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
+ <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: dsa: realtek: fix out-of-bounds access
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167971021766.17146.5805572858718496946.git-patchwork-notify@kernel.org>
-Date:   Sat, 25 Mar 2023 02:10:17 +0000
-References: <20230323103735.2331786-1-a.fatoum@pengutronix.de>
-In-Reply-To: <20230323103735.2331786-1-a.fatoum@pengutronix.de>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     linus.walleij@linaro.org, alsi@bang-olufsen.dk, andrew@lunn.ch,
-        f.fainelli@gmail.com, olteanv@gmail.com, luizluca@gmail.com,
-        davem@davemloft.net, kernel@pengutronix.de, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Russell,
 
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 23 Mar 2023 11:37:35 +0100 you wrote:
-> The probe function sets priv->chip_data to (void *)priv + sizeof(*priv)
-> with the expectation that priv has enough trailing space.
+On Tue, Mar 21, 2023 at 04:58:51PM +0000, Russell King (Oracle) wrote:
+> Add a quirk for a copper SFP that identifies itself as "OEM"
+> "SFP-2.5G-T". This module's PHY is inaccessible, and can only run
+> at 2500base-X with the host without negotiation. Add a quirk to
+> enable the 2500base-X interface mode with 2500base-T support, and
+> disable autonegotiation.
 > 
-> However, only realtek-smi actually allocated this chip_data space.
-> Do likewise in realtek-mdio to fix out-of-bounds accesses.
+> Reported-by: Frank Wunderlich <frank-w@public-files.de>
+> Tested-by: Frank Wunderlich <frank-w@public-files.de>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+
+I've tried the same fix also with my 2500Base-T SFP module:
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 4223c9fa6902..c7a18a72d2c5 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -424,6 +424,7 @@ static const struct sfp_quirk sfp_quirks[] = {
+        SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
+        SFP_QUIRK_F("Turris", "RTSFP-10G", sfp_fixup_rollball),
+        SFP_QUIRK_F("OEM", "SFP-GE-T", sfp_fixup_ignore_tx_fault),
++       SFP_QUIRK_M("TP-LINK", "TL-SM410U", sfp_quirk_oem_2_5g),
+ };
+
+ static size_t sfp_strlen(const char *str, size_t maxlen)
+
+However, the results are a bit of a mixed bag. The link now does come up
+without having to manually disable autonegotiation. However, I see this
+new warning in the bootlog:
+[   17.344155] sfp sfp2: module TP-LINK          TL-SM410U        rev 1.0  sn 12154J6000864    dc 210606  
+...
+[   21.653812] mt7530 mdio-bus:1f sfp2: selection of interface failed, advertisement 00,00000000,00000000,00006440
+
+Also link speed and status appears unknown, though we do know at least
+that the speed is 2500M, and also full duplex will always be true for
+2500Base-T:
+[   56.004937] mt7530 mdio-bus:1f sfp2: Link is Up - Unknown/Unknown - flow control off
+
+root@OpenWrt:/# ethtool sfp2
+Settings for sfp2:
+        Supported ports: [ FIBRE ]
+        Supported link modes:   2500baseT/Full
+        Supported pause frame use: Symmetric Receive-only
+        Supports auto-negotiation: No
+        Supported FEC modes: Not reported
+        Advertised link modes:  2500baseT/Full
+        Advertised pause frame use: Symmetric Receive-only
+        Advertised auto-negotiation: No
+        Advertised FEC modes: Not reported
+        Speed: Unknown!
+        Duplex: Unknown! (255)
+        Auto-negotiation: off
+        Port: FIBRE
+        PHYAD: 0
+        Transceiver: internal
+        Supports Wake-on: d
+        Wake-on: d
+        Link detected: yes
+
+So it seems like this new quirk has brought also some new problems or at
+least doesn't address them all.
+
+> ---
+>  drivers/net/phy/sfp.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
 > 
-> These accesses likely went unnoticed so far, because of an (unused)
-> buf[4096] member in struct realtek_priv, which caused kmalloc to
-> round up the allocated buffer to a big enough size, so nothing of
-> value was overwritten. With a different allocator (like in the barebox
-> bootloader port of the driver) or with KASAN, the memory corruption
-> becomes quickly apparent.
+> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+> index 39e3095796d0..9c1fa0b1737f 100644
+> --- a/drivers/net/phy/sfp.c
+> +++ b/drivers/net/phy/sfp.c
+> @@ -360,6 +360,23 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+>  	__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
+>  }
+>  
+> +static void sfp_quirk_disable_autoneg(const struct sfp_eeprom_id *id,
+> +				      unsigned long *modes,
+> +				      unsigned long *interfaces)
+> +{
+> +	linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, modes);
+> +}
+> +
+> +static void sfp_quirk_oem_2_5g(const struct sfp_eeprom_id *id,
+> +			       unsigned long *modes,
+> +			       unsigned long *interfaces)
+> +{
+> +	/* Copper 2.5G SFP */
+> +	linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, modes);
+> +	__set_bit(PHY_INTERFACE_MODE_2500BASEX, interfaces);
+> +	sfp_quirk_disable_autoneg(id, modes, interfaces);
+> +}
+> +
+>  static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
+>  				      unsigned long *modes,
+>  				      unsigned long *interfaces)
+> @@ -401,6 +418,7 @@ static const struct sfp_quirk sfp_quirks[] = {
+>  	SFP_QUIRK_M("UBNT", "UF-INSTANT", sfp_quirk_ubnt_uf_instant),
+>  
+>  	SFP_QUIRK_F("OEM", "SFP-10G-T", sfp_fixup_rollball_cc),
+> +	SFP_QUIRK_M("OEM", "SFP-2.5G-T", sfp_quirk_oem_2_5g),
+>  	SFP_QUIRK_F("OEM", "RTSFP-10", sfp_fixup_rollball_cc),
+>  	SFP_QUIRK_F("OEM", "RTSFP-10G", sfp_fixup_rollball_cc),
+>  	SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
+> -- 
+> 2.30.2
 > 
-> [...]
-
-Here is the summary with links:
-  - [net,v2] net: dsa: realtek: fix out-of-bounds access
-    https://git.kernel.org/netdev/net/c/b93eb5648693
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
