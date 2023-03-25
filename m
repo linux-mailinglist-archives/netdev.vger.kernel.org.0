@@ -2,151 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B9606C8F75
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 17:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A5C76C8F7B
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 17:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbjCYQdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 12:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
+        id S229600AbjCYQes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 12:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbjCYQdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 12:33:08 -0400
-X-Greylist: delayed 65 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 25 Mar 2023 09:33:05 PDT
-Received: from bgl-iport-4.cisco.com (bgl-iport-4.cisco.com [72.163.197.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691971999;
-        Sat, 25 Mar 2023 09:33:04 -0700 (PDT)
-X-IPAS-Result: =?us-ascii?q?A0BDAADxIB9klxjFo0haHAECAgEHARQBBAQBgXwHAQwBg?=
- =?us-ascii?q?3gsEhgujHFfiRKCNYhFA4c6ij+CDQEBAQ0BAUQEAQE+AYoCJjQJDgECBAEBA?=
- =?us-ascii?q?QEDAgMBAQEBAQEDAQEFAQEBAgEHBBQBAQECAjgFDjeFdYcDCwEpHSZcAgk8C?=
- =?us-ascii?q?IJ+gigBAzEDsh8WBQIWgQGEcpkoChkoDWgDgWSBQQGENyOCaYQrhw44T4EVg?=
- =?us-ascii?q?TyCLIFTTYJxhXIEgiSWUwEDAgIDAgIDBgQCAgIFBAIBAwQCDgQOAwEBAgIBA?=
- =?us-ascii?q?QIECAICAwMCCA8TAwcCAQYFAQMBAgYEAgQBCwIFAgoBAgQBAgICAQUJAQMBA?=
- =?us-ascii?q?wELAgIHAgMFBgQCAw0CAQEDAgICDQMCAwIEAQUFAQEQAgYEBwEGAwsCBAEEA?=
- =?us-ascii?q?wECBQcDBgMCAgICCAQSAgMCAgQFAgICAQIEBQIHBgIBAgICBAIBAwIEAgIEA?=
- =?us-ascii?q?gIEAxEKAgMFAw4CAgICAQkLAgMHBAIDAwEHAgIMAQMYAwICAgICAgEDBwoEC?=
- =?us-ascii?q?wIFAQIBBAsBBQENBAICAgICAwIBAQMGCAYDCgIFBAMDBgkPDwgFAwEEAwIDA?=
- =?us-ascii?q?gEICwIDAgIECAIDAQICAQYCAwECAgECAgELAQECAwUCAhEBAgICAgIBAQIDA?=
- =?us-ascii?q?gMBBwECAhwGBAUDAwQCAgEEAQICBAQFCwIEAwEBAQICAgIDAgsDBQMBBgMDC?=
- =?us-ascii?q?gcEAQgCBgMEAgUEAwQEBgICAgICAQQBBAoDAgQEAwMGAwkCAgwCFAISBgEEC?=
- =?us-ascii?q?wsEAQICAg0DBAYCAwMCBQgEAgICAgIDBgIHBAICAwMCAgMDBwMBAgICAwEEB?=
- =?us-ascii?q?QYDAgQCAQMCBAICBAMEAQcCAgICAwECAgMDAQIBBgMCAgUCAgEIAgMCAgICA?=
- =?us-ascii?q?wMOAQEBAgoCAwEBAQUEAgIEBAQEAQICAgICDAMCAgIDAgQDAgIDEgMCBQIED?=
- =?us-ascii?q?AECBAICBwICAgICAgICAQICAgIDBQQCAQIDAwIEBQMDAgIDAgIFAQMEAQcEA?=
- =?us-ascii?q?gIGAwIFBgICBQEDBAECAhIDAwMCAgIBAgEBAgMHCQYCCQQBBhIDAwIEAgcDA?=
- =?us-ascii?q?gIEAgIBAgoCAgMCAgICAgQCCAIFBQIoAwMCIAMJAwcFSQIJAyMPAwsJCAcMA?=
- =?us-ascii?q?RYoBgwHDCgENAEUEgcHBioOBgIGAwQBCgsFBAUIAQIBAQYCBAIHCQwCAQYBB?=
- =?us-ascii?q?QICAwIBAwICAQYDAQICAgIFCgMEBQMKCQMBAQQDAgECAQIDAgMHAwIEAgMBA?=
- =?us-ascii?q?gMEBgYBCQQGBQ0DBAICAQIBAQMEBAQCAgECAgMBBAICAQEDAwMCAgIDBAIDA?=
- =?us-ascii?q?wsECgcEAgEFCwQCAwIBAQMHCQQCAgYBAgQCAgICAgIDAQEDCQQCAQMCAgQDB?=
- =?us-ascii?q?gIBAgEJBQIBCQMBAgEDBAEDCQECAgQJAgQHBQoCAgICCAICDgMDAgEBBAICB?=
- =?us-ascii?q?AUJAQIHAgUBAQMFBwICAQICAQQDAQkEAQIDAgEBAxIDAwEEAgUDAw0JBgICA?=
- =?us-ascii?q?QMCAQ0DAQIBAgMBBQUXAwgHFAMFAgIEBAEHAgIDAwMCAQIJBgEDAQUCDgMCA?=
- =?us-ascii?q?gQGAQIBAQIDEAUBAQEBFwEDBAIDAQQDAQECAQIDDwQBBAUMAxAMAgQBBgIIA?=
- =?us-ascii?q?gIDAwECAwUBAgMEAgEICgICAgIJAgoDAgMBAwUBAwIJAwEFAQIHAgYBAQECA?=
- =?us-ascii?q?ggCCAIDCwEDBQYCAgEFAgECAgUDBQICAgIEDQIFAgICBQECBwQCAgIDAQICB?=
- =?us-ascii?q?gUBAgcHAgUCAgIDAwoEBAcEAQICAQEFAQIBAwMBBAECAQIFAwYCAgICAQICA?=
- =?us-ascii?q?QEBCAICAgICAgMEAgiaWgIBgmeBDk53lAmDI4tTgheBM51TZQpkgyCaf4VtG?=
- =?us-ascii?q?jKpPgEulzyRPpIHhCwCBAYFAhY1gS46gVtNI4EBgjZSGQ+OLBaTUTk0OwIHC?=
- =?us-ascii?q?wEBAwmLQwEB?=
-IronPort-Data: A9a23:0EAvwqrkq0o1/4gnT+6fdO79NNdeBmIFZRIvgKrLsJaIsI4StFCzt
- garIBnXOPmMYDPxfN52a4qy8UwAuJLTy9RnTgJpqX03F3sS8OPIVI+TRqvS04x+DSFioGZPt
- Zh2hgzodZhsJpPkjk7xdOCn9xGQ7InQLlbGILas1htZGEk1GE/NtTo5w7Ri2tUy3IDga++wk
- YqaT/P3aQfNNwFcagr424rbwP+4lK2v0N+wlgVWicFj5DcypVFMZH4sDf3Zw0/Df2VhNrXSq
- 9AvY12O1jixEx8FUrtJm1tgG6EAaua60QOm0hK6V0U+6/RPjnRa70o1CBYTQXwUth+wlu1z8
- sgOuLXrbTYvF4TdyM1IBnG0EwkmVUFH0LXIJT20ttaeiheAeHr3yPIoB0YzVWEa0rktRzgQr
- rpBeW9LNEzra+GemNpXTsF3hsUlMcLrNasUu2prynfSCvNOrZXrEvyUu4UIhl/cgOhcH/nva
- O0/dgBgdRSdU0IUK0UHM6MHybLAan7XKm0E9w39SbAMy27e0AB8zpDzP9fPPN+HX8NYmgCfv
- G2u12D4BAwKcd+S0zyI9lqyieLV2yD2QoQfEPu/7PECqEbP3XELBQcLTlahifa8g0+6HdlYL
- iQ84CslraEo+EesRdnnVhuQr3uNvxpaUN1Ve9DW8ymTzqONsljcAGEYCDVAc9ch8sQxQFTGy
- 2NlgfvSRgFFibSoS0iAtbq99heDPwE8PD8rMHpsoRQ+3/Hvp4Q6jxTqR9llEbKogtCdJQwc0
- wxmvwBl2+1O0ZJjO7GTuAme02jw+sChohsdv12PBgqYAhVFiJlJjmBEBF6y0BqtBJidRwDQ4
- j0CktTY5+EVBpbLnyuIKAnsIF1Lz6reWNE/qQc+d3XEy9hK0yT5Fb28GBkkeC9U3j8sIFcFm
- nP7twJL/4N0N3C3d6JxaI/ZI510kvm+RY66DaGPMIYmjn1NmOmvoX8Giam4gj6FraTQufpX1
- WqzKJz1Vi9KVcyLMhLmHbx1PUAXKtAWnDOPGs+TI+WP2ruFb3ndUqYeLFaLdYgEAFCs/m3oH
- yJkH5LSkX13CbSmCgGOqNJ7ELz/BSVibXwAg5cMLbDrz8sPMDxJNsI9Npt7JdE5xP4LyrqgE
- 7PUchYw9WcTTEbvcW2iAk2Popu2NXqjhRrX5RARAGs=
-IronPort-HdrOrdr: A9a23:ho18GKltddupuPIrcXtebZNEJtLpDfIn3DAbv31ZSRFFG/FwWf
- rAoB19726QtN9/YhAdcLy7VZVoIkmsl6Kdn7NwAV7KZmCP0wGVxepZg7cKrQeNJ8SHzJ8/6U
- +lGJIOb+EZyjNB/KLH3DU=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="5.98,290,1673913600"; 
-   d="scan'208";a="9166282"
-Received: from vla196-nat.cisco.com (HELO bgl-core-2.cisco.com) ([72.163.197.24])
-  by bgl-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 25 Mar 2023 16:31:57 +0000
-Received: from bgl-ads-3583.cisco.com (bgl-ads-3583.cisco.com [173.39.60.220])
-        by bgl-core-2.cisco.com (8.15.2/8.15.2) with ESMTPS id 32PGVv3Z003744
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Sat, 25 Mar 2023 16:31:57 GMT
-Received: by bgl-ads-3583.cisco.com (Postfix, from userid 1784405)
-        id 002E5CC1296; Sat, 25 Mar 2023 22:01:56 +0530 (IST)
-From:   Shinu Chandran <s4superuser@gmail.com>
-To:     richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shinu Chandran <s4superuser@gmail.com>
-Subject: [PATCH] ptp: ptp_clock: Fix coding style issues
-Date:   Sat, 25 Mar 2023 22:01:35 +0530
-Message-Id: <20230325163135.2431367-1-s4superuser@gmail.com>
-X-Mailer: git-send-email 2.35.6
+        with ESMTP id S231513AbjCYQen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 12:34:43 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FB272B4;
+        Sat, 25 Mar 2023 09:34:42 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id jl13so3662157qvb.10;
+        Sat, 25 Mar 2023 09:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679762081;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PJzR5HKC/AhvVM1iHc/1xcrdE7qDuWn0YWirlvIPn5c=;
+        b=KCnTRcAoJJHfVhZScD5aYf/oWitG1Df7QBG/3Nuok2zWRltnNFRBxJTcdphMiugMct
+         7SNIoBNNiXbDPBTiUhEkc3PVNM0Ndf4tRRdik4O9vf/0HoDqYwmpMs8fh0xT14zmDsoj
+         j/S4bRejeW/6+7g1noOWaiVFxsOxQN8Q5NEtFbanEhAV0QIdLp8PNtu6gRwXZRNinajv
+         S1RLsO9NaxMSUbcgEsJp6lekNajwcMMccsMaqUrPHzaZi7mxFIBeWG/v9nprGHTXUv5V
+         uiC/wVc7ZCH8JLn6VENNwkvIa4lc5tSAzlRd6yl3/eQ/MpkX25BV9ImFutNF/7201mp7
+         37xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679762081;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PJzR5HKC/AhvVM1iHc/1xcrdE7qDuWn0YWirlvIPn5c=;
+        b=ng5SoPrFosmSouMphU+fecpQav3bXAFrBpGe1U7hmI1sNHBktBqde44gRMve3Ug4o8
+         Y5+4xhueMqUPek+T5fGL+sN+7qlBx8EOSyMH6GEs5H7wWwpmNwoejW3gfoqTlhkFke00
+         +smrg7R0HwaYCe+diXrvxe5IUUsNjTR/mkwHYlwmbN85gcrJN4lYdUxluUswhAyyTWXY
+         ODfJhYAXpX+btb9/dQkyv5hTUwDguZCCi0vZusfiep3WlH4gLouOJXkjxJNeqNHwnfSY
+         URPS21vuE8JwEj999cAM/kddPfsvhnXU4rSbpdqoDq6Eq8MVyFyeXBXT8KoFh3CpJhAV
+         RJ1w==
+X-Gm-Message-State: AAQBX9fzC+ND+apjb2VTcJlrUZC0bXT6IznnJqXbfcZwSYrEUqzDPgO6
+        GQ3wnq9QFOVK99IDDx8t8Aw=
+X-Google-Smtp-Source: AKy350ZYMGYODreBpqRHnpo1P/J815UDqnc8684m4bOMwr+nlU1tuSCpslEKv6mPZRybEqcFKg0v0A==
+X-Received: by 2002:a05:6214:2028:b0:5b1:9c9f:d4d6 with SMTP id 8-20020a056214202800b005b19c9fd4d6mr13244711qvf.37.1679762081411;
+        Sat, 25 Mar 2023 09:34:41 -0700 (PDT)
+Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id x16-20020ad440d0000000b005dd8b9345b2sm1575625qvp.74.2023.03.25.09.34.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Mar 2023 09:34:40 -0700 (PDT)
+Message-ID: <7891b1df-8e73-1ae2-f726-804649bb1ef1@gmail.com>
+Date:   Sat, 25 Mar 2023 09:34:38 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH] net: dsa: b53: mmap: add phy ops
+Content-Language: en-US
+To:     =?UTF-8?Q?=c3=81lvaro_Fern=c3=a1ndez_Rojas?= <noltari@gmail.com>,
+        jonas.gorski@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230323194841.1431878-1-noltari@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230323194841.1431878-1-noltari@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Outbound-SMTP-Client: 173.39.60.220, bgl-ads-3583.cisco.com
-X-Outbound-Node: bgl-core-2.cisco.com
-X-Spam-Status: No, score=2.7 required=5.0 tests=DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,SPF_HELO_PASS,
-        SPF_NONE,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID autolearn=no
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
-X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixed coding style issues
 
-Signed-off-by: Shinu Chandran <s4superuser@gmail.com>
----
- drivers/ptp/ptp_clock.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index 62d4d29e7c05..8fe7f2ce9705 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -129,6 +129,7 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
- 		err = ops->adjtime(ops, delta);
- 	} else if (tx->modes & ADJ_FREQUENCY) {
- 		long ppb = scaled_ppm_to_ppb(tx->freq);
-+
- 		if (ppb > ops->max_adj || ppb < -ops->max_adj)
- 			return -ERANGE;
- 		err = ops->adjfine(ops, tx->freq);
-@@ -278,11 +279,13 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- 	/* Register a new PPS source. */
- 	if (info->pps) {
- 		struct pps_source_info pps;
-+
- 		memset(&pps, 0, sizeof(pps));
- 		snprintf(pps.name, PPS_MAX_NAME_LEN, "ptp%d", index);
- 		pps.mode = PTP_PPS_MODE;
- 		pps.owner = info->owner;
- 		ptp->pps_source = pps_register_source(&pps, PTP_PPS_DEFAULTS);
-+
- 		if (IS_ERR(ptp->pps_source)) {
- 			err = PTR_ERR(ptp->pps_source);
- 			pr_err("failed to register pps source\n");
-@@ -347,9 +350,8 @@ static int unregister_vclock(struct device *dev, void *data)
- 
- int ptp_clock_unregister(struct ptp_clock *ptp)
- {
--	if (ptp_vclock_in_use(ptp)) {
-+	if (ptp_vclock_in_use(ptp))
- 		device_for_each_child(&ptp->dev, NULL, unregister_vclock);
--	}
- 
- 	ptp->defunct = 1;
- 	wake_up_interruptible(&ptp->tsev_wq);
+On 3/23/2023 12:48 PM, Álvaro Fernández Rojas wrote:
+> Implement phy_read16() and phy_write16() ops for B53 MMAP to avoid accessing
+> B53_PORT_MII_PAGE registers which hangs the device.
+> This access should be done through the MDIO Mux bus controller.
+> 
+> Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.35.6
-
+Florian
