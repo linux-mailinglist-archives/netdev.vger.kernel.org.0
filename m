@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D586C913A
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 23:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 351EA6C91B9
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 00:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbjCYWRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 18:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
+        id S229637AbjCYXj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 19:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjCYWRU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 18:17:20 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A45BCDC4;
-        Sat, 25 Mar 2023 15:17:19 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id AFF515FD02;
-        Sun, 26 Mar 2023 01:17:17 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1679782637;
-        bh=1oACndxCCde0aJy+xLw/9NS5XuY78gvhoxVybxqB3oo=;
-        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=a7LEw/XzC36S/rkCWBxjy3X14M/lU2wLOXDrEgMg7A6QzUtOqlOXZrPeLSXCO2eIO
-         7YDiCSIUUckEI1f6F8i+/AUDxmo/a1Tpaw3FxkFKzVstc1U4rk6hd9zbf3Xb4Q3kCC
-         fC/jJ4NzVWkAbWCrqOSa5Gssq2k7MzFviLDSsNBfx/e1IqVN+6++QGguPNbDIy6Ari
-         U7CFIuhNdvCUJXvFA2A7nX3DgWLMXpqwBgvSer7gpbinQ5LmUVs3iAsAiu+/zEjMrj
-         hktjdq+LC0vCudqUYMXafgmQeHDHyk+9HO8kLeAQds9QAz5S3O9ZwewQ3Gg8efzbAE
-         9li1VSMJuysuw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun, 26 Mar 2023 01:17:17 +0300 (MSK)
-Message-ID: <f302d3de-28aa-e0b1-1fed-88d3c3bd606a@sberdevices.ru>
-Date:   Sun, 26 Mar 2023 01:14:01 +0300
+        with ESMTP id S229488AbjCYXj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 19:39:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C789AF25
+        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 16:39:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 694BB60DB5
+        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 23:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64042C433D2;
+        Sat, 25 Mar 2023 23:39:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679787593;
+        bh=Dboylo/78jBTGTrj2SlEO08uVBSCxw2LSC/H90FYjII=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mEC837KA4QjRR8MYWvFnepE71D1moz+0Jn1cqWVRS8wphyo83GFtl+EQRAcUlQH7o
+         Mw3TPzAUYifvBiz5nt49j6tzltN3vruJE7C5zMi0K7Kw0XGc+Sl/B3EL2ncMv0lY9X
+         1JLTuqrBsBFMAB2h+0vIbYKerFT0YR8sO+xOhBsYxjjVbp5qjIZiBxaVm69Gthd2GX
+         UucUyRygB+/uh6AmtDmPhuv07g3bkemWr+1rk7sQiUdK6tIV2TdXfzZuTVjd4JyeUj
+         APjKbbxelaDBg3j9aDt8znZBKLJAUHrHX+rVo7DyHtXOE9MH9DfBc0UcoRucftCY/Q
+         5FY29knsQMBew==
+Date:   Sat, 25 Mar 2023 16:39:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     <brett.creeley@amd.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <drivers@pensando.io>, <leon@kernel.org>,
+        <jiri@resnulli.us>
+Subject: Re: [PATCH v6 net-next 01/14] pds_core: initial framework for
+ pds_core PF driver
+Message-ID: <20230325163952.0eb18d3b@kernel.org>
+In-Reply-To: <20230324190243.27722-2-shannon.nelson@amd.com>
+References: <20230324190243.27722-1-shannon.nelson@amd.com>
+        <20230324190243.27722-2-shannon.nelson@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-In-Reply-To: <97f19214-ba04-c47e-7486-72e8aa16c690@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
-        <avkrasnov@sberdevices.ru>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v1 2/2] vsock/test: update expected return values
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/25 20:38:00 #21009968
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This updates expected return values for invalid buffer test. Now such
-values are returned from transport, not from af_vsock.c.
+On Fri, 24 Mar 2023 12:02:30 -0700 Shannon Nelson wrote:
+> This is the initial PCI driver framework for the new pds_core device
+> driver and its family of devices.  This does the very basics of
+> registering for the new PF PCI device 1dd8:100c, setting up debugfs
+> entries, and registering with devlink.
 
-Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
----
- tools/testing/vsock/vsock_test.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> +	debugfs_create_file("state", 0400, pdsc->dentry,
+> +			    pdsc, &core_state_fops);
 
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 3de10dbb50f5..a91d0ef963be 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -723,7 +723,7 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
- 		exit(EXIT_FAILURE);
- 	}
- 
--	if (errno != ENOMEM) {
-+	if (errno != EFAULT) {
- 		perror("unexpected errno of 'broken_buf'");
- 		exit(EXIT_FAILURE);
- 	}
-@@ -887,7 +887,7 @@ static void test_inv_buf_client(const struct test_opts *opts, bool stream)
- 		exit(EXIT_FAILURE);
- 	}
- 
--	if (errno != ENOMEM) {
-+	if (errno != EFAULT) {
- 		fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
- 		exit(EXIT_FAILURE);
- 	}
--- 
-2.25.1
+debugfs_create_ulong() ?
+
+> diff --git a/drivers/net/ethernet/amd/pds_core/devlink.c b/drivers/net/ethernet/amd/pds_core/devlink.c
+> new file mode 100644
+> index 000000000000..a9021bfe680a
+> --- /dev/null
+> +++ b/drivers/net/ethernet/amd/pds_core/devlink.c
+> @@ -0,0 +1,51 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/types.h>
+> +#include <linux/errno.h>
+> +#include <linux/pci.h>
+> +
+> +#include "core.h"
+> +
+> +static const struct devlink_ops pdsc_dl_ops = {
+> +};
+> +
+> +static const struct devlink_ops pdsc_dl_vf_ops = {
+> +};
+> +
+> +struct pdsc *pdsc_dl_alloc(struct device *dev, bool is_pf)
+> +{
+> +	const struct devlink_ops *ops;
+> +	struct devlink *dl;
+> +
+> +	ops = is_pf ? &pdsc_dl_ops : &pdsc_dl_vf_ops;
+> +	dl = devlink_alloc(ops, sizeof(struct pdsc), dev);
+> +	if (!dl)
+> +		return NULL;
+> +
+> +	return devlink_priv(dl);
+> +}
+> +
+> +void pdsc_dl_free(struct pdsc *pdsc)
+> +{
+> +	struct devlink *dl = priv_to_devlink(pdsc);
+> +
+> +	devlink_free(dl);
+> +}
+> +
+> +int pdsc_dl_register(struct pdsc *pdsc)
+> +{
+> +	struct devlink *dl = priv_to_devlink(pdsc);
+> +
+> +	devlink_register(dl);
+> +
+> +	return 0;
+> +}
+> +
+> +void pdsc_dl_unregister(struct pdsc *pdsc)
+> +{
+> +	struct devlink *dl = priv_to_devlink(pdsc);
+> +
+> +	devlink_unregister(dl);
+
+Don't put core devlink functionality in a separate file.
+You're not wrapping all pci_* calls in your own wrappers, why are you
+wrapping delvink? And use explicit locking, please. devl_* APIs.
