@@ -2,48 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A266C9125
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 23:10:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7160B6C9132
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 23:15:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbjCYWKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 18:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S231853AbjCYWPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 18:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbjCYWKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 18:10:42 -0400
-Received: from out-47.mta0.migadu.com (out-47.mta0.migadu.com [91.218.175.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ECDCC21
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 15:10:35 -0700 (PDT)
-Message-ID: <af0efbd5-c44c-d30b-9f82-b77ef59740ac@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1679782233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zpvv6o6OmF4icJLi33I+gqHsIckrR5qsYeeyJeujhX0=;
-        b=nJHNPVH98v8ygkeK3+NGYBXKkgwa3mQEwpddshCyEXWrKJqkXo3WXYljTKziH/FmHnRPra
-        6OfmUozzEkx60e0nbrLOvrNER+GBy9zrtnstiBVvf8wqFrxJnaVA8Rg2LgxD+0XkE2CEWb
-        YyXKKc9/cIvlvVMHR2kPvGGKRBFIYYI=
-Date:   Sat, 25 Mar 2023 15:10:29 -0700
+        with ESMTP id S229460AbjCYWP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 18:15:28 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A3DCDC1;
+        Sat, 25 Mar 2023 15:15:27 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id C40E85FD02;
+        Sun, 26 Mar 2023 01:15:25 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1679782525;
+        bh=blzS4++pYQHNhtF7NyjyEqKRhpH86CYY7XtCWadbAsw=;
+        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
+        b=r/Nol64Cw5hi1wTIoMUJklQnY+1478LXOuWhXWFTkVg956xDytgMpetXUX3n7keAP
+         sVOGX4u35yO92jJKmCwDWaEgtmpDJiFCJTHNDE7lrkKyGsZFgo5I0KJZaNnkAmapFB
+         ae1a5HaSA1PSGIq6vqIWMlbpholD/h02zQdC7aXXyA6DfplrJkEGW59utosRwaEhVG
+         5DjKII5VYukK+Fkthojd1iTK/oN1xaRjBncLWgTTHrHJihBfkslALsxCbrd+o2F2MH
+         BJdWsU78rmK6J911pNtd9TI9n/4Ppoy9ZDN7hgVFi9cV/05yamhkSS3KgCq099cxu2
+         SuUGkUmjMVoFQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Sun, 26 Mar 2023 01:15:25 +0300 (MSK)
+Message-ID: <97f19214-ba04-c47e-7486-72e8aa16c690@sberdevices.ru>
+Date:   Sun, 26 Mar 2023 01:12:09 +0300
 MIME-Version: 1.0
-Subject: Re: [Patch net-next v3] sock_map: dump socket map id via diag
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
 Content-Language: en-US
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-References: <20230319191913.61236-1-xiyou.wangcong@gmail.com>
- <CAKH8qBtoYREbbRaedAfv=cEv2a5gBEYLSLy2eqcMYvsN7sqE=Q@mail.gmail.com>
- <2b3b7e9c-8ed6-71b5-8002-beb5520334cc@linux.dev>
- <ZB9ZIG9fgWKKHL17@pop-os.localdomain>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <ZB9ZIG9fgWKKHL17@pop-os.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
+        <avkrasnov@sberdevices.ru>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Subject: [RFC PATCH v1 0/2] return errors other than -ENOMEM to socket
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/25 20:38:00 #21009968
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
@@ -53,39 +70,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/25/23 1:27 PM, Cong Wang wrote:
-> On Mon, Mar 20, 2023 at 01:29:39PM -0700, Martin KaFai Lau wrote:
->> On 3/20/23 11:13 AM, Stanislav Fomichev wrote:
->>> One thing I still don't understand here: what is missing from the
->>> socket iterators to implement this? Is it all the sk_psock_get magic?
->>> I remember you dismissed Yonghong's suggestion on v1, but have you
->>> actually tried it?
->> would be useful to know what is missing to print the bpf map id without
->> adding kernel code. There is new bpf_rdonly_cast() which will be useful here
->> also.
-> 
-> So you don't consider eBPF code as kernel code, right? Interestingly
-> enough, eBPF code runs in kernel... and you still need to write eBPF
-> code. So what is the point of "without adding kernel code" here?
+Hello,
 
-Interesting, how is it the same? if it needs to print something other than the 
-map id in the future, even putting aside further kernel maintenance and 
-additional review, does a new bpf prog need to upgrade and reboot the kernel?
+this patchset removes behaviour, where error code returned from any
+transport was always switched to ENOMEM. This works in the same way as
+patch from Bobby Eshleman:
+commit c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
+but for receive calls.
 
-Based on your idea, all possible sk_filter automatically qualify to be added to 
-the kernel source tree now because they also run in the kernel?
+vsock_test suite is also updated.
 
-> 
-> What is even more interesting is that even your own code does not agree
-> with you here, for example, you introduced INET_DIAG_SK_BPF_STORAGES, so
-> what was missing to print sk bpf storage without adding kernel code?
+Arseniy Krasnov (2):
+  vsock: return errors other than -ENOMEM to socket
+  vsock/test: update expected return values
 
-Yep, you are absolutely correct. Only if bpf-iter was available earlier. If 
-bpf-iter was available before INET_DIAG_SK_BPF_STORAGES was added, there was no 
-need to add INET_DIAG_SK_BPF_STORAGES and it would be no brainer to explore the 
-bpf-iter approach first. Things have been improving.
+ net/vmw_vsock/af_vsock.c         | 4 ++--
+ tools/testing/vsock/vsock_test.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-The question (from a few people) was to figure out what was missing in the 
-bpf-iter approach to print this bpf bits and trying to help. It is the only 
-reason I replied. Apparently, you have not even tried and not interested.
-
+-- 
+2.25.1
