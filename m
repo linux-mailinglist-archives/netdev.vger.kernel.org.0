@@ -2,116 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3D236C8C81
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 09:17:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9E16C8C84
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 09:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbjCYIRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 04:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
+        id S230096AbjCYIS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 04:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbjCYIRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 04:17:49 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on20708.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5a::708])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188CC11152;
-        Sat, 25 Mar 2023 01:17:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k1It4l2UxxSKKwQOrrQGlnq3H8KeXqoYukBuQDspHDWAU/6DIrS4u3EdqEq4hGYbJjC17s8hKbTDogE1Eb1MPE/93A2k//QoNu0Vt5DJV44EzfztR1rbjU6Wxtrp+o9sg3iqFA/SuyOVaoyfSepKEqp62C5PAGpqMiGfumy6PP1PmLSx0HL50BMElH69x+UrYtXlDT+nucwubDLDzBUWtlWfunm4+SnvPwZz4XJyxAv8U1JWXKYwbudKbz6H0siTOt47SQ2QWAuAY8l695MB/UL7H5rHyWWKV5v3xpaja1n9dc2Vf3ANx+HQFLC9+x7dU8DB19xKE/dqXp0ks1sJcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fki+czBDrXWUJYYiN0OAApFJ8OBc/xIcCXTlRsh/HIA=;
- b=d5Bc3oNIVys+YYiaih9Cqw+0xj0Mc74cJ8EsOUAuV3mJlep8Mcg5CfqzO+JpsjJw3QQdtKHQ5io1gIlXWuYE0mYcCIJrTY8fUXvhF+H6cl8373tiFE89X4N6zOt0J5k6V5NW5RwhVGE5gKKUSC2+5xDN1sM6+Q9/lfkVDXrzp3paqDWrwBlON1EhB8lrnGkfLBrL0o3/+3gJlrNoxS5Gy8NG3yMDhTJ7AQ9v5LKzjPHHxKQ5Rrcp+SFdiBFCRTnwAC6jbC5KfXzgEjGMkYQYuh4VQHRHVKknWJblq8b9kHfrPZ9bh9khDlNRB1nsAqoecIBrKZXiWdJObFgyhw3DDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S230062AbjCYISy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 04:18:54 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB8E1BF;
+        Sat, 25 Mar 2023 01:18:39 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id bc12so3930092plb.0;
+        Sat, 25 Mar 2023 01:18:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fki+czBDrXWUJYYiN0OAApFJ8OBc/xIcCXTlRsh/HIA=;
- b=AZBe7Vs/6JPNFrIEzXjVe1qkfnfazQyjxz8khFJamgAdLNybP71rIZP+uxPo4vXQIi6Xdwra1t44UG3BwG7ViVlcMGi+YivjMjoULqO8uiyc05j2KM9tuUCuJpHD48ykd2GYuDgr1VIQyxMlnFsqeCsF1DdnBzpeTTF4ElqkSRU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3944.namprd13.prod.outlook.com (2603:10b6:208:267::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Sat, 25 Mar
- 2023 08:17:10 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::85f5:bdb:fb9e:294c%2]) with mapi id 15.20.6178.041; Sat, 25 Mar 2023
- 08:17:10 +0000
-Date:   Sat, 25 Mar 2023 09:17:03 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sean Anderson <seanga2@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH net-next v4 01/10] net: sunhme: Fix uninitialized return
- code
-Message-ID: <ZB6t/64NoGejdxUG@corigine.com>
-References: <20230324175136.321588-1-seanga2@gmail.com>
- <20230324175136.321588-2-seanga2@gmail.com>
+        d=gmail.com; s=20210112; t=1679732319;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mA5oRxcQwzIVwISbmd69m7HVH8tIy7ezbQM7eKycBNg=;
+        b=EWA2CTqA1Wz6cP9V+siCsbfDjwTCBXkZJEoCa8Loh1TlOIjZEstZ+K3G5owFsl++7s
+         lvt0jSbK8BtAJXEyCE4wT1QWkPnpiAJ9PNO6T408o9+S1HEZY70dwxoVqtus+92Y30sL
+         pDqGRiKSgDpH3VtGxc6Q3QrddRB/h0sezUKNcwBoi2beAc/RN9GeOrGiB1zcyYjOavKE
+         pH3iqx8U4nSa7HP6nXTQWUkw6EdtsdeQmWPSE0QcgsGJsoa3ZvsuqbvfD5Aqdk2LzE4V
+         UecmZqqEgr1nzHk9BQUipQMdzxEPbXqbLi4zlXjKhYzBc1IO0+SIp1Ybub1kfzDsTWHu
+         /KBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679732319;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mA5oRxcQwzIVwISbmd69m7HVH8tIy7ezbQM7eKycBNg=;
+        b=RU81KnJC/Ez8OksqrywmSKnNtELBcFOm86/uS/sjeVCPYubnBZEbyNMmyfB7t/Ch4/
+         qtI0Ty54J/Pga0UcW0mjaeMWTlTlpXc3ADN3zk3TGAUz9d2Bi4v6eJZGEsHuMFZAlFFk
+         uRCclo2enacyOpWOX4CgMvXuLjFbbVSU1pmaRr2EtrADUKPJOnQeAFf1K0YbsswavUjB
+         2fCuG7J3nsRblHf4oCPOXLpvP9QiZjK6MW/oEhX8WFVGP8PZIjRAt/316fAnCzhsH+de
+         cTw0FwRh+S/j+ff3N0ee9o964QaGuNPYPKwdQ9HSAm4AFEztdMOuk8r9wqvQwEqFuFu1
+         +yUw==
+X-Gm-Message-State: AAQBX9d/TpG/vgA+uhE4zEgGx2KWXe/RBb8xjQw/gah5AseyFYVYw/si
+        zlZfbVdDCmsqwCA6mv30GTY=
+X-Google-Smtp-Source: AKy350Z7SmNAAeaFR6XEUxd/fRl32dCS8OV38VHPmhimOa5r+3qvPeZ6ZQP5LXJMr0J9zOXNLoXjMg==
+X-Received: by 2002:a17:903:188:b0:19c:f096:bbef with SMTP id z8-20020a170903018800b0019cf096bbefmr6271002plg.49.1679732319052;
+        Sat, 25 Mar 2023 01:18:39 -0700 (PDT)
+Received: from dragonet (dragonet.kaist.ac.kr. [143.248.133.220])
+        by smtp.gmail.com with ESMTPSA id c13-20020a170902c1cd00b0019f2328bef8sm15453785plc.34.2023.03.25.01.18.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Mar 2023 01:18:38 -0700 (PDT)
+Date:   Sat, 25 Mar 2023 17:18:34 +0900
+From:   "Dae R. Jeong" <threeearcat@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jirislaby@kernel.org, duoming@zju.edu.cn,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: KASAN: use-after-free Read in slip_ioctl
+Message-ID: <ZB6uWm6MbpX+NmE/@dragonet>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230324175136.321588-2-seanga2@gmail.com>
-X-ClientProxiedBy: AM9P192CA0006.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:20b:21d::11) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3944:EE_
-X-MS-Office365-Filtering-Correlation-Id: 10c178d3-d36b-4d82-685d-08db2d095483
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YfwsxPwYAGdZ04LLizCkWI8jrGFv9A+HPNgza44MJkeJXKFmpdGcIRUV5pUd97Zupm1xwK0yTZokyyEcVnb+z79tJugXA9Pt1E337N0/VVoIzopyVtEkBzMOk8ceoP4ektNDjD883yVuYp9SOjS6Q1MGOwGHnVwEmmC+t76F3ulPdU1MnA2YfRrThwtaYYZ7yHhEkXvil0XkzB4swdqn84RcG67SReuaTdKjJ7tnCw0IjYKQwQPjR7hQWuU8OTxsWXo8K7SLojqfDpaPDjDuFX5z8n+Riyvf3UYssbKt/LQmkGAJKvcYnVu8sv9NNzhN2D8AWyHtexIboteMn9qP6WXMDRI3RjMLuJndYwN7lBgidc4LumdCxm8fszQoKaJ/O58tG1xQYnX0BVWEovH7theLA4IIpmldSYPJyvHVc6eo7N4i5CrEl6jt8+UBOHWjeaJ8bQxHpZK0yXe5yoTipKl+kyKGLzVt+uEsUi4/IFm4GBVwt4ZJcBT/sA3xefmcmN5qRx82vqJH9Wxs0o/wXJApYcT0ztvGs0B7FcAfo1FgkMKfMlG/xSC1JxwfJY8XmMtD+oQWrmH/kaPY9sAGtw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(366004)(346002)(376002)(396003)(39840400004)(451199021)(5660300002)(8936002)(41300700001)(2616005)(86362001)(44832011)(2906002)(83380400001)(66556008)(8676002)(6512007)(966005)(38100700002)(6666004)(36756003)(478600001)(66946007)(316002)(66476007)(6916009)(6486002)(4326008)(6506007)(54906003)(186003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?M43OOLVtVGHUkKryj8tV8hBvnwLUTQbofjCrf3B9Ps03afOo55t4e7SaobAJ?=
- =?us-ascii?Q?5ehOj5IzY0C2BvCyJbMcx8uq/Or0fNxm1rsHDSl0/5RMyugDl2pKRQHOuA47?=
- =?us-ascii?Q?FUFE5+B7rRnPS0qfi1bKQ2yqEabVYOPYwB6iXUDbk04/U6JMDWXPO+m/iBMp?=
- =?us-ascii?Q?NUCXmMqu5Js+p1i50p9GWp+XJ1hrtwkgWLj3664r3XBNBTpD/Fn6uv5L9t5N?=
- =?us-ascii?Q?7MhVifzwZnmhC8On2DoAp+ehdwoPujQwqKPbYBQffkflyObSdVHnhWE4JJpv?=
- =?us-ascii?Q?ZpM1OTAxf0lFieuRuYjchsIAfwWzq+riMvV6tIPVWJQ88ffhTfgjeISXyERh?=
- =?us-ascii?Q?XcpXud2oM2vFOnet1vREItekJyAAficXOqbfTB54i0L4aFPxvAxsGFKaBgWl?=
- =?us-ascii?Q?jeYNh+l6BqcosTtg58HdQtptM3WlSszU+mg087mKocQ8mFBpOepcT3iE/yi9?=
- =?us-ascii?Q?Tlsqq+yWpHana5wbA/8LLt5u1v2ZdsnuqipwBO7Gii6vPFjkbDoA7W05oxLB?=
- =?us-ascii?Q?M1y6xpl1+yk4Ry04zO2ML+kkPJHjYzk/jRq4rNuLIboCkhC99IQA2u4FEkMu?=
- =?us-ascii?Q?xuXKmF/yNV/o27lAaxVgXhV8N7/0LUnvazPQlTXpb0JAG49usQIdZuh6F2hQ?=
- =?us-ascii?Q?FRa5fAJ7VtOPwskvAg96/0o+cPBAjwl7N3DXVLmsKEBriEZXpuFjBCNdrqhr?=
- =?us-ascii?Q?2oSsvdvEuIEdDvd/lJz4PadAodS4uiYC60Mxr+5pLwMrUmyBXnAaVb6D+xOT?=
- =?us-ascii?Q?IBCgmMv89zaO88eao6gF1AD6rjK6oihlOilSrtLNhXUV7jJ7XEuaIh13TVrp?=
- =?us-ascii?Q?YmfkKM7Uk0V7z1F+V+9o2hKKZCO9liCOBGFR+NbYPDExn18yiB00s2L+En0W?=
- =?us-ascii?Q?NAk4pBOxMTZuFbyQ0u16mGfqo3aDTFOxNKFfLa+WCMB+1Iqcp2ctrtwCwT2F?=
- =?us-ascii?Q?5YPctChMYnaoS5U7RF0kDBEja9uIFh3XNFV5eF6pRpkMqwBjnzWgD8npUAIm?=
- =?us-ascii?Q?9izISPejd3IGxY7dZDcAk5oxXjIERsry6OdFRTSyLIlMgUrCMJ9d6nClZCWK?=
- =?us-ascii?Q?BFZXtur5Wle4aku2WO75TXzuEh+iUQVZ3+Hcf5odP/Y9r394md4mkjEZrT//?=
- =?us-ascii?Q?8ADHjgrSjkcROsPdcL9Brsxsgqpkn2sqjqT15FvL8QQoDPboM7xOH3HDmhLx?=
- =?us-ascii?Q?dkN6npS1IP6acaUsZMGauZYa0gPBQ1e5qx/mHZERvgyAjkci0S3ZsA3dWODH?=
- =?us-ascii?Q?Ex3OzLbd8jUo2NYJy8kSVBOrBWyzzpwTSViz9q8AVEuQOKb2O3FWb4aUMROj?=
- =?us-ascii?Q?NmwIh8X8xcQVW4IZQG2kxzUJjgsE90ELR4sZ7PGLsI7cb5DSgvRgvc0XK9yh?=
- =?us-ascii?Q?nf1uehAGuT4tyrEy/jz6ZOhfI5PHan1rMVygLemDppH9GR03fhL0Xl5ygJkp?=
- =?us-ascii?Q?ZrzyKFVBBe1eIxkdNtN2TBNJ5XClsT3kMOjzbgOIlAEg9QHN8tsf4A6/iO9z?=
- =?us-ascii?Q?7asxbvEnjMK4wIAMSGcc1uwDFMrPHlIU/mdZJNERV/vB1qXebIGv1zzmJ6Km?=
- =?us-ascii?Q?OYVCczS+V+1msC9pVWQKjBDQ5+hULn9miD/kbaKt7Ymb0dIzSreSue/6QzZg?=
- =?us-ascii?Q?FLR5ouR8vgSlwTAtzb2Mmkd3XfHj520OnyHBVg2y9LVXCUi0akpbmBmMTrpM?=
- =?us-ascii?Q?7mRS0g=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10c178d3-d36b-4d82-685d-08db2d095483
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2023 08:17:10.2816
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i2kREi2bcvy/8BlRplW7s5pRwco5B+o8n8cB21EWWjCaAZkO7FV7PgYjdWfpLHBkKgjnRuEOZcN4iOvxGs+w1YAm+QvhQw21Q0vgQ2YD6Rk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3944
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -119,86 +67,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sean,
+Hello,
 
-On Fri, Mar 24, 2023 at 01:51:27PM -0400, Sean Anderson wrote:
-> Fix an uninitialized return code if we never found a qfe slot. It would be
-> a bug if we ever got into this situation, but it's good to return something
-> tracable.
-> 
-> Fixes: acb3f35f920b ("sunhme: forward the error code from pci_enable_device()")
+We observed a use-after-free in slip_ioctl as attached at the end.
 
-I think it might be,
+Although I'm not sure that our analysis is correct, it seems that the
+concurrent execution of slip_ioctl() and slip_close() causes the issue
+as follows.
 
-Fixes: 5b3dc6dda6b1 ("sunhme: Regularize probe errors")
+CPU1                            CPU2
+slip_ioctl                      slip_close (via slip_hangup)
+-----                           -----
+// Read a non-null value
+sl = tty->disc_data;
+                                // Nullify tty->disc_data and then
+                                // unregister sl->dev
+                                rcu_assign_pointer(tty->disc_data, NULL);
+                                unregister_netdev(sl->dev);
+// sl is freed in unregister_netdev()
+if (!sl || sl->magic != SLIP_MAGIC)
+    return -EINVAL;
 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <error27@gmail.com>
+I suspect that the two functions can be executed concurrently as I
+don't see a locking mechanism to prevent this in tty_ioctl(), and that
+sl is freed in unregister_netdev() as explained in the callstack. But
+still we need to look into this further.
 
-Checkpatch requests a Link tag after Reported-by tags.
 
-Link: https://lore.kernel.org/oe-kbuild/20230222135715.hjXBN9H5dr7nCnI_Ye2s5H--HsnWom4o9AMScThhDRM@z/T/
+Best regards,
+Dae R. Jeong
 
-> Signed-off-by: Sean Anderson <seanga2@gmail.com>
-> ---
-> 
-> Changes in v4:
-> - Move this fix to its own commit
-> 
->  drivers/net/ethernet/sun/sunhme.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-> index b0c7ab74a82e..7cf8210ebbec 100644
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -2834,7 +2834,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
->  	int i, qfe_slot = -1;
->  	char prom_name[64];
->  	u8 addr[ETH_ALEN];
-> -	int err;
-> +	int err = -ENODEV;
->  
->  	/* Now make sure pci_dev cookie is there. */
->  #ifdef CONFIG_SPARC
 
-Unfortunately I don't think this is the right fix,
-and indeed smatch still complains with it applied.
+==================================================================
+BUG: KASAN: use-after-free in slip_ioctl+0x6db/0x7d0 drivers/net/slip/slip.c:1083
+Read of size 4 at addr ffff88804b856c80 by task syz-executor.0/9106
 
-The reason is that a few lines further down there is:
+CPU: 2 PID: 9106 Comm: syz-executor.0 Not tainted 6.0.0-rc7-00166-gf09dbf1cf0d5 #1
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x1cf/0x2b7 lib/dump_stack.c:106
+ print_address_description+0x21/0x470 mm/kasan/report.c:317
+ print_report+0x108/0x1f0 mm/kasan/report.c:433
+ kasan_report+0xe5/0x110 mm/kasan/report.c:495
+ slip_ioctl+0x6db/0x7d0 drivers/net/slip/slip.c:1083
+ tty_ioctl+0x11e9/0x1a20 drivers/tty/tty_io.c:2787
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0x110/0x180 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x4e/0xa0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x478d29
+Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fbbbdfb8be8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000781408 RCX: 0000000000478d29
+RDX: 0000000020000040 RSI: 00000000402c542c RDI: 0000000000000003
+RBP: 00000000f477909a R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000781580
+r13: 0000000000781414 R14: 0000000000781408 R15: 00007ffcfdc4f040
+ </TASK>
 
-        err = pcim_enable_device(pdev);
-        if (err)
-                goto err_out;
+Allocated by task 9103:
+ kasan_save_stack mm/kasan/common.c:38 [inline]
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:437 [inline]
+ ____kasan_kmalloc+0xcd/0x100 mm/kasan/common.c:516
+ kasan_kmalloc include/linux/kasan.h:234 [inline]
+ __kmalloc_node+0x366/0x550 mm/slub.c:4477
+ kmalloc_node include/linux/slab.h:623 [inline]
+ kvmalloc_node+0x6e/0x170 mm/util.c:613
+ kvmalloc include/linux/slab.h:750 [inline]
+ kvzalloc include/linux/slab.h:758 [inline]
+ alloc_netdev_mqs+0x86/0x1240 net/core/dev.c:10603
+ sl_alloc drivers/net/slip/slip.c:756 [inline]
+ slip_open+0x489/0x1240 drivers/net/slip/slip.c:817
+ tty_ldisc_open+0xb4/0x120 drivers/tty/tty_ldisc.c:433
+ tty_set_ldisc+0x366/0x860 drivers/tty/tty_ldisc.c:558
+ tiocsetd drivers/tty/tty_io.c:2433 [inline]
+ tty_ioctl+0x168f/0x1a20 drivers/tty/tty_io.c:2714
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0x110/0x180 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x4e/0xa0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Which overrides the initialisation of err.
-Before getting to the line that smatch highlights, correctly as far
-as I can tell, as having a missing error code.
+Freed by task 9105:
+ kasan_save_stack mm/kasan/common.c:38 [inline]
+ kasan_set_track+0x3d/0x60 mm/kasan/common.c:45
+ kasan_set_free_info+0x1f/0x40 mm/kasan/generic.c:370
+ ____kasan_slab_free+0x134/0x1c0 mm/kasan/common.c:367
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1759 [inline]
+ slab_free_freelist_hook+0x278/0x370 mm/slub.c:1785
+ slab_free mm/slub.c:3539 [inline]
+ kfree+0x108/0x460 mm/slub.c:4567
+ device_release+0x189/0x220
+ kobject_cleanup+0x24f/0x360 lib/kobject.c:673
+ netdev_run_todo+0x14ac/0x15a0 net/core/dev.c:10385
+ unregister_netdev+0x1e9/0x270 net/core/dev.c:10922
+ tty_ldisc_hangup+0x224/0x750 drivers/tty/tty_ldisc.c:700
+ __tty_hangup+0x5b4/0x870 drivers/tty/tty_io.c:637
+ tty_vhangup drivers/tty/tty_io.c:707 [inline]
+ tty_ioctl+0xa7f/0x1a20 drivers/tty/tty_io.c:2718
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0x110/0x180 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x4e/0xa0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-			if (qfe_slot == 4)
-				goto err_out;
+The buggy address belongs to the object at ffff88804b856000
+ which belongs to the cache kmalloc-cg-4k of size 4096
+The buggy address is located 3200 bytes inside of
+ 4096-byte region [ffff88804b856000, ffff88804b857000)
 
-As err_out simply calls 'return err' one could just return here.
-And perhaps that is a nice cleanup to roll out at some point.
-But to be in keeping with the style of the function, as a minimal fix,
-I think the following might be appropriate.
+The buggy address belongs to the physical page:
+page:ffffea00012e1400 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x4b850
+head:ffffea00012e1400 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 ffffea000421c600 dead000000000003 ffff88801344c140
+raw: 0000000000000000 0000000080040004 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 3028, tgid 3028 (systemd-udevd), ts 3568645047764, free_ts 3567951761241
+ prep_new_page mm/page_alloc.c:2532 [inline]
+ get_page_from_freelist+0x800/0xc10 mm/page_alloc.c:4283
+ __alloc_pages+0x2f0/0x650 mm/page_alloc.c:5549
+ alloc_slab_page mm/slub.c:1829 [inline]
+ allocate_slab+0x1eb/0xc00 mm/slub.c:1974
+ new_slab mm/slub.c:2034 [inline]
+ ___slab_alloc+0x581/0xff0 mm/slub.c:3036
+ __slab_alloc mm/slub.c:3123 [inline]
+ slab_alloc_node mm/slub.c:3214 [inline]
+ __kmalloc_node+0x3db/0x550 mm/slub.c:4473
+ kmalloc_node include/linux/slab.h:623 [inline]
+ kvmalloc_node+0x6e/0x170 mm/util.c:613
+ kvmalloc include/linux/slab.h:750 [inline]
+ seq_buf_alloc fs/seq_file.c:38 [inline]
+ seq_read_iter+0x269/0x10f0 fs/seq_file.c:210
+ call_read_iter include/linux/fs.h:2181 [inline]
+ new_sync_read fs/read_write.c:389 [inline]
+ vfs_read+0x838/0xd30 fs/read_write.c:470
+ ksys_read+0x182/0x2c0 fs/read_write.c:607
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x4e/0xa0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1449 [inline]
+ free_pcp_prepare+0x76d/0x890 mm/page_alloc.c:1499
+ free_unref_page_prepare mm/page_alloc.c:3380 [inline]
+ free_unref_page+0x8a/0x880 mm/page_alloc.c:3476
+ __skb_frag_unref include/linux/skbuff.h:3380 [inline]
+ skb_release_data+0x3f0/0x910 net/core/skbuff.c:685
+ skb_release_all net/core/skbuff.c:756 [inline]
+ __kfree_skb+0x60/0x210 net/core/skbuff.c:770
+ e1000_unmap_and_free_tx_resource drivers/net/ethernet/intel/e1000/e1000_main.c:1970 [inline]
+ e1000_clean_tx_irq drivers/net/ethernet/intel/e1000/e1000_main.c:3860 [inline]
+ e1000_clean+0x5ba/0x4400 drivers/net/ethernet/intel/e1000/e1000_main.c:3801
+ __napi_poll+0xe7/0x6b0 net/core/dev.c:6511
+ napi_poll net/core/dev.c:6578 [inline]
+ net_rx_action+0x7a5/0x1210 net/core/dev.c:6689
+ __do_softirq+0x372/0x783 kernel/softirq.c:571
 
-Note, with this applied err doesn't need to be initialised at the top of
-the function (as far as my invocation of smatch is concerned).
-
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index b0c7ab74a82e..d6df778a0052 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -2863,8 +2863,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 			if (!qp->happy_meals[qfe_slot])
- 				break;
- 
--		if (qfe_slot == 4)
-+		if (qfe_slot == 4) {
-+			err = -ENODEV;
- 			goto err_out;
-+		}
- 	}
- 
- 	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
+Memory state around the buggy address:
+ ffff88804b856b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88804b856c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88804b856c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff88804b856d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88804b856d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
