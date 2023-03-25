@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A54D56C9034
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 19:55:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0EE6C903D
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 19:55:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbjCYSz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 14:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
+        id S230383AbjCYSz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 14:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbjCYSzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 14:55:24 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFB18A6B;
-        Sat, 25 Mar 2023 11:55:23 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id m6-20020a4ae846000000b0053b9059edd5so769751oom.3;
-        Sat, 25 Mar 2023 11:55:23 -0700 (PDT)
+        with ESMTP id S230223AbjCYSz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 14:55:26 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CDD8A6B;
+        Sat, 25 Mar 2023 11:55:25 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id s8so3615975ois.2;
+        Sat, 25 Mar 2023 11:55:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679770522;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=XxsSLWsZvE4szM1gEt4f7Si5Kl8ROd3jLoMcKM80+58=;
-        b=ACIVRz7GnOs5oqbTqChVW3js3iaTUMeheAjffOsvQQT+TiZxhdiDJvLOdXt/Wtf+hL
-         X/Bdz8hXYA9M1pprtPNkKdcylg+fuJbmTEon5FMYeEGe+AY+ejQg+7T1dx5vt13qpI9C
-         wa6Xj9ZInQzBW5d8RdpJq1nZrDrkG8tArPs+YC2oYQw/Y3fRtdlMJ3RoqZAfLoTI7UPo
-         lK63d26Sz16K1e2eVeCQY7UBC44djm0OP3+o0FDNwohLwc8JSF2Wx/5GdBV8nS+X2WPR
-         QCGSJHPlzkU3YDsgGJlbzk4frhRMkzhbwGRWfoqRpBtWvR6O+dE06n/i9TgL4TkhBu2T
-         WQaA==
+        d=gmail.com; s=20210112; t=1679770524;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P8DARwyXB1+f8bu+p73b5c/Fp4Rp72nImACGHBPnqI8=;
+        b=IdkxR+kxYgzj76LG+tvXbGzVQrTmA+weS+xDTfhfxO1G9+bJ7pznH6RtR9snmX9jwi
+         g112eus5kfFOueYG3J811mzC9ykU6d5wloVvAaaDqfPQeAQpib+JsOT83HmdBV+dTNhK
+         Sqv/Z5s68bM1OQ+iOK3QKAxn9LH0Qa5G7/yPPeClPsV3YyQioTtubyrTilr+qWi+JLw0
+         q9AydQ/RERe54yNKnLRNiL0R07d7lgDMcUCNNnevaDvTvShTzMsiBPSQNs8MpNNcpnCd
+         cQ9uXJbE9CK1cBeOiKjxea/FwJyRECQ0fstzFwglYaIVtwuUuBuL6a+E4u3U/M5pRxKt
+         VvjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679770522;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XxsSLWsZvE4szM1gEt4f7Si5Kl8ROd3jLoMcKM80+58=;
-        b=piCSuk3ZIpuhUYcxtWLNi8r3tx6yru/qCyC10Rkbo6ErJoskPZ/pX6ojZNjceBX4p/
-         D5Obx3wtGiRH2gU7yiRPG+pPDN3E4uDxOTwgQefCaHaJlfK31aOO/XsOzx1ZIDqJLpLV
-         RQEXo3knNhgN41ZAu5HcLRzeLD2YSfhMjcvIIMLvQvr8Ub3B28KayNdImbsVJUjF7CKL
-         DojwDpW5NSPjPy+w+j6Xs0oSa2h3cCnbdKH8CY82pJDY3APyynYPbL8Ikb1yLGoV4rse
-         TiU3RUIfneQnxz4zjrAayM8P9NXnAao7D5lv2DET6dcAkw0TC+dNI2PGTaWvWgMERFHu
-         WO1g==
-X-Gm-Message-State: AO0yUKUOr/zBq3rO73cEvuZxO7n/Jjs88fO1aK3/Vig1kLsNnYXiVu62
-        WxMTyjWYHrMNZy7K4uqQvSk=
-X-Google-Smtp-Source: AK7set+cb4Ku/IGSZgPqrYUrD0OTrQhX+nWmO6TmeK9Q4sOdCEFg9T1Hgh5qs74QwEPGqxBpSEpYXw==
-X-Received: by 2002:a4a:4111:0:b0:517:4020:60b6 with SMTP id x17-20020a4a4111000000b00517402060b6mr3596459ooa.8.1679770522550;
-        Sat, 25 Mar 2023 11:55:22 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679770524;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=P8DARwyXB1+f8bu+p73b5c/Fp4Rp72nImACGHBPnqI8=;
+        b=H3wOFmBEtRfA/1jOlHcHXWQyIPxs2INlngGcyRKLvmyk9gc0ayrSsVciGe2ac//BpJ
+         6o9WQwO9t3JzShaFfPUHBf8fB+3raV9Dbsa57+Za+zERER59Rg1BqK8WqDokcuFY++62
+         E6/YmdO0OD79uMEQX1grNKzudPYZ6ot7M6dRNNG+t38B8pcCcgCoexpKA517ets9lc20
+         hXtfM7Jjr0oDkEoSR+TDLBX7F0qZYdlMfDauAx2tShBQN7LKFL1J/eS19tAE0nqVHjLO
+         JQmeVIY0AONp5ic6CEsPR01ntKBzU5zxrd8Y90//ATEtl7MYh0rdPg3ZF0MufkmXORtk
+         yVgw==
+X-Gm-Message-State: AO0yUKW4c6TXbQWqK5VWi+vxPk0Q3cCuMuKYaSVJ7YGrGOeZlLKX1c85
+        3dhXWVLuWPVXtjdh6Y8G/2E=
+X-Google-Smtp-Source: AK7set+UxP7Iq9OQ1/Cyls3NrcFxB4JDS701EemJFeg1cf2g7q33ne9kN5OpaqhZuvwMpJ73veQPfQ==
+X-Received: by 2002:a05:6808:1584:b0:386:d1bd:8766 with SMTP id t4-20020a056808158400b00386d1bd8766mr4843928oiw.13.1679770524348;
+        Sat, 25 Mar 2023 11:55:24 -0700 (PDT)
 Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id e20-20020a4a8f14000000b0053dfd96fa61sm1760679ool.39.2023.03.25.11.55.21
+        by smtp.gmail.com with ESMTPSA id o187-20020acaf0c4000000b0038476262f65sm9559710oih.33.2023.03.25.11.55.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Mar 2023 11:55:22 -0700 (PDT)
+        Sat, 25 Mar 2023 11:55:24 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -74,10 +75,12 @@ Cc:     Yury Norov <yury.norov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Barry Song <baohua@kernel.org>
-Subject: [PATCH 0/8] sched/topology: add for_each_numa_cpu() macro
-Date:   Sat, 25 Mar 2023 11:55:06 -0700
-Message-Id: <20230325185514.425745-1-yury.norov@gmail.com>
+Subject: [PATCH 1/8] lib/find: add find_next_and_andnot_bit()
+Date:   Sat, 25 Mar 2023 11:55:07 -0700
+Message-Id: <20230325185514.425745-2-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230325185514.425745-1-yury.norov@gmail.com>
+References: <20230325185514.425745-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -90,92 +93,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-for_each_cpu() is widely used in kernel, and it's beneficial to create
-a NUMA-aware version of the macro.
+Similarly to find_nth_and_andnot_bit(), find_next_and_andnot_bit() is
+a convenient helper that allows traversing bitmaps without storing
+intermediate results in a temporary bitmap.
 
-Recently added for_each_numa_hop_mask() works, but switching existing
-codebase to it is not an easy process.
+In the following patches the function is used to implement NUMA-aware
+CPUs enumeration.
 
-This series adds for_each_numa_cpu(), which is designed to be similar to
-the for_each_cpu(). It allows to convert existing code to NUMA-aware as
-simple as adding a hop iterator variable and passing it inside new macro.
-for_each_numa_cpu() takes care of the rest.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ include/linux/find.h | 43 +++++++++++++++++++++++++++++++++++++++++++
+ lib/find_bit.c       | 12 ++++++++++++
+ 2 files changed, 55 insertions(+)
 
-At the moment, we have 2 users of NUMA-aware enumerators. One is
-Melanox's in-tree driver, and another is Intel's in-review driver:
-
-https://lore.kernel.org/lkml/20230216145455.661709-1-pawel.chmielewski@intel.com/
-
-Both real-life examples follow the same pattern:
-
-	for_each_numa_hop_mask(cpus, prev, node) {
- 		for_each_cpu_andnot(cpu, cpus, prev) {
- 			if (cnt++ == max_num)
- 				goto out;
- 			do_something(cpu);
- 		}
-		prev = cpus;
- 	}
-
-With the new macro, it has a more standard look, like this:
-
-	for_each_numa_cpu(cpu, hop, node, cpu_possible_mask) {
-		if (cnt++ == max_num)
-			break;
-		do_something(cpu);
- 	}
-
-Straight conversion of existing for_each_cpu() codebase to NUMA-aware
-version with for_each_numa_hop_mask() is difficult because it doesn't
-take a user-provided cpu mask, and eventually ends up with open-coded
-double loop. With for_each_numa_cpu() it shouldn't be a brainteaser.
-Consider the NUMA-ignorant example:
-
-	cpumask_t cpus = get_mask();
-	int cnt = 0, cpu;
-
-	for_each_cpu(cpu, cpus) {
-		if (cnt++ == max_num)
-			break;
-		do_something(cpu);
- 	}
-
-Converting it to NUMA-aware version would be as simple as:
-
-	cpumask_t cpus = get_mask();
-	int node = get_node();
-	int cnt = 0, hop, cpu;
-
-	for_each_numa_cpu(cpu, hop, node, cpus) {
-		if (cnt++ == max_num)
-			break;
-		do_something(cpu);
- 	}
-
-The latter looks more verbose and avoids from open-coding that annoying
-double loop. Another advantage is that it works with a 'hop' parameter with
-the clear meaning of NUMA distance, and doesn't make people not familiar
-to enumerator internals bothering with current and previous masks machinery.
-
-Yury Norov (8):
-  lib/find: add find_next_and_andnot_bit()
-  sched/topology: introduce sched_numa_find_next_cpu()
-  sched/topology: add for_each_numa_cpu() macro
-  net: mlx5: switch comp_irqs_request() to using for_each_numa_cpu
-  lib/cpumask: update comment to cpumask_local_spread()
-  sched/topology: export sched_domains_numa_levels
-  lib: add test for for_each_numa_{cpu,hop_mask}()
-  sched: drop for_each_numa_hop_mask()
-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 16 ++----
- include/linux/find.h                         | 43 ++++++++++++++
- include/linux/topology.h                     | 39 ++++++++-----
- kernel/sched/topology.c                      | 59 +++++++++++---------
- lib/cpumask.c                                |  7 +--
- lib/find_bit.c                               | 12 ++++
- lib/test_bitmap.c                            | 16 ++++++
- 7 files changed, 136 insertions(+), 56 deletions(-)
-
+diff --git a/include/linux/find.h b/include/linux/find.h
+index 4647864a5ffd..bde0ba9fa59b 100644
+--- a/include/linux/find.h
++++ b/include/linux/find.h
+@@ -14,6 +14,9 @@ unsigned long _find_next_and_bit(const unsigned long *addr1, const unsigned long
+ 					unsigned long nbits, unsigned long start);
+ unsigned long _find_next_andnot_bit(const unsigned long *addr1, const unsigned long *addr2,
+ 					unsigned long nbits, unsigned long start);
++unsigned long _find_next_and_andnot_bit(const unsigned long *addr1, const unsigned long *addr2,
++					const unsigned long *addr3, unsigned long nbits,
++					unsigned long start);
+ unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long nbits,
+ 					 unsigned long start);
+ extern unsigned long _find_first_bit(const unsigned long *addr, unsigned long size);
+@@ -127,6 +130,40 @@ unsigned long find_next_andnot_bit(const unsigned long *addr1,
+ }
+ #endif
+ 
++#ifndef find_next_and_andnot_bit
++/**
++ * find_next_and_andnot_bit - find the next bit set in *addr1 and *addr2,
++ *			      excluding all the bits in *addr3
++ * @addr1: The first address to base the search on
++ * @addr2: The second address to base the search on
++ * @addr3: The third address to base the search on
++ * @size: The bitmap size in bits
++ * @offset: The bitnumber to start searching at
++ *
++ * Returns the bit number for the next set bit
++ * If no bits are set, returns @size.
++ */
++static __always_inline
++unsigned long find_next_and_andnot_bit(const unsigned long *addr1,
++				   const unsigned long *addr2,
++				   const unsigned long *addr3,
++				   unsigned long size,
++				   unsigned long offset)
++{
++	if (small_const_nbits(size)) {
++		unsigned long val;
++
++		if (unlikely(offset >= size))
++			return size;
++
++		val = *addr1 & *addr2 & ~*addr3 & GENMASK(size - 1, offset);
++		return val ? __ffs(val) : size;
++	}
++
++	return _find_next_and_andnot_bit(addr1, addr2, addr3, size, offset);
++}
++#endif
++
+ #ifndef find_next_zero_bit
+ /**
+  * find_next_zero_bit - find the next cleared bit in a memory region
+@@ -536,6 +573,12 @@ unsigned long find_next_bit_le(const void *addr, unsigned
+ 	     (bit) = find_next_andnot_bit((addr1), (addr2), (size), (bit)), (bit) < (size);\
+ 	     (bit)++)
+ 
++#define for_each_and_andnot_bit(bit, addr1, addr2, addr3, size) \
++	for ((bit) = 0;									\
++	     (bit) = find_next_and_andnot_bit((addr1), (addr2), (addr3), (size), (bit)),\
++	     (bit) < (size);								\
++	     (bit)++)
++
+ /* same as for_each_set_bit() but use bit as value to start with */
+ #define for_each_set_bit_from(bit, addr, size) \
+ 	for (; (bit) = find_next_bit((addr), (size), (bit)), (bit) < (size); (bit)++)
+diff --git a/lib/find_bit.c b/lib/find_bit.c
+index c10920e66788..8e2a6b87262f 100644
+--- a/lib/find_bit.c
++++ b/lib/find_bit.c
+@@ -182,6 +182,18 @@ unsigned long _find_next_andnot_bit(const unsigned long *addr1, const unsigned l
+ EXPORT_SYMBOL(_find_next_andnot_bit);
+ #endif
+ 
++#ifndef find_next_and_andnot_bit
++unsigned long _find_next_and_andnot_bit(const unsigned long *addr1,
++					const unsigned long *addr2,
++					const unsigned long *addr3,
++					unsigned long nbits,
++					unsigned long start)
++{
++	return FIND_NEXT_BIT(addr1[idx] & addr2[idx] & ~addr3[idx], /* nop */, nbits, start);
++}
++EXPORT_SYMBOL(_find_next_and_andnot_bit);
++#endif
++
+ #ifndef find_next_zero_bit
+ unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long nbits,
+ 					 unsigned long start)
 -- 
 2.34.1
 
