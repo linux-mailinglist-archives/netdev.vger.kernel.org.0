@@ -2,198 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07BAC6C8F4D
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 17:06:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B9606C8F75
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 17:33:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbjCYQGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 12:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
+        id S230350AbjCYQdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 12:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbjCYQGr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 12:06:47 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BBEFF09;
-        Sat, 25 Mar 2023 09:06:44 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id l7so3682788qvh.5;
-        Sat, 25 Mar 2023 09:06:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679760403;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wVCSph/Zc1RNq1OirGOIH0MpgxECW2DNssMKlMd4kTU=;
-        b=iQQwOMNFl8A0rcbey0CwzP+trnzwLdfzf/J51KdVRRKu6husTL/NB1qJuoDr4zDbGn
-         61fEreOydUEib7GK/GTBKUreFL1TQ4drqpugAsO1UucZEIUtX0TkKVlVt8jHjdhzBYHY
-         FBMYHi0/QrKKOH1PCvsLOj2ansoQOmwgIofzZdC2BJiqcNSidqzGzlTLpfI1ggpLu5qD
-         Ra1vIZagNbfKE4gRthLvnyMJsm5Zfvk/XrO53aHuraWoOnERQ2Bx40qBFefGJVgWlOe+
-         pn5hf5fcsukhHY6Tnj+/a0RyGLuZboerDCbTnnO6/Y9jHDZFU2pnwMDSeOzsIfIyRy64
-         LkVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679760403;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wVCSph/Zc1RNq1OirGOIH0MpgxECW2DNssMKlMd4kTU=;
-        b=fJf0R8jg8OMerfi0dNFtUIC1ahKX7NDfahaTkoBYAJ++u1hoSgW0Epd7qP0+f4hUj8
-         SBkn5aAoevj3Wd0ZuQwkO9XaTunhWQ9Nvd7dYyQXlcqZJYHeIQ6zeDRLRncQZaMIQKHY
-         eupPJQ8x9H8JBx135x9Jbj3cYaYjcnLmhKR2bNSJ1i4zlhI5XDMD7TJk4ap7X9trfye2
-         LHFjjd+TluIhwtrOibIJRaSMg4iUGuqx1dxAOSILj4xP6Q4hrN3eFlrBuZYw445zbYzY
-         ZBhaj2WeH7JXCTjXlYOUzYpFD0jo4Klasyne57LbF4axLNNiq2MGCW7jUh3hhKvHjhrI
-         66OQ==
-X-Gm-Message-State: AAQBX9caLkZSXAtzcQjF5KpL4AzD8Rg9DWFXJ7CQ1jfdJxKRe2MBtpou
-        qfNGB7MloTEI1ap+mBNoDDU=
-X-Google-Smtp-Source: AKy350YBTrN/Ar9BYQm+khB5hD34JSWQ1ALaSWECXEB8WiWTXUmmkNeWrfpIuCD9Qenb6N88PKtxSg==
-X-Received: by 2002:a05:6214:62e:b0:56e:a96a:2bdc with SMTP id a14-20020a056214062e00b0056ea96a2bdcmr8767554qvx.40.1679760403046;
-        Sat, 25 Mar 2023 09:06:43 -0700 (PDT)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id q26-20020a05620a025a00b00746a0672cf3sm5936787qkn.94.2023.03.25.09.06.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Mar 2023 09:06:42 -0700 (PDT)
-Message-ID: <a4ecd20b-5d13-893b-2329-f6dd0c565ad5@gmail.com>
-Date:   Sat, 25 Mar 2023 12:06:41 -0400
+        with ESMTP id S230265AbjCYQdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 12:33:08 -0400
+X-Greylist: delayed 65 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 25 Mar 2023 09:33:05 PDT
+Received: from bgl-iport-4.cisco.com (bgl-iport-4.cisco.com [72.163.197.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691971999;
+        Sat, 25 Mar 2023 09:33:04 -0700 (PDT)
+X-IPAS-Result: =?us-ascii?q?A0BDAADxIB9klxjFo0haHAECAgEHARQBBAQBgXwHAQwBg?=
+ =?us-ascii?q?3gsEhgujHFfiRKCNYhFA4c6ij+CDQEBAQ0BAUQEAQE+AYoCJjQJDgECBAEBA?=
+ =?us-ascii?q?QEDAgMBAQEBAQEDAQEFAQEBAgEHBBQBAQECAjgFDjeFdYcDCwEpHSZcAgk8C?=
+ =?us-ascii?q?IJ+gigBAzEDsh8WBQIWgQGEcpkoChkoDWgDgWSBQQGENyOCaYQrhw44T4EVg?=
+ =?us-ascii?q?TyCLIFTTYJxhXIEgiSWUwEDAgIDAgIDBgQCAgIFBAIBAwQCDgQOAwEBAgIBA?=
+ =?us-ascii?q?QIECAICAwMCCA8TAwcCAQYFAQMBAgYEAgQBCwIFAgoBAgQBAgICAQUJAQMBA?=
+ =?us-ascii?q?wELAgIHAgMFBgQCAw0CAQEDAgICDQMCAwIEAQUFAQEQAgYEBwEGAwsCBAEEA?=
+ =?us-ascii?q?wECBQcDBgMCAgICCAQSAgMCAgQFAgICAQIEBQIHBgIBAgICBAIBAwIEAgIEA?=
+ =?us-ascii?q?gIEAxEKAgMFAw4CAgICAQkLAgMHBAIDAwEHAgIMAQMYAwICAgICAgEDBwoEC?=
+ =?us-ascii?q?wIFAQIBBAsBBQENBAICAgICAwIBAQMGCAYDCgIFBAMDBgkPDwgFAwEEAwIDA?=
+ =?us-ascii?q?gEICwIDAgIECAIDAQICAQYCAwECAgECAgELAQECAwUCAhEBAgICAgIBAQIDA?=
+ =?us-ascii?q?gMBBwECAhwGBAUDAwQCAgEEAQICBAQFCwIEAwEBAQICAgIDAgsDBQMBBgMDC?=
+ =?us-ascii?q?gcEAQgCBgMEAgUEAwQEBgICAgICAQQBBAoDAgQEAwMGAwkCAgwCFAISBgEEC?=
+ =?us-ascii?q?wsEAQICAg0DBAYCAwMCBQgEAgICAgIDBgIHBAICAwMCAgMDBwMBAgICAwEEB?=
+ =?us-ascii?q?QYDAgQCAQMCBAICBAMEAQcCAgICAwECAgMDAQIBBgMCAgUCAgEIAgMCAgICA?=
+ =?us-ascii?q?wMOAQEBAgoCAwEBAQUEAgIEBAQEAQICAgICDAMCAgIDAgQDAgIDEgMCBQIED?=
+ =?us-ascii?q?AECBAICBwICAgICAgICAQICAgIDBQQCAQIDAwIEBQMDAgIDAgIFAQMEAQcEA?=
+ =?us-ascii?q?gIGAwIFBgICBQEDBAECAhIDAwMCAgIBAgEBAgMHCQYCCQQBBhIDAwIEAgcDA?=
+ =?us-ascii?q?gIEAgIBAgoCAgMCAgICAgQCCAIFBQIoAwMCIAMJAwcFSQIJAyMPAwsJCAcMA?=
+ =?us-ascii?q?RYoBgwHDCgENAEUEgcHBioOBgIGAwQBCgsFBAUIAQIBAQYCBAIHCQwCAQYBB?=
+ =?us-ascii?q?QICAwIBAwICAQYDAQICAgIFCgMEBQMKCQMBAQQDAgECAQIDAgMHAwIEAgMBA?=
+ =?us-ascii?q?gMEBgYBCQQGBQ0DBAICAQIBAQMEBAQCAgECAgMBBAICAQEDAwMCAgIDBAIDA?=
+ =?us-ascii?q?wsECgcEAgEFCwQCAwIBAQMHCQQCAgYBAgQCAgICAgIDAQEDCQQCAQMCAgQDB?=
+ =?us-ascii?q?gIBAgEJBQIBCQMBAgEDBAEDCQECAgQJAgQHBQoCAgICCAICDgMDAgEBBAICB?=
+ =?us-ascii?q?AUJAQIHAgUBAQMFBwICAQICAQQDAQkEAQIDAgEBAxIDAwEEAgUDAw0JBgICA?=
+ =?us-ascii?q?QMCAQ0DAQIBAgMBBQUXAwgHFAMFAgIEBAEHAgIDAwMCAQIJBgEDAQUCDgMCA?=
+ =?us-ascii?q?gQGAQIBAQIDEAUBAQEBFwEDBAIDAQQDAQECAQIDDwQBBAUMAxAMAgQBBgIIA?=
+ =?us-ascii?q?gIDAwECAwUBAgMEAgEICgICAgIJAgoDAgMBAwUBAwIJAwEFAQIHAgYBAQECA?=
+ =?us-ascii?q?ggCCAIDCwEDBQYCAgEFAgECAgUDBQICAgIEDQIFAgICBQECBwQCAgIDAQICB?=
+ =?us-ascii?q?gUBAgcHAgUCAgIDAwoEBAcEAQICAQEFAQIBAwMBBAECAQIFAwYCAgICAQICA?=
+ =?us-ascii?q?QEBCAICAgICAgMEAgiaWgIBgmeBDk53lAmDI4tTgheBM51TZQpkgyCaf4VtG?=
+ =?us-ascii?q?jKpPgEulzyRPpIHhCwCBAYFAhY1gS46gVtNI4EBgjZSGQ+OLBaTUTk0OwIHC?=
+ =?us-ascii?q?wEBAwmLQwEB?=
+IronPort-Data: A9a23:0EAvwqrkq0o1/4gnT+6fdO79NNdeBmIFZRIvgKrLsJaIsI4StFCzt
+ garIBnXOPmMYDPxfN52a4qy8UwAuJLTy9RnTgJpqX03F3sS8OPIVI+TRqvS04x+DSFioGZPt
+ Zh2hgzodZhsJpPkjk7xdOCn9xGQ7InQLlbGILas1htZGEk1GE/NtTo5w7Ri2tUy3IDga++wk
+ YqaT/P3aQfNNwFcagr424rbwP+4lK2v0N+wlgVWicFj5DcypVFMZH4sDf3Zw0/Df2VhNrXSq
+ 9AvY12O1jixEx8FUrtJm1tgG6EAaua60QOm0hK6V0U+6/RPjnRa70o1CBYTQXwUth+wlu1z8
+ sgOuLXrbTYvF4TdyM1IBnG0EwkmVUFH0LXIJT20ttaeiheAeHr3yPIoB0YzVWEa0rktRzgQr
+ rpBeW9LNEzra+GemNpXTsF3hsUlMcLrNasUu2prynfSCvNOrZXrEvyUu4UIhl/cgOhcH/nva
+ O0/dgBgdRSdU0IUK0UHM6MHybLAan7XKm0E9w39SbAMy27e0AB8zpDzP9fPPN+HX8NYmgCfv
+ G2u12D4BAwKcd+S0zyI9lqyieLV2yD2QoQfEPu/7PECqEbP3XELBQcLTlahifa8g0+6HdlYL
+ iQ84CslraEo+EesRdnnVhuQr3uNvxpaUN1Ve9DW8ymTzqONsljcAGEYCDVAc9ch8sQxQFTGy
+ 2NlgfvSRgFFibSoS0iAtbq99heDPwE8PD8rMHpsoRQ+3/Hvp4Q6jxTqR9llEbKogtCdJQwc0
+ wxmvwBl2+1O0ZJjO7GTuAme02jw+sChohsdv12PBgqYAhVFiJlJjmBEBF6y0BqtBJidRwDQ4
+ j0CktTY5+EVBpbLnyuIKAnsIF1Lz6reWNE/qQc+d3XEy9hK0yT5Fb28GBkkeC9U3j8sIFcFm
+ nP7twJL/4N0N3C3d6JxaI/ZI510kvm+RY66DaGPMIYmjn1NmOmvoX8Giam4gj6FraTQufpX1
+ WqzKJz1Vi9KVcyLMhLmHbx1PUAXKtAWnDOPGs+TI+WP2ruFb3ndUqYeLFaLdYgEAFCs/m3oH
+ yJkH5LSkX13CbSmCgGOqNJ7ELz/BSVibXwAg5cMLbDrz8sPMDxJNsI9Npt7JdE5xP4LyrqgE
+ 7PUchYw9WcTTEbvcW2iAk2Popu2NXqjhRrX5RARAGs=
+IronPort-HdrOrdr: A9a23:ho18GKltddupuPIrcXtebZNEJtLpDfIn3DAbv31ZSRFFG/FwWf
+ rAoB19726QtN9/YhAdcLy7VZVoIkmsl6Kdn7NwAV7KZmCP0wGVxepZg7cKrQeNJ8SHzJ8/6U
+ +lGJIOb+EZyjNB/KLH3DU=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="5.98,290,1673913600"; 
+   d="scan'208";a="9166282"
+Received: from vla196-nat.cisco.com (HELO bgl-core-2.cisco.com) ([72.163.197.24])
+  by bgl-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 25 Mar 2023 16:31:57 +0000
+Received: from bgl-ads-3583.cisco.com (bgl-ads-3583.cisco.com [173.39.60.220])
+        by bgl-core-2.cisco.com (8.15.2/8.15.2) with ESMTPS id 32PGVv3Z003744
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Sat, 25 Mar 2023 16:31:57 GMT
+Received: by bgl-ads-3583.cisco.com (Postfix, from userid 1784405)
+        id 002E5CC1296; Sat, 25 Mar 2023 22:01:56 +0530 (IST)
+From:   Shinu Chandran <s4superuser@gmail.com>
+To:     richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shinu Chandran <s4superuser@gmail.com>
+Subject: [PATCH] ptp: ptp_clock: Fix coding style issues
+Date:   Sat, 25 Mar 2023 22:01:35 +0530
+Message-Id: <20230325163135.2431367-1-s4superuser@gmail.com>
+X-Mailer: git-send-email 2.35.6
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v4 10/10] net: sunhme: Consolidate common probe
- tasks
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230324175136.321588-1-seanga2@gmail.com>
- <20230324175136.321588-11-seanga2@gmail.com> <ZB66hgG2+nn6CxS7@corigine.com>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <ZB66hgG2+nn6CxS7@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Outbound-SMTP-Client: 173.39.60.220, bgl-ads-3583.cisco.com
+X-Outbound-Node: bgl-core-2.cisco.com
+X-Spam-Status: No, score=2.7 required=5.0 tests=DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,SPF_HELO_PASS,
+        SPF_NONE,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/25/23 05:10, Simon Horman wrote:
-> On Fri, Mar 24, 2023 at 01:51:36PM -0400, Sean Anderson wrote:
->> Most of the second half of the PCI/SBUS probe functions are the same.
->> Consolidate them into a common function.
->>
->> Signed-off-by: Sean Anderson <seanga2@gmail.com>
-> 
-> Hi Sean,
-> 
-> overall this looks good.
-> But I (still?) have some concerns about handling hm_revision.
-> 
-> ...
-> 
->> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
->> index bd1925f575c4..ec85aef35bf9 100644
->> --- a/drivers/net/ethernet/sun/sunhme.c
->> +++ b/drivers/net/ethernet/sun/sunhme.c
->> @@ -2430,6 +2430,58 @@ static void happy_meal_addr_init(struct happy_meal *hp,
->>   	}
->>   }
->>   
->> +static int happy_meal_common_probe(struct happy_meal *hp,
->> +				   struct device_node *dp)
->> +{
->> +	struct net_device *dev = hp->dev;
->> +	int err;
->> +
->> +#ifdef CONFIG_SPARC
->> +	hp->hm_revision = of_getintprop_default(dp, "hm-rev", hp->hm_revision);
-> 
-> Previously the logic, for SPARC for PCI went something like this:
-> 
-> 	/* in happy_meal_pci_probe() */
-> 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
-> 	if (hp->hm_revision == 0xff)
-> 		hp->hm_revision = 0xc0 | (pdev->revision & 0x0f);
-> 
-> Now it goes something like this:
-> 
-> 	/* in happy_meal_pci_probe() */
-> 	hp->hm_revision = 0xc0 | (pdev->revision & 0x0f);
-> 	/* in happy_meal_common_probe() */
-> 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", hp->hm_revision);
-> 
-> Is this intentional?
-> 
-> Likewise, for sbus (which implies SPARC) the logic was something like:
-> 
-> 	/* in happy_meal_sbus_probe_one() */
-> 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
-> 	if (hp->hm_revision == 0xff)
-> 		 hp->hm_revision = 0xa0;
-> 
-> And now goes something like this:
-> 
-> 	/* in happy_meal_pci_probe() */
-> 	hp->hm_revision = 0xa0;
-> 	/* in happy_meal_common_probe() */
-> 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", hp->hm_revision);
+Fixed coding style issues
 
-Yes, this is intentional. Logically, they are the same; we just set up the default
-before calling of_getintprop_default instead of after.
+Signed-off-by: Shinu Chandran <s4superuser@gmail.com>
+---
+ drivers/ptp/ptp_clock.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
->> +#endif
->> +
->> +	/* Now enable the feature flags we can. */
->> +	if (hp->hm_revision == 0x20 || hp->hm_revision == 0x21)
->> +		hp->happy_flags |= HFLAG_20_21;
->> +	else if (hp->hm_revision != 0xa0)
->> +		hp->happy_flags |= HFLAG_NOT_A0;
->> +
->> +	hp->happy_block = dmam_alloc_coherent(hp->dma_dev, PAGE_SIZE,
->> +					      &hp->hblock_dvma, GFP_KERNEL);
->> +	if (!hp->happy_block)
->> +		return -ENOMEM;
->> +
->> +	/* Force check of the link first time we are brought up. */
->> +	hp->linkcheck = 0;
->> +
->> +	/* Force timer state to 'asleep' with count of zero. */
->> +	hp->timer_state = asleep;
->> +	hp->timer_ticks = 0;
->> +
->> +	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
->> +
->> +	dev->netdev_ops = &hme_netdev_ops;
->> +	dev->watchdog_timeo = 5 * HZ;
->> +	dev->ethtool_ops = &hme_ethtool_ops;
->> +
->> +	/* Happy Meal can do it all... */
->> +	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM;
->> +	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
->> +
->> +
-> 
-> nit: one blank line is enough.
-
-Ah, oops.
-
---Sean
-
->> +	/* Grrr, Happy Meal comes up by default not advertising
->> +	 * full duplex 100baseT capabilities, fix this.
->> +	 */
->> +	spin_lock_irq(&hp->happy_lock);
->> +	happy_meal_set_initial_advertisement(hp);
->> +	spin_unlock_irq(&hp->happy_lock);
->> +
->> +	err = devm_register_netdev(hp->dma_dev, dev);
->> +	if (err)
->> +		dev_err(hp->dma_dev, "Cannot register net device, aborting.\n");
->> +	return err;
->> +}
->> +
-> 
-> ...
+diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+index 62d4d29e7c05..8fe7f2ce9705 100644
+--- a/drivers/ptp/ptp_clock.c
++++ b/drivers/ptp/ptp_clock.c
+@@ -129,6 +129,7 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
+ 		err = ops->adjtime(ops, delta);
+ 	} else if (tx->modes & ADJ_FREQUENCY) {
+ 		long ppb = scaled_ppm_to_ppb(tx->freq);
++
+ 		if (ppb > ops->max_adj || ppb < -ops->max_adj)
+ 			return -ERANGE;
+ 		err = ops->adjfine(ops, tx->freq);
+@@ -278,11 +279,13 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+ 	/* Register a new PPS source. */
+ 	if (info->pps) {
+ 		struct pps_source_info pps;
++
+ 		memset(&pps, 0, sizeof(pps));
+ 		snprintf(pps.name, PPS_MAX_NAME_LEN, "ptp%d", index);
+ 		pps.mode = PTP_PPS_MODE;
+ 		pps.owner = info->owner;
+ 		ptp->pps_source = pps_register_source(&pps, PTP_PPS_DEFAULTS);
++
+ 		if (IS_ERR(ptp->pps_source)) {
+ 			err = PTR_ERR(ptp->pps_source);
+ 			pr_err("failed to register pps source\n");
+@@ -347,9 +350,8 @@ static int unregister_vclock(struct device *dev, void *data)
+ 
+ int ptp_clock_unregister(struct ptp_clock *ptp)
+ {
+-	if (ptp_vclock_in_use(ptp)) {
++	if (ptp_vclock_in_use(ptp))
+ 		device_for_each_child(&ptp->dev, NULL, unregister_vclock);
+-	}
+ 
+ 	ptp->defunct = 1;
+ 	wake_up_interruptible(&ptp->tsev_wq);
+-- 
+2.35.6
 
