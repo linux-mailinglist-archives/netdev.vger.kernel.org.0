@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3A996C90B2
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 21:27:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D396C90B4
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 21:27:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbjCYU1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 16:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
+        id S230038AbjCYU1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 16:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbjCYU1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 16:27:16 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DEDD309;
-        Sat, 25 Mar 2023 13:27:15 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-54184571389so98969267b3.4;
-        Sat, 25 Mar 2023 13:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679776034;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yaARY077DGnjU3AMHe5fgCo5++amI4FQb8ZE5IDsYAc=;
-        b=h5ckjLzM/gsOYMB2o1KVFl+U62j30yLjyRzWHk1sd0MEce0kHq7gfxL1yRq53b5K6Q
-         +WRxveJEzVme0KwaVCeSRrn9Zc/RzsFQjaWCVUqRDF7u9+Skt8bHEff7/Ar61RlAZjRE
-         L0DcFL35miBoQyHakueOq0FaJUvTDXzlD5VIoarYRSqJQGudPqDhf+fOwAN4/tPK+Y3D
-         Bf9LgGd4EsAnazRskSxcRr0LKkFkb8y7nKX+C9gJoT7by5RqWbIN4HTj2g6X06ggBfRS
-         62S4GvTlsnYHcvHtGclgYtMKLAarmPyOzayC37S/4cKyKsIpOA4zKnb+/csKsIbfnEYv
-         iA1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679776034;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yaARY077DGnjU3AMHe5fgCo5++amI4FQb8ZE5IDsYAc=;
-        b=QlJbJncYcaDR2wE8uzY3O7zXbj167gTubRGMJzZjIbCKR/Zj1vl1yyq5KDe9Dhy1v9
-         yeCr+7PnKWh0d49XlV3BK6CzhnpemUgpbGK7bpbxLrG67wtoD4PYBYtGbBLQ+VfxC8/R
-         4AQF5uQX3GS+9V2+9mMHqqO1RwCs+GD5Gf731PPk9aR3r/3nRtuq+3/F8OH4utzN+0EE
-         gCrJUPEQFbXdLx79ugIvqR37DJBbr8RuF5Lb3vpnO1FkFy61Y6U2j9RjMZJs6Syv/BU1
-         1IugOPBcTyZpBkmYljITu89hPvR/F6KtkwurLd6WVu12C84v0mPiCGPJNbDuVZ0SnXux
-         KK2A==
-X-Gm-Message-State: AAQBX9fIYTocIEX30Hkqk1NaXifHGHXK+lZGYasyp6JZnwFAqnRKGqB0
-        WUsg5uh21FS9MNkxbmDxru1Aj2TeniQ=
-X-Google-Smtp-Source: AKy350bGOOL5VNz6k930qO3lFsXus7958cH5hstezy5khSnFiQsScpsKMVYdaFzs2DlEupKcR7Gahg==
-X-Received: by 2002:a81:590:0:b0:538:4364:ae9e with SMTP id 138-20020a810590000000b005384364ae9emr9966440ywf.15.1679776034339;
-        Sat, 25 Mar 2023 13:27:14 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:8df5:425c:8318:af19])
-        by smtp.gmail.com with ESMTPSA id i79-20020a816d52000000b00545a08184desm1141327ywc.110.2023.03.25.13.27.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Mar 2023 13:27:13 -0700 (PDT)
-Date:   Sat, 25 Mar 2023 13:27:12 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Subject: Re: [Patch net-next v3] sock_map: dump socket map id via diag
-Message-ID: <ZB9ZIG9fgWKKHL17@pop-os.localdomain>
-References: <20230319191913.61236-1-xiyou.wangcong@gmail.com>
- <CAKH8qBtoYREbbRaedAfv=cEv2a5gBEYLSLy2eqcMYvsN7sqE=Q@mail.gmail.com>
- <2b3b7e9c-8ed6-71b5-8002-beb5520334cc@linux.dev>
+        with ESMTP id S229528AbjCYU1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 16:27:38 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126AED31C;
+        Sat, 25 Mar 2023 13:27:37 -0700 (PDT)
+Received: from [192.168.1.103] (178.176.79.104) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Sat, 25 Mar
+ 2023 23:27:26 +0300
+Subject: Re: [PATCH net-next] sh_eth: remove open coded netif_running()
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>
+References: <20230321065826.2044-1-wsa+renesas@sang-engineering.com>
+ <79d945a4-e105-4bc4-3e73-64971731660e@omp.ru>
+ <CAMuHMdUt_kTH3tnrdF=oKBLyjrstei8PLsyr+dFXVoPEyxTLAA@mail.gmail.com>
+ <20230323094034.5b021c65@kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <6d2f216c-df1d-9ab5-353c-de5e5e082b57@omp.ru>
+Date:   Sat, 25 Mar 2023 23:27:25 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b3b7e9c-8ed6-71b5-8002-beb5520334cc@linux.dev>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230323094034.5b021c65@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.79.104]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 03/25/2023 20:10:37
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 176289 [Mar 24 2023]
+X-KSE-AntiSpam-Info: Version: 5.9.59.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 507 507 08d345461d9bcca7095738422a5279ab257bb65a
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_arrow_text}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;178.176.79.104:7.1.2;omp.ru:7.1.1
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.79.104
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 03/25/2023 20:13:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 3/25/2023 6:14:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-Spam-Status: No, score=-0.0 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 20, 2023 at 01:29:39PM -0700, Martin KaFai Lau wrote:
-> On 3/20/23 11:13 AM, Stanislav Fomichev wrote:
-> > One thing I still don't understand here: what is missing from the
-> > socket iterators to implement this? Is it all the sk_psock_get magic?
-> > I remember you dismissed Yonghong's suggestion on v1, but have you
-> > actually tried it?
-> would be useful to know what is missing to print the bpf map id without
-> adding kernel code. There is new bpf_rdonly_cast() which will be useful here
-> also.
+On 3/23/23 7:40 PM, Jakub Kicinski wrote:
+[...]
 
-So you don't consider eBPF code as kernel code, right? Interestingly
-enough, eBPF code runs in kernel... and you still need to write eBPF
-code. So what is the point of "without adding kernel code" here?
+>> Is there some protection against parallel execution of ndo_open()
+>> and get_stats()?
+> 
+> Nope - one is under rtnl_lock, the other under just RCU, IIRC.
+> So this patch just makes the race worse, but it was already
+> racy before.
 
-What is even more interesting is that even your own code does not agree
-with you here, for example, you introduced INET_DIAG_SK_BPF_STORAGES, so
-what was missing to print sk bpf storage without adding kernel code?
+   How about reverting it then?
 
-Thanks.
+MBR, Sergey
