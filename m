@@ -2,70 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B686C8C28
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 08:22:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D956C8C4B
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 08:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbjCYHW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 03:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50406 "EHLO
+        id S231721AbjCYHpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 03:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbjCYHW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 03:22:27 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A545C196B0
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 00:22:25 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id cn12so16172626edb.4
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 00:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679728944;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=saNBroOvM1I22v58z+1jlGQi08thNGmZ6cK60YX0TO0=;
-        b=IuOAgocF9RzRECslaS1GFtenH6BLVeKoyK1+RPytfkjQaT5phQJrOJCPSFtlYbRXwf
-         5UZ4mPY3fuC/g1CFfjb2eJyynhLsfrLDQgeD0848igaIoWyhIKqfpDxyyx4rxAPu/abJ
-         qQukCJghFbqrjSGC44DQj2sLRQ45zWovXyHB5xxDfde9ro7Os2Lk9cN04+OCR7PSlbTU
-         d5JJqRYwQ2gkBfBlDn2boK+2sr450oruRPWxhnIydPLmEJIZ2jrdHqTt9Q3G7KAZDpCS
-         nmbe1dRp55G47ggPrVOdpkm5v5IS7vjeM+1iQPxK5jBmMhfq/F8SFuvdnnHnay8jkgJj
-         lTRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679728944;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=saNBroOvM1I22v58z+1jlGQi08thNGmZ6cK60YX0TO0=;
-        b=JNQshmKB8MlaxDgO1bNhYA8lsSU2UkdvHCmzqY6Xwf+AlyHz6eYjanQzujQ9pyYrQz
-         29Sdogt2M/8nDQ7WLYxt4VVcLOAnx04q3MzIJCyDwVRJlS2Ih8qfiZg8p3rw3ri5BWO8
-         dDfs/0MZRcbv7Aopv1Lm9jr/UhtoY1L0zJB1mY8jIgAmTeX1SDClGBBI1iyC1vqhfaIH
-         /6CnxnlVxx5kpVbUmOz+Sk/6AFPINYibpQlv+Ed0Q5Bd2gv7URlZ2MLklZIEGwvvlLyw
-         4NmNyGRlaYiLLyaj2agm9SMWgkIaWPb6IbS/agwp1yf41aSvJvIePkDjm+l9eYh8E2Fq
-         1AXg==
-X-Gm-Message-State: AAQBX9e99J2o65pqaTX4t5sttKA38cABLIK+4a2ji+UNC7sO/aTj3wOS
-        SX7jiajsO7M9/uedLpNLAgQtUMcJzxQ2DsglGzY=
-X-Google-Smtp-Source: AKy350a7YiY6F5g4GUQwV6NWXEJSInnzJf9PS0n+V+N4U/hVup2OrlAffRnZUSSZT9Z57unbN1x8A8nyd/GKdJvqA44=
-X-Received: by 2002:a17:907:a49:b0:931:6f5b:d27d with SMTP id
- be9-20020a1709070a4900b009316f5bd27dmr2788601ejc.0.1679728944343; Sat, 25 Mar
- 2023 00:22:24 -0700 (PDT)
+        with ESMTP id S231443AbjCYHpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 03:45:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2609E1515D
+        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 00:44:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679730265;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c1fqtu9LBWrWaCQxQTVjr0cxRai+bTqOnRnWXMB8NKA=;
+        b=C4Se7jDCNpm4VB+6K7RzgEFTEBJ3OeClIJNvGO5AwVFpDa+JnaIFb3t432FRJwH6szuTA7
+        ySOkTfua59+utZIRWi9VUpEmd1ORar5EgIEHuVYnOc5LGZyct2InV0CLTw8XVaBdvuPfHU
+        brEe9mMOoCkFGHF3zRWYdJ2dUlOW3c8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-413-H1kqNBBlOki1ozjiPf4r0w-1; Sat, 25 Mar 2023 03:44:18 -0400
+X-MC-Unique: H1kqNBBlOki1ozjiPf4r0w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 698D385C06B;
+        Sat, 25 Mar 2023 07:44:17 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 55749175AD;
+        Sat, 25 Mar 2023 07:44:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <ZB6N/H27oeWqouyb@gondor.apana.org.au>
+References: <ZB6N/H27oeWqouyb@gondor.apana.org.au> <ZBPTC9WPYQGhFI30@gondor.apana.org.au> <3763055.1679676470@warthog.procyon.org.uk>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     dhowells@redhat.com, willy@infradead.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        viro@zeniv.linux.org.uk, hch@infradead.org, axboe@kernel.dk,
+        jlayton@kernel.org, brauner@kernel.org,
+        torvalds@linux-foundation.org, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-crypto@vger.kernel.org
+Subject: Re: [RFC PATCH 23/28] algif: Remove hash_sendpage*()
 MIME-Version: 1.0
-Received: by 2002:a05:7412:ed41:b0:c6:cc67:5f5f with HTTP; Sat, 25 Mar 2023
- 00:22:22 -0700 (PDT)
-Reply-To: carteralex166@gmail.com
-From:   Alex Ben <alexbigben200@gmail.com>
-Date:   Sat, 25 Mar 2023 00:22:22 -0700
-Message-ID: <CADqKhr4ScWF1cAvWZj+Os7H2L6vhaZZa6EXz=5U++Cz+KJ=oBw@mail.gmail.com>
-Subject: Business Proposal.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3792016.1679730254.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Sat, 25 Mar 2023 07:44:14 +0000
+Message-ID: <3792017.1679730254@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-I have a business proposal for you reply for more info.
+> > I must be missing something, I think.  What's particularly optimal abo=
+ut the
+> > code in hash_sendpage() but not hash_sendmsg()?  Is it that the former=
+ uses
+> > finup/digest, but the latter ony does update+final?
+> =
+
+> A lot of hardware hashes can't perform partial updates, so they
+> will always fall back to software unless you use finup/digest.
+
+Okay.  Btw, how much of a hard limit is ALG_MAX_PAGES?  Multipage folios c=
+an
+exceed the current limit (16 pages, 64K) in size.  Is it just to prevent t=
+oo
+much memory being pinned at once?
+
+David
+
