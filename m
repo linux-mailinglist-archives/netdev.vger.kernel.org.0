@@ -2,176 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FA16C9083
-	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 20:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E82F6C9096
+	for <lists+netdev@lfdr.de>; Sat, 25 Mar 2023 20:52:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231770AbjCYTg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 15:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
+        id S231753AbjCYTwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Mar 2023 15:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbjCYTg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 15:36:27 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AA1CDED
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 12:36:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5uag72Ie6QCQa9800M/AOUtkVhFcJpDWI2deUf6fld0=; b=vYVjmpL7AkTK/fpYp52hdYd8GD
-        xZkUM2t4RmUfspnYs2co4Y6B/HsYFkTvdvrBvdpgJhb6CJSMJOtW+HArZFZS3/Pl8RdeaKyobwfzz
-        Jb2bDmGzq+EyYGryLPVmTZshuKvKaIioaq/05MHgPrU6j6OAj5en4+Mh4DminDqtHkYzt7331EFWC
-        L7i0aCNP2TjhFLZhsC1Gq9Phe/6tG7F+nD7nmk3H2KlEW69T45BNihWeabVZFSvWd1uTM8VRLqleK
-        rT6CDKHCPCyds3cbPjY82AG3sstxPlfHSFcntQN8eybe/tR8JfeDMiaqvwHhqHtVG7w3hAdlENgtN
-        FVwKWekw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39926)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pg9gU-0000t6-Ud; Sat, 25 Mar 2023 19:36:14 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pg9gQ-0003i5-Nu; Sat, 25 Mar 2023 19:36:10 +0000
-Date:   Sat, 25 Mar 2023 19:36:10 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 2/2] net: sfp: add quirk for 2.5G copper SFP
-Message-ID: <ZB9NKo3iXe7CZSId@shell.armlinux.org.uk>
-References: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
- <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
- <ZB5YgPiZYwbf/G2u@makrotopia.org>
- <ZB7/v8oUu3lkO4yC@shell.armlinux.org.uk>
- <ZB8Upcgv8EIovPCl@makrotopia.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZB8Upcgv8EIovPCl@makrotopia.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229659AbjCYTwQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 15:52:16 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B898F4C01;
+        Sat, 25 Mar 2023 12:52:15 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id qe8-20020a17090b4f8800b0023f07253a2cso4791644pjb.3;
+        Sat, 25 Mar 2023 12:52:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679773935;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z5gYAwyA52lJdi82C8jPAWHJNufj9DPpB37puTNEGOE=;
+        b=fABRXbYgMCUvuvMTo+XCocOqukvX3lWhgG4i+CB+phD6KVhOSmQKvP+c3o7oJVu6no
+         bG/idSqa9ggk465dxs/D2b5iOXfqypcIpLdhXH91ISfad96bIEw46JJSeOVJXlqsHZpV
+         1LWPRXXc5j+w8TuU78LM6G4eaPSuuVbImBa41pcDbJx1gHesvh6rxk1prHrPufx+paKC
+         ASyDGMoZMav/6Rghwidpp5hxQ7R4J+1JCOXf/5DJZHnoS+yoDTtjUZvUXL7ToRlPe6Xd
+         rXpfYodLBmq+B2HXavPGPJavgQ1sSFqbu01ZIndYo8ZU522cbTWMcNY5gZJl4bPlgBo7
+         n5IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679773935;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=z5gYAwyA52lJdi82C8jPAWHJNufj9DPpB37puTNEGOE=;
+        b=3phiiczUtQ1pyInb18RlngIIqJ3rpSmBoA0HmdDvbbYBUilA6qMQ5jRiYsUhi7lF3w
+         RGA8SPE0k1A6a31jnlWSsRFlFWVmJEPaOSKUMHvhjFVV5Xlwywu4QhhvIMqiCo/iS+go
+         AQ7NwUPCLK0oEqGlYUXchg8qs5pmMQTE9Ck+C4rR7qLS4SQz5DmQhA/X+WrR4xC3zX00
+         GGPMVmF3DhYOFwJYsgXDLDy99twGJv4j2yn6o1LbrF5VWM7Y1EV95Nf4Ai107CD+hq1a
+         +RP/FomydoCTOcHOSFli24cDglPdDEpAww8HM+ns7gLDgRBxmyUcpN0a+SEkmSqqfPx5
+         W4zw==
+X-Gm-Message-State: AAQBX9dQmRvZ7wUDm/un9pMfb6FniueyWku+vOjDsdqqM6unfCS9Sdtj
+        vpQB2lUPFSNJVkmoOx/jdw8=
+X-Google-Smtp-Source: AKy350ZlN8R3SKJ7v+hs1AkKVZmcj9zfPcqjUVRGh7WExkCj5alattBsyLJh19oSVQ6TyxvLlwJq5w==
+X-Received: by 2002:a17:902:c406:b0:1a2:333f:e19f with SMTP id k6-20020a170902c40600b001a2333fe19fmr2898613plk.11.1679773935013;
+        Sat, 25 Mar 2023 12:52:15 -0700 (PDT)
+Received: from localhost ([98.97.117.131])
+        by smtp.gmail.com with ESMTPSA id b20-20020a170902d89400b001a217a7a11csm3568399plz.131.2023.03.25.12.52.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Mar 2023 12:52:14 -0700 (PDT)
+Date:   Sat, 25 Mar 2023 12:52:12 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Farbod Shahinfar <farbod.shahinfar@polimi.it>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "jakub@cloudflare.com" <jakub@cloudflare.com>
+Message-ID: <641f50ecdfe64_1711f620870@john.notmuch>
+In-Reply-To: <DB9P251MB038942715458FA2A2F76FD4585849@DB9P251MB0389.EURP251.PROD.OUTLOOK.COM>
+References: <DB9P251MB038942715458FA2A2F76FD4585849@DB9P251MB0389.EURP251.PROD.OUTLOOK.COM>
+Subject: RE: Kernel panic on bpf_skb_pull_data
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 25, 2023 at 03:35:01PM +0000, Daniel Golle wrote:
-> On Sat, Mar 25, 2023 at 02:05:51PM +0000, Russell King (Oracle) wrote:
-> > On Sat, Mar 25, 2023 at 02:12:16AM +0000, Daniel Golle wrote:
-> > > Hi Russell,
-> > > 
-> > > On Tue, Mar 21, 2023 at 04:58:51PM +0000, Russell King (Oracle) wrote:
-> > > > Add a quirk for a copper SFP that identifies itself as "OEM"
-> > > > "SFP-2.5G-T". This module's PHY is inaccessible, and can only run
-> > > > at 2500base-X with the host without negotiation. Add a quirk to
-> > > > enable the 2500base-X interface mode with 2500base-T support, and
-> > > > disable autonegotiation.
-> > > > 
-> > > > Reported-by: Frank Wunderlich <frank-w@public-files.de>
-> > > > Tested-by: Frank Wunderlich <frank-w@public-files.de>
-> > > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > > 
-> > > I've tried the same fix also with my 2500Base-T SFP module:
-> > > diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> > > index 4223c9fa6902..c7a18a72d2c5 100644
-> > > --- a/drivers/net/phy/sfp.c
-> > > +++ b/drivers/net/phy/sfp.c
-> > > @@ -424,6 +424,7 @@ static const struct sfp_quirk sfp_quirks[] = {
-> > >         SFP_QUIRK_F("Turris", "RTSFP-10", sfp_fixup_rollball),
-> > >         SFP_QUIRK_F("Turris", "RTSFP-10G", sfp_fixup_rollball),
-> > >         SFP_QUIRK_F("OEM", "SFP-GE-T", sfp_fixup_ignore_tx_fault),
-> > > +       SFP_QUIRK_M("TP-LINK", "TL-SM410U", sfp_quirk_oem_2_5g),
-> > >  };
-> > > 
-> > >  static size_t sfp_strlen(const char *str, size_t maxlen)
-> > 
-> > Thanks for testing.
-> > 
-> > > However, the results are a bit of a mixed bag. The link now does come up
-> > > without having to manually disable autonegotiation. However, I see this
-> > > new warning in the bootlog:
-> > > [   17.344155] sfp sfp2: module TP-LINK          TL-SM410U        rev 1.0  sn 12154J6000864    dc 210606  
-> > > ...
-> > > [   21.653812] mt7530 mdio-bus:1f sfp2: selection of interface failed, advertisement 00,00000000,00000000,00006440
-> > 
-> > This will be the result of issuing an ethtool command, and phylink
-> > doesn't know what to do with the advertising mask - which is saying:
-> > 
-> >    Autoneg, Fibre, Pause, AsymPause
-> > 
-> > In other words, there are no capabilities to be advertised, which is
-> > invalid, and suggests user error. What ethtool command was being
-> > issued?
+Farbod Shahinfar wrote:
+> Hello everyone,
 > 
-> This was simply adding the interface to a bridge and bringing it up.
-> No ethtool involved afaik.
+> I am performing some test with BPF SK_SKB and I have encountered a scenario resulting in kernel panic. I use a BPF_SK_SKB_STREAM_PARSER program to parse a request which might be spanning multiple TCP segments. If the end of request is detected in the parser program it returns skb->len, passing the request to the BPF_SK_SKB_STREAM_VERDICT program, and otherwise it returns 0, waiting for more data to be received. You can find the BPF program attached (bpf_test.c). Is there an assumption that the program violates?
+> 
+> To reproduce the crashing scenario, I use the python script attached (client.py) which sends data in chunks toward the bpf program. Usually, the kernel crashes on the 3rd segment.
+> 
+> To provide more information, I have attached some crash logs. I have tested this on kernel version 6.1.0 (slightly modified) and version 6.2.8 (unmodified, obtained from kernel.org). It seems that the panic happens when invoking the bpf_skb_pull_data.
+> 
+> Is this a known issue or is there any information that I can provide to help resolve it?
+> 
+> Sincerely,
+> Farbod Shahinfar
+> 
+> PhD student at Politecnico di Milano
+> https://fshahinfar1.github.io/
+> 
 
-If its not ethtool, then there is only one other possibility which I
-thought had already been ruled out - and that is the PHY is actually
-accessible, but either we don't have a driver for it, or when reading
-the PHY's "features" we don't know what it is.
+I believe I have a fix here for this. I'll check Monday and resend
+last set of fixes
 
-Therefore, as the PHY is accessible, we need to identify what it is
-and have a driver for it.
-
-Please apply the following patch to print some useful information
-about the PHY:
-
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index aec8e48bdd4f..6b67262d5706 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2978,9 +2978,37 @@ static int phylink_sfp_config_phy(struct phylink *pl, u8 mode,
- 
- 	iface = sfp_select_interface(pl->sfp_bus, config.advertising);
- 	if (iface == PHY_INTERFACE_MODE_NA) {
-+		const int num_ids = ARRAY_SIZE(phy->c45_ids.device_ids);
-+		u32 id;
-+		int i;
-+
-+		if (phy->is_c45) {
-+			for (i = 0; i < num_ids; i++) {
-+				id = phy->c45_ids.device_ids[i];
-+				if (id != 0xffffffff)
-+					break;
-+			}
-+		} else {
-+			id = phy->phy_id;
-+		}
-+		phylink_err(pl,
-+			    "Clause %s PHY [0x%04x:0x%04x] driver %s found but\n",
-+			    phy->is_c45 ? "45" : "22",
-+			    id >> 16, id & 0xffff,
-+			    phy->drv ? phy->drv->name : "[unbound]");
- 		phylink_err(pl,
- 			    "selection of interface failed, advertisement %*pb\n",
- 			    __ETHTOOL_LINK_MODE_MASK_NBITS, config.advertising);
-+
-+		if (phy->is_c45) {
-+			phylink_err(pl, "Further PHY IDs:\n");
-+			for (i = 0; i < num_ids; i++) {
-+				id = phy->c45_ids.device_ids[i];
-+				if (id != 0xffffffff)
-+					phylink_err(pl, "  MMD %d [0x%04x:0x%04x]\n",
-+						    i, id >> 16, id & 0xffff);
-+			}
-+		}
- 		return -EINVAL;
- 	}
- 
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+John
