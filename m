@@ -2,531 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA106C94D2
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 15:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9500E6C94CF
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 15:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232051AbjCZN4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 09:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        id S232022AbjCZN4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 09:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232140AbjCZN4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 09:56:03 -0400
-Received: from DM5PR00CU002.outbound.protection.outlook.com (mail-cusazlp170110003.outbound.protection.outlook.com [IPv6:2a01:111:f403:c111::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00128A51;
-        Sun, 26 Mar 2023 06:55:21 -0700 (PDT)
+        with ESMTP id S232043AbjCZNzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 09:55:36 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::619])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E724868D;
+        Sun, 26 Mar 2023 06:54:48 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jzghvx0apsEnEU0F/Wsp19UI6HMLAzDp31sUM8WjZ0Otf5TVDI/Qk4SPmHIIL5PNhFkVrfvLx0BwwaQbtf3SAgT+jjF/cvh6OwIUNRFFeBIkrIXKIa+VUCvcq8qIYakAsjuAnPQjZlLnguEl7l9MZAuw87F8dixi5KHewk3G7aatwNCzwYmsClIe9ukA3p3dFYmGkEXoEK3AaPrtjAfE+RbzyqVQcOTebumc4ZaFsoCiqINuubjjueMeDUdKWEC5J7Zi6V/oHqKCVebPwKNMtT7hmXTwhiiVy4BZW0gXIbhBbyrrk+bQWK+efUEGtfVeeeMJ/O2T8ARZFdIp8FjNFQ==
+ b=DIboPYzsujIclQRIGgzqPOmkynzLqyS8UHG15vEkEgmiIUWWCzn9t0sheI7fGAVCsHyxbqNhGUhXe3nc2kv0o3Yejd+uSjP+CdBwjpV3SAkwzWNMe5Sudl5cnlo/73EhCzGkoe5I7pw2i5x7WLH1wpkKMwcEh7R5mBDCebkNsrJj1ycBVAzhaEvSGiwy4VLcOd8dj9n7siJdQU0V8CVf2hfrcTVQyHFFAV7YaBIvg4hPXNL2axd/MIscxsWpMCpRL/bnlBlzwH4vk6ckXmknKuRxrsW2qqWj9xy0TQLUZQSdvP8u9MJy5eImQZM5/g/lSidUkjuEgS2Eyk1ALii7nQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gbY44/+BdsQQ12XPkkNa0EECdNIeOvA1nOIn1gHaafs=;
- b=PMHZ7qpEc0/iKT/hvxhvB19soOHkTkIjEsB3uvWJWWQ+Qx7DQlRe1kYpyYOO7yfK/QJGIpuUpLA+bZEBd6qg8VQmxoS/85D3SU+wD9/Fbg+1SlN9JWSoSTDSzLiK4M1+w01vG7X3fC6hjW4fZOu+puubLduIOGhBodBB1RJ03tGZlj003kUpusrQ0MigIDG6YFMg0S0grdbw1+rrLkHmGhJ6Id8NDaaOS0hwKG/tbJaXP9jF2xq12AmjbAzXjHgRp0AIBBEu5QYdgpY4dH7pUolfAJasnJMlSeF9WYb6ILEqepQoYjni8hux1ThsUfvMYybk9Afpz03wG8Pm/fVnQg==
+ bh=E5RFpX79GJ2EZKenEJTdJ0qq+oRW7Q15gudkYHnnaQA=;
+ b=VTSFBjLs80pwqWS2oh+9gqFhRHhJTHgu4fawkpzQDYqHQjpl33EMfMqLwZ8eaRPnUmW7QKENaIq25NU/+mPXQyF5/0nGNGA2587JNyiiQswpgKKRoLuxEj+Bahl6cv4kZb2jD3m2X7b5jlISQrJ5MCjdkZmdTEQRU4o/WuQlM9Axd4p9nPIwGlXWKXg5FUIlVjqUMIoiOTUr9c1mBXLprmGNdLzKXNpweMc7v3EY2pULGoxeCGaWSwJQCmfKxwCi5SfmSNUYiCx/QhIcj1Z2hFA4CCIbV9XshF9SFXc4GlYnY6gmKretbzr7V+86cLHzHBhniyXEQMSsd80/udgLMA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gbY44/+BdsQQ12XPkkNa0EECdNIeOvA1nOIn1gHaafs=;
- b=AGxeYTCQhe6TM4lrLIyIFcgLSSZHCtoAD7b7xn8JGbhoyA6XAn4xcO9f6HPj6a47H34DoKUPLON9bWoaRplzRYgzPjsvMJgLZcVIUbEWd+ZYGVnHRWXiovlhTVy87e8kG0V2QkNLAFl9Bko1Tr6ia/Z/l4oR0w8jcxpXqzzf+zg=
+ bh=E5RFpX79GJ2EZKenEJTdJ0qq+oRW7Q15gudkYHnnaQA=;
+ b=aoyD+hGxv+4N1BTb96L+MLaPFUoUZ5lh3rVRQEM4XC3hBbwpxCgTJcKMPR6MbExMWxKDqO/ICoN8tXhHFaSk2ODM1I0eHG8yt+WjEnmtdCrjIK/zIuWZSQZg3EdVg4JXo4EXVamGflsmIozxdJFXTk3x3IvYEFzsvcgXYFBy4EQ5s2B59aLgwdTAXTC8MIT8DP5khbOEPXfmSBF26R5DSjNKXR05vpEJqq2jymGCyjD7z778Yl9QYsTYuAmkU7E4aAKsoVY9EboJgOzToxlblHnPTFLkXgi/YT3pCfjvteXTXO2fC4e8ZJAxqlMQr5GERiBrv+8QYpSRaXT7aO+9Wg==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
- by MW4PR21MB2001.namprd21.prod.outlook.com (2603:10b6:303:68::21) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by IA1PR12MB8466.namprd12.prod.outlook.com (2603:10b6:208:44b::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.15; Sun, 26 Mar
- 2023 13:53:32 +0000
-Received: from DM6PR21MB1370.namprd21.prod.outlook.com
- ([fe80::b7e9:4da1:3c23:35f]) by DM6PR21MB1370.namprd21.prod.outlook.com
- ([fe80::b7e9:4da1:3c23:35f%3]) with mapi id 15.20.6254.009; Sun, 26 Mar 2023
- 13:53:32 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
-        peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
-        robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
-        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-        isaku.yamahata@intel.com, dan.j.williams@intel.com,
-        jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-        iommu@lists.linux.dev
-Cc:     mikelley@microsoft.com
-Subject: [PATCH v7 12/12] PCI: hv: Enable PCI pass-thru devices in Confidential VMs
-Date:   Sun, 26 Mar 2023 06:52:07 -0700
-Message-Id: <1679838727-87310-13-git-send-email-mikelley@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1679838727-87310-1-git-send-email-mikelley@microsoft.com>
-References: <1679838727-87310-1-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR03CA0168.namprd03.prod.outlook.com
- (2603:10b6:303:8d::23) To DM6PR21MB1370.namprd21.prod.outlook.com
- (2603:10b6:5:16b::28)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Sun, 26 Mar
+ 2023 13:54:05 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::d228:dfe5:a8a8:28b3]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::d228:dfe5:a8a8:28b3%5]) with mapi id 15.20.6178.038; Sun, 26 Mar 2023
+ 13:54:05 +0000
+Date:   Sun, 26 Mar 2023 16:53:58 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Amit Cohen <amcohen@nvidia.com>, mlxsw@nvidia.com,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH net-next 6/6] mlxsw: pci: Add support for new reset flow
+Message-ID: <ZCBOdunTNYsufhcn@shredder>
+References: <c61d07469ecf5d3053442e24d4d050405f466b76.1679502371.git.petrm@nvidia.com>
+ <20230323165115.GA2557618@bhelgaas>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230323165115.GA2557618@bhelgaas>
+X-ClientProxiedBy: LO2P265CA0244.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:8a::16) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|MW4PR21MB2001:EE_
-X-MS-Office365-Filtering-Correlation-Id: 19e2419c-0cc0-4e6d-4b9e-08db2e017c75
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|IA1PR12MB8466:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6bae1877-738d-451d-ce6b-08db2e018fd7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8cyK4rqkQ7uhgT/63MQFyIlEpF/sBDl9XhM5DG3uqogonqRkxWJi6ZSOkmhcgtO4NMBvheUXmWxTS4wU1f85x8bCI8IgvrTpKJ/cdpO6y/kzqRtg/mQs1BhGEiyn4dnFM+OnD2RBuzNPC+yjGLhAGywuNpq53WeGVfY8JFzQ4UbiVf+Q/pw7YGU1wK1c8escrCyMBza/WEsA/tVytJXzCK+9Wd2+dMC16qlDEe8SW0i7TRJCDAqXLOotLnJi8l8DX7MHorxyT+dkZFMCCVM8/BfSwC1NStKbfN9YjLKQ8eunpiQcpW3goaQUE9Mejtv/SfvvPQJECH/M1UxoXN0dqTXoj9+Qi0igCXTp9zaL2hJTPzGaJmwYMAQFZg1Yb2QIhuxuZwIgRr9Pk2p8Cooh/unKKYa0raYoavtrDgxIKDyV9LEpsVJvtfAz39yI4CT/dYcNejApJmHS64rck/Hqv0m/DYCz1fm9/XpouVYOy8pCIrGwNn575Q3Sdq/2R6u1n+N25r63i5WSInCWOuVBZ1h6Mn9KhzKqP7AdKIpKok/i0+HeFANkylmPk7sqCjQ1xUgZY9Wa1Eofnq7/Z45HvqTCJoQEXYQYG7JkuL7nxrUQB299aj50/fp+2MLPTm6kvu+agXkNz9oTyJNpbD1pSaGSZjcDcvF2YYLUogEW66E=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(346002)(366004)(136003)(396003)(451199021)(38100700002)(38350700002)(82950400001)(82960400001)(36756003)(86362001)(921005)(2906002)(6666004)(107886003)(10290500003)(186003)(26005)(478600001)(6506007)(6512007)(5660300002)(7416002)(7406005)(8936002)(52116002)(966005)(6486002)(41300700001)(30864003)(316002)(66556008)(66476007)(66946007)(4326008)(2616005)(8676002)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: nMTyPk3JaQCn8p6Xb3v7kL9WOjszTo4GIV1Lip/JDKFwQhU2bvbgA9ylChIAeHRa3eu/wGpnf7Ath17ubX6hMm5tgJoea/OHwS2BqPG+r75Katss8rSidt5aiSyLrIvaOV4iBItW70tEXALud/6K3zDAsL5ydBDL2qJiD/PYu5q1T/7Zuz53mQS6EIYXCoD4+8zgoInKoTbgELWkEK1XNAbxI5uaRr1grCYD0Z1tDy90skeX8tOps44HiiVwz5NxQkWRHSrjkghnvyyC5Iz5UAgVqusfo4zRYOfeDSFvRCvl/AFyn/fy2nYkCOXJiA8K6igHbA4RLzfdsl+3Y9Gr368STbWP0iuggSElC95u42Xt0h0Fu2A4+m0AQWH3gH2Nym3lS32T8rgWFZFUQjITdAYUIibdjGE+pvPiKzeoHso5izfhD3dayDmxg29nBZXHrr49o30w7gc9TdK9TbI5b7ADuVqw4bWroYLdKnDbhQDYIjQMG52SyZJFZ/uVCiiITxy2gJjLHNojCgU3k4QlXOZ1q1/oHXY0CiORaC5zQtNeL6L0f3Krp6AMn2ykeBoi
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(346002)(376002)(136003)(39860400002)(366004)(396003)(451199021)(66946007)(66556008)(5660300002)(66476007)(6486002)(316002)(54906003)(4326008)(8676002)(6916009)(8936002)(9686003)(186003)(478600001)(41300700001)(6512007)(26005)(6506007)(83380400001)(38100700002)(33716001)(86362001)(2906002)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Rdf/dciESQRn2tdCrxJeAG4Bs1/cjuqNkODQ1RsZssDn7fxDxZqa9rTEFjt4?=
- =?us-ascii?Q?o9HIsZnmKltAGoy3a9NMF0GqX4uOzYBM2lTGOWpmA7e+qhh48HGUct4qe3IE?=
- =?us-ascii?Q?wG8q4tN7RlV1RaCPBhfgAU8SPhY9QBP620wyj5CBadl3me5xgRhHdY8/4Boy?=
- =?us-ascii?Q?KE8u+ltuYH+P0zbIMooGwWBj1TP5TWK2Wa44sU5L06JcRAZX/Mp00u8u1yyc?=
- =?us-ascii?Q?KT6+8o/wiF9Zp825u/aQVnsHGoKuUqNENY9p1uQ8SNdy8VKGXQ5W/2AGrFft?=
- =?us-ascii?Q?CL+/K1lfqydtBCmV0uIuq7HGmV+zIsxR/Zo++huSQOO9uHe350LMksm3NhZ3?=
- =?us-ascii?Q?RJGFeDdG+Asm7Q/ApflRIo9IMUmbtyWeNxBoswcN3FMrDUjIQr7yIbw+V2fT?=
- =?us-ascii?Q?OdVsNRJMFuHlybAD0KFDQqOgyAkuwf0nH6bqma6CXg9UsHD9kiAlNCjq6PNL?=
- =?us-ascii?Q?yZTWg9+9Ke9s9nHdYNP8FB28oac73eLkGXriiwmSFyeq+29J1ofH3wt9H60P?=
- =?us-ascii?Q?LlqHf9Wd1CUMAx9dpq4+XGp9+ocWzg/xy6aNmnt8pL8obdP8f7fJhgSdSVSd?=
- =?us-ascii?Q?OuNCWPtEkj/1wh8y8R42eq09dXO9bcXSGdX/qhp1zlnlrEEd0kbOZXJ0cWCc?=
- =?us-ascii?Q?1rYEWhQT2rkp/zFEe5jKASTBGOicfWx503psZleBaDxkH+wVtRV+M3nkXtrq?=
- =?us-ascii?Q?U+a32I8IDnI+3BCxSqbFfSMNR38OVFx/Cp0TLwLWUh+v2VgldXhINyp8bIF7?=
- =?us-ascii?Q?nWzfdxuwMBazWIycUT67KFoEoP/h5WMbvLPuA0UpTmSFda6s0M3ufL8VA1Y1?=
- =?us-ascii?Q?NsX9HBMycu/7O9wUO3cYqCdpjcQJOtgUNFF/SOCmycHcCFx/ELAuA6MUCUjq?=
- =?us-ascii?Q?9ylB9ex7OS+yqbNJDci6u0vswJuDDczixxIUPGSFSxk2+gTagQFBZPXhBx7V?=
- =?us-ascii?Q?JV9/6jueyzG3H0Z7s7x4OAcqBsgcNgDwy7OIORcq835SOJZQiNzb5vdNDwiz?=
- =?us-ascii?Q?6zdbWnRh2tX0EIVyK0bZSYZfV68nPsE7ec4b5skJ2XIrrg+uBwBG1cCsHK+a?=
- =?us-ascii?Q?0UL0HV0ObxX4yc3B97G93MGPcin8D23y7E1foX1QPcc+uq//Fp+fLSKCm47Z?=
- =?us-ascii?Q?ob3tMZD8ajtmd2tJA+71hnMrvHTuZhS7enj3D2AtAo4ZDFAwkDqYYg5FDWxx?=
- =?us-ascii?Q?q951oak5Yjq5Iv+g3DwRLkOp/sHT8XLwJOLmhDBl5xfboKc7re7Wd/IDetbd?=
- =?us-ascii?Q?Fjg0pIS1H+Y4TjMQq+UZyEYPF2+iFlGsKDu8JW6yf/WPAEvaEG+lr104U5AW?=
- =?us-ascii?Q?JlTBioa4d8UnQIAjpb0J5AZyJvuFPKbAT90nEP9GrplfaMaIsvidjywm7TIS?=
- =?us-ascii?Q?UG3IrGsFxbMsnCIB4wr0+Z8yDbKIx20RG+Qikp/pI+/j8X4LLvVX0H3Dm2nB?=
- =?us-ascii?Q?64I/jNnCVN49e1ZY60p58Aei9aiFqLBeAxLlNMBE838ER4dCPx4Km2lnzgI/?=
- =?us-ascii?Q?7AXZ7o9uKoTrOn4u6JYce3s6XRKRJayzqScAwA9ZStTMS9JwGR3usgJeIcFT?=
- =?us-ascii?Q?NLSKA4BEWE98dHkXkQxoE6w7KdPK06UDOw7/JLBcvK8YfEzq8IA97nNw32ai?=
- =?us-ascii?Q?uw=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19e2419c-0cc0-4e6d-4b9e-08db2e017c75
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TsXVY6w4dhoRsNd8toA7jnhlC2I1+7XxRdYDpNPcfnCLZQh0OfP7h4kqewqG?=
+ =?us-ascii?Q?DpxhEAIhPNTqMSVtucnITmUyeekjHodJ2880APMVNUmJZjfdJVZ1luK6lqlu?=
+ =?us-ascii?Q?mHnobAJuRmNMFE7/6nYHUX8qfkJ7aCS7wewjPOcZc2tygBskUChfqMRbPfQH?=
+ =?us-ascii?Q?yKFgTFXvBNnc92RyY1TCZH5BKQEmrwfMpYhwG/Wt2ima5nlJdOPFmZtAljUx?=
+ =?us-ascii?Q?LWj4tpMh9KUjJQ/YdZ+W0IEcSHMpO57xFCUWySmxVcHnLbHUUvlvl00tPgBG?=
+ =?us-ascii?Q?J5GTHQjnfuLbGF/IUjasiUm+AHJy3BMdQocJoOGEHcmZz+ApIoMYl9uqOpbH?=
+ =?us-ascii?Q?k4xGkK4t3xpbZ1EYGcuwwAAvNfmb6f/tTvFdZExtdUCg5Cvw4YtXWOunWnq6?=
+ =?us-ascii?Q?TOpVmS+e+YNKxhhiVLfqdw/P8R+iBQMhMtdCW4mFI4lzdveo+uUFkqH7DeAd?=
+ =?us-ascii?Q?9jRTzppfXNlMbjKF3c1o2pbT2a7abuEzILVP7c/waLGIxlgCFDLY3lw0aIWq?=
+ =?us-ascii?Q?4EMBwSrNHF2Y1b98m5l7OSSlHYJnCTuZjR9mXhkfe3dTGf1HstBUxapQuFpX?=
+ =?us-ascii?Q?0EVMXGDZaDWFdEsgDcwUvCLgRd4MOQyrfyOJE9VLmJBR17vm3heZugfHxtOK?=
+ =?us-ascii?Q?aHIMDXr4ipnXgxZ0pOtLwMTGxGxzIS10mh7tE6Ts5g0ACoZcBkvEZUd5Jtq7?=
+ =?us-ascii?Q?Kk3gTWRvb8TasJF+E5RJDeseeu3N54wwH+wjMgQyJ4uux0fG63SZdjwUlUGK?=
+ =?us-ascii?Q?ELUbYICUbC5gp3GH23f7ZlBoGVkf6nLiDijdB9MyOew6mEcQaiVm3iWjZobC?=
+ =?us-ascii?Q?lZS0GK82weXG7Pv8aRE7NSSTXoJVOUnVp/B9cOnziRpcpyIUjuDFEReiYmcp?=
+ =?us-ascii?Q?N8qfCaCd0XqpsqHTgKPtPV+j7MjjE5m9wAaT/XHOkhlmk+Iba1pquv2poTXW?=
+ =?us-ascii?Q?eEEUJlgSlJvXSEXX9OEPHbTegeW7ZYJ+jqecC9hYmlfuMQZKz8OxZOablXvz?=
+ =?us-ascii?Q?Cb8thfgJIL2sWL2ZlCk90cmPTe04cJrs8vFl36k9IN90ArvM31TV2zSrKbXX?=
+ =?us-ascii?Q?c6sdLVTlICPWO2Ft5RQbXVOsEt+DTRLuFm5ec+kczXw/L8D7D8Z6MFAmAheR?=
+ =?us-ascii?Q?L7z8dG6At2oCbkL41t47wBGuh1OL9tYswwsKdLcVpLAz2HSsj/GcvKwD1bTx?=
+ =?us-ascii?Q?6xfjCvdDZBApQTD7bfSDXrdOZ+7BRdPDxiR2xhtRX/lJlQFg+CvHrOnCtv1F?=
+ =?us-ascii?Q?LiLYL451WvHHeJjJ8RZxRiX6oXDyagzCq+wmK2wQQg/PMcQiHaKONo6slSfM?=
+ =?us-ascii?Q?2pFAc43eUYekoJSgzkPNyaeAX+o26XbSFY06Q3sCCo3ZrdcT29mAdmvL1IAE?=
+ =?us-ascii?Q?F9qSkFK7oEngaEprk5Z53XgJ9//GZVhX0hpxErkKo8237C0j97qlL+dkW/uA?=
+ =?us-ascii?Q?9Khd1QNMLus4Hiskv5GDjLshA2D0yelUxyr0cowe43+SlG/QKCQNdAS+CBfd?=
+ =?us-ascii?Q?cu0w5ewdcp5IHDTGNI6rM+lZAnYSrkNUmxgyRfn37CW6HSYDM/kBp1uRI7pE?=
+ =?us-ascii?Q?HBEtM7QaG90NeuJ29xjXlNq/GpdTephq0WoVexq/?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bae1877-738d-451d-ce6b-08db2e018fd7
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 13:53:32.2313
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 13:54:05.0561
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jjUfcKcLxgOt7KKL9pVc0mCABKvaHo1z1/VkPIiGQzr4PykDE0d03UN9bHjOGpO91tKqbzWFOw4Pt6SBDbdWrg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB2001
+X-MS-Exchange-CrossTenant-UserPrincipalName: GEJgp0PSgRpUzjS35E2nM8ngNHd3DqCvxYfp9mcwGBsF+PJL9G8ewmVifpCsUfNatzpKBlnB3AokipAROnWlsw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8466
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For PCI pass-thru devices in a Confidential VM, Hyper-V requires
-that PCI config space be accessed via hypercalls.  In normal VMs,
-config space accesses are trapped to the Hyper-V host and emulated.
-But in a confidential VM, the host can't access guest memory to
-decode the instruction for emulation, so an explicit hypercall must
-be used.
+Hi Bjorn,
 
-Add functions to make the new MMIO read and MMIO write hypercalls.
-Update the PCI config space access functions to use the hypercalls
-when such use is indicated by Hyper-V flags.  Also, set the flag to
-allow the Hyper-V PCI driver to be loaded and used in a Confidential
-VM (a.k.a., "Isolation VM").  The driver has previously been hardened
-against a malicious Hyper-V host[1].
+On Thu, Mar 23, 2023 at 11:51:15AM -0500, Bjorn Helgaas wrote:
+> Hi Petr, thanks for pointing me here.
+> 
+> On Wed, Mar 22, 2023 at 05:49:35PM +0100, Petr Machata wrote:
+> > From: Amit Cohen <amcohen@nvidia.com>
+> > 
+> > The driver resets the device during probe and during a devlink reload.
+> > The current reset method reloads the current firmware version or a pending
+> > one, if one was previously flashed using devlink. However, the reset does
+> > not take down the PCI link, preventing the PCI firmware from being
+> > upgraded, unless the system is rebooted.
+> 
+> Just to make sure I understand this correctly, the above sounds like
+> "firmware" includes two parts that have different rules for loading:
+> 
+>   - Current reset method is completely mlxsw-specific and resets the
+>     mlxsw core but not the PCIe interface; this loads only firmware
+>     part A
+> 
+>   - A PCIe reset resets both the mlxsw core and the PCIe interface;
+>     this loads both firmware part A and part B
 
-[1] https://lore.kernel.org/all/20220511223207.3386-2-parri.andrea@gmail.com/
+Yes. A few years ago I had to flash a new firmware in order to test a
+fix in the PCIe firmware and the bug still reproduced after a devlink
+reload. Only after a reboot the new PCIe firmware was loaded and the bug
+was fixed. Bugs in PCIe firmware are not common, but we would like to
+avoid the scenario where users must reboot the machine in order to load
+the new firmware.
 
-Co-developed-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- arch/x86/include/asm/hyperv-tlfs.h  |   3 +
- drivers/hv/channel_mgmt.c           |   2 +-
- drivers/pci/controller/pci-hyperv.c | 232 ++++++++++++++++++++++++++----------
- include/asm-generic/hyperv-tlfs.h   |  22 ++++
- 4 files changed, 194 insertions(+), 65 deletions(-)
+> 
+> > To solve this problem, a new reset command (6) was implemented in the
+> > firmware. Unlike the current command (1), after issuing the new command
+> > the device will not start the reset immediately, but only after the PCI
+> > link was disabled. The driver is expected to wait for 500ms before
+> > re-enabling the link to give the firmware enough time to start the reset.
+> 
+> I guess the idea here is that the mlxsw driver:
+> 
+>   - Tells the firmware we're going to reset
+>     (MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE)
+> 
+>   - Saves PCI config state
+> 
+>   - Disables the link (mlxsw_pci_link_toggle()), which causes a PCIe
+>     hot reset
+> 
+>   - The firmware notices the link disable and starts its own internal
+>     reset
+> 
+>   - The mlxsw driver waits 500ms
+>     (MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS)
+> 
+>   - Enables link and waits for it to be active
+>     (mlxsw_pci_link_active_check()
+> 
+>   - Waits for device to be ready again (mlxsw_pci_device_id_read())
 
-diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
-index 0b73a80..b4fb75b 100644
---- a/arch/x86/include/asm/hyperv-tlfs.h
-+++ b/arch/x86/include/asm/hyperv-tlfs.h
-@@ -122,6 +122,9 @@
- /* Recommend using enlightened VMCS */
- #define HV_X64_ENLIGHTENED_VMCS_RECOMMENDED		BIT(14)
- 
-+/* Use hypercalls for MMIO config space access */
-+#define HV_X64_USE_MMIO_HYPERCALLS			BIT(21)
-+
- /*
-  * CPU management features identification.
-  * These are HYPERV_CPUID_CPU_MANAGEMENT_FEATURES.EAX bits.
-diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-index cc23b90..007f26d 100644
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -67,7 +67,7 @@
- 	{ .dev_type = HV_PCIE,
- 	  HV_PCIE_GUID,
- 	  .perf_device = false,
--	  .allowed_in_isolated = false,
-+	  .allowed_in_isolated = true,
- 	},
- 
- 	/* Synthetic Frame Buffer */
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index f33370b..337f3b4 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -514,6 +514,7 @@ struct hv_pcibus_device {
- 
- 	/* Highest slot of child device with resources allocated */
- 	int wslot_res_allocated;
-+	bool use_calls; /* Use hypercalls to access mmio cfg space */
- 
- 	/* hypercall arg, must not cross page boundary */
- 	struct hv_retarget_device_interrupt retarget_msi_interrupt_params;
-@@ -1041,6 +1042,70 @@ static int wslot_to_devfn(u32 wslot)
- 	return PCI_DEVFN(slot_no.bits.dev, slot_no.bits.func);
- }
- 
-+static void hv_pci_read_mmio(struct device *dev, phys_addr_t gpa, int size, u32 *val)
-+{
-+	struct hv_mmio_read_input *in;
-+	struct hv_mmio_read_output *out;
-+	u64 ret;
-+
-+	/*
-+	 * Must be called with interrupts disabled so it is safe
-+	 * to use the per-cpu input argument page.  Use it for
-+	 * both input and output.
-+	 */
-+	in = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	out = *this_cpu_ptr(hyperv_pcpu_input_arg) + sizeof(*in);
-+	in->gpa = gpa;
-+	in->size = size;
-+
-+	ret = hv_do_hypercall(HVCALL_MMIO_READ, in, out);
-+	if (hv_result_success(ret)) {
-+		switch (size) {
-+		case 1:
-+			*val = *(u8 *)(out->data);
-+			break;
-+		case 2:
-+			*val = *(u16 *)(out->data);
-+			break;
-+		default:
-+			*val = *(u32 *)(out->data);
-+			break;
-+		}
-+	} else
-+		dev_err(dev, "MMIO read hypercall error %llx addr %llx size %d\n",
-+				ret, gpa, size);
-+}
-+
-+static void hv_pci_write_mmio(struct device *dev, phys_addr_t gpa, int size, u32 val)
-+{
-+	struct hv_mmio_write_input *in;
-+	u64 ret;
-+
-+	/*
-+	 * Must be called with interrupts disabled so it is safe
-+	 * to use the per-cpu input argument memory.
-+	 */
-+	in = *this_cpu_ptr(hyperv_pcpu_input_arg);
-+	in->gpa = gpa;
-+	in->size = size;
-+	switch (size) {
-+	case 1:
-+		*(u8 *)(in->data) = val;
-+		break;
-+	case 2:
-+		*(u16 *)(in->data) = val;
-+		break;
-+	default:
-+		*(u32 *)(in->data) = val;
-+		break;
-+	}
-+
-+	ret = hv_do_hypercall(HVCALL_MMIO_WRITE, in, NULL);
-+	if (!hv_result_success(ret))
-+		dev_err(dev, "MMIO write hypercall error %llx addr %llx size %d\n",
-+				ret, gpa, size);
-+}
-+
- /*
-  * PCI Configuration Space for these root PCI buses is implemented as a pair
-  * of pages in memory-mapped I/O space.  Writing to the first page chooses
-@@ -1059,8 +1124,10 @@ static int wslot_to_devfn(u32 wslot)
- static void _hv_pcifront_read_config(struct hv_pci_dev *hpdev, int where,
- 				     int size, u32 *val)
- {
-+	struct hv_pcibus_device *hbus = hpdev->hbus;
-+	struct device *dev = &hbus->hdev->device;
-+	int offset = where + CFG_PAGE_OFFSET;
- 	unsigned long flags;
--	void __iomem *addr = hpdev->hbus->cfg_addr + CFG_PAGE_OFFSET + where;
- 
- 	/*
- 	 * If the attempt is to read the IDs or the ROM BAR, simulate that.
-@@ -1088,56 +1155,79 @@ static void _hv_pcifront_read_config(struct hv_pci_dev *hpdev, int where,
- 		 */
- 		*val = 0;
- 	} else if (where + size <= CFG_PAGE_SIZE) {
--		spin_lock_irqsave(&hpdev->hbus->config_lock, flags);
--		/* Choose the function to be read. (See comment above) */
--		writel(hpdev->desc.win_slot.slot, hpdev->hbus->cfg_addr);
--		/* Make sure the function was chosen before we start reading. */
--		mb();
--		/* Read from that function's config space. */
--		switch (size) {
--		case 1:
--			*val = readb(addr);
--			break;
--		case 2:
--			*val = readw(addr);
--			break;
--		default:
--			*val = readl(addr);
--			break;
-+
-+		spin_lock_irqsave(&hbus->config_lock, flags);
-+		if (hbus->use_calls) {
-+			phys_addr_t addr = hbus->mem_config->start + offset;
-+
-+			hv_pci_write_mmio(dev, hbus->mem_config->start, 4,
-+						hpdev->desc.win_slot.slot);
-+			hv_pci_read_mmio(dev, addr, size, val);
-+		} else {
-+			void __iomem *addr = hbus->cfg_addr + offset;
-+
-+			/* Choose the function to be read. (See comment above) */
-+			writel(hpdev->desc.win_slot.slot, hbus->cfg_addr);
-+			/* Make sure the function was chosen before reading. */
-+			mb();
-+			/* Read from that function's config space. */
-+			switch (size) {
-+			case 1:
-+				*val = readb(addr);
-+				break;
-+			case 2:
-+				*val = readw(addr);
-+				break;
-+			default:
-+				*val = readl(addr);
-+				break;
-+			}
-+			/*
-+			 * Make sure the read was done before we release the
-+			 * spinlock allowing consecutive reads/writes.
-+			 */
-+			mb();
- 		}
--		/*
--		 * Make sure the read was done before we release the spinlock
--		 * allowing consecutive reads/writes.
--		 */
--		mb();
--		spin_unlock_irqrestore(&hpdev->hbus->config_lock, flags);
-+		spin_unlock_irqrestore(&hbus->config_lock, flags);
- 	} else {
--		dev_err(&hpdev->hbus->hdev->device,
--			"Attempt to read beyond a function's config space.\n");
-+		dev_err(dev, "Attempt to read beyond a function's config space.\n");
- 	}
- }
- 
- static u16 hv_pcifront_get_vendor_id(struct hv_pci_dev *hpdev)
- {
-+	struct hv_pcibus_device *hbus = hpdev->hbus;
-+	struct device *dev = &hbus->hdev->device;
-+	u32 val;
- 	u16 ret;
- 	unsigned long flags;
--	void __iomem *addr = hpdev->hbus->cfg_addr + CFG_PAGE_OFFSET +
--			     PCI_VENDOR_ID;
- 
--	spin_lock_irqsave(&hpdev->hbus->config_lock, flags);
-+	spin_lock_irqsave(&hbus->config_lock, flags);
- 
--	/* Choose the function to be read. (See comment above) */
--	writel(hpdev->desc.win_slot.slot, hpdev->hbus->cfg_addr);
--	/* Make sure the function was chosen before we start reading. */
--	mb();
--	/* Read from that function's config space. */
--	ret = readw(addr);
--	/*
--	 * mb() is not required here, because the spin_unlock_irqrestore()
--	 * is a barrier.
--	 */
-+	if (hbus->use_calls) {
-+		phys_addr_t addr = hbus->mem_config->start +
-+					 CFG_PAGE_OFFSET + PCI_VENDOR_ID;
-+
-+		hv_pci_write_mmio(dev, hbus->mem_config->start, 4,
-+					hpdev->desc.win_slot.slot);
-+		hv_pci_read_mmio(dev, addr, 2, &val);
-+		ret = val;  /* Truncates to 16 bits */
-+	} else {
-+		void __iomem *addr = hbus->cfg_addr + CFG_PAGE_OFFSET +
-+					     PCI_VENDOR_ID;
-+		/* Choose the function to be read. (See comment above) */
-+		writel(hpdev->desc.win_slot.slot, hbus->cfg_addr);
-+		/* Make sure the function was chosen before we start reading. */
-+		mb();
-+		/* Read from that function's config space. */
-+		ret = readw(addr);
-+		/*
-+		 * mb() is not required here, because the
-+		 * spin_unlock_irqrestore() is a barrier.
-+		 */
-+	}
- 
--	spin_unlock_irqrestore(&hpdev->hbus->config_lock, flags);
-+	spin_unlock_irqrestore(&hbus->config_lock, flags);
- 
- 	return ret;
- }
-@@ -1152,39 +1242,51 @@ static u16 hv_pcifront_get_vendor_id(struct hv_pci_dev *hpdev)
- static void _hv_pcifront_write_config(struct hv_pci_dev *hpdev, int where,
- 				      int size, u32 val)
- {
-+	struct hv_pcibus_device *hbus = hpdev->hbus;
-+	struct device *dev = &hbus->hdev->device;
-+	int offset = where + CFG_PAGE_OFFSET;
- 	unsigned long flags;
--	void __iomem *addr = hpdev->hbus->cfg_addr + CFG_PAGE_OFFSET + where;
- 
- 	if (where >= PCI_SUBSYSTEM_VENDOR_ID &&
- 	    where + size <= PCI_CAPABILITY_LIST) {
- 		/* SSIDs and ROM BARs are read-only */
- 	} else if (where >= PCI_COMMAND && where + size <= CFG_PAGE_SIZE) {
--		spin_lock_irqsave(&hpdev->hbus->config_lock, flags);
--		/* Choose the function to be written. (See comment above) */
--		writel(hpdev->desc.win_slot.slot, hpdev->hbus->cfg_addr);
--		/* Make sure the function was chosen before we start writing. */
--		wmb();
--		/* Write to that function's config space. */
--		switch (size) {
--		case 1:
--			writeb(val, addr);
--			break;
--		case 2:
--			writew(val, addr);
--			break;
--		default:
--			writel(val, addr);
--			break;
-+		spin_lock_irqsave(&hbus->config_lock, flags);
-+
-+		if (hbus->use_calls) {
-+			phys_addr_t addr = hbus->mem_config->start + offset;
-+
-+			hv_pci_write_mmio(dev, hbus->mem_config->start, 4,
-+						hpdev->desc.win_slot.slot);
-+			hv_pci_write_mmio(dev, addr, size, val);
-+		} else {
-+			void __iomem *addr = hbus->cfg_addr + offset;
-+
-+			/* Choose the function to write. (See comment above) */
-+			writel(hpdev->desc.win_slot.slot, hbus->cfg_addr);
-+			/* Make sure the function was chosen before writing. */
-+			wmb();
-+			/* Write to that function's config space. */
-+			switch (size) {
-+			case 1:
-+				writeb(val, addr);
-+				break;
-+			case 2:
-+				writew(val, addr);
-+				break;
-+			default:
-+				writel(val, addr);
-+				break;
-+			}
-+			/*
-+			 * Make sure the write was done before we release the
-+			 * spinlock allowing consecutive reads/writes.
-+			 */
-+			mb();
- 		}
--		/*
--		 * Make sure the write was done before we release the spinlock
--		 * allowing consecutive reads/writes.
--		 */
--		mb();
--		spin_unlock_irqrestore(&hpdev->hbus->config_lock, flags);
-+		spin_unlock_irqrestore(&hbus->config_lock, flags);
- 	} else {
--		dev_err(&hpdev->hbus->hdev->device,
--			"Attempt to write beyond a function's config space.\n");
-+		dev_err(dev, "Attempt to write beyond a function's config space.\n");
- 	}
- }
- 
-@@ -3563,6 +3665,7 @@ static int hv_pci_probe(struct hv_device *hdev,
- 	hbus->bridge->domain_nr = dom;
- #ifdef CONFIG_X86
- 	hbus->sysdata.domain = dom;
-+	hbus->use_calls = !!(ms_hyperv.hints & HV_X64_USE_MMIO_HYPERCALLS);
- #elif defined(CONFIG_ARM64)
- 	/*
- 	 * Set the PCI bus parent to be the corresponding VMbus
-@@ -3572,6 +3675,7 @@ static int hv_pci_probe(struct hv_device *hdev,
- 	 * information to devices created on the bus.
- 	 */
- 	hbus->sysdata.parent = hdev->device.parent;
-+	hbus->use_calls = false;
- #endif
- 
- 	hbus->hdev = hdev;
-diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
-index b870983..ea406e9 100644
---- a/include/asm-generic/hyperv-tlfs.h
-+++ b/include/asm-generic/hyperv-tlfs.h
-@@ -168,6 +168,8 @@ struct ms_hyperv_tsc_page {
- #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE 0x00af
- #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST 0x00b0
- #define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY 0x00db
-+#define HVCALL_MMIO_READ			0x0106
-+#define HVCALL_MMIO_WRITE			0x0107
- 
- /* Extended hypercalls */
- #define HV_EXT_CALL_QUERY_CAPABILITIES		0x8001
-@@ -796,4 +798,24 @@ struct hv_memory_hint {
- 	union hv_gpa_page_range ranges[];
- } __packed;
- 
-+/* Data structures for HVCALL_MMIO_READ and HVCALL_MMIO_WRITE */
-+#define HV_HYPERCALL_MMIO_MAX_DATA_LENGTH 64
-+
-+struct hv_mmio_read_input {
-+	u64 gpa;
-+	u32 size;
-+	u32 reserved;
-+} __packed;
-+
-+struct hv_mmio_read_output {
-+	u8 data[HV_HYPERCALL_MMIO_MAX_DATA_LENGTH];
-+} __packed;
-+
-+struct hv_mmio_write_input {
-+	u64 gpa;
-+	u32 size;
-+	u32 reserved;
-+	u8 data[HV_HYPERCALL_MMIO_MAX_DATA_LENGTH];
-+} __packed;
-+
- #endif
--- 
-1.8.3.1
+Correct.
 
+> 
+> So the first question is why you don't simply use
+> pci_reset_function(), since it is supposed to cause a reset and do all
+> the necessary waiting for the device to be ready.  This is quite
+> complicated to do correctly; in fact, we still discover issues there
+> regularly.  There are many special cases in PCIe r6.0, sec 6.6.1, and
+> it would be much better if we can avoid trying to handle them all in
+> individual drivers.
+
+I see that this function takes the device lock and I think (didn't try)
+it will deadlock if we were to replace the current code with it since we
+also perform a reset during probe where I believe the device lock is
+already taken.
+
+__pci_reset_function_locked() is another option, but it assumes the
+device lock was already taken, which is correct during probe, but not
+when reset is performed as part of devlink reload.
+
+Let's put the locking issues aside and assume we can use
+__pci_reset_function_locked(). I'm trying to figure out what it can
+allow us to remove from the driver in favor of common PCI code. It
+essentially invokes one of the supported reset methods. Looking at my
+device, I see the following:
+
+ # cat /sys/class/pci_bus/0000\:01/device/0000\:01\:00.0/reset_method 
+ pm bus
+
+So I assume it will invoke pci_pm_reset(). I'm not sure it can work for
+us as our reset procedure requires us to disable the link on the
+downstream port as a way of notifying the device that it should start
+the reset procedure.
+
+We might be able to use the "device_specific" method and add quirks in
+"pci_dev_reset_methods". However, I'm not sure what would be the
+benefit, as it basically means moving the code in
+mlxsw_pci_link_toggle() to drivers/pci/quirks.c. Also, when the "probe"
+argument is "true" we can't actually determine if this reset method is
+supported or not, as we can't query that from the configuration space of
+the device in the current implementation. It's queried using a command
+interface that is specific to mlxsw and resides in the driver itself.
+Not usable from drivers/pci/quirks.c.
+
+> 
+> Of course, pci_reset_function() does *not* include details like
+> MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS.
+> 
+> I assume that flashing the firmware to the device followed by a power
+> cycle (without ever doing MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE)
+> would load the new firmware everywhere.  Can we not do the same with a
+> PCIe reset?
+
+Yes, that's what we would like to achieve.
+
+Thanks for the feedback!
