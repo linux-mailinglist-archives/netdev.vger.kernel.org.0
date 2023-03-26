@@ -2,112 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3CBE6C9797
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 21:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0418E6C97B6
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 22:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231786AbjCZTUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 15:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
+        id S229755AbjCZUJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 16:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbjCZTUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 15:20:36 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FDC5263;
-        Sun, 26 Mar 2023 12:20:35 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id p203so7914285ybb.13;
-        Sun, 26 Mar 2023 12:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679858435;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oG/w6m6QtpmYcph7ogXNw2Cb+L528y4HO8hE3WHqySk=;
-        b=RuYjs/StRoPkkDWrvmwXiGOQ4iyHBLQ/oUc4LBwsJU954HQ34/la6MiLmEMMLNjbqa
-         ZiUeOh17f/1xc5lpEgOWba9hMrolYNI2qlhsq4ilNa1fsdj763IHQLcbbtmWlRouvS+U
-         dSrhFSfzFxbzx8uTZEIfCUeszCpSx4HsO84dNQebYcswk4G/8jz7sbQ3dA0ol3PQ+waP
-         iB4UqDUppIJIX1r2twnkAJr8idV7fWN8MV3e85gpPvi18qlrTsFtoHk6k71NHG36rprB
-         swGIloWRV55T8523Do1MGQ3E2dVOcCW0XtgX2jKeLiU0qmhKETcks2Xzm46REysaFt5s
-         Evhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679858435;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oG/w6m6QtpmYcph7ogXNw2Cb+L528y4HO8hE3WHqySk=;
-        b=SitwAuNnrUXK5/XvvQboxos8yY8/RtcRC4khWBhH9F7onDyKDNp/P5s+X39jnTjiGn
-         ozuJW5szbo0kvgA47lHTkLk1UjETFm0xKCGziXoCwkNb8mb6u6qVcLUGvZZdBFOte2Qm
-         PtQSRMAhn2H/qxQME5aNEh4xuQp00eaVX5VSsfWpvkL+ipcT/mOwemxDHDHmso9iYpt+
-         dVqvSmLpjFkiBq/R09snLDAtYdWC1ikA8K6g29uCI3+z6sZns2h/55NciPzCtip0QpIS
-         XOzemTXUuJdpc+96y0YW7hR3v7CrPhVu7xO0xSl2D4x9uam2eXd9yox7UrsrYcFytX1i
-         lR5g==
-X-Gm-Message-State: AAQBX9fa9DgrjOKwsW8ChczYsu1WDKcIBw3TZsyXqpHQAChNUmMPMPEl
-        uqoDU7BpV4e9csMqTraWoJw=
-X-Google-Smtp-Source: AKy350ZX9Q/+0ojpsMuhWZXN3EJq3mCPftR76gOQ189+2+0EJNrC6JBFXYC2V/t/39GIYgzP3Km5zA==
-X-Received: by 2002:a25:2650:0:b0:b65:f335:2875 with SMTP id m77-20020a252650000000b00b65f3352875mr9567454ybm.37.1679858434757;
-        Sun, 26 Mar 2023 12:20:34 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:2049:9ff4:d425:1853])
-        by smtp.gmail.com with ESMTPSA id 64-20020a250643000000b00b7767ca749esm1874211ybg.59.2023.03.26.12.20.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 12:20:34 -0700 (PDT)
-Date:   Sun, 26 Mar 2023 12:20:33 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Bobby Eshleman <bobbyeshleman@gmail.com>
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        syzbot <syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com>,
-        axboe@kernel.dk, davem@davemloft.net, edumazet@google.com,
-        io-uring@vger.kernel.org, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, stefanha@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Subject: Re: [syzbot] [net?] [virt?] [io-uring?] [kvm?] BUG: soft lockup in
- vsock_connect
-Message-ID: <ZCCbATwov4U+GBUv@pop-os.localdomain>
-References: <00000000000075bebb05f79acfde@google.com>
- <CAGxU2F4jxdzK8Y-jaoKRaX_bDhoMtomOT6TyMek+un-Bp8RX3g@mail.gmail.com>
- <ZBUGp5bvNuE3sK5g@bullseye>
+        with ESMTP id S229475AbjCZUJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 16:09:54 -0400
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394B944A1
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 13:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ODLggqX0G4k8DHIekKUKvZSdD0FAa3VALQRYe8PHTxw=; b=qwGcnqQB3uOlGF93VRUpPUOpD+
+        JtyQhNnM0vZ/8QjCcDU0f9twgde8Kso/aXo2u9bhz4xzNNHhTNW7S4LHVp2hxUVc+8KIex+6lhBhJ
+        haflXy90JcERlHTwITT0DJBqjeGWPec1FRoPk46nnZkxvAKa9jLQrOPFcDGgHNC8sL6w=;
+Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=nf.local)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pgWgY-007669-3s; Sun, 26 Mar 2023 22:09:50 +0200
+Message-ID: <956879eb-a902-73dd-2574-1e6235571647@nbd.name>
+Date:   Sun, 26 Mar 2023 22:09:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZBUGp5bvNuE3sK5g@bullseye>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.0
+Subject: Re: Aw: Re: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix tx
+ throughput regression with direct 1G links
+Content-Language: en-US
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     netdev@vger.kernel.org, Daniel Golle <daniel@makrotopia.org>
+References: <20230324140404.95745-1-nbd@nbd.name>
+ <trinity-84b79570-2de7-496a-870e-a9678a55f4a4-1679736481816@3c-app-gmx-bap48>
+ <2e7464a7-a020-f270-4bc7-c8ef47188dcd@nbd.name>
+ <trinity-30bf2ced-ef19-4ce1-9738-07015a93dede-1679850603745@3c-app-gmx-bap64>
+ <4a67ee73-f4ee-2099-1b5b-8d6b74acf429@nbd.name>
+ <trinity-6b2ecbe5-7ad8-4740-b691-8b9868fae223-1679852966887@3c-app-gmx-bap64>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <trinity-6b2ecbe5-7ad8-4740-b691-8b9868fae223-1679852966887@3c-app-gmx-bap64>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 18, 2023 at 12:32:39AM +0000, Bobby Eshleman wrote:
-> On Fri, Mar 24, 2023 at 09:38:38AM +0100, Stefano Garzarella wrote:
-> > Hi Bobby,
-> > FYI we have also this one, but it seems related to
-> > syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
-> > 
-> > Thanks,
-> > Stefano
-> > 
+On 26.03.23 19:49, Frank Wunderlich wrote:
+>> Gesendet: Sonntag, 26. März 2023 um 19:27 Uhr
+>> Von: "Felix Fietkau" <nbd@nbd.name>
+>> An: "Frank Wunderlich" <frank-w@public-files.de>
+>> Cc: netdev@vger.kernel.org, "Daniel Golle" <daniel@makrotopia.org>
+>> Betreff: Re: Aw: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
+>>
+>> On 26.03.23 19:10, Frank Wunderlich wrote:
+>> >> Gesendet: Sonntag, 26. März 2023 um 17:56 Uhr
+>> >> Von: "Felix Fietkau" <nbd@nbd.name>
+>> >> An: "Frank Wunderlich" <frank-w@public-files.de>
+>> >> Cc: netdev@vger.kernel.org, "Daniel Golle" <daniel@makrotopia.org>
+>> >> Betreff: Re: Aw: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
+>> >>
+>> >> On 25.03.23 10:28, Frank Wunderlich wrote:
+>> >> >> Gesendet: Freitag, 24. März 2023 um 15:04 Uhr
+>> >> >> Von: "Felix Fietkau" <nbd@nbd.name>
+>> >> >> An: netdev@vger.kernel.org
+>> >> >> Cc: "Frank Wunderlich" <frank-w@public-files.de>, "Daniel Golle" <daniel@makrotopia.org>
+>> >> >> Betreff: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
+>> >> >>
+>> >> >> Using the QDMA tx scheduler to throttle tx to line speed works fine for
+>> >> >> switch ports, but apparently caused a regression on non-switch ports.
+>> >> >> 
+>> >> >> Based on a number of tests, it seems that this throttling can be safely
+>> >> >> dropped without re-introducing the issues on switch ports that the
+>> >> >> tx scheduling changes resolved.
+>> >> >> 
+>> >> >> Link: https://lore.kernel.org/netdev/trinity-92c3826f-c2c8-40af-8339-bc6d0d3ffea4-1678213958520@3c-app-gmx-bs16/
+>> >> >> Fixes: f63959c7eec3 ("net: ethernet: mtk_eth_soc: implement multi-queue support for per-port queues")
+>> >> >> Reported-by: Frank Wunderlich <frank-w@public-files.de>
+>> >> >> Reported-by: Daniel Golle <daniel@makrotopia.org>
+>> >> >> Tested-by: Daniel Golle <daniel@makrotopia.org>
+>> >> >> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>> >> >> ---
+>> >> >>  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 --
+>> >> >>  1 file changed, 2 deletions(-)
+>> >> >> 
+>> >> >> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> >> >> index a94aa08515af..282f9435d5ff 100644
+>> >> >> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> >> >> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+>> >> >> @@ -763,8 +763,6 @@ static void mtk_mac_link_up(struct phylink_config *config,
+>> >> >>  		break;
+>> >> >>  	}
+>> >> >>  
+>> >> >> -	mtk_set_queue_speed(mac->hw, mac->id, speed);
+>> >> >> -
+>> >> >>  	/* Configure duplex */
+>> >> >>  	if (duplex == DUPLEX_FULL)
+>> >> >>  		mcr |= MAC_MCR_FORCE_DPX;
+>> >> > 
+>> >> > thx for the fix, as daniel already checked it on mt7986/bpi-r3 i tested bpi-r2/mt7623
+>> >> > 
+>> >> > but unfortunately it does not fix issue on bpi-r2 where the gmac0/mt7530 part is affected.
+>> >> > 
+>> >> > maybe it needs a special handling like you do for mt7621? maybe it is because the trgmii mode used on this path?
+>> >> Could you please test if making it use the MT7621 codepath brings back 
+>> >> performance? I don't have any MT7623 hardware for testing right now.
+>> > 
+>> > Hi,
+>> > 
+>> > this seems to make the CPU stall (after kernel is loaded completely when userspace begins to start):
+>> > 
+>> > -       if (IS_ENABLED(CONFIG_SOC_MT7621)) {
+>> > +       if (IS_ENABLED(CONFIG_SOC_MT7621) || IS_ENABLED(CONFIG_SOC_MT7623)) {
+>> > 
+>> > [   27.252672] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
+>> > [   27.258618] rcu:     2-...0: (0 ticks this GP) idle=54c4/1/0x40000000 softir8
+>> > [   27.266973] rcu:     (detected by 1, t=2102 jiffies, g=-891, q=7 ncpus=4)
+>> > [   27.273499] Sending NMI from CPU 1 to CPUs 2:
+>> >                                                                                  
+>> > [USBD] USB PRB0 LineState: 0
+>> > 
+>> > wonder why this happens...i expected some kind of tranmit queue erros with trace...
+>> > 
+>> > full log here
+>> > https://pastebin.com/de4dZDt4
+>> > 
+>> > but i've found no error there (sorry for cutting on the right side...my terminal window was to small)
+>> The change you made has no effect, because CONFIG_SOC_MT7623 does not 
+>> exist, so there must be something else that broke your system.
+>> Try CONFIG_MACH_MT7623 instead, once you've resolved the system hang.
 > 
-> Got it, I'll look into it.
+> it was exactly this change above...dropping it fixed it
 > 
+> do not know why i did no compile-error, looked into implementation of IS_ENABLED which is passed through different defines till
+> 
+> include/linux/kconfig.h:42:#define ___is_defined(val)		____is_defined(__ARG_PLACEHOLDER_##val)
+> include/linux/kconfig.h:43:#define ____is_defined(arg1_or_junk)	__take_second_arg(arg1_or_junk 1, 0)
+> include/linux/kconfig.h:14:#define __take_second_arg(__ignored, val, ...) val
+> 
+> i do not expect that there is anything wrong, just wonder why this stalls...
+> 
+> used the CONFIG_MACH_MT7623 (which is set in my config) boots up fine, but did not fix the 622Mbit-tx-issue
+> 
+> and i'm not sure i have tested it before...all ports of mt7531 are affected, not only wan (i remembered you asked for this)
+Does the MAC that's connected to the switch use flow control? Can you 
+test if changing that makes a difference?
 
-It seems you forgot to set skb->sk??
-
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 957cdc01c8e8..d47ad27b409d 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -236,6 +236,7 @@ static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
-        }
-
-        virtio_transport_inc_tx_pkt(vvs, skb);
-+       skb_set_owner_w(skb, sk_vsock(vsk));
-
-        return t_ops->send_pkt(skb);
- }
+- Felix
 
