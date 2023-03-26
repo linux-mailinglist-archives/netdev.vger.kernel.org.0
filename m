@@ -2,169 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A3D56C93B2
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 12:11:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B43816C93F8
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 13:18:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231522AbjCZKKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 06:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
+        id S231308AbjCZLSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 07:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbjCZKKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 06:10:41 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECABC83E4;
-        Sun, 26 Mar 2023 03:10:39 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id ek18so24479775edb.6;
-        Sun, 26 Mar 2023 03:10:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679825438;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=44FjUDYM2l/hnTk2ARAIkT7XpeiTLM47QeD1JdG1Tfw=;
-        b=duJqAtETDF5nByrxWWhSZo2FKGV+5YJIRStzbiOwRhKYtkI0HQ0avpY/7U5wbYjmqE
-         k3B02iC2Yv4LiVt2noA/YDcYm5TxqMtDeKGHSLMwOhJfeockwvf7IDvwb9poIKGyubJ0
-         5zCYhiOn/3ZVa6QXMVTwfyGmczWYnWTFUBeoDO5m6uQdEx3kpjbMK1RvuGuJ+T60EFmt
-         m5gtBV8YIcY+HMisTmMxB7/24oKrFx2fSb5hghbPQ6UYeBVXZtiNBzHZZZnOViwa/9Ft
-         nw8ch7aJlku4SAPFcBpD9GHk9/630nfblb7QPGzdmw6M3Z5kdUgCk56fprZ+vdA+IT+d
-         G6Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679825438;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=44FjUDYM2l/hnTk2ARAIkT7XpeiTLM47QeD1JdG1Tfw=;
-        b=vtvkZYe6fPxPdoox9lFj0ZMet1fPafb5Z2RTwDUQeQySCnP6iQR7MJ0wNkx2lvwQ/6
-         YGslzxwnX9Dsef8XsUHUfJS7l3SX3CsmwG1StjCQX1K9JVEZcaSIERhehU8yvG8vJXIS
-         /w/QOL8/Q/tor361Lso4/PAMHNX/GudAuymeOFa65EB2gmpBJc0cHBhtsrvSqQVZqYbX
-         w5EVkvp1nYkShXeIyJQ49xcBkDfUh/j+zvFD+r08ryr/O1YCpD/nMJqPywP4lfNvc3rs
-         ns2Zemq6YAYAi8IEixohWKzjo/FGdFQEEKpFJl9j0l4j5O4GEbJDbzxroiAF8OJ7Upav
-         oJKQ==
-X-Gm-Message-State: AAQBX9cJSfedJNCA66QltWzDgXR9jA9Ty9QhwWE7+5haRc8chKW9j26P
-        p6W2uqJe3BFO2fMJDIr+oeafuOiJsvXrVw6tQuA=
-X-Google-Smtp-Source: AKy350bop1lMFf9FnEfEfqJnHnp6iri08z/Z2sUGsU4ZQ+4SDDytnEvf0jo+5v/gFKFQGFFxcAvCpwmSh4AXiZvN+mY=
-X-Received: by 2002:a17:906:eda6:b0:8dd:70a:3a76 with SMTP id
- sa6-20020a170906eda600b008dd070a3a76mr4191168ejb.11.1679825438367; Sun, 26
- Mar 2023 03:10:38 -0700 (PDT)
+        with ESMTP id S231821AbjCZLSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 07:18:38 -0400
+X-Greylist: delayed 185 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 26 Mar 2023 04:18:35 PDT
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC6861A2
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 04:18:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1679829326; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=gvu1PBAcSOcdZPWgnTBkS9BB1pOOBAACHG9/bgqKMFIldg/1sW601ARmglHmrTBmjQ
+    HcGZzXBiuYJDvcC6oPGjUlTKJP2w7dSTVnSciSkP3XxMTJbMaDvfHIU2BK1GpSjDGKxa
+    GIj2o7wEj110krhxJ+cdLoJa3oPHatW+hN3+OzOKg1cQ2m4/KkSj4kEfCgQ0EYOR0Hzg
+    NG9/CuvqFe7WRxSTJHeGLpWxHgC2Ze2oSwtDZditZNUN7mU8m97UGKN4qp7r0nahAiMb
+    y79+5XrJqCFHKOTTnxj7NJIX6FKgNyp2qM1FD5PU7MNI9HajDECRzuyUugvKe2UtMMXa
+    vMvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1679829326;
+    s=strato-dkim-0002; d=strato.com;
+    h=In-Reply-To:From:References:To:Subject:Date:Message-ID:Cc:Date:From:
+    Subject:Sender;
+    bh=gzuaxz9sjVMiVIadcyYNO7aKkqVL68IqsYnkniUFExE=;
+    b=hR0+gnFh+36P9UAQ7jYo2mBf9D+AdQmapfxIq0cakYruLANmKa50FC09Q5Yan+vkPb
+    YaTBcMfx6XV8tHpaGlT8+K1jMNSeM7iwi/2ynWW0ovANcnZ6GaPj0DUTNHceAxY0bRYX
+    dAks3MzRCNt1qvMRraFv0Wz+ZtkA3DXy76GjzbZxhv46n+Uwpqj45Te3hOl0nFNoFr/S
+    SxkFG0o3y7ehL7vztvPsHVBB+y1CEBKixE4yz1lTXBxct54OB4TxZwJ94/nIUFoTvMsk
+    lGwltJ7R4tGsXMySJAbCzu9QDOzW+0HI7BKKhVkiT0iDSRcyz22bCRFc6Z7dhiq029u7
+    ihzA==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1679829326;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:To:Subject:Date:Message-ID:Cc:Date:From:
+    Subject:Sender;
+    bh=gzuaxz9sjVMiVIadcyYNO7aKkqVL68IqsYnkniUFExE=;
+    b=G77sLgJXgLbkC7ThmA9oavxAxgxvy/lVIf+oB+tvUqger4/RufrwN2rvi/k8Shq/CE
+    AV0E0OijEEW7TKVaDmCkYXBgjJiDdxj8vxf9YU6AMMTwQfkx3bHGsvteZVFk0eLZIJOi
+    wmX1V1+nCr1Bd86dfp9WALprZeI6jVXGLQVWp6GiU4uJBwTcL1QWsdcLn31aCqhFtJvc
+    tny5nOO5hLBWKh4t9FUO4P9v7fvJypNPubebfHx/kJRuwCdlysD4U4EWaDlvwfjgQtS6
+    HDPKrwkvbHO4JRME1S6xdbdnjcNWshhtro5H2n326hSG+9yOHfAZ/o+T7cY5JcVRsF46
+    lLEg==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusl129OHEdFq0USEbDUQnQ=="
+Received: from [IPV6:2a00:6020:4a8e:5000::923]
+    by smtp.strato.de (RZmta 49.3.1 AUTH)
+    with ESMTPSA id n9397fz2QBFQSDP
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sun, 26 Mar 2023 13:15:26 +0200 (CEST)
+Message-ID: <31c4a218-ee1b-4b64-59b6-ba5ef6ecce3c@hartkopp.net>
+Date:   Sun, 26 Mar 2023 13:15:19 +0200
 MIME-Version: 1.0
-References: <20230325152417.5403-1-kerneljasonxing@gmail.com>
- <CANn89iJaVrObJNDC9TrnSUC3XQeo-zfmUXLVrNVcsbRDPuSNtA@mail.gmail.com> <CAL+tcoDVCywXXt0Whnx+o0PcULmdms0osJf0qUb0HKvVwuE6oQ@mail.gmail.com>
-In-Reply-To: <CAL+tcoDVCywXXt0Whnx+o0PcULmdms0osJf0qUb0HKvVwuE6oQ@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Sun, 26 Mar 2023 18:10:02 +0800
-Message-ID: <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com>
-Subject: Re: [PATCH net] net: fix raising a softirq on the current cpu with
- rps enabled
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: WARNING in isotp_tx_timer_handler and WARNING in print_tainted
+To:     "Dae R. Jeong" <threeearcat@gmail.com>, mkl@pengutronix.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <ZB/93xJxq/BUqAgG@dragonet>
+Content-Language: en-US
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <ZB/93xJxq/BUqAgG@dragonet>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 12:04=E2=80=AFPM Jason Xing <kerneljasonxing@gmail.=
-com> wrote:
->
-> On Sat, Mar 25, 2023 at 11:57=E2=80=AFPM Eric Dumazet <edumazet@google.co=
-m> wrote:
-> >
-> > On Sat, Mar 25, 2023 at 8:26=E2=80=AFAM Jason Xing <kerneljasonxing@gma=
-il.com> wrote:
-> > >
-> > > From: Jason Xing <kernelxing@tencent.com>
-> > >
-> > > Since we decide to put the skb into a backlog queue of another
-> > > cpu, we should not raise the softirq for the current cpu. When
-> > > to raise a softirq is based on whether we have more data left to
-> > > process later. As to the current cpu, there is no indication of
-> > > more data enqueued, so we do not need this action. After enqueuing
-> > > to another cpu, net_rx_action() function will call ipi and then
-> > > another cpu will raise the softirq as expected.
-> > >
-> > > Also, raising more softirqs which set the corresponding bit field
-> > > can make the IRQ mechanism think we probably need to start ksoftirqd
-> > > on the current cpu. Actually it shouldn't happen.
-> > >
-> > > Fixes: 0a9627f2649a ("rps: Receive Packet Steering")
-> > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > > ---
-> > >  net/core/dev.c | 2 --
-> > >  1 file changed, 2 deletions(-)
-> > >
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 1518a366783b..bfaaa652f50c 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -4594,8 +4594,6 @@ static int napi_schedule_rps(struct softnet_dat=
-a *sd)
-> > >         if (sd !=3D mysd) {
-> > >                 sd->rps_ipi_next =3D mysd->rps_ipi_list;
-> > >                 mysd->rps_ipi_list =3D sd;
-> > > -
-> > > -               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> > >                 return 1;
-> > >         }
-> > >  #endif /* CONFIG_RPS */
-> > > --
-> > > 2.37.3
-> > >
-> >
-> > This is not going to work in some cases. Please take a deeper look.
-> >
-> > I have to run, if you (or others) do not find the reason, I will give
-> > more details when I am done traveling.
->
-> I'm wondering whether we could use @mysd instead of @sd like this:
->
-> if (!__test_and_set_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
->     __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+Hi,
 
-Ah, I have to add more precise code because the above codes may mislead peo=
-ple.
+On 26.03.23 10:10, Dae R. Jeong wrote:
+> Hi,
+> 
+> I am curious about the error handling logic in isotp_sendmsg() which
+> looks a bit unclear to me.
+> 
+> I was looking the `WARNING in isotp_tx_timer_handler` warning [1],
+> which was firstly addressed by a commit [2] but reoccured even after
+> the commit.
+> [1]: https://syzkaller.appspot.com/bug?id=4f492d593461a5e44d76dd9322e179d13191a8ef
+> [2]: c6adf659a8ba can: isotp: check CAN address family in isotp_bind()
+> 
+> I thought that the warning is caused by the concurrent execution of
+> two isotp_sendmsg() as described below (I'm not 100% sure though).
+> 
+> CPU1                             CPU2
+> isotp_sendmsg()                  isotp_sendmsg()
+> -----                            -----
+> old_state = so->tx.state; // ISOTP_IDLE
+> 
+>                                   cmpxchg(&so->tx.state, ISTOP_IDLE, ISOTP_SENDING) // success
+> 							     ...
+> 							     so->tx.state = ISTOP_WAIT_FIRST_FC;
+> 							     hrtimer_start(&so->txtimer);
+> 
+> cmpxchg(&so->tx.state, ISTOP_IDLE, ISOTP_SENDING) // failed
+> // if MSG_DONTWAIT is set in msg->msg_flags or
+> // a signal is delivered during wait_event_interruptible()
+> goto err_out;
+> err_out:
+>      so->tx.state = old_state; // ISTOP_IDLE
+> 
+>                                   isotp_tx_timer_handler()
+> 								 -----
+> 								 switch (so->tx.state) {
+> 								 default:
+> 								     WARN_ONCE();
+> 								 }
+> 
+> Then, a commit [3] changed the logic of tx timer, and removed the
+> WARN_ONCE() statement. So I thought that the issue is completely
+> handled.
+> [3]: 4f027cba8216 can: isotp: split tx timer into transmission and timeout
+> 
+> But even after [3] is applied, I found a warning that seems related
+> occurred [4] (in the kernel commit: 478a351ce0d6).
+> [4]: https://syzkaller.appspot.com/bug?id=11d0e5f6fef53a0ea486bbd07ddd3cba66132150
+> 
+> So I wonder whether the `err_out` logic in isotp_sendmsg() is safe.
+> For me, it looks like isotp_sendmsg() can change so->tx.state to
+> ISTOP_IDLE at any time. It may not be a problem if all other locations
+> are aware of this. Is this an intended behavior?
+> 
+> Thank you in advance.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1518a366783b..9ac9b32e392f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4594,8 +4594,9 @@ static int napi_schedule_rps(struct softnet_data *sd)
-        if (sd !=3D mysd) {
-                sd->rps_ipi_next =3D mysd->rps_ipi_list;
-                mysd->rps_ipi_list =3D sd;
-+               if (!__test_and_set_bit(NAPI_STATE_SCHED, &mysd->backlog.st=
-ate))
-+                       __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+Thank you for picking this up!
 
--               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-                return 1;
-        }
- #endif /* CONFIG_RPS */
+In fact I was not aware of the possibility of a concurrent execution of 
+isotp_sendmsg() and thought cmpxchg() would just make it ...
 
-Eric, I realized that some paths don't call the ipi to notify another
-cpu. If someone grabs the NAPI_STATE_SCHED flag, we know that at the
-end of net_rx_action() or the beginning of process_backlog(), the
-net_rps_action_and_irq_enable() will handle the information delivery.
-However, if no one grabs the flag, in some paths we could not have a
-chance immediately to tell another cpu to raise the softirq and then
-process those pending data. Thus, I have to make sure if someone owns
-the napi poll as shown above.
+But looking at other *_sendmsg() implementations a lock_sock() seems to 
+be a common pattern to handle concurrent syscalls, see:
 
-If I get this wrong, please correct me if you're available. Thanks in advan=
-ce.
+git grep -p lock_sock net | grep sendmsg
 
->
-> I traced back to some historical changes and saw some relations with
-> this commit ("net: solve a NAPI race"):
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
-/?id=3D39e6c8208d7b6fb9d2047850fb3327db567b564b
->
-> Thanks,
-> Jason
+What do you think about adopting this to isotp_sendmsg()? See patch below.
+
+Best regards,
+Oliver
+
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 9bc344851704..0b95c0df7a63 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -912,13 +912,12 @@ static enum hrtimer_restart 
+isotp_txfr_timer_handler(struct hrtimer *hrtimer)
+  		isotp_send_cframe(so);
+
+  	return HRTIMER_NORESTART;
+  }
+
+-static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, 
+size_t size)
++static int isotp_sendmsg_locked(struct sock *sk, struct msghdr *msg, 
+size_t size)
+  {
+-	struct sock *sk = sock->sk;
+  	struct isotp_sock *so = isotp_sk(sk);
+  	u32 old_state = so->tx.state;
+  	struct sk_buff *skb;
+  	struct net_device *dev;
+  	struct canfd_frame *cf;
+@@ -1091,10 +1090,22 @@ static int isotp_sendmsg(struct socket *sock, 
+struct msghdr *msg, size_t size)
+  		wake_up_interruptible(&so->wait);
+
+  	return err;
+  }
+
++static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, 
+size_t size)
++{
++	struct sock *sk = sock->sk;
++	int ret;
++
++	lock_sock(sk);
++	ret = isotp_sendmsg_locked(sk, msg, size);
++	release_sock(sk);
++
++	return ret;
++}
++
+  static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, 
+size_t size,
+  			 int flags)
+  {
+  	struct sock *sk = sock->sk;
+  	struct sk_buff *skb;
+
+
+
