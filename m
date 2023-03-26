@@ -2,108 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBAA66C95BC
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:46:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE186C95DC
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbjCZOoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 10:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
+        id S232305AbjCZO47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 10:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbjCZOoV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:44:21 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593274232
-        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 07:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GEKZ+3rq0t0f02Ahyux8VIMBF2mer1/c3GBafURphD4=; b=a8kS+s6RHF3UrSjnKad7pcg0jc
-        Nm6aPpycUaJetoPexZ16H6EZuvv3D3TrfDXaHVrFHp8idJw63j8WHECxFdncxLX+exiAR1zXnY/zL
-        I+v/7u95zPkk7PVJYo7kASU341J96BGWzYdEFeHe8gbg7+QFTZZNu6tro8Qp/d07Udh9RXSOVboBQ
-        l88U4GShVDF001zBle1rytAq4tl0l2aV4d54KW3pmiVCjlhQhMJi+xi1nHbxkL6LJKwpoqkfRyVXy
-        NnRSCRd039ttBYb1xDHlIM+NILYvtQKtg7E8F4LU3stjaCSCdTMAJ1BivCPCXtARMCQ2usdAKnEgB
-        hjY0bDyA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46666)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pgRbL-00027f-Ea; Sun, 26 Mar 2023 15:44:07 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pgRbF-0004Y4-4y; Sun, 26 Mar 2023 15:44:01 +0100
-Date:   Sun, 26 Mar 2023 15:44:01 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: Re: [PATCH net-next 2/2] net: sfp: add quirk for 2.5G copper SFP
-Message-ID: <ZCBaMSvmNUPNBH6y@shell.armlinux.org.uk>
-References: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
- <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
- <ZB5YgPiZYwbf/G2u@makrotopia.org>
- <ZB7/v8oUu3lkO4yC@shell.armlinux.org.uk>
- <ZB8Upcgv8EIovPCl@makrotopia.org>
- <ZB9NKo3iXe7CZSId@shell.armlinux.org.uk>
- <trinity-d65e8e0e-6837-49d9-b5e2-1e1d68c289d3-1679830571282@3c-app-gmx-bap45>
+        with ESMTP id S232069AbjCZO45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:56:57 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C895B95;
+        Sun, 26 Mar 2023 07:56:56 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id eg48so25763070edb.13;
+        Sun, 26 Mar 2023 07:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679842615;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m9gY3qN/0TbI0QIi8rWv+RCKMQwx1Vl9uKOL6knVa0U=;
+        b=Gn3+s7kdMcPDShteR9u+nP+qN5vkLguoYbicJg2JFU/FUiuXHmyKHjKeW3sT6SM+EN
+         216oMMdL654WsT+UdJLZcUl43ctdYbAmRObbRePBsA1hir5GMX7hTz34D5IQ69vUY/AZ
+         4ur3APia65C2rvcLCq2QJkKEzvurWdzeBSJn4/DgISywrZ8Ml6cPXWHZn3cTRPvI7m0k
+         ZSykk4kzsn19zPfDjVawP6MskwIZ9sNoM3ImuGngEFj1dfifInm65traXnzg8S2Xd+7Y
+         g/oAaqzfe3cvWOwVKK4aEGtSvCVxT98E+NBD2eHeO656Rliuy07ghEt7/Tj4QfMEeGl6
+         oyCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679842615;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=m9gY3qN/0TbI0QIi8rWv+RCKMQwx1Vl9uKOL6knVa0U=;
+        b=s7es0ESYVS/InlLpwo41E8r+3ayNPM5uLTrVaYuCnY/VB3MZl9nd2z2lz1A3lb/SUt
+         CKi5jSC4pPMSRRrbEyUhv7As2IGPmgnc4T0x934UnBmWIX759T0Vw4QifXSPuF046IO3
+         rZjLF+wXoTE3hGvlPT2m6E4FA2UsE0NLGdkS1nKJZujyOJt9nqqHagnL//Y52cTE41s1
+         HI4qWhOvmBSWz5dIRsnatPW6YjGdUJdbV21ULRz+vouFCMvgesYtvKI4Fcm/ntmCj+YU
+         BDAqSkL2mG+TEZlmvX61H7BMbD6ALpSey9Qvcd7Jknuo4Q0QRHyaylv/O197MIbJHY5U
+         g1uw==
+X-Gm-Message-State: AAQBX9c+Rprq4wUWUC16t5mKXxVtbKJrJam4K9Ljkk+i93/ZKUoL0DP2
+        PGYFZOJLV1ZW0EVXbA9oqJJpUEfhs/OOgsJelxk=
+X-Google-Smtp-Source: AKy350b5D+CcivAjhuMqpfm72IrnCGNswMlh6TBioWZ6/flZqf1DaxZ7HYiDtUKjLQQlmNxi3H7akQCQ8C5EeHG94kY=
+X-Received: by 2002:a17:907:cb86:b0:930:42bd:ef1d with SMTP id
+ un6-20020a170907cb8600b0093042bdef1dmr4420205ejc.11.1679842615063; Sun, 26
+ Mar 2023 07:56:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-d65e8e0e-6837-49d9-b5e2-1e1d68c289d3-1679830571282@3c-app-gmx-bap45>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230325152417.5403-1-kerneljasonxing@gmail.com>
+ <CANn89iJaVrObJNDC9TrnSUC3XQeo-zfmUXLVrNVcsbRDPuSNtA@mail.gmail.com>
+ <CAL+tcoDVCywXXt0Whnx+o0PcULmdms0osJf0qUb0HKvVwuE6oQ@mail.gmail.com> <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com>
+In-Reply-To: <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Sun, 26 Mar 2023 22:56:18 +0800
+Message-ID: <CAL+tcoCFPKpDF+JBN1f74BxDJj9q=9ppoPntnCoT0gT6C0r=PA@mail.gmail.com>
+Subject: Re: [PATCH net] net: fix raising a softirq on the current cpu with
+ rps enabled
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 01:36:11PM +0200, Frank Wunderlich wrote:
-> i tried this patch too to get more information about the phy of my sfp (i use gmac1 instead of the mt7531 port5), but see nothing new
-> 
-> root@bpi-r3:~# dmesg | grep 'sfp\|phy'
-> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd034]
-> [    0.000000] arch_timer: cp15 timer(s) running at 13.00MHz (phys).
-> [    1.654975] sfp sfp-1: Host maximum power 1.0W
-> [    1.659976] sfp sfp-2: Host maximum power 1.0W
-> [    2.001284] sfp sfp-1: module OEM              SFP-2.5G-T       rev 1.0  sn SK2301110008     dc 230110  
-> [    2.010789] mtk_soc_eth 15100000.ethernet eth1: optical SFP: interfaces=[mac=2-4,21-22, sfp=22]
-> [    3.261039] mt7530 mdio-bus:1f: phylink_mac_config: mode=fixed/2500base-x/2.5Gbps/Full/none adv=00,00000000,00008000,00006200 pause=03 link=0 an=1
-> [    3.293176] mt7530 mdio-bus:1f wan (uninitialized): phy: gmii setting supported 00,00000000,00000000,000062ef advertising 00,00000000,00000000,000062ef
-> [    3.326808] mt7530 mdio-bus:1f lan0 (uninitialized): phy: gmii setting supported 00,00000000,00000000,000062ef advertising 00,00000000,00000000,000062ef
-> [    3.360144] mt7530 mdio-bus:1f lan1 (uninitialized): phy: gmii setting supported 00,00000000,00000000,000062ef advertising 00,00000000,00000000,000062ef
-> [    3.393490] mt7530 mdio-bus:1f lan2 (uninitialized): phy: gmii setting supported 00,00000000,00000000,000062ef advertising 00,00000000,00000000,000062ef
-> [    3.426819] mt7530 mdio-bus:1f lan3 (uninitialized): phy: gmii setting supported 00,00000000,00000000,000062ef advertising 00,00000000,00000000,000062ef
-> [   15.156727] mtk_soc_eth 15100000.ethernet eth0: phylink_mac_config: mode=fixed/2500base-x/2.5Gbps/Full/none adv=00,00000000,00008000,00006240 pause=03 link=0 an=1
-> [   15.178021] mt7530 mdio-bus:1f lan3: configuring for phy/gmii link mode
-> [   15.192190] mt7530 mdio-bus:1f lan3: phylink_mac_config: mode=phy/gmii/Unknown/Unknown/none adv=00,00000000,00000000,00000000 pause=00 link=0 an=0
-> [   15.208137] mt7530 mdio-bus:1f lan3: phy link down gmii/Unknown/Unknown/none/off
-> [   15.216371] mt7530 mdio-bus:1f lan2: configuring for phy/gmii link mode
-> [   15.228163] mt7530 mdio-bus:1f lan2: phylink_mac_config: mode=phy/gmii/Unknown/Unknown/none adv=00,00000000,00000000,00000000 pause=00 link=0 an=0
-> [   15.242579] mt7530 mdio-bus:1f lan1: configuring for phy/gmii link mode
-> [   15.245731] mt7530 mdio-bus:1f lan2: phy link down gmii/Unknown/Unknown/none/off
-> [   15.261771] mt7530 mdio-bus:1f lan1: phylink_mac_config: mode=phy/gmii/Unknown/Unknown/none adv=00,00000000,00000000,00000000 pause=00 link=0 an=0
-> [   15.277381] mt7530 mdio-bus:1f lan0: configuring for phy/gmii link mode
-> [   15.278665] mt7530 mdio-bus:1f lan1: phy link down gmii/Unknown/Unknown/none/off
-> [   15.296641] mt7530 mdio-bus:1f lan0: phylink_mac_config: mode=phy/gmii/Unknown/Unknown/none adv=00,00000000,00000000,00000000 pause=00 link=0 an=0
-> [   15.312570] mt7530 mdio-bus:1f lan0: phy link down gmii/Unknown/Unknown/none/off
-> [   15.392799] mt7530 mdio-bus:1f wan: configuring for phy/gmii link mode
-> [   15.404425] mt7530 mdio-bus:1f wan: phylink_mac_config: mode=phy/gmii/Unknown/Unknown/none adv=00,00000000,00000000,00000000 pause=00 link=0 an=0
-> [   15.420491] mt7530 mdio-bus:1f wan: phy link up gmii/1Gbps/Full/none/rx/tx
-> [  262.106630] mtk_soc_eth 15100000.ethernet eth1: phylink_mac_config: mode=inband/2500base-x/Unknown/Unknown/none adv=00,00000000,00008000,00006400 pause=00 link=0 an=0
+On Sun, Mar 26, 2023 at 6:10=E2=80=AFPM Jason Xing <kerneljasonxing@gmail.c=
+om> wrote:
+>
+> On Sun, Mar 26, 2023 at 12:04=E2=80=AFPM Jason Xing <kerneljasonxing@gmai=
+l.com> wrote:
+> >
+> > On Sat, Mar 25, 2023 at 11:57=E2=80=AFPM Eric Dumazet <edumazet@google.=
+com> wrote:
+> > >
+> > > On Sat, Mar 25, 2023 at 8:26=E2=80=AFAM Jason Xing <kerneljasonxing@g=
+mail.com> wrote:
+> > > >
+> > > > From: Jason Xing <kernelxing@tencent.com>
+> > > >
+> > > > Since we decide to put the skb into a backlog queue of another
+> > > > cpu, we should not raise the softirq for the current cpu. When
+> > > > to raise a softirq is based on whether we have more data left to
+> > > > process later. As to the current cpu, there is no indication of
+> > > > more data enqueued, so we do not need this action. After enqueuing
+> > > > to another cpu, net_rx_action() function will call ipi and then
+> > > > another cpu will raise the softirq as expected.
+> > > >
+> > > > Also, raising more softirqs which set the corresponding bit field
+> > > > can make the IRQ mechanism think we probably need to start ksoftirq=
+d
+> > > > on the current cpu. Actually it shouldn't happen.
+> > > >
+> > > > Fixes: 0a9627f2649a ("rps: Receive Packet Steering")
+> > > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
+> > > > ---
+> > > >  net/core/dev.c | 2 --
+> > > >  1 file changed, 2 deletions(-)
+> > > >
+> > > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > > index 1518a366783b..bfaaa652f50c 100644
+> > > > --- a/net/core/dev.c
+> > > > +++ b/net/core/dev.c
+> > > > @@ -4594,8 +4594,6 @@ static int napi_schedule_rps(struct softnet_d=
+ata *sd)
+> > > >         if (sd !=3D mysd) {
+> > > >                 sd->rps_ipi_next =3D mysd->rps_ipi_list;
+> > > >                 mysd->rps_ipi_list =3D sd;
+> > > > -
+> > > > -               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+> > > >                 return 1;
+> > > >         }
+> > > >  #endif /* CONFIG_RPS */
+> > > > --
+> > > > 2.37.3
+> > > >
+> > >
+> > > This is not going to work in some cases. Please take a deeper look.
+> > >
+> > > I have to run, if you (or others) do not find the reason, I will give
+> > > more details when I am done traveling.
+> >
+> > I'm wondering whether we could use @mysd instead of @sd like this:
+> >
+> > if (!__test_and_set_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
+> >     __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>
+> Ah, I have to add more precise code because the above codes may mislead p=
+eople.
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 1518a366783b..9ac9b32e392f 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4594,8 +4594,9 @@ static int napi_schedule_rps(struct softnet_data *s=
+d)
+>         if (sd !=3D mysd) {
+>                 sd->rps_ipi_next =3D mysd->rps_ipi_list;
+>                 mysd->rps_ipi_list =3D sd;
+> +               if (!__test_and_set_bit(NAPI_STATE_SCHED, &mysd->backlog.=
+state))
 
-Yours isn't detecting a PHY, and this this patch will have no effect
-as the patch only changes things in a path that is used when a PHY
-is detected.
+Forgive me. Really I need some coffee. I made a mistake. This line
+above should be:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
++               if (!test_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
+
+But the whole thing doesn't feel right. I need a few days to dig into
+this part until Eric can help me with more of it.
+
+Thanks,
+Jason
+
+> +                       __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>
+> -               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>                 return 1;
+>         }
+>  #endif /* CONFIG_RPS */
+>
+> Eric, I realized that some paths don't call the ipi to notify another
+> cpu. If someone grabs the NAPI_STATE_SCHED flag, we know that at the
+> end of net_rx_action() or the beginning of process_backlog(), the
+> net_rps_action_and_irq_enable() will handle the information delivery.
+> However, if no one grabs the flag, in some paths we could not have a
+> chance immediately to tell another cpu to raise the softirq and then
+> process those pending data. Thus, I have to make sure if someone owns
+> the napi poll as shown above.
+>
+> If I get this wrong, please correct me if you're available. Thanks in adv=
+ance.
+>
+> >
+> > I traced back to some historical changes and saw some relations with
+> > this commit ("net: solve a NAPI race"):
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
+it/?id=3D39e6c8208d7b6fb9d2047850fb3327db567b564b
+> >
+> > Thanks,
+> > Jason
