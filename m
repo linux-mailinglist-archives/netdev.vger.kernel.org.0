@@ -2,218 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A37DC6C95E8
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 17:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9E0B6C95F0
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 17:05:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbjCZPEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 11:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39882 "EHLO
+        id S230522AbjCZPFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 11:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbjCZPEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 11:04:02 -0400
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8FE3AAA;
-        Sun, 26 Mar 2023 08:04:00 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aeddf.dynamic.kabel-deutschland.de [95.90.237.223])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0C72B61CC457B;
-        Sun, 26 Mar 2023 17:03:57 +0200 (CEST)
-Message-ID: <ddbae662-96d6-8779-eb8a-5a375e97ec22@molgen.mpg.de>
-Date:   Sun, 26 Mar 2023 17:03:56 +0200
+        with ESMTP id S231960AbjCZPFO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 11:05:14 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2121.outbound.protection.outlook.com [40.107.243.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E6E40D0;
+        Sun, 26 Mar 2023 08:05:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kISoKL95AIwwQ/rmudV/kFLnKHhopbiD1pzDFPpQQ8khNdG8dJJ4rc49/qBwT3Jgg0qh7uG0j/Vwq2VoX6sqWAIlepBaRypBai8yOrvlY8oJrn/RK4mRIjRufRdiAtnojWN+vc5r0JrSqNIxYqCIfw1/c5ikwU9MR3uRLdHtPSCJM9YCtRT0X2dACA5w365feS6vIfyJ9HaIfr2TsDuDGaQsaijcuyNhEYT4ZM86ZwFrYy3lIeqSZKB7ZOscLRSr20A2WLD1n/gJCaz3UvAi4rD3okqv/ZOwI44xz6S+fUOSabQ1w2sXqdsAzerLU+Cyv8ey4Yonz10cE31PEoPAqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HlHIJy8oPqeHHwfRxuhkABQkI7VMDO5Ihw3jyKqxhjw=;
+ b=X5pmV4Lcy1Wb24oZu+HWAVVJ6or++S3PDEHNp6kLK0AmEFNyespviVXXpVIcFZEgk+9Mi5ja0YOUH10gYIslG4/yfs/niQaNLb3Ecgstfl4gj1StKZaaMo5fMJUSeBxHQwt9t7hLPIIce5enWXxePybLDrcgOleJzp/UJGVtNgIPcb0t4uGkNpZSd+QLVmcOhr2Q+61VuyKvPS/E2QBD5KJvYSTiVkeqw7RdkfElkDdqn0BVBxbwq+A0aUKzpNZMEhW/bxIT/L8XBOOADhTgNeTHJZFU7//nSK5LmqhNEd6xf1c4MSqtLeAsRjJCIrZW6ZpyU+5V36DehcU13tSdfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HlHIJy8oPqeHHwfRxuhkABQkI7VMDO5Ihw3jyKqxhjw=;
+ b=UATdwSUu5B0TZk2cgU2Ypn3BDMQKyp0agGszXrtcMOnqx+0Ii12Hmzd//Qn0cpXLnfQzwjfV8uv3RUrjd/ZlqopgYM6e4xtclfDrWhOLvEy0xSUN98IqDKvH+Hzmw8hkc4cEzUHfguv+g4Bw7lKLfRZad8IN4Z0mwoSEzBC2a3I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CO1PR13MB4934.namprd13.prod.outlook.com (2603:10b6:303:fa::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Sun, 26 Mar
+ 2023 15:05:09 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Sun, 26 Mar 2023
+ 15:05:08 +0000
+Date:   Sun, 26 Mar 2023 17:05:02 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jia-Ju Bai <baijiaju@buaa.edu.cn>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: mac80211: Add NULL checks for sta->sdata
+Message-ID: <ZCBfHlOhU8LjdRg3@corigine.com>
+References: <20230321093122.2652111-1-baijiaju@buaa.edu.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230321093122.2652111-1-baijiaju@buaa.edu.cn>
+X-ClientProxiedBy: AM0PR03CA0070.eurprd03.prod.outlook.com (2603:10a6:208::47)
+ To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [Intel-wired-lan] [PATCH net v3] ixgbe: Panic during XDP_TX with
- > 64 CPUs
-To:     John Hickey <jjh@daedalian.us>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Shujin Li <lishujin@kuaishou.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        bpf@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Jason Xing <xingwanli@kuaishou.com>
-References: <20230308220756.587317-1-jjh@daedalian.us>
-Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20230308220756.587317-1-jjh@daedalian.us>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CO1PR13MB4934:EE_
+X-MS-Office365-Filtering-Correlation-Id: ca3e6c57-e93b-4b03-52f4-08db2e0b7d32
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TyhnVR8PkygelvMPjjMDZoXgMq4OTJDUyuAwsdYcmbXSCmWajuIbmCuN0oszAhQw4z46TaYAZvtyTYsZVa/jZLu/UPD4ymiQb5Jqa+ZJUS7FQtM3S44Sc9gCRA7EfMAW/8f2OijAuqDxvEy9r/M10T6ktoDTSe9nYZAjwCCMgc+G8AyRMCdisXbKSum68kCs3CYeg/BdpyyVsWsjFQb4cCXLS+69s60pE+YXkZmbpfV0mqbD18X/t064iZ2k16dQd61Qq0mWw0oTMGvggwn2HZZ0aCzQxRgaNyZ5CVIsyKH9DQAlDEOgVvtYxZKAx4MplYD/O5DSf1ut6aG6on/g88pgZrH+pNffgMaMbWpUBlkzGsEqNTBAqbEin6y0XWUCvBrCi7avK867r+FxSHaPzqf+iFqaWgy1CC0ytkDI4wZloJ/09I+lRg8dBbdmEnnrY+nYF4Xo28McUebHWiw5KyXURURBRBt9R3KYF1dHoIFIwmjLkPOl1+ijv0B/CjJC7E0bNZm4fqKW6/yflxWECWB0pkRVJv2xn+5N4MbowIBchrvhN/FCRMPIHMvrcYgnzlN25NyeR8HjlopjCOuH82SLus9Rfh8xSF/wXN4CA84=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(136003)(346002)(376002)(39840400004)(451199021)(2616005)(38100700002)(41300700001)(36756003)(66556008)(66946007)(66476007)(86362001)(4326008)(6916009)(8676002)(478600001)(6486002)(316002)(83380400001)(2906002)(6512007)(44832011)(6506007)(8936002)(5660300002)(186003)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?q3YjvW0NDeUt/Qts1/PuC/ysdOU3/G89mmomncyn0tPhNGjF2JzZEBYYjEwM?=
+ =?us-ascii?Q?Bm0ojpqGnB7fIZcahGSpPPXrAc7KVlgJDcTmlJUrFVgJAzJnmjs6AaOJ+Wf6?=
+ =?us-ascii?Q?jBdvSMLt1z0gCYIy6kPlbwddv9VepnB85GVvNx4KJpk0heyqNc9AoSoUpCe1?=
+ =?us-ascii?Q?H6qRC84zhkO0gR/T12FHob+hVwT/LILDGqdODTkQV1X5t7fVT6rySyX0QKek?=
+ =?us-ascii?Q?reA8dPU38W2CGh9sojxDp+wFp3eHY0lN1qzqhIRv5j2DzTlYUKhDQP5UxzK3?=
+ =?us-ascii?Q?AR8fF6+n7fF2LYnhUN8G8XyB8sD6VfBooehKoRrEyC+KnEVbmGHbqv+OeCKs?=
+ =?us-ascii?Q?8MUtWlEt6rsAq5BWscCVZ3JC33LlolB9SyJPg+hKfKnnIW0JzaPazWZ+dIls?=
+ =?us-ascii?Q?rUeKoRM/leBa5e4qg+C3H1JounExZsYhACjEM5Ms0wk+Hpcf+o2FC4L77n0D?=
+ =?us-ascii?Q?g9n245jXHUGbYQTca9zs9lAIlq3UcPaHgbZgtIjmPwg6m5h/GJ1X/S4EMAst?=
+ =?us-ascii?Q?PsJwmReYzgpshPPxDSbI9vIaAIJQ6n5A7TMosJJiPba9tL02sG7z43ZpQh0H?=
+ =?us-ascii?Q?TcZsnDKKTaD1e8DDgRnLIeinWEISGcxHujJ5V2rj8qRbGXM60/Pi2yOhxGIV?=
+ =?us-ascii?Q?49FmIUlP7f3s3H0rLmfpAaL/Gwu1nmN4mmO1LX9IwvE2Xv9SFFJIuEeXmxJa?=
+ =?us-ascii?Q?UbRk0DMwugiTKmoaq63v8haZUHWfaME6xJX66Hpipf6RW6XZit5PIJgcGtir?=
+ =?us-ascii?Q?+x7dhVxnWKpKLK8BDRRYgRhySghDfW4cWfSRhkT8PCtpqow0qvNsiFHsJtdO?=
+ =?us-ascii?Q?mhjDLPBLH23m/Hxvkwgo6p+y9qFxENaXznduZygwjCR1kCKDs6KOkVsZty1H?=
+ =?us-ascii?Q?1mzBKTTRLGzgvO/LK5fQ6CfbxeONDQz8cIyQRvJchIzA5C31GDWH0Z7vWsKH?=
+ =?us-ascii?Q?F8sUmgD7FggYJ95QmRGwG+R6ARLG41H/h5p3mNgih49gJJSzUUzl0+XVvVek?=
+ =?us-ascii?Q?A1Mh+CWkLJp19v16xuXSk2mIfPco700plgrOUACm0APDYnm+890HQxTQviLf?=
+ =?us-ascii?Q?DJhuttZH5Kpex87UIsvslFgQTiIkMZ5BZP3MuMVNqJbOAJdAbYKwp3BPZeGb?=
+ =?us-ascii?Q?5EY6ZVYcInKyfv4BkPtlYR9blB7sZvQ4KUkQAoUS0ssuiiUj9w8fM2lymq0O?=
+ =?us-ascii?Q?qPJ4xCqs9XYgxq6sAFh+ErVAUBwd5TRS9QLRECTzO8m1/2d1lMrQNvevrH8a?=
+ =?us-ascii?Q?ePoQlWUkNv5Fa9lAWnW7Uzw8mkiKGAZFcQ0Iw8+RQFPzhiTIFD7g9eV7kPuS?=
+ =?us-ascii?Q?UwZpxCbM89jsFILe+1yV2csNV75eDx6wMXqop1yM7kd1nnNn0W0Vdhg5VQZH?=
+ =?us-ascii?Q?MBmIt5So1F6hetUTbsaKPlyTyIt3dCrMmhp6ZlhJJlswWrluj9ajkuvtn9Mm?=
+ =?us-ascii?Q?KGn2YD/leqN+7KScVMeQukcjNdPffYPt9osimZTJ3gO/3k5qG8NTYd3Naqio?=
+ =?us-ascii?Q?a2q2ZC8y6l0QZTr9aZnnslsRQ5n4Os1Ldb22pynTZiSyLpbsg9zB7xX+NaEr?=
+ =?us-ascii?Q?RFjIY+vx9hRWmZFuQ16hcMmvGV11ghQYWtDQuWevBvxlyM5YXPFxmVln+93u?=
+ =?us-ascii?Q?AEQAM3XRVOnXs/Gc5tLK3mH8mv9aM/C8+6e6THo5L9ogJIcCJsNM8UgyxXyF?=
+ =?us-ascii?Q?omewcg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca3e6c57-e93b-4b03-52f4-08db2e0b7d32
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 15:05:08.5415
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tRVCPek6oZtCEbrppj9GachStqNITIucMw5YLTT9kRU1PnYVGm4MNzchKgW14J8thjrZZWvaCFEsJnOJrRvjgdI9IxCftOZPxEv1l6LUM5E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR13MB4934
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear John,
-
-
-Thank you for your patch.
-
-I’d recommend, to use a statement in the git commit message/summary by 
-adding a verb (in imperative mood). Maybe:
-
-Fix panic during XDP_TX with > 64 CPUs
-
-Am 08.03.23 um 23:07 schrieb John Hickey:
-> In commit 'ixgbe: let the xdpdrv work with more than 64 cpus'
-> (4fe815850bdc), support was added to allow XDP programs to run on systems
-
-I think it’s more common to write it like:
-
-In commit 4fe815850bdc (ixgbe: let the xdpdrv work with more than 64 cpus) …
-
-Even shorter
-
-Commit 4fe815850bdc (ixgbe: let the xdpdrv work with more than 64 cpus) 
-adds support to allow XDP programs …
-
-> with more than 64 CPUs by locking the XDP TX rings and indexing them
-> using cpu % 64 (IXGBE_MAX_XDP_QS).
+On Tue, Mar 21, 2023 at 05:31:22PM +0800, Jia-Ju Bai wrote:
+> In a previous commit 69403bad97aa ("wifi: mac80211: sdata can be NULL
+> during AMPDU start"), sta->sdata can be NULL, and thus it should be 
+> checked before being used.
 > 
-> Upon trying this out patch via the Intel 5.18.6 out of tree driver
-
-Upon trying this patch out via …
-
-> on a system with more than 64 cores, the kernel paniced with an
-> array-index-out-of-bounds at the return in ixgbe_determine_xdp_ring in
-> ixgbe.h, which means ixgbe_determine_xdp_q_idx was just returning the
-> cpu instead of cpu % IXGBE_MAX_XDP_QS.  An example splat:
-
-Please add, that you have UBSAN  enabled, or does it happen without?
-
+> However, in the same call stack, sta->sdata is also used in the
+> following functions:
 > 
->   ==========================================================================
->   UBSAN: array-index-out-of-bounds in
->   /var/lib/dkms/ixgbe/5.18.6+focal-1/build/src/ixgbe.h:1147:26
->   index 65 is out of range for type 'ixgbe_ring *[64]'
->   ==========================================================================
->   BUG: kernel NULL pointer dereference, address: 0000000000000058
->   #PF: supervisor read access in kernel mode
->   #PF: error_code(0x0000) - not-present page
->   PGD 0 P4D 0
->   Oops: 0000 [#1] SMP NOPTI
->   CPU: 65 PID: 408 Comm: ksoftirqd/65
->   Tainted: G          IOE     5.15.0-48-generic #54~20.04.1-Ubuntu
->   Hardware name: Dell Inc. PowerEdge R640/0W23H8, BIOS 2.5.4 01/13/2020
->   RIP: 0010:ixgbe_xmit_xdp_ring+0x1b/0x1c0 [ixgbe]
->   Code: 3b 52 d4 cf e9 42 f2 ff ff 66 0f 1f 44 00 00 0f 1f 44 00 00 55 b9
->   00 00 00 00 48 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 08 <44> 0f b7
->   47 58 0f b7 47 5a 0f b7 57 54 44 0f b7 76 08 66 41 39 c0
-
-If you do not it yet, `scripts/decode_stacktrace.sh` helps decoding 
-these traces.
-
->   RSP: 0018:ffffbc3fcd88fcb0 EFLAGS: 00010282
->   RAX: ffff92a253260980 RBX: ffffbc3fe68b00a0 RCX: 0000000000000000
->   RDX: ffff928b5f659000 RSI: ffff928b5f659000 RDI: 0000000000000000
->   RBP: ffffbc3fcd88fce0 R08: ffff92b9dfc20580 R09: 0000000000000001
->   R10: 3d3d3d3d3d3d3d3d R11: 3d3d3d3d3d3d3d3d R12: 0000000000000000
->   R13: ffff928b2f0fa8c0 R14: ffff928b9be20050 R15: 000000000000003c
->   FS:  0000000000000000(0000) GS:ffff92b9dfc00000(0000)
->   knlGS:0000000000000000
->   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   CR2: 0000000000000058 CR3: 000000011dd6a002 CR4: 00000000007706e0
->   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->   PKRU: 55555554
->   Call Trace:
->    <TASK>
->    ixgbe_poll+0x103e/0x1280 [ixgbe]
->    ? sched_clock_cpu+0x12/0xe0
->    __napi_poll+0x30/0x160
->    net_rx_action+0x11c/0x270
->    __do_softirq+0xda/0x2ee
->    run_ksoftirqd+0x2f/0x50
->    smpboot_thread_fn+0xb7/0x150
->    ? sort_range+0x30/0x30
->    kthread+0x127/0x150
->    ? set_kthread_struct+0x50/0x50
->    ret_from_fork+0x1f/0x30
->    </TASK>
+> ieee80211_ba_session_work()
+>   ___ieee80211_stop_rx_ba_session(sta)
+>     ht_dbg(sta->sdata, ...); -> No check
+>     sdata_info(sta->sdata, ...); -> No check
+>     ieee80211_send_delba(sta->sdata, ...) -> No check
+>   ___ieee80211_start_rx_ba_session(sta)
+>     ht_dbg(sta->sdata, ...); -> No check
+>     ht_dbg_ratelimited(sta->sdata, ...); -> No check
+>   ieee80211_tx_ba_session_handle_start(sta)
+>     sdata = sta->sdata; if (!sdata) -> Add check by previous commit
+>   ___ieee80211_stop_tx_ba_session(sdata)
+>     ht_dbg(sta->sdata, ...); -> No check
+>   ieee80211_start_tx_ba_cb(sdata)
+>     sdata = sta->sdata; local = sdata->local -> No check
+>   ieee80211_stop_tx_ba_cb(sdata)
+>     ht_dbg(sta->sdata, ...); -> No check
 > 
-> I think this is how it happens:
+> Thus, to avoid possible null-pointer dereferences, the related checks
+> should be added.
 > 
-> Upon loading the first XDP program on a system with more than 64 CPUs,
-> ixgbe_xdp_locking_key is incremented in ixgbe_xdp_setup.  However,
-> immediately after this, the rings are reconfigured by ixgbe_setup_tc.
-> ixgbe_setup_tc calls ixgbe_clear_interrupt_scheme which calls
-> ixgbe_free_q_vectors which calls ixgbe_free_q_vector in a loop.
-> ixgbe_free_q_vector decrements ixgbe_xdp_locking_key once per call if
-> it is non-zero.  Commenting out the decrement in ixgbe_free_q_vector
-> stopped my system from panicing.
+> These bugs are reported by a static analysis tool implemented by myself, 
+> and they are found by extending a known bug fixed in the previous commit. 
+> Thus, they could be theoretical bugs.
 > 
-> I suspect to make the original patch work, I would need to load an XDP
-> program and then replace it in order to get ixgbe_xdp_locking_key back
-> above 0 since ixgbe_setup_tc is only called when transitioning between
-> XDP and non-XDP ring configurations, while ixgbe_xdp_locking_key is
-> incremented every time ixgbe_xdp_setup is called.
-> 
-> Also, ixgbe_setup_tc can be called via ethtool --set-channels, so this
-> becomes another path to decrement ixgbe_xdp_locking_key to 0 on systems
-> with greater than 64 CPUs.
-
-… with more than 64 CPUs.
-
-> For this patch, I have changed static_branch_inc to static_branch_enable
-> in ixgbe_setup_xdp.  We weren't counting references.  The
-> ixgbe_xdp_locking_key only protects code in the XDP_TX path, which is
-> not run when an XDP program is loaded.  The other condition for setting
-> it on is the number of CPUs, which I assume is static.
-> 
-> Fixes: 4fe815850bdc ("ixgbe: let the xdpdrv work with more than 64 cpus")
-> Signed-off-by: John Hickey <jjh@daedalian.us>
+> Signed-off-by: Jia-Ju Bai <baijiaju@buaa.edu.cn>
 > ---
-> v1 -> v2:
-> 	Added Fixes and net tag.  No code changes.
-> v2 -> v3:
-> 	Added splat.  Slight clarification as to why ixgbe_xdp_locking_key
-> 	is not turned off.  Based on feedback from Maciej Fijalkowski.
+> v2:
+> * Fix an error reported by checkpatch.pl, and make the bug finding
+>   process more clear in the description. Thanks for Simon's advice.
 > ---
->   drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 3 ---
->   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
->   2 files changed, 1 insertion(+), 4 deletions(-)
+>  net/mac80211/agg-rx.c | 68 ++++++++++++++++++++++++++-----------------
+>  net/mac80211/agg-tx.c | 16 ++++++++--
+>  2 files changed, 55 insertions(+), 29 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> index f8156fe4b1dc..0ee943db3dc9 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
-> @@ -1035,9 +1035,6 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
->   	adapter->q_vector[v_idx] = NULL;
->   	__netif_napi_del(&q_vector->napi);
->   
-> -	if (static_key_enabled(&ixgbe_xdp_locking_key))
-> -		static_branch_dec(&ixgbe_xdp_locking_key);
-> -
->   	/*
->   	 * after a call to __netif_napi_del() napi may still be used and
->   	 * ixgbe_get_stats64() might access the rings on this vector,
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index ab8370c413f3..cd2fb72c67be 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -10283,7 +10283,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->   	if (nr_cpu_ids > IXGBE_MAX_XDP_QS * 2)
->   		return -ENOMEM;
->   	else if (nr_cpu_ids > IXGBE_MAX_XDP_QS)
-> -		static_branch_inc(&ixgbe_xdp_locking_key);
-> +		static_branch_enable(&ixgbe_xdp_locking_key);
->   
->   	old_prog = xchg(&adapter->xdp_prog, prog);
->   	need_reset = (!!prog != !!old_prog);
+> diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
+> index c6fa53230450..6616970785a2 100644
+> --- a/net/mac80211/agg-rx.c
+> +++ b/net/mac80211/agg-rx.c
+> @@ -80,19 +80,21 @@ void ___ieee80211_stop_rx_ba_session(struct sta_info *sta, u16 tid,
+>  	RCU_INIT_POINTER(sta->ampdu_mlme.tid_rx[tid], NULL);
+>  	__clear_bit(tid, sta->ampdu_mlme.agg_session_valid);
+>  
+> -	ht_dbg(sta->sdata,
+> -	       "Rx BA session stop requested for %pM tid %u %s reason: %d\n", > -	       sta->sta.addr, tid,
+> -	       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
+> -	       (int)reason);
+> +	if (sta->sdata) {
+> +		ht_dbg(sta->sdata,
+> +		       "Rx BA session stop requested for %pM tid %u %s reason: %d\n",
+> +		       sta->sta.addr, tid,
+> +		       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
+> +		       (int)reason);
+> +	}
+
+The first line of the body of ___ieee80211_stop_rx_ba_session() is:
+
+	struct ieee80211_local *local = sta->sdata->local;
+
+So a NULL pointer dereference will have occurred before
+the checks this change adds to that function.
 
 
-Kind regards,
+>  
+> -	if (drv_ampdu_action(local, sta->sdata, &params))
+> +	if (sta->sdata && drv_ampdu_action(local, sta->sdata, &params))
+>  		sdata_info(sta->sdata,
+>  			   "HW problem - can not stop rx aggregation for %pM tid %d\n",
+>  			   sta->sta.addr, tid);
+>  
 
-Paul
+...
+
+> diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
+> index f9514bacbd4a..03b31b6e7ac7 100644
+> --- a/net/mac80211/agg-tx.c
+> +++ b/net/mac80211/agg-tx.c
+> @@ -368,8 +368,10 @@ int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
+>  
+>  	spin_unlock_bh(&sta->lock);
+>  
+> -	ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
+> -	       sta->sta.addr, tid);
+> +	if (sta->sdata) {
+> +		ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
+> +		       sta->sta.addr, tid);
+> +	}
+
+This seems clean :)
+
+>  	del_timer_sync(&tid_tx->addba_resp_timer);
+>  	del_timer_sync(&tid_tx->session_timer);
+> @@ -776,7 +778,12 @@ void ieee80211_start_tx_ba_cb(struct sta_info *sta, int tid,
+>  			      struct tid_ampdu_tx *tid_tx)
+>  {
+>  	struct ieee80211_sub_if_data *sdata = sta->sdata;
+> -	struct ieee80211_local *local = sdata->local;
+> +	struct ieee80211_local *local;
+> +
+> +	if (!sdata)
+> +		return;
+
+I'm not sure that silently ignoring non-existent sdata is the right approach.
+Perhaps a WARN_ON or WARN_ONCE is appropriate?
+
+> +
+> +	local = sdata->local;
+>  
+>  	if (WARN_ON(test_and_set_bit(HT_AGG_STATE_DRV_READY, &tid_tx->state)))
+>  		return;
+> @@ -902,6 +909,9 @@ void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
+>  	bool send_delba = false;
+>  	bool start_txq = false;
+>  
+> +	if (!sdata)
+> +		return;
+> +
+
+Ditto.
+
+>  	ht_dbg(sdata, "Stopping Tx BA session for %pM tid %d\n",
+>  	       sta->sta.addr, tid);
+>  
