@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2336C94FB
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78FD46C94FD
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbjCZOJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 10:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
+        id S232214AbjCZOJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 10:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231877AbjCZOJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:09:02 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14015FDC;
-        Sun, 26 Mar 2023 07:08:46 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id 59so5038502qva.11;
-        Sun, 26 Mar 2023 07:08:46 -0700 (PDT)
+        with ESMTP id S232224AbjCZOJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:09:12 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937164C37;
+        Sun, 26 Mar 2023 07:08:51 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id 31so5166336qvc.1;
+        Sun, 26 Mar 2023 07:08:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679839726;
+        d=gmail.com; s=20210112; t=1679839730;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gZ3M3RaLFnNGnHTnAZjnH0dZMMcYJsuKybc/E0bZ/Sg=;
-        b=PeCR9X86QsaVx20aY4cZ/N/U/BGXc9v0DseOfWum4DxYo6HDHO24fXFQLN385sn7Ak
-         ZnG+jG5QCzkpJ5OEPA4GGNujEszVt6QCOLJqDleCWpkO2MvcSaSYN9J7THCkRyhj7dy9
-         P7Su8HM8g/fddSiIMePJNUY8gHW02b2wpKHcIcEb+FKDaXzhdb0AdbacaM/cIeruVxsm
-         CZu38ZsgmVurt3yKyYDFLeRrUh8iHltb17BOTd27+2wzzJfAgtws7/vAybMOAgcnFh4Z
-         bVXqgEIdaM2bEl5swVmeZPpepIvamUtvQXclBqIfn2V7fJmLVvHsibGC3GOAiXlzSqE0
-         aAeg==
+        bh=FE6q6p+dFTrGAKyKj7RnvQhsdIZfEftFuQ5+sKNAZxc=;
+        b=D76MU+xeNJzZVMvqN9aEJ1ImGKcrDzJVZlZFme9Q3QdJoQ9B/u7bQc2xY9xU4pKoT1
+         tb7z1KGlHTGabEi5HyvKL8Br8kcZSf+lUmoyZg6wST2TKSwEC4kmk+/L5CtVekjC1imm
+         IUtcob0hiVfbBhjPkFtS9NHg0mlLRyfeyJ6tWab6Qw9U0nDQZSsLQMtu3ABd3+Rc1iZ0
+         x0p9R9twv0stKHFHlOuGHkolzkdxQFW+G8azSKEMkD9srJqFvgj6Xzna9Z1zVzPNyoZX
+         W5gb5hvef0MtcoE9/8m8O3/ZWF1CixamuO1WSS3fFlmnTzC9N9kzCatkBY66YwFUy+Hu
+         O3Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679839726;
+        d=1e100.net; s=20210112; t=1679839730;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gZ3M3RaLFnNGnHTnAZjnH0dZMMcYJsuKybc/E0bZ/Sg=;
-        b=amkYmb+5iK4h+YWyR4xT+LbJjn88rvnNqhyQZiKwO7yB/QebncrSltp8MvHoHF9FJC
-         +vGzyVuvWqTlEji/To8pTFz/cZUwxjXarATR3K0LlJAkqROL1mH4xoX/buSn3kQtbgZj
-         q1GrDy6pAYveQJz6A8nat/CeNNeKKYnZFi+PnT9CCDCqYf31IacvmZa3I2YMK0ATiVrM
-         yZtgxF1LPsyIhkCV/YAZQGLsVKVhr7LWZ4Gsv6NKau30C6KfL1lstKtibe6xYhv2d20i
-         Ga1aklAHnZY/4DVFvIciKCSERD7mJuNDEwjAoRlUd6lsgRmIPksarLPrHAB53jhXD7DU
-         GIEQ==
-X-Gm-Message-State: AAQBX9e8zKb3cmwkKTHVIfVw3oznmMv46vpj1VcDfwe/fhGrjfMdbWx4
-        POqe2KJ8qkd5S54Bb4qTOjs=
-X-Google-Smtp-Source: AKy350bmLDXXIZMwWIHi9YWMFSuPyoUC5Stl7CpvUKVBBwX6hYz/oXixnBj/Ni0i+8VU4sVOQf3erQ==
-X-Received: by 2002:a05:6214:f67:b0:5aa:d98a:8ace with SMTP id iy7-20020a0562140f6700b005aad98a8acemr17506531qvb.19.1679839725854;
-        Sun, 26 Mar 2023 07:08:45 -0700 (PDT)
+        bh=FE6q6p+dFTrGAKyKj7RnvQhsdIZfEftFuQ5+sKNAZxc=;
+        b=kGXrbBND1YR9GUVdFf8oWwd7J9WYxWCVzVAGyLR5G39OK3Mh6ZZHFYYH1/eDx4NX9r
+         qAytsuzsjyduW3GwB+9CG0Lkj3Tydt5ftxzewNeMeP4gb2p2i+ZYxsA0JmwdIj/Agy26
+         qau6kjjHm/ZyMk82n+++e06xWGuYC4oOjIWzXTxGuknLrWUluqw7uO2Ozodi0J4H9SJj
+         yTpXsptuhVXey0cTXgFbuA2rLRuaz8Gb32y2PzddddYQE8i6FJdNaIt+wJs/0psqCIhl
+         /qxP8KLtpjLRfvPtMklVYhxL1MFrEjodNkviq5QzlF2NoAEtwD5JBRRWjzTPf4ZpZlwf
+         pekw==
+X-Gm-Message-State: AAQBX9fcp9IoE+ILj7e47LngWvbg+4gkwg2iXYLMSCppC9LqalmhHHOb
+        CgMQ9wHkO6p5N1buJAAhq4o=
+X-Google-Smtp-Source: AKy350ZXYJBESOoxkQUOuwbRFbnXJKrJen8y5qornJklJSyCE/pS7djMghLwkglOYXW7p2HrKG/5HQ==
+X-Received: by 2002:a05:6214:29e4:b0:5a9:ed32:1765 with SMTP id jv4-20020a05621429e400b005a9ed321765mr14734612qvb.23.1679839730704;
+        Sun, 26 Mar 2023 07:08:50 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id j5-20020a0ce6a5000000b005dd8b93458esm2212220qvn.38.2023.03.26.07.08.41
+        by smtp.gmail.com with ESMTPSA id j5-20020a0ce6a5000000b005dd8b93458esm2212220qvn.38.2023.03.26.07.08.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 07:08:45 -0700 (PDT)
+        Sun, 26 Mar 2023 07:08:50 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -75,9 +75,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH net 4/7] net: dsa: mt7530: set both CPU port interfaces to PHY_INTERFACE_MODE_NA
-Date:   Sun, 26 Mar 2023 17:08:15 +0300
-Message-Id: <20230326140818.246575-5-arinc.unal@arinc9.com>
+Subject: [PATCH net 5/7] net: dsa: mt7530: set up port 5 before CPU ports are enabled
+Date:   Sun, 26 Mar 2023 17:08:16 +0300
+Message-Id: <20230326140818.246575-6-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230326140818.246575-1-arinc.unal@arinc9.com>
 References: <20230326140818.246575-1-arinc.unal@arinc9.com>
@@ -96,43 +96,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Set interfaces of both CPU ports to PHY_INTERFACE_MODE_NA. Either phylink
-or mt7530_setup_port5() on mt7530_setup() will handle the rest.
+Set priv->p5_intf_sel before the CPU ports are enabled.
 
-This is already being done for port 6, do it for port 5 as well.
+This makes sure the 'if (priv->p5_intf_sel != P5_DISABLED)' check on
+mt753x_phylink_mac_config() runs with priv->p5_intf_sel initialised.
+
+Set up port 5 for phy muxing right after priv->p5_interface is set to
+PHY_INTERFACE_MODE_NA.
 
 Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mt7530.c | 76 ++++++++++++++++++++--------------------
+ 1 file changed, 38 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 6d33c1050458..3deebdcfeedf 100644
+index 3deebdcfeedf..2397d63cec29 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2203,14 +2203,18 @@ mt7530_setup(struct dsa_switch *ds)
- 		mt7530_rmw(priv, MT7530_TRGMII_RD(i),
- 			   RD_TAP_MASK, RD_TAP(16));
+@@ -2209,44 +2209,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 	priv->p5_interface = PHY_INTERFACE_MODE_NA;
+ 	priv->p6_interface = PHY_INTERFACE_MODE_NA;
  
-+	/* Let phylink decide the interface later. If port 5 is used for phy
-+	 * muxing, its interface will be handled without involving phylink.
-+	 */
-+	priv->p5_interface = PHY_INTERFACE_MODE_NA;
-+	priv->p6_interface = PHY_INTERFACE_MODE_NA;
-+
- 	/* Enable port 6 */
- 	val = mt7530_read(priv, MT7530_MHWTRAP);
- 	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
- 	val |= MHWTRAP_MANUAL;
- 	mt7530_write(priv, MT7530_MHWTRAP, val);
- 
--	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+-	/* Enable port 6 */
+-	val = mt7530_read(priv, MT7530_MHWTRAP);
+-	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
+-	val |= MHWTRAP_MANUAL;
+-	mt7530_write(priv, MT7530_MHWTRAP, val);
 -
- 	/* Enable and reset MIB counters */
- 	mt7530_mib_reset(ds);
+-	/* Enable and reset MIB counters */
+-	mt7530_mib_reset(ds);
+-
+-	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+-		/* Disable forwarding by default on all ports */
+-		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+-			   PCR_MATRIX_CLR);
+-
+-		/* Disable learning by default on all ports */
+-		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
+-
+-		if (dsa_is_cpu_port(ds, i)) {
+-			ret = mt753x_cpu_port_enable(ds, i);
+-			if (ret)
+-				return ret;
+-		} else {
+-			mt7530_port_disable(ds, i);
+-
+-			/* Set default PVID to 0 on all user ports */
+-			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
+-				   G0_PORT_VID_DEF);
+-		}
+-		/* Enable consistent egress tag */
+-		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+-			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+-	}
+-
+-	/* Setup VLAN ID 0 for VLAN-unaware bridges */
+-	ret = mt7530_setup_vlan0(priv);
+-	if (ret)
+-		return ret;
+-
+ 	/* Setup port 5 */
+ 	if (!dsa_is_unused_port(ds, 5)) {
+ 		/* Set the interface selection of port 5 to GMAC5 when it's used
+@@ -2294,6 +2256,44 @@ mt7530_setup(struct dsa_switch *ds)
+ 			mt7530_setup_port5(ds, interface);
+ 	}
  
++	/* Enable port 6 */
++	val = mt7530_read(priv, MT7530_MHWTRAP);
++	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
++	val |= MHWTRAP_MANUAL;
++	mt7530_write(priv, MT7530_MHWTRAP, val);
++
++	/* Enable and reset MIB counters */
++	mt7530_mib_reset(ds);
++
++	for (i = 0; i < MT7530_NUM_PORTS; i++) {
++		/* Disable forwarding by default on all ports */
++		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
++			   PCR_MATRIX_CLR);
++
++		/* Disable learning by default on all ports */
++		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++
++		if (dsa_is_cpu_port(ds, i)) {
++			ret = mt753x_cpu_port_enable(ds, i);
++			if (ret)
++				return ret;
++		} else {
++			mt7530_port_disable(ds, i);
++
++			/* Set default PVID to 0 on all user ports */
++			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
++				   G0_PORT_VID_DEF);
++		}
++		/* Enable consistent egress tag */
++		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
++			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
++	}
++
++	/* Setup VLAN ID 0 for VLAN-unaware bridges */
++	ret = mt7530_setup_vlan0(priv);
++	if (ret)
++		return ret;
++
+ #ifdef CONFIG_GPIOLIB
+ 	if (of_property_read_bool(priv->dev->of_node, "gpio-controller")) {
+ 		ret = mt7530_setup_gpio(priv);
 -- 
 2.37.2
 
