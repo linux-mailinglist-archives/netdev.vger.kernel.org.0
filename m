@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9081E6C91DE
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 01:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27B3F6C921D
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 04:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbjCZAq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Mar 2023 20:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
+        id S229882AbjCZCaw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 25 Mar 2023 22:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbjCZAqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 20:46:25 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656707EC5
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 17:46:24 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id h136-20020a6bb78e000000b00758b105cdd3so3435875iof.23
-        for <netdev@vger.kernel.org>; Sat, 25 Mar 2023 17:46:24 -0700 (PDT)
+        with ESMTP id S229446AbjCZCav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Mar 2023 22:30:51 -0400
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4EFA5E3;
+        Sat, 25 Mar 2023 19:30:50 -0700 (PDT)
+Received: by mail-pf1-f173.google.com with SMTP id fb38so3551608pfb.7;
+        Sat, 25 Mar 2023 19:30:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679791583;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d15GJEJLrbSuQbr+AyveUByn8eaLHxEndF8G5qdETKg=;
-        b=KDRla8BIUiFqlE5pDsYzb4KUQ8c23NbLR8xYEEQbp4vzz/ZA9apj6/voxv9Gbbxcmm
-         S2pRVHQ1KiHqp0m7p2rKfWwRLKlSq+Z0F/2HHTSwr9NDRnZcN3zk9AO8so2riMa1YNcK
-         p6cJbk8pm6Gj6vi4eNey1BebPxDc3UqFnvazaDKbGG5p9LCD7VXZXgS1IMPBzEl+f/4/
-         IRkFo7AZ+jhsGCM304PhHl5+mO5bJ5CUP5QXz6dexk2YhHFtCCHYwRLEhVu1vc31sURI
-         sYX0L8gaxem4aK8/UdApYznuKWBl3ipe9JI5qjs+JrShB9rGWWGvns79sfD/aPsU8Ti8
-         Oi+A==
-X-Gm-Message-State: AAQBX9cIBj0eWxTU7dv5gpTy8Loyck1JNzvTJFKIAuaIqF3bJA61ZvvA
-        KrsCUZ3Gr/UPh3PPOuTl22GT4c49hQw0CZjzDdRPHdF5nKS9
-X-Google-Smtp-Source: AKy350YZ9Bw8Wn5/59DoOMOyPZeeVBG4oqgre9seN+QlAM/OXP3XvNoAOYg87OLsF8K1W5LMJIqbJ5jc7VzPsO6XacVyiqxdYvr8
+        d=1e100.net; s=20210112; t=1679797850;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=16zeEm3Yx86eXVp/qbGCAi0MIpRJKwJZlSDFwjFpw+o=;
+        b=yfuf8wV8TFo/3D3PUb93rl/hozXz/NwnH/ZzK4Z1uKuRcXRAvdShVvlSKOpPs/CQ6V
+         jTM3+VNnG0Ose5GVRpceMr8mYOSYSBy41tvf659knJCb/EE8WuCZXCLMZgytGs0LA2Lb
+         Fz/TDCa/7vHg+7H7Zzt4JvKB3qchjSbfyJJmkEEW1F0XIke+E7tryUhJ1vsDz6T9Hfh7
+         JDKK6smfHOPBQ/9pq+1ryDLDAQ3FAFL+Mip8SMleIJ91PJ2+2xogOyHtjV6YkG5LiDm/
+         WE0MZ4xzGc8l+WMFgOqNO/FP+ok2BgoKw3MpWICGeAphtXpD5WqASSzL0DLdJUrOfK/M
+         tvNw==
+X-Gm-Message-State: AAQBX9fReYgebGiU4IgpswTMXPNUGBEYIiqDqSs7ZdUItRtkyu9PBu16
+        lqkD5Q7VjS3XYO6E7sAWdQWAGIfZ9n2XhC65axA=
+X-Google-Smtp-Source: AKy350ZyiXVXqUs1LdjJV3le8Hl08j5qOc6C8xX3M4B2dQPsX/8enbe0vFReza0cI1e1ZcxpUPerYFKADVSMFKZFQoc=
+X-Received: by 2002:a63:5f02:0:b0:507:3e33:43e3 with SMTP id
+ t2-20020a635f02000000b005073e3343e3mr1874010pgb.7.1679797849615; Sat, 25 Mar
+ 2023 19:30:49 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:d51:b0:325:e737:9d62 with SMTP id
- h17-20020a056e020d5100b00325e7379d62mr2276622ilj.6.1679791583750; Sat, 25 Mar
- 2023 17:46:23 -0700 (PDT)
-Date:   Sat, 25 Mar 2023 17:46:23 -0700
-In-Reply-To: <000000000000e8fd1f05ed75bf20@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a5727605f7c2f407@google.com>
-Subject: Re: [syzbot] [nfc?] possible deadlock in nci_start_poll
-From:   syzbot <syzbot+f1f36887d202cea1446d@syzkaller.appspotmail.com>
-To:     bongsu.jeon@samsung.com, davem@davemloft.net, dvyukov@google.com,
-        edumazet@google.com, hdanton@sina.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org, linma@zju.edu.cn,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
+References: <20230321081152.26510-1-peter_hong@fintek.com.tw>
+ <CAMZ6RqJWg1H6Yo3nhsa-Kk-WdU=ZH39ecWaE6wiuKRJe1gLMkQ@mail.gmail.com>
+ <f71f1f59-f729-2c8c-f6da-8474be2074b1@fintek.com.tw> <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
+In-Reply-To: <CAMZ6Rq+xSCLe8CYm6K0CyPABo-Gzrt-JUO7_XGgXum+G8k5FCQ@mail.gmail.com>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Sun, 26 Mar 2023 11:30:37 +0900
+Message-ID: <CAMZ6RqLNQG30GJH6OJR6bb4yqACn+HiTMEbhbh19Zok=5njJsQ@mail.gmail.com>
+Subject: Re: [PATCH V2] can: usb: f81604: add Fintek F81604 support
+To:     Peter Hong <peter_hong@fintek.com.tw>
+Cc:     wg@grandegger.com, mkl@pengutronix.de,
+        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, frank.jungclaus@esd.eu,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ***
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On Tue. 23 Mar 2023 at 14:54, Vincent MAILHOL
+<mailhol.vincent@wanadoo.fr> wrote:
+> Le jeu. 23 mars 2023 à 14:14, Peter Hong <peter_hong@fintek.com.tw> a écrit :
 
-commit b2e44aac91b25abbed57d785089c4b7af926a7bd
-Author: Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue Nov 15 10:00:17 2022 +0000
+(...)
 
-    NFC: nci: Allow to create multiple virtual nci devices
+> > struct f81604_bulk_data {
+> >      u8 cmd;
+> >      u8 dlc;
+> >
+> >      union {
+> >          struct {
+> >              u8 id1, id2;
+> >              u8 data[CAN_MAX_DLEN];
+> >          } sff;
+> >
+> >          struct {
+> >              u8 id1, id2, id3, id4;
+> >              u8 data[CAN_MAX_DLEN];
+> >          } eff;
+> >      };
+> > } __attribute__((packed));
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=117e50c1c80000
-start commit:   0b1dcc2cf55a Merge tag 'mm-hotfixes-stable-2022-11-24' of ..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=436ee340148d5197
-dashboard link: https://syzkaller.appspot.com/bug?extid=f1f36887d202cea1446d
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125fa5c5880000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12508d3d880000
+Actually, there is an alias for this attribute. Just use __packed
+instead of __attribute__((packed)).
 
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: NFC: nci: Allow to create multiple virtual nci devices
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+(...)
