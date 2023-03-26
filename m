@@ -2,100 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CB4A6C9731
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 19:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EECE6C9737
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 19:35:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbjCZRc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 13:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
+        id S231782AbjCZRfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 13:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbjCZRc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 13:32:57 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3076E49D2;
-        Sun, 26 Mar 2023 10:32:55 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id bf30so4713352oib.12;
-        Sun, 26 Mar 2023 10:32:55 -0700 (PDT)
+        with ESMTP id S230232AbjCZRf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 13:35:28 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987BE72B2
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 10:35:27 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id h14so2156232ilj.0
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 10:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679851974;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=kMIdTPrzs9W2bcOisGTJ32C4tZONe5VcnIYDts13aIw=;
-        b=nqNPvS2vEQB9efoFo76JN7ONcu10HLvy2l6zDGCpZmhWoP3oDJITiKYFyR2UA6ylZX
-         awrzoBNXSNjmAOOgckqCsw0ZF2HdzXbWe8jpW8/tJzbX6HVqLQnEU6u5J7FBZDLjksTv
-         BSGEGgpIJQG7+N3d3OrQnCJVSBRFko45xnzAtvWoxcgJWPK1mqFUtl7lmknTkOeCxsAB
-         LzpNO6MVG2bjmWGmYpC6Dx1iUbxzFZgzczeJvoy6K+V1tDUSQWBJP6nj1H9JzhgbRUDa
-         EPGh7KEUD+CouiOeFE/Xh4H+RQ2sJKFk39vU8oUzS0MC6ZEk8KJSU+ewb7N802+fSqt0
-         8uyQ==
+        d=google.com; s=20210112; t=1679852127;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eZf4Q1Tx6L+B1KzWs59sfdK76WmqOF9UglHcQK60Ewo=;
+        b=Jwy+JVvhRuLgLuCfY6CQw+fTLE+tY6ltHEUlD3QiASg8te6DytHym0PZmc5ig+PnbS
+         NNhtOtov9yRmf9b6SDyrgNkeHybtXFzfu9D81NF6gx2xlMZQ4ai9QkZkuVQBE+Gvym+8
+         3KTsHzRc9l3iUFFYm2n0qAm+wtpuht8FoTYaBDb2VqLrJxFVoJAmMYCCJeLb3+ZueR1B
+         O0TjiLYi9f9t2+4L2QZslbxUm3SG9lQicIOalQb+59kYWnyMHLWTOXc5NVxpVSHCBhBR
+         HVVUBWO7b4kxJganBEKL1GutJsZEoM/eO5QZjrmpp/ReXknvUhQ8eYyUwX5+8pFz2Hek
+         exEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679851974;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20210112; t=1679852127;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=kMIdTPrzs9W2bcOisGTJ32C4tZONe5VcnIYDts13aIw=;
-        b=toRsyzO4eFcPJmz70an2qLAnzIB2dPo3tIjY7DU9YtckfZkQyiLAMF48sWpHaMaMFd
-         aA0shaR6xsj1XiQ91kXcUkWFtiP1OWhrbvPtvng2JyZn7j6782lH2UT1qvH4XKCphcan
-         z5d3OttLyPEd+Pw0fV6aiED9UGmFFM1ZOJxc6brPzfdpAPhQaB6CTqMzY7ifkjO6Rf2n
-         fKZJAKjc6Ror4GNG+AqrPVLQfbz/nsQHketWNr9xZMrxBDLQGDU0a3XJns2K6OkwfAD1
-         MZszRGzl/ikIed+cziTob1ceM+tcPfx2wt3JR8Y/M19HbSUrHZYwmifEGEWZ7TBeYg43
-         H0nQ==
-X-Gm-Message-State: AO0yUKVNSOffS6XUnvd5E1cEmuCJ6S83Ulf687DaAR7x1XbReBsfHrWF
-        ZgcxUoGhaIEDjWmO4mxGYS8=
-X-Google-Smtp-Source: AK7set/49UtlldFI6p/rQrGSVBcq35E2L5hx8hQveh7EcQGyM0FugN5APVKlOsGtnXSC2SkRcy1vAA==
-X-Received: by 2002:a05:6808:15a7:b0:386:e073:6996 with SMTP id t39-20020a05680815a700b00386e0736996mr5472851oiw.26.1679851974518;
-        Sun, 26 Mar 2023 10:32:54 -0700 (PDT)
-Received: from [192.168.1.204] ([216.130.59.33])
-        by smtp.gmail.com with ESMTPSA id i206-20020acaead7000000b003874e6dfeefsm4607368oih.37.2023.03.26.10.32.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Mar 2023 10:32:54 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <307ebdbb-1b0f-43df-04b1-a2275adcee72@lwfinger.net>
-Date:   Sun, 26 Mar 2023 12:32:52 -0500
+        bh=eZf4Q1Tx6L+B1KzWs59sfdK76WmqOF9UglHcQK60Ewo=;
+        b=Hm62475c9gF2eQk92cHcTVOhkzyz+fQsYS5Vi3WJLOLnB9mR+tQIuYA2CPfYrZZoNn
+         o7PiE15+5315dGTLtmZ8a0EfeMf++Qkgp301LdGhQ6mFKhoA8S1pH158cgtAPwWqhdvN
+         qEIYKf22cznhuAtwt5L3aJe/El+HhKyFyzP3z8CF37m8Ot9a9L7A2zPtoKcCUxRZ0PAV
+         UHOIqAhsNxMEUDwzkEH9bvBQW7yy/bdubrjK2Wq1ekoMcAOLTLijGhtBZ5BDTCtZYs2y
+         YijDZInJ3sslpxjuCUJKf1VDsd2q6fcQeL7MFCFrTBX375w+Dqx20YgbD2iJ4oxWuS+k
+         BKNQ==
+X-Gm-Message-State: AO0yUKXDxWKypsvQZ3GYn9Dpx9jLeZ/C9CzDfW98mMTm6S38Djrjzi2Y
+        7DuMT/Oa7VN4GYKUTCio6elNO/mrE0vVafJL92qK9ebDSDzeVEnwwVc8pFxe
+X-Google-Smtp-Source: AK7set/g3lz+4sKnlvKOVASmqn1QDk4/tVGy0Tw94Y+J4BJKvCsWijpStJlru7XpQne4Hd5S+NkHX+NPCmrxGYn86IA=
+X-Received: by 2002:a05:6e02:2207:b0:323:ecc:daf1 with SMTP id
+ j7-20020a056e02220700b003230eccdaf1mr8501949ilf.2.1679852126729; Sun, 26 Mar
+ 2023 10:35:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH] wireless: rtlwifi: fix incorrect error codes in
- rtl_debugfs_set_write_rfreg()
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>,
-        Wei Chen <harperchen1110@gmail.com>
-Cc:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230325083429.3571917-1-harperchen1110@gmail.com>
- <ZB7DSn3wfjU9OVgJ@corigine.com>
- <CAO4mrfduRPKLruShN76VDOMAeZF=A7f84=vcamnHPCtMLGuRvA@mail.gmail.com>
- <ZB/8YDQwc6uzHbZo@corigine.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <ZB/8YDQwc6uzHbZo@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+References: <20230325152417.5403-1-kerneljasonxing@gmail.com>
+ <CANn89iJaVrObJNDC9TrnSUC3XQeo-zfmUXLVrNVcsbRDPuSNtA@mail.gmail.com>
+ <CAL+tcoDVCywXXt0Whnx+o0PcULmdms0osJf0qUb0HKvVwuE6oQ@mail.gmail.com>
+ <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com> <CAL+tcoCFPKpDF+JBN1f74BxDJj9q=9ppoPntnCoT0gT6C0r=PA@mail.gmail.com>
+In-Reply-To: <CAL+tcoCFPKpDF+JBN1f74BxDJj9q=9ppoPntnCoT0gT6C0r=PA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sun, 26 Mar 2023 10:35:13 -0700
+Message-ID: <CANn89iJLdce57j6fPbLpexp=tzTtw9yDwV7wjT5FbNF6fPkk+g@mail.gmail.com>
+Subject: Re: [PATCH net] net: fix raising a softirq on the current cpu with
+ rps enabled
+To:     Jason Xing <kerneljasonxing@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/26/23 03:03, Simon Horman wrote:
-> On Sun, Mar 26, 2023 at 01:47:51PM +0800, Wei Chen wrote:
->> Dear Simon,
->>
->> Thanks for the advice and review. I have sent the second version of the patch.
->>
->> Besides, rtl_debugfs_set_write_reg also suffers from the incorrect
->> error code problem. I also sent v2 of the corresponding patch. Hope
->> there is no confusion between these two patches.
-> 
-> Thanks. I now see there are two similar but different patches. My bad.
+>
+> Forgive me. Really I need some coffee. I made a mistake. This line
+> above should be:
+>
+> +               if (!test_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
+>
+> But the whole thing doesn't feel right. I need a few days to dig into
+> this part until Eric can help me with more of it.
+>
 
-Avoid all such misunderstandings by making a patch set.
+I am still traveling, and this is weekend time :/
 
-Larry
+It should not be too hard to read net/core/dev.c and remember that not
+_all_ drivers (or some core networking functions) use the NAPI model.
 
+eg look at netif_rx() and ask yourself why your patch is buggy.
+
+Just look at callers of enqueue_to_backlog() and ask yourself if all
+of them are called from net_rx_action()
+
+[The answer is no, just in case you wonder]
+
+In order to add your optimization, more work is needed, like adding
+new parameters so that we do not miss critical
+__raise_softirq_irqoff(NET_RX_SOFTIRQ) when _needed_.
+
+We keep going circles around softirq deficiencies, I feel you are
+trying to fix a second-order 'issue'.
+
+Real cause is elsewhere, look at recent patches from Jakub.
+
+Thanks.
