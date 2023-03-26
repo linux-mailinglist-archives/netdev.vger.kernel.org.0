@@ -2,126 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B8476C930F
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 10:10:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1DFE6C9311
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 10:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230474AbjCZIKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 04:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        id S231171AbjCZILh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 04:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCZIKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 04:10:14 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091AB5FC2;
-        Sun, 26 Mar 2023 01:10:14 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id f22so1607781plr.0;
-        Sun, 26 Mar 2023 01:10:14 -0700 (PDT)
+        with ESMTP id S229483AbjCZILf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 04:11:35 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2117.outbound.protection.outlook.com [40.107.95.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02F059E4;
+        Sun, 26 Mar 2023 01:11:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gu6AjCS10tdJclcW4DeRc3IsnevXCprPc8/1z5aGnQgmjPQBhGcooAVwPJ956EmQz+Nw783kNNJ9Iyx6dFsIxCQcJ3u5DL/pZVGv0ngecEUy7o/aYE72ntrPtTbBTfbSMWJ5kdGEu3vYKs6hEmgCMgFnFyeYntbTRY6GsI8Xa20fkxfbRK29iVPj9yhdn66bBMQS0dXGXu/dQyK5GVs4paMI7TELxGC10hJCDK5MR51edS81FoJoQ/XJ6DeNgkSCFAdB1kU+XKIlXt2CHyKd8NecjZuddOSBxBMPF0cUGiI2wqZyWO+je94otDnLufJ39YNaE/brXYLRu8gFIGLJ5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S3Fw8TbizqqX4nAuYI7MOryBipdAHjL5HfrijeTf1T0=;
+ b=aUPYmPzfYTHhlGgqKzAXvjcg1qhzdof92SimdolF5U+sgm4LnVQ9eNiQltTSTr573NRPKSiHk5CAaslHMHd0LQzjNW1N5GQGs2gXV/Voe250cuP4niUhoz0mLjIR5XIQ8i5hyDPubRn5zD9nqqC84qnEAuiKQ4X4nJv1n/48SwSFnK2hJRLY0/heVY4f/bFoyRuZtvwCFhz+Vn7W/OeV98srzn57FkQODpRvXFE5Th7GSxtQCqzvQ8tF219eoLB9gU85koYL4wtkI3ybGYSWye28J/CgDqvstu4wkYRioZQeTWs1WgY/qS3npRJAMDsSQmdlopMpewZ7sb+f0zfuFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679818213;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=J1/B+9iVvI5dzcNRBNyfENWdpUqP//bX1siwDilnCMQ=;
-        b=qcPvHm8nga+RfdbuzKxuEXi3xRtekVEOGjsv60y0VG42t1/ElEGbaCBVC4oVgaDFT5
-         UesD2Z/cVtxV7ImrXKUMoHptPCyfzqPw5PZ/kR5VvZzBY8ndykQIOZz4FGMBxbVPmJ8t
-         9ILCylZuQbeIktCiccpRFSaR8pAlBTGUOGF9WDlYb3p8rODb39CeSrYiWWhmpv8Xzlzy
-         HhOAaO2gXvZ0rzesTal/Od0v8VmDTrEBMI4UY3Iurmc1FLeyHVLCeaN3BWMMVc1JLCFM
-         x25MWrZ4UoBzvpD7qoVIW0uSDl0EQ2V2AbgweQCSIMCNiJCyPR3LSeMyyuLNVuYSWWdI
-         tKCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679818213;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J1/B+9iVvI5dzcNRBNyfENWdpUqP//bX1siwDilnCMQ=;
-        b=SJLRzME+ii72yRD8Zds6dIFXRiKFo1ozBSvMiEw+6W3iCLjhVNL/Lg8sEnXWKWRsh7
-         hREdet/FiYw/3OZuiDxjunPslyXKJX0tIOzN0C/+zEmh4oUDoQ0v/Cvq9Uih7fTU4XIt
-         2ap3pPWdqu2Q+dQRa+hUUxqltJthmiWBNUAqqtCU6QKFuXChsgQ7i4IhcGEP6vrZ4uUZ
-         djapN2PjLtQIOo+J2yXupU1vyfJypLB9wcXJ/IC2E/1BRW74Jq7menzNxyhSlZDoc6vz
-         cODqGYLsV3j2Ylgs2hGDE8yVjv3xhuZOl9lNaCUfHspe0bE2mE631rTnQ2dKBEyGGWoT
-         0KLA==
-X-Gm-Message-State: AO0yUKWNe3VG8dbm724N+3p0yOJ/jWBOjnmHb64Z0nFCYC4E7vM+UY/x
-        kJLsusWLLyHmYKTnucUbebo=
-X-Google-Smtp-Source: AK7set8ySV+myqe2AQZuOsybwlNOJW4KrrPUt7tGNYbn1piaXcfX/9pMeDEesOfhSi8xzpw4XQTe6Q==
-X-Received: by 2002:a05:6a20:2a08:b0:da:5e10:799b with SMTP id e8-20020a056a202a0800b000da5e10799bmr7552372pzh.10.1679818213198;
-        Sun, 26 Mar 2023 01:10:13 -0700 (PDT)
-Received: from dragonet (dragonet.kaist.ac.kr. [143.248.133.220])
-        by smtp.gmail.com with ESMTPSA id j4-20020aa783c4000000b006281f4a54bdsm8667870pfn.154.2023.03.26.01.10.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 01:10:12 -0700 (PDT)
-Date:   Sun, 26 Mar 2023 17:10:07 +0900
-From:   "Dae R. Jeong" <threeearcat@gmail.com>
-To:     socketcan@hartkopp.net, mkl@pengutronix.de, davem@davemloft.net,
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S3Fw8TbizqqX4nAuYI7MOryBipdAHjL5HfrijeTf1T0=;
+ b=idfYUUtZyHce2HbgXN9w8Qt05WPIkvuFSAzLdki2tT8/4ERh7XBuvnWlz5uRYOVJkz57FLvI/EYlPQ0r26m20F06e7K1ybY5uN519Ki6FD8zpOD1paNHZT4zy1Muk0CM3T1zDoFTBD8yWPEdX0YqZVvrlJn9xtP6yYFJjUimirM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5665.namprd13.prod.outlook.com (2603:10b6:510:110::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Sun, 26 Mar
+ 2023 08:11:33 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Sun, 26 Mar 2023
+ 08:11:33 +0000
+Date:   Sun, 26 Mar 2023 10:11:26 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Wei Chen <harperchen1110@gmail.com>
+Cc:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: WARNING in isotp_tx_timer_handler and WARNING in print_tainted
-Message-ID: <ZB/93xJxq/BUqAgG@dragonet>
-MIME-Version: 1.0
+Subject: Re: [PATCH v2] rtlwifi: fix incorrect error codes in
+ rtl_debugfs_set_write_reg()
+Message-ID: <ZB/+Lhyxg7Ur3/c7@corigine.com>
+References: <20230326054217.93492-1-harperchen1110@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230326054217.93492-1-harperchen1110@gmail.com>
+X-ClientProxiedBy: AM0PR06CA0105.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::46) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5665:EE_
+X-MS-Office365-Filtering-Correlation-Id: 508d0550-3f15-44b2-8f5b-08db2dd1b607
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UcKXjFu1T8b0kukEswFP+dhZSzKi5BV9OtK3gJFZabiYz+xBVebIFjG7MVM6XHkTkljz3fyvZXn3ttTOy9h/rY6a+7jwF6sbCZJimUW5FFeQHVxaXIWsyey3vldXLsf7hHD05CprwRXJQuLCPln+HB8Dj0UR4zpL7yOHhLHasOLe10cV6ieQDjWoyGBOqknn5CR5DwEcfzYeb1VJ9jHxclLwnU0RnUY/9AbRYAgoUrvYCm1wnECFGvWX/n54+D25fGnmYfvtQT4Dy7LsnrfdMUqWDyvG6vIPgvbSCEPZkC+tPeO1xB2GTm2AxhTSUOlsfSmhVuIkRsghjgrLseNgrgX1RsHMO8AhFgiGDTExc52gB3p7VN4+H4TLmwHk9F+DqAydhNBkc1ftXAXqQcfDIjuwlMe8hwA7LcDYSPF9VOHXveUI/EJ3JZZCZQFiCv9J8QzJO9KlTQBXtIo/PBSg3lIoXkEaxGW4c5ma0izfkc4m/YyN9p1EJ+XeNh3bTA7GuzdPQP215eG85LGyFckadwATwRBZaOiH9PmK+pQ4iZKcm0z76oLpXZLGk9viI+nN
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(346002)(39840400004)(376002)(136003)(451199021)(6666004)(316002)(86362001)(83380400001)(2616005)(6506007)(6512007)(186003)(6486002)(8936002)(41300700001)(44832011)(38100700002)(36756003)(478600001)(6916009)(8676002)(66946007)(4326008)(66556008)(7416002)(4744005)(2906002)(66476007)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7jaJbmhUXs5n+lcCSLqhzNiqcVn/RFDqTp/dBF7KXHUVi7WSa2NpNc3frUme?=
+ =?us-ascii?Q?8sWxaCoZR6lK6jnVrmqOLkxq9ud5TcVPJ7zxOPewDQ76Y6fI6SaEI3gB6Zn1?=
+ =?us-ascii?Q?dclmCkUoORLreyZL9DjYhN1TW/8r31DhYUdqlZM3hEezCy7QLddjptQnZBzL?=
+ =?us-ascii?Q?VD4aWDd3iire4TtRAZUAN7xsp0TxKULOs4RAUIHebWsgF64ZVa23lQ8MD4TV?=
+ =?us-ascii?Q?3GNFxcD9rVP3mcD7mV8HRqZxgTsli7aLlmBPjku12kVIs68GsNFGpj+V+Lzc?=
+ =?us-ascii?Q?Yev7vVLR4O7NsLx0GyptQJuMAk6ilLn+gZaffVMCF4hY1EvLs3ojtV2DRQ7k?=
+ =?us-ascii?Q?qwS1csd3m9+0xwDj4FJn1ldkGpXNnSewPflSZWJALLfUjovyGKw3hDWHVYMy?=
+ =?us-ascii?Q?8jEl96wa8gTKhijIqccjKVEAe97eBRFi41JQpTGAR6E5hkrRiiPxaU15+eaI?=
+ =?us-ascii?Q?kOhP/DYfylw1O3CVZlKE3z7Zi6immz/DZwtBxYm5ukaIU6UhQqCkRZtgEZem?=
+ =?us-ascii?Q?doO0HN9ooM4gmfSINRqHruA9bZK11TBm4IDvP+COf8FfL6AGm1gm7TvQ0Zt4?=
+ =?us-ascii?Q?5mHPTOj91+bqUscPXcK6QUycw39wQ8FuHgSk3063SNDqRdl/xBanWykiZUYi?=
+ =?us-ascii?Q?3JRYEAJb9PtXLyqy3xMmvSz3oGgO74KbxnikKtsH4FL7KP+iIgPKxyjitVd/?=
+ =?us-ascii?Q?6uEOiohw7y9jFBe03NVI93IKk4JSe1HL7KfqHRpukVaTsp3PxeMchQ6y2uXn?=
+ =?us-ascii?Q?pUbd+SoBuQXOZV2wksVfC5oiDqhU9KuR7rN2LEB2zjaDwYynBW4pg5wnRcCc?=
+ =?us-ascii?Q?BSdX5L+8KYYd9P/2t12M+UMl95sQg6KzVFffWGp6uKpXFoCU/YoLymI7/9Ff?=
+ =?us-ascii?Q?q+Z5EAxxtX3rEMZwy85mmQLsXKUgXRsbH/Kpk0XfTFVvhHrSX/53LeEifvIm?=
+ =?us-ascii?Q?onhtK0UyWOsMQMoFu68Eh57f0KXBEYb6QnHGeE0Pxop23qQwBHeH+dL92zQE?=
+ =?us-ascii?Q?hPIZ1hn0FrjeeJeJmrBswUm0161eVCAoW/EKQ8ioCtS6wADLesuuhkFA1EsO?=
+ =?us-ascii?Q?Snl8GhKK9dJ83VdgvQijhhFIy4WkAdzSHe/NPSzG+K2IX5Nt/J0ecj2xSZQa?=
+ =?us-ascii?Q?ZKzTYIw0jpBW3D2GQLrtKUTZs+/i4+iUOyle60FHP1Z2lMGTGs7VzVU9iaK8?=
+ =?us-ascii?Q?tLBYY8TngyWkiVeRMZKEEGIE47ZIh7O7oSQal1tx6ONXsaPuyfwv8Hvw3k7o?=
+ =?us-ascii?Q?lowu5ZxoRJS3AzKt6USm4xqYykcUIY7rPj1o3bO8J93TJGVYzhsIzKIOk8eB?=
+ =?us-ascii?Q?iQp+pjVBYuZj8ghQ8bWAXtzHvcw+23rj1SxRztISmpFKsAgqiXMReWiP2Dtq?=
+ =?us-ascii?Q?Yp+GH821zKEtyE8/MNtlMgdzOCP83tSGF8DOlS7BsO1/CojM3zzVkpSUz+p/?=
+ =?us-ascii?Q?xhDzKuqzeZThcdQ97N9c5MXhEsxbewe3uhlwxay8lO2yFFd7LlxQINnn9lli?=
+ =?us-ascii?Q?c0wRxjFimU+HFv33wPWjG3P4Y7qsE1ib2hZOKUDhPPesO+l0bnmyQigTncAl?=
+ =?us-ascii?Q?b1nsk1VB4hmM+GfiGqQKTmv9qLKK2v7spSKg94RsaEEeholQB/Tapng74xxu?=
+ =?us-ascii?Q?c71rzVPY0ax80J3a6rcJVjuAL/xMHZDftkgzsyN2EQLMZBxKdlWheuAkiWTj?=
+ =?us-ascii?Q?aCvpgQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 508d0550-3f15-44b2-8f5b-08db2dd1b607
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 08:11:33.0352
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kN3G4+cZcVhKU/ZwF1vmPXOGT/5kNHIZND5PoqZ3u48zwrXtr3pu4JjOJm9HUZ+fOtNmTJkRbjTsGKmw7WfNvMKfRvAA2Fyd+pTsJc47X0E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5665
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Mar 26, 2023 at 05:42:17AM +0000, Wei Chen wrote:
+> If there is a failure during copy_from_user or user-provided data buffer is
+> invalid, rtl_debugfs_set_write_reg should return negative error code instead
+> of a positive value count.
+> 
+> Fix this bug by returning correct error code. Moreover, the check of buffer
+> against null is removed since it will be handled by copy_from_user.
+> 
+> Fixes: 610247f46feb ("rtlwifi: Improve debugging by using debugfs")
+> Signed-off-by: Wei Chen <harperchen1110@gmail.com>
 
-I am curious about the error handling logic in isotp_sendmsg() which
-looks a bit unclear to me.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-I was looking the `WARNING in isotp_tx_timer_handler` warning [1],
-which was firstly addressed by a commit [2] but reoccured even after
-the commit.
-[1]: https://syzkaller.appspot.com/bug?id=4f492d593461a5e44d76dd9322e179d13191a8ef
-[2]: c6adf659a8ba can: isotp: check CAN address family in isotp_bind()
-
-I thought that the warning is caused by the concurrent execution of
-two isotp_sendmsg() as described below (I'm not 100% sure though).
-
-CPU1                             CPU2
-isotp_sendmsg()                  isotp_sendmsg()
------                            -----
-old_state = so->tx.state; // ISOTP_IDLE
-
-                                 cmpxchg(&so->tx.state, ISTOP_IDLE, ISOTP_SENDING) // success
-							     ...
-							     so->tx.state = ISTOP_WAIT_FIRST_FC;
-							     hrtimer_start(&so->txtimer);
-
-cmpxchg(&so->tx.state, ISTOP_IDLE, ISOTP_SENDING) // failed
-// if MSG_DONTWAIT is set in msg->msg_flags or
-// a signal is delivered during wait_event_interruptible()
-goto err_out;
-err_out:
-    so->tx.state = old_state; // ISTOP_IDLE
-
-                                 isotp_tx_timer_handler()
-								 -----
-								 switch (so->tx.state) {
-								 default:
-								     WARN_ONCE();
-								 }
-
-Then, a commit [3] changed the logic of tx timer, and removed the
-WARN_ONCE() statement. So I thought that the issue is completely
-handled.
-[3]: 4f027cba8216 can: isotp: split tx timer into transmission and timeout
-
-But even after [3] is applied, I found a warning that seems related
-occurred [4] (in the kernel commit: 478a351ce0d6).
-[4]: https://syzkaller.appspot.com/bug?id=11d0e5f6fef53a0ea486bbd07ddd3cba66132150
-
-So I wonder whether the `err_out` logic in isotp_sendmsg() is safe.
-For me, it looks like isotp_sendmsg() can change so->tx.state to
-ISTOP_IDLE at any time. It may not be a problem if all other locations
-are aware of this. Is this an intended behavior?
-
-Thank you in advance.
-
-
-Best regards,
-Dae R. Jeong
