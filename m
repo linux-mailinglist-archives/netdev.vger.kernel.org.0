@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFD9B6C94F2
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:08:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A546C94F4
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230032AbjCZOI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 10:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
+        id S231875AbjCZOIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 10:08:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbjCZOI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:08:28 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774FC1FE3;
-        Sun, 26 Mar 2023 07:08:27 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id m16so5026773qvi.12;
-        Sun, 26 Mar 2023 07:08:27 -0700 (PDT)
+        with ESMTP id S231771AbjCZOId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:08:33 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F99149F2;
+        Sun, 26 Mar 2023 07:08:32 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id 31so5165894qvc.1;
+        Sun, 26 Mar 2023 07:08:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679839706;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=haZ/N5nW5Plmc5DWgnjdDixWfP9wBSD924tPnZWCLZY=;
-        b=KucRiVZKGuHD9i5gaGDTj2xSbZILOQZV1N1mWfqtpS1NCJ+27lQ1bokAIsc0qSTeo8
-         7rX6aOdI0sIVLoK12RmCm54E3zEIbzmssCpIPNNdqhvIXfc23rzMt7cdNQi0DH1lyBly
-         iKI4Bxrc5ViufogV6StNXc/+yfdHrRxruihgsczl5vWVzxOoH+tt0KSed1/8C71hpGyt
-         Bhl4OrnRSWmsdnMxzK7F4phiRPDPzF9bl270sT5c5A2i79xpY97ZPP3oA+HJMNbGWonW
-         mFMRISxOQd7j0YDu5EO2CX8UncmMDEOOHnFbtzbXGGeEqOrNZAMU2Pe/ZBlSipo8RWG0
-         uJ6w==
+        d=gmail.com; s=20210112; t=1679839711;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hlqMgsbtMdGDwnYgR2vesfxbv2C04RSOqe9u/KU4Ors=;
+        b=KHOvRSfqQyWTy9ScGQJ8IWC0p7ihFilYWFRWGp1cuRjLBuNtSqMAa18k5ewbyq7Per
+         F9Zk2ka0l6LdpkLmJi/Jpob3ws2xH4WfNayNory3VwV5s01MDbRtJD+d/ca8hTYcOUbk
+         rYzAWbueY94VBEaN34s2DeUNNiWKowsy1r7nY0nG2FdjSAFre1PQjh9aTMXfw8NMxG6Y
+         WGm/cKKdHhn0iG8Nsy8zyybIr/PS6FCBCq+fHQv87wIZFGhkjaqAjqoyqUUJcfFystzZ
+         ADKkLHoTDOIc3nWfngO1AOjGoSQtIM/JOyjzymCi0bR4wnPBYnx+Y03BkBl4M1Ky0IE5
+         epbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679839706;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=haZ/N5nW5Plmc5DWgnjdDixWfP9wBSD924tPnZWCLZY=;
-        b=vyRvsUf5FkBxw9MWHcBnwH/h3JNP/V09TKbvqe4xxalIxM9wqD1FqMVl4beZQxcMQS
-         3jNW/qRmp5zL0QD+HEUrbFNsU9g3ZNO3hBLyHwXYvIimbzZEssPKYeHL7//Yi1fX8pHM
-         indG9f9UwBOsM9ZwdcqurnHIRZO366P2bH7CwE5EqORjcFNm+IDCFdRod5iT9kqArkFC
-         gw56QN/xUDbGwxSMyisiT0T0CWocUymUuZHcVNkKh9Iu9k2chAXbI2rSnWZJsEYMppyA
-         Iv5bzOQOjCDsbEVMSzi+7djv5m/0vTJM/wrv+sb9/+ZIvSqoIHTu4lJkvDdM5/MM8G/0
-         uzIA==
-X-Gm-Message-State: AAQBX9fc0sY8ucWKJnMSlj/myQy31abMV+UhxhSHd7LlGgecmSQzwrXC
-        FoCnjdsGRymMLisOiAx7IJM=
-X-Google-Smtp-Source: AKy350bsAu31m1Dw9Tw+BR6RPVUqj+HtnaIW2d12BTKz4OhkuFdQoyywrUpuMw4f4xe3sDYtwp3MVw==
-X-Received: by 2002:ad4:5b82:0:b0:5b7:9d44:8dd8 with SMTP id 2-20020ad45b82000000b005b79d448dd8mr14559105qvp.20.1679839706435;
-        Sun, 26 Mar 2023 07:08:26 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679839711;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hlqMgsbtMdGDwnYgR2vesfxbv2C04RSOqe9u/KU4Ors=;
+        b=C7UwsxAHM2IDlgQMlLMXaw7tStheHWSenny3rVB6WCMXZXr3dqM/uHs9ItnfYr5Blg
+         SMELBbPhkBXeMLanWVUF0dU/eTxvZjpsIBlIlRurk2asq0+n8fshZbpie8OIxD0J9hJH
+         5fojsM0CEkWBYWcQwvsTqRnchA/6AwhwRnPuORIMqVuZ8uo1xVWHaFnt2o7uOBrscu10
+         9XKD/KJu3sHMN8kX+qZUYU15nVEZQmpDxeD33MEWXhwoFGcasbU1w8zm0LHS6meiDqLs
+         DYx0zcqGUmvr6hxQzRASkWRfiTh8Ss+/mT7AG5jcD6zQpqIH4jTLTDIY/cWlK0rrKH1m
+         APxg==
+X-Gm-Message-State: AAQBX9dDB0pjR3pO/aXO83EJv42K1hIAerL4YCwPTlWqWlag1ifjsbDj
+        qWEjVcAY1O/4NdTYCxZ0fWQ=
+X-Google-Smtp-Source: AKy350bQt+rT9tKjyp+jcmLOuyVtQ8y49KPu+aHAFnNI18NCKk4Cu4hKAl6gcnlq2J65UPddcNsBWw==
+X-Received: by 2002:a05:6214:258a:b0:56f:c138:2844 with SMTP id fq10-20020a056214258a00b0056fc1382844mr16074703qvb.37.1679839711363;
+        Sun, 26 Mar 2023 07:08:31 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id j5-20020a0ce6a5000000b005dd8b93458esm2212220qvn.38.2023.03.26.07.08.21
+        by smtp.gmail.com with ESMTPSA id j5-20020a0ce6a5000000b005dd8b93458esm2212220qvn.38.2023.03.26.07.08.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 07:08:26 -0700 (PDT)
+        Sun, 26 Mar 2023 07:08:31 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -64,20 +65,22 @@ To:     Sean Wang <sean.wang@mediatek.com>,
         <angelogioacchino.delregno@collabora.com>,
         Russell King <linux@armlinux.org.uk>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
         Landen Chao <landen.chao@mediatek.com>,
         Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
         Richard van Schagen <richard@routerhints.com>,
         Richard van Schagen <vschagen@cs.com>,
         Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH 0/7] net: dsa: mt7530: fix port 5 phylink, phy muxing, and port 6
-Date:   Sun, 26 Mar 2023 17:08:11 +0300
-Message-Id: <20230326140818.246575-1-arinc.unal@arinc9.com>
+Subject: [PATCH net 1/7] net: dsa: mt7530: fix comments regarding port 5 and 6 for both switches
+Date:   Sun, 26 Mar 2023 17:08:12 +0300
+Message-Id: <20230326140818.246575-2-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230326140818.246575-1-arinc.unal@arinc9.com>
+References: <20230326140818.246575-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -91,100 +94,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-This patch series is mainly focused on fixing the support for port 5 and
-setting up port 6.
+There's no logic to numerically order the CPU ports. State the port number
+and its being a CPU port instead.
 
-The only missing piece to properly support port 5 as a CPU port is the
-fixes [0] [1] [2] from Richard.
+Remove the irrelevant PHY muxing information from
+mt7530_mac_port_get_caps(). Explain the supported MII modes instead.
 
-Russell, looking forward to your review regarding phylink.
+Remove the out of place PHY muxing information from
+mt753x_phylink_mac_config(). The function is for both the MT7530 and MT7531
+switches but there's no phy muxing on MT7531.
 
-I have very thoroughly tested the patch series with every possible mode to
-use. I'll let the name of the dtb files speak for themselves.
+Fixes: ca366d6c889b ("net: dsa: mt7530: Convert to PHYLINK API")
+Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
+Fixes: 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a new hardware")
+Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ drivers/net/dsa/mt7530.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-MT7621 Unielec:
-
-only-gmac0-mt7621-unielec-u7621-06-16m.dtb
-rgmii-only-gmac0-mt7621-unielec-u7621-06-16m.dtb
-only-gmac1-mt7621-unielec-u7621-06-16m.dtb
-gmac0-and-gmac1-mt7621-unielec-u7621-06-16m.dtb
-phy0-muxing-mt7621-unielec-u7621-06-16m.dtb
-phy4-muxing-mt7621-unielec-u7621-06-16m.dtb
-port5-as-user-mt7621-unielec-u7621-06-16m.dtb
-
-tftpboot 0x80008000 mips-uzImage.bin; tftpboot 0x83000000 mips-rootfs.cpio.uboot; tftpboot 0x83f00000 $dtb; bootm 0x80008000 0x83000000 0x83f00000
-
-MT7623 Bananapi:
-
-only-gmac0-mt7623n-bananapi-bpi-r2.dtb
-rgmii-only-gmac0-mt7623n-bananapi-bpi-r2.dtb
-only-gmac1-mt7623n-bananapi-bpi-r2.dtb
-gmac0-and-gmac1-mt7623n-bananapi-bpi-r2.dtb
-phy0-muxing-mt7623n-bananapi-bpi-r2.dtb
-phy4-muxing-mt7623n-bananapi-bpi-r2.dtb
-port5-as-user-mt7623n-bananapi-bpi-r2.dtb
-
-tftpboot 0x80008000 arm-uImage; tftpboot 0x83000000 arm-rootfs.cpio.uboot; tftpboot 0x83f00000 $dtb; bootm 0x80008000 0x83000000 0x83f00000
-
-Current CPU ports setup of MT7530:
-
-mt7530_setup()
--> mt7530_setup_port5()
-
-mt753x_phylink_mac_config()
--> mt753x_mac_config()
-   -> mt7530_mac_config()
-      -> mt7530_setup_port5()
--> mt753x_pad_setup()
-   -> mt7530_pad_clk_setup() sets up port 6, rename to mt7530_setup_port6()
-
-How it will be with the patch series:
-
-mt7530_setup()
--> mt7530_setup_port5() runs if the port is not used as a CPU or user port
-
-mt753x_phylink_mac_config()
--> mt753x_mac_config()
-   -> mt7530_mac_config()
-      -> mt7530_setup_port5()
-      -> mt7530_setup_port6()
-
-CPU ports setup of MT7531 for reference:
-
-mt7531_setup()
--> mt753x_cpu_port_enable()
-   -> mt7531_cpu_port_config()
-      -> mt7531_mac_config()
-         -> mt7531_rgmii_setup()
-         -> mt7531_sgmii_setup_mode_an()
-         -> etc.
-
-mt753x_phylink_mac_config()
--> mt753x_mac_config()
-   -> mt7531_mac_config()
-      -> mt7531_rgmii_setup()
-      -> mt7531_sgmii_setup_mode_an()
-      -> etc.
-
-[0] https://lore.kernel.org/netdev/20230212213949.672443-1-richard@routerhints.com/
-[1] https://lore.kernel.org/netdev/20230212215152.673221-1-richard@routerhints.com/
-[2] https://lore.kernel.org/netdev/20230212214027.672501-1-richard@routerhints.com/
-
-Arınç
-
-Arınç ÜNAL (7):
-  net: dsa: mt7530: fix comments regarding port 5 and 6 for both switches
-  net: dsa: mt7530: fix phylink for port 5 and fix port 5 modes
-  net: dsa: mt7530: do not run mt7530_setup_port5() if port 5 is disabled
-  net: dsa: mt7530: set both CPU port interfaces to PHY_INTERFACE_MODE_NA
-  net: dsa: mt7530: set up port 5 before CPU ports are enabled
-  net: dsa: mt7530: call port 6 setup from mt7530_mac_config()
-  net: dsa: mt7530: remove pad_setup function pointer
-
- drivers/net/dsa/mt7530.c | 154 +++++++++++++++++++-----------------------
- drivers/net/dsa/mt7530.h |   3 -
- 2 files changed, 70 insertions(+), 87 deletions(-)
-
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 02410ac439b7..62a4b899a961 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2454,7 +2454,7 @@ static void mt7530_mac_port_get_caps(struct dsa_switch *ds, int port,
+ 			  config->supported_interfaces);
+ 		break;
+ 
+-	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
++	case 5: /* Port 5, a CPU port, supports rgmii, mii, and gmii. */
+ 		phy_interface_set_rgmii(config->supported_interfaces);
+ 		__set_bit(PHY_INTERFACE_MODE_MII,
+ 			  config->supported_interfaces);
+@@ -2462,7 +2462,7 @@ static void mt7530_mac_port_get_caps(struct dsa_switch *ds, int port,
+ 			  config->supported_interfaces);
+ 		break;
+ 
+-	case 6: /* 1st cpu port */
++	case 6: /* Port 6, a CPU port, supports rgmii and trgmii. */
+ 		__set_bit(PHY_INTERFACE_MODE_RGMII,
+ 			  config->supported_interfaces);
+ 		__set_bit(PHY_INTERFACE_MODE_TRGMII,
+@@ -2487,14 +2487,14 @@ static void mt7531_mac_port_get_caps(struct dsa_switch *ds, int port,
+ 			  config->supported_interfaces);
+ 		break;
+ 
+-	case 5: /* 2nd cpu port supports either rgmii or sgmii/8023z */
++	case 5: /* Port 5, a CPU port, supports rgmii and sgmii/802.3z. */
+ 		if (mt7531_is_rgmii_port(priv, port)) {
+ 			phy_interface_set_rgmii(config->supported_interfaces);
+ 			break;
+ 		}
+ 		fallthrough;
+ 
+-	case 6: /* 1st cpu port supports sgmii/8023z only */
++	case 6: /* Port 6, a CPU port, supports sgmii/802.3z only. */
+ 		__set_bit(PHY_INTERFACE_MODE_SGMII,
+ 			  config->supported_interfaces);
+ 		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
+@@ -2772,7 +2772,7 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 		if (state->interface != PHY_INTERFACE_MODE_GMII)
+ 			goto unsupported;
+ 		break;
+-	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
++	case 5: /* Port 5, a CPU port. */
+ 		if (priv->p5_interface == state->interface)
+ 			break;
+ 
+@@ -2782,7 +2782,7 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+ 		if (priv->p5_intf_sel != P5_DISABLED)
+ 			priv->p5_interface = state->interface;
+ 		break;
+-	case 6: /* 1st cpu port */
++	case 6: /* Port 6, a CPU port. */
+ 		if (priv->p6_interface == state->interface)
+ 			break;
+ 
+-- 
+2.37.2
 
