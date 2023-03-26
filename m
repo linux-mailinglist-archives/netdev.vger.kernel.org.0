@@ -2,187 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DE186C95DC
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:57:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A37DC6C95E8
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 17:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbjCZO47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 10:56:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S232271AbjCZPEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 11:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbjCZO45 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:56:57 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C895B95;
-        Sun, 26 Mar 2023 07:56:56 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id eg48so25763070edb.13;
-        Sun, 26 Mar 2023 07:56:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679842615;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m9gY3qN/0TbI0QIi8rWv+RCKMQwx1Vl9uKOL6knVa0U=;
-        b=Gn3+s7kdMcPDShteR9u+nP+qN5vkLguoYbicJg2JFU/FUiuXHmyKHjKeW3sT6SM+EN
-         216oMMdL654WsT+UdJLZcUl43ctdYbAmRObbRePBsA1hir5GMX7hTz34D5IQ69vUY/AZ
-         4ur3APia65C2rvcLCq2QJkKEzvurWdzeBSJn4/DgISywrZ8Ml6cPXWHZn3cTRPvI7m0k
-         ZSykk4kzsn19zPfDjVawP6MskwIZ9sNoM3ImuGngEFj1dfifInm65traXnzg8S2Xd+7Y
-         g/oAaqzfe3cvWOwVKK4aEGtSvCVxT98E+NBD2eHeO656Rliuy07ghEt7/Tj4QfMEeGl6
-         oyCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679842615;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=m9gY3qN/0TbI0QIi8rWv+RCKMQwx1Vl9uKOL6knVa0U=;
-        b=s7es0ESYVS/InlLpwo41E8r+3ayNPM5uLTrVaYuCnY/VB3MZl9nd2z2lz1A3lb/SUt
-         CKi5jSC4pPMSRRrbEyUhv7As2IGPmgnc4T0x934UnBmWIX759T0Vw4QifXSPuF046IO3
-         rZjLF+wXoTE3hGvlPT2m6E4FA2UsE0NLGdkS1nKJZujyOJt9nqqHagnL//Y52cTE41s1
-         HI4qWhOvmBSWz5dIRsnatPW6YjGdUJdbV21ULRz+vouFCMvgesYtvKI4Fcm/ntmCj+YU
-         BDAqSkL2mG+TEZlmvX61H7BMbD6ALpSey9Qvcd7Jknuo4Q0QRHyaylv/O197MIbJHY5U
-         g1uw==
-X-Gm-Message-State: AAQBX9c+Rprq4wUWUC16t5mKXxVtbKJrJam4K9Ljkk+i93/ZKUoL0DP2
-        PGYFZOJLV1ZW0EVXbA9oqJJpUEfhs/OOgsJelxk=
-X-Google-Smtp-Source: AKy350b5D+CcivAjhuMqpfm72IrnCGNswMlh6TBioWZ6/flZqf1DaxZ7HYiDtUKjLQQlmNxi3H7akQCQ8C5EeHG94kY=
-X-Received: by 2002:a17:907:cb86:b0:930:42bd:ef1d with SMTP id
- un6-20020a170907cb8600b0093042bdef1dmr4420205ejc.11.1679842615063; Sun, 26
- Mar 2023 07:56:55 -0700 (PDT)
+        with ESMTP id S229621AbjCZPEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 11:04:02 -0400
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8FE3AAA;
+        Sun, 26 Mar 2023 08:04:00 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aeddf.dynamic.kabel-deutschland.de [95.90.237.223])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0C72B61CC457B;
+        Sun, 26 Mar 2023 17:03:57 +0200 (CEST)
+Message-ID: <ddbae662-96d6-8779-eb8a-5a375e97ec22@molgen.mpg.de>
+Date:   Sun, 26 Mar 2023 17:03:56 +0200
 MIME-Version: 1.0
-References: <20230325152417.5403-1-kerneljasonxing@gmail.com>
- <CANn89iJaVrObJNDC9TrnSUC3XQeo-zfmUXLVrNVcsbRDPuSNtA@mail.gmail.com>
- <CAL+tcoDVCywXXt0Whnx+o0PcULmdms0osJf0qUb0HKvVwuE6oQ@mail.gmail.com> <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com>
-In-Reply-To: <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Sun, 26 Mar 2023 22:56:18 +0800
-Message-ID: <CAL+tcoCFPKpDF+JBN1f74BxDJj9q=9ppoPntnCoT0gT6C0r=PA@mail.gmail.com>
-Subject: Re: [PATCH net] net: fix raising a softirq on the current cpu with
- rps enabled
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [Intel-wired-lan] [PATCH net v3] ixgbe: Panic during XDP_TX with
+ > 64 CPUs
+To:     John Hickey <jjh@daedalian.us>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Shujin Li <lishujin@kuaishou.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
+        bpf@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Jason Xing <xingwanli@kuaishou.com>
+References: <20230308220756.587317-1-jjh@daedalian.us>
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20230308220756.587317-1-jjh@daedalian.us>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 6:10=E2=80=AFPM Jason Xing <kerneljasonxing@gmail.c=
-om> wrote:
->
-> On Sun, Mar 26, 2023 at 12:04=E2=80=AFPM Jason Xing <kerneljasonxing@gmai=
-l.com> wrote:
-> >
-> > On Sat, Mar 25, 2023 at 11:57=E2=80=AFPM Eric Dumazet <edumazet@google.=
-com> wrote:
-> > >
-> > > On Sat, Mar 25, 2023 at 8:26=E2=80=AFAM Jason Xing <kerneljasonxing@g=
-mail.com> wrote:
-> > > >
-> > > > From: Jason Xing <kernelxing@tencent.com>
-> > > >
-> > > > Since we decide to put the skb into a backlog queue of another
-> > > > cpu, we should not raise the softirq for the current cpu. When
-> > > > to raise a softirq is based on whether we have more data left to
-> > > > process later. As to the current cpu, there is no indication of
-> > > > more data enqueued, so we do not need this action. After enqueuing
-> > > > to another cpu, net_rx_action() function will call ipi and then
-> > > > another cpu will raise the softirq as expected.
-> > > >
-> > > > Also, raising more softirqs which set the corresponding bit field
-> > > > can make the IRQ mechanism think we probably need to start ksoftirq=
-d
-> > > > on the current cpu. Actually it shouldn't happen.
-> > > >
-> > > > Fixes: 0a9627f2649a ("rps: Receive Packet Steering")
-> > > > Signed-off-by: Jason Xing <kernelxing@tencent.com>
-> > > > ---
-> > > >  net/core/dev.c | 2 --
-> > > >  1 file changed, 2 deletions(-)
-> > > >
-> > > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > > index 1518a366783b..bfaaa652f50c 100644
-> > > > --- a/net/core/dev.c
-> > > > +++ b/net/core/dev.c
-> > > > @@ -4594,8 +4594,6 @@ static int napi_schedule_rps(struct softnet_d=
-ata *sd)
-> > > >         if (sd !=3D mysd) {
-> > > >                 sd->rps_ipi_next =3D mysd->rps_ipi_list;
-> > > >                 mysd->rps_ipi_list =3D sd;
-> > > > -
-> > > > -               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> > > >                 return 1;
-> > > >         }
-> > > >  #endif /* CONFIG_RPS */
-> > > > --
-> > > > 2.37.3
-> > > >
-> > >
-> > > This is not going to work in some cases. Please take a deeper look.
-> > >
-> > > I have to run, if you (or others) do not find the reason, I will give
-> > > more details when I am done traveling.
-> >
-> > I'm wondering whether we could use @mysd instead of @sd like this:
-> >
-> > if (!__test_and_set_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
-> >     __raise_softirq_irqoff(NET_RX_SOFTIRQ);
->
-> Ah, I have to add more precise code because the above codes may mislead p=
-eople.
->
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 1518a366783b..9ac9b32e392f 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4594,8 +4594,9 @@ static int napi_schedule_rps(struct softnet_data *s=
-d)
->         if (sd !=3D mysd) {
->                 sd->rps_ipi_next =3D mysd->rps_ipi_list;
->                 mysd->rps_ipi_list =3D sd;
-> +               if (!__test_and_set_bit(NAPI_STATE_SCHED, &mysd->backlog.=
-state))
+Dear John,
 
-Forgive me. Really I need some coffee. I made a mistake. This line
-above should be:
 
-+               if (!test_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
+Thank you for your patch.
 
-But the whole thing doesn't feel right. I need a few days to dig into
-this part until Eric can help me with more of it.
+I’d recommend, to use a statement in the git commit message/summary by 
+adding a verb (in imperative mood). Maybe:
 
-Thanks,
-Jason
+Fix panic during XDP_TX with > 64 CPUs
 
-> +                       __raise_softirq_irqoff(NET_RX_SOFTIRQ);
->
-> -               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
->                 return 1;
->         }
->  #endif /* CONFIG_RPS */
->
-> Eric, I realized that some paths don't call the ipi to notify another
-> cpu. If someone grabs the NAPI_STATE_SCHED flag, we know that at the
-> end of net_rx_action() or the beginning of process_backlog(), the
-> net_rps_action_and_irq_enable() will handle the information delivery.
-> However, if no one grabs the flag, in some paths we could not have a
-> chance immediately to tell another cpu to raise the softirq and then
-> process those pending data. Thus, I have to make sure if someone owns
-> the napi poll as shown above.
->
-> If I get this wrong, please correct me if you're available. Thanks in adv=
-ance.
->
-> >
-> > I traced back to some historical changes and saw some relations with
-> > this commit ("net: solve a NAPI race"):
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
-it/?id=3D39e6c8208d7b6fb9d2047850fb3327db567b564b
-> >
-> > Thanks,
-> > Jason
+Am 08.03.23 um 23:07 schrieb John Hickey:
+> In commit 'ixgbe: let the xdpdrv work with more than 64 cpus'
+> (4fe815850bdc), support was added to allow XDP programs to run on systems
+
+I think it’s more common to write it like:
+
+In commit 4fe815850bdc (ixgbe: let the xdpdrv work with more than 64 cpus) …
+
+Even shorter
+
+Commit 4fe815850bdc (ixgbe: let the xdpdrv work with more than 64 cpus) 
+adds support to allow XDP programs …
+
+> with more than 64 CPUs by locking the XDP TX rings and indexing them
+> using cpu % 64 (IXGBE_MAX_XDP_QS).
+> 
+> Upon trying this out patch via the Intel 5.18.6 out of tree driver
+
+Upon trying this patch out via …
+
+> on a system with more than 64 cores, the kernel paniced with an
+> array-index-out-of-bounds at the return in ixgbe_determine_xdp_ring in
+> ixgbe.h, which means ixgbe_determine_xdp_q_idx was just returning the
+> cpu instead of cpu % IXGBE_MAX_XDP_QS.  An example splat:
+
+Please add, that you have UBSAN  enabled, or does it happen without?
+
+> 
+>   ==========================================================================
+>   UBSAN: array-index-out-of-bounds in
+>   /var/lib/dkms/ixgbe/5.18.6+focal-1/build/src/ixgbe.h:1147:26
+>   index 65 is out of range for type 'ixgbe_ring *[64]'
+>   ==========================================================================
+>   BUG: kernel NULL pointer dereference, address: 0000000000000058
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD 0 P4D 0
+>   Oops: 0000 [#1] SMP NOPTI
+>   CPU: 65 PID: 408 Comm: ksoftirqd/65
+>   Tainted: G          IOE     5.15.0-48-generic #54~20.04.1-Ubuntu
+>   Hardware name: Dell Inc. PowerEdge R640/0W23H8, BIOS 2.5.4 01/13/2020
+>   RIP: 0010:ixgbe_xmit_xdp_ring+0x1b/0x1c0 [ixgbe]
+>   Code: 3b 52 d4 cf e9 42 f2 ff ff 66 0f 1f 44 00 00 0f 1f 44 00 00 55 b9
+>   00 00 00 00 48 89 e5 41 57 41 56 41 55 41 54 53 48 83 ec 08 <44> 0f b7
+>   47 58 0f b7 47 5a 0f b7 57 54 44 0f b7 76 08 66 41 39 c0
+
+If you do not it yet, `scripts/decode_stacktrace.sh` helps decoding 
+these traces.
+
+>   RSP: 0018:ffffbc3fcd88fcb0 EFLAGS: 00010282
+>   RAX: ffff92a253260980 RBX: ffffbc3fe68b00a0 RCX: 0000000000000000
+>   RDX: ffff928b5f659000 RSI: ffff928b5f659000 RDI: 0000000000000000
+>   RBP: ffffbc3fcd88fce0 R08: ffff92b9dfc20580 R09: 0000000000000001
+>   R10: 3d3d3d3d3d3d3d3d R11: 3d3d3d3d3d3d3d3d R12: 0000000000000000
+>   R13: ffff928b2f0fa8c0 R14: ffff928b9be20050 R15: 000000000000003c
+>   FS:  0000000000000000(0000) GS:ffff92b9dfc00000(0000)
+>   knlGS:0000000000000000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: 0000000000000058 CR3: 000000011dd6a002 CR4: 00000000007706e0
+>   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>   PKRU: 55555554
+>   Call Trace:
+>    <TASK>
+>    ixgbe_poll+0x103e/0x1280 [ixgbe]
+>    ? sched_clock_cpu+0x12/0xe0
+>    __napi_poll+0x30/0x160
+>    net_rx_action+0x11c/0x270
+>    __do_softirq+0xda/0x2ee
+>    run_ksoftirqd+0x2f/0x50
+>    smpboot_thread_fn+0xb7/0x150
+>    ? sort_range+0x30/0x30
+>    kthread+0x127/0x150
+>    ? set_kthread_struct+0x50/0x50
+>    ret_from_fork+0x1f/0x30
+>    </TASK>
+> 
+> I think this is how it happens:
+> 
+> Upon loading the first XDP program on a system with more than 64 CPUs,
+> ixgbe_xdp_locking_key is incremented in ixgbe_xdp_setup.  However,
+> immediately after this, the rings are reconfigured by ixgbe_setup_tc.
+> ixgbe_setup_tc calls ixgbe_clear_interrupt_scheme which calls
+> ixgbe_free_q_vectors which calls ixgbe_free_q_vector in a loop.
+> ixgbe_free_q_vector decrements ixgbe_xdp_locking_key once per call if
+> it is non-zero.  Commenting out the decrement in ixgbe_free_q_vector
+> stopped my system from panicing.
+> 
+> I suspect to make the original patch work, I would need to load an XDP
+> program and then replace it in order to get ixgbe_xdp_locking_key back
+> above 0 since ixgbe_setup_tc is only called when transitioning between
+> XDP and non-XDP ring configurations, while ixgbe_xdp_locking_key is
+> incremented every time ixgbe_xdp_setup is called.
+> 
+> Also, ixgbe_setup_tc can be called via ethtool --set-channels, so this
+> becomes another path to decrement ixgbe_xdp_locking_key to 0 on systems
+> with greater than 64 CPUs.
+
+… with more than 64 CPUs.
+
+> For this patch, I have changed static_branch_inc to static_branch_enable
+> in ixgbe_setup_xdp.  We weren't counting references.  The
+> ixgbe_xdp_locking_key only protects code in the XDP_TX path, which is
+> not run when an XDP program is loaded.  The other condition for setting
+> it on is the number of CPUs, which I assume is static.
+> 
+> Fixes: 4fe815850bdc ("ixgbe: let the xdpdrv work with more than 64 cpus")
+> Signed-off-by: John Hickey <jjh@daedalian.us>
+> ---
+> v1 -> v2:
+> 	Added Fixes and net tag.  No code changes.
+> v2 -> v3:
+> 	Added splat.  Slight clarification as to why ixgbe_xdp_locking_key
+> 	is not turned off.  Based on feedback from Maciej Fijalkowski.
+> ---
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c  | 3 ---
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
+>   2 files changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> index f8156fe4b1dc..0ee943db3dc9 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+> @@ -1035,9 +1035,6 @@ static void ixgbe_free_q_vector(struct ixgbe_adapter *adapter, int v_idx)
+>   	adapter->q_vector[v_idx] = NULL;
+>   	__netif_napi_del(&q_vector->napi);
+>   
+> -	if (static_key_enabled(&ixgbe_xdp_locking_key))
+> -		static_branch_dec(&ixgbe_xdp_locking_key);
+> -
+>   	/*
+>   	 * after a call to __netif_napi_del() napi may still be used and
+>   	 * ixgbe_get_stats64() might access the rings on this vector,
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index ab8370c413f3..cd2fb72c67be 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -10283,7 +10283,7 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
+>   	if (nr_cpu_ids > IXGBE_MAX_XDP_QS * 2)
+>   		return -ENOMEM;
+>   	else if (nr_cpu_ids > IXGBE_MAX_XDP_QS)
+> -		static_branch_inc(&ixgbe_xdp_locking_key);
+> +		static_branch_enable(&ixgbe_xdp_locking_key);
+>   
+>   	old_prog = xchg(&adapter->xdp_prog, prog);
+>   	need_reset = (!!prog != !!old_prog);
+
+
+Kind regards,
+
+Paul
