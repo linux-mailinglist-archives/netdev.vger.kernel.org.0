@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A546C94F4
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48EC56C94F7
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231875AbjCZOIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 10:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
+        id S232137AbjCZOIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 10:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbjCZOId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:08:33 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F99149F2;
-        Sun, 26 Mar 2023 07:08:32 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id 31so5165894qvc.1;
-        Sun, 26 Mar 2023 07:08:32 -0700 (PDT)
+        with ESMTP id S231928AbjCZOIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:08:39 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A2135AA;
+        Sun, 26 Mar 2023 07:08:36 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id m16so5026979qvi.12;
+        Sun, 26 Mar 2023 07:08:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679839711;
+        d=gmail.com; s=20210112; t=1679839716;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hlqMgsbtMdGDwnYgR2vesfxbv2C04RSOqe9u/KU4Ors=;
-        b=KHOvRSfqQyWTy9ScGQJ8IWC0p7ihFilYWFRWGp1cuRjLBuNtSqMAa18k5ewbyq7Per
-         F9Zk2ka0l6LdpkLmJi/Jpob3ws2xH4WfNayNory3VwV5s01MDbRtJD+d/ca8hTYcOUbk
-         rYzAWbueY94VBEaN34s2DeUNNiWKowsy1r7nY0nG2FdjSAFre1PQjh9aTMXfw8NMxG6Y
-         WGm/cKKdHhn0iG8Nsy8zyybIr/PS6FCBCq+fHQv87wIZFGhkjaqAjqoyqUUJcfFystzZ
-         ADKkLHoTDOIc3nWfngO1AOjGoSQtIM/JOyjzymCi0bR4wnPBYnx+Y03BkBl4M1Ky0IE5
-         epbg==
+        bh=9WREep/uFgN/eq+sZNlJgQLhID1K1IK3LPV9/PpCfqc=;
+        b=Q2l7rBPanCOROqiRzww4lARkg9ZAg9Bapi3rbhQW/IkFYT837uziBPuG1BziEFS89f
+         laRZiicNLo/9ulN9PV/DhIZY+mnS9gmbfDjvCF+Vz9eBnT5orhN/vfiMoh/VdZ34wQXh
+         TDlbawItGu4+/5LhY8Rb6fv6TERsFcWxh8maWE35D4VJSIKePaqsgLnqwcHZOEWDKoCz
+         OQAidwTXP7li7rERK7lO+UMePBSmIqrYbyJNG6D5ZVcaOgHBX7wNXQDWnAKsOJ6avYO0
+         Y9oZ8oelx4wtuKkl8XHqph74loxHZeh5RtA+C+hCP7/AffrP6PtW+3sbFvpfMSozLmg+
+         mEJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679839711;
+        d=1e100.net; s=20210112; t=1679839716;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=hlqMgsbtMdGDwnYgR2vesfxbv2C04RSOqe9u/KU4Ors=;
-        b=C7UwsxAHM2IDlgQMlLMXaw7tStheHWSenny3rVB6WCMXZXr3dqM/uHs9ItnfYr5Blg
-         SMELBbPhkBXeMLanWVUF0dU/eTxvZjpsIBlIlRurk2asq0+n8fshZbpie8OIxD0J9hJH
-         5fojsM0CEkWBYWcQwvsTqRnchA/6AwhwRnPuORIMqVuZ8uo1xVWHaFnt2o7uOBrscu10
-         9XKD/KJu3sHMN8kX+qZUYU15nVEZQmpDxeD33MEWXhwoFGcasbU1w8zm0LHS6meiDqLs
-         DYx0zcqGUmvr6hxQzRASkWRfiTh8Ss+/mT7AG5jcD6zQpqIH4jTLTDIY/cWlK0rrKH1m
-         APxg==
-X-Gm-Message-State: AAQBX9dDB0pjR3pO/aXO83EJv42K1hIAerL4YCwPTlWqWlag1ifjsbDj
-        qWEjVcAY1O/4NdTYCxZ0fWQ=
-X-Google-Smtp-Source: AKy350bQt+rT9tKjyp+jcmLOuyVtQ8y49KPu+aHAFnNI18NCKk4Cu4hKAl6gcnlq2J65UPddcNsBWw==
-X-Received: by 2002:a05:6214:258a:b0:56f:c138:2844 with SMTP id fq10-20020a056214258a00b0056fc1382844mr16074703qvb.37.1679839711363;
-        Sun, 26 Mar 2023 07:08:31 -0700 (PDT)
+        bh=9WREep/uFgN/eq+sZNlJgQLhID1K1IK3LPV9/PpCfqc=;
+        b=SMf44valfYlDQP7zECfyIAJHexJKvSnaGM/IfkZc+C/PChXsjcelx8bUrGmHH1uLQ7
+         nHo7mkh+0Xc+1q2cHZ5ku8giJDrHpGM62OKQltUQl++mw2l9rEkdmq+ZIYXDbUQsvvVC
+         nK3RelrlZkvypn9iGjRinFLLj1W12/dS5T6GzLKep8EcHWwl/D68e5+9KlgPWUKXJ3kj
+         z64RuF3Z3+gqKTq0/ltwCLtQHFO1Vbku05/9V76QgX156oQn043FBbYD506B+43ctgJH
+         a1wF/rd2rNanUloGf+FsfSHmMTLOSHnGcRhm/jF2CqIZu4OI+qEDInrS5hnO3+IiGVnP
+         Lk/Q==
+X-Gm-Message-State: AAQBX9cxnHz93H9JDmbsMCJR2k8H9HF7FtEw+fDPbvWlBXx6f0FiThOO
+        fia610DvLYa9ZEZ2SBIsoEA=
+X-Google-Smtp-Source: AKy350ZS8/EBgNW/qhv77gSkv3ALYbhI1UnitVz4DKT8orb8a12B2BcJsnGRHFuhE51Orjd/Hx6arg==
+X-Received: by 2002:a05:6214:c2c:b0:5aa:43c0:9cdd with SMTP id a12-20020a0562140c2c00b005aa43c09cddmr15287399qvd.45.1679839716258;
+        Sun, 26 Mar 2023 07:08:36 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id j5-20020a0ce6a5000000b005dd8b93458esm2212220qvn.38.2023.03.26.07.08.26
+        by smtp.gmail.com with ESMTPSA id j5-20020a0ce6a5000000b005dd8b93458esm2212220qvn.38.2023.03.26.07.08.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 07:08:31 -0700 (PDT)
+        Sun, 26 Mar 2023 07:08:35 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Sean Wang <sean.wang@mediatek.com>,
@@ -75,9 +75,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH net 1/7] net: dsa: mt7530: fix comments regarding port 5 and 6 for both switches
-Date:   Sun, 26 Mar 2023 17:08:12 +0300
-Message-Id: <20230326140818.246575-2-arinc.unal@arinc9.com>
+Subject: [PATCH net 2/7] net: dsa: mt7530: fix phylink for port 5 and fix port 5 modes
+Date:   Sun, 26 Mar 2023 17:08:13 +0300
+Message-Id: <20230326140818.246575-3-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230326140818.246575-1-arinc.unal@arinc9.com>
 References: <20230326140818.246575-1-arinc.unal@arinc9.com>
@@ -96,82 +96,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-There's no logic to numerically order the CPU ports. State the port number
-and its being a CPU port instead.
+There're two call paths for setting up port 5:
 
-Remove the irrelevant PHY muxing information from
-mt7530_mac_port_get_caps(). Explain the supported MII modes instead.
+mt7530_setup()
+-> mt7530_setup_port5()
 
-Remove the out of place PHY muxing information from
-mt753x_phylink_mac_config(). The function is for both the MT7530 and MT7531
-switches but there's no phy muxing on MT7531.
+mt753x_phylink_mac_config()
+-> mt753x_mac_config()
+   -> mt7530_mac_config()
+      -> mt7530_setup_port5()
 
-Fixes: ca366d6c889b ("net: dsa: mt7530: Convert to PHYLINK API")
+The first call path is supposed to run when phy muxing is being used. In
+this case, port 5 is somewhat of a hidden port. It won't be defined on the
+devicetree so phylink can't be used to manage the port.
+
+The second call path used to call mt7530_setup_port5() directly under case
+5 on mt7530_phylink_mac_config() before it was moved to mt7530_mac_config()
+with 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a
+new hardware"). mt7530_setup_port5() will never run through this call path
+because the current code on mt7530_setup() bypasses phylink for all cases
+of port 5.
+
+Leave it to phylink if port 5 is used as a CPU port or a user port. For the
+cases of phy muxing or the port being disabled, call mt7530_setup_port5()
+directly from mt7530_setup_port5() without involving phylink.
+
+Move setting the interface and P5_DISABLED mode to a more specific
+location. They're supposed to be overwritten if phy muxing is detected.
+
+Add comments which explain the process.
+
 Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
-Fixes: 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a new hardware")
-Fixes: c288575f7810 ("net: dsa: mt7530: Add the support of MT7531 switch")
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 02410ac439b7..62a4b899a961 100644
+index 62a4b899a961..eba356249ada 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2454,7 +2454,7 @@ static void mt7530_mac_port_get_caps(struct dsa_switch *ds, int port,
- 			  config->supported_interfaces);
- 		break;
+@@ -2247,16 +2247,18 @@ mt7530_setup(struct dsa_switch *ds)
+ 		return ret;
  
--	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
-+	case 5: /* Port 5, a CPU port, supports rgmii, mii, and gmii. */
- 		phy_interface_set_rgmii(config->supported_interfaces);
- 		__set_bit(PHY_INTERFACE_MODE_MII,
- 			  config->supported_interfaces);
-@@ -2462,7 +2462,7 @@ static void mt7530_mac_port_get_caps(struct dsa_switch *ds, int port,
- 			  config->supported_interfaces);
- 		break;
- 
--	case 6: /* 1st cpu port */
-+	case 6: /* Port 6, a CPU port, supports rgmii and trgmii. */
- 		__set_bit(PHY_INTERFACE_MODE_RGMII,
- 			  config->supported_interfaces);
- 		__set_bit(PHY_INTERFACE_MODE_TRGMII,
-@@ -2487,14 +2487,14 @@ static void mt7531_mac_port_get_caps(struct dsa_switch *ds, int port,
- 			  config->supported_interfaces);
- 		break;
- 
--	case 5: /* 2nd cpu port supports either rgmii or sgmii/8023z */
-+	case 5: /* Port 5, a CPU port, supports rgmii and sgmii/802.3z. */
- 		if (mt7531_is_rgmii_port(priv, port)) {
- 			phy_interface_set_rgmii(config->supported_interfaces);
+ 	/* Setup port 5 */
+-	priv->p5_intf_sel = P5_DISABLED;
+-	interface = PHY_INTERFACE_MODE_NA;
+-
+ 	if (!dsa_is_unused_port(ds, 5)) {
++		/* Set the interface selection of port 5 to GMAC5 when it's used
++		 * as a CPU port or a user port. Let phylink handle the rest.
++		 */
+ 		priv->p5_intf_sel = P5_INTF_SEL_GMAC5;
+-		ret = of_get_phy_mode(dsa_to_port(ds, 5)->dn, &interface);
+-		if (ret && ret != -ENODEV)
+-			return ret;
+ 	} else {
+-		/* Scan the ethernet nodes. look for GMAC1, lookup used phy */
++		/* Scan the ethernet nodes. Look for GMAC1, lookup the used phy.
++		 * Determine if phy muxing is defined and which phy to mux.
++		 */
++		priv->p5_intf_sel = P5_DISABLED;
++		interface = PHY_INTERFACE_MODE_NA;
++
+ 		for_each_child_of_node(dn, mac_np) {
+ 			if (!of_device_is_compatible(mac_np,
+ 						     "mediatek,eth-mac"))
+@@ -2287,6 +2289,8 @@ mt7530_setup(struct dsa_switch *ds)
+ 			of_node_put(phy_node);
  			break;
  		}
- 		fallthrough;
++
++		mt7530_setup_port5(ds, interface);
+ 	}
  
--	case 6: /* 1st cpu port supports sgmii/8023z only */
-+	case 6: /* Port 6, a CPU port, supports sgmii/802.3z only. */
- 		__set_bit(PHY_INTERFACE_MODE_SGMII,
- 			  config->supported_interfaces);
- 		__set_bit(PHY_INTERFACE_MODE_1000BASEX,
-@@ -2772,7 +2772,7 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		if (state->interface != PHY_INTERFACE_MODE_GMII)
- 			goto unsupported;
- 		break;
--	case 5: /* 2nd cpu port with phy of port 0 or 4 / external phy */
-+	case 5: /* Port 5, a CPU port. */
- 		if (priv->p5_interface == state->interface)
- 			break;
+ #ifdef CONFIG_GPIOLIB
+@@ -2297,8 +2301,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 	}
+ #endif /* CONFIG_GPIOLIB */
  
-@@ -2782,7 +2782,7 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		if (priv->p5_intf_sel != P5_DISABLED)
- 			priv->p5_interface = state->interface;
- 		break;
--	case 6: /* 1st cpu port */
-+	case 6: /* Port 6, a CPU port. */
- 		if (priv->p6_interface == state->interface)
- 			break;
- 
+-	mt7530_setup_port5(ds, interface);
+-
+ 	/* Flush the FDB table */
+ 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
+ 	if (ret < 0)
 -- 
 2.37.2
 
