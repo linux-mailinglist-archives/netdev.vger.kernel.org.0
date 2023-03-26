@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DBEC6C9802
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 23:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8DA06C9871
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 00:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbjCZVXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 17:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
+        id S231575AbjCZWQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 18:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCZVXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 17:23:21 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335051701
-        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 14:23:20 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id y19so4009461pgk.5
-        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 14:23:20 -0700 (PDT)
+        with ESMTP id S229456AbjCZWQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 18:16:36 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1072846BF;
+        Sun, 26 Mar 2023 15:16:35 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-5418d54d77bso137205417b3.12;
+        Sun, 26 Mar 2023 15:16:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679865799;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=389jz7AIDmNzyKbIOO0NZm5fjKmloXHOgtPsRxrNPwk=;
-        b=OeaUdpmdZLPZYis+uxV3odsEm0QmYv0T082K0m/TYHHi1thYdUfyGqR5sOj1nFA9pZ
-         ZyfNdseigwg03lEIBFssBObnrGADlD/LM9u+lrszOLclmD1H4P0+C0cAEBOziHkLBV+E
-         N2k5136gwNX3faXSwJHK2K8X7iFj6xho3MJ1y08qc7ajL1jjWyn9NR0hK988JVjKF9xC
-         0UeLg4EqSM9e0QZabqvDQCh9maKhgVG8JkEaScvXB+sbi01SeBLABZJfCJiGAJqHnCcd
-         KIVT0cpXzR6IbVdVPfKsQH8RxL8B60T/jxCRq8yt3sH6mIjB4G2Pim/wITlZHxZmC6V1
-         Mk5g==
+        d=gmail.com; s=20210112; t=1679868994;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=1P2bezaT/u+Scbs1rr3MlchzCBSv/VKeJL8doctcbxc=;
+        b=kqVeQ0N3b8tFo9o1ulILg3HyV99oQvQrv7RcUG5EYbvUE4z0RAyFVqvuBu0mvBk61i
+         NjnBgKYxEPfnUhjijHpqlI/Yp+K8lo7kEKQGZ7481uc4J5Y8ISNlAnVXoizR8S6dyO5p
+         iP8AMe65ChrNWP/K/vmdh6A75Px5iBt1TBPbOGBdVBwCIGiORLRDJxJA9d1RBL+SeLAf
+         r1Vunmt9cz77PudeZeQyrLJ2ezlUiV0gjsHuO5OpB/E2FcrexHzSv8W8QBWEK92SJrwk
+         BEWfjaIA//QqJeJvI4g75ZOMZKybmKmmvBzJXAuAaf4fnp14AxHcmGg+UkiVGUJN6WMo
+         R5uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679865799;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=389jz7AIDmNzyKbIOO0NZm5fjKmloXHOgtPsRxrNPwk=;
-        b=nlv8/932DxWHJ6D3aRq8c7PiRwXoI/XgOJZRxDOKchpid/v20nteutpzYqrxupemhE
-         9CQpTm8Ta7JHWcbIl9PuVmFRqwtvi5guHQhh30xAUaI/lxNwhQZJObJ3fHhj87jBnGcg
-         Jk4N8pYrshd8otL+coomQ+tHb6wSZHMlwb2kSdWqkWFzGwTDSAib/zK43PE3LwmjcMRJ
-         3PHkVbsNk1YAPD2dpPo4ZihWcwiSkg4YA45hlO7WOAJVxw//ckRGroR0xYLfjfM/eees
-         ol5Hs2KAmnn2cMmRzxhQDM9UY+cYDXbOLnjHdvhg5SckKRGnJeBeJLelwHVExfvOw55V
-         931A==
-X-Gm-Message-State: AAQBX9fk5NOH/Ga3lMddqomfwt2berU6FvCEpTgjysMXKu/A4zNzkuOy
-        EIJde+gKaJRe4/61REu6gORtFxvGrvgNPjy0fRI=
-X-Google-Smtp-Source: AKy350bshpUHrj+o+PhktnW6EomTdohUACXrD4fnQNoTz6taTW6M3A+RT0wXu8nFYBYnOAX5nZ3LnaEh/rXHBfabnXo=
-X-Received: by 2002:a05:6a00:1344:b0:625:a545:3292 with SMTP id
- k4-20020a056a00134400b00625a5453292mr4874509pfu.0.1679865799329; Sun, 26 Mar
- 2023 14:23:19 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1679868994;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1P2bezaT/u+Scbs1rr3MlchzCBSv/VKeJL8doctcbxc=;
+        b=qPg3KWesd329W+ZjZsmgS/1a86vCKQJLoaSCrWV6QsNOHRlOs3NzglPN1t1r9gG6Sg
+         9YpAvJKPNnb4lRvz6+7PyNcJ3XVxdfI88paZDsN+wmzjuP555AiDkGbjYd7MYmXfSISr
+         pggjTLxCYS8iUSP8JJPHKIiJblc5+UDgYGwG93f8syzPsTk6Pn6RZP2RQr34Xp496PGq
+         uxd5rAQMLcRgB0SWod8TI4/CUur84S1mXWE2B8AlAnzd+VuSrqmA5FCvhJL9feTPd+Ut
+         7HayPHtaZ6P03bWjrdiFWytLJt2EIcrEC7gFkAdkCFhrIU0NG4SuMszU9VqNn34KiKwK
+         CSKQ==
+X-Gm-Message-State: AAQBX9fjbUBk1YRC7jTUhcnKMTwxRzJSTkrVAgxRYX4mLwkEjPFYKJvz
+        i2Q8O2aQgsxljec55lpgOHRPa/0VxWI=
+X-Google-Smtp-Source: AKy350ZyKf8Gu8V3ojqUQsehhjLiQ1gpHz92tP9/hFfDWPeN/370zK1szIzvnChxHg8qEC/A4P2V7g==
+X-Received: by 2002:a0d:f285:0:b0:541:8744:ae5 with SMTP id b127-20020a0df285000000b0054187440ae5mr9211836ywf.8.1679868993930;
+        Sun, 26 Mar 2023 15:16:33 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:2caa:28f3:5004:3e2d])
+        by smtp.gmail.com with ESMTPSA id a67-20020a811a46000000b00545a0818482sm1657744ywa.18.2023.03.26.15.16.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Mar 2023 15:16:33 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [Patch bpf-next] sock_map: include sk_psock memory overhead too
+Date:   Sun, 26 Mar 2023 15:16:12 -0700
+Message-Id: <20230326221612.169289-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230322233028.269410-1-kuba@kernel.org> <5060c11df10c66f56b5ca7ec2ec92333252b084b.camel@gmail.com>
- <20230323200932.7cf30af5@kernel.org> <CAKgT0Ufv5Te668Y_tszQfuH0g_Zsn=oErQ8gAfX6FwHRUm+H3A@mail.gmail.com>
- <20230324142820.61e4f0b6@kernel.org>
-In-Reply-To: <20230324142820.61e4f0b6@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Sun, 26 Mar 2023 14:23:07 -0700
-Message-ID: <CAKgT0Ufoy2WM3=aMNOdq2PFYL8AH9QSs=QrP_Xx59uouTnKLJg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
- lockless queue stop/wake code
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, willemb@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -71,152 +70,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 2:28=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Fri, 24 Mar 2023 08:45:23 -0700 Alexander Duyck wrote:
-> > On Thu, Mar 23, 2023 at 8:09=E2=80=AFPM Jakub Kicinski <kuba@kernel.org=
-> wrote:
-> > > > We may want to change the values here. The most likely case is "lef=
-t
-> > > > enabled" with that being the case we probably want to make that the=
- 0
-> > > > case. I would then probably make 1 the re-enabled case and -1 the
-> > > > stopped case.
-> > >
-> > > I chose the return values this way because the important information =
-is
-> > > whether the queue was in fact stopped (in case the macro is used at t=
-he
-> > > start of .xmit as a safety check). If stopped is zero caller can chec=
-k
-> > > !ret vs !!ret.
-> > >
-> > > Seems pretty normal for the kernel function called stop() to return 0
-> > > if it did stop.
-> >
-> > Except this isn't "stop", this is "maybe stop".
->
-> So the return value from try_stop and maybe_stop would be different?
-> try_stop needs to return 0 if it stopped - the same semantics as
-> trylock(), AFAIR. Not that I love those semantics, but it's a fairly
-> strong precedent.
+From: Cong Wang <cong.wang@bytedance.com>
 
-The problem is this isn't a lock. Ideally with this we aren't taking
-the action. So if anything this functions in my mind more like the
-inverse where if this does stop we have to abort more like trylock
-failing.
+When a socket is added to a sockmap, sk_psock is allocated too as its
+sk_user_data, therefore it should be consider as an overhead of sockmap
+memory usage.
 
-This is why I mentioned that maybe this should be renamed. I view this
-more as a check to verify we are good to proceed. In addition there is
-the problem that there are 3 possible outcomes with maybe_stop versus
-the two from try_stop.
+Before this patch:
 
-> > Maybe we should just
-> > do away with the stop/wake messaging and go with something such as a
-> > RTS/CTS type setup. Basically this function is acting as a RTS to
-> > verify that we have room on the ring to place the frame. If we don't
-> > we are stopped. The "wake" function is on what is essentially the
-> > receiving end on the other side of the hardware after it has DMAed the
-> > frames and is providing the CTS signal back.
->
-> I'm definitely open to different naming but wouldn't calling RTS _after_
-> send be even more confusing than maybe_stop?
+1: sockmap  flags 0x0
+	key 4B  value 4B  max_entries 2  memlock 656B
+	pids echo-sockmap(549)
 
-We don't call maybe_stop after the send. For that we would be calling
-try_stop. The difference being in the case of maybe_stop we might have
-to return busy.
+After this patch:
 
-> > > > With that the decision tree becomes more straightforward as we woul=
-d do
-> > > > something like:
-> > > >       if (result) {
-> > > >               if (result < 0)
-> > > >                       Increment stopped stat
-> > > >                       return
-> > > >               else
-> > > >                       Increment restarted stat
-> > > >       }
-> > >
-> > > Do you see a driver where it matters? ixgbe and co. use
-> > > netif_tx_queue_try_stop() and again they just test stopped vs not sto=
-pped.
-> >
-> > The thing is in order to make this work for the ixgbe patch you didn't
-> > use the maybe_stop instead you went with the try_stop. If you replaced
-> > the ixgbe_maybe_stop_tx with your maybe stop would have to do
-> > something such as the code above to make it work. That is what I am
-> > getting at. From what I can tell the only real difference between
-> > ixgbe_maybe_stop_tx and your maybe_stop is that you avoided having to
-> > move the restart_queue stat increment out.
->
-> I can convert ixgbe further, true, but I needed the try_stop, anyway,
-> because bnxt does:
->
-> if (/* need to stop */) {
->         if (xmit_more())
->                 flush_db_write();
->         netif_tx_queue_try_stop();
-> }
->
-> which seems reasonable.
+9: sockmap  flags 0x0
+	key 4B  value 4B  max_entries 2  memlock 1824B
+	pids echo-sockmap(568)
 
-I wasn't saying we didn't need try_stop. However the logic here
-doesn't care about the return value. In the ixgbe case we track the
-queue restarts so we would want a 0 on success and a non-zero if we
-have to increment the stat. I would be okay with the 0 (success) / -1
-(queue restarted) in this case.
+Fixes: 73d2c61919e9 ("bpf, net: sock_map memory usage")
+Cc: Yafang Shao <laoar.shao@gmail.com>
+Cc: Jakub Sitnicki <jakub@cloudflare.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+ net/core/sock_map.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-> > The general thought is I would prefer to keep it so that 0 is the
-> > default most likely case in both where the queue is enabled and is
-> > still enabled. By moving the "take action" items into the 1/-1 values
-> > then it becomes much easier to sort them out with 1 being a stat
-> > increment and -1 being an indication to stop transmitting and prep for
-> > watchdog hang if we don't clear this in the next watchdog period.
->
-> Maybe worth taking a step back - the restart stat which ixgbe
-> maintains made perfect sense when you pioneered this approach but
-> I think we had a decade of use, and have kprobes now, so we don't
-> really need to maintain a statistic for a condition with no impact
-> to the user? New driver should not care 1 vs -1..
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 7c189c2e2fbf..22197e565ece 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -799,9 +799,17 @@ static void sock_map_fini_seq_private(void *priv_data)
+ 
+ static u64 sock_map_mem_usage(const struct bpf_map *map)
+ {
++	struct bpf_stab *stab = container_of(map, struct bpf_stab, map);
+ 	u64 usage = sizeof(struct bpf_stab);
++	int i;
+ 
+ 	usage += (u64)map->max_entries * sizeof(struct sock *);
++
++	for (i = 0; i < stab->map.max_entries; i++) {
++		if (stab->sks[i])
++			usage += sizeof(struct sk_psock);
++	}
++
+ 	return usage;
+ }
+ 
+@@ -1412,7 +1420,7 @@ static u64 sock_hash_mem_usage(const struct bpf_map *map)
+ 	u64 usage = sizeof(*htab);
+ 
+ 	usage += htab->buckets_num * sizeof(struct bpf_shtab_bucket);
+-	usage += atomic_read(&htab->count) * (u64)htab->elem_size;
++	usage += atomic_read(&htab->count) * ((u64)htab->elem_size + sizeof(struct sk_psock));
+ 	return usage;
+ }
+ 
+-- 
+2.34.1
 
-Actually the restart_queue stat is VERY useful for debugging. It tells
-us we are seeing backlogs develop in the Tx queue. We track it any
-time we wake up the queue, not just in the maybe_stop case.
-
-WIthout that we are then having to break out kprobes and the like
-which we could only add after-the-fact which makes things much harder
-to debug when issues occur. For example, a common case to use it is to
-monitor it when we see a system with slow Tx connections. With that
-stat we can tell if we are building a backlog in the qdisc or if it is
-something else such as a limited amount of socket memory is limiting
-the transmits.
-
-> > Also in general it makes it easier to understand if these all work
-> > with the same logic.
-> >
-> > > > In addition for readability we may want consider adding an enum sim=
-liar
-> > > > to the netdev_tx enum as then we have the return types locked and
-> > > > usable should we want to specifically pick out one.
-> > >
-> > > Hm, I thought people generally dislike the netdev_tx enum.
-> > > Maybe it's just me.
-> >
-> > The thought I had with the enum is to more easily connect the outcomes
-> > with the sources. It would also help to prevent any confusion on what
-> > is what. Having the two stop/wake functions return different values is
-> > a potential source for errors since 0/1 means different things in the
-> > different functions. Basically since we have 3 possible outcomes using
-> > the enum would make it very clear what the mapping is between the two.
->
-> IMO only two outcomes matter in practice (as mentioned above).
-> I really like the ability to treat the return value as a bool, if only
-> we had negative zero we would have a perfect compromise :(
-
-I think we are just thinking about two different things. I am focusing
-on the "maybe" calls that have 3 outcomes whereas I think you are
-mostly focused on the "try" calls. My thought is to treat it something
-like the msix allocation calls where a negative indicates a failure
-forcing us to stop since the ring is full, 0 is a success, and a value
-indicates that there are resources but they are/were limited.
