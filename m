@@ -2,233 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9500E6C94CF
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 15:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4856C94E6
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 16:00:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbjCZN4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 09:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        id S231297AbjCZOAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 10:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232043AbjCZNzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 09:55:36 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::619])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E724868D;
-        Sun, 26 Mar 2023 06:54:48 -0700 (PDT)
+        with ESMTP id S230053AbjCZOAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 10:00:12 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2095.outbound.protection.outlook.com [40.107.220.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727D17A9A
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 06:59:56 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DIboPYzsujIclQRIGgzqPOmkynzLqyS8UHG15vEkEgmiIUWWCzn9t0sheI7fGAVCsHyxbqNhGUhXe3nc2kv0o3Yejd+uSjP+CdBwjpV3SAkwzWNMe5Sudl5cnlo/73EhCzGkoe5I7pw2i5x7WLH1wpkKMwcEh7R5mBDCebkNsrJj1ycBVAzhaEvSGiwy4VLcOd8dj9n7siJdQU0V8CVf2hfrcTVQyHFFAV7YaBIvg4hPXNL2axd/MIscxsWpMCpRL/bnlBlzwH4vk6ckXmknKuRxrsW2qqWj9xy0TQLUZQSdvP8u9MJy5eImQZM5/g/lSidUkjuEgS2Eyk1ALii7nQ==
+ b=H8mxIiNMWLyegGLSH7vxWUxUWGbcAGFrZwE0oLORMLsAMSpPGY0lOhVRJjbk/tg2LKr6Gtri29l4de7ANGITEpgEkvOczxLvN2BZLCoCHRjXykv3BdSKiqM6ZwOCp8pI3+uW+7kK72vrf1Q2DpUZ1+WHdgJKIovLmPjKZBQjfDI9qUSoFAPjEQfCouaZvpdQU7O/wpSglVjOL2xASMelyHce1X78yxTPNLq4bmyVtOtLodBlheoBWJ0pdW1LPcdVvk0hmQTSGpT70+su3LBUy6yVYJ7cogCHldloreJNZwZ6Rwp3dUN58FaYh0GgXzOBtf6sJCJNH7kR99YKnl76eQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E5RFpX79GJ2EZKenEJTdJ0qq+oRW7Q15gudkYHnnaQA=;
- b=VTSFBjLs80pwqWS2oh+9gqFhRHhJTHgu4fawkpzQDYqHQjpl33EMfMqLwZ8eaRPnUmW7QKENaIq25NU/+mPXQyF5/0nGNGA2587JNyiiQswpgKKRoLuxEj+Bahl6cv4kZb2jD3m2X7b5jlISQrJ5MCjdkZmdTEQRU4o/WuQlM9Axd4p9nPIwGlXWKXg5FUIlVjqUMIoiOTUr9c1mBXLprmGNdLzKXNpweMc7v3EY2pULGoxeCGaWSwJQCmfKxwCi5SfmSNUYiCx/QhIcj1Z2hFA4CCIbV9XshF9SFXc4GlYnY6gmKretbzr7V+86cLHzHBhniyXEQMSsd80/udgLMA==
+ bh=u7N8Eak+YZe8Bh6ZWUqjYvB4u9QQ5Qu7K9UBKwg3874=;
+ b=l2ZWPoUIgc/zXNfw9idiNXVvYVjAXTjVBhIX3giZ2fRyRvLbGxuyNOhz2EBBvNP4tUOjZgx9epL5CW2SWk/XfgwfDAJdTBMLnnTG+98riKJ9JRV6ZaHSo2G0VyMCmkINT4Hnba2shhFwJa3RK5JhxNiF9cSedagBldVZodniFV80gua3rEEOFzMo+HVcSLPPYOIFnEnHmv5X5eNwX9pWbOkTJ3JORXnPfLOUptR0TbDqnx/LUEEeOL2DmXTSzOMnwDzh9y0TZNaVLQAqYry0pddRiMH8C7q28a7dnRtD4aha75Rmn1kE/v5/p4uy6uqXo4LMGWFs8a1OFpef4G8e1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E5RFpX79GJ2EZKenEJTdJ0qq+oRW7Q15gudkYHnnaQA=;
- b=aoyD+hGxv+4N1BTb96L+MLaPFUoUZ5lh3rVRQEM4XC3hBbwpxCgTJcKMPR6MbExMWxKDqO/ICoN8tXhHFaSk2ODM1I0eHG8yt+WjEnmtdCrjIK/zIuWZSQZg3EdVg4JXo4EXVamGflsmIozxdJFXTk3x3IvYEFzsvcgXYFBy4EQ5s2B59aLgwdTAXTC8MIT8DP5khbOEPXfmSBF26R5DSjNKXR05vpEJqq2jymGCyjD7z778Yl9QYsTYuAmkU7E4aAKsoVY9EboJgOzToxlblHnPTFLkXgi/YT3pCfjvteXTXO2fC4e8ZJAxqlMQr5GERiBrv+8QYpSRaXT7aO+9Wg==
+ bh=u7N8Eak+YZe8Bh6ZWUqjYvB4u9QQ5Qu7K9UBKwg3874=;
+ b=MdBX5CrN7RN2WbBZvQMcK8iU+5E1O4J0UsJiYBJdcUu1V4JfGK+zEijyulDaQ1M/j13dtb8aw2vrcMWDa2CsSdO2aT9rX8zGeN6tePrVwXF+WvKVOOlgu9HMprE6FZZ6FNgXMXvWsHueIqOQLwqXPJMz/ow3I0tmtgzMpEArczA=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by IA1PR12MB8466.namprd12.prod.outlook.com (2603:10b6:208:44b::7) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MW4PR13MB5939.namprd13.prod.outlook.com (2603:10b6:303:1b7::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Sun, 26 Mar
- 2023 13:54:05 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::d228:dfe5:a8a8:28b3]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::d228:dfe5:a8a8:28b3%5]) with mapi id 15.20.6178.038; Sun, 26 Mar 2023
- 13:54:05 +0000
-Date:   Sun, 26 Mar 2023 16:53:58 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+ 2023 13:59:51 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Sun, 26 Mar 2023
+ 13:59:51 +0000
+Date:   Sun, 26 Mar 2023 15:59:45 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Amit Cohen <amcohen@nvidia.com>, mlxsw@nvidia.com,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH net-next 6/6] mlxsw: pci: Add support for new reset flow
-Message-ID: <ZCBOdunTNYsufhcn@shredder>
-References: <c61d07469ecf5d3053442e24d4d050405f466b76.1679502371.git.petrm@nvidia.com>
- <20230323165115.GA2557618@bhelgaas>
+        Ido Schimmel <idosch@nvidia.com>,
+        Amit Cohen <amcohen@nvidia.com>, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 1/6] mlxsw: reg: Move 'mpsc' definition in
+ 'mlxsw_reg_infos'
+Message-ID: <ZCBP0WA06Z84xMCt@corigine.com>
+References: <cover.1679502371.git.petrm@nvidia.com>
+ <9ece6a3ddfc4f092fc07e912ace0efe9f882334f.1679502371.git.petrm@nvidia.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230323165115.GA2557618@bhelgaas>
-X-ClientProxiedBy: LO2P265CA0244.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:8a::16) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+In-Reply-To: <9ece6a3ddfc4f092fc07e912ace0efe9f882334f.1679502371.git.petrm@nvidia.com>
+X-ClientProxiedBy: AS4P191CA0029.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d9::12) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6179:EE_|IA1PR12MB8466:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6bae1877-738d-451d-ce6b-08db2e018fd7
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW4PR13MB5939:EE_
+X-MS-Office365-Filtering-Correlation-Id: 79ad8587-0b21-40ca-d889-08db2e025e8b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nMTyPk3JaQCn8p6Xb3v7kL9WOjszTo4GIV1Lip/JDKFwQhU2bvbgA9ylChIAeHRa3eu/wGpnf7Ath17ubX6hMm5tgJoea/OHwS2BqPG+r75Katss8rSidt5aiSyLrIvaOV4iBItW70tEXALud/6K3zDAsL5ydBDL2qJiD/PYu5q1T/7Zuz53mQS6EIYXCoD4+8zgoInKoTbgELWkEK1XNAbxI5uaRr1grCYD0Z1tDy90skeX8tOps44HiiVwz5NxQkWRHSrjkghnvyyC5Iz5UAgVqusfo4zRYOfeDSFvRCvl/AFyn/fy2nYkCOXJiA8K6igHbA4RLzfdsl+3Y9Gr368STbWP0iuggSElC95u42Xt0h0Fu2A4+m0AQWH3gH2Nym3lS32T8rgWFZFUQjITdAYUIibdjGE+pvPiKzeoHso5izfhD3dayDmxg29nBZXHrr49o30w7gc9TdK9TbI5b7ADuVqw4bWroYLdKnDbhQDYIjQMG52SyZJFZ/uVCiiITxy2gJjLHNojCgU3k4QlXOZ1q1/oHXY0CiORaC5zQtNeL6L0f3Krp6AMn2ykeBoi
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(346002)(376002)(136003)(39860400002)(366004)(396003)(451199021)(66946007)(66556008)(5660300002)(66476007)(6486002)(316002)(54906003)(4326008)(8676002)(6916009)(8936002)(9686003)(186003)(478600001)(41300700001)(6512007)(26005)(6506007)(83380400001)(38100700002)(33716001)(86362001)(2906002)(6666004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: xjGAkoEVCb5mXUWSSJTDwT+UFpzQPn54yFHILAdF0EcBmXNOCLBhi9z2hyNwc2Gr4x7qRglM52/XN1g+JPafMZik8rDHYkw3hY1vCIUr4WL8628PjrJ9uTzHGkyM2/mW9plyNJFlc2rDO1S1hSkPzUS7DuhpyrKMFDidkJ/DHlkfXIEHCBEhhFlFc7neFRHBQ4DxT+Z9xnjmiuLYjh58QAfIOXaqO+AA5WplauvJLT5q6BLqKACfaQD5vymtHPUWY89JwBDqynvXuexFSz0yOdDK10ZckqRqBTAeGH63VOtCxztLt8C1EDzzcXL2NZmSmUoBHwltz92OgiKsvLuTDpIW36z8HqkFxtQBPtwqtAaykXjm94nM6CD6b1PpXsxcj5Pg2n8T+DbO88ghnPM8veUFR1YHeUfTF7qOO4rXYMak0SudEZqxGII74U9zMKAsXLhUeKa0qfOq0ITGpVTWk8sxmcOCCeFCYECr/3KFr6WAevdBBsDDHXftlyE5oaKmyNIqZv5Nydj6PL5BbmMeDO3iFQ9EMZsFjCpw7ghMuNj6rXrrB7Lr2lGPXzlc0kLcJt5lYmCYXvEUntDaMShB4h0NX38eI7Ct18lyzBK/8RY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(396003)(346002)(39840400004)(376002)(136003)(451199021)(66946007)(66556008)(66476007)(8676002)(4326008)(6916009)(54906003)(316002)(5660300002)(8936002)(4744005)(38100700002)(41300700001)(186003)(6512007)(6506007)(2616005)(6486002)(478600001)(6666004)(83380400001)(86362001)(44832011)(2906002)(36756003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TsXVY6w4dhoRsNd8toA7jnhlC2I1+7XxRdYDpNPcfnCLZQh0OfP7h4kqewqG?=
- =?us-ascii?Q?DpxhEAIhPNTqMSVtucnITmUyeekjHodJ2880APMVNUmJZjfdJVZ1luK6lqlu?=
- =?us-ascii?Q?mHnobAJuRmNMFE7/6nYHUX8qfkJ7aCS7wewjPOcZc2tygBskUChfqMRbPfQH?=
- =?us-ascii?Q?yKFgTFXvBNnc92RyY1TCZH5BKQEmrwfMpYhwG/Wt2ima5nlJdOPFmZtAljUx?=
- =?us-ascii?Q?LWj4tpMh9KUjJQ/YdZ+W0IEcSHMpO57xFCUWySmxVcHnLbHUUvlvl00tPgBG?=
- =?us-ascii?Q?J5GTHQjnfuLbGF/IUjasiUm+AHJy3BMdQocJoOGEHcmZz+ApIoMYl9uqOpbH?=
- =?us-ascii?Q?k4xGkK4t3xpbZ1EYGcuwwAAvNfmb6f/tTvFdZExtdUCg5Cvw4YtXWOunWnq6?=
- =?us-ascii?Q?TOpVmS+e+YNKxhhiVLfqdw/P8R+iBQMhMtdCW4mFI4lzdveo+uUFkqH7DeAd?=
- =?us-ascii?Q?9jRTzppfXNlMbjKF3c1o2pbT2a7abuEzILVP7c/waLGIxlgCFDLY3lw0aIWq?=
- =?us-ascii?Q?4EMBwSrNHF2Y1b98m5l7OSSlHYJnCTuZjR9mXhkfe3dTGf1HstBUxapQuFpX?=
- =?us-ascii?Q?0EVMXGDZaDWFdEsgDcwUvCLgRd4MOQyrfyOJE9VLmJBR17vm3heZugfHxtOK?=
- =?us-ascii?Q?aHIMDXr4ipnXgxZ0pOtLwMTGxGxzIS10mh7tE6Ts5g0ACoZcBkvEZUd5Jtq7?=
- =?us-ascii?Q?Kk3gTWRvb8TasJF+E5RJDeseeu3N54wwH+wjMgQyJ4uux0fG63SZdjwUlUGK?=
- =?us-ascii?Q?ELUbYICUbC5gp3GH23f7ZlBoGVkf6nLiDijdB9MyOew6mEcQaiVm3iWjZobC?=
- =?us-ascii?Q?lZS0GK82weXG7Pv8aRE7NSSTXoJVOUnVp/B9cOnziRpcpyIUjuDFEReiYmcp?=
- =?us-ascii?Q?N8qfCaCd0XqpsqHTgKPtPV+j7MjjE5m9wAaT/XHOkhlmk+Iba1pquv2poTXW?=
- =?us-ascii?Q?eEEUJlgSlJvXSEXX9OEPHbTegeW7ZYJ+jqecC9hYmlfuMQZKz8OxZOablXvz?=
- =?us-ascii?Q?Cb8thfgJIL2sWL2ZlCk90cmPTe04cJrs8vFl36k9IN90ArvM31TV2zSrKbXX?=
- =?us-ascii?Q?c6sdLVTlICPWO2Ft5RQbXVOsEt+DTRLuFm5ec+kczXw/L8D7D8Z6MFAmAheR?=
- =?us-ascii?Q?L7z8dG6At2oCbkL41t47wBGuh1OL9tYswwsKdLcVpLAz2HSsj/GcvKwD1bTx?=
- =?us-ascii?Q?6xfjCvdDZBApQTD7bfSDXrdOZ+7BRdPDxiR2xhtRX/lJlQFg+CvHrOnCtv1F?=
- =?us-ascii?Q?LiLYL451WvHHeJjJ8RZxRiX6oXDyagzCq+wmK2wQQg/PMcQiHaKONo6slSfM?=
- =?us-ascii?Q?2pFAc43eUYekoJSgzkPNyaeAX+o26XbSFY06Q3sCCo3ZrdcT29mAdmvL1IAE?=
- =?us-ascii?Q?F9qSkFK7oEngaEprk5Z53XgJ9//GZVhX0hpxErkKo8237C0j97qlL+dkW/uA?=
- =?us-ascii?Q?9Khd1QNMLus4Hiskv5GDjLshA2D0yelUxyr0cowe43+SlG/QKCQNdAS+CBfd?=
- =?us-ascii?Q?cu0w5ewdcp5IHDTGNI6rM+lZAnYSrkNUmxgyRfn37CW6HSYDM/kBp1uRI7pE?=
- =?us-ascii?Q?HBEtM7QaG90NeuJ29xjXlNq/GpdTephq0WoVexq/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6bae1877-738d-451d-ce6b-08db2e018fd7
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GfgJ5j236ETFhle5uMsfX/BrD0n2S3SU8rAVj/q4/hryHjiU7svO1qwYgMlL?=
+ =?us-ascii?Q?LAgZ3xo8LD/+1XUflHOJtQLriUdMNdKN4rRDshkIt9PkZs4iBfCa8sin/pTv?=
+ =?us-ascii?Q?jIaxvChAsd75Kl3Jm4RGGnioq6ojVTWeKCPkmWzNHxgNo3GQT6CRUHK6qbAH?=
+ =?us-ascii?Q?HteGbA4NcHcOlYPu1a4BYV+OQ3iiZXBfw+wVBmysoRwVqt7+F0Lx0wC+BiIb?=
+ =?us-ascii?Q?uPwRaGhpXADmefqeZzOfeSAgBaL2En6Y4y9y1mBQPD41LCRUAyRv89WCLos9?=
+ =?us-ascii?Q?aX0xL4eFutqRFcsvsHYB+JvGUuOxoDR4yzHCzvpp1t9BkJhuZeyXR6F7sfQF?=
+ =?us-ascii?Q?Lb+OjEMxh+2kEinWA+KFLibUU7E7RRrun+qyAFUK8yWozloNGAyrz8W6OOfr?=
+ =?us-ascii?Q?0tnm6PfvNAzVoKHoQ/FvkN0llrgqnZEho8Gva2NTyLgRkVpuaOFhLc6Zhm9x?=
+ =?us-ascii?Q?Z37C5vRmnkSIjYkJpPR+41FtHZe/TDOk8fAxRK5N+RGnpGv1ki96p0QwWXJl?=
+ =?us-ascii?Q?u3l1rOx930w4J77Ysb1DQYchzn3/RyRL0WWJVQs/Uh2XJlxYFGMrWkoiQjh0?=
+ =?us-ascii?Q?KqzIQVqPkNIVzn3B4pe722BtDIAg+sh/Hy38kMa8xdAiikZh2hpRAt3z1L7I?=
+ =?us-ascii?Q?5jK0TAH9K8XzYdorOTed+9wfzXcz1CJh6x2kKwXOZIPLt3UYeZDbRlQpFVVY?=
+ =?us-ascii?Q?CyrWS9AIRZN/nLbTjrpTb6/OehNEvIKX81LcuIOFHWXMErqEZ3c4j8znAa2h?=
+ =?us-ascii?Q?zK1YVFkVIHfr+NIHabokBpquN6oMFxzAfEr2pUnDELGEreulDmfVF/etgksx?=
+ =?us-ascii?Q?NryOEDuoxUjmS10y8Km/GzccyQlHfChomoz3axk2evzbcIaVrmyVNkztx2Vv?=
+ =?us-ascii?Q?eMnyYgxXZw2wiZV+6bA05vgXzDRdMYX92I5m0OY06mKGrgihLOW6qOZ49nGM?=
+ =?us-ascii?Q?UuYRRpvZuUsbzfwrONK2bhP3ABaqf7k+xWSIiBN3Uz1w1Ah/Ay2t5p9ID+la?=
+ =?us-ascii?Q?u2QBLS8P2z8Xvl7UtVwCig/MfjzszQSA6Hw1+REMsr7srJWgk1Bn5QYOXRzb?=
+ =?us-ascii?Q?/T25mcTgQ+4ajS9mXCUiX/2dmCbZT8uvK14fbSvBbgcrr8fBJf9WXyVsN5LN?=
+ =?us-ascii?Q?zn3dzcJxn9yBFQRdJRLq1fUpVT12eHBa2tPLNucCilvarBO7UFrhBNIhiQ1r?=
+ =?us-ascii?Q?c5Wkpno9X1fmzn7UxR8LXsCaPsFkB9Cp2kwQVVruYDIr/pEUm8D3dln9+MLz?=
+ =?us-ascii?Q?9c2oWj+TMH7DydsXw0PxUnyYVTtx6rOw78qKmmSXBvnVKRpI1MPsfvQq5Ign?=
+ =?us-ascii?Q?3VGMDqVich2Sx4k1w1ADq6dWN+HFTlwEDIv6bYPdaAAIjNb35POmTS+NoUp5?=
+ =?us-ascii?Q?qWmhbFrGXQIvDK8O/lf1EGpYmJ8E1rLDt3Y0rTWPYwVTRXWa7qa5/MaFzoPj?=
+ =?us-ascii?Q?LhT9U/K2bf0QDMa6p8h829l9DN/lajGkF5c0K/P9TJFQZzYS5x7TLjjzWhei?=
+ =?us-ascii?Q?21w5g6nXadMIJVdUaut1J5HVWpqVaQQipFV52CSRNvZk1MptVh63U60oN0Bt?=
+ =?us-ascii?Q?MUQr6BFYTlbKm5ymkYtD0yUmW1O7O558S8gAZ5Rps0NTSBpnVQipO9I7z67P?=
+ =?us-ascii?Q?939//tPPSmA6xuoj62mkMi0+bT2SHaIANMXhO0miI1wa+Jx33uPD56ZT9jfX?=
+ =?us-ascii?Q?q0T98A=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79ad8587-0b21-40ca-d889-08db2e025e8b
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 13:54:05.0561
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 13:59:51.6442
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GEJgp0PSgRpUzjS35E2nM8ngNHd3DqCvxYfp9mcwGBsF+PJL9G8ewmVifpCsUfNatzpKBlnB3AokipAROnWlsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8466
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: MYUMfSxIduxO/dcBx2iFJZ8ajQ8mhRkX5dh8btv/qjPEwp9eHctC/ScaV0O4iTTrycKd7mr7d0x32bK5AtImzHrbGQla1B5XlnB5VevKJXk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5939
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjorn,
+On Wed, Mar 22, 2023 at 05:49:30PM +0100, Petr Machata wrote:
+> From: Amit Cohen <amcohen@nvidia.com>
+> 
+> The array 'mlxsw_reg_infos' is ordered by registers' IDs. The ID of MPSC
+> register is 0x9080, so it should be after MCDA (register ID 0x9063) and
+> not after MTUTC (register ID 0x9055). Note that the register's fields are
+> defined in the correct place in the file, only the definition in
+> 'mlxsw_reg_infos' is wrong. This issue was found while adding new
+> register which supposed to be before mpsc.
+> 
+> Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Petr Machata <petrm@nvidia.com>
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 
-On Thu, Mar 23, 2023 at 11:51:15AM -0500, Bjorn Helgaas wrote:
-> Hi Petr, thanks for pointing me here.
-> 
-> On Wed, Mar 22, 2023 at 05:49:35PM +0100, Petr Machata wrote:
-> > From: Amit Cohen <amcohen@nvidia.com>
-> > 
-> > The driver resets the device during probe and during a devlink reload.
-> > The current reset method reloads the current firmware version or a pending
-> > one, if one was previously flashed using devlink. However, the reset does
-> > not take down the PCI link, preventing the PCI firmware from being
-> > upgraded, unless the system is rebooted.
-> 
-> Just to make sure I understand this correctly, the above sounds like
-> "firmware" includes two parts that have different rules for loading:
-> 
->   - Current reset method is completely mlxsw-specific and resets the
->     mlxsw core but not the PCIe interface; this loads only firmware
->     part A
-> 
->   - A PCIe reset resets both the mlxsw core and the PCIe interface;
->     this loads both firmware part A and part B
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-Yes. A few years ago I had to flash a new firmware in order to test a
-fix in the PCIe firmware and the bug still reproduced after a devlink
-reload. Only after a reboot the new PCIe firmware was loaded and the bug
-was fixed. Bugs in PCIe firmware are not common, but we would like to
-avoid the scenario where users must reboot the machine in order to load
-the new firmware.
-
-> 
-> > To solve this problem, a new reset command (6) was implemented in the
-> > firmware. Unlike the current command (1), after issuing the new command
-> > the device will not start the reset immediately, but only after the PCI
-> > link was disabled. The driver is expected to wait for 500ms before
-> > re-enabling the link to give the firmware enough time to start the reset.
-> 
-> I guess the idea here is that the mlxsw driver:
-> 
->   - Tells the firmware we're going to reset
->     (MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE)
-> 
->   - Saves PCI config state
-> 
->   - Disables the link (mlxsw_pci_link_toggle()), which causes a PCIe
->     hot reset
-> 
->   - The firmware notices the link disable and starts its own internal
->     reset
-> 
->   - The mlxsw driver waits 500ms
->     (MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS)
-> 
->   - Enables link and waits for it to be active
->     (mlxsw_pci_link_active_check()
-> 
->   - Waits for device to be ready again (mlxsw_pci_device_id_read())
-
-Correct.
-
-> 
-> So the first question is why you don't simply use
-> pci_reset_function(), since it is supposed to cause a reset and do all
-> the necessary waiting for the device to be ready.  This is quite
-> complicated to do correctly; in fact, we still discover issues there
-> regularly.  There are many special cases in PCIe r6.0, sec 6.6.1, and
-> it would be much better if we can avoid trying to handle them all in
-> individual drivers.
-
-I see that this function takes the device lock and I think (didn't try)
-it will deadlock if we were to replace the current code with it since we
-also perform a reset during probe where I believe the device lock is
-already taken.
-
-__pci_reset_function_locked() is another option, but it assumes the
-device lock was already taken, which is correct during probe, but not
-when reset is performed as part of devlink reload.
-
-Let's put the locking issues aside and assume we can use
-__pci_reset_function_locked(). I'm trying to figure out what it can
-allow us to remove from the driver in favor of common PCI code. It
-essentially invokes one of the supported reset methods. Looking at my
-device, I see the following:
-
- # cat /sys/class/pci_bus/0000\:01/device/0000\:01\:00.0/reset_method 
- pm bus
-
-So I assume it will invoke pci_pm_reset(). I'm not sure it can work for
-us as our reset procedure requires us to disable the link on the
-downstream port as a way of notifying the device that it should start
-the reset procedure.
-
-We might be able to use the "device_specific" method and add quirks in
-"pci_dev_reset_methods". However, I'm not sure what would be the
-benefit, as it basically means moving the code in
-mlxsw_pci_link_toggle() to drivers/pci/quirks.c. Also, when the "probe"
-argument is "true" we can't actually determine if this reset method is
-supported or not, as we can't query that from the configuration space of
-the device in the current implementation. It's queried using a command
-interface that is specific to mlxsw and resides in the driver itself.
-Not usable from drivers/pci/quirks.c.
-
-> 
-> Of course, pci_reset_function() does *not* include details like
-> MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS.
-> 
-> I assume that flashing the firmware to the device followed by a power
-> cycle (without ever doing MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE)
-> would load the new firmware everywhere.  Can we not do the same with a
-> PCIe reset?
-
-Yes, that's what we would like to achieve.
-
-Thanks for the feedback!
