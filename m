@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1706C9472
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 15:18:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F109D6C9475
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 15:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231294AbjCZNSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 09:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
+        id S230204AbjCZNUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 09:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbjCZNSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 09:18:17 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2091.outbound.protection.outlook.com [40.107.212.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B212110E4
-        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 06:18:13 -0700 (PDT)
+        with ESMTP id S229483AbjCZNUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 09:20:08 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2111.outbound.protection.outlook.com [40.107.237.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD671FFA
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 06:20:06 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f63TfuLJ+Lb6ecH49ZVzlwB8UDIBKoQjWYKWbewm+1sICTl6zroYubZmZYvEq2eb/B7Vs3k51K9KNSVu2ejhjz7lXDe78cfDwzZu92j73HkyZMuO9SUVHUGGB3avdtdBXm4nWWtzUYVRJzWBXlOPDcFFTp/pEEElnn3kMb+gmNf6MMiwSn1OSHaVfMkCZnafVD3pjU/iGrfdscesd8gAaM+SE1zNeGFafm2JOUCrn7uTqK3L1UZLJ4XwksEFHTGtmNWewxMYjDZW/PBCHIpV+fj/4aSljslOoRcmOd/bbYga5PvK+PF2fL3gEIudOjmKvJx1Mx9kI+kPQYY1fCzL4A==
+ b=OtULrG0pEYyjqAWeytIlpvEcUf3MZzW46/4rPdy5pvQpf8/iVQ7jotVHkecwM3jhhweQVUpMCrFPH+Z61QP9DguaIeSfcaBMfW2CnLXhI7ZXjUqkXuMzSr9Tvlpoj6vqJkbuDPHx7jKJHDA/gf/N9vkZXPKC4BG99/ltWKxoOopUiU59pbv1dxOI+4DpWSCEHZOksuSpwLtUdH3kK9Hl0R+3zS62WXZ/wcfQ03WW09ecfg1z6wwMXaks70XHorvyN+EB8YxYxpDLNTGgNYDXANEFyA1/vetgrg7/fzwxGIGvywWKAM45ydWbBF7oDFnb0eHuEep+JaWQaDAVAtMABg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WJmb7LFoSdB9cbXXZV/TJ6dLkPJdZDj5X9qvXhk/WV8=;
- b=Ohzh7r+myop6Gj4UuPLztm28LC+X2JCW4YLf6oRYu2m29Xw3mwyRGK9OwHrmxZJwVUaajkVeBbNDO3DwAU4sM1RcIntN7HhEEXDosE8Q1bhJyY08/6yveMS4b7/akzzlCSZpChwBRzaocJ8kE7FiepMim4BjRD+qIqN4G58dAetWC7wcM7B3/W6GSD0tB0x3kf/YdUAitsjo1hdTaCBh568flhBmCWQQf3d26VyeQoVOdUgiRaZlovRizdlVHm93KGMgQU8rHTOqmBOizY4tegdUV48HIpntzXq2g+81jsjje+EWdapDrqeiX30ycPcFer8O8NMm5vf0pJ35o0Bp6A==
+ bh=5eFaKfaGWH07YLy4hAXL6XnGv9Xl4yVpvgyKrrCdTCY=;
+ b=MKkMaoka914hscr7Xf7i2V4Ss3BNDBGS0QFxbmKhX1qwMZATWCvA2cObZYgLIWvIYX1+SJRV6ltk9RJkrYZcRiOKIPT6hSwp+dh1isHmNBEpnERH777x1TSJot3Re62Qj64m9rt1JYjG4bc5GhXBURvMCmLpYC+2pukwGS//MKURwcInQSWrfDC3Tlcq/Kd39MqfRsqMIVZbPmSf7M/5X3Z5enF+aWGa12qXWtrzyaXM2q/sHVqm87VSLlLEJaScVQgumrphiJc1umFMmVWqKbDWJMSKloolMN3+miYnfNAewjYdWdFebl7gWgVCNoRgnDKVfLvX0M3333xZbf7KVA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WJmb7LFoSdB9cbXXZV/TJ6dLkPJdZDj5X9qvXhk/WV8=;
- b=jtqlywedrwvxoZGfOLWHq2v/EoUoeNFFzYpOkjRCij2GCiBZRRX9fBM/hKpF05eDwPJz31NKG2GiOOl73ZvWG2YTCLuB+VL775V86SDbQObwoELP/5siLBvRDFTOgsnGIM2m6NhwjFdtbApQDQAohnUZWMHvDNz1j/lcm+XJ3ys=
+ bh=5eFaKfaGWH07YLy4hAXL6XnGv9Xl4yVpvgyKrrCdTCY=;
+ b=vkm7FjIY9JtIpZCtJrU9RmxRGXtFmqcMIQ8OmaFaL3AxIOtEjNp5nx5pdeO1N5A0urfK1GHrAQBhXPgHMzU/GdKhCy9fG4jlVNwKitLQg6OtSfmQ0oHuodFcsAva6agL/+LGJJsleNIEqnnddqcaNaXN1cE5xAS2t9nLhPD0G/I=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by DM6PR13MB4067.namprd13.prod.outlook.com (2603:10b6:5:2a6::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Sun, 26 Mar
- 2023 13:18:10 +0000
+ 2023 13:20:04 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Sun, 26 Mar 2023
- 13:18:10 +0000
-Date:   Sun, 26 Mar 2023 15:18:03 +0200
+ 13:20:04 +0000
+Date:   Sun, 26 Mar 2023 15:19:58 +0200
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Piotr Raczynski <piotr.raczynski@intel.com>
 Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
@@ -49,64 +49,65 @@ Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         jesse.brandeburg@intel.com, aleksander.lobakin@intel.com,
         lukasz.czapnik@intel.com,
         Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: Re: [PATCH net-next v3 6/8] ice: add individual interrupt allocation
-Message-ID: <ZCBGC47iYuMloMms@corigine.com>
+Subject: Re: [PATCH net-next v3 7/8] ice: track interrupt vectors with xarray
+Message-ID: <ZCBGfoqzid7PLcZE@corigine.com>
 References: <20230323122440.3419214-1-piotr.raczynski@intel.com>
- <20230323122440.3419214-7-piotr.raczynski@intel.com>
+ <20230323122440.3419214-8-piotr.raczynski@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230323122440.3419214-7-piotr.raczynski@intel.com>
-X-ClientProxiedBy: AM3PR04CA0141.eurprd04.prod.outlook.com (2603:10a6:207::25)
- To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+In-Reply-To: <20230323122440.3419214-8-piotr.raczynski@intel.com>
+X-ClientProxiedBy: AM4PR0302CA0020.eurprd03.prod.outlook.com
+ (2603:10a6:205:2::33) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|DM6PR13MB4067:EE_
-X-MS-Office365-Filtering-Correlation-Id: cd7f0936-490a-40f9-b6a4-08db2dfc8ba6
+X-MS-Office365-Filtering-Correlation-Id: 4fbfaa76-b9e5-4d24-4995-08db2dfccfc0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nk5qr6PUZH2neKp81uDWHaprmpnkB5R/LKELPZe36CgWUPvt02JDhu5z/Hqw73goyf9iGAXgWfWDkpO56HNmt7VMxwNCtNi8+wcxwF+0W8+6uznMFxakBwtU+ZWLUF2vrv6Kgs9dknHHbZDqCwQiYJuh28uN3Tzmtvsb685OY+RGGi7jCCQ7I7/yyCwWd3WYbIzfKCSnA4GLVIbJ1S6eFf6NllRf3bzaBDoW25+9VOdR+irPEGqGelu7VzuFyB4ZH6jRRpKiVErdmi2dHz8QRzV2j0mZqgpjk6EADC33rSj82PE8+Z1Am8gi+1/xhDMxXtnoJUjrUyOtt4lJBPigmC3S1gFCzuDg8EI5hvQmPpgsJmLxqBLOEwYPXmWx0lOtYK8xg9dQDiyvFweAF0BpLj1Lb9XuQ4GUASjSENSazWATPKz+kGQtginKPPK3BIXjCj9UlY8xA00u5hO/ASZbzctmcWDUB7xJ3t7LZcimCJJv1DjuxCtA1QBs0qT+MJDChss7bBnY60WTcfAK6fBkWTbMsfG499lP7b0UOHwsEG9/VzFicvuOAhBITppGH9Wq
+X-Microsoft-Antispam-Message-Info: 1B6VjOo/pgm6XlHSfzVGoTP8j5DWuVrVRDyr0b+MNkGxoXRhAj5qdoHAWdaTPLBzkmys4qwvkjWzuvzrJnTmc7ZpcjaqWJtEJZUBVIe3bPQImrGMHFhAA01PT0W80W1Jjmjw6WmTF/Dop/oeOl5Rufs91oSB7Q6LSJW9P8fsudlQQ53zy4zBHuz3QbS3/JDeiBGqHy6vlPv814pO956QrMraiCzHKpGHFT2EOBUJ2A3luqQCEew+NQyKRIHKP2czeFZw9irg3MT9Icu7WcSo+QUMHii9T560HMmtZ/STsSWYnbcNIXCWHO2Lkdmh9QyhMzGmNL0ZjptS0uvW/gn1NaD/oaruJoQw9zi7Eu4qAM4m/2rVHk4PsOsvEadx7N9+/80rVtts+r8HBzoqZRuNVKfLhpofBfDxbY1ZiF/qk0pQoMdVvPeXVk/UuuSBD8mg/YWEHVDqr8AjQCKCyqh2+Boic5E0ZrboPioA8YRnzVx16pZXNyz90xnHWCxKwPrUppRMbz7dsRvV8yLj8LfKzaDB3SEB1V1uKVtD5dK/+MZUHMjVBOggOtAS7B7b8DkA
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(376002)(136003)(346002)(39830400003)(451199021)(2906002)(86362001)(83380400001)(186003)(2616005)(38100700002)(66556008)(8936002)(5660300002)(4326008)(6916009)(8676002)(41300700001)(66946007)(7416002)(36756003)(66476007)(44832011)(6506007)(6512007)(6486002)(316002)(6666004)(478600001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5ghR4Hnb43L65hFU+kjuGiJEZLOsEP9Vv2/V80sz2/C7EVvEEhGu3r2JmsxZ?=
- =?us-ascii?Q?+mHGT1bHmLqjC7fi98+C3Vf6BAXOtBnyqae+6HCJEnHW4qHOv8dKa/ngS0Vl?=
- =?us-ascii?Q?D00ER1hTYPQ/x9m53ZTW2PVH3P6EWWICTUWjWEUB9hpUVBYShy55H5SiVrw4?=
- =?us-ascii?Q?88d7YaSkNE+3qePQL6PwtBvQNwxSVr59ceE4Hr0ZM+oAZbBhjlj7wfz8BiCz?=
- =?us-ascii?Q?mM1GOxDyAl2+VTPNLibM2OBdN/ooUlSaZ9oZbizBRetJxq96W/6PQR55zKAU?=
- =?us-ascii?Q?d81YymyAw0BtGgmFRPDT3+nMJePBfP7kPZKGLM/qWuwT4vlL6ILkZfJ5BlKQ?=
- =?us-ascii?Q?pn9FV7E4yrLlROTsy5qRlEcsViMed1kJe63EbdgG95KUG8gw2DylxUtQRjsX?=
- =?us-ascii?Q?iSnhjSZF1qpim/gTb5GS9fjka+/gH+oJpDqUJety/hAMCsD6tdWrKXNtPpKp?=
- =?us-ascii?Q?RfZZluvihC5S5h2fxEptqhcfdz1DSIszJWhEcXFf41RVxv5q+OYF37iBcqwy?=
- =?us-ascii?Q?nLoTWD9/P1j2txFJuWon8xHogG7Bb24UJj4v3R06l16E0sKQuXx95V5A5EX1?=
- =?us-ascii?Q?foVFC2nCSyfn8ES9M9DL8RlHRiNAn9aA1MX7CUwP9BDucicRcD5C8YfYE+14?=
- =?us-ascii?Q?ad5niW5dMWKw4HESLsLrJGQEXKyVdgqxhryc92Bs9OgVftgA0YBHqwueea4z?=
- =?us-ascii?Q?rswo5qxaBj3XBFVIm/7Tl/Wo3FBBT2Zn4CjqibWu3gn92/Z9TEmXbCO4BQBw?=
- =?us-ascii?Q?NEBpTXF6wmlGOzk8X3FE9VE9cdB+GiyBw1gVXglWq7LZ/G4fLbeNm1XNqZXH?=
- =?us-ascii?Q?3iwKBqPFfA8UWrfpgNkCTnUolTY99trolNNPaqRYfFVh1hI3OcRHaGVHJXWA?=
- =?us-ascii?Q?2Vto1KASFoIq0ipj/zK5nBTTTYjeMC+BFUPXH/Ce26N5HDzd7+2uOSWkAyYE?=
- =?us-ascii?Q?n+/+X5dFBs10BE5gbCEuZIKOSv9W+YNDAIuoMUJmI9Fqj8s/1AyZ7ymp/wMF?=
- =?us-ascii?Q?2jqLv95SH0ljFIxw3xZKDPKDkjPggOzrsVMRKy133+NGwTepI8aPQgv0ZOUW?=
- =?us-ascii?Q?D8twSX95yrU6MVRPvxhKekTfzWnehuQ5T7BmQz7DKpgnPbzBYr02VmoR1ssi?=
- =?us-ascii?Q?GTs5mhg4iW+FRkIB/4u+a74SND4JqoXon2cJzwGs0JVdy6g7BV2jD7Ao1kyr?=
- =?us-ascii?Q?FIlJEY94PbJMGuxESmHfwmiMuzHICcAtO3d/XlmemKUNfbPVxl9/IOnRlVuH?=
- =?us-ascii?Q?bq89+OefPduWjvMzXuLfen3ADIL4S9GUbGzJmqWidX/dyt8eoAXT7bYI9Ax4?=
- =?us-ascii?Q?1aEjoVjOe1LcPrzDC7m5Dhh6FNmGtIvV8L4kNMrXX4tgrxjsKbRB5luIcTOP?=
- =?us-ascii?Q?hx1nYyj2+jKuvHgCuQ9TMpGLw2CgSLKGAgPrA0Myz0HrJWzYB2pIFzBsZV7+?=
- =?us-ascii?Q?X7rkrlXPSggU9fTS5eNUl55A/tNFkDktT/upKvcQlJhcHCpT7TjTuS5zLOXh?=
- =?us-ascii?Q?wd2COCf1Pr5hatHrxqpQcIsR6xeTTHr14G1JndlO4FcEaDrHn1z8ZmZKgLR1?=
- =?us-ascii?Q?Nle44ewYHwroVXZWoM/IL3EAg8978BN2N267WJrne3G45hi2KduvNcUr9F8V?=
- =?us-ascii?Q?VoH3ujnTiMGum8bhE9W8q4Aq2CKnsxZ+6Q7UZ1azcEKUVCI9gzOJhxTRlcR+?=
- =?us-ascii?Q?FHTmCw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oQouyz/2xnI48GlNo/NFb273piRe80zWE5jfMmpQ5FV/11POUWcYVvczQeul?=
+ =?us-ascii?Q?yuvs/9iThy95n4z6gGNS/MWLCTkKedZ7uNS0ztJbU7nHI6k6jHdPFFu5O9gI?=
+ =?us-ascii?Q?gu+GIDOXPQDDXRwDIvjaBjKtEHoZy4hvI0saZCNt4vvb7arBRz9p7renQ+Pg?=
+ =?us-ascii?Q?7P4x3Xap2+toHCFPyTUPnTBJ5U1oVkHyoqGGZId8nh9OvYKrISJVfyrXP94H?=
+ =?us-ascii?Q?W9ll04TKwhYG8f/81r8aZm32rzBKFbvtA5ubJFIMh+dCLQoiFkkTQkrXgwbL?=
+ =?us-ascii?Q?t02n5xPxctaJImev1rcrJRFV86f4hjVzpBMz11gdGfE2hY5DwF0znZHcuOVO?=
+ =?us-ascii?Q?OF3YClRs/Ayj7gNWxnPF+3Y/z5X7NN9N7lk4QoUWnv8pOaghaCfZREDiCGt1?=
+ =?us-ascii?Q?fkHh8XizHt5FM4S0rzgnR+JioANJerJXIwDb/7oWPx/vHsS2uh1vj0ZdEdEb?=
+ =?us-ascii?Q?257Le6xrwehXYxeNYKfxud3K5Vz10X09O+feh8Zy2b4NWBDh9Fxo86X61dPB?=
+ =?us-ascii?Q?3Wg5D30JZUWaxMyauWmBc4NRI16m9rFPhQdhyu7FfeUz6C996lPlA67I3VWG?=
+ =?us-ascii?Q?MkC9up8uMxg1cBTcsVF32fEI8m/LfE3GJ6c5GGsHI4LHugOerCnH+hmMUrrq?=
+ =?us-ascii?Q?cYqaUYpnz0SPaFJ4Z7H8tHojAkYXTVD+PQmMdP10fmx0DBALofowufHgMyU+?=
+ =?us-ascii?Q?gK9J0CEulf6rnh+r7bIGzR4d/UC8/uzwQQVSTzQTapm85x2impf4Z4dEMT1M?=
+ =?us-ascii?Q?IxFC4zdj4olvXmweiRzawlHKTzgvUUQSy5Ks+gBbPTWHjSmWU6AP5xDbLQOg?=
+ =?us-ascii?Q?5n80c7JfJ8JYFVpkWxns1rLsRn9y+kVdiqbRtbxPW6D8lAjRutkWutaf4BUd?=
+ =?us-ascii?Q?dZuN781olFt8QN6eRFJIFXueKwTwid6B+ehNPtRTC3E7su6uxIIRDry9ff2+?=
+ =?us-ascii?Q?rXUXyML5t8MVvdYCJSsSRbL7a796PExgC6VESsCiOIK7h144DrN/b4rn+YXg?=
+ =?us-ascii?Q?am42+sa+bMmDSqYugRWRcpkDIuy4TY6oVmcxjDar/5oH2HJmEoOMGk7+/cT8?=
+ =?us-ascii?Q?OzxQ5/mUZEdVM+JXnEUv52jZ0YggtdrTLkaBkA6Uycwjn+s5KEEMiOcES/5O?=
+ =?us-ascii?Q?gjzyyBmNcpPKigHkaUyJVFaHos4hQ2O0DL2ar8uSUjKSklhUlt/0rBS5CbHG?=
+ =?us-ascii?Q?kmNjdiQ52j78srrnwdHlqIldeXH6dlYY6KP/mfDCDLjdkA+OvG3RNjSPE08g?=
+ =?us-ascii?Q?zZ93gAx70O+L3fvV4Ai+omWTan+bTBYNbWuO9e+eqm9Ny01hiGIcevM1FYSI?=
+ =?us-ascii?Q?ods/MIYpncvbwy2vWuhHMT07SFrBrueWSy0hfp2UyZqoK0mMmMpQiwqSIDDu?=
+ =?us-ascii?Q?g8TUTaEq1fwHSzj0hXmhmoOdxiFPlU/bikQwbeoH7cG5u1M9u4zd9d2kP3P6?=
+ =?us-ascii?Q?0zvx76YEAR4A2q9pzIFbj6+TTOtrPlWWX+SSoDsv2JeujUfrK9DtBFzKnApu?=
+ =?us-ascii?Q?ashGpeE2ZvojIaih7gCCFJopxR2MiyacvEeyuHiMsAvuknuSmPfng8mjio8N?=
+ =?us-ascii?Q?KSacnGC4zZdSVDrZ/pYzFO4Is6yaxjPbamJTT1w4dZyDT5UB200bahBox805?=
+ =?us-ascii?Q?Dk5k8fGojAg20QSTuT2pegO5yaIqORuNpMw6pY0FdaRocvi5PP7ixpuH6LTq?=
+ =?us-ascii?Q?FhJ+Pw=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd7f0936-490a-40f9-b6a4-08db2dfc8ba6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4fbfaa76-b9e5-4d24-4995-08db2dfccfc0
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 13:18:10.4211
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2023 13:20:04.4891
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2vux0ahvgkT+2jHSTlwWE7GAegcqo+R/j+v4GqdOHafnO0TFXAV8tlNimcEAPPMUc8qKh4t/ror3DMgGYNH2krof/jm63JT6hs36NRnrALk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: O057r5hSqfYuPhB7Rfzhm5FI52z0RuwqzB7tsnLa2fynIgt2NS7C4qn/FEMT+pJH0MHRTmzMqlztQ7ELbBjh0B4gymRCc4YrHlZvVcjcw8M=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4067
 X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -117,16 +118,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 01:24:38PM +0100, Piotr Raczynski wrote:
-> Currently interrupt allocations, depending on a feature are distributed
-> in batches. Also, after allocation there is a series of operations that
-> distributes per irq settings through that batch of interrupts.
+On Thu, Mar 23, 2023 at 01:24:39PM +0100, Piotr Raczynski wrote:
+> Replace custom interrupt tracker with generic xarray data structure.
+> Remove all code responsible for searching for a new entry with xa_alloc,
+> which always tries to allocate at the lowes possible index. As a result
+> driver is always using a contiguous region of the MSIX vector table.
 > 
-> Although driver does not yet support dynamic interrupt allocation, keep
-> allocated interrupts in a pool and add allocation abstraction logic to
-> make code more flexible. Keep per interrupt information in the
-> ice_q_vector structure, which yields ice_vsi::base_vector redundant.
-> Also, as a result there are a few functions that can be removed.
+> New tracker keeps ice_irq_entry entries in xarray as opaque for the rest
+> of the driver hiding the entry details from the caller.
 > 
 > Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
 > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
@@ -134,143 +133,81 @@ On Thu, Mar 23, 2023 at 01:24:38PM +0100, Piotr Raczynski wrote:
 
 Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-I've made a few minor observations inline.
-I don't think there is a need to respin for any of them.
-
-> ---
->  drivers/net/ethernet/intel/ice/ice.h         |  11 +-
->  drivers/net/ethernet/intel/ice/ice_arfs.c    |   5 +-
->  drivers/net/ethernet/intel/ice/ice_base.c    |  36 ++-
->  drivers/net/ethernet/intel/ice/ice_ethtool.c |   2 +-
->  drivers/net/ethernet/intel/ice/ice_idc.c     |  45 ++--
->  drivers/net/ethernet/intel/ice/ice_irq.c     |  46 +++-
->  drivers/net/ethernet/intel/ice/ice_irq.h     |   3 +
->  drivers/net/ethernet/intel/ice/ice_lib.c     | 225 ++-----------------
-
-Nice code removal from ice_lib.c :)
-
->  drivers/net/ethernet/intel/ice/ice_lib.h     |   4 +-
->  drivers/net/ethernet/intel/ice/ice_main.c    |  44 ++--
->  drivers/net/ethernet/intel/ice/ice_ptp.c     |   2 +-
->  drivers/net/ethernet/intel/ice/ice_sriov.c   |   2 +-
->  drivers/net/ethernet/intel/ice/ice_xsk.c     |   5 +-
->  13 files changed, 154 insertions(+), 276 deletions(-)
+I've added a few comments inline for your consideration
+if you need to respin for some other reason.
 
 ...
 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
-> index 1911d644dfa8..e5db23eaa3f4 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_base.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_base.c
-> @@ -118,9 +118,31 @@ static int ice_vsi_alloc_q_vector(struct ice_vsi *vsi, u16 v_idx)
->  	q_vector->rx.itr_mode = ITR_DYNAMIC;
->  	q_vector->tx.type = ICE_TX_CONTAINER;
->  	q_vector->rx.type = ICE_RX_CONTAINER;
-> +	q_vector->irq.index = -ENOENT;
+> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+> index 89d80a2b5feb..b7398abda26a 100644
+> --- a/drivers/net/ethernet/intel/ice/ice.h
+> +++ b/drivers/net/ethernet/intel/ice/ice.h
+> @@ -104,7 +104,6 @@
+>  #define ICE_Q_WAIT_RETRY_LIMIT	10
+>  #define ICE_Q_WAIT_MAX_RETRY	(5 * ICE_Q_WAIT_RETRY_LIMIT)
+>  #define ICE_MAX_LG_RSS_QS	256
+> -#define ICE_RES_VALID_BIT	0x8000
+
+nit: BIT() could be used here.
+
+>  #define ICE_INVAL_Q_INDEX	0xffff
 >  
-> -	if (vsi->type == ICE_VSI_VF)
-> +	if (vsi->type == ICE_VSI_VF) {
-> +		q_vector->reg_idx = ice_calc_vf_reg_idx(vsi->vf, q_vector);
->  		goto out;
-> +	} else if (vsi->type == ICE_VSI_CTRL && vsi->vf) {
-> +		struct ice_vsi *ctrl_vsi = ice_get_vf_ctrl_vsi(pf, vsi);
-> +
-> +		if (ctrl_vsi) {
-> +			if (unlikely(!ctrl_vsi->q_vectors))
-> +				return -ENOENT;
-> +			q_vector->irq = ctrl_vsi->q_vectors[0]->irq;
-> +			goto skip_alloc;
-
-nit: I think goto for error paths is very much the norm.
-     But, FWIIW, I would have avoided using goto here.
-
-> +		}
-> +	}
-> +
-> +	q_vector->irq = ice_alloc_irq(pf);
-> +	if (q_vector->irq.index < 0) {
-> +		kfree(q_vector);
-> +		return -ENOMEM;
-> +	}
-> +
-> +skip_alloc:
-> +	q_vector->reg_idx = q_vector->irq.index;
-> +
->  	/* only set affinity_mask if the CPU is online */
->  	if (cpu_online(v_idx))
->  		cpumask_set_cpu(v_idx, &q_vector->affinity_mask);
-> @@ -168,6 +190,18 @@ static void ice_free_q_vector(struct ice_vsi *vsi, int v_idx)
->  	if (vsi->netdev)
->  		netif_napi_del(&q_vector->napi);
->  
-> +	/* release MSIX interrupt if q_vector had interrupt allocated */
-> +	if (q_vector->irq.index < 0)
-> +		goto free_q_vector;
-> +
-> +	/* only free last VF ctrl vsi interrupt */
-> +	if (vsi->type == ICE_VSI_CTRL && vsi->vf &&
-> +	    ice_get_vf_ctrl_vsi(pf, vsi))
-> +		goto free_q_vector;
-
-Ditto (x2).
-
-> +
-> +	ice_free_irq(pf, q_vector->irq);
-> +
-> +free_q_vector:
->  	devm_kfree(dev, q_vector);
->  	vsi->q_vectors[v_idx] = NULL;
->  }
+>  #define ICE_MAX_RXQS_PER_TC		256	/* Used when setting VSI context per TC Rx queues */
 
 ...
 
 > diff --git a/drivers/net/ethernet/intel/ice/ice_irq.c b/drivers/net/ethernet/intel/ice/ice_irq.c
-> index f61be5d76373..ca1a1de26766 100644
+> index ca1a1de26766..20d4e9a6aefb 100644
 > --- a/drivers/net/ethernet/intel/ice/ice_irq.c
 > +++ b/drivers/net/ethernet/intel/ice/ice_irq.c
-> @@ -194,9 +194,53 @@ int ice_init_interrupt_scheme(struct ice_pf *pf)
->  	}
->  
->  	/* populate SW interrupts pool with number of OS granted IRQs. */
-> -	pf->num_avail_sw_msix = (u16)vectors;
->  	pf->irq_tracker->num_entries = (u16)vectors;
->  	pf->irq_tracker->end = pf->irq_tracker->num_entries;
->  
->  	return 0;
->  }
-> +
+
+...
+
 > +/**
-> + * ice_alloc_irq - Allocate new interrupt vector
+> + * ice_get_irq_res - get an interrupt resource
 > + * @pf: board private structure
 > + *
-> + * Allocate new interrupt vector for a given owner id.
-> + * return struct msi_map with interrupt details and track
-> + * allocated interrupt appropriately.
+> + * Allocate new irq entry in the free slot of the tracker. Since xarray
+> + * is used, always allocate new entry at the lowest possible index. Set
+> + * proper allocation limit for maximum tracker entries.
 > + *
-> + * This function mimics individual interrupt allocation,
-> + * even interrupts are actually already allocated with
-> + * pci_alloc_irq_vectors. Individual allocation helps
-> + * to track interrupts and simplifies interrupt related
-> + * handling.
-> + *
-> + * On failure, return map with negative .index. The caller
-> + * is expected to check returned map index.
-> + *
+> + * Returns allocated irq entry or NULL on failure.
 > + */
-> +struct msi_map ice_alloc_irq(struct ice_pf *pf)
+> +static struct ice_irq_entry *ice_get_irq_res(struct ice_pf *pf)
 > +{
-> +	struct msi_map map = { .index = -ENOENT };
-> +	int entry;
+> +	struct xa_limit limit = { .max = pf->irq_tracker.num_entries,
+> +				  .min = 0 };
+> +	struct ice_irq_entry *entry;
+> +	unsigned int index;
+> +	int ret;
 > +
-> +	entry = ice_get_res(pf, pf->irq_tracker);
-> +	if (entry < 0)
+> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+> +	if (!entry)
+> +		goto exit;
 
-nit: map.index could be initialised here.
+nit: maybe it is simpler to return NULL here.
 
-> +		return map;
 > +
-> +	map.index = entry;
-> +	map.virq = pci_irq_vector(pf->pdev, map.index);
+> +	ret = xa_alloc(&pf->irq_tracker.entries, &index, entry, limit,
+> +		       GFP_KERNEL);
 > +
-> +	return map;
+> +	if (ret) {
+> +		kfree(entry);
+> +		entry = NULL;
+
+and here.
+
+> +	} else {
+> +		entry->index = index;
+
+Which allows for more idiomatic code by moving this out of the else clause.
+
+> +	}
+> +
+> +exit:
+
+And removal of this label.
+
+> +	return entry;
 > +}
+> +
