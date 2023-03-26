@@ -2,160 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0418E6C97B6
-	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 22:09:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D996C97C6
+	for <lists+netdev@lfdr.de>; Sun, 26 Mar 2023 22:39:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbjCZUJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 16:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48234 "EHLO
+        id S229715AbjCZUiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 16:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCZUJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 16:09:54 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394B944A1
-        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 13:09:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ODLggqX0G4k8DHIekKUKvZSdD0FAa3VALQRYe8PHTxw=; b=qwGcnqQB3uOlGF93VRUpPUOpD+
-        JtyQhNnM0vZ/8QjCcDU0f9twgde8Kso/aXo2u9bhz4xzNNHhTNW7S4LHVp2hxUVc+8KIex+6lhBhJ
-        haflXy90JcERlHTwITT0DJBqjeGWPec1FRoPk46nnZkxvAKa9jLQrOPFcDGgHNC8sL6w=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pgWgY-007669-3s; Sun, 26 Mar 2023 22:09:50 +0200
-Message-ID: <956879eb-a902-73dd-2574-1e6235571647@nbd.name>
-Date:   Sun, 26 Mar 2023 22:09:49 +0200
+        with ESMTP id S229458AbjCZUiu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 16:38:50 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1795252
+        for <netdev@vger.kernel.org>; Sun, 26 Mar 2023 13:38:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:References:Cc:To:Subject:From:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=qVf0O6v6SeqmGF9Kh7KDJ5KiLT8JseXMVeSt+RpXNB0=; b=N5nSxLN4Bx3zj1hbQNely37Gx6
+        qu6+YEPwU7ix5p82RUZ3DlUzRGSFXk72cFbdbdngaX01pHl1TAQ1w6aw2QeeWjlm28zXdw4yCOMPD
+        +QLY6ruzIC0aQX9Voi5ssZpoE6LNzn9mw6QTYyuBAZpZga7sw2TnuITNVsDnCGgEWIUwFV3MkBgtj
+        xYifyWc+GMVfmDCjElGugNMl99LOVxdRUrT5Z3yftEWOdq9ntvjOrQxWTDZBp7ewuPY9wPJoZE9MW
+        2iE/K8NjK5bbngLS15XvPCDiXTfpQAYEfx9BIwf7kxtdoXlxmT69kGQKaks3rXcosRGX+HLb0aaoN
+        0UFccQHw==;
+Received: from 108-90-42-56.lightspeed.sntcca.sbcglobal.net ([108.90.42.56] helo=[192.168.1.80])
+        by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+        id 1pgX8M-005wsc-19;
+        Sun, 26 Mar 2023 20:38:35 +0000
+Message-ID: <188a8527-23ce-5a5a-b1ca-3d45b03f9086@infradead.org>
+Date:   Sun, 26 Mar 2023 13:38:30 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: Aw: Re: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix tx
- throughput regression with direct 1G links
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+From:   Geoff Levand <geoff@infradead.org>
+Subject: Re: [PATCH net v6 1/2] net/ps3_gelic_net: Fix RX sk_buff length
+To:     Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <cover.1677377639.git.geoff@infradead.org>
+ <1bf36b8e08deb3d16fafde3e88ae7cd761e4e7b3.1677377639.git.geoff@infradead.org>
+ <fe77a548-a248-95f3-f840-8cd6ee0c1c27@intel.com>
 Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     netdev@vger.kernel.org, Daniel Golle <daniel@makrotopia.org>
-References: <20230324140404.95745-1-nbd@nbd.name>
- <trinity-84b79570-2de7-496a-870e-a9678a55f4a4-1679736481816@3c-app-gmx-bap48>
- <2e7464a7-a020-f270-4bc7-c8ef47188dcd@nbd.name>
- <trinity-30bf2ced-ef19-4ce1-9738-07015a93dede-1679850603745@3c-app-gmx-bap64>
- <4a67ee73-f4ee-2099-1b5b-8d6b74acf429@nbd.name>
- <trinity-6b2ecbe5-7ad8-4740-b691-8b9868fae223-1679852966887@3c-app-gmx-bap64>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <trinity-6b2ecbe5-7ad8-4740-b691-8b9868fae223-1679852966887@3c-app-gmx-bap64>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <fe77a548-a248-95f3-f840-8cd6ee0c1c27@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.03.23 19:49, Frank Wunderlich wrote:
->> Gesendet: Sonntag, 26. März 2023 um 19:27 Uhr
->> Von: "Felix Fietkau" <nbd@nbd.name>
->> An: "Frank Wunderlich" <frank-w@public-files.de>
->> Cc: netdev@vger.kernel.org, "Daniel Golle" <daniel@makrotopia.org>
->> Betreff: Re: Aw: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
->>
->> On 26.03.23 19:10, Frank Wunderlich wrote:
->> >> Gesendet: Sonntag, 26. März 2023 um 17:56 Uhr
->> >> Von: "Felix Fietkau" <nbd@nbd.name>
->> >> An: "Frank Wunderlich" <frank-w@public-files.de>
->> >> Cc: netdev@vger.kernel.org, "Daniel Golle" <daniel@makrotopia.org>
->> >> Betreff: Re: Aw: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
->> >>
->> >> On 25.03.23 10:28, Frank Wunderlich wrote:
->> >> >> Gesendet: Freitag, 24. März 2023 um 15:04 Uhr
->> >> >> Von: "Felix Fietkau" <nbd@nbd.name>
->> >> >> An: netdev@vger.kernel.org
->> >> >> Cc: "Frank Wunderlich" <frank-w@public-files.de>, "Daniel Golle" <daniel@makrotopia.org>
->> >> >> Betreff: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
->> >> >>
->> >> >> Using the QDMA tx scheduler to throttle tx to line speed works fine for
->> >> >> switch ports, but apparently caused a regression on non-switch ports.
->> >> >> 
->> >> >> Based on a number of tests, it seems that this throttling can be safely
->> >> >> dropped without re-introducing the issues on switch ports that the
->> >> >> tx scheduling changes resolved.
->> >> >> 
->> >> >> Link: https://lore.kernel.org/netdev/trinity-92c3826f-c2c8-40af-8339-bc6d0d3ffea4-1678213958520@3c-app-gmx-bs16/
->> >> >> Fixes: f63959c7eec3 ("net: ethernet: mtk_eth_soc: implement multi-queue support for per-port queues")
->> >> >> Reported-by: Frank Wunderlich <frank-w@public-files.de>
->> >> >> Reported-by: Daniel Golle <daniel@makrotopia.org>
->> >> >> Tested-by: Daniel Golle <daniel@makrotopia.org>
->> >> >> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->> >> >> ---
->> >> >>  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 --
->> >> >>  1 file changed, 2 deletions(-)
->> >> >> 
->> >> >> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> >> >> index a94aa08515af..282f9435d5ff 100644
->> >> >> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> >> >> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> >> >> @@ -763,8 +763,6 @@ static void mtk_mac_link_up(struct phylink_config *config,
->> >> >>  		break;
->> >> >>  	}
->> >> >>  
->> >> >> -	mtk_set_queue_speed(mac->hw, mac->id, speed);
->> >> >> -
->> >> >>  	/* Configure duplex */
->> >> >>  	if (duplex == DUPLEX_FULL)
->> >> >>  		mcr |= MAC_MCR_FORCE_DPX;
->> >> > 
->> >> > thx for the fix, as daniel already checked it on mt7986/bpi-r3 i tested bpi-r2/mt7623
->> >> > 
->> >> > but unfortunately it does not fix issue on bpi-r2 where the gmac0/mt7530 part is affected.
->> >> > 
->> >> > maybe it needs a special handling like you do for mt7621? maybe it is because the trgmii mode used on this path?
->> >> Could you please test if making it use the MT7621 codepath brings back 
->> >> performance? I don't have any MT7623 hardware for testing right now.
->> > 
->> > Hi,
->> > 
->> > this seems to make the CPU stall (after kernel is loaded completely when userspace begins to start):
->> > 
->> > -       if (IS_ENABLED(CONFIG_SOC_MT7621)) {
->> > +       if (IS_ENABLED(CONFIG_SOC_MT7621) || IS_ENABLED(CONFIG_SOC_MT7623)) {
->> > 
->> > [   27.252672] rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
->> > [   27.258618] rcu:     2-...0: (0 ticks this GP) idle=54c4/1/0x40000000 softir8
->> > [   27.266973] rcu:     (detected by 1, t=2102 jiffies, g=-891, q=7 ncpus=4)
->> > [   27.273499] Sending NMI from CPU 1 to CPUs 2:
->> >                                                                                  
->> > [USBD] USB PRB0 LineState: 0
->> > 
->> > wonder why this happens...i expected some kind of tranmit queue erros with trace...
->> > 
->> > full log here
->> > https://pastebin.com/de4dZDt4
->> > 
->> > but i've found no error there (sorry for cutting on the right side...my terminal window was to small)
->> The change you made has no effect, because CONFIG_SOC_MT7623 does not 
->> exist, so there must be something else that broke your system.
->> Try CONFIG_MACH_MT7623 instead, once you've resolved the system hang.
-> 
-> it was exactly this change above...dropping it fixed it
-> 
-> do not know why i did no compile-error, looked into implementation of IS_ENABLED which is passed through different defines till
-> 
-> include/linux/kconfig.h:42:#define ___is_defined(val)		____is_defined(__ARG_PLACEHOLDER_##val)
-> include/linux/kconfig.h:43:#define ____is_defined(arg1_or_junk)	__take_second_arg(arg1_or_junk 1, 0)
-> include/linux/kconfig.h:14:#define __take_second_arg(__ignored, val, ...) val
-> 
-> i do not expect that there is anything wrong, just wonder why this stalls...
-> 
-> used the CONFIG_MACH_MT7623 (which is set in my config) boots up fine, but did not fix the 622Mbit-tx-issue
-> 
-> and i'm not sure i have tested it before...all ports of mt7531 are affected, not only wan (i remembered you asked for this)
-Does the MAC that's connected to the switch use flow control? Can you 
-test if changing that makes a difference?
+Hi,
 
-- Felix
+I've gone back to setting up the napi routines.
+
+On 2/28/23 08:12, Alexander Lobakin wrote:
+> From: Geoff Levand <geoff@infradead.org>
+> Date: Sun, 26 Feb 2023 02:25:42 +0000
+> 
+>> The Gelic Ethernet device needs to have the RX sk_buffs aligned to
+>> GELIC_NET_RXBUF_ALIGN and the length of the RX sk_buffs must be a
+>> multiple of GELIC_NET_RXBUF_ALIGN.
+
+>> +
+>> +	napi_buff = napi_alloc_frag_align(GELIC_NET_MAX_MTU,
+>> +		GELIC_NET_RXBUF_ALIGN);
+>> +
+>> +	descr->skb = napi_build_skb(napi_buff, GELIC_NET_MAX_MTU);
+> 
+> You're mixing two, no, three things here.
+> 
+> 1. MTU. I.e. max L3+ payload len. It doesn't include Eth header, VLAN
+>    and FCS.
+> 2. Max frame size. It is MTU + the abovementioned. Usually it's
+>    something like `some power of two - 1`.
+> 3. skb truesize.
+>    It is: frame size (i.e. 2) + headroom (usually %NET_SKB_PAD when
+>    !XDP, %XDP_PACKET_HEADROOM otherwise, plus %NET_IP_ALIGN) + tailroom
+>    (SKB_DATA_ALIGN(sizeof(struct skb_shared_info), see
+>     SKB_WITH_OVERHEAD() and adjacent macros).
+> 
+> I'm not sure whether your definition is the first or the second... or
+> maybe third? You had 1522, but then changed to 1920? You must pass the
+> third to napi_build_skb().
+> So you should calculate the truesize first, then allocate a frag and
+> build an skb. Then skb->data will point to the free space with the
+> length of your max frame size.
+> And the truesize calculation might be not just a hardcoded value, but an
+> expression where you add all those head- and tailrooms, so that they
+> will be calculated depending on the platform's configuration.
+> 
+> Your current don't reserve any space as headroom, so that frames / HW
+> visible part starts at the very beginning of a frag. It's okay, I mean,
+> there will be reallocations when the stack needs more headroom, but
+> definitely not something to kill the system. You could leave it to an
+> improvement series in the future*.
+> But it either way *must* include tailroom, e.g.
+> SKB_DATA_ALIGN(see_above), otherwise your HW might overwrite kernel
+> structures.
+> 
+> * given that the required HW alignment is 128, I'd just allocate 128
+> bytes more and then do `skb_reserve(skb, RXBUF_HW_ALIGN` right after
+> napi_build_skb() to avoid reallocations.
+
+Looking at the docs for the PS3's gelic network device I found
+that the DMA buffer it uses has a fixed layout:
+
+  VLAN Data   2 bytes
+  Dest MAC    6 bytes
+  Source MAC  6 bytes
+  Type/Length 2 bytes
+  DATA        46-2294 bytes
+
+So, the max DMA buffer size is 2310, which I guess is the same
+as the MAX_FRAME size, which is given as 2312.  That's about
+18.05*128.  So if the napi_buff size is 19*128 = 2432 and the
+start aligned to 128, that should give me what I need:
+
+  #define GELIC_NET_RXBUF_ALIGN 128
+  static const unsigned int napi_buff_size = 19 * GELIC_NET_RXBUF_ALIGN;
+
+  napi_buff = napi_alloc_frag_align(napi_buff_size, GELIC_NET_RXBUF_ALIGN);
+
+  descr->skb = napi_build_skb(napi_buff, napi_buff_size);
+
+  cpu_addr = dma_map_single(dev, napi_buff, napi_buff_size, DMA_FROM_DEVICE);
+
+You can find the actual patch here:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/geoff/ps3-linux.git/commit/?h=ps3-queue-v6.3--gelic-work&id=629de5a5d2875354c5d48fca7f5c1d24f4bf3a8e
+
+I did some rigorous testing with this and didn't have any
+problems.
+
+-Geoff
+
+
+
+
+ 
+
+
+
+
 
