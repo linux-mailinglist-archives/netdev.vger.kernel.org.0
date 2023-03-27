@@ -2,231 +2,517 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B068D6CAD2B
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E6A6CAD58
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:41:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232463AbjC0Si2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 14:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47404 "EHLO
+        id S232714AbjC0Slw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 14:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232526AbjC0SiV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:38:21 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2921469F;
-        Mon, 27 Mar 2023 11:38:13 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id ek18so40084110edb.6;
-        Mon, 27 Mar 2023 11:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679942292;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=nLcZ+qrcIgnqBo+U06+wPoGBwMC2BfvNUbagKz8WaXA=;
-        b=Orq60UWEuwu2H2PPv3K7xkXg2YPLaPKObVj87R00l9spmhZHKTrG3jQwE4YkRwBKzx
-         I1dGyiIT5BpQctEGtKUJgfHT1uMgPZwYvWYb1e+Ow7l16f2rjae/W8sPnrAxie+N2R7C
-         q/5ybHe7f3CyuFPIdkBTmjlliBiGPCNayS1aPn1Z2/SqjJ1Hk+xa7Rg4rfMRMfZQK82o
-         I3tVNgUKtV0UHKl3yoRo3PdY8KQXQoVyO3aXKNv8xdHJyqE18gW91Z1w70eBxAJHvkdk
-         IpjdYKOwRVcTpE9PntMkhGebMGdACiCaf+a0U7JMcrPmnJb4KaRluC1BPitW2k9xf9N6
-         EVJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679942292;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nLcZ+qrcIgnqBo+U06+wPoGBwMC2BfvNUbagKz8WaXA=;
-        b=OC6BoBFQJv4UZVrVLm/Ir+FzQ345RSqDlBIdLcmKbGb3FsGPzuU5/Xf9X57y989sli
-         M1OA3ssPHxpsDtJf63azxVqiwPLgfuPXgGbY+2vxfaXoCe/tTahZmbaHPJN6cQEBypfC
-         aRAwQHTJsOuJM1f1+7zhTEJ+uAWCM+FLbIG/DzPpihsEGMrlotjtXz0tysfxqyGE5+KC
-         7nsDl+Nps5ytyfE+aK62JXPyeLsC/qBT2HhDzEffmKBI8GUp0iAIfbqyAyjOsK1PiJjY
-         nNQ8KuTa3vTJw1nHVyh1SmEY44IxTchucPt8KJ1p6ih69hdu6fBdD+fZzoyMqc0qpqtt
-         H3YA==
-X-Gm-Message-State: AAQBX9fSK3B9ZAWUzzb6oYvQN5At+si3RQR0y1UuSpJCA24WGuNBTODG
-        0XJd/ytSpkzaQTHnytRhzHk=
-X-Google-Smtp-Source: AKy350bYfp6Lxy5+de6zhDv28RxPJ+gjb6yuG1b5+tRvrdnJIvmpv2oO9r6pB2k4n0jsOJdB3Zchnw==
-X-Received: by 2002:a05:6402:48e:b0:4ad:7056:23a5 with SMTP id k14-20020a056402048e00b004ad705623a5mr12952202edv.14.1679942292011;
-        Mon, 27 Mar 2023 11:38:12 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id r12-20020a50c00c000000b00501d2f10d19sm10527273edb.20.2023.03.27.11.38.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 11:38:11 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 21:38:09 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thibaut <hacks@slashdirt.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Subject: Re: Move MT7530 phy muxing from DSA to PHY driver
-Message-ID: <20230327183809.vhft6rqek3kisytb@skbuf>
-References: <4a291389-105a-6288-1347-4f02171b0dd0@arinc9.com>
- <b66fff15-3521-f889-d9bf-70f1cf689cdc@gmail.com>
- <0e3ca573-2190-57b0-0e98-7f5b890d328e@arinc9.com>
- <YyKQKRIYDIVeczl1@lunn.ch>
- <dad09430-4f33-7f1d-76c7-4dbd0710e950@arinc9.com>
- <YyXiswbZfDh8aZHN@lunn.ch>
- <4a291389-105a-6288-1347-4f02171b0dd0@arinc9.com>
- <b66fff15-3521-f889-d9bf-70f1cf689cdc@gmail.com>
- <20ede15d-c5b0-bf96-4fe3-7639b4d646f8@arinc9.com>
- <20ede15d-c5b0-bf96-4fe3-7639b4d646f8@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        with ESMTP id S232588AbjC0Slq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:41:46 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11olkn2081e.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::81e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655C71B6;
+        Mon, 27 Mar 2023 11:41:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iLbhvPmXmigDRffW5Y+JvsdPB01/kRX9rtsMRgfNFfvZ77DAqabnz2fSuOS8nLMy6CXytaK/7bUFOZkkJKBvqevCQUqpMNXyK3fzy0aRbsKxw1fV/Y8tP/LsQzOuRQRlYrAmHlMJq3/lUiip52LQfyPb23Bw7f6L3Qa6d2YfS1+gAxpp0OP+P7jfWWGG3jUw488Qitx64ko6rCjhJ/knBhKHO8NIXG8C5UuEVHuoFZ7rJBK/vaZdE2GMhS84kcHtGg2jlDDSjxZBBwTh0UXcWF4W9tgc01meSsgjtGJOPlPx0p+Qgmp2y6tUd7MkfxBUSm0RDRDPwxpbjtjSKKEwFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=o5jzP+PrGWDa0xRXH3/Y49+Pox7Si9cezgjlFiFatwQ=;
+ b=WN2kJa9HhT53h6gv2GJPNW1qaDQ2XhBxiMyV2rjHOJYNbHks7ChUmsbOpmTvRbpAfUcxiHMmwff1lQSebeFsC7ZSxYdC9Kzd2IjO0jKpPmVrnmEz4fckgRM4SyN1I55In+LHdYRM3RfNUxozQ7J2IibS0lyHRJHhvz8aWqfsPSBAba7+Mo/MzQV37vFlVqIyZACR3iDarSuXN4CzLDdG5lzIGBo/NHTzRF9CgVkBWXpNvDowuXCG/OhX8jcKTyLBagMpq3Z3DlHH3X1bgLePap9ojq/C2ooGgVwug3ZvZXGwQVWG5b7QjoCJeooPKRWEdIYSNvTk6M6kyAK43k2Y2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o5jzP+PrGWDa0xRXH3/Y49+Pox7Si9cezgjlFiFatwQ=;
+ b=MTlqAx5y0Txh+na1K31LGRHAHQtb/aLWGvSIIGTneRbzFh/wAlg2ECerMC7a6fqP1ie45TT36afa33pAm07J2O6gDPG06e9winonEDIhjGVgsuc01KX/jSJpRF/Qn7HCd+V74n0hHmk7JFvspx/2AcpDmz9kDTd/8dIX69AKKxoiM94/WbggiD50ZO3rrfa+VhrN/bolM0ZHIbb2bwgCBJHcubGYbTVlZc/2NRM0CEvpKdwwcrq4b4/v57WA772x58b+PrF1GJtsHppMsJxkHp3+EorPEVg5aSxA63RhjXMdLTSKqmflZyLuKlvXjqYxA/0/qbMAD/qpjiq1gm/MkA==
+Received: from MW5PR03MB6932.namprd03.prod.outlook.com (2603:10b6:303:1cd::22)
+ by BY5PR03MB5251.namprd03.prod.outlook.com (2603:10b6:a03:22b::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Mon, 27 Mar
+ 2023 18:40:10 +0000
+Received: from MW5PR03MB6932.namprd03.prod.outlook.com
+ ([fe80::191c:ca4e:23a0:274f]) by MW5PR03MB6932.namprd03.prod.outlook.com
+ ([fe80::191c:ca4e:23a0:274f%8]) with mapi id 15.20.6178.037; Mon, 27 Mar 2023
+ 18:40:10 +0000
+From:   Min Li <lnimi@hotmail.com>
+To:     richardcochran@gmail.com, lee@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH mfd v2 1/3] mfd: rsmu: support 32-bit address space
+Date:   Mon, 27 Mar 2023 14:39:53 -0400
+Message-ID: <MW5PR03MB693295AF31ABCAF6AE52EE74A08B9@MW5PR03MB6932.namprd03.prod.outlook.com>
+X-Mailer: git-send-email 2.39.2
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20ede15d-c5b0-bf96-4fe3-7639b4d646f8@arinc9.com>
- <20ede15d-c5b0-bf96-4fe3-7639b4d646f8@arinc9.com>
+Content-Type: text/plain
+X-TMN:  [EDBOH9aZytHkWMcnoRwEiK8+gP4gIhgY]
+X-ClientProxiedBy: YQBPR0101CA0092.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:4::25) To MW5PR03MB6932.namprd03.prod.outlook.com
+ (2603:10b6:303:1cd::22)
+X-Microsoft-Original-Message-ID: <20230327183955.30239-1-lnimi@hotmail.com>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW5PR03MB6932:EE_|BY5PR03MB5251:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3db95087-66ad-4e99-75f4-08db2ef2b168
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: K3Vc73ULLSgd8GviWF6EOso6grA+GQAI8eKC2Cb+s51fIrXt0iSm9tnhLbXj0L6u/JXFf3yPkFidUmYPUdFqSUsvfZrGSdm/Ramv1Yb/7qJ7taIUcZz47MtX5sKCYbmQTWE9ekIxaEONwO0WRP+IlZVwGdxgah69eDx4DRS2wsjaei7maPCl6jlvtzmlBXnS6vdfGNbGFkRmMzaK1QLskrpc4NO1eCVhJNwcwAWAE4IioQ8xS5B1PtLW3SYsBPTerDcYNCekoyxdPHw33XenjGZu1UxqzqzlRLR+by5DJ48Y3pbhwk/fBJWJiezA9PrOUJmdE3/G9XndBuEYTxLdI68IUW/c324UTfM5d7BzBVXe3G9qVqL+/+A7waJcnHm4DFgCvVrUeFwYkVVTy9yXWUk/Vnpv9YXyvtBOY5eX7mG5vf4DIL0CUN9Vbjxbcyj34Id3bNV/CJQrf7QmFFR9gwLQhoAZ4WffIGKRgEVDScfSxMPmszQcz6Po4XS7L4KKyisPG8dR7Ea3tzfZg/24Uvp0j2SwtGXl8mUpztLBe9fyxkrplODfMSJzEi7bZQIl
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?T7yqETUQBB6+dG1nbabviQLNeYpwgcE9Pxu1oY6naOc5F3aQKOzkGcWDmAju?=
+ =?us-ascii?Q?aDdciZOG+3nayyyConmwRb9CKpOYPNygUWHJMSIhRPns9nVJzsNrX88zIb4e?=
+ =?us-ascii?Q?N95Mr7kkpnv7gmeD6h9knoDkUsyHQepGrePYka+1ojFaCuWHQCqc5sv9ieRY?=
+ =?us-ascii?Q?guuI1sX3vtJH4gP9lkc9eY7CtXR3pcCNDy6KjgPL+GIKXtLUXBy6Sf6DN6vx?=
+ =?us-ascii?Q?5TJuVhTzLw30HcZ3rshfe6CmAYuJsv9hs9LuMF/YeF1ukYuNRCtmegIgTBdW?=
+ =?us-ascii?Q?5pj0JI5FQhMWVqwuue6UylMh74Nd4cwA42GTvw6+Y0D6YOsLC16yVqlW+sXQ?=
+ =?us-ascii?Q?amh8RV8Db8MidVflwOGAGnr4uagTlfeBsIO1nNv+yf8XPN44zCWWqZlNmCxm?=
+ =?us-ascii?Q?xSd5q7kPGxwIvjToCYhkAQGD773PmNcsVc1kbIRXTSjhH/1kCv2a0tcxOtya?=
+ =?us-ascii?Q?aeV4plW/HDoGWMABVrcBMUjUmIs4nD5q8mOIlakI3gDzXNWTnnLjLBzy0EKV?=
+ =?us-ascii?Q?2kxyoWUh+pqUvQwwsjjYAXdtimMp18B6HyFEx9YMfPlaUVmd4socpsAAI6ew?=
+ =?us-ascii?Q?6m3aL8E0XOutNWInIKNTbmtWzy6OCxVn5Ssd5MxILIxxULv6S7mFboamt1UB?=
+ =?us-ascii?Q?3/emy1Zo4CPOoUfjagUmT0mg6rbD92MT29/uczrRcFxqZ/7F2fX5CQdbke/2?=
+ =?us-ascii?Q?QF22mMotjh5TZyJeS8u3W+jUqYL2HWM6/Aq2TFfjA2KVq2iWKoGrl+8UeaQg?=
+ =?us-ascii?Q?HMWiT+nDEG7tUaAdI2ikTv5FkWB7LPJI8QAq2zxzRCX7lM570YGpDIY8Nqvt?=
+ =?us-ascii?Q?kL5NdgNakbpKC+XtEI2whAslz68RoE9EmLEwTirV7ExMQUEkbBZUQdF2PJNV?=
+ =?us-ascii?Q?VyXkEtqmYohByVHlB40ubnT+w7c95JpNLVAb+yX9MQ/p0y1lZowQMxmvunHD?=
+ =?us-ascii?Q?g1amM6SfnPbFoM6HnCDc/ZnDysHdmMKHrLug2u6zEMhJefa69bi5SF/UdeuH?=
+ =?us-ascii?Q?stKlIdVRndJdMi9jyFLafjJSbcM8L0rmlN6ikDPb/9WAu36k+IF9VE/Y6JOq?=
+ =?us-ascii?Q?Fxcjt0ufAZ3mKT5l+lEOvWsVnN2VaQkoKKCiISSUuUv9gEVGHJ/oHnCmExrS?=
+ =?us-ascii?Q?Lyd8UgYhvoJOMOeHpo45RYGjn5sh7JmDyLVKRPfzKdyj0Xd8adN5ev04c77j?=
+ =?us-ascii?Q?+vUOsq8GA/dBc9qwTbFrAxiaOXOscfNtGG0V1g=3D=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-685f7.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3db95087-66ad-4e99-75f4-08db2ef2b168
+X-MS-Exchange-CrossTenant-AuthSource: MW5PR03MB6932.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 18:40:10.2662
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR03MB5251
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 07:52:12PM +0300, Arınç ÜNAL wrote:
-> I'm currently working on the mt7530 driver and I think I found a way
-> that takes the least effort, won't break the ABI, and most importantly,
-> will work.
+From: Min Li <min.li.xe@renesas.com>
 
-This sounds promising....
+We used to assume 0x2010xxxx address. Now that we
+need to access 0x2011xxxx address, we need to
+support read/write the whole 32-bit address space.
 
-> As we acknowledged, the registers are in the switch address space. This
-> must also mean that the switch must be properly probed before doing
-> anything with the registers.
-> 
-> I'm not sure how exactly making a tiny driver would work in this case.
+Also defined RSMU_MAX_WRITE_COUNT and
+RSMU_MAX_READ_COUNT for readability
 
-I'm not sure how it would work, either. It sounds like the driver for
-the mdio-bus address @1f should have been a parent driver (MFD or not)
-with 2 (platform device) children, one for the switch and another for
-the HWTRAP registers and whatever else might be needed for the PHY
-multiplexing. The parent (mdio_device) driver deals with the chip-wide
-reset, resources, and manages the registers, giving them regmaps.
-The driver with the mux probably just exports a symbol representing a
-function that gets called by the "mediatek,eth-mac" driver and/or the
-switch driver.
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+changelog
+-change commit message to include defining RSMU_MAX_WRITE/WRITE_COUNT
 
-BTW, I have something vaguely similar to this in a stalled WIP branch
-for sja1105, but things like this get really complicated really quickly
-if the DSA driver's DT bindings weren't designed from day one to not
-cover the entire switch's register map.
+ drivers/mfd/rsmu.h       |   2 +
+ drivers/mfd/rsmu_i2c.c   | 172 +++++++++++++++++++++++++++++++--------
+ drivers/mfd/rsmu_spi.c   |  52 +++++++-----
+ include/linux/mfd/rsmu.h |   5 +-
+ 4 files changed, 175 insertions(+), 56 deletions(-)
 
-> I figured we can just run the phy muxing code before the DSA driver
-> exits because there are no (CPU) ports defined on the devicetree. Right
-> after probing is done on mt7530_probe, before dsa_register_switch() is run.
+diff --git a/drivers/mfd/rsmu.h b/drivers/mfd/rsmu.h
+index bb88597d189f..1bb04cafa45d 100644
+--- a/drivers/mfd/rsmu.h
++++ b/drivers/mfd/rsmu.h
+@@ -10,6 +10,8 @@
+ 
+ #include <linux/mfd/rsmu.h>
+ 
++#define RSMU_CM_SCSR_BASE		0x20100000
++
+ int rsmu_core_init(struct rsmu_ddata *rsmu);
+ void rsmu_core_exit(struct rsmu_ddata *rsmu);
+ 
+diff --git a/drivers/mfd/rsmu_i2c.c b/drivers/mfd/rsmu_i2c.c
+index 15d25b081434..171b0544b778 100644
+--- a/drivers/mfd/rsmu_i2c.c
++++ b/drivers/mfd/rsmu_i2c.c
+@@ -18,11 +18,12 @@
+ #include "rsmu.h"
+ 
+ /*
+- * 16-bit register address: the lower 8 bits of the register address come
+- * from the offset addr byte and the upper 8 bits come from the page register.
++ * 32-bit register address: the lower 8 bits of the register address come
++ * from the offset addr byte and the upper 24 bits come from the page register.
+  */
+-#define	RSMU_CM_PAGE_ADDR		0xFD
+-#define	RSMU_CM_PAGE_WINDOW		256
++#define	RSMU_CM_PAGE_ADDR		0xFC
++#define RSMU_CM_PAGE_MASK		0xFFFFFF00
++#define RSMU_CM_ADDRESS_MASK		0x000000FF
+ 
+ /*
+  * 15-bit register address: the lower 7 bits of the register address come
+@@ -31,18 +32,6 @@
+ #define	RSMU_SABRE_PAGE_ADDR		0x7F
+ #define	RSMU_SABRE_PAGE_WINDOW		128
+ 
+-static const struct regmap_range_cfg rsmu_cm_range_cfg[] = {
+-	{
+-		.range_min = 0,
+-		.range_max = 0xD000,
+-		.selector_reg = RSMU_CM_PAGE_ADDR,
+-		.selector_mask = 0xFF,
+-		.selector_shift = 0,
+-		.window_start = 0,
+-		.window_len = RSMU_CM_PAGE_WINDOW,
+-	}
+-};
+-
+ static const struct regmap_range_cfg rsmu_sabre_range_cfg[] = {
+ 	{
+ 		.range_min = 0,
+@@ -55,35 +44,142 @@ static const struct regmap_range_cfg rsmu_sabre_range_cfg[] = {
+ 	}
+ };
+ 
+-static bool rsmu_cm_volatile_reg(struct device *dev, unsigned int reg)
++static bool rsmu_sabre_volatile_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+-	case RSMU_CM_PAGE_ADDR:
++	case RSMU_SABRE_PAGE_ADDR:
+ 		return false;
+ 	default:
+ 		return true;
+ 	}
+ }
+ 
+-static bool rsmu_sabre_volatile_reg(struct device *dev, unsigned int reg)
++static int rsmu_read_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes)
+ {
+-	switch (reg) {
+-	case RSMU_SABRE_PAGE_ADDR:
+-		return false;
+-	default:
+-		return true;
++	struct i2c_client *client = to_i2c_client(rsmu->dev);
++	struct i2c_msg msg[2];
++	int cnt;
++
++	msg[0].addr = client->addr;
++	msg[0].flags = 0;
++	msg[0].len = 1;
++	msg[0].buf = &reg;
++
++	msg[1].addr = client->addr;
++	msg[1].flags = I2C_M_RD;
++	msg[1].len = bytes;
++	msg[1].buf = buf;
++
++	cnt = i2c_transfer(client->adapter, msg, 2);
++
++	if (cnt < 0) {
++		dev_err(rsmu->dev, "i2c_transfer failed at addr: %04x!", reg);
++		return cnt;
++	} else if (cnt != 2) {
++		dev_err(rsmu->dev,
++			"i2c_transfer sent only %d of 2 messages", cnt);
++		return -EIO;
++	}
++
++	return 0;
++}
++
++static int rsmu_write_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes)
++{
++	struct i2c_client *client = to_i2c_client(rsmu->dev);
++	/* we add 1 byte for device register */
++	u8 msg[RSMU_MAX_WRITE_COUNT + 1];
++	int cnt;
++
++	if (bytes > RSMU_MAX_WRITE_COUNT)
++		return -EINVAL;
++
++	msg[0] = reg;
++	memcpy(&msg[1], buf, bytes);
++
++	cnt = i2c_master_send(client, msg, bytes + 1);
++
++	if (cnt < 0) {
++		dev_err(&client->dev,
++			"i2c_master_send failed at addr: %04x!", reg);
++		return cnt;
+ 	}
++
++	return 0;
++}
++
++static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
++{
++	u32 page = reg & RSMU_CM_PAGE_MASK;
++	u8 buf[4];
++	int err;
++
++	/* Do not modify offset register for none-scsr registers */
++	if (reg < RSMU_CM_SCSR_BASE)
++		return 0;
++
++	/* Simply return if we are on the same page */
++	if (rsmu->page == page)
++		return 0;
++
++	buf[0] = 0x0;
++	buf[1] = (u8)((page >> 8) & 0xFF);
++	buf[2] = (u8)((page >> 16) & 0xFF);
++	buf[3] = (u8)((page >> 24) & 0xFF);
++
++	err = rsmu_write_device(rsmu, RSMU_CM_PAGE_ADDR, buf, sizeof(buf));
++	if (err)
++		dev_err(rsmu->dev, "Failed to set page offset 0x%x\n", page);
++	else
++		/* Remember the last page */
++		rsmu->page = page;
++
++	return err;
++}
++
++static int rsmu_reg_read(void *context, unsigned int reg, unsigned int *val)
++{
++	struct rsmu_ddata *rsmu = i2c_get_clientdata((struct i2c_client *)context);
++	u8 addr = (u8)(reg & RSMU_CM_ADDRESS_MASK);
++	int err;
++
++	err = rsmu_write_page_register(rsmu, reg);
++	if (err)
++		return err;
++
++	err = rsmu_read_device(rsmu, addr, (u8 *)val, 1);
++	if (err)
++		dev_err(rsmu->dev, "Failed to read offset address 0x%x\n", addr);
++
++	return err;
++}
++
++static int rsmu_reg_write(void *context, unsigned int reg, unsigned int val)
++{
++	struct rsmu_ddata *rsmu = i2c_get_clientdata((struct i2c_client *)context);
++	u8 addr = (u8)(reg & RSMU_CM_ADDRESS_MASK);
++	u8 data = (u8)val;
++	int err;
++
++	err = rsmu_write_page_register(rsmu, reg);
++	if (err)
++		return err;
++
++	err = rsmu_write_device(rsmu, addr, &data, 1);
++	if (err)
++		dev_err(rsmu->dev,
++			"Failed to write offset address 0x%x\n", addr);
++
++	return err;
+ }
+ 
+ static const struct regmap_config rsmu_cm_regmap_config = {
+-	.reg_bits = 8,
++	.reg_bits = 32,
+ 	.val_bits = 8,
+-	.max_register = 0xD000,
+-	.ranges = rsmu_cm_range_cfg,
+-	.num_ranges = ARRAY_SIZE(rsmu_cm_range_cfg),
+-	.volatile_reg = rsmu_cm_volatile_reg,
+-	.cache_type = REGCACHE_RBTREE,
+-	.can_multi_write = true,
++	.max_register = 0x20120000,
++	.reg_read = rsmu_reg_read,
++	.reg_write = rsmu_reg_write,
++	.cache_type = REGCACHE_NONE,
+ };
+ 
+ static const struct regmap_config rsmu_sabre_regmap_config = {
+@@ -101,14 +197,14 @@ static const struct regmap_config rsmu_sl_regmap_config = {
+ 	.reg_bits = 16,
+ 	.val_bits = 8,
+ 	.reg_format_endian = REGMAP_ENDIAN_BIG,
+-	.max_register = 0x339,
++	.max_register = 0x340,
+ 	.cache_type = REGCACHE_NONE,
+ 	.can_multi_write = true,
+ };
+ 
+-static int rsmu_i2c_probe(struct i2c_client *client)
++static int rsmu_i2c_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
+ {
+-	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+ 	const struct regmap_config *cfg;
+ 	struct rsmu_ddata *rsmu;
+ 	int ret;
+@@ -136,7 +232,11 @@ static int rsmu_i2c_probe(struct i2c_client *client)
+ 		dev_err(rsmu->dev, "Unsupported RSMU device type: %d\n", rsmu->type);
+ 		return -ENODEV;
+ 	}
+-	rsmu->regmap = devm_regmap_init_i2c(client, cfg);
++
++	if (rsmu->type == RSMU_CM)
++		rsmu->regmap = devm_regmap_init(&client->dev, NULL, client, cfg);
++	else
++		rsmu->regmap = devm_regmap_init_i2c(client, cfg);
+ 	if (IS_ERR(rsmu->regmap)) {
+ 		ret = PTR_ERR(rsmu->regmap);
+ 		dev_err(rsmu->dev, "Failed to allocate register map: %d\n", ret);
+@@ -180,7 +280,7 @@ static struct i2c_driver rsmu_i2c_driver = {
+ 		.name = "rsmu-i2c",
+ 		.of_match_table = of_match_ptr(rsmu_i2c_of_match),
+ 	},
+-	.probe_new = rsmu_i2c_probe,
++	.probe = rsmu_i2c_probe,
+ 	.remove	= rsmu_i2c_remove,
+ 	.id_table = rsmu_i2c_id,
+ };
+diff --git a/drivers/mfd/rsmu_spi.c b/drivers/mfd/rsmu_spi.c
+index 2428aaa9aaed..a4a595bb8d0d 100644
+--- a/drivers/mfd/rsmu_spi.c
++++ b/drivers/mfd/rsmu_spi.c
+@@ -19,19 +19,21 @@
+ 
+ #define	RSMU_CM_PAGE_ADDR		0x7C
+ #define	RSMU_SABRE_PAGE_ADDR		0x7F
+-#define	RSMU_HIGHER_ADDR_MASK		0xFF80
+-#define	RSMU_HIGHER_ADDR_SHIFT		7
+-#define	RSMU_LOWER_ADDR_MASK		0x7F
++#define	RSMU_PAGE_MASK			0xFFFFFF80
++#define	RSMU_ADDR_MASK			0x7F
+ 
+ static int rsmu_read_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes)
+ {
+ 	struct spi_device *client = to_spi_device(rsmu->dev);
+ 	struct spi_transfer xfer = {0};
+ 	struct spi_message msg;
+-	u8 cmd[256] = {0};
+-	u8 rsp[256] = {0};
++	u8 cmd[RSMU_MAX_READ_COUNT + 1] = {0};
++	u8 rsp[RSMU_MAX_READ_COUNT + 1] = {0};
+ 	int ret;
+ 
++	if (bytes > RSMU_MAX_READ_COUNT)
++		return -EINVAL;
++
+ 	cmd[0] = reg | 0x80;
+ 	xfer.rx_buf = rsp;
+ 	xfer.len = bytes + 1;
+@@ -66,7 +68,10 @@ static int rsmu_write_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes
+ 	struct spi_device *client = to_spi_device(rsmu->dev);
+ 	struct spi_transfer xfer = {0};
+ 	struct spi_message msg;
+-	u8 cmd[256] = {0};
++	u8 cmd[RSMU_MAX_WRITE_COUNT + 1] = {0};
++
++	if (bytes > RSMU_MAX_WRITE_COUNT)
++		return -EINVAL;
+ 
+ 	cmd[0] = reg;
+ 	memcpy(&cmd[1], buf, bytes);
+@@ -86,26 +91,35 @@ static int rsmu_write_device(struct rsmu_ddata *rsmu, u8 reg, u8 *buf, u16 bytes
+  * 16-bit register address: the lower 7 bits of the register address come
+  * from the offset addr byte and the upper 9 bits come from the page register.
+  */
+-static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u16 reg)
++static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u32 reg)
+ {
+ 	u8 page_reg;
+-	u8 buf[2];
++	u8 buf[4];
+ 	u16 bytes;
+-	u16 page;
++	u32 page;
+ 	int err;
+ 
+ 	switch (rsmu->type) {
+ 	case RSMU_CM:
++		/* Do not modify page register for none-scsr registers */
++		if (reg < RSMU_CM_SCSR_BASE)
++			return 0;
+ 		page_reg = RSMU_CM_PAGE_ADDR;
+-		page = reg & RSMU_HIGHER_ADDR_MASK;
++		page = reg & RSMU_PAGE_MASK;
+ 		buf[0] = (u8)(page & 0xff);
+ 		buf[1] = (u8)((page >> 8) & 0xff);
+-		bytes = 2;
++		buf[2] = (u8)((page >> 16) & 0xff);
++		buf[3] = (u8)((page >> 24) & 0xff);
++		bytes = 4;
+ 		break;
+ 	case RSMU_SABRE:
++		/* Do not modify page register if reg is page register itself */
++		if ((reg & RSMU_ADDR_MASK) == RSMU_ADDR_MASK)
++			return 0;
+ 		page_reg = RSMU_SABRE_PAGE_ADDR;
+-		page = reg >> RSMU_HIGHER_ADDR_SHIFT;
+-		buf[0] = (u8)(page & 0xff);
++		page = reg & RSMU_PAGE_MASK;
++		/* The three page bits are located in the single Page Register */
++		buf[0] = (u8)((page >> 7) & 0x7);
+ 		bytes = 1;
+ 		break;
+ 	default:
+@@ -129,8 +143,8 @@ static int rsmu_write_page_register(struct rsmu_ddata *rsmu, u16 reg)
+ 
+ static int rsmu_reg_read(void *context, unsigned int reg, unsigned int *val)
+ {
+-	struct rsmu_ddata *rsmu = spi_get_drvdata(context);
+-	u8 addr = (u8)(reg & RSMU_LOWER_ADDR_MASK);
++	struct rsmu_ddata *rsmu = spi_get_drvdata((struct spi_device *)context);
++	u8 addr = (u8)(reg & RSMU_ADDR_MASK);
+ 	int err;
+ 
+ 	err = rsmu_write_page_register(rsmu, reg);
+@@ -146,8 +160,8 @@ static int rsmu_reg_read(void *context, unsigned int reg, unsigned int *val)
+ 
+ static int rsmu_reg_write(void *context, unsigned int reg, unsigned int val)
+ {
+-	struct rsmu_ddata *rsmu = spi_get_drvdata(context);
+-	u8 addr = (u8)(reg & RSMU_LOWER_ADDR_MASK);
++	struct rsmu_ddata *rsmu = spi_get_drvdata((struct spi_device *)context);
++	u8 addr = (u8)(reg & RSMU_ADDR_MASK);
+ 	u8 data = (u8)val;
+ 	int err;
+ 
+@@ -164,9 +178,9 @@ static int rsmu_reg_write(void *context, unsigned int reg, unsigned int val)
+ }
+ 
+ static const struct regmap_config rsmu_cm_regmap_config = {
+-	.reg_bits = 16,
++	.reg_bits = 32,
+ 	.val_bits = 8,
+-	.max_register = 0xD000,
++	.max_register = 0x20120000,
+ 	.reg_read = rsmu_reg_read,
+ 	.reg_write = rsmu_reg_write,
+ 	.cache_type = REGCACHE_NONE,
+diff --git a/include/linux/mfd/rsmu.h b/include/linux/mfd/rsmu.h
+index 6870de608233..0379aa207428 100644
+--- a/include/linux/mfd/rsmu.h
++++ b/include/linux/mfd/rsmu.h
+@@ -8,6 +8,9 @@
+ #ifndef __LINUX_MFD_RSMU_H
+ #define __LINUX_MFD_RSMU_H
+ 
++#define RSMU_MAX_WRITE_COUNT	(255)
++#define RSMU_MAX_READ_COUNT	(255)
++
+ /* The supported devices are ClockMatrix, Sabre and SnowLotus */
+ enum rsmu_type {
+ 	RSMU_CM		= 0x34000,
+@@ -31,6 +34,6 @@ struct rsmu_ddata {
+ 	struct regmap *regmap;
+ 	struct mutex lock;
+ 	enum rsmu_type type;
+-	u16 page;
++	u32 page;
+ };
+ #endif /*  __LINUX_MFD_RSMU_H */
+-- 
+2.39.2
 
-Aren't there timing issues, though? When is the earliest moment that the
-"mediatek,eth-mac" driver needs the HWTRAP muxing to be changed?
-The operation of changing that from the "mediatek,mt7530" driver is
-completely asynchronous to the probing of "mediatek,eth-mac".
-What's the worst that will happen with incorrect (not yet updated) GMII
-signal muxing? "Just" some lost packets?
-
-> 
-> For proof of concept, I've moved some necessary switch probing code from
-> mt7530_setup() to mt7530_probe(). After the switch is properly reset,
-> phy4 is muxed, before dsa_register_switch() is run.
-
-This is fragile because someone eager for some optimizations could move
-the code back the way it was, and say: "the switch initialization costs
-X ms and is done X times, because dsa_register_switch() -> ... ->
-of_find_net_device_by_node() returns -EPROBE_DEFER the first X-1 times.
-If we move the switch initialization to ds->ops->setup(), it will run
-only once, after the handle to the DSA master has been obtained, and
-this gives us a boost in kernel startup time."
-
-It's even more fragile because currently (neither before nor after your change),
-mt7530_remove() does not do the mirror opposite of mt7530_probe(), and somebody
-eager from the future will notice this, and add an error handling path for
-dsa_register_switch(), which calls the opposite of regulator_enable(),
-regulator_disable(), saying "hey, there's no reason to let the regulators
-on if the switch failed to probe, it consumes power for nothing!".
-
-It's an open question whether that regulator is needed for anything after
-the HWMUX registers has been changed, or if it can indeed be turned off.
-Not knowing this, it's hard to say if the change is okay or not.
-It seems that there's a high probability it will work for a while,
-by coincidence.
-
-> 
-> [    0.650721] mt7530 mdio-bus:1f: MT7530 adapts as multi-chip module
-> [    0.660285] mt7530 mdio-bus:1f: muxing phy4 to gmac5
-> [    0.665284] mt7530 mdio-bus:1f: no ports child node found
-> [    0.670688] mt7530: probe of mdio-bus:1f failed with error -22
-> [    0.679118] mtk_soc_eth 1e100000.ethernet: generated random MAC address b6:9c:4d:eb:1f:8e
-> [    0.688922] mtk_soc_eth 1e100000.ethernet eth0: mediatek frame engine at 0xbe100000, irq 15
-> 
-> ---
-> 
-> # ifup eth0
-> [   30.674595] mtk_soc_eth 1e100000.ethernet eth0: configuring for fixed/rgmii link mode
-> [   30.683451] mtk_soc_eth 1e100000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> # ping 192.168.2.2
-> PING 192.168.2.2 (192.168.2.2): 56 data bytes
-> 64 bytes from 192.168.2.2: seq=0 ttl=64 time=0.688 ms
-> 64 bytes from 192.168.2.2: seq=1 ttl=64 time=0.375 ms
-> 64 bytes from 192.168.2.2: seq=2 ttl=64 time=0.357 ms
-> 64 bytes from 192.168.2.2: seq=3 ttl=64 time=0.323 ms
-> 
-> ---
-> 
-> # ip a
-> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
->     inet 127.0.0.1/8 scope host lo
->        valid_lft forever preferred_lft forever
-> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
->     link/ether b6:9c:4d:eb:1f:8e brd ff:ff:ff:ff:ff:ff
->     inet 192.168.2.1/24 scope global eth0
->        valid_lft forever preferred_lft forever
-> 
-> There is a lot to do, such as fixing the method to read from the
-> devicetree as it relies on the mac node the CPU port is connected to but
-> when this is finalised, we should be able to use it like this:
-> 
-> mac@1 {
-> 	compatible = "mediatek,eth-mac";
-> 	reg = <1>;
-> 	phy-mode = "rgmii";
-> 	phy-handle = <&ethphy0>;
-> };
-> 
-> mdio-bus {
-> 	#address-cells = <1>;
-> 	#size-cells = <0>;
-> 
-> 	ethphy0: ethernet-phy@0 {
-> 		reg = <0>;
-> 	};
-> 
-> 	switch@1f {
-> 		compatible = "mediatek,mt7530";
-> 		reg = <0x1f>;
-> 		reset-gpios = <&pio 33 0>;
-> 		core-supply = <&mt6323_vpa_reg>;
-> 		io-supply = <&mt6323_vemc3v3_reg>;
-> 	};
-> };
-
-And this is fragile because the "mediatek,eth-mac" driver only works
-because of the side effects of a driver that began to probe, and failed.
-Someone, seeing that "mediatek,mt7530" fails to probe, and knowing that
-the switch ports are not needed/used on that board, could put a
-status = "disabled"; property under the switch@1f node.
