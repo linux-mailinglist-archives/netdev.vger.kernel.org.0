@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E06A86CA70F
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EBB76CA714
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:12:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232956AbjC0OMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 10:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
+        id S232973AbjC0OMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 10:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232698AbjC0OL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:11:57 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1DF524C;
-        Mon, 27 Mar 2023 07:11:16 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id l12so8926941wrm.10;
-        Mon, 27 Mar 2023 07:11:16 -0700 (PDT)
+        with ESMTP id S232734AbjC0OMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:12:03 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A12155AE;
+        Mon, 27 Mar 2023 07:11:18 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id d17so8931102wrb.11;
+        Mon, 27 Mar 2023 07:11:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679926275;
+        d=gmail.com; s=20210112; t=1679926276;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=nAbMbzGoAUXhien3wP1TBou62FlRCxoeRd6GPGyBVkY=;
-        b=CcaljGgqjESmV23PIrcxN9126f60ZABls3i6N2zF/oRUFiympEC3g88iZyVjpMsu03
-         w2tP4bc6lNH1cv1kp19qwmOnKbaJbd34R5xdwHITjKvaFw1TUuuQVrr6Lf58OO+z3iKz
-         VtlazM4dVBahjRyWYbN9I9tSKwwsmLP6Qh4OW+I/Tf/FNE/kfxfc4ZhkjZ13hMxt9vBb
-         WMoWQoXSEMM4yd1PJGb7bFaYnWFG1lAXm95k4POCK1YtDe/y6lcvCCQwagWghcMFdB7c
-         v+YtmhPYh2KMUensbuSy5TcZSmtDLNV/n/KHg7Qe+lHtwFsNGI9GQNkJdS1iS3IHV/ZR
-         yMaw==
+        bh=kRx8/9Oo8Ezq1aHd7HdN9nepqFDv6AoXlmRIJbikFuk=;
+        b=PfKUtNWq3gqDlyLY18gk5tD5VBGNVZa+wUwyTRsZxYlEu9lLSZcjnS+L87V4NFXjXZ
+         auk4OEqDxDvCkNtiD8JSfLEUfddHaKdkyH4Kw1gcNZUDHmgg8YywEyQCr6FxYPcE5CoR
+         SzEI7CfGV/U5MwIkXMCaaGrnvNFR3vnw5mDtQPDY+R6r8RWUQ5JBlBy19WtY1nKTrFHX
+         ArFTcsyl7jrG3T//YctjNW+axo0FABK5GsMWPYI22/tlDafaBQKAWMLt4ig6qQr9+E2s
+         4BYh6UjHI4nFrDIyzUmZI281rUxkLbhOokfgDy/q9sRnldN8wa9y7oEKm3/0QnzxOLVu
+         Z18A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679926275;
+        d=1e100.net; s=20210112; t=1679926276;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=nAbMbzGoAUXhien3wP1TBou62FlRCxoeRd6GPGyBVkY=;
-        b=nqwZvjDd1KlV6oKsQcBsxuYratFiXS6dizr1USUs2nRnK5ZNIQfK8DOY68IuHxU3R4
-         Mymb4/LMiTkVIAZg3YHwy6oLz2/b7/xCYJCu8GhNJAAsVpRtpPNZIrlRv8778lLN52i6
-         aGvaIUYEWbPJ1G/JgREbw+ySjXg9f7A4QApGgWmpBHAjh9Ux57O+pe0YN/TArJZEppLS
-         PM1KT0JBHzpEEPzkH2MYWIboskOcX2ph2lgxMNktKUbSqveuru+dx6UtOqQTkv4wSpoi
-         GZO8uPLb4kBd6e2x1FMbMYEu8vjDhJvAUrwYlcNTQ4EDu41criSRmgJVBkZChaVdoEDD
-         0feg==
-X-Gm-Message-State: AAQBX9dlsCohcaBMp/Z93hUmRw9P9hYV3MzCAL4BPNUF4X05mQ+k9H1+
-        OUqHMLKYPkmCIcEBzmJ/cJc=
-X-Google-Smtp-Source: AKy350bKV5lGWwBGNkMaHLc7SyYG/WoW7N03Ge8CF1La1u+XwwO/i2jc6VgPrccjRLx/oBueA20aHQ==
-X-Received: by 2002:adf:dd87:0:b0:2ce:aa62:ff79 with SMTP id x7-20020adfdd87000000b002ceaa62ff79mr9994473wrl.40.1679926274843;
-        Mon, 27 Mar 2023 07:11:14 -0700 (PDT)
+        bh=kRx8/9Oo8Ezq1aHd7HdN9nepqFDv6AoXlmRIJbikFuk=;
+        b=JaD0Bfe8TJwA1J+Oq3AVv0aEJPl8edt2jsxliCFNuiURCa3vXFYpiu8OvnCuNQo/XL
+         BmvtLC4lTRay/VZs7BeO0J6CQluxB5tYdiWXYJhexf8z2b+FGFliHyZ2yiyukHHOtRLd
+         WXCLUEB1BqCduD3RZAwmvmsV30v+v48YBojqQ+LudrLhKvFfESTn5m4lS6i3NAaLvZrF
+         Yxe73jvVaGyC/bs9KIJphdxE/dB0G599pPq24BI26fkiLCcueHSX7ui3ADMnh7sClF7v
+         nwRoUm8xYwA0zAYJMSsWElPOBqHaT4k9qkixC81BSpSvNnRsZIQPEPmtVIl8Ltd4Ai5s
+         1tpw==
+X-Gm-Message-State: AAQBX9do8VEpFkak3YUxZyiKAQGZPFqOfkVDj5hdvhqlsWObZACKAEr/
+        t7TBW3fmIurIJyAWJPhojFQ=
+X-Google-Smtp-Source: AKy350akHSgr93UvRjPgL/gvA9wUZIwcKGkWpcRe9ctOuZ5MGxTQvboX+44eNVzJxp6F8KtXUQBvlw==
+X-Received: by 2002:adf:f9cc:0:b0:2ce:a777:90c4 with SMTP id w12-20020adff9cc000000b002cea77790c4mr8409285wrr.31.1679926276396;
+        Mon, 27 Mar 2023 07:11:16 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id p17-20020adfcc91000000b002c71dd1109fsm25307591wrj.47.2023.03.27.07.11.13
+        by smtp.googlemail.com with ESMTPSA id p17-20020adfcc91000000b002c71dd1109fsm25307591wrj.47.2023.03.27.07.11.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 07:11:14 -0700 (PDT)
+        Mon, 27 Mar 2023 07:11:16 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,9 +72,9 @@ To:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org
-Subject: [net-next PATCH v6 10/16] dt-bindings: leds: Document support for generic ethernet LEDs
-Date:   Mon, 27 Mar 2023 16:10:25 +0200
-Message-Id: <20230327141031.11904-11-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v6 11/16] dt-bindings: net: ethernet-controller: Document support for LEDs node
+Date:   Mon, 27 Mar 2023 16:10:26 +0200
+Message-Id: <20230327141031.11904-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230327141031.11904-1-ansuelsmth@gmail.com>
 References: <20230327141031.11904-1-ansuelsmth@gmail.com>
@@ -90,102 +90,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for support of generic ethernet LEDs.
-These LEDs are ethernet port LED and are controllable by the ethernet
-controller or the ethernet PHY.
+Document support for LEDs node in ethernet-controller.
+Ethernet Controller may support different LEDs that can be configured
+for different operation like blinking on traffic event or port link.
 
-A port may expose multiple LEDs and reg is used to provide an index to
-differentiate them.
-Ethernet port LEDs follow generic LED implementation.
+Also add some Documentation to describe the difference of these nodes
+compared to PHY LEDs, since ethernet-controller LEDs are controllable
+by the ethernet controller regs and the possible intergated PHY doesn't
+have control on them.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- .../bindings/leds/leds-ethernet.yaml          | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/leds/leds-ethernet.yaml
+ .../devicetree/bindings/net/ethernet-controller.yaml   | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/leds/leds-ethernet.yaml b/Documentation/devicetree/bindings/leds/leds-ethernet.yaml
-new file mode 100644
-index 000000000000..0a03d65beea0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/leds-ethernet.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/leds/leds-ethernet.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 00be387984ac..e2558787531b 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -222,6 +222,16 @@ properties:
+         required:
+           - speed
+ 
++  leds:
++    description:
++      Describes the LEDs associated by Ethernet Controller.
++      These LEDs are not integrated in the PHY and PHY doesn't have any
++      control on them. Ethernet Controller regs are used to control
++      these defined LEDs.
 +
-+title: Common properties for the ethernet port LED.
++    allOf:
++      - $ref: /schemas/leds/leds-ethernet.yaml#
 +
-+maintainers:
-+  - Christian Marangi <ansuelsmth@gmail.com>
-+
-+description:
-+  Bindings for the LEDs present in ethernet port and controllable by
-+  the ethernet controller or the ethernet PHY regs.
-+
-+  These LEDs provide the same feature of a normal LED and follow
-+  the same LED definitions.
-+
-+  An ethernet port may expose multiple LEDs, reg binding is used to
-+  differentiate them.
-+
-+properties:
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+patternProperties:
-+  '^led@[a-f0-9]+$':
-+    $ref: /schemas/leds/common.yaml#
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+        description:
-+          This define the LED index in the PHY or the MAC. It's really
-+          driver dependent and required for ports that define multiple
-+          LED for the same port.
-+
-+    required:
-+      - reg
-+
-+    unevaluatedProperties: false
-+
-+required:
-+  - '#address-cells'
-+  - '#size-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/leds/common.h>
-+
-+    leds {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        led@0 {
-+            reg = <0>;
-+            color = <LED_COLOR_ID_WHITE>;
-+            function = LED_FUNCTION_LAN;
-+            function-enumerator = <1>;
-+            default-state = "keep";
-+        };
-+
-+        led@1 {
-+            reg = <1>;
-+            color = <LED_COLOR_ID_AMBER>;
-+            function = LED_FUNCTION_LAN;
-+            function-enumerator = <1>;
-+            default-state = "keep";
-+        };
-+    };
-+...
+ dependencies:
+   pcs-handle-names: [pcs-handle]
+ 
 -- 
 2.39.2
 
