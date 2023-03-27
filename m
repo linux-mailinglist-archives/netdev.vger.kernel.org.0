@@ -2,152 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B1676CA090
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 11:54:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1B46CA0B0
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 11:58:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233053AbjC0Jye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 05:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        id S233371AbjC0J6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 05:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232424AbjC0Jyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 05:54:32 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2109.outbound.protection.outlook.com [40.107.243.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B26549DD
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 02:54:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VxMsOrpgQJ+or1xENuzG1lZL3YYMz9UrmivBjoIXXLdRypgnfo2NWTfHpEgL9MILK9tngdIvz8jkYMFFCU1Tl3xGYuuuqM+j7PVHYzGJ2d9AGFE5fIlhAlVz9dGLoqg4R3HmDVNKkp9P5raLrnHGTqQWglRxRUdMvflySeAJj1IhRz7UHWmrsBWAoWo5dKCS0h7lwp5q0EhK14AoBXmoJH7yE+oZy4VAkXLoCaAzbxWIiBlhx2N6vIhGEiCpk+hlObUj+rRbLJo5bgXxRQdfbHJVQ0hon8isbzjhsTP2G9ks6lO0/IJuCrFZAlww+FDI+NoFO3dO2oSyh9EhEiZSLg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QTG9/aScWq0P7xPQpUJAMtbExVrIJBKQowCwugqEIaE=;
- b=VTsiz0C8BZ7goChrohcbmX3POyQqSL4jSfYB06pj7TwddAlT6/RI0LIkgxAdI8D+gO2Y25gq/epYhkrhteDTOVlh8tf5njWtpjdJUtwhirUdIR7dmGeaU54CqqK6XHPud4ZSrCjpaQMoAfmvZOZ+PZCS2MvMs+ACK5vKKBwJXh1jKtjP2YRuo+8tJK6XSvlFeRK9xOCJKWB88SlBW7TctU+8LaC4TFXc5Qbdql7HteZdlhhYg0uctO4f62lz5CIFZ2vy72a2xOPFGggOUXrcS2eHNi5IXB7ySkb3O7F0PGuKVyzVdorpaf/hVMHhqalgfVEi/1GGgSyn4BpJRIMvCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S233325AbjC0J6k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 05:58:40 -0400
+Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BA459C5
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 02:58:28 -0700 (PDT)
+Received: by mail-ua1-x944.google.com with SMTP id r7so5902701uaj.2
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 02:58:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QTG9/aScWq0P7xPQpUJAMtbExVrIJBKQowCwugqEIaE=;
- b=T3jFRI8boD3upBXXLaVGOe7qTcaaHunfD7NEwuhfux7kewQqq763IYZkmE1uaFoVVHSmIhLbUBXWImXArWhN3zXvqBbwcHVUAGnifEVTACE7wqt/T4/ohlXxOnL+lu6GB8U7C2BEet6cxqbDruAeAF6XAkqlpmNH6HxK1U3EdbI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB6090.namprd13.prod.outlook.com (2603:10b6:510:2bd::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Mon, 27 Mar
- 2023 09:54:29 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Mon, 27 Mar 2023
- 09:54:29 +0000
-Date:   Mon, 27 Mar 2023 11:54:20 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        "Woodhouse, David" <dwmw@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        Saeed Bshara <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>,
-        "Arinzon, David" <darinzon@amazon.com>,
-        "Itzko, Shahar" <itzko@amazon.com>,
-        "Abboud, Osama" <osamaabb@amazon.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Michal Kubiak <michal.kubiak@intel.com>
-Subject: Re: [PATCH v8 net-next 3/7] net: ena: Make few cosmetic preparations
- to support large LLQ
-Message-ID: <ZCFnzIiwgoOf+SFi@corigine.com>
-References: <20230323195923.1731790-1-shayagr@amazon.com>
- <20230323195923.1731790-4-shayagr@amazon.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230323195923.1731790-4-shayagr@amazon.com>
-X-ClientProxiedBy: AM0PR02CA0179.eurprd02.prod.outlook.com
- (2603:10a6:20b:28e::16) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        d=gmail.com; s=20210112; t=1679911107;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=BYcZPqH3I6SUi+3HZiGlz7bBbKQQVG9vXsJL8zyyX8g=;
+        b=P6uCWhHf2jb3ORI3C/HMCZ7CD0wwHp+HeoK87Ilg4GWNkgcsWS7IAuWT4spA6BT1xt
+         UhqD2JRdVSO3viSCg5KHe256b/WXM5dpgRem7cyTfl0tfhnXmRPcadqXplCUmP3ql8pD
+         W34aTsTy7QyGJwSS615do3gTNE0VBdL5YlZw7ysfdnrcO0L4iGbqp4CpVz3KhNITJpEG
+         /Lb/xqlrnw8lp1JCag1tsceeggZT+ggrV0A535PTEg0iFVJR9yisWBOtUYZ5LZsX1BEM
+         /8q7A0GqEjgBuZV0X2bwyrYtAgMkNYY+1l2PF/aUJ3AJl/1TYrFFrA9XFrTAadmJi63H
+         y4tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679911107;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BYcZPqH3I6SUi+3HZiGlz7bBbKQQVG9vXsJL8zyyX8g=;
+        b=3GG8FrRVkn0uddo3As1kZIUaEypOHKQe4Xgp9kJgqYah1L7czty85rKnvq2zyTgbQU
+         ENPHLsvSN1ncmk1ppmJn2MvON91IsHuu6S/SrDsytkG9749A++QZVGgB92A9g1fha8UZ
+         SYY+UKjS/PQ5KivViFpJtH3FOvo2h1zIZxAxBZNx42kmpMvKVlTVjVTwfce+Wy4UYwzL
+         prb7y0Jpa/mmCV91o7axmTk92X4WhyPU5FpXp8Ey+3UMGMOobiNqb7sO2heQVmknQ26K
+         wIm2lrUxYIUASG3IJDG4YktzWZVwR47N7oUZ+QWlCmt6iWrTkPzobTTfVQZ++/vWKGV/
+         Ghbg==
+X-Gm-Message-State: AAQBX9cjb5W85GEs1+2jTOnMd3VUAFZo/QEfs84O5vnLxw4mo726RoL/
+        vdwjfP3CFL9OJW0zHg3TL7IsGiuwnNrPQVNjm4A=
+X-Google-Smtp-Source: AKy350aehYmpAuUQK6bWHsG579UK/SCF/87xMhNW6I7vQUVY72IxStcb38qnMJVWk4q3/fMEjmeGOUuNGogbt6hseC8=
+X-Received: by 2002:a05:6130:2a9:b0:68a:5c52:7f2b with SMTP id
+ q41-20020a05613002a900b0068a5c527f2bmr7452968uac.1.1679911107323; Mon, 27 Mar
+ 2023 02:58:27 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH7PR13MB6090:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8653b129-1330-4e16-a868-08db2ea941fa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6fWvsGjLCSKHRheS/gEuEe+6YvaImhYqiZc4fTtxqeJStEK6JV5US6Hkt/4htqpTrBQDz7yjxb6Qb7Z5BXcOvukU9lwnMMdAtjsbksxT24xE/s6P+jJBjd9Hc3yZvqSSif3QapCKeKSVJPH9A7oH/i7ADG5aVZxNdRBR82lBjJ4P6Gu4wmDb8uHwwrl/f0B2hhkKt7KgDPI9v1ygTUiAKXKd0NE5RO5dnMAcjMU+Z2zJQM4F8l+qfFlYEPXqdJG7DRzVvHsvb4CQaVSlRgbDOYZgEjtdqzlc9Xx+177AmR7AJTQZtVnAkgJrhmYueBZfKyqZ0pCnXHLaAI32tX7N+/N64h11DI2ZdrhnG60TnwHKci6tORrp/e/KZiRla8fo4+je2QZk3f1gCmV3Hdb2hKWWJyN/ggnuLCiVTfYL/x+a8OWe+wUMFoBrh+wS4lHzUut3pZGem8LuXs+L/f8c18LIqCxqO4y8b8GwRSHMFUzgOD/Gi9XRMtVzNugcAAUfZrbf47tLkO5T3xJcNJ19mfrc0QgONR/A6CjXC2SAKR+r9M9G3moQRheLQ3vDTZWRDnJX2pf7wWdzY3KTIvyTm/NK4FL2gAsdX9b8cUtk5XI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(396003)(376002)(39840400004)(136003)(451199021)(6506007)(6666004)(186003)(66946007)(38100700002)(36756003)(54906003)(6486002)(41300700001)(316002)(8676002)(4744005)(86362001)(66476007)(8936002)(478600001)(66556008)(2906002)(6916009)(2616005)(7416002)(44832011)(4326008)(5660300002)(6512007)(83380400001)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wilPe6OqhpnqvDlJHlq16H+0n5QpURpiwsU1zrpN7IORF15bUjve4Ku+fCj2?=
- =?us-ascii?Q?FBeqYwzbhi2AbXzxs3wGnFAjgW79Kbg3NfrHGMCSgHg2gRVi1Kq0F7tYvdco?=
- =?us-ascii?Q?qEFP2y14XECamI6itjvLY5DbBsCqFc8AnPev88YGggpV9L1oHrpJGLutJMP1?=
- =?us-ascii?Q?D+RbK7717T2VTbJ8BaDD6vPMKluaexF+cc1N2A8l1RQ5ePfEByYQoHPNG9D2?=
- =?us-ascii?Q?NR75tZmtGTJ9POhgPEd2ZCAp0MpPZeB+o1Mkyec5KFnbY5X+R2ealtFyyE7s?=
- =?us-ascii?Q?k9v1h8jjk7WHpBj4jfp9AvWvKkuy4PNaDLofAZOJiuJllg+r/liAT8F7FyjE?=
- =?us-ascii?Q?+nanh96Pk/nc6BfOsbV/QdZK5qr7PoJudLmgEDDaV1IWc2A7/oTqUAE9tM/m?=
- =?us-ascii?Q?+nlg8eXfxkyXw0+I1pkKu50/rtnwPss/FlYL8/qUSiwB8ttpLVOeb5TH7xCE?=
- =?us-ascii?Q?JmSoqoL2OdtPUdhskifFaVVTuZD1foYAxwt5zENw+vMSthSJ/GssQ2log94O?=
- =?us-ascii?Q?3Esq1jfgdeSCCaHs0JHRiMwtDfG3oCyFqODoMurERuAaRS+08B4OWom6+rrc?=
- =?us-ascii?Q?I3mLVNJNb0ykD5vZgScr1zA/A7CEd4EjwYMgNsSrCI7HsjOv27hjHRUyjSgI?=
- =?us-ascii?Q?sVolgpnMkbPg5fYk7hbHOQRN8YzN9E/8qVr5cBFC3yqBJiaBHLfHvag2BXWr?=
- =?us-ascii?Q?I181eH4zGkFZXcapvEEguCB8P+y9lVE0i7NyU693PyVYFHOZQTZBJkgd1qUn?=
- =?us-ascii?Q?orFCxxMh54uPbkpqcvD+HTLh7Lc6IRdPw9hexITNIHOtydibIrQQWoXcJiqd?=
- =?us-ascii?Q?HJrTtsbvO04Dw5kjH0tl6lbX+VO7jz6ji65u6MUKlPpC5h1xqE3i7J/px+z3?=
- =?us-ascii?Q?5PM0tl9h+skaqN9pkzt+tPkFtNT+z7GhHkLeWd8NV1owOj033ac8HxZywpue?=
- =?us-ascii?Q?0pHBGYp/RWaSWg53L+gD6tC80dXJCExAaLmJTyMJ9jFgGf9MB7wthT/dob6A?=
- =?us-ascii?Q?H0cOYslAq5oz2LBTvlkFBn1MLUm4vtgEs2E2tFh+D3kQ0kG+ocRSBWHjrBvR?=
- =?us-ascii?Q?fQoRegRzvXcB9CXv71Xzc8tdY1c67qWDjwqZoQi00E2t3aNH9qc3b6jD9KBi?=
- =?us-ascii?Q?pJgp+olRtXZmDFdoTx7v+bgEN+w90ulFBCdCd4g79WileSw3pitzBpRKUkXg?=
- =?us-ascii?Q?Qz/tjlwgJ7QWx2omATmPmFgcXv+HBP6Wj8nwOn/qfW1dzwbWIcM9/IqdvzHk?=
- =?us-ascii?Q?RC704Sh+uWtPCg48YWhP1mRBagxdj7YC2zhY6RDUXOhhzExK3mDSvPzhc4KO?=
- =?us-ascii?Q?0BVFXm0j1BylNIqwOzfcQbvv6VK5x5VnisL8bc6wBD5lYN52Azbbl5jJUiNd?=
- =?us-ascii?Q?ts89eMd05flxTI0dM82HeU29+u9viOBEJJKGoFmSir1+r36/YnZ5kA3B4C1R?=
- =?us-ascii?Q?Qjc5cmh0CcrMfaYUj2v0VxGoUCn79oUZen3JA8TK7R5rytwO3Wr7ZjEt6AXm?=
- =?us-ascii?Q?dBrlvEe4TEwNi2DaETdoas/JufEGzjjzVqn6t6n4oYFdN0EkJmSZHpMMk/za?=
- =?us-ascii?Q?DTPcYZkibC3Z0J4uPNj4U9oJv32pC0+Gnmr8rN8XRb4wTnlcVGnKuryDp5O7?=
- =?us-ascii?Q?aKDqu/dOti53V4qWYy9lH+kfKJ4mrRMwemSws2ohjjP35m++1BolNbVmHvdN?=
- =?us-ascii?Q?QiUbTg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8653b129-1330-4e16-a868-08db2ea941fa
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 09:54:29.8652
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WWzqIr8gstJM+ZFNmtlCEm6RRxztXxBwffd6dPeSse9M2v0zgYKysL+0AlGn8Jkh0bqFNPFRftGcTyeDv4uTlK5P1LrMuMEB96vutTSdQyI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB6090
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Received: by 2002:ab4:1450:0:b0:351:e0de:eb1e with HTTP; Mon, 27 Mar 2023
+ 02:58:27 -0700 (PDT)
+Reply-To: annamalgorzata587@gmail.com
+From:   "Leszczynska Anna Malgorzata." <pastorwilliamleung@gmail.com>
+Date:   Mon, 27 Mar 2023 02:58:27 -0700
+Message-ID: <CACGvA98GXcPy+3gSjMWF4TjaX4AXxwmyHu+u8v+wq-u=iObjjA@mail.gmail.com>
+Subject: Mrs. Leszczynska Anna Malgorzata.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.8 required=5.0 tests=ADVANCE_FEE_5_NEW,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNDISC_FREEM,UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:944 listed in]
+        [list.dnswl.org]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [pastorwilliamleung[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [annamalgorzata587[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  0.8 ADVANCE_FEE_5_NEW Appears to be advance fee fraud (Nigerian
+        *      419)
+        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 23, 2023 at 09:59:19PM +0200, Shay Agroskin wrote:
-> Move ena_calc_io_queue_size() implementation closer to the file's
-> beginning so that it can be later called from ena_device_init()
-> function without adding a function declaration.
-> 
-> Also add an empty line at some spots to separate logical blocks in
-> funcitons.
+-- 
+I am Mrs. Leszczynska Anna Malgorzatafrom Germany . Presently admitted
+ in one of the hospitals here in Ivory Coast.
 
-nit: s/funcitons/functions/
+I and my late husband do not have any child that is why I am donating
+this money to you having known my condition that I will join my late
+husband soonest.
 
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Reviewed-by: Michal Kubiak <michal.kubiak@intel.com>
-> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+I wish to donate towards education and the less privileged I ask for
+your assistance. I am suffering from colon cancer I have some few
+weeks to live according to my doctor.
+
+The money should be used for this purpose.
+Motherless babies
+Children orphaned by aids.
+Destitute children
+Widows and Widowers.
+Children who cannot afford education.
+
+My husband stressed the importance of education and the less
+privileged I feel that this is what he would have wanted me to do with
+the money that he left for charity.
+
+These services bring so much joy to the kids. Together we are
+transforming lives and building brighter futures - but without you, it
+just would not be possible.
+I am using translation to communicate with you in case there is any
+mistake in my writing please correct me.
+Sincerely,
+
+Mrs. Leszczynska Anna Malgorzata.
