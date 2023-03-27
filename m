@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBB76CA714
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5376CA719
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232973AbjC0OMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 10:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        id S232985AbjC0OMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 10:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232734AbjC0OMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:12:03 -0400
+        with ESMTP id S232856AbjC0OMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:12:05 -0400
 Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A12155AE;
-        Mon, 27 Mar 2023 07:11:18 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id d17so8931102wrb.11;
-        Mon, 27 Mar 2023 07:11:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943725BB3;
+        Mon, 27 Mar 2023 07:11:19 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id v1so8962018wrv.1;
+        Mon, 27 Mar 2023 07:11:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679926276;
+        d=gmail.com; s=20210112; t=1679926278;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=kRx8/9Oo8Ezq1aHd7HdN9nepqFDv6AoXlmRIJbikFuk=;
-        b=PfKUtNWq3gqDlyLY18gk5tD5VBGNVZa+wUwyTRsZxYlEu9lLSZcjnS+L87V4NFXjXZ
-         auk4OEqDxDvCkNtiD8JSfLEUfddHaKdkyH4Kw1gcNZUDHmgg8YywEyQCr6FxYPcE5CoR
-         SzEI7CfGV/U5MwIkXMCaaGrnvNFR3vnw5mDtQPDY+R6r8RWUQ5JBlBy19WtY1nKTrFHX
-         ArFTcsyl7jrG3T//YctjNW+axo0FABK5GsMWPYI22/tlDafaBQKAWMLt4ig6qQr9+E2s
-         4BYh6UjHI4nFrDIyzUmZI281rUxkLbhOokfgDy/q9sRnldN8wa9y7oEKm3/0QnzxOLVu
-         Z18A==
+        bh=3Z6/vpShlUlg/J0rkwr+qjoQBR81Rffp5jMKcKsFHNI=;
+        b=lp+M6+H7U9MucCz9wGB7fQjadR8acyOZHoS+5jL8JC9QKyYD+rhj5QCH/p65CKgRmO
+         Cs3fdKAcSGfB6GafxQCHo5p0v9xzqOatsWDtbmkCiNxkIZ3SX2hwlUHjyCsS3g80bBsk
+         K2yxce0zqgXoC/8WqGrtsCyokYZIX0lEEKeerB4cLt0tgo7Gvz25e97fT3UDxa++5YVN
+         h9Sm5kJoNTVQ7Y52qSuD0c3OU+gzEmreenWyaOiduiqCDhQe0bDGJMxuLeeGsg2HA2jy
+         sTkPv45klKnzBLaiDfMBvyAZrIfEtam//It/VfMkbNBTP7jMKbgYjYya6vDowbcpGSft
+         jbQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679926276;
+        d=1e100.net; s=20210112; t=1679926278;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kRx8/9Oo8Ezq1aHd7HdN9nepqFDv6AoXlmRIJbikFuk=;
-        b=JaD0Bfe8TJwA1J+Oq3AVv0aEJPl8edt2jsxliCFNuiURCa3vXFYpiu8OvnCuNQo/XL
-         BmvtLC4lTRay/VZs7BeO0J6CQluxB5tYdiWXYJhexf8z2b+FGFliHyZ2yiyukHHOtRLd
-         WXCLUEB1BqCduD3RZAwmvmsV30v+v48YBojqQ+LudrLhKvFfESTn5m4lS6i3NAaLvZrF
-         Yxe73jvVaGyC/bs9KIJphdxE/dB0G599pPq24BI26fkiLCcueHSX7ui3ADMnh7sClF7v
-         nwRoUm8xYwA0zAYJMSsWElPOBqHaT4k9qkixC81BSpSvNnRsZIQPEPmtVIl8Ltd4Ai5s
-         1tpw==
-X-Gm-Message-State: AAQBX9do8VEpFkak3YUxZyiKAQGZPFqOfkVDj5hdvhqlsWObZACKAEr/
-        t7TBW3fmIurIJyAWJPhojFQ=
-X-Google-Smtp-Source: AKy350akHSgr93UvRjPgL/gvA9wUZIwcKGkWpcRe9ctOuZ5MGxTQvboX+44eNVzJxp6F8KtXUQBvlw==
-X-Received: by 2002:adf:f9cc:0:b0:2ce:a777:90c4 with SMTP id w12-20020adff9cc000000b002cea77790c4mr8409285wrr.31.1679926276396;
-        Mon, 27 Mar 2023 07:11:16 -0700 (PDT)
+        bh=3Z6/vpShlUlg/J0rkwr+qjoQBR81Rffp5jMKcKsFHNI=;
+        b=jRDooIU3jkfFYNYLOm8o2Vlz+pIkNLP3cMUEU1cpgHbckaRqR5xCxwOpObOW7omBtm
+         tbKCktyEEvvxZopgmB/Kz1B9QKX3D8R8ajlI6J56ve1LC1K5Ug4IAzu0/di4rR3rALZJ
+         mqQlbqlO/oQKMN4vmTGVcyeMcYQO7uw1/ywOvYatJDlaBz7aHrjaXk+mBeyi54McFBbZ
+         18i/ZK3XjcaODl6JdgTMomSYE3sbeexfwTzeEKp5+fJuvrbR21AbM8bTC2GJyXba3UAP
+         rVo6uXjdziDkiCLN8cQ6VfVnG8oUNnyRmvklGx3qHjPK9PJmhyPQYSqh1wA6FHgRkyCO
+         eN9w==
+X-Gm-Message-State: AAQBX9cP/CSuXw9sxr3ESM+Bw7UpUhlrzTWkqundYG3Y3wY5MP0iuvKx
+        re/rn7NykYTRfxpOFWd6470=
+X-Google-Smtp-Source: AKy350ZzxqZMh5iOjbZYPWRnemygLvqUrM+NlUJa3yuZXBpaPSFFJmEwwWpEF6BT0SrmHFY4iftS/g==
+X-Received: by 2002:adf:f491:0:b0:2ce:da65:12d9 with SMTP id l17-20020adff491000000b002ceda6512d9mr9863140wro.15.1679926277917;
+        Mon, 27 Mar 2023 07:11:17 -0700 (PDT)
 Received: from localhost.localdomain (93-34-89-197.ip49.fastwebnet.it. [93.34.89.197])
-        by smtp.googlemail.com with ESMTPSA id p17-20020adfcc91000000b002c71dd1109fsm25307591wrj.47.2023.03.27.07.11.14
+        by smtp.googlemail.com with ESMTPSA id p17-20020adfcc91000000b002c71dd1109fsm25307591wrj.47.2023.03.27.07.11.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 07:11:16 -0700 (PDT)
+        Mon, 27 Mar 2023 07:11:17 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -72,9 +72,9 @@ To:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org
-Subject: [net-next PATCH v6 11/16] dt-bindings: net: ethernet-controller: Document support for LEDs node
-Date:   Mon, 27 Mar 2023 16:10:26 +0200
-Message-Id: <20230327141031.11904-12-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v6 12/16] dt-bindings: net: dsa: qca8k: add LEDs definition example
+Date:   Mon, 27 Mar 2023 16:10:27 +0200
+Message-Id: <20230327141031.11904-13-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230327141031.11904-1-ansuelsmth@gmail.com>
 References: <20230327141031.11904-1-ansuelsmth@gmail.com>
@@ -90,41 +90,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document support for LEDs node in ethernet-controller.
-Ethernet Controller may support different LEDs that can be configured
-for different operation like blinking on traffic event or port link.
-
-Also add some Documentation to describe the difference of these nodes
-compared to PHY LEDs, since ethernet-controller LEDs are controllable
-by the ethernet controller regs and the possible intergated PHY doesn't
-have control on them.
+Add LEDs definition example for qca8k Switch Family to describe how they
+should be defined for a correct usage.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- .../devicetree/bindings/net/ethernet-controller.yaml   | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ .../devicetree/bindings/net/dsa/qca8k.yaml    | 24 +++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index 00be387984ac..e2558787531b 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -222,6 +222,16 @@ properties:
-         required:
-           - speed
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+index 389892592aac..ad354864187a 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
+@@ -18,6 +18,8 @@ description:
+   PHY it is connected to. In this config, an internal mdio-bus is registered and
+   the MDIO master is used for communication. Mixed external and internal
+   mdio-bus configurations are not supported by the hardware.
++  Each phy has at most 3 LEDs connected and can be declared
++  using the standard LEDs structure.
  
-+  leds:
-+    description:
-+      Describes the LEDs associated by Ethernet Controller.
-+      These LEDs are not integrated in the PHY and PHY doesn't have any
-+      control on them. Ethernet Controller regs are used to control
-+      these defined LEDs.
-+
-+    allOf:
-+      - $ref: /schemas/leds/leds-ethernet.yaml#
-+
- dependencies:
-   pcs-handle-names: [pcs-handle]
+ properties:
+   compatible:
+@@ -117,6 +119,7 @@ unevaluatedProperties: false
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/leds/common.h>
  
+     mdio {
+         #address-cells = <1>;
+@@ -226,6 +229,27 @@ examples:
+                     label = "lan1";
+                     phy-mode = "internal";
+                     phy-handle = <&internal_phy_port1>;
++
++                    leds {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++
++                        led@0 {
++                            reg = <0>;
++                            color = <LED_COLOR_ID_WHITE>;
++                            function = LED_FUNCTION_LAN;
++                            function-enumerator = <1>;
++                            default-state = "keep";
++                        };
++
++                        led@1 {
++                            reg = <1>;
++                            color = <LED_COLOR_ID_AMBER>;
++                            function = LED_FUNCTION_LAN;
++                            function-enumerator = <1>;
++                            default-state = "keep";
++                        };
++                    };
+                 };
+ 
+                 port@2 {
 -- 
 2.39.2
 
