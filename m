@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29E4E6C9E0A
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0976C9E15
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:38:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbjC0Ihv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 04:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
+        id S233274AbjC0Iih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 04:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233016AbjC0Ih3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:37:29 -0400
+        with ESMTP id S233289AbjC0IiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:38:19 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EAF76BC
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 01:32:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C157AAC
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 01:32:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=YNOkyiQLi6rsjmLS4oe/+s1BKco
-        sbWSDxtO/1EqJKJs=; b=e965lDlKU7sfdRCqt6zCCT1Mm6Hkmm444GuAhEYxWRW
-        8ErrG+r95/YWnY0YsQ/RqI+IY0ZsfZNdL5G+Gu+Av4EvpxVkQRYfFzyy8mULqO64
-        1ZHsSX4lf/pDKg5o6mRiSzkogGDzhnIUdh/v1d/0iQ0RD2hTvKERHd71+jxgbj88
-        =
-Received: (qmail 3064193 invoked from network); 27 Mar 2023 10:31:40 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 27 Mar 2023 10:31:40 +0200
-X-UD-Smtp-Session: l3s3148p1@8TNskt33wpsujnv6
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=aVuvyhKAC3iN4VeKP3wIsTfoGjND
+        VWqpZy+lP5v9nwg=; b=LBAqKoHbd85YMHIc+gavwB2Zv/he9yP5vn2JxkwA76Tg
+        +sZAVRMv2DX7xp120nCvawyFcskviiSPpyIF2HDt884shCM/koeTOsAjiFqJiozS
+        V3PuR9kfonZb3uroczdskE869m4pFN00vJf6S4cCpqY0A2uz7R8vz0dVVUVPluQ=
+Received: (qmail 3064472 invoked from network); 27 Mar 2023 10:32:22 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 27 Mar 2023 10:32:22 +0200
+X-UD-Smtp-Session: l3s3148p1@iKzzlN33lrAujnv6
+Date:   Mon, 27 Mar 2023 10:32:22 +0200
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-renesas-soc@vger.kernel.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Revert "sh_eth: remove open coded netif_running()"
+Message-ID: <ZCFUljNn2oclk3nK@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net v4] smsc911x: avoid PHY being resumed when interface is not up
-Date:   Mon, 27 Mar 2023 10:31:38 +0200
-Message-Id: <20230327083138.6044-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.30.2
+References: <20230327081933.5460-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="8eJdQj0TMrNOHpom"
+Content-Disposition: inline
+In-Reply-To: <20230327081933.5460-1-wsa+renesas@sang-engineering.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_MSPIKE_H3,
         RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
@@ -53,57 +57,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMSC911x doesn't need mdiobus suspend/resume, that's why it sets
-'mac_managed_pm'. However, setting it needs to be moved from init to
-probe, so mdiobus PM functions will really never be called (e.g. when
-the interface is not up yet during suspend/resume).
 
-Fixes: 3ce9f2bef755 ("net: smsc911x: Stop and start PHY during suspend and resume")
-Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
+--8eJdQj0TMrNOHpom
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes since v3:
-* broken out of a patch series. The other patch needs bigger rework and
-  a seperate series
-* add Simon's tag (thanks!)
+On Mon, Mar 27, 2023 at 10:19:33AM +0200, Wolfram Sang wrote:
+> This reverts commit ce1fdb065695f49ef6f126d35c1abbfe645d62d5. It turned
+> out this actually introduces a race condition. netif_running() is not a
+> suitable check for get_stats.
+>=20
+> Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
- drivers/net/ethernet/smsc/smsc911x.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Geez, I forgot 'net-next' in $subject. I need to script that somehow...
 
-diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
-index a2e511912e6a..a690d139e177 100644
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -1037,8 +1037,6 @@ static int smsc911x_mii_probe(struct net_device *dev)
- 		return ret;
- 	}
- 
--	/* Indicate that the MAC is responsible for managing PHY PM */
--	phydev->mac_managed_pm = true;
- 	phy_attached_info(phydev);
- 
- 	phy_set_max_speed(phydev, SPEED_100);
-@@ -1066,6 +1064,7 @@ static int smsc911x_mii_init(struct platform_device *pdev,
- 			     struct net_device *dev)
- {
- 	struct smsc911x_data *pdata = netdev_priv(dev);
-+	struct phy_device *phydev;
- 	int err = -ENXIO;
- 
- 	pdata->mii_bus = mdiobus_alloc();
-@@ -1108,6 +1107,10 @@ static int smsc911x_mii_init(struct platform_device *pdev,
- 		goto err_out_free_bus_2;
- 	}
- 
-+	phydev = phy_find_first(pdata->mii_bus);
-+	if (phydev)
-+		phydev->mac_managed_pm = true;
-+
- 	return 0;
- 
- err_out_free_bus_2:
--- 
-2.30.2
 
+--8eJdQj0TMrNOHpom
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQhVJYACgkQFA3kzBSg
+KbZ9xg//cBklNc7gsUajNoqwrDg7VlssJEu1Ka/JqsPRnG2UZhIUABFVopXhb/R4
+TbD0NheilEIt3AzPYTXqUuygAiMDfWCMKupHYbSXarHb0tJzk+FcO+MDNejFjyUC
+Wt43BuyVJLEopf6C6XVwXmEBc7s+9WQ66yULyzAtJZQK0b3WfFESvT3HRyleNLzN
+qn1G+vhw3r10EcsNzK7DyY2XJZCehrT0rNoWh5GDzNTodnOv0yIf+2M3mYnjupF+
+lD9bgJDHnQvtu9clwa0lyoTavB9r6ck6GC0iu1CpzvJAp4YUgg6pZMu1pRSgxOx5
+9do6k+kC0C3MpVi1LXJ0uBgWZ+ygZqL/Zkjc0Ji3hBQf6CXpHG8ofP6CVZI1UXES
+NCLIEoP9MKAnMRcaSSxmbzNuFd3LICzL+49nj8jZynj/Q0JX2e9kfPviwlqmnJP3
+QqCPf6NwWg+Y2F4iecThuVDuC/2gIS98Y2/GI0ACg0V81dDcIR8lriAHQ71V6TIw
+r/fBgBR16N5CtibD/GNhtCOtGkqHgRbGHl1L6zn2abn/WlABQwERyvX/db1usn6o
+QVqwbpkBB5k3fzYWxlFERmj6opbPhwKS0J+swR9e7UaYMNqbqpLApIElHGR4HwYJ
+MomhZLZFF28w1W9TfSBaeYaDRL+2HJ4p3PEdtlD9YAlF5IyYvAQ=
+=L1kA
+-----END PGP SIGNATURE-----
+
+--8eJdQj0TMrNOHpom--
