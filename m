@@ -2,352 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6AC6CA1D9
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 12:59:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8316CA1DF
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 13:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbjC0K7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 06:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S232178AbjC0LAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 07:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbjC0K64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 06:58:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A94E3C2A
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 03:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679914693;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NWFv7t02vS0yYyBB7zVZWHgzKmSZWKJ46Htcmvlz8e8=;
-        b=h00AGLklUspkEcTIEB6LxtWgMSI88tw7CuboVv4AkvYNtxIlZviSNTUmsvKes/V/HxOwZh
-        wZUifczd30MKIMW4QlixAHEMkic/7u44sszN7jAu1svK3A40cBZ1nbEsShtvXDb4N/y2fv
-        7DgdP6fZhQsN0mh2uK9rhy7akO+XdD8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-659-NVFXkJFmNe6gUf9kqJgVQw-1; Mon, 27 Mar 2023 06:58:10 -0400
-X-MC-Unique: NVFXkJFmNe6gUf9kqJgVQw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C49CC101A54F;
-        Mon, 27 Mar 2023 10:58:09 +0000 (UTC)
-Received: from ihuguet-laptop.redhat.com (unknown [10.39.192.123])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1199BC15BA0;
-        Mon, 27 Mar 2023 10:58:07 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Yalin Li <yalli@redhat.com>
-Subject: [PATCH v5 net-next 4/4] sfc: remove expired unicast PTP filters
-Date:   Mon, 27 Mar 2023 12:57:55 +0200
-Message-Id: <20230327105755.13949-5-ihuguet@redhat.com>
-In-Reply-To: <20230327105755.13949-1-ihuguet@redhat.com>
-References: <20230327105755.13949-1-ihuguet@redhat.com>
+        with ESMTP id S232190AbjC0LAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 07:00:03 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B298D4C1E;
+        Mon, 27 Mar 2023 03:59:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1679914798; x=1711450798;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ON4I5PtMunBXucfrOvf8QdAIsFXMKtannAGMTWJJbvs=;
+  b=iP8mgBYbUxBvJakT8x+TETbFVcpH5aADxKDhQ2OrkSf/WssIhHgVa1wA
+   nysQd92gIRL6gPgdoKyGAZzEKbXMUefbt7biWQkEQyPk4n3igYdvGg6sR
+   ZmEt/sml9wD12gVWhQti8YOP9q3QlB0zrCgx0xhp9Wj/6rq9qb/QN+I/7
+   aBPc/tFGngI+JPehAI6Muj9b9WL135g8D73vBy2qnJZr/a8/Q4bXk4XFH
+   JW79Y1ie6CvN/aXjCW/pKDvx9aJ03NjsapJjF3G/YGJuAGPk0JGv8SLGY
+   LIxk9LL4GT+cAhGjfJvMIIOWzM4u4ahK9YvfP8xANrEfMiiEuCpkLBkBb
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10661"; a="338956278"
+X-IronPort-AV: E=Sophos;i="5.98,294,1673942400"; 
+   d="scan'208";a="338956278"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 03:59:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10661"; a="1013069853"
+X-IronPort-AV: E=Sophos;i="5.98,294,1673942400"; 
+   d="scan'208";a="1013069853"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Mar 2023 03:59:55 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 27 Mar 2023 03:59:54 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 27 Mar 2023 03:59:54 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Mon, 27 Mar 2023 03:59:54 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.45) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Mon, 27 Mar 2023 03:59:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OPjKf+m/Xe15GFgOfEmWl+HOxm6kiZcr0xnVHMEQSu6VKihvwk6E7CHPlyZIJN+fIuwkW9lADfmAYwdipKRu50JlvnLgwiID2yU/iYq4PWNjuVx0oymjeYBpEJ9VAgjiKZt4XQmcS4NUzGQuGUZFX81UgQ/0k7I6uEmTUeHH17E5//kzrr9SKA+qKK1ywYteMJ5Iirs3krcSPt9X5CyMC8EZXqsdhWrwgbGZmT4JYK6VHB9pm3MsE34NLMNB56oWisjLDkImky0ZADYCp0awszNl1Q212nr9p31zsPrAvtfA1BlLs1m3KwwPqbORnPfHIo0Yyeuy+ZFzT2+cHEXwkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=83Ty5cdQJvdrBocpgk5J2TXfTH8efOdL0lxdleTNP/M=;
+ b=FxdCLVhT6A+9AVlHC3VWPl2idMj+Y1ByShpLX/KaKy9Jy0ATR5pL4jdGlLjAgfxvy3xZAJACiS+5dezYxAbsf8Qx4B65egpz9gUUMCETlii1BdcfH1lkJZ8eQSNE4pFl/J8DrlxuXXrZm/2pw0AUgalviMYfaTncdUTSfzy3RsT5Tzp8qzEm8tT8hINJBltP/1I4XGeUox4RVgF7JlsewgFzoa9EDYEds8AJJ8K9jMJ0tcF8g6nYvQvPOj51ZELjHew6bKyMX0IUgn9MeEl1CInfbFsYZxBkN9XdjBaG8BCBkjs9CJcYjtoa+7HxqoNdFFHFz3QtvD1PoYegg0WOGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5354.namprd11.prod.outlook.com (2603:10b6:408:11b::7)
+ by DS0PR11MB7577.namprd11.prod.outlook.com (2603:10b6:8:142::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Mon, 27 Mar
+ 2023 10:59:52 +0000
+Received: from BN9PR11MB5354.namprd11.prod.outlook.com
+ ([fe80::464f:1bfb:43d4:416a]) by BN9PR11MB5354.namprd11.prod.outlook.com
+ ([fe80::464f:1bfb:43d4:416a%9]) with mapi id 15.20.6222.028; Mon, 27 Mar 2023
+ 10:59:52 +0000
+From:   "Arland, ArpanaX" <arpanax.arland@intel.com>
+To:     Jakob Koschel <jkl820.git@gmail.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Pietro Borrello <borrello@diag.uniroma1.it>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        "Cristiano Giuffrida" <c.giuffrida@vu.nl>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH net v2] ice: fix invalid check for empty
+ list in ice_sched_assoc_vsi_to_agg()
+Thread-Topic: [Intel-wired-lan] [PATCH net v2] ice: fix invalid check for
+ empty list in ice_sched_assoc_vsi_to_agg()
+Thread-Index: AQHZW0BLlTZ3eq8RrkOhNPFwVJI9Ga8OfopQ
+Date:   Mon, 27 Mar 2023 10:59:52 +0000
+Message-ID: <BN9PR11MB535442A326EDAD2FFAA1588B808B9@BN9PR11MB5354.namprd11.prod.outlook.com>
+References: <20230301-ice-fix-invalid-iterator-found-check-v2-1-7a352ee4f5ac@gmail.com>
+In-Reply-To: <20230301-ice-fix-invalid-iterator-found-check-v2-1-7a352ee4f5ac@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5354:EE_|DS0PR11MB7577:EE_
+x-ms-office365-filtering-correlation-id: c9534e6f-8e1e-4558-19b0-08db2eb26424
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: I3x8+gT2m6wnsAWO4UIXfUzDsXCKi7A0XO7J3vxaQmCg9b3ZLpRa6c9dWCtBGCKJkL5h8J6TfQgdc6d3SDgNFwctQJn5c3WXzi+ZIAyOIWNXT8KfA/r9HKmVFU+KFyrwxdIQZplWuhMJqJuvS9Scyu3fs/GlyTc7oCLCL55dv7flZ5C0SIctNB/dAiymizO0zNlzwu0sHuVl2WR4KHy73wBcDjliBVXEDgWj/ZmsMf+kFX2rjF7YUgcVSNYs9sVBqHbfppjz5z0leGyzA8F7PbPkWSgHdExrEgbPE7EQngbmlAw8qx8aUSi9o6eV6NIBKGC3QNBFUHp8VCvV1lMu1GItRDlCAuqwJmCh19XW0+Ro327xcZGaZBK4LWWgxksFiyq6ig8moNZIXMkdFONgajVEg+XVlfYqEAkxb1bXS4FcZa1zKaDQaoqq4UA30yZPcMfyHXxxzjDOzrv8ebhRmen6pdCd28nbfOZDlb6urMBXHBmCHQ7IfxExlxMFmoFwi+Kzv8LgSXldHoIwwMxlp/ARZPcmW4R4SUvf8BEs1kJf8oPtRaaMnnNVJeHAWP+1ZvCIfZ6nA/DjRl5RGU6qkFPA8LvKViHVYK1JMNZ38yqBS53IhcRAzFw3jfkBEROr3fse8sUf3uCA9Hn60A7E3A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5354.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(376002)(39860400002)(346002)(396003)(366004)(451199021)(966005)(110136005)(54906003)(7696005)(71200400001)(478600001)(52536014)(53546011)(6506007)(26005)(316002)(9686003)(8676002)(64756008)(76116006)(66946007)(66476007)(4326008)(66556008)(66446008)(41300700001)(82960400001)(33656002)(122000001)(8936002)(55016003)(186003)(7416002)(5660300002)(83380400001)(2906002)(38070700005)(86362001)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?yehqsQmanS+j/qNZiBaK5uSduNlnBVQ5bVbqN7HAVp3xADWnHDa5TW/5ezSK?=
+ =?us-ascii?Q?KNzTqTiQ5xQfGNzli7MjDP5jwv9wZrvIHCMhqUksGYjEfUCJpTqf7T5ntV+s?=
+ =?us-ascii?Q?2nb1TmBHN0SLcOFkGmeRmWZ0i6PUvogyB9sFVPFJvDLgiaB8ojd/6k8WMmoA?=
+ =?us-ascii?Q?gmgQ2ddhxQTEF1oWPizjZD5B7X99cmwHDqKljZQMJbnsXTkYL9Jxk2hzH3QJ?=
+ =?us-ascii?Q?8BmEDWrYRy7Wwk5K8IofyUMLh+smIwxyB+uXap5vwNAiemLUYBXfumElzuRv?=
+ =?us-ascii?Q?v26lK5YJkinykyx3UnGM/4OyLMxf8TiyDcEA/T7hTMimjaiPoavfnn0Lw+ra?=
+ =?us-ascii?Q?mlwUw7OT9khPT2oCfnqakfcNZApIYgJxMFXjL13NULpwj8Y4u+2LyhuJ/lAo?=
+ =?us-ascii?Q?cVts3YTRfKWS63AjY35rTO1Oj7rOJ9pvaXt8XAUTAu5GqF3yLPDMolm/aTZ+?=
+ =?us-ascii?Q?USsbdWTkC3eEx69//zkp6Rw58QwrqGKbdI/5j53UYfX06mU8xzCdLO6tFNla?=
+ =?us-ascii?Q?6o9/DFFZHWiHKnYWGc5yK+qmFsqWQKaL9mTzoSOUQ3YTjWPU+ao+iqLTdE0H?=
+ =?us-ascii?Q?KkNYJ3NMwxmvfhoGz8clRAah5+fxAabIAgRxm6vUt/m+0pzcV8Q2jOQX+5iH?=
+ =?us-ascii?Q?oe6m1ufgaDfHVyM42IF6ETzMF/ACqdnJ2BIKdXHtrMdNS3nP1iuIAv0yIMyp?=
+ =?us-ascii?Q?FOHM8krM5NiCXg6PbOXGP7zp2XasIWUtahHcUTnGRdBhhQxUAR6KCE58MJWq?=
+ =?us-ascii?Q?sE3/fyUgI4bDTlbVD/Gsz4pcoSMIW/Et52hfiV25dpGsGV6052thldc2tSVb?=
+ =?us-ascii?Q?UYX8MKzsZ1mxDjs2bk1Ap/hQxg8wNkZlL5UdfLM77CrcBVsgSiTH66RcHL3x?=
+ =?us-ascii?Q?KfJVGXCq4JnnCeRsvcE0SOAk1kr5d4F+ZHv+USL4zDmWrZoNbKtqRuy2wLQs?=
+ =?us-ascii?Q?QLx/ti3tR+sH8u3rZLCeJ8NR0+ATb63LMfgqNmE1KJZUS/QEQLg/NSMGiZyo?=
+ =?us-ascii?Q?wT0XZCJPEc/jwSOQPQ133kblzzEq6RpBfExEIm5QQljGdyBA1lImQYOwIcDN?=
+ =?us-ascii?Q?Di3ZZZqJTCtxyWW11bL5wy5MVa8plWClmgtdreMbnT3IyVblOSvFs8SIBfuB?=
+ =?us-ascii?Q?fzKXcfLKP3mtHcpb/vzksphdTyxRkKyHi4hrLD9dwlQrS3LgGzNx0x9BRrWi?=
+ =?us-ascii?Q?wuUxHpO+Cx25ChCrCzuuQOaeVwgRWxIiemLb7bq8vmMbstgItbzxwYFGWUiG?=
+ =?us-ascii?Q?rPhrnQ//HJQCTOFzmcuDPA00am/uvs3uVqssy1P6BFevwamFvrm6hyKbQIY9?=
+ =?us-ascii?Q?SRdOCA/v/Q/X2fGalYw91jlXtziX4olOdJnagd7FjbR+J/7rMklJUteEx3e4?=
+ =?us-ascii?Q?AMlHugrOBpuiOheaJOg8+8PDX08S0t9ZYwTvLSQculksVp3eW1aUnUywPi5C?=
+ =?us-ascii?Q?eY1cO9IZnj2aauDgNggLg1K1C4pFKBl84W4eqI6TfGaZpimjClpJlA6rdMym?=
+ =?us-ascii?Q?/9JlJlCff01O5gLioidI6u/Qjrk////EwtVgJqlqRN44WlxpSLJx3uxpMB3d?=
+ =?us-ascii?Q?wO9yMDnu1Ut1/+Ek0Tweyk2CL8kGyheI8FTMR0u3?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5354.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9534e6f-8e1e-4558-19b0-08db2eb26424
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Mar 2023 10:59:52.1966
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HmfzmnB9UtCtZm/YTleleL8lZPfnYo8pzUSlQqvzjsagKSCA0vxkQbQ1Yee4CGdTwepJAbu6Kysot2Tf8eCfd4S+4truPRb24sdOZfXPxEA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7577
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Filters inserted to support unicast PTP mode might become unused after
-some time, so we need to remove them to avoid accumulating many of them.
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of J=
+akob Koschel
+> Sent: Monday, March 20, 2023 6:18 PM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L <an=
+thony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Eric Duma=
+zet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <p=
+abeni@redhat.com>
+> Cc: netdev@vger.kernel.org; Pietro Borrello <borrello@diag.uniroma1.it>; =
+linux-kernel@vger.kernel.org; Bos, H.J. <h.j.bos@vu.nl>; Cristiano Giuffrid=
+a <c.giuffrida@vu.nl>; intel-wired-lan@lists.osuosl.org; Jakob Koschel <jkl=
+820.git@gmail.com>
+> Subject: [Intel-wired-lan] [PATCH net v2] ice: fix invalid check for empt=
+y list in ice_sched_assoc_vsi_to_agg()
+>
+> The code implicitly assumes that the list iterator finds a correct handle=
+. If 'vsi_handle' is not found the 'old_agg_vsi_info' was pointing to an bo=
+gus memory location. For safety a separate list iterator variable should be=
+ used to make the !=3D NULL check on 'old_agg_vsi_info' correct under any c=
+ircumstances.
+>
+> Additionally Linus proposed to avoid any use of the list iterator variabl=
+e after the loop, in the attempt to move the list iterator variable declara=
+tion into the macro to avoid any potential misuse after the loop. Using it =
+in a pointer comparison after the loop is undefined behavior and should be =
+omitted if possible [1].
+>
+> Fixes: 37c592062b16 ("ice: remove the VSI info from previous agg")
+> Link: https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXP=
+wr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+> Signed-off-by: Jakob Koschel <jkl820.git@gmail.com>
+> ---
+> Changes in v2:
+> - add Fixes tag
+> - Link to v1: https://lore.kernel.org/r/20230301-ice-fix-invalid-iterator=
+-found-check-v1-1-87c26deed999@gmail.com
+> ---
+>  drivers/net/ethernet/intel/ice/ice_sched.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+>
 
-Refresh the expiration time of a filter each time it's used. Then check
-periodically if any filter hasn't been used for a long time (30s) and
-remove it.
-
-Reported-by: Yalin Li <yalli@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/ptp.c | 96 +++++++++++++++++++++++++---------
- 1 file changed, 71 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index b495f3d0616b..949299f61bdd 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -75,6 +75,9 @@
- /* How long an unmatched event or packet can be held */
- #define PKT_EVENT_LIFETIME_MS		10
- 
-+/* How long unused unicast filters can be held */
-+#define UCAST_FILTER_EXPIRY_JIFFIES	msecs_to_jiffies(30000)
-+
- /* Offsets into PTP packet for identification.  These offsets are from the
-  * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
-  * PTP V2 permit the use of IPV4 options.
-@@ -218,6 +221,7 @@ struct efx_ptp_timeset {
-  * @ether_type: Network protocol of the filter (ETHER_P_IP / ETHER_P_IPV6)
-  * @loc_port: UDP port of the filter (PTP_EVENT_PORT / PTP_GENERAL_PORT)
-  * @loc_host: IPv4/v6 address of the filter
-+ * @expiry: time when the filter expires, in jiffies
-  * @handle: Handle ID for the MCDI filters table
-  */
- struct efx_ptp_rxfilter {
-@@ -225,6 +229,7 @@ struct efx_ptp_rxfilter {
- 	__be16 ether_type;
- 	__be16 loc_port;
- 	__be32 loc_host[4];
-+	unsigned long expiry;
- 	int handle;
- };
- 
-@@ -313,6 +318,7 @@ struct efx_ptp_data {
- 	struct efx_ptp_event_rx rx_evts[MAX_RECEIVE_EVENTS];
- 	struct workqueue_struct *workwq;
- 	struct work_struct work;
-+	struct delayed_work cleanup_work;
- 	bool reset_required;
- 	struct list_head rxfilters_mcast;
- 	struct list_head rxfilters_ucast;
-@@ -1318,8 +1324,8 @@ static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
- 	local_bh_enable();
- }
- 
--static bool efx_ptp_filter_exists(struct list_head *filter_list,
--				  struct efx_filter_spec *spec)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_find_filter(struct list_head *filter_list, struct efx_filter_spec *spec)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 
-@@ -1327,10 +1333,19 @@ static bool efx_ptp_filter_exists(struct list_head *filter_list,
- 		if (rxfilter->ether_type == spec->ether_type &&
- 		    rxfilter->loc_port == spec->loc_port &&
- 		    !memcmp(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host)))
--			return true;
-+			return rxfilter;
- 	}
- 
--	return false;
-+	return NULL;
-+}
-+
-+static void efx_ptp_remove_one_filter(struct efx_nic *efx,
-+				      struct efx_ptp_rxfilter *rxfilter)
-+{
-+	efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-+				  rxfilter->handle);
-+	list_del(&rxfilter->list);
-+	kfree(rxfilter);
- }
- 
- static void efx_ptp_remove_filters(struct efx_nic *efx,
-@@ -1338,12 +1353,8 @@ static void efx_ptp_remove_filters(struct efx_nic *efx,
- {
- 	struct efx_ptp_rxfilter *rxfilter, *tmp;
- 
--	list_for_each_entry_safe(rxfilter, tmp, filter_list, list) {
--		efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
--					  rxfilter->handle);
--		list_del(&rxfilter->list);
--		kfree(rxfilter);
--	}
-+	list_for_each_entry_safe(rxfilter, tmp, filter_list, list)
-+		efx_ptp_remove_one_filter(efx, rxfilter);
- }
- 
- static void efx_ptp_init_filter(struct efx_nic *efx,
-@@ -1358,13 +1369,18 @@ static void efx_ptp_init_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_filter(struct efx_nic *efx,
- 				 struct list_head *filter_list,
--				 struct efx_filter_spec *spec)
-+				 struct efx_filter_spec *spec,
-+				 unsigned long expiry)
- {
-+	struct efx_ptp_data *ptp = efx->ptp_data;
- 	struct efx_ptp_rxfilter *rxfilter;
- 	int rc;
- 
--	if (efx_ptp_filter_exists(filter_list, spec))
-+	rxfilter = efx_ptp_find_filter(filter_list, spec);
-+	if (rxfilter) {
-+		rxfilter->expiry = expiry;
- 		return 0;
-+	}
- 
- 	rxfilter = kzalloc(sizeof(*rxfilter), GFP_KERNEL);
- 	if (!rxfilter)
-@@ -1378,8 +1394,12 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 	rxfilter->ether_type = spec->ether_type;
- 	rxfilter->loc_port = spec->loc_port;
- 	memcpy(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host));
-+	rxfilter->expiry = expiry;
- 	list_add(&rxfilter->list, filter_list);
- 
-+	queue_delayed_work(ptp->workwq, &ptp->cleanup_work,
-+			   UCAST_FILTER_EXPIRY_JIFFIES);
-+
- 	return 0;
- 
- fail:
-@@ -1389,24 +1409,26 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
- 				      struct list_head *filter_list,
--				      __be32 addr, u16 port)
-+				      __be32 addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv4_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, filter_list, &spec);
-+	return efx_ptp_insert_filter(efx, filter_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
- 				      struct list_head *filter_list,
--				      struct in6_addr *addr, u16 port)
-+				      struct in6_addr *addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv6_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, filter_list, &spec);
-+	return efx_ptp_insert_filter(efx, filter_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
-@@ -1419,7 +1441,7 @@ static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- 	efx_filter_set_eth_local(&spec, EFX_FILTER_VID_UNSPEC, addr);
- 	spec.match_flags |= EFX_FILTER_MATCH_ETHER_TYPE;
- 	spec.ether_type = htons(ETH_P_1588);
--	return efx_ptp_insert_filter(efx, &ptp->rxfilters_mcast, &spec);
-+	return efx_ptp_insert_filter(efx, &ptp->rxfilters_mcast, &spec, 0);
- }
- 
- static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
-@@ -1434,12 +1456,14 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 	 * that there is no packet re-ordering.
- 	 */
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
-@@ -1450,12 +1474,12 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 		struct in6_addr ipv6_addr = {{PTP_ADDR_IPV6}};
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_EVENT_PORT);
-+						&ipv6_addr, PTP_EVENT_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_GENERAL_PORT);
-+						&ipv6_addr, PTP_GENERAL_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
-@@ -1491,32 +1515,35 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 					 struct sk_buff *skb)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-+	unsigned long expiry;
- 	int rc;
- 
- 	if (!efx_ptp_valid_unicast_event_pkt(skb))
- 		return -EINVAL;
- 
-+	expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-+
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		__be32 addr = ip_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto out;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 	} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
- 		/* IPv6 PTP only supported by devices with MAC hw timestamp */
- 		struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto out;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 	} else {
- 		return -EOPNOTSUPP;
- 	}
-@@ -1627,6 +1654,23 @@ static void efx_ptp_worker(struct work_struct *work)
- 		efx_ptp_process_rx(efx, skb);
- }
- 
-+static void efx_ptp_cleanup_worker(struct work_struct *work)
-+{
-+	struct efx_ptp_data *ptp =
-+		container_of(work, struct efx_ptp_data, cleanup_work.work);
-+	struct efx_ptp_rxfilter *rxfilter, *tmp;
-+
-+	list_for_each_entry_safe(rxfilter, tmp, &ptp->rxfilters_ucast, list) {
-+		if (time_is_before_jiffies(rxfilter->expiry))
-+			efx_ptp_remove_one_filter(ptp->efx, rxfilter);
-+	}
-+
-+	if (!list_empty(&ptp->rxfilters_ucast)) {
-+		queue_delayed_work(ptp->workwq, &ptp->cleanup_work,
-+				   UCAST_FILTER_EXPIRY_JIFFIES + 1);
-+	}
-+}
-+
- static const struct ptp_clock_info efx_phc_clock_info = {
- 	.owner		= THIS_MODULE,
- 	.name		= "sfc",
-@@ -1685,6 +1729,7 @@ int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
- 	}
- 
- 	INIT_WORK(&ptp->work, efx_ptp_worker);
-+	INIT_DELAYED_WORK(&ptp->cleanup_work, efx_ptp_cleanup_worker);
- 	ptp->config.flags = 0;
- 	ptp->config.tx_type = HWTSTAMP_TX_OFF;
- 	ptp->config.rx_filter = HWTSTAMP_FILTER_NONE;
-@@ -1776,6 +1821,7 @@ void efx_ptp_remove(struct efx_nic *efx)
- 	(void)efx_ptp_disable(efx);
- 
- 	cancel_work_sync(&efx->ptp_data->work);
-+	cancel_delayed_work_sync(&efx->ptp_data->cleanup_work);
- 	if (efx->ptp_data->pps_workwq)
- 		cancel_work_sync(&efx->ptp_data->pps_work);
- 
--- 
-2.39.2
+Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at=
+ Intel)
 
