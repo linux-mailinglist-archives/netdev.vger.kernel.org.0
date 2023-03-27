@@ -2,116 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC176CAE01
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:56:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E005A6CAE39
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 21:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbjC0S4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 14:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
+        id S229774AbjC0TMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 15:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232318AbjC0S4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:56:17 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8108D2697;
-        Mon, 27 Mar 2023 11:56:16 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id ew6so40213031edb.7;
-        Mon, 27 Mar 2023 11:56:16 -0700 (PDT)
+        with ESMTP id S229456AbjC0TL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 15:11:59 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F94C170A
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 12:11:54 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id cj15so2144486qtb.5
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 12:11:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679943375;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=9kdFzEqP1sLEIpGSE6bD26PwKxdQuQNtb+UIdaFS6w4=;
-        b=UGymmXiuIlLml8ijpf+xg6TTWxqyOmO29fMqond0Chl519oazCi6HipKFEmbHhcRyr
-         kFd+NhLJL3R6Ik/DjNFUBBPD4ptYE7ntse3turxwUSZctRayA3G7gdNU+x0tvIG0CkdW
-         HQqz5n0+Q3XHZoIBK58G+nO3yfnyykbwx3QREmxdBgiuTe7P7XF9W3K/q4cQDrlaB25v
-         Zw+9STo270ZfEmqSBD/n63vOUPQnfgz9sijrU8Xni/DZsLb0HqhzF2VGIUYL+L6Kbllw
-         aBno+V12LnQbwPUiyVYuvTpxZM/Whl0JoawAMyrj9U+fbAl62+noh7WAqEpTD6QuKnhc
-         OiJQ==
+        d=bytedance.com; s=google; t=1679944313;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=v7QgF4SPMByI95xKzR5JGt1MbjLLP8ljYyAalP24SZ0=;
+        b=fj9ssUNvI0n6VKKx7zevE6u4UkHwEvocg0Hwc+ADRIU82d6JgjBqmN8nQCar5UMtmK
+         c3wYyRc/0lYfxRMiHLOGqojq7mSU+v0qyN7P5q793z4033nycPbedcUKGr4pQcb3/dr9
+         2AABL2LLCF3J6o49Ugq/FZHqbBDaq24f3OQfsvWOmQIgQT9L2kfL12Bcy4hiN+O+lzAt
+         dVMpMikros3nEcW9kg31ahO8Am7qSRuh3LEjDhcGT/XCCSj6+NyX3/ohlvdd0U3ylYHD
+         1ESXpfdvTsQ5mczGInyzTOkj43Ug0vegCxekafyazAeF9TlncJbddRnDRwvLnPXkKkjm
+         3VHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679943375;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9kdFzEqP1sLEIpGSE6bD26PwKxdQuQNtb+UIdaFS6w4=;
-        b=JSnDKtWUCyhTx2b46w0YCs49Pra82ie8A40mc8EOBE9CY1hs96icN21ciXhEyXv3QG
-         CSOLlycsJkDk/m0hrDMYyykTbpSCg3T6ywMOU4mwJRjhS5TLjkdHSlgd9LkvVVq/GAGS
-         4Eo16qxTSAZVclDGOq/eJ8hbWuxIOMk+BMgI0jl+0i+7T3GpzGxM8n+l/W8TiqlYpTa9
-         jMZNpsoOjWV2d/aE1sUhXJQQLAkxa16Sn6sDWNppRr3tMqqlyJac5Fe8l9QzzoSN8/mW
-         dqHp1K+QLYWeyWYwXtMRDh5HRpYhCB9OsnTNgt9sE3PJFHb7zrs2U/J9yUbO506AygJh
-         FYiw==
-X-Gm-Message-State: AAQBX9fVGrs5QLUkNXfJmM9gKIPYdgqlYBfcn/xX4ausXFETARPeX5UU
-        8HMIo3+cmkC1uAv7VS4GUfY=
-X-Google-Smtp-Source: AKy350YAx3rW1SyuJCnBZhBxCFQ7rsS3Tq/yQDzMp69TUHeQbWPH6REg0eDj/nLcvQWAEZQjxF/XiQ==
-X-Received: by 2002:a17:907:8687:b0:933:499e:62a7 with SMTP id qa7-20020a170907868700b00933499e62a7mr16565873ejc.49.1679943374605;
-        Mon, 27 Mar 2023 11:56:14 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id u27-20020a170906069b00b00923bb9f0c36sm14288264ejb.127.2023.03.27.11.56.13
+        d=1e100.net; s=20210112; t=1679944313;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=v7QgF4SPMByI95xKzR5JGt1MbjLLP8ljYyAalP24SZ0=;
+        b=ZejlOoAkuBz5WDAB4S8tglHrtkDB5f7DBB5CGoEOEbPRsl81q1iMSjN5SIZUlgGdqx
+         iUWfEu+OVaE5aN5p1vadclb3PSzHjS7A6olgIpNiIMNl+mFv0SMmN1HYU1amzaAljloE
+         iv9wgWnKRLqFc1lhnNjjXByKk7whp3BKH6kz5trQeKMKFbRaN+F2XypKmy4swok9ZT7j
+         j3Tqdca1Ekq8JWEncczwac/5egVb56HtbQ/u4owmCfSHI4f/TDwSepOBrdpbIy7wGYgK
+         9QX9/5BlxvTZbK2qDHvjkzTYMj+vfGZxnAHtdJUXj2o1TGAOqIjySAVkQAlFZf7vZ8QT
+         Z/qw==
+X-Gm-Message-State: AAQBX9e36uYanZYgC/0kDXuaoe+iyw8dfE6PDc4EZl7BnpADoh0nX6rr
+        jHUWmQAras91R4ewWmaH5LzslA==
+X-Google-Smtp-Source: AKy350bgbPKaehPavn4jrWcChc00F0kRsdrrQ9tfFTF5o7GVzpAXwL0VK3B2pUdIMuH1t8ze8fyp6w==
+X-Received: by 2002:ac8:5f53:0:b0:3e4:e58c:d321 with SMTP id y19-20020ac85f53000000b003e4e58cd321mr9356681qta.33.1679944313444;
+        Mon, 27 Mar 2023 12:11:53 -0700 (PDT)
+Received: from [172.17.0.3] ([130.44.215.126])
+        by smtp.gmail.com with ESMTPSA id d185-20020a37b4c2000000b007425ef4cbc2sm16989236qkf.100.2023.03.27.12.11.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 11:56:14 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 21:56:11 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     arinc9.unal@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Mon, 27 Mar 2023 12:11:52 -0700 (PDT)
+From:   Bobby Eshleman <bobby.eshleman@bytedance.com>
+Subject: [PATCH net-next v4 0/3] Add support for sockmap to vsock.
+Date:   Mon, 27 Mar 2023 19:11:50 +0000
+Message-Id: <20230327-vsock-sockmap-v4-0-c62b7cd92a85@bytedance.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAHbqIWQC/1WNQQrCMBBFr1Jm7eCYBIpeRVxkpqMNYloypRRK7
+ 27izs2HB//xdjAtSQ1u3Q5F12RpyhXCqQMZY34ppqEyOHKevOtxtUne2OYTZ/TEdCXpSYYLVIe
+ jKXKJWcZmcThz+Ffaay76TNuveoesC2bdFngcxxfYw958jwAAAA==
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net 3/7] net: dsa: mt7530: do not run
- mt7530_setup_port5() if port 5 is disabled
-Message-ID: <20230327185611.gjwlrmhaiorfpj5q@skbuf>
-References: <20230326140818.246575-1-arinc.unal@arinc9.com>
- <20230326140818.246575-1-arinc.unal@arinc9.com>
- <20230326140818.246575-4-arinc.unal@arinc9.com>
- <20230326140818.246575-4-arinc.unal@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230326140818.246575-4-arinc.unal@arinc9.com>
- <20230326140818.246575-4-arinc.unal@arinc9.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+X-Mailer: b4 0.12.2
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 05:08:14PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> There's no need to run all the code on mt7530_setup_port5() if port 5 is
-> disabled. Run mt7530_setup_port5() if priv->p5_intf_sel is not P5_DISABLED
-> and remove the P5_DISABLED case from mt7530_setup_port5().
-> 
-> Stop initialising the interface variable as the remaining cases will always
-> call mt7530_setup_port5() with it initialised.
-> 
-> Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
+We're testing usage of vsock as a way to redirect guest-local UDS
+requests to the host and this patch series greatly improves the
+performance of such a setup.
 
-Again, not sure what is the problem, and how this solution addresses
-that problem. I see Fixes tags for all patches, but I don't understand
-what they fix, what didn't work before that works now?
+Compared to copying packets via userspace, this improves throughput by
+121% in basic testing.
+
+Tested as follows.
+
+Setup: guest unix dgram sender -> guest vsock redirector -> host vsock
+       server
+Threads: 1
+Payload: 64k
+No sockmap:
+- 76.3 MB/s
+- The guest vsock redirector was
+  "socat VSOCK-CONNECT:2:1234 UNIX-RECV:/path/to/sock"
+Using sockmap (this patch):
+- 168.8 MB/s (+121%)
+- The guest redirector was a simple sockmap echo server,
+  redirecting unix ingress to vsock 2:1234 egress.
+- Same sender and server programs
+
+*Note: these numbers are from RFC v1
+
+Only the virtio transport has been tested. The loopback transport was
+used in writing bpf/selftests, but not thoroughly tested otherwise.
+
+This series requires the skb patch.
+
+Changes in v4:
+- af_vsock: fix parameter alignment in vsock_dgram_recvmsg()
+- af_vsock: add TCP_ESTABLISHED comment in vsock_dgram_connect()
+- vsock/bpf: change ret type to bool
+
+Changes in v3:
+- vsock/bpf: Refactor wait logic in vsock_bpf_recvmsg() to avoid
+  backwards goto
+- vsock/bpf: Check psock before acquiring slock
+- vsock/bpf: Return bool instead of int of 0 or 1
+- vsock/bpf: Wrap macro args __sk/__psock in parens
+- vsock/bpf: Place comment trailer */ on separate line
+
+Changes in v2:
+- vsock/bpf: rename vsock_dgram_* -> vsock_*
+- vsock/bpf: change sk_psock_{get,put} and {lock,release}_sock() order
+  to minimize slock hold time
+- vsock/bpf: use "new style" wait
+- vsock/bpf: fix bug in wait log
+- vsock/bpf: add check that recvmsg sk_type is one dgram, seqpacket, or
+  stream.  Return error if not one of the three.
+- virtio/vsock: comment __skb_recv_datagram() usage
+- virtio/vsock: do not init copied in read_skb()
+- vsock/bpf: add ifdef guard around struct proto in dgram_recvmsg()
+- selftests/bpf: add vsock loopback config for aarch64
+- selftests/bpf: add vsock loopback config for s390x
+- selftests/bpf: remove vsock device from vmtest.sh qemu machine
+- selftests/bpf: remove CONFIG_VIRTIO_VSOCKETS=y from config.x86_64
+- vsock/bpf: move transport-related (e.g., if (!vsk->transport)) checks
+  out of fast path
+
+Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+---
+Bobby Eshleman (3):
+      vsock: support sockmap
+      selftests/bpf: add vsock to vmtest.sh
+      selftests/bpf: add a test case for vsock sockmap
+
+ drivers/vhost/vsock.c                              |   1 +
+ include/linux/virtio_vsock.h                       |   1 +
+ include/net/af_vsock.h                             |  17 ++
+ net/vmw_vsock/Makefile                             |   1 +
+ net/vmw_vsock/af_vsock.c                           |  64 +++++++-
+ net/vmw_vsock/virtio_transport.c                   |   2 +
+ net/vmw_vsock/virtio_transport_common.c            |  25 +++
+ net/vmw_vsock/vsock_bpf.c                          | 174 +++++++++++++++++++++
+ net/vmw_vsock/vsock_loopback.c                     |   2 +
+ tools/testing/selftests/bpf/config.aarch64         |   2 +
+ tools/testing/selftests/bpf/config.s390x           |   3 +
+ tools/testing/selftests/bpf/config.x86_64          |   3 +
+ .../selftests/bpf/prog_tests/sockmap_listen.c      | 163 +++++++++++++++++++
+ 13 files changed, 452 insertions(+), 6 deletions(-)
+---
+base-commit: e5b42483ccce50d5b957f474fd332afd4ef0c27b
+change-id: 20230327-vsock-sockmap-30b090c70cd1
+
+Best regards,
+-- 
+Bobby Eshleman <bobby.eshleman@bytedance.com>
+
