@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA006C9D11
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E276C9D0E
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbjC0IA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 04:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57478 "EHLO
+        id S232932AbjC0IAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 04:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbjC0IAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:00:23 -0400
+        with ESMTP id S232900AbjC0IAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:00:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417E44693
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 01:00:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DAB4685;
+        Mon, 27 Mar 2023 01:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F0661052
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 08:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0EE0BC433A4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3FCF61042;
         Mon, 27 Mar 2023 08:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F2B68C433EF;
+        Mon, 27 Mar 2023 08:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1679904019;
-        bh=uc5vOpc06rPCMFW+xrq9g/IO6bkO2KTY7TXgmSDxL7o=;
+        bh=9ySR9UOyQlkYt24hLL/e6CMGlP26H3qYJtgXugM5zcU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aL2r7DG3us4syUGpoEH/7GCL6l9lZAhgpsUFtIA9jlcurxG4IKSjnrwq4bZ5UWUXb
-         lAwy+kLPf/e2uRsSrWpQ/zvRkChVburBBzur8vqTtoBr/g5K02xg6Tex0bSvWy+2kr
-         htHglOLOWs12BQe+xW+VwdNj0fm4Dmdid4yCnUdEAO14qy7gu7ttEO2TgQ6YKUcOLW
-         FbM8Tv1bgNxt0qDXUvgLRMahwzncCsxGkd89xLBjkA4Y/meTADm+S7S2zc0tXik7Du
-         XQPzBCDa8d1jRSTNbdHmRLOZblvzS6lxbc//gO0Idv2vLN0nPC9YnBVc7tih4bmKWd
-         Fh7gOWCHeu3pQ==
+        b=uB3GfZls10PqB/xYkP24YnAoaMwSAG/vZuMow7pMO/ybMhoXDP7xVEjH97nS4r14N
+         XrnJzJ+9OXnUHDzAGMQpTWf/JNwS6BmLwx6NfpKEv+x+Px009QowDFacqLu93vvfyj
+         wSTK9GBicTkNPiP3rgPpbipdo2Fkl2d1bD8Gss8/qmhcuu4CA6MHCHAF/HiWYJJ6Zp
+         a7ycocGCrvEnylf6X+Geitwic8cO+UKeqTGSkwcMIUQ9Pf9HCSVE4q0/rTRy7i+1Kn
+         BO/eHnrryRROdxg+il8C4Goi37R7QGgTkaukS+tsTK1USzW3/G5hyQs2YMoLAkargE
+         rfmR8p/IFuJcw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DFDF3E4D029;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D63F9E4D02F;
         Mon, 27 Mar 2023 08:00:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4] tools: ynl: Add missing types to encode/decode
+Subject: Re: [PATCH net-next] selftests: tls: add a test for queuing data before
+ setting the ULP
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167990401891.27318.17495811832218442091.git-patchwork-notify@kernel.org>
+Message-Id: <167990401887.27318.15104190928200538935.git-patchwork-notify@kernel.org>
 Date:   Mon, 27 Mar 2023 08:00:18 +0000
-References: <20230324175258.25145-1-michal.michalik@intel.com>
-In-Reply-To: <20230324175258.25145-1-michal.michalik@intel.com>
-To:     Michal Michalik <michal.michalik@intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
+References: <20230324181757.2407412-1-kuba@kernel.org>
+In-Reply-To: <20230324181757.2407412-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
 X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -60,26 +62,21 @@ Hello:
 This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 24 Mar 2023 18:52:58 +0100 you wrote:
-> While testing the tool I noticed we miss the u16 type on payload create.
-> On the code inspection it turned out we miss also u64 - add them.
+On Fri, 24 Mar 2023 11:17:57 -0700 you wrote:
+> Other tests set up the connection fully on both ends before
+> communicating any data. Add a test which will queue up TLS
+> records to TCP before the TLS ULP is installed.
 > 
-> We also miss the decoding of u16 despite the fact `NlAttr` class
-> supports it - add it.
-> 
-> Signed-off-by: Michal Michalik <michal.michalik@intel.com>
-> --
-> v4:
-> - remove `Fixes:` tag since no code is using that now
-> - rebased to latest tree
-> v3: change tree `net` -> `net-next`
-> v2: add a `Fixes:` tag to the commit message
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: shuah@kernel.org
+> CC: linux-kselftest@vger.kernel.org
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v4] tools: ynl: Add missing types to encode/decode
-    https://git.kernel.org/netdev/net-next/c/dd3a7d58dcc2
+  - [net-next] selftests: tls: add a test for queuing data before setting the ULP
+    https://git.kernel.org/netdev/net-next/c/a504d246d212
 
 You are awesome, thank you!
 -- 
