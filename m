@@ -2,170 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A49E56CA2DA
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 13:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8666CA45B
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 14:45:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232528AbjC0LwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 07:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
+        id S232260AbjC0MpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 08:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbjC0LwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 07:52:13 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8672D4E;
-        Mon, 27 Mar 2023 04:52:11 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id b20so35074626edd.1;
-        Mon, 27 Mar 2023 04:52:11 -0700 (PDT)
+        with ESMTP id S230351AbjC0MpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 08:45:08 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACFA40DF;
+        Mon, 27 Mar 2023 05:45:06 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id gp15-20020a17090adf0f00b0023d1bbd9f9eso11721841pjb.0;
+        Mon, 27 Mar 2023 05:45:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679917930;
+        d=gmail.com; s=20210112; t=1679921106;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=reW1DVwM1zk8Q9iqp1u3bB31mlwrsAJaRz6RuSIoXIU=;
-        b=M1zZJS7aR62kTdJ1jkufI//A+r0KrxQx24PFXrRWBX2xnMPE6tABYKqI2H4s2xqk3u
-         lx715LjMHeL8JxddEDtGvf2MqmMZJu6/KNdO1igiaFxZyAKXsKvr02xlpfrVKi8TevBp
-         QR9RxKgUwi/MVBJ1Axaj3wUOgXnTbx3ATx3JvSxb7YnmtnYvKvq9MCSEU+5gtUju8znz
-         gjDAS/0UoZyMaEr1mmzJnF0mhrczZe+NnIt+99HuglMce8Q5Zattl2b85mo1jKFyfBOO
-         rkOXXjLLpDbqJTJ0hIeVxNAszfJyAi/5uEwHLIePTh+Q+hEKTm+896smc6GdIy8TqZA2
-         1j3Q==
+        bh=CfnHyaaBH+Lk9iWABIQalbJ32qbFAoxiTvidJWprhp8=;
+        b=NNxARsSVi+Vf8UNk8EQ9Q9/8OjYeMe26RXINidqLbbXrCuOsIJdftNQ8upuPFiTPLc
+         zfTeZzaKBWmwc+pLglgVnBP6OH2OixtLKlDz7gdjv6WGv/QooAQlBR3sK3OgP+9FXfvJ
+         sxTCa4DSP+5rxehV3A3qADQefIuOG4Ak99AMU07TYrf3f1hYapnS3wSRSTxceInhdCpX
+         VJTPhIFVzxZgOnpsrX7fmrEUmK3aJqnUtErZfTNAf42RFrZjb0m6fWxw9ogK34CWaaSb
+         I5srQiYz805zdd1hg0zWrvUf8iyRtQaS7nLa29U8JGPSwmlJKu0lhmHwmAwwLBvM3FK6
+         iyIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679917930;
+        d=1e100.net; s=20210112; t=1679921106;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=reW1DVwM1zk8Q9iqp1u3bB31mlwrsAJaRz6RuSIoXIU=;
-        b=D6OM1Zi6k6nPPIxloeJYYYjVWh5RMMAkGgqFNEZDlSAl5D4fv4h8HCh8e1kq46gZUy
-         qvLs9B69xumxt82e71w3yV1V6YEbyu2SLB425nOgIM+KjQEIfHNKa2CB7ChwTGTDbRTc
-         NgUdt2HVWjsyvq5fZEjNrUUoxbEmlNMvXoXcKwugPdIzXhANeTECo99QqWF5j/5hBG0A
-         fSJRZwapD1iWdU+BC6+MUrOikeitKpHZn0+RgtOsyFgICzjeyX1TlHc6oUFUK8iNZ5CB
-         sLCslAX/utQLKjcZckNjYEDfOSBeSQYR+wU78qin3ZKMBANpT9E3Y8JMCsIxDSDytt7b
-         W2YQ==
-X-Gm-Message-State: AAQBX9c+4AkR+WAGQ1izFK+HL1SrIrPkDSPUW9SGrlBe/oMoNoR58XAN
-        Dt9h0CXdIdimv5zCcdk9VSI=
-X-Google-Smtp-Source: AKy350bLfbg96/HAe8yX3pMOfueGxTBs/7BRBWdpqdBgFhAsQdsRhKDSQbhmFu49387GoBMY7YjoZQ==
-X-Received: by 2002:a17:906:7090:b0:885:a62c:5a5c with SMTP id b16-20020a170906709000b00885a62c5a5cmr11379251ejk.46.1679917930144;
-        Mon, 27 Mar 2023 04:52:10 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id y4-20020a17090629c400b0092fdb0b2e5dsm14067388eje.93.2023.03.27.04.52.08
+        bh=CfnHyaaBH+Lk9iWABIQalbJ32qbFAoxiTvidJWprhp8=;
+        b=uT4h4LQABPjyvV9DifsoVhDiOTLrMLzp78PBQYspBG3HVfz5ycXat5UO1TQMIDJ03T
+         zVE2R9ha6tIUCZnsmfE2dO0k/VGN7KkNl4zEYp/TIN3zC8MzDAQPZFC2rXF4mW22Ffc+
+         kTDH15AzA+WWp94KZkJdHFgejy1QUcYSWUXfRyfi0MJBgqQqk1+rs439+Gm+5iF/boXc
+         VzfGtVmUTWA+cqeawKA3KjDl9AyWEobrX+YmrhdeBEHMTbzE3UbjZVXD/v4RTKJD1w8j
+         y83oWbHiMX8dtH6Py5mUDC2t/72HnPu3uMFBNnmQWudkFvLAUC+XnS8T/NsDRHAz4AQG
+         GJBg==
+X-Gm-Message-State: AAQBX9eHey9sMB9u6sx2DtT8GUAXFioMKMwzTW/nN6rWf+w4tVUY3tjA
+        FCmek3XLGw+RfznJsnvchPM=
+X-Google-Smtp-Source: AKy350a354fPptjXr9CCSC0YCaAVEB1MwOJCcjrJDLqV5X6Lj0XRJ5MmqLZMXVU25Yk8sR1peeymTQ==
+X-Received: by 2002:a17:902:ec91:b0:1a1:dd3a:7509 with SMTP id x17-20020a170902ec9100b001a1dd3a7509mr14214042plg.48.1679921106075;
+        Mon, 27 Mar 2023 05:45:06 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-75.three.co.id. [180.214.233.75])
+        by smtp.gmail.com with ESMTPSA id d9-20020a170902854900b0019c61616f82sm19084100plo.230.2023.03.27.05.45.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 04:52:09 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 14:52:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "Hans J. Schultz" <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Mon, 27 Mar 2023 05:45:05 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 2CC41106758; Mon, 27 Mar 2023 19:45:00 +0700 (WIB)
+Date:   Mon, 27 Mar 2023 19:44:59 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Donald Hunter <donald.hunter@gmail.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 2/6] net: dsa: propagate flags down towards
- drivers
-Message-ID: <20230327115206.jk5q5l753aoelwus@skbuf>
-References: <20230318141010.513424-1-netdev@kapio-technology.com>
- <20230318141010.513424-3-netdev@kapio-technology.com>
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     donald.hunter@redhat.com
+Subject: Re: [PATCH net-next v5 6/7] docs: netlink: document struct support
+ for genetlink-legacy
+Message-ID: <ZCGPy+90DsRpsicj@debian.me>
+References: <20230327083138.96044-1-donald.hunter@gmail.com>
+ <20230327083138.96044-7-donald.hunter@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nh5IJXJhvW4Mxisv"
 Content-Disposition: inline
-In-Reply-To: <20230318141010.513424-3-netdev@kapio-technology.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+In-Reply-To: <20230327083138.96044-7-donald.hunter@gmail.com>
+X-Spam-Status: No, score=1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 18, 2023 at 03:10:06PM +0100, Hans J. Schultz wrote:
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index e5f156940c67..c07a2e225ae5 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -626,6 +626,12 @@ static int dsa_switch_setup(struct dsa_switch *ds)
->  
->  	ds->configure_vlan_while_not_filtering = true;
->  
-> +	/* Since dynamic FDB entries are legacy, all switch drivers should
-> +	 * support the flag at least by just installing a static entry and
-> +	 * letting the bridge age it.
-> +	 */
-> +	ds->supported_fdb_flags = DSA_FDB_FLAG_DYNAMIC;
 
-I believe that switchdev has a structural problem in the fact that FDB
-entries with flags that aren't interpreted by drivers (so they don't
-know if those flags are set or unset) are still passed to the switchdev
-notifier chains by default.
+--nh5IJXJhvW4Mxisv
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I don't believe that anybody used 'bridge fdb add <mac> <dev> master dynamic"
-while relying on a static FDB entry in the DSA offloaded data path.
-
-Just like commit 6ab4c3117aec ("net: bridge: don't notify switchdev for
-local FDB addresses"), we could deny that for stable kernels, and add
-the correct interpretation of the flag in net-next.
-
-Ido, Nikolay, Roopa, Jiri, thoughts?
-
+On Mon, Mar 27, 2023 at 09:31:37AM +0100, Donald Hunter wrote:
+> diff --git a/Documentation/userspace-api/netlink/genetlink-legacy.rst b/D=
+ocumentation/userspace-api/netlink/genetlink-legacy.rst
+> index 3bf0bcdf21d8..b8fdcf7f6615 100644
+> --- a/Documentation/userspace-api/netlink/genetlink-legacy.rst
+> +++ b/Documentation/userspace-api/netlink/genetlink-legacy.rst
+> @@ -162,9 +162,77 @@ Other quirks (todo)
+>  Structures
+>  ----------
+> =20
+> -Legacy families can define C structures both to be used as the contents
+> -of an attribute and as a fixed message header. The plan is to define
+> -the structs in ``definitions`` and link the appropriate attrs.
+> +Legacy families can define C structures both to be used as the contents =
+of
+> +an attribute and as a fixed message header. Structures are defined in
+> +``definitions``  and referenced in operations or attributes. Note that
+> +structures defined in YAML are implicitly packed according to C
+> +conventions. For example, the following struct is 4 bytes, not 6 bytes:
 > +
->  	err = ds->ops->setup(ds);
->  	if (err < 0)
->  		goto unregister_notifier;
+> +.. code-block:: c
+> +
+> +  struct {
+> +          u8 a;
+> +          u16 b;
+> +          u8 c;
+> +  }
+> +
+> +Any padding must be explicitly added and C-like languages should infer t=
+he
+> +need for explicit padding from whether the members are naturally aligned.
+> +
+> +Here is the struct definition from above, declared in YAML:
+> +
+> +.. code-block:: yaml
+> +
+> +  definitions:
+> +    -
+> +      name: message-header
+> +      type: struct
+> +      members:
+> +        -
+> +          name: a
+> +          type: u8
+> +        -
+> +          name: b
+> +          type: u16
+> +        -
+> +          name: c
+> +          type: u8
+> +
 
-By the way, there is a behavior change here.
+Nit: The indentation for code-block codes should be relative to
+code-block:: declaration (e.g. if it starts from column 4, the first
+column of code is also at 4).
 
-Before:
+> +Fixed Headers
+> +~~~~~~~~~~~~~
+> +
+> +Fixed message headers can be added to operations using ``fixed-header``.
+> +The default ``fixed-header`` can be set in ``operations`` and it can be =
+set
+> +or overridden for each operation.
+> +
+> +.. code-block:: yaml
+> +
+> +  operations:
+> +    fixed-header: message-header
+> +    list:
+> +      -
+> +        name: get
+> +        fixed-header: custom-header
+> +        attribute-set: message-attrs
+> +
+> +Attributes
+> +~~~~~~~~~~
+> +
+> +A ``binary`` attribute can be interpreted as a C structure using a
+> +``struct`` property with the name of the structure definition. The
+> +``struct`` property implies ``sub-type: struct`` so it is not necessary =
+to
+> +specify a sub-type.
+> +
+> +.. code-block:: yaml
+> +
+> +  attribute-sets:
+> +    -
+> +      name: stats-attrs
+> +      attributes:
+> +        -
+> +          name: stats
+> +          type: binary
+> +          struct: vport-stats
+> =20
+>  Multi-message DO
+>  ----------------
 
-$ ip link add br0 type bridge && ip link set br0 up
-$ ip link set swp0 master br0 && ip link set swp0 up
-$ bridge fdb add dev swp0 00:01:02:03:04:05 master dynamic
-[   70.010181] mscc_felix 0000:00:00.5: felix_fdb_add: port 0 addr 00:01:02:03:04:05 vid 0
-[   70.019105] mscc_felix 0000:00:00.5: felix_fdb_add: port 0 addr 00:01:02:03:04:05 vid 1
-.... 5 minutes later
-[  371.686935] mscc_felix 0000:00:00.5: felix_fdb_del: port 0 addr 00:01:02:03:04:05 vid 1
-[  371.695449] mscc_felix 0000:00:00.5: felix_fdb_del: port 0 addr 00:01:02:03:04:05 vid 0
-$ bridge fdb | grep 00:01:02:03:04:05
+Otherwise LGTM, thanks!
 
-After:
+Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-$ ip link add br0 type bridge && ip link set br0 up
-$ ip link set swp0 master br0 && ip link set swp0 up
-$ bridge fdb add dev swp0 00:01:02:03:04:05 master dynamic
-[  222.071492] mscc_felix 0000:00:00.5: felix_fdb_add: port 0 addr 00:01:02:03:04:05 vid 0 flags 0x1
-[  222.081154] mscc_felix 0000:00:00.5: felix_fdb_add: port 0 addr 00:01:02:03:04:05 vid 1 flags 0x1
-.... 5 minutes later
-$ bridge fdb | grep 00:01:02:03:04:05
-00:01:02:03:04:05 dev swp0 vlan 1 offload master br0 stale
-00:01:02:03:04:05 dev swp0 offload master br0 stale
-00:01:02:03:04:05 dev swp0 vlan 1 self
-00:01:02:03:04:05 dev swp0 self
+--=20
+An old man doll... just what I always wanted! - Clara
 
-As you can see, the behavior is not identical, and it made more sense
-before.
+--nh5IJXJhvW4Mxisv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZCGPxwAKCRD2uYlJVVFO
+o7dAAP9Kl/eouvxC4qUIM4eux+mH7G2CdpTE5COhvkjWprES6QEAmcdj2JAO+3BF
+lYWIetPQF8ppzikEZ8Np6UDuXZInfAQ=
+=Sjt1
+-----END PGP SIGNATURE-----
+
+--nh5IJXJhvW4Mxisv--
