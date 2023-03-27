@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B186F6C9E0E
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7916C9E10
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbjC0IiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 04:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S233072AbjC0IiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 04:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233029AbjC0Iha (ORCPT
+        with ESMTP id S233035AbjC0Iha (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:37:30 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93617A247;
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D05A24B;
         Mon, 27 Mar 2023 01:32:03 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id l12so7748626wrm.10;
+Received: by mail-wr1-x434.google.com with SMTP id l27so7783434wrb.2;
         Mon, 27 Mar 2023 01:32:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679905920;
+        d=gmail.com; s=20210112; t=1679905922;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=baO/JoV/iXYEzhQwMlu7mnvyc24+QpS7jNnl+nSC1E8=;
-        b=YtQgmvrLx05oF7czPID/aIMRXHg4M3b3SCDAKauuwd7AQhSEnAkNVDUAw6lknTbbOa
-         S5zHpg4wSdLaMljnUEq5os+BTLyc+Z4cLfOlI15gtIiGgGJeGsowlpmTRHDrruHoDwSG
-         70efjXBcJPEhXFkzisdQREVMXf36rkBhmrViCE3AdKLYe59kRdE4C9MzsOXIBqZrCCoc
-         Y1eTgWSg4Jv4vPqmBEUvWAaJozR98cIqmudrMzwzqNfiQPhKiUzC/i3Ro4U/DbMSya1s
-         bbx/Vy00Gw7RZQvuiK5refBM6UzHeHF1/N1t9B7ki0QFU1gaEVJTMFUhr2mI9oGgmuWX
-         x5Pg==
+        bh=71KoEvNw1a5K58EQ9MffE/8r5VSXHU8fzu2wgupbboU=;
+        b=J4RsoRpBnwN1MqbboCHaHWoIINzGdRVo7e+jhZ+2JH7+YVu8z/mUJO5beVgJZmmx5y
+         O3EArjWy5A7cubyHbMv5vYaMLQs67VBGcKnT8jJGrdSAhENwCQzvndRIWkFt0ZT4wQN0
+         PV48JFRZiYwKl+OYU68DnCUyphLMngKVp6Afu6U+aykBAOd5y2OMThul+JrmmpyD79yL
+         +WuGb1YBKG5Se3RtW6vLB4kkMl7YUr4OdflJFaDr8fCtoqJNyB5ZfKXEnLJMgbBWSe2d
+         sy2/MFmGJzYZcvRxdO2AmQzwX44/pcTirBe4a6iGMIlAPW9QqOcf943M97m/xEZGE1G1
+         7G8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679905920;
+        d=1e100.net; s=20210112; t=1679905922;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=baO/JoV/iXYEzhQwMlu7mnvyc24+QpS7jNnl+nSC1E8=;
-        b=XMhOA2gYEq6MjOXRhzBW0xbLa7P+CNuqFko5dqEc+D2eA8iSCYR+0wfCPOjzaF2gqQ
-         acUw3zDXeR84kusR5BZYRDoFXsXZpum9RSas4p2y59Z7pQUoPDt7YT5lQ8rys7PAwwHo
-         4Ke/sZi9NbPIqxs4ADA6/QWe1iE1N5e005HbYts1tPAo6pD7hj3QAMehSobMvZtjsL8Z
-         GlsSpZavbGbpfRom06XenhLEc+mp2ZmBkwZ+bK+pi4FpzCaZR9WrYObZ2jpXDxAsifXc
-         T4l4fhQRWMhPKe4VsuXI0GhsUC08dnY8pCWefrAjPp5I++GQAcoP+pVkScFzcL3YGHvZ
-         cuQg==
-X-Gm-Message-State: AAQBX9dXBunWwWBVfWSLF9JI42X5aRgt6ZpyKTQpVzNtK3dmoxxwYNf6
-        1/e1NyAd4YpMTT2O11F1n1MNSFRCYyjHjQ==
-X-Google-Smtp-Source: AKy350ZyYBwmEVI8F/eXSkK603ntFgHYL63twRuf8Rm9ECXWG4nA2bRkSX1B36vkuCG/4WTpiR+76g==
-X-Received: by 2002:a5d:6845:0:b0:2d0:3584:27f with SMTP id o5-20020a5d6845000000b002d03584027fmr9008483wrw.68.1679905920465;
-        Mon, 27 Mar 2023 01:32:00 -0700 (PDT)
+        bh=71KoEvNw1a5K58EQ9MffE/8r5VSXHU8fzu2wgupbboU=;
+        b=xnd2FCzGrZDNNsIDK8gXlOZIAjGOIdDV+bVn7BTG2FPgpmT9GxzXU1eugNCFk8wfoN
+         ilILH1HvMRXSgtByUimzh4z1X9zKtZSbjv+bsfce0Y7V4hymIt6AekkTvyItwuzrSFa7
+         DKpbuHARzPExta4ZBAbXOSHYYY/idbt6HGiP3acRRVL9e7wVwOVz5m+4/haFAzsCfO0z
+         jEE5PSFtUdHgYd0yRiKgCEInDusXih6yban3Xwv9qhCvNcAiZ/RrkCoWHv5zbGl4H5i3
+         P4rOaIXX/uDV0rWILRmZCGB6TWDoJcYOiIkQHs+Jf/W2yOSQfq+xmBgs/Sz+Syw97Zpz
+         Sf5g==
+X-Gm-Message-State: AAQBX9eE+zP91xlG/qk0YXt1Wz2eMW5E05PqekHCx/sXJDWHYebD20QP
+        us0qLOfYDjo5oxUSzgcdwotLtCmwJPmyLg==
+X-Google-Smtp-Source: AKy350aM6lYL21FU3RM1r+IrDmd1X4g5iCKGkf8lGXaX/M48js6Bgm8kyAD4RinWQiSktmBRSQh2vA==
+X-Received: by 2002:a5d:5343:0:b0:2ce:ada5:325d with SMTP id t3-20020a5d5343000000b002ceada5325dmr9156319wrv.37.1679905921856;
+        Mon, 27 Mar 2023 01:32:01 -0700 (PDT)
 Received: from imac.fritz.box ([2a02:8010:60a0:0:7887:5530:69a2:a11f])
-        by smtp.gmail.com with ESMTPSA id z6-20020a056000110600b002c557f82e27sm24353249wrw.99.2023.03.27.01.31.59
+        by smtp.gmail.com with ESMTPSA id z6-20020a056000110600b002c557f82e27sm24353249wrw.99.2023.03.27.01.32.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 01:31:59 -0700 (PDT)
+        Mon, 27 Mar 2023 01:32:01 -0700 (PDT)
 From:   Donald Hunter <donald.hunter@gmail.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -56,9 +56,9 @@ To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
 Cc:     donald.hunter@redhat.com, Donald Hunter <donald.hunter@gmail.com>
-Subject: [PATCH net-next v5 5/7] netlink: specs: add partial specification for openvswitch
-Date:   Mon, 27 Mar 2023 09:31:36 +0100
-Message-Id: <20230327083138.96044-6-donald.hunter@gmail.com>
+Subject: [PATCH net-next v5 6/7] docs: netlink: document struct support for genetlink-legacy
+Date:   Mon, 27 Mar 2023 09:31:37 +0100
+Message-Id: <20230327083138.96044-7-donald.hunter@gmail.com>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230327083138.96044-1-donald.hunter@gmail.com>
 References: <20230327083138.96044-1-donald.hunter@gmail.com>
@@ -74,377 +74,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The openvswitch family has a fixed header, uses struct attrs and has array
-values. This partial spec demonstrates these features in the YNL CLI. These
-specs are sufficient to create, delete and dump datapaths and to dump vports:
-
-$ ./tools/net/ynl/cli.py \
-    --spec Documentation/netlink/specs/ovs_datapath.yaml \
-    --do dp-new --json '{ "dp-ifindex": 0, "name": "demo", "upcall-pid": 0}'
-None
-
-$ ./tools/net/ynl/cli.py \
-    --spec Documentation/netlink/specs/ovs_datapath.yaml \
-    --dump dp-get --json '{ "dp-ifindex": 0 }'
-[{'dp-ifindex': 3,
-  'masks-cache-size': 256,
-  'megaflow-stats': {'cache-hits': 0,
-                     'mask-hit': 0,
-                     'masks': 0,
-                     'pad1': 0,
-                     'padding': 0},
-  'name': 'test',
-  'stats': {'flows': 0, 'hit': 0, 'lost': 0, 'missed': 0},
-  'user-features': {'dispatch-upcall-per-cpu',
-                    'tc-recirc-sharing',
-                    'unaligned'}},
- {'dp-ifindex': 48,
-  'masks-cache-size': 256,
-  'megaflow-stats': {'cache-hits': 0,
-                     'mask-hit': 0,
-                     'masks': 0,
-                     'pad1': 0,
-                     'padding': 0},
-  'name': 'demo',
-  'stats': {'flows': 0, 'hit': 0, 'lost': 0, 'missed': 0},
-  'user-features': set()}]
-
-$ ./tools/net/ynl/cli.py \
-    --spec Documentation/netlink/specs/ovs_datapath.yaml \
-    --do dp-del --json '{ "dp-ifindex": 0, "name": "demo"}'
-None
-
-$ ./tools/net/ynl/cli.py \
-    --spec Documentation/netlink/specs/ovs_vport.yaml \
-    --dump vport-get --json '{ "dp-ifindex": 3 }'
-[{'dp-ifindex': 3,
-  'ifindex': 3,
-  'name': 'test',
-  'port-no': 0,
-  'stats': {'rx-bytes': 0,
-            'rx-dropped': 0,
-            'rx-errors': 0,
-            'rx-packets': 0,
-            'tx-bytes': 0,
-            'tx-dropped': 0,
-            'tx-errors': 0,
-            'tx-packets': 0},
-  'type': 'internal',
-  'upcall-pid': [0],
-  'upcall-stats': {'fail': 0, 'success': 0}}]
+Describe the genetlink-legacy support for using struct definitions
+for fixed headers and for binary attributes.
 
 Signed-off-by: Donald Hunter <donald.hunter@gmail.com>
 ---
- Documentation/netlink/specs/ovs_datapath.yaml | 153 ++++++++++++++++++
- Documentation/netlink/specs/ovs_vport.yaml    | 139 ++++++++++++++++
- 2 files changed, 292 insertions(+)
- create mode 100644 Documentation/netlink/specs/ovs_datapath.yaml
- create mode 100644 Documentation/netlink/specs/ovs_vport.yaml
+ .../netlink/genetlink-legacy.rst              | 74 ++++++++++++++++++-
+ 1 file changed, 71 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/netlink/specs/ovs_datapath.yaml b/Documentation/netlink/specs/ovs_datapath.yaml
-new file mode 100644
-index 000000000000..6d71db8c4416
---- /dev/null
-+++ b/Documentation/netlink/specs/ovs_datapath.yaml
-@@ -0,0 +1,153 @@
-+# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
+diff --git a/Documentation/userspace-api/netlink/genetlink-legacy.rst b/Documentation/userspace-api/netlink/genetlink-legacy.rst
+index 3bf0bcdf21d8..b8fdcf7f6615 100644
+--- a/Documentation/userspace-api/netlink/genetlink-legacy.rst
++++ b/Documentation/userspace-api/netlink/genetlink-legacy.rst
+@@ -162,9 +162,77 @@ Other quirks (todo)
+ Structures
+ ----------
+ 
+-Legacy families can define C structures both to be used as the contents
+-of an attribute and as a fixed message header. The plan is to define
+-the structs in ``definitions`` and link the appropriate attrs.
++Legacy families can define C structures both to be used as the contents of
++an attribute and as a fixed message header. Structures are defined in
++``definitions``  and referenced in operations or attributes. Note that
++structures defined in YAML are implicitly packed according to C
++conventions. For example, the following struct is 4 bytes, not 6 bytes:
 +
-+name: ovs_datapath
-+version: 2
-+protocol: genetlink-legacy
++.. code-block:: c
 +
-+doc:
-+  OVS datapath configuration over generic netlink.
++  struct {
++          u8 a;
++          u16 b;
++          u8 c;
++  }
 +
-+definitions:
-+  -
-+    name: ovs-header
-+    type: struct
-+    members:
-+      -
-+        name: dp-ifindex
-+        type: u32
-+  -
-+    name: user-features
-+    type: flags
-+    entries:
-+      -
-+        name: unaligned
-+        doc: Allow last Netlink attribute to be unaligned
-+      -
-+        name: vport-pids
-+        doc: Allow datapath to associate multiple Netlink PIDs to each vport
-+      -
-+        name: tc-recirc-sharing
-+        doc: Allow tc offload recirc sharing
-+      -
-+        name: dispatch-upcall-per-cpu
-+        doc: Allow per-cpu dispatch of upcalls
-+  -
-+    name: datapath-stats
-+    type: struct
-+    members:
-+      -
-+        name: hit
-+        type: u64
-+      -
-+        name: missed
-+        type: u64
-+      -
-+        name: lost
-+        type: u64
-+      -
-+        name: flows
-+        type: u64
-+  -
-+    name: megaflow-stats
-+    type: struct
-+    members:
-+      -
-+        name: mask-hit
-+        type: u64
-+      -
-+        name: masks
-+        type: u32
-+      -
-+        name: padding
-+        type: u32
-+      -
-+        name: cache-hits
-+        type: u64
-+      -
-+        name: pad1
-+        type: u64
++Any padding must be explicitly added and C-like languages should infer the
++need for explicit padding from whether the members are naturally aligned.
 +
-+attribute-sets:
-+  -
-+    name: datapath
-+    attributes:
-+      -
-+        name: name
-+        type: string
-+      -
-+        name: upcall-pid
-+        doc: upcall pid
-+        type: u32
-+      -
-+        name: stats
-+        type: binary
-+        struct: datapath-stats
-+      -
-+        name: megaflow-stats
-+        type: binary
-+        struct: megaflow-stats
-+      -
-+        name: user-features
-+        type: u32
-+        enum: user-features
-+        enum-as-flags: true
-+      -
-+        name: pad
-+        type: unused
-+      -
-+        name: masks-cache-size
-+        type: u32
-+      -
-+        name: per-cpu-pids
-+        type: binary
-+        sub-type: u32
++Here is the struct definition from above, declared in YAML:
 +
-+operations:
-+  fixed-header: ovs-header
-+  list:
++.. code-block:: yaml
++
++  definitions:
 +    -
-+      name: dp-get
-+      doc: Get / dump OVS data path configuration and state
-+      value: 3
-+      attribute-set: datapath
-+      do: &dp-get-op
-+        request:
-+          attributes:
-+            - name
-+        reply:
-+          attributes:
-+            - name
-+            - upcall-pid
-+            - stats
-+            - megaflow-stats
-+            - user-features
-+            - masks-cache-size
-+            - per-cpu-pids
-+      dump: *dp-get-op
++      name: message-header
++      type: struct
++      members:
++        -
++          name: a
++          type: u8
++        -
++          name: b
++          type: u16
++        -
++          name: c
++          type: u8
++
++Fixed Headers
++~~~~~~~~~~~~~
++
++Fixed message headers can be added to operations using ``fixed-header``.
++The default ``fixed-header`` can be set in ``operations`` and it can be set
++or overridden for each operation.
++
++.. code-block:: yaml
++
++  operations:
++    fixed-header: message-header
++    list:
++      -
++        name: get
++        fixed-header: custom-header
++        attribute-set: message-attrs
++
++Attributes
++~~~~~~~~~~
++
++A ``binary`` attribute can be interpreted as a C structure using a
++``struct`` property with the name of the structure definition. The
++``struct`` property implies ``sub-type: struct`` so it is not necessary to
++specify a sub-type.
++
++.. code-block:: yaml
++
++  attribute-sets:
 +    -
-+      name: dp-new
-+      doc: Create new OVS data path
-+      value: 1
-+      attribute-set: datapath
-+      do:
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - name
-+            - upcall-pid
-+            - user-features
-+    -
-+      name: dp-del
-+      doc: Delete existing OVS data path
-+      value: 2
-+      attribute-set: datapath
-+      do:
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - name
-+
-+mcast-groups:
-+  list:
-+    -
-+      name: ovs_datapath
-diff --git a/Documentation/netlink/specs/ovs_vport.yaml b/Documentation/netlink/specs/ovs_vport.yaml
-new file mode 100644
-index 000000000000..8e55622ddf11
---- /dev/null
-+++ b/Documentation/netlink/specs/ovs_vport.yaml
-@@ -0,0 +1,139 @@
-+# SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-+
-+name: ovs_vport
-+version: 2
-+protocol: genetlink-legacy
-+
-+doc:
-+  OVS vport configuration over generic netlink.
-+
-+definitions:
-+  -
-+    name: ovs-header
-+    type: struct
-+    members:
-+      -
-+        name: dp-ifindex
-+        type: u32
-+  -
-+    name: vport-type
-+    type: enum
-+    entries: [ unspec, netdev, internal, gre, vxlan, geneve ]
-+  -
-+    name: vport-stats
-+    type: struct
-+    members:
-+      -
-+        name: rx-packets
-+        type: u64
-+      -
-+        name: tx-packets
-+        type: u64
-+      -
-+        name: rx-bytes
-+        type: u64
-+      -
-+        name: tx-bytes
-+        type: u64
-+      -
-+        name: rx-errors
-+        type: u64
-+      -
-+        name: tx-errors
-+        type: u64
-+      -
-+        name: rx-dropped
-+        type: u64
-+      -
-+        name: tx-dropped
-+        type: u64
-+
-+attribute-sets:
-+  -
-+    name: vport-options
-+    attributes:
-+      -
-+        name: dst-port
-+        type: u32
-+      -
-+        name: extension
-+        type: u32
-+  -
-+    name: upcall-stats
-+    attributes:
-+      -
-+        name: success
-+        type: u64
-+        value: 0
-+      -
-+        name: fail
-+        type: u64
-+  -
-+    name: vport
-+    attributes:
-+      -
-+        name: port-no
-+        type: u32
-+      -
-+        name: type
-+        type: u32
-+        enum: vport-type
-+      -
-+        name: name
-+        type: string
-+      -
-+        name: options
-+        type: nest
-+        nested-attributes: vport-options
-+      -
-+        name: upcall-pid
-+        type: binary
-+        sub-type: u32
-+      -
-+        name: stats
-+        type: binary
-+        struct: vport-stats
-+      -
-+        name: pad
-+        type: unused
-+      -
-+        name: ifindex
-+        type: u32
-+      -
-+        name: netnsid
-+        type: u32
-+      -
-+        name: upcall-stats
-+        type: nest
-+        nested-attributes: upcall-stats
-+
-+operations:
-+  list:
-+    -
-+      name: vport-get
-+      doc: Get / dump OVS vport configuration and state
-+      value: 3
-+      attribute-set: vport
-+      fixed-header: ovs-header
-+      do: &vport-get-op
-+        request:
-+          attributes:
-+            - dp-ifindex
-+            - name
-+        reply: &dev-all
-+          attributes:
-+            - dp-ifindex
-+            - port-no
-+            - type
-+            - name
-+            - upcall-pid
-+            - stats
-+            - ifindex
-+            - netnsid
-+            - upcall-stats
-+      dump: *vport-get-op
-+
-+mcast-groups:
-+  list:
-+    -
-+      name: ovs_vport
++      name: stats-attrs
++      attributes:
++        -
++          name: stats
++          type: binary
++          struct: vport-stats
+ 
+ Multi-message DO
+ ----------------
 -- 
 2.39.0
 
