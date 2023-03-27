@@ -2,172 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B436CA484
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 14:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 155D76CA575
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 15:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbjC0MsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 08:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        id S231986AbjC0NUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 09:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbjC0MsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 08:48:19 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157172D72
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 05:48:16 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pgmGl-0000cH-CM
-        for netdev@vger.kernel.org; Mon, 27 Mar 2023 14:48:15 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id B639D19D3C1
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 12:48:14 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1ACD219D3AD;
-        Mon, 27 Mar 2023 12:48:12 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a51f1b82;
-        Mon, 27 Mar 2023 12:48:09 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Ivan Orlov <ivan.orlov0322@gmail.com>,
-        syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 2/2] can: bcm: bcm_tx_setup(): fix KMSAN uninit-value in vfs_write
-Date:   Mon, 27 Mar 2023 14:48:07 +0200
-Message-Id: <20230327124807.1157134-3-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230327124807.1157134-1-mkl@pengutronix.de>
-References: <20230327124807.1157134-1-mkl@pengutronix.de>
+        with ESMTP id S231881AbjC0NUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 09:20:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754152115
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 06:19:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679923192;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=fp97bd4egAyMlz94O+W8oRAJLsbe6t9my51Gm91T/aM=;
+        b=a6La+48uF1wwhBHmYLfNCk0mzYxOeFLRbpl738We7+ghtDeFwY4/9d0UVQb4pLDyKMxaNK
+        8bpMCVmT1CpP3huJtpgGayE+qX1iQsT+CMUK3HU6MIh8KaLzg+ZpXrc3o8xPm+jA3ZM6Uu
+        XJSBBxxiGgnBs2Hl/pIABbAmHbWEj6I=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-629-4pxpSVivNRyTCo-fV1PHPA-1; Mon, 27 Mar 2023 09:19:51 -0400
+X-MC-Unique: 4pxpSVivNRyTCo-fV1PHPA-1
+Received: by mail-wm1-f70.google.com with SMTP id o7-20020a05600c4fc700b003edf85f6bb1so5729710wmq.3
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 06:19:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679923190;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fp97bd4egAyMlz94O+W8oRAJLsbe6t9my51Gm91T/aM=;
+        b=B7h5ZLdMidoFLd5iBR06pvAP7BrdUTZChk2LZliAH8PN+mGHkhx2kfRvz234Dn50an
+         1HNO6Gqw/Vq8cfbK2zBXjxnRNkntuUoGlHNibzvCEbmSfB8MG0o52LHtehVZxtG5p+kg
+         9SZiR0R2LnBLpoOThhUST5tEzs6YkDMZ6QVdWnzxpwhDMore0g9wT0/lggApFOVKd5lD
+         Ig/giQyeY7Zf/69nfR0brC2Sn71lwFl+z/JR0yZ2eAl7IVz/8vJD6+i3Ppps0KohD3/Z
+         AjolYfeQ2F67owH5qSb0oFLyubADTz2ZPODjsPRfNQoRAEHWAGAOxGK93tGG0Xisw7NP
+         Ke1w==
+X-Gm-Message-State: AO0yUKXWAqVfgxTQncRxpVxd2ji7rxbGBOQRWtiqXXj12XkMxPDgIVzh
+        fyJxzyHYGncxsPbdlWYn2qEz1wH3+fc8evAJpfOzERcOZqv/T5ZfECtlmQjQns2Vc+SJZm3qW/0
+        PKlwFBcEsG/1IA7bi
+X-Received: by 2002:a1c:7c1a:0:b0:3ee:6d88:774a with SMTP id x26-20020a1c7c1a000000b003ee6d88774amr8075074wmc.14.1679923190461;
+        Mon, 27 Mar 2023 06:19:50 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+a3nlhZjRZvrUa3ZYlE0VCFu21NVVFHGZYCsteCubT34r2yrI5XsBkcW+x/td8mODOzUHdhw==
+X-Received: by 2002:a1c:7c1a:0:b0:3ee:6d88:774a with SMTP id x26-20020a1c7c1a000000b003ee6d88774amr8075048wmc.14.1679923190202;
+        Mon, 27 Mar 2023 06:19:50 -0700 (PDT)
+Received: from redhat.com ([2.52.153.142])
+        by smtp.gmail.com with ESMTPSA id p5-20020a05600c358500b003ef6f87118dsm2752456wmq.42.2023.03.27.06.19.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 06:19:49 -0700 (PDT)
+Date:   Mon, 27 Mar 2023 09:19:47 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elic@nvidia.com, mst@redhat.com
+Subject: [GIT PULL] vdpa: bugfix
+Message-ID: <20230327091947-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Orlov <ivan.orlov0322@gmail.com>
+The following changes since commit e8d018dd0257f744ca50a729e3d042cf2ec9da65:
 
-Syzkaller reported the following issue:
+  Linux 6.3-rc3 (2023-03-19 13:27:55 -0700)
 
-=====================================================
-BUG: KMSAN: uninit-value in aio_rw_done fs/aio.c:1520 [inline]
-BUG: KMSAN: uninit-value in aio_write+0x899/0x950 fs/aio.c:1600
- aio_rw_done fs/aio.c:1520 [inline]
- aio_write+0x899/0x950 fs/aio.c:1600
- io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
- __do_sys_io_submit fs/aio.c:2078 [inline]
- __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
- __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+are available in the Git repository at:
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:766 [inline]
- slab_alloc_node mm/slub.c:3452 [inline]
- __kmem_cache_alloc_node+0x71f/0xce0 mm/slub.c:3491
- __do_kmalloc_node mm/slab_common.c:967 [inline]
- __kmalloc+0x11d/0x3b0 mm/slab_common.c:981
- kmalloc_array include/linux/slab.h:636 [inline]
- bcm_tx_setup+0x80e/0x29d0 net/can/bcm.c:930
- bcm_sendmsg+0x3a2/0xce0 net/can/bcm.c:1351
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- sock_write_iter+0x495/0x5e0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2189 [inline]
- aio_write+0x63a/0x950 fs/aio.c:1600
- io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
- __do_sys_io_submit fs/aio.c:2078 [inline]
- __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
- __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-CPU: 1 PID: 5034 Comm: syz-executor350 Not tainted 6.2.0-rc6-syzkaller-80422-geda666ff2276 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/12/2023
-=====================================================
+for you to fetch changes up to 8fc9ce051f22581f60325fd87a0fd0f37a7b70c3:
 
-We can follow the call chain and find that 'bcm_tx_setup' function
-calls 'memcpy_from_msg' to copy some content to the newly allocated
-frame of 'op->frames'. After that the 'len' field of copied structure
-being compared with some constant value (64 or 8). However, if
-'memcpy_from_msg' returns an error, we will compare some uninitialized
-memory. This triggers 'uninit-value' issue.
+  vdpa/mlx5: Remove debugfs file after device unregister (2023-03-21 16:39:02 -0400)
 
-This patch will add 'memcpy_from_msg' possible errors processing to
-avoid uninit-value issue.
+----------------------------------------------------------------
+vdpa: bugfix
 
-Tested via syzkaller
+An error handling fix in mlx5.
 
-Reported-by: syzbot+c9bfd85eca611ebf5db1@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?id=47f897f8ad958bbde5790ebf389b5e7e0a345089
-Signed-off-by: Ivan Orlov <ivan.orlov0322@gmail.com>
-Fixes: 6f3b911d5f29b ("can: bcm: add support for CAN FD frames")
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Link: https://lore.kernel.org/all/20230314120445.12407-1-ivan.orlov0322@gmail.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- net/can/bcm.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 27706f6ace34..a962ec2b8ba5 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -941,6 +941,8 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
- 
- 			cf = op->frames + op->cfsiz * i;
- 			err = memcpy_from_msg((u8 *)cf, msg, op->cfsiz);
-+			if (err < 0)
-+				goto free_op;
- 
- 			if (op->flags & CAN_FD_FRAME) {
- 				if (cf->len > 64)
-@@ -950,12 +952,8 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
- 					err = -EINVAL;
- 			}
- 
--			if (err < 0) {
--				if (op->frames != &op->sframe)
--					kfree(op->frames);
--				kfree(op);
--				return err;
--			}
-+			if (err < 0)
-+				goto free_op;
- 
- 			if (msg_head->flags & TX_CP_CAN_ID) {
- 				/* copy can_id into frame */
-@@ -1026,6 +1024,12 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
- 		bcm_tx_start_timer(op);
- 
- 	return msg_head->nframes * op->cfsiz + MHSIZ;
-+
-+free_op:
-+	if (op->frames != &op->sframe)
-+		kfree(op->frames);
-+	kfree(op);
-+	return err;
- }
- 
- /*
--- 
-2.39.2
+----------------------------------------------------------------
+Eli Cohen (1):
+      vdpa/mlx5: Remove debugfs file after device unregister
 
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
