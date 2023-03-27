@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB5186CAB57
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0626CAB52
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232767AbjC0RDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 13:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
+        id S232741AbjC0RDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 13:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232769AbjC0RCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:02:50 -0400
+        with ESMTP id S232720AbjC0RCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:02:47 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B095252
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 10:02:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCD24EE2
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 10:02:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=e0m7j6SezYrBhtF/+cBMWZxzfiKdBjQQrISuhWpeZXE=; b=rL2lZFD4dqb5OC0lm+oafhOR46
-        wSBeYwOFYPW7uJT/QFbcoVRBYLdKwGwyZXhO0HoiEMO+51pvoY42YJMr5slJahdIwSC5T3JYqSgak
-        It3WhzGDokZqWTN77LVdAv5Z26hj6pk1ZBamGBv0gc36zY0rX/vyzHvOhyiZKg1yz8fA=;
+        bh=PP1y5/S+YzgIp7z6rQyCoh49YIF8zTc8hnNM4eb7FRs=; b=tdlgmmvICCn2cWV+ansLqW15dv
+        146tM7B/S0hY+2D+dPnvlUbzug6v1257BIBAUItRaX4XT+nhT5Ep4yxPtKdXK0hj1EcORfKVCd2Mj
+        i8hhK5w+A7wU3rrofxBonSve3UOs5ib3dlsubYK89Q+S2CUZfZrFkyoyR8AYxrvEYUi4=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pgqEU-008Xqd-KG; Mon, 27 Mar 2023 19:02:10 +0200
+        id 1pgqEU-008Xqh-LJ; Mon, 27 Mar 2023 19:02:10 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -32,9 +32,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [RFC/RFT 05/23] net: phy: Immediately call adjust_link if only tx_lpi_enabled changes
-Date:   Mon, 27 Mar 2023 19:01:43 +0200
-Message-Id: <20230327170201.2036708-6-andrew@lunn.ch>
+Subject: [RFC/RFT 06/23] net: marvell: mvneta: Simplify EEE configuration
+Date:   Mon, 27 Mar 2023 19:01:44 +0200
+Message-Id: <20230327170201.2036708-7-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230327170201.2036708-1-andrew@lunn.ch>
 References: <20230327170201.2036708-1-andrew@lunn.ch>
@@ -49,85 +49,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MAC driver changes its EEE hardware configuration in its
-adjust_link callback. This is called when auto-neg completes. If
-set_eee is called with a change to tx_lpi_enabled which does not
-trigger an auto-neg, it is necessary to call the adjust_link callback
-so that the MAC is reconfigured to take this change into account.
+phylib already does most of the work. It will track eee_enabled,
+eee_active and tx_lpi_enabled and correctly set them in the
+ethtool_get_eee callback.
 
-When setting phydev->eee_active, take tx_lpi_enabled into account, so
-the MAC drivers don't need to consider tx_lpi_enabled.
+Replace the call to phy_init_eee() by looking at the value of
+eee_active passed to the function.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy-c45.c | 11 ++++++++---
- drivers/net/phy/phy.c     | 15 ++++++++++++---
- 2 files changed, 20 insertions(+), 6 deletions(-)
+v2: Use eee_active parameter, which is race free.
+    Remove handling of tx_lpi_enabled, leave it to phylib.
+---
+ drivers/net/ethernet/marvell/mvneta.c | 19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index fee514b96ab1..84e859eae64b 100644
---- a/drivers/net/phy/phy-c45.c
-+++ b/drivers/net/phy/phy-c45.c
-@@ -1431,6 +1431,8 @@ EXPORT_SYMBOL(genphy_c45_ethtool_get_eee);
-  *
-  * Description: it reportes the Supported/Advertisement/LP Advertisement
-  * capabilities.
-+ * Returns either error code, 0 if there was no change, or positive if
-+ * there was a change which triggered auto-neg.
-  */
- int genphy_c45_ethtool_set_eee(struct phy_device *phydev,
- 			       struct ethtool_eee *data)
-@@ -1464,9 +1466,12 @@ int genphy_c45_ethtool_set_eee(struct phy_device *phydev,
- 	ret = genphy_c45_an_config_eee_aneg(phydev);
- 	if (ret < 0)
- 		return ret;
--	if (ret > 0)
--		return phy_restart_aneg(phydev);
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index cebd3848a228..c7d53fc774c3 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -536,10 +536,6 @@ struct mvneta_port {
+ 	struct mvneta_bm_pool *pool_short;
+ 	int bm_win_id;
+ 
+-	bool eee_enabled;
+-	bool eee_active;
+-	bool tx_lpi_enabled;
 -
-+	if (ret > 0) {
-+		ret = phy_restart_aneg(phydev);
-+		if (ret < 0)
-+			return ret;
-+		return 1;
-+	}
- 	return 0;
- }
- EXPORT_SYMBOL(genphy_c45_ethtool_set_eee);
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 7d9205c3f235..b074ac5d1de1 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -933,7 +933,7 @@ static int phy_check_link_status(struct phy_device *phydev)
- 		if (err < 0)
- 			phydev->eee_active = false;
- 		else
--			phydev->eee_active = err;
-+			phydev->eee_active = (err & phydev->tx_lpi_enabled);
- 		phy_link_up(phydev);
- 	} else if (!phydev->link && phydev->state != PHY_NOLINK) {
- 		phydev->state = PHY_NOLINK;
-@@ -1619,11 +1619,20 @@ int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
+ 	u64 ethtool_stats[ARRAY_SIZE(mvneta_statistics)];
  
- 	mutex_lock(&phydev->lock);
- 	ret = genphy_c45_ethtool_set_eee(phydev, data);
--	if (!ret)
-+	if (ret >= 0) {
-+		if (ret == 0) {
-+			/* auto-neg not triggered */
-+			if (phydev->tx_lpi_enabled != data->tx_lpi_enabled) {
-+				phydev->tx_lpi_enabled = data->tx_lpi_enabled;
-+				if (phydev->link)
-+					phy_link_up(phydev);
-+			}
-+		}
- 		phydev->tx_lpi_enabled = data->tx_lpi_enabled;
-+	}
- 	mutex_unlock(&phydev->lock);
+ 	u32 indir[MVNETA_RSS_LU_TABLE_SIZE];
+@@ -4170,7 +4166,6 @@ static void mvneta_mac_link_down(struct phylink_config *config,
+ 		mvreg_write(pp, MVNETA_GMAC_AUTONEG_CONFIG, val);
+ 	}
  
--	return ret;
-+	return (ret < 0 ? ret : 0);
+-	pp->eee_active = false;
+ 	mvneta_set_eee(pp, false);
  }
- EXPORT_SYMBOL(phy_ethtool_set_eee);
+ 
+@@ -4222,10 +4217,8 @@ static void mvneta_mac_link_up(struct phylink_config *config,
+ 
+ 	mvneta_port_up(pp);
+ 
+-	if (phy && pp->eee_enabled) {
+-		pp->eee_active = phy_init_eee(phy, false) >= 0;
+-		mvneta_set_eee(pp, pp->eee_active && pp->tx_lpi_enabled);
+-	}
++	if (phy)
++		mvneta_set_eee(pp, eee_active);
+ }
+ 
+ static const struct phylink_mac_ops mvneta_phylink_ops = {
+@@ -5029,9 +5022,6 @@ static int mvneta_ethtool_get_eee(struct net_device *dev,
+ 
+ 	lpi_ctl0 = mvreg_read(pp, MVNETA_LPI_CTRL_0);
+ 
+-	eee->eee_enabled = pp->eee_enabled;
+-	eee->eee_active = pp->eee_active;
+-	eee->tx_lpi_enabled = pp->tx_lpi_enabled;
+ 	eee->tx_lpi_timer = (lpi_ctl0) >> 8; // * scale;
+ 
+ 	return phylink_ethtool_get_eee(pp->phylink, eee);
+@@ -5054,11 +5044,6 @@ static int mvneta_ethtool_set_eee(struct net_device *dev,
+ 	lpi_ctl0 |= eee->tx_lpi_timer << 8;
+ 	mvreg_write(pp, MVNETA_LPI_CTRL_0, lpi_ctl0);
+ 
+-	pp->eee_enabled = eee->eee_enabled;
+-	pp->tx_lpi_enabled = eee->tx_lpi_enabled;
+-
+-	mvneta_set_eee(pp, eee->tx_lpi_enabled && eee->eee_enabled);
+-
+ 	return phylink_ethtool_set_eee(pp->phylink, eee);
+ }
  
 -- 
 2.39.2
