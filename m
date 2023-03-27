@@ -2,707 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B71C6CB0C5
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 23:36:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 181BC6CB0D3
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 23:40:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbjC0VgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 17:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        id S230075AbjC0Vkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 17:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229744AbjC0VgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 17:36:14 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D00230D2;
-        Mon, 27 Mar 2023 14:35:51 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pguVJ-0008MV-1c;
-        Mon, 27 Mar 2023 23:35:49 +0200
-Date:   Mon, 27 Mar 2023 22:35:43 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S229501AbjC0Vky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 17:40:54 -0400
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A5E10E0;
+        Mon, 27 Mar 2023 14:40:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1679953217; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=CnqINhD0JxYCrwBPv605MLbpVlDOzikzzOxOqj5qhUn0jxgEGJ6AHpJp4RQyhMeWo68TyUefTkYpRbx6Ke6mNv9T+o7uyUGHyIprfSwF1HeKZJeJVUKMvCTRAao0jwvQufiafF5W9O1KcW5yfDc9qwrNM6QxNqxhLM/KP7r2vdc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1679953217; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=Iti3YmQ6QZRAkK86zoA/mBc7nxnJTi9AuPJgslPE2wc=; 
+        b=ShjxFBxP/n3E1cZ6exsXU+jEOSGxLZ2i3SCpULATaQTFouG9fNQmVp+dh8oDCPOWzzlIQYROl3qNied90gyAUEkO5bZoukCaoQ+mJ//h2l/K6f3QRNHQ0slwUwqqlxzYcoYKCOm4Qf/faOmlnGzARenqmX1IAyCR5GCy3zcnVd8=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1679953217;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=Iti3YmQ6QZRAkK86zoA/mBc7nxnJTi9AuPJgslPE2wc=;
+        b=amoEXdo1W0O1xOFLjV/vj//zzZy5O0GYz95A4bsF8pJJjRH3FEYhklQnuXW5SVWp
+        yMaHeP4ITbKFLgdr8fxgZYUUgwcoR0vyTg11x0Tt8L6x2O6ba1SwFONbe9+WfVCVBFV
+        qWWV/gzezLq+07VIf85HinUc9l4SuQift2wWcFiI=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1679953215654371.39539986878196; Mon, 27 Mar 2023 14:40:15 -0700 (PDT)
+Message-ID: <a97eb87d-bc36-cb31-b887-1feef40c4d34@arinc9.com>
+Date:   Tue, 28 Mar 2023 00:40:08 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: Move MT7530 phy muxing from DSA to PHY driver
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thibaut <hacks@slashdirt.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
         Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
         DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: [RFC PATCH net-next 2/2] net: dsa: mt7530: introduce MMIO driver for
- MT7988 SoC
-Message-ID: <ZCIML310vc8/uoM4@makrotopia.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+References: <4a291389-105a-6288-1347-4f02171b0dd0@arinc9.com>
+ <b66fff15-3521-f889-d9bf-70f1cf689cdc@gmail.com>
+ <0e3ca573-2190-57b0-0e98-7f5b890d328e@arinc9.com> <YyKQKRIYDIVeczl1@lunn.ch>
+ <dad09430-4f33-7f1d-76c7-4dbd0710e950@arinc9.com> <YyXiswbZfDh8aZHN@lunn.ch>
+ <4a291389-105a-6288-1347-4f02171b0dd0@arinc9.com>
+ <b66fff15-3521-f889-d9bf-70f1cf689cdc@gmail.com>
+ <20ede15d-c5b0-bf96-4fe3-7639b4d646f8@arinc9.com>
+ <20ede15d-c5b0-bf96-4fe3-7639b4d646f8@arinc9.com>
+ <20230327183809.vhft6rqek3kisytb@skbuf>
+Content-Language: en-US
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20230327183809.vhft6rqek3kisytb@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MediaTek MT7988 SoC comes with a built-in switch very similar to
-previous MT7530 and MT7531. However, the switch address space is mapped
-into the SoCs memory space rather than being connected via MDIO.
-Using MMIO simplifies register access and also removes the need for a bus
-lock, and for that reason also makes interrupt handling more light-weight.
+On 27.03.2023 21:38, Vladimir Oltean wrote:
+> On Sun, Mar 26, 2023 at 07:52:12PM +0300, Arınç ÜNAL wrote:
+>> I'm currently working on the mt7530 driver and I think I found a way
+>> that takes the least effort, won't break the ABI, and most importantly,
+>> will work.
+> 
+> This sounds promising....
+> 
+>> As we acknowledged, the registers are in the switch address space. This
+>> must also mean that the switch must be properly probed before doing
+>> anything with the registers.
+>>
+>> I'm not sure how exactly making a tiny driver would work in this case.
+> 
+> I'm not sure how it would work, either. It sounds like the driver for
+> the mdio-bus address @1f should have been a parent driver (MFD or not)
+> with 2 (platform device) children, one for the switch and another for
+> the HWTRAP registers and whatever else might be needed for the PHY
+> multiplexing. The parent (mdio_device) driver deals with the chip-wide
+> reset, resources, and manages the registers, giving them regmaps.
+> The driver with the mux probably just exports a symbol representing a
+> function that gets called by the "mediatek,eth-mac" driver and/or the
+> switch driver.
+> 
+> BTW, I have something vaguely similar to this in a stalled WIP branch
+> for sja1105, but things like this get really complicated really quickly
+> if the DSA driver's DT bindings weren't designed from day one to not
+> cover the entire switch's register map.
+> 
+>> I figured we can just run the phy muxing code before the DSA driver
+>> exits because there are no (CPU) ports defined on the devicetree. Right
+>> after probing is done on mt7530_probe, before dsa_register_switch() is run.
+> 
+> Aren't there timing issues, though? When is the earliest moment that the
+> "mediatek,eth-mac" driver needs the HWTRAP muxing to be changed?
+> The operation of changing that from the "mediatek,mt7530" driver is
+> completely asynchronous to the probing of "mediatek,eth-mac".
+> What's the worst that will happen with incorrect (not yet updated) GMII
+> signal muxing? "Just" some lost packets?
 
-Note that this is different from previous SoCs like MT7621 and MT7623N
-which also came with an integrated MT7530-like switch which yet had to be
-accessed via MDIO.
+We're not doing any changes to the MediaTek SoC's MAC if that's what 
+you're asking. The phy muxing on the mt7530 DSA driver merely muxes PHY4 
+of the switch to GMAC5 of the switch. Whatever MAC connected to GMAC5 
+can access the muxed PHY.
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/net/dsa/Kconfig       |   8 ++
- drivers/net/dsa/Makefile      |   1 +
- drivers/net/dsa/mt7530-mmio.c | 126 +++++++++++++++++++++
- drivers/net/dsa/mt7530.c      | 203 ++++++++++++++++++++++++++++++----
- drivers/net/dsa/mt7530.h      |  16 ++-
- 5 files changed, 324 insertions(+), 30 deletions(-)
- create mode 100644 drivers/net/dsa/mt7530-mmio.c
+It's just the current ABI that requires the MAC to be mediatek,eth-mac. 
+PHY muxing can still be perfectly done with a simple property like 
+mediatek,mt7530-muxphy = <0>;.
 
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index 5a67a74166a3d..0120586df330d 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -50,6 +50,14 @@ config NET_DSA_MT7530_MDIO
- 	  switch chips. Multi-chip module MT7530 in MT7621AT, MT7621DAT,
- 	  MT7621ST and MT7623AI SoCs is supported.
- 
-+config NET_DSA_MT7530_MMIO
-+	tristate "MediaTek MT7988 built-in Ethernet switch support"
-+	select NET_DSA_MT7530
-+	depends on HAS_IOMEM
-+	help
-+	  This enables support for the MediaTek MT7988 Ethernet
-+	  switch chip.
-+
- config NET_DSA_MV88E6060
- 	tristate "Marvell 88E6060 ethernet switch chip support"
- 	select NET_DSA_TAG_TRAILER
-diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
-index 2b072d574ed02..7c763578b297f 100644
---- a/drivers/net/dsa/Makefile
-+++ b/drivers/net/dsa/Makefile
-@@ -8,6 +8,7 @@ endif
- obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
- obj-$(CONFIG_NET_DSA_MT7530)		+= mt7530.o
- obj-$(CONFIG_NET_DSA_MT7530_MDIO)	+= mt7530-mdio.o
-+obj-$(CONFIG_NET_DSA_MT7530_MMIO)	+= mt7530-mmio.o
- obj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o
- obj-$(CONFIG_NET_DSA_RZN1_A5PSW) += rzn1_a5psw.o
- obj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o
-diff --git a/drivers/net/dsa/mt7530-mmio.c b/drivers/net/dsa/mt7530-mmio.c
-new file mode 100644
-index 0000000000000..8096315f17a95
---- /dev/null
-+++ b/drivers/net/dsa/mt7530-mmio.c
-@@ -0,0 +1,126 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
-+#include <net/dsa.h>
-+
-+#include "mt7530.h"
-+
-+static const struct of_device_id mt7988_of_match[] = {
-+	{ .compatible = "mediatek,mt7988-switch", .data = &mt753x_table[ID_MT7988], },
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, mt7988_of_match);
-+
-+static int
-+mt7988_probe(struct platform_device *pdev)
-+{
-+	struct mt7530_priv *priv;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->base_addr = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->base_addr)) {
-+		dev_err(&pdev->dev, "cannot request I/O memory space\n");
-+		return -ENXIO;
-+	}
-+
-+	priv->ds = devm_kzalloc(&pdev->dev, sizeof(*priv->ds), GFP_KERNEL);
-+	if (!priv->ds)
-+		return -ENOMEM;
-+
-+	priv->ds->dev = &pdev->dev;
-+	priv->ds->num_ports = MT7530_NUM_PORTS;
-+
-+	priv->rstc = devm_reset_control_get(&pdev->dev, NULL);
-+	if (IS_ERR(priv->rstc)) {
-+		dev_err(&pdev->dev, "Couldn't get our reset line\n");
-+		return PTR_ERR(priv->rstc);
-+	}
-+
-+	/* Get the hardware identifier from the devicetree node.
-+	 * We will need it for some of the clock and regulator setup.
-+	 */
-+	priv->info = of_device_get_match_data(&pdev->dev);
-+	if (!priv->info)
-+		return -EINVAL;
-+
-+	/* Sanity check if these required device operations are filled
-+	 * properly.
-+	 */
-+	if (!priv->info->sw_setup || !priv->info->pad_setup ||
-+	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
-+	    !priv->info->mac_port_get_caps ||
-+	    !priv->info->mac_port_config)
-+		return -EINVAL;
-+
-+	priv->id = priv->info->id;
-+	priv->bus = NULL;
-+	priv->dev = &pdev->dev;
-+	priv->ds->priv = priv;
-+	priv->ds->ops = &mt7530_switch_ops;
-+	mutex_init(&priv->reg_mutex);
-+	dev_set_drvdata(&pdev->dev, priv);
-+
-+	return dsa_register_switch(priv->ds);
-+}
-+
-+static int
-+mt7988_remove(struct platform_device *pdev)
-+{
-+	struct mt7530_priv *priv = platform_get_drvdata(pdev);
-+	int ret = 0;
-+
-+	if (!priv)
-+		return 0;
-+
-+	ret = regulator_disable(priv->core_pwr);
-+	if (ret < 0)
-+		dev_err(priv->dev,
-+			"Failed to disable core power: %d\n", ret);
-+
-+	ret = regulator_disable(priv->io_pwr);
-+	if (ret < 0)
-+		dev_err(priv->dev, "Failed to disable io pwr: %d\n",
-+			ret);
-+
-+	if (priv->irq)
-+		mt7530_free_irq(priv);
-+
-+	dsa_unregister_switch(priv->ds);
-+
-+	mutex_destroy(&priv->reg_mutex);
-+
-+	return 0;
-+}
-+
-+static void mt7988_shutdown(struct platform_device *pdev)
-+{
-+	struct mt7530_priv *priv = platform_get_drvdata(pdev);
-+
-+	if (!priv)
-+		return;
-+
-+	dsa_switch_shutdown(priv->ds);
-+
-+	dev_set_drvdata(&pdev->dev, NULL);
-+}
-+
-+static struct platform_driver mt7988_platform_driver = {
-+	.probe  = mt7988_probe,
-+	.remove = mt7988_remove,
-+	.shutdown = mt7988_shutdown,
-+	.driver = {
-+		.name = "mt7988-switch",
-+		.of_match_table = mt7988_of_match,
-+	},
-+};
-+module_platform_driver(mt7988_platform_driver);
-+
-+MODULE_AUTHOR("Sean Wang <sean.wang@mediatek.com>");
-+MODULE_DESCRIPTION("Driver for Mediatek MT7530 Switch (MMIO)");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 7828837d15e15..a5c3f69ea193d 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -118,6 +118,9 @@ core_write_mmd_indirect(struct mt7530_priv *priv, int prtad,
- 	struct mii_bus *bus = priv->bus;
- 	int ret;
- 
-+	if (!bus)
-+		return 0;
-+
- 	/* Write the desired MMD Devad */
- 	ret = bus->write(bus, 0, MII_MMD_CTRL, devad);
- 	if (ret < 0)
-@@ -147,11 +150,13 @@ core_write(struct mt7530_priv *priv, u32 reg, u32 val)
- {
- 	struct mii_bus *bus = priv->bus;
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	core_write_mmd_indirect(priv, reg, MDIO_MMD_VEND2, val);
- 
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- }
- 
- static void
-@@ -160,6 +165,9 @@ core_rmw(struct mt7530_priv *priv, u32 reg, u32 mask, u32 set)
- 	struct mii_bus *bus = priv->bus;
- 	u32 val;
- 
-+	if (!bus)
-+		return;
-+
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	val = core_read_mmd_indirect(priv, reg, MDIO_MMD_VEND2);
-@@ -189,6 +197,11 @@ mt7530_mii_write(struct mt7530_priv *priv, u32 reg, u32 val)
- 	u16 page, r, lo, hi;
- 	int ret;
- 
-+	if (priv->base_addr) {
-+		iowrite32(val, priv->base_addr + reg);
-+		return 0;
-+	}
-+
- 	page = (reg >> 6) & 0x3ff;
- 	r  = (reg >> 2) & 0xf;
- 	lo = val & 0xffff;
-@@ -218,6 +231,9 @@ mt7530_mii_read(struct mt7530_priv *priv, u32 reg)
- 	u16 page, r, lo, hi;
- 	int ret;
- 
-+	if (priv->base_addr)
-+		return ioread32(priv->base_addr + reg);
-+
- 	page = (reg >> 6) & 0x3ff;
- 	r = (reg >> 2) & 0xf;
- 
-@@ -240,11 +256,13 @@ mt7530_write(struct mt7530_priv *priv, u32 reg, u32 val)
- {
- 	struct mii_bus *bus = priv->bus;
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	mt7530_mii_write(priv, reg, val);
- 
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- }
- 
- static u32
-@@ -256,14 +274,16 @@ _mt7530_unlocked_read(struct mt7530_dummy_poll *p)
- static u32
- _mt7530_read(struct mt7530_dummy_poll *p)
- {
--	struct mii_bus		*bus = p->priv->bus;
-+	struct mii_bus *bus = p->priv->bus;
- 	u32 val;
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	val = mt7530_mii_read(p->priv, p->reg);
- 
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- 
- 	return val;
- }
-@@ -284,14 +304,16 @@ mt7530_rmw(struct mt7530_priv *priv, u32 reg,
- 	struct mii_bus *bus = priv->bus;
- 	u32 val;
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	val = mt7530_mii_read(priv, reg);
- 	val &= ~mask;
- 	val |= set;
- 	mt7530_mii_write(priv, reg, val);
- 
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- }
- 
- static void
-@@ -642,7 +664,8 @@ mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
- 
- 	INIT_MT7530_DUMMY_POLL(&p, priv, MT7531_PHY_IAC);
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	ret = readx_poll_timeout(_mt7530_unlocked_read, &p, val,
- 				 !(val & MT7531_PHY_ACS_ST), 20, 100000);
-@@ -675,7 +698,8 @@ mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
- 
- 	ret = val & MT7531_MDIO_RW_DATA_MASK;
- out:
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- 
- 	return ret;
- }
-@@ -691,7 +715,8 @@ mt7531_ind_c45_phy_write(struct mt7530_priv *priv, int port, int devad,
- 
- 	INIT_MT7530_DUMMY_POLL(&p, priv, MT7531_PHY_IAC);
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	ret = readx_poll_timeout(_mt7530_unlocked_read, &p, val,
- 				 !(val & MT7531_PHY_ACS_ST), 20, 100000);
-@@ -723,7 +748,8 @@ mt7531_ind_c45_phy_write(struct mt7530_priv *priv, int port, int devad,
- 	}
- 
- out:
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- 
- 	return ret;
- }
-@@ -738,7 +764,8 @@ mt7531_ind_c22_phy_read(struct mt7530_priv *priv, int port, int regnum)
- 
- 	INIT_MT7530_DUMMY_POLL(&p, priv, MT7531_PHY_IAC);
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	ret = readx_poll_timeout(_mt7530_unlocked_read, &p, val,
- 				 !(val & MT7531_PHY_ACS_ST), 20, 100000);
-@@ -761,7 +788,8 @@ mt7531_ind_c22_phy_read(struct mt7530_priv *priv, int port, int regnum)
- 
- 	ret = val & MT7531_MDIO_RW_DATA_MASK;
- out:
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- 
- 	return ret;
- }
-@@ -777,7 +805,8 @@ mt7531_ind_c22_phy_write(struct mt7530_priv *priv, int port, int regnum,
- 
- 	INIT_MT7530_DUMMY_POLL(&p, priv, MT7531_PHY_IAC);
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	ret = readx_poll_timeout(_mt7530_unlocked_read, &p, reg,
- 				 !(reg & MT7531_PHY_ACS_ST), 20, 100000);
-@@ -799,7 +828,8 @@ mt7531_ind_c22_phy_write(struct mt7530_priv *priv, int port, int regnum,
- 	}
- 
- out:
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- 
- 	return ret;
- }
-@@ -1109,7 +1139,8 @@ mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- 	if (!dsa_is_cpu_port(ds, port))
- 		return 0;
- 
--	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (bus)
-+		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
- 
- 	val = mt7530_mii_read(priv, MT7530_GMACCR);
- 	val &= ~MAX_RX_PKT_LEN_MASK;
-@@ -1130,7 +1161,8 @@ mt7530_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- 
- 	mt7530_mii_write(priv, MT7530_GMACCR, val);
- 
--	mutex_unlock(&bus->mdio_lock);
-+	if (bus)
-+		mutex_unlock(&bus->mdio_lock);
- 
- 	return 0;
- }
-@@ -1931,10 +1963,14 @@ mt7530_irq_thread_fn(int irq, void *dev_id)
- 	u32 val;
- 	int p;
- 
--	mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+	if (priv->bus)
-+		mutex_lock_nested(&priv->bus->mdio_lock, MDIO_MUTEX_NESTED);
-+
- 	val = mt7530_mii_read(priv, MT7530_SYS_INT_STS);
- 	mt7530_mii_write(priv, MT7530_SYS_INT_STS, val);
--	mutex_unlock(&priv->bus->mdio_lock);
-+
-+	if (priv->bus)
-+		mutex_unlock(&priv->bus->mdio_lock);
- 
- 	for (p = 0; p < MT7530_NUM_PHYS; p++) {
- 		if (BIT(p) & val) {
-@@ -2007,6 +2043,47 @@ static const struct irq_domain_ops mt7530_irq_domain_ops = {
- 	.xlate = irq_domain_xlate_onecell,
- };
- 
-+static void
-+mt7988_irq_mask(struct irq_data *d)
-+{
-+	struct mt7530_priv *priv = irq_data_get_irq_chip_data(d);
-+
-+	priv->irq_enable &= ~BIT(d->hwirq);
-+	mt7530_mii_write(priv, MT7530_SYS_INT_EN, priv->irq_enable);
-+}
-+
-+static void
-+mt7988_irq_unmask(struct irq_data *d)
-+{
-+	struct mt7530_priv *priv = irq_data_get_irq_chip_data(d);
-+
-+	priv->irq_enable |= BIT(d->hwirq);
-+	mt7530_mii_write(priv, MT7530_SYS_INT_EN, priv->irq_enable);
-+}
-+
-+static struct irq_chip mt7988_irq_chip = {
-+	.name = KBUILD_MODNAME,
-+	.irq_mask = mt7988_irq_mask,
-+	.irq_unmask = mt7988_irq_unmask,
-+};
-+
-+static int
-+mt7988_irq_map(struct irq_domain *domain, unsigned int irq,
-+	       irq_hw_number_t hwirq)
-+{
-+	irq_set_chip_data(irq, domain->host_data);
-+	irq_set_chip_and_handler(irq, &mt7988_irq_chip, handle_simple_irq);
-+	irq_set_nested_thread(irq, true);
-+	irq_set_noprobe(irq);
-+
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops mt7988_irq_domain_ops = {
-+	.map = mt7988_irq_map,
-+	.xlate = irq_domain_xlate_onecell,
-+};
-+
- static void
- mt7530_setup_mdio_irq(struct mt7530_priv *priv)
- {
-@@ -2041,8 +2118,15 @@ mt7530_setup_irq(struct mt7530_priv *priv)
- 		return priv->irq ? : -EINVAL;
- 	}
- 
--	priv->irq_domain = irq_domain_add_linear(np, MT7530_NUM_PHYS,
--						 &mt7530_irq_domain_ops, priv);
-+	if (priv->id == ID_MT7988)
-+		priv->irq_domain = irq_domain_add_linear(np, MT7530_NUM_PHYS,
-+							 &mt7988_irq_domain_ops,
-+							 priv);
-+	else
-+		priv->irq_domain = irq_domain_add_linear(np, MT7530_NUM_PHYS,
-+							 &mt7530_irq_domain_ops,
-+							 priv);
-+
- 	if (!priv->irq_domain) {
- 		dev_err(dev, "failed to create IRQ domain\n");
- 		return -ENOMEM;
-@@ -2627,6 +2711,8 @@ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 	case PHY_INTERFACE_MODE_NA:
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	case PHY_INTERFACE_MODE_2500BASEX:
-+	case PHY_INTERFACE_MODE_USXGMII:
-+	case PHY_INTERFACE_MODE_10GKR:
- 		/* handled in SGMII PCS driver */
- 		return 0;
- 	default:
-@@ -2751,7 +2837,9 @@ static void mt753x_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 	 * variants.
- 	 */
- 	if (interface == PHY_INTERFACE_MODE_TRGMII ||
--	    (phy_interface_mode_is_8023z(interface))) {
-+	    interface == PHY_INTERFACE_MODE_USXGMII ||
-+	    interface == PHY_INTERFACE_MODE_10GKR ||
-+	    phy_interface_mode_is_8023z(interface)) {
- 		speed = SPEED_1000;
- 		duplex = DUPLEX_FULL;
- 	}
-@@ -3029,6 +3117,60 @@ static int mt753x_set_mac_eee(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
-+static int mt7988_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
-+{
-+	return 0;
-+}
-+
-+static int mt7988_setup(struct dsa_switch *ds)
-+{
-+	struct mt7530_priv *priv = ds->priv;
-+	u32 unused_pm = 0;
-+	int i;
-+
-+	/* Reset the switch */
-+	reset_control_assert(priv->rstc);
-+	udelay(20);
-+	reset_control_deassert(priv->rstc);
-+	udelay(20);
-+
-+	/* Reset the switch PHYs */
-+	mt7530_write(priv, MT7530_SYS_CTRL, SYS_CTRL_PHY_RST);
-+
-+	/* BPDU to CPU port */
-+	mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
-+		   BIT(MT7988_CPU_PORT));
-+	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-+		   MT753X_BPDU_CPU_ONLY);
-+
-+	/* Enable and reset MIB counters */
-+	mt7530_mib_reset(ds);
-+
-+	for (i = 0; i < MT7530_NUM_PORTS; i++) {
-+		/* Disable forwarding by default on all ports */
-+		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
-+			   PCR_MATRIX_CLR);
-+
-+		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
-+
-+		if (dsa_is_unused_port(ds, i))
-+			unused_pm |= BIT(i);
-+		else if (dsa_is_cpu_port(ds, i))
-+			mt753x_cpu_port_enable(ds, i);
-+		else
-+			mt7530_port_disable(ds, i);
-+
-+		/* Enable consistent egress tag */
-+		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
-+			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
-+	}
-+
-+	ds->configure_vlan_while_not_filtering = true;
-+
-+	/* Flush the FDB table */
-+	return mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
-+}
-+
- const struct dsa_switch_ops mt7530_switch_ops = {
- 	.get_tag_protocol	= mtk_get_tag_protocol,
- 	.setup			= mt753x_setup,
-@@ -3103,6 +3245,19 @@ const struct mt753x_info mt753x_table[] = {
- 		.mac_port_get_caps = mt7531_mac_port_get_caps,
- 		.mac_port_config = mt7531_mac_config,
- 	},
-+	[ID_MT7988] = {
-+		.id = ID_MT7988,
-+		.pcs_ops = &mt7530_pcs_ops,
-+		.sw_setup = mt7988_setup,
-+		.phy_read_c22 = mt7531_ind_c22_phy_read,
-+		.phy_write_c22 = mt7531_ind_c22_phy_write,
-+		.phy_read_c45 = mt7531_ind_c45_phy_read,
-+		.phy_write_c45 = mt7531_ind_c45_phy_write,
-+		.pad_setup = mt7988_pad_setup,
-+		.cpu_port_config = mt7531_cpu_port_config,
-+		.mac_port_get_caps = mt7531_mac_port_get_caps,
-+		.mac_port_config = mt7531_mac_config,
-+	},
- };
- EXPORT_SYMBOL_GPL(mt753x_table);
- 
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index e78ae5c8955ee..6d7f72cb8a2bb 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -11,6 +11,8 @@
- #define MT7530_NUM_FDB_RECORDS		2048
- #define MT7530_ALL_MEMBERS		0xff
- 
-+#define MT7988_CPU_PORT			6
-+
- #define MTK_HDR_LEN	4
- #define MT7530_MAX_MTU	(15 * 1024 - ETH_HLEN - ETH_FCS_LEN - MTK_HDR_LEN)
- 
-@@ -18,6 +20,7 @@ enum mt753x_id {
- 	ID_MT7530 = 0,
- 	ID_MT7621 = 1,
- 	ID_MT7531 = 2,
-+	ID_MT7988 = 3,
- };
- 
- #define	NUM_TRGMII_CTRL			5
-@@ -54,11 +57,11 @@ enum mt753x_id {
- #define  MT7531_MIRROR_PORT_SET(x)	(((x) & MIRROR_MASK) << 16)
- #define  MT7531_CPU_PMAP_MASK		GENMASK(7, 0)
- 
--#define MT753X_MIRROR_REG(id)		(((id) == ID_MT7531) ? \
-+#define MT753X_MIRROR_REG(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
- 					 MT7531_CFC : MT7530_MFC)
--#define MT753X_MIRROR_EN(id)		(((id) == ID_MT7531) ? \
-+#define MT753X_MIRROR_EN(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
- 					 MT7531_MIRROR_EN : MIRROR_EN)
--#define MT753X_MIRROR_MASK(id)		(((id) == ID_MT7531) ? \
-+#define MT753X_MIRROR_MASK(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
- 					 MT7531_MIRROR_MASK : MIRROR_MASK)
- 
- /* Registers for BPDU and PAE frame control*/
-@@ -295,9 +298,8 @@ enum mt7530_vlan_port_acc_frm {
- 					 MT7531_FORCE_DPX | \
- 					 MT7531_FORCE_RX_FC | \
- 					 MT7531_FORCE_TX_FC)
--#define  PMCR_FORCE_MODE_ID(id)		(((id) == ID_MT7531) ? \
--					 MT7531_FORCE_MODE : \
--					 PMCR_FORCE_MODE)
-+#define  PMCR_FORCE_MODE_ID(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
-+					 MT7531_FORCE_MODE : PMCR_FORCE_MODE)
- #define  PMCR_LINK_SETTINGS_MASK	(PMCR_TX_EN | PMCR_FORCE_SPEED_1000 | \
- 					 PMCR_RX_EN | PMCR_FORCE_SPEED_100 | \
- 					 PMCR_TX_FC_EN | PMCR_RX_FC_EN | \
-@@ -740,6 +742,7 @@ struct mt753x_info {
-  * @core_pwr:		The power supplied into the core
-  * @io_pwr:		The power supplied into the I/O
-  * @reset:		The descriptor for GPIO line tied to its reset pin
-+ * @base_addr:		MMIO address for the switch interface.
-  * @mcm:		Flag for distinguishing if standalone IC or module
-  *			coupling
-  * @ports:		Holding the state among ports
-@@ -760,6 +763,7 @@ struct mt7530_priv {
- 	struct regulator	*core_pwr;
- 	struct regulator	*io_pwr;
- 	struct gpio_desc	*reset;
-+	void __iomem		*base_addr;
- 	const struct mt753x_info *info;
- 	unsigned int		id;
- 	bool			mcm;
--- 
-2.39.2
+properties:
+   mediatek,mt7530-muxphy:
+     description:
+       Set the PHY to mux to GMAC5. Only PHY0 or PHY4 can be muxed.
+     enum:
+       - 0
+       - 4
+     maxItems: 1
 
+Whether or not PHY muxing will work with non-MediaTek MACs is still 
+unknown as there is no known hardware that combines a standalone MT7530 
+with a non-MediaTek SoC. Though in theory, it should work.
+
+> 
+>>
+>> For proof of concept, I've moved some necessary switch probing code from
+>> mt7530_setup() to mt7530_probe(). After the switch is properly reset,
+>> phy4 is muxed, before dsa_register_switch() is run.
+> 
+> This is fragile because someone eager for some optimizations could move
+> the code back the way it was, and say: "the switch initialization costs
+> X ms and is done X times, because dsa_register_switch() -> ... ->
+> of_find_net_device_by_node() returns -EPROBE_DEFER the first X-1 times.
+> If we move the switch initialization to ds->ops->setup(), it will run
+> only once, after the handle to the DSA master has been obtained, and
+> this gives us a boost in kernel startup time."
+> 
+> It's even more fragile because currently (neither before nor after your change),
+> mt7530_remove() does not do the mirror opposite of mt7530_probe(), and somebody
+> eager from the future will notice this, and add an error handling path for
+> dsa_register_switch(), which calls the opposite of regulator_enable(),
+> regulator_disable(), saying "hey, there's no reason to let the regulators
+> on if the switch failed to probe, it consumes power for nothing!".
+> 
+> It's an open question whether that regulator is needed for anything after
+> the HWMUX registers has been changed, or if it can indeed be turned off.
+> Not knowing this, it's hard to say if the change is okay or not.
+> It seems that there's a high probability it will work for a while,
+> by coincidence.
+
+Let's just say that since it's needed for probing, it's best it stays 
+on. This should prevent mt7530_remove() from going further if phy muxing 
+is enabled.
+
+> @@ -3167,6 +3173,9 @@ mt7530_remove(struct mdio_device *mdiodev)
+>  	if (!priv)
+>  		return;
+>  
+> +	if (priv->p5_intf_sel == (P5_INTF_SEL_PHY_P0 || P5_INTF_SEL_PHY_P4))
+> +		return;
+> +
+>  	ret = regulator_disable(priv->core_pwr);
+>  	if (ret < 0)
+>  		dev_err(priv->dev,
+
+Is mt7530_remove(), or to be more inclusive, the .remove operation of 
+mdio_driver, run only when the switch fails to probe? If not, with the 
+diff above, the switch won't be disabled in both of the cases (phy 
+muxing only, phy muxing + normal DSA ports) if mt7530_remove() is run 
+for some other reason.
+
+> 
+>>
+>> [    0.650721] mt7530 mdio-bus:1f: MT7530 adapts as multi-chip module
+>> [    0.660285] mt7530 mdio-bus:1f: muxing phy4 to gmac5
+>> [    0.665284] mt7530 mdio-bus:1f: no ports child node found
+>> [    0.670688] mt7530: probe of mdio-bus:1f failed with error -22
+>> [    0.679118] mtk_soc_eth 1e100000.ethernet: generated random MAC address b6:9c:4d:eb:1f:8e
+>> [    0.688922] mtk_soc_eth 1e100000.ethernet eth0: mediatek frame engine at 0xbe100000, irq 15
+>>
+>> ---
+>>
+>> # ifup eth0
+>> [   30.674595] mtk_soc_eth 1e100000.ethernet eth0: configuring for fixed/rgmii link mode
+>> [   30.683451] mtk_soc_eth 1e100000.ethernet eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+>> # ping 192.168.2.2
+>> PING 192.168.2.2 (192.168.2.2): 56 data bytes
+>> 64 bytes from 192.168.2.2: seq=0 ttl=64 time=0.688 ms
+>> 64 bytes from 192.168.2.2: seq=1 ttl=64 time=0.375 ms
+>> 64 bytes from 192.168.2.2: seq=2 ttl=64 time=0.357 ms
+>> 64 bytes from 192.168.2.2: seq=3 ttl=64 time=0.323 ms
+>>
+>> ---
+>>
+>> # ip a
+>> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+>>      link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+>>      inet 127.0.0.1/8 scope host lo
+>>         valid_lft forever preferred_lft forever
+>> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+>>      link/ether b6:9c:4d:eb:1f:8e brd ff:ff:ff:ff:ff:ff
+>>      inet 192.168.2.1/24 scope global eth0
+>>         valid_lft forever preferred_lft forever
+>>
+>> There is a lot to do, such as fixing the method to read from the
+>> devicetree as it relies on the mac node the CPU port is connected to but
+>> when this is finalised, we should be able to use it like this:
+>>
+>> mac@1 {
+>> 	compatible = "mediatek,eth-mac";
+>> 	reg = <1>;
+>> 	phy-mode = "rgmii";
+>> 	phy-handle = <&ethphy0>;
+>> };
+>>
+>> mdio-bus {
+>> 	#address-cells = <1>;
+>> 	#size-cells = <0>;
+>>
+>> 	ethphy0: ethernet-phy@0 {
+>> 		reg = <0>;
+>> 	};
+>>
+>> 	switch@1f {
+>> 		compatible = "mediatek,mt7530";
+>> 		reg = <0x1f>;
+>> 		reset-gpios = <&pio 33 0>;
+>> 		core-supply = <&mt6323_vpa_reg>;
+>> 		io-supply = <&mt6323_vemc3v3_reg>;
+>> 	};
+>> };
+> 
+> And this is fragile because the "mediatek,eth-mac" driver only works
+> because of the side effects of a driver that began to probe, and failed.
+> Someone, seeing that "mediatek,mt7530" fails to probe, and knowing that
+> the switch ports are not needed/used on that board, could put a
+> status = "disabled"; property under the switch@1f node.
+
+This should help.
+
+> 	if (priv->p5_intf_sel == (P5_INTF_SEL_PHY_P0 || P5_INTF_SEL_PHY_P4)) {
+> 		dev_info(priv->dev,
+> 			 "PHY muxing is enabled, gracefully exiting\n");
+> 		return;
+> 	}
+
+Arınç
