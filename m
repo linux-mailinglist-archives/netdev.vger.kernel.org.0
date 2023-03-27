@@ -2,368 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 376B66CA923
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 17:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 009256CA933
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 17:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232601AbjC0Pgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 11:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        id S232939AbjC0Pit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 11:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232561AbjC0Pgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 11:36:48 -0400
-Received: from out0-221.mail.aliyun.com (out0-221.mail.aliyun.com [140.205.0.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61566C2
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 08:36:46 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R501e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047188;MF=amy.saq@antgroup.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---.S01cQa3_1679931403;
-Received: from localhost(mailfrom:amy.saq@antgroup.com fp:SMTPD_---.S01cQa3_1679931403)
-          by smtp.aliyun-inc.com;
-          Mon, 27 Mar 2023 23:36:43 +0800
-From:   "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
-To:     netdev@vger.kernel.org
-Cc:     <willemdebruijn.kernel@gmail.com>, <mst@redhat.com>,
-        <davem@davemloft.net>, <jasowang@redhat.com>,
-        "=?UTF-8?B?6LCI6Ym06ZSL?=" <henry.tjf@antgroup.com>,
-        "=?UTF-8?B?5rKI5a6J55CqKOWHm+eOpSk=?=" <amy.saq@antgroup.com>
-Subject: [PATCH v6] net/packet: support mergeable feature of virtio
-Date:   Mon, 27 Mar 2023 23:36:41 +0800
-Message-Id: <20230327153641.204660-1-amy.saq@antgroup.com>
-X-Mailer: git-send-email 2.19.1.6.gb485710b
+        with ESMTP id S232056AbjC0Pis (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 11:38:48 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2045.outbound.protection.outlook.com [40.107.22.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E4FC2;
+        Mon, 27 Mar 2023 08:38:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mE8b7ZaNb7Nq7AODYOmb0kNCBtdxlRgUhU+rstvQ/YvDuMfIIKy8BHApX841ybEdIdETvk6WFRXbW3X2D/uz6BG9UV91wSs0WVWeKzZ4Z+YhJQTcDo7jnq3Oj762L3wB42bvQkxFeKgu92gZt6IDTgTBhO9bVNvhGcyNfjfGsug88yboicxSPMyusO2L0ZGj5Y5SeYjK7dchlnCDda1qCAhU+Mn5MryGk0d8TeRwLa2eFruTcsXMZAN2RETo2xOqRzi2eoa8Fin3UJRpsWb/uz61EOJg0eFzr8FzAgzUF2/+6nUZ2F3Aa0JeyrI21EZxHnrEMC5xTVxugOtCQBTuDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tET5XWsbzJc25vRwP7iQ1JD35iIyc4moy2SuPeyqit4=;
+ b=FQOOKmy4atVPDutH6T1dVFvCFx/1WXBOBaZTBhOc5sJWLTYDq6pNqm4OR7LBFIo6L8RN55S+CtaOhGLNeYRxKWS8em4yoT93fIJWUnFg5dXtXfE4WR3rFtYSOmtZNM8TE19sPva9AXZnk3HgxQ73wKe+6TwmKszQPICGM1wowcSCce2ki3IQdrVIInlcdrzNqpLslkwiGxvMRGxRodMS4s2OVEEIuCln2QMfyELKj31RFZ+5g7oSrjU2IG7aFzlSHV4/x218MuI/JZbAlJeh+uVkLfcSurxs98l/RxpuDebgPdgMXGeHZbwv0YSLdoA5rCgv8NanKXvM99KJGY1dTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tET5XWsbzJc25vRwP7iQ1JD35iIyc4moy2SuPeyqit4=;
+ b=UHOjdg5pxLhvF4LnWsIsPcO1jvtfkLKitskbrq9N6gOos4pxB3+ellqe5fimcFxlHjoHWmosenaEy3BeTiZZvDGCqfdkoxmbuJnJTjKU+5P3NJFxDgX/fOMuhEGdF3NCCXEIMMRC9rs9fM/fUa0U3JGvXTRQ1TVARnIur2uNqdfUDBTHGy/TZGs+oJ7hgLNeBk4F0d5nIalxlCwVEiuC29eo6k7rv6q2qm2uag5if5snekKCnrfen7mAAdebPfGGC3IvAb/i6dJFprf33oBVYvosa1M2Ef93BNfeHiuuRYB5uNTbjTd7qeY3i9VnN4ph/QK9nRDcuH2XTJ/ZFIs9fQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
+ by PAWPR04MB9957.eurprd04.prod.outlook.com (2603:10a6:102:385::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Mon, 27 Mar
+ 2023 15:38:43 +0000
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::154e:166d:ec25:531b]) by VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::154e:166d:ec25:531b%6]) with mapi id 15.20.6222.029; Mon, 27 Mar 2023
+ 15:38:43 +0000
+Message-ID: <89653286-f05e-1fc1-b6bf-265b7ecaad0d@suse.com>
+Date:   Mon, 27 Mar 2023 17:38:44 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+From:   Jan Beulich <jbeulich@suse.com>
+Subject: Re: [PATCH 1/2] xen/netback: don't do grant copy across page boundary
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        xen-devel@lists.xenproject.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20230327083646.18690-1-jgross@suse.com>
+ <20230327083646.18690-2-jgross@suse.com>
+ <59d90811-bc68-83cd-b7e5-7a8c2e2370d9@suse.com>
+ <f519a2d3-6662-35a2-b295-1825924affa8@suse.com>
+Content-Language: en-US
+In-Reply-To: <f519a2d3-6662-35a2-b295-1825924affa8@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0139.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9e::10) To VE1PR04MB6560.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::25)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6560:EE_|PAWPR04MB9957:EE_
+X-MS-Office365-Filtering-Correlation-Id: af957ac7-806d-4413-a7ab-08db2ed958aa
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7NYbhtp4z21cSgB3y8FAXYG09iXZFSOA3SL+yW2Rl/kFVLiA9z0vjqtGg4ke2n0iFwcBmJwFYcODeC0x3ck7bzdk5pC8Xk+Ic40C+wUta1mSzOJ/JfBvW43bfFLTU3LfwA6MSlRw7GFTQFwcCk353v8jAEAuuZColXhTiAVVCoVSDjwaNTOt+bvvaYDLufim0OlSCP5B3q+GqOLO6IhkwnLtoTFNar+mMSNrFBssw9PzfdO77FOaXHkaY7P9jMEiYqt3sDaWXZiavVSUpsR/kBTBOkgMFVE1/W0h1kEjOlyOVYBt1aGucvJ+kbykz3FldJcomMMAzpqmZjFHt8gWw1qFjpg9pSZg3QLznu1UotZTqvzqI3WkfV+vkInUTZMH7qd0WrtrqAPOJcmsK04AIXeFcsFprPACrGEFyyzKSbDElaMmfzj/VAzCHsU+s8G4T0mT8ippS3WQHIQmrAiIEz/lb2lNP2J6SAwTxGdMiqHUEaeKbVlhdyfFqGUZK/g2TFJkwkzx/+QlQ7J94Q0wscn+mmWUkfelVWeNGcKAIPP9HZhlJ1kMhfxVpGW74jDy+FIaCfWovSfSRiNZXtLuQFAqmIcelnnHMokmATJydpkpY4fSTAHcvuk+/FUDjlptyb0raj0ty/3/AOm7tDvEVQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(396003)(376002)(346002)(39860400002)(451199021)(478600001)(31686004)(54906003)(6636002)(2616005)(316002)(37006003)(6512007)(6506007)(26005)(6486002)(66946007)(53546011)(66476007)(66556008)(8676002)(4326008)(31696002)(186003)(86362001)(41300700001)(8936002)(83380400001)(2906002)(36756003)(6862004)(38100700002)(5660300002)(7416002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SjJmUXkvMitGSnp5MWpzb2VYNWJFT25lOWlWMVd0Rk9PT20wMnZLOHBKUzBj?=
+ =?utf-8?B?YUYySkJzU3AxQ01LVFFLdFJXVEFkSnFCSXpnREV3VHBmNytXbDBhenhBYnVl?=
+ =?utf-8?B?SW9GZW12a3duOTcvSzhXVVRJT0laRDI3TEZLOVZmS3RiRjdRMUh2eWNHVUJB?=
+ =?utf-8?B?bFVabWc2YmIvb3RJQU4zQUZvcmdLRGdmdUs0MURBYktOblc0Z0s3bEJrVG9V?=
+ =?utf-8?B?c0xaOTNIL3BHNXNBeElFS0x4WDA4bDFqT3NNQVhNaTc3MkhkOUJZL1cweTYv?=
+ =?utf-8?B?NnNCYlAwZ2FNU3ZqdzdJYnFLd0hkQkFENGk0OFk3aVNYMnB1UGoxRVJDZXpm?=
+ =?utf-8?B?RVVIdDVxbS96QTBhY1RQSGo0QUx4NWdKOUdsYlRINzhYVjBRaFRGUFNlRnZY?=
+ =?utf-8?B?T3FuSXNzcnRpdzFHTGhjSzVIN1dWV1NUN3I5U1hSVFIxYjJYeVdBZlY0SmVs?=
+ =?utf-8?B?UnNzeVJ2Sm04MUVNZnlkZXRpUTh3TkdtczU0V3A2K1NvNnFqVW9qZGFlNnI1?=
+ =?utf-8?B?b2FuK1pTUENZYXdVQ21DeDlrM2tXUVJ1QksyTmxHUnZhQU9lQVVvUHpMOGoz?=
+ =?utf-8?B?MmViTzZFbDlZbzdGOVVIMkRoMVJqcTROVWZ1TVZFaUI2dlBXN3lyYlRwZzRR?=
+ =?utf-8?B?YTVkQWcxbEJKd3hVZStYcE9KSndzbkc2N3Y1R0FOUTZnZFNYRDZRL2czTWtC?=
+ =?utf-8?B?b3NKSzl6NHZoQ0FlYUtIQWZwczV2OVdiNkhJTEUrS0docE9pbHg0MlBnRVQz?=
+ =?utf-8?B?UlFMUG00T1RVc2JOY0JYdVloNmNsYVpUREVHUkluR3F1YndWU2dVN1F1cXB3?=
+ =?utf-8?B?dEk5WWRwbWREZWdCMExGamcrczF6QzV6MFpjTTVrQ2JLazZiNU8yd1pvNFU0?=
+ =?utf-8?B?NUJhZzA0N0hoYUhEbTVYUjBhSi9uQjVzVDZnMUMxQlVMaG1MTjdpS1d4Ylpi?=
+ =?utf-8?B?dmhGQ3BnYzI3eTFzRmRoQXlYdXdJZDZXQ1Z0MVdKa0gvVlg1bjRSb1hnbUtP?=
+ =?utf-8?B?MDUyWkl0SmxVUFBlT1ZOT2d4K1pVYVdVUmRmOEQwb29LK1RuRkh5WGpZOWk3?=
+ =?utf-8?B?c3lsRlR1R0lacVFRY1g3WTB6bHhSMnRPaGphTHNTTEZMWUtRS2VXV1dxNGs2?=
+ =?utf-8?B?YjNkNWRhK0FYcWYvN292dzdRRGd6N244Zmp6c3AxcVdQd0dsMGhWaVdLUGRW?=
+ =?utf-8?B?WXYrUk40RjdsbEZjQ2JIOFYrV2JvSTdtNEl4S0V3dG5IVTZwa3R3M2trV3NQ?=
+ =?utf-8?B?SXVuK2lrOU52L2FQVHpZakhpTlVZbmJib3l0c2VUZEIvMXdiVmkxWS9LcVdP?=
+ =?utf-8?B?LzBONlNSa3FaYmpTUytPNzFJY3RKeElDeUtsblpDc3FpS0FtNDdPSWg4Y3g4?=
+ =?utf-8?B?T2lsV0p4cTJSVmlzMW9ydzgxQll3Y0xYNDJnM2VKS25VL3JSR1o1SENiUkl0?=
+ =?utf-8?B?aVcyZ1RlQ1VCelNGc0E2NEpRUHV6ZDI5TTYvYzVsa0hPYTJLZFVITjY1d0VX?=
+ =?utf-8?B?cnpMSmxNbGJTMThheWsxVGgzL3I5dTJ5WGZ2QmgyOWIySGFCMjU5QnA2c242?=
+ =?utf-8?B?SVppM0VLdHZVdXBLU0E2c3BGNzE0VlJyWERVVzZlRWJmV1BWTld2aGdHR2pT?=
+ =?utf-8?B?dFF0L2JFZTd0V29KejRsMkg3TDhGWUZ0Q3dyUGtOWENTR1p5RWJnck9LQkhQ?=
+ =?utf-8?B?emI0eXRiajArdmY0dmNHeUdWNlo4VXFFMVVGcHZyQ2U4akNlaFJGT3hjUm9S?=
+ =?utf-8?B?aFFDS3IvQ3d6YTd2OW1mQzJEY0JDeWFiYU5qZE1QOUc1a1Q5b2dBQ1ArMTM1?=
+ =?utf-8?B?L0lqTGZiNFNvbEdzNzgzY3BzN2tpc3A1c3J5RFhyTUpjRzdzemlBNWo2MHE4?=
+ =?utf-8?B?UytLdTM4SWZ6eFE2VWRDVUNab2NsOWtaVE92d3NxSDlqS20yTnRLQXlJV1c1?=
+ =?utf-8?B?RVFVT0JWMjJVOVNVR0VMVWU0S0s0S2F6WWxZZ0w3TXRnWnB0RTlyMUs3WUJu?=
+ =?utf-8?B?M2VSNkkvNkZacy9md2pwRnlDTDlYczMvakszeXp4Q1lOU2c4c2V6akFveDB6?=
+ =?utf-8?B?RktvR20rMlMzRFkwTllERkpZSFRZMk1yNXBDRTUydzZoTC9DRGVvb0lkaFRM?=
+ =?utf-8?Q?PFh92a7o8F/Ou5JVU18zlTIm9?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af957ac7-806d-4413-a7ab-08db2ed958aa
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 15:38:43.7533
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IL5DYqZ47DtvKirvgABQT+AeYJkIsO9JxFX7hgsjR8nrD9zzfbUCTWkiGuovdgbxSn0eEoLbtsZiFI1fVQI5vA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9957
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianfeng Tan <henry.tjf@antgroup.com>
+On 27.03.2023 12:07, Juergen Gross wrote:
+> On 27.03.23 11:49, Jan Beulich wrote:
+>> On 27.03.2023 10:36, Juergen Gross wrote:
+>>> @@ -413,6 +418,13 @@ static void xenvif_get_requests(struct xenvif_queue *queue,
+>>>   		cop->dest.u.gmfn = virt_to_gfn(skb->data + skb_headlen(skb)
+>>>   				               - data_len);
+>>>   
+>>> +		/* Don't cross local page boundary! */
+>>> +		if (cop->dest.offset + amount > XEN_PAGE_SIZE) {
+>>> +			amount = XEN_PAGE_SIZE - cop->dest.offset;
+>>> +			XENVIF_TX_CB(skb)->split_mask |= 1U << copy_count(skb);
+>>
+>> Maybe worthwhile to add a BUILD_BUG_ON() somewhere to make sure this
+>> shift won't grow too large a shift count. The number of slots accepted
+>> could conceivably be grown past XEN_NETBK_LEGACY_SLOTS_MAX (i.e.
+>> XEN_NETIF_NR_SLOTS_MIN) at some point.
+> 
+> This is basically impossible due to the size restriction of struct
+> xenvif_tx_cb.
 
-Packet sockets, like tap, can be used as the backend for kernel vhost.
-In packet sockets, virtio net header size is currently hardcoded to be
-the size of struct virtio_net_hdr, which is 10 bytes; however, it is not
-always the case: some virtio features, such as mrg_rxbuf, need virtio
-net header to be 12-byte long.
+If its size became a problem, it might simply take a level of indirection
+to overcome the limitation.
 
-Mergeable buffers, as a virtio feature, is worthy of supporting: packets
-that are larger than one-mbuf size will be dropped in vhost worker's
-handle_rx if mrg_rxbuf feature is not used, but large packets
-cannot be avoided and increasing mbuf's size is not economical.
+>>> @@ -420,7 +432,8 @@ static void xenvif_get_requests(struct xenvif_queue *queue,
+>>>   		pending_idx = queue->pending_ring[index];
+>>>   		callback_param(queue, pending_idx).ctx = NULL;
+>>>   		copy_pending_idx(skb, copy_count(skb)) = pending_idx;
+>>> -		copy_count(skb)++;
+>>> +		if (!split)
+>>> +			copy_count(skb)++;
+>>>   
+>>>   		cop++;
+>>>   		data_len -= amount;
+>>> @@ -441,7 +454,8 @@ static void xenvif_get_requests(struct xenvif_queue *queue,
+>>>   			nr_slots--;
+>>>   		} else {
+>>>   			/* The copy op partially covered the tx_request.
+>>> -			 * The remainder will be mapped.
+>>> +			 * The remainder will be mapped or copied in the next
+>>> +			 * iteration.
+>>>   			 */
+>>>   			txp->offset += amount;
+>>>   			txp->size -= amount;
+>>> @@ -539,6 +553,13 @@ static int xenvif_tx_check_gop(struct xenvif_queue *queue,
+>>>   		pending_idx = copy_pending_idx(skb, i);
+>>>   
+>>>   		newerr = (*gopp_copy)->status;
+>>> +
+>>> +		/* Split copies need to be handled together. */
+>>> +		if (XENVIF_TX_CB(skb)->split_mask & (1U << i)) {
+>>> +			(*gopp_copy)++;
+>>> +			if (!newerr)
+>>> +				newerr = (*gopp_copy)->status;
+>>> +		}
+>>
+>> It isn't guaranteed that a slot may be split only once, is it? Assuming a
+> 
+> I think it is guaranteed.
+> 
+> No slot can cover more than XEN_PAGE_SIZE bytes due to the grants being
+> restricted to that size. There is no way how such a data packet could cross
+> 2 page boundaries.
+> 
+> In the end the problem isn't the copies for the linear area not crossing
+> multiple page boundaries, but the copies for a single request slot not
+> doing so. And this can't happen IMO.
 
-With this virtio feature enabled by virtio-user, packet sockets with
-hardcoded 10-byte virtio net header will parse mac head incorrectly in
-packet_snd by taking the last two bytes of virtio net header as part of
-mac header.
-This incorrect mac header parsing will cause packet to be dropped due to
-invalid ether head checking in later under-layer device packet receiving.
+You're thinking of only well-formed requests. What about said request
+providing a large size with only tiny fragments? xenvif_get_requests()
+will happily process such, creating bogus grant-copy ops. But them failing
+once submitted to Xen will be only after damage may already have occurred
+(from bogus updates of internal state; the logic altogether is too
+involved for me to be convinced that nothing bad can happen).
 
-By adding extra field vnet_hdr_sz with utilizing holes in struct
-packet_sock to record currently used virtio net header size and supporting
-extra sockopt PACKET_VNET_HDR_SZ to set specified vnet_hdr_sz, packet
-sockets can know the exact length of virtio net header that virtio user
-gives.
-In packet_snd, tpacket_snd and packet_recvmsg, instead of using
-hardcoded virtio net header size, it can get the exact vnet_hdr_sz from
-corresponding packet_sock, and parse mac header correctly based on this
-information to avoid the packets being mistakenly dropped.
+Interestingly (as I realize now) the shifts you add are not be at risk of
+turning UB in this case, as the shift count won't go beyond 16.
 
-Signed-off-by: Jianfeng Tan <henry.tjf@antgroup.com>
-Co-developed-by: Anqi Shen <amy.saq@antgroup.com>
-Signed-off-by: Anqi Shen <amy.saq@antgroup.com>
----
+>> near-64k packet with all tiny non-primary slots, that'll cause those tiny
+>> slots to all be mapped, but due to
+>>
+>> 		if (ret >= XEN_NETBK_LEGACY_SLOTS_MAX - 1 && data_len < txreq.size)
+>> 			data_len = txreq.size;
+>>
+>> will, afaict, cause a lot of copying for the primary slot. Therefore I
+>> think you need a loop here, not just an if(). Plus tx_copy_ops[]'es
+>> dimension also looks to need further growing to accommodate this. Or
+>> maybe not - at least the extreme example given would still be fine; more
+>> generally packets being limited to below 64k means 2*16 slots would
+>> suffice at one end of the scale, while 2*MAX_PENDING_REQS would at the
+>> other end (all tiny, including the primary slot). What I haven't fully
+>> convinced myself of is whether there might be cases in the middle which
+>> are yet worse.
+> 
+> See above reasoning. I think it is okay, but maybe I'm missing something.
 
-V5 -> V6:
-* rebase patch based on 6.3-rc2
+Well, the main thing I'm missing is a "primary request fits in a page"
+check, even more so with the new copying logic that the commit referenced
+by Fixes: introduced into xenvif_get_requests().
 
- include/uapi/linux/if_packet.h |  1 +
- net/packet/af_packet.c         | 88 +++++++++++++++++++++-------------
- net/packet/diag.c              |  2 +-
- net/packet/internal.h          |  2 +-
- 4 files changed, 59 insertions(+), 34 deletions(-)
-
-diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
-index 78c981d6a9d4..9efc42382fdb 100644
---- a/include/uapi/linux/if_packet.h
-+++ b/include/uapi/linux/if_packet.h
-@@ -59,6 +59,7 @@ struct sockaddr_ll {
- #define PACKET_ROLLOVER_STATS		21
- #define PACKET_FANOUT_DATA		22
- #define PACKET_IGNORE_OUTGOING		23
-+#define PACKET_VNET_HDR_SZ		24
- 
- #define PACKET_FANOUT_HASH		0
- #define PACKET_FANOUT_LB		1
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 497193f73030..b13536767cbe 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2090,18 +2090,18 @@ static unsigned int run_filter(struct sk_buff *skb,
- }
- 
- static int packet_rcv_vnet(struct msghdr *msg, const struct sk_buff *skb,
--			   size_t *len)
-+			   size_t *len, int vnet_hdr_sz)
- {
--	struct virtio_net_hdr vnet_hdr;
-+	struct virtio_net_hdr_mrg_rxbuf vnet_hdr = { .num_buffers = 0 };
- 
--	if (*len < sizeof(vnet_hdr))
-+	if (*len < vnet_hdr_sz)
- 		return -EINVAL;
--	*len -= sizeof(vnet_hdr);
-+	*len -= vnet_hdr_sz;
- 
--	if (virtio_net_hdr_from_skb(skb, &vnet_hdr, vio_le(), true, 0))
-+	if (virtio_net_hdr_from_skb(skb, (struct virtio_net_hdr *)&vnet_hdr, vio_le(), true, 0))
- 		return -EINVAL;
- 
--	return memcpy_to_msg(msg, (void *)&vnet_hdr, sizeof(vnet_hdr));
-+	return memcpy_to_msg(msg, (void *)&vnet_hdr, vnet_hdr_sz);
- }
- 
- /*
-@@ -2251,6 +2251,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 	bool is_drop_n_account = false;
- 	unsigned int slot_id = 0;
- 	bool do_vnet = false;
-+	int vnet_hdr_sz;
- 
- 	/* struct tpacket{2,3}_hdr is aligned to a multiple of TPACKET_ALIGNMENT.
- 	 * We may add members to them until current aligned size without forcing
-@@ -2308,8 +2309,9 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 		netoff = TPACKET_ALIGN(po->tp_hdrlen +
- 				       (maclen < 16 ? 16 : maclen)) +
- 				       po->tp_reserve;
--		if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
--			netoff += sizeof(struct virtio_net_hdr);
-+		vnet_hdr_sz = READ_ONCE(po->vnet_hdr_sz);
-+		if (vnet_hdr_sz) {
-+			netoff += vnet_hdr_sz;
- 			do_vnet = true;
- 		}
- 		macoff = netoff - maclen;
-@@ -2551,16 +2553,26 @@ static int __packet_snd_vnet_parse(struct virtio_net_hdr *vnet_hdr, size_t len)
- }
- 
- static int packet_snd_vnet_parse(struct msghdr *msg, size_t *len,
--				 struct virtio_net_hdr *vnet_hdr)
-+				 struct virtio_net_hdr *vnet_hdr, int vnet_hdr_sz)
- {
--	if (*len < sizeof(*vnet_hdr))
-+	int ret;
-+
-+	if (*len < vnet_hdr_sz)
- 		return -EINVAL;
--	*len -= sizeof(*vnet_hdr);
-+	*len -= vnet_hdr_sz;
- 
- 	if (!copy_from_iter_full(vnet_hdr, sizeof(*vnet_hdr), &msg->msg_iter))
- 		return -EFAULT;
- 
--	return __packet_snd_vnet_parse(vnet_hdr, *len);
-+	ret = __packet_snd_vnet_parse(vnet_hdr, *len);
-+	if (ret)
-+		return ret;
-+
-+	/* move iter to point to the start of mac header */
-+	if (vnet_hdr_sz != sizeof(struct virtio_net_hdr))
-+		iov_iter_advance(&msg->msg_iter, vnet_hdr_sz - sizeof(struct virtio_net_hdr));
-+
-+	return 0;
- }
- 
- static int tpacket_fill_skb(struct packet_sock *po, struct sk_buff *skb,
-@@ -2722,6 +2734,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 	void *ph;
- 	DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
- 	bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
-+	int vnet_hdr_sz = READ_ONCE(po->vnet_hdr_sz);
- 	unsigned char *addr = NULL;
- 	int tp_len, size_max;
- 	void *data;
-@@ -2779,8 +2792,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 	size_max = po->tx_ring.frame_size
- 		- (po->tp_hdrlen - sizeof(struct sockaddr_ll));
- 
--	if ((size_max > dev->mtu + reserve + VLAN_HLEN) &&
--	    !packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR))
-+	if ((size_max > dev->mtu + reserve + VLAN_HLEN) && !vnet_hdr_sz)
- 		size_max = dev->mtu + reserve + VLAN_HLEN;
- 
- 	reinit_completion(&po->skb_completion);
-@@ -2809,10 +2821,11 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 		status = TP_STATUS_SEND_REQUEST;
- 		hlen = LL_RESERVED_SPACE(dev);
- 		tlen = dev->needed_tailroom;
--		if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
-+
-+		if (vnet_hdr_sz) {
- 			vnet_hdr = data;
--			data += sizeof(*vnet_hdr);
--			tp_len -= sizeof(*vnet_hdr);
-+			data += vnet_hdr_sz;
-+			tp_len -= vnet_hdr_sz;
- 			if (tp_len < 0 ||
- 			    __packet_snd_vnet_parse(vnet_hdr, tp_len)) {
- 				tp_len = -EINVAL;
-@@ -2837,7 +2850,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 					  addr, hlen, copylen, &sockc);
- 		if (likely(tp_len >= 0) &&
- 		    tp_len > dev->mtu + reserve &&
--		    !packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR) &&
-+		    !vnet_hdr_sz &&
- 		    !packet_extra_vlan_len_allowed(dev, skb))
- 			tp_len = -EMSGSIZE;
- 
-@@ -2856,7 +2869,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 			}
- 		}
- 
--		if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
-+		if (vnet_hdr_sz) {
- 			if (virtio_net_hdr_to_skb(skb, vnet_hdr, vio_le())) {
- 				tp_len = -EINVAL;
- 				goto tpacket_error;
-@@ -2946,7 +2959,7 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 	struct virtio_net_hdr vnet_hdr = { 0 };
- 	int offset = 0;
- 	struct packet_sock *po = pkt_sk(sk);
--	bool has_vnet_hdr = false;
-+	int vnet_hdr_sz = READ_ONCE(po->vnet_hdr_sz);
- 	int hlen, tlen, linear;
- 	int extra_len = 0;
- 
-@@ -2990,11 +3003,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	if (sock->type == SOCK_RAW)
- 		reserve = dev->hard_header_len;
--	if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR)) {
--		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr);
-+
-+	if (vnet_hdr_sz) {
-+		err = packet_snd_vnet_parse(msg, &len, &vnet_hdr, vnet_hdr_sz);
- 		if (err)
- 			goto out_unlock;
--		has_vnet_hdr = true;
- 	}
- 
- 	if (unlikely(sock_flag(sk, SOCK_NOFCS))) {
-@@ -3064,11 +3077,11 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	packet_parse_headers(skb, sock);
- 
--	if (has_vnet_hdr) {
-+	if (vnet_hdr_sz) {
- 		err = virtio_net_hdr_to_skb(skb, &vnet_hdr, vio_le());
- 		if (err)
- 			goto out_free;
--		len += sizeof(vnet_hdr);
-+		len += vnet_hdr_sz;
- 		virtio_net_hdr_set_proto(skb, &vnet_hdr);
- 	}
- 
-@@ -3408,7 +3421,7 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 	struct sock *sk = sock->sk;
- 	struct sk_buff *skb;
- 	int copied, err;
--	int vnet_hdr_len = 0;
-+	int vnet_hdr_len = READ_ONCE(pkt_sk(sk)->vnet_hdr_sz);
- 	unsigned int origlen = 0;
- 
- 	err = -EINVAL;
-@@ -3449,11 +3462,10 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 
- 	packet_rcv_try_clear_pressure(pkt_sk(sk));
- 
--	if (packet_sock_flag(pkt_sk(sk), PACKET_SOCK_HAS_VNET_HDR)) {
--		err = packet_rcv_vnet(msg, skb, &len);
-+	if (vnet_hdr_len) {
-+		err = packet_rcv_vnet(msg, skb, &len, vnet_hdr_len);
- 		if (err)
- 			goto out_free;
--		vnet_hdr_len = sizeof(struct virtio_net_hdr);
- 	}
- 
- 	/* You lose any data beyond the buffer you gave. If it worries
-@@ -3915,8 +3927,9 @@ packet_setsockopt(struct socket *sock, int level, int optname, sockptr_t optval,
- 		return 0;
- 	}
- 	case PACKET_VNET_HDR:
-+	case PACKET_VNET_HDR_SZ:
- 	{
--		int val;
-+		int val, hdr_len;
- 
- 		if (sock->type != SOCK_RAW)
- 			return -EINVAL;
-@@ -3925,11 +3938,19 @@ packet_setsockopt(struct socket *sock, int level, int optname, sockptr_t optval,
- 		if (copy_from_sockptr(&val, optval, sizeof(val)))
- 			return -EFAULT;
- 
-+		hdr_len = val ? sizeof(struct virtio_net_hdr) : 0;
-+		if (optname == PACKET_VNET_HDR_SZ) {
-+			if (val && val != sizeof(struct virtio_net_hdr) &&
-+			    val != sizeof(struct virtio_net_hdr_mrg_rxbuf))
-+				return -EINVAL;
-+			hdr_len = val;
-+		}
-+
- 		lock_sock(sk);
- 		if (po->rx_ring.pg_vec || po->tx_ring.pg_vec) {
- 			ret = -EBUSY;
- 		} else {
--			packet_sock_flag_set(po, PACKET_SOCK_HAS_VNET_HDR, val);
-+			po->vnet_hdr_sz = hdr_len;
- 			ret = 0;
- 		}
- 		release_sock(sk);
-@@ -4062,7 +4083,10 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
- 		val = packet_sock_flag(po, PACKET_SOCK_ORIGDEV);
- 		break;
- 	case PACKET_VNET_HDR:
--		val = packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR);
-+		val = !!po->vnet_hdr_sz;
-+		break;
-+	case PACKET_VNET_HDR_SZ:
-+		val = po->vnet_hdr_sz;
- 		break;
- 	case PACKET_VERSION:
- 		val = po->tp_version;
-diff --git a/net/packet/diag.c b/net/packet/diag.c
-index de4ced5cf3e8..5cf13cf0b862 100644
---- a/net/packet/diag.c
-+++ b/net/packet/diag.c
-@@ -27,7 +27,7 @@ static int pdiag_put_info(const struct packet_sock *po, struct sk_buff *nlskb)
- 		pinfo.pdi_flags |= PDI_AUXDATA;
- 	if (packet_sock_flag(po, PACKET_SOCK_ORIGDEV))
- 		pinfo.pdi_flags |= PDI_ORIGDEV;
--	if (packet_sock_flag(po, PACKET_SOCK_HAS_VNET_HDR))
-+	if (po->vnet_hdr_sz)
- 		pinfo.pdi_flags |= PDI_VNETHDR;
- 	if (packet_sock_flag(po, PACKET_SOCK_TP_LOSS))
- 		pinfo.pdi_flags |= PDI_LOSS;
-diff --git a/net/packet/internal.h b/net/packet/internal.h
-index 27930f69f368..63f4865202c1 100644
---- a/net/packet/internal.h
-+++ b/net/packet/internal.h
-@@ -118,6 +118,7 @@ struct packet_sock {
- 	struct mutex		pg_vec_lock;
- 	unsigned long		flags;
- 	int			ifindex;	/* bound device		*/
-+	u8			vnet_hdr_sz;
- 	__be16			num;
- 	struct packet_rollover	*rollover;
- 	struct packet_mclist	*mclist;
-@@ -139,7 +140,6 @@ enum packet_sock_flags {
- 	PACKET_SOCK_AUXDATA,
- 	PACKET_SOCK_TX_HAS_OFF,
- 	PACKET_SOCK_TP_LOSS,
--	PACKET_SOCK_HAS_VNET_HDR,
- 	PACKET_SOCK_RUNNING,
- 	PACKET_SOCK_PRESSURE,
- 	PACKET_SOCK_QDISC_BYPASS,
--- 
-2.19.1.6.gb485710b
-
+Jan
