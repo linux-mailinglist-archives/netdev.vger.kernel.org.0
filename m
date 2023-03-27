@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 326566CAB55
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:03:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A0F56CAB62
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232454AbjC0RDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 13:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
+        id S232395AbjC0RDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 13:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232766AbjC0RCt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:02:49 -0400
+        with ESMTP id S232538AbjC0RCz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:02:55 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E2C4EF7
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 10:02:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ADF3ABA
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 10:02:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aaMEyB/T5u8BtwRY2FG9AMNvWgS93E+JmUo3WB29QhM=; b=zmdS+fwVDO/0ToOL1LZJ6TQPuo
-        jrex2udTuE/3HwKqWJE/SEteKRaT2t1Vm5UhVom/GwDC4bWNV21xhXmdiY/aORngixHxtpcIe2+Uz
-        jFpFdkubAsDCdqXGM9CRPxqWSFJ3bDXC0xX44p+haZCYy/hKFfkDoBFsfXzHyTgkjD2Q=;
+        bh=/GNTUvbLFUj7rguANJQ+DfY7+NXKKGe2M70j/ntNoLs=; b=0BZAwJ0VGSNoq2/qmL11i7PkKw
+        vRo+6oS08oSt1D4G8kvMlGxsNntc+jzyEJqUvbW8YgnXCqjOS6iln+6I9EtGKeGg5j9rARrkzmYab
+        aYqiWU71qF3rOIN+mVexcO6qtILpGHyPQfRKrEF/TUwsxgXk/z7wX9WPOJEoWYz5vTE8=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pgqEU-008Xqt-Oe; Mon, 27 Mar 2023 19:02:10 +0200
+        id 1pgqEU-008Xqx-QP; Mon, 27 Mar 2023 19:02:10 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -32,9 +32,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [RFC/RFT 09/23] net: lan743x: Fixup EEE
-Date:   Mon, 27 Mar 2023 19:01:47 +0200
-Message-Id: <20230327170201.2036708-10-andrew@lunn.ch>
+Subject: [RFC/RFT 10/23] net: fec: Move fec_enet_eee_mode_set() and helper earlier
+Date:   Mon, 27 Mar 2023 19:01:48 +0200
+Message-Id: <20230327170201.2036708-11-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230327170201.2036708-1-andrew@lunn.ch>
 References: <20230327170201.2036708-1-andrew@lunn.ch>
@@ -49,95 +49,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The enabling/disabling of EEE in the MAC should happen as a result of
-auto negotiation. So move the enable/disable into
-lan743x_phy_link_status_change() which gets called by phylib when
-there is a change in link status.
-
-lan743x_ethtool_set_eee() now just programs the hardware with the LTI
-timer value, and passed everything else to phylib, so it can correctly
-setup the PHY.
-
-lan743x_ethtool_get_eee() relies on phylib doing most of the work, the
-MAC driver just adds the LTI timer value.
+FEC is about to get its EEE code re-written. To allow this, move
+fec_enet_eee_mode_set() before fec_enet_adjust_link() which will
+need to call it.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- .../net/ethernet/microchip/lan743x_ethtool.c  | 22 -------------------
- drivers/net/ethernet/microchip/lan743x_main.c |  7 ++++++
- 2 files changed, 7 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/freescale/fec_main.c | 79 ++++++++++++-----------
+ 1 file changed, 40 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-index 2db5949b4c7e..da2f1110e0db 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-@@ -1073,16 +1073,10 @@ static int lan743x_ethtool_get_eee(struct net_device *netdev,
- 
- 	buf = lan743x_csr_read(adapter, MAC_CR);
- 	if (buf & MAC_CR_EEE_EN_) {
--		eee->eee_enabled = true;
--		eee->eee_active = !!(eee->advertised & eee->lp_advertised);
--		eee->tx_lpi_enabled = true;
- 		/* EEE_TX_LPI_REQ_DLY & tx_lpi_timer are same uSec unit */
- 		buf = lan743x_csr_read(adapter, MAC_EEE_TX_LPI_REQ_DLY_CNT);
- 		eee->tx_lpi_timer = buf;
- 	} else {
--		eee->eee_enabled = false;
--		eee->eee_active = false;
--		eee->tx_lpi_enabled = false;
- 		eee->tx_lpi_timer = 0;
- 	}
- 
-@@ -1095,7 +1089,6 @@ static int lan743x_ethtool_set_eee(struct net_device *netdev,
- 	struct lan743x_adapter *adapter;
- 	struct phy_device *phydev;
- 	u32 buf = 0;
--	int ret = 0;
- 
- 	if (!netdev)
- 		return -EINVAL;
-@@ -1112,23 +1105,8 @@ static int lan743x_ethtool_set_eee(struct net_device *netdev,
- 	}
- 
- 	if (eee->eee_enabled) {
--		ret = phy_init_eee(phydev, false);
--		if (ret) {
--			netif_err(adapter, drv, adapter->netdev,
--				  "EEE initialization failed\n");
--			return ret;
--		}
--
- 		buf = (u32)eee->tx_lpi_timer;
- 		lan743x_csr_write(adapter, MAC_EEE_TX_LPI_REQ_DLY_CNT, buf);
--
--		buf = lan743x_csr_read(adapter, MAC_CR);
--		buf |= MAC_CR_EEE_EN_;
--		lan743x_csr_write(adapter, MAC_CR, buf);
--	} else {
--		buf = lan743x_csr_read(adapter, MAC_CR);
--		buf &= ~MAC_CR_EEE_EN_;
--		lan743x_csr_write(adapter, MAC_CR, buf);
- 	}
- 
- 	return phy_ethtool_set_eee(phydev, eee);
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 957d96a91a8a..7986f8fcf7d3 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1457,6 +1457,13 @@ static void lan743x_phy_link_status_change(struct net_device *netdev)
- 		    phydev->interface == PHY_INTERFACE_MODE_1000BASEX ||
- 		    phydev->interface == PHY_INTERFACE_MODE_2500BASEX)
- 			lan743x_sgmii_config(adapter);
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index f3b16a6673e2..462755f5d33e 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1919,6 +1919,46 @@ static int fec_get_mac(struct net_device *ndev)
+ /*
+  * Phy section
+  */
 +
-+		data = lan743x_csr_read(adapter, MAC_CR);
-+		if (phydev->eee_active)
-+			data |=  MAC_CR_EEE_EN_;
-+		else
-+			data &= ~MAC_CR_EEE_EN_;
-+		lan743x_csr_write(adapter, MAC_CR, data);
- 	}
++/* LPI Sleep Ts count base on tx clk (clk_ref).
++ * The lpi sleep cnt value = X us / (cycle_ns).
++ */
++static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
++{
++	struct fec_enet_private *fep = netdev_priv(ndev);
++
++	return us * (fep->clk_ref_rate / 1000) / 1000;
++}
++
++static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
++{
++	struct fec_enet_private *fep = netdev_priv(ndev);
++	struct ethtool_eee *p = &fep->eee;
++	unsigned int sleep_cycle, wake_cycle;
++	int ret = 0;
++
++	if (enable) {
++		ret = phy_init_eee(ndev->phydev, false);
++		if (ret)
++			return ret;
++
++		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
++		wake_cycle = sleep_cycle;
++	} else {
++		sleep_cycle = 0;
++		wake_cycle = 0;
++	}
++
++	p->tx_lpi_enabled = enable;
++	p->eee_enabled = enable;
++	p->eee_active = enable;
++
++	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
++	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
++
++	return 0;
++}
++
+ static void fec_enet_adjust_link(struct net_device *ndev)
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+@@ -3057,45 +3097,6 @@ static int fec_enet_set_tunable(struct net_device *netdev,
+ 	return ret;
  }
  
+-/* LPI Sleep Ts count base on tx clk (clk_ref).
+- * The lpi sleep cnt value = X us / (cycle_ns).
+- */
+-static int fec_enet_us_to_tx_cycle(struct net_device *ndev, int us)
+-{
+-	struct fec_enet_private *fep = netdev_priv(ndev);
+-
+-	return us * (fep->clk_ref_rate / 1000) / 1000;
+-}
+-
+-static int fec_enet_eee_mode_set(struct net_device *ndev, bool enable)
+-{
+-	struct fec_enet_private *fep = netdev_priv(ndev);
+-	struct ethtool_eee *p = &fep->eee;
+-	unsigned int sleep_cycle, wake_cycle;
+-	int ret = 0;
+-
+-	if (enable) {
+-		ret = phy_init_eee(ndev->phydev, false);
+-		if (ret)
+-			return ret;
+-
+-		sleep_cycle = fec_enet_us_to_tx_cycle(ndev, p->tx_lpi_timer);
+-		wake_cycle = sleep_cycle;
+-	} else {
+-		sleep_cycle = 0;
+-		wake_cycle = 0;
+-	}
+-
+-	p->tx_lpi_enabled = enable;
+-	p->eee_enabled = enable;
+-	p->eee_active = enable;
+-
+-	writel(sleep_cycle, fep->hwp + FEC_LPI_SLEEP);
+-	writel(wake_cycle, fep->hwp + FEC_LPI_WAKE);
+-
+-	return 0;
+-}
+-
+ static int
+ fec_enet_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+ {
 -- 
 2.39.2
 
