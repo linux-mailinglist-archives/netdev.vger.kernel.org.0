@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2066CA211
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 13:06:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 605E96CA213
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 13:06:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbjC0LGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 07:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
+        id S232388AbjC0LG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 07:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbjC0LGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 07:06:18 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A024207;
-        Mon, 27 Mar 2023 04:06:16 -0700 (PDT)
+        with ESMTP id S229546AbjC0LGX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 07:06:23 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2084.outbound.protection.outlook.com [40.107.223.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DBFF468E;
+        Mon, 27 Mar 2023 04:06:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mte0KA7sRqnUfO3nicaw6aHsRIU8cuCiHDUWxswZi/OF6lPA1YNxKfLvHx+ob6IFfisUnFpKNwCBzzm2XTfoLj+WvC5UJG7Vk5dmiqvBZ2DulBtv6mA5Qxhy0iI0zm4M5O55Hy+M6hjOg0FxBffsoFgj/OwRMDYenvoUfKBIaLBRDrT6e+uwqyHIydF4lklapYZ3ASpgaZK2Dg7SnO/dMSZRjDxEMLPVtoUi/Kiq/QNNk90FWZJ8FF0MHrr8w+DtwvputUgGp+5yzQyOFPk4PjekT5nqPlkK5D1AotPc/Z/pkS2iOZYW6shCjBsfjujP4/GfUN5uQuZpeOjmZ4QZvg==
+ b=Ca7Uqam4WVgjArgeV3TaTjiSa42xxi/8A4YUatFjqZvy65Cj6ZlYQCjX1vrVaqFgBnbBcK/UfCgsEvzd8Z9QBATAgwT5fLppUoQr/fAQdL7YTeac0ee3zbceql6VRaJp5YUpp7lLBWi33/c0wEo4EKRc+y9cHw1OIUrjB/sfQFCJtqaqWnC6Ak1L9xNIYvcwQNRRfUH7RZ7ZtfjJejD0vXg276x/zxftd18kCiakuYkFG/UmsGVXTOpkTfn3d/9DZpctKvkzOdKa8jPmwuyeXy9GaYyORlF5gnrbmW4QjXO8g5jQaC1eg5CJl2iNfCxYF4R6nO75FzBlOu1zF5ClvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UL2cpmjnZhOw8J/La3QeHCLsUyESMwjJMJxT3ugCkj0=;
- b=A1BwFQDFt2P3E1y+s2dF+LXL1lBx0CLL7JL+eqBhPSlwrzegFtSUmm34vKNDq/mcHD58P2fLn5cBiTqu/UPC2WGPPomo6kDUp2iBIp3Q8W45EpYNGimJTlf/CHFcyVezNtYkJnO574mSytxLT9klCP62/O86pdC6+ktNZegr/LhzAgWBIFI1iDsj7v2JOrsONidc6p1S9Bf4Bi7Zi2fll3nyKBWaWiEUViL1YRxqp3q1YcLKf6Hf9f4u5zEKPmly9Nw8fsep/xsgEOIe2iyr/cljiI1tnmKOWQ7WfU58X7bGArfEoicC7CfxQ8D+tk7Dr05ULn8jxS9HR98VMk4e7Q==
+ bh=Spn8Pi1i4yafXE9SaGQap1MRbPwCW9izTJUcHEd7LXY=;
+ b=mXevP6NeQxZ1CTQ+oL7Y8XnI+xHs1n3nQrtv3VOdv71Y59NaiQgMVMV+ceJuPb931rp1VG5URJY9eK2dPXYDAxer88H9vpaCiNuGhiT826ml13Ym4Y6GrQkAq5p+k5hKdkFmnIq2X3wcIoGixyKUyeG14mXje5reVLIV7zGX9Jx1LhzYqTx6DjMjmnNVi9z0YHbr8Hgt08g68b8jpdUBPFatqWL4v7Xa+8tgANZKlu47dbUHdtbheFggDFfAtwFkleV5VX3TCBd7dCLbykq2qq/Kh7W5Wyrn9gFe/c4niL3L8M+cjsNVUhj/QcLmVcLbg1BsN3QxykblUtUr3BfFfQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UL2cpmjnZhOw8J/La3QeHCLsUyESMwjJMJxT3ugCkj0=;
- b=QrOCVFuUmVHI7j38vriSU3w2MjCO0g7MDAF8AjWQsNEzIqt/pIFFr9SSSS2TnyHegORsz3AA0c/DIzQWhwKzXQouFC9utpbjBxEj3D8b9dPjsDnckknV2jcPmmGLOJGHO+G+QfTe1Ad1BOT1DetIXmsyC2NlmkWMdwCdkdfqYus=
-Received: from BN8PR07CA0022.namprd07.prod.outlook.com (2603:10b6:408:ac::35)
- by SJ0PR12MB8165.namprd12.prod.outlook.com (2603:10b6:a03:4e4::6) with
+ bh=Spn8Pi1i4yafXE9SaGQap1MRbPwCW9izTJUcHEd7LXY=;
+ b=Xm9St+q1z971fTfqCifzDL/1/9ys3YHdtOPltW12siQFvGKwi7tcGT4msPdLWjUXeJKO5FHr1rqsL/7Yc191V7A5VdLkoJtKJQoU+EugTCYPwsaDPSta9MXsmRjagyvnUbodUDr9aV9TJ1MrU/QVUzdol26cJmKPMRRFuALf6uE=
+Received: from BN8PR03CA0033.namprd03.prod.outlook.com (2603:10b6:408:94::46)
+ by DS0PR12MB8480.namprd12.prod.outlook.com (2603:10b6:8:159::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Mon, 27 Mar
- 2023 11:06:13 +0000
-Received: from BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ac:cafe::81) by BN8PR07CA0022.outlook.office365.com
- (2603:10b6:408:ac::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.42 via Frontend
- Transport; Mon, 27 Mar 2023 11:06:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Mon, 27 Mar
+ 2023 11:06:20 +0000
+Received: from BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:94:cafe::81) by BN8PR03CA0033.outlook.office365.com
+ (2603:10b6:408:94::46) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41 via Frontend
+ Transport; Mon, 27 Mar 2023 11:06:20 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -46,20 +46,16 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
 Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT106.mail.protection.outlook.com (10.13.177.7) with Microsoft SMTP
+ BN8NAM11FT044.mail.protection.outlook.com (10.13.177.219) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6222.22 via Frontend Transport; Mon, 27 Mar 2023 11:06:12 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
+ 15.20.6222.22 via Frontend Transport; Mon, 27 Mar 2023 11:06:19 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 27 Mar
- 2023 06:06:12 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 27 Mar
- 2023 06:06:11 -0500
+ 2023 06:06:15 -0500
 Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Mon, 27 Mar 2023 06:06:08 -0500
+ Transport; Mon, 27 Mar 2023 06:06:12 -0500
 From:   Harini Katakam <harini.katakam@amd.com>
 To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
         <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
@@ -68,31 +64,33 @@ To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <michal.simek@amd.com>, <harinikatakamlinux@gmail.com>,
         <harini.katakam@amd.com>
-Subject: [PATCH net-next v3 0/3] Macb PTP minor updates
-Date:   Mon, 27 Mar 2023 16:36:04 +0530
-Message-ID: <20230327110607.21964-1-harini.katakam@amd.com>
+Subject: [PATCH net-next v3 1/3] net: macb: Update gem PTP support check
+Date:   Mon, 27 Mar 2023 16:36:05 +0530
+Message-ID: <20230327110607.21964-2-harini.katakam@amd.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20230327110607.21964-1-harini.katakam@amd.com>
+References: <20230327110607.21964-1-harini.katakam@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT106:EE_|SJ0PR12MB8165:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0e34424f-ac4e-4fa6-aa4d-08db2eb34712
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT044:EE_|DS0PR12MB8480:EE_
+X-MS-Office365-Filtering-Correlation-Id: b5f1dc5d-7f66-4137-9b1c-08db2eb34b24
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FC4zqERGUkyzFYbEtZ8vOp36+XzZkdMRFv+1AOhWzSeN0/1kQIRdW7Sg3foa+m8+Dh4QKxyfgeRBU08r5RxAK/w6uo5QjC8CQKISaudrugkCBPAmYeuYDlSQ/hxLUzeHn0sr0F/j4oc7U4wcjJHlr41Ad/H1A7BvIV8uveLfjNKgkxVufyksZU5YixntU5/snzwn5hCxO10KCLwgf74JmMdBdrvuVZSV82jspMZ1trs7X//BFJxCnpP4Pcm+IxH3fZJVMUL1QQXDQwyoT2+2s+gQVWvvWwYSFaiyiAV4jK2Y8UM+WMY6vecG5CQtu+AKpctZPryXgXJp5XsOFhMFuLvwgk5nXe8N4n5xsPOKevPt+nOflJQmYf1Gbs5XCQhEtg9RZvuIz6ajSmSZwfyd4CNpVd3dFPP9JabCR11eBIDhrXlhIfUExaiMvCEzSeJxb97LhWHoyyCNivOI+WEVnWMIw87+wc84VG3w3cmgpjGj397bUDiljSCZlDRSmZQSRzBKuZaxVLh1ZvOLf10PH4W/f2B2PAdhKk3cg9Rg8opUtLFsXxdAssc2oFQgPo/TvyXUxexpI7hO7pohQGqMensLs8zzuxVkTFYOGAI4YPOuPF3rIo+H1Y2BwjoTTZqCm5/dXx0hMabspMIS6bTZPZVaye+UncM7D6LIvuUx/RdTUV26uYqWCUyXaX7b7nzpCltFi36S4D+ZzUhibnxAM0wfOflxTwP03PPB6NVrozc=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(376002)(346002)(136003)(451199021)(40470700004)(46966006)(36840700001)(356005)(40480700001)(36756003)(40460700003)(86362001)(82310400005)(70586007)(70206006)(8676002)(186003)(316002)(336012)(8936002)(4744005)(7416002)(5660300002)(2616005)(41300700001)(6666004)(478600001)(54906003)(26005)(110136005)(1076003)(4326008)(36860700001)(15650500001)(426003)(47076005)(44832011)(81166007)(2906002)(82740400003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 6TAQIxwf3xz668imLXIKW6jUbi+dD+Uf1LGqDm3Bs35MdysjG27g55GI/CkwST0WwCats2Gt1CJVbOw8ZOMWxJuIZWa8Dnr5qMOjYb2J3be6F/d4UW8Zpyp2hDlLLsOiAK8lYLBmYOYRLy2G3XQ0BClk8U0CIM24sN8ugJPw1SDGB9ZQ4ygwkbF7rA8z9fRHCmPwvI4uAhEX3WvhK0oJm0rVmc/iLYlVnl/FP5rg8ri9AulO2JWQs1tGa5N7tzd1ZiujydrXcPFGSAjNaiISnRT/wAXMZ1NhRoCw+K4R39gtyqysK/1FFOMb8+NvpfQ79IBE1RuPCHbP5BcKXwrviApf1M2v+sni9ysYJNCVP+ipsm2Q8WVFezXdP6vX0n6op05FX+kxvmrxLP8wZEWxtDZe/UJC485dr1I4aMY2FRbaljNt6+XZROewshApIwTGtNQ5JrDkjidZLpVAwa9BEcSoG7xeHVZzfQCZ7LhsJykfTu9y52HFQ/bvw6OgFlCHIUMMAUm2IBnnV1+X0/7AF+lcmo2UoewVT2hwzUW7CXKuOQKOMH2U1KzES0e74uuxNMIuHuF+0ssM9aAE652WBhNHhtrRH+rjVL1ZT21ZDQi6ZuGfYYz0FzFF5dro44LGSttO/AFpx2zEWqJ6Yry7T223xBOW7k7hhDzvNrYDFdKN7d4xQ6Zt4kuMV1lsTuDJkeaJrQYcO2sRwj9ueW8jKD9DxRp9i2ellB3TT0q7Ug8=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(136003)(39860400002)(396003)(451199021)(46966006)(36840700001)(40470700004)(356005)(81166007)(7416002)(8936002)(5660300002)(82310400005)(186003)(1076003)(36756003)(26005)(2616005)(2906002)(40480700001)(6666004)(47076005)(86362001)(36860700001)(83380400001)(426003)(336012)(44832011)(40460700003)(82740400003)(4326008)(8676002)(54906003)(70586007)(70206006)(41300700001)(478600001)(110136005)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 11:06:12.4799
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 11:06:19.6052
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e34424f-ac4e-4fa6-aa4d-08db2eb34712
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5f1dc5d-7f66-4137-9b1c-08db2eb34b24
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT106.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT044.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8165
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8480
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
@@ -103,27 +101,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Enable PTP unicast
-- Optimize HW timestamp reading
+There are currently two checks for PTP functionality - one on GEM
+capability and another on the kernel config option. Combine them
+into a single function as there's no use case where gem_has_ptp is
+TRUE and MACB_USE_HWSTAMP is false.
 
+Signed-off-by: Harini Katakam <harini.katakam@amd.com>
+---
 v3:
-Add patch to move CONFIG_MACB_USE_HWTSTAMP check into gem_has_ptp
+New patch
 
-v2:
-- Handle unicast setting with one register R/W operation
-- Update HW timestamp logic to remove sec_rollover variable
-- Removed Richard Cochran's ACK as patch 2/2 changed
+ drivers/net/ethernet/cadence/macb.h      | 2 +-
+ drivers/net/ethernet/cadence/macb_main.c | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-Harini Katakam (3):
-  net: macb: Update gem PTP support check
-  net: macb: Enable PTP unicast
-  net: macb: Optimize reading HW timestamp
-
- drivers/net/ethernet/cadence/macb.h      |  6 +++++-
- drivers/net/ethernet/cadence/macb_main.c | 15 +++++++++++----
- drivers/net/ethernet/cadence/macb_ptp.c  |  4 ++--
- 3 files changed, 18 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index c1fc91c97cee..b6c5ecbd572c 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -1363,7 +1363,7 @@ static inline bool macb_is_gem(struct macb *bp)
+ 
+ static inline bool gem_has_ptp(struct macb *bp)
+ {
+-	return !!(bp->caps & MACB_CAPS_GEM_HAS_PTP);
++	return (IS_ENABLED(CONFIG_MACB_USE_HWSTAMP) && (!!(bp->caps & MACB_CAPS_GEM_HAS_PTP)));
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index f77bd1223c8f..bcda6a08706f 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -3889,7 +3889,6 @@ static void macb_configure_caps(struct macb *bp,
+ 		dcfg = gem_readl(bp, DCFG2);
+ 		if ((dcfg & (GEM_BIT(RX_PKT_BUFF) | GEM_BIT(TX_PKT_BUFF))) == 0)
+ 			bp->caps |= MACB_CAPS_FIFO_MODE;
+-#ifdef CONFIG_MACB_USE_HWSTAMP
+ 		if (gem_has_ptp(bp)) {
+ 			if (!GEM_BFEXT(TSU, gem_readl(bp, DCFG5)))
+ 				dev_err(&bp->pdev->dev,
+@@ -3899,7 +3898,6 @@ static void macb_configure_caps(struct macb *bp,
+ 				bp->ptp_info = &gem_ptp_info;
+ 			}
+ 		}
+-#endif
+ 	}
+ 
+ 	dev_dbg(&bp->pdev->dev, "Cadence caps 0x%08x\n", bp->caps);
 -- 
 2.17.1
 
