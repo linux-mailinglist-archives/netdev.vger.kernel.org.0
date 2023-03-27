@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 177826CADE3
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC176CAE01
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232435AbjC0SuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 14:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        id S232405AbjC0S4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 14:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232557AbjC0St6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:49:58 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527931709;
-        Mon, 27 Mar 2023 11:49:49 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id eh3so40123745edb.11;
-        Mon, 27 Mar 2023 11:49:49 -0700 (PDT)
+        with ESMTP id S232318AbjC0S4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:56:17 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8108D2697;
+        Mon, 27 Mar 2023 11:56:16 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id ew6so40213031edb.7;
+        Mon, 27 Mar 2023 11:56:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679942988;
+        d=gmail.com; s=20210112; t=1679943375;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=WV8Ob0uf4bBIKDlLtZZnzrbTAhR4hy3V64r28D4o5YY=;
-        b=Gqu/bFJ31hSb6EVqByUP2G55oy+x+jxUsnrUTS9y/idimRggaf3K4hUFSzP+hG9MRI
-         sQfcvDM5RNFMd5ZDGyrznKLDx6NMzwD7SsllmCmntS4xXcKolnrK4SYXEncVSWCjcRRL
-         ncut7EiyGFCMxso6b2qPxijfjp7cdtfRPUII5fzp4l31zRGZtGd+VwfkUzSowqA3Htq3
-         wokXFQRRkH7XOQAtjUDnqjcxcfpQ4e2MyXfjc3NKEGCddkxy7hiCNDfUBbZlUa001tt9
-         qJl1aqUEQ31uhApIu1qt02Lh8KzRABWxTuZGK6rcjgkuclGDQYi++LLK5FyNx5RdjYxN
-         3YFg==
+        bh=9kdFzEqP1sLEIpGSE6bD26PwKxdQuQNtb+UIdaFS6w4=;
+        b=UGymmXiuIlLml8ijpf+xg6TTWxqyOmO29fMqond0Chl519oazCi6HipKFEmbHhcRyr
+         kFd+NhLJL3R6Ik/DjNFUBBPD4ptYE7ntse3turxwUSZctRayA3G7gdNU+x0tvIG0CkdW
+         HQqz5n0+Q3XHZoIBK58G+nO3yfnyykbwx3QREmxdBgiuTe7P7XF9W3K/q4cQDrlaB25v
+         Zw+9STo270ZfEmqSBD/n63vOUPQnfgz9sijrU8Xni/DZsLb0HqhzF2VGIUYL+L6Kbllw
+         aBno+V12LnQbwPUiyVYuvTpxZM/Whl0JoawAMyrj9U+fbAl62+noh7WAqEpTD6QuKnhc
+         OiJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679942988;
+        d=1e100.net; s=20210112; t=1679943375;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WV8Ob0uf4bBIKDlLtZZnzrbTAhR4hy3V64r28D4o5YY=;
-        b=u+QRZTsPPqtqxn1vpFf3vDt3wXRwbdl8izk2rPMHvQNVqPFVmNj6umjeHoyL0KiZFn
-         bG38/BNDbnOi+kB7ekTuMPn26bipUa8OOfhlWxiugGoSgMawaW0sEo+u+J6oQ4HqKAR0
-         YBwnPDDfTOCmGxXBWHh5o31ezXfVBrVy0KKfEzRd4gXMW/KIy8oh4Ua4YjoMfAEVhJOy
-         hBMYsJO5NrytxbI2ROBuDad2nrWE5CEYBeVUx9Dr0ouDQ6R4cDGmAH76ZMszYoJgz/4l
-         G+Q0fterqVpG0rgYy6xgpJM5naIeP7SE1h46OeDQbddJByHJsV48qxaFy+kl3y4UdHx7
-         8YQA==
-X-Gm-Message-State: AAQBX9ej6CWIGn5ZJdfw6wI360tXXX5RxLrIcDynjyCBCRIfw3ICoouO
-        LXP6Uu7D952v1Q5jg7c6acQ=
-X-Google-Smtp-Source: AKy350YOQCzEGffLYub7F2SVGrQDvP3iDvPNDUkaIZbZqUsO6bIeX5ddq3lF1+dztJqbY3lmGpgvpQ==
-X-Received: by 2002:a17:907:8b88:b0:925:f788:d76d with SMTP id tb8-20020a1709078b8800b00925f788d76dmr13593874ejc.27.1679942987666;
-        Mon, 27 Mar 2023 11:49:47 -0700 (PDT)
+        bh=9kdFzEqP1sLEIpGSE6bD26PwKxdQuQNtb+UIdaFS6w4=;
+        b=JSnDKtWUCyhTx2b46w0YCs49Pra82ie8A40mc8EOBE9CY1hs96icN21ciXhEyXv3QG
+         CSOLlycsJkDk/m0hrDMYyykTbpSCg3T6ywMOU4mwJRjhS5TLjkdHSlgd9LkvVVq/GAGS
+         4Eo16qxTSAZVclDGOq/eJ8hbWuxIOMk+BMgI0jl+0i+7T3GpzGxM8n+l/W8TiqlYpTa9
+         jMZNpsoOjWV2d/aE1sUhXJQQLAkxa16Sn6sDWNppRr3tMqqlyJac5Fe8l9QzzoSN8/mW
+         dqHp1K+QLYWeyWYwXtMRDh5HRpYhCB9OsnTNgt9sE3PJFHb7zrs2U/J9yUbO506AygJh
+         FYiw==
+X-Gm-Message-State: AAQBX9fVGrs5QLUkNXfJmM9gKIPYdgqlYBfcn/xX4ausXFETARPeX5UU
+        8HMIo3+cmkC1uAv7VS4GUfY=
+X-Google-Smtp-Source: AKy350YAx3rW1SyuJCnBZhBxCFQ7rsS3Tq/yQDzMp69TUHeQbWPH6REg0eDj/nLcvQWAEZQjxF/XiQ==
+X-Received: by 2002:a17:907:8687:b0:933:499e:62a7 with SMTP id qa7-20020a170907868700b00933499e62a7mr16565873ejc.49.1679943374605;
+        Mon, 27 Mar 2023 11:56:14 -0700 (PDT)
 Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id b26-20020a170906195a00b00930a4e5b46bsm14301659eje.211.2023.03.27.11.49.46
+        by smtp.gmail.com with ESMTPSA id u27-20020a170906069b00b00923bb9f0c36sm14288264ejb.127.2023.03.27.11.56.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 11:49:47 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 21:49:44 +0300
+        Mon, 27 Mar 2023 11:56:14 -0700 (PDT)
+Date:   Mon, 27 Mar 2023 21:56:11 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     arinc9.unal@gmail.com
 Cc:     Sean Wang <sean.wang@mediatek.com>,
@@ -74,16 +74,19 @@ Cc:     Sean Wang <sean.wang@mediatek.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net 2/7] net: dsa: mt7530: fix phylink for port 5 and fix
- port 5 modes
-Message-ID: <20230327184944.oahce2iizpauw4nm@skbuf>
+Subject: Re: [PATCH net 3/7] net: dsa: mt7530: do not run
+ mt7530_setup_port5() if port 5 is disabled
+Message-ID: <20230327185611.gjwlrmhaiorfpj5q@skbuf>
 References: <20230326140818.246575-1-arinc.unal@arinc9.com>
- <20230326140818.246575-3-arinc.unal@arinc9.com>
+ <20230326140818.246575-1-arinc.unal@arinc9.com>
+ <20230326140818.246575-4-arinc.unal@arinc9.com>
+ <20230326140818.246575-4-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230326140818.246575-3-arinc.unal@arinc9.com>
+In-Reply-To: <20230326140818.246575-4-arinc.unal@arinc9.com>
+ <20230326140818.246575-4-arinc.unal@arinc9.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -94,49 +97,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 05:08:13PM +0300, arinc9.unal@gmail.com wrote:
+On Sun, Mar 26, 2023 at 05:08:14PM +0300, arinc9.unal@gmail.com wrote:
 > From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> There're two call paths for setting up port 5:
+> There's no need to run all the code on mt7530_setup_port5() if port 5 is
+> disabled. Run mt7530_setup_port5() if priv->p5_intf_sel is not P5_DISABLED
+> and remove the P5_DISABLED case from mt7530_setup_port5().
 > 
-> mt7530_setup()
-> -> mt7530_setup_port5()
-> 
-> mt753x_phylink_mac_config()
-> -> mt753x_mac_config()
->    -> mt7530_mac_config()
->       -> mt7530_setup_port5()
-> 
-> The first call path is supposed to run when phy muxing is being used. In
-> this case, port 5 is somewhat of a hidden port. It won't be defined on the
-> devicetree so phylink can't be used to manage the port.
-> 
-> The second call path used to call mt7530_setup_port5() directly under case
-> 5 on mt7530_phylink_mac_config() before it was moved to mt7530_mac_config()
-> with 88bdef8be9f6 ("net: dsa: mt7530: Extend device data ready for adding a
-> new hardware"). mt7530_setup_port5() will never run through this call path
-> because the current code on mt7530_setup() bypasses phylink for all cases
-> of port 5.
-> 
-> Leave it to phylink if port 5 is used as a CPU port or a user port. For the
-> cases of phy muxing or the port being disabled, call mt7530_setup_port5()
-> directly from mt7530_setup_port5() without involving phylink.
-
-You probably don't mean "call X() from X()" (that would make it recursive),
-but maybe from mt7530_setup(). But it was already called from mt7530_setup(),
-so I don't understand what is being transmitted here...
-
-> 
-> Move setting the interface and P5_DISABLED mode to a more specific
-> location. They're supposed to be overwritten if phy muxing is detected.
-> 
-> Add comments which explain the process.
+> Stop initialising the interface variable as the remaining cases will always
+> call mt7530_setup_port5() with it initialised.
 > 
 > Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
 > Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 > ---
 
-Sorry, I didn't understand... so what was the problem, and how does the
-movement of the mt7530_setup_port5() call that isn't under phylink solve
-that problem?
+Again, not sure what is the problem, and how this solution addresses
+that problem. I see Fixes tags for all patches, but I don't understand
+what they fix, what didn't work before that works now?
