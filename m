@@ -2,233 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 009256CA933
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 17:38:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22EDB6CA971
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 17:45:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232939AbjC0Pit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 11:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59880 "EHLO
+        id S232343AbjC0Ppa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 11:45:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232056AbjC0Pis (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 11:38:48 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2045.outbound.protection.outlook.com [40.107.22.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E4FC2;
-        Mon, 27 Mar 2023 08:38:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mE8b7ZaNb7Nq7AODYOmb0kNCBtdxlRgUhU+rstvQ/YvDuMfIIKy8BHApX841ybEdIdETvk6WFRXbW3X2D/uz6BG9UV91wSs0WVWeKzZ4Z+YhJQTcDo7jnq3Oj762L3wB42bvQkxFeKgu92gZt6IDTgTBhO9bVNvhGcyNfjfGsug88yboicxSPMyusO2L0ZGj5Y5SeYjK7dchlnCDda1qCAhU+Mn5MryGk0d8TeRwLa2eFruTcsXMZAN2RETo2xOqRzi2eoa8Fin3UJRpsWb/uz61EOJg0eFzr8FzAgzUF2/+6nUZ2F3Aa0JeyrI21EZxHnrEMC5xTVxugOtCQBTuDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tET5XWsbzJc25vRwP7iQ1JD35iIyc4moy2SuPeyqit4=;
- b=FQOOKmy4atVPDutH6T1dVFvCFx/1WXBOBaZTBhOc5sJWLTYDq6pNqm4OR7LBFIo6L8RN55S+CtaOhGLNeYRxKWS8em4yoT93fIJWUnFg5dXtXfE4WR3rFtYSOmtZNM8TE19sPva9AXZnk3HgxQ73wKe+6TwmKszQPICGM1wowcSCce2ki3IQdrVIInlcdrzNqpLslkwiGxvMRGxRodMS4s2OVEEIuCln2QMfyELKj31RFZ+5g7oSrjU2IG7aFzlSHV4/x218MuI/JZbAlJeh+uVkLfcSurxs98l/RxpuDebgPdgMXGeHZbwv0YSLdoA5rCgv8NanKXvM99KJGY1dTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tET5XWsbzJc25vRwP7iQ1JD35iIyc4moy2SuPeyqit4=;
- b=UHOjdg5pxLhvF4LnWsIsPcO1jvtfkLKitskbrq9N6gOos4pxB3+ellqe5fimcFxlHjoHWmosenaEy3BeTiZZvDGCqfdkoxmbuJnJTjKU+5P3NJFxDgX/fOMuhEGdF3NCCXEIMMRC9rs9fM/fUa0U3JGvXTRQ1TVARnIur2uNqdfUDBTHGy/TZGs+oJ7hgLNeBk4F0d5nIalxlCwVEiuC29eo6k7rv6q2qm2uag5if5snekKCnrfen7mAAdebPfGGC3IvAb/i6dJFprf33oBVYvosa1M2Ef93BNfeHiuuRYB5uNTbjTd7qeY3i9VnN4ph/QK9nRDcuH2XTJ/ZFIs9fQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
- by PAWPR04MB9957.eurprd04.prod.outlook.com (2603:10a6:102:385::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Mon, 27 Mar
- 2023 15:38:43 +0000
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::154e:166d:ec25:531b]) by VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::154e:166d:ec25:531b%6]) with mapi id 15.20.6222.029; Mon, 27 Mar 2023
- 15:38:43 +0000
-Message-ID: <89653286-f05e-1fc1-b6bf-265b7ecaad0d@suse.com>
-Date:   Mon, 27 Mar 2023 17:38:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-From:   Jan Beulich <jbeulich@suse.com>
-Subject: Re: [PATCH 1/2] xen/netback: don't do grant copy across page boundary
-To:     Juergen Gross <jgross@suse.com>
-Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        with ESMTP id S232335AbjC0Pp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 11:45:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E93FF;
+        Mon, 27 Mar 2023 08:45:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Mmeo2QfPROydV2hnIZ+M0llsB5zsdAAqyRGqrQB82ak=; b=Q//31HAK9QsolCcGbbhUD08JTp
+        JVGck6ZeYKPtWMWdzB5aNpu/SAUvXGK9jWpNEHuZ8001SEJQJKK56ozRd4/kvFBf7M1AeYeoNJH77
+        feFwIPRX8cRdj5pYpdd7ORQrzfqiLeHkSsWf3X4d8czHM4t11MZ/7d6AhUzjgu4e4m9GWAwdOiTXV
+        12eFysoq44kLa0SJrEsfNi/MxtQz2IIou33SStgVMABOwfRu5MaFbaf3m4sFeCwvHdki9NNRIj398
+        eHKzZLMyHptY6vqYMOqR9bSIgNpVcIhhSXZGbYHgt7Y1jkxeN6ZqKNZ3us9RGiyY4y2ZV4rjIgekL
+        g4A6BDtg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60658)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pgp2A-00047x-2v; Mon, 27 Mar 2023 16:45:22 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pgp27-0005YJ-Rp; Mon, 27 Mar 2023 16:45:19 +0100
+Date:   Mon, 27 Mar 2023 16:45:19 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        xen-devel@lists.xenproject.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20230327083646.18690-1-jgross@suse.com>
- <20230327083646.18690-2-jgross@suse.com>
- <59d90811-bc68-83cd-b7e5-7a8c2e2370d9@suse.com>
- <f519a2d3-6662-35a2-b295-1825924affa8@suse.com>
-Content-Language: en-US
-In-Reply-To: <f519a2d3-6662-35a2-b295-1825924affa8@suse.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0139.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9e::10) To VE1PR04MB6560.eurprd04.prod.outlook.com
- (2603:10a6:803:122::25)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
+ node for default settings
+Message-ID: <ZCG6D7KV/0W0FUoI@shell.armlinux.org.uk>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8f-00Dvo9-KT@rmk-PC.armlinux.org.uk>
+ <ZB24fDEqwx53Rthm@kuha.fi.intel.com>
+ <ZB3YGWTWLYyecgw7@shell.armlinux.org.uk>
+ <ZCFvtuyelA+WoeqK@kuha.fi.intel.com>
+ <ZCF2BLvGoaD/RGCS@shell.armlinux.org.uk>
+ <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
+ <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6560:EE_|PAWPR04MB9957:EE_
-X-MS-Office365-Filtering-Correlation-Id: af957ac7-806d-4413-a7ab-08db2ed958aa
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7NYbhtp4z21cSgB3y8FAXYG09iXZFSOA3SL+yW2Rl/kFVLiA9z0vjqtGg4ke2n0iFwcBmJwFYcODeC0x3ck7bzdk5pC8Xk+Ic40C+wUta1mSzOJ/JfBvW43bfFLTU3LfwA6MSlRw7GFTQFwcCk353v8jAEAuuZColXhTiAVVCoVSDjwaNTOt+bvvaYDLufim0OlSCP5B3q+GqOLO6IhkwnLtoTFNar+mMSNrFBssw9PzfdO77FOaXHkaY7P9jMEiYqt3sDaWXZiavVSUpsR/kBTBOkgMFVE1/W0h1kEjOlyOVYBt1aGucvJ+kbykz3FldJcomMMAzpqmZjFHt8gWw1qFjpg9pSZg3QLznu1UotZTqvzqI3WkfV+vkInUTZMH7qd0WrtrqAPOJcmsK04AIXeFcsFprPACrGEFyyzKSbDElaMmfzj/VAzCHsU+s8G4T0mT8ippS3WQHIQmrAiIEz/lb2lNP2J6SAwTxGdMiqHUEaeKbVlhdyfFqGUZK/g2TFJkwkzx/+QlQ7J94Q0wscn+mmWUkfelVWeNGcKAIPP9HZhlJ1kMhfxVpGW74jDy+FIaCfWovSfSRiNZXtLuQFAqmIcelnnHMokmATJydpkpY4fSTAHcvuk+/FUDjlptyb0raj0ty/3/AOm7tDvEVQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(396003)(376002)(346002)(39860400002)(451199021)(478600001)(31686004)(54906003)(6636002)(2616005)(316002)(37006003)(6512007)(6506007)(26005)(6486002)(66946007)(53546011)(66476007)(66556008)(8676002)(4326008)(31696002)(186003)(86362001)(41300700001)(8936002)(83380400001)(2906002)(36756003)(6862004)(38100700002)(5660300002)(7416002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SjJmUXkvMitGSnp5MWpzb2VYNWJFT25lOWlWMVd0Rk9PT20wMnZLOHBKUzBj?=
- =?utf-8?B?YUYySkJzU3AxQ01LVFFLdFJXVEFkSnFCSXpnREV3VHBmNytXbDBhenhBYnVl?=
- =?utf-8?B?SW9GZW12a3duOTcvSzhXVVRJT0laRDI3TEZLOVZmS3RiRjdRMUh2eWNHVUJB?=
- =?utf-8?B?bFVabWc2YmIvb3RJQU4zQUZvcmdLRGdmdUs0MURBYktOblc0Z0s3bEJrVG9V?=
- =?utf-8?B?c0xaOTNIL3BHNXNBeElFS0x4WDA4bDFqT3NNQVhNaTc3MkhkOUJZL1cweTYv?=
- =?utf-8?B?NnNCYlAwZ2FNU3ZqdzdJYnFLd0hkQkFENGk0OFk3aVNYMnB1UGoxRVJDZXpm?=
- =?utf-8?B?RVVIdDVxbS96QTBhY1RQSGo0QUx4NWdKOUdsYlRINzhYVjBRaFRGUFNlRnZY?=
- =?utf-8?B?T3FuSXNzcnRpdzFHTGhjSzVIN1dWV1NUN3I5U1hSVFIxYjJYeVdBZlY0SmVs?=
- =?utf-8?B?UnNzeVJ2Sm04MUVNZnlkZXRpUTh3TkdtczU0V3A2K1NvNnFqVW9qZGFlNnI1?=
- =?utf-8?B?b2FuK1pTUENZYXdVQ21DeDlrM2tXUVJ1QksyTmxHUnZhQU9lQVVvUHpMOGoz?=
- =?utf-8?B?MmViTzZFbDlZbzdGOVVIMkRoMVJqcTROVWZ1TVZFaUI2dlBXN3lyYlRwZzRR?=
- =?utf-8?B?YTVkQWcxbEJKd3hVZStYcE9KSndzbkc2N3Y1R0FOUTZnZFNYRDZRL2czTWtC?=
- =?utf-8?B?b3NKSzl6NHZoQ0FlYUtIQWZwczV2OVdiNkhJTEUrS0docE9pbHg0MlBnRVQz?=
- =?utf-8?B?UlFMUG00T1RVc2JOY0JYdVloNmNsYVpUREVHUkluR3F1YndWU2dVN1F1cXB3?=
- =?utf-8?B?dEk5WWRwbWREZWdCMExGamcrczF6QzV6MFpjTTVrQ2JLazZiNU8yd1pvNFU0?=
- =?utf-8?B?NUJhZzA0N0hoYUhEbTVYUjBhSi9uQjVzVDZnMUMxQlVMaG1MTjdpS1d4Ylpi?=
- =?utf-8?B?dmhGQ3BnYzI3eTFzRmRoQXlYdXdJZDZXQ1Z0MVdKa0gvVlg1bjRSb1hnbUtP?=
- =?utf-8?B?MDUyWkl0SmxVUFBlT1ZOT2d4K1pVYVdVUmRmOEQwb29LK1RuRkh5WGpZOWk3?=
- =?utf-8?B?c3lsRlR1R0lacVFRY1g3WTB6bHhSMnRPaGphTHNTTEZMWUtRS2VXV1dxNGs2?=
- =?utf-8?B?YjNkNWRhK0FYcWYvN292dzdRRGd6N244Zmp6c3AxcVdQd0dsMGhWaVdLUGRW?=
- =?utf-8?B?WXYrUk40RjdsbEZjQ2JIOFYrV2JvSTdtNEl4S0V3dG5IVTZwa3R3M2trV3NQ?=
- =?utf-8?B?SXVuK2lrOU52L2FQVHpZakhpTlVZbmJib3l0c2VUZEIvMXdiVmkxWS9LcVdP?=
- =?utf-8?B?LzBONlNSa3FaYmpTUytPNzFJY3RKeElDeUtsblpDc3FpS0FtNDdPSWg4Y3g4?=
- =?utf-8?B?T2lsV0p4cTJSVmlzMW9ydzgxQll3Y0xYNDJnM2VKS25VL3JSR1o1SENiUkl0?=
- =?utf-8?B?aVcyZ1RlQ1VCelNGc0E2NEpRUHV6ZDI5TTYvYzVsa0hPYTJLZFVITjY1d0VX?=
- =?utf-8?B?cnpMSmxNbGJTMThheWsxVGgzL3I5dTJ5WGZ2QmgyOWIySGFCMjU5QnA2c242?=
- =?utf-8?B?SVppM0VLdHZVdXBLU0E2c3BGNzE0VlJyWERVVzZlRWJmV1BWTld2aGdHR2pT?=
- =?utf-8?B?dFF0L2JFZTd0V29KejRsMkg3TDhGWUZ0Q3dyUGtOWENTR1p5RWJnck9LQkhQ?=
- =?utf-8?B?emI0eXRiajArdmY0dmNHeUdWNlo4VXFFMVVGcHZyQ2U4akNlaFJGT3hjUm9S?=
- =?utf-8?B?aFFDS3IvQ3d6YTd2OW1mQzJEY0JDeWFiYU5qZE1QOUc1a1Q5b2dBQ1ArMTM1?=
- =?utf-8?B?L0lqTGZiNFNvbEdzNzgzY3BzN2tpc3A1c3J5RFhyTUpjRzdzemlBNWo2MHE4?=
- =?utf-8?B?UytLdTM4SWZ6eFE2VWRDVUNab2NsOWtaVE92d3NxSDlqS20yTnRLQXlJV1c1?=
- =?utf-8?B?RVFVT0JWMjJVOVNVR0VMVWU0S0s0S2F6WWxZZ0w3TXRnWnB0RTlyMUs3WUJu?=
- =?utf-8?B?M2VSNkkvNkZacy9md2pwRnlDTDlYczMvakszeXp4Q1lOU2c4c2V6akFveDB6?=
- =?utf-8?B?RktvR20rMlMzRFkwTllERkpZSFRZMk1yNXBDRTUydzZoTC9DRGVvb0lkaFRM?=
- =?utf-8?Q?PFh92a7o8F/Ou5JVU18zlTIm9?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af957ac7-806d-4413-a7ab-08db2ed958aa
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 15:38:43.7533
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IL5DYqZ47DtvKirvgABQT+AeYJkIsO9JxFX7hgsjR8nrD9zzfbUCTWkiGuovdgbxSn0eEoLbtsZiFI1fVQI5vA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9957
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.03.2023 12:07, Juergen Gross wrote:
-> On 27.03.23 11:49, Jan Beulich wrote:
->> On 27.03.2023 10:36, Juergen Gross wrote:
->>> @@ -413,6 +418,13 @@ static void xenvif_get_requests(struct xenvif_queue *queue,
->>>   		cop->dest.u.gmfn = virt_to_gfn(skb->data + skb_headlen(skb)
->>>   				               - data_len);
->>>   
->>> +		/* Don't cross local page boundary! */
->>> +		if (cop->dest.offset + amount > XEN_PAGE_SIZE) {
->>> +			amount = XEN_PAGE_SIZE - cop->dest.offset;
->>> +			XENVIF_TX_CB(skb)->split_mask |= 1U << copy_count(skb);
->>
->> Maybe worthwhile to add a BUILD_BUG_ON() somewhere to make sure this
->> shift won't grow too large a shift count. The number of slots accepted
->> could conceivably be grown past XEN_NETBK_LEGACY_SLOTS_MAX (i.e.
->> XEN_NETIF_NR_SLOTS_MIN) at some point.
+On Mon, Mar 27, 2023 at 03:32:46PM +0100, Russell King (Oracle) wrote:
+> On Mon, Mar 27, 2023 at 05:13:25PM +0300, Heikki Krogerus wrote:
+> > Hi Russell,
+> > 
+> > On Mon, Mar 27, 2023 at 11:55:00AM +0100, Russell King (Oracle) wrote:
+> > > On Mon, Mar 27, 2023 at 01:28:06PM +0300, Heikki Krogerus wrote:
+> > > > On Fri, Mar 24, 2023 at 05:04:25PM +0000, Russell King (Oracle) wrote:
+> > > > > On Fri, Mar 24, 2023 at 04:49:32PM +0200, Heikki Krogerus wrote:
+> > > > > > Hi Russell,
+> > > > > > 
+> > > > > > On Wed, Mar 22, 2023 at 12:00:21PM +0000, Russell King (Oracle) wrote:
+> > > > > > > +static struct fwnode_handle *mv88e6xxx_create_fixed_swnode(struct fwnode_handle *parent,
+> > > > > > > +							   int speed,
+> > > > > > > +							   int duplex)
+> > > > > > > +{
+> > > > > > > +	struct property_entry fixed_link_props[3] = { };
+> > > > > > > +
+> > > > > > > +	fixed_link_props[0] = PROPERTY_ENTRY_U32("speed", speed);
+> > > > > > > +	if (duplex == DUPLEX_FULL)
+> > > > > > > +		fixed_link_props[1] = PROPERTY_ENTRY_BOOL("full-duplex");
+> > > > > > > +
+> > > > > > > +	return fwnode_create_named_software_node(fixed_link_props, parent,
+> > > > > > > +						 "fixed-link");
+> > > > > > > +}
+> > > > > > > +
+> > > > > > > +static struct fwnode_handle *mv88e6xxx_create_port_swnode(phy_interface_t mode,
+> > > > > > > +							  int speed,
+> > > > > > > +							  int duplex)
+> > > > > > > +{
+> > > > > > > +	struct property_entry port_props[2] = {};
+> > > > > > > +	struct fwnode_handle *fixed_link_fwnode;
+> > > > > > > +	struct fwnode_handle *new_port_fwnode;
+> > > > > > > +
+> > > > > > > +	port_props[0] = PROPERTY_ENTRY_STRING("phy-mode", phy_modes(mode));
+> > > > > > > +	new_port_fwnode = fwnode_create_software_node(port_props, NULL);
+> > > > > > > +	if (IS_ERR(new_port_fwnode))
+> > > > > > > +		return new_port_fwnode;
+> > > > > > > +
+> > > > > > > +	fixed_link_fwnode = mv88e6xxx_create_fixed_swnode(new_port_fwnode,
+> > > > > > > +							  speed, duplex);
+> > > > > > > +	if (IS_ERR(fixed_link_fwnode)) {
+> > > > > > > +		fwnode_remove_software_node(new_port_fwnode);
+> > > > > > > +		return fixed_link_fwnode;
+> > > > > > > +	}
+> > > > > > > +
+> > > > > > > +	return new_port_fwnode;
+> > > > > > > +}
+> > > > > > 
+> > > > > > That new fwnode_create_named_software_node() function looks like a
+> > > > > > conflict waiting to happen - if a driver adds a node to the root level
+> > > > > > (does not have to be root level), all the tests will pass because
+> > > > > > there is only a single device, but when a user later tries the driver
+> > > > > > with two devices, it fails, because the node already exist. But you
+> > > > > > don't need that function at all.
+> > > > > 
+> > > > > I think you're totally failing to explain how this can fail.
+> > > > > 
+> > > > > Let me reiterate what thestructure of the swnodes here is:
+> > > > > 
+> > > > > 	root
+> > > > > 	`- node%d (%d allocated by root IDA)
+> > > > > 	   +- phy-mode property
+> > > > > 	   `- fixed-link
+> > > > > 	      +- speed property
+> > > > > 	      `- optional full-duplex property
+> > > > > 
+> > > > > If we have two different devices creating these nodes, then at the
+> > > > > root level, they will end up having different root names. The
+> > > > > "fixed-link" is a child of this node.
+> > > > 
+> > > > Ah, sorry, the problem is not with this patch, or your use case. The
+> > > > problem is with the PATCH 1/7 of this series where you introduce that
+> > > > new function fwnode_create_named_software_node() which will not be
+> > > > tied to your use case only. In this patch you just use that function.
+> > > > I should have been more clear on that.
+> > > 
+> > > How is this any different from creating two struct device's with the
+> > > same parent and the same name? Or kobject_add() with the same parent
+> > > and name?
+> > 
+> > But that can not mean we have to take the same risk everywhere. I do
+> > understand that we don't protect developers from doing silly decisions
+> > in kernel, but that does not mean that we should simply accept
+> > interfaces into the kernel that expose these risk if we don't need
+> > them.
+> > 
+> > > > I really just wanted to show how you can create those nodes by using
+> > > > the API designed for the statically described software nodes. So you
+> > > > don't need that new function. Please check that proposal from my
+> > > > original reply.
+> > > 
+> > > I don't see why I should. This is clearly a case that if one creates
+> > > two named nodes with the same name and same parent, it should fail and
+> > > it's definitely a "well don't do that then" in just the same way that
+> > > one doesn't do it with kobject_add() or any of the other numerous
+> > > interfaces that take names in a space that need to be unique.
+> > > 
+> > > I really don't think there is any issue here to be solved. In fact,
+> > > I think solving it will add additional useless complexity that just
+> > > isn't required - which adds extra code that can be wrong and fail.
+> > > 
+> > > Let's keep this simple. This approach is simple. If one does something
+> > > stupid (like creating two named nodes with the same name and same
+> > > parent) then it will verbosely fail. That is a good thing.
+> > 
+> > Well, I think the most simplest approach would be to have both the
+> > nodes and the properties as part of that struct mv88e6xxx_chip:
+> > 
+> > struct mv88e6xxx_chip {
+> >         ...
+> >        struct property_entry port_props[2];
+> >        struct property_entry fixed_link_props[3];
+> > 
+> >        struct software_node port_swnode;
+> >        struct software_node fixed_link_swnode;
+> > };
+> > 
+> > That allows you to register both nodes in one go:
+> > 
+> > static struct fwnode_handle *mv88e6xxx_create_port_swnode(struct mv88e6xxx_chip *chip,
+> >                                                           phy_interface_t mode,
+> >                                                           int speed,
+> >                                                           int duplex)
+> > {
+> >         struct software_node *nodes[3] = {
+> >                 &chip->port_swnode,
+> >                 &chip->fixed_link_swnode,
+> >         };
+> >         int ret;
+> > 
+> >         chip->port_props[0] = PROPERTY_ENTRY_STRING("phy-mode", phy_modes(mode));
+> >         chip->port_swnode.properties = chip->port_props;
+> > 
+> >         chip->fixed_link_props[0] = PROPERTY_ENTRY_U32("speed", speed);
+> >         if (duplex == DUPLEX_FULL)
+> >                 chip->fixed_link_props[1] = PROPERTY_ENTRY_BOOL("full-duplex");
+> > 
+> >         chip->fixed_link_swnode.name = "fixed-link";
+> >         chip->fixed_link_swnode.parent = &chip->port_swnode;
+> >         chip->fixed_link_swnode.properties = chip->fixed_link_props;
+> > 
+> >         ret = software_node_register_node_group(nodes);
+> >         if (ret)
+> >                 return ERR_PTR(ret);
+> > 
+> >         return software_node_fwnode(&chip->port_swnode);
+> > }
 > 
-> This is basically impossible due to the size restriction of struct
-> xenvif_tx_cb.
-
-If its size became a problem, it might simply take a level of indirection
-to overcome the limitation.
-
->>> @@ -420,7 +432,8 @@ static void xenvif_get_requests(struct xenvif_queue *queue,
->>>   		pending_idx = queue->pending_ring[index];
->>>   		callback_param(queue, pending_idx).ctx = NULL;
->>>   		copy_pending_idx(skb, copy_count(skb)) = pending_idx;
->>> -		copy_count(skb)++;
->>> +		if (!split)
->>> +			copy_count(skb)++;
->>>   
->>>   		cop++;
->>>   		data_len -= amount;
->>> @@ -441,7 +454,8 @@ static void xenvif_get_requests(struct xenvif_queue *queue,
->>>   			nr_slots--;
->>>   		} else {
->>>   			/* The copy op partially covered the tx_request.
->>> -			 * The remainder will be mapped.
->>> +			 * The remainder will be mapped or copied in the next
->>> +			 * iteration.
->>>   			 */
->>>   			txp->offset += amount;
->>>   			txp->size -= amount;
->>> @@ -539,6 +553,13 @@ static int xenvif_tx_check_gop(struct xenvif_queue *queue,
->>>   		pending_idx = copy_pending_idx(skb, i);
->>>   
->>>   		newerr = (*gopp_copy)->status;
->>> +
->>> +		/* Split copies need to be handled together. */
->>> +		if (XENVIF_TX_CB(skb)->split_mask & (1U << i)) {
->>> +			(*gopp_copy)++;
->>> +			if (!newerr)
->>> +				newerr = (*gopp_copy)->status;
->>> +		}
->>
->> It isn't guaranteed that a slot may be split only once, is it? Assuming a
+> You're suggesting code that passes a fwnode pointer back up layers
+> that has been allocated in the driver's private structure, assuming
+> that those upper layers are going to release this before re-calling
+> this function for a different port. They do today, but in the future?
 > 
-> I think it is guaranteed.
+> There are always plenty of guns...
 > 
-> No slot can cover more than XEN_PAGE_SIZE bytes due to the grants being
-> restricted to that size. There is no way how such a data packet could cross
-> 2 page boundaries.
+> If we don't want to give the monkey the gun, we need a more complex
+> solution than that... and it becomes a question about how far you
+> want to take gun control.
 > 
-> In the end the problem isn't the copies for the linear area not crossing
-> multiple page boundaries, but the copies for a single request slot not
-> doing so. And this can't happen IMO.
+> Then there's the question about why we should have this data allocated
+> permanently in the system when it is only used for a very short period
+> during driver initialisation. That seems to be a complete waste of
+> resources.
 
-You're thinking of only well-formed requests. What about said request
-providing a large size with only tiny fragments? xenvif_get_requests()
-will happily process such, creating bogus grant-copy ops. But them failing
-once submitted to Xen will be only after damage may already have occurred
-(from bogus updates of internal state; the logic altogether is too
-involved for me to be convinced that nothing bad can happen).
+Also, given that the data structures get re-used, your above example
+code is actually buggy - so you seem to have taken the gun and shot
+yourself! Why is it buggy?
 
-Interestingly (as I realize now) the shifts you add are not be at risk of
-turning UB in this case, as the shift count won't go beyond 16.
+If on the first call to it, duplex is DUPLEX_FULL, then we set
+fixed_link_props[1] to point at the full-duplex property. On the next
+call, if we pass DUPLEX_HALF, then fixed_link_props[1] is left#
+untouched and will still point at the full-duplex property.
 
->> near-64k packet with all tiny non-primary slots, that'll cause those tiny
->> slots to all be mapped, but due to
->>
->> 		if (ret >= XEN_NETBK_LEGACY_SLOTS_MAX - 1 && data_len < txreq.size)
->> 			data_len = txreq.size;
->>
->> will, afaict, cause a lot of copying for the primary slot. Therefore I
->> think you need a loop here, not just an if(). Plus tx_copy_ops[]'es
->> dimension also looks to need further growing to accommodate this. Or
->> maybe not - at least the extreme example given would still be fine; more
->> generally packets being limited to below 64k means 2*16 slots would
->> suffice at one end of the scale, while 2*MAX_PENDING_REQS would at the
->> other end (all tiny, including the primary slot). What I haven't fully
->> convinced myself of is whether there might be cases in the middle which
->> are yet worse.
-> 
-> See above reasoning. I think it is okay, but maybe I'm missing something.
+This is a great illustration why trying to remove one gun from
+circulation results in other more subtle guns being manufactured.
 
-Well, the main thing I'm missing is a "primary request fits in a page"
-check, even more so with the new copying logic that the commit referenced
-by Fixes: introduced into xenvif_get_requests().
+I'm in favour of simple obviously correct code, which is what my
+proposal is. If someone does something stupid with it such as
+creating two swnodes with the same name, that isn't a problem -
+kobject (and sysfs) will detect the error, print a warning and
+return an error - resulting in a graceful cleanup. It won't crash
+the kernel.
 
-Jan
+I think you're making a mountain out of a mole hill over the "someone
+might use fwnode_create_named_software_node() to create two nodes with
+the same name under the same parent" issue. At least to me, it's
+really not an issue that should have been raised, and I am firmly
+of the opinion that this is a total non-issue.
+
+I'm also of the opinion that trying to "fix" this non-issue creates
+more problems than it solves.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
