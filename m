@@ -2,65 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3BB46CAC44
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AB46CAC47
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbjC0Rw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 13:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        id S232118AbjC0Rwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 13:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbjC0RwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:52:25 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F9810E;
-        Mon, 27 Mar 2023 10:52:24 -0700 (PDT)
+        with ESMTP id S231896AbjC0Rwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:52:31 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B731270F;
+        Mon, 27 Mar 2023 10:52:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679939544; x=1711475544;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zp7GDJJT8bOwVslnKFXWafUO/OPv2Ix3nPBVGY3BpZM=;
-  b=MLV2HDrC3Yz1LIlBOkhrlkQ4Gx6aPm9VEWSjCdQkLaFc7vZmxwyAFzpa
-   /awpnoJbTVOjoUcjrj2DGywn4+a8SKu7EYH2IUNE35/os30RjorbBbvO4
-   W/VibomOvfkKz3XElo+y6/9YPvb6UoIPHhCom1UCqlF9h0OmBdfoQAdy6
-   AX7+7ebk7CoM1ol7D1x1nC80IxV+nUPeLvvUl01gjwqyqPTtb/wss4lb+
-   OOR3AM89YgjujWfsjbt2cYttSnIWNdNtwy3Gzruj1yw5pX9yNanR1xaQH
-   HrN+sVI6DLEtL4T7o1Eg9lsiYDhMJ2D9/PAYO2KmglHIVynnKkRUeuN2v
+  t=1679939548; x=1711475548;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=8C7qiAaGWXdcWH5e0gwd8WoShFTnO0L4h6ZSfsB6Mao=;
+  b=cUQCaONyBkug5PZFamxbfDv6eLHA+hVylaL8kS+nBQJGkh3drTdjHvuv
+   7RWeFPJocvXzDBQ9owIR1dJTL5RtOqgxjg6u4LB1LZKiJ2V3dxlA7hfjS
+   rLPxr9VMa6doVwXMzcN7CleUI1mGMR3ApM8F3TJu9ZD5R8iqpdtAKcUQj
+   r3ItGyb5YOP91ahbKLoEFLomtbZTb8guJUZwQzH2e6j4PPoIVYKdO6tbw
+   D7Ofo+sJUOCxCl1YWMUbU3RpQLEsI2jCEeoNkSlve1ocO9dnBuY/g9L7x
+   KLGkD0/XCeP5GBUtFv4pabYRXQwCKpgI6+4aaI+fpQXtg7koDOfiRQW67
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="337845293"
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="324226276"
 X-IronPort-AV: E=Sophos;i="5.98,295,1673942400"; 
-   d="scan'208";a="337845293"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 10:52:23 -0700
+   d="scan'208";a="324226276"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 10:52:09 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="827139264"
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="748099503"
 X-IronPort-AV: E=Sophos;i="5.98,295,1673942400"; 
-   d="scan'208";a="827139264"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 27 Mar 2023 10:52:20 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pgr12-000Hsw-0R;
-        Mon, 27 Mar 2023 17:52:20 +0000
-Date:   Tue, 28 Mar 2023 01:51:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Harini Katakam <harini.katakam@amd.com>,
-        nicolas.ferre@microchip.com, davem@davemloft.net,
-        richardcochran@gmail.com, claudiu.beznea@microchip.com,
-        andrei.pistirica@microchip.com, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, michal.simek@amd.com,
-        harinikatakamlinux@gmail.com, harini.katakam@amd.com
-Subject: Re: [PATCH net-next v3 1/3] net: macb: Update gem PTP support check
-Message-ID: <202303280125.0cmGPLT1-lkp@intel.com>
-References: <20230327110607.21964-2-harini.katakam@amd.com>
+   d="scan'208";a="748099503"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga008.fm.intel.com with ESMTP; 27 Mar 2023 10:52:08 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 27 Mar 2023 10:52:08 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Mon, 27 Mar 2023 10:52:08 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Mon, 27 Mar 2023 10:52:07 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HNS59RSlKnVzma739SSqmsj/eEFkHDtzx8Hteld40H3b7G+a+X/DPIhs9dDWeHdsvdHsG1FpomhjeVmDSEK/YV8SQVva3jmn92JX7VZL0nroy8LcOzXTspjC2I/bJ3CzH8d6JvH//cIxXRxdM0Pp++jwX9DNPVU906vo7CeKkmSMENkKCEnbCMLD7fbVnQdDIZXG+ODowHj1pbyesQjjnk+rzuateYod1p+PcUJ1cyPsl3Gx/3sRRwiQh80TfoAOwnsa6fadqbh6UZYKfouQtjtaczqdxASc8qle427vOs5+25Vxd3qRYSPB3Gtekv+T8yCtv1aV3IOQuY79kDjiug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mbniL+zq6+L3K7bhLYEkhZfVsKp+oPMDK1prxp9lWHw=;
+ b=bRvFBr4X9QLFp0/yuwHL6G9Wjkp1Znn0hPxLi3zZXmmH+Y6FEmtOeB5hq3kezRGcD6NlS9C3auG4x6JkqIcz2H6AKOKDnNd0FXzTagsDj4UChKnT4y2sCV9UoCLANZT9lh2px0c+IXVGL1kQsKcY7G6N95MV+WqF2Bgzp0+dAwVamWMT2eLREwTfBGuQDGBnAlRD1R6+li41X3HtSyLBjx61whdoy/RTI1mGFUv9IjHEWlIQehcKBfgIpog1Rs9Cs7vk68mRCbgK+iiM+CCBPmOG9G5+d3sw03G/WgB1y6l6MYsPfYb6tyw5UqPdbaYZ8eLn1DYcblNYbb8h0zPWpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
+ by DS7PR11MB7857.namprd11.prod.outlook.com (2603:10b6:8:da::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Mon, 27 Mar
+ 2023 17:52:06 +0000
+Received: from CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::ea5c:3d05:5d92:bc04]) by CO1PR11MB5089.namprd11.prod.outlook.com
+ ([fe80::ea5c:3d05:5d92:bc04%7]) with mapi id 15.20.6222.030; Mon, 27 Mar 2023
+ 17:52:06 +0000
+Message-ID: <5dce2b97-9f41-6ac0-cb64-de1e67e99526@intel.com>
+Date:   Mon, 27 Mar 2023 10:52:03 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net-next] docs: netdev: clarify the need to sending
+ reverts as patches
+To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <corbet@lwn.net>, <linux-doc@vger.kernel.org>
+References: <20230327172646.2622943-1-kuba@kernel.org>
+Content-Language: en-US
+From:   Jacob Keller <jacob.e.keller@intel.com>
+In-Reply-To: <20230327172646.2622943-1-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ2PR07CA0001.namprd07.prod.outlook.com
+ (2603:10b6:a03:505::11) To CO1PR11MB5089.namprd11.prod.outlook.com
+ (2603:10b6:303:9b::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230327110607.21964-2-harini.katakam@amd.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PR11MB5089:EE_|DS7PR11MB7857:EE_
+X-MS-Office365-Filtering-Correlation-Id: e200d0e0-8e20-4f5a-7230-08db2eebfaa0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: F/z/lwxYZxGjPgbjaJR3A6zzetXGTa2HHSgKJM4UfoxV20jbWdbdydfsFz5hQXvaTwWtmThMqRw+Mh7HPELDEeaDTLnDH2nRwR2TYXzsrlYTXN/V1nVINcrlhxFRVWb6ypwfmC7O9zkuUtvnWm8myTq3xIvYsumeqsk67KPyzCoWiQZKaPXRk7kDQEHeii1jWKC5TqZT2/I6BwyCDIGKx8i9KeV8nqRVosqSNgddTgH4/HXNmXgsqd8SHG/u6oZmDJG9H1RxkcPU0YokM5cV7qohTlEzdW+hpMXha0J5EpKaAn4cCKx14ZDj6yS3o7juLvqnwbl7ac6Zynv2dyJhIhOVpG9laDqxg3/OKkjjftMQbBE8FGVTwJaISITwfnGJpigLTvDC2vYT5xBGyWD8A4Q97MaGa96eEYFQ6SaptmsYuj8vBLT3r0jZU72W/PtijC4OISbjU5Hu8GpbV2b2rdeTFnqh+P1r4qdSjveN0mstzjP3J9Soe+cjxqlnaAjLdUMu+wlD4U2cVdXZRY6MMbuSz1Ln/C6IeUJ53GpFHITmK+a+c+oC6AohM4Q35mzA1ajCWPczvkn2f+nuhvqxbSNE6FbRencTukxoS9NugSS75vGv1XHvOTKJDY73gvQH6r3QG3B3Xpus66i56mOI7Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(346002)(366004)(136003)(396003)(376002)(451199021)(53546011)(316002)(83380400001)(2616005)(38100700002)(31696002)(86362001)(478600001)(82960400001)(6486002)(186003)(6666004)(26005)(36756003)(6506007)(6512007)(5660300002)(8936002)(31686004)(2906002)(8676002)(4326008)(66946007)(66556008)(66476007)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NFY5YVJiM2FQc0hSRmdvajlaS2FpWnNUeUpLMEhpbkczeitTb01BZCszU0V6?=
+ =?utf-8?B?NUNoYklOakxwWlduUFQ5Z2EzNm1VeXlmYW9tNGIyT3ZWVW4rcHpHNVpYbC9Z?=
+ =?utf-8?B?K1E1RXhHWDNVRGwzYmJMakZldzFtcGQvelhOMEw1Z1Q1aHNXTmlDRC9jWFJW?=
+ =?utf-8?B?N3J6YUN2MVA0SGxPN2dPU3hyQ3F1UG1aak52Nk5jbFlpUVNQZDkzY3FCd3ht?=
+ =?utf-8?B?SDRQayttWWJhSXR1MFpyMTBrYzh1V09rMVlJS2VOcXRVYTJBb3ZmcVV1VjVB?=
+ =?utf-8?B?WG8wdTNpWVlyM0kydUFYQUd1Yis0NHB3M0NhcE9aNkFObG5lMS9OWGpwMWE4?=
+ =?utf-8?B?U1gwSVZqU01VVnpQS01yV0JmM3FvcVlUay9vTWZBNEFPVXR4ckNBelJCK0wr?=
+ =?utf-8?B?Q0YvNlYwSlkxVExBZW1CcmpwdW1uWnRUbzNPNDRaSmZwWFJSM0VXd2FiSUVE?=
+ =?utf-8?B?OWlJYllzWjZ5aTJMS0NpRTFiSVYrb1Jlb0YveU9KWWtDTDNpQ1V6c2RDcU1F?=
+ =?utf-8?B?VG94MUFXT0dxSkIySDNVbUdaUEhRMWJiYWUvbHZYS2NHenBqLzlzbHRKYWxr?=
+ =?utf-8?B?Rk9aKy81VGZ1Q1dHQWFTaVNtdk1EajM5UEdjaGdDNnZ1OURFZWFPQTBPa2ZT?=
+ =?utf-8?B?akdWR3hoajk5eWI4S044ZU5CbzJPazlWM3BndThwY2g0N1g3SmxwMHVZbjhC?=
+ =?utf-8?B?T3JnVXgyZTZGM0FraGZFNXc2NkpSdW5ocEtlcW5LNEdCOUw1YkZGbWx2SE4r?=
+ =?utf-8?B?RWVkYUJBN0dKelZtQXpzbmQzWWFwK1ZzNm1HMnAvWDRGa1NMSTQwaUNhOXdX?=
+ =?utf-8?B?dUg3c2MzUWVIUVp5MXl6SW41bUEvNTVZcDlKU3hRakU4ZHBwakRzTzRYZHk5?=
+ =?utf-8?B?cTBKWGFsRUJtaGk2T01iRFBXMmMrajFxQjZLQVdzYnk2clVoeHVaMWx2Uks4?=
+ =?utf-8?B?cjFheEhhQmdRRGc3Z0hEYU5ic0lrZGlON1A4QzQ5UGtSZXBMZ3h4N3pkYjY1?=
+ =?utf-8?B?ZHRNS1BpSkY3eWNQOFUzNVBKVlhNdFNSeW5JdEdGU0VsVW5icEY4Wm9zaDI3?=
+ =?utf-8?B?U0NBelA0Rmk4cHNGNjVPcXI5d2w1ZHlNM21NRExmcnVzcEhzS2NWd2FVR2JJ?=
+ =?utf-8?B?cStKQk1zV1QrdFJjQW4wSEtabmg1Z1pYMjViTW9RQkc5aE1TaGY2UXYxL1dP?=
+ =?utf-8?B?UTg4ZEdMaCsvdDlZc3ZtazNnaUt0SXJaa1hpUVI3c05RL0lYazBkL2lQR2lT?=
+ =?utf-8?B?Z1J2ZzhvZ1dncHoxLzFpa2lGalFXVzFIL3MrQnI4cXV3KzNHREtOVmUyQ2t4?=
+ =?utf-8?B?RUorc0NaWUk3bkVCUFQ5amJsZFBSUTZUUmd4VXA0VVZFWCs0cW5rMzQ5VXVP?=
+ =?utf-8?B?MDJKQUFneE9ZL0dOdHY0Yjgrb3REMGpnc2FwVW9sVndRWDB6UVgyNk1IMTBv?=
+ =?utf-8?B?ZUFKcnpEUE02TlA2VGFSWWk1azl2VUxvNXlpMkJlUk5pYStNekFiVjJGMDg2?=
+ =?utf-8?B?SFIwYVZJNmx2bTJnSXRTRUVyQmVYRnZFK1YxRXhSWU1jT1RNWTgwSE01andz?=
+ =?utf-8?B?Vngyd1NUK1pxY0o3UlhpU2ZpM2hXNmpnbmxoNmF3VXA5bGFOeEZIRTVYSkxi?=
+ =?utf-8?B?aS9QZ2NpUE5SQ01vaTljb1ZEa3dUcUN6d2llc0tTZ0xEQXFzL2ZuL0tJNHJ3?=
+ =?utf-8?B?OHhxcHptUmtZbXROL25vSmYyT3ZOZTJUc1RDS240R2RLVTNvd3lqbGZEUFBY?=
+ =?utf-8?B?MWRHS0w1empoeEJ3NXZuZGlwa0svWGhCekUwTi9yMHlySnNsWEtESktoNWlJ?=
+ =?utf-8?B?S3NBNlVnR0xkZ0w4S2F1cUx0UlFlZ2dnTUJZR1ZBSDNFVUZwbHdKbFFnQ1RL?=
+ =?utf-8?B?WjdSemtuRnhUNitBRldVbEQvZ3EyYStua2hIayt1eGptUjlqQlRoVEhqQ3N0?=
+ =?utf-8?B?YXVZY0FKNUJuMTNpNFZad3VCMEd2WGNsNjJMZlorTm9IemIxQ2FhaVNZNkMr?=
+ =?utf-8?B?b2lYcko0QUhQZDIwbnhqdGlHNUJ5OU01N2VFK1BCZHQyenRnUzhRS2w0SG42?=
+ =?utf-8?B?RWYveEJkR0U3L0tlOXpvcytzYnFxZXBCeGxlWHJiMFM4UkhBeDhMQW5OWEZi?=
+ =?utf-8?B?dEpkVzFqbzVPc0tEdktmT2hSVHAzYkI0bWVDWGQvcUVxZ3FjckRJRUQraVJV?=
+ =?utf-8?B?UXc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e200d0e0-8e20-4f5a-7230-08db2eebfaa0
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 17:52:06.1572
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gMyzI27cCF44s3yfDGUhXmPWzCblVu7oDlhi8TJs3kOVSm6uoIei1g92oS5rJqVdTmCu/djS5kEfRnNJ52DyL0tkMhK4IlBmMFS6wPFEEPM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR11MB7857
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
         SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,92 +156,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Harini,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on net-next/main]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Harini-Katakam/net-macb-Update-gem-PTP-support-check/20230327-190937
-patch link:    https://lore.kernel.org/r/20230327110607.21964-2-harini.katakam%40amd.com
-patch subject: [PATCH net-next v3 1/3] net: macb: Update gem PTP support check
-config: riscv-rv32_defconfig (https://download.01.org/0day-ci/archive/20230328/202303280125.0cmGPLT1-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0a2f03b6a91caa746dfd1b56b998534464dae83d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Harini-Katakam/net-macb-Update-gem-PTP-support-check/20230327-190937
-        git checkout 0a2f03b6a91caa746dfd1b56b998534464dae83d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303280125.0cmGPLT1-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/net/ethernet/cadence/macb_main.c: In function 'macb_configure_caps':
->> drivers/net/ethernet/cadence/macb_main.c:3897:35: error: 'struct macb' has no member named 'hw_dma_cap'
-    3897 |                                 bp->hw_dma_cap |= HW_DMA_CAP_PTP;
-         |                                   ^~
->> drivers/net/ethernet/cadence/macb_main.c:3897:51: error: 'HW_DMA_CAP_PTP' undeclared (first use in this function)
-    3897 |                                 bp->hw_dma_cap |= HW_DMA_CAP_PTP;
-         |                                                   ^~~~~~~~~~~~~~
-   drivers/net/ethernet/cadence/macb_main.c:3897:51: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/net/ethernet/cadence/macb_main.c:3898:49: error: 'gem_ptp_info' undeclared (first use in this function); did you mean 'gem_ptp_init'?
-    3898 |                                 bp->ptp_info = &gem_ptp_info;
-         |                                                 ^~~~~~~~~~~~
-         |                                                 gem_ptp_init
 
 
-vim +3897 drivers/net/ethernet/cadence/macb_main.c
+On 3/27/2023 10:26 AM, Jakub Kicinski wrote:
+> We don't state explicitly that reverts need to be submitted
+> as a patch. It occasionally comes up.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: corbet@lwn.net
+> CC: linux-doc@vger.kernel.org
+> ---
+>  Documentation/process/maintainer-netdev.rst | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/process/maintainer-netdev.rst b/Documentation/process/maintainer-netdev.rst
+> index e31d7a951073..f6983563ff06 100644
+> --- a/Documentation/process/maintainer-netdev.rst
+> +++ b/Documentation/process/maintainer-netdev.rst
+> @@ -184,11 +184,18 @@ Handling misapplied patches
+>  
+>  Occasionally a patch series gets applied before receiving critical feedback,
+>  or the wrong version of a series gets applied.
+> -There is no revert possible, once it is pushed out, it stays like that.
+> +
+> +Making the patch disappear once it is pushed out is not possible, the commit
+> +history in netdev trees is stable.
+>  Please send incremental versions on top of what has been merged in order to fix
+>  the patches the way they would look like if your latest patch series was to be
+>  merged.
+>  
+> +In cases where full revert is needed the revert has to be submitted
+> +as a patch to the list with a commit message explaining the technical
+> +problems with the reverted commit. Reverts should be used as a last resort,
+> +when original change is completely wrong; incremental fixes are preferred.
+> +
 
-5f1fa992382cf8 drivers/net/macb.c                       Alexander Beregalov 2009-04-11  3866  
-64ec42fe272322 drivers/net/ethernet/cadence/macb.c      Moritz Fischer      2016-03-29  3867  /* Configure peripheral capabilities according to device tree
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3868   * and integration options used
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3869   */
-64ec42fe272322 drivers/net/ethernet/cadence/macb.c      Moritz Fischer      2016-03-29  3870  static void macb_configure_caps(struct macb *bp,
-64ec42fe272322 drivers/net/ethernet/cadence/macb.c      Moritz Fischer      2016-03-29  3871  				const struct macb_config *dt_conf)
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3872  {
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3873  	u32 dcfg;
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3874  
-f6970505defd0e drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2015-03-31  3875  	if (dt_conf)
-f6970505defd0e drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2015-03-31  3876  		bp->caps = dt_conf->caps;
-f6970505defd0e drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2015-03-31  3877  
-f2ce8a9e48385f drivers/net/ethernet/cadence/macb.c      Andy Shevchenko     2015-07-24  3878  	if (hw_is_gem(bp->regs, bp->native_io)) {
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3879  		bp->caps |= MACB_CAPS_MACB_IS_GEM;
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3880  
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3881  		dcfg = gem_readl(bp, DCFG1);
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3882  		if (GEM_BFEXT(IRQCOR, dcfg) == 0)
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3883  			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
-e4e143e26ce8f5 drivers/net/ethernet/cadence/macb_main.c Parshuram Thombare  2020-10-29  3884  		if (GEM_BFEXT(NO_PCS, dcfg) == 0)
-e4e143e26ce8f5 drivers/net/ethernet/cadence/macb_main.c Parshuram Thombare  2020-10-29  3885  			bp->caps |= MACB_CAPS_PCS;
-e4e143e26ce8f5 drivers/net/ethernet/cadence/macb_main.c Parshuram Thombare  2020-10-29  3886  		dcfg = gem_readl(bp, DCFG12);
-e4e143e26ce8f5 drivers/net/ethernet/cadence/macb_main.c Parshuram Thombare  2020-10-29  3887  		if (GEM_BFEXT(HIGH_SPEED, dcfg) == 1)
-e4e143e26ce8f5 drivers/net/ethernet/cadence/macb_main.c Parshuram Thombare  2020-10-29  3888  			bp->caps |= MACB_CAPS_HIGH_SPEED;
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3889  		dcfg = gem_readl(bp, DCFG2);
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3890  		if ((dcfg & (GEM_BIT(RX_PKT_BUFF) | GEM_BIT(TX_PKT_BUFF))) == 0)
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3891  			bp->caps |= MACB_CAPS_FIFO_MODE;
-ab91f0a9b5f4b9 drivers/net/ethernet/cadence/macb_main.c Rafal Ozieblo       2017-06-29  3892  		if (gem_has_ptp(bp)) {
-7b4296148066f1 drivers/net/ethernet/cadence/macb.c      Rafal Ozieblo       2017-06-29  3893  			if (!GEM_BFEXT(TSU, gem_readl(bp, DCFG5)))
-7897b071ac3b45 drivers/net/ethernet/cadence/macb_main.c Antoine Tenart      2019-11-13  3894  				dev_err(&bp->pdev->dev,
-7897b071ac3b45 drivers/net/ethernet/cadence/macb_main.c Antoine Tenart      2019-11-13  3895  					"GEM doesn't support hardware ptp.\n");
-ab91f0a9b5f4b9 drivers/net/ethernet/cadence/macb_main.c Rafal Ozieblo       2017-06-29  3896  			else {
-7b4296148066f1 drivers/net/ethernet/cadence/macb.c      Rafal Ozieblo       2017-06-29 @3897  				bp->hw_dma_cap |= HW_DMA_CAP_PTP;
-ab91f0a9b5f4b9 drivers/net/ethernet/cadence/macb_main.c Rafal Ozieblo       2017-06-29 @3898  				bp->ptp_info = &gem_ptp_info;
-7b4296148066f1 drivers/net/ethernet/cadence/macb.c      Rafal Ozieblo       2017-06-29  3899  			}
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3900  		}
-ab91f0a9b5f4b9 drivers/net/ethernet/cadence/macb_main.c Rafal Ozieblo       2017-06-29  3901  	}
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3902  
-a35919e174350d drivers/net/ethernet/cadence/macb.c      Andy Shevchenko     2015-07-24  3903  	dev_dbg(&bp->pdev->dev, "Cadence caps 0x%08x\n", bp->caps);
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3904  }
-e175587f4d32de drivers/net/ethernet/cadence/macb.c      Nicolas Ferre       2014-07-24  3905  
+This is much clearer. It highlights that you won't rewind/modify
+history, and explains the desire for incremental fixes better.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+
+>  Stable tree
+>  ~~~~~~~~~~~
+>  
