@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91CD96C9972
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 03:58:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B53416C998D
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 04:26:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbjC0B6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 21:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
+        id S230232AbjC0C0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 22:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjC0B6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 21:58:36 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061B14C37;
-        Sun, 26 Mar 2023 18:58:33 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id a16so6270725pjs.4;
-        Sun, 26 Mar 2023 18:58:33 -0700 (PDT)
+        with ESMTP id S229471AbjC0C0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 22:26:10 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B44D49CB;
+        Sun, 26 Mar 2023 19:26:09 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id eg48so29710633edb.13;
+        Sun, 26 Mar 2023 19:26:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679882312;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZjmUW5IisW2GWYy+PxnI3Bi0lsrMsX8ocUsfSaOhCyo=;
-        b=WixHUlX/hYnaWWj5sw3xrgqurQGEGntBs6MIlZLXVl8IU9yOM7X+6txDnoh9zC6ldj
-         X/wMby3DoEf+RjlGceqBnSUi2GOgA1IAjt32LJUgzE3WZw3ye2RGWMsxYQY80xbUk4OK
-         dS6FLZ1cZ+Y89wNewGmUsTtiIgnifd7Ro6C9cotSMntovUwzTkBdB6BL0o5Q2FljQpf3
-         aVSqo++ybvR8512hQSDNAIed3fs7phCpBc7iLxBLluxznNEawob4r42XaSSXUQQoph1j
-         ibxUEYJRZ2UwJOcrOMCNjp4hexRwkjw28QlKwlLOxAHQqkRCFJr8L16aKZLsv+xMGQHr
-         W/QQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679882312;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1679883968;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZjmUW5IisW2GWYy+PxnI3Bi0lsrMsX8ocUsfSaOhCyo=;
-        b=Bf9RlKUXfl5Gisywn6iCJR89WssebIGpIcihT+d0tnqQ1D7iWr2oNL/RrAmo/dOnxI
-         Tu5b+KddirLR4aAvoeDWS1GiKF1Z6lF5AqxKzll0Fuan92062XY6SdbVdlsBtJzwS/gY
-         CIwQTyhY4uq5t6VCGsV+fZhiqmfynWYSCN9Jjtq2PVdL5AOdajz8Jd4GjetJQWY51hI5
-         oRAW6CvXtPLXHTab3X2HxZVj1iyrf6IiSCClTjtPCDq9EQ4jeyXDD3J6/3VieBghGq9A
-         dgE6M5utSA6VOUbXcqOohVPwKGnG8fPsS+GA9hD9HiobQG4LAFm5OItBKQIVLXhRhJOo
-         kNUw==
-X-Gm-Message-State: AAQBX9c5TijfaXlBtagbCXiu2LBtgHv7N3x3TQu0hXpIYn2Ij23Zbqnj
-        5sr9BJvUpm5XLq+cFD1odzg=
-X-Google-Smtp-Source: AKy350Z3zNguzhGHpgATQ8MDf0wd9rCZgBSx26nl8J2OHV3dYBp2fVoJa4zU1w1V3CPYh6oSPmALOg==
-X-Received: by 2002:a17:902:ba88:b0:19e:25b4:7740 with SMTP id k8-20020a170902ba8800b0019e25b47740mr8682259pls.28.1679882312213;
-        Sun, 26 Mar 2023 18:58:32 -0700 (PDT)
-Received: from dragonet (dragonet.kaist.ac.kr. [143.248.133.220])
-        by smtp.gmail.com with ESMTPSA id b20-20020a170902d89400b001a217a7a11csm5175006plz.131.2023.03.26.18.58.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Mar 2023 18:58:31 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 10:58:27 +0900
-From:   "Dae R. Jeong" <threeearcat@gmail.com>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     mkl@pengutronix.de, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: WARNING in isotp_tx_timer_handler and WARNING in print_tainted
-Message-ID: <ZCD4Q2rHnQokUxbe@dragonet>
-References: <ZB/93xJxq/BUqAgG@dragonet>
- <31c4a218-ee1b-4b64-59b6-ba5ef6ecce3c@hartkopp.net>
- <ZCAytf0CpfAhjUSe@dragonet>
- <81ebf23b-f539-5782-2abd-8db8a232bb72@hartkopp.net>
+        bh=KEKMQ//sgZgh2Mb71h08sVFHOl6IgD+xXmIsoUisjIE=;
+        b=U50NhQlrcsiBrL+ES0XyqT67HLtli94VrhiODol4xuPdZB6LHOV/GbbPKTsFEE+LRd
+         EOroH+0Jh03k2DGByBnhiFvUCImUz7ZqIuFCizBOmFREae5AM6fvyod+Cq0cxReveEsu
+         TguP202q2dVbPlaiy1MYlt59WNcVtCbbV5E7dzxlIlkcy79qF8puFfqAcQ+eM2xBZDoR
+         n2fIhZa9VLaqziKejQxR+WiD3fYmALN8vzm+qad4pexEm0Y51rTP1ZDYbdfC16ZBXWpZ
+         FoDOLCo+cr8hjBGLVeFePsiXmahPVYdhhdKDdz6Y7529Xf3nn5RuKl2cnccnHjP4K0c/
+         7PIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679883968;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KEKMQ//sgZgh2Mb71h08sVFHOl6IgD+xXmIsoUisjIE=;
+        b=7HpgledsbxkEYZtusXcY0bu5KE/Uz1LGGabqCh4BxSpBsAwnhvxnVBYDH4cSqwB0t6
+         il29/8gb6kly1YFE6tv3aIMm3SlA3yT2S+83jKRf/hjxjoAIP0qtgkAiN6JIhipAalHS
+         +VjM84D8FlsuIpmMhp1UVL+wJ9Jj316cYMUzskf2SQVSd+Sy5JZGVIwPJ29PvZZ5oU3H
+         0Eq+aM+osWFr9AItPjuM4v0mGWeLOm409eO1znQwcle3Du45fgev9GTtWSnZi3+Y2M0A
+         j610gRQNFDUQc+z4c+uBQu1ueR6ZLXoF/pmh5AfmDhdyevx/sBgNoacNzxmILx0hrFaT
+         +Q6g==
+X-Gm-Message-State: AAQBX9c6JIGF4BlJ5TvNK4WgLj1A9EQdKkJ0WBMLzfTKzU5rT8x5xRWS
+        E/85kJK6GLRWAeMnVyKUbpRiYP3HrXOs0C1oEiA=
+X-Google-Smtp-Source: AKy350Y5/Ok4YStrnh36ripiu493+BNv+naZFMAGv66y317rz4bigTGy+L9I4nGRvyG44tOX9jsIu4h1kFlDrS3XpiE=
+X-Received: by 2002:a17:906:891:b0:8b1:7569:b526 with SMTP id
+ n17-20020a170906089100b008b17569b526mr4314015eje.11.1679883967999; Sun, 26
+ Mar 2023 19:26:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <81ebf23b-f539-5782-2abd-8db8a232bb72@hartkopp.net>
+References: <20230325152417.5403-1-kerneljasonxing@gmail.com>
+ <CANn89iJaVrObJNDC9TrnSUC3XQeo-zfmUXLVrNVcsbRDPuSNtA@mail.gmail.com>
+ <CAL+tcoDVCywXXt0Whnx+o0PcULmdms0osJf0qUb0HKvVwuE6oQ@mail.gmail.com>
+ <CAL+tcoCeyqMif1SDUq4MwfV0bBasgQ4LeYuQjPJYDKYLyof=Rw@mail.gmail.com>
+ <CAL+tcoCFPKpDF+JBN1f74BxDJj9q=9ppoPntnCoT0gT6C0r=PA@mail.gmail.com> <CANn89iJLdce57j6fPbLpexp=tzTtw9yDwV7wjT5FbNF6fPkk+g@mail.gmail.com>
+In-Reply-To: <CANn89iJLdce57j6fPbLpexp=tzTtw9yDwV7wjT5FbNF6fPkk+g@mail.gmail.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Mon, 27 Mar 2023 10:25:31 +0800
+Message-ID: <CAL+tcoB+xAQWCjznDTmNRfzebJcKa_mTx7-drLWBk_wWbd=G6A@mail.gmail.com>
+Subject: Re: [PATCH net] net: fix raising a softirq on the current cpu with
+ rps enabled
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Xing <kernelxing@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -74,131 +74,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 06:17:17PM +0200, Oliver Hartkopp wrote:
-> Hi Dae,
-> 
-> On 26.03.23 13:55, Dae R. Jeong wrote:
-> > > diff --git a/net/can/isotp.c b/net/can/isotp.c
-> > > index 9bc344851704..0b95c0df7a63 100644
-> > > --- a/net/can/isotp.c
-> > > +++ b/net/can/isotp.c
-> > > @@ -912,13 +912,12 @@ static enum hrtimer_restart
-> > > isotp_txfr_timer_handler(struct hrtimer *hrtimer)
-> > >   		isotp_send_cframe(so);
-> > > 
-> > >   	return HRTIMER_NORESTART;
-> > >   }
-> > > 
-> > > -static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t
-> > > size)
-> > > +static int isotp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t
-> > > size)
-> > >   {
-> > > -	struct sock *sk = sock->sk;
-> > >   	struct isotp_sock *so = isotp_sk(sk);
-> > >   	u32 old_state = so->tx.state;
-> > >   	struct sk_buff *skb;
-> > >   	struct net_device *dev;
-> > >   	struct canfd_frame *cf;
-> > > @@ -1091,10 +1090,22 @@ static int isotp_sendmsg(struct socket *sock, struct
-> > > msghdr *msg, size_t size)
-> > >   		wake_up_interruptible(&so->wait);
-> > > 
-> > >   	return err;
-> > >   }
-> > > 
-> > > +static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t
-> > > size)
-> > > +{
-> > > +	struct sock *sk = sock->sk;
-> > > +	int ret;
-> > > +
-> > > +	lock_sock(sk);
-> > > +	ret = isotp_sendmsg_locked(sk, msg, size);
-> > > +	release_sock(sk);
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > >   static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t
-> > > size,
-> > >   			 int flags)
-> > >   {
-> > >   	struct sock *sk = sock->sk;
-> > >   	struct sk_buff *skb;
-> > 
-> > Hi, Oliver.
-> > 
-> > It seems that the patch should address the scenario I was thinking
-> > of. But using a lock is always scary for a newbie like me because of
-> > the possibility of causing other problems, e.g., deadlock. If it does
-> > not cause other problems, it looks good for me.
-> 
-> Yes, I feel you!
-> 
-> We use lock_sock() also in the notifier which is called when someone removes
-> the CAN interface.
-> 
-> But the other cases for e.g. set_sockopt() and for sendmsg() seem to be a
-> common pattern to lock concurrent user space calls.
+On Mon, Mar 27, 2023 at 1:35=E2=80=AFAM Eric Dumazet <edumazet@google.com> =
+wrote:
+>
+> >
+> > Forgive me. Really I need some coffee. I made a mistake. This line
+> > above should be:
+> >
+> > +               if (!test_bit(NAPI_STATE_SCHED, &mysd->backlog.state))
+> >
+> > But the whole thing doesn't feel right. I need a few days to dig into
+> > this part until Eric can help me with more of it.
+> >
+>
+> I am still traveling, and this is weekend time :/
+
+Thanks for your time, Eric, really appreciate it.
+
+>
+> It should not be too hard to read net/core/dev.c and remember that not
+> _all_ drivers (or some core networking functions) use the NAPI model.
+>
+> eg look at netif_rx() and ask yourself why your patch is buggy.
+
+Yes, it is. In my last email I sent yesterday I encountered one issue
+which exactly happened when I started hundreds of iperf processes
+transmitting data to loopback.
+It got stuck :( So I realized it is the non-napi case that triggers
+such a problem.
+
+>
+> Just look at callers of enqueue_to_backlog() and ask yourself if all
+> of them are called from net_rx_action()
+>
+> [The answer is no, just in case you wonder]
+>
+> In order to add your optimization, more work is needed, like adding
+> new parameters so that we do not miss critical
+> __raise_softirq_irqoff(NET_RX_SOFTIRQ) when _needed_.
+
+Thanks, I need to do more work/study on it.
+
+>
+> We keep going circles around softirq deficiencies, I feel you are
+> trying to fix a second-order 'issue'.
+
+Right, going circles gives me a headache.
+
+>
+> Real cause is elsewhere, look at recent patches from Jakub.
+
+After you pointed out, I searched and found there is indeed one patchset in=
+ 2022
+
+The tile like this:
+
+[PATCH 0/3] softirq: uncontroversial change
+
+Thanks,
+Jason
 
 
-Yes, I see lock_sock() is a common pattern in *_sendmsg(). One thing I
-wonder is whether sleeping (i.e., wait_event_*) after lock_sock() is
-safe or not, as lock_sock() seems to have mutex_lock() semantics.
-
-Perhaps we may need to unlock - wait_event - lock in istop_sendmsg()?
-If so, we also need to consider various possible thread interleaving
-cases.
-
-
-> > Or although I'm not sure about this, what about getting rid of
-> > reverting so->tx.state to old_state?
-> > 
-> > I think the concurrent execution of isotp_sendmsg() would be
-> > problematic when reverting so->tx.state to old_state after goto'ing
-> > err_out.
-> Your described case in the original post indeed shows that this might lead
-> to a problem.
-> 
-> > There are two locations of "goto err_out", and
-> > iostp_sendmsg() does nothing to the socket before both of "goto
-> > err_out". So after goto'ing err_out, it seems fine for me even if we
-> > do not revert so->tx.state to old_state.
-> > 
-> > If I think correctly, this will make cmpxchg() work, and prevent the
-> > problematic concurrent execution. Could you please check the patch
-> > below?
-> 
-> Hm, interesting idea.
-> 
-> But in which state will so->tx.state be here:
-> 
-> /* wait for complete transmission of current pdu */
-> err = wait_event_interruptible(so->wait, so->tx.state == ISOTP_IDLE);
-> if (err)
-> 	goto err_out;
-> 
-> 
-> Should we better set the tx.state in the error case?
-> 
-> if (err) {
-> 	so->tx.state = ISOTP_IDLE;
-> 	goto err_out;
-> }
-> 
-> Best regards,
-> Oliver
-> 
-> (..)
-
-Hmm... my original thought was that 1) isotp_sendmsg() waiting the
-event (so->tx.state == ISTOP_IDLE) does not touch anything related to
-the socket as well as the sending process yet, so 2) this
-isotp_sendmsg() does not need to change the tx.state if it returns an
-error due to a signal. I'm not sure that we need to set tx.state in
-this case. Do we still need to do it?
-
-
-Best regards,
-Dae R. Jeong.
+>
+> Thanks.
