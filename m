@@ -2,47 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 461486CB17E
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 00:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E416CB17F
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 00:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbjC0WPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 18:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        id S229959AbjC0WQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 18:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbjC0WPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 18:15:36 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5DA10D
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 15:15:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=YmxfS8CCBG+PM6xoZMx+Q/KC+uMhCMBR1d6pvObKjuk=; b=6Auuy977lWzyhP47l8eQUrtN7s
-        rLlSnq873PmjwA1qtSx2vNeKUzlXi4SpBMjRwH1k0G4uVeFt2gxuNdb+KXmuoMPDqbkRoGLn4Hy3A
-        opJNjcQWpHl7j8JjSxLpwzvgkdkrrWqWXD2Udcknsj7REzLRh7RRMysybWC80znFFDdE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pgv7m-008Zc1-BV; Tue, 28 Mar 2023 00:15:34 +0200
-Date:   Tue, 28 Mar 2023 00:15:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [RFC/RFT 20/23] net: phylink: Add MAC_EEE to mac_capabilites
-Message-ID: <f33a5ff2-1c0b-410d-a1ab-a746792720ca@lunn.ch>
-References: <20230327170201.2036708-1-andrew@lunn.ch>
- <20230327170201.2036708-21-andrew@lunn.ch>
- <ZCIR1/TSonhMSGKF@shell.armlinux.org.uk>
+        with ESMTP id S229501AbjC0WQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 18:16:14 -0400
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD2D10D
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 15:16:13 -0700 (PDT)
+Received: by mail-qt1-x835.google.com with SMTP id g19so10099284qts.9
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 15:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1679955373;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z5lj/6UTrMTaQs3XxDzRmkfXrhODt3Vk2XYXlA7CNSk=;
+        b=EK2yoTZaEtxFX/3TLQN6gzUJMYeSfOGAR/HFGrnEDjIjX5aG/DUbySfreRK8kpPp65
+         2+iZvNUAL1Qoe+9xSCeaOKhO0WH/hNND9wwTx9OeA7SiQ817m0Rfr7wckfGYvF+MZYTq
+         szTv8tuGi3AQNkMOHsMcMFdMGgXZg31C7OcmKQzedqAplG2/24qOf6qBb6MotL/9i3Jt
+         vVsa68qNnH6yS1M54GhN+trCYbP+eH3OR4Yhs3BFzLhFljBowVcm0j1vztIzSAmJXZzs
+         Gpc9OQUzBI8qWDVNNJcSaD3/+HEJpNf/GKYsqfeOZNFTm6LDNgIe1vcZyoVUKB2m9Pjg
+         HbJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679955373;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Z5lj/6UTrMTaQs3XxDzRmkfXrhODt3Vk2XYXlA7CNSk=;
+        b=t12RziRR2FLl7Ss54G3TGbF9LwBvqomi8fOm7JQ3XYjm5nmQdDNKpuwoqQP6GYUfms
+         JJuWHxybbjgVjezziIdyQVGQ2QdM8Nu3Vm7eFXSGDtcWhaavxtaKW6N92fYMKnpkz1XA
+         WLxSFOAUMg6wGbkAgeQ9WxbabHEM/LKL7PTTH1MNfa66S8xXyrqUyFikTP2njywo0uDw
+         TOia8J2a7CGvdSyOgAinM9HDVz2Sqi3PkarakIDNJ7NqTIP3bDBeEr1znoa52E8vGc5R
+         hd4VKNeoF5+YPhE1HPPO5s4zvQJcPf+f0lvuS0PE1vNSrPy6RbxJLDkxk0PFfqmyL8Os
+         7vWA==
+X-Gm-Message-State: AO0yUKVpDTT7FFfppWOmKvJQG4RXcElUmJMMxg6iElqe38Rp7kF3WAEz
+        9gUBMvifV8LO7tWxo0gDXbg6sQ==
+X-Google-Smtp-Source: AK7set+agQjVz+xTuIC1yCXMJbM4aGDPi+73qWSmpx2q1CeguaYQjJsMApS7ZK6OKEdhGLFP+Ihslw==
+X-Received: by 2002:a05:622a:1193:b0:3e4:26de:162d with SMTP id m19-20020a05622a119300b003e426de162dmr21706637qtk.16.1679955372850;
+        Mon, 27 Mar 2023 15:16:12 -0700 (PDT)
+Received: from [172.17.0.3] ([130.44.215.108])
+        by smtp.gmail.com with ESMTPSA id i67-20020a37b846000000b0074865a9cb34sm1516383qkf.28.2023.03.27.15.16.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 15:16:12 -0700 (PDT)
+From:   Bobby Eshleman <bobby.eshleman@bytedance.com>
+Date:   Mon, 27 Mar 2023 22:16:06 +0000
+Subject: [PATCH net-next] testing/vsock: add vsock_perf to gitignore
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCIR1/TSonhMSGKF@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230327-vsock-add-vsock-perf-to-ignore-v1-1-f28a84f3606b@bytedance.com>
+X-B4-Tracking: v=1; b=H4sIAKUVImQC/0WNSwrDMAwFrxK0riCxS1p6ldKFP3IiCnKQTQiE3
+ L1OKXT3hoF5OxRSpgKPbgellQtnaTBcOgizk4mQY2MwvbG9NTdcSw5vdDH+1kKasGbkSbIS3o2
+ /jn5INo0JWsS7QujVSZjPjFBFoa2ealFKvH2/n3/xOo4PqELZWpUAAAA=
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+X-Mailer: b4 0.12.2
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,17 +74,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 10:59:51PM +0100, Russell King (Oracle) wrote:
-> On Mon, Mar 27, 2023 at 07:01:58PM +0200, Andrew Lunn wrote:
-> > If the MAC supports Energy Efficient Ethernet, it should indicate this
-> > by setting the MAC_EEE bit in the config.mac_capabilities
-> > bitmap. phylink will then enable EEE in the PHY, if it supports it.
-> 
-> I know it will be a larger patch, but I would prefer to add it after
-> MAC_ASYM_PAUSE and shuffle the speeds up. I'm sure network speeds will
-> continue to increase, resulting in more bits added in the future.
+This adds the vsock_perf binary to the gitignore file.
 
-O.K, i can make the new symbol BIT(2).
+Fixes: 8abbffd27ced ("test/vsock: vsock_perf utility")
+Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+---
+ tools/testing/vsock/.gitignore | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks
-	Andrew
+diff --git a/tools/testing/vsock/.gitignore b/tools/testing/vsock/.gitignore
+index 87ca2731cff9..a8adcfdc292b 100644
+--- a/tools/testing/vsock/.gitignore
++++ b/tools/testing/vsock/.gitignore
+@@ -2,3 +2,4 @@
+ *.d
+ vsock_test
+ vsock_diag_test
++vsock_perf
+
+---
+base-commit: e5b42483ccce50d5b957f474fd332afd4ef0c27b
+change-id: 20230327-vsock-add-vsock-perf-to-ignore-82b46b1f3f6f
+
+Best regards,
+-- 
+Bobby Eshleman <bobby.eshleman@bytedance.com>
+
