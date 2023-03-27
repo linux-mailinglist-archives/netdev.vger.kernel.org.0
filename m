@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C524E6CAC5E
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE7886CAC60
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 19:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232403AbjC0Ryx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 13:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
+        id S232434AbjC0RzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 13:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbjC0Ryw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:54:52 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A79E10E;
-        Mon, 27 Mar 2023 10:54:51 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id cu12so6226606pfb.13;
-        Mon, 27 Mar 2023 10:54:51 -0700 (PDT)
+        with ESMTP id S232411AbjC0Ryy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 13:54:54 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6F02681;
+        Mon, 27 Mar 2023 10:54:53 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id u38so6231303pfg.10;
+        Mon, 27 Mar 2023 10:54:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679939691;
+        d=gmail.com; s=20210112; t=1679939692;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=OpJzN70oPUzh0zn7YxxB2eKnGbh8qoYQfWsq6BBmv1Y=;
-        b=KiR3a+Uwx2hSg4HBAA4OZ7g2fyB2HRivC6HzjPg4Wn86I9dIGtIg0F8FHJOcLqwfUA
-         NQerfiyi1GvhNTM+3bEZjnJNFRnnPxNXLj+umeUSNc20/O2D54oPhu4v3fxsLsHdmJF2
-         9+g/4rB4aDPt+LMKci9BMh3w5tVI6dvcP6c0KyBqgBH7NUfwf7ul+ejUgMp2EptF62OP
-         Dgr9JJhPwD5f1OagBrRlsWVi34ykEomzvvo3z7sLfuWEb8+7rRKu+aDS9beBMAfQM5IV
-         El7I91p+x/JmQcK1pHCgAV4f+bYBTQ5FywcWNfTSq+9nZJRmKNuqwTg+vMCsCdV/BdVY
-         wgZA==
+        bh=C16N4t/yebwnWEt3up1L0bcXG9FtrfIrB+7RyncYbw4=;
+        b=Rx+8aMu1S5OCokhgOjj9VcKAd6xcTAfr5TEZ7fMDXcdINXcSceXeRtFpbZpW/miWdW
+         L399WIgI0n/JpnazBmQVwb/TvJcSCo4EOFryfeETVAnQuHLFhkFFf2546nh67FMRs8KW
+         LU41acMfN+kDpFmTdQlTNHlDXMOWX9LdErGZ3hv7lTkF9M35Ts64XFIGPh+lpExgf3WL
+         WAu09kZ/O8/qc/ES5zuEqwpVXvmjxCr9n770yMmvQBx47lOfikOeft6BwCsXoTcSCsPA
+         seuwM4dgecw79Pc6UaH+v+Y2GLc0jPevbpT559hSbX1bfmK1z+18FshJyUkaNuX83a+l
+         HA7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679939691;
+        d=1e100.net; s=20210112; t=1679939692;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=OpJzN70oPUzh0zn7YxxB2eKnGbh8qoYQfWsq6BBmv1Y=;
-        b=zTqKwq+p1k7kAIPFlVp/aHoaEySj8NNu0VGt9WR02SF8zZVL3JdX68D80ZTCpYy9Tb
-         p6exoTUbTzM3G2cB9CEzpBjIb/TMOOFWGdEnRbdHoel5emAqrWqcjeT3Gbxgn++BesM4
-         fnaoMN7OjwmpRh2Em0jtLWdHrRjrrQ3SsjhkEtYDnfXs7oON4p2dUUS1QUasY/AyGuJ2
-         snqqt/Bp0iYTAvufcbAOPe/Bhz8peoVSBgBre/m2pl/hDJehwc1Lm24REk/BrZkayAin
-         qkBbDjaLGR/P2PWGg45yGg11K/WlSmwHxTKlBbn9x/80qvhWqcoTWscQQ6Cj7hQA/61S
-         10ww==
-X-Gm-Message-State: AAQBX9fw+AB5/h9r5EZ3fZJCPekjN3L92iQbawCPbkiCqdccLjOBE/qU
-        hvi6VO5meqhP5wAFl24vm4w=
-X-Google-Smtp-Source: AKy350aDMh9p3JyXABfEU8CulMMukL4hDd1TxZHOuzrm37kSO5xD2lOfh/vdj0kIcMs5BrDsNaxyMw==
-X-Received: by 2002:aa7:9477:0:b0:628:0:7939 with SMTP id t23-20020aa79477000000b0062800007939mr13282813pfq.26.1679939690781;
-        Mon, 27 Mar 2023 10:54:50 -0700 (PDT)
+        bh=C16N4t/yebwnWEt3up1L0bcXG9FtrfIrB+7RyncYbw4=;
+        b=ydJ1v6y7J35HSis6WESo3W8hxL0Ux+E/AzOw5lshch82kiocDZjtW/vbfF8CsnaJ5n
+         z/VFHU35T98I9ylMXSFchbgAEkcNv7EsZFMoYXrtE1ZeVmO0OM5kBLzdZ/WaTPxF/rdR
+         F+9r2/N/V2VEDmaWN4Lzj3tgK7yypduU96exGeISht9GHET22KOM/ThzaT+XNJ0qTOTC
+         EDTBuyOyLkfGjqAVh/F/qNFohxR3kfTAnXkq1ky143X8zCbXLuOab/+hdtwSXgVM2qr0
+         iIXh8Lg5qCtHsc9amWq+B/D5UX1Kbf3gQr7OF+i3+bB+8ZBgVhDOoFhFnd/pnLARPr6R
+         /xfg==
+X-Gm-Message-State: AO0yUKUPnZ14CXv1AG8dOM2vZBb5Tm+ZIrfW0qDJQvrAIBAjBnVju/6a
+        f+cR14zD9n0xx5hsdZM2cDzNv9DQeD8eOA==
+X-Google-Smtp-Source: AK7set+0QVnVDWf74ydnur5p6Xcm5H8+m01tD0sceNb0GvGWdGBIW4O395t06etQ17KMFQc6MtHqaA==
+X-Received: by 2002:a05:6a00:309e:b0:625:5403:cd87 with SMTP id bh30-20020a056a00309e00b006255403cd87mr15948601pfb.11.1679939692398;
+        Mon, 27 Mar 2023 10:54:52 -0700 (PDT)
 Received: from john.lan ([98.97.117.131])
-        by smtp.gmail.com with ESMTPSA id r1-20020a62e401000000b005a8ba70315bsm19408316pfh.6.2023.03.27.10.54.49
+        by smtp.gmail.com with ESMTPSA id r1-20020a62e401000000b005a8ba70315bsm19408316pfh.6.2023.03.27.10.54.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 10:54:50 -0700 (PDT)
+        Mon, 27 Mar 2023 10:54:52 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     cong.wang@bytedance.com, jakub@cloudflare.com,
         daniel@iogearbox.net, lmb@isovalent.com, edumazet@google.com
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
         will@isovalent.com
-Subject: [PATCH bpf v2 01/12] bpf: sockmap, pass skb ownership through read_skb
-Date:   Mon, 27 Mar 2023 10:54:35 -0700
-Message-Id: <20230327175446.98151-2-john.fastabend@gmail.com>
+Subject: [PATCH bpf v2 02/12] bpf: sockmap, convert schedule_work into delayed_work
+Date:   Mon, 27 Mar 2023 10:54:36 -0700
+Message-Id: <20230327175446.98151-3-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20230327175446.98151-1-john.fastabend@gmail.com>
 References: <20230327175446.98151-1-john.fastabend@gmail.com>
@@ -73,131 +73,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The read_skb hook calls consume_skb() now, but this means that if the
-recv_actor program wants to use the skb it needs to inc the ref cnt
-so that the consume_skb() doesn't kfree the sk_buff.
+Sk_buffs are fed into sockmap verdict programs either from a strparser
+(when the user might want to decide how framing of skb is done by attaching
+another parser program) or directly through tcp_read_sock. The
+tcp_read_sock is the preferred method for performance when the BPF logic is
+a stream parser.
 
-This is problematic because in some error cases under memory pressure
-we may need to linearize the sk_buff from sk_psock_skb_ingress_enqueue().
-Then we get this,
+The flow for Cilium's common use case with a stream parser is,
 
- skb_linearize()
-   __pskb_pull_tail()
-     pskb_expand_head()
-       BUG_ON(skb_shared(skb))
+ tcp_read_sock()
+  sk_psock_verdict_recv
+    ret = bpf_prog_run_pin_on_cpu()
+    sk_psock_verdict_apply(sock, skb, ret)
+     // if system is under memory pressure or app is slow we may
+     // need to queue skb. Do this queuing through ingress_skb and
+     // then kick timer to wake up handler
+     skb_queue_tail(ingress_skb, skb)
+     schedule_work(work);
 
-Because we incremented users refcnt from sk_psock_verdict_recv() we
-hit the bug on with refcnt > 1 and trip it.
 
-To fix lets simply pass ownership of the sk_buff through the skb_read
-call. Then we can drop the consume from read_skb handlers and assume
-the verdict recv does any required kfree.
+The work queue is wired up to sk_psock_backlog(). This will then walk the
+ingress_skb skb list that holds our sk_buffs that could not be handled,
+but should be OK to run at some later point. However, its possible that
+the workqueue doing this work still hits an error when sending the skb.
+When this happens the skbuff is requeued on a temporary 'state' struct
+kept with the workqueue. This is necessary because its possible to
+partially send an skbuff before hitting an error and we need to know how
+and where to restart when the workqueue runs next.
 
-Bug found while testing in our CI which runs in VMs that hit memory
-constraints rather regularly. William tested TCP read_skb handlers.
+Now for the trouble, we don't rekick the workqueue. This can cause a
+stall where the skbuff we just cached on the state variable might never
+be sent. This happens when its the last packet in a flow and no further
+packets come along that would cause the system to kick the workqueue from
+that side.
 
-[  106.536188] ------------[ cut here ]------------
-[  106.536197] kernel BUG at net/core/skbuff.c:1693!
-[  106.536479] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[  106.536726] CPU: 3 PID: 1495 Comm: curl Not tainted 5.19.0-rc5 #1
-[  106.537023] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ArchLinux 1.16.0-1 04/01/2014
-[  106.537467] RIP: 0010:pskb_expand_head+0x269/0x330
-[  106.538585] RSP: 0018:ffffc90000138b68 EFLAGS: 00010202
-[  106.538839] RAX: 000000000000003f RBX: ffff8881048940e8 RCX: 0000000000000a20
-[  106.539186] RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff8881048940e8
-[  106.539529] RBP: ffffc90000138be8 R08: 00000000e161fd1a R09: 0000000000000000
-[  106.539877] R10: 0000000000000018 R11: 0000000000000000 R12: ffff8881048940e8
-[  106.540222] R13: 0000000000000003 R14: 0000000000000000 R15: ffff8881048940e8
-[  106.540568] FS:  00007f277dde9f00(0000) GS:ffff88813bd80000(0000) knlGS:0000000000000000
-[  106.540954] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  106.541227] CR2: 00007f277eeede64 CR3: 000000000ad3e000 CR4: 00000000000006e0
-[  106.541569] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  106.541915] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  106.542255] Call Trace:
-[  106.542383]  <IRQ>
-[  106.542487]  __pskb_pull_tail+0x4b/0x3e0
-[  106.542681]  skb_ensure_writable+0x85/0xa0
-[  106.542882]  sk_skb_pull_data+0x18/0x20
-[  106.543084]  bpf_prog_b517a65a242018b0_bpf_skskb_http_verdict+0x3a9/0x4aa9
-[  106.543536]  ? migrate_disable+0x66/0x80
-[  106.543871]  sk_psock_verdict_recv+0xe2/0x310
-[  106.544258]  ? sk_psock_write_space+0x1f0/0x1f0
-[  106.544561]  tcp_read_skb+0x7b/0x120
-[  106.544740]  tcp_data_queue+0x904/0xee0
-[  106.544931]  tcp_rcv_established+0x212/0x7c0
-[  106.545142]  tcp_v4_do_rcv+0x174/0x2a0
-[  106.545326]  tcp_v4_rcv+0xe70/0xf60
-[  106.545500]  ip_protocol_deliver_rcu+0x48/0x290
-[  106.545744]  ip_local_deliver_finish+0xa7/0x150
+To fix we could do simple schedule_work(), but while under memory pressure
+it makes sense to back off some instead of continue to retry repeatedly. So
+instead to fix convert schedule_work to schedule_delayed_work and add
+backoff logic to reschedule from backlog queue on errors. Its not obvious
+though what a good backoff is so use '1'.
+
+To test we observed some flakes whil running NGINX compliance test with
+sockmap we attributed these failed test to this bug and subsequent issue.
 
 Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-Reported-by: William Findlay <will@isovalent.com>
 Tested-by: William Findlay <will@isovalent.com>
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c   | 2 --
- net/ipv4/tcp.c     | 1 -
- net/ipv4/udp.c     | 5 +----
- net/unix/af_unix.c | 5 +----
- 4 files changed, 2 insertions(+), 11 deletions(-)
+ include/linux/skmsg.h |  2 +-
+ net/core/skmsg.c      | 19 ++++++++++++-------
+ net/core/sock_map.c   |  3 ++-
+ 3 files changed, 15 insertions(+), 9 deletions(-)
 
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 84f787416a54..904ff9a32ad6 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -105,7 +105,7 @@ struct sk_psock {
+ 	struct proto			*sk_proto;
+ 	struct mutex			work_mutex;
+ 	struct sk_psock_work_state	work_state;
+-	struct work_struct		work;
++	struct delayed_work		work;
+ 	struct rcu_work			rwork;
+ };
+ 
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 53d0251788aa..2b6d9519ff29 100644
+index 2b6d9519ff29..96a6a3a74a67 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -1180,8 +1180,6 @@ static int sk_psock_verdict_recv(struct sock *sk, struct sk_buff *skb)
- 	int ret = __SK_DROP;
- 	int len = skb->len;
+@@ -481,7 +481,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
+ 	}
+ out:
+ 	if (psock->work_state.skb && copied > 0)
+-		schedule_work(&psock->work);
++		schedule_delayed_work(&psock->work, 0);
+ 	return copied;
+ }
+ EXPORT_SYMBOL_GPL(sk_msg_recvmsg);
+@@ -639,7 +639,8 @@ static void sk_psock_skb_state(struct sk_psock *psock,
  
--	skb_get(skb);
--
- 	rcu_read_lock();
- 	psock = sk_psock(sk);
- 	if (unlikely(!psock)) {
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 33f559f491c8..6572962b0237 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1770,7 +1770,6 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
- 		WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
- 		tcp_flags = TCP_SKB_CB(skb)->tcp_flags;
- 		used = recv_actor(sk, skb);
--		consume_skb(skb);
- 		if (used < 0) {
- 			if (!copied)
- 				copied = used;
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 9592fe3e444a..04e8c6385246 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1832,10 +1832,7 @@ int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ static void sk_psock_backlog(struct work_struct *work)
+ {
+-	struct sk_psock *psock = container_of(work, struct sk_psock, work);
++	struct delayed_work *dwork = to_delayed_work(work);
++	struct sk_psock *psock = container_of(dwork, struct sk_psock, work);
+ 	struct sk_psock_work_state *state = &psock->work_state;
+ 	struct sk_buff *skb = NULL;
+ 	bool ingress;
+@@ -679,6 +680,10 @@ static void sk_psock_backlog(struct work_struct *work)
+ 				if (ret == -EAGAIN) {
+ 					sk_psock_skb_state(psock, state, skb,
+ 							   len, off);
++
++					// Delay slightly to prioritize any
++					// other work that might be here.
++					schedule_delayed_work(&psock->work, 1);
+ 					goto end;
+ 				}
+ 				/* Hard errors break pipe and stop xmit. */
+@@ -733,7 +738,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
+ 	INIT_LIST_HEAD(&psock->link);
+ 	spin_lock_init(&psock->link_lock);
+ 
+-	INIT_WORK(&psock->work, sk_psock_backlog);
++	INIT_DELAYED_WORK(&psock->work, sk_psock_backlog);
+ 	mutex_init(&psock->work_mutex);
+ 	INIT_LIST_HEAD(&psock->ingress_msg);
+ 	spin_lock_init(&psock->ingress_lock);
+@@ -822,7 +827,7 @@ static void sk_psock_destroy(struct work_struct *work)
+ 
+ 	sk_psock_done_strp(psock);
+ 
+-	cancel_work_sync(&psock->work);
++	cancel_delayed_work_sync(&psock->work);
+ 	mutex_destroy(&psock->work_mutex);
+ 
+ 	psock_progs_drop(&psock->progs);
+@@ -937,7 +942,7 @@ static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
  	}
  
- 	WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
--	copied = recv_actor(sk, skb);
--	kfree_skb(skb);
--
--	return copied;
-+	return recv_actor(sk, skb);
+ 	skb_queue_tail(&psock_other->ingress_skb, skb);
+-	schedule_work(&psock_other->work);
++	schedule_delayed_work(&psock_other->work, 0);
+ 	spin_unlock_bh(&psock_other->ingress_lock);
+ 	return 0;
  }
- EXPORT_SYMBOL(udp_read_skb);
- 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index f0c2293f1d3b..a5dd2ee0cfed 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -2554,10 +2554,7 @@ static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
- 	if (!skb)
- 		return err;
- 
--	copied = recv_actor(sk, skb);
--	kfree_skb(skb);
--
--	return copied;
-+	return recv_actor(sk, skb);
- }
- 
- /*
+@@ -1017,7 +1022,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
+ 			spin_lock_bh(&psock->ingress_lock);
+ 			if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+ 				skb_queue_tail(&psock->ingress_skb, skb);
+-				schedule_work(&psock->work);
++				schedule_delayed_work(&psock->work, 0);
+ 				err = 0;
+ 			}
+ 			spin_unlock_bh(&psock->ingress_lock);
+@@ -1048,7 +1053,7 @@ static void sk_psock_write_space(struct sock *sk)
+ 	psock = sk_psock(sk);
+ 	if (likely(psock)) {
+ 		if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
+-			schedule_work(&psock->work);
++			schedule_delayed_work(&psock->work, 0);
+ 		write_space = psock->saved_write_space;
+ 	}
+ 	rcu_read_unlock();
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index a68a7290a3b2..d38267201892 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -1624,9 +1624,10 @@ void sock_map_close(struct sock *sk, long timeout)
+ 		rcu_read_unlock();
+ 		sk_psock_stop(psock);
+ 		release_sock(sk);
+-		cancel_work_sync(&psock->work);
++		cancel_delayed_work_sync(&psock->work);
+ 		sk_psock_put(sk, psock);
+ 	}
++
+ 	/* Make sure we do not recurse. This is a bug.
+ 	 * Leak the socket instead of crashing on a stack overflow.
+ 	 */
 -- 
 2.33.0
 
