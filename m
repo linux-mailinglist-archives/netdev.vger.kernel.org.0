@@ -2,241 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B151F6CA7C4
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F4E36CA7E2
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbjC0OdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 10:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33840 "EHLO
+        id S232705AbjC0OkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 10:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232276AbjC0OdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:33:07 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208AF2128;
-        Mon, 27 Mar 2023 07:33:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KB30QhBCHewGv16VQY0jqKT+9mbsWR4z0+fSBUF2eHc=; b=07UdryqETyFuTA83LFN2INgMpz
-        ak5wlM+wkykj0pLJEkXWemJEQTXWBUO5ZQzpyQKInLRE4auiBQ25zji217Ulx9f9wRvDr85xwEJTc
-        zPDFwIHkfp6DRO6zS2OmLhupIhDb1ECncCg+bSQ2zI1jCp5MMWLsPZBRC3TpV2pLTpUC+QVRwV9ti
-        AzCF7nXwIKyMJxENx4dBb39TWnXNQuhDozmzX4gwMhJ8phjbluUcEXSwgfvYbQc9aeWeCpGPMSqLf
-        TIzeW3WhQbhY195Ef7KKZwAJH+5OdpknSDCEOCUzF99kR1C8dsrBmJhWjAhlf9SS6x8OWySp1JSpX
-        SzfgVAeQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38034)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pgnu1-0003xF-QL; Mon, 27 Mar 2023 15:32:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pgntu-0005UX-O7; Mon, 27 Mar 2023 15:32:46 +0100
-Date:   Mon, 27 Mar 2023 15:32:46 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
- node for default settings
-Message-ID: <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
-References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
- <E1pex8f-00Dvo9-KT@rmk-PC.armlinux.org.uk>
- <ZB24fDEqwx53Rthm@kuha.fi.intel.com>
- <ZB3YGWTWLYyecgw7@shell.armlinux.org.uk>
- <ZCFvtuyelA+WoeqK@kuha.fi.intel.com>
- <ZCF2BLvGoaD/RGCS@shell.armlinux.org.uk>
- <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
+        with ESMTP id S232263AbjC0OkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:40:04 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23248A1;
+        Mon, 27 Mar 2023 07:40:04 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id s19so5305725pgi.0;
+        Mon, 27 Mar 2023 07:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679928003;
+        h=content-transfer-encoding:in-reply-to:from:content-language:subject
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SyYmTYsp48SN5GhFCO3GnJdP+uhW7qRHTOQPZ8beoaU=;
+        b=g5EuLIiLm6gkT4v7NNIQ2Cy/jsRWj20OJQhSpNWH4CiOnpwEpikge+EitbC6MUTKfq
+         mOr0qjYXCewmp68v/TZ28wgyLCzy/+s3oxKxymaX9laCrDnEfNX5CPmQEUrTBS58waL3
+         nWplDyr9lsPGdhqp4GuzsD/LYqnE9Q6/Ra8sgxmg+KtdhNa7dzu/8c1ULrPJabq09gUA
+         qgjFOvx2UDnxT/ids/pa43rWHymyjrR5Sz+aew2PTJwkjp5QfbrDigRZwUqbvxIcg6kH
+         q0OP/wEvkEC7diU7ApViIXkMWGVbnCMD6fdySPqzajAWfrKq1xxrs6IuAODhuHZnc6y0
+         kUFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679928003;
+        h=content-transfer-encoding:in-reply-to:from:content-language:subject
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SyYmTYsp48SN5GhFCO3GnJdP+uhW7qRHTOQPZ8beoaU=;
+        b=B7DzhPo9x3PixWr/3aVROKAohA9HVfyp+MJ3B0tEba1OoYa+eT3bTOsNi8H6Izqixe
+         hV336g6U7Cmth7s2b2/ewf5H6rl9JQIhHRMssQGEp7CjfqbAYN4zRpU8+vsKh0F9mZ78
+         W7sysUN96KLA29ejp5z74YYntjdIjr0VMBS1Q613hBeZtyDjNZZFqw1xn0D/xx57IUuW
+         Vs4J3QuxXd2bwbtYWEL729p5UTd/tFXmTnilY6sD1oA3994A/8NbsPdtbZyZwkoIIHMP
+         KRL+kCF/7/qPA30UaSQapAxFz/s3itDcnXuxOGbG7uzmhzqi4bX/NGbXdr2+G0/Wur1o
+         mpgQ==
+X-Gm-Message-State: AAQBX9fV5VAK2P/fFQ//geDe/orMcfoE9bbHPWNxTm7GM6yNd44nmRr1
+        5Y+qDixq9atGmLguniPs/14=
+X-Google-Smtp-Source: AKy350Z+bLkSuLBES54vGvv3XE566i7LbqSCQqPUsHfk83sIinzJl5JNLzoGEQOgDR73iIuitB1qzQ==
+X-Received: by 2002:aa7:8e88:0:b0:626:2cc8:311e with SMTP id a8-20020aa78e88000000b006262cc8311emr12245416pfr.12.1679928003516;
+        Mon, 27 Mar 2023 07:40:03 -0700 (PDT)
+Received: from [192.168.11.9] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id n2-20020aa79042000000b00625e885a6ffsm8929071pfo.18.2023.03.27.07.40.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Mar 2023 07:40:03 -0700 (PDT)
+Message-ID: <a1d0d61c-d6e9-aee6-fe67-e35f42b76a04@gmail.com>
+Date:   Mon, 27 Mar 2023 23:39:54 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+To:     bagasdotme@gmail.com
+Cc:     corbet@lwn.net, davem@davemloft.net, donald.hunter@gmail.com,
+        donald.hunter@redhat.com, edumazet@google.com, kuba@kernel.org,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com
+References: <ZCGPy+90DsRpsicj@debian.me>
+Subject: Re: [PATCH net-next v5 6/7] docs: netlink: document struct support
+ for genetlink-legacy
+Content-Language: en-US
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <ZCGPy+90DsRpsicj@debian.me>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 05:13:25PM +0300, Heikki Krogerus wrote:
-> Hi Russell,
-> 
-> On Mon, Mar 27, 2023 at 11:55:00AM +0100, Russell King (Oracle) wrote:
-> > On Mon, Mar 27, 2023 at 01:28:06PM +0300, Heikki Krogerus wrote:
-> > > On Fri, Mar 24, 2023 at 05:04:25PM +0000, Russell King (Oracle) wrote:
-> > > > On Fri, Mar 24, 2023 at 04:49:32PM +0200, Heikki Krogerus wrote:
-> > > > > Hi Russell,
-> > > > > 
-> > > > > On Wed, Mar 22, 2023 at 12:00:21PM +0000, Russell King (Oracle) wrote:
-> > > > > > +static struct fwnode_handle *mv88e6xxx_create_fixed_swnode(struct fwnode_handle *parent,
-> > > > > > +							   int speed,
-> > > > > > +							   int duplex)
-> > > > > > +{
-> > > > > > +	struct property_entry fixed_link_props[3] = { };
-> > > > > > +
-> > > > > > +	fixed_link_props[0] = PROPERTY_ENTRY_U32("speed", speed);
-> > > > > > +	if (duplex == DUPLEX_FULL)
-> > > > > > +		fixed_link_props[1] = PROPERTY_ENTRY_BOOL("full-duplex");
-> > > > > > +
-> > > > > > +	return fwnode_create_named_software_node(fixed_link_props, parent,
-> > > > > > +						 "fixed-link");
-> > > > > > +}
-> > > > > > +
-> > > > > > +static struct fwnode_handle *mv88e6xxx_create_port_swnode(phy_interface_t mode,
-> > > > > > +							  int speed,
-> > > > > > +							  int duplex)
-> > > > > > +{
-> > > > > > +	struct property_entry port_props[2] = {};
-> > > > > > +	struct fwnode_handle *fixed_link_fwnode;
-> > > > > > +	struct fwnode_handle *new_port_fwnode;
-> > > > > > +
-> > > > > > +	port_props[0] = PROPERTY_ENTRY_STRING("phy-mode", phy_modes(mode));
-> > > > > > +	new_port_fwnode = fwnode_create_software_node(port_props, NULL);
-> > > > > > +	if (IS_ERR(new_port_fwnode))
-> > > > > > +		return new_port_fwnode;
-> > > > > > +
-> > > > > > +	fixed_link_fwnode = mv88e6xxx_create_fixed_swnode(new_port_fwnode,
-> > > > > > +							  speed, duplex);
-> > > > > > +	if (IS_ERR(fixed_link_fwnode)) {
-> > > > > > +		fwnode_remove_software_node(new_port_fwnode);
-> > > > > > +		return fixed_link_fwnode;
-> > > > > > +	}
-> > > > > > +
-> > > > > > +	return new_port_fwnode;
-> > > > > > +}
-> > > > > 
-> > > > > That new fwnode_create_named_software_node() function looks like a
-> > > > > conflict waiting to happen - if a driver adds a node to the root level
-> > > > > (does not have to be root level), all the tests will pass because
-> > > > > there is only a single device, but when a user later tries the driver
-> > > > > with two devices, it fails, because the node already exist. But you
-> > > > > don't need that function at all.
-> > > > 
-> > > > I think you're totally failing to explain how this can fail.
-> > > > 
-> > > > Let me reiterate what thestructure of the swnodes here is:
-> > > > 
-> > > > 	root
-> > > > 	`- node%d (%d allocated by root IDA)
-> > > > 	   +- phy-mode property
-> > > > 	   `- fixed-link
-> > > > 	      +- speed property
-> > > > 	      `- optional full-duplex property
-> > > > 
-> > > > If we have two different devices creating these nodes, then at the
-> > > > root level, they will end up having different root names. The
-> > > > "fixed-link" is a child of this node.
-> > > 
-> > > Ah, sorry, the problem is not with this patch, or your use case. The
-> > > problem is with the PATCH 1/7 of this series where you introduce that
-> > > new function fwnode_create_named_software_node() which will not be
-> > > tied to your use case only. In this patch you just use that function.
-> > > I should have been more clear on that.
-> > 
-> > How is this any different from creating two struct device's with the
-> > same parent and the same name? Or kobject_add() with the same parent
-> > and name?
-> 
-> But that can not mean we have to take the same risk everywhere. I do
-> understand that we don't protect developers from doing silly decisions
-> in kernel, but that does not mean that we should simply accept
-> interfaces into the kernel that expose these risk if we don't need
-> them.
-> 
-> > > I really just wanted to show how you can create those nodes by using
-> > > the API designed for the statically described software nodes. So you
-> > > don't need that new function. Please check that proposal from my
-> > > original reply.
-> > 
-> > I don't see why I should. This is clearly a case that if one creates
-> > two named nodes with the same name and same parent, it should fail and
-> > it's definitely a "well don't do that then" in just the same way that
-> > one doesn't do it with kobject_add() or any of the other numerous
-> > interfaces that take names in a space that need to be unique.
-> > 
-> > I really don't think there is any issue here to be solved. In fact,
-> > I think solving it will add additional useless complexity that just
-> > isn't required - which adds extra code that can be wrong and fail.
-> > 
-> > Let's keep this simple. This approach is simple. If one does something
-> > stupid (like creating two named nodes with the same name and same
-> > parent) then it will verbosely fail. That is a good thing.
-> 
-> Well, I think the most simplest approach would be to have both the
-> nodes and the properties as part of that struct mv88e6xxx_chip:
-> 
-> struct mv88e6xxx_chip {
->         ...
->        struct property_entry port_props[2];
->        struct property_entry fixed_link_props[3];
-> 
->        struct software_node port_swnode;
->        struct software_node fixed_link_swnode;
-> };
-> 
-> That allows you to register both nodes in one go:
-> 
-> static struct fwnode_handle *mv88e6xxx_create_port_swnode(struct mv88e6xxx_chip *chip,
->                                                           phy_interface_t mode,
->                                                           int speed,
->                                                           int duplex)
-> {
->         struct software_node *nodes[3] = {
->                 &chip->port_swnode,
->                 &chip->fixed_link_swnode,
->         };
->         int ret;
-> 
->         chip->port_props[0] = PROPERTY_ENTRY_STRING("phy-mode", phy_modes(mode));
->         chip->port_swnode.properties = chip->port_props;
-> 
->         chip->fixed_link_props[0] = PROPERTY_ENTRY_U32("speed", speed);
->         if (duplex == DUPLEX_FULL)
->                 chip->fixed_link_props[1] = PROPERTY_ENTRY_BOOL("full-duplex");
-> 
->         chip->fixed_link_swnode.name = "fixed-link";
->         chip->fixed_link_swnode.parent = &chip->port_swnode;
->         chip->fixed_link_swnode.properties = chip->fixed_link_props;
-> 
->         ret = software_node_register_node_group(nodes);
->         if (ret)
->                 return ERR_PTR(ret);
-> 
->         return software_node_fwnode(&chip->port_swnode);
-> }
+On Date: Mon, 27 Mar 2023 19:44:59 +0700, Bagas Sanjaya wrote:
+> On Mon, Mar 27, 2023 at 09:31:37AM +0100, Donald Hunter wrote:
+[...]
 
-You're suggesting code that passes a fwnode pointer back up layers
-that has been allocated in the driver's private structure, assuming
-that those upper layers are going to release this before re-calling
-this function for a different port. They do today, but in the future?
+>> +
+>> +Here is the struct definition from above, declared in YAML:
+>> +
+>> +.. code-block:: yaml
+>> +
+>> +  definitions:
+>> +    -
+>> +      name: message-header
+>> +      type: struct
+>> +      members:
+>> +        -
+>> +          name: a
+>> +          type: u8
+>> +        -
+>> +          name: b
+>> +          type: u16
+>> +        -
+>> +          name: c
+>> +          type: u8
+>> +
+> 
+> Nit: The indentation for code-block codes should be relative to
+> code-block:: declaration (e.g. if it starts from column 4, the first
+> column of code is also at 4).
 
-There are always plenty of guns...
+Hey Bagas,
 
-If we don't want to give the monkey the gun, we need a more complex
-solution than that... and it becomes a question about how far you
-want to take gun control.
+I don't believe there is any such restriction. :-\
+Where did you find it ?
 
-Then there's the question about why we should have this data allocated
-permanently in the system when it is only used for a very short period
-during driver initialisation. That seems to be a complete waste of
-resources.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+        Thanks, Akira
