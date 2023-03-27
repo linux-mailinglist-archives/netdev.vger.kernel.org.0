@@ -2,37 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B656C9A2B
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 05:30:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3C2D6C9A5A
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 05:48:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232311AbjC0DaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Mar 2023 23:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
+        id S232093AbjC0Dst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 23:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232301AbjC0D3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 23:29:34 -0400
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8E75279;
-        Sun, 26 Mar 2023 20:28:42 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vef4At-_1679887717;
-Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0Vef4At-_1679887717)
-          by smtp.aliyun-inc.com;
-          Mon, 27 Mar 2023 11:28:39 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
-        wintera@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net-next v4 9/9] net/smc: Add interface implementation of loopback device
-Date:   Mon, 27 Mar 2023 11:28:19 +0800
-Message-Id: <1679887699-54797-10-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
-References: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        with ESMTP id S229546AbjC0Dsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 23:48:47 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBF04493;
+        Sun, 26 Mar 2023 20:48:45 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id cu4so5921487qvb.3;
+        Sun, 26 Mar 2023 20:48:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679888925;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9FeDfkMMrQT4BDoir4JGzfzhAzX0w2OMMWqn887G1Eo=;
+        b=A2Iugkarl99Xefq1xw10HIk/9BMvoZdl5gaOzCfGEadbdbudzs3hSFwdZkDVz1hKoX
+         VdqpYuIxJ0pXyAl5j+ZzgOmfFkCIFVIivvlkxENj1GLiMVoaEjbA0YbydIsAlzv4bMl4
+         phXAlTAXOX17SD/YtnDW2zWgPEpSpIxq59KXKOz806++goc+HZ2WF3geK4q4NTTWKx+D
+         mB9LjiOokNTL6GiAg97aSXKaHy7mSLcyoiyAfZx448xA/qongVBP8mItPCIE6PzC0S/E
+         nnQgJA9DOUlsA8FgarwXtxdT8SRgp3lrhWITjI1P6k24XXB3G0BhUuzy9vv5V4OBrJh5
+         xJTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679888925;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9FeDfkMMrQT4BDoir4JGzfzhAzX0w2OMMWqn887G1Eo=;
+        b=d9i2T+5uv9TWSAhM3ToNO2qBO/b61k4kPwKabZ4hAMtW+oLlrlvTpVFcJjR8d+t0oZ
+         5ToDwtSSF3PGv7hcvlod6Dej5spEO9rw1F4PWc/J/WHBhZmhzu342jcvybOenqH8AmPz
+         IhN2pEyLIeSsxEUVW14VJmzis5eiOgsZ1K6gq2Z9MEHf70Rx/jcUVsPlDHyEtNOde6Sr
+         IedKohDHigjRCGIYC3g0fIQfcG4YkT0e9GJJmMkJ44Vbm+1DyHv5/DIS3kblaSaQ3DXb
+         h7yLru6sQfpi1ncb2g3SavuYZ5i0ybAyS3+yprzvtf/ZqfuHdtuBpoEAGPU238A6+njJ
+         Kcow==
+X-Gm-Message-State: AAQBX9dv5QPKfPDEoOkbfUK9zEGj89yeBXDVu5T1jA5VdGHI42UL3Y3s
+        RYGFR+6YEpGlunbxQgq2hwz0Djd/DOxhJRwTUSKydXCZsexcUqUm
+X-Google-Smtp-Source: AKy350aFYcs9gGpXm+APkz8hI/e4rajCNWrHEygpCdMoraFWrr/3/dlVPc5wTlPKyGcxF56qvA1wsbkKps2hPNW/vfs=
+X-Received: by 2002:a05:6214:1863:b0:56e:ace8:866f with SMTP id
+ eh3-20020a056214186300b0056eace8866fmr1792699qvb.3.1679888924973; Sun, 26 Mar
+ 2023 20:48:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230326221612.169289-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20230326221612.169289-1-xiyou.wangcong@gmail.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Mon, 27 Mar 2023 11:48:09 +0800
+Message-ID: <CALOAHbCyGJzp1yH2NTsikre0RuQ+4WoZCsAc110_+tW=L8FgQg@mail.gmail.com>
+Subject: Re: [Patch bpf-next] sock_map: include sk_psock memory overhead too
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -40,231 +70,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch completes the specific implementation of loopback device
-for the newly added SMC-D DMB-related interface.
+On Mon, Mar 27, 2023 at 6:16=E2=80=AFAM Cong Wang <xiyou.wangcong@gmail.com=
+> wrote:
+>
+> From: Cong Wang <cong.wang@bytedance.com>
+>
+> When a socket is added to a sockmap, sk_psock is allocated too as its
+> sk_user_data, therefore it should be consider as an overhead of sockmap
+> memory usage.
+>
+> Before this patch:
+>
+> 1: sockmap  flags 0x0
+>         key 4B  value 4B  max_entries 2  memlock 656B
+>         pids echo-sockmap(549)
+>
+> After this patch:
+>
+> 9: sockmap  flags 0x0
+>         key 4B  value 4B  max_entries 2  memlock 1824B
+>         pids echo-sockmap(568)
+>
+> Fixes: 73d2c61919e9 ("bpf, net: sock_map memory usage")
+> Cc: Yafang Shao <laoar.shao@gmail.com>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  net/core/sock_map.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index 7c189c2e2fbf..22197e565ece 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -799,9 +799,17 @@ static void sock_map_fini_seq_private(void *priv_dat=
+a)
+>
+>  static u64 sock_map_mem_usage(const struct bpf_map *map)
+>  {
+> +       struct bpf_stab *stab =3D container_of(map, struct bpf_stab, map)=
+;
+>         u64 usage =3D sizeof(struct bpf_stab);
+> +       int i;
+>
+>         usage +=3D (u64)map->max_entries * sizeof(struct sock *);
+> +
+> +       for (i =3D 0; i < stab->map.max_entries; i++) {
 
-The loopback device always provides mappable DMB because the device
-users are in the same OS instance.
+Although it adds a for-loop, the operation below is quite light. So it
+looks good to me.
 
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/smc_loopback.c | 101 +++++++++++++++++++++++++++++++++++++++++++++----
- net/smc/smc_loopback.h |   5 +++
- 2 files changed, 98 insertions(+), 8 deletions(-)
+> +               if (stab->sks[i])
 
-diff --git a/net/smc/smc_loopback.c b/net/smc/smc_loopback.c
-index 6ac5727..2e35cb5 100644
---- a/net/smc/smc_loopback.c
-+++ b/net/smc/smc_loopback.c
-@@ -74,6 +74,7 @@ static int smc_lo_register_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb,
- 	}
- 	dmb_node->len = dmb->dmb_len;
- 	dmb_node->dma_addr = (dma_addr_t)dmb_node->cpu_addr;
-+	refcount_set(&dmb_node->refcnt, 1);
- 
- 	/* TODO: token is random but not exclusive !
- 	 * suppose to find token in dmb hask table, if has this token
-@@ -84,6 +85,7 @@ static int smc_lo_register_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb,
- 	write_lock(&ldev->dmb_ht_lock);
- 	hash_add(ldev->dmb_ht, &dmb_node->list, dmb_node->token);
- 	write_unlock(&ldev->dmb_ht_lock);
-+	atomic_inc(&ldev->dmb_cnt);
- 
- 	dmb->sba_idx = dmb_node->sba_idx;
- 	dmb->dmb_tok = dmb_node->token;
-@@ -105,11 +107,12 @@ static int smc_lo_unregister_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb)
- 	struct smc_lo_dmb_node *dmb_node = NULL, *tmp_node;
- 	struct smc_lo_dev *ldev = smcd->priv;
- 
--	/* remove dmb from hash table */
-+	/* find dmb from hash table */
- 	write_lock(&ldev->dmb_ht_lock);
- 	hash_for_each_possible(ldev->dmb_ht, tmp_node, list, dmb->dmb_tok) {
- 		if (tmp_node->token == dmb->dmb_tok) {
- 			dmb_node = tmp_node;
-+			dmb_node->freeing = 1;
- 			break;
- 		}
- 	}
-@@ -117,16 +120,85 @@ static int smc_lo_unregister_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb)
- 		write_unlock(&ldev->dmb_ht_lock);
- 		return -EINVAL;
- 	}
-+	write_unlock(&ldev->dmb_ht_lock);
-+
-+	/* wait for dmb refcnt to be 0 */
-+	if (!refcount_dec_and_test(&dmb_node->refcnt))
-+		wait_event(ldev->dmbs_release, !refcount_read(&dmb_node->refcnt));
-+
-+	/* remove dmb from hash table */
-+	write_lock(&ldev->dmb_ht_lock);
- 	hash_del(&dmb_node->list);
- 	write_unlock(&ldev->dmb_ht_lock);
- 
- 	clear_bit(dmb_node->sba_idx, ldev->sba_idx_mask);
-+
- 	kfree(dmb_node->cpu_addr);
- 	kfree(dmb_node);
- 
-+	if (atomic_dec_and_test(&ldev->dmb_cnt))
-+		wake_up(&ldev->ldev_release);
- 	return 0;
- }
- 
-+static int smc_lo_attach_dmb(struct smcd_dev *smcd, struct smcd_dmb *dmb)
-+{
-+	struct smc_lo_dmb_node *dmb_node = NULL, *tmp_node;
-+	struct smc_lo_dev *ldev = smcd->priv;
-+
-+	/* find dmb_node according to dmb->dmb_tok */
-+	read_lock(&ldev->dmb_ht_lock);
-+	hash_for_each_possible(ldev->dmb_ht, tmp_node, list, dmb->dmb_tok) {
-+		if (tmp_node->token == dmb->dmb_tok && !tmp_node->freeing) {
-+			dmb_node = tmp_node;
-+			break;
-+		}
-+	}
-+	if (!dmb_node) {
-+		read_unlock(&ldev->dmb_ht_lock);
-+		return -EINVAL;
-+	}
-+	refcount_inc(&dmb_node->refcnt);
-+	read_unlock(&ldev->dmb_ht_lock);
-+
-+	/* provide dmb information */
-+	dmb->sba_idx = dmb_node->sba_idx;
-+	dmb->dmb_tok = dmb_node->token;
-+	dmb->cpu_addr = dmb_node->cpu_addr;
-+	dmb->dma_addr = dmb_node->dma_addr;
-+	dmb->dmb_len = dmb_node->len;
-+	return 0;
-+}
-+
-+static int smc_lo_detach_dmb(struct smcd_dev *smcd, u64 token)
-+{
-+	struct smc_lo_dmb_node *dmb_node = NULL, *tmp_node;
-+	struct smc_lo_dev *ldev = smcd->priv;
-+
-+	/* find dmb_node according to dmb->dmb_tok */
-+	read_lock(&ldev->dmb_ht_lock);
-+	hash_for_each_possible(ldev->dmb_ht, tmp_node, list, token) {
-+		if (tmp_node->token == token) {
-+			dmb_node = tmp_node;
-+			break;
-+		}
-+	}
-+	if (!dmb_node) {
-+		read_unlock(&ldev->dmb_ht_lock);
-+		return -EINVAL;
-+	}
-+	read_unlock(&ldev->dmb_ht_lock);
-+
-+	if (refcount_dec_and_test(&dmb_node->refcnt))
-+		wake_up_all(&ldev->dmbs_release);
-+	return 0;
-+}
-+
-+static int smc_lo_get_dev_dmb_attr(struct smcd_dev *smcd)
-+{
-+	return (1 << ISM_DMB_MAPPABLE);
-+}
-+
- static int smc_lo_add_vlan_id(struct smcd_dev *smcd, u64 vlan_id)
- {
- 	return -EOPNOTSUPP;
-@@ -153,7 +225,15 @@ static int smc_lo_move_data(struct smcd_dev *smcd, u64 dmb_tok, unsigned int idx
- {
- 	struct smc_lo_dmb_node *rmb_node = NULL, *tmp_node;
- 	struct smc_lo_dev *ldev = smcd->priv;
--
-+	struct smc_connection *conn;
-+
-+	if (!sf) {
-+		/* local sndbuf shares the same physical memory with
-+		 * peer RMB, so no need to copy data from local sndbuf
-+		 * to peer RMB.
-+		 */
-+		return 0;
-+	}
- 	read_lock(&ldev->dmb_ht_lock);
- 	hash_for_each_possible(ldev->dmb_ht, tmp_node, list, dmb_tok) {
- 		if (tmp_node->token == dmb_tok) {
-@@ -169,13 +249,10 @@ static int smc_lo_move_data(struct smcd_dev *smcd, u64 dmb_tok, unsigned int idx
- 
- 	memcpy((char *)rmb_node->cpu_addr + offset, data, size);
- 
--	if (sf) {
--		struct smc_connection *conn =
--			smcd->conn[rmb_node->sba_idx];
-+	conn = smcd->conn[rmb_node->sba_idx];
-+	if (conn && !conn->killed)
-+		smcd_cdc_rx_handler(conn);
- 
--		if (conn && !conn->killed)
--			smcd_cdc_rx_handler(conn);
--	}
- 	return 0;
- }
- 
-@@ -208,6 +285,8 @@ static struct device *smc_lo_get_dev(struct smcd_dev *smcd)
- 	.query_remote_gid = smc_lo_query_rgid,
- 	.register_dmb = smc_lo_register_dmb,
- 	.unregister_dmb = smc_lo_unregister_dmb,
-+	.attach_dmb = smc_lo_attach_dmb,
-+	.detach_dmb = smc_lo_detach_dmb,
- 	.add_vlan_id = smc_lo_add_vlan_id,
- 	.del_vlan_id = smc_lo_del_vlan_id,
- 	.set_vlan_required = smc_lo_set_vlan_required,
-@@ -219,6 +298,7 @@ static struct device *smc_lo_get_dev(struct smcd_dev *smcd)
- 	.get_local_gid = smc_lo_get_local_gid,
- 	.get_chid = smc_lo_get_chid,
- 	.get_dev = smc_lo_get_dev,
-+	.get_dev_dmb_attr = smc_lo_get_dev_dmb_attr,
- };
- 
- static struct smcd_dev *smcd_lo_alloc_dev(const struct smcd_ops *ops,
-@@ -299,6 +379,9 @@ static int smc_lo_dev_init(struct smc_lo_dev *ldev)
- 	smc_lo_gen_id(ldev);
- 	rwlock_init(&ldev->dmb_ht_lock);
- 	hash_init(ldev->dmb_ht);
-+	atomic_set(&ldev->dmb_cnt, 0);
-+	init_waitqueue_head(&ldev->dmbs_release);
-+	init_waitqueue_head(&ldev->ldev_release);
- 
- 	return smcd_lo_register_dev(ldev);
- }
-@@ -337,6 +420,8 @@ static int smc_lo_dev_probe(void)
- static void smc_lo_dev_exit(struct smc_lo_dev *ldev)
- {
- 	smcd_lo_unregister_dev(ldev);
-+	if (atomic_read(&ldev->dmb_cnt))
-+		wait_event(ldev->ldev_release, !atomic_read(&ldev->dmb_cnt));
- }
- 
- static void smc_lo_dev_remove(void)
-diff --git a/net/smc/smc_loopback.h b/net/smc/smc_loopback.h
-index 9d34aba..e0bf044 100644
---- a/net/smc/smc_loopback.h
-+++ b/net/smc/smc_loopback.h
-@@ -33,6 +33,8 @@ struct smc_lo_dmb_node {
- 	u32 sba_idx;
- 	void *cpu_addr;
- 	dma_addr_t dma_addr;
-+	refcount_t refcnt;
-+	u8 freeing : 1;
- };
- 
- struct smc_lo_dev {
-@@ -43,6 +45,9 @@ struct smc_lo_dev {
- 	DECLARE_BITMAP(sba_idx_mask, SMC_LODEV_MAX_DMBS);
- 	rwlock_t dmb_ht_lock;
- 	DECLARE_HASHTABLE(dmb_ht, SMC_LODEV_MAX_DMBS_BUCKETS);
-+	atomic_t dmb_cnt;
-+	wait_queue_head_t dmbs_release;
-+	wait_queue_head_t ldev_release;
- };
- 
- int smc_loopback_init(void);
--- 
-1.8.3.1
+Nit, stab->sks[i] can be modified in the delete path in parallel, so
+there should be a READ_ONCE() here.
 
+> +                       usage +=3D sizeof(struct sk_psock);
+> +       }
+> +
+>         return usage;
+>  }
+>
+> @@ -1412,7 +1420,7 @@ static u64 sock_hash_mem_usage(const struct bpf_map=
+ *map)
+>         u64 usage =3D sizeof(*htab);
+>
+>         usage +=3D htab->buckets_num * sizeof(struct bpf_shtab_bucket);
+> -       usage +=3D atomic_read(&htab->count) * (u64)htab->elem_size;
+> +       usage +=3D atomic_read(&htab->count) * ((u64)htab->elem_size + si=
+zeof(struct sk_psock));
+>         return usage;
+>  }
+>
+> --
+> 2.34.1
+>
+
+
+--=20
+Regards
+Yafang
