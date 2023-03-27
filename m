@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E0B6CA773
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08CF6CA77A
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 16:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232540AbjC0OYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 10:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
+        id S233085AbjC0OYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 10:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232518AbjC0OXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:23:51 -0400
+        with ESMTP id S232582AbjC0OXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 10:23:52 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19757EC8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C002E8A65
         for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 07:22:17 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1pgnja-0008Hj-Kt; Mon, 27 Mar 2023 16:22:06 +0200
+        id 1pgnja-0008Hm-Kr; Mon, 27 Mar 2023 16:22:06 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pgnjY-0076IK-7Q; Mon, 27 Mar 2023 16:22:04 +0200
+        id 1pgnjY-0076IT-N2; Mon, 27 Mar 2023 16:22:04 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1pgnjW-00Fkik-PV; Mon, 27 Mar 2023 16:22:02 +0200
+        id 1pgnjW-00Fkit-Qe; Mon, 27 Mar 2023 16:22:02 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Wei Fang <wei.fang@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -44,9 +44,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
         Willem de Bruijn <willemb@google.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2 1/8] net: phy: Add driver-specific get/set_eee support for non-standard PHYs
-Date:   Mon, 27 Mar 2023 16:21:55 +0200
-Message-Id: <20230327142202.3754446-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 2/8] net: phy: add is_smart_eee_phy variable for SmartEEE support
+Date:   Mon, 27 Mar 2023 16:21:56 +0200
+Message-Id: <20230327142202.3754446-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20230327142202.3754446-1-o.rempel@pengutronix.de>
 References: <20230327142202.3754446-1-o.rempel@pengutronix.de>
@@ -65,63 +65,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Not all PHYs are implemented fully according to the IEEE 802.3
-specification and cannot be handled by the generic
-phy_ethtool_get/set_eee() functions. To address this, this commit adds
-driver-specific get/set_eee support, enabling better handling of such
-PHYs. This is particularly important for handling PHYs with SmartEEE
-support, which requires specialized management.
+This commit introduces a new variable, is_smart_eee_phy, to the PHY
+layer. This variable is used to indicate whether a PHY supports the
+SmartEEE functionality, which is a Low Power Idle (LPI) implementation
+on the PHY side, typically handled by the MAC.
+
+By adding the is_smart_eee_phy variable, PHY drivers and the PHYlib
+framework can provide proper configuration depending on the side that
+implements LPI (PHY or MAC).
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/phy.c | 10 ++++++++--
- include/linux/phy.h   |  5 +++++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ include/linux/phy.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 0c0df38cd1ab..103484c24437 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -1568,7 +1568,10 @@ int phy_ethtool_get_eee(struct phy_device *phydev, struct ethtool_eee *data)
- 		return -EIO;
- 
- 	mutex_lock(&phydev->lock);
--	ret = genphy_c45_ethtool_get_eee(phydev, data);
-+	if (phydev->drv->get_eee)
-+		ret = phydev->drv->get_eee(phydev, data);
-+	else
-+		ret = genphy_c45_ethtool_get_eee(phydev, data);
- 	mutex_unlock(&phydev->lock);
- 
- 	return ret;
-@@ -1590,7 +1593,10 @@ int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data)
- 		return -EIO;
- 
- 	mutex_lock(&phydev->lock);
--	ret = genphy_c45_ethtool_set_eee(phydev, data);
-+	if (phydev->drv->set_eee)
-+		ret = phydev->drv->set_eee(phydev, data);
-+	else
-+		ret = genphy_c45_ethtool_set_eee(phydev, data);
- 	mutex_unlock(&phydev->lock);
- 
- 	return ret;
 diff --git a/include/linux/phy.h b/include/linux/phy.h
-index fefd5091bc24..07cebf110aa6 100644
+index 07cebf110aa6..6622b59ab5a1 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -1056,6 +1056,11 @@ struct phy_driver {
- 	/** @get_plca_status: Return the current PLCA status info */
- 	int (*get_plca_status)(struct phy_device *dev,
- 			       struct phy_plca_status *plca_st);
-+
-+	/** @get_eee: Return the current EEE configuration */
-+	int (*get_eee)(struct phy_device *phydev, struct ethtool_eee *e);
-+	/** @set_eee: Set the EEE configuration */
-+	int (*set_eee)(struct phy_device *phydev, struct ethtool_eee *e);
- };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
+@@ -547,6 +547,7 @@ struct macsec_ops;
+  * @downshifted_rate: Set true if link speed has been downshifted.
+  * @is_on_sfp_module: Set true if PHY is located on an SFP module.
+  * @mac_managed_pm: Set true if MAC driver takes of suspending/resuming PHY
++ * @is_smart_eee_phy: Set true if PHY is a Smart EEE PHY
+  * @state: State of the PHY for management purposes
+  * @dev_flags: Device-specific flags used by the PHY driver.
+  *
+@@ -642,6 +643,7 @@ struct phy_device {
+ 	unsigned downshifted_rate:1;
+ 	unsigned is_on_sfp_module:1;
+ 	unsigned mac_managed_pm:1;
++	unsigned is_smart_eee_phy:1;
+ 
+ 	unsigned autoneg:1;
+ 	/* The most recently read link state */
 -- 
 2.30.2
 
