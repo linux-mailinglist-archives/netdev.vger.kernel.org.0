@@ -2,102 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8A9D6C9CC2
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 09:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346866C9CC9
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 09:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232783AbjC0Hui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 03:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41144 "EHLO
+        id S232807AbjC0Hvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 03:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbjC0Hue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 03:50:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAE744BA;
-        Mon, 27 Mar 2023 00:50:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30F2EB80E9D;
-        Mon, 27 Mar 2023 07:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BB5CFC4339C;
-        Mon, 27 Mar 2023 07:50:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679903420;
-        bh=so1OnpfijwflVOtweah2v9BOoWst1VABwtJ5gAs1vXY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ro/we0tyqIRuSEb7S6zsAEcYxyNx4YzrIxF+Zd0Au4tDb7YtVkYxp3QSEe3YCJB5S
-         K4v3WPS9zovjMygf1FOlTIi9IQ4PblKUtGmhGaRepUTk2hAYvHasIaSTaWcfO53wrg
-         fzT3tHFBdtfkuvGl2v0fct9TIOSlAVOWodmY5eorhcW54u5Pw38Ddx3Vat1yzpTG0Q
-         8RNUOX72GT+Rmo1f+YRq4j7kZkZjga8cGNWcYgCkylO3OmgNDAAeUaaFz4YF139kTR
-         kcjD+FxA+rNy1EuDbsOUcTinD/8boXagVhy7Cm3UKTvV56HfOyprZKZWOzqkkgMxz9
-         7l1SDGQpqe+/Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9DC07E4D029;
-        Mon, 27 Mar 2023 07:50:20 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232844AbjC0Hv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 03:51:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737C13599
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 00:51:27 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pghdG-0003gU-7y; Mon, 27 Mar 2023 09:51:10 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id ADDD219CEAC;
+        Mon, 27 Mar 2023 07:51:07 +0000 (UTC)
+Date:   Mon, 27 Mar 2023 09:51:06 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        michael@amarulasolutions.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
+Subject: Re: [RESEND PATCH v7 0/5] can: bxcan: add support for ST bxCAN
+ controller
+Message-ID: <20230327075106.ucfzckbhkwa23wci@pengutronix.de>
+References: <20230315211040.2455855-1-dario.binacchi@amarulasolutions.com>
+ <CABGWkvpHHLNzZHDMzWveoHtApmR3czVvoCOnuWBZt-UoLVU-6g@mail.gmail.com>
+ <20230324155632.24chi5ndo23awhhp@pengutronix.de>
+ <CABGWkvpsza=b8GAFkyL2VMMHqkHyY4VLQ=8aky5G8vWTeAR49g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 00/10] net: sunhme: Probe/IRQ cleanups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167990342063.21476.7775706161280440153.git-patchwork-notify@kernel.org>
-Date:   Mon, 27 Mar 2023 07:50:20 +0000
-References: <20230324175136.321588-1-seanga2@gmail.com>
-In-Reply-To: <20230324175136.321588-1-seanga2@gmail.com>
-To:     Sean Anderson <seanga2@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        simon.horman@corigine.com, linux-kernel@vger.kernel.org,
-        debian-sparc@lists.debian.org, rescue@sunhelp.org, sparc@gentoo.org
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="w6wvx2l43euoafha"
+Content-Disposition: inline
+In-Reply-To: <CABGWkvpsza=b8GAFkyL2VMMHqkHyY4VLQ=8aky5G8vWTeAR49g@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (main)
-by David S. Miller <davem@davemloft.net>:
+--w6wvx2l43euoafha
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 24 Mar 2023 13:51:26 -0400 you wrote:
-> Well, I've had these patches kicking around in my tree since last October, so I
-> guess I had better get around to posting them. This series is mainly a
-> cleanup/consolidation of the probe process, with some interrupt changes as well.
-> Some of these changes are SBUS- (AKA SPARC-) specific, so this should really get
-> some testing there as well to ensure nothing breaks. I've CC'd a few SPARC
-> mailing lists in hopes that someone there can try this out. I also have an SBUS
-> card I ordered by mistake if anyone has a SPARC computer but lacks this card.
-> 
-> [...]
+On 26.03.2023 18:07:14, Dario Binacchi wrote:
+> > On 21.03.2023 12:25:15, Dario Binacchi wrote:
+> > > A gentle ping to remind you of this series.
+> > > I have no idea why it hasn't deserved any response for quite some
+> > > time.
+> > > Is there anything I am still missing?
+> >
+> > I wonder if we want to do a s/master/primary/ in the DT bindings and
+> > driver?
+>=20
+> The ST reference manual (RM0386) explicitly uses the master and slave wor=
+ds
+> in the bxcan chapter.
 
-Here is the summary with links:
-  - [net-next,v4,01/10] net: sunhme: Fix uninitialized return code
-    https://git.kernel.org/netdev/net-next/c/d61157414d0a
-  - [net-next,v4,02/10] net: sunhme: Just restart autonegotiation if we can't bring the link up
-    https://git.kernel.org/netdev/net-next/c/70b1b4b86227
-  - [net-next,v4,03/10] net: sunhme: Remove residual polling code
-    https://git.kernel.org/netdev/net-next/c/3427372d0bd8
-  - [net-next,v4,04/10] net: sunhme: Unify IRQ requesting
-    https://git.kernel.org/netdev/net-next/c/27b9ea8f37a6
-  - [net-next,v4,05/10] net: sunhme: Alphabetize includes
-    (no matching commit)
-  - [net-next,v4,06/10] net: sunhme: Switch SBUS to devres
-    https://git.kernel.org/netdev/net-next/c/cc216e4b44ce
-  - [net-next,v4,07/10] net: sunhme: Consolidate mac address initialization
-    https://git.kernel.org/netdev/net-next/c/273fb669c62c
-  - [net-next,v4,08/10] net: sunhme: Clean up mac address init
-    https://git.kernel.org/netdev/net-next/c/d1f088196057
-  - [net-next,v4,09/10] net: sunhme: Inline error returns
-    https://git.kernel.org/netdev/net-next/c/902fe6e90368
-  - [net-next,v4,10/10] net: sunhme: Consolidate common probe tasks
-    https://git.kernel.org/netdev/net-next/c/ecdcd0428c59
+ACK
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> I would stay consistent with it.
 
+Yes, this is a known problem, on the one hand I'd like the drivers to
+match the datasheet, but here I am in favor of a deviation.
 
+> But I have no problem changing it to primary. I just sent v8 with the
+> changes you suggested for shared irq and clock enable/disable,
+
+These changes look good!
+
+> but if you prefer to use primary I will send the v9 version with that
+> change. Please let me know your opinion.
+
+Please convert the driver and bindings to use "primary". Feel free to
+mention that the datasheet calls the primary peripheral "master".
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--w6wvx2l43euoafha
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQhSucACgkQvlAcSiqK
+BOiPjQf9E5vCrptcbyNMbkUflXvdpNyA61rS146Nh9RTyCJEn2ACUqG+HnYYLtoY
+za2I3hFo7w8rtro5lMUCpm5VelthwcH0ye1rg6l27SrXoNJqscr1FIfjULRTCgPb
+UcKxrn++mNJILZVBCEVD0e9cEA6ZVz7aWXWOCodnjzR/Zs8t61VBYaKOU/owFzfl
+ukyZeFWOAlfHidUNyOf9DZcYH0yEyWDgQ1epR+FHvuMkj2/5u35K/dZjD0QzO0Ee
+wJzk3qbrJaR7amHXfaOwm+FYUl4xIEV6CDDXVxTvvUAAajNfzm+WZceALYU4tRQw
+GLaIUlEJklglv+zm79XBdEZeaGSQag==
+=FOmF
+-----END PGP SIGNATURE-----
+
+--w6wvx2l43euoafha--
