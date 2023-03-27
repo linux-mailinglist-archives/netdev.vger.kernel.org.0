@@ -2,119 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 464776CA0C6
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 12:03:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACF56CA190
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 12:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbjC0KDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 06:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60696 "EHLO
+        id S233485AbjC0KiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 06:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232439AbjC0KDI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 06:03:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2442F19AC
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 03:02:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679911339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1oIh4W1K4C1hh/u3Sp5preXUm1Zx4Wdyg747WB2Zyw8=;
-        b=BB5Nd7fnGetaf/Rgb7q0/Yn+OJG217nR1vcIRe4dx8WuqF74hTS+JHknXOhYTommeZSuC4
-        Ewb/LP6KI6oSxaA9dmAZKnr9mx0FQYXuHfB656vrXWkG+R4GeoVNWFP+sluufcLZlZdvcm
-        Rp9NNoulI6tsi+Hwc/ieDZwnWHUc95g=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-148-vZcia6juOUi4XM5R_tBTLw-1; Mon, 27 Mar 2023 06:02:18 -0400
-X-MC-Unique: vZcia6juOUi4XM5R_tBTLw-1
-Received: by mail-ed1-f72.google.com with SMTP id b1-20020aa7dc01000000b004ad062fee5eso11714264edu.17
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 03:02:18 -0700 (PDT)
+        with ESMTP id S233665AbjC0KiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 06:38:23 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FE9CD
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 03:38:02 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id i5so34233762eda.0
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 03:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679913480;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=6H7+5iXr2gD2DO7nhfsGDWjC3fNiYdCNVD2CPrJp0vI=;
+        b=eKs9dA3h1RlNVUMtZ2YxHbEqoNXSXR/EQ4CGw0meGY4Gae6hZi2wt8PWYmqy369431
+         PXs/E38hwKE1C16Tthbb1AosFzQRdwoF4es6uNpE8LddPimHs+Jl4W6PCDg6ZSmb53Tc
+         Kh/RhQbqtuMc6IN5bVSE9oPM97W0585R7lys5rtq23IcamZuvjQZkagEr9CN4BNYAzZm
+         bnZaZyzo9cBll5TcD4L6bVbtGYg5O6Vr9z3KXLGSiGZ1y98IhaEWoIrtuKKalJpMZVNb
+         k38doqKTSAS8JwXT2/eViQ2ZJcL7N1St1xvsPws8u1IpiT4QwQvihpn0iOtUGeTxJmSG
+         CWXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679911336;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1oIh4W1K4C1hh/u3Sp5preXUm1Zx4Wdyg747WB2Zyw8=;
-        b=dd+aGVacTHO+DD74DEn8gfLYUyk4+R8Qu/2DCQYTilPyVLrIhVsJXFKsXSHKGngrlH
-         L2TiVJIhkkIN+HH/NfdLJCzokXQjFYcsTj5ghImmRLT25GpWD9+6b5S/W6SEcyV0bAZl
-         wnZEHfqnPy5SqM30WrxvBROl5R4v/VckqJt2o8uVVCgnGnLMuKinrv3AIHz+C/WH7TOS
-         cVivBYJmqCfQvtJPIvNnMCJU7s8UlIGT1WaoWvH3B9S5v+N0lVQbscMqEtLRMcWN1GQe
-         GZrHARZEOM4TmNPFR6lqj05gZjBsMCUGtJMoBFldx8nE4jHqYhoblQ+kEHlV45G60SJi
-         3q8w==
-X-Gm-Message-State: AAQBX9cL4/YAeKOUw0WOTXDlzEZO9hZhnu247XfxAGrUSHVn4oiQwJ7f
-        VsC0o0AUsVfMf/S0vsL4HFX58cM7fyEyKm9VbmMAFb8wKtNVoPTuiO5N3b3958Q11lQJ2arF0jt
-        jpQa+4q5q+OTCsWgh1yAbJQ1m+0c=
-X-Received: by 2002:a17:907:98ce:b0:931:de86:1879 with SMTP id kd14-20020a17090798ce00b00931de861879mr12925347ejc.9.1679911336491;
-        Mon, 27 Mar 2023 03:02:16 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bWJSxRkkClaAm1ekHhAEOECsiyz841yv6H3zCEK/lOADbTZJH7cvSoaHjZgpoN1KS/RVjdBQ==
-X-Received: by 2002:a17:907:98ce:b0:931:de86:1879 with SMTP id kd14-20020a17090798ce00b00931de861879mr12925327ejc.9.1679911336167;
-        Mon, 27 Mar 2023 03:02:16 -0700 (PDT)
-Received: from localhost (net-37-119-203-146.cust.vodafonedsl.it. [37.119.203.146])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170906924500b0092be625d981sm13943322ejx.91.2023.03.27.03.02.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 03:02:14 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 12:02:14 +0200
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Pedro Tammela <pctammela@mojatatu.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/4] selftests: tc-testing: extend the "skip"
- property
-Message-ID: <ZCFpprlY8GiNu6IX@dcaratti.users.ipa.redhat.com>
-References: <cover.1679569719.git.dcaratti@redhat.com>
- <29e811befea5e751f938e3bf46ca870ec214d53d.1679569719.git.dcaratti@redhat.com>
- <b6ed0c28-248c-e383-cf05-a8a9bec73b20@mojatatu.com>
+        d=1e100.net; s=20210112; t=1679913480;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6H7+5iXr2gD2DO7nhfsGDWjC3fNiYdCNVD2CPrJp0vI=;
+        b=kOk0sTsrokwL/D7A2TFortxlSiqec1FYLNq9N4DlKGtaSOlmpcXjAo6DhmVwF7dVHq
+         dJizqa8D+BBvSBrwcHbheH/Qs2iOhJj39L6dgMNh9xtfY0BK9kj0zJR5PajEvJ7+mDNk
+         foOq8wxcTgHbO2T+gvJ85IoUt3Y+KcR6uozDgO6abHJsJxW/2Q5sophFu/dV5OH4L2cV
+         7gJU/ev7fLUN0k8E/+G8gul319G0ozg5nipa+QeT6zCx9aMgfnt8iAXg+CH3Si1ZXuCA
+         Pbina3NhHfV32pon/CxSKhaWC5czSoaYImUyfKDYgBV3VVFPQcUi09qsk4PGzVoFBtIu
+         D9aw==
+X-Gm-Message-State: AAQBX9dTe2JJN4UC27+C8rQyWC50hN8EelkrxfExljeQY/0gPLKQ/l7N
+        PKDxonbp7aNXj0CzxgVzsJrWn1N0qG63ZDm4okdalR5u51JGrA==
+X-Google-Smtp-Source: AKy350bL6ebMFlo5hGV4jIwOsbUHWCm6GVsPNExvsDk6t0DVEUtw/kpD4EfoNkC1VrAwg5nMXiSW1ZFTyKtJYIsZkis=
+X-Received: by 2002:a2e:9c4b:0:b0:29e:fcb3:b37e with SMTP id
+ t11-20020a2e9c4b000000b0029efcb3b37emr3165461ljj.4.1679907013269; Mon, 27 Mar
+ 2023 01:50:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6ed0c28-248c-e383-cf05-a8a9bec73b20@mojatatu.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Received: by 2002:ab2:3311:0:b0:1b1:680c:f32 with HTTP; Mon, 27 Mar 2023
+ 01:50:12 -0700 (PDT)
+From:   "facixbooka@yahoo.com" <thuytienle0307@gmail.com>
+Date:   Mon, 27 Mar 2023 15:50:12 +0700
+Message-ID: <CAHKhASj6CNyJAn0XR-dscV4FGsj9CRGf3Ewc5HsjoJ077zJJVA@mail.gmail.com>
+Subject: 
+To:     Facix Booka <facixbooka@yahoo.com>,
+        netdev <netdev@vger.kernel.org>, Oliver Neukum <oneukum@suse.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        PDS_EMPTYSUBJ_URISHRT,PDS_FROM_2_EMAILS_SHRTNER,PDS_TINYSUBJ_URISHRT,
+        POSSIBLE_GMAIL_PHISHER,RCVD_IN_DNSWL_NONE,SHORT_SHORTNER,SPF_HELO_NONE,
+        SPF_PASS,TVD_SPACE_RATIO,T_PDS_TO_EQ_FROM_NAME autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:52d listed in]
+        [list.dnswl.org]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [thuytienle0307[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [thuytienle0307[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.0 TVD_SPACE_RATIO No description available.
+        *  0.0 T_PDS_TO_EQ_FROM_NAME From: name same as To: address
+        *  0.7 POSSIBLE_GMAIL_PHISHER Apparent phishing email sent from a
+        *      gmail account
+        *  1.4 PDS_FROM_2_EMAILS_SHRTNER From 2 emails short email with little
+        *       more than a URI shortener
+        *  1.1 SHORT_SHORTNER Short body with little more than a link to a
+        *      shortener
+        *  1.4 PDS_EMPTYSUBJ_URISHRT Empty subject with little more than URI
+        *      shortener
+        *  1.4 PDS_TINYSUBJ_URISHRT Short subject with URL shortener
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hello Pedro, thanks for looking at this!
-
-On Thu, Mar 23, 2023 at 11:01:53AM -0300, Pedro Tammela wrote:
-> On 23/03/2023 10:34, Davide Caratti wrote:
-> > currently, users can skip individual test cases by means of writing
-> > 
-> >    "skip": "yes"
-> > 
-> > in the scenario file. Extend this functionality by allowing the execution
-> > of a command, written in the "skip" property for a specific test case. If
-> > such property is present, tdc executes that command and skips the test if
-> > the return value is non-zero.
-> > 
-> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> 
-> 
-> I saw the use case in patch 3 but I didn't understand how it can happen.
-> Shouldn't iproute2 at least match the kernel version? I know it's not a hard
-> requirement for 99% of use cases, but when running tdc I would argue it's
-> the minimum expected.
-
-sure, but there are distributions where patches are backported: on these
-ones, the kernel/iproute version is not so meaningful.
-Instead of posting kselftest after the iproute2 support code is merged, I
-think it's preferrable to just skip those kselftests that can't run because
-they lack userspace bits; and by the way I see we are already taking this
-approach elsewhere [1] [2].
-
--- 
-davide
-
-[1] https://elixir.bootlin.com/linux/v6.3-rc4/source/tools/testing/selftests/net/srv6_hl2encap_red_l2vpn_test.sh#L789
-[2] https://elixir.bootlin.com/linux/v6.3-rc4/source/tools/testing/selftests/net/rtnetlink.sh#L391
-
-
-
+https://bit.ly/40zCoFg
