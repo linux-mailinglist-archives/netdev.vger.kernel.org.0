@@ -2,91 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58CE66CACB5
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6CA6CACDB
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 20:17:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbjC0SHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 14:07:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
+        id S231787AbjC0SRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 14:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjC0SHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:07:37 -0400
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A7946A4;
-        Mon, 27 Mar 2023 11:07:03 -0700 (PDT)
-Received: from [192.168.1.103] (31.173.81.236) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 27 Mar
- 2023 21:06:39 +0300
-Subject: Re: [PATCH net-next v2] Revert "sh_eth: remove open coded
- netif_running()"
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        <netdev@vger.kernel.org>
-CC:     <linux-renesas-soc@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>
-References: <20230327152112.15635-1-wsa+renesas@sang-engineering.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <09108926-4d0c-79b7-5e8b-36deff4561e5@omp.ru>
-Date:   Mon, 27 Mar 2023 21:06:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20230327152112.15635-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        with ESMTP id S229550AbjC0SRt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 14:17:49 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8625213C;
+        Mon, 27 Mar 2023 11:17:48 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id fb38so6296936pfb.7;
+        Mon, 27 Mar 2023 11:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679941068;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+Vi/Vv4Ii7DOvoFpFwntmDUanvKO2EfmjxpTZ1StCdY=;
+        b=I26JdAX+3TuKYJjsCYyzhZ9B09gut/FTRMAvLKPKWdkPU9mZgCjwhb1k94kK8ks8iA
+         QJA+vQ3ymv/++GennEwkjrDo9C6Ff7qrdU+IOpbQjBMvD0Tj2Ktkg38a2Exhp33nrJR6
+         w2yUoW/LwEAtbqeNkiGyXLqSHPvttQENVcVaZ4/aIXUqjxwZAgyFp9lpzhonluRkcU2l
+         O3p3oBDuVEWAzcQaRVWDg5YVUJc7ws78TB/JeNuF0ZRhXxj/xIxiQsJ3YxhaQvVbPDjJ
+         yytbG6pdnK5Bte0ZfKA/LOywNxSs2sCO2QIemIzHEnzw58K5+VO1GGxJKjNa8qkcUnh1
+         CVlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679941068;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=+Vi/Vv4Ii7DOvoFpFwntmDUanvKO2EfmjxpTZ1StCdY=;
+        b=LaCysDhem23M8ScseagGSppASG2ZHy2ttGTVwX8aQ7mLRVcIOTO+jDuW5OFLb8B0Br
+         68PMvnaCFoHqmycq1Q2xr+ZWYcymrxGw5Bj+It+vDKJsZjC3dFnkrN1wJXDN0QAUwDTK
+         ElUKcUqplOc1JYA4QPPgASdDWlemHPt0967GCC62L8+4EV1DrG1jYwI3EDGP8YjAEFCy
+         Q2LXW0eWNuTsAvIunEwOrPHudWf/ujblSt3TESvAfArTVxRi6ItLM1gI3wkby3eZ+N2K
+         Tfyp4nsifjSUGPK9XK420iMr8KmUyN4a+b0ELjy8VpRK+UuJml2oA54E/qyHtQML3Aao
+         KClQ==
+X-Gm-Message-State: AAQBX9cm9iFzwcJ7fU/XkHPopBCc0h+rC4ebNBHXaN7QEyq5XEF6OzL6
+        mMfCwJAzqbb/LdOpxkyIryk=
+X-Google-Smtp-Source: AKy350Y8012cAr/N6sF0Ywui6BJ1fiKkY6zGyYY2AJjke0ROq/QFduoR2RbH8S8BdP+vcVAL/vuuKg==
+X-Received: by 2002:aa7:9696:0:b0:5a8:bcf2:125 with SMTP id f22-20020aa79696000000b005a8bcf20125mr12462613pfk.21.1679941068276;
+        Mon, 27 Mar 2023 11:17:48 -0700 (PDT)
+Received: from localhost ([98.97.117.131])
+        by smtp.gmail.com with ESMTPSA id x4-20020aa79184000000b005a8b4dcd21asm19930470pfa.15.2023.03.27.11.17.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 11:17:47 -0700 (PDT)
+Date:   Mon, 27 Mar 2023 11:17:45 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>, cong.wang@bytedance.com,
+        jakub@cloudflare.com, daniel@iogearbox.net, lmb@isovalent.com,
+        edumazet@google.com
+Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
+        will@isovalent.com
+Message-ID: <6421ddc9f15b8_18d4f208ec@john.notmuch>
+In-Reply-To: <20230327175446.98151-1-john.fastabend@gmail.com>
+References: <20230327175446.98151-1-john.fastabend@gmail.com>
+Subject: RE: [PATCH bpf v2 00/11] bpf sockmap fixes
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [31.173.81.236]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.59, Database issued on: 03/27/2023 17:45:10
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 176318 [Mar 27 2023]
-X-KSE-AntiSpam-Info: Version: 5.9.59.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 507 507 08d345461d9bcca7095738422a5279ab257bb65a
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.81.236
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 03/27/2023 17:47:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 3/27/2023 4:08:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-Spam-Status: No, score=-0.0 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/27/23 6:21 PM, Wolfram Sang wrote:
-
-> This reverts commit ce1fdb065695f49ef6f126d35c1abbfe645d62d5. It turned
-> out this actually introduces a race condition. netif_running() is not a
-> suitable check for get_stats.
+John Fastabend wrote:
+> Fixes for sockmap running against NGINX TCP tests and also on an
+> underprovisioned VM so that we hit error (ENOMEM) cases regularly.
 > 
-> Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-[...]
+> The first 3 patches fix cases related to ENOMEM that were either
+> causing splats or data hangs.
+> 
+> Then 4-7 resolved cases found when running NGINX with its sockets
+> assigned to sockmap. These mostly have to do with handling fin/shutdown
+> incorrectly and ensuring epoll_wait works as expected.
+> 
+> Patches 8 and 9 extract some of the logic used for sockmap_listen tests
+> so that we can use it in other tests because it didn't make much
+> sense to me to add tests to the sockmap_listen cases when here we
+> are testing send/recv *basic* cases.
+> 
+> Finally patches 10 and 11 add the new tests to ensure we handle
+> ioctl(FIONREAD) and shutdown correctly.
+> 
+> To test the series I ran the NGINX compliance tests and the sockmap
+> selftests. For now our compliance test just runs with SK_PASS.
+> 
+> There are some more things to be done here, but these 11 patches
+> stand on their own in my opionion and fix issues we are having in
+> CI now. For bpf-next we can fixup/improve selftests to use the
+> ASSERT_* in sockmap_helpers, streamline some of the testing, and
+> add more tests. We also still are debugging a few additional flakes
+> patches coming soon.
+> 
+> v2: use skb_queue_empty instead of *_empty_lockless (Eric)
+>     oops incorrectly updated copied_seq on DROP case (Eric)
+>     added test for drop case copied_seq update
+> 
 
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Sorry folks on the to line there I resent with the cc list here. I had
+suppressed the CC list in the first batch.
 
-MBR, Sergey
+.John
