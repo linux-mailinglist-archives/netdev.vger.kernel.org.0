@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7CFF6C9906
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 02:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B3C6C9958
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 03:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbjC0AiH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 26 Mar 2023 20:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
+        id S229880AbjC0BaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Mar 2023 21:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbjC0AiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 20:38:06 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A3912E;
-        Sun, 26 Mar 2023 17:38:05 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32R0bIhoD005218, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32R0bIhoD005218
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Mon, 27 Mar 2023 08:37:18 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Mon, 27 Mar 2023 08:37:34 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Mon, 27 Mar 2023 08:37:34 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Mon, 27 Mar 2023 08:37:34 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Cai Huoqing <cai.huoqing@linux.dev>
-CC:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229471AbjC0BaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Mar 2023 21:30:15 -0400
+Received: from fd01.gateway.ufhost.com (fd01.gateway.ufhost.com [61.152.239.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CD04680;
+        Sun, 26 Mar 2023 18:30:11 -0700 (PDT)
+Received: from EXMBX166.cuchost.com (unknown [175.102.18.54])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "EXMBX166", Issuer "EXMBX166" (not verified))
+        by fd01.gateway.ufhost.com (Postfix) with ESMTP id 27CE024E13F;
+        Mon, 27 Mar 2023 09:29:55 +0800 (CST)
+Received: from EXMBX162.cuchost.com (172.16.6.72) by EXMBX166.cuchost.com
+ (172.16.6.76) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 27 Mar
+ 2023 09:29:55 +0800
+Received: from [192.168.120.42] (171.223.208.138) by EXMBX162.cuchost.com
+ (172.16.6.72) with Microsoft SMTP Server (TLS) id 15.0.1497.42; Mon, 27 Mar
+ 2023 09:29:53 +0800
+Message-ID: <670108d3-d8d7-102b-75fc-52e2db8945f2@starfivetech.com>
+Date:   Mon, 27 Mar 2023 09:29:52 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH v8 6/6] net: stmmac: starfive_dmac: Add phy interface
+ settings
+Content-Language: en-US
+To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>,
-        "ath12k@lists.infradead.org" <ath12k@lists.infradead.org>
-Subject: RE: [PATCH 5/5] wifi: rtw89: Remove redundant pci_clear_master
-Thread-Topic: [PATCH 5/5] wifi: rtw89: Remove redundant pci_clear_master
-Thread-Index: AQHZXXpgQZeubkOvMUyQJYDWG6thja8NzZ5A
-Date:   Mon, 27 Mar 2023 00:37:33 +0000
-Message-ID: <90e016cbdf5846b6989af90c1f57d532@realtek.com>
-References: <20230323112613.7550-1-cai.huoqing@linux.dev>
- <20230323112613.7550-5-cai.huoqing@linux.dev>
-In-Reply-To: <20230323112613.7550-5-cai.huoqing@linux.dev>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Conor Dooley <conor@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        Tommaso Merciai <tomm.merciai@gmail.com>
+References: <20230324022819.2324-1-samin.guo@starfivetech.com>
+ <20230324022819.2324-7-samin.guo@starfivetech.com>
+ <CAJM55Z8_W9yOcL+yGAwB-qanD_-bbf16VjCP66P_xDFW6-c+3A@mail.gmail.com>
+From:   Guo Samin <samin.guo@starfivetech.com>
+In-Reply-To: <CAJM55Z8_W9yOcL+yGAwB-qanD_-bbf16VjCP66P_xDFW6-c+3A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [171.223.208.138]
+X-ClientProxiedBy: EXCAS064.cuchost.com (172.16.6.24) To EXMBX162.cuchost.com
+ (172.16.6.72)
+X-YovoleRuleAgent: yovoleflag
+X-Spam-Status: No, score=-0.0 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -74,56 +75,127 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Re: [PATCH v8 6/6] net: stmmac: starfive_dmac: Add phy interface settings
+From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+to: Samin Guo <samin.guo@starfivetech.com>
+data: 2023/3/24
 
-> -----Original Message-----
-> From: Cai Huoqing <cai.huoqing@linux.dev>
-> Sent: Thursday, March 23, 2023 7:26 PM
-> To: cai.huoqing@linux.dev
-> Cc: Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>; Eric Dumazet
-> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; Yan-Hsuan Chuang
-> <tony0620emma@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; ath10k@lists.infradead.org;
-> linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
-> ath11k@lists.infradead.org; ath12k@lists.infradead.org
-> Subject: [PATCH 5/5] wifi: rtw89: Remove redundant pci_clear_master
+> On Fri, 24 Mar 2023 at 03:30, Samin Guo <samin.guo@starfivetech.com> wrote:
+>>
+>> dwmac supports multiple modess. When working under rmii and rgmii,
+>> you need to set different phy interfaces.
+>>
+>> According to the dwmac document, when working in rmii, it needs to be
+>> set to 0x4, and rgmii needs to be set to 0x1.
+>>
+>> The phy interface needs to be set in syscon, the format is as follows:
+>> starfive,syscon: <&syscon, offset, shift>
+>>
+>> Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
+>> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+>> ---
+>>  .../ethernet/stmicro/stmmac/dwmac-starfive.c  | 47 +++++++++++++++++++
+>>  1 file changed, 47 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>> index ef5a769b1c75..84690c8f0250 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c
+>> @@ -13,6 +13,10 @@
+>>
+>>  #include "stmmac_platform.h"
+>>
+>> +#define STARFIVE_DWMAC_PHY_INFT_RGMII  0x1
+>> +#define STARFIVE_DWMAC_PHY_INFT_RMII   0x4
+>> +#define STARFIVE_DWMAC_PHY_INFT_FIELD  0x7U
+>> +
+>>  struct starfive_dwmac {
+>>         struct device *dev;
+>>         struct clk *clk_tx;
+>> @@ -44,6 +48,43 @@ static void starfive_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+>>                 dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
+>>  }
+>>
+>> +static int starfive_dwmac_set_mode(struct plat_stmmacenet_data *plat_dat)
+>> +{
+>> +       struct starfive_dwmac *dwmac = plat_dat->bsp_priv;
+>> +       struct regmap *regmap;
+>> +       unsigned int args[2];
+>> +       unsigned int mode;
+>> +
+>> +       switch (plat_dat->interface) {
+>> +       case PHY_INTERFACE_MODE_RMII:
+>> +               mode = STARFIVE_DWMAC_PHY_INFT_RMII;
+>> +               break;
+>> +
+>> +       case PHY_INTERFACE_MODE_RGMII:
+>> +       case PHY_INTERFACE_MODE_RGMII_ID:
+>> +               mode = STARFIVE_DWMAC_PHY_INFT_RGMII;
+>> +               break;
+>> +
+>> +       default:
+>> +               dev_err(dwmac->dev, "unsupported interface %d\n",
+>> +                       plat_dat->interface);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       regmap = syscon_regmap_lookup_by_phandle_args(dwmac->dev->of_node,
+>> +                                                     "starfive,syscon",
+>> +                                                     2, args);
+>> +       if (IS_ERR(regmap)) {
+>> +               dev_err(dwmac->dev, "syscon regmap failed.\n");
+>> +               return -ENXIO;
+>> +       }
+>> +
+>> +       /* args[0]:offset  args[1]: shift */
+>> +       return regmap_update_bits(regmap, args[0],
+>> +                                 STARFIVE_DWMAC_PHY_INFT_FIELD << args[1],
+>> +                                 mode << args[1]);
+>> +}
+>> +
+>>  static int starfive_dwmac_probe(struct platform_device *pdev)
+>>  {
+>>         struct plat_stmmacenet_data *plat_dat;
+>> @@ -89,6 +130,12 @@ static int starfive_dwmac_probe(struct platform_device *pdev)
+>>         plat_dat->bsp_priv = dwmac;
+>>         plat_dat->dma_cfg->dche = true;
+>>
+>> +       err = starfive_dwmac_set_mode(plat_dat);
+>> +       if (err) {
+>> +               dev_err(&pdev->dev, "dwmac set mode failed.\n");
+>> +               return err;
+>> +       }
 > 
-> Remove pci_clear_master to simplify the code,
-> the bus-mastering is also cleared in do_pci_disable_device,
-> like this:
-> ./drivers/pci/pci.c:2197
-> static void do_pci_disable_device(struct pci_dev *dev)
-> {
->         u16 pci_command;
+> Usually it's better to keep all error messages at the same "level".
+> Like this you'll get two error messages if
+> syscon_regmap_lookup_by_phandle_args fails. So I'd suggest moving this
+> message into the starfive_dwmac_set_mode function and while you're at
+> it you can do
 > 
->         pci_read_config_word(dev, PCI_COMMAND, &pci_command);
->         if (pci_command & PCI_COMMAND_MASTER) {
->                 pci_command &= ~PCI_COMMAND_MASTER;
->                 pci_write_config_word(dev, PCI_COMMAND, pci_command);
->         }
+> err = regmap_update_bits(...);
+> if (err)
+>   return dev_err_probe(dwmac->dev, err, "error setting phy mode\n");
 > 
->         pcibios_disable_device(dev);
-> }.
-> And dev->is_busmaster is set to 0 in pci_disable_device.
+> Also the file is called dwmac-starfive.c, so I'd expect the patch
+> header to be "net: stmmac: dwmac-starfive: Add phy interface
+> settings".
 > 
-> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+> /Emil
+> 
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Thanks, the next version will be optimized.
 
-> ---
->  drivers/net/wireless/realtek/rtw89/pci.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw89/pci.c b/drivers/net/wireless/realtek/rtw89/pci.c
-> index ec8bb5f10482..75bd3ac4dd71 100644
-> --- a/drivers/net/wireless/realtek/rtw89/pci.c
-> +++ b/drivers/net/wireless/realtek/rtw89/pci.c
-> @@ -2694,7 +2694,6 @@ static int rtw89_pci_claim_device(struct rtw89_dev *rtwdev,
->  static void rtw89_pci_declaim_device(struct rtw89_dev *rtwdev,
->                                      struct pci_dev *pdev)
->  {
-> -       pci_clear_master(pdev);
->         pci_disable_device(pdev);
->  }
-> 
-> --
-> 2.34.1
+Best regards,
+Samin
+>>         err = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+>>         if (err) {
+>>                 stmmac_remove_config_dt(pdev, plat_dat);
+>> --
+>> 2.17.1
+>>
+>>
+>> _______________________________________________
+>> linux-riscv mailing list
+>> linux-riscv@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-riscv
 
