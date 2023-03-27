@@ -2,111 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5462E6CA8D5
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 17:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2706CA8DE
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 17:26:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232529AbjC0PV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 11:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        id S230297AbjC0P0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 11:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232508AbjC0PV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 11:21:27 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7969C26BC
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 08:21:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=/hEkQuC5dIyQge5O1M/0+jkjKhV
-        RP21yuq+uBggGlXE=; b=f1lNr5OaBMalEC9f23kB9Pwe8lViA8QXaMkzBslZN/z
-        wbQhsY511cIvbzK26c9VNIm34r03u9KBZcCMIofTWb3K8JeBervbm1sxlAhOKU8v
-        Y8TAx0QO5IQQ3YL4pWzDGxh9b4jqbq/yCrt0FHaQOWRW3fK4V84Viw0SVuXz7Ark
-        =
-Received: (qmail 3175861 invoked from network); 27 Mar 2023 17:21:22 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 27 Mar 2023 17:21:22 +0200
-X-UD-Smtp-Session: l3s3148p1@p6ejS+P3ApAujnv6
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2] Revert "sh_eth: remove open coded netif_running()"
-Date:   Mon, 27 Mar 2023 17:21:12 +0200
-Message-Id: <20230327152112.15635-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229967AbjC0P0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 11:26:18 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89DB2D4C
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 08:26:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=7w3oFciDozr/m0gBbu4/EVE2g5t8g5mXol3WnIcQXOU=; b=z8
+        JmgY0ZTBkaR/VuZxwwjpbtxZRpV2/BnGp5Z7o4qY3oo0dKD0U3Wi4VnaXggETd9HQQfwiUlQpxGeA
+        qZ4o5PyKBT0zZ2KySS5J0NRCiIRO3boj3tLJlrU1XeYkHWHBOx8j4s2FxS5MB3JVpJPdTeJUABDQ3
+        qL6O3U1hUf6ThYY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pgoja-008XLd-1V; Mon, 27 Mar 2023 17:26:10 +0200
+Date:   Mon, 27 Mar 2023 17:26:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Steffen =?iso-8859-1?Q?B=E4tz?= - Innosonix GmbH 
+        <steffen@innosonix.de>
+Cc:     Fabio Estevam <festevam@gmail.com>, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Fabio Estevam <festevam@denx.de>
+Subject: Re: [RFC] net: dsa: mv88e6xxx disable IGMP snooping on cpu port
+Message-ID: <aba08f9a-899c-4608-b441-27789bcd7ebd@lunn.ch>
+References: <20230327134832.216867-1-festevam@gmail.com>
+ <8bba8376-95f8-42d0-a6c2-6ea88f684113@lunn.ch>
+ <CAK5sFAXDY0RP5NEwHoUBTam73cjU8yEMaZYO1d5yEBLD_TEoEA@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK5sFAXDY0RP5NEwHoUBTam73cjU8yEMaZYO1d5yEBLD_TEoEA@mail.gmail.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit ce1fdb065695f49ef6f126d35c1abbfe645d62d5. It turned
-out this actually introduces a race condition. netif_running() is not a
-suitable check for get_stats.
+On Mon, Mar 27, 2023 at 04:51:20PM +0200, Steffen Bätz - Innosonix GmbH wrote:
+> Hi Andrew,
+> Yes, strangely, this piece of code has stayed the same for years.
+> But we only face this behaviour if you add a bridge interface on top of the DSA
+> ports.
+> The setup looks like: eth0 (physical port of the imx8mn) <-> lan3/lan4 (DSA
+> ports of the mv88e6320)
+> 
+> ip link add br0 type bridge
+> ip link set br0 up
+> ip link set lan3 master br0
+> ip link set lan4 master br0
+> ip link set lan3 up
+> ip link set lan4 up
+> dhcpcd -b br0
+> 
+> If now you try to receive an audio multicast stream, like from 239.255.84.1,
+> the neighbour bridge will not forward this stream to our board. And there is no
+> entry in the MDB of the external switch.
 
-Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
+Ah, O.K. That is not actually IGMP snooping. It is normal usage of
+IGMP. I probably did not test that. I think all my multicast source
+and sinks where on switch ports, and i tested that the switch did not
+flood multicast to all ports, just ports with listeners.
 
-Change since v1:
-* added 'net-next' to $subject
+So your change looks O.K, but as i said, it probably should apply to
+DSA ports as well as CPU ports. And i suggest you reword the commit
+message to differentiate between IGMP snooping and an IGMP listener on
+the bridge.
 
- drivers/net/ethernet/renesas/sh_eth.c | 6 +++++-
- drivers/net/ethernet/renesas/sh_eth.h | 1 +
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-index 2d9787231099..d8ec729825be 100644
---- a/drivers/net/ethernet/renesas/sh_eth.c
-+++ b/drivers/net/ethernet/renesas/sh_eth.c
-@@ -2441,6 +2441,8 @@ static int sh_eth_open(struct net_device *ndev)
- 
- 	netif_start_queue(ndev);
- 
-+	mdp->is_opened = 1;
-+
- 	return ret;
- 
- out_free_irq:
-@@ -2563,7 +2565,7 @@ static struct net_device_stats *sh_eth_get_stats(struct net_device *ndev)
- 	if (mdp->cd->no_tx_cntrs)
- 		return &ndev->stats;
- 
--	if (!netif_running(ndev))
-+	if (!mdp->is_opened)
- 		return &ndev->stats;
- 
- 	sh_eth_update_stat(ndev, &ndev->stats.tx_dropped, TROCR);
-@@ -2612,6 +2614,8 @@ static int sh_eth_close(struct net_device *ndev)
- 	/* Free all the skbuffs in the Rx queue and the DMA buffer. */
- 	sh_eth_ring_free(ndev);
- 
-+	mdp->is_opened = 0;
-+
- 	pm_runtime_put(&mdp->pdev->dev);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/renesas/sh_eth.h b/drivers/net/ethernet/renesas/sh_eth.h
-index f56dbc8a064a..a5c07c6ff44a 100644
---- a/drivers/net/ethernet/renesas/sh_eth.h
-+++ b/drivers/net/ethernet/renesas/sh_eth.h
-@@ -560,6 +560,7 @@ struct sh_eth_private {
- 
- 	unsigned no_ether_link:1;
- 	unsigned ether_link_active_low:1;
-+	unsigned is_opened:1;
- 	unsigned wol_enabled:1;
- };
- 
--- 
-2.30.2
-
+    Andrew
