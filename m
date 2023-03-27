@@ -2,107 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB656C9F00
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 11:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093FD6C9F11
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 11:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232760AbjC0JJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 05:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        id S233042AbjC0JMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 05:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232736AbjC0JIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 05:08:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6489E10CE
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 02:08:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679908086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q/jHqPQ9labkDpwONGksLRLwMhvFcLpODPDEk10PFbM=;
-        b=MSnRWPPpAlaSdJ/xYjX2olTH3prFhPfUzmbC9Vm3dMOr5cYdxIUOmar7jWqlwPZzvLkjGi
-        k6bgGXtiRILyEPrXnb6QFKzeshzrMCMTkQf3BLGt7ZTIFlRAXsx8Cj3ZoXeNkFI2OT63tp
-        MU7vWpVsURhW+kHjacW05TSncLmJtuQ=
-Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
- [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-336-2fN4JtU4P8iTouakRk4aBA-1; Mon, 27 Mar 2023 05:08:05 -0400
-X-MC-Unique: 2fN4JtU4P8iTouakRk4aBA-1
-Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-541942bfdccso81707387b3.14
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 02:08:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679908084;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=q/jHqPQ9labkDpwONGksLRLwMhvFcLpODPDEk10PFbM=;
-        b=nQ64WV8c321QkuW0XRypz2pCSTLVw5tvS6YcDtgnCb9b5dQYcUJAuPzO0ESLbJDJgS
-         2kM0LH/E7qtTuqI2P86J+eknulLvV/rBIlQPr6cevu0yggMSXMdXmzV1+8KTA+gIvojD
-         y9jrCCM4r0ivcDk49wIz2DVyt036tkMbnENm3WTbvhbTytN1WOdY/5w/wBuefoVSQHav
-         Lhe8vQIhco1hF9l6PjV4mbGb0Ck/iXVxLJU4aMiFDreKZ6nZK+JnI3U3ZHJipudJcK9F
-         pfY0alo0DIYSbQWJ0Q5tqBIiYVbGHOk9+EE3qtEvPbI0i2Jd1FStxH3slxD3XOOlaKOi
-         35EQ==
-X-Gm-Message-State: AAQBX9dbNgsAw91PU2PD8PoDUl8Bd9ZGCymsApZzYUMCtgYKT91FLOsC
-        LWzUs2L5WR732fApvPqXy8+U800tRIXMTSw5w/Nb2/TSvyBAbFuokMWs55Q86Z2pDq6OlDpxdV4
-        7fE2dKsjPUM1uVNV5fDU5GHssidjKX6bY
-X-Received: by 2002:a05:6902:168d:b0:b6d:1483:bc18 with SMTP id bx13-20020a056902168d00b00b6d1483bc18mr6595374ybb.7.1679908084553;
-        Mon, 27 Mar 2023 02:08:04 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZK4A0vkFV+Fi54XXazb/aOmFl65dPrh+4dL2oYcZ2EWPZ/YWITfHG4vrrsNYo/PRnSdXQDyk1J9i2vTaifXNI=
-X-Received: by 2002:a05:6902:168d:b0:b6d:1483:bc18 with SMTP id
- bx13-20020a056902168d00b00b6d1483bc18mr6595359ybb.7.1679908084346; Mon, 27
- Mar 2023 02:08:04 -0700 (PDT)
+        with ESMTP id S233036AbjC0JMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 05:12:18 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DBC49E8;
+        Mon, 27 Mar 2023 02:12:15 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 32R9BfaN6021750, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 32R9BfaN6021750
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
+        Mon, 27 Mar 2023 17:11:41 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.17; Mon, 27 Mar 2023 17:11:57 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 27 Mar 2023 17:11:57 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
+ RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
+ 15.01.2375.007; Mon, 27 Mar 2023 17:11:57 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Chris Morgan <macroalpha82@gmail.com>,
+        "Nitin Gupta" <nitin.gupta981@gmail.com>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Subject: RE: [PATCH v3 2/9] wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets
+Thread-Topic: [PATCH v3 2/9] wifi: rtw88: sdio: Add HCI implementation for
+ SDIO based chipsets
+Thread-Index: AQHZW3PmZA7gPA0kmU6G6BuQjRUl4q8HoQbggAAT5QCAAIJ4AIAGJ0Tw
+Date:   Mon, 27 Mar 2023 09:11:56 +0000
+Message-ID: <33e7ca4c7ba947d68d451e919837f6b7@realtek.com>
+References: <20230320213508.2358213-1-martin.blumenstingl@googlemail.com>
+ <20230320213508.2358213-3-martin.blumenstingl@googlemail.com>
+ <f7b9dda9d852456caffc3c0572f88947@realtek.com>
+ <CAFBinCCspK=GaCMEiHsXi=0H4Sbp2vg_4EK=8bqQLWR8+qg7Sw@mail.gmail.com>
+ <CAFBinCAxuEyNkUxsqJ9wVxXupErcp33JCFsJ2hDupWj9MRMYGA@mail.gmail.com>
+In-Reply-To: <CAFBinCAxuEyNkUxsqJ9wVxXupErcp33JCFsJ2hDupWj9MRMYGA@mail.gmail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-antispam-interceptor-info: fallback
+x-kse-antivirus-interceptor-info: fallback
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <00000000000075bebb05f79acfde@google.com> <CAGxU2F4jxdzK8Y-jaoKRaX_bDhoMtomOT6TyMek+un-Bp8RX3g@mail.gmail.com>
- <ZBUGp5bvNuE3sK5g@bullseye>
-In-Reply-To: <ZBUGp5bvNuE3sK5g@bullseye>
-From:   Stefano Garzarella <sgarzare@redhat.com>
-Date:   Mon, 27 Mar 2023 11:07:52 +0200
-Message-ID: <CAGxU2F6StMA+Dp77thrC-Tdq+GMiA802yCgxpE5atDn3RiVA1w@mail.gmail.com>
-Subject: Re: [syzbot] [net?] [virt?] [io-uring?] [kvm?] BUG: soft lockup in vsock_connect
-To:     Bobby Eshleman <bobbyeshleman@gmail.com>
-Cc:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        syzbot <syzbot+0bc015ebddc291a97116@syzkaller.appspotmail.com>,
-        axboe@kernel.dk, davem@davemloft.net, edumazet@google.com,
-        io-uring@vger.kernel.org, kuba@kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, stefanha@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 25, 2023 at 1:44=E2=80=AFAM Bobby Eshleman <bobbyeshleman@gmail=
-.com> wrote:
->
-> On Fri, Mar 24, 2023 at 09:38:38AM +0100, Stefano Garzarella wrote:
-> > Hi Bobby,
-> > FYI we have also this one, but it seems related to
-> > syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com
-> >
-> > Thanks,
-> > Stefano
-> >
->
-> Got it, I'll look into it.
-
-I think it is related to
-syzbot+befff0a9536049e7902e@syzkaller.appspotmail.com, so I tested the
-same patch and syzbot seems happy.
-I marked this as duplicated, but feel free to undup if it is not the case.
-
-Thanks,
-Stefano
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFydGluIEJsdW1lbnN0
+aW5nbCA8bWFydGluLmJsdW1lbnN0aW5nbEBnb29nbGVtYWlsLmNvbT4NCj4gU2VudDogRnJpZGF5
+LCBNYXJjaCAyNCwgMjAyMyAzOjA0IEFNDQo+IFRvOiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFs
+dGVrLmNvbT4NCj4gQ2M6IGxpbnV4LXdpcmVsZXNzQHZnZXIua2VybmVsLm9yZzsgWWFuLUhzdWFu
+IENodWFuZyA8dG9ueTA2MjBlbW1hQGdtYWlsLmNvbT47IEthbGxlIFZhbG8NCj4gPGt2YWxvQGtl
+cm5lbC5vcmc+OyBVbGYgSGFuc3NvbiA8dWxmLmhhbnNzb25AbGluYXJvLm9yZz47IGxpbnV4LWtl
+cm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LW1t
+Y0B2Z2VyLmtlcm5lbC5vcmc7IENocmlzIE1vcmdhbiA8bWFjcm9hbHBoYTgyQGdtYWlsLmNvbT47
+IE5pdGluIEd1cHRhDQo+IDxuaXRpbi5ndXB0YTk4MUBnbWFpbC5jb20+OyBOZW8gSm91IDxuZW9q
+b3VAZ21haWwuY29tPjsgSmVybmVqIFNrcmFiZWMgPGplcm5lai5za3JhYmVjQGdtYWlsLmNvbT47
+IExhcnJ5DQo+IEZpbmdlciA8TGFycnkuRmluZ2VyQGx3ZmluZ2VyLm5ldD4NCj4gU3ViamVjdDog
+UmU6IFtQQVRDSCB2MyAyLzldIHdpZmk6IHJ0dzg4OiBzZGlvOiBBZGQgSENJIGltcGxlbWVudGF0
+aW9uIGZvciBTRElPIGJhc2VkIGNoaXBzZXRzDQo+IA0KPiBIZWxsbyBQaW5nLUtlLA0KPiANCj4g
+T24gVGh1LCBNYXIgMjMsIDIwMjMgYXQgMTI6MTbigK9QTSBNYXJ0aW4gQmx1bWVuc3RpbmdsDQo+
+IDxtYXJ0aW4uYmx1bWVuc3RpbmdsQGdvb2dsZW1haWwuY29tPiB3cm90ZToNCj4gWy4uLl0NCj4g
+PiA+ID4gKyAgICAgICBpZiAoZGlyZWN0KSB7DQo+ID4gPiA+ICsgICAgICAgICAgICAgICBhZGRy
+ID0gcnR3X3NkaW9fdG9fYnVzX29mZnNldChydHdkZXYsIGFkZHIpOw0KPiA+ID4gPiArICAgICAg
+ICAgICAgICAgdmFsID0gcnR3X3NkaW9fcmVhZGwocnR3ZGV2LCBhZGRyLCAmcmV0KTsNCj4gPiA+
+ID4gKyAgICAgICB9IGVsc2UgaWYgKGFkZHIgJiAzKSB7DQo+ID4gPg0KPiA+ID4gZWxzZSBpZiAo
+SVNfQUxJR05FRChhZGRyLCA0KSB7DQo+ID4gSSdsbCBhZGQgdGhlc2UgSVNfQUxJR05FRCBpbiB2
+NA0KPiA+IEFsc28gSSBmb3VuZCBhbiBpc3N1ZSB3aXRoIFJUV19XQ1BVXzExTiBkZXZpY2VzIHdo
+ZXJlIGluZGlyZWN0IHJlYWQNCj4gPiB3b3JrcyBkaWZmZXJlbnRseSAodGhvc2UgY2FuJ3QgdXNl
+DQo+ID4gUkVHX1NESU9fSU5ESVJFQ1RfUkVHX0NGRy9SRUdfU0RJT19JTkRJUkVDVF9SRUdfREFU
+QSBidXQgbmVlZCB0byBnbw0KPiA+IHRocm91Z2ggdGhlIG5vcm1hbCBwYXRoIHdpdGggV0xBTl9J
+T1JFR19PRkZTRVQgaW5zdGVhZCkuIEknbGwgYWxzbw0KPiA+IGluY2x1ZGUgdGhhdCBmaXggaW4g
+djQNCj4gSSBoYXZlIGEgcXVlc3Rpb24gYWJvdXQgdGhlICJpbmRpcmVjdCIgaGFuZGxpbmcuDQo+
+IExldCBtZSBzdGFydCB3aXRoIHdoYXQgSSBrbm93Og0KPiAtIFJFR19TRElPX0lORElSRUNUX1JF
+R19DRkcgYW5kIFJFR19TRElPX0lORElSRUNUX1JFR19EQVRBIGFyZSBvbmx5DQo+IHByZXNlbnQg
+b24gUlRXX1dDUFVfMTFBQyBiYXNlZCBjaGlwcyAob2xkZXIgUlRXX1dDUFVfMTFOIGNoaXBzIGRv
+bid0DQo+IGhhdmUgdGhlc2UgcmVnaXN0ZXJzKQ0KPiAtIHRoZSBuYW1lIG9mIFJFR19TRElPX0lO
+RElSRUNUX1JFR19DRkdbMjBdIGlzIG5vdCBrbm93biBidXQgd2UncmUNCj4gcG9sbGluZyB0aGF0
+IGJpdCB0byBjaGVjayBpZiBSRUdfU0RJT19JTkRJUkVDVF9SRUdfREFUQSBpcyByZWFkeSB0byBi
+ZQ0KPiByZWFkIG9yIGhhcyBkYXRhIGZyb20gUkVHX1NESU9fSU5ESVJFQ1RfUkVHX0RBVEEgaGFz
+IGJlZW4gd3JpdHRlbg0KPiAtIFJFR19TRElPX0lORElSRUNUX1JFR19DRkdbMTldIGNvbmZpZ3Vy
+ZXMgYSByZWFkIG9wZXJhdGlvbg0KPiAtIFJFR19TRElPX0lORElSRUNUX1JFR19DRkdbMThdIGNv
+bmZpZ3VyZXMgYSB3cml0ZSBvcGVyYXRpb24NCj4gLSBSRUdfU0RJT19JTkRJUkVDVF9SRUdfQ0ZH
+WzE3XSBpbmRpY2F0ZXMgdGhhdCBhIERXT1JEICgzMi1iaXQpIGFyZQ0KPiB3cml0dGVuIHRvIFJF
+R19TRElPX0lORElSRUNUX1JFR19EQVRBICgrIHRoZSBmb2xsb3dpbmcgMyksIHRoaXMgYml0DQo+
+IHNlZW1zIGlycmVsZXZhbnQgZm9yIHJlYWQgbW9kZQ0KPiAtIFJFR19TRElPX0lORElSRUNUX1JF
+R19DRkdbMTZdIGluZGljYXRlcyB0aGF0IGEgRFdPUkQgKDE2LWJpdCkgYXJlDQo+IHdyaXR0ZW4g
+dG8gUkVHX1NESU9fSU5ESVJFQ1RfUkVHX0RBVEEgKCsgdGhlIGZvbGxvd2luZyAzKSwgdGhpcyBi
+aXQNCj4gc2VlbXMgaXJyZWxldmFudCBmb3IgcmVhZCBtb2RlDQo+IC0gUlRXX1dDUFVfMTFOIGNo
+aXBzIGFyZSBzaW1wbHkgdXNpbmcgImFkZHIgfCBXTEFOX0lPUkVHX09GRlNFVCIgZm9yDQo+IGFj
+Y2Vzc2VzIHRoYXQgd291bGQgdXN1YWxseSBiZSAiaW5kaXJlY3QiIHJlYWRzL3dyaXRlcyBvbg0K
+PiBSVFdfV0NQVV8xMUFDIGNoaXBzDQo+IA0KPiBXaGlsZSBmaXhpbmcgdGhlIGlzc3VlIGZvciB0
+aGUgUlRXX1dDUFVfMTFOIGNoaXBzIEkgZGlzY292ZXJlZCB0aGF0DQo+IHRoZSAib2xkIiBhcHBy
+b2FjaCBmb3IgaW5kaXJlY3QgcmVnaXN0ZXIgYWNjZXNzICh3aXRob3V0DQo+IFJFR19TRElPX0lO
+RElSRUNUX1JFR19DRkcgYW5kIFJFR19TRElPX0lORElSRUNUX1JFR19EQVRBKSBhbHNvIHdvcmtz
+DQo+IG9uIFJUV19XQ1BVXzExQUMgY2hpcHMuDQo+IChJJ20gY2FsbGluZyBpdCB0aGUgIm9sZCIg
+YXBwcm9hY2ggYmVjYXVzZSBpdCdzIHdoYXQgdGhlIFJUTDg3MjNEUyBhbg0KPiBSVEw4NzIzQlMg
+dmVuZG9yIGRyaXZlcnMgdXNlKQ0KPiBJbiBmYWN0LCB0aGlzIHNlcmllcyBpcyB1c2luZyB0aGUg
+Im9sZCIgYXBwcm9hY2ggZm9yIHdyaXRlcywgYnV0IHRoZQ0KPiBuZXcgKFJFR19TRElPX0lORElS
+RUNUX1JFR19DRkcgYW5kIFJFR19TRElPX0lORElSRUNUX1JFR19EQVRBIGJhc2VkKQ0KPiBhcHBy
+b2FjaCBmb3IgcmVhZHMuDQo+IE5hdHVyYWxseSBJJ20gY3VyaW91cyBhcyB0byB3aHkgdHdvIGRp
+ZmZlcmVudCBhcHByb2FjaGVzIGFjaGlldmUgdGhlDQo+IHNhbWUgZ29hbC4gVXNpbmcgdGhlICJv
+bGQiIGFwcHJvYWNoIChhZGRyIHwgV0xBTl9JT1JFR19PRkZTRVQpIG1lYW5zIGENCj4gbG90IG9m
+IGNvZGUgY291bGQgYmUgZGVsZXRlZC9zaW1wbGlmaWVkLg0KPiANCj4gTm93IG15IHF1ZXN0aW9u
+Og0KPiBEbyB5b3UgaGF2ZSBhbnkgZXhwbGFuYXRpb24gKGVpdGhlciBmcm9tIGludGVybmFsIGRv
+Y3VtZW50YXRpb24gb3INCj4gZnJvbSB0aGUgaGFyZHdhcmUvZmlybXdhcmUgdGVhbXMpIGlmIGFu
+ZCB3aGVuIHRoZQ0KPiBSRUdfU0RJT19JTkRJUkVDVF9SRUdfQ0ZHIGFuZCBSRUdfU0RJT19JTkRJ
+UkVDVF9SRUdfREFUQSByZWdpc3RlcnMNCj4gc2hvdWxkIGJlIHVzZWQgb24gUlRXX1dDUFVfMTFB
+QyBjaGlwcz8NCj4gDQoNClVzaW5nIFJFR19TRElPX0lORElSRUNUX1JFR19DRkcgYW5kIFJFR19T
+RElPX0lORElSRUNUX1JFR19EQVRBIGlmIHlvdSBhcmUNCnVzaW5nIFNESU8gMy4wOyBvdGhlcndp
+c2UsIGl0IGNvdWxkIGNhdXNlcyBJTyBhYm5vcm1hbC4gT3Bwb3NpdGVseSwgdXNpbmcNCiJvbGQi
+IGFwcHJvYWNoIChhZGRyIHwgV0xBTl9JT1JFR19PRkZTRVQpIGZvciBTRElPIDIuMC4gDQoNClBp
+bmctS2UNCg0K
