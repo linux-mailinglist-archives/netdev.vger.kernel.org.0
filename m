@@ -2,321 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 397826CAE4F
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 21:13:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 209E56CAE50
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 21:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232829AbjC0TNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 15:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
+        id S232664AbjC0TNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 15:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbjC0TMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 15:12:48 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131902726
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 12:11:56 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id h16so2834292qtn.7
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 12:11:56 -0700 (PDT)
+        with ESMTP id S232646AbjC0TNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 15:13:23 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13814488;
+        Mon, 27 Mar 2023 12:12:47 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id v1so9889028wrv.1;
+        Mon, 27 Mar 2023 12:12:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1679944316;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OzIQcNqys8Zuk/+dMRpS5HHTGI8p2pv2tGiZ4CSbhe0=;
-        b=igvtpJ4h3mUlwgPmMGjf4lj+LFMtI2T0XYCHEitT1RscqfzENMJBHAjAnDcXeggWw6
-         BbPAk8qywx5LNuJPbvpM5LPKuNdtgstorMSUa2VKyft0Ghm+pq958iTlO31Bo/D21RLA
-         Isr+wZmCR5DbTw3i2Ukpq6BHU8FPyOcdQxORtvQONKTHzcU0KZ/npyCiM0AGLKaIp3bQ
-         c3zpG9mGslhgAvJqvq9FwLylcN9VzV1BdZwEKwrYOtZhxr+Rgn8eFOLI7PI0ojx3O+1h
-         0Osy9DCmUHnGVJ9MPQP4V1H2L6XWqTn3ZxTaIqg8iHNRInwAzGBvvs6QX1yCdHaDp1St
-         s9jQ==
+        d=gmail.com; s=20210112; t=1679944365;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=HYVINSPcX570meD+tbiju4gbaHHy2aZVdws7rdRLV/U=;
+        b=KK68TZUyb+HjYZ0CT1XzfVmxm49E3yfbXe3orrjtJTlDrkwsoLOl0N/qqEXfKQdiug
+         9ObLgEKV80TmHgjR3TkTRtmyu0L2wdEYHfTCPt3ppDJDlmPpWI2zoArUty3g6GYcCcaA
+         ve+hm8dWOolIdC/kqciF2FqMVRnImO1jO7UMqw3epBVc9vSJQncDg25FDtX3EokW8Ybs
+         zYIpH3hyjBPw6L+lLPp7VZ55p9QsX910cv+BSoDT/Sn7ZpG3O7mCZ5iUoeZIHNTQDwnV
+         gFwLhQp6tVnPpsCP1wPUznIJz+EyX5Qs6Iq/jYI/c1nRBxU8B6AZ4Z4Ph7CJt5mCu0r5
+         uRiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679944316;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OzIQcNqys8Zuk/+dMRpS5HHTGI8p2pv2tGiZ4CSbhe0=;
-        b=jhBG0jXfnTFmptjXTrhJJyiarVJxiEjaN/eklTi3YvbAQNdMn95jvUOxp5wv8U0MQI
-         +q0NOGWXshrLtSCqSRXbdtI/vNVCtI8m2gAeQBEt0wWUBBaeXHqYg3H1KO3PJkkobYb7
-         2gbpBggjPh6d4priC6LAfMfAK/w9z57KxtaXYZE/ofjP7AEzqy+Pniqr0OCo3G9RA72m
-         U5zhnMvixjhMxGRhQsKIQ//g7Vqj1MfrLCX7Foz7bJ2rHqVhSp8vDa8gRJVozpF9dwwA
-         cz2AfAyA9xIvHEtqT4TyUWZA2lVjleucLXFfMAIn7RexzkLbiTX6T+p068NYt3UJxa+l
-         pCSw==
-X-Gm-Message-State: AO0yUKWMnDx2le5228K/MaOV11qzr4ho1okInCFu3qSimZ4w+hRl38Y1
-        m8a1prkvaizkLaIYBkYHyEt+HQ==
-X-Google-Smtp-Source: AK7set+DaMDq197o5VboTURLgPUvM1L8Cilfj2fo6Qhqc7ss6X/78vWszCgw7RUV52PIvI5enmaXCA==
-X-Received: by 2002:a05:622a:81:b0:3de:4819:2449 with SMTP id o1-20020a05622a008100b003de48192449mr23393643qtw.38.1679944316085;
-        Mon, 27 Mar 2023 12:11:56 -0700 (PDT)
-Received: from [172.17.0.3] ([130.44.215.126])
-        by smtp.gmail.com with ESMTPSA id d185-20020a37b4c2000000b007425ef4cbc2sm16989236qkf.100.2023.03.27.12.11.55
+        d=1e100.net; s=20210112; t=1679944365;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HYVINSPcX570meD+tbiju4gbaHHy2aZVdws7rdRLV/U=;
+        b=EUIt0ku5UX63KvVShrde6WkGI/VpIfiUPl7m6wzGOa+FAtJDJ8jmypU62QtBH9i0/g
+         XES94hfTS/PCFouqbmoirPqeuUrZY9TG5DIAJvC5YIhWmoVdDHQHsTj1fAy32Jh5gH1L
+         MDRRBg7l3G+WVbWdeJeatPPfqYqLu6dnQWsvo+mWNBdHtLJft5I1cbAs4fRAbzLg3Hd4
+         2N1cnaitaXd9CVY/9+DRbsKsbv/eMa2heNIdhoY1R3Rd3/NEzPyq4+S2FcneqjZZyb6J
+         t6kwsvoAdfFPu5yqndYB2YR2Ml7j07y5V38kqT/knKsXTzDYGH08nRb6VBuQpql/hPvD
+         q+hA==
+X-Gm-Message-State: AAQBX9fRhxtMvPYLL33GtT3JfJDedykgxZ39gYglUwhUnswpYXTtCPCk
+        BqlOJL6kvDp9jVNFftO618o=
+X-Google-Smtp-Source: AKy350Y47ZUzytcAg65n77+zDkosW+9AMGn5S4UlJ/7NcuCee8SP+Hdo0fbynRibnYV+tUN/IEK8bw==
+X-Received: by 2002:a5d:526a:0:b0:2d0:58f9:a6a with SMTP id l10-20020a5d526a000000b002d058f90a6amr10553468wrc.57.1679944365660;
+        Mon, 27 Mar 2023 12:12:45 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id f6-20020a05600c154600b003ef7058ea02sm3295888wmg.29.2023.03.27.12.12.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 12:11:55 -0700 (PDT)
-From:   Bobby Eshleman <bobby.eshleman@bytedance.com>
-Date:   Mon, 27 Mar 2023 19:11:53 +0000
-Subject: [PATCH net-next v4 3/3] selftests/bpf: add a test case for vsock
- sockmap
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230327-vsock-sockmap-v4-3-c62b7cd92a85@bytedance.com>
-References: <20230327-vsock-sockmap-v4-0-c62b7cd92a85@bytedance.com>
-In-Reply-To: <20230327-vsock-sockmap-v4-0-c62b7cd92a85@bytedance.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        Mon, 27 Mar 2023 12:12:45 -0700 (PDT)
+Date:   Mon, 27 Mar 2023 22:12:42 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-X-Mailer: b4 0.12.2
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net 4/7] net: dsa: mt7530: set both CPU port interfaces
+ to PHY_INTERFACE_MODE_NA
+Message-ID: <20230327191242.4qabzrn3vtx3l2a7@skbuf>
+References: <20230326140818.246575-1-arinc.unal@arinc9.com>
+ <20230326140818.246575-5-arinc.unal@arinc9.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230326140818.246575-5-arinc.unal@arinc9.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test case testing the redirection from connectible AF_VSOCK
-sockets to connectible AF_UNIX sockets.
+On Sun, Mar 26, 2023 at 05:08:15PM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+> 
+> Set interfaces of both CPU ports to PHY_INTERFACE_MODE_NA. Either phylink
+> or mt7530_setup_port5() on mt7530_setup() will handle the rest.
+> 
+> This is already being done for port 6, do it for port 5 as well.
+> 
+> Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
 
-Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
-Acked-by: Stefano Garzarella <sgarzare@redhat.com>
----
- .../selftests/bpf/prog_tests/sockmap_listen.c      | 163 +++++++++++++++++++++
- 1 file changed, 163 insertions(+)
+This is getting comical.. I think I'm putting too much energy in
+trying to understand the hidden meaning of this patch set.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 567e07c19ecc..8f09e1ea3ba7 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -18,6 +18,7 @@
- #include <string.h>
- #include <sys/select.h>
- #include <unistd.h>
-+#include <linux/vm_sockets.h>
- 
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
-@@ -251,6 +252,16 @@ static void init_addr_loopback6(struct sockaddr_storage *ss, socklen_t *len)
- 	*len = sizeof(*addr6);
- }
- 
-+static void init_addr_loopback_vsock(struct sockaddr_storage *ss, socklen_t *len)
-+{
-+	struct sockaddr_vm *addr = memset(ss, 0, sizeof(*ss));
-+
-+	addr->svm_family = AF_VSOCK;
-+	addr->svm_port = VMADDR_PORT_ANY;
-+	addr->svm_cid = VMADDR_CID_LOCAL;
-+	*len = sizeof(*addr);
-+}
-+
- static void init_addr_loopback(int family, struct sockaddr_storage *ss,
- 			       socklen_t *len)
- {
-@@ -261,6 +272,9 @@ static void init_addr_loopback(int family, struct sockaddr_storage *ss,
- 	case AF_INET6:
- 		init_addr_loopback6(ss, len);
- 		return;
-+	case AF_VSOCK:
-+		init_addr_loopback_vsock(ss, len);
-+		return;
- 	default:
- 		FAIL("unsupported address family %d", family);
- 	}
-@@ -1478,6 +1492,8 @@ static const char *family_str(sa_family_t family)
- 		return "IPv6";
- 	case AF_UNIX:
- 		return "Unix";
-+	case AF_VSOCK:
-+		return "VSOCK";
- 	default:
- 		return "unknown";
- 	}
-@@ -1689,6 +1705,151 @@ static void test_unix_redir(struct test_sockmap_listen *skel, struct bpf_map *ma
- 	unix_skb_redir_to_connected(skel, map, sotype);
- }
- 
-+/* Returns two connected loopback vsock sockets */
-+static int vsock_socketpair_connectible(int sotype, int *v0, int *v1)
-+{
-+	struct sockaddr_storage addr;
-+	socklen_t len = sizeof(addr);
-+	int s, p, c;
-+
-+	s = socket_loopback(AF_VSOCK, sotype);
-+	if (s < 0)
-+		return -1;
-+
-+	c = xsocket(AF_VSOCK, sotype | SOCK_NONBLOCK, 0);
-+	if (c == -1)
-+		goto close_srv;
-+
-+	if (getsockname(s, sockaddr(&addr), &len) < 0)
-+		goto close_cli;
-+
-+	if (connect(c, sockaddr(&addr), len) < 0 && errno != EINPROGRESS) {
-+		FAIL_ERRNO("connect");
-+		goto close_cli;
-+	}
-+
-+	len = sizeof(addr);
-+	p = accept_timeout(s, sockaddr(&addr), &len, IO_TIMEOUT_SEC);
-+	if (p < 0)
-+		goto close_cli;
-+
-+	*v0 = p;
-+	*v1 = c;
-+
-+	return 0;
-+
-+close_cli:
-+	close(c);
-+close_srv:
-+	close(s);
-+
-+	return -1;
-+}
-+
-+static void vsock_unix_redir_connectible(int sock_mapfd, int verd_mapfd,
-+					 enum redir_mode mode, int sotype)
-+{
-+	const char *log_prefix = redir_mode_str(mode);
-+	char a = 'a', b = 'b';
-+	int u0, u1, v0, v1;
-+	int sfd[2];
-+	unsigned int pass;
-+	int err, n;
-+	u32 key;
-+
-+	zero_verdict_count(verd_mapfd);
-+
-+	if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0, sfd))
-+		return;
-+
-+	u0 = sfd[0];
-+	u1 = sfd[1];
-+
-+	err = vsock_socketpair_connectible(sotype, &v0, &v1);
-+	if (err) {
-+		FAIL("vsock_socketpair_connectible() failed");
-+		goto close_uds;
-+	}
-+
-+	err = add_to_sockmap(sock_mapfd, u0, v0);
-+	if (err) {
-+		FAIL("add_to_sockmap failed");
-+		goto close_vsock;
-+	}
-+
-+	n = write(v1, &a, sizeof(a));
-+	if (n < 0)
-+		FAIL_ERRNO("%s: write", log_prefix);
-+	if (n == 0)
-+		FAIL("%s: incomplete write", log_prefix);
-+	if (n < 1)
-+		goto out;
-+
-+	n = recv(mode == REDIR_INGRESS ? u0 : u1, &b, sizeof(b), MSG_DONTWAIT);
-+	if (n < 0)
-+		FAIL("%s: recv() err, errno=%d", log_prefix, errno);
-+	if (n == 0)
-+		FAIL("%s: incomplete recv", log_prefix);
-+	if (b != a)
-+		FAIL("%s: vsock socket map failed, %c != %c", log_prefix, a, b);
-+
-+	key = SK_PASS;
-+	err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
-+	if (err)
-+		goto out;
-+	if (pass != 1)
-+		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
-+out:
-+	key = 0;
-+	bpf_map_delete_elem(sock_mapfd, &key);
-+	key = 1;
-+	bpf_map_delete_elem(sock_mapfd, &key);
-+
-+close_vsock:
-+	close(v0);
-+	close(v1);
-+
-+close_uds:
-+	close(u0);
-+	close(u1);
-+}
-+
-+static void vsock_unix_skb_redir_connectible(struct test_sockmap_listen *skel,
-+					     struct bpf_map *inner_map,
-+					     int sotype)
-+{
-+	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-+	int verdict_map = bpf_map__fd(skel->maps.verdict_map);
-+	int sock_map = bpf_map__fd(inner_map);
-+	int err;
-+
-+	err = xbpf_prog_attach(verdict, sock_map, BPF_SK_SKB_VERDICT, 0);
-+	if (err)
-+		return;
-+
-+	skel->bss->test_ingress = false;
-+	vsock_unix_redir_connectible(sock_map, verdict_map, REDIR_EGRESS, sotype);
-+	skel->bss->test_ingress = true;
-+	vsock_unix_redir_connectible(sock_map, verdict_map, REDIR_INGRESS, sotype);
-+
-+	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
-+}
-+
-+static void test_vsock_redir(struct test_sockmap_listen *skel, struct bpf_map *map)
-+{
-+	const char *family_name, *map_name;
-+	char s[MAX_TEST_NAME];
-+
-+	family_name = family_str(AF_VSOCK);
-+	map_name = map_type_str(map);
-+	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
-+	if (!test__start_subtest(s))
-+		return;
-+
-+	vsock_unix_skb_redir_connectible(skel, map, SOCK_STREAM);
-+	vsock_unix_skb_redir_connectible(skel, map, SOCK_SEQPACKET);
-+}
-+
- static void test_reuseport(struct test_sockmap_listen *skel,
- 			   struct bpf_map *map, int family, int sotype)
- {
-@@ -2060,12 +2221,14 @@ void serial_test_sockmap_listen(void)
- 	run_tests(skel, skel->maps.sock_map, AF_INET6);
- 	test_unix_redir(skel, skel->maps.sock_map, SOCK_DGRAM);
- 	test_unix_redir(skel, skel->maps.sock_map, SOCK_STREAM);
-+	test_vsock_redir(skel, skel->maps.sock_map);
- 
- 	skel->bss->test_sockmap = false;
- 	run_tests(skel, skel->maps.sock_hash, AF_INET);
- 	run_tests(skel, skel->maps.sock_hash, AF_INET6);
- 	test_unix_redir(skel, skel->maps.sock_hash, SOCK_DGRAM);
- 	test_unix_redir(skel, skel->maps.sock_hash, SOCK_STREAM);
-+	test_vsock_redir(skel, skel->maps.sock_hash);
- 
- 	test_sockmap_listen__destroy(skel);
- }
+In include/linux/phy.h we have:
 
--- 
-2.30.2
+typedef enum {
+	PHY_INTERFACE_MODE_NA,
 
+In lack of other initializer, the first element of an enum gets the
+value 0 in C.
+
+Then, "priv" is allocated by this driver with devm_kzalloc(), which
+means that its entire memory is zero-filled. So priv->p5_interface and
+priv->p6_interface are already set to 0, or PHY_INTERFACE_MODE_NA.
+
+There is no code path between the devm_kzalloc() and the position in
+mt7530_setup() that would change the value of priv->p5_interface or
+priv->p6_interface from their value of 0 (PHY_INTERFACE_MODE_NA).
+For example, mt753x_phylink_mac_config() can only be called from
+phylink, after dsa_port_phylink_create() was called. But
+dsa_port_phylink_create() comes later than ds->ops->setup() - one comes
+from dsa_tree_setup_ports(), and the other from dsa_tree_setup_switches().
+
+The movement of the priv->p6_interface assignment with a few lines
+earlier does not change anything relative to the other call sites which
+assign different values to priv->p6_interface, so there isn't any
+functional change there, either.
+
+So this patch is putting 0 into a variable containing 0, and claiming,
+through the presence of the Fixes: tag and the submission to the "net"
+tree, that it is a bug fix which should be backported to "stable".
+
+Can it be that you are abusing the meaning of a "bug fix", and that I'm
+trying too hard to take this patch set seriously?
+
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  drivers/net/dsa/mt7530.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 6d33c1050458..3deebdcfeedf 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -2203,14 +2203,18 @@ mt7530_setup(struct dsa_switch *ds)
+>  		mt7530_rmw(priv, MT7530_TRGMII_RD(i),
+>  			   RD_TAP_MASK, RD_TAP(16));
+>  
+> +	/* Let phylink decide the interface later. If port 5 is used for phy
+> +	 * muxing, its interface will be handled without involving phylink.
+> +	 */
+> +	priv->p5_interface = PHY_INTERFACE_MODE_NA;
+> +	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+> +
+>  	/* Enable port 6 */
+>  	val = mt7530_read(priv, MT7530_MHWTRAP);
+>  	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
+>  	val |= MHWTRAP_MANUAL;
+>  	mt7530_write(priv, MT7530_MHWTRAP, val);
+>  
+> -	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+> -
+>  	/* Enable and reset MIB counters */
+>  	mt7530_mib_reset(ds);
+>  
+> -- 
+> 2.37.2
+> 
