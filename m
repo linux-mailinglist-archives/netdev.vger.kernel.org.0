@@ -2,100 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAB66C9DF6
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88CDD6C9DFF
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 10:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232793AbjC0IfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 04:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        id S233361AbjC0Ihg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 04:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232906AbjC0Ie0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:34:26 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF135FFD
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 01:29:53 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id n10-20020a05600c4f8a00b003ee93d2c914so6407302wmq.2
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 01:29:53 -0700 (PDT)
+        with ESMTP id S233162AbjC0IhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 04:37:09 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217349EFE;
+        Mon, 27 Mar 2023 01:31:54 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id r29so7742550wra.13;
+        Mon, 27 Mar 2023 01:31:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679905739;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=92wOwSHUeDZqCtJDZbKwLBLN104z+KTYVQByUtB67gg=;
-        b=j+SqQ+lEDA+9EMjoVJic0XTwFBL/TckPCgIw+8158BvwDlrK/uwe9TKnymG0Uo7Uvm
-         62XQiP4w6vHwfF/RuLFRJLj9GkxsowP+f/VevmNLqM0T+6PJv6xAvv3a4HElEOfpcD8x
-         +VLsasU8tZKvBFxOWcyRF+bQeiLpuLTbP1E7x4gQlwtcTYslwO2nhiFEvvhSNtQyEwBp
-         R394VK9a4CGovBk/dzuJemeI8QaE9xhQbGFihYvAG1AvV1sQJooGCt2WlzECCWntF04k
-         w9pP1aT3AAnx1/1nW4sT6rsI/Ujup/nSfPsQqjqKyfQKY7BhSpRE0DmM+uuR8wzrc657
-         wCjQ==
+        d=gmail.com; s=20210112; t=1679905911;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HjNj28/Jhl8ERT2Gnc3byTIO3nUY9uGnzk3NiQJVKjI=;
+        b=JdkO1R4MTFSIMrDa56x/MU24Z68WDwhUPUdjH4CPAcEhzhEyfz3htowkfCOWMcsz1N
+         VRgfPekM0R6dUffH8iMhSfHv8358NG09aC9LMAfZsU17tLK9nNEgfSt91NMV0INgo3uD
+         3nIZModLFVQXyp3SPuzAJ3M2GKhC2cxr/DhwbSyOyJtA6jpYHNe3WTrss9Xo+T4JKzG7
+         RX46RIhHYJAVAqKqZYy0qW0jSew1OxWYs6Stetz8pXMyDgBgZT7j/Z1xDVvfQ7c8VdKj
+         SoAEumYx6cLNwWTL0GHGkoT2Hj4uCF16Es3+FICOdjpKwAHmKgto5Hj7XAMKoVHi6ONA
+         yXhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679905739;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=92wOwSHUeDZqCtJDZbKwLBLN104z+KTYVQByUtB67gg=;
-        b=Kma8nXbQCRfq5VZqdW0tXUI1Cy14hUQzX7g8N41HbHILY0aSY4oTDGtxCjTiCIsm0E
-         u8YkEkoVOcJEwnstegX30VBWayah/kbkwoZkyxFrjHAV0smQ19rsnFHY8LWHvEAk4Ahx
-         8dozKroYT5MlYm2urNEs0TGVYPqZ/kN+pfD1TVEgJpF3zLsYQY4tYdOa1/rch9PRwmVV
-         euV6YBZIcJ4vxfQD8ZgswrU7+17VOS3cgM+qHmoQwZI55boFnBs9ZSyQL7yk9MqRyslH
-         wIBegA4t2V0xkTchHv/OVYOIm3TRQsgec2VCUC8lbJ29CCGveVZonv/0DSU/kYbol2oD
-         7IMQ==
-X-Gm-Message-State: AO0yUKVJms6PY/cfKnpMQo5SxtXdMmGlqohE6bBuUbww0cHEs0Ss9FYC
-        D5kWXbgVvRLDM2IKvEKYoEE=
-X-Google-Smtp-Source: AK7set/46IwrMLNSm/031eEZNNeaxq4YWWGOjbL05/yPcHntZK0+QVkDlSJEJzhCOPAVbNVlM8U20Q==
-X-Received: by 2002:a05:600c:2109:b0:3ed:6ba7:66d9 with SMTP id u9-20020a05600c210900b003ed6ba766d9mr9299310wml.5.1679905738513;
-        Mon, 27 Mar 2023 01:28:58 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id a2-20020a05600c224200b003ee63fe5203sm12885289wmm.36.2023.03.27.01.28.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Mar 2023 01:28:58 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 4/6] sfc: add functions to insert encap
- matches into the MAE
-To:     Simon Horman <simon.horman@corigine.com>, edward.cree@amd.com
-Cc:     linux-net-drivers@amd.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, netdev@vger.kernel.org,
-        habetsm.xilinx@gmail.com, michal.swiatkowski@linux.intel.com
-References: <cover.1679603051.git.ecree.xilinx@gmail.com>
- <b9798c4b1f176257cb9b690d350f3a3c66c1b401.1679603051.git.ecree.xilinx@gmail.com>
- <ZB7jadqopcv250l2@corigine.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <66d1c67b-ecda-69a5-a8be-feddeee4a5d0@gmail.com>
-Date:   Mon, 27 Mar 2023 09:28:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        d=1e100.net; s=20210112; t=1679905911;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HjNj28/Jhl8ERT2Gnc3byTIO3nUY9uGnzk3NiQJVKjI=;
+        b=GjlDB98sL488pBB23gAkchDzhxBQT/V2u0rMgYEl/oR6/xjBzHTDrbvn2TE9KV8O0e
+         nJcS1GXqHT++GzTmBSn4xqv4qE7OwP2SWw6Q5XZJmc7TMZPGjAA9NvPdw489wdhlGIRo
+         zKpDkB7aex2YyLdOjvCwzM0fFGYqjTJqORRSaIAkUBzlYkyagMPZKSmY6iHHTb1oXjre
+         NKFHlDwFV+AdtRWZSLgF42MbMHN4Fs4vUdgR5Gzh7C4inxWEaUhwh57yJPx5rQ1YsNin
+         HPj1+iI43yVSowpfLfvpkCn0nqBC5EfAmvYkS9WP0wcPwYCJ685s3Zv22K9JpR63vTuS
+         mTWg==
+X-Gm-Message-State: AAQBX9eYY7JF3ee/PeCGIHjYL+YWTPiWpjbCbPl8Zjlz7LOPwB5SDOj8
+        TCh01KCuCP++ZbmuSEW6zxxidUO4SZlJ5g==
+X-Google-Smtp-Source: AKy350ZjJQa9J6vaKWYLO2Hbe8n54pRri4fDbfsglS2P7q7tUlItjIQS+9ejW7SaahqLxYSE9UVxiw==
+X-Received: by 2002:adf:f544:0:b0:2cf:f2f9:5aab with SMTP id j4-20020adff544000000b002cff2f95aabmr9169193wrp.20.1679905911332;
+        Mon, 27 Mar 2023 01:31:51 -0700 (PDT)
+Received: from imac.fritz.box ([2a02:8010:60a0:0:7887:5530:69a2:a11f])
+        by smtp.gmail.com with ESMTPSA id z6-20020a056000110600b002c557f82e27sm24353249wrw.99.2023.03.27.01.31.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 01:31:50 -0700 (PDT)
+From:   Donald Hunter <donald.hunter@gmail.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     donald.hunter@redhat.com, Donald Hunter <donald.hunter@gmail.com>
+Subject: [PATCH net-next v5 0/7] ynl: add support for user headers and struct attrs
+Date:   Mon, 27 Mar 2023 09:31:31 +0100
+Message-Id: <20230327083138.96044-1-donald.hunter@gmail.com>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-In-Reply-To: <ZB7jadqopcv250l2@corigine.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/03/2023 12:04, Simon Horman wrote:
-> On Thu, Mar 23, 2023 at 08:45:12PM +0000, edward.cree@amd.com wrote:
->> diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
->> index c1485679507c..19782c9a4354 100644
->> --- a/drivers/net/ethernet/sfc/tc.h
->> +++ b/drivers/net/ethernet/sfc/tc.h
->> @@ -70,6 +70,7 @@ struct efx_tc_encap_match {
->>  	__be32 src_ip, dst_ip;
->>  	struct in6_addr src_ip6, dst_ip6;
->>  	__be16 udp_dport;
->> +	u16 tun_type; /* enum efx_encap_type */
-> 
-> nit: maybe the type of tyn_type can be enum efx_encap_type.
+Add support for user headers and struct attrs to YNL. This patchset adds
+features to ynl and add a partial spec for openvswitch that demonstrates
+use of the features.
 
-Yeah, it probably should.  Looking at my git history I think the
- initial reason was for struct-packing reasons (enums are int-sized
- at minimum, which is excessive for a field whose largest value is
- 3), but with the rhash_head that later appears between these two
- fields, using the narrower type doesn't actually avoid a 16-bit
- hole like it appears to here.
-Will change in v3.
+Patch 1-4 add features to ynl
+Patch 5 adds partial openvswitch specs that demonstrate the new features
+Patch 6-7 add documentation for legacy structs and for sub-type
+
+v4 - v5: all requested by Jakub Kicinski
+ - Describe C struct packing sematics in docs
+ - Rework struct example
+ - Change sub-type doc to use text from Jakub
+ - Add struct_name and sub_type as fields of class SpecAttr
+ - Fix typos and wrap at 80 chars
+ - Clean up signature formatting in python code
+
+v3 - v4:
+ - Rebase to net-next after net-6.3-rc4 merge
+
+v2 - v3: all requested by Jakub Kicinski
+ - Drop genlmsg fix that was applied separately
+ - Don't mention 'kernel' types, leave it to schema
+ - Avoid passing fixed header around in python code
+ - Use 'binary' with 'sub-type' for C arrays
+ - Use 'binary' with 'struct' for C structs
+ - Add docs for structs and sub-type
+
+v1 - v2: all requested by Jakub Kicinski
+ - Split ynl changes into separate patches
+ - Rename user-header to fixed-header and improve description
+ - Move fixed-header to operations section of spec
+ - Introduce objects to represent struct config in nlspec
+ - Use kebab-case throughout openvswitch specs
+
+Donald Hunter (7):
+  tools: ynl: Add struct parsing to nlspec
+  tools: ynl: Add C array attribute decoding to ynl
+  tools: ynl: Add struct attr decoding to ynl
+  tools: ynl: Add fixed-header support to ynl
+  netlink: specs: add partial specification for openvswitch
+  docs: netlink: document struct support for genetlink-legacy
+  docs: netlink: document the sub-type attribute property
+
+ Documentation/netlink/genetlink-legacy.yaml   |  16 ++
+ Documentation/netlink/specs/ovs_datapath.yaml | 153 ++++++++++++++++++
+ Documentation/netlink/specs/ovs_vport.yaml    | 139 ++++++++++++++++
+ .../netlink/genetlink-legacy.rst              |  88 +++++++++-
+ Documentation/userspace-api/netlink/specs.rst |  10 ++
+ tools/net/ynl/lib/nlspec.py                   |  73 +++++++--
+ tools/net/ynl/lib/ynl.py                      |  55 ++++++-
+ 7 files changed, 516 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/netlink/specs/ovs_datapath.yaml
+ create mode 100644 Documentation/netlink/specs/ovs_vport.yaml
+
+-- 
+2.39.0
+
