@@ -2,147 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F0ED6CA220
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 13:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04046CA227
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 13:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbjC0LHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 07:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52840 "EHLO
+        id S232358AbjC0LIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 07:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232366AbjC0LHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 07:07:12 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3354C18;
-        Mon, 27 Mar 2023 04:07:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AGMdvSBW4c1KT4NcoHiJDZgU8aU9ifVtEV46qmCjA8NPr7G17JxXQQ0oiWUQGTKt59TwgDuvLys1u115BiksXn6GK35cLLdH8adaB7V9eqC1SqmcFX14Zghf3+GTvCGDG9mlSmo42SnNaRg8G+XlyYPSF6m8Ovh2l2RQn+i9kxI3MhaAs5uwSE0VQwEdSvXHuVSVi9vC5YdKpREwd0yP9hUe8UugP/lR1V1kZgcrm3wrqaJ/tZTMHK/CF04h5yTC0tiRzMwnM4kO8pD5tko6kaJV/kn5tByXe0ZT1pjAyldOfoJ7+Xcmt2ikYCY7+0caJ2tIgAmn3WtW5DpbGdmMhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sZM9LHbl9/pdkshnCwgZ1Td4H1TAYtRXnqKnaU2BhJc=;
- b=ItwCT9erIAPt3kSlmqIoWg8C7uR3PzNfTYfjGBNG8mp+k1N1UARWoEpggJfqHbuMK41beBaFY9eUEmemKHJPKMN3EZPIp3mXoeheGqcs5Me8Nhvk1fpBQ6qXKQenlzHYSyFi0B68RkVgUBB55XOFqhAn5lMQeVxMyhXNRijxYC0QQE2GJ7q5l0nX3KZIyYyq5E8hwcYC56ZrEKJT5g/MilqtFIvHrejSm23+8XH1hTBBmTp272FKoXYHIBI/4158ZfW6pN0CtO3g04dXuq2jDoj/u0Rlbh8PnXLkqObwBHZ2AtfqELGlN5AwKnILKP8dPjRs6wwtIXImKXUHwnAsJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sZM9LHbl9/pdkshnCwgZ1Td4H1TAYtRXnqKnaU2BhJc=;
- b=GKbO5AgcokeV1vLJ82B2Gk9GEQTBEG53vugzjAqZFPPOBQvtHG79GRdPv40yGjbl+HUI/Y2yr1nd0QsapD6rx7X77ByUadT+1/gNOeC29zy7ffeyVsWJJv6o544v2XJ03ODmsPftZpcgT0r4fDLYN4hZEY9sUdiRLlr1aEwDgXc=
-Received: from DM6PR10CA0010.namprd10.prod.outlook.com (2603:10b6:5:60::23) by
- SJ1PR12MB6073.namprd12.prod.outlook.com (2603:10b6:a03:488::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41; Mon, 27 Mar
- 2023 11:07:03 +0000
-Received: from DS1PEPF0000E650.namprd02.prod.outlook.com
- (2603:10b6:5:60:cafe::1e) by DM6PR10CA0010.outlook.office365.com
- (2603:10b6:5:60::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.43 via Frontend
- Transport; Mon, 27 Mar 2023 11:07:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS1PEPF0000E650.mail.protection.outlook.com (10.167.18.6) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6178.30 via Frontend Transport; Mon, 27 Mar 2023 11:07:03 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Mon, 27 Mar
- 2023 06:07:02 -0500
-Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Mon, 27 Mar 2023 06:06:19 -0500
-From:   Harini Katakam <harini.katakam@amd.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
-        <andrei.pistirica@microchip.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@amd.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@amd.com>
-Subject: [PATCH net-next v3 3/3] net: macb: Optimize reading HW timestamp
-Date:   Mon, 27 Mar 2023 16:36:07 +0530
-Message-ID: <20230327110607.21964-4-harini.katakam@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230327110607.21964-1-harini.katakam@amd.com>
-References: <20230327110607.21964-1-harini.katakam@amd.com>
+        with ESMTP id S232354AbjC0LIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 07:08:12 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8C459F9;
+        Mon, 27 Mar 2023 04:07:47 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-544787916d9so162528617b3.13;
+        Mon, 27 Mar 2023 04:07:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679915266;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RnlG8EW/Y6v27XyheoThSlIrzCWXQvtjhpisnLHznMk=;
+        b=eK2HE/XnQwP/UNazlTsLT+STq4LxZ4z467zoabUG41KnUDGUecspn0OYZ2STe2Cge1
+         4uRacuZzBBC20AVtybGUtwrRN+MwDiwpseVwKrxuA/5LhNZs9r/dKsTzCQQ/GvssC+Mf
+         doS1N2Zy4GQl4YAbMoatYXxYsiHtFq8PlAbD2IczChTOrx9XgvKj1JPyEvicl73kdQiz
+         OFROyxbUmjHgFAjnzZx5vK6rSLGbqRnus2CvQcxU890A50bP4b6s3ebYct8SZH70rWkx
+         7qqKx/+6mnv7yHHFsYY0cjmnAjm6K3WDRydcXj5JS2W6p/261zozs34C4JKYFZhkI1tR
+         x+Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679915266;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RnlG8EW/Y6v27XyheoThSlIrzCWXQvtjhpisnLHznMk=;
+        b=rzScrMt/QJEpj/Rxfw82fI6GCqQ2Hf9j9eRB7RVSFXAzslmJ3NDrOiQYYPjSHqr0lt
+         10Yi7w+u5/Pd++zLgURaEr82Cfz9daawbiF7WHGuZ6L+5GwjywRfCuVCRA3VNTWDpNGu
+         vWZI74T41CEQIOF4rjgvxJNXpznZ+M6aOxyeUgBUwaRAFB3l1DC/iJCSXVLy35tPNYcW
+         r9KTz68BQa9824BPpfve8L4d/zuxs0S/K8q5uFS6i65O8jGCk1/Y//VuWkOA8bSWTIQN
+         bGmlcIMWdZh1eA/RMmV4XHphHXGQ6Qn7ES1x9sIC9yTdxYOLwNz52JKaDKqnRiiPpZ9w
+         HL3A==
+X-Gm-Message-State: AAQBX9eTMzpuQJ9kcBfWXY+HNEUsMLXGoIM50EYLtOPxoFIUzTQ06SQQ
+        AEp/1UvsrJkQWcUt9b9j/wE=
+X-Google-Smtp-Source: AKy350YZMjhH7tb4pzL5/0rvgmO5yEYLCp3ZV9n6PhLVgcwQ1IaQMmz4B1OUopQ/wbC9XJrRag/KwQ==
+X-Received: by 2002:a0d:d8c4:0:b0:542:7d6d:498a with SMTP id a187-20020a0dd8c4000000b005427d6d498amr12486299ywe.23.1679915265995;
+        Mon, 27 Mar 2023 04:07:45 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id p184-20020a81b1c1000000b00545a08184bbsm1879102ywh.75.2023.03.27.04.07.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 04:07:45 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 27 Mar 2023 04:07:43 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     borisp@nvidia.com, john.fastabend@gmail.com, kuba@kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        davejwatson@fb.com, aviadye@mellanox.com, ilyal@mellanox.com,
+        fw@strlen.de, sd@queasysnail.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: tls: fix possible race condition between
+ do_tls_getsockopt_conf() and do_tls_setsockopt_conf()
+Message-ID: <a03e3716-d708-4a38-9ce7-0cce7af46780@roeck-us.net>
+References: <20230228023344.9623-1-hbh25y@gmail.com>
+ <fdfa0099-481c-48d6-8ab8-0c84b260e451@roeck-us.net>
+ <f3eb7ec0-99b0-0ed3-0ffc-5ea20436bd08@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E650:EE_|SJ1PR12MB6073:EE_
-X-MS-Office365-Filtering-Correlation-Id: fbefec9d-b77b-4cb2-d2a7-08db2eb3653d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PQiB+OmwRHnuz1+RhiFJNXXrQB9WIB8REnzgp7owubUjKfy5TWyTWoJcBywCoyP2Js+CXsDh403AwaiiYs5hiqImD9mUHt4a9AaemyhSOAyaeCYJD8KJ1esiupoI/L/KWauTkyZ5//Wr0FJHhbsGy+18JXS1uKyJ/RW25wZckavdWBQfMHwRqmXLxoTRnBcQcb56vOtlwtOvC26N5or9WYueWCey/gkBo5QtjF4zDFDNv78X+/4kxbFNzIlNSz3bjI1cH7dGIgwMOEJrB2F9ARzORhr1VfwSAMVLyed1Vn0tLPvij/g8G8A+BflY0+66xHBgdnFG8olz/bcOOicxdUQ8cQRh+OuxcsOt+2349M/XD1/7M1XQFHr63367nw1up3bDvqVpKloLjBp4KUMNjK1ScuvedthhnUz3I8m4h3MOKENIE6RlfZkMQ3s0kX1aB1dtTtpsqxkon0g/NJ1wpkq+atCRN+n3qGq1vqIoDPHu0y54BTH3MO7DqWxhj1a58xU8pdrDEItNa0ybZL1B0TSOMek5Fj18KwS8Q75UPnLgszQKtGYT13s6F9gRjlwjHhNnVDSJynxdhjZE1ASkrK9Kv1vrdCsfhhRpjHKKyZ+rzPN9+LWelUyo8RpHyK1tRuf3dn/UedfHtMnK9xrUL/nIQrSb/7Jc/X9Y04k5lfMAI+JjK+bc+rbtTY8nfvB5PKh+Mpsh+XdceKPtUNVdaHD+FsIax0DMq0YSNJubu10=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(376002)(346002)(39860400002)(451199021)(36840700001)(40470700004)(46966006)(40460700003)(41300700001)(70586007)(70206006)(4326008)(186003)(36756003)(2906002)(83380400001)(5660300002)(7416002)(36860700001)(336012)(44832011)(82310400005)(426003)(47076005)(356005)(86362001)(82740400003)(2616005)(81166007)(8936002)(40480700001)(6666004)(8676002)(54906003)(110136005)(478600001)(26005)(1076003)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2023 11:07:03.4850
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbefec9d-b77b-4cb2-d2a7-08db2eb3653d
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E650.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6073
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f3eb7ec0-99b0-0ed3-0ffc-5ea20436bd08@gmail.com>
+X-Spam-Status: No, score=0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Harini Katakam <harini.katakam@xilinx.com>
+On Mon, Mar 27, 2023 at 05:05:37PM +0800, Hangyu Hua wrote:
+> On 26/3/2023 22:12, Guenter Roeck wrote:
+> > Hi,
+> > 
+> > On Tue, Feb 28, 2023 at 10:33:44AM +0800, Hangyu Hua wrote:
+> > > ctx->crypto_send.info is not protected by lock_sock in
+> > > do_tls_getsockopt_conf(). A race condition between do_tls_getsockopt_conf()
+> > > and do_tls_setsockopt_conf() can cause a NULL point dereference or
+> > > use-after-free read when memcpy.
+> > > 
+> > > Please check the following link for pre-information:
+> > >   https://lore.kernel.org/all/Y/ht6gQL+u6fj3dG@hog/
+> > > 
+> > > Fixes: 3c4d7559159b ("tls: kernel TLS support")
+> > > Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> > 
+> > This patch has been applied to v6.1.y. Should it be applied to older kernel
+> > branches as well ? I know it doesn't apply cleanly, but the conflicts
+> > should be easy to resolve. I'll be happy to send backports to stable@ if
+> > needed.
+> > 
+> > Thanks,
+> > Guenter
+> 
+> Look like Meena Shanmugam is doing this. Please check this:
+> 
+> https://lore.kernel.org/all/20230323005440.518172-2-meenashanmugam@google.com/
+> 
 
-The seconds input from BD (6 bits) just needs to be ORed with the
-upper bits from timer in this function. Avoid addition operation
-every single time. Seconds rollover handling is left untouched.
+Excellent. Thanks!
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
-v3:
-No change
-v2:
-- Update HW timestamp logic to remove sec_rollover variable as per
-Cladiu's comment
-- Remove Richard Cochran's ACK on original patch as the patch changed
-
- drivers/net/ethernet/cadence/macb_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index f962a95068a0..51d26fa190d7 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -258,6 +258,8 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
- 	 */
- 	gem_tsu_get_time(&bp->ptp_clock_info, &tsu, NULL);
- 
-+	ts->tv_sec |= ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
-+
- 	/* If the top bit is set in the timestamp,
- 	 * but not in 1588 timer, it has rolled over,
- 	 * so subtract max size
-@@ -266,8 +268,6 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
- 	    !(tsu.tv_sec & (GEM_DMA_SEC_TOP >> 1)))
- 		ts->tv_sec -= GEM_DMA_SEC_TOP;
- 
--	ts->tv_sec += ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
--
- 	return 0;
- }
- 
--- 
-2.17.1
-
+Guenter
