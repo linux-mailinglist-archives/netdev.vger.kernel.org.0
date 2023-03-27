@@ -2,174 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 209E56CAE50
-	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 21:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF8F6CAE6C
+	for <lists+netdev@lfdr.de>; Mon, 27 Mar 2023 21:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232664AbjC0TNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 15:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S232731AbjC0TTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 15:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232646AbjC0TNX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 15:13:23 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13814488;
-        Mon, 27 Mar 2023 12:12:47 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id v1so9889028wrv.1;
-        Mon, 27 Mar 2023 12:12:47 -0700 (PDT)
+        with ESMTP id S232723AbjC0TTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 15:19:22 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139C1FF;
+        Mon, 27 Mar 2023 12:19:21 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id x15so8674388pjk.2;
+        Mon, 27 Mar 2023 12:19:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679944365;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=HYVINSPcX570meD+tbiju4gbaHHy2aZVdws7rdRLV/U=;
-        b=KK68TZUyb+HjYZ0CT1XzfVmxm49E3yfbXe3orrjtJTlDrkwsoLOl0N/qqEXfKQdiug
-         9ObLgEKV80TmHgjR3TkTRtmyu0L2wdEYHfTCPt3ppDJDlmPpWI2zoArUty3g6GYcCcaA
-         ve+hm8dWOolIdC/kqciF2FqMVRnImO1jO7UMqw3epBVc9vSJQncDg25FDtX3EokW8Ybs
-         zYIpH3hyjBPw6L+lLPp7VZ55p9QsX910cv+BSoDT/Sn7ZpG3O7mCZ5iUoeZIHNTQDwnV
-         gFwLhQp6tVnPpsCP1wPUznIJz+EyX5Qs6Iq/jYI/c1nRBxU8B6AZ4Z4Ph7CJt5mCu0r5
-         uRiQ==
+        d=gmail.com; s=20210112; t=1679944760;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cEkusteTCwDKEBTVV3xCwC/kfjYPRfGUw+a3FX5ZwvQ=;
+        b=VnMzSKRHkGQ2F/1Qlw8a1//zhs7+0iNWB2nGlemtBy84Ho48i/cq1Hobv6NM96R+As
+         4gyZ6BZTmXOGaJhdpgRtci1kjrgXsPypn9ENPuGKjmAPxd80GPkWJA108NLSeISHFjPI
+         3zinFav0jBjl9Rk1fvHIcBsrbJx1ws2gH3w4KNjFHgyymCm2OpoCgL7pUGpYfE00/PoH
+         Naifw8HjeekgmNMW9+SMaX4hMok2vY6IjJyExkvHTi7JWrccVjn+QWzUa1sHjfFMAieH
+         D23CMPUEL+eAQLKud4oHIUEQHjbCskl+AQkWuRZQfJ15jFIklGUyzAKZefO+ctZCyXSq
+         4Pzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679944365;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20210112; t=1679944760;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HYVINSPcX570meD+tbiju4gbaHHy2aZVdws7rdRLV/U=;
-        b=EUIt0ku5UX63KvVShrde6WkGI/VpIfiUPl7m6wzGOa+FAtJDJ8jmypU62QtBH9i0/g
-         XES94hfTS/PCFouqbmoirPqeuUrZY9TG5DIAJvC5YIhWmoVdDHQHsTj1fAy32Jh5gH1L
-         MDRRBg7l3G+WVbWdeJeatPPfqYqLu6dnQWsvo+mWNBdHtLJft5I1cbAs4fRAbzLg3Hd4
-         2N1cnaitaXd9CVY/9+DRbsKsbv/eMa2heNIdhoY1R3Rd3/NEzPyq4+S2FcneqjZZyb6J
-         t6kwsvoAdfFPu5yqndYB2YR2Ml7j07y5V38kqT/knKsXTzDYGH08nRb6VBuQpql/hPvD
-         q+hA==
-X-Gm-Message-State: AAQBX9fRhxtMvPYLL33GtT3JfJDedykgxZ39gYglUwhUnswpYXTtCPCk
-        BqlOJL6kvDp9jVNFftO618o=
-X-Google-Smtp-Source: AKy350Y47ZUzytcAg65n77+zDkosW+9AMGn5S4UlJ/7NcuCee8SP+Hdo0fbynRibnYV+tUN/IEK8bw==
-X-Received: by 2002:a5d:526a:0:b0:2d0:58f9:a6a with SMTP id l10-20020a5d526a000000b002d058f90a6amr10553468wrc.57.1679944365660;
-        Mon, 27 Mar 2023 12:12:45 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id f6-20020a05600c154600b003ef7058ea02sm3295888wmg.29.2023.03.27.12.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Mar 2023 12:12:45 -0700 (PDT)
-Date:   Mon, 27 Mar 2023 22:12:42 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     arinc9.unal@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Richard van Schagen <richard@routerhints.com>,
-        Richard van Schagen <vschagen@cs.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net 4/7] net: dsa: mt7530: set both CPU port interfaces
- to PHY_INTERFACE_MODE_NA
-Message-ID: <20230327191242.4qabzrn3vtx3l2a7@skbuf>
-References: <20230326140818.246575-1-arinc.unal@arinc9.com>
- <20230326140818.246575-5-arinc.unal@arinc9.com>
+        bh=cEkusteTCwDKEBTVV3xCwC/kfjYPRfGUw+a3FX5ZwvQ=;
+        b=ymg9vvTAOblxVeFWpSjiwf4e6OIHsqFFAB1T5YjcAjfLAfTPmcwZCDyD2XhQv/VhKn
+         pHblsqFGvRHOZm8PKnGkyIoOANyq/1z19bS5yatsAvI061b6+91SPYXRPuwNDpYnWG7h
+         lE6wVc3AOoBR6inUBgJ5l1H12wRWhtHbXUlTcqHBDPC/rEUm7Iek+4gC279loilqUK7L
+         mRCGcw0mDOkuYG/Nm2Hmp9xE3TtRJ48YQg5mGrjdpFj3Be6U57UyYgWfcpQl/P9divcO
+         s+sGNVylniEMGyKSv/OjE83dkUcYfWxB+mgFc66hLjD6TpwLDyLaP4bKxn5lumvhZJMj
+         WopQ==
+X-Gm-Message-State: AAQBX9fJsaNVNzS9jJU49xRMAw6qaom9d+2FYIvec2vca9vWi4KOy2NG
+        3krofGPzgJHimaABKV/mjJKB6zdnvZ4=
+X-Google-Smtp-Source: AKy350Y1d7IcYtthJ5wrpgwsqCrUj3040jTnkKRMa1iUXhp3SBw6zzkp8EfejSdE9+zdinFv4DQQcQ==
+X-Received: by 2002:a17:90a:c402:b0:234:656d:2366 with SMTP id i2-20020a17090ac40200b00234656d2366mr14314177pjt.42.1679944760470;
+        Mon, 27 Mar 2023 12:19:20 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ce19-20020a17090aff1300b002367325203fsm4743777pjb.50.2023.03.27.12.19.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Mar 2023 12:19:19 -0700 (PDT)
+Message-ID: <7975a642-965b-81c7-d0e7-21e499b152ea@gmail.com>
+Date:   Mon, 27 Mar 2023 12:19:14 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230326140818.246575-5-arinc.unal@arinc9.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [PATCH net-next] docs: netdev: clarify the need to sending
+ reverts as patches
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        corbet@lwn.net, linux-doc@vger.kernel.org
+References: <20230327172646.2622943-1-kuba@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230327172646.2622943-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 05:08:15PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On 3/27/23 10:26, Jakub Kicinski wrote:
+> We don't state explicitly that reverts need to be submitted
+> as a patch. It occasionally comes up.
 > 
-> Set interfaces of both CPU ports to PHY_INTERFACE_MODE_NA. Either phylink
-> or mt7530_setup_port5() on mt7530_setup() will handle the rest.
-> 
-> This is already being done for port 6, do it for port 5 as well.
-> 
-> Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
-
-This is getting comical.. I think I'm putting too much energy in
-trying to understand the hidden meaning of this patch set.
-
-In include/linux/phy.h we have:
-
-typedef enum {
-	PHY_INTERFACE_MODE_NA,
-
-In lack of other initializer, the first element of an enum gets the
-value 0 in C.
-
-Then, "priv" is allocated by this driver with devm_kzalloc(), which
-means that its entire memory is zero-filled. So priv->p5_interface and
-priv->p6_interface are already set to 0, or PHY_INTERFACE_MODE_NA.
-
-There is no code path between the devm_kzalloc() and the position in
-mt7530_setup() that would change the value of priv->p5_interface or
-priv->p6_interface from their value of 0 (PHY_INTERFACE_MODE_NA).
-For example, mt753x_phylink_mac_config() can only be called from
-phylink, after dsa_port_phylink_create() was called. But
-dsa_port_phylink_create() comes later than ds->ops->setup() - one comes
-from dsa_tree_setup_ports(), and the other from dsa_tree_setup_switches().
-
-The movement of the priv->p6_interface assignment with a few lines
-earlier does not change anything relative to the other call sites which
-assign different values to priv->p6_interface, so there isn't any
-functional change there, either.
-
-So this patch is putting 0 into a variable containing 0, and claiming,
-through the presence of the Fixes: tag and the submission to the "net"
-tree, that it is a bug fix which should be backported to "stable".
-
-Can it be that you are abusing the meaning of a "bug fix", and that I'm
-trying too hard to take this patch set seriously?
-
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  drivers/net/dsa/mt7530.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+> CC: corbet@lwn.net
+> CC: linux-doc@vger.kernel.org
+> ---
+>   Documentation/process/maintainer-netdev.rst | 9 ++++++++-
+>   1 file changed, 8 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 6d33c1050458..3deebdcfeedf 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -2203,14 +2203,18 @@ mt7530_setup(struct dsa_switch *ds)
->  		mt7530_rmw(priv, MT7530_TRGMII_RD(i),
->  			   RD_TAP_MASK, RD_TAP(16));
->  
-> +	/* Let phylink decide the interface later. If port 5 is used for phy
-> +	 * muxing, its interface will be handled without involving phylink.
-> +	 */
-> +	priv->p5_interface = PHY_INTERFACE_MODE_NA;
-> +	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+> diff --git a/Documentation/process/maintainer-netdev.rst b/Documentation/process/maintainer-netdev.rst
+> index e31d7a951073..f6983563ff06 100644
+> --- a/Documentation/process/maintainer-netdev.rst
+> +++ b/Documentation/process/maintainer-netdev.rst
+> @@ -184,11 +184,18 @@ Handling misapplied patches
+>   
+>   Occasionally a patch series gets applied before receiving critical feedback,
+>   or the wrong version of a series gets applied.
+> -There is no revert possible, once it is pushed out, it stays like that.
 > +
->  	/* Enable port 6 */
->  	val = mt7530_read(priv, MT7530_MHWTRAP);
->  	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
->  	val |= MHWTRAP_MANUAL;
->  	mt7530_write(priv, MT7530_MHWTRAP, val);
->  
-> -	priv->p6_interface = PHY_INTERFACE_MODE_NA;
-> -
->  	/* Enable and reset MIB counters */
->  	mt7530_mib_reset(ds);
->  
-> -- 
-> 2.37.2
-> 
+> +Making the patch disappear once it is pushed out is not possible, the commit
+> +history in netdev trees is stable.
+
+I would write immutable instead of stable here to convey the idea that 
+there are no history rewrites once the tree is pushed out. With that:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
+
