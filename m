@@ -2,196 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 209206CBDE9
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123916CBE10
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232314AbjC1Lgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 07:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        id S232934AbjC1Ltv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 07:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230103AbjC1Lgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:36:32 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A7959E9;
-        Tue, 28 Mar 2023 04:36:30 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id C87825FD14;
-        Tue, 28 Mar 2023 14:36:28 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1680003388;
-        bh=Y8nntKCoo+n61PM/8lM1Pimdv3DPve4+/I2dLAhzNuU=;
-        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=TVHnStf6myFchlia37InfF8F2J5RP/rNzHTcFe/Hm+P2DLzW2SPzvbOfgmHjpARAS
-         yWzhn+Uj65RvkMRZZutEJF+EzNxIulyVE6pfhxMBGwpvkLgzj9jBPnH9EDPTi+actR
-         XaXADzxkzemEIIAnohlv6MKEQ9UY8F/A2ISOn88iIXZw3RRMSej0k4G3DKfNc4/gP6
-         qDbR28D4vT3kmAWOvCN1hPsBIzu/qeM1k+ayigGSElBDEVTzuMIFdO1hDZgLLKpfe0
-         pShhRs1NomyV6KQJKCtxvsuJPbMFYit/scWawvD+IulzUyojjBOLZ/350644jcAFGg
-         AQon4g+3PuQLg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 28 Mar 2023 14:36:28 +0300 (MSK)
-Message-ID: <1e85f2b9-b958-0252-041d-6c48e04d9a19@sberdevices.ru>
-Date:   Tue, 28 Mar 2023 14:33:07 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-In-Reply-To: <0683cc6e-5130-484c-1105-ef2eb792d355@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230073AbjC1Ltt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:49:49 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C816B4EE7;
+        Tue, 28 Mar 2023 04:49:48 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id m6-20020a05600c3b0600b003ee6e324b19so7242338wms.1;
+        Tue, 28 Mar 2023 04:49:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680004187;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=d/r365YzR4z2GUjbK/bi1SZFXqHlnLKc6PIvPNZ2lRc=;
+        b=iO58f6tcmkzPWSbg7kupiEHtiApSvwACv57rpe3rm8RiJ8ouJG59UwXU2DToee2okr
+         IUcYWKye6jJmJYfvu8eeByd1gtdC96vRX3/BCxhGs4KBB4vGDv0S0sCZHvk0eYBn69ov
+         DcIjL4WpuncS0QlGPlBdg+C1Br3J70PkHveOmrnjimVIIMLw9HqmvqulopAjRdWAmEza
+         AyVJoxGQYq5mBYBpvZVkYVsLfS8aBpjvkPZanvSjSmzb6xDTVCLb1so2EId6nM29koss
+         74FFqqK2KtSZzXaFwagq5m/p/yrL+kpn7s0ykdfZInmR9zV5ehKdmn0DDBgYgvfVxhbf
+         V/hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680004187;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=d/r365YzR4z2GUjbK/bi1SZFXqHlnLKc6PIvPNZ2lRc=;
+        b=mwaZyL++Geww5Rz2Lr6auJGQ25OFGJGw4KPJNMT0qzMYoToajQ6EJ2XknNOvO84b06
+         xtx8SarV7J1ZkZofDttShQxp+vc9abMIUK4rbFHHmzFs4hSXLNjhUkAg830hGqojqkoZ
+         aBusgX8SZj4EMDZyXQOMXMw62+IraAcAee+3xzK5q9KA8pdlxGsxiZYmKjyYOqWxdLpb
+         FK8f5XFYr38Eo0gdWbW54gzesNehVMaaLu8n8IQfU/mX/nYTcXVRBRkxZdsZgVoL62RP
+         d0YmlV6STgSCUzcl4WIz08TafQupLn+PHRn54H8N1RNhrVWsK5+H5ipK68ecmHUFk1h0
+         b9Og==
+X-Gm-Message-State: AO0yUKURt9aipupSx6KEiZSMZjvnw6ApgwG94O3/B9XxigQ+woiiUQnI
+        ObpiIKMtZUKjmHuAsSCn+qY=
+X-Google-Smtp-Source: AK7set+zTszhDgDoSbIPu4QLbK7SYfkBZiuqVsVMkXIAf2QkJVEAEbWd1vEqziskOOvC8WeShKxd4A==
+X-Received: by 2002:a05:600c:3795:b0:3ed:a82d:dffb with SMTP id o21-20020a05600c379500b003eda82ddffbmr11330072wmr.40.1680004187137;
+        Tue, 28 Mar 2023 04:49:47 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id u15-20020a05600c210f00b003ed2433aa4asm17097652wml.41.2023.03.28.04.49.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 04:49:46 -0700 (PDT)
+Date:   Tue, 28 Mar 2023 14:49:43 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
-        <avkrasnov@sberdevices.ru>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [PATCH net v2 3/3] test/vsock: new skbuff appending test
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/28 06:38:00 #21021220
-X-KSMG-AntiVirus-Status: Clean, skipped
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 2/6] net: dsa: propagate flags down towards
+ drivers
+Message-ID: <20230328114943.4mibmn2icutcio4m@skbuf>
+References: <20230318141010.513424-1-netdev@kapio-technology.com>
+ <20230318141010.513424-3-netdev@kapio-technology.com>
+ <20230327115206.jk5q5l753aoelwus@skbuf>
+ <87355qb48h.fsf@kapio-technology.com>
+ <20230327160009.bdswnalizdv2u77z@skbuf>
+ <87pm8tooe1.fsf@kapio-technology.com>
+ <20230327225933.plm5raegywbe7g2a@skbuf>
+ <87ileljfwo.fsf@kapio-technology.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ileljfwo.fsf@kapio-technology.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds test which checks case when data of newly received skbuff is
-appended to the last skbuff in the socket's queue. It looks like simple
-test with 'send()' and 'recv()', but internally it triggers logic which
-appends one received skbuff to another. Test checks that this feature
-works correctly.
+On Tue, Mar 28, 2023 at 01:04:23PM +0200, Hans Schultz wrote:
+> On Tue, Mar 28, 2023 at 01:59, Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > which idea is that, again?
+> 
+> So I cannot us the offloaded flag as it is added by DSA in the common
+> case when using 'bridge fdb replace ... dynamic'.
 
-This test is actual only for virtio transport.
+Why not? I find it reasonable that the software bridge does not age out
+a dynamic FDB entry that is offloaded to hardware... the hardware should
+do that ("dynamic" being the key). At least, I find it more reasonable
+than the current behavior, where the bridge notifies dynamic FDB entries
+to switchdev, but doesn't say they're dynamic, and switchdev treats them
+as static, so they don't roam from one bridge port to another until
+software sees a packet with that MAC DA, and they have the potential of
+blocking traffic because of that.
 
-Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
----
- tools/testing/vsock/vsock_test.c | 90 ++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+If for some reason you do think that behavior is useful and still want
+to keep it (I'm not sure I would), I would consider extending struct
+switchdev_notifier_fdb_info with a "bool pls_dont_age_out", and I would
+make dsa_fdb_offload_notify() set this to true if the driver did
+actually install the dynamic FDB entry as dynamic in the ATU.
 
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 3de10dbb50f5..12b97c92fbb2 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -968,6 +968,91 @@ static void test_seqpacket_inv_buf_server(const struct test_opts *opts)
- 	test_inv_buf_server(opts, false);
- }
- 
-+#define HELLO_STR "HELLO"
-+#define WORLD_STR "WORLD"
-+
-+static void test_stream_virtio_skb_merge_client(const struct test_opts *opts)
-+{
-+	ssize_t res;
-+	int fd;
-+
-+	fd = vsock_stream_connect(opts->peer_cid, 1234);
-+	if (fd < 0) {
-+		perror("connect");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	/* Send first skbuff. */
-+	res = send(fd, HELLO_STR, strlen(HELLO_STR), 0);
-+	if (res != strlen(HELLO_STR)) {
-+		fprintf(stderr, "unexpected send(2) result %zi\n", res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_writeln("SEND0");
-+	/* Peer reads part of first skbuff. */
-+	control_expectln("REPLY0");
-+
-+	/* Send second skbuff, it will be appended to the first. */
-+	res = send(fd, WORLD_STR, strlen(WORLD_STR), 0);
-+	if (res != strlen(WORLD_STR)) {
-+		fprintf(stderr, "unexpected send(2) result %zi\n", res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_writeln("SEND1");
-+	/* Peer reads merged skbuff packet. */
-+	control_expectln("REPLY1");
-+
-+	close(fd);
-+}
-+
-+static void test_stream_virtio_skb_merge_server(const struct test_opts *opts)
-+{
-+	unsigned char buf[64];
-+	ssize_t res;
-+	int fd;
-+
-+	fd = vsock_stream_accept(VMADDR_CID_ANY, 1234, NULL);
-+	if (fd < 0) {
-+		perror("accept");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_expectln("SEND0");
-+
-+	/* Read skbuff partially. */
-+	res = recv(fd, buf, 2, 0);
-+	if (res != 2) {
-+		fprintf(stderr, "expected recv(2) returns 2 bytes, got %zi\n", res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_writeln("REPLY0");
-+	control_expectln("SEND1");
-+
-+	res = recv(fd, buf + 2, sizeof(buf) - 2, 0);
-+	if (res != 8) {
-+		fprintf(stderr, "expected recv(2) returns 8 bytes, got %zi\n", res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	res = recv(fd, buf, sizeof(buf) - 8 - 2, MSG_DONTWAIT);
-+	if (res != -1) {
-+		fprintf(stderr, "expected recv(2) failure, got %zi\n", res);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	if (memcmp(buf, HELLO_STR WORLD_STR, strlen(HELLO_STR WORLD_STR))) {
-+		fprintf(stderr, "pattern mismatch\n");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	control_writeln("REPLY1");
-+
-+	close(fd);
-+}
-+
- static struct test_case test_cases[] = {
- 	{
- 		.name = "SOCK_STREAM connection reset",
-@@ -1038,6 +1123,11 @@ static struct test_case test_cases[] = {
- 		.run_client = test_seqpacket_inv_buf_client,
- 		.run_server = test_seqpacket_inv_buf_server,
- 	},
-+	{
-+		.name = "SOCK_STREAM virtio skb merge",
-+		.run_client = test_stream_virtio_skb_merge_client,
-+		.run_server = test_stream_virtio_skb_merge_server,
-+	},
- 	{},
- };
- 
--- 
-2.25.1
+> 
+> The idea is then to use the ext_learn flag instead, which is not aged by
+> the bridge. To do this the driver (mv88e6xxx) will send a
+> SWITCHDEV_FDB_ADD_TO_BRIDGE switchdev event when the new dynamic flag is
+> true. The function sending this event will then be named
+> mv88e6xxx_add_fdb_synth_learned() in
+> drivers/net/dsa/mv88e6xxx/switchdev.c, replacing the
+> mv88e6xxx_set_fdb_offloaded() function but in most part the same
+> content, just another event type.
+
+Basically you're suggesting that the hardware driver, after receiving a
+SWITCHDEV_FDB_ADD_TO_DEVICE and responding to it with SWITCHDEV_FDB_OFFLOADED,
+emits a SWITCHDEV_FDB_ADD_TO_BRIDGE which takes over that software
+bridge FDB entry, with the advantage that the new one already has the
+semantics of not being aged out by the software bridge.
+
+hmmm... I'd say that the flow should work even with a single notifier
+emitted from the driver side, which would be SWITCHDEV_FDB_OFFLOADED,
+perhaps annotated with some qualifiers that would inform the bridge a
+certain behavior is required. Although, as mentioned, I think that in
+principle, "pls_dont_age_out" should be unnecessary, because it just
+papers over the issue that switchdev drivers treat static and dynamic
+FDB entries just the same, and "pls_dont_age_out" would be the
+differentiator for an issue that should have been solved elsewhere, as
+it could lead to other problems of its own.
+
+Basically we're designing around a workaround to a problem to which
+we're turning a blind eye. These are my 2c.
