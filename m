@@ -2,28 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D4A26CB465
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 04:58:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7547A6CB46E
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbjC1C6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 22:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50680 "EHLO
+        id S229706AbjC1DCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 23:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjC1C6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 22:58:05 -0400
+        with ESMTP id S229631AbjC1DCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:02:36 -0400
 Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2CB1BFF
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 19:58:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1321FE7
+        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 20:02:33 -0700 (PDT)
 Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
         by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pgzX5-009Nng-3N; Tue, 28 Mar 2023 10:58:00 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 28 Mar 2023 10:57:59 +0800
-From:   "Herbert Xu" <herbert@gondor.apana.org.au>
-Date:   Tue, 28 Mar 2023 10:57:59 +0800
-Subject: [PATCH 2/2] macvlan: Add netlink attribute for broadcast cutoff
+        id 1pgzbQ-009Nsu-SS; Tue, 28 Mar 2023 11:02:29 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 28 Mar 2023 11:02:28 +0800
+Date:   Tue, 28 Mar 2023 11:02:28 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH iproute2-next] macvlan: Add bclim parameter
+Message-ID: <ZCJYxDy1fgCm+cbj@gondor.apana.org.au>
 References: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
-To:     netdev@vger.kernel.org
-Message-Id: <E1pgzX5-009Nng-3N@formenos.hmeau.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
 X-Spam-Status: No, score=4.3 required=5.0 tests=HELO_DYNAMIC_IPADDR2,
         PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP
         autolearn=no autolearn_force=no version=3.4.6
@@ -34,114 +38,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the broadcast cutoff configurable through netlink.  Note
-that macvlan is weird because there is no central device for
-us to configure (the lowerdev could be anything).  So all the
-options are duplicated over what could be thousands of child
-devices.
-
-IFLA_MACVLAN_BC_QUEUE_LEN took the approach of taking the maximum
-of all child device settings.  This is unnecessary as we could
-simply store the option in the port device and take the last
-child device that gets updated as the value to use.
+This patch adds support for setting the broadcast queueing threshold
+on macvlan devices.  This controls which multicast packets will be
+processed in a workqueue instead of inline.
 
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
----
 
- drivers/net/macvlan.c              |   31 +++++++++++++++++++++++++++++--
- include/uapi/linux/if_link.h       |    1 +
- tools/include/uapi/linux/if_link.h |    1 +
- 3 files changed, 31 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 62b4748d3836..4215106adc40 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -47,6 +47,7 @@ struct macvlan_port {
- 	struct sk_buff_head	bc_queue;
- 	struct work_struct	bc_work;
- 	u32			bc_queue_len_used;
-+	int			bc_cutoff;
- 	u32			flags;
- 	int			count;
- 	struct hlist_head	vlan_source_hash[MACVLAN_HASH_SIZE];
-@@ -814,6 +815,12 @@ static void macvlan_compute_filter(unsigned long *mc_filter,
- 	}
- }
- 
-+static void macvlan_recompute_bc_filter(struct macvlan_dev *vlan)
-+{
-+	macvlan_compute_filter(vlan->port->bc_filter, vlan->lowerdev, NULL,
-+			       vlan->port->bc_cutoff);
-+}
-+
- static void macvlan_set_mac_lists(struct net_device *dev)
- {
- 	struct macvlan_dev *vlan = netdev_priv(dev);
-@@ -838,8 +845,16 @@ static void macvlan_set_mac_lists(struct net_device *dev)
- 	 */
- 	macvlan_compute_filter(vlan->port->mc_filter, vlan->lowerdev, NULL,
- 			       0);
--	macvlan_compute_filter(vlan->port->bc_filter, vlan->lowerdev, NULL,
--			       1);
-+	macvlan_recompute_bc_filter(vlan);
-+}
-+
-+static void update_port_bc_cutoff(struct macvlan_dev *vlan, int cutoff)
-+{
-+	if (vlan->port->bc_cutoff == cutoff)
-+		return;
-+
-+	vlan->port->bc_cutoff = cutoff;
-+	macvlan_recompute_bc_filter(vlan);
- }
- 
- static int macvlan_change_mtu(struct net_device *dev, int new_mtu)
-@@ -1254,6 +1269,7 @@ static int macvlan_port_create(struct net_device *dev)
- 		INIT_HLIST_HEAD(&port->vlan_source_hash[i]);
- 
- 	port->bc_queue_len_used = 0;
-+	port->bc_cutoff = 1;
- 	skb_queue_head_init(&port->bc_queue);
- 	INIT_WORK(&port->bc_work, macvlan_process_broadcast);
- 
-@@ -1527,6 +1543,10 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
- 	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN])
- 		vlan->bc_queue_len_req = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
- 
-+	if (data && data[IFLA_MACVLAN_BC_CUTOFF])
-+		update_port_bc_cutoff(
-+			vlan, nla_get_s32(data[IFLA_MACVLAN_BC_CUTOFF]));
-+
- 	err = register_netdevice(dev);
- 	if (err < 0)
- 		goto destroy_macvlan_port;
-@@ -1623,6 +1643,10 @@ static int macvlan_changelink(struct net_device *dev,
- 		update_port_bc_queue_len(vlan->port);
- 	}
- 
-+	if (data && data[IFLA_MACVLAN_BC_CUTOFF])
-+		update_port_bc_cutoff(
-+			vlan, nla_get_s32(data[IFLA_MACVLAN_BC_CUTOFF]));
-+
- 	if (set_mode)
- 		vlan->mode = mode;
- 	if (data && data[IFLA_MACVLAN_MACADDR_MODE]) {
-@@ -1703,6 +1727,9 @@ static int macvlan_fill_info(struct sk_buff *skb,
- 		goto nla_put_failure;
- 	if (nla_put_u32(skb, IFLA_MACVLAN_BC_QUEUE_LEN_USED, port->bc_queue_len_used))
- 		goto nla_put_failure;
-+	if (port->bc_cutoff != 1 &&
-+	    nla_put_s32(skb, IFLA_MACVLAN_BC_CUTOFF, port->bc_cutoff))
-+		goto nla_put_failure;
- 	return 0;
- 
- nla_put_failure:
 diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 57ceb788250f..8d679688efe0 100644
+index d61bd32d..71ddffc6 100644
 --- a/include/uapi/linux/if_link.h
 +++ b/include/uapi/linux/if_link.h
-@@ -635,6 +635,7 @@ enum {
+@@ -633,6 +633,7 @@ enum {
  	IFLA_MACVLAN_MACADDR_COUNT,
  	IFLA_MACVLAN_BC_QUEUE_LEN,
  	IFLA_MACVLAN_BC_QUEUE_LEN_USED,
@@ -149,15 +56,120 @@ index 57ceb788250f..8d679688efe0 100644
  	__IFLA_MACVLAN_MAX,
  };
  
-diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
-index 901d98b865a1..39e659c83cfd 100644
---- a/tools/include/uapi/linux/if_link.h
-+++ b/tools/include/uapi/linux/if_link.h
-@@ -605,6 +605,7 @@ enum {
- 	IFLA_MACVLAN_MACADDR_COUNT,
- 	IFLA_MACVLAN_BC_QUEUE_LEN,
- 	IFLA_MACVLAN_BC_QUEUE_LEN_USED,
-+	IFLA_MACVLAN_BC_CUTOFF,
- 	__IFLA_MACVLAN_MAX,
- };
+diff --git a/ip/iplink_macvlan.c b/ip/iplink_macvlan.c
+index 0f13637d..29a9112e 100644
+--- a/ip/iplink_macvlan.c
++++ b/ip/iplink_macvlan.c
+@@ -26,13 +26,14 @@
+ static void print_explain(struct link_util *lu, FILE *f)
+ {
+ 	fprintf(f,
+-		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN]\n"
++		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN] [bclim BCLIM]\n"
+ 		"\n"
+ 		"MODE: private | vepa | bridge | passthru | source\n"
+ 		"MODE_FLAG: null | nopromisc | nodst\n"
+ 		"MODE_OPTS: for mode \"source\":\n"
+ 		"\tmacaddr { { add | del } <macaddr> | set [ <macaddr> [ <macaddr>  ... ] ] | flush }\n"
+-		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n",
++		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n"
++		"BCLIM: Threshold for broadcast queueing: 32-bit integer\n",
+ 		lu->id
+ 	);
+ }
+@@ -67,6 +68,12 @@ static int bc_queue_len_arg(const char *arg)
+ 	return -1;
+ }
  
++static int bclim_arg(const char *arg)
++{
++	fprintf(stderr, "Error: illegal value for \"bclen\": \"%s\"\n", arg);
++	return -1;
++}
++
+ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			  struct nlmsghdr *n)
+ {
+@@ -168,6 +175,15 @@ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				return bc_queue_len_arg(*argv);
+ 			}
+ 			addattr32(n, 1024, IFLA_MACVLAN_BC_QUEUE_LEN, bc_queue_len);
++		} else if (matches(*argv, "bclim") == 0) {
++			__s32 bclim;
++			NEXT_ARG();
++
++			if (get_s32(&bclim, *argv, 0)) {
++				return bclim_arg(*argv);
++			}
++			addattr_l(n, 1024, IFLA_MACVLAN_BC_CUTOFF,
++				  &bclim, sizeof(bclim));
+ 		} else if (matches(*argv, "help") == 0) {
+ 			explain(lu);
+ 			return -1;
+@@ -245,6 +261,12 @@ static void macvlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[]
+ 		print_luint(PRINT_ANY, "usedbcqueuelen", "usedbcqueuelen %lu ", bc_queue_len);
+ 	}
+ 
++	if (tb[IFLA_MACVLAN_BC_CUTOFF] &&
++		RTA_PAYLOAD(tb[IFLA_MACVLAN_BC_CUTOFF]) >= sizeof(__s32)) {
++		__s32 bclim = rta_getattr_s32(tb[IFLA_MACVLAN_BC_CUTOFF]);
++		print_int(PRINT_ANY, "bclim", "bclim %d ", bclim);
++	}
++
+ 	/* in source mode, there are more options to print */
+ 
+ 	if (mode != MACVLAN_MODE_SOURCE)
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index c8c65657..bec1b78b 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -1479,6 +1479,7 @@ the following additional arguments are supported:
+ .BR mode " { " private " | " vepa " | " bridge " | " passthru
+ .RB " [ " nopromisc " ] | " source " [ " nodst " ] } "
+ .RB " [ " bcqueuelen " { " LENGTH " } ] "
++.RB " [ " bclim " " LIMIT " ] "
+ 
+ .in +8
+ .sp
+@@ -1537,6 +1538,13 @@ will be the maximum length that any macvlan interface has requested.
+ When listing device parameters both the bcqueuelen parameter
+ as well as the actual used bcqueuelen are listed to better help
+ the user understand the setting.
++
++.BR bclim " " LIMIT
++- Set the threshold for broadcast queueing.
++.BR LIMIT " must be a 32-bit integer."
++Setting this to -1 disables broadcast queueing altogether.  Otherwise
++a multicast address will be queued as broadcast if the number of devices
++using it is greater than the given value.
+ .in -8
+ 
+ .TP
+@@ -2699,6 +2707,9 @@ Update the broadcast/multicast queue length.
+ [
+ .BI bcqueuelen "  LENGTH  "
+ ]
++[
++.BI bclim " LIMIT "
++]
+ 
+ .in +8
+ .BI bcqueuelen " LENGTH "
+@@ -2712,6 +2723,13 @@ will be the maximum length that any macvlan interface has requested.
+ When listing device parameters both the bcqueuelen parameter
+ as well as the actual used bcqueuelen are listed to better help
+ the user understand the setting.
++
++.BI bclim " LIMIT "
++- Set the threshold for broadcast queueing.
++.IR LIMIT " must be a 32-bit integer."
++Setting this to -1 disables broadcast queueing altogether.  Otherwise
++a multicast address will be queued as broadcast if the number of devices
++using it is greater than the given value.
+ .in -8
+ 
+ .TP
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
