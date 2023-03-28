@@ -2,130 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3726CBA73
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC9D6CBAFE
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:31:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232269AbjC1JYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 05:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S232752AbjC1J31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 05:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229654AbjC1JYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:24:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F8D5B99
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:23:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1679995403;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FlyvMdw2nhPSREcgm2mQMSn2Bg5EDd8FhpiFHg5I85g=;
-        b=U2UQqI9hvzBmCId2321DGltf6q7/vTvZdTe10uVqS0lT8l+oNLpV8Xr2YkZNpY5HpLbidH
-        Pn6T25rbl77jdki48LtSJ4S+SG/mfXZ1t6YFP4QfTSK/Z+ehDsF/qcxP0dYzW3kUxfDSvX
-        XrpwjwWzZ5l3md2l0BwEtgjg+kWA2cA=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-371-ikYrHqx4O_i4PE9HySjRUA-1; Tue, 28 Mar 2023 05:23:22 -0400
-X-MC-Unique: ikYrHqx4O_i4PE9HySjRUA-1
-Received: by mail-qk1-f200.google.com with SMTP id 66-20020a370345000000b00746886b1593so5317361qkd.14
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:23:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679995402;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FlyvMdw2nhPSREcgm2mQMSn2Bg5EDd8FhpiFHg5I85g=;
-        b=TLtyyQZx5RMiUMkjwrAkz5DJWBH1Qb7pGyelK2/UkWfO5A1lw2mo0OgevF3HBciRMq
-         iiHDjM0cQu5icGQ/zeLpMX9YcouiEvNxahshDJe4ijSSMm/TeRH9oCjRhUuSov/FQyBE
-         DN6lGWQnnl2WJ9jDsystNiqFlUeDTVjJCNeqA7QOUKT2CNgdSy1sg4ewe3zJgh0br+f7
-         Uto2Gy2LMxnDHo0dfhb8uALRikabJSVo/yyaMETt1bZeU7FX3uwbrR0Z64eN6Lg/m31n
-         JmILsQrEKX2PCOtceUG6Bi55zmCk9eDJyMAyagIOSexQ+NNNPosca+psbSr3kCOP9URn
-         Jblw==
-X-Gm-Message-State: AAQBX9f6r7tifDm4GaSjsEMg+3aEIPkLyNjNkK+sjkVm1KEnraQawF/u
-        ghJDZXhWVmBnqduG5MMBuDzBsCLjlN87wOsa2aAI9jdsC1RRI/WrQerq4/l2nUgsnFRYWJAo3bf
-        a67hstY+1X+bzsJwg
-X-Received: by 2002:a05:6214:27c6:b0:56e:a9d4:429b with SMTP id ge6-20020a05621427c600b0056ea9d4429bmr23339841qvb.1.1679995402136;
-        Tue, 28 Mar 2023 02:23:22 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Yjyndn+8JhX5yEkfDB1ZbfV1IVX73FEzKiCbPGXb88TQ6qGch6AlQQ3iq9fmV5EH8VUrZ2rQ==
-X-Received: by 2002:a05:6214:27c6:b0:56e:a9d4:429b with SMTP id ge6-20020a05621427c600b0056ea9d4429bmr23339828qvb.1.1679995401919;
-        Tue, 28 Mar 2023 02:23:21 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
-        by smtp.gmail.com with ESMTPSA id l7-20020a0cc207000000b005dd8b9345d0sm3588061qvh.104.2023.03.28.02.23.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 02:23:21 -0700 (PDT)
-Date:   Tue, 28 Mar 2023 11:23:16 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232453AbjC1J26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:28:58 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFCC619E;
+        Tue, 28 Mar 2023 02:28:51 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VesbhcT_1679995727;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VesbhcT_1679995727)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Mar 2023 17:28:48 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@sberdevices.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v2 1/3] virtio/vsock: fix header length on skb merging
-Message-ID: <yi6goqhyxkh4slmje6a37vlrxby2qmzg66wgdzrzgt55wgpvdy@d3b7jucayzxv>
-References: <728181e9-6b35-0092-3d01-3d7aff4521b6@sberdevices.ru>
- <b5d31a81-a089-146b-d04f-569710e6b14b@sberdevices.ru>
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: [PATCH 00/16] virtio-net: split virtio-net.c
+Date:   Tue, 28 Mar 2023 17:28:31 +0800
+Message-Id: <20230328092847.91643-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <b5d31a81-a089-146b-d04f-569710e6b14b@sberdevices.ru>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Git-Hash: e880b402863c
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 26, 2023 at 01:08:22AM +0300, Arseniy Krasnov wrote:
->This fixes appending newly arrived skbuff to the last skbuff of the
->socket's queue. Problem fires when we are trying to append data to skbuff
->which was already processed in dequeue callback at least once. Dequeue
->callback calls function 'skb_pull()' which changes 'skb->len'. In current
->implementation 'skb->len' is used to update length in header of the last
->skbuff after new data was copied to it. This is bug, because value in
->header is used to calculate 'rx_bytes'/'fwd_cnt' and thus must be not
->be changed during skbuff's lifetime.
->
->Bug starts to fire since:
->
->commit 077706165717
->("virtio/vsock: don't use skbuff state to account credit")
->
->It presents before, but didn't triggered due to a little bit buggy
->implementation of credit calculation logic. So use Fixes tag for it.
->
->Fixes: 077706165717 ("virtio/vsock: don't use skbuff state to account credit")
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> net/vmw_vsock/virtio_transport_common.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index 7fc178c3ee07..b9144af71553 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -1101,7 +1101,7 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
-> 			memcpy(skb_put(last_skb, skb->len), skb->data, skb->len);
-> 			free_pkt = true;
-> 			last_hdr->flags |= hdr->flags;
->-			last_hdr->len = cpu_to_le32(last_skb->len);
->+			le32_add_cpu(&last_hdr->len, len);
-> 			goto out;
-> 		}
-> 	}
->-- 
->2.25.1
->
+Considering the complexity of virtio-net.c and the new features we want
+to add, it is time to split virtio-net.c into multiple independent
+module files.
 
-LGTM!
+This is beneficial to the maintenance and adding new functions.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+And AF_XDP support will be added later, then a separate xsk.c file will
+be added.
+
+This patchset split virtio-net.c into these parts:
+
+* virtnet.c:         virtio net device ops (napi, tx, rx, device ops, ...)
+* virtnet_common.c:  virtio net common code
+* virtnet_ethtool.c: virtio net ethtool callbacks
+* virtnet_ctrl.c:    virtio net ctrl queue command APIs
+* virtnet_virtio.c:  virtio net virtio callbacks/ops (driver register, virtio probe, virtio free, ...)
+
+Please review.
+
+Thanks.
+
+Xuan Zhuo (16):
+  virtio_net: add a separate directory for virtio-net
+  virtio_net: move struct to header file
+  virtio_net: add prefix to the struct inside header file
+  virtio_net: separating cpu-related funs
+  virtio_net: separate virtnet_ctrl_set_queues()
+  virtio_net: separate virtnet_ctrl_set_mac_address()
+  virtio_net: remove lock from virtnet_ack_link_announce()
+  virtio_net: separating the APIs of cq
+  virtio_net: introduce virtnet_rq_update_stats()
+  virtio_net: separating the funcs of ethtool
+  virtio_net: introduce virtnet_dev_rx_queue_group()
+  virtio_net: introduce virtnet_get_netdev()
+  virtio_net: prepare for virtio
+  virtio_net: move virtnet_[en/dis]able_delayed_refill to header file
+  virtio_net: add APIs to register/unregister virtio driver
+  virtio_net: separating the virtio code
+
+ MAINTAINERS                                   |    2 +-
+ drivers/net/Kconfig                           |    8 +-
+ drivers/net/Makefile                          |    2 +-
+ drivers/net/virtio/Kconfig                    |   11 +
+ drivers/net/virtio/Makefile                   |   10 +
+ .../net/{virtio_net.c => virtio/virtnet.c}    | 2368 ++---------------
+ drivers/net/virtio/virtnet.h                  |  213 ++
+ drivers/net/virtio/virtnet_common.c           |  138 +
+ drivers/net/virtio/virtnet_common.h           |   14 +
+ drivers/net/virtio/virtnet_ctrl.c             |  272 ++
+ drivers/net/virtio/virtnet_ctrl.h             |   45 +
+ drivers/net/virtio/virtnet_ethtool.c          |  578 ++++
+ drivers/net/virtio/virtnet_ethtool.h          |    8 +
+ drivers/net/virtio/virtnet_virtio.c           |  880 ++++++
+ drivers/net/virtio/virtnet_virtio.h           |    8 +
+ 15 files changed, 2366 insertions(+), 2191 deletions(-)
+ create mode 100644 drivers/net/virtio/Kconfig
+ create mode 100644 drivers/net/virtio/Makefile
+ rename drivers/net/{virtio_net.c => virtio/virtnet.c} (50%)
+ create mode 100644 drivers/net/virtio/virtnet.h
+ create mode 100644 drivers/net/virtio/virtnet_common.c
+ create mode 100644 drivers/net/virtio/virtnet_common.h
+ create mode 100644 drivers/net/virtio/virtnet_ctrl.c
+ create mode 100644 drivers/net/virtio/virtnet_ctrl.h
+ create mode 100644 drivers/net/virtio/virtnet_ethtool.c
+ create mode 100644 drivers/net/virtio/virtnet_ethtool.h
+ create mode 100644 drivers/net/virtio/virtnet_virtio.c
+ create mode 100644 drivers/net/virtio/virtnet_virtio.h
+
+--
+2.32.0.3.g01195cf9f
 
