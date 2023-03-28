@@ -2,87 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7656CBB85
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DE26CBB92
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbjC1JvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 05:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
+        id S230352AbjC1J4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 05:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232868AbjC1Juo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:50:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C937682
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC9C60E65
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 34639C433EF;
-        Tue, 28 Mar 2023 09:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679997019;
-        bh=7fFgILf/h3c8mwH2eiB4ST6qMmwAT2oqJA9MByazeAE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fUZyu0jHpMMRTlrgxqIs9T89ZgyYHTlJfllqOZSaoohbk2Tlb+TT7JBFZ3hl+ZcBe
-         sQMQbSzDWf7RckqjQKPjF6ptl2JEKLDB94cbwrVM8VaHgP8kxLFXUnGFXALQmixL1v
-         ZxmRA68LlD1B+tiueYgZI2vzD1s3C+65idmekEwxMn+JZFPYwT3oS/IklN+vFQJDHn
-         7mw78vCrm9CFYOVX2+x+NwV4jhidnIW+PC7nQT1cg5fKqpubIOXAb+3BIZqSNTxHei
-         UYACcNWVkY+1636Vxnv31gJgIFZHdDy5IKz37ZXYax4vaiV6QwnkjK2WJE9mgRMHGe
-         uZVRK2hc7YZ5w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 15FD0E4D01A;
-        Tue, 28 Mar 2023 09:50:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232071AbjC1J4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:56:15 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D708E1A7
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:56:12 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id bz27so11347342qtb.1
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:56:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679997372;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JXfaiVEaS7XgCqm5+wRW8Wdj+DYINCUUAzdNfbuxeug=;
+        b=oNpRRMCj1Ys1IpK5a22wzMpiU0aH0umsZ6l7wLDgCJ3/KFPwMnMdKazmDxuj3XQ8yh
+         ON05pEm312fdyl5FkYFzuhNAs7MxdFXR0NSl6ImFsyVxJtsao1AREtirfq/ceqr7iP/r
+         YnQcbKVkl4JCsLNKUqx9hw2zOLNVCT1tFYY2KxHnTjFh0HF8EH2jn8JY7f+1oNZiGp/r
+         ScPe5JyM7JAiRoUcWLrkfkiFTxhuyw8IMKESp6AnhSqXjwq9tT3AOsNspDKcf70sYsBn
+         iU4ViJnsmC+II11PFBEdUPSaFwxgep/quBA5aDnD+SXElJ+pPTZ3JjS2G7dAPDXWbpAm
+         z8bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679997372;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=JXfaiVEaS7XgCqm5+wRW8Wdj+DYINCUUAzdNfbuxeug=;
+        b=YskiCb0ovhL0Z4Ok5jdLUQs2N7Y6ugkxHIoMIcTeIkA1nU2+duGZlCNZgeqffrvCwi
+         n75pNmd7cHB4x07fTcjc8tEQgSm1EwlqXhPiPLZpia65AIh3CANmSQ9sDEMfqjtyNjZw
+         0gsTf3AMZiIiv7vme2lGNKGsi+xvH3Yn1P+ur1mSTvqrBrrk2bRIEK9ozy4FLfZOVAkE
+         n3pOYgc9o+ieeOtjGuETWo7hJzeJDx2LjnQLcPPW0BMuA0oMuzVOF0/EDVaXJ6lidf3d
+         nAKmKaZs/9oBq0j8f/faGJ1VfTQQO8rRdo+h77KDQ4cVOcMxyiCDFC7voeHuCdkNVyvn
+         gzOw==
+X-Gm-Message-State: AO0yUKU3mdP9GnWhNwuBJY5MBl27OuN71FoIjQ9s5UfO1vZttXWCJ/U9
+        zQJzRwCQM1u7oSWXEMJs2qMcz242m/t7d9vZP+c=
+X-Google-Smtp-Source: AK7set95v8Ofqkc1geuyI9y7sn7ZY7YoaNPmMZfK37EwA7cmfge23sx3bxXPeb4oaZ0EsDyOdIoHTyQdAVPedguPGGs=
+X-Received: by 2002:a05:622a:1a0d:b0:3d7:9d03:75ae with SMTP id
+ f13-20020a05622a1a0d00b003d79d0375aemr5661952qtb.10.1679997372038; Tue, 28
+ Mar 2023 02:56:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/3] net: mvpp2: rss fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <167999701908.28396.17253986050227713973.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Mar 2023 09:50:19 +0000
-References: <20230325163903.ofefgus43x66as7i@Svens-MacBookPro.local>
-In-Reply-To: <20230325163903.ofefgus43x66as7i@Svens-MacBookPro.local>
-To:     Sven Auhagen <sven.auhagen@voleatech.de>
-Cc:     netdev@vger.kernel.org, mw@semihalf.com, linux@armlinux.org.uk,
-        kuba@kernel.org, davem@davemloft.net,
-        maxime.chevallier@bootlin.com, pabeni@redhat.com
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Received: by 2002:a0c:e4cf:0:b0:5dd:d6fd:2925 with HTTP; Tue, 28 Mar 2023
+ 02:56:11 -0700 (PDT)
+Reply-To: hitnodeby23@yahoo.com
+From:   Hinda Itno Deby <beattykate.01@gmail.com>
+Date:   Tue, 28 Mar 2023 02:56:11 -0700
+Message-ID: <CA+AyO7esQY5EN6kTOhPTz7ZfnKy7eG0zPjFuPbu9qJaY0EROig@mail.gmail.com>
+Subject: Reply
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM,UNDISC_MONEY,URG_BIZ autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:832 listed in]
+        [list.dnswl.org]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [beattykate.01[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [beattykate.01[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [hitnodeby23[at]yahoo.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.9 URG_BIZ Contains urgent matter
+        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+ Hello Dear
 
-This series was applied to netdev/net.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+My name is Hinda Itno Deby Please I want us to discuss Urgent Business
+Proposal, if you are interested kindly reply to me so i can give you
+all the details.
 
-On Sat, 25 Mar 2023 17:39:03 +0100 you wrote:
-> This patch series fixes up some rss problems
-> in the mvpp2 driver.
-> 
-> The classifier is missing some fragmentation flags,
-> the parser has the QinQ headers switched and
-> the PPPoE Layer 4 detecion is not working
-> correctly.
-> 
-> [...]
+Thanks and God Bless You.
 
-Here is the summary with links:
-  - [v3,1/3] net: mvpp2: classifier flow fix fragmentation flags
-    https://git.kernel.org/netdev/net/c/9a251cae51d5
-  - [v3,2/3] net: mvpp2: parser fix QinQ
-    https://git.kernel.org/netdev/net/c/a587a84813b9
-  - [v3,3/3] net: mvpp2: parser fix PPPoE
-    https://git.kernel.org/netdev/net/c/031a416c2170
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Ms Hinda Itno Deby
