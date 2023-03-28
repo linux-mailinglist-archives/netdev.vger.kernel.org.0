@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 292476CC7E6
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 18:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D5F26CC7EB
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 18:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232537AbjC1Q16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 12:27:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        id S232453AbjC1Q3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 12:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230346AbjC1Q15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 12:27:57 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC84C1BDC
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:27:55 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id o12so1600604ilh.13
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:27:55 -0700 (PDT)
+        with ESMTP id S230280AbjC1Q3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 12:29:20 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E6ECC2D
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:29:18 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id m6so9688557qvq.0
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:29:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680020875;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HZlLwQPOb8jKLc2eNXMwjH3kvxbHnpPjAYHKfKgd7uA=;
-        b=Qtxy9wPVh5rqdceW19ctke0VfOWZMgcfxj6GjZesd+Pd9vieH4JM1u8sejWiGo2BxB
-         WT2qiUUZE5kv7/kYXwFQwDi4BKmVmod9Z9YoY39MubGBP8Q5PYUKTsm3hNjqW2YUXGYA
-         duSYZBfxSHuODhD80wW3+aRpuL4SPAxpIS14OOgD8i2lX/3R1dLLTMF4Ogyt/Zlo5WUw
-         5uLA613pQMPoqacuHvClHq8/2Wfmz+k+S/S5W1kNSQ1YwiRA5jb73pXIRyhITApxjZtv
-         jn40+ffjxJd3ZTS9WJ14eeJ9czJLt47Ks33FNntjUbmfUTxzMUYnFV+QJ5qQk+Sfw4XY
-         vJFg==
+        d=bytedance.com; s=google; t=1680020957;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pF7n/Eqo2dEZoKzmZtiE3BnURDQ21G0m3HQyJWfxRsU=;
+        b=V3u7TE7LZ8maCIPEsKINGf1if8fTws2/Y7d4jTDkHOvKyU33hdvPtvY9jESgpaWGIF
+         0ARloOvRAPwWhd8EhX6QSOxiVDap2H/3cq4bpwwVHjeaUlOPWOm2inUl+oH8OSDMR5M/
+         SdaLqA2Ipuvpp+3u7qzn2zoHSP8m+cEOrdfCZaC613Te2whCi7g0YBWEToNwmPcwrkzj
+         gfmWX0Rrqrz9dTKco9YZrITp1Rp1BsGmqFkQeVnJTViM0vsaVUd3qrOhs9a2flrtTTXD
+         UWm9G8sP18joTGecb8HPnns6+9aqDoHHIU4w0fgb6jJkAvksMVRsNNCF9eTrObnecZRC
+         ofNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680020875;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20210112; t=1680020957;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HZlLwQPOb8jKLc2eNXMwjH3kvxbHnpPjAYHKfKgd7uA=;
-        b=IyZqKuygFP0FiK1JICoU0R1QjSXyeBjoUenYsoK9MEJTINFWbcpn55UnLAD1proKh9
-         5hqB2GjwoPDNgHlOby1xrAFTihkOX6JgNYeUOjZ+YG0XUnS+JywnxVg2TyawxAbyw2yS
-         cGjL1QHWF66SXGeTSBM0Y82Ogw3rNOHN5d0URFhE/P9Rjk/PM5EcgCfsnADaGZfVuaiG
-         XjjJbPqW8ARCwYsQUG8vcaV7T/BdQW1sosUD9KEfY/c5AWCXFOMfyK+ZFndI4Ahr/gCb
-         bKhY8lUK+DKrqnWz/RGJ4C7iDYGW0MBcD5E6+z7KdIIpQDF0YwqDhJtc6Wos4kVtI1Qn
-         P5dA==
-X-Gm-Message-State: AAQBX9df9OvSYB2wI6oc02og7O4a+TRRXvgBE6ULbB0t5tyukvtbFbZA
-        KNv9HbiCfL0oSfoYOAHk0XU3gQ==
-X-Google-Smtp-Source: AKy350auGPR2rXe6tX4isI+DRP4rAbQtTgO5YEMWMmej3TcLoAd9VmkXAB1ub8WFQZAjitvbzGN9hw==
-X-Received: by 2002:a92:c8c6:0:b0:315:8bc0:1d85 with SMTP id c6-20020a92c8c6000000b003158bc01d85mr12800420ilq.11.1680020874908;
-        Tue, 28 Mar 2023 09:27:54 -0700 (PDT)
-Received: from localhost.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id g2-20020a92c7c2000000b003159b6d97d6sm8642814ilk.52.2023.03.28.09.27.53
+        bh=pF7n/Eqo2dEZoKzmZtiE3BnURDQ21G0m3HQyJWfxRsU=;
+        b=C42bmGw+syGCeLYI9mXk6kEvzC6MpOYi/hjKR8KKmVa1mjoF3Jm/6Vk45OoUW3x9xC
+         wxIpRgRkBZHYeEOoGXkRasNr4VrgGyr4h0vJ92XcQi1Pq1KwzJNT6X7MQCPbutKne8Qk
+         ZFY2ishxjniXIFEVnll8g9tXNuiBEoy1qbdGZjE0OsDTMG2Tj8jRlr1oRmII1Kdnn/zU
+         ggQ5KDzfD+ZdW9Vp6kfeEnOQJ3E51Rkj7x7NSQXzeKQycZqzSHIs7xz1hhgHXvG1UsCY
+         o93+ckkeh22rKOyFM12gh9Ey5yLDLp/Drseij+1B0VLghh+wTwI0K6MJg9GzSTZGdEwG
+         TKjA==
+X-Gm-Message-State: AAQBX9ejSQfiGZmdY06aVLPl/Ioq7QX46oS+GiXyduU2jbFOZls63SMy
+        qYj+Z9NhFDbOU/DaLymm74clgA==
+X-Google-Smtp-Source: AKy350YGBbT1TG8n/LqQeEQtBdF+No9E41y7r0rqn3z0VXqcthosfKqjIExYf/RSRKbEbAC9B9vQhQ==
+X-Received: by 2002:a05:6214:ac4:b0:56e:a791:37c6 with SMTP id g4-20020a0562140ac400b0056ea79137c6mr31974268qvi.16.1680020957159;
+        Tue, 28 Mar 2023 09:29:17 -0700 (PDT)
+Received: from [172.17.0.3] ([130.44.215.103])
+        by smtp.gmail.com with ESMTPSA id mk5-20020a056214580500b005dd8b93459csm3899644qvb.52.2023.03.28.09.29.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 09:27:54 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     quic_bjorande@quicinc.com, mbloch@nvidia.com,
-        caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v3] net: ipa: compute DMA pool size properly
-Date:   Tue, 28 Mar 2023 11:27:51 -0500
-Message-Id: <20230328162751.2861791-1-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Tue, 28 Mar 2023 09:29:16 -0700 (PDT)
+From:   Bobby Eshleman <bobby.eshleman@bytedance.com>
+Date:   Tue, 28 Mar 2023 16:29:09 +0000
+Subject: [PATCH net v2] virtio/vsock: fix leaks due to missing skb owner
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230327-vsock-fix-leak-v2-1-f6619972dee0@bytedance.com>
+X-B4-Tracking: v=1; b=H4sIANQVI2QC/3WOTQ6CMBCFr2Jm7RjaBiGuvIdh0ZapNGhrOqRKC
+ He3sHHl8v3lewswJU8Ml8MCibJnH0MR8ngAO+hwJ/R90SArqSolG8wc7YjOf/BBekQjLDlRt1L
+ rFsrIaCY0SQc7bLNfm0eD8R0oba1XouLt2BsEmqAr5uB5imner2SxR/+oWaBA5agndW5EVburm
+ SfqC5VONj6hW9f1C1Y7DNTbAAAA
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>
+X-Mailer: b4 0.12.2
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
@@ -73,50 +79,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In gsi_trans_pool_init_dma(), the total size of a pool of memory
-used for DMA transactions is calculated.  However the calculation is
-done incorrectly.
+This patch sets the skb owner in the recv and send path for virtio.
 
-For 4KB pages, this total size is currently always more than one
-page, and as a result, the calculation produces a positive (though
-incorrect) total size.  The code still works in this case; we just
-end up with fewer DMA pool entries than we intended.
+For the send path, this solves the leak caused when
+virtio_transport_purge_skbs() finds skb->sk is always NULL and therefore
+never matches it with the current socket. Setting the owner upon
+allocation fixes this.
 
-Bjorn Andersson tested booting a kernel with 16KB pages, and hit a
-null pointer derereference in sg_alloc_append_table_from_pages(),
-descending from gsi_trans_pool_init_dma().  The cause of this was
-that a 16KB total size was going to be allocated, and with 16KB
-pages the order of that allocation is 0.  The total_size calculation
-yielded 0, which eventually led to the crash.
+For the recv path, this ensures correctness of accounting and also
+correct transfer of ownership in vsock_loopback (when skbs are sent from
+one socket and received by another).
 
-Correcting the total_size calculation fixes the problem.
-
-Reported-by: Bjorn Andersson <quic_bjorande@quicinc.com>
-Tested-by: Bjorn Andersson <quic_bjorande@quicinc.com>
-Fixes: 9dd441e4ed57 ("soc: qcom: ipa: GSI transactions")
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Signed-off-by: Alex Elder <elder@linaro.org>
+Fixes: 71dc9ec9ac7d ("virtio/vsock: replace virtio_vsock_pkt with sk_buff")
+Signed-off-by: Bobby Eshleman <bobby.eshleman@bytedance.com>
+Reported-by: Cong Wang <xiyou.wangcong@gmail.com>
+Link: https://lore.kernel.org/all/ZCCbATwov4U+GBUv@pop-os.localdomain/
 ---
-Note: This was reported via private communication.
-v3: - Added Mark Bloch's reviewed-by tag.
-v2: - Added Bjorn's actual name to tags.  
+Changes in v2:
+- virtio/vsock: add skb_set_owner_r to recv_pkt()
+- Link to v1: https://lore.kernel.org/r/20230327-vsock-fix-leak-v1-1-3fede367105f@bytedance.com
+---
+ net/vmw_vsock/virtio_transport_common.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
- drivers/net/ipa/gsi_trans.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index 0f52c068c46d6..ee6fb00b71eb6 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -156,7 +156,7 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
- 	 * gsi_trans_pool_exit_dma() can assume the total allocated
- 	 * size is exactly (count * size).
- 	 */
--	total_size = get_order(total_size) << PAGE_SHIFT;
-+	total_size = PAGE_SIZE << get_order(total_size);
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 957cdc01c8e8..900e5dca05f5 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -94,6 +94,9 @@ virtio_transport_alloc_skb(struct virtio_vsock_pkt_info *info,
+ 					 info->op,
+ 					 info->flags);
  
- 	virt = dma_alloc_coherent(dev, total_size, &addr, GFP_KERNEL);
- 	if (!virt)
++	if (info->vsk)
++		skb_set_owner_w(skb, sk_vsock(info->vsk));
++
+ 	return skb;
+ 
+ out:
+@@ -1294,6 +1297,8 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+ 		goto free_pkt;
+ 	}
+ 
++	skb_set_owner_r(skb, sk);
++
+ 	vsk = vsock_sk(sk);
+ 
+ 	lock_sock(sk);
+
+---
+base-commit: e5b42483ccce50d5b957f474fd332afd4ef0c27b
+change-id: 20230327-vsock-fix-leak-b1cef1582aa8
+
+Best regards,
 -- 
-2.34.1
+Bobby Eshleman <bobby.eshleman@bytedance.com>
 
