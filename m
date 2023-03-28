@@ -2,86 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F0726CC12A
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 15:40:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 745E76CC154
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 15:46:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233285AbjC1NkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 09:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41100 "EHLO
+        id S230313AbjC1Nqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 09:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233213AbjC1NkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 09:40:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE38C15F;
-        Tue, 28 Mar 2023 06:40:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BC04617C4;
-        Tue, 28 Mar 2023 13:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F98BC4339C;
-        Tue, 28 Mar 2023 13:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680010819;
-        bh=W7CkkhoADbYkEkKnj7YOIqkOzfALUfXLdWDJ3FNHACk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vAIj4zxRXrZtECoGB2XymFVbmwQL6H3bVBJxiOjmMNGrPM0cinsV5i5yEk5enV4lM
-         YPPb/fZg/IXKU6CFNWeAHJWD2TjW1GrtC4EWrKS5xgWlVD17Rap3A9WcqkQiIUJc8W
-         srYqZhFDr4AEsiNGDdDikuYBLS/WISrC5sJfuSP6VgB7RLUS22VMTDuABob7CtT1ki
-         C6En1XVBVYQnqNwLARYoboPYz37VrE8LSYnzFlfmc8Ju5TC7J6sQIWsM6vexb+5cdq
-         1eTH86Mo3eFFYbGixKsDO46SbvMhtajfruTYK/3fCSyK7Oqk+aHm4Jpw7pyhGLOq8U
-         liRyc2GIsd3pw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 86E55E4D01A;
-        Tue, 28 Mar 2023 13:40:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229718AbjC1Nqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 09:46:37 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744E2A24F;
+        Tue, 28 Mar 2023 06:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=0hN/CU8aZOETFIw+gJgS4+iXt8aaOblr5a1fb5YDdL0=; b=pK
+        Vn6G9yngtMYbIzhclRcHbRES4WA91FGz+Rc7bX+HP4dsa951oo6ynxwSBMYlWYVAMJxvbfp4iYaZb
+        dbprX4wmZjU72Bc6DQYMWA/AcYc8dSaYnU+v28dQGvmDptQY5M9btiIGUgJ4ECS3PqbgXyZoBe7ql
+        ciwS19C8amnB+B8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ph9e3-008ePr-4w; Tue, 28 Mar 2023 15:45:51 +0200
+Date:   Tue, 28 Mar 2023 15:45:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gustav Ekelund <gustaek@axis.com>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
+        Gustav Ekelund <gustav.ekelund@axis.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@axis.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Reset mv88e6393x watchdog
+ register
+Message-ID: <be2b5084-9cab-4cc7-ba50-a53dd71dfea5@lunn.ch>
+References: <20230328115511.400145-1-gustav.ekelund@axis.com>
+ <20230328120604.zawfeskqs4yhlze6@kandell>
+ <9ba1722a-8dd7-4d6d-bade-b4c702c8387f@lunn.ch>
+ <20230328124754.oscahd3wtod6vkfy@kandell>
+ <c92234f1-099b-29a0-f093-c54c046d304a@axis.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ethernet: ti: am65-cpsw: enable p0 host port
- rx_vlan_remap
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168001081954.18925.1181894423003592285.git-patchwork-notify@kernel.org>
-Date:   Tue, 28 Mar 2023 13:40:19 +0000
-References: <20230327092103.3256118-1-s-vadapalli@ti.com>
-In-Reply-To: <20230327092103.3256118-1-s-vadapalli@ti.com>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srk@ti.com
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <c92234f1-099b-29a0-f093-c54c046d304a@axis.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Mar 28, 2023 at 03:34:03PM +0200, Gustav Ekelund wrote:
 
-This patch was applied to netdev/net-next.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon, 27 Mar 2023 14:51:03 +0530 you wrote:
-> From: Grygorii Strashko <grygorii.strashko@ti.com>
+> 1) Marvell has confirmed that 6393x (Amethyst) differs from 6390 (Peridot)
+> with quote: “I tried this on my board and see G2 offset 0x1B index 12 bit 0
+> does not clear, I also tried doing a SWReset and the bit is still 1. I did
+> try the same on a Peridot board and it clears as advertised.”
 > 
-> By default, the tagged ingress packets to the switch from the host port
-> P0 get internal switch priority assigned equal to the DMA CPPI channel
-> number they came from, unless CPSW_P0_CONTROL_REG.RX_REMAP_VLAN is enabled.
-> This causes issues with applying QoS policies and mapping packets on
-> external port fifos, because the default configuration is vlan_aware and
-> DMA CPPI channels are shared between all external ports.
-> 
-> [...]
+> 2) Marvell are not aware of any other stuck bits, but has confirmed that the
+> WD event bits are not cleared on SW reset which is indeed contradictory to
+> what the data sheet suggests.
 
-Here is the summary with links:
-  - [net-next] net: ethernet: ti: am65-cpsw: enable p0 host port rx_vlan_remap
-    https://git.kernel.org/netdev/net-next/c/86e2eca4dded
+Hi Gustav
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Please expand the commit message with a summary of this
+information. It answers the questions both Marek and i have been
+asking, so deserves to be in the commit message.
 
-
+	Andrew
