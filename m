@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3BF6CCDDE
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 01:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF556CCDE1
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 01:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbjC1XIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 19:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        id S229635AbjC1XIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 19:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjC1XIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 19:08:11 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6D310F8;
-        Tue, 28 Mar 2023 16:08:10 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1phIQ9-000450-1v;
-        Wed, 29 Mar 2023 01:08:05 +0200
-Date:   Wed, 29 Mar 2023 00:08:02 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC PATCH net-next v2 2/2] net: dsa: mt7530: introduce MMIO
- driver for MT7988 SoC
-Message-ID: <ZCNzUrgTUGVF6YxF@makrotopia.org>
-References: <cover.1680041193.git.daniel@makrotopia.org>
- <6f628e3a56ad8390b1f5a00b86b61c54d66d3106.1680041193.git.daniel@makrotopia.org>
- <8494e02c-6c04-46c9-af86-a414f27fcf23@lunn.ch>
+        with ESMTP id S229804AbjC1XIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 19:08:48 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDE32683
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 16:08:46 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-5419d4c340aso260318267b3.11
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 16:08:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore.com; s=google; t=1680044925;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ZSQMHyUAqVGVS2BQigz/A6ja8dJSfiSf613vf2Qfabc=;
+        b=cVQt9bu7I3EGZHXeNHx3U4o57jcXzPIJjBZMjpKHD/FUnKowQFmQs2AQ4+hk0TZMLe
+         9ooVdivzmNZBQPN6C6EW8Zzx/Jh7uVO7Gb+BuedaxYeBCliIHiFPN4eAL10XC92aj7vH
+         +e9wUppKga8bQydQE3lwD6FMYb/oQoPDMBPXAOypC+IHg8WnBgQiShkQTltg/fpzFEy2
+         BGTYNjh9fqOjAGqkDlBQ8UBUiyYGELN85aHNIBkI/vOhS8mmlYPf6ympIB+hRvNaHq8T
+         QbWO1ipKw76wtjrPGos+97NgT9jJ7EW3fweMyFv3HyIGs0YvJncejNxkp0FgeymH/0Ze
+         AaSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680044925;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZSQMHyUAqVGVS2BQigz/A6ja8dJSfiSf613vf2Qfabc=;
+        b=29S5U0IZIs8x8inhHZO5B+3Q7DbTQNjsLFp/rrkKo2S2xDEC2eOruc25LMxubc0JB8
+         m3gWXlwqX6leEQCkUg/jlcmLmomZRA5SSil9cAiUWv94a8o4X5rRqGlea5RzIG3U6Ozc
+         0cZO/plieFTeML070QwiAOoffbzhphxmUlXgzjmLP1ezvlGX12CizGrSPP6/CagmVYC+
+         0f+VUCIvn3uYamXhORezxMS/yOVaoosIIGQNVVKkR3cXcTCdF0wjUNTzqMLV0z1spOEi
+         PIuyfNNi3gK1S794xJZZlcPWklxk9PLW5B54ZHVXw3U+zzuKLy7h+evP9xVNWwltC4iD
+         gYIQ==
+X-Gm-Message-State: AAQBX9fNBnaR2CAhYGtbSnbSfW05rZd/ML3fhxquJ7okTnF2jacp7beq
+        VlJ8mmfkPOMrOwRn8xRiCdLEG4D/46xsazAdD3a7
+X-Google-Smtp-Source: AKy350abK8FdRjqum0rkpK7dFO74Ka6qWR1lzCgORAvXYVmNk4vPUiF0YnEYgjzDVu8XJA0CXmwa6+vQTcGj4938tKo=
+X-Received: by 2002:a81:af18:0:b0:541:7f7b:a2ff with SMTP id
+ n24-20020a81af18000000b005417f7ba2ffmr8217177ywh.8.1680044925502; Tue, 28 Mar
+ 2023 16:08:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8494e02c-6c04-46c9-af86-a414f27fcf23@lunn.ch>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 28 Mar 2023 19:08:34 -0400
+Message-ID: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
+Subject: Potential regression/bug in net/mlx5 driver
+To:     Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Cc:     netdev@vger.kernel.org, regressions@lists.linux.dev,
+        selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,146 +62,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 12:45:37AM +0200, Andrew Lunn wrote:
-> > @@ -146,11 +149,13 @@ core_write(struct mt7530_priv *priv, u32 reg, u32 val)
-> >  {
-> >  	struct mii_bus *bus = priv->bus;
-> >  
-> > -	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-> > +	if (bus)
-> > +		mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-> >  
-> >  	core_write_mmd_indirect(priv, reg, MDIO_MMD_VEND2, val);
-> >  
-> > -	mutex_unlock(&bus->mdio_lock);
-> > +	if (bus)
-> > +		mutex_unlock(&bus->mdio_lock);
-> >  }
-> 
-> All this if (bus) is pretty ugly.
-> 
-> First off, what is this mutex actually protecting? And why is the same
-> protection not required for MMIO?
+Hello all,
 
-The mutex is protecting the MDIO bus. Each access to any register of the
-MT753x switch requires at least two operations on the MDIO bus.
-Hence if there is congruent access, e.g. due to PCS or PHY polling, this
-can mess up and interfere with another ongoing register access sequence.
+Starting with the v6.3-rcX kernel releases I noticed that my
+InfiniBand devices were no longer present under /sys/class/infiniband,
+causing some of my automated testing to fail.  It took me a while to
+find the time to bisect the issue, but I eventually identified the
+problematic commit:
 
-You may argue that we should just use regmap's locking API for that, as
-it is done also when creating the pcs-mtk-lynxi instance. However, some
-things like interrupt handling require more complex (as in: not covered
-by regmap_update_bits) pseudo-atomic operations, so the idea was to keep
-the locking just like it was before for MDIO-connected MT753x switches
-and provide a lock-less regmap replacing the former mt7530_mii_write() and 
-mt7530_mii_read() functions.
+  commit fe998a3c77b9f989a30a2a01fb00d3729a6d53a4
+  Author: Shay Drory <shayd@nvidia.com>
+  Date:   Wed Jun 29 11:38:21 2022 +0300
 
-If we use MMIO we can directly access the 32-bit wide registers and hence
-do not require locking.
+   net/mlx5: Enable management PF initialization
 
-> 
-> If you have a convincing argument the mutex is not needed, please add
-> two helpers:
-> 
-> mt7530_mutex_lock(struct mt7530_priv *priv)
-> mt7530_mutex_unlock(struct mt7530_priv *priv)
-> 
-> and hide the if inside that. As part of the commit message, explain
-> why the mutex is not needed for MDIO.
+   Enable initialization of DPU Management PF, which is a new loopback PF
+   designed for communication with BMC.
+   For now Management PF doesn't support nor require most upper layer
+   protocols so avoid them.
 
-Ok, will do.
+   Signed-off-by: Shay Drory <shayd@nvidia.com>
+   Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+   Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+   Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 
-> 
-> Adding these helpers and changing all calls can be a preparation
-> patch. It is the sort of patch which should be obviously correct.
+I'm not a mlx5 driver expert so I can't really offer much in the way
+of a fix, but as a quick test I did remove the
+'mlx5_core_is_management_pf(...)' calls in mlx5/core/dev.c and
+everything seemed to work okay on my test system (or rather the tests
+ran without problem).
 
-Understood.
+If you need any additional information, or would like me to test a
+patch, please let me know.
 
-> 
-> > @@ -2588,6 +2664,8 @@ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
-> >  	case PHY_INTERFACE_MODE_NA:
-> >  	case PHY_INTERFACE_MODE_1000BASEX:
-> >  	case PHY_INTERFACE_MODE_2500BASEX:
-> > +	case PHY_INTERFACE_MODE_USXGMII:
-> > +	case PHY_INTERFACE_MODE_10GKR:
-> >  		/* handled in SGMII PCS driver */
-> >  		return 0;
-> >  	default:
-> > @@ -2712,7 +2790,9 @@ static void mt753x_phylink_mac_link_up(struct dsa_switch *ds, int port,
-> >  	 * variants.
-> >  	 */
-> >  	if (interface == PHY_INTERFACE_MODE_TRGMII ||
-> > -	    (phy_interface_mode_is_8023z(interface))) {
-> > +	    interface == PHY_INTERFACE_MODE_USXGMII ||
-> > +	    interface == PHY_INTERFACE_MODE_10GKR ||
-> > +	    phy_interface_mode_is_8023z(interface)) {
-> >  		speed = SPEED_1000;
-> >  		duplex = DUPLEX_FULL;
-> >  	}
-> 
-> This looks like something which should be in a separate patch.
-
-Ok, I will put it into a separate patch before adding support for
-MT7988 which is the only switch supporting those modes (and also
-requiring them).
-
-> 
-> > +static int mt7988_setup(struct dsa_switch *ds)
-> > +{
-> > +	struct mt7530_priv *priv = ds->priv;
-> > +	u32 unused_pm = 0;
-> > +	int i;
-> > +
-> > +	/* Reset the switch */
-> > +	reset_control_assert(priv->rstc);
-> > +	udelay(20);
-> > +	reset_control_deassert(priv->rstc);
-> > +	udelay(20);
-> > +
-> > +	/* Reset the switch PHYs */
-> > +	mt7530_write(priv, MT7530_SYS_CTRL, SYS_CTRL_PHY_RST);
-> > +
-> > +	/* BPDU to CPU port */
-> > +	mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
-> > +		   BIT(MT7988_CPU_PORT));
-> > +	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
-> > +		   MT753X_BPDU_CPU_ONLY);
-> > +
-> > +	/* Enable and reset MIB counters */
-> > +	mt7530_mib_reset(ds);
-> > +
-> > +	for (i = 0; i < MT7530_NUM_PORTS; i++) {
-> > +		/* Disable forwarding by default on all ports */
-> > +		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
-> > +			   PCR_MATRIX_CLR);
-> > +
-> > +		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
-> > +
-> > +		if (dsa_is_unused_port(ds, i))
-> > +			unused_pm |= BIT(i);
-> > +		else if (dsa_is_cpu_port(ds, i))
-> > +			mt753x_cpu_port_enable(ds, i);
-> > +		else
-> > +			mt7530_port_disable(ds, i);
-> > +
-> > +		/* Enable consistent egress tag */
-> > +		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
-> > +			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
-> > +	}
-> > +
-> > +	ds->configure_vlan_while_not_filtering = true;
-> > +
-> > +	/* Flush the FDB table */
-> > +	return mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
-> 
-> Is this really specific to the mt7988? 
-
-While the setup function is somehow similar to mt7530_setup or
-mt7531_setup there are also differences. It would be possible to
-split this more, so more common parts can be shared, such as the
-loop over the ports which is the same as for MT7531.
-The way initial reset is carried out as well as setting up the CPU
-port is specific to MT7988.
-
-> 
->    Andrew
+-- 
+paul-moore.com
