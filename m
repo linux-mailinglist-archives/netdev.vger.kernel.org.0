@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B2076CCE32
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 01:50:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D11C96CCE33
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 01:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbjC1Xud (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 19:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56374 "EHLO
+        id S229539AbjC1Xug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 19:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjC1Xub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 19:50:31 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6712D44
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 16:50:30 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-5458201ab8cso138686737b3.23
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 16:50:30 -0700 (PDT)
+        with ESMTP id S229456AbjC1Xud (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 19:50:33 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C4D2D44
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 16:50:32 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-544781e30easo135312867b3.1
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 16:50:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680047430;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=/XmXfnoITNnJXgMxYGIf6TnU2noVAIQby9EMzIZP/pA=;
-        b=ZpyDVmAs3O0ej9c4VoQFbKAkXpYAfZ+xaS4P2k844HeCfuHbHKX7uaqeh+aAOGemz3
-         zn08+gRbkyEd6GGziTcv3wx5s9Bfu74MVs5wIsVUdkua44kan6pj5X5ixewh3NtT+clS
-         c+2TB8HP06X7uO1u5zcl58SdKwkwlJal4ykW3cixuuoD/2QkM/g3hiu3oJhOwE8Wwvzr
-         OfCqDkKnzjK7f020VmCo0ng2IxDjytibsjaHaEUOHbGUTaQekyEGSP60IwXNQgopZsLJ
-         36pM3s1FbxOT1KhXfOeKUR3XwG/5Ma+aaeVaUGq9VpToavKnwkqEvxyXOAGaUpqKPaQG
-         p3tA==
+        d=google.com; s=20210112; t=1680047432;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3CdzwHl+i0hjW4tayhSMZE6wgFVMM8hGLCJ6rJecFRg=;
+        b=ZKwFe5Sa1Hkmzg756Ax6SsmXeZP9W8rz8s8e2YIec5FHjLGFuOBxEkNW2WLRvMeotV
+         o6qNm9SKh0lIsnDALILjW/oil3LtQbRph55mdy3bcndd/5kLlhqviIxMs7Z+0e1jbgEo
+         RlHEgMTNvSXDVaHDXxusPabgWkO5Ww+P8s6VYRgi+7DtOUtrQ7pAVrGMKgslrWQ8DvHS
+         cGmo5N2bWiV7eZwxuJ28TfNfNgVkwfF3rlVY0qLtqcYLesTilX26JBP3leDeJ+IyvOvs
+         nIGh+CBwY/c2VjLs9DfjfOsHf0EgzlXMGhBi7N+LzVWWnb7ncPOAFllDbnBT1cPDC5Ur
+         ePlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680047430;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/XmXfnoITNnJXgMxYGIf6TnU2noVAIQby9EMzIZP/pA=;
-        b=p2FoB1zyvXhTQtTiFLhPkdwr3C1NkYQvsduEJ2/Gwjh8IzF+5NwoBC6kFnGgyREUlj
-         4wJUwHKiPaidQSSyE9kfhpUvmCLcylNHc5oJu0ScY1OZhV/aij5CPG+6mYPFVxr52yx4
-         jMHLNafOTM//QpfAmzMDfV8n7JTjjm9kF24GlAaYDuz0B8DWedaFIVkZkhRJtPrpK8om
-         XHGAomtDRjncoOjazT1FLlitmRdm2p7ruclvZ74DWfFf4IG8PyuVXKkDrEYE9HdBD+m3
-         85IcmcxThcmXLjxEr1nS4+yJ9DOXkJTyiLteRlDdtYDJ0rlSrZn8VaTahBqafmqT/o1A
-         3sFA==
-X-Gm-Message-State: AAQBX9d2PiZRUfo7zi4Noax+hkaAd0zOuR17FJgLWh9RZHU5hpxp3AtX
-        1TevfxBusMD0goSy1lKtQ8Y8Wnjyfpevpg==
-X-Google-Smtp-Source: AKy350YQVDSaItYpJS6qMGCS9gh4oqt0ekQPh/D2UuD2U2Icgn9oc2y1V0IQD70qux/trQNmA2JjGBEZA/edCQ==
+        d=1e100.net; s=20210112; t=1680047432;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3CdzwHl+i0hjW4tayhSMZE6wgFVMM8hGLCJ6rJecFRg=;
+        b=7+ZWwliKdBFN++67+QtyrT74BVp7nsG8E4AXgFBpf3T+lwmb3njiijEqqq/ickhEqi
+         DVAqFnF0uxuznq+r+cawlstr2+Hy53oTIisP2RPgdumIM4SQDqbqQdkO8go3W6oCWT7W
+         vwqoIKi9LlTVPVDDAct/eW62u+1iLKr4szOM5HNdx4kKy0Zs5m+98llBbLuOC0c43fsR
+         IhHJKb7o1RZXd+N27mBmAhzLA6KFVU0s4NGOQTTcNuRP0VotO8p0SV64ql/KUYIbsdVV
+         75G2qP8loDthx4ng0LKW5TN6nae1FUw35Hm89khO5yY/ZMLYuTH8ruzGnaX9ko1ZUwnZ
+         28UQ==
+X-Gm-Message-State: AAQBX9fZs+ZbAOKYgQ12AwcOLgwg+cFZ8aRe9nqUrNsN3yLGNrkJXFyZ
+        ATYH5jxY44Pcw9F+6IxWmtht0oZS94ic6w==
+X-Google-Smtp-Source: AKy350ao0t/vmg1VE3azkPdik6EXiGL7WrF4D/o0fJbZWHV0fEolKl686fh/xEcYa5SAXZuuyYwIP7pxfLyBMQ==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6902:110b:b0:b71:addc:e19c with SMTP
- id o11-20020a056902110b00b00b71addce19cmr8855128ybu.8.1680047430192; Tue, 28
- Mar 2023 16:50:30 -0700 (PDT)
-Date:   Tue, 28 Mar 2023 23:50:17 +0000
+ (user=edumazet job=sendgmr) by 2002:a81:4516:0:b0:541:9b2b:8240 with SMTP id
+ s22-20020a814516000000b005419b2b8240mr8133640ywa.6.1680047432077; Tue, 28 Mar
+ 2023 16:50:32 -0700 (PDT)
+Date:   Tue, 28 Mar 2023 23:50:18 +0000
+In-Reply-To: <20230328235021.1048163-1-edumazet@google.com>
 Mime-Version: 1.0
+References: <20230328235021.1048163-1-edumazet@google.com>
 X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
-Message-ID: <20230328235021.1048163-1-edumazet@google.com>
-Subject: [PATCH net-next 0/4] net: rps/rfs improvements
+Message-ID: <20230328235021.1048163-2-edumazet@google.com>
+Subject: [PATCH net-next 1/4] net: napi_schedule_rps() cleanup
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -67,35 +69,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Xing attempted to optimize napi_schedule_rps() by avoiding
-unneeded NET_RX_SOFTIRQ raises: [1], [2]
+napi_schedule_rps() return value is ignored, remove it.
 
-This is quite complex to implement properly. I chose to implement
-the idea, and added a similar optimization in ____napi_schedule()
+Change the comment to clarify the intent.
 
-Overall, in an intensive RPC workload, with 32 TX/RX queues with RFS
-I was able to observe a ~10% reduction of NET_RX_SOFTIRQ
-invocations.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/dev.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-While this had no impact on throughput or cpu costs on this synthetic
-benchmark, we know that firing NET_RX_SOFTIRQ from softirq handler
-can force __do_softirq() to wakeup ksoftirqd when need_resched() is true.
-This can have a latency impact on stressed hosts.
-
-[1] https://lore.kernel.org/lkml/20230325152417.5403-1-kerneljasonxing@gmail.com/
-[2] https://lore.kernel.org/netdev/20230328142112.12493-1-kerneljasonxing@gmail.com/
-
-
-Eric Dumazet (4):
-  net: napi_schedule_rps() cleanup
-  net: add softnet_data.in_net_rx_action
-  net: optimize napi_schedule_rps()
-  net: optimize ____napi_schedule() to avoid extra NET_RX_SOFTIRQ
-
- include/linux/netdevice.h |  1 +
- net/core/dev.c            | 46 ++++++++++++++++++++++++++++++---------
- 2 files changed, 37 insertions(+), 10 deletions(-)
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7172334a418fdfe6132562f4c864ad0c69ebfd74..f7050b95d125014d00f4c876175b1569d82525cd 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4582,11 +4582,18 @@ static void trigger_rx_softirq(void *data)
+ }
+ 
+ /*
+- * Check if this softnet_data structure is another cpu one
+- * If yes, queue it to our IPI list and return 1
+- * If no, return 0
++ * After we queued a packet into sd->input_pkt_queue,
++ * we need to make sure this queue is serviced soon.
++ *
++ * - If this is another cpu queue, link it to our rps_ipi_list,
++ *   and make sure we will process rps_ipi_list from net_rx_action().
++ *   As we do not know yet if we are called from net_rx_action(),
++ *   we have to raise NET_RX_SOFTIRQ. This might change in the future.
++ *
++ * - If this is our own queue, NAPI schedule our backlog.
++ *   Note that this also raises NET_RX_SOFTIRQ.
+  */
+-static int napi_schedule_rps(struct softnet_data *sd)
++static void napi_schedule_rps(struct softnet_data *sd)
+ {
+ 	struct softnet_data *mysd = this_cpu_ptr(&softnet_data);
+ 
+@@ -4596,11 +4603,10 @@ static int napi_schedule_rps(struct softnet_data *sd)
+ 		mysd->rps_ipi_list = sd;
+ 
+ 		__raise_softirq_irqoff(NET_RX_SOFTIRQ);
+-		return 1;
++		return;
+ 	}
+ #endif /* CONFIG_RPS */
+ 	__napi_schedule_irqoff(&mysd->backlog);
+-	return 0;
+ }
+ 
+ #ifdef CONFIG_NET_FLOW_LIMIT
 -- 
 2.40.0.348.gf938b09366-goog
 
