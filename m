@@ -2,117 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B83D06CC198
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 16:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0966CC1C2
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 16:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232957AbjC1OAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 10:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
+        id S229611AbjC1OMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 10:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233028AbjC1OAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 10:00:07 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986B2CC33;
-        Tue, 28 Mar 2023 06:59:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=v+3vKgAYziYUNd1/YtEm0M2tEuJj+3Sc+fTWjNKvGfM=; b=AA0Yc10UggUYifkJN5+9WMeg/m
-        NbiCMrPKVFf6g1DW046vTIOwTs44SSQzGVWuxI1tzR7ly2TQhW5HM+jXggnfndYrHltFlTBSEKcKL
-        9Xg60iIePWc/Y02BGM6fzgQXzmsW5vJcupJ3NPHBIUAQVko6k3bM+WZB5g+ETK3UtLf4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ph9r3-008eUK-Ek; Tue, 28 Mar 2023 15:59:17 +0200
-Date:   Tue, 28 Mar 2023 15:59:17 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC PATCH net-next 2/2] net: dsa: mt7530: introduce MMIO driver
- for MT7988 SoC
-Message-ID: <7e6915bf-f773-4644-b0a7-3cd0730dad8b@lunn.ch>
-References: <ZCIML310vc8/uoM4@makrotopia.org>
- <a3458e6d-9a30-4ece-9586-18799f532580@lunn.ch>
- <ZCLmwm01FK7laSqs@makrotopia.org>
+        with ESMTP id S232276AbjC1OMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 10:12:18 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E9BCC14
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 07:11:15 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id r11so50307800edd.5
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 07:11:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680012675;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=aMDawhYLx3Mw1Ru7M4ieYmIRH4V6sKt21mgwWoKmlKA=;
+        b=jXUAn/Z6hITgOzPMYHqlu22vv/v9lj0wbME6e5E1lq/uWP0rWxi3azFeLwT7+gYc8F
+         EnE4cfiMxtY5iMbgzrWACCIQYQXEw8VjQemUSmxzA7fU0kiItaaQYrkrfPjevo5q75jj
+         /sNETyCIeCU8czSjwz6eg0la1rEkAbthtRxZIbBdKQQu5+oj5L1rnAdAz+5VhuUaP1mD
+         RPjoV8FzAuUdcDBAJs2tqit9bbUNRfDK+Q3oXiEuqM9Og/QFgyc5I8b7fev8QzhPl5bJ
+         eyAHPh8NL02ImBpTrehZOSgEReclRst/gorfkbN0EPGvEY1A4fT+T5AahJYGCdF/BVam
+         nUzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680012675;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aMDawhYLx3Mw1Ru7M4ieYmIRH4V6sKt21mgwWoKmlKA=;
+        b=VFHerh4q6X5c0fqJP7zU1Yahnzu9yDie4uov53kkF+KtxjkLmdbNyUVt1aE+tQFH+j
+         RioBFaMXcY807lhxa4y8vZkC4DJpXfiMXTMYYa8VFRCsfGParFLbUlL9Xvaz1jBNuUdh
+         PR/hHUasMPN9afcY6pgCCVr7IZjFbXTvK3lNO/MD7VxFtqHg7OBKwV8X6LL+TKll1s8A
+         zjA0wyOKvLezn0lLc2vv641KxlNukW+1cW/KcPpSvd3xT7DNutOZI1EXSSdo/hN5qjad
+         UWa/+o6N/EFOAQ9hl7ELl/fJvTKePsQ+Lt1Pvw5+RqA+M4r6RTxSfgDvStvsJx5PshpM
+         VLoA==
+X-Gm-Message-State: AAQBX9cUoaiJdyADLZjyLq3wCcCsAGR60GYvuJwODggFLChEaUsrvk2b
+        0mwzgPNgyF4m0IkO3wePV3/AiF4gPrxEQubCa87Y6PPQ7hlufG0h
+X-Google-Smtp-Source: AKy350YZEW2CbWm5W4OfdvKPwFzImqWsjB+7OWrCv4UaWXpQ8rkzlVIfXTWnioMvypqQ19hdtAox10076gE8WXQwwTU=
+X-Received: by 2002:a50:d68c:0:b0:4fb:80cf:898b with SMTP id
+ r12-20020a50d68c000000b004fb80cf898bmr7359895edi.7.1680012674656; Tue, 28 Mar
+ 2023 07:11:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCLmwm01FK7laSqs@makrotopia.org>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+From:   nancy dubuc <nancy.dubuc.b2business@gmail.com>
+Date:   Tue, 28 Mar 2023 19:40:55 +0530
+Message-ID: <CAO=bF_qBn54fohb9O9iPycU8r0uPS+LikJXiKNL4oWGkEz3xvg@mail.gmail.com>
+Subject: RE: NTI - American Association of Critical-Care Nurses Attendees
+ Email List-2023
+To:     nancy dubuc <nancy.dubuc.b2business@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=1.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FILL_THIS_FORM,FILL_THIS_FORM_LONG,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I agree that using regmap would be better and I have evaluated that
-> approach as well. As regmap doesn't allow lock-skipping and mt7530.c is
-> much more complex than xrs700x in the way indirect access to its MDIO bus
-> and interrupts work, using regmap accessors for everything would not be
-> trivial.
+Hi,
 
-O.K, so lets go another way.
+Would you be interested in acquiring the American Association of
+Critical-Care Nurses Attendees Email List-2023?
 
-Study the low level accesors, and put an abstraction over
-them. Provide an MDIO set and an MMIO set.
+List Includes: Company Name, First Name, Last Name, Full Name, Contact
+Job Title, Verified Email Address, Website URL, Mailing address, Phone
+number, Industry and many more=E2=80=A6
 
-> To illustrate what I'm talking about, let me show some examples in the
-> current code for which I don't see a way to use regmap:
-> 634) static int
-> 635) mt7531_ind_c45_phy_read(struct mt7530_priv *priv, int port, int devad,
-> 636)                   int regnum)
-> 637) {
-> 638)   struct mii_bus *bus = priv->bus;
-> 639)   struct mt7530_dummy_poll p;
-> 640)   u32 reg, val;
-> 641)   int ret;
-> 642) 
-> 643)   INIT_MT7530_DUMMY_POLL(&p, priv, MT7531_PHY_IAC);
-> 644) 
-> 645)   mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+Number of Contacts: 12,639 Verified Contacts.
+Cost : $ 1,638
 
-So you need an abstract lock() and an unlock(). Maybe the MMIO
-implementation is a NOP? And the MDIO implementation does a real lock?
+If you=E2=80=99re interested please let me know I will assist you with furt=
+her details.
 
-> 646) 
-> 647)   ret = readx_poll_timeout(_mt7530_unlocked_read, &p, val,
-> 648)                            !(val & MT7531_PHY_ACS_ST), 20, 100000);
-
-_mt7530_unlocked_read and presumably _mt7530_unlocked_write()?
-
-> 649)   if (ret < 0) {
-> 650)           dev_err(priv->dev, "poll timeout\n");
-> 651)           goto out;
-> 652)   }
-> 653) 
-> 654)   reg = MT7531_MDIO_CL45_ADDR | MT7531_MDIO_PHY_ADDR(port) |
-> 655)         MT7531_MDIO_DEV_ADDR(devad) | regnum;
-> 656)   mt7530_mii_write(priv, MT7531_PHY_IAC, reg | MT7531_PHY_ACS_ST);
-
-mt7530_write() and mt7530_read()
-
-Put the MDIO accessors in the _mdio.c file, and the MMIO accessors in
-the _mmio.c file. Pass them to the core. If you have the abstraction
-correct, the core should not care how the registers are accessed.
-
-	 Andrew
+Kind Regards,
+nancy dubuc
+Marketing Coordinators
