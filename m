@@ -2,86 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C9B76CC338
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 16:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 599F86CC42E
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233513AbjC1OwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 10:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
+        id S233707AbjC1PAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 11:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233405AbjC1Ov5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 10:51:57 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B4D50C;
-        Tue, 28 Mar 2023 07:51:47 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id d22so7367922pgw.2;
-        Tue, 28 Mar 2023 07:51:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680015107;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=bsKwpvtiQoDLspEBMkXsCnDvjo923fDOoGDyxh50cps=;
-        b=OE90hZF1ZKPClTWnLJlSIsn1hAXNShsM6tyPv3xKvJeP3Z8MCoRqstY4lDZ/eoHnEA
-         nDxsnnZlRGnhMT8luEDBpLOA3iNuaKYRofit3Fne4lo6JH7MVataoYvRTqyNUtMyxf0j
-         dmhwIV6Q9UmltPsgsv1pjyJMp7IFZPNRzOgS2Xdv+s8hkvEvjUafS8Yf7nde8mVDnda7
-         4PlheTdKAIp4w+X/D5klNkchhdqEq5ZFNRTvV2Pbmx9oTOSPOtKeRQO85tODK8kQpHuJ
-         ARUf0imEWU9YG9hbrCKIv3Nnh099I5jHSe5so3aQJWjoqx1joZ2rjHPFDJkL1naVXyTr
-         98jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680015107;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bsKwpvtiQoDLspEBMkXsCnDvjo923fDOoGDyxh50cps=;
-        b=EY4GZdQ9Mm7XG4k5JfkjEiXDrAcsMtTm2vvOWMz1iiIhsdFqp1tdZdm+nTlpSuV+vy
-         uz8KuvUFPuqpoiH5VfMQXlIyPDZuOPDlAlP8Nz94yG/2XF8VqYKvIYDCJcaiiPJW6ynV
-         WQByPlsH+zUmf04kkqC+RW0Xnr9vl3X1dOHB5QKQt4pOg/bKJEkXNkcijvgIn5EN3QV5
-         a13CAJ9gdpNxst0rXeC6wpyKFAjSHJUynaeiRa4gSgebSi1ZtDj4ZG3syeXHCmFG1bzm
-         H77yUuQ+itihItpNqDkw8ccmoWu3MPlAtlZU/zRJ1jhdlRgq2RQ8y/XWbZzimRxF2CIr
-         3kDA==
-X-Gm-Message-State: AAQBX9c3YwkSRSoLitXH9X0iADwMui7p5/369V0vTipPRmd0gyYIAYVi
-        TDvYVH1/6lgcSPSEiqGWN1P/tZH84EmB6NzinKU=
-X-Google-Smtp-Source: AKy350ZQuMilvavN0CtY2koePQa9CNJBjbeIEICDpza43Kabg2jPtTxomDNHMot7/NDs15IgGbqfn9Szd4FmTMNTYOE=
-X-Received: by 2002:a05:6a00:1a03:b0:623:8990:4712 with SMTP id
- g3-20020a056a001a0300b0062389904712mr8411018pfv.1.1680015106776; Tue, 28 Mar
- 2023 07:51:46 -0700 (PDT)
+        with ESMTP id S233722AbjC1PAo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:00:44 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAADEE395;
+        Tue, 28 Mar 2023 08:00:42 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1phAoM-0008Nx-1D;
+        Tue, 28 Mar 2023 17:00:34 +0200
+Date:   Tue, 28 Mar 2023 16:00:30 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC PATCH net-next 2/2] net: dsa: mt7530: introduce MMIO driver
+ for MT7988 SoC
+Message-ID: <ZCMBDm31AzDGBKyL@makrotopia.org>
+References: <ZCIML310vc8/uoM4@makrotopia.org>
+ <a3458e6d-9a30-4ece-9586-18799f532580@lunn.ch>
+ <ZCIML310vc8/uoM4@makrotopia.org>
+ <a3458e6d-9a30-4ece-9586-18799f532580@lunn.ch>
+ <ZCLmwm01FK7laSqs@makrotopia.org>
+ <ZCLmwm01FK7laSqs@makrotopia.org>
+ <20230328141628.ahteqtqniey45wb6@skbuf>
 MIME-Version: 1.0
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Tue, 28 Mar 2023 11:51:35 -0300
-Message-ID: <CAOMZO5BTAaEV+vzq8v_gtyBSC24BY7hWVBehKa_X9BFZY4aYaA@mail.gmail.com>
-Subject: net: dsa: mv88e6xxx: Request for stable inclusion
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>, stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230328141628.ahteqtqniey45wb6@skbuf>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Mar 28, 2023 at 05:16:28PM +0300, Vladimir Oltean wrote:
+> On Tue, Mar 28, 2023 at 02:08:18PM +0100, Daniel Golle wrote:
+> > I agree that using regmap would be better and I have evaluated that
+> > approach as well. As regmap doesn't allow lock-skipping and mt7530.c is
+> > much more complex than xrs700x in the way indirect access to its MDIO bus
+> > and interrupts work, using regmap accessors for everything would not be
+> > trivial.
+> > 
+> > So here we can of course use regmap_read_poll_timeout and a bunch of
+> > readmap_write operations. However, each of them will individually acquire
+> > and release the mdio bus mutex while the current code acquires the lock
+> > at the top of the function and then uses unlocked operations.
+> > regmap currently doesn't offer any way to skip the locking and/or perform
+> > locking manually. regmap_read, regmap_write, regmap_update_bits, ... always
+> > acquire and release the lock on each operation.
+> 
+> What does struct regmap_config :: disable_locking do?
 
-I am running kernel 6.1 on a system with a mv88e6320 and can easily
-trigger a flood of "mv88e6085 30be0000.ethernet-1:00: VTU member
-violation for vid 10, source port 5" messages.
+I thought I can't use that on a per-operation base because the
+instance of struct regmap_config itself isn't protected by any lock
+and hence setting disable_locking=false before calling one of the
+accessor functions may affect also other congruent calls to the
+accessors which will then ignore locking and screw things up.
+Please correct me if I'm wrong there.
 
-When this happens, the Ethernet audio that passes through the switch
-causes a loud noise in the speaker.
-
-Backporting the following commits to 6.1 solves the problem:
-
-4bf24ad09bc0 ("net: dsa: mv88e6xxx: read FID when handling ATU violations")
-8646384d80f3 ("net: dsa: mv88e6xxx: replace ATU violation prints with
-trace points")
-9e3d9ae52b56 ("net: dsa: mv88e6xxx: replace VTU violation prints with
-trace points")
-
-Please apply them to 6.1-stable tree.
-
-Thanks,
-
-Fabio Estevam
+Yet another way I thought about now could also be to have two regmap
+instances, one for locked and one for unlocked accessed to the same
+regmap_bus.
