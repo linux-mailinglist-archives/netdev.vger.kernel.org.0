@@ -2,165 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D83D16CC5E7
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:19:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3816CC5D1
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233609AbjC1PTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 11:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
+        id S233027AbjC1PS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 11:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233907AbjC1PSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:18:52 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957C111150;
-        Tue, 28 Mar 2023 08:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680016649; x=1711552649;
-  h=from:date:subject:mime-version:content-transfer-encoding:
-   message-id:references:in-reply-to:to:cc;
-  bh=LsmUDbnIlE4apXp83QZEhT9gpY1ZA5IO+nuheEoXvek=;
-  b=JLNe9raE1O4kncgBgoGGGJ0HPYcaT7Jt2nQoWAAzzH91q8qQAnmm0FaA
-   NGgEcy77VLTv3eJREywT3kgXU6CR+meieVUD7twFIapTESwFo4Gjn0fqi
-   shsr9JzGGioV88v5UTnqCYKG4ITmgEJqRl0TGLZqgGBANagjr6G8W2ItL
-   UaVSauPs/DTLLgLtatvWUW0BPHBidPHK2ipdkxiYvSNkzvlNMHFI1Cm4Q
-   eqVTHTXZusUgWdyBVftBK6TZcwnjTxtYDrArJlEc0X0E8nSzHLjCait3h
-   kh8FJBqqC5UNGGBGVzokTHkQMDU4CL/coJ/WBjsbMUjbaaZdRQNAu3HbT
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="403208773"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="403208773"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:16:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="773181781"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="773181781"
-Received: from lab-ah.igk.intel.com ([10.102.138.202])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:16:10 -0700
-From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Date:   Tue, 28 Mar 2023 17:15:31 +0200
-Subject: [PATCH v5 8/8] drm/i915/gt: Hold a wakeref for the active VM
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20230224-track_gt-v5-8-77be86f2c872@intel.com>
-References: <20230224-track_gt-v5-0-77be86f2c872@intel.com>
-In-Reply-To: <20230224-track_gt-v5-0-77be86f2c872@intel.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>
-X-Mailer: b4 0.11.1
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S233217AbjC1PRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:17:47 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50B41042F;
+        Tue, 28 Mar 2023 08:16:57 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8294E21A0A;
+        Tue, 28 Mar 2023 15:16:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1680016592; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6QgSO8wDw5KEL2ajdy0D+21KSYiUS25pvfcwBmocJaE=;
+        b=lLQbrGDzB8frwkgr32mVp/G6BGdgwMfltH1HpXI+dikNadSiuYnvMiZuQTyovmvpgB2D+w
+        sgFjgbsLmXjRgTY2HwdmMGZWDXOl/Uwk3T7XMJpUEl2wXZGFWCyAxWrP9TE7wb8uThFWse
+        4VeseT2rHBaGrC3JyOr0Lm68kq6PRYw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1680016592;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6QgSO8wDw5KEL2ajdy0D+21KSYiUS25pvfcwBmocJaE=;
+        b=DddRiXBa9InoBFpXJXtvvWj2iayhA9tWzC5fH8r/8Cwjfw82MNd9dsKeGgntHhc7sadalj
+        ANaAMCc54DuBn2DQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 542111390D;
+        Tue, 28 Mar 2023 15:16:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id drTTE9AEI2QMFQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 28 Mar 2023 15:16:32 +0000
+Date:   Tue, 28 Mar 2023 17:16:31 +0200
+Message-ID: <87pm8s29f4.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [Intel-wired-lan] [REGRESSION] e1000e probe/link detection fails since 6.2 kernel
+In-Reply-To: <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
+References: <87jzz13v7i.wl-tiwai@suse.de>
+        <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=ISO-2022-JP
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Wilson <chris@chris-wilson.co.uk>
+On Tue, 28 Mar 2023 16:39:01 +0200,
+Paul Menzel wrote:
+> 
+> Dear Takashi,
+> 
+> 
+> Am 28.03.23 um 14:40 schrieb Takashi Iwai:
+> 
+> > we've got a regression report for e1000e device on Lenovo T460p since
+> > 6.2 kernel (with openSUSE Tumbleweed).  The details are found in
+> >    https://bugzilla.opensuse.org/show_bug.cgi?id=1209254
+> 
+> Thank you for forwarding the report.
+> 
+> > It seems that the driver can't detect the 1000Mbps but only 10/100Mbps
+> > link, eventually making the device unusable.
+> > 
+> > On 6.1.12:
+> > [    5.119117] e1000e: Intel(R) PRO/1000 Network Driver
+> > [    5.119120] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> > [    5.121754] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+> > [    7.905526] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): Failed to disable ULP
+> > [    7.988925] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
+> > [    8.069935] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 50:7b:9d:cf:13:43
+> > [    8.069942] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
+> > [    8.072691] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: 1000FF-0FF
+> > [   11.643919] e1000e 0000:00:1f.6 eth0: NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+> > [   15.437437] e1000e 0000:00:1f.6 eth0: NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+> > 
+> > On 6.2.4:
+> > [    4.344140] e1000e: Intel(R) PRO/1000 Network Driver
+> > [    4.344143] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> > [    4.344933] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+> > [    7.113334] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): Failed to disable ULP
+> > [    7.201715] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
+> > [    7.284038] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 50:7b:9d:cf:13:43
+> > [    7.284044] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
+> > [    7.284125] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: 1000FF-0FF
+> > [   10.897973] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+> > [   10.897977] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> > [   14.710059] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+> > [   14.710064] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> > [   59.894807] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+> > [   59.894812] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> > [   63.808662] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+> > [   63.808668] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> > 
+> > The same problem persists with 6.3-rc3.
+> > 
+> > Can you guys check what can go wrong, or if there is a fix?
+> 
+> Does openSUSE Tumbleweed make it easy to bisect the regression at
+> least on “rc level”? It be great if narrow it more down, so we know
+> it for example regressed in 6.2-rc7.
 
-There may be a disconnect between the GT used by the engine and the GT
-used for the VM, requiring us to hold a wakeref on both while the GPU is
-active with this request.
+Not easy, unfortunately.  The official TW kernel moved to a newer
+version only after the final release.  Although the rc kernel packages
+are provided as unofficial packages, they are transient and go away at
+each update, so we have no archives for testing the older ones.
 
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
----
- drivers/gpu/drm/i915/gt/intel_context.h       | 15 +++++++++++----
- drivers/gpu/drm/i915/gt/intel_context_types.h |  2 ++
- drivers/gpu/drm/i915/gt/intel_engine_pm.c     |  4 ++++
- 3 files changed, 17 insertions(+), 4 deletions(-)
+Or, if you can suggest some commit to be tested for revert, I can
+create a test kernel package at any time.
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_context.h b/drivers/gpu/drm/i915/gt/intel_context.h
-index 0a8d553da3f439..582faa21181e58 100644
---- a/drivers/gpu/drm/i915/gt/intel_context.h
-+++ b/drivers/gpu/drm/i915/gt/intel_context.h
-@@ -14,6 +14,7 @@
- #include "i915_drv.h"
- #include "intel_context_types.h"
- #include "intel_engine_types.h"
-+#include "intel_gt_pm.h"
- #include "intel_ring_types.h"
- #include "intel_timeline_types.h"
- #include "i915_trace.h"
-@@ -207,8 +208,11 @@ void intel_context_exit_engine(struct intel_context *ce);
- static inline void intel_context_enter(struct intel_context *ce)
- {
- 	lockdep_assert_held(&ce->timeline->mutex);
--	if (!ce->active_count++)
--		ce->ops->enter(ce);
-+	if (ce->active_count++)
-+		return;
-+
-+	ce->ops->enter(ce);
-+	ce->wakeref = intel_gt_pm_get(ce->vm->gt);
- }
- 
- static inline void intel_context_mark_active(struct intel_context *ce)
-@@ -222,8 +226,11 @@ static inline void intel_context_exit(struct intel_context *ce)
- {
- 	lockdep_assert_held(&ce->timeline->mutex);
- 	GEM_BUG_ON(!ce->active_count);
--	if (!--ce->active_count)
--		ce->ops->exit(ce);
-+	if (--ce->active_count)
-+		return;
-+
-+	intel_gt_pm_put_async(ce->vm->gt, ce->wakeref);
-+	ce->ops->exit(ce);
- }
- 
- static inline struct intel_context *intel_context_get(struct intel_context *ce)
-diff --git a/drivers/gpu/drm/i915/gt/intel_context_types.h b/drivers/gpu/drm/i915/gt/intel_context_types.h
-index e36670f2e6260b..5dc39a9d7a501c 100644
---- a/drivers/gpu/drm/i915/gt/intel_context_types.h
-+++ b/drivers/gpu/drm/i915/gt/intel_context_types.h
-@@ -17,6 +17,7 @@
- #include "i915_utils.h"
- #include "intel_engine_types.h"
- #include "intel_sseu.h"
-+#include "intel_wakeref.h"
- 
- #include "uc/intel_guc_fwif.h"
- 
-@@ -110,6 +111,7 @@ struct intel_context {
- 	u32 ring_size;
- 	struct intel_ring *ring;
- 	struct intel_timeline *timeline;
-+	intel_wakeref_t wakeref;
- 
- 	unsigned long flags;
- #define CONTEXT_BARRIER_BIT		0
-diff --git a/drivers/gpu/drm/i915/gt/intel_engine_pm.c b/drivers/gpu/drm/i915/gt/intel_engine_pm.c
-index 7063dea2112943..c2d17c97bfe989 100644
---- a/drivers/gpu/drm/i915/gt/intel_engine_pm.c
-+++ b/drivers/gpu/drm/i915/gt/intel_engine_pm.c
-@@ -114,6 +114,10 @@ __queue_and_release_pm(struct i915_request *rq,
- 
- 	ENGINE_TRACE(engine, "parking\n");
- 
-+	GEM_BUG_ON(rq->context->active_count != 1);
-+	__intel_gt_pm_get(engine->gt);
-+	rq->context->wakeref = intel_wakeref_track(&engine->gt->wakeref);
-+
- 	/*
- 	 * We have to serialise all potential retirement paths with our
- 	 * submission, as we don't want to underflow either the
 
--- 
-2.34.1
+thanks,
+
+Takashi
