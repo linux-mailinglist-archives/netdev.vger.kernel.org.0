@@ -2,132 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 919376CCD4C
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 00:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D306CCD9A
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 00:42:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbjC1Wgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 18:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33974 "EHLO
+        id S229719AbjC1Wl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 18:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbjC1Wgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 18:36:52 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC02FD
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 15:36:51 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-5456249756bso258874047b3.5
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 15:36:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1680043010;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+UNQvF8UOEhiBUfEZA+3IQy6uvaasF3Nx+C0W7hu5w4=;
-        b=jFp9ucyhyyrspSSHIRZyfoc7G1AHxaiMD6k1udjODCuluExwWT+bWYIV3DwmNFwogk
-         SRGr9Dh/4pbyiyIFtwvCzCw+WJ5Qi6KUC8sIjtC3o8dB8vOL+stexFhx/0odekvDEMd0
-         fgUDd7TEDR1XoSWRf0F+HgdA4KT6MnkuK9FKnYTpGyWHymB9AkPi8GWHnwDXPjELD1gc
-         HLM4Fi9rWhFX86r3JTp/M15qyrp0cWQxBqlOOHp/UTz14LP4Rxe8GsiK6xxj+86wSR+A
-         WtrQMVY+raIXQbQ42RYsPzN+JqUVDKbpz3tY/VVrScAtrnU/sS80TZ0OO/bSvb7ApEgL
-         2RUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680043010;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+UNQvF8UOEhiBUfEZA+3IQy6uvaasF3Nx+C0W7hu5w4=;
-        b=WoHt5Z3F5f2p95a2Y93IM/g8rKMxf3dCdJz8fjqpjU5xJsESDik57hHG5NbKHM81r3
-         Jy20HWXFCiC3zKlYEQPVwJ04hSJGhhZctXy4If1HG3y/+js1sP+WGhurTj3nzdrkyLD9
-         1V3PPtWLAMh3AqsQ/134kwheZqve9sHVjTM0blZUjtRyFO5FzJeced5wnGXULfWbDKV0
-         EZRG988bK+AIT/7oZN+vraOS+pl1PuCKbw/511xyLlFnIMg7lGM0M2RvgrI+KU4pC1Kd
-         PliWoKQx74RTVUT7pC47c72fhDOvZQp5o8CshfDX6M+RsLOyLURzkriQwnUnbTcjG4Uv
-         6c/w==
-X-Gm-Message-State: AAQBX9cv1jNfAcY0nAQ7x9Xv53QpJQaiOdRP3Ucd+0iRjQTm6fL7KPaJ
-        aA9gjlM1dQ5A6uzPdOq8si7k0ph+QIWKffC24qws6A==
-X-Google-Smtp-Source: AKy350YQZ5UyGhY/2mp50i7pJ7eIiMS0wvq9J7rpKl1o+iEzHILspJo71pqpCO5FJhOxnYWFi6z9GJ6pT8ovCOTbirc=
-X-Received: by 2002:a81:b286:0:b0:545:7b92:2890 with SMTP id
- q128-20020a81b286000000b005457b922890mr8342630ywh.7.1680043010333; Tue, 28
- Mar 2023 15:36:50 -0700 (PDT)
+        with ESMTP id S229655AbjC1Wl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 18:41:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EBA1B0
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 15:41:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAFD8619A2
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 22:41:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC72EC433D2;
+        Tue, 28 Mar 2023 22:41:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680043316;
+        bh=rf466V61DpUUK2d9tIKnXQHYA5HfD6+YAiSNakZut5w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tmFrNuLB4dcsN1nralHAVXM05VX3UsuSe2csAA4qMroKI67u4SrIf/+NAAM0x0hqt
+         RjgROYE44BogjvzuvXnQJNZdHKYGHlFhJ46yQ+yYs4o0E1SYDQWd+x5kzvahVfi+2u
+         YCe2y+mBlpAht1Nwa5uza+to4KPrvkRvRP97RqS75CVYpGKDTlfM45GLBKtwmLsiLr
+         ClZX0ZX7AvfMoSM3UlBTq2EdfNDxF8lCGzJs2vgjzYQ/hUUXziUWNskEYJIcYWuqfZ
+         eA2j1pKOa5RoWr4zlkEop26bLRzzUeO9xR6dKxR25bLXgmPkRQ7Gv1Y7qt7q0vkKwD
+         aEq1wWJ3D96Mg==
+Date:   Tue, 28 Mar 2023 15:41:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Emeel Hakim <ehakim@nvidia.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/4] vlan: Add MACsec offload operations for
+ VLAN interface
+Message-ID: <20230328154154.14bbee54@kernel.org>
+In-Reply-To: <IA1PR12MB6353B5E1BC80B60993267190AB889@IA1PR12MB6353.namprd12.prod.outlook.com>
+References: <20230326072636.3507-1-ehakim@nvidia.com>
+        <20230326072636.3507-2-ehakim@nvidia.com>
+        <20230327094335.07f462f9@kernel.org>
+        <IA1PR12MB6353B5E1BC80B60993267190AB889@IA1PR12MB6353.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <cover.1680021219.git.dcaratti@redhat.com> <72335bd036509a533d1cf00554b77b674fad846f.1680021219.git.dcaratti@redhat.com>
-In-Reply-To: <72335bd036509a533d1cf00554b77b674fad846f.1680021219.git.dcaratti@redhat.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Tue, 28 Mar 2023 18:36:39 -0400
-Message-ID: <CAM0EoMmv+_rLFVEuJNgpScdpUKLtbpb6oWrpNBx-w9Z660ga+A@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 3/4] selftests: tc-testing: add tunnel_key
- "nofrag" test case
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Pedro Tammela <pctammela@mojatatu.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 12:45=E2=80=AFPM Davide Caratti <dcaratti@redhat.co=
-m> wrote:
->
->  # ./tdc.py -e 6bda -l
->  6bda: (actions, tunnel_key) Add tunnel_key action with nofrag option
->
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+On Tue, 28 Mar 2023 06:54:11 +0000 Emeel Hakim wrote:
+> > > +     if (real_dev->features & NETIF_F_HW_MACSEC)
+> > > +             features |= NETIF_F_HW_MACSEC;
+> > > +
+> > >       return features;
+> > >  }  
+> > 
+> > Shouldn't vlan_features be consulted somehow?  
+> 
+> I did consider including the vlan_features, but after careful
+> consideration, I couldn't see how they were relevant to the task at
+> hand.
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
-
-cheers,
-jamal
-
-> ---
->  .../tc-tests/actions/tunnel_key.json          | 25 +++++++++++++++++++
->  1 file changed, 25 insertions(+)
->
-> diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_k=
-ey.json b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.js=
-on
-> index b40ee602918a..b5b47fbf6c00 100644
-> --- a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-> +++ b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
-> @@ -983,5 +983,30 @@
->          "teardown": [
->              "$TC actions flush action tunnel_key"
->          ]
-> +    },
-> +    {
-> +        "id": "6bda",
-> +        "name": "Add tunnel_key action with nofrag option",
-> +        "category": [
-> +            "actions",
-> +            "tunnel_key"
-> +        ],
-> +        "dependsOn": "$TC actions add action tunnel_key help 2>&1 | grep=
- -q nofrag",
-> +        "setup": [
-> +            [
-> +                "$TC action flush action tunnel_key",
-> +                0,
-> +                1,
-> +                255
-> +            ]
-> +        ],
-> +        "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 10=
-.10.10.1 dst_ip 10.10.10.2 id 1111 nofrag index 222",
-> +        "expExitCode": "0",
-> +        "verifyCmd": "$TC actions get action tunnel_key index 222",
-> +        "matchPattern": "action order [0-9]+: tunnel_key.*src_ip 10.10.1=
-0.1.*dst_ip 10.10.10.2.*key_id 1111.*csum.*nofrag pipe.*index 222",
-> +        "matchCount": "1",
-> +        "teardown": [
-> +            "$TC actions flush action tunnel_key"
-> +        ]
->      }
->  ]
-> --
-> 2.39.2
->
+Decode this for me please:
+ - what was you careful consideration
+ - what do you think the task at hand is; and
+ - what are vlan_features supposed to mean?
