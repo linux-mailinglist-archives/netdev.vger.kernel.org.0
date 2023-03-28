@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DE6A6CCBAE
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:57:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 709D56CCBAF
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:57:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbjC1U5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 16:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
+        id S229768AbjC1U5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 16:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbjC1U5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:57:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C126D1FFF
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:56:56 -0700 (PDT)
+        with ESMTP id S229732AbjC1U5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:57:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0671D26BD
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:56:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0A0BCB81E74
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:56:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3C8AC433A4;
-        Tue, 28 Mar 2023 20:56:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E94DB81E72
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C043FC433EF;
+        Tue, 28 Mar 2023 20:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680037013;
-        bh=p0nloBRhd52+nkQZ5nSC5GWKFJqQTgnxEz7sgBqN5Y4=;
+        s=k20201202; t=1680037014;
+        bh=0SqVWcJuQ6ckR3Kt1QYR6aleFJ0U14eEudewJWQMP50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFX7XE59zPTDX6Aa4y6PDdsvaol1+aqHsGKO8O0DXewEcqSpizk/csyebRlSEUczE
-         BWk5rvOuRzqDOtOKXwWbfXZBnWWP+rKKu/0AQ6bHrqhVevRdBgR7BTTUlUDtzk2Ykc
-         qigJkkGpq89RPANKUHbeIiiRZQUQhp69UqHZOJmI+D7fSIrAT010LGZWzuSpISW0Mu
-         m1K7uZY5atLQtM03FqUxdwsHL8wKJj091ioicKQWKrLLnao6Ny7Zmz2EenLsEkhown
-         vKhwl8G5Qeb4iWMqoWKR2zH6p3dcCfsp2FKGg3oqfIjzokXJFmeszZO1pGzI36hcS8
-         oEDEsKsP+FImQ==
+        b=uGqr6InwfY8bCp6Q1GwEFXVXDbknY9m22GdqCwTU1A3GIJ/Jl5I+klLYfCCCWgmq1
+         tpgG4yL1h0PXEz40IW+qYmmv2dSUPKBAv3p+Ety1VotOHv30LjKxOchvKD/G5KgMY/
+         +53hI8LWZ45Za8J5+OeNR7Z9xymfS/bMJgadxu9PYqhHRF6ylx6+kOaylVnjrXEtW6
+         dF4XkPHYyRIRnPvDeknxQD1jiQscSBvTMT8AeCsphIM8TmxQQB6fYQxTBfNk4c2ShR
+         VXoS4OI94GXtlZVXl3iXALy61sFuMP0iftMdCSAa0G60gksEjOHitLuIbr/ARFUX32
+         b/h8ADBT5HLwA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -43,16 +43,16 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Dragos Tatulea <dtatulea@nvidia.com>
-Subject: [net-next 08/15] net/mlx5e: RX, Rename xdp_xmit_bitmap to a more generic name
-Date:   Tue, 28 Mar 2023 13:56:16 -0700
-Message-Id: <20230328205623.142075-9-saeed@kernel.org>
+Subject: [net-next 09/15] net/mlx5e: RX, Defer page release in striding rq for better recycling
+Date:   Tue, 28 Mar 2023 13:56:17 -0700
+Message-Id: <20230328205623.142075-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230328205623.142075-1-saeed@kernel.org>
 References: <20230328205623.142075-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,105 +62,183 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dragos Tatulea <dtatulea@nvidia.com>
 
-The xdp_xmit_bitmap currently serves only one purpose: to avoid
-releasing pages that are still in use due to XDP TX.
+Currently, for striding RQ, fragmented pages from the page pool can
+get released in two ways:
 
-A following patch will use this bitmap in a slightly different context
-but for the same purpose. So rename the bitmap to a more generic name
-that reflects the purpose not the context.
+1) In the mlx5e driver when trimming off the unused fragments AND the
+   associated skb fragments have been released. This path allows
+   recycling of pages to the page pool cache (allow_direct == true).
+
+2) On the skb release path (last fragment release), which
+   will always release pages to the page pool ring
+   (allow_direct == false).
+
+Whichever is releasing the last fragment will be decisive on
+where the page gets released: the cache or the ring. So we
+obviously want to maximize for doing the release from 1.
+
+This patch does that by deferring the release of page fragments
+right before requesting new ones from the page pool. Extra care
+needs to be taken for the corner cases:
+
+* On first call, make sure that release is not called. The
+  skip_release_bitmap is used for this purpose.
+
+* On rq shutdown, make sure that all wqes that were not
+  in the linked list are released.
+
+For a single ring, single core, default MTU (1500) TCP stream
+test the number of pages allocated from the cache directly
+(rx_pp_recycle_cached) increases from 31 % to 98 %:
+
++----------------------------------------------+
+| Page Pool stats (/sec)  |  Before |   After  |
++-------------------------+---------+----------+
+|rx_pp_alloc_fast         | 2137754 |  2261033 |
+|rx_pp_alloc_slow         |      47 |        9 |
+|rx_pp_alloc_empty        |      47 |        9 |
+|rx_pp_alloc_refill       |   23230 |      819 |
+|rx_pp_alloc_waive        |       0 |        0 |
+|rx_pp_recycle_cached     |  672182 |  2209015 |
+|rx_pp_recycle_cache_full |    1789 |        0 |
+|rx_pp_recycle_ring       | 1485848 |    52259 |
+|rx_pp_recycle_ring_full  |    3003 |      584 |
++----------------------------------------------+
+
+With this patch, the performance in striding rq for the above test is
+back to baseline.
 
 Signed-off-by: Dragos Tatulea <dtatulea@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h        |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c |  4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     | 12 ++++++------
- 3 files changed, 9 insertions(+), 9 deletions(-)
+ .../mellanox/mlx5/core/en/reporter_rx.c       |  4 ++--
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 21 +++++++++++++++----
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  8 ++++---
+ 4 files changed, 25 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 0862556105d5..566ddf7a7aa9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -622,7 +622,7 @@ union mlx5e_alloc_units {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+index b621f735cdc3..a047a2a4ddac 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+@@ -121,9 +121,9 @@ static int mlx5e_rx_reporter_err_icosq_cqe_recover(void *ctx)
  
- struct mlx5e_mpw_info {
- 	u16 consumed_strides;
--	DECLARE_BITMAP(xdp_xmit_bitmap, MLX5_MPWRQ_MAX_PAGES_PER_WQE);
-+	DECLARE_BITMAP(skip_release_bitmap, MLX5_MPWRQ_MAX_PAGES_PER_WQE);
- 	union mlx5e_alloc_units alloc_units;
- };
+ 	mlx5e_reset_icosq_cc_pc(icosq);
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index b2c1af07c317..3cde264cbe4e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -120,7 +120,7 @@ int mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		}
+-	mlx5e_free_rx_in_progress_descs(rq);
++	mlx5e_free_rx_missing_descs(rq);
+ 	if (xskrq)
+-		mlx5e_free_rx_in_progress_descs(xskrq);
++		mlx5e_free_rx_missing_descs(xskrq);
+ 
+ 	clear_bit(MLX5E_SQ_STATE_RECOVERING, &icosq->state);
+ 	mlx5e_activate_icosq(icosq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+index cd7779a9d046..651be7aaf7d5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+@@ -69,7 +69,7 @@ INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq));
+ INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq));
+ int mlx5e_poll_rx_cq(struct mlx5e_cq *cq, int budget);
+ void mlx5e_free_rx_descs(struct mlx5e_rq *rq);
+-void mlx5e_free_rx_in_progress_descs(struct mlx5e_rq *rq);
++void mlx5e_free_rx_missing_descs(struct mlx5e_rq *rq);
+ 
+ static inline bool mlx5e_rx_hw_stamp(struct hwtstamp_config *config)
+ {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index eca9a11454e5..53eef689f225 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -301,6 +301,15 @@ static int mlx5e_rq_alloc_mpwqe_info(struct mlx5e_rq *rq, int node)
+ 	if (!rq->mpwqe.info)
+ 		return -ENOMEM;
+ 
++	/* For deferred page release (release right before alloc), make sure
++	 * that on first round release is not called.
++	 */
++	for (int i = 0; i < wq_sz; i++) {
++		struct mlx5e_mpw_info *wi = mlx5e_get_mpw_info(rq, i);
++
++		bitmap_fill(wi->skip_release_bitmap, rq->mpwqe.pages_per_wqe);
++	}
++
+ 	mlx5e_build_umr_wqe(rq, rq->icosq, &rq->mpwqe.umr_wqe);
+ 
+ 	return 0;
+@@ -1112,7 +1121,7 @@ int mlx5e_wait_for_min_rx_wqes(struct mlx5e_rq *rq, int wait_time)
+ 	return -ETIMEDOUT;
+ }
+ 
+-void mlx5e_free_rx_in_progress_descs(struct mlx5e_rq *rq)
++void mlx5e_free_rx_missing_descs(struct mlx5e_rq *rq)
+ {
+ 	struct mlx5_wq_ll *wq;
+ 	u16 head;
+@@ -1124,8 +1133,12 @@ void mlx5e_free_rx_in_progress_descs(struct mlx5e_rq *rq)
+ 	wq = &rq->mpwqe.wq;
+ 	head = wq->head;
+ 
+-	/* Outstanding UMR WQEs (in progress) start at wq->head */
+-	for (i = 0; i < rq->mpwqe.umr_in_progress; i++) {
++	/* Release WQEs that are in missing state: they have been
++	 * popped from the list after completion but were not freed
++	 * due to deferred release.
++	 * Also free the linked-list reserved entry, hence the "+ 1".
++	 */
++	for (i = 0; i < mlx5_wq_ll_missing(wq) + 1; i++) {
+ 		rq->dealloc_wqe(rq, head);
+ 		head = mlx5_wq_ll_get_wqe_next_ix(wq, head);
  	}
+@@ -1152,7 +1165,7 @@ void mlx5e_free_rx_descs(struct mlx5e_rq *rq)
+ 	if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+ 		struct mlx5_wq_ll *wq = &rq->mpwqe.wq;
  
--	bitmap_zero(wi->xdp_xmit_bitmap, rq->mpwqe.pages_per_wqe);
-+	bitmap_zero(wi->skip_release_bitmap, rq->mpwqe.pages_per_wqe);
- 	wi->consumed_strides = 0;
+-		mlx5e_free_rx_in_progress_descs(rq);
++		mlx5e_free_rx_missing_descs(rq);
  
- 	umr_wqe->ctrl.opmod_idx_opcode =
-@@ -289,7 +289,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
- 	prog = rcu_dereference(rq->xdp_prog);
- 	if (likely(prog && mlx5e_xdp_handle(rq, prog, mxbuf))) {
- 		if (likely(__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)))
--			__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
-+			__set_bit(page_idx, wi->skip_release_bitmap); /* non-atomic */
- 		return NULL; /* page/packet was consumed by XDP */
- 	}
- 
+ 		while (!mlx5_wq_ll_is_empty(wq)) {
+ 			struct mlx5e_rx_wqe_ll *wqe;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 7724e30ec133..eab8cba33ce4 100644
+index eab8cba33ce4..73bc373bf27d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -439,10 +439,10 @@ mlx5e_free_rx_mpwqe(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi, bool recycle
- 	int i;
+@@ -983,6 +983,11 @@ INDIRECT_CALLABLE_SCOPE bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq)
+ 	head = rq->mpwqe.actual_wq_head;
+ 	i = missing;
+ 	do {
++		struct mlx5e_mpw_info *wi = mlx5e_get_mpw_info(rq, head);
++
++		/* Deferred free for better page pool cache usage. */
++		mlx5e_free_rx_mpwqe(rq, wi, true);
++
+ 		alloc_err = rq->xsk_pool ? mlx5e_xsk_alloc_rx_mpwqe(rq, head) :
+ 					   mlx5e_alloc_rx_mpwqe(rq, head);
  
- 	/* A common case for AF_XDP. */
--	if (bitmap_full(wi->xdp_xmit_bitmap, rq->mpwqe.pages_per_wqe))
-+	if (bitmap_full(wi->skip_release_bitmap, rq->mpwqe.pages_per_wqe))
- 		return;
+@@ -1855,7 +1860,6 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
  
--	no_xdp_xmit = bitmap_empty(wi->xdp_xmit_bitmap, rq->mpwqe.pages_per_wqe);
-+	no_xdp_xmit = bitmap_empty(wi->skip_release_bitmap, rq->mpwqe.pages_per_wqe);
+ 	wq  = &rq->mpwqe.wq;
+ 	wqe = mlx5_wq_ll_get_wqe(wq, wqe_id);
+-	mlx5e_free_rx_mpwqe(rq, wi, true);
+ 	mlx5_wq_ll_pop(wq, cqe->wqe_id, &wqe->next.next_wqe_index);
+ }
  
- 	if (rq->xsk_pool) {
- 		struct xdp_buff **xsk_buffs = wi->alloc_units.xsk_buffs;
-@@ -452,11 +452,11 @@ mlx5e_free_rx_mpwqe(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi, bool recycle
- 		 * the page to the userspace when the interface goes down.
- 		 */
- 		for (i = 0; i < rq->mpwqe.pages_per_wqe; i++)
--			if (no_xdp_xmit || !test_bit(i, wi->xdp_xmit_bitmap))
-+			if (no_xdp_xmit || !test_bit(i, wi->skip_release_bitmap))
- 				xsk_buff_free(xsk_buffs[i]);
- 	} else {
- 		for (i = 0; i < rq->mpwqe.pages_per_wqe; i++) {
--			if (no_xdp_xmit || !test_bit(i, wi->xdp_xmit_bitmap)) {
-+			if (no_xdp_xmit || !test_bit(i, wi->skip_release_bitmap)) {
- 				struct mlx5e_frag_page *frag_page;
+@@ -2173,7 +2177,6 @@ static void mlx5e_handle_rx_cqe_mpwrq_shampo(struct mlx5e_rq *rq, struct mlx5_cq
  
- 				frag_page = &wi->alloc_units.frag_pages[i];
-@@ -687,7 +687,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
- 		       sizeof(*umr_wqe->inline_mtts) * pad);
- 	}
+ 	wq  = &rq->mpwqe.wq;
+ 	wqe = mlx5_wq_ll_get_wqe(wq, wqe_id);
+-	mlx5e_free_rx_mpwqe(rq, wi, true);
+ 	mlx5_wq_ll_pop(wq, cqe->wqe_id, &wqe->next.next_wqe_index);
+ }
  
--	bitmap_zero(wi->xdp_xmit_bitmap, rq->mpwqe.pages_per_wqe);
-+	bitmap_zero(wi->skip_release_bitmap, rq->mpwqe.pages_per_wqe);
- 	wi->consumed_strides = 0;
+@@ -2233,7 +2236,6 @@ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cq
  
- 	umr_wqe->ctrl.opmod_idx_opcode =
-@@ -1970,7 +1970,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 		mlx5e_fill_mxbuf(rq, cqe, va, rx_headroom, cqe_bcnt, &mxbuf);
- 		if (mlx5e_xdp_handle(rq, prog, &mxbuf)) {
- 			if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
--				__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
-+				__set_bit(page_idx, wi->skip_release_bitmap); /* non-atomic */
- 			return NULL; /* page/packet was consumed by XDP */
- 		}
+ 	wq  = &rq->mpwqe.wq;
+ 	wqe = mlx5_wq_ll_get_wqe(wq, wqe_id);
+-	mlx5e_free_rx_mpwqe(rq, wi, true);
+ 	mlx5_wq_ll_pop(wq, cqe->wqe_id, &wqe->next.next_wqe_index);
+ }
  
 -- 
 2.39.2
