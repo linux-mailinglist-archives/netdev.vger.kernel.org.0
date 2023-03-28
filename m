@@ -2,182 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 020756CB4C4
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEE26CB4D3
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:29:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232491AbjC1DTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 23:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33222 "EHLO
+        id S231375AbjC1D3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 23:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbjC1DTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:19:53 -0400
-Received: from mail.fintek.com.tw (mail.fintek.com.tw [59.120.186.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4357710CA;
-        Mon, 27 Mar 2023 20:19:50 -0700 (PDT)
-Received: from vmMailSRV.fintek.com.tw ([192.168.1.1])
-        by mail.fintek.com.tw with ESMTP id 32S3IiQi058277;
-        Tue, 28 Mar 2023 11:18:44 +0800 (+08)
-        (envelope-from peter_hong@fintek.com.tw)
-Received: from [192.168.1.111] (192.168.1.111) by vmMailSRV.fintek.com.tw
- (192.168.1.1) with Microsoft SMTP Server id 14.3.498.0; Tue, 28 Mar 2023
- 11:18:43 +0800
-Message-ID: <5bdee736-7868-81c3-e63f-a28787bd0007@fintek.com.tw>
-Date:   Tue, 28 Mar 2023 11:18:44 +0800
+        with ESMTP id S229501AbjC1D3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:29:52 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4A910CF;
+        Mon, 27 Mar 2023 20:29:51 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id q102so9608451pjq.3;
+        Mon, 27 Mar 2023 20:29:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1679974191; x=1682566191;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4oQNXXPHSk+h/Z/8f6Wulz11mYj7JAUcpMZzJ/xe0cY=;
+        b=T48wpnhndVIey2DfImqrGAiex+Rn0y7EUFWrh2YEIDsIhVQBgajXAB77Qiy5q4RrHH
+         +w82U7uYrW6iWjYepkK7huUkOyyiHHWOqOppzmPSj6BMJB0V5rlq6TdnlJGxIU1p4qJB
+         5mG3CDsSaA8Kgaz9FGa/P+Za5BKIms+MN7YCdEDXnKdG73Uh6aOUidi52appcQ/GxPrK
+         VuQJA+K5/T+9jsk1XOK3WCfrq96geGEn1i0jOlSDJxP36ubsS1j+6jnz7hJSFlX1E5vg
+         WV8X+/jFlnsKwGYcS0AD2wQ7365fT+c51H3TvpW+S+ij37TLVgju5aQucFPkTfD8H+co
+         ldJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679974191; x=1682566191;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4oQNXXPHSk+h/Z/8f6Wulz11mYj7JAUcpMZzJ/xe0cY=;
+        b=cw7IsK23eIGoYcWuqO+EDD0ReWhdvrf9+WA6pnbLsbfhTAhSUE1I1bvvFeseEe6Rc7
+         WKreM/EvLO49bA4spHwalmFBGERrJ8wXPmQvLNuxZJZrmR9L4D/c7XG3W42xEUs5AA62
+         +ksjS/BdczJc4REdv8agAo2gbNkj/416wDXBdmpDs4bD5DXqO7+mCLKt+v0AmROsQ2OU
+         IO3LrONDq7jSkTB9opWKGJex628cV+vh9NDLi6V4LpgOSvykpp6OZNUh9k6H4XuaCEl2
+         M8jdYgFtfvOGjHfFxJGvFYJysfEiAxcOXi18UEItU2DSSNuaYqeWYDJc1Mr8xFjXZyDN
+         Vk+Q==
+X-Gm-Message-State: AO0yUKV83/8rcFGR5mFz6cvvueHsIYLemM9YBASWp0qe8VHbCKcmBwS0
+        0NgLta/vYlwwxm7RrCFJ5KSU65f8Dto=
+X-Google-Smtp-Source: AK7set8Y4mEq28kbOLKaDDpPt8MiJ220kPDyg7VPyzSFqGtPFp0k/VVt1yfko9G5l4pZ+JLuvRho1w==
+X-Received: by 2002:a05:6a20:914b:b0:dc:e387:566b with SMTP id x11-20020a056a20914b00b000dce387566bmr14690515pzc.1.1679974191389;
+        Mon, 27 Mar 2023 20:29:51 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id w5-20020aa78585000000b005a8dd86018dsm14603552pfn.64.2023.03.27.20.29.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Mar 2023 20:29:51 -0700 (PDT)
+Date:   Mon, 27 Mar 2023 20:29:48 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Shinu Chandran <s4superuser@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptp: ptp_clock: Fix coding style issues
+Message-ID: <ZCJfLIKXyQk5HyZc@hoboy.vegasvil.org>
+References: <20230325163135.2431367-1-s4superuser@gmail.com>
+ <20230327174746.499fe945@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH V3] can: usb: f81604: add Fintek F81604 support
-Content-Language: en-US
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-CC:     <wg@grandegger.com>, <mkl@pengutronix.de>,
-        <michal.swiatkowski@linux.intel.com>,
-        <Steen.Hegelund@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <frank.jungclaus@esd.eu>, <linux-kernel@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <hpeter+linux_kernel@gmail.com>
-References: <20230327051048.11589-1-peter_hong@fintek.com.tw>
- <CAMZ6Rq+ps1tLii1VfYyAqfD4ck_TGWBUo_ouK_vLfhoNEg-BPg@mail.gmail.com>
-From:   Peter Hong <peter_hong@fintek.com.tw>
-In-Reply-To: <CAMZ6Rq+ps1tLii1VfYyAqfD4ck_TGWBUo_ouK_vLfhoNEg-BPg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.1.111]
-X-TM-AS-Product-Ver: SMEX-12.5.0.2055-9.0.1002-27530.001
-X-TM-AS-Result: No-7.990000-8.000000-10
-X-TMASE-MatchedRID: gzVbiXtWD9v/9O/B1c/Qy3UVR7WQKpLPC/ExpXrHizzNcDGAMPdV9+J1
-        Z55wDcxTB1Q/hS3bW9EOLDetfgAGJuELIy87MLr+nVTWWiNp+v/0swHSFcVJ6OjMOEZ5AL0S8y0
-        S9JacVy+7NbSZc60NuauVCdsHobg3xZYesGakkusZgmFGHqyx63607foZgOWytwi3bXRtaAjLqp
-        eT6UXHoA0mmbOIq98WQZndHGkHvOfKVlK+ZD4tD9yBRU/cKn69MoS2PLq1B75M+b8yxBqvA46My
-        bdCDh5gSpAFNe4DUJ6H+8KYiFISoinqwKmU0oYzhqdH8K9g7xd7hg5h3855AubnFWpNX1DBunqB
-        IQj+1JmQn/TyVRWddCYHONDCYeA20qC4NoBZfqzEOJqSsn5KmR6OXxdRGLx8y3v7xMC1C6RsKs8
-        i+cqOr5xuEByUpzTftB35FpYtHMZyNLIRgHOxXsp9Bgr5ONKhMVx/3ZYby7+q+LxFU7C3tmcduY
-        7Ph1FD585VzGMOFzABi3kqJOK62QtuKBGekqUpnH7sbImOEBTIljWAt/a0oj3gWXE4r5BuZktF7
-        gomgCu2Vh+y/eGrhbyH+tFkkwsg8UVNvYa2McYoDkna7QJAeA99pC5jqgWkq7qwdb6tHadiouj3
-        9kMFs02viMYyOMeglkEG27gbXTQ3u31m+KVyduulxyHOcPoH
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.990000-8.000000
-X-TMASE-Version: SMEX-12.5.0.2055-9.0.1002-27530.001
-X-TM-SNTS-SMTP: 5C27E5AABC32B491905B4A7100DA75432EDE5757E0E3DDF12F1128D1E404E12E2000:8
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL: mail.fintek.com.tw 32S3IiQi058277
-X-Spam-Status: No, score=-0.0 required=5.0 tests=NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230327174746.499fe945@kernel.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vincent,
+On Mon, Mar 27, 2023 at 05:47:46PM -0700, Jakub Kicinski wrote:
+> On Sat, 25 Mar 2023 22:01:35 +0530 Shinu Chandran wrote:
+> > Fixed coding style issues
+> 
+> If Richard acks we'll take it but as a general rule we try to avoid
+> taking pure formatting changes in networking. Too much churn.
 
-Vincent MAILHOL 於 2023/3/27 下午 06:27 寫道:
-> eff->id is a 32 bit value. It is not aligned. So, you must always use
-> {get|set}_unaligned_be32() to manipulate this value.
-> N.B. on x86 architecture, unaligned access is fine, but some other
-> architecture may throw a fault. Read this for more details:
->
->    https://docs.kernel.org/arm/mem_alignment.html
+Yeah its pointless churn.
 
-for the consistency of the code, could I also add get/put_unaligned_be16 
-in SFF
-sections ?
-
->> +static int f81604_set_reset_mode(struct net_device *netdev)
->> +{
->> +       struct f81604_port_priv *priv = netdev_priv(netdev);
->> +       int status, i;
->> +       u8 tmp;
->> +
->> +       /* disable interrupts */
->> +       status = f81604_set_sja1000_register(priv->dev, netdev->dev_id,
->> +                                            SJA1000_IER, IRQ_OFF);
->> +       if (status)
->> +               return status;
->> +
->> +       for (i = 0; i < F81604_SET_DEVICE_RETRY; i++) {
-> Thanks for removing F81604_USB_MAX_RETRY.
->
-> Yet, I still would like to understand why you need one hundred tries?
-> Is this some paranoiac safenet? Or does the device really need so many
-> attempts to operate reliably? If those are needed, I would like to
-> understand the root cause.
-
-This section is copy from sja1000.c. In my test, the operation/reset may 
-retry 1 times.
-I'll reduce it from 100 to 10 times.
-
-
->> +       int status, len;
->> +
->> +       if (can_dropped_invalid_skb(netdev, skb))
->> +               return NETDEV_TX_OK;
->> +
->> +       netif_stop_queue(netdev);
-> In your driver, you send the CAN frames one at a time and wait for the
-> rx_handler to restart the queue. This approach dramatically degrades
-> the throughput. Is this a device limitation? Is the device not able to
-> manage more than one frame at a time?
->
-
-This device will not NAK on TX frame not complete, it only NAK on TX 
-endpoint
-memory not processed, so we'll send next frame unitl TX complete(TI) 
-interrupt
-received.
-
-The device can polling status register via TX/RX endpoint, but it's more 
-complex.
-We'll plan to do it when first driver landing in mainstream.
-
->> +static int f81604_set_termination(struct net_device *netdev, u16 term)
->> +{
->> +       struct f81604_port_priv *port_priv = netdev_priv(netdev);
->> +       struct f81604_priv *priv;
->> +       u8 mask, data = 0;
->> +       int r;
->> +
->> +       priv = usb_get_intfdata(port_priv->intf);
->> +
->> +       if (netdev->dev_id == 0)
->> +               mask = F81604_CAN0_TERM;
->> +       else
->> +               mask = F81604_CAN1_TERM;
->> +
->> +       if (term == F81604_TERMINATION_ENABLED)
->> +               data = mask;
->> +
->> +       mutex_lock(&priv->mutex);
-> Did you witness a race condition?
->
-> As far as I know, this call back is only called while the network
-> stack big kernel lock (a.k.a. rtnl_lock) is being hold.
-> If you have doubt, try adding a:
->
->    ASSERT_RTNL()
->
-> If this assert works, then another mutex is not needed.
-
-It had added ASSERT_RTNL() into f81604_set_termination(). It only assert
-in f81604_probe() -> f81604_set_termination(), not called via ip command:
-     ip link set dev can0 type can termination 120
-     ip link set dev can0 type can termination 0
-
-so I'll still use mutex on here.
-
->> +               port_priv->can.do_get_berr_counter = f81604_get_berr_counter;
->> +               port_priv->can.ctrlmode_supported =
->> +                       CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_3_SAMPLES |
->> +                       CAN_CTRLMODE_ONE_SHOT | CAN_CTRLMODE_BERR_REPORTING |
->> +                       CAN_CTRLMODE_CC_LEN8_DLC | CAN_CTRLMODE_PRESUME_ACK;
-> Did you test the CAN_CTRLMODE_CC_LEN8_DLC feature? Did you confirm
-> that you can send and receive DLC greater than 8?
-
-Sorry, I had misunderstand the define. This device is only support 0~8 
-data length,
-so I'll remove CAN_CTRLMODE_CC_LEN8_DLC in future patch.
+NAK on this as the visual impression is not at all improved IMO.
 
 Thanks,
-
+Richard
