@@ -2,178 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C82B6CCBAB
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D84416CCBB9
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:58:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbjC1U5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 16:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        id S229741AbjC1U6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 16:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbjC1U5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:57:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CFB30D6
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:56:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F186E61965
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4266CC433AE;
-        Tue, 28 Mar 2023 20:56:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680037011;
-        bh=I23JbWt3pnwxk2S5aZ56ZAfB7RVuunEPLupu2dZDWzA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fe/QOdOTeFISyWJA5dfL7J/VOuEGiH1kAK/OR26pwzNBAjlSkASSeZpeIMnKFiWsE
-         +RZeaAmyKEtzpb6eyuPb9OJWPi7O8A8cmQ+1dkETNFggIFjVgsTzTRvywdAEZ354u2
-         og0aI/yxaD5E8OGaxwI9ey65qZvO1q56unnbQCuNQR/KArGZJl0GUFjdT1EWVCG+x6
-         fgoRsT8AhETXXzzUYiM/nAIZKPLQQ06V+g36jetU1XyyYQiycGPFGn7UWCYeAugD/W
-         ZrZs7TE4eGOmXoQHP9P1QT/pOA2sjOmjBCAFeKr334ZCT7F613xRS+aPmBxDcJXfEe
-         zVufZNC4NYoMg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Dragos Tatulea <dtatulea@nvidia.com>
-Subject: [net-next 06/15] net/mlx5e: RX, Enable dma map and sync from page_pool allocator
-Date:   Tue, 28 Mar 2023 13:56:14 -0700
-Message-Id: <20230328205623.142075-7-saeed@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230328205623.142075-1-saeed@kernel.org>
-References: <20230328205623.142075-1-saeed@kernel.org>
+        with ESMTP id S229784AbjC1U6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:58:38 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452FE272B
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:58:18 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1phGOG-0002ks-0g;
+        Tue, 28 Mar 2023 22:58:02 +0200
+Date:   Tue, 28 Mar 2023 21:56:14 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next 2/2] net: sfp: add quirk for 2.5G copper SFP
+Message-ID: <ZCNUborFRGwySBQv@makrotopia.org>
+References: <ZBniMlTDZJQ242DP@shell.armlinux.org.uk>
+ <E1pefJz-00Dn4V-Oc@rmk-PC.armlinux.org.uk>
+ <ZB5YgPiZYwbf/G2u@makrotopia.org>
+ <ZB7/v8oUu3lkO4yC@shell.armlinux.org.uk>
+ <ZB8Upcgv8EIovPCl@makrotopia.org>
+ <ZB9NKo3iXe7CZSId@shell.armlinux.org.uk>
+ <ZCMDgqBSvHigTcbb@shell.armlinux.org.uk>
+ <ZCMx5UBUaycq8+O/@makrotopia.org>
+ <ZCM8+dsOo8c6TRJT@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCM8+dsOo8c6TRJT@shell.armlinux.org.uk>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dragos Tatulea <dtatulea@nvidia.com>
+On Tue, Mar 28, 2023 at 08:16:09PM +0100, Russell King (Oracle) wrote:
+> On Tue, Mar 28, 2023 at 07:28:53PM +0100, Daniel Golle wrote:
+> > Hi Russell,
+> > 
+> > On Tue, Mar 28, 2023 at 04:10:58PM +0100, Russell King (Oracle) wrote:
+> > > Hi Daniel,
+> > > 
+> > > Any feedback with this patch applied? Can't move forward without that.
+> > 
+> > Sorry for the delay, I only got back to it today.
+> > I've tried your patch and do not see any additional output on the
+> > kernel log, just like it is the case for Frank's 2.5G SFP module as
+> > well. I conclude that the PHY is inaccessible.
+> > 
+> > I've tried with and without the sfp_quirk_oem_2_5g.
+> > 
+> > With the quirk:
+> > [   55.111856] mt7530 mdio-bus:1f sfp2: Link is Up - Unknown/Unknown - flow control off
+> > 
+> > Without the quirk:
+> > [   44.603495] mt7530 mdio-bus:1f sfp2: unsupported SFP module: no common interface modes
+> 
+> This is all getting really very messy, and I have no idea what's going
+> on and which modules you're testing from report to report.
+> 
+> The patch was to be used with the module which you previously reported
+> earlier in this thread:
+> 
+> [   17.344155] sfp sfp2: module TP-LINK          TL-SM410U        rev 1.0  sn    12154J6000864    dc 210606
+> ...
+> [   21.653812] mt7530 mdio-bus:1f sfp2: selection of interface failed, advertisement 00,00000000,00000000,00006440
+> 
+> That second message - "selection of interface failed" only appears in
+> two places:
+> 
+> 1) in phylink_ethtool_ksettings_set() which will be called in response
+> to ethtool being used, but you've said it isn't, so this can't be it.
+> 2) in phylink_sfp_config_phy(), which will be called when we have
+> detected a PHY on the SFP module and we're trying to set it up.
+> This means we must have discovered a PHY on the TL-SM410U module.
+> 
+> This new message you report:
+> 
+> 	"unsupported SFP module: no common interface modes"
+> 
+> is produced by phylink_sfp_config_optical(), which is called when we
+> think we have an optical module (in other words when sfp_may_have_phy()
+> returns false) or it returns true but we start the module without
+> having discovered a PHY.
+> 
+> So we can only get to this message if we think the module does not
+> have a PHY detected.
+> 
+> If it's the exact same module, that would suggest that the module does
+> have an accessible PHY, but there could be a hardware race between the
+> PHY becoming accessible and our probing for it. However, we do retry
+> probing for the PHY up to 12 times at 50ms intervals.
+> 
+> Maybe you could shed some light on what's going on? Is it the exact
+> same module? Maybe enable debugging in both sfp.c
 
-Remove driver dma mapping and unmapping of pages. Let the
-page_pool api do it.
+Yes, this is all TL-SM410U. Just one time with the qurik added and one
+time without. It can be that OpenWrt's netifd issues some ethtool
+ioctls...
 
-Signed-off-by: Dragos Tatulea <dtatulea@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  1 -
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  2 --
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  6 +++--
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 22 -------------------
- 4 files changed, 4 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index dab00a2c2eb7..04419f56ac85 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -65,7 +65,6 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget);
- int mlx5e_poll_ico_cq(struct mlx5e_cq *cq);
- 
- /* RX */
--void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct page *page);
- void mlx5e_page_release_dynamic(struct mlx5e_rq *rq, struct page *page, bool recycle);
- INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq));
- INDIRECT_CALLABLE_DECLARE(bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq));
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index c5dae48b7932..5e6ef602c748 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -209,8 +209,6 @@ bool mlx5e_xdp_handle(struct mlx5e_rq *rq,
- 			goto xdp_abort;
- 		__set_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags);
- 		__set_bit(MLX5E_RQ_FLAG_XDP_REDIRECT, rq->flags);
--		if (xdp->rxq->mem.type != MEM_TYPE_XSK_BUFF_POOL)
--			mlx5e_page_dma_unmap(rq, virt_to_page(xdp->data));
- 		rq->stats->xdp_redirect++;
- 		return true;
- 	default:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index b0322a20b71b..2a73680021c2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -733,7 +733,6 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
- 			  struct mlx5e_rq_param *rqp,
- 			  int node, struct mlx5e_rq *rq)
- {
--	struct page_pool_params pp_params = { 0 };
- 	struct mlx5_core_dev *mdev = rq->mdev;
- 	void *rqc = rqp->rqc;
- 	void *rqc_wq = MLX5_ADDR_OF(rqc, rqc, wq);
-@@ -829,12 +828,15 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
- 		xsk_pool_set_rxq_info(rq->xsk_pool, &rq->xdp_rxq);
- 	} else {
- 		/* Create a page_pool and register it with rxq */
-+		struct page_pool_params pp_params = { 0 };
-+
- 		pp_params.order     = 0;
--		pp_params.flags     = 0; /* No-internal DMA mapping in page_pool */
-+		pp_params.flags     = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
- 		pp_params.pool_size = pool_size;
- 		pp_params.nid       = node;
- 		pp_params.dev       = rq->pdev;
- 		pp_params.dma_dir   = rq->buff.map_dir;
-+		pp_params.max_len   = PAGE_SIZE;
- 
- 		/* page_pool can be used even when there is no rq->xdp_prog,
- 		 * given page_pool does not handle DMA mapping there is no
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 192f12a7d9a9..01c789b89cb9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -273,40 +273,18 @@ static inline u32 mlx5e_decompress_cqes_start(struct mlx5e_rq *rq,
- 
- static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq, struct page **pagep)
- {
--	dma_addr_t addr;
--
- 	*pagep = page_pool_dev_alloc_pages(rq->page_pool);
- 	if (unlikely(!*pagep))
- 		return -ENOMEM;
- 
--	/* Non-XSK always uses PAGE_SIZE. */
--	addr = dma_map_page(rq->pdev, *pagep, 0, PAGE_SIZE, rq->buff.map_dir);
--	if (unlikely(dma_mapping_error(rq->pdev, addr))) {
--		page_pool_recycle_direct(rq->page_pool, *pagep);
--		*pagep = NULL;
--		return -ENOMEM;
--	}
--	page_pool_set_dma_addr(*pagep, addr);
--
- 	return 0;
- }
- 
--void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct page *page)
--{
--	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
--
--	dma_unmap_page_attrs(rq->pdev, dma_addr, PAGE_SIZE, rq->buff.map_dir,
--			     DMA_ATTR_SKIP_CPU_SYNC);
--	page_pool_set_dma_addr(page, 0);
--}
--
- void mlx5e_page_release_dynamic(struct mlx5e_rq *rq, struct page *page, bool recycle)
- {
- 	if (likely(recycle)) {
--		mlx5e_page_dma_unmap(rq, page);
- 		page_pool_recycle_direct(rq->page_pool, page);
- 	} else {
--		mlx5e_page_dma_unmap(rq, page);
- 		page_pool_release_page(rq->page_pool, page);
- 		put_page(page);
- 	}
--- 
-2.39.2
-
+> 
+> At the moment I'm rather confused.
+> 
+> Thanks.
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
