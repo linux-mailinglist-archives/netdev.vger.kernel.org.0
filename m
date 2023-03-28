@@ -2,176 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6239C6CC5A3
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF14D6CC5BC
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233962AbjC1PQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 11:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55080 "EHLO
+        id S233088AbjC1PR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 11:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233936AbjC1PPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:15:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209A411644
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 08:14:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680016405;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3DsgcTYFWxhX9PLfaIyKWk2AVWDq7BUElXbxQWwuPGo=;
-        b=cfV+3DAxWSPaNOmjFFKvq9xKmFFejX+5WCXI1gyOD3Cjh+NYhBw3hT2jZL+t4yJR8HrkW1
-        CTZLNakqatLcZ1mx7KrCCnIBLPdjKzwRHDyt7fFcoCoDewGWWICkp6m1iwW7k15Xl2eGBi
-        WrMQKrmQMljYCsxOKB85H5ra3uKd+Qg=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-196-eEI3YIqtOXqwyeICqC76Lg-1; Tue, 28 Mar 2023 11:13:24 -0400
-X-MC-Unique: eEI3YIqtOXqwyeICqC76Lg-1
-Received: by mail-qt1-f197.google.com with SMTP id r4-20020ac867c4000000b003bfefb6dd58so8422963qtp.2
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 08:13:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680016403; x=1682608403;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3DsgcTYFWxhX9PLfaIyKWk2AVWDq7BUElXbxQWwuPGo=;
-        b=kHyY9j1SEyQvvKmPyfq8rkRnxpfML9JpbRummHG7uARjJueZ0hogmKyTmaGzDeChn3
-         LzrBlF0y7nqvdZJkwpFdSM4pRMghKLpKB/l5WFfCBn1+1HH088nR2xsODzVSwX0YNSuA
-         UxBZbQFcMC8zu4nnwImYM9hF9ENPwGCMeXjHD/lu+8pBjG+D9jdxlc8ybseyJVla3adA
-         CXW3hjjHKgFYkHEc97/SqDxUZw/Tj/Axmz+yOMFwN1JtluPQkKpC91zWgvmWfLRxE2YM
-         y0M8mQw+KK43HAh4cyri5INj5BGcJVNWGnacib5hPaIsi4pK0D1pMFvCP9s4Krrcsg2J
-         pARA==
-X-Gm-Message-State: AO0yUKVahzijkfGOGD5n4ORno/qnWy1Xyf6dZhyQqKyp/Td++MCTzr0D
-        44bM49QHIFN5hcPzGOPNQ2ZCzyYZ7/fjHBeM3o5fklJqZfDq4vt1zgbBRUlsWDpVVew482+oMMW
-        0qYBaA3bWLLo6skY/
-X-Received: by 2002:ac8:5905:0:b0:3d9:56ce:a8cd with SMTP id 5-20020ac85905000000b003d956cea8cdmr27300505qty.6.1680016403644;
-        Tue, 28 Mar 2023 08:13:23 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YwwGHDreK24ccOM1fRksnfMcjyV+HDpQvkvYlDeAaCKhWxUqK0D0aDc17Jr9LYaSTFZIprTg==
-X-Received: by 2002:ac8:5905:0:b0:3d9:56ce:a8cd with SMTP id 5-20020ac85905000000b003d956cea8cdmr27300446qty.6.1680016403274;
-        Tue, 28 Mar 2023 08:13:23 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-148.dyn.eolo.it. [146.241.232.148])
-        by smtp.gmail.com with ESMTPSA id y16-20020a376410000000b00746aa4465b4sm8103982qkb.43.2023.03.28.08.13.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 08:13:22 -0700 (PDT)
-Message-ID: <9331f1358cf7c24442d705d840812e9cd490e018.camel@redhat.com>
-Subject: Re: [PATCH net-next] net/core: add optional threading for backlog
- processing
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Felix Fietkau <nbd@nbd.name>, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 28 Mar 2023 17:13:20 +0200
-In-Reply-To: <b001c8ed-214f-94e6-2d4f-0ee13e3d8760@nbd.name>
-References: <20230324171314.73537-1-nbd@nbd.name>
-         <20230324102038.7d91355c@kernel.org>
-         <2d251879-1cf4-237d-8e62-c42bb4feb047@nbd.name>
-         <20230324104733.571466bc@kernel.org>
-         <f59ee83f-7267-04df-7286-f7ea147b5b49@nbd.name>
-         <751fd5bb13a49583b1593fa209bfabc4917290ae.camel@redhat.com>
-         <b001c8ed-214f-94e6-2d4f-0ee13e3d8760@nbd.name>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S233010AbjC1PRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:17:14 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B14D31E;
+        Tue, 28 Mar 2023 08:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680016588; x=1711552588;
+  h=from:subject:date:message-id:mime-version:
+   content-transfer-encoding:to:cc;
+  bh=8UzayBLRBQ8s0UpLIwh56xr9xEKmxU+0z/KLnW55M0o=;
+  b=SumoGfX0YN/yDtlAOt0QcuhrvFdAtHKq27bKLO7Pu1BSb1JXfhDwB26i
+   OOAb2TNtFsEjPX09mlE1H84+pFNU5o/7g4jESXldy8rQ+AEGRFyTThmia
+   CrvbtrWonFivCclp+aITlV95K7etvlG+uCHTvq9sMYQsALCD04nDmEaEE
+   EQHHqWzPBAxN7eeBorFfiu9PBLHaGmqITusPacFggtjRTBZBdkJyfo1tD
+   FBTtQgGPBplSy4Br7HKuno5bqXWsX50jw9s98XuKkm0YmWQk5iHgyzsmA
+   Rn+GUBK/JbaVtJRFC0wOCZqs6i1tTYQO+IIN+ohFbyBwEg11td0wIToOm
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="403208591"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="403208591"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:15:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="773181732"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="773181732"
+Received: from lab-ah.igk.intel.com ([10.102.138.202])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 08:15:43 -0700
+From:   Andrzej Hajda <andrzej.hajda@intel.com>
+Subject: [PATCH v5 0/8] drm/i915: use ref_tracker library for tracking wakerefs
+Date:   Tue, 28 Mar 2023 17:15:24 +0200
+Message-Id: <20230224-track_gt-v5-0-77be86f2c872@intel.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAIwEI2QC/3WNQQ7CIBREr9KwFqUUq3XlPYwxH/htiZY2gETT9
+ O5CVy50+SbzZmbi0Rn05FTMxGE03ow2wX5TENWD7ZAanZhwxivGuaDBgbrfukBLWWk4Sg1KH0iq
+ S/BIpQOr+iw8Jx8cwrDTbqDBTLkyOWzNa327XBP3xofRvdfzWOb0x08sKaMp4qypW6VVfTY24GO
+ rxoHkkSj+iSKJohZ4BClUA/JbXJblA8iW3In8AAAA
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Andi Shyti <andi.shyti@linux.intel.com>
+X-Mailer: b4 0.11.1
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-03-28 at 11:45 +0200, Felix Fietkau wrote:
-> On 28.03.23 11:29, Paolo Abeni wrote:
-> > On Fri, 2023-03-24 at 18:57 +0100, Felix Fietkau wrote:
-> > > On 24.03.23 18:47, Jakub Kicinski wrote:
-> > > > On Fri, 24 Mar 2023 18:35:00 +0100 Felix Fietkau wrote:
-> > > > > I'm primarily testing this on routers with 2 or 4 CPUs and limite=
-d=20
-> > > > > processing power, handling routing/NAT. RPS is typically needed t=
-o=20
-> > > > > properly distribute the load across all available CPUs. When ther=
-e is=20
-> > > > > only a small number of flows that are pushing a lot of traffic, a=
- static=20
-> > > > > RPS assignment often leaves some CPUs idle, whereas others become=
- a=20
-> > > > > bottleneck by being fully loaded. Threaded NAPI reduces this a bi=
-t, but=20
-> > > > > CPUs can become bottlenecked and fully loaded by a NAPI thread al=
-one.
-> > > >=20
-> > > > The NAPI thread becomes a bottleneck with RPS enabled?
-> > >=20
-> > > The devices that I work with often only have a single rx queue. That =
-can
-> > > easily become a bottleneck.
-> > >=20
-> > > > > Making backlog processing threaded helps split up the processing =
-work=20
-> > > > > even more and distribute it onto remaining idle CPUs.
-> > > >=20
-> > > > You'd want to have both threaded NAPI and threaded backlog enabled?
-> > >=20
-> > > Yes
-> > >=20
-> > > > > It can basically be used to make RPS a bit more dynamic and=20
-> > > > > configurable, because you can assign multiple backlog threads to =
-a set=20
-> > > > > of CPUs and selectively steer packets from specific devices / rx =
-queues=20
-> > > >=20
-> > > > Can you give an example?
-> > > >=20
-> > > > With the 4 CPU example, in case 2 queues are very busy - you're try=
-ing
-> > > > to make sure that the RPS does not end up landing on the same CPU a=
-s
-> > > > the other busy queue?
-> > >=20
-> > > In this part I'm thinking about bigger systems where you want to have=
- a
-> > > group of CPUs dedicated to dealing with network traffic without
-> > > assigning a fixed function (e.g. NAPI processing or RPS target) to ea=
-ch
-> > > one, allowing for more dynamic processing.
-> > >=20
-> > > > > to them and allow the scheduler to take care of the rest.
-> > > >=20
-> > > > You trust the scheduler much more than I do, I think :)
-> > >=20
-> > > In my tests it brings down latency (both avg and p99) considerably in
-> > > some cases. I posted some numbers here:
-> > > https://lore.kernel.org/netdev/e317d5bc-cc26-8b1b-ca4b-66b5328683c4@n=
-bd.name/
-> >=20
-> > It's still not 110% clear to me why/how this additional thread could
-> > reduce latency. What/which threads are competing for the busy CPU[s]? I
-> > suspect it could be easier/cleaner move away the others (non RPS)
-> > threads.
-> In the tests that I'm doing, network processing load from routing/NAT is=
-=20
-> enough to occupy all available CPUs.
-> If I dedicate the NAPI thread to one core and use RPS to steer packet=20
-> processing to the other cores, the core taking care of NAPI has some=20
-> idle cycles that go to waste, while the other cores are busy.
-> If I include the core in the RPS mask, it can take too much away from=20
-> the NAPI thread.
+Gently ping for network developers, could you look at ref_tracker patches,
+as the ref_tracker library was developed for network.
 
-I feel like I'm missing some relevant points.
+This is revived patchset improving ref_tracker library and converting
+i915 internal tracker to ref_tracker.
+The old thread ended without consensus about small kernel allocations,
+which are performed under spinlock.
+I have tried to solve the problem by splitting the calls, but it results
+in complicated API, so I went back to original solution.
+If there are better solutions I am glad to discuss them.
+Meanwhile I send original patchset with addressed remaining comments.
 
-If RPS keeps the target CPU fully busy, moving RPS processing in a
-separate thread still will not allow using more CPU time.
+To: Jani Nikula <jani.nikula@linux.intel.com>
+To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+To: Rodrigo Vivi <rodrigo.vivi@intel.com>
+To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+To: David Airlie <airlied@gmail.com>
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: linux-kernel@vger.kernel.org
+Cc: intel-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: netdev@vger.kernel.org
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
 
-Which NIC driver are you using?
+---
+Changes in v5 (thx Andi for review):
+- use *_locked convention instead of __*,
+- improved commit messages,
+- re-worked i915 patches, squashed separation and conversion patches,
+- added tags,
+- Link to v4: https://lore.kernel.org/r/20230224-track_gt-v4-0-464e8ab4c9ab@intel.com
 
-thanks!
+Changes in v4:
+- split "Separate wakeref tracking" to smaller parts
+- fixed typos,
+- Link to v1-v3: https://patchwork.freedesktop.org/series/100327/
 
-Paolo
+---
+Andrzej Hajda (7):
+      lib/ref_tracker: add unlocked leak print helper
+      lib/ref_tracker: improve printing stats
+      lib/ref_tracker: add printing to memory buffer
+      lib/ref_tracker: remove warnings in case of allocation failure
+      drm/i915: Correct type of wakeref variable
+      drm/i915: Replace custom intel runtime_pm tracker with ref_tracker library
+      drm/i915: track gt pm wakerefs
 
+Chris Wilson (1):
+      drm/i915/gt: Hold a wakeref for the active VM
+
+ drivers/gpu/drm/i915/Kconfig.debug                 |  19 ++
+ drivers/gpu/drm/i915/display/intel_display_power.c |   2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c     |   7 +-
+ .../drm/i915/gem/selftests/i915_gem_coherency.c    |  10 +-
+ drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c |  14 +-
+ drivers/gpu/drm/i915/gt/intel_breadcrumbs.c        |  13 +-
+ drivers/gpu/drm/i915/gt/intel_breadcrumbs_types.h  |   3 +-
+ drivers/gpu/drm/i915/gt/intel_context.h            |  15 +-
+ drivers/gpu/drm/i915/gt/intel_context_types.h      |   2 +
+ drivers/gpu/drm/i915/gt/intel_engine_pm.c          |  10 +-
+ drivers/gpu/drm/i915/gt/intel_engine_types.h       |   2 +
+ .../gpu/drm/i915/gt/intel_execlists_submission.c   |   2 +-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.c              |  12 +-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.h              |  38 +++-
+ drivers/gpu/drm/i915/gt/intel_gt_pm_debugfs.c      |   4 +-
+ drivers/gpu/drm/i915/gt/selftest_engine_cs.c       |  20 +-
+ drivers/gpu/drm/i915/gt/selftest_gt_pm.c           |   5 +-
+ drivers/gpu/drm/i915/gt/selftest_reset.c           |  10 +-
+ drivers/gpu/drm/i915/gt/selftest_rps.c             |  17 +-
+ drivers/gpu/drm/i915/gt/selftest_slpc.c            |   5 +-
+ drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c  |  11 +-
+ drivers/gpu/drm/i915/i915_driver.c                 |   2 +-
+ drivers/gpu/drm/i915/i915_pmu.c                    |  16 +-
+ drivers/gpu/drm/i915/intel_runtime_pm.c            | 221 ++-------------------
+ drivers/gpu/drm/i915/intel_runtime_pm.h            |  11 +-
+ drivers/gpu/drm/i915/intel_wakeref.c               |   7 +-
+ drivers/gpu/drm/i915/intel_wakeref.h               |  99 ++++++++-
+ include/linux/ref_tracker.h                        |  31 ++-
+ lib/ref_tracker.c                                  | 179 ++++++++++++++---
+ 29 files changed, 456 insertions(+), 331 deletions(-)
+---
+base-commit: c6137ecf40b2dc5bdf1ed8928122b700bfc91fea
+change-id: 20230224-track_gt-1b3da8bdacd7
+
+Best regards,
+-- 
+Andrzej Hajda <andrzej.hajda@intel.com>
