@@ -2,107 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EBC26CBE46
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C56C6CBE5F
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232745AbjC1L7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 07:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
+        id S232960AbjC1MET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 08:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjC1L7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:59:49 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E4A199;
-        Tue, 28 Mar 2023 04:59:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xdsfUu/qnsBP4IbjC/WCYy76g1YOySMvlcjwDWLo/i0=; b=dXMGbmJNOZCHGV/Lt3TyRQLm77
-        C8ZFsE7r42xczo/t2ucxtlpphRrnPONWu6QdmmY2SYomQO4jAbzFK6Q8zg5E0dNsKiXl3fGrGNDpc
-        DKuEOgRp6Cz+Pz0pM1DV/NPmu9r8RvzlrevPur+fbJMkb73PxiifwL2oIIybdFSWCqWg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ph7z8-008dk4-GB; Tue, 28 Mar 2023 13:59:30 +0200
-Date:   Tue, 28 Mar 2023 13:59:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S232115AbjC1MES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:04:18 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394D0619F;
+        Tue, 28 Mar 2023 05:04:16 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vet497l_1680005052;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vet497l_1680005052)
+          by smtp.aliyun-inc.com;
+          Tue, 28 Mar 2023 20:04:12 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [net-next PATCH v6 16/16] arm: mvebu: dt: Add PHY LED support
- for 370-rd WAN port
-Message-ID: <2e5c6dfb-5f55-416f-a934-6fa3997783b7@lunn.ch>
-References: <20230327141031.11904-1-ansuelsmth@gmail.com>
- <20230327141031.11904-17-ansuelsmth@gmail.com>
- <ZCKl1A9dZOIAdMY8@duo.ucw.cz>
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: [PATCH net-next 0/8] virtio_net: refactor xdp codes
+Date:   Tue, 28 Mar 2023 20:04:04 +0800
+Message-Id: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0.3.g01195cf9f
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCKl1A9dZOIAdMY8@duo.ucw.cz>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Git-Hash: 822c071fd47f
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 10:31:16AM +0200, Pavel Machek wrote:
-> On Mon 2023-03-27 16:10:31, Christian Marangi wrote:
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > 
-> > The WAN port of the 370-RD has a Marvell PHY, with one LED on
-> > the front panel. List this LED in the device tree.
-> 
-> > @@ -135,6 +136,19 @@ &mdio {
-> >  	pinctrl-names = "default";
-> >  	phy0: ethernet-phy@0 {
-> >  		reg = <0>;
-> > +		leds {
-> > +			#address-cells = <1>;
-> > +			#size-cells = <0>;
-> > +
-> > +			led@0 {
-> > +				reg = <0>;
-> > +				label = "WAN";
-> > +				color = <LED_COLOR_ID_WHITE>;
-> > +				function = LED_FUNCTION_LAN;
-> > +				function-enumerator = <1>;
-> > +				linux,default-trigger = "netdev";
-> > +			};
-> 
-> /sys/class/leds/WAN is not acceptable.
+Due to historical reasons, the implementation of XDP in virtio-net is relatively
+chaotic. For example, the processing of XDP actions has two copies of similar
+code. Such as page, xdp_page processing, etc.
 
-As i said here, that is not what it gets called:
+The purpose of this patch set is to refactor these code. Reduce the difficulty
+of subsequent maintenance. Subsequent developers will not introduce new bugs
+because of some complex logical relationships.
 
-https://lore.kernel.org/netdev/aa2d0a8b-b98b-4821-9413-158be578e8e0@lunn.ch/T/#m6c72bd355df3fcf8babc0d01dd6bf2697d069407
+In addition, the supporting to AF_XDP that I want to submit later will also need
+to reuse the logic of XDP, such as the processing of actions, I don't want to
+introduce a new similar code. In this way, I can reuse these codes in the
+future.
 
-> It can be found in /sys/class/leds/f1072004.mdio-mii:00:WAN. But when
-> we come to using it for ledtrig-netdev, the user is more likely to follow
-> /sys/class/net/eth0/phydev/leds/f1072004.mdio-mii\:00\:WAN/
+Please review.
 
-Is that acceptable?
+Thanks.
 
-What are the acceptance criteria?
+v1:
+    1. fix some variables are uninitialized
 
-     Andrew
+Xuan Zhuo (8):
+  virtio_net: mergeable xdp: put old page immediately
+  virtio_net: mergeable xdp: introduce mergeable_xdp_prepare
+  virtio_net: introduce virtnet_xdp_handler() to seprate the logic of
+    run xdp
+  virtio_net: separate the logic of freeing xdp shinfo
+  virtio_net: separate the logic of freeing the rest mergeable buf
+  virtio_net: auto release xdp shinfo
+  virtio_net: introduce receive_mergeable_xdp()
+  virtio_net: introduce receive_small_xdp()
+
+ drivers/net/virtio_net.c | 618 +++++++++++++++++++++++----------------
+ 1 file changed, 360 insertions(+), 258 deletions(-)
+
+--
+2.32.0.3.g01195cf9f
+
