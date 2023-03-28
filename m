@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 187CF6CC859
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 18:46:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5D56CC85A
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 18:46:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbjC1QqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 12:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S230098AbjC1QqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 12:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbjC1QqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 12:46:10 -0400
+        with ESMTP id S230241AbjC1QqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 12:46:11 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5023B1BF
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:45:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBF71729
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:45:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680021923;
+        s=mimecast20190719; t=1680021925;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qAZy2j3+F4ntMZ7G7MAt0HSs1UdJO4xu5JiY8UeiDpM=;
-        b=MPkZW5CSKdcaH5yj9hENis5bDwE6gs8RDGAQmbQGVB6seIuBkwvHuVSSKLDLBgJD0WRdt1
-        De9pOTJGLLwjwq0sgJ6W2kFk3fvSOlALzVvvqx2UMSJth5tDmzGw9FpMZiRhLQjw2cQPs1
-        FRZHe8s5k+nAefe61JABHIdJuHORjTs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=2cwFaiGEcaKbetx5eOECVzhQrtIqPQ2dWgamjvGOv18=;
+        b=BAhxgdhlak7revjCQoGTvxGCuPr72y+VHhdyYrbkUmOq3PjNmuSsoCcFi6n4s23xEffXNZ
+        JH3oOSXdrMmTdpGbAAl8pcRh+CUjLYmOL+j2YfG7bFJ99Y+Va5WrHKEf3haLMOgr2dAYwm
+        HUIPtdW7YrqtAznBqRLCwsMSDPvmDv4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-l1W4NMc1Pq-MEhSCcj4BtA-1; Tue, 28 Mar 2023 12:45:19 -0400
-X-MC-Unique: l1W4NMc1Pq-MEhSCcj4BtA-1
+ us-mta-371-jfkahAOcMN6wb6bOpPNn_w-1; Tue, 28 Mar 2023 12:45:21 -0400
+X-MC-Unique: jfkahAOcMN6wb6bOpPNn_w-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A38F8801779;
-        Tue, 28 Mar 2023 16:45:18 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AD8D31C07547;
+        Tue, 28 Mar 2023 16:45:20 +0000 (UTC)
 Received: from dcaratti.users.ipa.redhat.com (unknown [10.32.181.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B74C492C13;
-        Tue, 28 Mar 2023 16:45:17 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A53AB492C13;
+        Tue, 28 Mar 2023 16:45:19 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
@@ -44,9 +44,9 @@ To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Ilya Maximets <i.maximets@ovn.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Pedro Tammela <pctammela@mojatatu.com>
-Subject: [PATCH net-next v3 2/4] selftests: tc-testing: add "depends_on" property to skip tests
-Date:   Tue, 28 Mar 2023 18:45:03 +0200
-Message-Id: <1113c9203f6bb491819dec865d3e107a69a13ec6.1680021219.git.dcaratti@redhat.com>
+Subject: [PATCH net-next v3 3/4] selftests: tc-testing: add tunnel_key "nofrag" test case
+Date:   Tue, 28 Mar 2023 18:45:04 +0200
+Message-Id: <72335bd036509a533d1cf00554b77b674fad846f.1680021219.git.dcaratti@redhat.com>
 In-Reply-To: <cover.1680021219.git.dcaratti@redhat.com>
 References: <cover.1680021219.git.dcaratti@redhat.com>
 MIME-Version: 1.0
@@ -62,59 +62,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-currently, users can skip individual test cases by means of writing
-
-  "skip": "yes"
-
-in the scenario file. Extend this functionality, introducing 'dependsOn':
-it's optional property like "skip", but the value contains a command (for
-example, a probe on iproute2 to check if it supports a specific feature).
-If such property is present, tdc executes that command and skips the test
-when the return value is non-zero.
+ # ./tdc.py -e 6bda -l
+ 6bda: (actions, tunnel_key) Add tunnel_key action with nofrag option
 
 Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- .../creating-testcases/AddingTestCases.txt          |  2 ++
- tools/testing/selftests/tc-testing/tdc.py           | 13 +++++++++++++
- 2 files changed, 15 insertions(+)
+ .../tc-tests/actions/tunnel_key.json          | 25 +++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/tools/testing/selftests/tc-testing/creating-testcases/AddingTestCases.txt b/tools/testing/selftests/tc-testing/creating-testcases/AddingTestCases.txt
-index a28571aff0e1..ff956d8c99c5 100644
---- a/tools/testing/selftests/tc-testing/creating-testcases/AddingTestCases.txt
-+++ b/tools/testing/selftests/tc-testing/creating-testcases/AddingTestCases.txt
-@@ -38,6 +38,8 @@ skip:         A completely optional key, if the corresponding value is "yes"
-               this test case will still appear in the results output but
-               marked as skipped. This key can be placed anywhere inside the
-               test case at the top level.
-+dependsOn:    Same as 'skip', but the value is executed as a command. The test
-+              is skipped when the command returns non-zero.
- category:     A list of single-word descriptions covering what the command
-               under test is testing. Example: filter, actions, u32, gact, etc.
- setup:        The list of commands required to ensure the command under test
-diff --git a/tools/testing/selftests/tc-testing/tdc.py b/tools/testing/selftests/tc-testing/tdc.py
-index 7bd94f8e490a..5fa3fe644bfe 100755
---- a/tools/testing/selftests/tc-testing/tdc.py
-+++ b/tools/testing/selftests/tc-testing/tdc.py
-@@ -369,6 +369,19 @@ def run_one_test(pm, args, index, tidx):
-             pm.call_post_execute()
-             return res
- 
-+    if 'dependsOn' in tidx:
-+        if (args.verbose > 0):
-+            print('probe command for test skip')
-+        (p, procout) = exec_cmd(args, pm, 'execute', tidx['dependsOn'])
-+        if p:
-+            if (p.returncode != 0):
-+                res = TestResult(tidx['id'], tidx['name'])
-+                res.set_result(ResultState.skip)
-+                res.set_errormsg('probe command failed: test skipped.')
-+                pm.call_pre_case(tidx, test_skip=True)
-+                pm.call_post_execute()
-+                return res
-+
-     # populate NAMES with TESTID for this test
-     NAMES['TESTID'] = tidx['id']
- 
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
+index b40ee602918a..b5b47fbf6c00 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/tunnel_key.json
+@@ -983,5 +983,30 @@
+         "teardown": [
+             "$TC actions flush action tunnel_key"
+         ]
++    },
++    {
++        "id": "6bda",
++        "name": "Add tunnel_key action with nofrag option",
++        "category": [
++            "actions",
++            "tunnel_key"
++        ],
++        "dependsOn": "$TC actions add action tunnel_key help 2>&1 | grep -q nofrag",
++        "setup": [
++            [
++                "$TC action flush action tunnel_key",
++                0,
++                1,
++                255
++            ]
++        ],
++        "cmdUnderTest": "$TC actions add action tunnel_key set src_ip 10.10.10.1 dst_ip 10.10.10.2 id 1111 nofrag index 222",
++        "expExitCode": "0",
++        "verifyCmd": "$TC actions get action tunnel_key index 222",
++        "matchPattern": "action order [0-9]+: tunnel_key.*src_ip 10.10.10.1.*dst_ip 10.10.10.2.*key_id 1111.*csum.*nofrag pipe.*index 222",
++        "matchCount": "1",
++        "teardown": [
++            "$TC actions flush action tunnel_key"
++        ]
+     }
+ ]
 -- 
 2.39.2
 
