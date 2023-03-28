@@ -2,153 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B8F6CC51E
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D50056CC484
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 17:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbjC1PMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 11:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
+        id S233853AbjC1PFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 11:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbjC1PMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:12:21 -0400
-X-Greylist: delayed 620 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 28 Mar 2023 08:11:52 PDT
-Received: from er-systems.de (er-systems.de [IPv6:2a01:4f8:261:3c41::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE10FF27
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 08:11:52 -0700 (PDT)
-Received: from localhost.localdomain (localhost [127.0.0.1])
-        by er-systems.de (Postfix) with ESMTP id 4F161ECDAE2
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:01:27 +0200 (CEST)
+        with ESMTP id S233848AbjC1PFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 11:05:45 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2070e.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe5b::70e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B989774;
+        Tue, 28 Mar 2023 08:04:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jAtGlQOxJPoSmuR0JKEwe+hSaQqO4bZKMN4gIqcrEdqZf74YGj+ginwDA2+tYsohen6vUh++bbYEzKjRRVuSP7q1S4aK6jV1r99BFCp19nsGJwn4PkaO3nPY9TxlmUqR2Fdz7gtSSlpK4GP6+N9z6ZBoluCb5H4XYT6gD+1gLDM+Qr1gQjds69kKvy5qf1xlqiyGbPy4Z2Qgrwq8UlTMS0oxAN+H0kJ9HHBibSHihawhAvvroUxCYQ7CSsvTo98OYcHyWPVt6olDI/tAz9cN1xpfJ0pPw8NIUPwqXL4NWf8fwLzvc5MKSpIizRgSte7qJawQp+Cu5hYtWjDdINRP0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jOjwBZBogmRHpFK9fzguZl/mQ+weud83Q5M6VhFIgHg=;
+ b=MnehywD5yaIcq0k8oQZXZaBMskNl99euJ8mRreZ+ov6y3eCCmgIE6daa6DT8T/XxhuoV+OdCsFwEpHa0vF/9IdG8ED9arnMH8habD7ePJcS6FOGJglCxoScLycbt7vA0nOXHZf+DljQbnIMTzGWJinULhnX8K8jqDnUEbi+ImoOQ2qW4PkdLkNesRj0Fbu5rcnIUFKCBm1y7h3G/BXmS4U9981Y6mhhUfJUk/JxTZihBay9pvqqfwjf0848XQRJcvV2gbmvuCB+RT4BEPnd3Vkied5IPI3exlTTuKQ8EGyU9MixJEaiW4V9s3LpVDYPNSJELZvDjijro2tn28ISGzg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jOjwBZBogmRHpFK9fzguZl/mQ+weud83Q5M6VhFIgHg=;
+ b=ZGJqy3FHAUoR6WN+TbUCaxkwA+FibEAIGrCW6UhvZ5mgQU37oMXzgRGYlAdiIq9cEedj/rOyesqqVuyIaPPrBRThHf4qpdfFmLVQkx7UYqfNpDDMl1DFAMTBHMjgfyWxV01XVZlRIgxRIjxHsZPcYuGEqpBRViMfbA/KJKqbZno=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA1PR13MB6147.namprd13.prod.outlook.com (2603:10b6:806:333::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.38; Tue, 28 Mar
+ 2023 15:03:33 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Tue, 28 Mar 2023
+ 15:03:33 +0000
+Date:   Tue, 28 Mar 2023 17:03:26 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] Revert "sh_eth: remove open coded
+ netif_running()"
+Message-ID: <ZCMBvv7Qm3ApnD/i@corigine.com>
+References: <20230327152112.15635-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230327152112.15635-1-wsa+renesas@sang-engineering.com>
+X-ClientProxiedBy: AS4PR10CA0018.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5d8::12) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB6147:EE_
+X-MS-Office365-Filtering-Correlation-Id: b6e7761e-312e-4fa2-aec4-08db2f9d9930
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AhEEd2WI8IRmJpJm+n4dJoW0+L888fBLjQUcyLMnQLLEx3VUQelG9F7rGeZa3F3YU1zpkGPEpKfvoGbzlR47tJVmhAfE4YBHwOeevjARYg6iEYol5eG2Nunew4hkAOaB//tdYsvmP8calWU0dNZpHv2Ap/7e9A371c84KpKrA4O/tYYTdfKe5M1E6+jhw1/MI/8i2VXu5EAYuxHY2MCm5bLO57B81GHJefwwUNIMm023jBkEBjTDqhyuttlNQPHspP8R2BRgIKvcQonyDoggBSmzbiNzlGDbZ8i2ByrnUbaJmiPKDx22j9RTDkpgwHdmcjc2UpRFajsTvdC0LyewDx+6WcQzlZln1o1h5fvnuHbnMNo9SfWXSyCQDbfvTMsFF4RG69iL3wUhQX8oTazdDuHZfcm+W52vXLsxRvdgE3m8s8YWW9aYKET1hratTKy13ZdWWAP0HqVFxIKBo8HaBjOuBep2jOqcQE79++HXFCQjHpJlVFn12H0XychaXEXwb78kjfbfVwlEWZUGQwn7Y/0x/jU2FbUCeJWa+dkYWJ+ZEPrU9njjiaPwwyx4Mbsb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(366004)(136003)(346002)(376002)(39830400003)(451199021)(6666004)(66556008)(316002)(66476007)(4326008)(66946007)(8676002)(5660300002)(4744005)(41300700001)(8936002)(38100700002)(186003)(54906003)(6512007)(2616005)(478600001)(6506007)(6486002)(86362001)(2906002)(44832011)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mQnsxiN/AMOq/01IXXWx/kigqL1fmgUS68vZg7kz6EVez8LF4AIvdD07YTGm?=
+ =?us-ascii?Q?Y8dfT0JNsy9ZEqVQOLdGz5hEe9T9q6Vb4Ax/gSjFnNrUwWLu5Uqe5NY8J/hg?=
+ =?us-ascii?Q?0Pdq3NR7n4/F7lpjDR3H0tiOUpjkJ20eEu7sxd1K1M01cLEShohC8p3pvB69?=
+ =?us-ascii?Q?zUTnJoGMCrnMozkzSuGoLL/zd6XNFtBB7BVKKp/MzhAQNFnhSmClU9wiLZJw?=
+ =?us-ascii?Q?TOimWg3AMO9rk2uNeFyPL6fXSNcgR/qPE6FsziuZJjrY/mwprH9j8XljgIHZ?=
+ =?us-ascii?Q?OsEWmrxyDNmIze5wakbUXuRvWEQf8kVtmJZ+HiagYoWSt/qJPrSLcnLsOroF?=
+ =?us-ascii?Q?xJ53SFJpj2na1YIBK4PvdA7E3auV8ncGD8l4EgKeJse6easrGLdHugguulM2?=
+ =?us-ascii?Q?RjQunPk+OnH9pO/MrDhjW0Wyww2MHATIJ/7v6NNW2aKonGMUczmW0Kw92cSn?=
+ =?us-ascii?Q?dnG0MqzV79hMmAWn2MKkddi4bXvQLFQ5qGOUKR9amcUkqjvTJ2GdqQA6e4I8?=
+ =?us-ascii?Q?AOt6KB3YGsXbWRxD+q58ee0J3WmLBsK8y0HpHWQ/UPznOn8XsTtQCU/n/3O8?=
+ =?us-ascii?Q?uqF9/nlHczLZdfYC0ta8w5QMt8+awufPLPqogDQFInv2i+ggU0izRLPiW0Z7?=
+ =?us-ascii?Q?OSpj+EThHvlF6SjkJLJieURqUyHYJ/0ZAvnj0x3xbPCYq09biULTnRrgJVYI?=
+ =?us-ascii?Q?faqfpn9V5ASZ+10FDwluzKitv/ToHW7X1ws4hKQO7E1pIxpakxUMpeebeW73?=
+ =?us-ascii?Q?ORthO4/CigaYMf8Rb3OrdZdb2b0+7n7EcyeNjteOiG2txcqSxp+mGuyCGJ2C?=
+ =?us-ascii?Q?J+NJkRc4cGwTpZYk/hzbdCGurMDPAQTf1i+feKjW2DE70o9JQRu6cEQdUp1/?=
+ =?us-ascii?Q?GD5tI1qGiPLqNn0xLpF7sSEqXhDtEFAzaZnmgHe1X/HEWic3Eb2QcZs53cSe?=
+ =?us-ascii?Q?YqypokAGL+fKW+E+gWc4rai3fR5ueJFWU8+8mS8zFvamaJr7WjV+vOby8baG?=
+ =?us-ascii?Q?2xC6pVaqMU0HJlHnkCQ2b7krP7xnbo5uiSDoP3vlnzCR2A8vROSb383aedEt?=
+ =?us-ascii?Q?UHr7mpdmgDeIiFXuW4lp7XxnuSttSOGWRi8anNUBYJS6vBA+r89Ce+sk4cEZ?=
+ =?us-ascii?Q?D3XGr6iWBc00PHqSF2F4dIgaRFtAxUNkmIgaIMhrkHRLCRqZFOjJyLuJInxw?=
+ =?us-ascii?Q?YgeKmQeIS9hWgBbjA80OzIAVHbloUDAqlUwRVudTMInR+MH11NndDtoWVLFP?=
+ =?us-ascii?Q?++jLK2MeQmtgwJBOlqqMid5L4E2lSymIGd1dwKDtv/2EWIP7E4uZV2BZyQv2?=
+ =?us-ascii?Q?klqUbZFui59VhZ9gf6wjT57Lpc304Z5gbRhJm+tr06Io9sCC2zO8ePYgj4ut?=
+ =?us-ascii?Q?0xjCDrI95zjZPVbD+Ey0VsdNME91Ex3lfqTrrb29XLpHOlrv5dk28rJCLpJL?=
+ =?us-ascii?Q?3xp1ncaNFrmtkEdkBnvKqOKIIL4Xlaz/mkINraH4bAqHGKzG7CdgxI8TbwNH?=
+ =?us-ascii?Q?+rWs+u151TJR8SzleP03UxlONyhIzHlhuqHcncA2RTF+LVuzRYFI67V9nKX0?=
+ =?us-ascii?Q?NgHp9EZpiK03jro8EscuxH8Na0zKk+U9//iBPyTQF3PQ9ZjqIlgD1Wg865YO?=
+ =?us-ascii?Q?S4mCrVhQ1xY1aA4dNntBkm2/tkaLlzaAzDet4zNCK9BCqAAkb9QCDju2kpKV?=
+ =?us-ascii?Q?AqBxKQ=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6e7761e-312e-4fa2-aec4-08db2f9d9930
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2023 15:03:33.1794
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gV5/38JicYzUml1z6dyh546UDyQmYIfRHa4BJH+nIipWRToGcTF4VubxNCiO8miHNNXTcVPEwxrS9IEuegXBizUMien3r4GsXADWPvQ1USE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB6147
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.0 required=5.0 tests=SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
-Received: from localhost (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by er-systems.de (Postfix) with ESMTPS id 38127ECDAC4
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:01:27 +0200 (CEST)
-Date:   Tue, 28 Mar 2023 17:01:24 +0200 (CEST)
-From:   Thomas Voegtle <tv@lio96.de>
-To:     netdev@vger.kernel.org
-Subject: Warning: "Use slab_build_skb() instead" wrt bnx2x
-Message-ID: <b8f295e4-ba57-8bfb-7d9c-9d62a498a727@lio96.de>
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
-X-Virus-Status: No
-X-Virus-Checker-Version: clamassassin 1.2.4 with clamdscan / ClamAV 0.103.8/26857/Tue Mar 28 09:23:39 2023
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 27, 2023 at 05:21:12PM +0200, Wolfram Sang wrote:
+> This reverts commit ce1fdb065695f49ef6f126d35c1abbfe645d62d5. It turned
+> out this actually introduces a race condition. netif_running() is not a
+> suitable check for get_stats.
+> 
+> Reported-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Hello,
-
-this warning comes up when this BCM57840 NetXtreme II 10 Gigabit Ethernet 
-card is put in to a bond with another card during booting with Linux 
-6.3.0-rc4.
-This also can be seen with Linux 6.2.8.
-
-    Thomas
-
-
-[   83.750521] ------------[ cut here ]------------
-[   83.750523] Use slab_build_skb() instead
-[   83.750534] WARNING: CPU: 2 PID: 0 at net/core/skbuff.c:376 
-__build_skb_around+0xcc/0x100
-[   83.750540] Modules linked in: af_packet nf_conntrack_netlink msr 
-bridge 8021q garp mrp bonding tls stp llc xfrm_user xfrm_algo dummy 
-ip6t_ipv6header ip6table_raw ipt_REJECT nf_reject_ipv4
-xt_state xt_conntrack xt_TCPMSS xt_connmark xt_CT xt_NFLOG nfnetlink_log 
-xt_addrtype xt_set xt_policy iptable_raw ip6table_mangle iptable_mangle 
-ip6table_nat iptable_nat ip6table_filter ip6_tables
-iptable_filter ip_tables bpfilter nf_nat_tftp nf_conntrack_tftp nf_nat_sip 
-nf_conntrack_sip nf_nat_pptp nf_conntrack_pptp nf_nat_irc nf_conntrack_irc 
-nf_nat_ftp nf_nat nf_conntrack_ftp nf_conntrack
-nf_defrag_ipv6 nf_defrag_ipv4 ip_set_hash_netiface ip_set_list_set 
-ip_set_hash_net ip_set_hash_ip ip_set vhost_net tun vhost vhost_iotlb tap 
-ipmi_devintf ipmi_msghandler ppdev parport_pc parport st
-snd_hda_codec_hdmi snd_hda_codec_realtek snd_hda_codec_generic 
-ledtrig_audio led_class i915 drm_buddy coretemp intel_rapl_msr 
-drm_display_helper intel_rapl_common intel_tcc_cooling
-x86_pkg_temp_thermal kvm_intel ttm cec drm_kms_helper snd_hda_intel
-[   83.750593]  kvm snd_intel_dspcfg snd_hda_codec uas drm snd_hwdep 
-ee1004 mei_hdcp mei_pxp wmi_bmof mxm_wmi snd_hda_core bnx2x snd_pcm igb 
-snd_timer irqbypass crc32_pclmul crc32c_intel
-polyval_clmulni snd polyval_generic gf128mul ghash_clmulni_intel 
-sha512_ssse3 aesni_intel crypto_simd i2c_i801 cryptd pcspkr i2c_smbus 
-soundcore intel_gtt mei_me hwmon agpgart ptp mei dca r8169
-syscopyarea pps_core sg sysfillrect video sysimgblt realtek 
-tiny_power_button acpi_pad wmi button configfs
-[   83.750625] CPU: 2 PID: 0 Comm: swapper/2 Not tainted 6.3.0-rc4 #1 
-ed9f7d9e385b31369315248b96faa9df43a0c154
-[   83.750628] Hardware name: bluechip Computer AG bluechip ServerLine 
-individual/P10S WS, BIOS 3801 11/19/2019
-[   83.750629] RIP: 0010:__build_skb_around+0xcc/0x100
-[   83.750631] Code: 20 01 00 00 00 5b 5d 41 5c c3 cc cc cc cc 80 3d 8c 94 
-2b 01 00 75 15 48 c7 c7 70 e6 9b ae c6 05 7c 94 2b 01 01 e8 f4 d2 4e ff 
-<0f> 0b 48 89 df e8 ea 90 71 ff ba 20 08 00 00 48
-89 df 89 c6 41 89
-[   83.750633] RSP: 0018:ffffa81e80170db0 EFLAGS: 00010286
-[   83.750635] RAX: 000000000000001c RBX: ffff93c80fd38000 RCX: 
-0000000000000000
-[   83.750636] RDX: ffffa81e80170c68 RSI: ffffa81e80170cb8 RDI: 
-0000000000000001
-[   83.750637] RBP: ffff93c808038a00 R08: 0000000000000000 R09: 
-c0000000ffffdfff
-[   83.750638] R10: 0000000000000001 R11: ffffa81e80170c60 R12: 
-0000000000000000
-[   83.750639] R13: ffff93c849e182f8 R14: ffff93c8082c0980 R15: 
-ffff93c80fdc00c0
-[   83.750640] FS:  0000000000000000(0000) GS:ffff93cd56d00000(0000) 
-knlGS:0000000000000000
-[   83.750642] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   83.750643] CR2: 0000563a63c73bd8 CR3: 0000000601c34005 CR4: 
-00000000003706e0
-[   83.750645] Call Trace:
-[   83.750647]  <IRQ>
-[   83.750649]  __build_skb+0x49/0x60
-[   83.750652]  build_skb+0x11/0xb0
-[   83.750655]  bnx2x_rx_int+0x6be/0x16b0 [bnx2x 
-bb4aca8a40e7af80af92c2691d138057d98c8214]
-[   83.750706]  ? enqueue_entity+0x11f/0x3a0
-[   83.750710]  ? __x64_sys_sched_rr_get_interval+0xb/0x50
-[   83.750713]  ? __pfx_wake_q_add+0x3/0x10
-[   83.750716]  bnx2x_poll+0x1b8/0x260 [bnx2x 
-bb4aca8a40e7af80af92c2691d138057d98c8214]
-[   83.750759]  __napi_poll+0x28/0x1b0
-[   83.750763]  net_rx_action+0x28f/0x2e0
-[   83.750767]  __do_softirq+0xbd/0x2b0
-[   83.750771]  irq_exit_rcu+0x77/0xa0
-[   83.750775]  common_interrupt+0x82/0xa0
-[   83.750778]  </IRQ>
-[   83.750779]  <TASK>
-[   83.750780]  asm_common_interrupt+0x22/0x40
-[   83.750783] RIP: 0010:cpuidle_enter_state+0xc6/0x450
-[   83.750785] Code: 00 00 e8 9d 28 31 ff e8 18 f8 ff ff 49 89 c4 0f 1f 44 
-00 00 31 ff e8 b9 45 30 ff 45 84 ff 0f 85 49 02 00 00 fb 0f 1f 44 00 00 
-<45> 85 f6 0f 88 75 01 00 00 49 63 d6 4c 2b 24 24
-48 8d 04 52 48 8d
-[   83.750787] RSP: 0018:ffffa81e800f7e98 EFLAGS: 00000246
-[   83.750789] RAX: ffff93cd56d32e80 RBX: 0000000000000004 RCX: 
-000000000000001f
-[   83.750790] RDX: 000000137feb6d01 RSI: 000000002aaaab99 RDI: 
-0000000000000000
-[   83.750791] RBP: ffffc81e7fd00108 R08: 0000000000000002 R09: 
-0000000000032640
-[   83.750792] R10: 000000709eeb8408 R11: ffff93cd56d31a04 R12: 
-000000137feb6d01
-[   83.750793] R13: ffffffffaedd81a0 R14: 0000000000000004 R15: 
-0000000000000000
-[   83.750796]  ? cpuidle_enter_state+0xb7/0x450
-[   83.750799]  cpuidle_enter+0x29/0x40
-[   83.750803]  do_idle+0x1fb/0x220
-[   83.750806]  cpu_startup_entry+0x19/0x20
-[   83.750808]  start_secondary+0xed/0xf0
-[   83.750811]  secondary_startup_64_no_verify+0xe5/0xeb
-[   83.750816]  </TASK>
-[   83.750817] ---[ end trace 0000000000000000 ]---
-
-
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
