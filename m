@@ -2,156 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 592256CB7D0
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 09:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EEA16CB82C
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 09:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbjC1HPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 03:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56578 "EHLO
+        id S231377AbjC1Hdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 03:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbjC1HPV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 03:15:21 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DA02118
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 00:15:20 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id cn12so45664348edb.4
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 00:15:20 -0700 (PDT)
+        with ESMTP id S230452AbjC1Hdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 03:33:47 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7434206
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 00:33:44 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id ek18so45789678edb.6
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 00:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1679987719;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a5+zy5SoCYq6/et2tieaSXMpayerIKj860Onx4Vw8+I=;
-        b=Ho8JSOryFKimIksqf5bO4XzT5xg7fQ8AUYrBISwwm/DvVDZe9L2hbzg9JWGCbwLxEp
-         XUnFp0+mg2xv8hIDg7Axw8y6PX2zKbjlUy0YVr6FC89GdEb07jP+VWr83cuBzYroKgcJ
-         J85vVDAWFSnQTmDZG/Jjhrfhnx8xxSdnmF0hcy5GtZ8VMnd+jxl8XkMcRDMkZJXL1L3c
-         d/FvU3A74ViIu2yuM7vJSTJsPE4hRcUsaSl0hSnLz0lorbBZggwgGa8JmltCK65Oo5s0
-         lcdPfmzNLxafuLVIqRm0S/K0DlhQTU23nNiCU6NokM0pF5QzTCwF6pdITYMybKNq+Nrr
-         sIFg==
+        d=amarulasolutions.com; s=google; t=1679988823;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IQemtvhch+zpychTw2wPnm8AfYz48LBPAqThlF3dIgU=;
+        b=DDUJo2LUdaN/EQ7qfHi1KDLV00MZH5/PH2X5hnuvjtJigIGuxkr6lgHi454/0Ic6dV
+         wZuw1pNJuhb0fuh8Fo1T+E25Y1FXav1kSDre2Veb0Dytbkh0LzQD0fIVtPtbJ7lX/45V
+         l171wS7bvsLBAL2BZf2Ps9xCSKcQ1PnFqY8ho=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679987719;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=a5+zy5SoCYq6/et2tieaSXMpayerIKj860Onx4Vw8+I=;
-        b=5yvkEhmsgSdJJ/sMAz2rGXnyvFMUqU0drXP6fT9mzYZmREFW57/q9j/YV3Rox2Blkc
-         DiJswtBAoGLtoBeVDBhNdeB8O2HI000qL0tPS2j2mGohx66CWmOQGA1zkwRylEJL5Nsx
-         W8iiQzdeQgNlSx/8foo7lutno36HJu99Jx57DWokd3uSYuYYh0zq+HvA/sQuMzswZamF
-         aK7H7I5+NpQRMOPB8B/Y+vrmVojs1dq1IX4v3pOm6ULbkH6/n9TjxJhbjfnV3CSEnFz1
-         RNOhXoWJvaJ4oub6D9qNBn0KIo5Opclt6XHca4EyFnG0o4l2Lum1tw6+tU7CYWjbEvWI
-         8T9g==
-X-Gm-Message-State: AO0yUKWD8BGO0Crgl/thf8Kq4Indo8Sb713BAu5NmyrvkOzdqW2VWktl
-        tneGXHCqrd62UC6YZGePQRxoLT/EJrnLywTs32ZrGY5iDcYgsw==
-X-Google-Smtp-Source: AK7set+w9HL6bZGjbPOTJ/gGhKn8M4plcIkYVae6XC9D3coqQ1Y2eAz3nFbgIxt3YfscIab2KGU4+aRfKHTbKKFPjU0=
-X-Received: by 2002:a17:907:c084:b0:922:26ae:c68c with SMTP id
- st4-20020a170907c08400b0092226aec68cmr11293640ejc.5.1679987718858; Tue, 28
- Mar 2023 00:15:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230327230628.45660-1-kuniyu@amazon.com>
-In-Reply-To: <20230327230628.45660-1-kuniyu@amazon.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Tue, 28 Mar 2023 15:14:42 +0800
-Message-ID: <CAL+tcoD9zYs-6wT1mqx2Zu3v6S=9q3Wq_X_W0_XNFu6ViAvwiw@mail.gmail.com>
-Subject: Re: [PATCH v1 net] tcp: Refine SYN handling for PAWS.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        d=1e100.net; s=20210112; t=1679988823;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IQemtvhch+zpychTw2wPnm8AfYz48LBPAqThlF3dIgU=;
+        b=pVb688t1BlZ66+CU37/YiLCnVDpOL5nP03EsHLijmyNHZAkiPvDtZdK/1N97rjmg52
+         wzeKjZPsRFGLAJsCZ7dMdffY7PKz6Q8hDxZDGTdZBRQpHYEiLHn2Fage7vjYbZ3UN914
+         psCVPumf6cLazLPFz24L0dqEBBohghMjTEglzovn/hJzdBEg52DQNmIHt8sHTX6n9UUx
+         l1aR/egDXGQlnsoDt4vAaWGg/fYYOTXizFkkaJgkiQZSmt5uGXPdQ/qo8EkifN2n8/cF
+         tqHiYXT4DxWP9KDYCb6D+/aGMcrQXhb/AzBUdQ8fd3NByXIvFo2FA/OLZFNLj8I+k6Qe
+         FH5A==
+X-Gm-Message-State: AAQBX9e/xo38XnoWOuM7Z83fVU2E6+uApW/gOUDLPnfcoLKLooDlC9a4
+        1xoARr1zXMZqFGmAudJXLXn/jA==
+X-Google-Smtp-Source: AKy350ZKKZTwjymwVYKuJHzbW08nK3OTt+QV0Hz6QQXW10YOGTYY6Tbp/bTXgkSwuXUVY1zISzfGFQ==
+X-Received: by 2002:a17:906:c453:b0:90b:53f6:fd8a with SMTP id ck19-20020a170906c45300b0090b53f6fd8amr16162637ejb.10.1679988822894;
+        Tue, 28 Mar 2023 00:33:42 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-87-0-102-254.retail.telecomitalia.it. [87.0.102.254])
+        by smtp.gmail.com with ESMTPSA id 15-20020a508e4f000000b004fa99a22c3bsm15478850edx.61.2023.03.28.00.33.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 00:33:42 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Rob Herring <robh@kernel.org>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Christophe Roullier <christophe.roullier@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Rob Herring <robh+dt@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-can@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
+Subject: [PATCH v10 0/5] can: bxcan: add support for ST bxCAN controller
+Date:   Tue, 28 Mar 2023 09:33:23 +0200
+Message-Id: <20230328073328.3949796-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 7:18=E2=80=AFAM Kuniyuki Iwashima <kuniyu@amazon.co=
-m> wrote:
->
-> Our Network Load Balancer (NLB) [0] has multiple nodes with different
-> IP addresses, and each node forwards TCP flows from clients to backend
-> targets.  NLB has an option to preserve the client's source IP address
-> and port when routing packets to backend targets.
->
-> When a client connects to two different NLB nodes, they may select the
-> same backend target.  Then, if the client has used the same source IP
-> and port, the two flows at the backend side will have the same 4-tuple.
+The series adds support for the basic extended CAN controller (bxCAN)
+found in many low- to middle-end STM32 SoCs.
 
-It rarely happens based on my knowledge (at least no one reports such
-an issue in my company), but indeed it can happen.
+The driver has been tested on the stm32f469i-discovery board with a
+kernel version 5.19.0-rc2 in loopback + silent mode:
 
->
-> While testing around such cases, I saw these sequences on the backend
-> target.
->
-> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 2819965599, win 62=
-727, options [mss 8365,sackOK,TS val 1029816180 ecr 0,nop,wscale 7], length=
- 0
-> IP 10.0.3.249.10000 > 10.0.0.215.60000: Flags [S.], seq 3040695044, ack 2=
-819965600, win 62643, options [mss 8961,sackOK,TS val 1224784076 ecr 102981=
-6180,nop,wscale 7], length 0
-> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [.], ack 1, win 491, option=
-s [nop,nop,TS val 1029816181 ecr 1224784076], length 0
-> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 2681819307, win 62=
-727, options [mss 8365,sackOK,TS val 572088282 ecr 0,nop,wscale 7], length =
-0
-> IP 10.0.3.249.10000 > 10.0.0.215.60000: Flags [.], ack 1, win 490, option=
-s [nop,nop,TS val 1224794914 ecr 1029816181,nop,nop,sack 1 {4156821004:4156=
-821005}], length 0
->
-> It seems to be working correctly, but the last ACK was generated by
-> tcp_send_dupack() and PAWSEstab was increased.  This is because the
-> second connection has a smaller timestamp than the first one.
->
-> In this case, we should send a challenge ACK instead of a dup ACK and
-> increase the correct counter to rate-limit it properly.
->
-> Let's check the SYN bit after the PAWS tests to avoid adding unnecessary
-> overhead for most packets.
->
-> Link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/int=
-roduction.html [0]
-> Link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/loa=
-d-balancer-target-groups.html#client-ip-preservation [1]
-> Fixes: 0c24604b68fc ("tcp: implement RFC 5961 4.2")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+ip link set can0 type can bitrate 125000 loopback on listen-only on
+ip link set up can0
+candump can0 -L &
+cansend can0 300#AC.AB.AD.AE.75.49.AD.D1
 
-A long time ago, a similar case reported in 2012 was handled in commit
-e37158991701(tcp: refine SYN handling in tcp_validate_incoming) by
-Eric.
-I believe we also can do this here during the paws check phrase.
+For uboot and kernel compilation, as well as for rootfs creation I used
+buildroot:
 
-It looks good to me, please feel free to add:
-Reviewed-by: Jason Xing <kerneljasonxing@gmail.com>
+make stm32f469_disco_sd_defconfig
+make
 
-Thanks!
+but I had to patch can-utils and busybox as can-utils and iproute are
+not compiled for MMU-less microcotrollers. In the case of can-utils,
+replacing the calls to fork() with vfork(), I was able to compile the
+package with working candump and cansend applications, while in the
+case of iproute, I ran into more than one problem and finally I decided
+to extend busybox's ip link command for CAN-type devices. I'm still
+wondering if it was really necessary, but this way I was able to test
+the driver.
 
-> ---
->  net/ipv4/tcp_input.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index cc072d2cfcd8..89fca4c18530 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -5714,6 +5714,8 @@ static bool tcp_validate_incoming(struct sock *sk, =
-struct sk_buff *skb,
->             tp->rx_opt.saw_tstamp &&
->             tcp_paws_discard(sk, skb)) {
->                 if (!th->rst) {
-> +                       if (unlikely(th->syn))
-> +                               goto syn_challenge;
->                         NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABRE=
-JECTED);
->                         if (!tcp_oow_rate_limited(sock_net(sk), skb,
->                                                   LINUX_MIB_TCPACKSKIPPED=
-PAWS,
-> --
-> 2.30.2
->
+Changes in v10:
+- Fix errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'.
+  Fix the "st,can-primary" description removing the "Note:" word that
+  caused the failure.
+- Slightly change the note text at the top of the driver module. No
+  functional changes.
+
+Changes in v9:
+- Fix commit description formatting. No semantic changes have been made.
+- Replace master/slave terms with primary/secondary.
+- Replace master/slave terms with primary/secondary.
+- Replace master/slave terms with primary/secondary.
+
+Changes in v8:
+- Do not enable the clock in probe and enable/disable it in open/close.
+- Return IRQ_NONE if no IRQ is active.
+
+Changes in v7:
+- Add Vincent Mailhol's Reviewed-by tag.
+- Remove all unused macros for reading/writing the controller registers.
+- Add CAN_ERR_CNT flag to notify availability of error counter.
+- Move the "break" before the newline in the switch/case statements.
+- Print the mnemotechnic instead of the error value in each netdev_err().
+- Remove the debug print for timings parameter.
+- Do not copy the data if CAN_RTR_FLAG is set in bxcan_start_xmit().
+- Populate ndev->ethtool_ops with the default timestamp info.
+
+Changes in v6:
+- move can1 node before gcan to keep ordering by address.
+
+Changes in v5:
+- Add Rob Herring's Acked-by tag.
+- Add Rob Herring's Reviewed-by tag.
+- Put static in front of bxcan_enable_filters() definition.
+
+Changes in v4:
+- Remove "st,stm32f4-bxcan-core" compatible. In this way the can nodes
+ (compatible "st,stm32f4-bxcan") are no longer children of a parent
+  node with compatible "st,stm32f4-bxcan-core".
+- Add the "st,gcan" property (global can memory) to can nodes which
+  references a "syscon" node containing the shared clock and memory
+  addresses.
+- Replace the node can@40006400 (compatible "st,stm32f4-bxcan-core")
+  with the gcan@40006600 node ("sysnode" compatible). The gcan node
+  contains clocks and memory addresses shared by the two can nodes
+  of which it's no longer the parent.
+- Add to can nodes the "st,gcan" property (global can memory) which
+  references the gcan@40006600 node ("sysnode compatibble).
+- Add "dt-bindings: arm: stm32: add compatible for syscon gcan node" patch.
+- Drop the core driver. Thus bxcan-drv.c has been renamed to bxcan.c and
+  moved to the drivers/net/can folder. The drivers/net/can/bxcan directory
+  has therefore been removed.
+- Use the regmap_*() functions to access the shared memory registers.
+- Use spinlock to protect bxcan_rmw().
+- Use 1 space, instead of tabs, in the macros definition.
+- Drop clock ref-counting.
+- Drop unused code.
+- Drop the _SHIFT macros and use FIELD_GET()/FIELD_PREP() directly.
+- Add BXCAN_ prefix to lec error codes.
+- Add the macro BXCAN_RX_MB_NUM.
+- Enable time triggered mode and use can_rx_offload().
+- Use readx_poll_timeout() in function with timeouts.
+- Loop from tail to head in bxcan_tx_isr().
+- Check bits of tsr register instead of pkts variable in bxcan_tx_isr().
+- Don't return from bxcan_handle_state_change() if skb/cf are NULL.
+- Enable/disable the generation of the bus error interrupt depending
+  on can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING.
+- Don't return from bxcan_handle_bus_err() if skb is NULL.
+- Drop statistics updating from bxcan_handle_bus_err().
+- Add an empty line in front of 'return IRQ_HANDLED;'
+- Rename bxcan_start() to bxcan_chip_start().
+- Rename bxcan_stop() to bxcan_chip_stop().
+- Disable all IRQs in bxcan_chip_stop().
+- Rename bxcan_close() to bxcan_ndo_stop().
+- Use writel instead of bxcan_rmw() to update the dlc register.
+
+Changes in v3:
+- Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+- Add description to the parent of the two child nodes.
+- Move "patterProperties:" after "properties: in top level before "required".
+- Add "clocks" to the "required:" list of the child nodes.
+- Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+- Add "clocks" to can@0 node.
+- Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+- Remove a blank line.
+- Remove 'Dario Binacchi <dariobin@libero.it>' SOB.
+- Fix the documentation file path in the MAINTAINERS entry.
+- Do not increment the "stats->rx_bytes" if the frame is remote.
+- Remove pr_debug() call from bxcan_rmw().
+
+Changes in v2:
+- Change the file name into 'st,stm32-bxcan-core.yaml'.
+- Rename compatibles:
+  - st,stm32-bxcan-core -> st,stm32f4-bxcan-core
+  - st,stm32-bxcan -> st,stm32f4-bxcan
+- Rename master property to st,can-master.
+- Remove the status property from the example.
+- Put the node child properties as required.
+- Remove a blank line.
+- Fix sparse errors.
+- Create a MAINTAINERS entry.
+- Remove the print of the registers address.
+- Remove the volatile keyword from bxcan_rmw().
+- Use tx ring algorithm to manage tx mailboxes.
+- Use can_{get|put}_echo_skb().
+- Update DT properties.
+
+Dario Binacchi (5):
+  dt-bindings: arm: stm32: add compatible for syscon gcan node
+  dt-bindings: net: can: add STM32 bxcan DT bindings
+  ARM: dts: stm32: add CAN support on stm32f429
+  ARM: dts: stm32: add pin map for CAN controller on stm32f4
+  can: bxcan: add support for ST bxCAN controller
+
+ .../bindings/arm/stm32/st,stm32-syscon.yaml   |    2 +
+ .../bindings/net/can/st,stm32-bxcan.yaml      |   85 ++
+ MAINTAINERS                                   |    7 +
+ arch/arm/boot/dts/stm32f4-pinctrl.dtsi        |   30 +
+ arch/arm/boot/dts/stm32f429.dtsi              |   29 +
+ drivers/net/can/Kconfig                       |   12 +
+ drivers/net/can/Makefile                      |    1 +
+ drivers/net/can/bxcan.c                       | 1098 +++++++++++++++++
+ 8 files changed, 1264 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/can/st,stm32-bxcan.yaml
+ create mode 100644 drivers/net/can/bxcan.c
+
+-- 
+2.32.0
+
