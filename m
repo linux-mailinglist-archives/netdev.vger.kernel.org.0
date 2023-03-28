@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDD76CCC3C
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 23:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D398E6CCC65
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 23:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbjC1VnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 17:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39794 "EHLO
+        id S230003AbjC1V5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 17:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjC1VnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 17:43:15 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FE52D68;
-        Tue, 28 Mar 2023 14:43:11 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id cn12so55431918edb.4;
-        Tue, 28 Mar 2023 14:43:11 -0700 (PDT)
+        with ESMTP id S230009AbjC1V5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 17:57:10 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37FD273A;
+        Tue, 28 Mar 2023 14:56:53 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id g7so9007970pfu.2;
+        Tue, 28 Mar 2023 14:56:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680039789;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1680040611;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xvPLTtKlU0vNaz9725r81EHFLKAu4AQ65dj5fg+SF9o=;
-        b=PHzYOgN3kiUberFUFRdpHlY1IeaKO2su/u4MjPlENAtPs1jUgI9VRf8otOVAos+JcL
-         U/FDVRJbNVs8TslMAMqO9wdBebDufzTpB5j60GkblJyBQaoEOi3Ze9eWuIT7bZxcLl2Q
-         21G10Z793p2Nc7DYKBDuugDswH94Be+y0UNE1o01YawDMpf5VX7m3Ni3jOwKPsLsU/vY
-         lpm6XDmbaWDhkda3EldQLNUx+ie3pjhSmvQeAxw1uuJM8kMDQzfWv9QFXG7IpnOBukVE
-         WZcAPWZuRt5JD4ronusHFxNw1xLZOoI8NFyDz2UtWkxk/SBQ0Bgw7e/T42x60fEh1BLW
-         ARAQ==
+        bh=odlvPMU0DvOEA8Zyoa7tw66A464oovwujJNAX+TA7BY=;
+        b=Aes6vhsEHGl9+S+XBQ1os1tsS3ccUvB8Vita4tFZ1pTO8Af9yOSh8W66anrirzO8YW
+         BEiB1YMjsACR2RCLeK9FGYolTyn1q9nZMbvG3XEKFJ04mcQ1btoAFAZFfLljBDWHNPsA
+         mZ6nhf7GZIU7LIK4E1X1YBCLoETFl3odvFjARzZ+l/U0Y07GqXdDBPKOWNpneqNfN5vJ
+         e+C4p8/bYY4jdlE3ZhkNg3a9heH+yrK4ayCw48cv30+kBHPopIxrI27sdTikY0eQvIhe
+         x0T7eshz3ckZ+ggTu9/pTGUl+ItNPuKNdmhyhPoqFt3gxL3+yDJDOCWtGnYjUg059Nni
+         MIMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680039789;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xvPLTtKlU0vNaz9725r81EHFLKAu4AQ65dj5fg+SF9o=;
-        b=f6jYh0RqQWchPPjmbCUAP944sEymPP7QbhCwqxMkvWxwbNs8lmpncf74zrg8s9Uspt
-         pZYNNnpRs/JS9auVJ39wd1uX4DCl1NE4toO8qR0Fmy5zp6LrYtqISD88GeM8bUKgmoL5
-         9LOGaowMEaGDKLOFuNASsGxMT6UfOi5UyH88DHqjxXdfKaYB7qk7Jh2jrte3BNcjIt4S
-         HkEB6beY5ZwK2qifWdBXu2OlcrOvsYzmTW+LLYQNxLKp2wdX7i2r/hKIQB2pED9t84++
-         wXJDzqcQlZyKgR/k540jjYwsexJHyIxWXfrDMps6T0tovW7RVGg9Vno1+A8994QYAPFV
-         nXjA==
-X-Gm-Message-State: AAQBX9fmpl1Rzy3THEd3yg4N5Bm91CgQSpOoBNnj673s/sik5BVznrFg
-        hEpYzj6kpZkpK/ibx24sT/8qY97tfePFcR+eT7c=
-X-Google-Smtp-Source: AKy350aySh1k6SU2Zakrc+HUzPRxbOk4VjgCQEdQFoUpBC1PHkeludEjEA0Yeiy88DUuJzO1DQIycIJ2jhyLZppxeg0=
-X-Received: by 2002:a50:d6c3:0:b0:501:d489:f797 with SMTP id
- l3-20020a50d6c3000000b00501d489f797mr8806073edj.1.1680039789534; Tue, 28 Mar
- 2023 14:43:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230306071006.73t5vtmxrsykw4zu@apollo> <CAADnVQJ=wzztviB73jBy3+OYxUKhAX_jTGpS8Xv45vUVTDY-ZA@mail.gmail.com>
- <20230307102233.bemr47x625ity26z@apollo> <CAADnVQ+xOrCSwgxGQXNM5wHfOwV+x0csHfNyDYBHgyGVXgc2Ow@mail.gmail.com>
- <20230307173529.gi2crls7fktn6uox@apollo> <CAEf4Bza4N6XtXERkL+41F+_UsTT=T4B3gt0igP5mVVrzr9abXw@mail.gmail.com>
- <20230310211541.schh7iyrqgbgfaay@macbook-pro-6.dhcp.thefacebook.com>
- <CAEf4BzYo-8ckyi-aogvW9HijNh+Z81CE__mWtmVJtCzuY+oECA@mail.gmail.com>
- <CAADnVQLBDNqqfoNOV=mPxvsMdXLJCK_g1qmHjqxo=PED_vbhuw@mail.gmail.com>
- <CAJnrk1YCbLxcKT_FY_UdO9YBOz9fTyFQFTB8P0_2swPc39egvg@mail.gmail.com>
- <20230313144135.5xvgdfvfknb4liwh@apollo> <CAEf4BzacF6pj7wHJ4NH3GBe4rtkaLSZUU1xahhQ37892Ds2ZmA@mail.gmail.com>
- <CAJnrk1Y=u_9sVo1QhNopRu7F7tRsmZmcNDMeiUw+QF3rtQQ2og@mail.gmail.com>
-In-Reply-To: <CAJnrk1Y=u_9sVo1QhNopRu7F7tRsmZmcNDMeiUw+QF3rtQQ2og@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Mar 2023 14:42:57 -0700
-Message-ID: <CAEf4BzaLmKr4Jc_Hmoqc=uWnpcGXJMzzZVt9nrU8pvhXOPzbmQ@mail.gmail.com>
-Subject: Re: [PATCH v13 bpf-next 09/10] bpf: Add bpf_dynptr_slice and bpf_dynptr_slice_rdwr
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        d=1e100.net; s=20210112; t=1680040611;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=odlvPMU0DvOEA8Zyoa7tw66A464oovwujJNAX+TA7BY=;
+        b=1dyGDcLkveEbycXWoYEc5VqG7jNYmj2hM+36Ci13MGcDjV7+o9jY6poUPf8rOz4nvS
+         GDgCRn8YvWrAidjNwwKqRXMxUy14tr12YF10+SY22/7gn3OMaCEM1rnh+0kTmYNbKZQA
+         /Ai92CHEm7Gs2LYhfPrYwCia3u64a0Ffm4Q0M4jCZ6n0BxTuJyxutOg7O5+wv2aE/2m1
+         OtS+JPzQfGZgyni5cX5fNR3b1wKdmJcMj1joxzZ8RoB+7+zzP33zgwC5SEOsgFN8sykv
+         jxWSZ1jqnvxqk/GTId/U0Ag5obvLb1XE/S8p9bmZB/FGBMKF4xy8YCQ5qnk9+pzb7xUi
+         3M7w==
+X-Gm-Message-State: AAQBX9fREpLswKh/9AmcRAwXxEu2DWX1e4DW+1rIiYbza1aBGxZEfTE+
+        E3IAJG1H2nxVHDo21VUZS78=
+X-Google-Smtp-Source: AK7set+0JDGKHYDfUmhNiD24vp24TtBUrFDVWQi+4Ws2kUO77zPIcUUFH2UFrW8Whj6PnxUzdbcS7Q==
+X-Received: by 2002:aa7:8f3c:0:b0:627:6328:79d7 with SMTP id y28-20020aa78f3c000000b00627632879d7mr13897242pfr.34.1680040611138;
+        Tue, 28 Mar 2023 14:56:51 -0700 (PDT)
+Received: from localhost ([98.97.117.131])
+        by smtp.gmail.com with ESMTPSA id g13-20020a62e30d000000b0062a51587499sm10756999pfh.109.2023.03.28.14.56.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 14:56:50 -0700 (PDT)
+Date:   Tue, 28 Mar 2023 14:56:49 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     cong.wang@bytedance.com, daniel@iogearbox.net, lmb@isovalent.com,
+        edumazet@google.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        ast@kernel.org, andrii@kernel.org, will@isovalent.com
+Message-ID: <642362a1403ee_286af20850@john.notmuch>
+In-Reply-To: <87tty55aou.fsf@cloudflare.com>
+References: <20230327175446.98151-1-john.fastabend@gmail.com>
+ <20230327175446.98151-3-john.fastabend@gmail.com>
+ <87tty55aou.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf v2 02/12] bpf: sockmap, convert schedule_work into
+ delayed_work
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -83,76 +77,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 12:47=E2=80=AFAM Joanne Koong <joannelkoong@gmail.c=
-om> wrote:
->
-> On Thu, Mar 16, 2023 at 11:55=E2=80=AFAM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
+Jakub Sitnicki wrote:
+> On Mon, Mar 27, 2023 at 10:54 AM -07, John Fastabend wrote:
+> > Sk_buffs are fed into sockmap verdict programs either from a strparser
+> > (when the user might want to decide how framing of skb is done by attaching
+> > another parser program) or directly through tcp_read_sock. The
+> > tcp_read_sock is the preferred method for performance when the BPF logic is
+> > a stream parser.
 > >
-> > On Mon, Mar 13, 2023 at 7:41=E2=80=AFAM Kumar Kartikeya Dwivedi
-> > <memxor@gmail.com> wrote:
-> > >
-> [...]
-> > > > > For bpf_dynptr_slice_rdrw we can mark buffer[] in stack as
-> > > > > poisoned with dynptr_id =3D=3D R0's PTR_TO_MEM dynptr_id.
-> > > > > Then as soon as first spillable reg touches that poisoned stack a=
-rea
-> > > > > we can invalidate all PTR_TO_MEM's with that dynptr_id.
-> > > >
-> > > > Okay, this makes sense to me. are you already currently working or
-> > > > planning to work on a fix for this Kumar, or should i take a stab a=
-t
-> > > > it?
-> > >
-> > > I'm not planning to do so, so go ahead. One more thing I noticed just=
- now is
-> > > that we probably need to update regsafe to perform a check_ids compar=
-ison for
-> > > dynptr_id for dynptr PTR_TO_MEMs? It was not a problem back when f806=
-4ab90d66
-> > > ("bpf: Invalidate slices on destruction of dynptrs on stack") was add=
-ed but
-> > > 567da5d253cd ("bpf: improve regsafe() checks for PTR_TO_{MEM,BUF,TP_B=
-UFFER}")
-> > > added PTR_TO_MEM in the switch statement.
+> > The flow for Cilium's common use case with a stream parser is,
 > >
-> > I can take care of this. But I really would like to avoid these
-> > special cases of extra dynptr_id, exactly for reasons like this
-> > omitted check.
+> >  tcp_read_sock()
+> >   sk_psock_verdict_recv
+> >     ret = bpf_prog_run_pin_on_cpu()
+> >     sk_psock_verdict_apply(sock, skb, ret)
+> >      // if system is under memory pressure or app is slow we may
+> >      // need to queue skb. Do this queuing through ingress_skb and
+> >      // then kick timer to wake up handler
+> >      skb_queue_tail(ingress_skb, skb)
+> >      schedule_work(work);
 > >
-> > What do people think about generalizing current ref_obj_id to be more
-> > like "lifetime id" (to borrow Rust terminology a bit), which would be
-> > an object (which might or might not be a tracked reference) defining
-> > the scope/lifetime of the current register (whatever it represents).
 > >
-> > I haven't looked through code much, but I've been treating ref_obj_id
-> > as that already in my thinking before, and it seems to be a better
-> > approach than having a special-case of dynptr_id.
+> > The work queue is wired up to sk_psock_backlog(). This will then walk the
+> > ingress_skb skb list that holds our sk_buffs that could not be handled,
+> > but should be OK to run at some later point. However, its possible that
+> > the workqueue doing this work still hits an error when sending the skb.
+> > When this happens the skbuff is requeued on a temporary 'state' struct
+> > kept with the workqueue. This is necessary because its possible to
+> > partially send an skbuff before hitting an error and we need to know how
+> > and where to restart when the workqueue runs next.
 > >
-> > Thoughts?
->
-> Thanks for taking care of this (and apologies for the late reply). i
-> think the dynptr_id field would still be needed in this case to
-> associate a slice with a dynptr, so that when a dynptr is invalidated
-> its slices get invalidated as well. I'm not sure we could get away
-> with just having ref_obj_id symbolize that in the case where the
-> underlying object is a tracked reference, because for example, it
-> seems like a dynptr would need both a unique reference id to the
-> object (so that if for example there are two dynptrs pointing to the
-> same object, they will both be assignedthe same reference id so the
-> object can't for example be freed twice) and also its own dynptr id so
-> that its slices get invalidated if the dynptr is invalidated
+> > Now for the trouble, we don't rekick the workqueue. This can cause a
+> > stall where the skbuff we just cached on the state variable might never
+> > be sent. This happens when its the last packet in a flow and no further
+> > packets come along that would cause the system to kick the workqueue from
+> > that side.
+> >
+> > To fix we could do simple schedule_work(), but while under memory pressure
+> > it makes sense to back off some instead of continue to retry repeatedly. So
+> > instead to fix convert schedule_work to schedule_delayed_work and add
+> > backoff logic to reschedule from backlog queue on errors. Its not obvious
+> > though what a good backoff is so use '1'.
+> >
+> > To test we observed some flakes whil running NGINX compliance test with
+> > sockmap we attributed these failed test to this bug and subsequent issue.
+> >
+> > Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
+> > Tested-by: William Findlay <will@isovalent.com>
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
 
-Can you elaborate on specific example? Because let's say dynptr is
-created from some refcounted object. Then that dynptr's id field will
-be a unique "dynptr id", dynptr's ref_obj_id will point to that
-refcounted object from which we derived dynptr itself. And then when
-we create slices from dynptrs, then each slice gets its own unique id,
-but records dynptr's id as slice's ref_obj_id. So we end up with this
-hierarchy of id + ref_obj_id forming a tree.
+[...]
 
-Or am I missing something?
+> > --- a/net/core/skmsg.c
+> > +++ b/net/core/skmsg.c
+> > @@ -481,7 +481,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
+> >  	}
+> >  out:
+> >  	if (psock->work_state.skb && copied > 0)
+> > -		schedule_work(&psock->work);
+> > +		schedule_delayed_work(&psock->work, 0);
+> >  	return copied;
+> >  }
+> >  EXPORT_SYMBOL_GPL(sk_msg_recvmsg);
+> > @@ -639,7 +639,8 @@ static void sk_psock_skb_state(struct sk_psock *psock,
+> >  
+> >  static void sk_psock_backlog(struct work_struct *work)
+> >  {
+> > -	struct sk_psock *psock = container_of(work, struct sk_psock, work);
+> > +	struct delayed_work *dwork = to_delayed_work(work);
+> > +	struct sk_psock *psock = container_of(dwork, struct sk_psock, work);
+> >  	struct sk_psock_work_state *state = &psock->work_state;
+> >  	struct sk_buff *skb = NULL;
+> >  	bool ingress;
+> > @@ -679,6 +680,10 @@ static void sk_psock_backlog(struct work_struct *work)
+> >  				if (ret == -EAGAIN) {
+> >  					sk_psock_skb_state(psock, state, skb,
+> >  							   len, off);
+> > +
+> > +					// Delay slightly to prioritize any
+> > +					// other work that might be here.
+> > +					schedule_delayed_work(&psock->work, 1);
+> 
+> Do IIUC that this means we can back out changes from commit bec217197b41
+> ("skmsg: Schedule psock work if the cached skb exists on the psock")?
 
-I want to take a look at simplifying this at some point, so I'll know
-more details once I start digging into code. Right now I still fail to
-see why we need a third ID for dynptr.
+Yeah I think so this is a more direct way to get the same result. I'm also
+thinking this check,
+
+       if (psock->work_state.skb && copied > 0)
+               schedule_work(&psock->work)
+
+is not correct copied=0 which could happen on empty queue could be the
+result of a skb stuck from this eagain error in backlog.
+
+I think its OK to revert that patch in a separate patch. And ideally we
+could get some way to load up the stack to hit these corner cases without
+running long stress tests.
+
+WDYT?
+
+> 
+> Nit: Comment syntax.
+
+Yep happy to fix.
