@@ -2,187 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3856CBD54
+	by mail.lfdr.de (Postfix) with ESMTP id DD56C6CBD56
 	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbjC1LUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 07:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
+        id S230110AbjC1LUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 07:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231432AbjC1LUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:20:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0F01A7
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:19:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680002361;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xTS3qxFhBqMP5asqq6o4vShlFpc+3Cgiy/wm+SvxL0Q=;
-        b=E4nXNwQoeURnz5bknTQx7aZmKkHu4q8IaDd94j01/oc6/LC+ckUjHJejWhksCnmPW9ZipZ
-        zDL6L2eHDiMfDcDddU1qAHG1xeAmNyhklNczvYYd6gWgsCyADc6O49+wK+PqOC0aBAglsz
-        lxpIBPQtJR9TeUzOyb04iv4CPU84JCY=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-117-P067p9ivOHe5PE5MHygbaw-1; Tue, 28 Mar 2023 07:19:20 -0400
-X-MC-Unique: P067p9ivOHe5PE5MHygbaw-1
-Received: by mail-qv1-f72.google.com with SMTP id w2-20020a0cc242000000b00583d8e55181so4845279qvh.23
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:19:20 -0700 (PDT)
+        with ESMTP id S229556AbjC1LUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:20:08 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DCD19D;
+        Tue, 28 Mar 2023 04:20:06 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id q7-20020a05600c46c700b003ef6e809574so3887957wmo.4;
+        Tue, 28 Mar 2023 04:20:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680002405;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=fAQImpnQP0GAv34nwxb4A/1+q39BUDZ/O6A+p8S3rBY=;
+        b=H1MABtWfJIUIayq6bepL/MKgHiFtHlkQyfEpqGH9thGfkT7r/KkaJlKniNP0Gl29Fc
+         CFeYEvToTOk9UZ07hZlWCLDPrvadWy56lUuR4J1ldz/5r/4+5CUGSbWMP67yI5+mqUkT
+         3j0Q9/bjnLHlNks146DA+DdiM/uGLJrzz2X3FYJDp0iZ5FjZDSR2jjYUDTYYHg+5Ury4
+         OVLUtndAwAnMACSb0VzKxRRkh+YraEAsImxIW0enn5jda3VSUy8+2t8G+K0FBjNQ3xOz
+         3ZWmBsbw+RXcfwxqWfZucUclJ9/u+xjCnW89QH03j1ekX47HDjWdaBm5nBttSrCfMPcm
+         hodg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680002360;
+        d=1e100.net; s=20210112; t=1680002405;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xTS3qxFhBqMP5asqq6o4vShlFpc+3Cgiy/wm+SvxL0Q=;
-        b=ZJDPaYLzhKI/G4aV7NH+31IMsItd0cK5kie9QVOlAyj6p69mQGi/oAi3LgBAVP813p
-         AtnJWmHRdpL3o0bpTz+VjWU6i9Kr9I4c72JDlANdRvi/djlE9t+k24ADFYT8CeRxsMX/
-         8ZdB4pbOhGUykkxoaDNbEOTSLvxIWYwF3abgpTHmSCN0TIINxm9Lyem/E+0QEvbk/cZh
-         ebKsuAUDlT5whi0A1VVxUtSiArddC0Gg7t3CPMp7JYZf/jFrRpw+Npel8F6Ak4m7mhx3
-         GxLsMPL2uUYyxFdQUvp3HlT0/zcVaB4kWWdbG+Nipk39Q88Xb4yoCXxHpTNSXnOV+SSa
-         vDGg==
-X-Gm-Message-State: AO0yUKUCmAWthQ0uQTcHzguH4xLHRNduWKPhGSJVkk0HOyqMCHz2pQZ2
-        11hqNfWJ+/vrP6WRQyP8NHkRTm5x6G61jk7ZGycl5SMjCRnGXVxCukRi0BI9yaO8hEFT9pcKhL1
-        7fVyKY+U3gNuswgGQ
-X-Received: by 2002:a05:622a:88:b0:3d8:3aed:66f4 with SMTP id o8-20020a05622a008800b003d83aed66f4mr26549977qtw.41.1680002359531;
-        Tue, 28 Mar 2023 04:19:19 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9rLhqoc1M0lOv19pEk7kytc7wZbIHzVGbGY5clwetaWE5MDsGKBYhOBeIW8AABeuWV7JcagA==
-X-Received: by 2002:a05:622a:88:b0:3d8:3aed:66f4 with SMTP id o8-20020a05622a008800b003d83aed66f4mr26549929qtw.41.1680002359066;
-        Tue, 28 Mar 2023 04:19:19 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
-        by smtp.gmail.com with ESMTPSA id v127-20020a379385000000b007456c75edbbsm17581456qkd.129.2023.03.28.04.19.15
+        bh=fAQImpnQP0GAv34nwxb4A/1+q39BUDZ/O6A+p8S3rBY=;
+        b=3VklrEfLV6kmwaKrAWRJ5YkGQNE3CyJuwl4WAhhdNu2zBuVPyRyz93P2rOUYTM5IgQ
+         j7M8n3IsNao+E4aRdoE/3QrirPHLdOZIPdZJTPWFMy8C6dCmsyTrA24OzCBulUFQAQMZ
+         1F0+kaiFgCFgd2K4lW+xcrWqlwQuE/bICNFmD7TDmYK2EqEkLPbFH9WyrT6ksqvGIpI+
+         bPmhJ1KMIXRUQ0/JQ8gB6R5VwidoAg/o31PeKJw9FSBfXXvmwSfmoKCf/lb9vvgLUCix
+         mOHHuhNbv94Kw1Y76xw4DrvWH9AqxdP18STenmX1e7B4ZXP6wzjlZhFSKhoVgXPm+Ruw
+         ZvwQ==
+X-Gm-Message-State: AO0yUKWNk10iK1IHznrdzUzUVZKGy+qMWQ4iw2rhCszxm9RAQXZZ/2HC
+        +98G1BnKCFFq0Z6WecoI0LQ=
+X-Google-Smtp-Source: AK7set9sW2CNkTzeBb1i+Tw8DSAJQEexXoH1tDNeUkgCs29kSQhdJ4uChgVBKJKZ9buerEsJ7QTfWw==
+X-Received: by 2002:a1c:4c13:0:b0:3ee:a492:e95e with SMTP id z19-20020a1c4c13000000b003eea492e95emr11763199wmf.6.1680002405248;
+        Tue, 28 Mar 2023 04:20:05 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id fc9-20020a05600c524900b003ee2a0d49dbsm12523567wmb.25.2023.03.28.04.20.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 04:19:18 -0700 (PDT)
-Date:   Tue, 28 Mar 2023 13:19:13 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>,
-        Vishnu Dasa <vdasa@vmware.com>
-Cc:     Bryan Tan <bryantan@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
+        Tue, 28 Mar 2023 04:20:05 -0700 (PDT)
+Date:   Tue, 28 Mar 2023 14:20:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@sberdevices.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v1 1/2] vsock: return errors other than -ENOMEM to
- socket
-Message-ID: <ak74j6l2qesrixxmw7pfw56najqhdn32lv3xfxcb53nvmkyi3x@fr25vo2jlvbj>
-References: <97f19214-ba04-c47e-7486-72e8aa16c690@sberdevices.ru>
- <99da938b-3e67-150c-2f74-41d917a95950@sberdevices.ru>
- <itjmw7vh3a7ggbodsu4mksu2hqbpdpxmu6cpexbra66nfhsw4x@hzpuzwldkfx5>
- <CAGxU2F648TyvAJN+Zk6YCnGUhn=0W_MZTox7RxQ45zHmHHO0SA@mail.gmail.com>
- <0f0a8603-e8a1-5fb2-23d9-5773c808ef85@sberdevices.ru>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH net 4/7] net: dsa: mt7530: set both CPU port interfaces
+ to PHY_INTERFACE_MODE_NA
+Message-ID: <20230328112002.2p7r6estix3dpijm@skbuf>
+References: <20230326140818.246575-1-arinc.unal@arinc9.com>
+ <20230326140818.246575-5-arinc.unal@arinc9.com>
+ <20230327191242.4qabzrn3vtx3l2a7@skbuf>
+ <8450084e-1474-17fa-32c2-a4653b74ff17@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <0f0a8603-e8a1-5fb2-23d9-5773c808ef85@sberdevices.ru>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <8450084e-1474-17fa-32c2-a4653b74ff17@arinc9.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 01:42:19PM +0300, Arseniy Krasnov wrote:
->
->
->On 28.03.2023 12:42, Stefano Garzarella wrote:
->> I pressed send too early...
->>
->> CCing Bryan, Vishnu, and pv-drivers@vmware.com
->>
->> On Tue, Mar 28, 2023 at 11:39 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>>
->>> On Sun, Mar 26, 2023 at 01:13:11AM +0300, Arseniy Krasnov wrote:
->>>> This removes behaviour, where error code returned from any transport
->>>> was always switched to ENOMEM. This works in the same way as:
->>>> commit
->>>> c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
->>>> but for receive calls.
->>>>
->>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->>>> ---
->>>> net/vmw_vsock/af_vsock.c | 4 ++--
->>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->>>> index 19aea7cba26e..9262e0b77d47 100644
->>>> --- a/net/vmw_vsock/af_vsock.c
->>>> +++ b/net/vmw_vsock/af_vsock.c
->>>> @@ -2007,7 +2007,7 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
->>>>
->>>>               read = transport->stream_dequeue(vsk, msg, len - copied, flags);
->>>
->>> In vmci_transport_stream_dequeue() vmci_qpair_peekv() and
->>> vmci_qpair_dequev() return VMCI_ERROR_* in case of errors.
->>>
->>> Maybe we should return -ENOMEM in vmci_transport_stream_dequeue() if
->>> those functions fail to keep the same behavior.
->
->Yes, seems i missed it, because several months ago we had similar question for send
->logic:
->https://www.spinics.net/lists/kernel/msg4611091.html
->And it was ok to not handle VMCI send path in this way. So i think current implementation
->for tx is a little bit buggy, because VMCI specific error from 'vmci_qpair_enquev()' is
->returned to af_vsock.c. I think error conversion must be added to VMCI transport for tx
->also.
+On Tue, Mar 28, 2023 at 12:57:57AM +0300, Arınç ÜNAL wrote:
+> I don't appreciate your consistent use of the word "abuse" on my patches.
 
-Good point!
+Consistent would mean that, when given the same kind of input, I respond
+with the same kind of output. I'm thinking you'd want a reviewer to do that?
 
-These are negative values, so there are no big problems, but I don't
-know what the user expects in this case.
+Last time I said: "It's best not to abuse the net.git tree with non-bugfix patches."
+https://patchwork.kernel.org/project/netdevbpf/patch/20230307220328.11186-1-arinc.unal@arinc9.com/
 
-@Vishnu Do we want to return an errno to the user or a VMCI_ERROR_*?
+If anything, Jakub was/is slightly inconsistent by accepting those previous
+non-bugfix patches to the net.git tree, and then agreeing with me. He probably
+did that thinking it wasn't a hill worth dying on, which I can agree with.
+But I'm afraid that this didn't help you realize that yes, maybe you really
+are abusing the process by submitting exclusively non-bugfix commits to the
+net tree. There's a fine balance between trying to be nice and trying not to
+transmit the wrong message.
 
-In both cases I think we should do the same for both enqueue and
-dequeue.
+It would be good if you could clarify your objection regarding my consistent
+use of the word "abuse" on your patches.
 
->
->Good thing is that Hyper-V uses general error codes.
+There is a document at Documentation/process/stable-kernel-rules.rst
+which I remember having shared with you before, where there are some
+indications as to what constitutes a legitimate candidate for "stable"
+and what does not.
 
-Yeah!
+> I'm by no means a senior C programmer. I'm doing my best to correct the
+> driver.
+> 
+> Thank you for explaining the process of phylink with DSA, I will adjust my
+> patches accordingly.
+> 
+> I suggest you don't take my patches seriously for a while, until I know
+> better.
 
-Thanks,
-Stefano
+Whether you're a junior or a senior C programmer is entirely irrelevant
+here. I have no choice but to take your patches seriously unless otherwise
+specified, in the commit message, cover letter, or by marking them as
+RFC/RFT (but even then, their intention must be very clearly specified,
+so that I know what to comment on, or test).
 
->
->Thanks, Arseniy
->>>
->>> CCing Bryan, Vishnu, and pv-drivers@vmware.com
->>>
->>> The other transports seem okay to me.
->>>
->>> Thanks,
->>> Stefano
->>>
->>>>               if (read < 0) {
->>>> -                      err = -ENOMEM;
->>>> +                      err = read;
->>>>                       break;
->>>>               }
->>>>
->>>> @@ -2058,7 +2058,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
->>>>       msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
->>>>
->>>>       if (msg_len < 0) {
->>>> -              err = -ENOMEM;
->>>> +              err = msg_len;
->>>>               goto out;
->>>>       }
->>>>
->>>> --
->>>> 2.25.1
->>>>
->>
->
-
+I don't think you really want what you're asking for, which is for
+people to not take your patches seriously. I recommend forming a smaller
+community of people which does preliminary patch review and discusses
+issues around the hardware you're working on, prior to upstream submission.
+That would, at least, be more productive.
