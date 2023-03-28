@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9916CCBA7
+	by mail.lfdr.de (Postfix) with ESMTP id 116C36CCBA6
 	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbjC1U4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 16:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
+        id S229655AbjC1U4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 16:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbjC1U4s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:56:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29A01FFF
+        with ESMTP id S229493AbjC1U4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:56:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CB91FEC
         for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:56:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56091B81E6F
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F39E16195E
         for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:56:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE3A7C433D2;
-        Tue, 28 Mar 2023 20:56:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD5DC4339C;
+        Tue, 28 Mar 2023 20:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680037004;
-        bh=dtVRfSb+OPdj+FfT+gmihz5hWMXLxWt3OLgoXd3RzPk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JmVqR0LUwAe8M8WEPQ0c8ku5VKBDWSh0lGGNyhaYG1f45H/dulGm4tX+5OCkp+dUh
-         Mk15H+NDQgQIvFnYhkVRTH8HXKNo/BXaQaB9cb0KXLAtIIVi32R+0Fy5s9tgbIh2za
-         3MZ46LmCyBR/ovVxRmfs2lUhkP1iIcIz7/EEtLX6jCU2xSUS9uNrpg5OFz7cMeHIzL
-         pRXZKBJjtL1UVkcST7XP1OxTqTDVfOoxk1GC1iV+M8kx2y0gftXGaMN15Ik3egGHxD
-         oW5OA+Yd3SURzp1vmovhN4diWv0iRiXqMWtIoID9OOZyRLdULkoJ809nH8Va96adyi
-         SftbtXyL1BT4Q==
+        s=k20201202; t=1680037005;
+        bh=XlAZ2VdXkOnMYH4d2OM/KnDzqO8i1CYImN34MFua0Ws=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HPvPAgX/uyeuqyMD5TZIwlD6Jgn6s4M0EWjSyHYXnt1A6XTmX8WMVKgOtFi/KgBte
+         eGEb2h2+6v+hHGp7bpHo/Os9rPpkMhyjcDKfQP/ERLnJOF1CyYXqHl1s0w+g/ha6Nq
+         b1jujup9pgp9bU/AveNyVemaCzbvPb8pxNAtW9XXvNUHWOf3m0wD0eCQ6tcjKBCqct
+         rUCRFCk9CCsyFA4GWQJLNJtNoms84Z7NiGJo6++MWaYww8+t19SyzjjHzXV1HWVGob
+         OgUEYjBBBHfTvlDlGNq13LhRU5Nh+aXIKNPCXHDuBHkMj8BtWBiMsb2rKlKFT98kuv
+         EewMqzokb3bjA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -41,15 +41,18 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Matthew Wilcox <willy@infradead.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: [pull request][net-next 00/15] mlx5: Drop internal page cache implementation 
-Date:   Tue, 28 Mar 2023 13:56:08 -0700
-Message-Id: <20230328205623.142075-1-saeed@kernel.org>
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Dragos Tatulea <dtatulea@nvidia.com>
+Subject: [net-next 01/15] net/mlx5e: RX, Remove mlx5e_alloc_unit argument in page allocation
+Date:   Tue, 28 Mar 2023 13:56:09 -0700
+Message-Id: <20230328205623.142075-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230328205623.142075-1-saeed@kernel.org>
+References: <20230328205623.142075-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,127 +60,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Dragos Tatulea <dtatulea@nvidia.com>
 
-Hi Dave, Hi Jakub,
+Change internal page cache and page pool api to use a struct page **
+instead of a mlx5e_alloc_unit *.
 
-This series from Dragos provides the patches that remove the mlx5
-internal page cache implementation and convert mlx5 RX buffers to
-completely rely on the standard page pool.
+This is the first change in a series which is meant to remove the
+mlx5e_alloc_unit altogether.
 
-For more information please see tag log below.
+Signed-off-by: Dragos Tatulea <dtatulea@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 35 ++++++++++---------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
 
-Please pull and let me know if there is any problem.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 3f7b63d6616b..36300118b6e4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -292,7 +292,7 @@ static inline bool mlx5e_rx_cache_put(struct mlx5e_rq *rq, struct page *page)
+ 	return true;
+ }
+ 
+-static inline bool mlx5e_rx_cache_get(struct mlx5e_rq *rq, union mlx5e_alloc_unit *au)
++static inline bool mlx5e_rx_cache_get(struct mlx5e_rq *rq, struct page **pagep)
+ {
+ 	struct mlx5e_page_cache *cache = &rq->page_cache;
+ 	struct mlx5e_rq_stats *stats = rq->stats;
+@@ -308,35 +308,35 @@ static inline bool mlx5e_rx_cache_get(struct mlx5e_rq *rq, union mlx5e_alloc_uni
+ 		return false;
+ 	}
+ 
+-	au->page = cache->page_cache[cache->head];
++	*pagep = cache->page_cache[cache->head];
+ 	cache->head = (cache->head + 1) & (MLX5E_CACHE_SIZE - 1);
+ 	stats->cache_reuse++;
+ 
+-	addr = page_pool_get_dma_addr(au->page);
++	addr = page_pool_get_dma_addr(*pagep);
+ 	/* Non-XSK always uses PAGE_SIZE. */
+ 	dma_sync_single_for_device(rq->pdev, addr, PAGE_SIZE, rq->buff.map_dir);
+ 	return true;
+ }
+ 
+-static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq, union mlx5e_alloc_unit *au)
++static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq, struct page **pagep)
+ {
+ 	dma_addr_t addr;
+ 
+-	if (mlx5e_rx_cache_get(rq, au))
++	if (mlx5e_rx_cache_get(rq, pagep))
+ 		return 0;
+ 
+-	au->page = page_pool_dev_alloc_pages(rq->page_pool);
+-	if (unlikely(!au->page))
++	*pagep = page_pool_dev_alloc_pages(rq->page_pool);
++	if (unlikely(!*pagep))
+ 		return -ENOMEM;
+ 
+ 	/* Non-XSK always uses PAGE_SIZE. */
+-	addr = dma_map_page(rq->pdev, au->page, 0, PAGE_SIZE, rq->buff.map_dir);
++	addr = dma_map_page(rq->pdev, *pagep, 0, PAGE_SIZE, rq->buff.map_dir);
+ 	if (unlikely(dma_mapping_error(rq->pdev, addr))) {
+-		page_pool_recycle_direct(rq->page_pool, au->page);
+-		au->page = NULL;
++		page_pool_recycle_direct(rq->page_pool, *pagep);
++		*pagep = NULL;
+ 		return -ENOMEM;
+ 	}
+-	page_pool_set_dma_addr(au->page, addr);
++	page_pool_set_dma_addr(*pagep, addr);
+ 
+ 	return 0;
+ }
+@@ -376,7 +376,7 @@ static inline int mlx5e_get_rx_frag(struct mlx5e_rq *rq,
+ 		 * offset) should just use the new one without replenishing again
+ 		 * by themselves.
+ 		 */
+-		err = mlx5e_page_alloc_pool(rq, frag->au);
++		err = mlx5e_page_alloc_pool(rq, &frag->au->page);
+ 
+ 	return err;
+ }
+@@ -605,13 +605,14 @@ static int mlx5e_build_shampo_hd_umr(struct mlx5e_rq *rq,
+ 		header_offset = (index & (MLX5E_SHAMPO_WQ_HEADER_PER_PAGE - 1)) <<
+ 			MLX5E_SHAMPO_LOG_MAX_HEADER_ENTRY_SIZE;
+ 		if (!(header_offset & (PAGE_SIZE - 1))) {
+-			union mlx5e_alloc_unit au;
+ 
+-			err = mlx5e_page_alloc_pool(rq, &au);
++			err = mlx5e_page_alloc_pool(rq, &page);
+ 			if (unlikely(err))
+ 				goto err_unmap;
+-			page = dma_info->page = au.page;
+-			addr = dma_info->addr = page_pool_get_dma_addr(au.page);
++
++			addr = page_pool_get_dma_addr(page);
++			dma_info->addr = addr;
++			dma_info->page = page;
+ 		} else {
+ 			dma_info->addr = addr + header_offset;
+ 			dma_info->page = page;
+@@ -715,7 +716,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	for (i = 0; i < rq->mpwqe.pages_per_wqe; i++, au++) {
+ 		dma_addr_t addr;
+ 
+-		err = mlx5e_page_alloc_pool(rq, au);
++		err = mlx5e_page_alloc_pool(rq, &au->page);
+ 		if (unlikely(err))
+ 			goto err_unmap;
+ 		addr = page_pool_get_dma_addr(au->page);
+-- 
+2.39.2
 
-Thanks,
-Saeed.
-
-
-The following changes since commit 86e2eca4ddedc07d639c44c990e1c220cac3741e:
-
-  net: ethernet: ti: am65-cpsw: enable p0 host port rx_vlan_remap (2023-03-28 15:29:50 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-03-28
-
-for you to fetch changes up to 3905f8d64ccc2c640d8c1179f4452f2bf8f1df56:
-
-  net/mlx5e: RX, Remove unnecessary recycle parameter and page_cache stats (2023-03-28 13:43:59 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2023-03-28
-
-Dragos Tatulea says:
-====================
-
-net/mlx5e: RX, Drop page_cache and fully use page_pool
-
-For page allocation on the rx path, the mlx5e driver has been using an
-internal page cache in tandem with the page pool. The internal page
-cache uses a queue for page recycling which has the issue of head of
-queue blocking.
-
-This patch series drops the internal page_cache altogether and uses the
-page_pool to implement everything that was done by the page_cache
-before:
-* Let the page_pool handle dma mapping and unmapping.
-* Use fragmented pages with fragment counter instead of tracking via
-  page ref.
-* Enable skb recycling.
-
-The patch series has the following effects on the rx path:
-
-* Improved performance for the cases when there was low page recycling
-  due to head of queue blocking in the internal page_cache. The test
-  for this was running a single iperf TCP stream to a rx queue
-  which is bound on the same cpu as the application.
-
-  |-------------+--------+--------+------+---------|
-  | rq type     | before | after  | unit |   diff  |
-  |-------------+--------+--------+------+---------|
-  | striding rq |  30.1  |  31.4  | Gbps |  4.14 % |
-  | legacy rq   |  30.2  |  33.0  | Gbps |  8.48 % |
-  |-------------+--------+--------+------+---------|
-
-* Small XDP performance degradation. The test was is XDP drop
-  program running on a single rx queue with small packets incoming
-  it looks like this:
-
-  |-------------+----------+----------+------+---------|
-  | rq type     | before   | after    | unit |   diff  |
-  |-------------+----------+----------+------+---------|
-  | striding rq | 19725449 | 18544617 | pps  | -6.37 % |
-  | legacy rq   | 19879931 | 18631841 | pps  | -6.70 % |
-  |-------------+----------+----------+------+---------|
-
-  This will be handled in a different patch series by adding support for
-  multi-packet per page.
-
-* For other cases the performance is roughly the same.
-
-The above numbers were obtained on the following system:
-  24 core Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz
-  32 GB RAM
-  ConnectX-7 single port
-
-The breakdown on the patch series is the following:
-* Preparations for introducing the mlx5e_frag_page struct.
-* Delete the mlx5e_page_cache struct.
-* Enable dma mapping from page_pool.
-* Enable skb recycling and fragment counting.
-* Do deferred release of pages (just before alloc) to ensure better
-  page_pool cache utilization.
-
-====================
-
-----------------------------------------------------------------
-Dragos Tatulea (15):
-      net/mlx5e: RX, Remove mlx5e_alloc_unit argument in page allocation
-      net/mlx5e: RX, Remove alloc unit layout constraint for legacy rq
-      net/mlx5e: RX, Remove alloc unit layout constraint for striding rq
-      net/mlx5e: RX, Store SHAMPO header pages in array
-      net/mlx5e: RX, Remove internal page_cache
-      net/mlx5e: RX, Enable dma map and sync from page_pool allocator
-      net/mlx5e: RX, Enable skb page recycling through the page_pool
-      net/mlx5e: RX, Rename xdp_xmit_bitmap to a more generic name
-      net/mlx5e: RX, Defer page release in striding rq for better recycling
-      net/mlx5e: RX, Change wqe last_in_page field from bool to bit flags
-      net/mlx5e: RX, Defer page release in legacy rq for better recycling
-      net/mlx5e: RX, Split off release path for xsk buffers for legacy rq
-      net/mlx5e: RX, Increase WQE bulk size for legacy rq
-      net/mlx5e: RX, Break the wqe bulk refill in smaller chunks
-      net/mlx5e: RX, Remove unnecessary recycle parameter and page_cache stats
-
- .../ethernet/mellanox/mlx5/counters.rst            |  26 --
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  51 ++-
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |  53 ++-
- .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |   6 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |  10 +-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |  54 +--
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 167 +++++---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 452 +++++++++++----------
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c |  20 -
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  10 -
- 11 files changed, 464 insertions(+), 389 deletions(-)
