@@ -2,272 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 168376CB917
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 10:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20FEB6CB91B
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 10:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbjC1IL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 04:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59456 "EHLO
+        id S230209AbjC1INY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 04:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbjC1ILy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 04:11:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3B8B1;
-        Tue, 28 Mar 2023 01:11:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2FEBB810DF;
-        Tue, 28 Mar 2023 08:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391EDC433EF;
-        Tue, 28 Mar 2023 08:11:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1679991110;
-        bh=5qqfCDIKX8O+ZuI35vNhL5dM7n99//NsdnXWD5dIeaA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XHP6CBLqsGcbSrkcGuQMHJxp5oZB52bgDlIOthWrYDhgcfl9fUhteX2Qnbsy795cF
-         kfvjeIgr7L4vXX03pPK0V9Z6ercd9m4ytr0WRbJl5FmaHzlzScUm8TbdmAegiTiQQ2
-         BS4ZxGGzZx4MZaTukbbVbFn1hshJl4rETLdcPLa94VjAYZu+HDJtGL8CsISqvrJWtx
-         P0u0PMNCrnFaGI3qt+yyCe/shSdrpEM1dkILNG9rnRQTSG6thpXIMM5wuYWEao3jSs
-         dJdw0LWguKCcQeKYU1uv+UkQM1yPskj975dmtYsjQxAKa6uFwIJVCiJA4tj0ZrYapq
-         eRzTzuevLsmeg==
-Date:   Tue, 28 Mar 2023 10:11:46 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 06/10] dt-bindings: soc: mediatek: move ilm in a
- dedicated dts node
-Message-ID: <ZCKhQt/h7ITzMmZ8@lore-desk>
-References: <cover.1679330630.git.lorenzo@kernel.org>
- <c9b65ef3aeb28a50cec45d1f98aec72d8016c828.1679330630.git.lorenzo@kernel.org>
- <20230321193254.GA1306908-robh@kernel.org>
- <ZBsnLLh5zu9DEQBb@lore-desk>
+        with ESMTP id S229784AbjC1INW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 04:13:22 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0E3B1
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 01:13:21 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id y85so5020849iof.13
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 01:13:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1679991201;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UllKSXpClfzRh6etv67Dn7QqTZmFbEtwqH7NwKr6ZkM=;
+        b=jOCfCax2JpMqg2Mtv8IaqZb7fjUoiB8+13RaESKewVHyNZ7U3yZqzpfQlEQL0AiTR1
+         UvWfk3eNFMO8J1XiHYr4YJFjsmgcwn0sxYkotkXfbh7XxbkB94n+46wlfO5FaTff/p+N
+         i0QRtRIfWO76KXHYh7YkcDzt/K8ppR1QAHbN+Ii6LjYQI/S7RrBJoyFYZWY/QRfqjN+b
+         Xs9whEnMpXHPwnjH2Oq0bLpjLM2wGBQboJq8LTC2MC4AvzOqWV+SWsZe6jmMX9JqiYPi
+         gaXnTQmdWFPX9u4bv7IRxMI/jGRptuGqmR6rzmeKct3Iv2KHvIxAQArY+6XzQW5pU909
+         cCYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1679991201;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=UllKSXpClfzRh6etv67Dn7QqTZmFbEtwqH7NwKr6ZkM=;
+        b=deEOfUE4GZM2OQH9lOm0no7Qvhx+CvBvbJ6YkZWmKd5TTrq1eZAjacSLwblsgvccMI
+         U39V1BC+PRsJR3KyqGp+ZVqGdF+HQyJVh2feQIOsBoJQx6Guu6c7xjTAr0DviNwldxkH
+         iyMUTv9D+HEOvvwmtzkYwSJ5J9zMj10/Pgx3BigBVX8FAE+NaCd0VFs66BPWqVA2ZZUD
+         biJwcyzvy4Qkm9Wp/L7sjxVF1jnwEg49/zNFeFsa0dG8p5H9EMIWUNFZC17M50OJrn3o
+         W+29W0ZTL6amuHaof5y+I+3bcj/bxAuEBV+daUhnn0KuEHbkdWla63V6xBxyWi9PZY4x
+         mCSA==
+X-Gm-Message-State: AO0yUKUC0B3ioS5wo/TqOUh/sEZV2qUlzi5nQJrP6ezyl44wVmL+461y
+        w7YcPNDcMyeyfMyVc16hmMy9D8Js3/hnMighRmN6lVapWWKRSZ59psVK0MKG
+X-Google-Smtp-Source: AK7set+TMdRrk31zYY86vjJoPyvsN2RIqC/JzGBGu368q5ZJvMQMK+1LbytiVyEpivlfej6xr3yT0i41ZcyvLLcuoO4=
+X-Received: by 2002:a02:95a1:0:b0:3ec:dc1f:12dd with SMTP id
+ b30-20020a0295a1000000b003ecdc1f12ddmr5488368jai.6.1679991200578; Tue, 28 Mar
+ 2023 01:13:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="IDH3Hw5Z9TRESUbK"
-Content-Disposition: inline
-In-Reply-To: <ZBsnLLh5zu9DEQBb@lore-desk>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230327230628.45660-1-kuniyu@amazon.com>
+In-Reply-To: <20230327230628.45660-1-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 28 Mar 2023 01:13:09 -0700
+Message-ID: <CANn89iLF6_iUd6DSbrqALSvowPfNKqnOrX27GpVPLSCG-FipCA@mail.gmail.com>
+Subject: Re: [PATCH v1 net] tcp: Refine SYN handling for PAWS.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 27, 2023 at 4:06=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon.co=
+m> wrote:
+>
+> Our Network Load Balancer (NLB) [0] has multiple nodes with different
+> IP addresses, and each node forwards TCP flows from clients to backend
+> targets.  NLB has an option to preserve the client's source IP address
+> and port when routing packets to backend targets.
+>
+> When a client connects to two different NLB nodes, they may select the
+> same backend target.  Then, if the client has used the same source IP
+> and port, the two flows at the backend side will have the same 4-tuple.
+>
+> While testing around such cases, I saw these sequences on the backend
+> target.
+>
+> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 2819965599, win 62=
+727, options [mss 8365,sackOK,TS val 1029816180 ecr 0,nop,wscale 7], length=
+ 0
+> IP 10.0.3.249.10000 > 10.0.0.215.60000: Flags [S.], seq 3040695044, ack 2=
+819965600, win 62643, options [mss 8961,sackOK,TS val 1224784076 ecr 102981=
+6180,nop,wscale 7], length 0
+> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [.], ack 1, win 491, option=
+s [nop,nop,TS val 1029816181 ecr 1224784076], length 0
+> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 2681819307, win 62=
+727, options [mss 8365,sackOK,TS val 572088282 ecr 0,nop,wscale 7], length =
+0
+> IP 10.0.3.249.10000 > 10.0.0.215.60000: Flags [.], ack 1, win 490, option=
+s [nop,nop,TS val 1224794914 ecr 1029816181,nop,nop,sack 1 {4156821004:4156=
+821005}], length 0
+>
+> It seems to be working correctly, but the last ACK was generated by
+> tcp_send_dupack() and PAWSEstab was increased.  This is because the
+> second connection has a smaller timestamp than the first one.
+>
+> In this case, we should send a challenge ACK instead of a dup ACK and
+> increase the correct counter to rate-limit it properly.
 
---IDH3Hw5Z9TRESUbK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+OK, but this seems about the same thing to me. A challenge ACK is a dup ACK=
+ ?
 
-> > On Mon, Mar 20, 2023 at 05:58:00PM +0100, Lorenzo Bianconi wrote:
-> > > Since the cpuboot memory region is not part of the RAM SoC, move ilm =
-in
-> > > a deidicated syscon node.
-> > > This patch helps to keep backward-compatibility with older version of
-> > > uboot codebase where we have a limit of 8 reserved-memory dts child
-> > > nodes.
-> >=20
-> > Maybe, but breaks the ABI. It also looks like a step backwards. Fix you=
-r=20
-> > u-boot.
->=20
-> Can you please give some more details about ABI breakage? mtk_wed driver =
-is
-> supposed to be backward compatible with respect to the older dts descript=
-ion
-> (please take a look to patch 5/10 and 8/10).
->=20
-> >=20
-> > >=20
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 14 +++---
-> > >  .../soc/mediatek/mediatek,mt7986-wo-ilm.yaml  | 45 +++++++++++++++++=
-++
-> > >  2 files changed, 53 insertions(+), 6 deletions(-)
-> > >  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/me=
-diatek,mt7986-wo-ilm.yaml
-> > >=20
-> > > diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,=
-mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,m=
-t7622-wed.yaml
-> > > index 7f6638d43854..5d2397ec5891 100644
-> > > --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-=
-wed.yaml
-> > > +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-=
-wed.yaml
-> > > @@ -32,14 +32,12 @@ properties:
-> > >    memory-region:
-> > >      items:
-> > >        - description: firmware EMI region
-> > > -      - description: firmware ILM region
-> > >        - description: firmware DLM region
-> > >        - description: firmware CPU DATA region
-> > > =20
-> > >    memory-region-names:
-> > >      items:
-> > >        - const: wo-emi
-> > > -      - const: wo-ilm
-> > >        - const: wo-dlm
-> > >        - const: wo-data
-> > > =20
-> > > @@ -51,6 +49,10 @@ properties:
-> > >      $ref: /schemas/types.yaml#/definitions/phandle
-> > >      description: mediatek wed-wo cpuboot controller interface.
-> > > =20
-> > > +  mediatek,wo-ilm:
-> > > +    $ref: /schemas/types.yaml#/definitions/phandle
-> > > +    description: mediatek wed-wo ilm interface.
-> > > +
-> > >  allOf:
-> > >    - if:
-> > >        properties:
-> > > @@ -63,6 +65,7 @@ allOf:
-> > >          memory-region: false
-> > >          mediatek,wo-ccif: false
-> > >          mediatek,wo-cpuboot: false
-> > > +        mediatek,wo-ilm: false
-> > > =20
-> > >  required:
-> > >    - compatible
-> > > @@ -97,11 +100,10 @@ examples:
-> > >          reg =3D <0 0x15010000 0 0x1000>;
-> > >          interrupts =3D <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-> > > =20
-> > > -        memory-region =3D <&wo_emi>, <&wo_ilm>, <&wo_dlm>,
-> > > -                        <&wo_data>;
-> > > -        memory-region-names =3D "wo-emi", "wo-ilm", "wo-dlm",
-> > > -                              "wo-data";
-> > > +        memory-region =3D <&wo_emi>, <&wo_dlm>, &wo_data>;
-> > > +        memory-region-names =3D "wo-emi", "wo-dlm", "wo-data";
-> > >          mediatek,wo-ccif =3D <&wo_ccif0>;
-> > >          mediatek,wo-cpuboot =3D <&wo_cpuboot>;
-> > > +        mediatek,wo-ilm =3D <&wo_ilm>;
-> > >        };
-> > >      };
-> > > diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,=
-mt7986-wo-ilm.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediate=
-k,mt7986-wo-ilm.yaml
-> > > new file mode 100644
-> > > index 000000000000..2a3775cd941e
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-=
-wo-ilm.yaml
-> > > @@ -0,0 +1,45 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mt7986-wo-i=
-lm.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: MediaTek Wireless Ethernet Dispatch (WED) WO ILM firmware int=
-erface for MT7986
-> >=20
-> > Either this region is some memory or it's a device. Sounds like the=20
-> > former and this is not a 'syscon'.
->=20
-> ILM and DLM are mmio regions used to store Wireless Ethernet Dispatch fir=
-mware
-> sections.
-> AFAIU reserved-memory nodes are supposed to be used just for RAM areas, c=
-orrect?
-> What do you think would be the best dts node type for ILM and DLM?
->=20
-> Another possibility I was discussing with Felix is to move ILM and DLM de=
-finitions
-> in WED node reg section, something like:
->=20
-> wed0: wed@15010000 {
-> 	compatible =3D "mediatek,mt7986-wed";
-> 	reg =3D <0 0x15010000 0 0x1000>,
-> 	      <0 0x151e0000 0 0x8000>,
-> 	      <0 0x151e8000 0 0x2000>;
-> 	...
-> };
->=20
-> Doing so we need to get rid of syscon in WED compatible string, right? Is=
- it acceptable?
->=20
-> Regards,
-> Lorenzo
+It is not clear why it matters, because most probably both ACK make no
+sense for the sender ?
 
-Hi Rob,
+>
+> Let's check the SYN bit after the PAWS tests to avoid adding unnecessary
+> overhead for most packets.
+>
+> Link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/int=
+roduction.html [0]
+> Link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/loa=
+d-balancer-target-groups.html#client-ip-preservation [1]
+> Fixes: 0c24604b68fc ("tcp: implement RFC 5961 4.2")
 
-do you have any more input about this? Is it fine to just use syscon for
-ILM/DLM dts nodes or do you prefer to rework WED node in order to have ILM/=
-DLM
-regs info into it?
-
-Regards,
-Lorenzo
-
->=20
-> >=20
-> > > +
-> > > +maintainers:
-> > > +  - Lorenzo Bianconi <lorenzo@kernel.org>
-> > > +  - Felix Fietkau <nbd@nbd.name>
-> > > +
-> > > +description:
-> > > +  The MediaTek wo-ilm (Information Lifecycle Management) provides a =
-configuration
-> > > +  interface for WiFi critical data used by WED WO firmware. WED WO c=
-ontroller is
-> > > +  used to perform offload rx packet processing (e.g. 802.11 aggregat=
-ion packet
-> > > +  reordering or rx header translation) on MT7986 soc.
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    items:
-> > > +      - enum:
-> > > +          - mediatek,mt7986-wo-ilm
-> > > +      - const: syscon
-> > > +
-> > > +  reg:
-> > > +    maxItems: 1
-> > > +
-> > > +required:
-> > > +  - compatible
-> > > +  - reg
-> > > +
-> > > +additionalProperties: false
-> > > +
-> > > +examples:
-> > > +  - |
-> > > +    soc {
-> > > +      #address-cells =3D <2>;
-> > > +      #size-cells =3D <2>;
-> > > +
-> > > +      syscon@151e0000 {
-> > > +        compatible =3D "mediatek,mt7986-wo-ilm", "syscon";
-> > > +        reg =3D <0 0x151e0000 0 0x8000>;
-> > > +      };
-> > > +    };
-> > > --=20
-> > > 2.39.2
-> > >=20
+The core of the change was to not send an RST anymore.
+I did not change part of the code which was not sending an RST :)
 
 
 
---IDH3Hw5Z9TRESUbK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCZCKhQgAKCRA6cBh0uS2t
-rObvAQCMaKWLG9Ulru7OhhvAppG/1E64Z9HPyAU4m8wbcM2h0AD/Z6cket2SEJDs
-X3uTiZUjMaHYXIWuDIMA5EJd4SldyAo=
-=PRya
------END PGP SIGNATURE-----
-
---IDH3Hw5Z9TRESUbK--
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  net/ipv4/tcp_input.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index cc072d2cfcd8..89fca4c18530 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -5714,6 +5714,8 @@ static bool tcp_validate_incoming(struct sock *sk, =
+struct sk_buff *skb,
+>             tp->rx_opt.saw_tstamp &&
+>             tcp_paws_discard(sk, skb)) {
+>                 if (!th->rst) {
+> +                       if (unlikely(th->syn))
+> +                               goto syn_challenge;
+>                         NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABRE=
+JECTED);
+>                         if (!tcp_oow_rate_limited(sock_net(sk), skb,
+>                                                   LINUX_MIB_TCPACKSKIPPED=
+PAWS,
+> --
+> 2.30.2
+>
