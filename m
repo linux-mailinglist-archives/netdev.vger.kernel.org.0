@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C556CC92E
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA6C6CC92F
 	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 19:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbjC1RXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 13:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35728 "EHLO
+        id S231381AbjC1RXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 13:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231180AbjC1RW7 (ORCPT
+        with ESMTP id S231181AbjC1RW7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 13:22:59 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7869D8F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B92DBBA1
         for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 10:22:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1680024178; x=1711560178;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZzceTe8X9WmOMQn9qREKYh2lnVyiWEBem4ZfqvxjWpg=;
-  b=LMocoxI/sbjcav4Q3dZDOVogzGMxHHCIHM0Y7H8MnTvqLgi4TuuugziS
-   0kpxB6E6M2WWomP2/eO1+Dd0r2NaXo3tEsUj6tYltKp1lOJ1Z5gTUd5+h
-   ZuOubTkrhebYpxGyEveOTW3KrnTv6gbWzZ88efPlhMWzs35vLrblQ4N8e
-   4RYI0fkXhuuX0BJzSGQ/KxpzdZK2ictNfURF5u/ms1P3TV6NrwPfhAi15
-   BmSaRAbMdHMlHek2nqn3jjwFIyRM5Nu4UR+DF/5IfTc2AwgD5V44QAyn4
-   uwl7dw0fLIEfOAT9Kl90842LVRRJlkRCmfGnrBc9DLfmDDpSROcImf653
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="340658928"
+  bh=4FEmkdG7+Mh8utMnnrwucItdH3lGfseQQ5MDaCVr/1E=;
+  b=EoZdFnkI8xdftueh/sndvIUW7qGCSzshKEi/0xe9NQhIrDFAQWbCV+l8
+   G6Nl+YWsuKVFAIDfTIDojcVl/fQCG9rKa0f0AKLoRU5Q+DW4U4vFEMV2L
+   9iQgeyEn0YOB5KBIrMdpkdao4g5L28ABPK6Uc+UTLNQT9Rnz3J24COaKP
+   Y0y8GyZOeU2WNd/ZdA3Q1EUPWq9XencWqvq0W0joiJiHcgDfWm2o8rk5K
+   3LNG0WhsUMJCQHMuh24Lvk0mE+GYT+RBaxzxVkB5KOa7Zx3lkW5/dmlmY
+   xX9/U99lbWUKQK3NewUbYTItYp7XxxhLGqIb2mew3aRUfLOZEQ2Y5T83g
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="340658933"
 X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="340658928"
+   d="scan'208";a="340658933"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 10:22:56 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="807906257"
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="807906260"
 X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="807906257"
+   d="scan'208";a="807906260"
 Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
   by orsmga004.jf.intel.com with ESMTP; 28 Mar 2023 10:22:55 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
-Cc:     Junfeng Guo <junfeng.guo@intel.com>, anthony.l.nguyen@intel.com,
-        Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: [PATCH net 3/4] ice: add profile conflict check for AVF FDIR
-Date:   Tue, 28 Mar 2023 10:20:34 -0700
-Message-Id: <20230328172035.3904953-4-anthony.l.nguyen@intel.com>
+Cc:     Jakob Koschel <jkl820.git@gmail.com>, anthony.l.nguyen@intel.com,
+        Arpana Arland <arpanax.arland@intel.com>
+Subject: [PATCH net 4/4] ice: fix invalid check for empty list in ice_sched_assoc_vsi_to_agg()
+Date:   Tue, 28 Mar 2023 10:20:35 -0700
+Message-Id: <20230328172035.3904953-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.38.1
 In-Reply-To: <20230328172035.3904953-1-anthony.l.nguyen@intel.com>
 References: <20230328172035.3904953-1-anthony.l.nguyen@intel.com>
@@ -60,120 +60,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junfeng Guo <junfeng.guo@intel.com>
+From: Jakob Koschel <jkl820.git@gmail.com>
 
-Add profile conflict check while adding some FDIR rules to avoid
-unexpected flow behavior, rules may have conflict including:
-        IPv4 <---> {IPv4_UDP, IPv4_TCP, IPv4_SCTP}
-        IPv6 <---> {IPv6_UDP, IPv6_TCP, IPv6_SCTP}
+The code implicitly assumes that the list iterator finds a correct
+handle. If 'vsi_handle' is not found the 'old_agg_vsi_info' was
+pointing to an bogus memory location. For safety a separate list
+iterator variable should be used to make the != NULL check on
+'old_agg_vsi_info' correct under any circumstances.
 
-For example, when we create an FDIR rule for IPv4, this rule will work
-on packets including IPv4, IPv4_UDP, IPv4_TCP and IPv4_SCTP. But if we
-then create an FDIR rule for IPv4_UDP and then destroy it, the first
-FDIR rule for IPv4 cannot work on pkt IPv4_UDP then.
+Additionally Linus proposed to avoid any use of the list iterator
+variable after the loop, in the attempt to move the list iterator
+variable declaration into the macro to avoid any potential misuse after
+the loop. Using it in a pointer comparison after the loop is undefined
+behavior and should be omitted if possible [1].
 
-To prevent this unexpected behavior, we add restriction in software
-when creating FDIR rules by adding necessary profile conflict check.
-
-Fixes: 1f7ea1cd6a37 ("ice: Enable FDIR Configure for AVF")
-Signed-off-by: Junfeng Guo <junfeng.guo@intel.com>
-Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
+Fixes: 37c592062b16 ("ice: remove the VSI info from previous agg")
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jkl820.git@gmail.com>
+Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../ethernet/intel/ice/ice_virtchnl_fdir.c    | 73 +++++++++++++++++++
- 1 file changed, 73 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_sched.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-index e6ef6b303222..5fd75e75772e 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-@@ -541,6 +541,72 @@ static void ice_vc_fdir_rem_prof_all(struct ice_vf *vf)
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 4eca8d195ef0..b7682de0ae05 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -2788,7 +2788,7 @@ static int
+ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
+ 			   u16 vsi_handle, unsigned long *tc_bitmap)
+ {
+-	struct ice_sched_agg_vsi_info *agg_vsi_info, *old_agg_vsi_info = NULL;
++	struct ice_sched_agg_vsi_info *agg_vsi_info, *iter, *old_agg_vsi_info = NULL;
+ 	struct ice_sched_agg_info *agg_info, *old_agg_info;
+ 	struct ice_hw *hw = pi->hw;
+ 	int status = 0;
+@@ -2806,11 +2806,13 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
+ 	if (old_agg_info && old_agg_info != agg_info) {
+ 		struct ice_sched_agg_vsi_info *vtmp;
+ 
+-		list_for_each_entry_safe(old_agg_vsi_info, vtmp,
++		list_for_each_entry_safe(iter, vtmp,
+ 					 &old_agg_info->agg_vsi_list,
+ 					 list_entry)
+-			if (old_agg_vsi_info->vsi_handle == vsi_handle)
++			if (iter->vsi_handle == vsi_handle) {
++				old_agg_vsi_info = iter;
+ 				break;
++			}
  	}
- }
  
-+/**
-+ * ice_vc_fdir_has_prof_conflict
-+ * @vf: pointer to the VF structure
-+ * @conf: FDIR configuration for each filter
-+ *
-+ * Check if @conf has conflicting profile with existing profiles
-+ *
-+ * Return: true on success, and false on error.
-+ */
-+static bool
-+ice_vc_fdir_has_prof_conflict(struct ice_vf *vf,
-+			      struct virtchnl_fdir_fltr_conf *conf)
-+{
-+	struct ice_fdir_fltr *desc;
-+
-+	list_for_each_entry(desc, &vf->fdir.fdir_rule_list, fltr_node) {
-+		struct virtchnl_fdir_fltr_conf *existing_conf;
-+		enum ice_fltr_ptype flow_type_a, flow_type_b;
-+		struct ice_fdir_fltr *a, *b;
-+
-+		existing_conf = to_fltr_conf_from_desc(desc);
-+		a = &existing_conf->input;
-+		b = &conf->input;
-+		flow_type_a = a->flow_type;
-+		flow_type_b = b->flow_type;
-+
-+		/* No need to compare two rules with different tunnel types or
-+		 * with the same protocol type.
-+		 */
-+		if (existing_conf->ttype != conf->ttype ||
-+		    flow_type_a == flow_type_b)
-+			continue;
-+
-+		switch (flow_type_a) {
-+		case ICE_FLTR_PTYPE_NONF_IPV4_UDP:
-+		case ICE_FLTR_PTYPE_NONF_IPV4_TCP:
-+		case ICE_FLTR_PTYPE_NONF_IPV4_SCTP:
-+			if (flow_type_b == ICE_FLTR_PTYPE_NONF_IPV4_OTHER)
-+				return true;
-+			break;
-+		case ICE_FLTR_PTYPE_NONF_IPV4_OTHER:
-+			if (flow_type_b == ICE_FLTR_PTYPE_NONF_IPV4_UDP ||
-+			    flow_type_b == ICE_FLTR_PTYPE_NONF_IPV4_TCP ||
-+			    flow_type_b == ICE_FLTR_PTYPE_NONF_IPV4_SCTP)
-+				return true;
-+			break;
-+		case ICE_FLTR_PTYPE_NONF_IPV6_UDP:
-+		case ICE_FLTR_PTYPE_NONF_IPV6_TCP:
-+		case ICE_FLTR_PTYPE_NONF_IPV6_SCTP:
-+			if (flow_type_b == ICE_FLTR_PTYPE_NONF_IPV6_OTHER)
-+				return true;
-+			break;
-+		case ICE_FLTR_PTYPE_NONF_IPV6_OTHER:
-+			if (flow_type_b == ICE_FLTR_PTYPE_NONF_IPV6_UDP ||
-+			    flow_type_b == ICE_FLTR_PTYPE_NONF_IPV6_TCP ||
-+			    flow_type_b == ICE_FLTR_PTYPE_NONF_IPV6_SCTP)
-+				return true;
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+
-+	return false;
-+}
-+
- /**
-  * ice_vc_fdir_write_flow_prof
-  * @vf: pointer to the VF structure
-@@ -677,6 +743,13 @@ ice_vc_fdir_config_input_set(struct ice_vf *vf, struct virtchnl_fdir_add *fltr,
- 	enum ice_fltr_ptype flow;
- 	int ret;
- 
-+	ret = ice_vc_fdir_has_prof_conflict(vf, conf);
-+	if (ret) {
-+		dev_dbg(dev, "Found flow profile conflict for VF %d\n",
-+			vf->vf_id);
-+		return ret;
-+	}
-+
- 	flow = input->flow_type;
- 	ret = ice_vc_fdir_alloc_prof(vf, flow);
- 	if (ret) {
+ 	/* check if entry already exist */
 -- 
 2.38.1
 
