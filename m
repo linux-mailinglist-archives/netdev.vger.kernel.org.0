@@ -2,120 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 060E66CB4F4
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D716CB4FF
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:41:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbjC1Dgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 23:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
+        id S232617AbjC1DlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 23:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbjC1Dgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:36:54 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9296AF;
-        Mon, 27 Mar 2023 20:36:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1679974612; x=1711510612;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=j5hmjjyKk5Psz1U4nuya4ZEXu6xtodg5+e6026qUC0c=;
-  b=TZLGBKioFd/8YPRMwZ85330ZmhrHYnwg+rKYSCP0gGOn2xnGPcHnRhYG
-   Gf4qtNuCabgTSYQ8W2kMn7qf/m0uCxZkQUPYoMsgzOXNedt+oOsh0Ms9w
-   yGfPRr/NX3Paq6qnUmThVfSjwpxt77TlhrPGjsZvLb751OURENb5vtRpz
-   AAD2SWv3TuDrjHMuDzaG2cgWtOQDhKnHAAXg9WLQvikCs1eAoByTdfBmx
-   te0nx4we7WyuvaVBH3lYaUR3URQKmEJ9oEYLIt45bT0u821haWPieV1db
-   5SS8qqBTeAa+h4yL1HIb9uQyaOMEjBJYzgbpDWa+Zyj3Wa3lCposCuRrP
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="320861202"
-X-IronPort-AV: E=Sophos;i="5.98,296,1673942400"; 
-   d="scan'208";a="320861202"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2023 20:36:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="807715325"
-X-IronPort-AV: E=Sophos;i="5.98,296,1673942400"; 
-   d="scan'208";a="807715325"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 27 Mar 2023 20:36:47 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1ph08c-000IFb-1y;
-        Tue, 28 Mar 2023 03:36:46 +0000
-Date:   Tue, 28 Mar 2023 11:36:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wei Fang <wei.fang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     oe-kbuild-all@lists.linux.dev, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Amit Cohen <amcohen@nvidia.com>, Gal Pressman <gal@nvidia.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next v2 4/8] ethtool: eee: Rework get/set handler for
- SmartEEE-capable PHYs with non-EEE MACs
-Message-ID: <202303281117.3288i7kT-lkp@intel.com>
-References: <20230327142202.3754446-5-o.rempel@pengutronix.de>
+        with ESMTP id S232546AbjC1DlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:41:23 -0400
+Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C10C198B;
+        Mon, 27 Mar 2023 20:41:19 -0700 (PDT)
+X-UUID: b1670cf888f84dab9788b343001e7cdb-20230328
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.20,REQID:4924d34c-98e4-4057-8ba2-3e0330e3e5fe,IP:-32
+        768,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:-32768,SF:-32768,FIL
+        E:-32768,BULK:-32768,RULE:Release_Ham,ACTION:release,TS:0
+X-CID-INFO: VERSION:1.1.20,REQID:4924d34c-98e4-4057-8ba2-3e0330e3e5fe,IP:-3276
+        8,URL:-32768,TC:-32768,Content:-32768,EDM:-32768,RT:-32768,SF:-32768,FILE:
+        -32768,BULK:-32768,RULE:Release_Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:25b5999,CLOUDID:nil,BulkID:nil,BulkQuantity:0,Recheck:
+        0,SF:nil,TC:nil,Content:nil,EDM:nil,IP:nil,URL:nil,File:nil,Bulk:nil,QS:ni
+        l,BEC:nil,COL:0,OSI:0,OSA:0,AV:0
+X-CID-BVR: 0
+X-UUID: b1670cf888f84dab9788b343001e7cdb-20230328
+X-User: sujing@kylinos.cn
+Received: from localhost.localdomain [(210.12.40.82)] by mailgw
+        (envelope-from <sujing@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1177435070; Tue, 28 Mar 2023 11:40:46 +0800
+From:   sujing <sujing@kylinos.cn>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        andy@greyhouse.net, j.vosburgh@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sujing <sujing@kylinos.cn>
+Subject: [PATCH] net: bonding: avoid use-after-free with tx_hashtbl/rx_hashtbl
+Date:   Tue, 28 Mar 2023 11:40:37 +0800
+Message-Id: <20230328034037.2076930-1-sujing@kylinos.cn>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230327142202.3754446-5-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+In bonding mode 6 (Balance-alb),
+there are some potential race conditions between the 'bond_close' process
+and the tx/rx processes that use tx_hashtbl/rx_hashtbl,
+which may lead to use-after-free.
 
-I love your patch! Yet something to improve:
+For instance, when the bond6 device is in the 'bond_close' process
+while some backlogged packets from upper level are transmitted
+to 'bond_start_xmit', there is a spinlock contention between
+'tlb_deinitialize' and 'tlb_choose_channel'.
 
-[auto build test ERROR on net-next/main]
+If 'tlb_deinitialize' preempts the lock before 'tlb_choose_channel',
+a NULL pointer kernel panic will be triggered.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Oleksij-Rempel/net-phy-Add-driver-specific-get-set_eee-support-for-non-standard-PHYs/20230327-222630
-patch link:    https://lore.kernel.org/r/20230327142202.3754446-5-o.rempel%40pengutronix.de
-patch subject: [PATCH net-next v2 4/8] ethtool: eee: Rework get/set handler for SmartEEE-capable PHYs with non-EEE MACs
-config: csky-defconfig (https://download.01.org/0day-ci/archive/20230328/202303281117.3288i7kT-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fcee3230c8abb824746744ba0fc39dfd626faa65
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Oleksij-Rempel/net-phy-Add-driver-specific-get-set_eee-support-for-non-standard-PHYs/20230327-222630
-        git checkout fcee3230c8abb824746744ba0fc39dfd626faa65
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash
+Here's the timeline:
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202303281117.3288i7kT-lkp@intel.com/
+bond_close  ------------------  bond_start_xmit
+bond_alb_deinitialize  -------  __bond_start_xmit
+tlb_deinitialize  ------------  bond_alb_xmit
+spin_lock_bh  ----------------  bond_xmit_alb_slave_get
+tx_hashtbl = NULL  -----------  tlb_choose_channel
+spin_unlock_bh  --------------  //wait for spin_lock_bh
+------------------------------  spin_lock_bh
+------------------------------  __tlb_choose_channel
+causing kernel panic ========>  tx_hashtbl[hash_index].tx_slave
+------------------------------  spin_unlock_bh
 
-All errors (new ones prefixed by >>):
+Signed-off-by: sujing <sujing@kylinos.cn>
+---
+ drivers/net/bonding/bond_alb.c  | 32 +++++++++------------------
+ drivers/net/bonding/bond_main.c | 39 +++++++++++++++++++++++++++------
+ include/net/bond_alb.h          |  5 ++++-
+ 3 files changed, 46 insertions(+), 30 deletions(-)
 
-   csky-linux-ld: net/ethtool/common.o: in function `__ethtool_get_eee':
-   common.c:(.text+0x45c): undefined reference to `phy_ethtool_get_eee'
-   csky-linux-ld: net/ethtool/common.o: in function `__ethtool_set_eee':
-   common.c:(.text+0x49c): undefined reference to `phy_ethtool_set_eee'
->> csky-linux-ld: common.c:(.text+0x4b8): undefined reference to `phy_ethtool_get_eee'
->> csky-linux-ld: common.c:(.text+0x4bc): undefined reference to `phy_ethtool_set_eee'
-
+diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+index b9dbad3a8af8..f6ff5ea835c4 100644
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -71,7 +71,7 @@ static inline u8 _simple_hash(const u8 *hash_start, int hash_size)
+ 
+ /*********************** tlb specific functions ***************************/
+ 
+-static inline void tlb_init_table_entry(struct tlb_client_info *entry, int save_load)
++void tlb_init_table_entry(struct tlb_client_info *entry, int save_load)
+ {
+ 	if (save_load) {
+ 		entry->load_history = 1 + entry->tx_bytes /
+@@ -269,8 +269,8 @@ static void rlb_update_entry_from_arp(struct bonding *bond, struct arp_pkt *arp)
+ 	spin_unlock_bh(&bond->mode_lock);
+ }
+ 
+-static int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
+-			struct slave *slave)
++int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
++		 struct slave *slave)
+ {
+ 	struct arp_pkt *arp, _arp;
+ 
+@@ -756,7 +756,7 @@ static void rlb_init_table_entry_src(struct rlb_client_info *entry)
+ 	entry->src_next = RLB_NULL_INDEX;
+ }
+ 
+-static void rlb_init_table_entry(struct rlb_client_info *entry)
++void rlb_init_table_entry(struct rlb_client_info *entry)
+ {
+ 	memset(entry, 0, sizeof(struct rlb_client_info));
+ 	rlb_init_table_entry_dst(entry);
+@@ -874,9 +874,6 @@ static int rlb_initialize(struct bonding *bond)
+ 
+ 	spin_unlock_bh(&bond->mode_lock);
+ 
+-	/* register to receive ARPs */
+-	bond->recv_probe = rlb_arp_recv;
+-
+ 	return 0;
+ }
+ 
+@@ -888,7 +885,6 @@ static void rlb_deinitialize(struct bonding *bond)
+ 
+ 	kfree(bond_info->rx_hashtbl);
+ 	bond_info->rx_hashtbl = NULL;
+-	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
+ 
+ 	spin_unlock_bh(&bond->mode_lock);
+ }
+@@ -1303,7 +1299,7 @@ static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+ 
+ /************************ exported alb functions ************************/
+ 
+-int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
++int bond_alb_initialize(struct bonding *bond)
+ {
+ 	int res;
+ 
+@@ -1311,15 +1307,10 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+ 	if (res)
+ 		return res;
+ 
+-	if (rlb_enabled) {
+-		res = rlb_initialize(bond);
+-		if (res) {
+-			tlb_deinitialize(bond);
+-			return res;
+-		}
+-		bond->alb_info.rlb_enabled = 1;
+-	} else {
+-		bond->alb_info.rlb_enabled = 0;
++	res = rlb_initialize(bond);
++	if (res) {
++		tlb_deinitialize(bond);
++		return res;
+ 	}
+ 
+ 	return 0;
+@@ -1327,12 +1318,9 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+ 
+ void bond_alb_deinitialize(struct bonding *bond)
+ {
+-	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+-
+ 	tlb_deinitialize(bond);
+ 
+-	if (bond_info->rlb_enabled)
+-		rlb_deinitialize(bond);
++	rlb_deinitialize(bond);
+ }
+ 
+ static netdev_tx_t bond_do_alb_xmit(struct sk_buff *skb, struct bonding *bond,
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 236e5219c811..8fcb5d3ac0a2 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4217,6 +4217,7 @@ static int bond_open(struct net_device *bond_dev)
+ 	struct bonding *bond = netdev_priv(bond_dev);
+ 	struct list_head *iter;
+ 	struct slave *slave;
++	int i;
+ 
+ 	if (BOND_MODE(bond) == BOND_MODE_ROUNDROBIN && !bond->rr_tx_counter) {
+ 		bond->rr_tx_counter = alloc_percpu(u32);
+@@ -4239,11 +4240,29 @@ static int bond_open(struct net_device *bond_dev)
+ 	}
+ 
+ 	if (bond_is_lb(bond)) {
+-		/* bond_alb_initialize must be called before the timer
+-		 * is started.
+-		 */
+-		if (bond_alb_initialize(bond, (BOND_MODE(bond) == BOND_MODE_ALB)))
+-			return -ENOMEM;
++		struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
++
++		spin_lock_bh(&bond->mode_lock);
++
++		for (i = 0; i < TLB_HASH_TABLE_SIZE; i++)
++			tlb_init_table_entry(&bond_info->tx_hashtbl[i], 0);
++
++		spin_unlock_bh(&bond->mode_lock);
++
++		if (BOND_MODE(bond) == BOND_MODE_ALB) {
++			bond->alb_info.rlb_enabled = 1;
++			spin_lock_bh(&bond->mode_lock);
++
++			bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
++			for (i = 0; i < RLB_HASH_TABLE_SIZE; i++)
++				rlb_init_table_entry(bond_info->rx_hashtbl + i);
++
++			spin_unlock_bh(&bond->mode_lock);
++			bond->recv_probe = rlb_arp_recv;
++		} else {
++			bond->alb_info.rlb_enabled = 0;
++		}
++
+ 		if (bond->params.tlb_dynamic_lb || BOND_MODE(bond) == BOND_MODE_ALB)
+ 			queue_delayed_work(bond->wq, &bond->alb_work, 0);
+ 	}
+@@ -4279,8 +4298,6 @@ static int bond_close(struct net_device *bond_dev)
+ 
+ 	bond_work_cancel_all(bond);
+ 	bond->send_peer_notif = 0;
+-	if (bond_is_lb(bond))
+-		bond_alb_deinitialize(bond);
+ 	bond->recv_probe = NULL;
+ 
+ 	if (bond_uses_primary(bond)) {
+@@ -5854,6 +5871,8 @@ static void bond_uninit(struct net_device *bond_dev)
+ 	struct list_head *iter;
+ 	struct slave *slave;
+ 
++	bond_alb_deinitialize(bond);
++
+ 	bond_netpoll_cleanup(bond_dev);
+ 
+ 	/* Release the bonded slaves */
+@@ -6295,6 +6314,12 @@ static int bond_init(struct net_device *bond_dev)
+ 	    bond_dev->addr_assign_type == NET_ADDR_PERM)
+ 		eth_hw_addr_random(bond_dev);
+ 
++	/* bond_alb_initialize must be called before the timer
++	 * is started.
++	 */
++	if (bond_alb_initialize(bond))
++		return -ENOMEM;
++
+ 	return 0;
+ }
+ 
+diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
+index 9dc082b2d543..9fd16e20ef82 100644
+--- a/include/net/bond_alb.h
++++ b/include/net/bond_alb.h
+@@ -150,7 +150,7 @@ struct alb_bond_info {
+ 						 */
+ };
+ 
+-int bond_alb_initialize(struct bonding *bond, int rlb_enabled);
++int bond_alb_initialize(struct bonding *bond);
+ void bond_alb_deinitialize(struct bonding *bond);
+ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
+ void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
+@@ -165,5 +165,8 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+ void bond_alb_monitor(struct work_struct *);
+ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr);
+ void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
++int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond, struct slave *slave);
++void tlb_init_table_entry(struct tlb_client_info *entry, int save_load);
++void rlb_init_table_entry(struct rlb_client_info *entry);
+ #endif /* _NET_BOND_ALB_H */
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.27.0
+
