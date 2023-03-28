@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 263916CBB71
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:48:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7656CBB85
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232976AbjC1JsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 05:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        id S233043AbjC1JvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 05:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232949AbjC1Jrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:47:49 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4E47A84;
-        Tue, 28 Mar 2023 02:46:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=44mtZ61q7P+35bUH8uAbGMN+mLf2mEbB9fYaZnFfL/U=; b=tfrb+y9fqLdjjN1h5+XBr+ihvP
-        keMi/4l3Hq/r8rnt1vwO9tW2el95OeYLkmJ3oJ6vPNwrniznDZasIdoy1OF8msRNT00+0qFqqEVFL
-        6IIVo8OC3A1JoRCRZ0iNeo2W9e6uu46iQH7fNOQrBMLHeB1Ny3Tj37kImJKBxjNNkPgc=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1ph5tz-007gqn-KR; Tue, 28 Mar 2023 11:46:03 +0200
-Message-ID: <f436c2cc-4f6f-0dc1-a343-4c41eb14935e@nbd.name>
-Date:   Tue, 28 Mar 2023 11:46:03 +0200
+        with ESMTP id S232868AbjC1Juo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:50:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C937682
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:50:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC9C60E65
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 09:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 34639C433EF;
+        Tue, 28 Mar 2023 09:50:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679997019;
+        bh=7fFgILf/h3c8mwH2eiB4ST6qMmwAT2oqJA9MByazeAE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fUZyu0jHpMMRTlrgxqIs9T89ZgyYHTlJfllqOZSaoohbk2Tlb+TT7JBFZ3hl+ZcBe
+         sQMQbSzDWf7RckqjQKPjF6ptl2JEKLDB94cbwrVM8VaHgP8kxLFXUnGFXALQmixL1v
+         ZxmRA68LlD1B+tiueYgZI2vzD1s3C+65idmekEwxMn+JZFPYwT3oS/IklN+vFQJDHn
+         7mw78vCrm9CFYOVX2+x+NwV4jhidnIW+PC7nQT1cg5fKqpubIOXAb+3BIZqSNTxHei
+         UYACcNWVkY+1636Vxnv31gJgIFZHdDy5IKz37ZXYax4vaiV6QwnkjK2WJE9mgRMHGe
+         uZVRK2hc7YZ5w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 15FD0E4D01A;
+        Tue, 28 Mar 2023 09:50:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH net-next] net/core: add optional threading for backlog
- processing
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230324171314.73537-1-nbd@nbd.name>
- <20230324102038.7d91355c@kernel.org>
- <2d251879-1cf4-237d-8e62-c42bb4feb047@nbd.name>
- <20230324104733.571466bc@kernel.org>
- <f59ee83f-7267-04df-7286-f7ea147b5b49@nbd.name>
- <20230324201951.75eabe1f@kernel.org>
- <2ef8ab92-3670-61a1-384d-b827865447ca@nbd.name>
- <20230327190629.7e966f46@kernel.org>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <20230327190629.7e966f46@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 0/3] net: mvpp2: rss fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167999701908.28396.17253986050227713973.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Mar 2023 09:50:19 +0000
+References: <20230325163903.ofefgus43x66as7i@Svens-MacBookPro.local>
+In-Reply-To: <20230325163903.ofefgus43x66as7i@Svens-MacBookPro.local>
+To:     Sven Auhagen <sven.auhagen@voleatech.de>
+Cc:     netdev@vger.kernel.org, mw@semihalf.com, linux@armlinux.org.uk,
+        kuba@kernel.org, davem@davemloft.net,
+        maxime.chevallier@bootlin.com, pabeni@redhat.com
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.03.23 04:06, Jakub Kicinski wrote:
-> On Sat, 25 Mar 2023 06:42:43 +0100 Felix Fietkau wrote:
->> >> In my tests it brings down latency (both avg and p99) considerably in
->> >> some cases. I posted some numbers here:
->> >> https://lore.kernel.org/netdev/e317d5bc-cc26-8b1b-ca4b-66b5328683c4@nbd.name/  
->> > 
->> > Could you provide the full configuration for this test?
->> > In non-threaded mode the RPS is enabled to spread over remaining
->> > 3 cores? 
->> 
->> In this test I'm using threaded NAPI and backlog_threaded without any 
->> fixed core assignment.
-> 
-> I was asking about the rps_threaded=0 side of the comparison.
-> So you're saying on that side you were using threaded NAPI with
-> no pinning and RPS across all cores?
-Yes.
+Hello:
 
-- Felix
+This series was applied to netdev/net.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sat, 25 Mar 2023 17:39:03 +0100 you wrote:
+> This patch series fixes up some rss problems
+> in the mvpp2 driver.
+> 
+> The classifier is missing some fragmentation flags,
+> the parser has the QinQ headers switched and
+> the PPPoE Layer 4 detecion is not working
+> correctly.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3,1/3] net: mvpp2: classifier flow fix fragmentation flags
+    https://git.kernel.org/netdev/net/c/9a251cae51d5
+  - [v3,2/3] net: mvpp2: parser fix QinQ
+    https://git.kernel.org/netdev/net/c/a587a84813b9
+  - [v3,3/3] net: mvpp2: parser fix PPPoE
+    https://git.kernel.org/netdev/net/c/031a416c2170
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
