@@ -2,170 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 473CE6CBB0D
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFAE56CBB16
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbjC1JbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 05:31:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
+        id S232944AbjC1JdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 05:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232817AbjC1JaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:30:23 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628B1769D
+        with ESMTP id S232942AbjC1JdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:33:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1FC83F2
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:30:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1679995761;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2MTYkIHhyDg1tSTjOD+oc1eBs9Ie8OrzP6nP660U11M=;
+        b=co8y9FE3CeMxbgb9J/erVbhhC9QnN5ji8wtKFh0cSIFWPlQrI06gNUsOtKluDjsIU5DDw0
+        EgFJ4BxrrkwRFKmvcHJNcrsNjeCoIylg+3ej3diNar85y9iYMJhQuGUnasD2KCudwCi/37
+        q17jUbTmimEu7Sh+Bvsk7w67OfPqtoI=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-547-i4WXrM5tNo-4l36uZHH7UQ-1; Tue, 28 Mar 2023 05:29:20 -0400
+X-MC-Unique: i4WXrM5tNo-4l36uZHH7UQ-1
+Received: by mail-qv1-f69.google.com with SMTP id m3-20020a0cbf03000000b005de7233ca79so2618150qvi.3
         for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:29:18 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id cf7so14202969ybb.5
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 02:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google; t=1679995751;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yFB98fl8c+VxJhat2aITQJylt85+D41Na+tueFpnBAE=;
-        b=h6Vz5hHsFbSVlybmIlvV3llRGY6zxdMBPqd7vuRnJb91gssIrU+JkHC8x3k8jk99aZ
-         TUV+/AV65p6lGjzaxQBmfrutizEWwOo+EZeXN/NHKK4LwatIFW/QwCXbyNZ7bW8Vvnd5
-         K2dz4isaG3Fg9/yhee6xJqIWq4kl98h+rwO8U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679995751;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yFB98fl8c+VxJhat2aITQJylt85+D41Na+tueFpnBAE=;
-        b=utArIi5VB59QvXjSVaEJfOnYtGiTIrrv/5U+McT/W6TI63REgMI0fF3960ZQkM9nES
-         vUq7zZPiw0odnlEN/UPJdS4jtPgItHNYXGn9azWP3yDeC+Q+5xMcqS8E4xy4bSRaF4lG
-         vBK7/LdixHq9HvwtO1/hwMTNYvzXAJhUwbIM75NVe5K3AyOnbSXYs6/8JPBEsta2Q3iZ
-         D6rSuYZWI/P001AT9uGlLQFHyi/fc9kkCq3lFFf9LvmVylD+HIU8nmWcyljwXX5zCj7j
-         ylMKhp8DQ1cRQSCWAvgkikqG9gvvtpg0mcigR3VpVjMg8qt5QcKrnjDtsgvKxOda9dXP
-         /I0g==
-X-Gm-Message-State: AAQBX9cDooR/uR6faaQHGkpQawZK4pbYmuZzy9WVpRCmVYOMXjwbCBiy
-        khzpP/mEoRm4rFkFru8gquSMr9o8ICMLmWdsHNgyPA==
-X-Google-Smtp-Source: AKy350afBwmCZQBALVcAA/Tbw4Xqq5Zxd871dGI57F78yPyqoxYIijJLMdgmt6M0w+Y8hISHOAZdDyJishaV0ICRHKo=
-X-Received: by 2002:a05:6902:188f:b0:b78:bced:2e3d with SMTP id
- cj15-20020a056902188f00b00b78bced2e3dmr7396712ybb.3.1679995751012; Tue, 28
- Mar 2023 02:29:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230328073328.3949796-1-dario.binacchi@amarulasolutions.com> <20230328084710.jnrwvydewx3atxti@pengutronix.de>
-In-Reply-To: <20230328084710.jnrwvydewx3atxti@pengutronix.de>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Tue, 28 Mar 2023 11:28:59 +0200
-Message-ID: <CABGWkvq0gOMw2J9GpLS=w+qg-3xhAst6KN9kvCuZnV9bSBJ3CA@mail.gmail.com>
-Subject: Re: [PATCH v10 0/5] can: bxcan: add support for ST bxCAN controller
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Rob Herring <robh@kernel.org>,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Christophe Roullier <christophe.roullier@foss.st.com>,
+        d=1e100.net; s=20210112; t=1679995758;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2MTYkIHhyDg1tSTjOD+oc1eBs9Ie8OrzP6nP660U11M=;
+        b=ououlpOqxiEAfTK4V1oiPPIY9HWv/0q3Vnl0E7Kh1w4QqyQEd7eONySrwHaxGDsl1B
+         yYIftUvrdTDn9cwgm2KhKEdKuN8IlwJoLfaBJ028RMTwK97Hb7r8wuMqc6buI6NkpRLD
+         m+n9iPuH417By90prXvbfD5aDtpEHQgoDfdAQ6hxMaJSMglKvKJIAKIzlXPZeUdpiweE
+         g7VI+0WKhNo4ndrwV6uAN8jD5wyystiqGnrC5OMg9K2Dje/sYdsMr+pRI4gWgwxw8sG3
+         wqVhea1lhh/sLP5FU3ypfelQuooKI8Nm2S4m7K8TVLDBDLfi+wRIRa91AHlx+dxeLu8v
+         MLHA==
+X-Gm-Message-State: AAQBX9f9AiCW66yiogNzWJzdpPOYRFXmGVa6jC2kyYNhFHUYrM8h3o9d
+        zjXXxQ1YGEcX/ECfAZ5+yn/B9JVaahhc8oUr5wMvqULd+zI83CZx0P82b2l2Yhl+A8ADcUgUuOL
+        TzF0V0G2JHybAFsR0
+X-Received: by 2002:a05:6214:260f:b0:56b:fb58:c350 with SMTP id gu15-20020a056214260f00b0056bfb58c350mr23964670qvb.26.1679995758200;
+        Tue, 28 Mar 2023 02:29:18 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YbQdtTvthYdS2lSVNkd7CIQnOjtbLTtQpWx6BoakwOHWkvtaIfcNuo2kDx2/O8wrbZT546kA==
+X-Received: by 2002:a05:6214:260f:b0:56b:fb58:c350 with SMTP id gu15-20020a056214260f00b0056bfb58c350mr23964649qvb.26.1679995757971;
+        Tue, 28 Mar 2023 02:29:17 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id z9-20020a376509000000b0074283b87a4esm10340876qkb.90.2023.03.28.02.29.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 02:29:17 -0700 (PDT)
+Date:   Tue, 28 Mar 2023 11:29:12 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-can@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@sberdevices.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v2 2/3] virtio/vsock: WARN_ONCE() for invalid state
+ of socket
+Message-ID: <lgpswwclsuiukh2q5couf33jytf6abneazmwkty6fevoxcgh5p@3dzfbmenjhco>
+References: <728181e9-6b35-0092-3d01-3d7aff4521b6@sberdevices.ru>
+ <30aa2604-77c0-322e-44fd-ff99fc25e388@sberdevices.ru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <30aa2604-77c0-322e-44fd-ff99fc25e388@sberdevices.ru>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Sun, Mar 26, 2023 at 01:09:25AM +0300, Arseniy Krasnov wrote:
+>This adds WARN_ONCE() and return from stream dequeue callback when
+>socket's queue is empty, but 'rx_bytes' still non-zero.
 
-On Tue, Mar 28, 2023 at 10:47=E2=80=AFAM Marc Kleine-Budde <mkl@pengutronix=
-.de> wrote:
->
-> On 28.03.2023 09:33:23, Dario Binacchi wrote:
-> > The series adds support for the basic extended CAN controller (bxCAN)
-> > found in many low- to middle-end STM32 SoCs.
-> >
-> > The driver has been tested on the stm32f469i-discovery board with a
-> > kernel version 5.19.0-rc2 in loopback + silent mode:
-> >
-> > ip link set can0 type can bitrate 125000 loopback on listen-only on
-> > ip link set up can0
-> > candump can0 -L &
-> > cansend can0 300#AC.AB.AD.AE.75.49.AD.D1
-> >
-> > For uboot and kernel compilation, as well as for rootfs creation I used
-> > buildroot:
-> >
-> > make stm32f469_disco_sd_defconfig
-> > make
-> >
-> > but I had to patch can-utils and busybox as can-utils and iproute are
-> > not compiled for MMU-less microcotrollers. In the case of can-utils,
-> > replacing the calls to fork() with vfork(), I was able to compile the
-> > package with working candump and cansend applications, while in the
-> > case of iproute, I ran into more than one problem and finally I decided
-> > to extend busybox's ip link command for CAN-type devices. I'm still
-> > wondering if it was really necessary, but this way I was able to test
-> > the driver.
->
-> Applied to linux-can-next.
+Nit: I would explain why we add this, for example:
 
-Just one last question:
-To test this series, as described in the cover letter, I could not use
-the iproute2
-package since the microcontroller is without MMU. I then extended busybox f=
-or
-the ip link command. I actually also added the rtnl-link-can.c
-application to the
-libmnl library. So now I find myself with two applications that have
-been useful
-to me for this type of use case.
-Did I do useless work because I could use other tools? If instead the tools=
- for
-this use case are missing, what do you think is better to do?
-Submit to their respective repos or add this functionality to another
-project that
-I haven't considered ?
-
-Thanks and regards,
-Dario
+This allows the detection of potential bugs due to packet merging
+(see previous patch).
 
 >
-> Thanks,
-> Marc
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> net/vmw_vsock/virtio_transport_common.c | 7 +++++++
+> 1 file changed, 7 insertions(+)
+
 >
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129  |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index b9144af71553..ad70531de133 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -398,6 +398,13 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+> 	u32 free_space;
+>
+> 	spin_lock_bh(&vvs->rx_lock);
+>+
+>+	if (WARN_ONCE(skb_queue_empty(&vvs->rx_queue) && vvs->rx_bytes,
+>+		      "No skbuffs with non-zero 'rx_bytes'\n")) {
 
+Nit: I would rephrase it this way:
+"rx_queue is empty, but rx_bytes is non-zero"
 
+>+		spin_unlock_bh(&vvs->rx_lock);
+>+		return err;
+>+	}
+>+
+> 	while (total < len && !skb_queue_empty(&vvs->rx_queue)) {
+> 		skb = skb_peek(&vvs->rx_queue);
+>
+>-- 
+>2.25.1
+>
 
---=20
+Anyway the patch LGTM!
 
-Dario Binacchi
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Senior Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
