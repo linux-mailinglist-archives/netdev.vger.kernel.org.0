@@ -2,116 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA6C6CC92F
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 19:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77CD66CC935
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 19:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231381AbjC1RXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 13:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35730 "EHLO
+        id S229645AbjC1RYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 13:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbjC1RW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 13:22:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B92DBBA1
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 10:22:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680024178; x=1711560178;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4FEmkdG7+Mh8utMnnrwucItdH3lGfseQQ5MDaCVr/1E=;
-  b=EoZdFnkI8xdftueh/sndvIUW7qGCSzshKEi/0xe9NQhIrDFAQWbCV+l8
-   G6Nl+YWsuKVFAIDfTIDojcVl/fQCG9rKa0f0AKLoRU5Q+DW4U4vFEMV2L
-   9iQgeyEn0YOB5KBIrMdpkdao4g5L28ABPK6Uc+UTLNQT9Rnz3J24COaKP
-   Y0y8GyZOeU2WNd/ZdA3Q1EUPWq9XencWqvq0W0joiJiHcgDfWm2o8rk5K
-   3LNG0WhsUMJCQHMuh24Lvk0mE+GYT+RBaxzxVkB5KOa7Zx3lkW5/dmlmY
-   xX9/U99lbWUKQK3NewUbYTItYp7XxxhLGqIb2mew3aRUfLOZEQ2Y5T83g
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="340658933"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="340658933"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 10:22:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="807906260"
-X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
-   d="scan'208";a="807906260"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by orsmga004.jf.intel.com with ESMTP; 28 Mar 2023 10:22:55 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-Cc:     Jakob Koschel <jkl820.git@gmail.com>, anthony.l.nguyen@intel.com,
-        Arpana Arland <arpanax.arland@intel.com>
-Subject: [PATCH net 4/4] ice: fix invalid check for empty list in ice_sched_assoc_vsi_to_agg()
-Date:   Tue, 28 Mar 2023 10:20:35 -0700
-Message-Id: <20230328172035.3904953-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230328172035.3904953-1-anthony.l.nguyen@intel.com>
-References: <20230328172035.3904953-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S231136AbjC1RYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 13:24:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E329B2D5B;
+        Tue, 28 Mar 2023 10:24:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87299B81D72;
+        Tue, 28 Mar 2023 17:24:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E803EC4339B;
+        Tue, 28 Mar 2023 17:24:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680024287;
+        bh=O8m+p0zD+XNFiA03Z+/yCzyznUzLzCLRpXdQTJ8dP+Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=RldpunhtC07J9KzcN6AhpUCmYq+S2XB4JSuwhsGPYTfVDvDz0rkamEDIHzb53qlzY
+         UH0NCPk2pyMqQ7XhPU4+B6QRoHbW6qopkRssgz7ZXzG87ReBJtU2RPqyNeLwxJdRgB
+         AwvgMNJ91k3jHME+1zm+fxvIEyVp7a8YgMckCKuFvk+U/0KElQytwPOdNMnMU/2m9N
+         5Y0R6mjaZaipytIgrDIOlCuZGbmRAyjJh5Bhj4YoR/Ika5lg4OG5WLjyE5auzsbOud
+         Ji65Cp3/2Dh6FTnUBinyRs/35CvO8iUXoC0swemghz7ySQWSCq5p/pvu1qJuC2Bgdc
+         YM5GHRU5QMy7w==
+Date:   Tue, 28 Mar 2023 12:24:45 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     Saurabh Singh Sengar <ssengar@microsoft.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Jake Oshins <jakeo@microsoft.com>,
+        "kuba@kernel.org" <kuba@kernel.org>, "kw@linux.com" <kw@linux.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh@kernel.org" <robh@kernel.org>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Long Li <longli@microsoft.com>,
+        "boqun.feng@gmail.com" <boqun.feng@gmail.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [EXTERNAL] [PATCH 1/6] PCI: hv: fix a race condition bug in
+ hv_pci_query_relations()
+Message-ID: <20230328172445.GA2951931@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SA1PR21MB133553326FBAD376DE9DB48ABF889@SA1PR21MB1335.namprd21.prod.outlook.com>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakob Koschel <jkl820.git@gmail.com>
+On Tue, Mar 28, 2023 at 05:38:59AM +0000, Dexuan Cui wrote:
+> > From: Saurabh Singh Sengar <ssengar@microsoft.com>
+> > Sent: Monday, March 27, 2023 10:29 PM
+> > > ...
+> > > ---
+> 
+> Please note this special line "---". 
+> Anything after the special line and before the line "diff --git" is discarded
+> automaticaly by 'git' and 'patch'. 
+> 
+> > >  drivers/pci/controller/pci-hyperv.c | 13 +++++++++++++
+> > >  1 file changed, 13 insertions(+)
+> > >
+> > > @@ -3635,6 +3641,8 @@ static int hv_pci_probe(struct hv_device *hdev,
+> > >
+> > >  retry:
+> > >  	ret = hv_pci_query_relations(hdev);
+> > > +	printk("hv_pci_query_relations() exited\n");
+> > 
+> > Can we use pr_* or the appropriate KERN_<LEVEL> in all the printk(s).
+> 
+> This is not part of the real patch :-)
+> I just thought the debug code can help understand the issues
+> resolved by the patches.
+> I'll remove the debug code to avoid confusion if I need to post v2.
 
-The code implicitly assumes that the list iterator finds a correct
-handle. If 'vsi_handle' is not found the 'old_agg_vsi_info' was
-pointing to an bogus memory location. For safety a separate list
-iterator variable should be used to make the != NULL check on
-'old_agg_vsi_info' correct under any circumstances.
+I guess that means you *will* post a v2, right?  Or do you expect
+somebody else to remove the debug code?  If you do keep any debug or
+other logging, use pci_info() (or dev_info()) whenever possible.
 
-Additionally Linus proposed to avoid any use of the list iterator
-variable after the loop, in the attempt to move the list iterator
-variable declaration into the macro to avoid any potential misuse after
-the loop. Using it in a pointer comparison after the loop is undefined
-behavior and should be omitted if possible [1].
+Also capitalize the subject line to match the others in the series.
 
-Fixes: 37c592062b16 ("ice: remove the VSI info from previous agg")
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jkl820.git@gmail.com>
-Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_sched.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index 4eca8d195ef0..b7682de0ae05 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -2788,7 +2788,7 @@ static int
- ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
- 			   u16 vsi_handle, unsigned long *tc_bitmap)
- {
--	struct ice_sched_agg_vsi_info *agg_vsi_info, *old_agg_vsi_info = NULL;
-+	struct ice_sched_agg_vsi_info *agg_vsi_info, *iter, *old_agg_vsi_info = NULL;
- 	struct ice_sched_agg_info *agg_info, *old_agg_info;
- 	struct ice_hw *hw = pi->hw;
- 	int status = 0;
-@@ -2806,11 +2806,13 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi, u32 agg_id,
- 	if (old_agg_info && old_agg_info != agg_info) {
- 		struct ice_sched_agg_vsi_info *vtmp;
- 
--		list_for_each_entry_safe(old_agg_vsi_info, vtmp,
-+		list_for_each_entry_safe(iter, vtmp,
- 					 &old_agg_info->agg_vsi_list,
- 					 list_entry)
--			if (old_agg_vsi_info->vsi_handle == vsi_handle)
-+			if (iter->vsi_handle == vsi_handle) {
-+				old_agg_vsi_info = iter;
- 				break;
-+			}
- 	}
- 
- 	/* check if entry already exist */
--- 
-2.38.1
-
+Bjorn
