@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6A96CCBB2
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:57:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6676CCBB4
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 22:57:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbjC1U5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 16:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
+        id S229804AbjC1U5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 16:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbjC1U5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:57:16 -0400
+        with ESMTP id S229745AbjC1U5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 16:57:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE86830FC
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:56:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8EB2117
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 13:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B65CB81E78
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:56:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02EEBC433D2;
-        Tue, 28 Mar 2023 20:56:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68BD3B81E74
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15248C433EF;
+        Tue, 28 Mar 2023 20:56:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680037018;
-        bh=ACuZM5mn/z7yxWUzKVu6rqlVqqaQnPuK1nHIQV8xI8g=;
+        s=k20201202; t=1680037019;
+        bh=IUZ8xjtr5IR2EnJKE79NvLe78eYmdkm6LCKiGVkFafQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DL6unPXM7SauToeCJSxBOF2KK9Ym7CVngxNMYs0OdeS15La7LiCSK3jpS0ttpe6pP
-         r6G+Cs4shkU5gSWeTEsr2MhiExBs2SYSooyKdEP4UPosU6FcN9vnibTjl8kCMSv4De
-         YeSC8U+qkXH3rbCid2lT80/PqWC04odJn4ubVEac1c9HsZtGYEoWcaTYAbuyKckLK3
-         9JNMacBujXNEwu+OBdm1kTlL9p6WOUKJ8paR+qSH/bH9ShLZ1H+UomKjJOr9Z5uz0W
-         sRnwvCv0pzSjihr6dGiJw9J/nDGI36jNml/f2sRFE1sDnqmxmyMACUzxEKdAJCUmr5
-         KMnJaZZS78F9A==
+        b=eLxA6z1aoXL1yF2X3XIpPnqubINIXi8LsH9bIUfnxeCsmXpy3VWOoBJom9AZAfGaw
+         +IUHXbkqSSVrMj1Q6EhtKfoo9luRl3CfH/T48Dk94XdSox9553OpqyDc8GNbbOnRy+
+         rhN3YlB/Lq80+BPE1Q/h9GJ/Vi/ua7NgwnYSemrhjcv1KXygRY+Xqn+F36hR7ZuxDs
+         drBfcmXUzn7GCMO6PjcRJkH+fyr3scfvxB8/bqNUfbEjKR4ar9BU9PK71zQ2ijM7Kh
+         2yIepglNfDCsB096VQSJIQj24PqtzRI/GpXLlgNLRK15ZPa/mHDpm54D5AiZZmaWnR
+         s4u53Id/+Ao6w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -43,9 +43,9 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Dragos Tatulea <dtatulea@nvidia.com>
-Subject: [net-next 12/15] net/mlx5e: RX, Split off release path for xsk buffers for legacy rq
-Date:   Tue, 28 Mar 2023 13:56:20 -0700
-Message-Id: <20230328205623.142075-13-saeed@kernel.org>
+Subject: [net-next 13/15] net/mlx5e: RX, Increase WQE bulk size for legacy rq
+Date:   Tue, 28 Mar 2023 13:56:21 -0700
+Message-Id: <20230328205623.142075-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230328205623.142075-1-saeed@kernel.org>
 References: <20230328205623.142075-1-saeed@kernel.org>
@@ -62,102 +62,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dragos Tatulea <dtatulea@nvidia.com>
 
-Don't mix xsk buffer releases with page releases anymore. This is
-needed for handling of deferred page release.
+Deferred page release was added to legacy rq but its desired effect
+(driver releases last fragment to page pool cache) is not yet visible
+due to the WQE bulks being too small.
 
-Add a new bulk free function for xsk buffers from wqe frags.
+This patch increases the WQE bulk size to span 512 KB and clip it to
+one quarter of the rx queue size.
 
 Signed-off-by: Dragos Tatulea <dtatulea@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 50 +++++++++++++------
- 1 file changed, 35 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 +-
+ .../ethernet/mellanox/mlx5/core/en/params.c   | 47 +++++++++++++++++--
+ 2 files changed, 44 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 0675ffa5f8df..9c5270eb9dc6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -379,24 +379,42 @@ static inline void mlx5e_free_rx_wqe(struct mlx5e_rq *rq,
- {
- 	int i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 613a7daf9595..a087c433366b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -670,7 +670,7 @@ struct mlx5e_rq_frags_info {
+ 	struct mlx5e_rq_frag_info arr[MLX5E_MAX_RX_FRAGS];
+ 	u8 num_frags;
+ 	u8 log_num_frags;
+-	u8 wqe_bulk;
++	u16 wqe_bulk;
+ 	u8 wqe_index_mask;
+ };
  
--	if (rq->xsk_pool && !(wi->flags & BIT(MLX5E_WQE_FRAG_SKIP_RELEASE))) {
--		/* The `recycle` parameter is ignored, and the page is always
--		 * put into the Reuse Ring, because there is no way to return
--		 * the page to the userspace when the interface goes down.
--		 */
--		xsk_buff_free(*wi->xskp);
--		return;
--	}
--
- 	for (i = 0; i < rq->wqe.info.num_frags; i++, wi++)
- 		mlx5e_put_rx_frag(rq, wi, recycle);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 561da78d3b5c..40218d77ef34 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -667,6 +667,43 @@ static int mlx5e_max_nonlinear_mtu(int first_frag_size, int frag_size, bool xdp)
+ 	return first_frag_size + (MLX5E_MAX_RX_FRAGS - 2) * frag_size + PAGE_SIZE;
  }
  
-+static void mlx5e_xsk_free_rx_wqe(struct mlx5e_wqe_frag_info *wi)
++static void mlx5e_rx_compute_wqe_bulk_params(struct mlx5e_params *params,
++					     struct mlx5e_rq_frags_info *info)
 +{
-+	if (!(wi->flags & BIT(MLX5E_WQE_FRAG_SKIP_RELEASE)))
-+		xsk_buff_free(*wi->xskp);
-+}
-+
- static void mlx5e_dealloc_rx_wqe(struct mlx5e_rq *rq, u16 ix)
- {
- 	struct mlx5e_wqe_frag_info *wi = get_frag(rq, ix);
- 
--	mlx5e_free_rx_wqe(rq, wi, false);
-+	if (rq->xsk_pool)
-+		mlx5e_xsk_free_rx_wqe(wi);
-+	else
-+		mlx5e_free_rx_wqe(rq, wi, false);
-+}
-+
-+static void mlx5e_xsk_free_rx_wqes(struct mlx5e_rq *rq, u16 ix, int wqe_bulk)
-+{
-+	struct mlx5_wq_cyc *wq = &rq->wqe.wq;
++	u16 bulk_bound_rq_size = (1 << params->log_rq_mtu_frames) / 4;
++	u32 bulk_bound_rq_size_in_bytes;
++	u32 sum_frag_strides = 0;
++	u32 wqe_bulk_in_bytes;
++	u32 wqe_bulk;
 +	int i;
 +
-+	for (i = 0; i < wqe_bulk; i++) {
-+		int j = mlx5_wq_cyc_ctr2ix(wq, ix + i);
-+		struct mlx5e_wqe_frag_info *wi;
++	for (i = 0; i < info->num_frags; i++)
++		sum_frag_strides += info->arr[i].frag_stride;
 +
-+		wi = get_frag(rq, j);
-+		/* The page is always put into the Reuse Ring, because there
-+		 * is no way to return the page to the userspace when the
-+		 * interface goes down.
-+		 */
-+		mlx5e_xsk_free_rx_wqe(wi);
-+	}
- }
++	/* For MTUs larger than PAGE_SIZE, align to PAGE_SIZE to reflect
++	 * amount of consumed pages per wqe in bytes.
++	 */
++	if (sum_frag_strides > PAGE_SIZE)
++		sum_frag_strides = ALIGN(sum_frag_strides, PAGE_SIZE);
++
++	bulk_bound_rq_size_in_bytes = bulk_bound_rq_size * sum_frag_strides;
++
++#define MAX_WQE_BULK_BYTES(xdp) ((xdp ? 256 : 512) * 1024)
++
++	/* A WQE bulk should not exceed min(512KB, 1/4 of rq size). For XDP
++	 * keep bulk size smaller to avoid filling the page_pool cache on
++	 * every bulk refill.
++	 */
++	wqe_bulk_in_bytes = min_t(u32, MAX_WQE_BULK_BYTES(params->xdp_prog),
++				  bulk_bound_rq_size_in_bytes);
++	wqe_bulk = DIV_ROUND_UP(wqe_bulk_in_bytes, sum_frag_strides);
++
++	/* Make sure that allocations don't start when the page is still used
++	 * by older WQEs.
++	 */
++	info->wqe_bulk = max_t(u16, info->wqe_index_mask + 1, wqe_bulk);
++}
++
+ #define DEFAULT_FRAG_SIZE (2048)
  
- static void mlx5e_free_rx_wqes(struct mlx5e_rq *rq, u16 ix, int wqe_bulk)
-@@ -818,19 +836,21 @@ INDIRECT_CALLABLE_SCOPE bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq)
+ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+@@ -774,11 +811,13 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ 	}
+ 
+ out:
+-	/* Bulking optimization to skip allocation until at least 8 WQEs can be
+-	 * allocated in a row. At the same time, never start allocation when
+-	 * the page is still used by older WQEs.
++	/* Bulking optimization to skip allocation until a large enough number
++	 * of WQEs can be allocated in a row. Bulking also influences how well
++	 * deferred page release works.
  	 */
- 	wqe_bulk -= (head + wqe_bulk) & rq->wqe.info.wqe_index_mask;
+-	info->wqe_bulk = max_t(u8, info->wqe_index_mask + 1, 8);
++	mlx5e_rx_compute_wqe_bulk_params(params, info);
++
++	mlx5_core_dbg(mdev, "%s: wqe_bulk = %u\n", __func__, info->wqe_bulk);
  
--	mlx5e_free_rx_wqes(rq, head, wqe_bulk);
--
--	if (!rq->xsk_pool)
-+	if (!rq->xsk_pool) {
-+		mlx5e_free_rx_wqes(rq, head, wqe_bulk);
- 		count = mlx5e_alloc_rx_wqes(rq, head, wqe_bulk);
--	else if (likely(!rq->xsk_pool->dma_need_sync))
-+	} else if (likely(!rq->xsk_pool->dma_need_sync)) {
-+		mlx5e_xsk_free_rx_wqes(rq, head, wqe_bulk);
- 		count = mlx5e_xsk_alloc_rx_wqes_batched(rq, head, wqe_bulk);
--	else
-+	} else {
-+		mlx5e_xsk_free_rx_wqes(rq, head, wqe_bulk);
- 		/* If dma_need_sync is true, it's more efficient to call
- 		 * xsk_buff_alloc in a loop, rather than xsk_buff_alloc_batch,
- 		 * because the latter does the same check and returns only one
- 		 * frame.
- 		 */
- 		count = mlx5e_xsk_alloc_rx_wqes(rq, head, wqe_bulk);
-+	}
+ 	info->log_num_frags = order_base_2(info->num_frags);
  
- 	mlx5_wq_cyc_push_n(wq, count);
- 	if (unlikely(count != wqe_bulk)) {
 -- 
 2.39.2
 
