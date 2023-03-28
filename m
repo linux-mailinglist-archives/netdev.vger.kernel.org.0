@@ -2,174 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7547A6CB46E
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3F86CB493
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 05:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229706AbjC1DCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Mar 2023 23:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S232323AbjC1DK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Mar 2023 23:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbjC1DCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:02:36 -0400
-Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC1321FE7
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 20:02:33 -0700 (PDT)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1pgzbQ-009Nsu-SS; Tue, 28 Mar 2023 11:02:29 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 28 Mar 2023 11:02:28 +0800
-Date:   Tue, 28 Mar 2023 11:02:28 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next] macvlan: Add bclim parameter
-Message-ID: <ZCJYxDy1fgCm+cbj@gondor.apana.org.au>
-References: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
+        with ESMTP id S229527AbjC1DKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Mar 2023 23:10:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651112114;
+        Mon, 27 Mar 2023 20:10:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAC4A61598;
+        Tue, 28 Mar 2023 03:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5EE8BC4339B;
+        Tue, 28 Mar 2023 03:10:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679973022;
+        bh=5b2uwDKv8tMhRw7PjoNG8+hyRGiiIOPEFOsPlE+wtGQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZSbkzEnlQLL5qpm0KhD3lW1E5YgcYdBugYor/+p0Trip2LDtcCc0pvHPAPoFlfHKp
+         f1RjVx8NeBKZxuLQkoGateiufLWS+kWmnbpDnVLbqHUyto2IEtiXv9RwZkPnJnpWV7
+         Upa1unXsVuMQsu4wz8PSNMFMT07XZsa0JB9h5TayWVtQJNb4AdgdZdztIOH1eaQ+h2
+         OAKBCUisQ+4W77sed9W8nJwaysX40DtbIR+Vqp60+ktbTma6o6x9lyYYzbf50NztSC
+         SJw3ACMgCvVllp1EuggVlQiK0f3LQJ92yvsZi8D3OHF89TUy86JcoDW4h1oBX6bd+F
+         ExJvoe21/GbtQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 49DCEE4D029;
+        Tue, 28 Mar 2023 03:10:22 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
-X-Spam-Status: No, score=4.3 required=5.0 tests=HELO_DYNAMIC_IPADDR2,
-        PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 01/11] can: rcar_canfd: Add transceiver support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167997302229.22360.14426132499017428755.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Mar 2023 03:10:22 +0000
+References: <20230327073354.1003134-2-mkl@pengutronix.de>
+In-Reply-To: <20230327073354.1003134-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        geert+renesas@glider.be, simon.horman@corigine.com,
+        mailhol.vincent@wanadoo.fr
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for setting the broadcast queueing threshold
-on macvlan devices.  This controls which multicast packets will be
-processed in a workqueue instead of inline.
+Hello:
 
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+This series was applied to netdev/net-next.git (main)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index d61bd32d..71ddffc6 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -633,6 +633,7 @@ enum {
- 	IFLA_MACVLAN_MACADDR_COUNT,
- 	IFLA_MACVLAN_BC_QUEUE_LEN,
- 	IFLA_MACVLAN_BC_QUEUE_LEN_USED,
-+	IFLA_MACVLAN_BC_CUTOFF,
- 	__IFLA_MACVLAN_MAX,
- };
- 
-diff --git a/ip/iplink_macvlan.c b/ip/iplink_macvlan.c
-index 0f13637d..29a9112e 100644
---- a/ip/iplink_macvlan.c
-+++ b/ip/iplink_macvlan.c
-@@ -26,13 +26,14 @@
- static void print_explain(struct link_util *lu, FILE *f)
- {
- 	fprintf(f,
--		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN]\n"
-+		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN] [bclim BCLIM]\n"
- 		"\n"
- 		"MODE: private | vepa | bridge | passthru | source\n"
- 		"MODE_FLAG: null | nopromisc | nodst\n"
- 		"MODE_OPTS: for mode \"source\":\n"
- 		"\tmacaddr { { add | del } <macaddr> | set [ <macaddr> [ <macaddr>  ... ] ] | flush }\n"
--		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n",
-+		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n"
-+		"BCLIM: Threshold for broadcast queueing: 32-bit integer\n",
- 		lu->id
- 	);
- }
-@@ -67,6 +68,12 @@ static int bc_queue_len_arg(const char *arg)
- 	return -1;
- }
- 
-+static int bclim_arg(const char *arg)
-+{
-+	fprintf(stderr, "Error: illegal value for \"bclen\": \"%s\"\n", arg);
-+	return -1;
-+}
-+
- static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
- 			  struct nlmsghdr *n)
- {
-@@ -168,6 +175,15 @@ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
- 				return bc_queue_len_arg(*argv);
- 			}
- 			addattr32(n, 1024, IFLA_MACVLAN_BC_QUEUE_LEN, bc_queue_len);
-+		} else if (matches(*argv, "bclim") == 0) {
-+			__s32 bclim;
-+			NEXT_ARG();
-+
-+			if (get_s32(&bclim, *argv, 0)) {
-+				return bclim_arg(*argv);
-+			}
-+			addattr_l(n, 1024, IFLA_MACVLAN_BC_CUTOFF,
-+				  &bclim, sizeof(bclim));
- 		} else if (matches(*argv, "help") == 0) {
- 			explain(lu);
- 			return -1;
-@@ -245,6 +261,12 @@ static void macvlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[]
- 		print_luint(PRINT_ANY, "usedbcqueuelen", "usedbcqueuelen %lu ", bc_queue_len);
- 	}
- 
-+	if (tb[IFLA_MACVLAN_BC_CUTOFF] &&
-+		RTA_PAYLOAD(tb[IFLA_MACVLAN_BC_CUTOFF]) >= sizeof(__s32)) {
-+		__s32 bclim = rta_getattr_s32(tb[IFLA_MACVLAN_BC_CUTOFF]);
-+		print_int(PRINT_ANY, "bclim", "bclim %d ", bclim);
-+	}
-+
- 	/* in source mode, there are more options to print */
- 
- 	if (mode != MACVLAN_MODE_SOURCE)
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index c8c65657..bec1b78b 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -1479,6 +1479,7 @@ the following additional arguments are supported:
- .BR mode " { " private " | " vepa " | " bridge " | " passthru
- .RB " [ " nopromisc " ] | " source " [ " nodst " ] } "
- .RB " [ " bcqueuelen " { " LENGTH " } ] "
-+.RB " [ " bclim " " LIMIT " ] "
- 
- .in +8
- .sp
-@@ -1537,6 +1538,13 @@ will be the maximum length that any macvlan interface has requested.
- When listing device parameters both the bcqueuelen parameter
- as well as the actual used bcqueuelen are listed to better help
- the user understand the setting.
-+
-+.BR bclim " " LIMIT
-+- Set the threshold for broadcast queueing.
-+.BR LIMIT " must be a 32-bit integer."
-+Setting this to -1 disables broadcast queueing altogether.  Otherwise
-+a multicast address will be queued as broadcast if the number of devices
-+using it is greater than the given value.
- .in -8
- 
- .TP
-@@ -2699,6 +2707,9 @@ Update the broadcast/multicast queue length.
- [
- .BI bcqueuelen "  LENGTH  "
- ]
-+[
-+.BI bclim " LIMIT "
-+]
- 
- .in +8
- .BI bcqueuelen " LENGTH "
-@@ -2712,6 +2723,13 @@ will be the maximum length that any macvlan interface has requested.
- When listing device parameters both the bcqueuelen parameter
- as well as the actual used bcqueuelen are listed to better help
- the user understand the setting.
-+
-+.BI bclim " LIMIT "
-+- Set the threshold for broadcast queueing.
-+.IR LIMIT " must be a 32-bit integer."
-+Setting this to -1 disables broadcast queueing altogether.  Otherwise
-+a multicast address will be queued as broadcast if the number of devices
-+using it is greater than the given value.
- .in -8
- 
- .TP
+On Mon, 27 Mar 2023 09:33:44 +0200 you wrote:
+> From: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+> Add support for CAN transceivers described as PHYs.
+> 
+> While simple CAN transceivers can do without, this is needed for CAN
+> transceivers like NXP TJR1443 that need a configuration step (like
+> pulling standby or enable lines), and/or impose a bitrate limit.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,01/11] can: rcar_canfd: Add transceiver support
+    https://git.kernel.org/netdev/net-next/c/a0340df7eca4
+  - [net-next,02/11] can: rcar_canfd: Improve error messages
+    https://git.kernel.org/netdev/net-next/c/33eced402b18
+  - [net-next,03/11] can: c_can: Remove redundant pci_clear_master
+    https://git.kernel.org/netdev/net-next/c/594503341de7
+  - [net-next,04/11] can: ctucanfd: Remove redundant pci_clear_master
+    https://git.kernel.org/netdev/net-next/c/c9d23f9657ca
+  - [net-next,05/11] can: kvaser_pciefd: Remove redundant pci_clear_master
+    https://git.kernel.org/netdev/net-next/c/8db931835fad
+  - [net-next,06/11] can: esd_usb: Improve code readability by means of replacing struct esd_usb_msg with a union
+    https://git.kernel.org/netdev/net-next/c/a57915aee315
+  - [net-next,07/11] can: m_can: Remove repeated check for is_peripheral
+    https://git.kernel.org/netdev/net-next/c/73042934e4a3
+  - [net-next,08/11] can: m_can: Always acknowledge all interrupts
+    https://git.kernel.org/netdev/net-next/c/4ab639480900
+  - [net-next,09/11] can: m_can: Remove double interrupt enable
+    https://git.kernel.org/netdev/net-next/c/71725bfdbbf2
+  - [net-next,10/11] can: m_can: Disable unused interrupts
+    https://git.kernel.org/netdev/net-next/c/897e663218e2
+  - [net-next,11/11] can: m_can: Keep interrupts enabled during peripheral read
+    https://git.kernel.org/netdev/net-next/c/9083e0b09df3
+
+You are awesome, thank you!
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
