@@ -2,247 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D47C6CBD4A
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3856CBD54
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232724AbjC1LRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 07:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54680 "EHLO
+        id S232019AbjC1LUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 07:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbjC1LRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:17:32 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE163C20;
-        Tue, 28 Mar 2023 04:17:30 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32SBH9xG108436;
-        Tue, 28 Mar 2023 06:17:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680002229;
-        bh=+eoEEe1pmtcdoeNbEZvPGDZU834mlTMCt5fDZ1sH9SQ=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=oGGoOHR38rHg1qUDXzXDofSvKLb4TCXoaDSwBXKvJqcFbaP2AZ6akfsbz4hZS1jMX
-         gRZ2Lj6Q7nNSA5gYVyHRgID/tmEGDY3kWCwgqo00dzrluSkMJ5DiWymlEqvP6zgs/w
-         kH1Zrq6uXL86JfNBFkHgQECIpJRLoclkvPnEX+iU=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32SBH9M6037561
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 28 Mar 2023 06:17:09 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 28
- Mar 2023 06:17:09 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 28 Mar 2023 06:17:09 -0500
-Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32SBH4Wp095866;
-        Tue, 28 Mar 2023 06:17:04 -0500
-Message-ID: <f5b84da7-313a-179b-5f35-aefffaa206a7@ti.com>
-Date:   Tue, 28 Mar 2023 16:47:03 +0530
+        with ESMTP id S231432AbjC1LUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:20:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0F01A7
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:19:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680002361;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xTS3qxFhBqMP5asqq6o4vShlFpc+3Cgiy/wm+SvxL0Q=;
+        b=E4nXNwQoeURnz5bknTQx7aZmKkHu4q8IaDd94j01/oc6/LC+ckUjHJejWhksCnmPW9ZipZ
+        zDL6L2eHDiMfDcDddU1qAHG1xeAmNyhklNczvYYd6gWgsCyADc6O49+wK+PqOC0aBAglsz
+        lxpIBPQtJR9TeUzOyb04iv4CPU84JCY=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-117-P067p9ivOHe5PE5MHygbaw-1; Tue, 28 Mar 2023 07:19:20 -0400
+X-MC-Unique: P067p9ivOHe5PE5MHygbaw-1
+Received: by mail-qv1-f72.google.com with SMTP id w2-20020a0cc242000000b00583d8e55181so4845279qvh.23
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:19:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680002360;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xTS3qxFhBqMP5asqq6o4vShlFpc+3Cgiy/wm+SvxL0Q=;
+        b=ZJDPaYLzhKI/G4aV7NH+31IMsItd0cK5kie9QVOlAyj6p69mQGi/oAi3LgBAVP813p
+         AtnJWmHRdpL3o0bpTz+VjWU6i9Kr9I4c72JDlANdRvi/djlE9t+k24ADFYT8CeRxsMX/
+         8ZdB4pbOhGUykkxoaDNbEOTSLvxIWYwF3abgpTHmSCN0TIINxm9Lyem/E+0QEvbk/cZh
+         ebKsuAUDlT5whi0A1VVxUtSiArddC0Gg7t3CPMp7JYZf/jFrRpw+Npel8F6Ak4m7mhx3
+         GxLsMPL2uUYyxFdQUvp3HlT0/zcVaB4kWWdbG+Nipk39Q88Xb4yoCXxHpTNSXnOV+SSa
+         vDGg==
+X-Gm-Message-State: AO0yUKUCmAWthQ0uQTcHzguH4xLHRNduWKPhGSJVkk0HOyqMCHz2pQZ2
+        11hqNfWJ+/vrP6WRQyP8NHkRTm5x6G61jk7ZGycl5SMjCRnGXVxCukRi0BI9yaO8hEFT9pcKhL1
+        7fVyKY+U3gNuswgGQ
+X-Received: by 2002:a05:622a:88:b0:3d8:3aed:66f4 with SMTP id o8-20020a05622a008800b003d83aed66f4mr26549977qtw.41.1680002359531;
+        Tue, 28 Mar 2023 04:19:19 -0700 (PDT)
+X-Google-Smtp-Source: AK7set9rLhqoc1M0lOv19pEk7kytc7wZbIHzVGbGY5clwetaWE5MDsGKBYhOBeIW8AABeuWV7JcagA==
+X-Received: by 2002:a05:622a:88:b0:3d8:3aed:66f4 with SMTP id o8-20020a05622a008800b003d83aed66f4mr26549929qtw.41.1680002359066;
+        Tue, 28 Mar 2023 04:19:19 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-53-134-98.retail.telecomitalia.it. [82.53.134.98])
+        by smtp.gmail.com with ESMTPSA id v127-20020a379385000000b007456c75edbbsm17581456qkd.129.2023.03.28.04.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 04:19:18 -0700 (PDT)
+Date:   Tue, 28 Mar 2023 13:19:13 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>,
+        Vishnu Dasa <vdasa@vmware.com>
+Cc:     Bryan Tan <bryantan@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@sberdevices.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v1 1/2] vsock: return errors other than -ENOMEM to
+ socket
+Message-ID: <ak74j6l2qesrixxmw7pfw56najqhdn32lv3xfxcb53nvmkyi3x@fr25vo2jlvbj>
+References: <97f19214-ba04-c47e-7486-72e8aa16c690@sberdevices.ru>
+ <99da938b-3e67-150c-2f74-41d917a95950@sberdevices.ru>
+ <itjmw7vh3a7ggbodsu4mksu2hqbpdpxmu6cpexbra66nfhsw4x@hzpuzwldkfx5>
+ <CAGxU2F648TyvAJN+Zk6YCnGUhn=0W_MZTox7RxQ45zHmHHO0SA@mail.gmail.com>
+ <0f0a8603-e8a1-5fb2-23d9-5773c808ef85@sberdevices.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [EXTERNAL] Re: [PATCH v5 3/5] soc: ti: pruss: Add
- pruss_cfg_read()/update() API
-Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        MD Danish Anwar <danishanwar@ti.com>
-CC:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>, <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230323062451.2925996-1-danishanwar@ti.com>
- <20230323062451.2925996-4-danishanwar@ti.com> <20230327210126.GC3158115@p14s>
-From:   Md Danish Anwar <a0501179@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <20230327210126.GC3158115@p14s>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0f0a8603-e8a1-5fb2-23d9-5773c808ef85@sberdevices.ru>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 28/03/23 02:31, Mathieu Poirier wrote:
-> On Thu, Mar 23, 2023 at 11:54:49AM +0530, MD Danish Anwar wrote:
->> From: Suman Anna <s-anna@ti.com>
+On Tue, Mar 28, 2023 at 01:42:19PM +0300, Arseniy Krasnov wrote:
+>
+>
+>On 28.03.2023 12:42, Stefano Garzarella wrote:
+>> I pressed send too early...
 >>
->> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
->> the PRUSS platform driver to read and program respectively a register
->> within the PRUSS CFG sub-module represented by a syscon driver.
+>> CCing Bryan, Vishnu, and pv-drivers@vmware.com
 >>
->> These APIs are internal to PRUSS driver. Various useful registers
->> and macros for certain register bit-fields and their values have also
->> been added.
->>
->> Signed-off-by: Suman Anna <s-anna@ti.com>
->> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
->> ---
->>  drivers/soc/ti/pruss.c |   1 +
->>  drivers/soc/ti/pruss.h | 112 +++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 113 insertions(+)
->>  create mode 100644 drivers/soc/ti/pruss.h
->>
-> 
-> This patch doesn't compile without warnings.
-> 
+>> On Tue, Mar 28, 2023 at 11:39 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>>>
+>>> On Sun, Mar 26, 2023 at 01:13:11AM +0300, Arseniy Krasnov wrote:
+>>>> This removes behaviour, where error code returned from any transport
+>>>> was always switched to ENOMEM. This works in the same way as:
+>>>> commit
+>>>> c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
+>>>> but for receive calls.
+>>>>
+>>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>>> ---
+>>>> net/vmw_vsock/af_vsock.c | 4 ++--
+>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>>>> index 19aea7cba26e..9262e0b77d47 100644
+>>>> --- a/net/vmw_vsock/af_vsock.c
+>>>> +++ b/net/vmw_vsock/af_vsock.c
+>>>> @@ -2007,7 +2007,7 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
+>>>>
+>>>>               read = transport->stream_dequeue(vsk, msg, len - copied, flags);
+>>>
+>>> In vmci_transport_stream_dequeue() vmci_qpair_peekv() and
+>>> vmci_qpair_dequev() return VMCI_ERROR_* in case of errors.
+>>>
+>>> Maybe we should return -ENOMEM in vmci_transport_stream_dequeue() if
+>>> those functions fail to keep the same behavior.
+>
+>Yes, seems i missed it, because several months ago we had similar question for send
+>logic:
+>https://www.spinics.net/lists/kernel/msg4611091.html
+>And it was ok to not handle VMCI send path in this way. So i think current implementation
+>for tx is a little bit buggy, because VMCI specific error from 'vmci_qpair_enquev()' is
+>returned to af_vsock.c. I think error conversion must be added to VMCI transport for tx
+>also.
 
-Sure, Mathieu. I'll check the warnings.
+Good point!
 
->> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
->> index 126b672b9b30..2fa7df667592 100644
->> --- a/drivers/soc/ti/pruss.c
->> +++ b/drivers/soc/ti/pruss.c
->> @@ -21,6 +21,7 @@
->>  #include <linux/regmap.h>
->>  #include <linux/remoteproc.h>
->>  #include <linux/slab.h>
->> +#include "pruss.h"
->>  
->>  /**
->>   * struct pruss_private_data - PRUSS driver private data
->> diff --git a/drivers/soc/ti/pruss.h b/drivers/soc/ti/pruss.h
->> new file mode 100644
->> index 000000000000..4626d5f6b874
->> --- /dev/null
->> +++ b/drivers/soc/ti/pruss.h
->> @@ -0,0 +1,112 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * PRU-ICSS Subsystem user interfaces
->> + *
->> + * Copyright (C) 2015-2023 Texas Instruments Incorporated - http://www.ti.com
->> + *	MD Danish Anwar <danishanwar@ti.com>
->> + */
->> +
->> +#ifndef _SOC_TI_PRUSS_H_
->> +#define _SOC_TI_PRUSS_H_
->> +
->> +#include <linux/bits.h>
->> +#include <linux/regmap.h>
->> +
->> +/*
->> + * PRU_ICSS_CFG registers
->> + * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
->> + */
->> +#define PRUSS_CFG_REVID         0x00
->> +#define PRUSS_CFG_SYSCFG        0x04
->> +#define PRUSS_CFG_GPCFG(x)      (0x08 + (x) * 4)
->> +#define PRUSS_CFG_CGR           0x10
->> +#define PRUSS_CFG_ISRP          0x14
->> +#define PRUSS_CFG_ISP           0x18
->> +#define PRUSS_CFG_IESP          0x1C
->> +#define PRUSS_CFG_IECP          0x20
->> +#define PRUSS_CFG_SCRP          0x24
->> +#define PRUSS_CFG_PMAO          0x28
->> +#define PRUSS_CFG_MII_RT        0x2C
->> +#define PRUSS_CFG_IEPCLK        0x30
->> +#define PRUSS_CFG_SPP           0x34
->> +#define PRUSS_CFG_PIN_MX        0x40
->> +
->> +/* PRUSS_GPCFG register bits */
->> +#define PRUSS_GPCFG_PRU_GPO_SH_SEL              BIT(25)
->> +
->> +#define PRUSS_GPCFG_PRU_DIV1_SHIFT              20
->> +#define PRUSS_GPCFG_PRU_DIV1_MASK               GENMASK(24, 20)
->> +
->> +#define PRUSS_GPCFG_PRU_DIV0_SHIFT              15
->> +#define PRUSS_GPCFG_PRU_DIV0_MASK               GENMASK(15, 19)
->> +
->> +#define PRUSS_GPCFG_PRU_GPO_MODE                BIT(14)
->> +#define PRUSS_GPCFG_PRU_GPO_MODE_DIRECT         0
->> +#define PRUSS_GPCFG_PRU_GPO_MODE_SERIAL         BIT(14)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_SB                  BIT(13)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_DIV1_SHIFT          8
->> +#define PRUSS_GPCFG_PRU_GPI_DIV1_MASK           GENMASK(12, 8)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_DIV0_SHIFT          3
->> +#define PRUSS_GPCFG_PRU_GPI_DIV0_MASK           GENMASK(7, 3)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_POSITIVE   0
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_NEGATIVE   BIT(2)
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE            BIT(2)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_MODE_MASK           GENMASK(1, 0)
->> +#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT          0
->> +
->> +#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT           26
->> +#define PRUSS_GPCFG_PRU_MUX_SEL_MASK            GENMASK(29, 26)
->> +
->> +/* PRUSS_MII_RT register bits */
->> +#define PRUSS_MII_RT_EVENT_EN                   BIT(0)
->> +
->> +/* PRUSS_SPP register bits */
->> +#define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
->> +#define PRUSS_SPP_PRU1_PAD_HP_EN                BIT(0)
->> +#define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
->> +
->> +/**
->> + * pruss_cfg_read() - read a PRUSS CFG sub-module register
->> + * @pruss: the pruss instance handle
->> + * @reg: register offset within the CFG sub-module
->> + * @val: pointer to return the value in
->> + *
->> + * Reads a given register within the PRUSS CFG sub-module and
->> + * returns it through the passed-in @val pointer
->> + *
->> + * Return: 0 on success, or an error code otherwise
->> + */
->> +static int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)
->> +{
->> +	if (IS_ERR_OR_NULL(pruss))
->> +		return -EINVAL;
->> +
->> +	return regmap_read(pruss->cfg_regmap, reg, val);
->> +}
->> +
->> +/**
->> + * pruss_cfg_update() - configure a PRUSS CFG sub-module register
->> + * @pruss: the pruss instance handle
->> + * @reg: register offset within the CFG sub-module
->> + * @mask: bit mask to use for programming the @val
->> + * @val: value to write
->> + *
->> + * Programs a given register within the PRUSS CFG sub-module
->> + *
->> + * Return: 0 on success, or an error code otherwise
->> + */
->> +static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->> +			    unsigned int mask, unsigned int val)
->> +{
->> +	if (IS_ERR_OR_NULL(pruss))
->> +		return -EINVAL;
->> +
->> +	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
->> +}
->> +
->> +#endif  /* _SOC_TI_PRUSS_H_ */
->> -- 
->> 2.25.1
+These are negative values, so there are no big problems, but I don't
+know what the user expects in this case.
+
+@Vishnu Do we want to return an errno to the user or a VMCI_ERROR_*?
+
+In both cases I think we should do the same for both enqueue and
+dequeue.
+
+>
+>Good thing is that Hyper-V uses general error codes.
+
+Yeah!
+
+Thanks,
+Stefano
+
+>
+>Thanks, Arseniy
+>>>
+>>> CCing Bryan, Vishnu, and pv-drivers@vmware.com
+>>>
+>>> The other transports seem okay to me.
+>>>
+>>> Thanks,
+>>> Stefano
+>>>
+>>>>               if (read < 0) {
+>>>> -                      err = -ENOMEM;
+>>>> +                      err = read;
+>>>>                       break;
+>>>>               }
+>>>>
+>>>> @@ -2058,7 +2058,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+>>>>       msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
+>>>>
+>>>>       if (msg_len < 0) {
+>>>> -              err = -ENOMEM;
+>>>> +              err = msg_len;
+>>>>               goto out;
+>>>>       }
+>>>>
+>>>> --
+>>>> 2.25.1
+>>>>
 >>
+>
 
--- 
-Thanks and Regards,
-Danish.
