@@ -2,194 +2,488 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4646CC1F7
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 16:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD526CC1DD
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 16:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbjC1OV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 10:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        id S230512AbjC1OQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 10:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjC1OVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 10:21:25 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E2A102;
-        Tue, 28 Mar 2023 07:21:24 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id p13-20020a17090a284d00b0023d2e945aebso1831317pjf.0;
-        Tue, 28 Mar 2023 07:21:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680013284;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=EBTD9anSg+DK8ZTYd/DgBczIs+okCYD2CyOH9MpwvwM=;
-        b=ksycxZwnk4UEPjWWOOiiqyDfXgfNPznq5Xcrsca/beigGP9no3pfZAIphhSoCHPOVA
-         iVlLABmX4ctAi9nXWG0wVJPTrvn24ketP21QZWc8l8qoN0RYxF56ep4hMtKcz0a9ddA4
-         8lPxep52D0Qedn7RqeW5AF/1B1CUJfj1AJt1piKejolZYTN0llifmxmy0OUdD0kwb0ei
-         zPvyQet/XJdNFZqURh/+dBl7BlTo0nIyFkqqeYRr3ZdEuObN/uTdaOjIdRZvSFcntAEU
-         rkgXznM2yCPQZBsBwEOjTxONthQhDsR+EPszwLHbPa5dVjNkkgJYgzkDlfslX8ucG7yt
-         +IaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680013284;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EBTD9anSg+DK8ZTYd/DgBczIs+okCYD2CyOH9MpwvwM=;
-        b=jhtfQPHOvcsBrLnQ0QSlS/XJ7fq8zP+R/DVCXLApZb1HLiSzJRbOwrQkSe1cIqdxd8
-         dR9BkPwFNnEoB1NLvrX/3rNLGolOBxbIfrEnQh+u51aMJWBzRrInAvXb75nkqZRPxlhh
-         3b8hkjtimYwG/e0CDabMlj2jiq8LUf6GHjbQIti7+Gc8VFFqpAZmGgHVtNEJ/pGfcCLn
-         P+HX9pWC48/Aquvk3ruYxD2YvoyGM/krMj+doag40Ta8B3KXtVzQYeC3+BiE9ZuCuI3L
-         54ehhEbLQebLg0DsVQVOTUH7g6NJfsO7G6PBcVHGLSbrFLmqc5XoRpJ2ODm0Yb3wRivq
-         2NEg==
-X-Gm-Message-State: AAQBX9fsBClccYF1nAbkOHyuuEXVpV5yr6pLRUdNyMLEp7cpkaq690Fv
-        YK4jjg2w0gb3tnHfUp1vNkE=
-X-Google-Smtp-Source: AKy350ZUOoMaKKaMZEP+Uclx7Qf8HuNoKAm6zEbBiBBN5ugLie1EzM4ICCQko4Td+hPakrvv7/LLrQ==
-X-Received: by 2002:a17:902:cec6:b0:19a:ad2f:2df9 with SMTP id d6-20020a170902cec600b0019aad2f2df9mr17179609plg.55.1680013284114;
-        Tue, 28 Mar 2023 07:21:24 -0700 (PDT)
-Received: from KERNELXING-MB0.tencent.com ([103.7.29.31])
-        by smtp.gmail.com with ESMTPSA id g7-20020a170902934700b0019d397b0f18sm21141552plp.214.2023.03.28.07.21.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 07:21:23 -0700 (PDT)
-From:   Jason Xing <kerneljasonxing@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kerneljasonxing@gmail.com, Jason Xing <kernelxing@tencent.com>
-Subject: [PATCH v2 net] net: rps: avoid raising a softirq on the current cpu when scheduling napi
-Date:   Tue, 28 Mar 2023 22:21:12 +0800
-Message-Id: <20230328142112.12493-1-kerneljasonxing@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S233000AbjC1OQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 10:16:24 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28B713E;
+        Tue, 28 Mar 2023 07:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680012973; x=1711548973;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wsoLpdIxexaoNBiqfqN6BSn/03zk7j0zxn2YignKbDg=;
+  b=em1pLJ+hzmL2bcxekqNW6qnzJh96jiq/iz94HuVig4sa1gz9TciQ4g3I
+   r2Rd8wSMuIkW2tTOLxPSg3jCUWiFgEYw9L8iRf7+OTr9ZDEyYWHzBwGAF
+   8rX0iCo3APDpdDaQiRR8b6dnwREX+v4WPYG2ANxihGtPPkrRRWcqBNj38
+   ZA/RXgTGL2K55NpCw9c1z9fqyLJO3Yyf1ULbe+flZhmUEgf8UiwujhKrN
+   j0LffFSjM/hMJQGwsT1qb9xgZH6I8I919kQRDzmwhGyKVLJQxNm2Poiw0
+   rGoawRINZT44UHFXvgZmqR4nuSqG/Rh17lP88tNTt3hymstYFS5HrhHhX
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="368334578"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="368334578"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2023 07:16:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10662"; a="858097428"
+X-IronPort-AV: E=Sophos;i="5.98,297,1673942400"; 
+   d="scan'208";a="858097428"
+Received: from unknown (HELO fedora.sh.intel.com) ([10.238.175.104])
+  by orsmga005.jf.intel.com with ESMTP; 28 Mar 2023 07:16:10 -0700
+From:   Tianfei Zhang <tianfei.zhang@intel.com>
+To:     richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, linux-fpga@vger.kernel.org,
+        ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
+        vinicius.gomes@intel.com, pierre-louis.bossart@linux.intel.com,
+        marpagan@redhat.com, russell.h.weight@intel.com,
+        matthew.gerlach@linux.intel.com, nico@fluxnic.net,
+        Tianfei Zhang <tianfei.zhang@intel.com>,
+        Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
+Subject: [PATCH v3] ptp: add ToD device driver for Intel FPGA cards
+Date:   Tue, 28 Mar 2023 10:24:55 -0400
+Message-Id: <20230328142455.481146-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.38.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-0.8 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,URIBL_BLACK
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Xing <kernelxing@tencent.com>
+Adding a DFL (Device Feature List) device driver of ToD device for
+Intel FPGA cards.
 
-When we are scheduling napi and then RPS decides to put the skb into
-a backlog queue of another cpu, we shouldn't raise the softirq for
-the current cpu. When to raise a softirq is based on whether we have
-more data left to process later. But apparently, as to the current
-cpu, there is no indication of more data enqueued, so we do not need
-this action. After enqueuing to another cpu, net_rx_action() or
-process_backlog() will call ipi and then another cpu will raise the
-softirq as expected.
+The Intel FPGA Time of Day(ToD) IP within the FPGA DFL bus is exposed
+as PTP Hardware clock(PHC) device to the Linux PTP stack to synchronize
+the system clock to its ToD information using phc2sys utility of the
+Linux PTP stack. The DFL is a hardware List within FPGA, which defines
+a linked list of feature headers within the device MMIO space to provide
+an extensible way of adding subdevice features.
 
-Also, raising more softirqs which set the corresponding bit field
-can make the IRQ mechanism think we probably need to start ksoftirqd
-on the current cpu. Actually it shouldn't happen.
+Signed-off-by: Raghavendra Khadatare <raghavendrax.anand.khadatare@intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
 
-Here are some codes to clarify how it can trigger ksoftirqd:
-__do_softirq()
-  [1] net_rx_action() -> enqueue_to_backlog() -> raise an IRQ
-  [2] check if pending is set again -> wakeup_softirqd
-
-Comments on above:
-[1] when RPS chooses another cpu to enqueue skb
-[2] in __do_softirq() it will wait a little bit of time around 2 jiffies
-
-In this patch, raising an IRQ can be avoided when RPS enqueues the skb
-into another backlog queue not the current one.
-
-I captured some data when starting one iperf3 process and found out
-we can reduces around ~1500 times/sec at least calling
-__raise_softirq_irqoff().
-
-Fixes: 0a9627f2649a ("rps: Receive Packet Steering")
-Signed-off-by: Jason Xing <kernelxing@tencent.com>
 ---
+v3:
+- add PTP_1588_CLOCK dependency for PTP_DFL_TOD in Kconfig file.
+- don't need handle NULL case for ptp_clock_register() after adding
+  PTP_1588_CLOCK dependency.
+- wrap the code at 80 characters.
+
 v2:
-1) change the title and add more details.
-2) add one parameter to recognise whether it is napi or non-napi case
-suggested by Eric.
-Link: https://lore.kernel.org/lkml/20230325152417.5403-1-kerneljasonxing@gmail.com/
+- handle NULL for ptp_clock_register().
+- use readl_poll_timeout_atomic() instead of readl_poll_timeout(), and
+  change the interval timeout to 10us.
+- fix the uninitialized variable.
 ---
- net/core/dev.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ MAINTAINERS               |   7 +
+ drivers/ptp/Kconfig       |  14 ++
+ drivers/ptp/Makefile      |   1 +
+ drivers/ptp/ptp_dfl_tod.c | 332 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 354 insertions(+)
+ create mode 100644 drivers/ptp/ptp_dfl_tod.c
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1518a366783b..504dc3fc09b1 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4586,7 +4586,7 @@ static void trigger_rx_softirq(void *data)
-  * If yes, queue it to our IPI list and return 1
-  * If no, return 0
-  */
--static int napi_schedule_rps(struct softnet_data *sd)
-+static int napi_schedule_rps(struct softnet_data *sd, bool napi)
- {
- 	struct softnet_data *mysd = this_cpu_ptr(&softnet_data);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1dc8bd26b6cf..e2f791de38e2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15623,6 +15623,13 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/ptp/ptp_ocp.c
  
-@@ -4594,8 +4594,9 @@ static int napi_schedule_rps(struct softnet_data *sd)
- 	if (sd != mysd) {
- 		sd->rps_ipi_next = mysd->rps_ipi_list;
- 		mysd->rps_ipi_list = sd;
-+		if (!napi)
-+			__raise_softirq_irqoff(NET_RX_SOFTIRQ);
++INTEL PTP DFL ToD DRIVER
++M:	Tianfei Zhang <tianfei.zhang@intel.com>
++L:	linux-fpga@vger.kernel.org
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	drivers/ptp/ptp_dfl_tod.c
++
+ OPENCORES I2C BUS DRIVER
+ M:	Peter Korsgaard <peter@korsgaard.com>
+ M:	Andrew Lunn <andrew@lunn.ch>
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index fe4971b65c64..b00201d81313 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -186,4 +186,18 @@ config PTP_1588_CLOCK_OCP
  
--		__raise_softirq_irqoff(NET_RX_SOFTIRQ);
- 		return 1;
- 	}
- #endif /* CONFIG_RPS */
-@@ -4648,7 +4649,7 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
-  * queue (may be a remote CPU queue).
-  */
- static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
--			      unsigned int *qtail)
-+			      unsigned int *qtail, bool napi)
- {
- 	enum skb_drop_reason reason;
- 	struct softnet_data *sd;
-@@ -4675,7 +4676,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
- 		 * We can use non atomic operation since we own the queue lock
- 		 */
- 		if (!__test_and_set_bit(NAPI_STATE_SCHED, &sd->backlog.state))
--			napi_schedule_rps(sd);
-+			napi_schedule_rps(sd, napi);
- 		goto enqueue;
- 	}
- 	reason = SKB_DROP_REASON_CPU_BACKLOG;
-@@ -4933,7 +4934,7 @@ static int netif_rx_internal(struct sk_buff *skb)
- 		if (cpu < 0)
- 			cpu = smp_processor_id();
+ 	  More information is available at http://www.timingcard.com/
  
--		ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-+		ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail, false);
- 
- 		rcu_read_unlock();
- 	} else
-@@ -4941,7 +4942,7 @@ static int netif_rx_internal(struct sk_buff *skb)
- 	{
- 		unsigned int qtail;
- 
--		ret = enqueue_to_backlog(skb, smp_processor_id(), &qtail);
-+		ret = enqueue_to_backlog(skb, smp_processor_id(), &qtail, false);
- 	}
- 	return ret;
- }
-@@ -5670,7 +5671,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- 		int cpu = get_rps_cpu(skb->dev, skb, &rflow);
- 
- 		if (cpu >= 0) {
--			ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-+			ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail, false);
- 			rcu_read_unlock();
- 			return ret;
- 		}
-@@ -5705,7 +5706,7 @@ void netif_receive_skb_list_internal(struct list_head *head)
- 			if (cpu >= 0) {
- 				/* Will be handled, remove from list */
- 				skb_list_del_init(skb);
--				enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
-+				enqueue_to_backlog(skb, cpu, &rflow->last_qtail, true);
- 			}
- 		}
- 	}
++config PTP_DFL_TOD
++	tristate "FPGA DFL ToD Driver"
++	depends on FPGA_DFL
++	depends on PTP_1588_CLOCK
++	help
++	  The DFL (Device Feature List) device driver for the Intel ToD
++	  (Time-of-Day) device in FPGA card. The ToD IP within the FPGA
++	  is exposed as PTP Hardware Clock (PHC) device to the Linux PTP
++	  stack to synchronize the system clock to its ToD information
++	  using phc2sys utility of the Linux PTP stack.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called ptp_dfl_tod.
++
+ endmenu
+diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+index 28a6fe342d3e..553f18bf3c83 100644
+--- a/drivers/ptp/Makefile
++++ b/drivers/ptp/Makefile
+@@ -18,3 +18,4 @@ obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
+ obj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)	+= ptp_idt82p33.o
+ obj-$(CONFIG_PTP_1588_CLOCK_VMW)	+= ptp_vmw.o
+ obj-$(CONFIG_PTP_1588_CLOCK_OCP)	+= ptp_ocp.o
++obj-$(CONFIG_PTP_DFL_TOD)		+= ptp_dfl_tod.o
+diff --git a/drivers/ptp/ptp_dfl_tod.c b/drivers/ptp/ptp_dfl_tod.c
+new file mode 100644
+index 000000000000..f699d541b360
+--- /dev/null
++++ b/drivers/ptp/ptp_dfl_tod.c
+@@ -0,0 +1,332 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * DFL device driver for Time-of-Day (ToD) private feature
++ *
++ * Copyright (C) 2023 Intel Corporation
++ */
++
++#include <linux/bitfield.h>
++#include <linux/delay.h>
++#include <linux/dfl.h>
++#include <linux/gcd.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/ptp_clock_kernel.h>
++#include <linux/spinlock.h>
++#include <linux/units.h>
++
++#define FME_FEATURE_ID_TOD		0x22
++
++/* ToD clock register space. */
++#define TOD_CLK_FREQ			0x038
++
++/*
++ * The read sequence of ToD timestamp registers: TOD_NANOSEC, TOD_SECONDSL and
++ * TOD_SECONDSH, because there is a hardware snapshot whenever the TOD_NANOSEC
++ * register is read.
++ *
++ * The ToD IP requires writing registers in the reverse order to the read sequence.
++ * The timestamp is corrected when the TOD_NANOSEC register is written, so the
++ * sequence of write TOD registers: TOD_SECONDSH, TOD_SECONDSL and TOD_NANOSEC.
++ */
++#define TOD_SECONDSH			0x100
++#define TOD_SECONDSL			0x104
++#define TOD_NANOSEC			0x108
++#define TOD_PERIOD			0x110
++#define TOD_ADJUST_PERIOD		0x114
++#define TOD_ADJUST_COUNT		0x118
++#define TOD_DRIFT_ADJUST		0x11c
++#define TOD_DRIFT_ADJUST_RATE		0x120
++#define PERIOD_FRAC_OFFSET		16
++#define SECONDS_MSB			GENMASK_ULL(47, 32)
++#define SECONDS_LSB			GENMASK_ULL(31, 0)
++#define TOD_SECONDSH_SEC_MSB		GENMASK_ULL(15, 0)
++
++#define CAL_SECONDS(m, l)		((FIELD_GET(TOD_SECONDSH_SEC_MSB, (m)) << 32) | (l))
++
++#define TOD_PERIOD_MASK		GENMASK_ULL(19, 0)
++#define TOD_PERIOD_MAX			FIELD_MAX(TOD_PERIOD_MASK)
++#define TOD_PERIOD_MIN			0
++#define TOD_DRIFT_ADJUST_MASK		GENMASK_ULL(15, 0)
++#define TOD_DRIFT_ADJUST_FNS_MAX	FIELD_MAX(TOD_DRIFT_ADJUST_MASK)
++#define TOD_DRIFT_ADJUST_RATE_MAX	TOD_DRIFT_ADJUST_FNS_MAX
++#define TOD_ADJUST_COUNT_MASK		GENMASK_ULL(19, 0)
++#define TOD_ADJUST_COUNT_MAX		FIELD_MAX(TOD_ADJUST_COUNT_MASK)
++#define TOD_ADJUST_INTERVAL_US		10
++#define TOD_ADJUST_MS			\
++		(((TOD_PERIOD_MAX >> 16) + 1) * (TOD_ADJUST_COUNT_MAX + 1))
++#define TOD_ADJUST_MS_MAX		(TOD_ADJUST_MS / MICRO)
++#define TOD_ADJUST_MAX_US		(TOD_ADJUST_MS_MAX * USEC_PER_MSEC)
++#define TOD_MAX_ADJ			(500 * MEGA)
++
++struct dfl_tod {
++	struct ptp_clock_info ptp_clock_ops;
++	struct device *dev;
++	struct ptp_clock *ptp_clock;
++
++	/* ToD Clock address space */
++	void __iomem *tod_ctrl;
++
++	/* ToD clock registers protection */
++	spinlock_t tod_lock;
++};
++
++/*
++ * A fine ToD HW clock offset adjustment. To perform the fine offset adjustment, the
++ * adjust_period and adjust_count argument are used to update the TOD_ADJUST_PERIOD
++ * and TOD_ADJUST_COUNT register for in hardware. The dt->tod_lock spinlock must be
++ * held when calling this function.
++ */
++static int fine_adjust_tod_clock(struct dfl_tod *dt, u32 adjust_period,
++				 u32 adjust_count)
++{
++	void __iomem *base = dt->tod_ctrl;
++	u32 val;
++
++	writel(adjust_period, base + TOD_ADJUST_PERIOD);
++	writel(adjust_count, base + TOD_ADJUST_COUNT);
++
++	/* Wait for present offset adjustment update to complete */
++	return readl_poll_timeout_atomic(base + TOD_ADJUST_COUNT, val, !val, TOD_ADJUST_INTERVAL_US,
++				  TOD_ADJUST_MAX_US);
++}
++
++/*
++ * A coarse ToD HW clock offset adjustment. The coarse time adjustment performs by
++ * adding or subtracting the delta value from the current ToD HW clock time.
++ */
++static int coarse_adjust_tod_clock(struct dfl_tod *dt, s64 delta)
++{
++	u32 seconds_msb, seconds_lsb, nanosec;
++	void __iomem *base = dt->tod_ctrl;
++	u64 seconds, now;
++
++	if (delta == 0)
++		return 0;
++
++	nanosec = readl(base + TOD_NANOSEC);
++	seconds_lsb = readl(base + TOD_SECONDSL);
++	seconds_msb = readl(base + TOD_SECONDSH);
++
++	/* Calculate new time */
++	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
++	now = seconds * NSEC_PER_SEC + nanosec + delta;
++
++	seconds = div_u64_rem(now, NSEC_PER_SEC, &nanosec);
++	seconds_msb = FIELD_GET(SECONDS_MSB, seconds);
++	seconds_lsb = FIELD_GET(SECONDS_LSB, seconds);
++
++	writel(seconds_msb, base + TOD_SECONDSH);
++	writel(seconds_lsb, base + TOD_SECONDSL);
++	writel(nanosec, base + TOD_NANOSEC);
++
++	return 0;
++}
++
++static int dfl_tod_adjust_fine(struct ptp_clock_info *ptp, long scaled_ppm)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 tod_period, tod_rem, tod_drift_adjust_fns, tod_drift_adjust_rate;
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags, rate;
++	u64 ppb;
++
++	/* Get the clock rate from clock frequency register offset */
++	rate = readl(base + TOD_CLK_FREQ);
++
++	/* add GIGA as nominal ppb */
++	ppb = scaled_ppm_to_ppb(scaled_ppm) + GIGA;
++
++	tod_period = div_u64_rem(ppb << PERIOD_FRAC_OFFSET, rate, &tod_rem);
++	if (tod_period > TOD_PERIOD_MAX)
++		return -ERANGE;
++
++	/*
++	 * The drift of ToD adjusted periodically by adding a drift_adjust_fns
++	 * correction value every drift_adjust_rate count of clock cycles.
++	 */
++	tod_drift_adjust_fns = tod_rem / gcd(tod_rem, rate);
++	tod_drift_adjust_rate = rate / gcd(tod_rem, rate);
++
++	while ((tod_drift_adjust_fns > TOD_DRIFT_ADJUST_FNS_MAX) ||
++	       (tod_drift_adjust_rate > TOD_DRIFT_ADJUST_RATE_MAX)) {
++		tod_drift_adjust_fns >>= 1;
++		tod_drift_adjust_rate >>= 1;
++	}
++
++	if (tod_drift_adjust_fns == 0)
++		tod_drift_adjust_rate = 0;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++	writel(tod_period, base + TOD_PERIOD);
++	writel(0, base + TOD_ADJUST_PERIOD);
++	writel(0, base + TOD_ADJUST_COUNT);
++	writel(tod_drift_adjust_fns, base + TOD_DRIFT_ADJUST);
++	writel(tod_drift_adjust_rate, base + TOD_DRIFT_ADJUST_RATE);
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	return 0;
++}
++
++static int dfl_tod_adjust_time(struct ptp_clock_info *ptp, s64 delta)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 period, diff, rem, rem_period, adj_period;
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags;
++	bool neg_adj;
++	u64 count;
++	int ret;
++
++	neg_adj = delta < 0;
++	if (neg_adj)
++		delta = -delta;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++
++	/*
++	 * Get the maximum possible value of the Period register offset
++	 * adjustment in nanoseconds scale. This depends on the current
++	 * Period register setting and the maximum and minimum possible
++	 * values of the Period register.
++	 */
++	period = readl(base + TOD_PERIOD);
++
++	if (neg_adj) {
++		diff = (period - TOD_PERIOD_MIN) >> PERIOD_FRAC_OFFSET;
++		adj_period = period - (diff << PERIOD_FRAC_OFFSET);
++		count = div_u64_rem(delta, diff, &rem);
++		rem_period = period - (rem << PERIOD_FRAC_OFFSET);
++	} else {
++		diff = (TOD_PERIOD_MAX - period) >> PERIOD_FRAC_OFFSET;
++		adj_period = period + (diff << PERIOD_FRAC_OFFSET);
++		count = div_u64_rem(delta, diff, &rem);
++		rem_period = period + (rem << PERIOD_FRAC_OFFSET);
++	}
++
++	ret = 0;
++
++	if (count > TOD_ADJUST_COUNT_MAX) {
++		ret = coarse_adjust_tod_clock(dt, delta);
++	} else {
++		/* Adjust the period by count cycles to adjust the time */
++		if (count)
++			ret = fine_adjust_tod_clock(dt, adj_period, count);
++
++		/* If there is a remainder, adjust the period for an additional cycle */
++		if (rem)
++			ret = fine_adjust_tod_clock(dt, rem_period, 1);
++	}
++
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	return ret;
++}
++
++static int dfl_tod_get_timex(struct ptp_clock_info *ptp, struct timespec64 *ts,
++			     struct ptp_system_timestamp *sts)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 seconds_msb, seconds_lsb, nanosec;
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags;
++	u64 seconds;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++	ptp_read_system_prets(sts);
++	nanosec = readl(base + TOD_NANOSEC);
++	seconds_lsb = readl(base + TOD_SECONDSL);
++	seconds_msb = readl(base + TOD_SECONDSH);
++	ptp_read_system_postts(sts);
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	seconds = CAL_SECONDS(seconds_msb, seconds_lsb);
++
++	ts->tv_nsec = nanosec;
++	ts->tv_sec = seconds;
++
++	return 0;
++}
++
++static int dfl_tod_set_time(struct ptp_clock_info *ptp,
++			    const struct timespec64 *ts)
++{
++	struct dfl_tod *dt = container_of(ptp, struct dfl_tod, ptp_clock_ops);
++	u32 seconds_msb = FIELD_GET(SECONDS_MSB, ts->tv_sec);
++	u32 seconds_lsb = FIELD_GET(SECONDS_LSB, ts->tv_sec);
++	u32 nanosec = FIELD_GET(SECONDS_LSB, ts->tv_nsec);
++	void __iomem *base = dt->tod_ctrl;
++	unsigned long flags;
++
++	spin_lock_irqsave(&dt->tod_lock, flags);
++	writel(seconds_msb, base + TOD_SECONDSH);
++	writel(seconds_lsb, base + TOD_SECONDSL);
++	writel(nanosec, base + TOD_NANOSEC);
++	spin_unlock_irqrestore(&dt->tod_lock, flags);
++
++	return 0;
++}
++
++static struct ptp_clock_info dfl_tod_clock_ops = {
++	.owner = THIS_MODULE,
++	.name = "dfl_tod",
++	.max_adj = TOD_MAX_ADJ,
++	.adjfine = dfl_tod_adjust_fine,
++	.adjtime = dfl_tod_adjust_time,
++	.gettimex64 = dfl_tod_get_timex,
++	.settime64 = dfl_tod_set_time,
++};
++
++static int dfl_tod_probe(struct dfl_device *ddev)
++{
++	struct device *dev = &ddev->dev;
++	struct dfl_tod *dt;
++
++	dt = devm_kzalloc(dev, sizeof(*dt), GFP_KERNEL);
++	if (!dt)
++		return -ENOMEM;
++
++	dt->tod_ctrl = devm_ioremap_resource(dev, &ddev->mmio_res);
++	if (IS_ERR(dt->tod_ctrl))
++		return PTR_ERR(dt->tod_ctrl);
++
++	dt->dev = dev;
++	spin_lock_init(&dt->tod_lock);
++	dev_set_drvdata(dev, dt);
++
++	dt->ptp_clock_ops = dfl_tod_clock_ops;
++
++	dt->ptp_clock = ptp_clock_register(&dt->ptp_clock_ops, dev);
++	if (IS_ERR(dt->ptp_clock))
++		return dev_err_probe(dt->dev, PTR_ERR(dt->ptp_clock),
++				     "Unable to register PTP clock\n");
++
++	return 0;
++}
++
++static void dfl_tod_remove(struct dfl_device *ddev)
++{
++	struct dfl_tod *dt = dev_get_drvdata(&ddev->dev);
++
++	ptp_clock_unregister(dt->ptp_clock);
++}
++
++static const struct dfl_device_id dfl_tod_ids[] = {
++	{ FME_ID, FME_FEATURE_ID_TOD },
++	{ }
++};
++MODULE_DEVICE_TABLE(dfl, dfl_tod_ids);
++
++static struct dfl_driver dfl_tod_driver = {
++	.drv = {
++		.name = "dfl-tod",
++	},
++	.id_table = dfl_tod_ids,
++	.probe = dfl_tod_probe,
++	.remove = dfl_tod_remove,
++};
++module_dfl_driver(dfl_tod_driver);
++
++MODULE_DESCRIPTION("FPGA DFL ToD driver");
++MODULE_AUTHOR("Intel Corporation");
++MODULE_LICENSE("GPL");
 -- 
-2.37.3
+2.38.1
 
