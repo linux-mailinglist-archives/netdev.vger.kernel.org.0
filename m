@@ -2,395 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5B76CB576
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 06:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A45B6CB580
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 06:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbjC1Eik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 00:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52792 "EHLO
+        id S229671AbjC1EtT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Mar 2023 00:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229705AbjC1Eij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 00:38:39 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E087D1FE5
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 21:38:10 -0700 (PDT)
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AFAFA3F210
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:38:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1679978287;
-        bh=686fpAWYbCb9nKozPm3P7x4wMIwJg4LGwO1Jttut4kg=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=jmDaQ/de73hdbYPYmeX5v5HpbGwxmuw+7VYWouwMP0NaOF9MNNfasvHo7tvxBNWsJ
-         /3FnSAfBV6QntqN+SamEGwtNPu4b+yyX/haKKnL7xXZsl78MEZ3bOCjB1n7DCkH99y
-         vDkfkWUARZWdo195GwfUOyi8KAnODkrulW4zkCWcvoPhiwfZCTi0mqZpcXzWlYA25N
-         xCHybUkiHe9vsKgaF7zFpORidQJF5jEg9qIgtRgYQLZva4bIYcAOJq9FwYXRFd6z6q
-         mH8mwq3eBXUQvZrMO6jsCXn7WHiS8J4OHTTACtmYOW1I2T+LbkS0hHP+2TvuvkIbaZ
-         CSkHzPEAKfAcw==
-Received: by mail-pf1-f198.google.com with SMTP id x3-20020a62fb03000000b00622df3f5d0cso5264547pfm.10
-        for <netdev@vger.kernel.org>; Mon, 27 Mar 2023 21:38:07 -0700 (PDT)
+        with ESMTP id S229452AbjC1EtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 00:49:18 -0400
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450A310FB;
+        Mon, 27 Mar 2023 21:49:17 -0700 (PDT)
+Received: by mail-pf1-f179.google.com with SMTP id u38so7110452pfg.10;
+        Mon, 27 Mar 2023 21:49:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1679978286;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=686fpAWYbCb9nKozPm3P7x4wMIwJg4LGwO1Jttut4kg=;
-        b=2eah7AUZWez3mlaptq+rLVo6zRn7dHSkNssRAwk8oA/gLoqvCXe9HYBekEOvV6go69
-         J4KftpiqSC9jR+vefmJtphW059zKOZmMHiPgBRWvPibia3PoODddm2AguZ68UGRI2w0c
-         zUcmwdaqhx4LJ0xwwzikl8ewfpvAkF/AxQjCR7kYiY0h6KlfucX7VtGZYpg3odw/zPxZ
-         4ajYbZ5FMHmT7HiVgAPl6LON4a8Bg6DCenSgkd/LczikEjY66XH6lBMv4IUozxr0zvaa
-         4nwaeMLFeAG0vs+9qJNYyfpjr7OvQpY0PEMqf/O5/9/HnpbCA6G42i1HuYrwIn8J54p6
-         toLQ==
-X-Gm-Message-State: AAQBX9eg1fdLoqUF1MFDfEBjNNYegXd6nfi/QL5MDDPnFJNJbIg0Ch52
-        Y/+83kvUydmHnw0OifmC8gg27F2n/yKHH7OVFtpXW+Fo90r4dnipeJEjjEArGKN2lOfKwg6roXt
-        H9mgsTh+7TM3l5gcch/EU8Ynx+GJHQCPEpg==
-X-Received: by 2002:a17:902:cf45:b0:19f:1f0a:97f1 with SMTP id e5-20020a170902cf4500b0019f1f0a97f1mr11851396plg.30.1679978286185;
-        Mon, 27 Mar 2023 21:38:06 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZUXJ6hQZuQufvn6eGNuiWnhfqaZdjOeBO7O6cx/GbMYOTRk/HihXU8WgrlZgR8l/WBxkQ88w==
-X-Received: by 2002:a17:902:cf45:b0:19f:1f0a:97f1 with SMTP id e5-20020a170902cf4500b0019f1f0a97f1mr11851382plg.30.1679978285791;
-        Mon, 27 Mar 2023 21:38:05 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id u4-20020a170902b28400b001a19d4592e1sm19820566plr.282.2023.03.27.21.38.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Mar 2023 21:38:05 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id C038461E6A; Mon, 27 Mar 2023 21:38:04 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id B8ED49FB79;
-        Mon, 27 Mar 2023 21:38:04 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     sujing <sujing@kylinos.cn>
-cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, andy@greyhouse.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: bonding: avoid use-after-free with tx_hashtbl/rx_hashtbl
-In-reply-to: <20230328034037.2076930-1-sujing@kylinos.cn>
-References: <20230328034037.2076930-1-sujing@kylinos.cn>
-Comments: In-reply-to sujing <sujing@kylinos.cn>
-   message dated "Tue, 28 Mar 2023 11:40:37 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        d=1e100.net; s=20210112; t=1679978957;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eeysXSBzNTunyxSLsLf6PZdL/mFzWkWNNBxhRDgo0c0=;
+        b=sOT/hJfYGv2ejCMoZdzlnDkUFF2+vjLZ7kX2YHYip8z0NMKQNzaF/pvn2RD+0E8Z6o
+         kR3lOW8TVZqP9krDF+eNXJyCyYlsHOa1aFsUuvmAAE7Wic/SFXpGeA6f/jJndXRepj4W
+         W8/vtwaR2gyatnda21dInwxcEdXyWKyLIwJgzJr7zR01pH/Btex5KkD47jkc1K3WsOT8
+         CV6wrtTPVos9NPa2V4fTyUS+Ds4TNqRCOKq6B/kqFaOR+9SC6HpteS0wjWUhqV/QZ/7D
+         zwA6S/PWYMhXhl23EVOJFwGoRP39RrxBQzVeiXktvw7qW4OoupEDWE3Jcwscu57sDwrS
+         y0NQ==
+X-Gm-Message-State: AAQBX9fMUk/OZ1aUI6fBZ7In8oBKZCKFc/88kus4HRjF/2JJcDrQ8LUp
+        j3MMxf2+gcrM2PSGRHgTp8Bkr+0sE/z7HKY2dSg=
+X-Google-Smtp-Source: AKy350aKCni2mn2m2LUsiHsUqDTbJwB8esZTT/Ly4hHJ156kktIhkVqLpPy7U7QY6Wb4YzxDrart1KXMGtX32uIRj2g=
+X-Received: by 2002:a05:6a00:1a15:b0:62a:56ce:f90b with SMTP id
+ g21-20020a056a001a1500b0062a56cef90bmr7455059pfv.2.1679978956567; Mon, 27 Mar
+ 2023 21:49:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <23771.1679978284.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 27 Mar 2023 21:38:04 -0700
-Message-ID: <23772.1679978284@famine>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230327051048.11589-1-peter_hong@fintek.com.tw>
+ <CAMZ6Rq+ps1tLii1VfYyAqfD4ck_TGWBUo_ouK_vLfhoNEg-BPg@mail.gmail.com> <5bdee736-7868-81c3-e63f-a28787bd0007@fintek.com.tw>
+In-Reply-To: <5bdee736-7868-81c3-e63f-a28787bd0007@fintek.com.tw>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 28 Mar 2023 13:49:05 +0900
+Message-ID: <CAMZ6Rq++N9ui5srP2uBYz0FPXttBYd2m982K8X-ESCC=qu1dAQ@mail.gmail.com>
+Subject: Re: [PATCH V3] can: usb: f81604: add Fintek F81604 support
+To:     Peter Hong <peter_hong@fintek.com.tw>
+Cc:     wg@grandegger.com, mkl@pengutronix.de,
+        michal.swiatkowski@linux.intel.com, Steen.Hegelund@microchip.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, frank.jungclaus@esd.eu,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, hpeter+linux_kernel@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sujing <sujing@kylinos.cn> wrote:
-
->In bonding mode 6 (Balance-alb),
->there are some potential race conditions between the 'bond_close' process
->and the tx/rx processes that use tx_hashtbl/rx_hashtbl,
->which may lead to use-after-free.
+On Tue 28 Mar 2023 at 12:32, Peter Hong <peter_hong@fintek.com.tw> wrote:
+> Hi Vincent,
 >
->For instance, when the bond6 device is in the 'bond_close' process
->while some backlogged packets from upper level are transmitted
->to 'bond_start_xmit', there is a spinlock contention between
->'tlb_deinitialize' and 'tlb_choose_channel'.
+> Vincent MAILHOL 於 2023/3/27 下午 06:27 寫道:
+> > eff->id is a 32 bit value. It is not aligned. So, you must always use
+> > {get|set}_unaligned_be32() to manipulate this value.
+> > N.B. on x86 architecture, unaligned access is fine, but some other
+> > architecture may throw a fault. Read this for more details:
+> >
+> >    https://docs.kernel.org/arm/mem_alignment.html
 >
->If 'tlb_deinitialize' preempts the lock before 'tlb_choose_channel',
->a NULL pointer kernel panic will be triggered.
+> for the consistency of the code, could I also add get/put_unaligned_be16
+> in SFF
+> sections ?
+
+It is not needed. OK to mix.
+
+> >> +static int f81604_set_reset_mode(struct net_device *netdev)
+> >> +{
+> >> +       struct f81604_port_priv *priv = netdev_priv(netdev);
+> >> +       int status, i;
+> >> +       u8 tmp;
+> >> +
+> >> +       /* disable interrupts */
+> >> +       status = f81604_set_sja1000_register(priv->dev, netdev->dev_id,
+> >> +                                            SJA1000_IER, IRQ_OFF);
+> >> +       if (status)
+> >> +               return status;
+> >> +
+> >> +       for (i = 0; i < F81604_SET_DEVICE_RETRY; i++) {
+> > Thanks for removing F81604_USB_MAX_RETRY.
+> >
+> > Yet, I still would like to understand why you need one hundred tries?
+> > Is this some paranoiac safenet? Or does the device really need so many
+> > attempts to operate reliably? If those are needed, I would like to
+> > understand the root cause.
 >
->Here's the timeline:
+> This section is copy from sja1000.c. In my test, the operation/reset may
+> retry 1 times.
+> I'll reduce it from 100 to 10 times.
+
+Is it because the device is not ready? Does this only appear at
+startup or at random?
+
 >
->bond_close  ------------------  bond_start_xmit
->bond_alb_deinitialize  -------  __bond_start_xmit
->tlb_deinitialize  ------------  bond_alb_xmit
->spin_lock_bh  ----------------  bond_xmit_alb_slave_get
->tx_hashtbl =3D NULL  -----------  tlb_choose_channel
->spin_unlock_bh  --------------  //wait for spin_lock_bh
->------------------------------  spin_lock_bh
->------------------------------  __tlb_choose_channel
->causing kernel panic =3D=3D=3D=3D=3D=3D=3D=3D>  tx_hashtbl[hash_index].tx=
-_slave
->------------------------------  spin_unlock_bh
-
-	I'm still thinking on the race here, but have some questions
-below about the implementation in the meantime.
-
->Signed-off-by: sujing <sujing@kylinos.cn>
->---
-> drivers/net/bonding/bond_alb.c  | 32 +++++++++------------------
-> drivers/net/bonding/bond_main.c | 39 +++++++++++++++++++++++++++------
-> include/net/bond_alb.h          |  5 ++++-
-> 3 files changed, 46 insertions(+), 30 deletions(-)
+> >> +       int status, len;
+> >> +
+> >> +       if (can_dropped_invalid_skb(netdev, skb))
+> >> +               return NETDEV_TX_OK;
+> >> +
+> >> +       netif_stop_queue(netdev);
+> > In your driver, you send the CAN frames one at a time and wait for the
+> > rx_handler to restart the queue. This approach dramatically degrades
+> > the throughput. Is this a device limitation? Is the device not able to
+> > manage more than one frame at a time?
+> >
 >
->diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_al=
-b.c
->index b9dbad3a8af8..f6ff5ea835c4 100644
->--- a/drivers/net/bonding/bond_alb.c
->+++ b/drivers/net/bonding/bond_alb.c
->@@ -71,7 +71,7 @@ static inline u8 _simple_hash(const u8 *hash_start, int=
- hash_size)
-> =
-
-> /*********************** tlb specific functions ************************=
-***/
-> =
-
->-static inline void tlb_init_table_entry(struct tlb_client_info *entry, i=
-nt save_load)
->+void tlb_init_table_entry(struct tlb_client_info *entry, int save_load)
-> {
-> 	if (save_load) {
-> 		entry->load_history =3D 1 + entry->tx_bytes /
->@@ -269,8 +269,8 @@ static void rlb_update_entry_from_arp(struct bonding =
-*bond, struct arp_pkt *arp)
-> 	spin_unlock_bh(&bond->mode_lock);
-> }
-> =
-
->-static int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
->-			struct slave *slave)
->+int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
->+		 struct slave *slave)
-> {
-> 	struct arp_pkt *arp, _arp;
-> =
-
->@@ -756,7 +756,7 @@ static void rlb_init_table_entry_src(struct rlb_clien=
-t_info *entry)
-> 	entry->src_next =3D RLB_NULL_INDEX;
-> }
-> =
-
->-static void rlb_init_table_entry(struct rlb_client_info *entry)
->+void rlb_init_table_entry(struct rlb_client_info *entry)
-> {
-> 	memset(entry, 0, sizeof(struct rlb_client_info));
-> 	rlb_init_table_entry_dst(entry);
->@@ -874,9 +874,6 @@ static int rlb_initialize(struct bonding *bond)
-> =
-
-> 	spin_unlock_bh(&bond->mode_lock);
-> =
-
->-	/* register to receive ARPs */
->-	bond->recv_probe =3D rlb_arp_recv;
->-
-> 	return 0;
-> }
-> =
-
->@@ -888,7 +885,6 @@ static void rlb_deinitialize(struct bonding *bond)
-> =
-
-> 	kfree(bond_info->rx_hashtbl);
-> 	bond_info->rx_hashtbl =3D NULL;
->-	bond_info->rx_hashtbl_used_head =3D RLB_NULL_INDEX;
-
-	Why remove this line?
-
-> 	spin_unlock_bh(&bond->mode_lock);
-> }
->@@ -1303,7 +1299,7 @@ static bool alb_determine_nd(struct sk_buff *skb, s=
-truct bonding *bond)
-> =
-
-> /************************ exported alb functions ***********************=
-*/
-> =
-
->-int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
->+int bond_alb_initialize(struct bonding *bond)
-> {
-> 	int res;
-> =
-
->@@ -1311,15 +1307,10 @@ int bond_alb_initialize(struct bonding *bond, int=
- rlb_enabled)
-> 	if (res)
-> 		return res;
-> =
-
->-	if (rlb_enabled) {
->-		res =3D rlb_initialize(bond);
->-		if (res) {
->-			tlb_deinitialize(bond);
->-			return res;
->-		}
->-		bond->alb_info.rlb_enabled =3D 1;
->-	} else {
->-		bond->alb_info.rlb_enabled =3D 0;
->+	res =3D rlb_initialize(bond);
->+	if (res) {
->+		tlb_deinitialize(bond);
->+		return res;
-> 	}
-> =
-
-> 	return 0;
->@@ -1327,12 +1318,9 @@ int bond_alb_initialize(struct bonding *bond, int =
-rlb_enabled)
-> =
-
-> void bond_alb_deinitialize(struct bonding *bond)
-> {
->-	struct alb_bond_info *bond_info =3D &(BOND_ALB_INFO(bond));
->-
-> 	tlb_deinitialize(bond);
-> =
-
->-	if (bond_info->rlb_enabled)
->-		rlb_deinitialize(bond);
->+	rlb_deinitialize(bond);
-
-	Why is rlb_deinitialize() now unconditionally called here and in
-bond_alb_initialize()?  if rlb_enabled is false, why set up / tear down
-the RLB hash table that won't be used?
-
-> }
-> =
-
-> static netdev_tx_t bond_do_alb_xmit(struct sk_buff *skb, struct bonding =
-*bond,
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 236e5219c811..8fcb5d3ac0a2 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -4217,6 +4217,7 @@ static int bond_open(struct net_device *bond_dev)
-> 	struct bonding *bond =3D netdev_priv(bond_dev);
-> 	struct list_head *iter;
-> 	struct slave *slave;
->+	int i;
-> =
-
-> 	if (BOND_MODE(bond) =3D=3D BOND_MODE_ROUNDROBIN && !bond->rr_tx_counter=
-) {
-> 		bond->rr_tx_counter =3D alloc_percpu(u32);
->@@ -4239,11 +4240,29 @@ static int bond_open(struct net_device *bond_dev)
-> 	}
-> =
-
-> 	if (bond_is_lb(bond)) {
->-		/* bond_alb_initialize must be called before the timer
->-		 * is started.
->-		 */
->-		if (bond_alb_initialize(bond, (BOND_MODE(bond) =3D=3D BOND_MODE_ALB)))
->-			return -ENOMEM;
->+		struct alb_bond_info *bond_info =3D &(BOND_ALB_INFO(bond));
->+
->+		spin_lock_bh(&bond->mode_lock);
->+
->+		for (i =3D 0; i < TLB_HASH_TABLE_SIZE; i++)
->+			tlb_init_table_entry(&bond_info->tx_hashtbl[i], 0);
->+
->+		spin_unlock_bh(&bond->mode_lock);
->+
->+		if (BOND_MODE(bond) =3D=3D BOND_MODE_ALB) {
->+			bond->alb_info.rlb_enabled =3D 1;
->+			spin_lock_bh(&bond->mode_lock);
->+
->+			bond_info->rx_hashtbl_used_head =3D RLB_NULL_INDEX;
->+			for (i =3D 0; i < RLB_HASH_TABLE_SIZE; i++)
->+				rlb_init_table_entry(bond_info->rx_hashtbl + i);
->+
->+			spin_unlock_bh(&bond->mode_lock);
->+			bond->recv_probe =3D rlb_arp_recv;
->+		} else {
->+			bond->alb_info.rlb_enabled =3D 0;
->+		}
->+
-
-	Why is all of the above done directly in bond_open() and not in
-bond_alb.c somewhere?  That would reduce some churn (changing some
-functions away from static).
-
-	Also, I see that bond_alb_initialize() is now called from
-bond_init() instead of bond_open(), and it only calls rlb_initialize().
-However, this now duplicates most of the functionality of
-rlb_initialize() and tlb_initialize() here.  Why?
-
-	In general, the described race is TX vs. close processing, so
-why is there so much change to the open processing?
-
-	-J
-
-> 		if (bond->params.tlb_dynamic_lb || BOND_MODE(bond) =3D=3D BOND_MODE_AL=
-B)
-> 			queue_delayed_work(bond->wq, &bond->alb_work, 0);
-> 	}
->@@ -4279,8 +4298,6 @@ static int bond_close(struct net_device *bond_dev)
-> =
-
-> 	bond_work_cancel_all(bond);
-> 	bond->send_peer_notif =3D 0;
->-	if (bond_is_lb(bond))
->-		bond_alb_deinitialize(bond);
-> 	bond->recv_probe =3D NULL;
-> =
-
-> 	if (bond_uses_primary(bond)) {
->@@ -5854,6 +5871,8 @@ static void bond_uninit(struct net_device *bond_dev=
-)
-> 	struct list_head *iter;
-> 	struct slave *slave;
-> =
-
->+	bond_alb_deinitialize(bond);
->+
-> 	bond_netpoll_cleanup(bond_dev);
-> =
-
-> 	/* Release the bonded slaves */
->@@ -6295,6 +6314,12 @@ static int bond_init(struct net_device *bond_dev)
-> 	    bond_dev->addr_assign_type =3D=3D NET_ADDR_PERM)
-> 		eth_hw_addr_random(bond_dev);
-> =
-
->+	/* bond_alb_initialize must be called before the timer
->+	 * is started.
->+	 */
->+	if (bond_alb_initialize(bond))
->+		return -ENOMEM;
->+
-> 	return 0;
-> }
-> =
-
->diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
->index 9dc082b2d543..9fd16e20ef82 100644
->--- a/include/net/bond_alb.h
->+++ b/include/net/bond_alb.h
->@@ -150,7 +150,7 @@ struct alb_bond_info {
-> 						 */
-> };
-> =
-
->-int bond_alb_initialize(struct bonding *bond, int rlb_enabled);
->+int bond_alb_initialize(struct bonding *bond);
-> void bond_alb_deinitialize(struct bonding *bond);
-> int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
-> void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave);
->@@ -165,5 +165,8 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding =
-*bond,
-> void bond_alb_monitor(struct work_struct *);
-> int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr);
-> void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id);
->+int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond, struct=
- slave *slave);
->+void tlb_init_table_entry(struct tlb_client_info *entry, int save_load);
->+void rlb_init_table_entry(struct rlb_client_info *entry);
-> #endif /* _NET_BOND_ALB_H */
-> =
-
->-- =
-
->2.27.0
+> This device will not NAK on TX frame not complete, it only NAK on TX
+> endpoint
+> memory not processed, so we'll send next frame unitl TX complete(TI)
+> interrupt
+> received.
 >
+> The device can polling status register via TX/RX endpoint, but it's more
+> complex.
+> We'll plan to do it when first driver landing in mainstream.
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+OK for me to have this as a next step. Marc, what do you think?
+
+> >> +static int f81604_set_termination(struct net_device *netdev, u16 term)
+> >> +{
+> >> +       struct f81604_port_priv *port_priv = netdev_priv(netdev);
+> >> +       struct f81604_priv *priv;
+> >> +       u8 mask, data = 0;
+> >> +       int r;
+> >> +
+> >> +       priv = usb_get_intfdata(port_priv->intf);
+> >> +
+> >> +       if (netdev->dev_id == 0)
+> >> +               mask = F81604_CAN0_TERM;
+> >> +       else
+> >> +               mask = F81604_CAN1_TERM;
+> >> +
+> >> +       if (term == F81604_TERMINATION_ENABLED)
+> >> +               data = mask;
+> >> +
+> >> +       mutex_lock(&priv->mutex);
+> > Did you witness a race condition?
+> >
+> > As far as I know, this call back is only called while the network
+> > stack big kernel lock (a.k.a. rtnl_lock) is being hold.
+> > If you have doubt, try adding a:
+> >
+> >    ASSERT_RTNL()
+> >
+> > If this assert works, then another mutex is not needed.
+>
+> It had added ASSERT_RTNL() into f81604_set_termination(). It only assert
+> in f81604_probe() -> f81604_set_termination(), not called via ip command:
+>      ip link set dev can0 type can termination 120
+>      ip link set dev can0 type can termination 0
+>
+> so I'll still use mutex on here.
+
+Sorry, do you mean that the assert throws warnings for f81604_probe()
+-> f81604_set_termination() but that it is OK (no warning) for ip
+command?
+
+I did not see that you called f81604_set_termination() internally.
+Indeed, rtnl_lock is not held in probe(). But I think it is still OK.
+In f81604_probe() you call f81604_set_termination() before
+register_candev(). If the device is not yet registered,
+f81604_set_termination() can not yet be called via ip command. Can you
+describe more precisely where you think there is a concurrency issue?
+I still do not see it.
+
+> >> +               port_priv->can.do_get_berr_counter = f81604_get_berr_counter;
+> >> +               port_priv->can.ctrlmode_supported =
+> >> +                       CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_3_SAMPLES |
+> >> +                       CAN_CTRLMODE_ONE_SHOT | CAN_CTRLMODE_BERR_REPORTING |
+> >> +                       CAN_CTRLMODE_CC_LEN8_DLC | CAN_CTRLMODE_PRESUME_ACK;
+> > Did you test the CAN_CTRLMODE_CC_LEN8_DLC feature? Did you confirm
+> > that you can send and receive DLC greater than 8?
+>
+> Sorry, I had misunderstand the define. This device is only support 0~8
+> data length,
+  ^^^^^^^^^^^
+
+Data length or Data Length Code (DLC)? Classical CAN maximum data
+length is 8 but maximum DLC is 15 (and DLC 8 to 15 mean a data length
+of 8).
+
+> so I'll remove CAN_CTRLMODE_CC_LEN8_DLC in future patch.
