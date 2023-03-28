@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF676CC057
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 15:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C8E6CC05B
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 15:13:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233051AbjC1NNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 09:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
+        id S233090AbjC1NN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 09:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232952AbjC1NNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 09:13:05 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1268A62;
-        Tue, 28 Mar 2023 06:13:04 -0700 (PDT)
+        with ESMTP id S233024AbjC1NNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 09:13:11 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6946893C7;
+        Tue, 28 Mar 2023 06:13:10 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E146221A25;
-        Tue, 28 Mar 2023 13:13:02 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 26F491FD68;
+        Tue, 28 Mar 2023 13:13:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1680009182; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1680009189; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YW7EQFAaSbV1XiZ+rWOC33Mh7NdDO+nn7h2JPqjxGsU=;
-        b=O/kjrp9uwhaX0UHcxnMEsib0oNTmVBstScUxSKkHjVOFyAM6ud1RCyuekMkZ36jQpPD1ZR
-        DM6toj/Ixa4HrtnnqRELqKdV5fzFX7Xh5gXJKbQgznCMyUK/eCvzYBpBmemN5d0MS02eho
-        LyrmFwNOmbYVjCPAQEH2c0kPLjUJMZE=
+        bh=e6vgelWHY1ROLaWG0osSVVXd0iuJBGBZOPQEJcLJre4=;
+        b=LFdM3W5zZdqeRLZgZr7qTz4F8ur5guOoVem4nRZ5tsOfJdaBCOsiQzafNzRFzubTv7yfyb
+        feDgbHO21RGAggkFmlAu9qVgUNQwRwRcMSErkykvTj3OpSc/KPkMlv24EVnN1IiuN5l4HP
+        lBHqk0bOEMYvh57nwqVONSIthXtdbiA=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 98ADC1390D;
-        Tue, 28 Mar 2023 13:13:02 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CEEE21390D;
+        Tue, 28 Mar 2023 13:13:08 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id bIYXJN7nImRBTgAAMHmgww
-        (envelope-from <jgross@suse.com>); Tue, 28 Mar 2023 13:13:02 +0000
+        id 5g83MeTnImRMTgAAMHmgww
+        (envelope-from <jgross@suse.com>); Tue, 28 Mar 2023 13:13:08 +0000
 From:   Juergen Gross <jgross@suse.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
@@ -48,9 +48,9 @@ Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         xen-devel@lists.xenproject.org, Jan Beulich <jbeulich@suse.com>
-Subject: [PATCH v2 2/3] xen/netback: remove not needed test in xenvif_tx_build_gops()
-Date:   Tue, 28 Mar 2023 15:12:32 +0200
-Message-Id: <20230328131233.2534-3-jgross@suse.com>
+Subject: [PATCH v2 3/3] xen/netback: use same error messages for same errors
+Date:   Tue, 28 Mar 2023 15:12:33 +0200
+Message-Id: <20230328131233.2534-4-jgross@suse.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20230328131047.2440-1-jgross@suse.com>
 References: <20230328131047.2440-1-jgross@suse.com>
@@ -65,38 +65,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tests for the number of grant mapping or copy operations reaching
-the array size of the operations buffer at the end of the main loop in
-xenvif_tx_build_gops() isn't needed.
-
-The loop can handle at maximum MAX_PENDING_REQS transfer requests, as
-XEN_RING_NR_UNCONSUMED_REQUESTS() is taking unsent responses into
-consideration, too.
-
-Remove the tests.
+Issue the same error message in case an illegal page boundary crossing
+has been detected in both cases where this is tested.
 
 Suggested-by: Jan Beulich <jbeulich@suse.com>
 Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
 ---
- drivers/net/xen-netback/netback.c | 4 ----
- 1 file changed, 4 deletions(-)
+V2:
+- new patch
+---
+ drivers/net/xen-netback/netback.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index 54c76af90233..9ca4b69d3b39 100644
+index 9ca4b69d3b39..5dfdec44354a 100644
 --- a/drivers/net/xen-netback/netback.c
 +++ b/drivers/net/xen-netback/netback.c
-@@ -1084,10 +1084,6 @@ static void xenvif_tx_build_gops(struct xenvif_queue *queue,
- 		__skb_queue_tail(&queue->tx_queue, skb);
+@@ -996,10 +996,8 @@ static void xenvif_tx_build_gops(struct xenvif_queue *queue,
  
- 		queue->tx.req_cons = idx;
--
--		if ((*map_ops >= ARRAY_SIZE(queue->tx_map_ops)) ||
--		    (*copy_ops >= ARRAY_SIZE(queue->tx_copy_ops)))
--			break;
- 	}
- 
- 	return;
+ 		/* No crossing a page as the payload mustn't fragment. */
+ 		if (unlikely((txreq.offset + txreq.size) > XEN_PAGE_SIZE)) {
+-			netdev_err(queue->vif->dev,
+-				   "txreq.offset: %u, size: %u, end: %lu\n",
+-				   txreq.offset, txreq.size,
+-				   (unsigned long)(txreq.offset&~XEN_PAGE_MASK) + txreq.size);
++			netdev_err(queue->vif->dev, "Cross page boundary, txp->offset: %u, size: %u\n",
++				   txreq.offset, txreq.size);
+ 			xenvif_fatal_tx_err(queue->vif);
+ 			break;
+ 		}
 -- 
 2.35.3
 
