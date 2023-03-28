@@ -2,141 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62C696CBE3E
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EBC26CBE46
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 13:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbjC1L5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 07:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50570 "EHLO
+        id S232745AbjC1L7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 07:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbjC1L5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:57:36 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CACF7693
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:57:35 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id b20so48625746edd.1
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 04:57:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680004654;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RG+eTwEqbkDSJBi1NatlM7PgeUa0/GUARHfUI0qPaV8=;
-        b=GJU2xg/v51vJMedUtpVQWw0Y3xQD+5FOXKikQp26eG4k7VteW4qg1HM/hhw34M3JcH
-         UxbYOC3owKvWuKZkLGmsPZpBMJaceloa/V72Zto+Mo5ogbwWUclIrgSgc7X3C/uEvAKE
-         HhfcfkUwV6Vh3hwJdjiA+6CTEQ/UnJmHDQz9+7kKj7mLBCBi3gE1Q9x8N1VPrMkxKOZE
-         qI5fam5Z0wDD52rk8DoQMe7TRWCEGH8625w6AuRrQiiPm6Ej2LIzCZSNhmmD3IDMjclg
-         DFJKcbW9NNMQR3oUoOsCeM7dj0zJU5U8tlpVH6DnMstfqAGcL7750oCpEX2m7TrE3LlE
-         DAXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680004654;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RG+eTwEqbkDSJBi1NatlM7PgeUa0/GUARHfUI0qPaV8=;
-        b=SsWq1u54loAmOaF/pMI7JR/GsWZF1jnP7DHIvshS2pLN0mwMTwtkTrgaQ8sd1G2E2P
-         e1xrispmqq+oHKg/dcFQbu1pSSaPMYpPN1BQzBRD0hMq+Ugi1qmWynGyGhBOcvK8FUeu
-         NX/51W2ptAeNa80T0LdPsUQOqKL7pIehdFoYwCA5sUfeRxb7TEHd9MFvvbfrJYSQcpp9
-         Z1zZGl20ZFU0VFqL+7VzqI3xRbka2qIdBIWvvdR2+xGSV1DaskF0PKb62V9RC9RfIIoA
-         V41gWPzscpH68SCIN/+SUCpsWnRejfdrDMIOQOgzzFR8k1JiuXsRTt3GV0fE5KbKG+PX
-         0/UA==
-X-Gm-Message-State: AAQBX9dxvwk7LxRwq55m7tw6IwitLfDS82kUIGfA/8TiMbnaOX+HQXDJ
-        yMLBAEMuaCzdpqXJtVuW8SDu2w==
-X-Google-Smtp-Source: AKy350Y9HnV0VgYg9E5b1ZGdqpAjJYGTnN7BA9rplW9wQdUyqK7zNB5omaIdn9MdcMPSZ20p6qilZw==
-X-Received: by 2002:a17:906:8581:b0:93e:3127:fc28 with SMTP id v1-20020a170906858100b0093e3127fc28mr16432912ejx.39.1680004653763;
-        Tue, 28 Mar 2023 04:57:33 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:9e92:dca6:241d:71b6? ([2a02:810d:15c0:828:9e92:dca6:241d:71b6])
-        by smtp.gmail.com with ESMTPSA id fi9-20020a170906da0900b00931faf03db0sm14919700ejb.27.2023.03.28.04.57.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Mar 2023 04:57:33 -0700 (PDT)
-Message-ID: <d216b729-fe96-1128-132f-7104a82f5463@linaro.org>
-Date:   Tue, 28 Mar 2023 13:57:31 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v8 4/6] dt-bindings: net: Add support StarFive dwmac
-Content-Language: en-US
-To:     Samin Guo <samin.guo@starfivetech.com>,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229436AbjC1L7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 07:59:49 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E4A199;
+        Tue, 28 Mar 2023 04:59:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xdsfUu/qnsBP4IbjC/WCYy76g1YOySMvlcjwDWLo/i0=; b=dXMGbmJNOZCHGV/Lt3TyRQLm77
+        C8ZFsE7r42xczo/t2ucxtlpphRrnPONWu6QdmmY2SYomQO4jAbzFK6Q8zg5E0dNsKiXl3fGrGNDpc
+        DKuEOgRp6Cz+Pz0pM1DV/NPmu9r8RvzlrevPur+fbJMkb73PxiifwL2oIIybdFSWCqWg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ph7z8-008dk4-GB; Tue, 28 Mar 2023 13:59:30 +0200
+Date:   Tue, 28 Mar 2023 13:59:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Conor Dooley <conor@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-References: <20230324022819.2324-1-samin.guo@starfivetech.com>
- <20230324022819.2324-5-samin.guo@starfivetech.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230324022819.2324-5-samin.guo@starfivetech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [net-next PATCH v6 16/16] arm: mvebu: dt: Add PHY LED support
+ for 370-rd WAN port
+Message-ID: <2e5c6dfb-5f55-416f-a934-6fa3997783b7@lunn.ch>
+References: <20230327141031.11904-1-ansuelsmth@gmail.com>
+ <20230327141031.11904-17-ansuelsmth@gmail.com>
+ <ZCKl1A9dZOIAdMY8@duo.ucw.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCKl1A9dZOIAdMY8@duo.ucw.cz>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/03/2023 03:28, Samin Guo wrote:
-> From: Yanhong Wang <yanhong.wang@starfivetech.com>
+On Tue, Mar 28, 2023 at 10:31:16AM +0200, Pavel Machek wrote:
+> On Mon 2023-03-27 16:10:31, Christian Marangi wrote:
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > 
+> > The WAN port of the 370-RD has a Marvell PHY, with one LED on
+> > the front panel. List this LED in the device tree.
 > 
-> Add documentation to describe StarFive dwmac driver(GMAC).
+> > @@ -135,6 +136,19 @@ &mdio {
+> >  	pinctrl-names = "default";
+> >  	phy0: ethernet-phy@0 {
+> >  		reg = <0>;
+> > +		leds {
+> > +			#address-cells = <1>;
+> > +			#size-cells = <0>;
+> > +
+> > +			led@0 {
+> > +				reg = <0>;
+> > +				label = "WAN";
+> > +				color = <LED_COLOR_ID_WHITE>;
+> > +				function = LED_FUNCTION_LAN;
+> > +				function-enumerator = <1>;
+> > +				linux,default-trigger = "netdev";
+> > +			};
 > 
-> Signed-off-by: Yanhong Wang <yanhong.wang@starfivetech.com>
-> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+> /sys/class/leds/WAN is not acceptable.
 
+As i said here, that is not what it gets called:
 
-> +  starfive,syscon:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    items:
-> +      - items:
-> +          - description: phandle to syscon that configures phy mode
-> +          - description: Offset of phy mode selection
-> +          - description: Shift of phy mode selection
-> +    description:
-> +      A phandle to syscon with two arguments that configure phy mode.
-> +      The argument one is the offset of phy mode selection, the
-> +      argument two is the shift of phy mode selection.
-> +
-> +allOf:
-> +  - $ref: snps,dwmac.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - interrupts
-> +  - interrupt-names
-> +  - resets
-> +  - reset-names
+https://lore.kernel.org/netdev/aa2d0a8b-b98b-4821-9413-158be578e8e0@lunn.ch/T/#m6c72bd355df3fcf8babc0d01dd6bf2697d069407
 
-required: goes after properties:
+> It can be found in /sys/class/leds/f1072004.mdio-mii:00:WAN. But when
+> we come to using it for ledtrig-netdev, the user is more likely to follow
+> /sys/class/net/eth0/phydev/leds/f1072004.mdio-mii\:00\:WAN/
 
-Just like in example-schema.
+Is that acceptable?
 
-*With* fix above:
+What are the acceptance criteria?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+     Andrew
