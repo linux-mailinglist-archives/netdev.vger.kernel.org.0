@@ -2,195 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E4E6CBB9D
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 11:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B26166CBC23
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 12:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232770AbjC1J65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 05:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47448 "EHLO
+        id S232638AbjC1KKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 06:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbjC1J6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 05:58:53 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179C06A58;
-        Tue, 28 Mar 2023 02:58:51 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32S9shk6000530;
-        Tue, 28 Mar 2023 11:58:37 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=WgobufBoN42IEs5ZSFVLsVL/P0UO9CKmIaFyDWY7oXg=;
- b=MQ81+Hk16ObyxQLguF2YIAmUZGFebM8Y/yfQSIKptWESFOrzK0jRQ4cuXeWNK/2zauil
- MEyIEY09orvrN4ffckmH0CQuf9Y9hJzdot2q7W36lGCYzHEdh7fnNJUwwK38C1PmQIDH
- mllTyAVPxcpIU61E/xOOJdjZYr8dN8zhK4cwDD97VWIHWV0CGeJE+G6eIW4mrXmtDTUo
- Cv0YDODhnr7MVPUYuBMuNfz5Z9r+JzyA9zg0sFfadFlzSU9oB1PRjHHW241jZCObxAKf
- kp8M2UWpcAM92bJN9TkyXf8Av6i9Aunhtm2ZggVqLjtnd3FU7S15PmIU4I4sOxugmw8I RQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3pkvs4rnts-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Mar 2023 11:58:37 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6C79A10002A;
-        Tue, 28 Mar 2023 11:58:36 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 65723211F1E;
-        Tue, 28 Mar 2023 11:58:36 +0200 (CEST)
-Received: from [10.201.21.93] (10.201.21.93) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Tue, 28 Mar
- 2023 11:58:35 +0200
-Message-ID: <1a2d16c8-8c16-5fcc-7906-7b454a81922f@foss.st.com>
-Date:   Tue, 28 Mar 2023 11:58:34 +0200
+        with ESMTP id S229971AbjC1KKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 06:10:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE98819A3;
+        Tue, 28 Mar 2023 03:10:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5BF66162F;
+        Tue, 28 Mar 2023 10:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 35F2AC433D2;
+        Tue, 28 Mar 2023 10:10:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1679998219;
+        bh=zSDBSOhDjfN/K7WH4y7LW1rJDe/pE9vrURd3pMLRMtg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uF3I6wSbd+4EcVywrze49L/ypnknPj+2mn4fvIJYM31sXYROxe1CrlAq8swF2dY7Q
+         K1nfQLkEKzpMGEL6NLaPPCuXKweozonFzHJuLN2D/lCyFKbbqJN0Iv8vwyF4ibP/Rz
+         OTDCJMjraYhVCc/zFnt1zOqo0JERK8VZ2XMvSGEYicWuLHVNlyH8mR2oyQea85b/03
+         85PPbctHrrIF5+3UnQbZ5KhziHt92tXWtxatPHlEdnTzMalvW7bAHFG3oahoDOm8x1
+         gGO1lNKTVVHRYWeRFZjOQCGYYYSdnuyVbMC5+4lqx8JvvV/lzLfkChtbtSN7L8J1k3
+         kWAp4psmYXTLw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1B432E4D01A;
+        Tue, 28 Mar 2023 10:10:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v1] ARM: dts: stm32: prtt1c: Add PoDL PSE regulator nodes
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>
-CC:     <kernel@pengutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20230323123242.3763673-1-o.rempel@pengutronix.de>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20230323123242.3763673-1-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.21.93]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-24_11,2023-03-27_02,2023-02-09_01
-X-Spam-Status: No, score=-0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v5 0/2] allocate multiple skbuffs on tx
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <167999821910.6518.13997608603920855143.git-patchwork-notify@kernel.org>
+Date:   Tue, 28 Mar 2023 10:10:19 +0000
+References: <b0d15942-65ba-3a32-ba8d-fed64332d8f6@sberdevices.ru>
+In-Reply-To: <b0d15942-65ba-3a32-ba8d-fed64332d8f6@sberdevices.ru>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        bobby.eshleman@bytedance.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
+        oxffffaa@gmail.com, avkrasnov@sberdevices.ru
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij
+Hello:
 
-On 3/23/23 13:32, Oleksij Rempel wrote:
-> This commit introduces Power over Data Line (PoDL) Power Source
-> Equipment (PSE) regulator nodes to the PRTT1C devicetree. The addition
-> of these nodes enables support for PoDL in PRTT1C devices, allowing
-> power delivery and data transmission over a single twisted pair.
+This series was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sun, 26 Mar 2023 01:02:43 +0300 you wrote:
+> This adds small optimization for tx path: instead of allocating single
+> skbuff on every call to transport, allocate multiple skbuff's until
+> credit space allows, thus trying to send as much as possible data without
+> return to af_vsock.c.
 > 
-> The new PoDL PSE regulator nodes provide voltage capability information
-> of the current board design, which can be used as a hint for system
-> administrators when configuring and managing power settings. This
-> update enhances the versatility and simplifies the power management of
-> PRTT1C devices while ensuring compatibility with connected Powered
-> Devices (PDs).
+> Also this patchset includes second patch which adds check and return from
+> 'virtio_transport_get_credit()' and 'virtio_transport_put_credit()' when
+> these functions are called with 0 argument. This is needed, because zero
+> argument makes both functions to behave as no-effect, but both of them
+> always tries to acquire spinlock. Moreover, first patch always calls
+> function 'virtio_transport_put_credit()' with zero argument in case of
+> successful packet transmission.
 > 
-> After applying this patch, the power delivery can be controlled from
-> user space with a patched [1] ethtool version using the following commands:
->    ethtool --set-pse t1l2 podl-pse-admin-control enable
-> to enable power delivery, and
->    ethtool --show-pse t1l2
-> to display the PoDL PSE settings.
-> 
-> By integrating PoDL PSE support into the PRTT1C devicetree, users can
-> benefit from streamlined power and data connections in their
-> deployments, improving overall system efficiency and reducing cabling
-> complexity.
-> 
-> [1] https://lore.kernel.org/all/20230317093024.1051999-1-o.rempel@pengutronix.de/
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+> [...]
 
-Please, fix the introduction of those new yaml validation errors:
+Here is the summary with links:
+  - [net-next,v5,1/2] virtio/vsock: allocate multiple skbuffs on tx
+    https://git.kernel.org/netdev/net-next/c/b68ffb1b3bee
+  - [net-next,v5,2/2] virtio/vsock: check argument to avoid no effect call
+    https://git.kernel.org/netdev/net-next/c/e3ec366eb0d1
 
-arch/arm/boot/dts/stm32mp151a-prtt1c.dtb: ethernet-pse-1: $nodename:0: 
-'ethernet-pse-1' does not match '^ethernet-pse(@.*)?$'
-         From schema: 
-/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
-arch/arm/boot/dts/stm32mp151a-prtt1c.dtb: ethernet-pse-2: $nodename:0: 
-'ethernet-pse-2' does not match '^ethernet-pse(@.*)?$'
-         From schema: 
-/local/home/frq08678/STLINUX/kernel/my-kernel/stm32/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-
-Thanks
-Alex
-
-
-
-
->   arch/arm/boot/dts/stm32mp151a-prtt1c.dts | 32 ++++++++++++++++++++++++
->   1 file changed, 32 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/stm32mp151a-prtt1c.dts b/arch/arm/boot/dts/stm32mp151a-prtt1c.dts
-> index 58bb05a8c685..ca0d3329cfd7 100644
-> --- a/arch/arm/boot/dts/stm32mp151a-prtt1c.dts
-> +++ b/arch/arm/boot/dts/stm32mp151a-prtt1c.dts
-> @@ -23,6 +23,18 @@ clock_sja1105: clock-sja1105 {
->   		clock-frequency = <25000000>;
->   	};
->   
-> +	pse_t1l1: ethernet-pse-1 {
-> +		compatible = "podl-pse-regulator";
-> +		pse-supply = <&reg_t1l1>;
-> +		#pse-cells = <0>;
-> +	};
-> +
-> +	pse_t1l2: ethernet-pse-2 {
-> +		compatible = "podl-pse-regulator";
-> +		pse-supply = <&reg_t1l2>;
-> +		#pse-cells = <0>;
-> +	};
-> +
->   	mdio0: mdio {
->   		compatible = "virtual,mdio-gpio";
->   		#address-cells = <1>;
-> @@ -32,6 +44,24 @@ mdio0: mdio {
->   
->   	};
->   
-> +	reg_t1l1: regulator-pse-t1l1 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "pse-t1l1";
-> +		regulator-min-microvolt = <12000000>;
-> +		regulator-max-microvolt = <12000000>;
-> +		gpio = <&gpiog 13 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +	};
-> +
-> +	reg_t1l2: regulator-pse-t1l2 {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "pse-t1l2";
-> +		regulator-min-microvolt = <12000000>;
-> +		regulator-max-microvolt = <12000000>;
-> +		gpio = <&gpiog 14 GPIO_ACTIVE_HIGH>;
-> +		enable-active-high;
-> +	};
-> +
->   	wifi_pwrseq: wifi-pwrseq {
->   		compatible = "mmc-pwrseq-simple";
->   		reset-gpios = <&gpiod 8 GPIO_ACTIVE_LOW>;
-> @@ -92,6 +122,7 @@ t1l1_phy: ethernet-phy@7 {
->   		reset-gpios = <&gpiog 12 GPIO_ACTIVE_LOW>;
->   		reset-assert-us = <10>;
->   		reset-deassert-us = <35>;
-> +		pses = <&pse_t1l1>;
->   	};
->   
->   	/* TI DP83TD510E */
-> @@ -102,6 +133,7 @@ t1l2_phy: ethernet-phy@10 {
->   		reset-gpios = <&gpiog 11 GPIO_ACTIVE_LOW>;
->   		reset-assert-us = <10>;
->   		reset-deassert-us = <35>;
-> +		pses = <&pse_t1l2>;
->   	};
->   
->   	/* Micrel KSZ9031 */
 
