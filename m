@@ -2,126 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C486CBE8A
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:05:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C58B46CBE96
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232798AbjC1MFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 08:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
+        id S230445AbjC1MGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 08:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbjC1MFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:05:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330E493C7
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 05:05:27 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ph84j-0006Ir-CN; Tue, 28 Mar 2023 14:05:17 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ph84g-0006UO-Rj; Tue, 28 Mar 2023 14:05:14 +0200
-Date:   Tue, 28 Mar 2023 14:05:14 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Wei Fang <wei.fang@nxp.com>,
+        with ESMTP id S232211AbjC1MGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:06:44 -0400
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAAB8A43;
+        Tue, 28 Mar 2023 05:06:17 -0700 (PDT)
+Received: from kandell (unknown [172.20.6.87])
+        by mail.nic.cz (Postfix) with ESMTPS id 5B5D91C1481;
+        Tue, 28 Mar 2023 14:06:04 +0200 (CEST)
+Authentication-Results: mail.nic.cz;
+        none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1680005165; bh=yEJ4s07mOxgd45ojTtnpz2ZYwsSZtSkS7TxxQM1EWMg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From:Reply-To:
+         Subject:To:Cc;
+        b=F3Z1VnT0PbkprI187QqXHFnS9lanGTcPSUXj80fYUbixwlxz2Y3Qhb4dujmw8qDAc
+         JzHINBlNRJ4qrQ1SfVeGFOebhucIC831HhK4pBHdS45GuzDdGDus/qiIcTmKR6tW4k
+         9fDad7cbX4a0GTuvqoN/Wff/YHGHBC1XT1L0LBx4=
+Date:   Tue, 28 Mar 2023 14:06:04 +0200
+From:   Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>
+To:     Gustav Ekelund <gustav.ekelund@axis.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>,
-        Clark Wang <xiaoning.wang@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Amit Cohen <amcohen@nvidia.com>, Gal Pressman <gal@nvidia.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next v2 6/8] net: phy: at803x: Make SmartEEE support
- optional and configurable via ethtool
-Message-ID: <20230328120514.GF15196@pengutronix.de>
-References: <20230327142202.3754446-1-o.rempel@pengutronix.de>
- <20230327142202.3754446-7-o.rempel@pengutronix.de>
+        Paolo Abeni <pabeni@redhat.com>, kernel@axis.com,
+        Gustav Ekelund <gustaek@axis.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Reset mv88e6393x watchdog
+ register
+Message-ID: <20230328120604.zawfeskqs4yhlze6@kandell>
+References: <20230328115511.400145-1-gustav.ekelund@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230327142202.3754446-7-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230328115511.400145-1-gustav.ekelund@axis.com>
+X-Virus-Scanned: clamav-milter 0.103.7 at mail
+X-Virus-Status: Clean
+X-Rspamd-Action: no action
+X-Rspamd-Server: mail
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spamd-Result: default: False [-0.10 / 20.00];
+        MIME_GOOD(-0.10)[text/plain];
+        TAGGED_RCPT(0.00)[];
+        ARC_NA(0.00)[];
+        FROM_EQ_ENVFROM(0.00)[];
+        FREEMAIL_ENVRCPT(0.00)[gmail.com];
+        WHITELISTED_IP(0.00)[172.20.6.87];
+        FROM_HAS_DN(0.00)[];
+        MIME_TRACE(0.00)[0:+]
+X-Rspamd-Queue-Id: 5B5D91C1481
+X-Spamd-Bar: /
+X-Rspamd-Pre-Result: action=no action;
+        module=multimap;
+        Matched map: WHITELISTED_IP
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 04:22:00PM +0200, Oleksij Rempel wrote:
-> This commit makes SmartEEE support in the AR8035 PHY optional and
-> configurable through the ethtool eee_set/get interface. Before this
-> patch, SmartEEE was always enabled except when a device tree option was
-> preventing it. Since EEE support not only provides advantages in power
-> management, but can also uncover compatibility issues and other bugs, it
-> is beneficial to allow users to control this functionality.
+On Tue, Mar 28, 2023 at 01:55:11PM +0200, Gustav Ekelund wrote:
+> From: Gustav Ekelund <gustaek@axis.com>
 > 
-> By making SmartEEE support optional and configurable via ethtool, the
-> at803x driver can adapt to different MAC configurations and properly
-> handle EEE and LPI features. This flexibility empowers users to manage
-> the trade-offs between power management, compatibility, and overall
-> performance as needed.
+> The watchdog event bits are not cleared during SW reset in the mv88e6393x
+> switch. This causes one event to be handled over and over again.
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Explicitly clear the watchdog event register to 0 after the SW reset.
+> 
+> Signed-off-by: Gustav Ekelund <gustaek@axis.com>
 > ---
->  drivers/net/phy/at803x.c | 126 ++++++++++++++++++++++++++++++++++++---
->  1 file changed, 118 insertions(+), 8 deletions(-)
+>  drivers/net/dsa/mv88e6xxx/chip.c    |  2 +-
+>  drivers/net/dsa/mv88e6xxx/global2.c | 17 +++++++++++++++++
+>  drivers/net/dsa/mv88e6xxx/global2.h |  1 +
+>  3 files changed, 19 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index 653d27a2e62b..4f65b3ebf806 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -165,8 +165,18 @@
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 30383c4f8fd0..ee22d4785e9e 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -5596,7 +5596,7 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
+>  	 * .port_set_upstream_port method.
+>  	 */
+>  	.set_egress_port = mv88e6393x_set_egress_port,
+> -	.watchdog_ops = &mv88e6390_watchdog_ops,
+> +	.watchdog_ops = &mv88e6393x_watchdog_ops,
+>  	.mgmt_rsvd2cpu = mv88e6393x_port_mgmt_rsvd2cpu,
+>  	.pot_clear = mv88e6xxx_g2_pot_clear,
+>  	.reset = mv88e6352_g1_reset,
+> diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
+> index ed3b2f88e783..bef8297d4f78 100644
+> --- a/drivers/net/dsa/mv88e6xxx/global2.c
+> +++ b/drivers/net/dsa/mv88e6xxx/global2.c
+> @@ -943,6 +943,23 @@ const struct mv88e6xxx_irq_ops mv88e6390_watchdog_ops = {
+>  	.irq_free = mv88e6390_watchdog_free,
+>  };
 >  
->  #define AT803X_MMD3_SMARTEEE_CTL1		0x805b
->  #define AT803X_MMD3_SMARTEEE_CTL2		0x805c
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_LOW	GENMASK(15, 0)
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_15_0	GENMASK(15, 0)
->  #define AT803X_MMD3_SMARTEEE_CTL3		0x805d
->  #define AT803X_MMD3_SMARTEEE_CTL3_LPI_EN	BIT(8)
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH	GENMASK(7, 0)
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_23_16	GENMASK(23, 16)
-> +/* Tx LPI timer resolution */
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS	163840
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_MAX_US	\
-> +	((GENMASK(23, 0) * AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS) / \
-> +	       NSEC_PER_USEC)
-> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_DEF_US	335544
+> +static int mv88e6393x_watchdog_action(struct mv88e6xxx_chip *chip, int irq)
+> +{
+> +	mv88e6390_watchdog_action(chip, irq);
+> +
+> +	mv88e6xxx_g2_write(chip, MV88E6390_G2_WDOG_CTL,
+> +			   MV88E6390_G2_WDOG_CTL_UPDATE |
+> +			   MV88E6390_G2_WDOG_CTL_PTR_EVENT);
+> +
+> +	return IRQ_HANDLED;
+> +}
+
+Shouldn't this update be in .irq_setup() method? In the commit message
+you're saying that the problem is that bits aren't cleared with SW
+reset. So I would guess that the change should be in the setup of
+watchdog IRQ, not in IRQ action?
+
+(I am not disagreeing, I am just asking because I don't have access to
+documentation right now.)
+
+Marek
+
+> +const struct mv88e6xxx_irq_ops mv88e6393x_watchdog_ops = {
+> +	.irq_action = mv88e6393x_watchdog_action,
+> +	.irq_setup = mv88e6390_watchdog_setup,
+> +	.irq_free = mv88e6390_watchdog_free,
+> +};
+> +
+>  static irqreturn_t mv88e6xxx_g2_watchdog_thread_fn(int irq, void *dev_id)
+>  {
+>  	struct mv88e6xxx_chip *chip = dev_id;
+> diff --git a/drivers/net/dsa/mv88e6xxx/global2.h b/drivers/net/dsa/mv88e6xxx/global2.h
+> index e973114d6890..7e091965582b 100644
+> --- a/drivers/net/dsa/mv88e6xxx/global2.h
+> +++ b/drivers/net/dsa/mv88e6xxx/global2.h
+> @@ -369,6 +369,7 @@ int mv88e6xxx_g2_device_mapping_write(struct mv88e6xxx_chip *chip, int target,
+>  extern const struct mv88e6xxx_irq_ops mv88e6097_watchdog_ops;
+>  extern const struct mv88e6xxx_irq_ops mv88e6250_watchdog_ops;
+>  extern const struct mv88e6xxx_irq_ops mv88e6390_watchdog_ops;
+> +extern const struct mv88e6xxx_irq_ops mv88e6393x_watchdog_ops;
 >  
->  #define ATH9331_PHY_ID				0x004dd041
->  #define ATH8030_PHY_ID				0x004dd076
-> @@ -302,6 +312,8 @@ struct at803x_priv {
->  	u8 smarteee_lpi_tw_100m;
->  	bool is_fiber;
->  	bool is_1000basex;
-> +	bool tx_lpi_on;
-
-@Andrew, this variable can be replace by your phydev->tx_lpi_enabled
-variable. Should I wait for your patches went mainline?
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+>  extern const struct mv88e6xxx_avb_ops mv88e6165_avb_ops;
+>  extern const struct mv88e6xxx_avb_ops mv88e6352_avb_ops;
+> -- 
+> 2.30.2
+> 
