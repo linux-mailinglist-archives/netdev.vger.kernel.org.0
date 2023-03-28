@@ -2,52 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B93CF6CBF09
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D40B86CBF65
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:41:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230258AbjC1Mat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 08:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33342 "EHLO
+        id S232531AbjC1Mkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 08:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjC1Mat (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:30:49 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EA186BE;
-        Tue, 28 Mar 2023 05:30:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=p1vueGhlFqaDJRo3Ow4NaqQoeuYHMXia7i1M7wo4oX0=; b=IWf53GWYdLA9Up9WtqneknvJxX
-        ztNLrBxlFPW0QeMFs36BDZewTV3YGh98GPqTbyplhKj3H7gS9BFnkTn44mJAlJBWfZNCpWXDkZ/IZ
-        5eyAwBA1jNo3833RCoi+FCliKJ/9copbULIfNCKPGbjJEQBopCeYwlMn+yO+TXpkAt6g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ph8TF-008dwt-UM; Tue, 28 Mar 2023 14:30:37 +0200
-Date:   Tue, 28 Mar 2023 14:30:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     Gustav Ekelund <gustav.ekelund@axis.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@axis.com,
-        Gustav Ekelund <gustaek@axis.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Reset mv88e6393x watchdog
- register
-Message-ID: <9ba1722a-8dd7-4d6d-bade-b4c702c8387f@lunn.ch>
-References: <20230328115511.400145-1-gustav.ekelund@axis.com>
- <20230328120604.zawfeskqs4yhlze6@kandell>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230328120604.zawfeskqs4yhlze6@kandell>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        with ESMTP id S232417AbjC1Mku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:40:50 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71764AD1B;
+        Tue, 28 Mar 2023 05:40:39 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id E786F21A1E;
+        Tue, 28 Mar 2023 12:40:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1680007233; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=vqqlZblvF32Oc3IEsXbE37GU4gfQk/3dHtRa1C6odSg=;
+        b=xHt7RMHDZj9iis1BjDPp6W38V2IQqat+XbSH3pDFr3Q8lMsHhl6OUz4BbYU3sA+TAgW0yZ
+        Ggu1w7SxsIRtvWZzMX9xKCfrTnUEVCcHQngs3zUc4bEE5jkLd/mrFq9nGCWDKHC53Blgvx
+        aRpaNBKDFvI7RbL9f17QXIRbUb1qFSI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1680007233;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=vqqlZblvF32Oc3IEsXbE37GU4gfQk/3dHtRa1C6odSg=;
+        b=o5Jo4JPHBesRVld4amUIZZUpKqjp/6hduT5zW2BbvcHXU86DH/woDQc6NLpc9eMdEXszql
+        bDnM1A3n/EFvo3DQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D2B631390D;
+        Tue, 28 Mar 2023 12:40:33 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +CQBM0HgImTWOgAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 28 Mar 2023 12:40:33 +0000
+Date:   Tue, 28 Mar 2023 14:40:33 +0200
+Message-ID: <87jzz13v7i.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     regressions@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [REGRESSION] e1000e probe/link detection fails since 6.2 kernel
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,38 +64,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +static int mv88e6393x_watchdog_action(struct mv88e6xxx_chip *chip, int irq)
-> > +{
-> > +	mv88e6390_watchdog_action(chip, irq);
-> > +
-> > +	mv88e6xxx_g2_write(chip, MV88E6390_G2_WDOG_CTL,
-> > +			   MV88E6390_G2_WDOG_CTL_UPDATE |
-> > +			   MV88E6390_G2_WDOG_CTL_PTR_EVENT);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> 
-> Shouldn't this update be in .irq_setup() method? In the commit message
-> you're saying that the problem is that bits aren't cleared with SW
-> reset. So I would guess that the change should be in the setup of
-> watchdog IRQ, not in IRQ action?
+Hi,
 
-I think it is a bit more complex than that. At least for the 6352,
-which i just looked at the data sheet, the interrupt bits are listed
-as "ROC". Which is missing from the list of definitions, but seems to
-mean Read Only, Clear on read. So even if it was not cleared on
-software reset, it would only fire once, and then be cleared.
+we've got a regression report for e1000e device on Lenovo T460p since
+6.2 kernel (with openSUSE Tumbleweed).  The details are found in
+  https://bugzilla.opensuse.org/show_bug.cgi?id=1209254
 
-The problem description here is that it does not clear on read, it
-needs an explicit write. Which suggests Marvell changed it for the
-6393.
+It seems that the driver can't detect the 1000Mbps but only 10/100Mbps
+link, eventually making the device unusable.
 
-So i have a couple of questions:
+On 6.1.12:
+[    5.119117] e1000e: Intel(R) PRO/1000 Network Driver
+[    5.119120] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+[    5.121754] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+[    7.905526] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): Failed to disable ULP
+[    7.988925] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
+[    8.069935] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 50:7b:9d:cf:13:43
+[    8.069942] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
+[    8.072691] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: 1000FF-0FF
+[   11.643919] e1000e 0000:00:1f.6 eth0: NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
+[   15.437437] e1000e 0000:00:1f.6 eth0: NIC Link is Up 1000 Mbps Full Duplex, Flow Control: None
 
-1) Is this new behaviour limited to the 6393, or does the 6390 also
-need this write?
+On 6.2.4:
+[    4.344140] e1000e: Intel(R) PRO/1000 Network Driver
+[    4.344143] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+[    4.344933] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) set to dynamic conservative mode
+[    7.113334] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): Failed to disable ULP
+[    7.201715] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): registered PHC clock
+[    7.284038] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 50:7b:9d:cf:13:43
+[    7.284044] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connection
+[    7.284125] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: 1000FF-0FF
+[   10.897973] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+[   10.897977] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+[   14.710059] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+[   14.710064] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+[   59.894807] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+[   59.894812] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+[   63.808662] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Duplex, Flow Control: None
+[   63.808668] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
 
-2) What about other interrupts? Is this the only one which has changed
-behaviour?
+The same problem persists with 6.3-rc3.
 
-	Andrew
+Can you guys check what can go wrong, or if there is a fix?
+
+
+Thanks!
+
+Takashi
