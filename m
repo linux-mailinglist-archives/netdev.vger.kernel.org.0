@@ -2,47 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 436536CBE79
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:04:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67C486CBE8A
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 14:05:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232354AbjC1MEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 08:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
+        id S232798AbjC1MFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 08:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231365AbjC1MEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:04:32 -0400
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36C57ECF;
-        Tue, 28 Mar 2023 05:04:27 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vet2gxL_1680005061;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vet2gxL_1680005061)
-          by smtp.aliyun-inc.com;
-          Tue, 28 Mar 2023 20:04:21 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        with ESMTP id S232371AbjC1MFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 08:05:48 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330E493C7
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 05:05:27 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ph84j-0006Ir-CN; Tue, 28 Mar 2023 14:05:17 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ph84g-0006UO-Rj; Tue, 28 Mar 2023 14:05:14 +0200
+Date:   Tue, 28 Mar 2023 14:05:14 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Wei Fang <wei.fang@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next 8/8] virtio_net: introduce receive_small_xdp()
-Date:   Tue, 28 Mar 2023 20:04:12 +0800
-Message-Id: <20230328120412.110114-9-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.32.0.3.g01195cf9f
-In-Reply-To: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
-References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Shenwei Wang <shenwei.wang@nxp.com>,
+        Clark Wang <xiaoning.wang@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Amit Cohen <amcohen@nvidia.com>, Gal Pressman <gal@nvidia.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Piergiorgio Beruto <piergiorgio.beruto@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next v2 6/8] net: phy: at803x: Make SmartEEE support
+ optional and configurable via ethtool
+Message-ID: <20230328120514.GF15196@pengutronix.de>
+References: <20230327142202.3754446-1-o.rempel@pengutronix.de>
+ <20230327142202.3754446-7-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-Git-Hash: 822c071fd47f
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230327142202.3754446-7-o.rempel@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,225 +67,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The purpose of this patch is to simplify the receive_small().
-Separate all the logic of XDP of small into a function.
+On Mon, Mar 27, 2023 at 04:22:00PM +0200, Oleksij Rempel wrote:
+> This commit makes SmartEEE support in the AR8035 PHY optional and
+> configurable through the ethtool eee_set/get interface. Before this
+> patch, SmartEEE was always enabled except when a device tree option was
+> preventing it. Since EEE support not only provides advantages in power
+> management, but can also uncover compatibility issues and other bugs, it
+> is beneficial to allow users to control this functionality.
+> 
+> By making SmartEEE support optional and configurable via ethtool, the
+> at803x driver can adapt to different MAC configurations and properly
+> handle EEE and LPI features. This flexibility empowers users to manage
+> the trade-offs between power management, compatibility, and overall
+> performance as needed.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/at803x.c | 126 ++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 118 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 653d27a2e62b..4f65b3ebf806 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -165,8 +165,18 @@
+>  
+>  #define AT803X_MMD3_SMARTEEE_CTL1		0x805b
+>  #define AT803X_MMD3_SMARTEEE_CTL2		0x805c
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_LOW	GENMASK(15, 0)
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_15_0	GENMASK(15, 0)
+>  #define AT803X_MMD3_SMARTEEE_CTL3		0x805d
+>  #define AT803X_MMD3_SMARTEEE_CTL3_LPI_EN	BIT(8)
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_HIGH	GENMASK(7, 0)
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_23_16	GENMASK(23, 16)
+> +/* Tx LPI timer resolution */
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS	163840
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_MAX_US	\
+> +	((GENMASK(23, 0) * AT803X_MMD3_SMARTEEE_LPI_TIME_RESOL_NS) / \
+> +	       NSEC_PER_USEC)
+> +#define AT803X_MMD3_SMARTEEE_LPI_TIME_DEF_US	335544
+>  
+>  #define ATH9331_PHY_ID				0x004dd041
+>  #define ATH8030_PHY_ID				0x004dd076
+> @@ -302,6 +312,8 @@ struct at803x_priv {
+>  	u8 smarteee_lpi_tw_100m;
+>  	bool is_fiber;
+>  	bool is_1000basex;
+> +	bool tx_lpi_on;
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- drivers/net/virtio_net.c | 168 +++++++++++++++++++++++----------------
- 1 file changed, 100 insertions(+), 68 deletions(-)
+@Andrew, this variable can be replace by your phydev->tx_lpi_enabled
+variable. Should I wait for your patches went mainline?
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index c8978d8d8adb..37cd0bf97a16 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -939,6 +939,99 @@ static struct page *xdp_linearize_page(struct receive_queue *rq,
- 	return NULL;
- }
- 
-+static struct sk_buff *receive_small_xdp(struct net_device *dev,
-+					 struct virtnet_info *vi,
-+					 struct receive_queue *rq,
-+					 struct bpf_prog *xdp_prog,
-+					 void *buf,
-+					 void *ctx,
-+					 unsigned int len,
-+					 unsigned int *xdp_xmit,
-+					 struct virtnet_rq_stats *stats)
-+{
-+	unsigned int xdp_headroom = (unsigned long)ctx;
-+	unsigned int header_offset = VIRTNET_RX_PAD + xdp_headroom;
-+	unsigned int headroom = vi->hdr_len + header_offset;
-+	struct virtio_net_hdr_mrg_rxbuf *hdr = buf + header_offset;
-+	struct page *page = virt_to_head_page(buf);
-+	struct page *xdp_page;
-+	unsigned int buflen;
-+	struct xdp_buff xdp;
-+	struct sk_buff *skb;
-+	unsigned int delta = 0;
-+	unsigned int metasize = 0;
-+	void *orig_data;
-+	u32 act;
-+
-+	buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-+		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+
-+	if (unlikely(hdr->hdr.gso_type))
-+		goto err_xdp;
-+
-+	if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
-+		int offset = buf - page_address(page) + header_offset;
-+		unsigned int tlen = len + vi->hdr_len;
-+		int num_buf = 1;
-+
-+		xdp_headroom = virtnet_get_headroom(vi);
-+		header_offset = VIRTNET_RX_PAD + xdp_headroom;
-+		headroom = vi->hdr_len + header_offset;
-+		buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
-+			SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+		xdp_page = xdp_linearize_page(rq, &num_buf, page,
-+					      offset, header_offset,
-+					      &tlen);
-+		if (!xdp_page)
-+			goto err_xdp;
-+
-+		buf = page_address(xdp_page);
-+		put_page(page);
-+		page = xdp_page;
-+	}
-+
-+	xdp_init_buff(&xdp, buflen, &rq->xdp_rxq);
-+	xdp_prepare_buff(&xdp, buf + VIRTNET_RX_PAD + vi->hdr_len,
-+			 xdp_headroom, len, true);
-+	orig_data = xdp.data;
-+
-+	act = virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
-+
-+	switch (act) {
-+	case VIRTNET_XDP_RES_PASS:
-+		/* Recalculate length in case bpf program changed it */
-+		delta = orig_data - xdp.data;
-+		len = xdp.data_end - xdp.data;
-+		metasize = xdp.data - xdp.data_meta;
-+		break;
-+
-+	case VIRTNET_XDP_RES_CONSUMED:
-+		goto xdp_xmit;
-+
-+	case VIRTNET_XDP_RES_DROP:
-+		goto err_xdp;
-+	}
-+
-+	skb = build_skb(buf, buflen);
-+	if (!skb)
-+		goto err;
-+
-+	skb_reserve(skb, headroom - delta);
-+	skb_put(skb, len);
-+	if (metasize)
-+		skb_metadata_set(skb, metasize);
-+
-+	return skb;
-+
-+err_xdp:
-+	stats->xdp_drops++;
-+err:
-+	stats->drops++;
-+	put_page(page);
-+xdp_xmit:
-+	return NULL;
-+}
-+
- static struct sk_buff *receive_small(struct net_device *dev,
- 				     struct virtnet_info *vi,
- 				     struct receive_queue *rq,
-@@ -949,15 +1042,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
- {
- 	struct sk_buff *skb;
- 	struct bpf_prog *xdp_prog;
--	unsigned int xdp_headroom = (unsigned long)ctx;
--	unsigned int header_offset = VIRTNET_RX_PAD + xdp_headroom;
-+	unsigned int header_offset = VIRTNET_RX_PAD;
- 	unsigned int headroom = vi->hdr_len + header_offset;
- 	unsigned int buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
- 			      SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 	struct page *page = virt_to_head_page(buf);
--	unsigned int delta = 0;
--	struct page *xdp_page;
--	unsigned int metasize = 0;
- 
- 	len -= vi->hdr_len;
- 	stats->bytes += len;
-@@ -977,57 +1066,9 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	rcu_read_lock();
- 	xdp_prog = rcu_dereference(rq->xdp_prog);
- 	if (xdp_prog) {
--		struct virtio_net_hdr_mrg_rxbuf *hdr = buf + header_offset;
--		struct xdp_buff xdp;
--		void *orig_data;
--		u32 act;
--
--		if (unlikely(hdr->hdr.gso_type))
--			goto err_xdp;
--
--		if (unlikely(xdp_headroom < virtnet_get_headroom(vi))) {
--			int offset = buf - page_address(page) + header_offset;
--			unsigned int tlen = len + vi->hdr_len;
--			int num_buf = 1;
--
--			xdp_headroom = virtnet_get_headroom(vi);
--			header_offset = VIRTNET_RX_PAD + xdp_headroom;
--			headroom = vi->hdr_len + header_offset;
--			buflen = SKB_DATA_ALIGN(GOOD_PACKET_LEN + headroom) +
--				 SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
--			xdp_page = xdp_linearize_page(rq, &num_buf, page,
--						      offset, header_offset,
--						      &tlen);
--			if (!xdp_page)
--				goto err_xdp;
--
--			buf = page_address(xdp_page);
--			put_page(page);
--			page = xdp_page;
--		}
--
--		xdp_init_buff(&xdp, buflen, &rq->xdp_rxq);
--		xdp_prepare_buff(&xdp, buf + VIRTNET_RX_PAD + vi->hdr_len,
--				 xdp_headroom, len, true);
--		orig_data = xdp.data;
--
--		act = virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
--
--		switch (act) {
--		case VIRTNET_XDP_RES_PASS:
--			/* Recalculate length in case bpf program changed it */
--			delta = orig_data - xdp.data;
--			len = xdp.data_end - xdp.data;
--			metasize = xdp.data - xdp.data_meta;
--			break;
--
--		case VIRTNET_XDP_RES_CONSUMED:
--			rcu_read_unlock();
--			goto xdp_xmit;
--
--		case VIRTNET_XDP_RES_DROP:
--			goto err_xdp;
--		}
-+		skb = receive_small_xdp(dev, vi, rq, xdp_prog, buf, ctx, len, xdp_xmit, stats);
-+		rcu_read_unlock();
-+		return skb;
- 	}
- 	rcu_read_unlock();
- 
-@@ -1035,25 +1076,16 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	skb = build_skb(buf, buflen);
- 	if (!skb)
- 		goto err;
--	skb_reserve(skb, headroom - delta);
-+	skb_reserve(skb, headroom);
- 	skb_put(skb, len);
--	if (!xdp_prog) {
--		buf += header_offset;
--		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
--	} /* keep zeroed vnet hdr since XDP is loaded */
--
--	if (metasize)
--		skb_metadata_set(skb, metasize);
- 
-+	buf += header_offset;
-+	memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
- 	return skb;
- 
--err_xdp:
--	rcu_read_unlock();
--	stats->xdp_drops++;
- err:
- 	stats->drops++;
- 	put_page(page);
--xdp_xmit:
- 	return NULL;
- }
- 
+Regards,
+Oleksij
 -- 
-2.32.0.3.g01195cf9f
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
