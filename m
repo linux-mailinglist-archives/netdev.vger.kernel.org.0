@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E31396CB614
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 07:29:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C1A06CB625
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 07:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbjC1F3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 01:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
+        id S232065AbjC1FjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 01:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbjC1F3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 01:29:14 -0400
-Received: from HK2P15301CU002.outbound.protection.outlook.com (mail-eastasiaazon11020024.outbound.protection.outlook.com [52.101.128.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6467B19BC;
-        Mon, 27 Mar 2023 22:29:12 -0700 (PDT)
+        with ESMTP id S231932AbjC1FjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 01:39:03 -0400
+Received: from DM6FTOPR00CU001.outbound.protection.outlook.com (mail-cusazon11020016.outbound.protection.outlook.com [52.101.61.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050FF2685;
+        Mon, 27 Mar 2023 22:39:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f+bTumz/ZTTZV768m7EuzgaNr5QshPzMFSfYK7E/r7XlEoZ3antgONOzwRrTUNPG/u7DEJnlHn4fh3JwYPEWbEqVLqzsrDjI9I8c+SWiAsXY1+NE9eNOGY07lILCsN00yU8qTpUNtUTj+zAD3q/PaG2ufk5KiP9cfapET69kx33qg5cwiSVP6B4xdmtUx++SHLFYX22MMAh04mOV4NcnSsVkBwli8lN6ij2De30v4uYFSJfmy4pO8Gz0m9Zw5A6ULdCHU3K3E0uCjAgI/XPPtRVCzB9NaclTpldIh6BD4BtzGmYE0rOhQyE1ZQMottgU/8ZlGX9XIQhsuVeAYljBNQ==
+ b=ZpsS9pLjcHn++vOsewQ9sbwnfhmA7FgJNnR2yGR3SV0DSXmji8sW2GzptKBzc8F0XrCmuqF0+JiV5PsrIJfU2HHKafNPaqoGkR9i7RwuqVbyESKM/PI1+5lmP5BfuaJ8RekicpMS6I/ILSgm64acP793I7jvZTQIVySYPFFEn3n9SL/hu+9heJQGP/TMat5AiJQqgVvkTw3t3N5MHvWRHAj7HzNZmL/IB2f1VDybJCFkAbPBbQ1eBg+SV6RuqJCjgwRnIWipQ275mw6fJDJfyBKtAD3LDKVH40sYci6TJZKe3xenlqlUYZqV0kTtXrK1/SCoAAbL4PzgffBqCJpjXQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IUHUSeFoF6gfydKyyf7RHI7Z1Oj2+9M3ySdv1jb451c=;
- b=Spy3LfUUzO4D/mlzSp8NdnbibAfIVTyILYk6DM4uxiqlSTDoLEf09wZ9YMQcUViwnQtmfMCTRY+1rBQQgYkMQaXUmNPJu0kWG/7EGV4ZTeW5jxvGEVX4dykMxjbpBfudFnoWjov1YJDkPz9HUP4K0gs1GW1amR8cBW5P3Bcq4F9XqfMqBoBZgkJbxdbJWrqVvg46Htw5MAPm16BZQZ6sF6x6AXUCgpR4Lhgzmb7TWGKBflddn22YsZyjzGdWFB7ZFO/K3kS2ikb1qdG32eRZDuIJZ3lK1/8DCAeUZamPTXLsFJ68UannZe/4lIqbGEet29lREf/k+Natvgr371G/zA==
+ bh=pse6oqGPGZ1zPD1gcIKd7v9UBwzkToQk3+ikLFzcyIc=;
+ b=JVczqWmTEIe84SSgep7jQPiCIEhHyzWMxmDUuMVjnCOWNmD9JG1WZFJy2PpIC0R2JRFXqt1fcbG9YFq3C74QPlaeV6dHFcyZzH0rvrI7Bf6Wdrf+boTXuQoYmgY9NQbBqfYVD270zn2EIXAeZgzB7e6YMxzLa1yeyTAwlTm7UTg0VqPcbhWNkCq0XPkiYZInIZczE1RSJ0XLKWFuErpVMO27rS/kXTxQaKnaSxXHPbPJq7WCqh3R+xhZvuicKIKiJhQ+/woWpntLr0S7KzNoiQRyjinEcQQTz0Somob2wSUe4Nh6CtKOM2h5unxhUH98HeYohd8QA8Zd+lAgwxcdmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IUHUSeFoF6gfydKyyf7RHI7Z1Oj2+9M3ySdv1jb451c=;
- b=TJcjoc9tDIxO6N9LyV02NjbehZLIlwLswxURilnKPx/H1ZduR0ob/L6DxFXP1C8asUxV796j7tyT6XuTU5lduZ3Qmjt2g1G39iRWTqYUMLE7jyjvwsExVBimjM+6/SIyygFX0tDHq1fGwQDsHDhonuw0uSChr4cYTqQVB6dYkLQ=
-Received: from PUZP153MB0749.APCP153.PROD.OUTLOOK.COM (2603:1096:301:e6::8) by
- SEZP153MB0648.APCP153.PROD.OUTLOOK.COM (2603:1096:101:99::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6277.5; Tue, 28 Mar 2023 05:29:07 +0000
-Received: from PUZP153MB0749.APCP153.PROD.OUTLOOK.COM
- ([fe80::ce12:9abe:af7f:5097]) by PUZP153MB0749.APCP153.PROD.OUTLOOK.COM
- ([fe80::ce12:9abe:af7f:5097%7]) with mapi id 15.20.6277.005; Tue, 28 Mar 2023
- 05:29:07 +0000
-From:   Saurabh Singh Sengar <ssengar@microsoft.com>
-To:     Dexuan Cui <decui@microsoft.com>,
+ bh=pse6oqGPGZ1zPD1gcIKd7v9UBwzkToQk3+ikLFzcyIc=;
+ b=AhZhpk2LeAOPxK8zz80OvAJAbtTho9vbgj/tuxdH0DeKw7WV+6XcoiKaFKLYWoOoMW+G15DyfnPwE32sjhUqn1MYPXRZvn0i9kQH76M9olICPCqgjc6bMueMQwQe5JN9OWYFgCDHuiutH9WOtZeLSbWcvh7OUTpAu7nQaZtK0Oc=
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
+ by PH7PR21MB3358.namprd21.prod.outlook.com (2603:10b6:510:1de::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.6; Tue, 28 Mar
+ 2023 05:38:59 +0000
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::2e52:d6aa:9a99:500a]) by SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::2e52:d6aa:9a99:500a%5]) with mapi id 15.20.6277.006; Tue, 28 Mar 2023
+ 05:38:59 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     Saurabh Singh Sengar <ssengar@microsoft.com>,
         "bhelgaas@google.com" <bhelgaas@google.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
         "edumazet@google.com" <edumazet@google.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
         Jake Oshins <jakeo@microsoft.com>,
@@ -65,13 +65,14 @@ Subject: RE: [EXTERNAL] [PATCH 1/6] PCI: hv: fix a race condition bug in
  hv_pci_query_relations()
 Thread-Topic: [EXTERNAL] [PATCH 1/6] PCI: hv: fix a race condition bug in
  hv_pci_query_relations()
-Thread-Index: AQHZYTE8ycJYvqlEuU6bxR9LLTVmZa8Pqarw
-Date:   Tue, 28 Mar 2023 05:29:07 +0000
-Message-ID: <PUZP153MB0749F39A34DEC9FABE17C615BE889@PUZP153MB0749.APCP153.PROD.OUTLOOK.COM>
+Thread-Index: AQHZYTE8ycJYvqlEuU6bxR9LLTVmZa8PqarwgAABRpA=
+Date:   Tue, 28 Mar 2023 05:38:59 +0000
+Message-ID: <SA1PR21MB133553326FBAD376DE9DB48ABF889@SA1PR21MB1335.namprd21.prod.outlook.com>
 References: <20230328045122.25850-1-decui@microsoft.com>
  <20230328045122.25850-2-decui@microsoft.com>
-In-Reply-To: <20230328045122.25850-2-decui@microsoft.com>
-Accept-Language: en-IN, en-US
+ <PUZP153MB0749F39A34DEC9FABE17C615BE889@PUZP153MB0749.APCP153.PROD.OUTLOOK.COM>
+In-Reply-To: <PUZP153MB0749F39A34DEC9FABE17C615BE889@PUZP153MB0749.APCP153.PROD.OUTLOOK.COM>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
@@ -79,55 +80,56 @@ msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5d1d925f-e
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PUZP153MB0749:EE_|SEZP153MB0648:EE_
-x-ms-office365-filtering-correlation-id: b2f49125-bc39-4d06-0b38-08db2f4d5a0f
+x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|PH7PR21MB3358:EE_
+x-ms-office365-filtering-correlation-id: 1f0fc65f-ae04-4389-d3cf-08db2f4ebb02
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gkmkbLuznKltVtb3+eLKFcXmAHvaCN+n3sz2hQ9GbGrJijAeqc8ZOp+biQ8dtwhKs7jVEK9SkSmkLxzix2xMDQAonbtPH9s17iomZFPmL3LLBcBKu5Xp7YuLYoSWufFa4PxRP6KF+XDSxp3eyhsPXUEYzQlfvMTngnG9SenF6IRef2iUFsZNe6vOOIDJkc+n3qbGVJHouYRAWXoyzBiXKUmqk5lcYNjmnrU86dTa4gWTRbilQ54Hfa6LWiOdAMMf3gG4uVhwGE9K83rEePiGR13utBDRkEZXHB4+jQHDSAQLEqA2xOLeYNN4kD5V3UJRHROFSFV+ZD0dvjXVPBzlWjWrcZv9Hh9Opgk+Jx+94/Bjxx2DdGmwPZb0c7oBINGfZhR62H5sFeSuRnTrgfCDFRnKqoM4ab4gMK1yzbevUxxJm3j+sCtoOXsOdgOzPH1TSyYHSG9dzas1QGiSWNN98MudTlraTJq5r3Jz15YDF85MPGlxHiQ+p+N0g//uzSSnosWo97DePW3wlFz6a3PohSLSYDP+66ScxXtW1v2qmk0yVXP7KOaYbeZB3s8eokECUzZMoG7oOe8MKvmZuIbd03ZeBWaCvywU2Dv4Jndw+QawQxgOGClt2ctt1oXLpZsJWyCD6AKAcgZxHDZOZdQhn6I0uBQd7fvk8L6q8GYaZnrkkVmoGXRCbOBnca6ymJTo
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:cs;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZP153MB0749.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(376002)(396003)(39860400002)(346002)(451199021)(38070700005)(8990500004)(7696005)(9686003)(33656002)(53546011)(186003)(6506007)(55016003)(41300700001)(82960400001)(82950400001)(86362001)(76116006)(4326008)(8676002)(66556008)(66946007)(66476007)(64756008)(66446008)(38100700002)(8936002)(52536014)(921005)(7416002)(122000001)(5660300002)(316002)(110136005)(54906003)(10290500003)(478600001)(83380400001)(71200400001)(2906002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: 45aI6MPtioyxbQtXoulhl78GF+qT15gb8FPRHyTSM6fIVQ9+RDswGtgQ/+H3Q43yGphCBEyHyYtxImL6hEl/cl+MLeCfBP71Pv0R/XZ+ypH5US/UY/wdcahQP6QWNJjV4xfWSXyh2KTK4qBWGKoae2kGyUxRpLuijloZH/NnWbm3vWnKdvs3P7OlkxZH0Vh39VBtCH1qjQTavZ6myaonnPtg7vUsx6konLBRqeRKS93fP/kNb35ShSNICLN9o8WaXMfPkPi+bLaDlC58UZG7IgL7XcRPyMW+Veg9z8ChITKygM9VAZoYu691VfhW6kRl3hc3gQ9U3JjcA6r4acZYG0eFYM+2SCAsDNtMeYmLbO1cTc7Wjh7ieqUMdUrjpv6QT/pZbvhJnfTl4WKbUSOC4N8+sKa8QDKC1qJyKdbkSYJYprZiuqolFqAz0ZAFBSGlawMWfQT41hUK79JbQOJUTrDhshSWVckppZ3EC/GFxSCzP9BUM97rbblEwUDiKBWiSyDgwAbr3w5qayJjvkO6kONE27GxrIyVoVMgUSuCdpUz6GHWWZFDEIA2x7+HN8Qg2KnThpXY69ADJ+MDXuNS/VyLmCR4x0L/nhdI8ncO10jEeOHT213rzrogo6gSDUr98M8XqZVzVIgfzoDW/C0mDm5bwiiK5dBc20EsfTpN0RjYiOgDQoy76GIsBP3x3iOA
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:cs;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39860400002)(396003)(366004)(376002)(451199021)(110136005)(54906003)(316002)(186003)(9686003)(6506007)(71200400001)(7696005)(4744005)(33656002)(122000001)(86362001)(478600001)(38100700002)(38070700005)(8990500004)(8936002)(5660300002)(7416002)(10290500003)(55016003)(82950400001)(76116006)(66946007)(82960400001)(921005)(64756008)(66446008)(66476007)(8676002)(4326008)(66556008)(41300700001)(52536014)(2906002);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?tNQHnrpVqQtzsduPOz0cMJwhn40CcjIoNySCHGlI6KtI2Zd/dyQnBDHmsylb?=
- =?us-ascii?Q?4sDOOMUIDM2rATfRPbQ1OiWq+giBLEd16XkXQdOHT8OQ6WnchjtyGEAiUuIJ?=
- =?us-ascii?Q?tlbjv3MWVgqLeOfkC3nOEqNp5B/7Q10XUNfYolIzZgXQdGHVB5OPSZKMWgpv?=
- =?us-ascii?Q?RwoH+jR+T1cfjMwoYqkFGh7X21YgCPi4h84OyD/BAMLe5/GQ0KZUjeYm2wxI?=
- =?us-ascii?Q?FbqcyIZ6ZVG+5P5s+QHvnmWjQnjXyTFKePDV9AT8ZB9vWH3YAJiDJuL7rUu+?=
- =?us-ascii?Q?BCnxIwiDAm+dO4dRaHjd8gsGLK4wMT+Gk+52p/OozDEcYc/wMlIJ7H9oDB3I?=
- =?us-ascii?Q?oTS/9vUiNWpjNdbkmGNfP5nSGD/6R/9gP5yM3H6aGSGaXZgqaVGKH5x5MEls?=
- =?us-ascii?Q?VdjkwwDMu+kg2mQKA2Qqap8E315K+Mwgsjj0rUVMHxMLmLy+nCNOfOxTgxET?=
- =?us-ascii?Q?bwOyjwg1vGnWs/KhLsxbdGtJKvoivIXLNY01JexGOIJFxd4KvAbtMd5FJPEi?=
- =?us-ascii?Q?1L9/ETgnpP9TmYdTp0evO6GmzfD9AdrSCpExh9K2TuW1q2K673TtZH88cFAf?=
- =?us-ascii?Q?IfpzUBEuHv/EPha4CbBDcODjyBuO8QJM4W+kUoqyTf1lcOUJJDelHOxmIQRq?=
- =?us-ascii?Q?A6DTkTwB/4vGtif/Sc9zcN5jRpDv4O4CXum1KM8O7xQ88dwBa865ZQ+APITJ?=
- =?us-ascii?Q?GFWxkTbhEwzZmBdw9LCuhZRyts+GmAeuCQOAz19uI6cxmf3lhFVOBXldwTmQ?=
- =?us-ascii?Q?+R3v0LJeswaMcW/Nm9Hz6SVB6AfzTzAgnocPRL+rOQFUxorHsHTxv8FmQrW5?=
- =?us-ascii?Q?mzXTWdyT45Qa1lKZCV9GonmpggDgpIWBjDkZjX7YbE5INwXdiyrSL6MQrRDO?=
- =?us-ascii?Q?Q5v6ZD0n2dbRMi1X6+Lt1qBKNZJCwPusSJsFmxYmXDfOC/VWiRhbqqFxa9vl?=
- =?us-ascii?Q?JNQj+2PIBZ34/tbnFTzu77OII0UDMM2AfRocZpIo8nbGpbnSHgWQJcBUUZsV?=
- =?us-ascii?Q?55ILNht79b6f57ENxw6P5Yn9uPOpt4+ZW3kPEhhTLPibKcdJkPjpUDGslTUV?=
- =?us-ascii?Q?vWzhTD0dRy7oXstSY8VSbDBPk1cBl9lUtmDn9MO506SQ8/BvFP175Yoo9ARj?=
- =?us-ascii?Q?Sq0TMZME6zM9k7vAFBFmKG5GaW9RFRYN4a48aLPO27YtILEf/iOhZptIIQL1?=
- =?us-ascii?Q?DKnW0pm+m8+fNwkZAHvBjp/LnspK0AWY3pv2pJxvmowQunmocKIyvXwyZkf9?=
- =?us-ascii?Q?txXmR+4MJqrJapoRLS4hJbIXN0+iu6poEctFPcOaPJxdzyhDKFeStiIu8qRI?=
- =?us-ascii?Q?/VcPFxqQO3mNazIqiFyql6BBK0ECdWkkZWwWxplnoUAEcXQcDLQSvGEnvbnq?=
- =?us-ascii?Q?q0HtBnR1yBVlN4E7wQkKI46JHc1aiIjEdEoanELYkR002P7uTgKnUEEFJDkH?=
- =?us-ascii?Q?6f5eknRaVwW00zGevM9Viovg/iMe+Q5/2RZpBagxbvOOYGC8GIhbgQFta+o8?=
- =?us-ascii?Q?GeN4s1y91xPg35WDRuFV2h0PvSJPXk3BwcHJRGixOpTbeV7z+6zxzQkylXqw?=
- =?us-ascii?Q?bhnl5Q9myr0vBFc0zUh3fjmQy/tOT/F88dN9WxtZ?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?O5bwjpFFQY2+F1HMNcE3f/VyU2veRRDbO4m1CDplL4/BMFNh1r0gz5M731rO?=
+ =?us-ascii?Q?KTtdpxQZz/ocqardYT3RmXQ/M9GVRG4QeYRH89xx/ilLT7S+WAAa5k0YQYoO?=
+ =?us-ascii?Q?E+Rot1U010VeaQs/9FfKtcFr3LCKCfTHbk+yYM4vGpEKeqMc2rXPhKQdIYQf?=
+ =?us-ascii?Q?b3+DL3EI1hMdb5qBUzWTr/nUgrpDXT41cbxy4M6Q1HbrprPZDvZJ1lqnskHe?=
+ =?us-ascii?Q?TDM/zyey5xY+Mg0H1++fHPhgDbV/5WT8KJ3S6AF4UCZSKv+rS3hBs722yCuJ?=
+ =?us-ascii?Q?5lfvp4ugov1Ov/oIfuNhGdV/2gttfFV90pLKkCwKtU3kfZ+xYQ1TEFukCZLM?=
+ =?us-ascii?Q?106CKxWmPsm69ebMo/xeK+TLaDYtIb553hXN3WHttXLMVnFx+VvrMfD1+aC6?=
+ =?us-ascii?Q?os+I3dEpzoWVBlwmU6z0drMpeP5YgO2G9+7sN/D9fC8xBteo3DPCpsxOds65?=
+ =?us-ascii?Q?Xrj9r2QgWLSviQuJzVhEaCauogq2pQXBfkVxil1YcfvB9bQt8q40aotGlmyM?=
+ =?us-ascii?Q?YN27UIW+UIo4+uE1yB3JG/IJ7tpxUwYGXupj5QR0WU5FJ3ZwFD3y1O4GYjCC?=
+ =?us-ascii?Q?PCjvBj5srbtObTdtl7FwEmub1rSu7s8wpqDvPv1QlxKUVQzjdo9rrKYiD8cd?=
+ =?us-ascii?Q?nDcSus1/+uGgYRe2fLcsOeblBEf2blzuJUdwV50/Bi0xUSMbUg2UqlGjpZoq?=
+ =?us-ascii?Q?mLmCahUgrg5YUJBCr+U05QxaQBbawPbzTDrU0dejYtEC1+ySYQFyf6pxMhyM?=
+ =?us-ascii?Q?iZdwLoS9RxBBVMADCIl/uBh1eatJ6iDTEFnVbIguaN1njuFSHkIaIYcT/0cl?=
+ =?us-ascii?Q?QCU9yphQSJcRDyfOCJY4EKRrQVV0qzfeSvCCEztNnOG7Wtiu7yVAfHaGw9ih?=
+ =?us-ascii?Q?GKlPSUwcWDURUE5mQCZskwM7FQbe/xDNxWT9imOqrfzayKVn6voYWLuqgrd9?=
+ =?us-ascii?Q?cpPz1jFXRqdZRCbpVuwk57IkNLS72kJR0VetxbSeR7wXbopq92RTH7DjtPz2?=
+ =?us-ascii?Q?wkfRBFIADcosOvsZS/NLZwZE0SqvtXsAJSEbqkVwxfVz/CQVIlbRhfnfO0vm?=
+ =?us-ascii?Q?jSPaKgGn6kTPqsGxcKYSzjupgZvvIUwMMj26ghyJJLU2MGXiBVHu9fkytaTQ?=
+ =?us-ascii?Q?lyPa18HK+9eYiDjF4q3/Cdn4uNX8eIavYrels/hA2xPqNkJEZ4nBAiAsHxVl?=
+ =?us-ascii?Q?WSxaHavekV8QwspziGRhKxIpWfIQmVTHiShw9ngw0dsAyd5O7VLlPdrVtfqR?=
+ =?us-ascii?Q?yr1ff4qmtqB7mXS9xMKIqsLQp1NRRj3AmIjFpLfh3b761vJFndYpTUYlErEH?=
+ =?us-ascii?Q?0i3CMKwPqW27RvvgWayPE6QLYCpLbZEgZUJc2bU+fKbLz9Rl766AU1lYz3/1?=
+ =?us-ascii?Q?cVSIKZ9x5iy12i5tA9GKfG6+6LNR3ZkV2KoFqqZje/4VS8CvADWytTjeEpMt?=
+ =?us-ascii?Q?F3B4XnNCi3Mq9bCpKSSQOjpUCKGWyHautSgDGPt9y48DinPf1fzCTOOev9ue?=
+ =?us-ascii?Q?d4TZglL3Uyc2jlxvo7tW/9yGhN/d5KEfWlTO1O1ai98Tr40/W3ZX7V+efR3i?=
+ =?us-ascii?Q?K54uX7O1Wjc0NR2WYmIIPE726wFpEnjFOB0g2moCe7rDsozIhVcdx3gIJduq?=
+ =?us-ascii?Q?et1KdMFat1erpAayU3WvTJHPl15F3f2s9PrC6p9bH7tp?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PUZP153MB0749.APCP153.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2f49125-bc39-4d06-0b38-08db2f4d5a0f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2023 05:29:07.2570
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f0fc65f-ae04-4389-d3cf-08db2f4ebb02
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2023 05:38:59.4122
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Dbb7u5VSrb9CoHAofQTZdSjrrQwNzeHnCGuaELaJyQjiK30LHHDKqPMPOcz3qyxWVgWBdrVohnBa8Gd9UYHcCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEZP153MB0648
+X-MS-Exchange-CrossTenant-userprincipalname: YBzsgqGaYvfpVL4v7+1C8vHfoOcnF4RnzEo4Ks+TiHbju344NljcRYgskkSAx4JRTPVOHIcr57xuJIe9nPtW+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3358
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
@@ -138,154 +140,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> From: Saurabh Singh Sengar <ssengar@microsoft.com>
+> Sent: Monday, March 27, 2023 10:29 PM
+> > ...
+> > ---
 
+Please note this special line "---".=20
+Anything after the special line and before the line "diff --git" is discard=
+ed
+automaticaly by 'git' and 'patch'.=20
 
-> -----Original Message-----
-> From: Dexuan Cui <decui@microsoft.com>
-> Sent: Tuesday, March 28, 2023 10:21 AM
-> To: bhelgaas@google.com; davem@davemloft.net; Dexuan Cui
-> <decui@microsoft.com>; edumazet@google.com; Haiyang Zhang
-> <haiyangz@microsoft.com>; Jake Oshins <jakeo@microsoft.com>;
-> kuba@kernel.org; kw@linux.com; KY Srinivasan <kys@microsoft.com>;
-> leon@kernel.org; linux-pci@vger.kernel.org; lpieralisi@kernel.org; Michae=
-l
-> Kelley (LINUX) <mikelley@microsoft.com>; pabeni@redhat.com;
-> robh@kernel.org; saeedm@nvidia.com; wei.liu@kernel.org; Long Li
-> <longli@microsoft.com>; boqun.feng@gmail.com
-> Cc: linux-hyperv@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
-> rdma@vger.kernel.org; netdev@vger.kernel.org
-> Subject: [EXTERNAL] [PATCH 1/6] PCI: hv: fix a race condition bug in
-> hv_pci_query_relations()
+> >  drivers/pci/controller/pci-hyperv.c | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> >
+> > @@ -3635,6 +3641,8 @@ static int hv_pci_probe(struct hv_device *hdev,
+> >
+> >  retry:
+> >  	ret =3D hv_pci_query_relations(hdev);
+> > +	printk("hv_pci_query_relations() exited\n");
 >=20
-> Fix the longstanding race between hv_pci_query_relations() and
-> survey_child_resources() by flushing the workqueue before we exit from
-> hv_pci_query_relations().
->=20
-> Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsof=
-t
-> Hyper-V VMs")
-> Signed-off-by: Dexuan Cui <decui@microsoft.com>
->=20
-> ---
->  drivers/pci/controller/pci-hyperv.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->=20
-> With the below debug code:
->=20
-> @@ -2103,6 +2103,8 @@ static void survey_child_resources(struct
-> hv_pcibus_device *hbus)
->  	}
->=20
->  	spin_unlock_irqrestore(&hbus->device_list_lock, flags);
-> +	ssleep(15);
-> +	printk("%s: completing %px\n", __func__, event);
->  	complete(event);
->  }
->=20
-> @@ -3305,8 +3307,12 @@ static int hv_pci_query_relations(struct hv_device
-> *hdev)
->=20
->  	ret =3D vmbus_sendpacket(hdev->channel, &message, sizeof(message),
->  			       0, VM_PKT_DATA_INBAND, 0);
-> -	if (!ret)
-> +	if (!ret) {
-> +		ssleep(10); // unassign the PCI device on the host during the
-> 10s
->  		ret =3D wait_for_response(hdev, &comp);
-> +		printk("%s: comp=3D%px is becoming invalid! ret=3D%d\n",
-> +			__func__, &comp, ret);
-> +	}
->=20
->  	return ret;
->  }
-> @@ -3635,6 +3641,8 @@ static int hv_pci_probe(struct hv_device *hdev,
->=20
->  retry:
->  	ret =3D hv_pci_query_relations(hdev);
-> +	printk("hv_pci_query_relations() exited\n");
+> Can we use pr_* or the appropriate KERN_<LEVEL> in all the printk(s).
 
-Can we use pr_* or the appropriate KERN_<LEVEL> in all the printk(s).
-
-> +
->  	if (ret)
->  		goto free_irq_domain;
->=20
-> I'm able to repro the below hang issue:
->=20
-> [   74.544744] hv_pci b92a0085-468b-407a-a88a-d33fac8edc75: PCI VMBus
-> probing: Using version 0x10004
-> [   76.886944] hv_netvsc 818fe754-b912-4445-af51-1f584812e3c9 eth0: VF sl=
-ot
-> 1 removed
-> [   84.788266] hv_pci b92a0085-468b-407a-a88a-d33fac8edc75: The device is
-> gone.
-> [   84.792586] hv_pci_query_relations: comp=3Dffffa7504012fb58 is becomin=
-g
-> invalid! ret=3D-19
-> [   84.797505] hv_pci_query_relations() exited
-> [   89.652268] survey_child_resources: completing ffffa7504012fb58
-> [  150.392242] rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-> [  150.398447] rcu:     15-...0: (2 ticks this GP)
-> idle=3D867c/1/0x4000000000000000 softirq=3D947/947 fqs=3D5234
-> [  150.405851] rcu:     (detected by 14, t=3D15004 jiffies, g=3D2553, q=
-=3D4833
-> ncpus=3D16)
-> [  150.410870] Sending NMI from CPU 14 to CPUs 15:
-> [  150.414836] NMI backtrace for cpu 15
-> [  150.414840] CPU: 15 PID: 10 Comm: kworker/u32:0 Tainted: G        W   =
-E
-> 6.3.0-rc3-decui-dirty #34
-> ...
-> [  150.414849] Workqueue: hv_pci_468b pci_devices_present_work
-> [pci_hyperv] [  150.414866] RIP:
-> 0010:__pv_queued_spin_lock_slowpath+0x10f/0x3c0
-> ...
-> [  150.414905] Call Trace:
-> [  150.414907]  <TASK>
-> [  150.414911]  _raw_spin_lock_irqsave+0x40/0x50 [  150.414917]
-> complete+0x1d/0x60 [  150.414924]  pci_devices_present_work+0x5dd/0x680
-> [pci_hyperv] [  150.414946]  process_one_work+0x21f/0x430 [  150.414952]
-> worker_thread+0x4a/0x3c0
->=20
-> With this patch, the hang issue goes away:
->=20
-> [  186.143612] hv_pci b92a0085-468b-407a-a88a-d33fac8edc75: The device is
-> gone.
-> [  186.148034] hv_pci_query_relations: comp=3Dffffa7cfd0aa3b50 is becomin=
-g
-> invalid! ret=3D-19 [  191.263611] survey_child_resources: completing
-> ffffa7cfd0aa3b50 [  191.267732] hv_pci_query_relations() exited
->=20
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller=
-/pci-
-> hyperv.c
-> index f33370b75628..b82c7cde19e6 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -3308,6 +3308,19 @@ static int hv_pci_query_relations(struct hv_device
-> *hdev)
->  	if (!ret)
->  		ret =3D wait_for_response(hdev, &comp);
->=20
-> +	/*
-> +	 * In the case of fast device addition/removal, it's possible that
-> +	 * vmbus_sendpacket() or wait_for_response() returns -ENODEV but
-> we
-> +	 * already got a PCI_BUS_RELATIONS* message from the host and the
-> +	 * channel callback already scheduled a work to hbus->wq, which can
-> be
-> +	 * running survey_child_resources() -> complete(&hbus-
-> >survey_event),
-> +	 * even after hv_pci_query_relations() exits and the stack variable
-> +	 * 'comp' is no longer valid. This can cause a strange hang issue
-> +	 * or sometimes a page fault. Flush hbus->wq before we exit from
-> +	 * hv_pci_query_relations() to avoid the issues.
-> +	 */
-> +	flush_workqueue(hbus->wq);
-> +
->  	return ret;
->  }
->=20
-> --
-> 2.25.1
-
+This is not part of the real patch :-)
+I just thought the debug code can help understand the issues
+resolved by the patches.
+I'll remove the debug code to avoid confusion if I need to post v2.
