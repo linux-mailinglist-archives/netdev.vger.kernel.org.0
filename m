@@ -2,106 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 621756CC086
-	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 15:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702BD6CC099
+	for <lists+netdev@lfdr.de>; Tue, 28 Mar 2023 15:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232557AbjC1NVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 09:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        id S232521AbjC1NX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 09:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232616AbjC1NVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 09:21:19 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C98A5C6;
-        Tue, 28 Mar 2023 06:21:18 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0B4355C0217;
-        Tue, 28 Mar 2023 09:21:18 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 28 Mar 2023 09:21:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1680009678; x=1680096078; bh=JS
-        r0mrDFOHDXgzkPvPPgOx/WHcneMZ3MuklnDTjY+Wg=; b=Tf9WxvqQLV0U61wfw9
-        C6+IJhMfyBypZeTVOqdrqRRGWff7da677vQIYG/QGjdacDL7iSqRqKbYyE/5NM75
-        d/cGNYjBooy/VOSQ2z3g/Dc/kT/UhLRrdU0hYJ2jwLEBR4qxuiQ2zkZkSphiclv5
-        TTahJRJ/LVHB377RrAPxcf7aGo4nv2BkS7VumKdQaVkds+huhCK5wQLaSOLQX8wP
-        yoQHfrGV07/YmFt0fEtK/BxZhGiJLNBsxY1ZOLTG3O7AYZt7wO9ucds7fkLHwvzZ
-        L+Iibzb8sOMg6Q7A6MGMS/1AbC0jMhDGJ2Udq4hg9h//tT1OYi7B8/5TMK61x2sX
-        xyGA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1680009678; x=1680096078; bh=JSr0mrDFOHDXg
-        zkPvPPgOx/WHcneMZ3MuklnDTjY+Wg=; b=fRNGwLbCfBeTf5h3FxwslnS55w5cE
-        FW+DY9wiP1pJRRNOnArtdjokogu1/wmgXvxp4xHDkto5C4dfTDRu1JQ0Hbw+GqmB
-        4mNiowJKn6TBalpwc/EpaNwDBv66XnHBw03Nlln43Pp291akKQlpfGrO+FtDCOGX
-        fZtroeg2Cz0K4WWRQ/fD0pZO/WebxN7X1S0MXbzsXwzW6rdrcox1OIgFbgryrDYm
-        j55iZSucnV0MVmtlsp7eUiV9X7Kau5UVTcnmqvahXFIJLOGvtQw6Do2lvbErbbUT
-        Ag5BXiT/35IDTCw3bz++MsxsHV72+N7W4W26fMAlQsyPUbhq/r0gOwnow==
-X-ME-Sender: <xms:zekiZAuROTEWqsI9E6Iu7QB3440PCiR2D74n3j1nG1mrlJ1Q4JNbSA>
-    <xme:zekiZNe_7DXZAIokYJ9BV7XPTAWtzeOYgbLiL65tXvfA0yMsda-NVn1Ab7DYQWgHf
-    uNrazRga0TOuA>
-X-ME-Received: <xmr:zekiZLwwve2pqz16v2IjPZ1ax2mWmsNroRivMqHZwAjsmS0a8WaWnmP_acW7PwcJAbWllbe2pw8gl75gCoMmoX8R4RmWvMlPkOh4cw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdehgedgiedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepgeehue
-    ehgfdtledutdelkeefgeejteegieekheefudeiffdvudeffeelvedttddvnecuffhomhgr
-    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
-X-ME-Proxy: <xmx:zekiZDMUim3X7vXkJWx7xueTWaNLrR818fjcKiSZndscplRgftxFyg>
-    <xmx:zekiZA8wOMdSftbSmQrIm5c3XgEA_40Z3QB2MyZ1BSXGp6UxRhCXEA>
-    <xmx:zekiZLWM1B5ggDxesW5T4r816CGQ-0hUd9Wy9nx_mKmZvO5keiJcXg>
-    <xmx:zukiZANvZmMW3U6X3tUqIwE4rPYL2Ar_Pdl5M5wcnaCz_VygNKcrwg>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 28 Mar 2023 09:21:17 -0400 (EDT)
-Date:   Tue, 28 Mar 2023 15:21:14 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Dragos-Marian Panait <dragos.panait@windriver.com>
-Cc:     stable@vger.kernel.org, George Kennedy <george.kennedy@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230155AbjC1NXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 09:23:54 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D83F7DB3;
+        Tue, 28 Mar 2023 06:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=aHmFILwMVGQQJcPzLZQGMuTJzK2MYr3DqFR1hRipmhg=; b=AxqH/FeMM8p70qAoeFrfoapGW7
+        ApO1GC73ZDvUVw+qAKtGWeafwdHTVI5kVg0MsVbyYpuGaRlOLoIcVt5djKrVns1Xn2j12b6AWz2Xx
+        p1lP/bDnJzktas+5aLFZSc125/Pqro3WzfAQxIWJMoAI2blp2pJVWpg2vnvpvAxWnTvaihXBxNhsU
+        XYv4b5djHkU3KtyipgXk8JDoMD+EgWURTbbSJAGPvb5d93qKjd1Ebo/EQsbYCnY6wxraHHIE9KOiM
+        Z/BBCersucJNyNbYo4du4Kj6TnLcS3uAyWolmJtUT3wYwIsEVC0E8IOldUlNhCf4MALd4/iXG9iI8
+        nb+j+Ysg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48388)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ph9Ie-0006Ii-MJ; Tue, 28 Mar 2023 14:23:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ph9Ib-0006VO-At; Tue, 28 Mar 2023 14:23:41 +0100
+Date:   Tue, 28 Mar 2023 14:23:41 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5.4 0/1] tun: avoid double free in tun_free_netdev
-Message-ID: <ZCLpysWGJo_4-iEK@kroah.com>
-References: <20230328124628.1645138-1-dragos.panait@windriver.com>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
+ node for default settings
+Message-ID: <ZCLqXRKHh+VjCg8v@shell.armlinux.org.uk>
+References: <ZBrtqPW29NnxVoEc@shell.armlinux.org.uk>
+ <E1pex8f-00Dvo9-KT@rmk-PC.armlinux.org.uk>
+ <ZB24fDEqwx53Rthm@kuha.fi.intel.com>
+ <ZB3YGWTWLYyecgw7@shell.armlinux.org.uk>
+ <ZCFvtuyelA+WoeqK@kuha.fi.intel.com>
+ <ZCF2BLvGoaD/RGCS@shell.armlinux.org.uk>
+ <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
+ <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
+ <ZCG6D7KV/0W0FUoI@shell.armlinux.org.uk>
+ <ZCLZFA964zu/otQJ@kuha.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230328124628.1645138-1-dragos.panait@windriver.com>
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <ZCLZFA964zu/otQJ@kuha.fi.intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 03:46:27PM +0300, Dragos-Marian Panait wrote:
-> The following commit is needed to fix CVE-2022-4744:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=158b515f703e75e7d68289bf4d98c664e1d632df
-> 
-> George Kennedy (1):
->   tun: avoid double free in tun_free_netdev
-> 
->  drivers/net/tun.c | 109 +++++++++++++++++++++++++---------------------
->  1 file changed, 59 insertions(+), 50 deletions(-)
-> 
-> 
-> base-commit: 6849d8c4a61a93bb3abf2f65c84ec1ebfa9a9fb6
-> -- 
-> 2.39.1
-> 
-Thanks, now queued up.
+On Tue, Mar 28, 2023 at 03:09:56PM +0300, Heikki Krogerus wrote:
+> The problem is that the function you are proposing will be exploited
+> silently - people will use NULL as the parent without anybody
+> noticing. Everything will work for a while, because everybody will
+> first only have a single device for that driver. But as time goes by
+> and new hardware appears, suddenly there are multiple devices for
+> those drivers, and the conflict start to appear.
 
-greg k-h
+So, an easy solution would be to reject a call to
+fwnode_create_named_software_node() when parent is NULL, thereby
+preventing named nodes at the root level.
+
+> At that point the changes that added the function call will have
+> trickled down to the stable trees, so the distros are affected. Now we
+> are no longer talking about a simple cleanup that fixes the issue. In
+> the unlikely, but possible case, this will turn into ABI problem if
+
+There is no such thing as stable APIs for internal kernel interfaces.
+
+Documentation/process/stable-api-nonsense.rst
+
+> As you pointed out, this kind of risks we have to live with kbojects,
+> struct device stuff and many others, but the thing is, with the
+> software node and device property APIs right now we don't. So the fact
+> that a risk exists in one place just isn't justification to accept the
+> same risk absolutely everywhere.
+
+Meanwhile, firmware descriptions explicitly permit looking up nodes by
+their names, but here we are, with the software node maintainers
+basically stating that they don't wish to support creating software
+nodes with explicit names.
+
+> Russell, if you have some good arguments for accepting your proposal,
+> I assure you I will agree with you, but so far all you have given are
+> attacks on a sketch details and statements like that "I think you're
+> making a mountain out of a mole". Those just are not good enough.
+
+Basically, I think you are outright wrong for all the reasons I have
+given in all my emails on this subject.
+
+Yes, I accept there is a *slight* risk of abuse, but I see it as no
+different from the risk from incorrect usage of any other kernel
+internal interface. Therefore I just do not accept your argument
+that we should not have this function, and I do not accept your
+reasoning.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
