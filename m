@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B1F6CF63E
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 00:17:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F4D6CF63F
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 00:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230302AbjC2WQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 18:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
+        id S230309AbjC2WRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 18:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjC2WQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 18:16:58 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7264ED5
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 15:16:57 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id e23-20020a25e717000000b00b66ab374ba1so16974308ybh.22
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 15:16:57 -0700 (PDT)
+        with ESMTP id S229694AbjC2WQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 18:16:59 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AE34EEA
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 15:16:59 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id ie7-20020a17090b400700b0023f06808981so4591713pjb.8
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 15:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680128216;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=DyxIIff8enn78/pNtAopvsqeiDyCq6YphL15U+xOR4Q=;
-        b=gKHqKLOKAEMsJfW4hrrRwWVBezoc7NUP5Z8erU7YhXGWa79ek9A9BiYuk6BO8s1FzP
-         ZGX0Asoo2ZwppVpetC5RU7IP5ony09dBmnnUuqIoJPNwbOaJ8ZvLlmtLq/vBGNWLYUT9
-         c3+8IRiXatyH4MACAA9IH7avNk9XgOkMNvjsRkSK6PvW/XG92ehHDjyl0xt0QxjdTbBN
-         JmCuL2ZzNaua9LxqTF2r6J72ga7Ra9Q7adIu6X1bRbDuSDI6hJ/JKTbCOTZCKNMEitrM
-         1vxuM728A5/3bEvJXQIsptmiHSMhJDnhyE/eO9GDjftfcI4Kab88F0i1BS4QSvK79tgG
-         WcUw==
+        d=google.com; s=20210112; t=1680128218;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=jBISv61FN093xJ06J7nlRTFrBK3zOfMadg13PK22rwE=;
+        b=CPpujeZ+ESlHcyT0xciQOXzvE5gSuhzvjfhxlPmvs5F45WscW5sqryC8GqMJRpXJrC
+         2p0RG9BbFRP4WgUO6pd+xeCUtrbZyP9Rqie4eFEvZ7fPWtdU+QxLG57EVVuomnRLA5ux
+         O6AYmYVBGmYqB0o1fJqzlQIftmBJta3EngaRg7+3LLvZqD/m0ZesTFhJOZPeJplxJVpz
+         J+2l4EH4SK/q5qZiNLvLfYKDDpR10ZcYPjJlYvv5TUkUGvItLpTAhGoHHkUukKR2Z6nb
+         vllDtr3fw4zvtbCBamdITME14rEHqnYKA9FZ3l8Q2oghl2+kW5mQmpcHn3mPVPyKl7Mu
+         QBTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680128216;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DyxIIff8enn78/pNtAopvsqeiDyCq6YphL15U+xOR4Q=;
-        b=mfmXGhalpiQR43DI/Cw5Hg6K7uiMwPGzjEx4BVHPWQPPwHSjfktLwb8szJ7/jfHgGh
-         +sY2H1Z/oVFRSvTxfCzQ43ZAm1DuGvUz8m/oswcg9NR9EnoeL+N0CTmDvi0922nMBrCH
-         Cc6S3JyMoRmsM+qFywp6pazeKtZ4VWIRzSuXfPD82a1bX33XtQ9eNTwod6wpa03gQz5l
-         +zWnGW1UOXt79jJyI8NpjvWlGhAXRVHRMxrziowocmYitT1wibpnbsV8ueYbvpDqE8fH
-         szdA3sKO8z0bsHpOBTXnDeHGCP2qqmwq1QdFWWizu9vawNAjnoemsoYCDIXdpRD5MGgV
-         A/5A==
-X-Gm-Message-State: AAQBX9fqGESbAAmDEDBquzzG1szVAX9p9ycKjrgQqd+08N4s14aD9gc4
-        fnX5MUshbrmeuYsg77yaSzMh4AqiaktFvPp6DVmfkEmgQrnA/ZK9djJp2cQD1zRpVXDZz91cD8G
-        ECtEfvYHPfq57dNfKOveyCJatAi3qwhyhNhgnj+ZnDHTZLsa/QJkTrA==
-X-Google-Smtp-Source: AKy350bdfXJrLetDQeVgQo3zyf8Z6K4/5tQtggPdNCoyIRfv99g2KewlMgssxkIV7ASRSVpYQ3+qgQU=
+        d=1e100.net; s=20210112; t=1680128218;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jBISv61FN093xJ06J7nlRTFrBK3zOfMadg13PK22rwE=;
+        b=Ci14suY76HJejoBZGEKUfmnyU0zJtZUDDfP/BLusOGd8ZMZDi/hjMRWhcHvRKKb3Bd
+         bK3OsahZRkPYtIuMP+cttHCBhXCk3c8ySBjXye9oaInaXqdARfqDyvhXBBJyPj+0FNEM
+         1CVkqjg9itG0d4JRZ38QgPH86XTDHxw0fO+JMwq0UkAgYBhPa+q/1AJloN5OFvOUYDsD
+         mLTQXlzmSF4roXJKSiafYh0qSq7sktxud3h2ZfXWmNPWfH4jgJ9PhzLa7ZgWBz+PkPqQ
+         CQ8qPahdHMcGuzH16tqEW1dfR+sGRT4NZrBnt8AgexmmY16JCCENCXk2EQpn/e7pYsW5
+         SqZw==
+X-Gm-Message-State: AAQBX9c69REinnXzjYGKreapIBbC9WP9YbjMekrjrOwg4YUjrgRnc92f
+        7LD/uKCaWD/+pFQy8jsWThi5q76sm1y0+dtSaf5/srJBtFIvVnLSTK48t7ePJgyrdx0lNM5mpTS
+        RW1TvSIGdiQZcyHQ4pT7gd9Bnny7jAWeHvzcyBtvaYQvSbVoTWl8eOQ==
+X-Google-Smtp-Source: AKy350Z8QLswOC2NqJT4TMYuRhvNh6ZsgkEFtAicAr9I4vffOKXwSjDpedGAczcbi/FD5Vy6CLs2oIQ=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a05:6902:168d:b0:b78:3a15:e704 with SMTP id
- bx13-20020a056902168d00b00b783a15e704mr12894392ybb.10.1680128216687; Wed, 29
- Mar 2023 15:16:56 -0700 (PDT)
-Date:   Wed, 29 Mar 2023 15:16:51 -0700
+ (user=sdf job=sendgmr) by 2002:a17:902:da8e:b0:19d:1dfe:eac6 with SMTP id
+ j14-20020a170902da8e00b0019d1dfeeac6mr7762571plx.1.1680128218407; Wed, 29 Mar
+ 2023 15:16:58 -0700 (PDT)
+Date:   Wed, 29 Mar 2023 15:16:52 -0700
+In-Reply-To: <20230329221655.708489-1-sdf@google.com>
 Mime-Version: 1.0
+References: <20230329221655.708489-1-sdf@google.com>
 X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
-Message-ID: <20230329221655.708489-1-sdf@google.com>
-Subject: [PATCH net-next v3 0/4] tools: ynl: fill in some gaps of ethtool spec
+Message-ID: <20230329221655.708489-2-sdf@google.com>
+Subject: [PATCH net-next v3 1/4] tools: ynl: support byte-order in cli
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -66,52 +68,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I was trying to fill in the spec while exploring ethtool API for some
-related work. I don't think I'll have the patience to fill in the rest,
-so decided to share whatever I currently have.
+Used by ethtool spec.
 
-Patches 1-2 add the be16 + spec.
-Patches 3-4 implement an ethtool-like python tool to test the spec.
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/net/ynl/lib/nlspec.py |  1 +
+ tools/net/ynl/lib/ynl.py    | 35 +++++++++++++++++++++++------------
+ 2 files changed, 24 insertions(+), 12 deletions(-)
 
-Patches 3-4 are there because it felt more fun do the tool instead
-of writing the actual tests; feel free to drop it; sharing mostly
-to show that the spec is not a complete nonsense.
-
-The spec is not 100% complete, see patch 2 for what's missing.
-I was hoping to finish the stats-get message, but I'm too dump
-to implement bitmask marshaling (multi-attr).
-
-Note, this is on top of net-next plus the following patch:
-[PATCH net-next v4] tools: ynl: Add missing types to encode/decode
-
-v3:
-- reindent ethtool to 4 spaces
-- byte_order=None to keep existing callers as is
-- byte_order to SpecAttr
-
-v2:
-- be16 -> byte-order
-- remove header in ethtool, not the lib
-- NlError two spaces after
-- s/_/-/ in ethtool spec
-- add missing - for s32-array
-- remove "value: 13" hard-code for features-ntf (empty reply instead)
-- updated output of the sample run in the last patch (I was actually
-  using real ethtool, lol)
-
-Stanislav Fomichev (4):
-  tools: ynl: support byte-order in cli
-  tools: ynl: populate most of the ethtool spec
-  tools: ynl: replace print with NlError
-  tools: ynl: ethtool testing tool
-
- Documentation/netlink/specs/ethtool.yaml | 1480 ++++++++++++++++++++--
- tools/net/ynl/ethtool                    |  424 +++++++
- tools/net/ynl/lib/nlspec.py              |   10 +
- tools/net/ynl/lib/ynl.py                 |   58 +-
- 4 files changed, 1844 insertions(+), 128 deletions(-)
- create mode 100755 tools/net/ynl/ethtool
-
+diff --git a/tools/net/ynl/lib/nlspec.py b/tools/net/ynl/lib/nlspec.py
+index 06a906d74f0e..0c43022ff7e6 100644
+--- a/tools/net/ynl/lib/nlspec.py
++++ b/tools/net/ynl/lib/nlspec.py
+@@ -163,6 +163,7 @@ jsonschema = None
+         self.is_multi = yaml.get('multi-attr', False)
+         self.struct_name = yaml.get('struct')
+         self.sub_type = yaml.get('sub-type')
++        self.byte_order = yaml.get('byte-order')
+ 
+ 
+ class SpecAttrSet(SpecElement):
+diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
+index ec40918152e1..8778994d40c0 100644
+--- a/tools/net/ynl/lib/ynl.py
++++ b/tools/net/ynl/lib/ynl.py
+@@ -80,17 +80,25 @@ from .nlspec import SpecFamily
+         self.full_len = (self.payload_len + 3) & ~3
+         self.raw = raw[offset + 4:offset + self.payload_len]
+ 
++    def format_byte_order(byte_order):
++        if byte_order:
++            return ">" if byte_order == "big-endian" else "<"
++        return ""
++
+     def as_u8(self):
+         return struct.unpack("B", self.raw)[0]
+ 
+-    def as_u16(self):
+-        return struct.unpack("H", self.raw)[0]
++    def as_u16(self, byte_order=None):
++        endian = NlAttr.format_byte_order(byte_order)
++        return struct.unpack(f"{endian}H", self.raw)[0]
+ 
+-    def as_u32(self):
+-        return struct.unpack("I", self.raw)[0]
++    def as_u32(self, byte_order=None):
++        endian = NlAttr.format_byte_order(byte_order)
++        return struct.unpack(f"{endian}I", self.raw)[0]
+ 
+-    def as_u64(self):
+-        return struct.unpack("Q", self.raw)[0]
++    def as_u64(self, byte_order=None):
++        endian = NlAttr.format_byte_order(byte_order)
++        return struct.unpack(f"{endian}Q", self.raw)[0]
+ 
+     def as_strz(self):
+         return self.raw.decode('ascii')[:-1]
+@@ -365,11 +373,14 @@ genl_family_name_to_id = None
+         elif attr["type"] == 'u8':
+             attr_payload = struct.pack("B", int(value))
+         elif attr["type"] == 'u16':
+-            attr_payload = struct.pack("H", int(value))
++            endian = NlAttr.format_byte_order(attr.byte_order)
++            attr_payload = struct.pack(f"{endian}H", int(value))
+         elif attr["type"] == 'u32':
+-            attr_payload = struct.pack("I", int(value))
++            endian = NlAttr.format_byte_order(attr.byte_order)
++            attr_payload = struct.pack(f"{endian}I", int(value))
+         elif attr["type"] == 'u64':
+-            attr_payload = struct.pack("Q", int(value))
++            endian = NlAttr.format_byte_order(attr.byte_order)
++            attr_payload = struct.pack(f"{endian}Q", int(value))
+         elif attr["type"] == 'string':
+             attr_payload = str(value).encode('ascii') + b'\x00'
+         elif attr["type"] == 'binary':
+@@ -415,11 +426,11 @@ genl_family_name_to_id = None
+             elif attr_spec['type'] == 'u8':
+                 decoded = attr.as_u8()
+             elif attr_spec['type'] == 'u16':
+-                decoded = attr.as_u16()
++                decoded = attr.as_u16(attr_spec.byte_order)
+             elif attr_spec['type'] == 'u32':
+-                decoded = attr.as_u32()
++                decoded = attr.as_u32(attr_spec.byte_order)
+             elif attr_spec['type'] == 'u64':
+-                decoded = attr.as_u64()
++                decoded = attr.as_u64(attr_spec.byte_order)
+             elif attr_spec["type"] == 'string':
+                 decoded = attr.as_strz()
+             elif attr_spec["type"] == 'binary':
 -- 
 2.40.0.348.gf938b09366-goog
 
