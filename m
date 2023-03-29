@@ -2,94 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 632606CD890
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 13:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 281F16CD8C5
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 13:52:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbjC2Lg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 07:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
+        id S229536AbjC2Lwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 07:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjC2Lg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 07:36:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4580040DC;
-        Wed, 29 Mar 2023 04:36:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAFF9B822E4;
-        Wed, 29 Mar 2023 11:36:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A0DC433EF;
-        Wed, 29 Mar 2023 11:36:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680089784;
-        bh=6+vy2/hB3y49UvGdSNmTWDpBgZjjMzQaTj4iQPJPGz8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oOD1CPKf7kxcpdHrrYGQW8fDtLDNv7NU/d4CdfhU8WvDR+mzflcwhd2oAvC+ej3Yi
-         5SiV0ygTLx2KvcQ7dJTPSRtgbfZTfYqJZRH4rvdvqZ/suKLMasAi+etIg2oW5myNZu
-         gxYypg/5hBrHYR/wEeVOoEjDw7x2MhMVPFR+oOOaXJ94eg2WF2lDflW1VybIWYGWO6
-         c/VKUmAG6Q1vp/sz8HVRTAn0r/Uwf4OuS/tZ46IqeysJVWLuGJ0RG2T9LEdCv/wmWR
-         49UbXqs8a59E0kvkz7YNs5XaOOrQbNZ+TAXteqk+NEm5h78gUtN02jL3/tWRtz8ZV6
-         3hlSwN3dQVUrg==
-Date:   Wed, 29 Mar 2023 14:36:20 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, quic_bjorande@quicinc.com, mbloch@nvidia.com,
-        caleb.connolly@linaro.org, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3] net: ipa: compute DMA pool size properly
-Message-ID: <20230329113620.GO831478@unreal>
-References: <20230328162751.2861791-1-elder@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230328162751.2861791-1-elder@linaro.org>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229550AbjC2Lwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 07:52:39 -0400
+Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442BB1FE2;
+        Wed, 29 Mar 2023 04:52:34 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R261e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0Vewqdy9_1680090750;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vewqdy9_1680090750)
+          by smtp.aliyun-inc.com;
+          Wed, 29 Mar 2023 19:52:31 +0800
+Message-ID: <1680090663.603155-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [RFC PATCH 0/4] eBPF RSS through QMP support.
+Date:   Wed, 29 Mar 2023 19:51:03 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Andrew Melnychenko <andrew@daynix.com>
+Cc:     yan@daynix.com, yuri.benditovich@daynix.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        mst@redhat.com, jasowang@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20230329104546.108016-1-andrew@daynix.com>
+In-Reply-To: <20230329104546.108016-1-andrew@daynix.com>
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 11:27:51AM -0500, Alex Elder wrote:
-> In gsi_trans_pool_init_dma(), the total size of a pool of memory
-> used for DMA transactions is calculated.  However the calculation is
-> done incorrectly.
-> 
-> For 4KB pages, this total size is currently always more than one
-> page, and as a result, the calculation produces a positive (though
-> incorrect) total size.  The code still works in this case; we just
-> end up with fewer DMA pool entries than we intended.
-> 
-> Bjorn Andersson tested booting a kernel with 16KB pages, and hit a
-> null pointer derereference in sg_alloc_append_table_from_pages(),
-> descending from gsi_trans_pool_init_dma().  The cause of this was
-> that a 16KB total size was going to be allocated, and with 16KB
-> pages the order of that allocation is 0.  The total_size calculation
-> yielded 0, which eventually led to the crash.
-> 
-> Correcting the total_size calculation fixes the problem.
-> 
-> Reported-by: Bjorn Andersson <quic_bjorande@quicinc.com>
-> Tested-by: Bjorn Andersson <quic_bjorande@quicinc.com>
-> Fixes: 9dd441e4ed57 ("soc: qcom: ipa: GSI transactions")
-> Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
-> Note: This was reported via private communication.
-> v3: - Added Mark Bloch's reviewed-by tag.
-> v2: - Added Bjorn's actual name to tags.  
-> 
->  drivers/net/ipa/gsi_trans.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+Is this a patch-set of QEMU? If yes, why are the email lists all kernel mail
+list without QEMU mail list?
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Thanks.
+
+On Wed, 29 Mar 2023 13:45:41 +0300, Andrew Melnychenko <andrew@daynix.com> wrote:
+> This series of patches provides the ability to retrieve eBPF program
+> through qmp, so management application may load bpf blob with proper capabilities.
+> Now, virtio-net devices can accept eBPF programs and maps through properties
+> as external file descriptors. Access to the eBPF map is direct through mmap()
+> call, so it should not require additional capabilities to bpf* calls.
+> eBPF file descriptors can be passed to QEMU from parent process or by unix
+> socket with sendfd() qmp command.
+>
+> Overall, the basic scenario of using the helper looks like this:
+>  * Libvirt checks for ebpf_fds property.
+>  * Libvirt requests eBPF blob through QMP.
+>  * Libvirt loads blob for virtio-net.
+>  * Libvirt launches the QEMU with eBPF fds passed.
+>
+> Andrew Melnychenko (4):
+>   ebpf: Added eBPF initialization by fds and map update.
+>   virtio-net: Added property to load eBPF RSS with fds.
+>   ebpf: Added declaration/initialization routines.
+>   qmp: Added new command to retrieve eBPF blob.
+>
+>  ebpf/ebpf.c                    |  48 +++++++++++++
+>  ebpf/ebpf.h                    |  25 +++++++
+>  ebpf/ebpf_rss-stub.c           |   6 ++
+>  ebpf/ebpf_rss.c                | 124 +++++++++++++++++++++++++++------
+>  ebpf/ebpf_rss.h                |  10 +++
+>  ebpf/meson.build               |   1 +
+>  hw/net/virtio-net.c            |  77 ++++++++++++++++++--
+>  include/hw/virtio/virtio-net.h |   1 +
+>  monitor/qmp-cmds.c             |  17 +++++
+>  qapi/misc.json                 |  25 +++++++
+>  10 files changed, 307 insertions(+), 27 deletions(-)
+>  create mode 100644 ebpf/ebpf.c
+>  create mode 100644 ebpf/ebpf.h
+>
+> --
+> 2.39.1
+>
