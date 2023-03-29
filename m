@@ -2,192 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C3496CED45
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213066CEE32
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbjC2PsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 11:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34940 "EHLO
+        id S231126AbjC2P6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 11:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbjC2PsJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:48:09 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59343527A
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:48:08 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id v5so5743632ilj.4
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680104887;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dGG8hCPldEDckf8vbKJvs41CjDb5Mp+draGOiHbiKCs=;
-        b=aJrFgaVTDFsgYXDS9AFsj7cFe9ZX5WnxsQafdk8y8C405aOxDF/toNKUbY3PNboC+m
-         /Vr8VSOXl//1Wpm5HkN3JEmLjiEZYZVCM0f7RZJavbAqetu+jfVK2YOvsRg9VrWZYaD0
-         aVXzPvR8fjAXOz4ENqbPyfmIi+ZCDAznLp0Ob/mSjqy/2NC3La1ILQVPaawDXP/5TWBH
-         Xji5yRiBIfrOImxlZcJobnSnDA4x8feyo38yqn+Hxs2+Z34fV+YUU1fod2foaBwd1t97
-         H2WE8BTwY8BrGXCVvL+BH4+F+WuqTL9QTO4T9GoDf5z/CZGXSUkkNzW8QA6t2Dg8VQlo
-         gwgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680104887;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dGG8hCPldEDckf8vbKJvs41CjDb5Mp+draGOiHbiKCs=;
-        b=LAdViMkZ4G+oynti+cMyW+plK+6kr3Gr304YdaHkBsfj78PottO7senF/7rcndOi08
-         XsJHeQzkiIQPIZl+RnZWVqGjJTrPO79FQzOjAIiwVUGFKDK+r2m2N5Kur5V2BFHq8s4E
-         uXuB82gSMLcped74JCOMHoCvCKH7o6v3HVe4+IxXLyeGJhr72DT7vombNAhmEvCi9U1S
-         M4bv5TfVcg2/SkfvxWFY3lGVzfhsQUU7L8zN+d9SpSbXPDv7WJcujIm6DBAGqxrxCYkG
-         9WRYN0s1ymsCl/y6rHGcsGGjsDicTNN/ohNiByf964mN2fWUxnrsxCJIwaSR2ETvoumK
-         QwYA==
-X-Gm-Message-State: AAQBX9ceEqwGImF6Xy6jYj4y7SmhrKhoX4fMBq78mXVCv+nhsjVuuX1q
-        CKsixkcABCiYcda2zoH4Qv6oOf0iXEJEB6m3TPp0uw==
-X-Google-Smtp-Source: AKy350YQzofJeW4oxCuHsbA3tJDfb2WeRUr8kwy20ZlR6cM3r0AyvipmTH8cWwijzWIqgWQPX745icLpsTxGa9OGmfg=
-X-Received: by 2002:a05:6e02:1bef:b0:322:fe4d:d60 with SMTP id
- y15-20020a056e021bef00b00322fe4d0d60mr10757052ilv.2.1680104887536; Wed, 29
- Mar 2023 08:48:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230328235021.1048163-1-edumazet@google.com> <20230328235021.1048163-5-edumazet@google.com>
- <fa860d02-0310-2666-1043-6909dc68ea01@huawei.com>
-In-Reply-To: <fa860d02-0310-2666-1043-6909dc68ea01@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 29 Mar 2023 17:47:56 +0200
-Message-ID: <CANn89iLmugenUSDAQT9ryHTG9tRuKUfYgc8OqPMQwVv-1-ajNg@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/4] net: optimize ____napi_schedule() to avoid
- extra NET_RX_SOFTIRQ
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230034AbjC2P6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:58:36 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06CF5FDC;
+        Wed, 29 Mar 2023 08:58:03 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1phYAh-0003Jq-1t;
+        Wed, 29 Mar 2023 17:57:12 +0200
+Date:   Wed, 29 Mar 2023 16:57:04 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jason Xing <kernelxing@tencent.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+Subject: [RFC PATCH net-next v3 00/15] net: dsa: add support for MT7988
+Message-ID: <cover.1680105013.git.daniel@makrotopia.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 2:47=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.co=
-m> wrote:
->
-> On 2023/3/29 7:50, Eric Dumazet wrote:
-> > ____napi_schedule() adds a napi into current cpu softnet_data poll_list=
-,
-> > then raises NET_RX_SOFTIRQ to make sure net_rx_action() will process it=
-.
-> >
-> > Idea of this patch is to not raise NET_RX_SOFTIRQ when being called ind=
-irectly
-> > from net_rx_action(), because we can process poll_list from this point,
-> > without going to full softirq loop.
-> >
-> > This needs a change in net_rx_action() to make sure we restart
-> > its main loop if sd->poll_list was updated without NET_RX_SOFTIRQ
-> > being raised.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: Jason Xing <kernelxing@tencent.com>
-> > ---
-> >  net/core/dev.c | 22 ++++++++++++++++++----
-> >  1 file changed, 18 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index f34ce93f2f02e7ec71f5e84d449fa99b7a882f0c..0c4b21291348d4558f036fb=
-05842dab023f65dc3 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -4360,7 +4360,11 @@ static inline void ____napi_schedule(struct soft=
-net_data *sd,
-> >       }
-> >
-> >       list_add_tail(&napi->poll_list, &sd->poll_list);
-> > -     __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> > +     /* If not called from net_rx_action()
-> > +      * we have to raise NET_RX_SOFTIRQ.
-> > +      */
-> > +     if (!sd->in_net_rx_action)
->
-> It seems sd->in_net_rx_action may be read/writen by different CPUs at the=
- same
-> time, does it need something like READ_ONCE()/WRITE_ONCE() to access
-> sd->in_net_rx_action?
+The MediaTek MT7988 SoC comes with a built-in switch very similar to
+previous MT7530 and MT7531. However, the switch address space is mapped
+into the SoCs memory space rather than being connected via MDIO.
+Using MMIO simplifies register access and also removes the need for a bus
+lock, and for that reason also makes interrupt handling more light-weight.
 
-You probably missed the 2nd patch, explaining the in_net_rx_action is
-only read and written by the current (owning the percpu var) cpu.
+Note that this is different from previous SoCs like MT7621 and MT7623N
+which also came with an integrated MT7530-like switch which yet had to be
+accessed via MDIO.
 
-Have you found a caller that is not providing to ____napi_schedule( sd
-=3D this_cpu_ptr(&softnet_data)) ?
+Split-off the part of the driver registering an MDIO driver, then add
+another module acting as MMIO/platform driver.
 
+Changes since v2:
+ * split into many small commits to ease review
+ * introduce helper functions to reduce code duplication
+ * use helpers for locking to make lock-skipping easier and less ugly
+   to implement.
+ * add dt-bindings for mediatek,mt7988-switch
 
+Changes since initial RFC:
+ * use regmap for register access and move register access to bus-
+   specific driver
+ * move initialization of MT7531 SGMII PCS to MDIO driver
 
->
-> > +             __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> >  }
-> >
-> >  #ifdef CONFIG_RPS
-> > @@ -6648,6 +6652,7 @@ static __latent_entropy void net_rx_action(struct=
- softirq_action *h)
-> >       LIST_HEAD(list);
-> >       LIST_HEAD(repoll);
-> >
-> > +start:
-> >       sd->in_net_rx_action =3D true;
-> >       local_irq_disable();
-> >       list_splice_init(&sd->poll_list, &list);
-> > @@ -6659,9 +6664,18 @@ static __latent_entropy void net_rx_action(struc=
-t softirq_action *h)
-> >               skb_defer_free_flush(sd);
-> >
-> >               if (list_empty(&list)) {
-> > -                     sd->in_net_rx_action =3D false;
-> > -                     if (!sd_has_rps_ipi_waiting(sd) && list_empty(&re=
-poll))
-> > -                             goto end;
-> > +                     if (list_empty(&repoll)) {
-> > +                             sd->in_net_rx_action =3D false;
-> > +                             barrier();
->
-> Do we need a stronger barrier to prevent out-of-order execution
-> from cpu?
+Daniel Golle (15):
+  net: dsa: mt7530: refactor SGMII PCS creation
+  net: dsa: mt7530: use unlocked regmap accessors
+  net: dsa: mt7530: use regmap to access switch register space
+  net: dsa: mt7530: move SGMII PCS creation to mt7530_probe function
+  net: dsa: mt7530: introduce mutex helpers
+  net: dsa: mt7530: move p5_intf_modes() function to mt7530.c
+  net: dsa: mt7530: introduce mt7530_probe_common helper function
+  net: dsa: mt7530: introduce mt7530_remove_common helper function
+  net: dsa: mt7530: split-off common parts from mt7531_setup
+  net: dsa: mt7530: introduce separate MDIO driver
+  net: dsa: mt7530: skip locking if MDIO bus isn't present
+  net: dsa: mt7530: add support for single-chip reset line
+  net: dsa: mt7530: add support for 10G link modes for CPU port
+  net: dsa: mt7530: introduce driver for MT7988 built-in switch
+  dt-bindings: net: dsa: mediatek,mt7530: add mediatek,mt7988-switch
 
-We do not need more than barrier() to make sure local cpu wont move this
-write after the following code.
-
-It should not, even without the barrier(), because of the way
-list_empty() is coded,
-but a barrier() makes things a bit more explicit.
-
-> Do we need a barrier between list_add_tail() and sd->in_net_rx_action
-> checking in ____napi_schedule() to pair with the above barrier?
-
-I do not think so.
-
-While in ____napi_schedule(), sd->in_net_rx_action is stable
-because we run with hardware IRQ masked.
-
-Thanks.
+ .../bindings/net/dsa/mediatek,mt7530.yaml     |  26 +-
+ MAINTAINERS                                   |   3 +
+ drivers/net/dsa/Kconfig                       |  28 +-
+ drivers/net/dsa/Makefile                      |   4 +-
+ drivers/net/dsa/mt7530-mdio.c                 | 242 ++++++++
+ drivers/net/dsa/mt7530-mmio.c                 |  96 ++++
+ drivers/net/dsa/mt7530.c                      | 519 +++++++++---------
+ drivers/net/dsa/mt7530.h                      |  38 +-
+ 8 files changed, 653 insertions(+), 303 deletions(-)
+ create mode 100644 drivers/net/dsa/mt7530-mdio.c
+ create mode 100644 drivers/net/dsa/mt7530-mmio.c
 
 
+base-commit: 86e2eca4ddedc07d639c44c990e1c220cac3741e
+-- 
+2.39.2
 
->
-> > +                             /* We need to check if ____napi_schedule(=
-)
-> > +                              * had refilled poll_list while
-> > +                              * sd->in_net_rx_action was true.
-> > +                              */
-> > +                             if (!list_empty(&sd->poll_list))
-> > +                                     goto start;
-> > +                             if (!sd_has_rps_ipi_waiting(sd))
-> > +                                     goto end;
-> > +                     }
-> >                       break;
-> >               }
-> >
-> >
