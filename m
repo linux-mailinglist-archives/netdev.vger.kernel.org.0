@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F226CF0B7
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB8906CF0B3
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231189AbjC2RKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 13:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        id S231578AbjC2RKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 13:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231458AbjC2RKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:10:16 -0400
+        with ESMTP id S231454AbjC2RKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:10:15 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EB25FC6;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A8165AF;
         Wed, 29 Mar 2023 10:09:30 -0700 (PDT)
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TFobCa032164;
-        Wed, 29 Mar 2023 10:09:22 -0700
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TFobCb032164;
+        Wed, 29 Mar 2023 10:09:23 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=La/ke9ZRJ7EVarRCZpDAcuhvINgB6+KJJy92FQiy70E=;
- b=KZYlTwKdKGQ0a5YUVLLABwvBgFNdi10VQrHRrK+6gpBB7XtpBCmJpsmECD193aBZ/rua
- z9MFW3r5HMU3qwOFxAkve03OtzEICAAQPMnkoV9eqLkpLQYr00cFpP3rH1tmg/I4ucZZ
- D5wD+ZBARNPO4/ST9C1Y2Pk3yFkOlVPG905IXt5YjUh0lLD4RQMX1yccmZ6zCmGpOil2
- cWbeBSW62RgDoPTK/VGupiLA+dGqm8RIgbgA8ZbspyW6CcSIUZCxDIBTEP+XGrCINLI9
- VcLF3GgGFOjH4m4qwgWDE4gO5UknfOWsZrLKkGGEoTu+hqycLuqwUy/vag55XutO1iFo 5w== 
+ bh=BlWiti7aiJ9pMybHjerR+p6XbcoliBYcRK+PVTNGv5s=;
+ b=ATnMGW4C628CKzUGKGwnLUPdcmkBCWSVeKcKZ1JxEwwroVoKxjDfzO/yjNDY22khH+2v
+ B6T74NVptB1sUdl9DH1GwIRMXNerywTF6FBc79Y5VysX4huv0paveGi6rTd2Au3wnS8O
+ 3xBkPS7zpQRvttBu9lVL7zNos+p7HFEiq+F4Q/uE673a5SsmXvqCHSfcXrUyy0CBaZXx
+ +HjTA4N7E2BkPJ+iBTFOLidGortls55kJYIZAODs1ejrjZsCLWlKUawTqwpTEDq39E/7
+ 6l8CZulbjEMjb2UL1cCzy2ITq+aJwc7hpmiDXspZcQlZdK3WUV+fHwbzwCa8bobsD46A bA== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3pmhc4a0jv-12
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3pmhc4a0jv-13
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 29 Mar 2023 10:09:22 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+        Wed, 29 Mar 2023 10:09:23 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 29 Mar
- 2023 10:07:04 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Wed, 29 Mar 2023 10:07:04 -0700
+ 2023 10:07:08 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Wed, 29 Mar 2023 10:07:08 -0700
 Received: from hyd1425.marvell.com (unknown [10.29.37.83])
-        by maili.marvell.com (Postfix) with ESMTP id D05833F7060;
-        Wed, 29 Mar 2023 10:07:01 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 73EEA3F704C;
+        Wed, 29 Mar 2023 10:07:05 -0700 (PDT)
 From:   Sai Krishna <saikrishnag@marvell.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>,
         <richardcochran@gmail.com>
-CC:     Ratheesh Kannoth <rkannoth@marvell.com>,
+CC:     Subbaraya Sundeep <sbhatta@marvell.com>,
         Sai Krishna <saikrishnag@marvell.com>
-Subject: [net PATCH 6/7] octeontx2-af: Skip PFs if not enabled
-Date:   Wed, 29 Mar 2023 22:36:18 +0530
-Message-ID: <20230329170619.183064-7-saikrishnag@marvell.com>
+Subject: [net PATCH 7/7] octeontx2-pf: Disable packet I/O for graceful exit
+Date:   Wed, 29 Mar 2023 22:36:19 +0530
+Message-ID: <20230329170619.183064-8-saikrishnag@marvell.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20230329170619.183064-1-saikrishnag@marvell.com>
 References: <20230329170619.183064-1-saikrishnag@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: ysZlWxZwBBJEWXBqpudQsVtHw5JR5E9u
-X-Proofpoint-GUID: ysZlWxZwBBJEWXBqpudQsVtHw5JR5E9u
+X-Proofpoint-ORIG-GUID: wSBnIlf5MciGRqLFY8xDQsziAqetcQ6P
+X-Proofpoint-GUID: wSBnIlf5MciGRqLFY8xDQsziAqetcQ6P
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
  definitions=2023-03-29_10,2023-03-28_02,2023-02-09_01
@@ -69,162 +69,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ratheesh Kannoth <rkannoth@marvell.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Skip mbox initialization of disabled PFs. Firmware configures PFs
-and allocate mbox resources etc. Linux should configure particular
-PFs, which ever are enabled by firmware.
+At the stage of enabling packet I/O in otx2_open, If mailbox
+timeout occurs then interface ends up in down state where as
+hardware packet I/O is enabled. Hence disable packet I/O also
+before bailing out. This patch also free the LMTST per cpu structure
+on teardown, if the lmt_info pointer is not NULL.
 
-Fixes: 9bdc47a6e328 ("octeontx2-af: Mbox communication support btw AF and it's VFs")
-Signed-off-by: Ratheesh Kannoth <rkannoth@marvell.com>
+Fixes: 1ea0166da050 ("octeontx2-pf: Fix the device state on error")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/mbox.c  |  5 ++-
- .../net/ethernet/marvell/octeontx2/af/mbox.h  |  3 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.c   | 38 ++++++++++++++++---
- 3 files changed, 39 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 11 ++++++++++-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c |  8 +++++---
+ 2 files changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.c b/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-index 2898931d5260..9690ac01f02c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-@@ -157,7 +157,7 @@ EXPORT_SYMBOL(otx2_mbox_init);
-  */
- int otx2_mbox_regions_init(struct otx2_mbox *mbox, void **hwbase,
- 			   struct pci_dev *pdev, void *reg_base,
--			   int direction, int ndevs)
-+			   int direction, int ndevs, unsigned long *pf_bmap)
- {
- 	struct otx2_mbox_dev *mdev;
- 	int devid, err;
-@@ -169,6 +169,9 @@ int otx2_mbox_regions_init(struct otx2_mbox *mbox, void **hwbase,
- 	mbox->hwbase = hwbase[0];
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 179433d0a54a..52a57d2493dc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1835,13 +1835,22 @@ int otx2_open(struct net_device *netdev)
+ 		otx2_dmacflt_reinstall_flows(pf);
  
- 	for (devid = 0; devid < ndevs; devid++) {
-+		if (!test_bit(devid, pf_bmap))
-+			continue;
-+
- 		mdev = &mbox->dev[devid];
- 		mdev->mbase = hwbase[devid];
- 		mdev->hwbase = hwbase[devid];
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 0ce533848536..26636a4d7dcc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -96,9 +96,10 @@ void otx2_mbox_destroy(struct otx2_mbox *mbox);
- int otx2_mbox_init(struct otx2_mbox *mbox, void __force *hwbase,
- 		   struct pci_dev *pdev, void __force *reg_base,
- 		   int direction, int ndevs);
-+
- int otx2_mbox_regions_init(struct otx2_mbox *mbox, void __force **hwbase,
- 			   struct pci_dev *pdev, void __force *reg_base,
--			   int direction, int ndevs);
-+			   int direction, int ndevs, unsigned long *bmap);
- void otx2_mbox_msg_send(struct otx2_mbox *mbox, int devid);
- int otx2_mbox_wait_for_rsp(struct otx2_mbox *mbox, int devid);
- int otx2_mbox_busy_poll_for_rsp(struct otx2_mbox *mbox, int devid);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 8683ce57ed3f..61c658fa3f28 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -2282,7 +2282,7 @@ static inline void rvu_afvf_mbox_up_handler(struct work_struct *work)
- }
+ 	err = otx2_rxtx_enable(pf, true);
+-	if (err)
++	/* If a mbox communication error happens at this point then interface
++	 * will end up in a state such that it is in down state but hardware
++	 * mcam entries are enabled to receive the packets. Hence disable the
++	 * packet I/O.
++	 */
++	if (err == EIO)
++		goto err_disable_rxtx;
++	else if (err)
+ 		goto err_tx_stop_queues;
  
- static int rvu_get_mbox_regions(struct rvu *rvu, void **mbox_addr,
--				int num, int type)
-+				int num, int type, unsigned long *pf_bmap)
- {
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	int region;
-@@ -2294,6 +2294,9 @@ static int rvu_get_mbox_regions(struct rvu *rvu, void **mbox_addr,
- 	 */
- 	if (type == TYPE_AFVF) {
- 		for (region = 0; region < num; region++) {
-+			if (!test_bit(region, pf_bmap))
-+				continue;
-+
- 			if (hw->cap.per_pf_mbox_regs) {
- 				bar4 = rvu_read64(rvu, BLKADDR_RVUM,
- 						  RVU_AF_PFX_BAR4_ADDR(0)) +
-@@ -2315,6 +2318,9 @@ static int rvu_get_mbox_regions(struct rvu *rvu, void **mbox_addr,
- 	 * RVU_AF_PF_BAR4_ADDR register.
- 	 */
- 	for (region = 0; region < num; region++) {
-+		if (!test_bit(region, pf_bmap))
-+			continue;
-+
- 		if (hw->cap.per_pf_mbox_regs) {
- 			bar4 = rvu_read64(rvu, BLKADDR_RVUM,
- 					  RVU_AF_PFX_BAR4_ADDR(region));
-@@ -2343,8 +2349,27 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 	int err = -EINVAL, i, dir, dir_up;
- 	void __iomem *reg_base;
- 	struct rvu_work *mwork;
-+	unsigned long *pf_bmap;
- 	void **mbox_regions;
- 	const char *name;
-+	u64 cfg;
-+
-+	pf_bmap = devm_kcalloc(rvu->dev, BITS_TO_LONGS(num), sizeof(long), GFP_KERNEL);
-+	if (!pf_bmap)
-+		return -ENOMEM;
-+
-+	/* RVU VFs */
-+	if (type == TYPE_AFVF)
-+		bitmap_set(pf_bmap, 0, num);
-+
-+	if (type == TYPE_AFPF) {
-+		/* Mark enabled PFs in bitmap */
-+		for (i = 0; i < num; i++) {
-+			cfg = rvu_read64(rvu, BLKADDR_RVUM, RVU_PRIV_PFX_CFG(i));
-+			if (cfg & BIT_ULL(20))
-+				set_bit(i, pf_bmap);
-+		}
-+	}
+ 	otx2_do_set_rx_mode(pf);
  
- 	mbox_regions = kcalloc(num, sizeof(void *), GFP_KERNEL);
- 	if (!mbox_regions)
-@@ -2356,7 +2381,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 		dir = MBOX_DIR_AFPF;
- 		dir_up = MBOX_DIR_AFPF_UP;
- 		reg_base = rvu->afreg_base;
--		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF);
-+		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF, pf_bmap);
- 		if (err)
- 			goto free_regions;
- 		break;
-@@ -2365,7 +2390,7 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 		dir = MBOX_DIR_PFVF;
- 		dir_up = MBOX_DIR_PFVF_UP;
- 		reg_base = rvu->pfreg_base;
--		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF);
-+		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF, pf_bmap);
- 		if (err)
- 			goto free_regions;
- 		break;
-@@ -2396,16 +2421,19 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 	}
+ 	return 0;
  
- 	err = otx2_mbox_regions_init(&mw->mbox, mbox_regions, rvu->pdev,
--				     reg_base, dir, num);
-+				     reg_base, dir, num, pf_bmap);
++err_disable_rxtx:
++	otx2_rxtx_enable(pf, false);
+ err_tx_stop_queues:
+ 	netif_tx_stop_all_queues(netdev);
+ 	netif_carrier_off(netdev);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index ab126f8706c7..6ab4780f12fd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -621,7 +621,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	err = otx2vf_realloc_msix_vectors(vf);
  	if (err)
- 		goto exit;
+-		goto err_mbox_destroy;
++		goto err_detach_rsrc;
  
- 	err = otx2_mbox_regions_init(&mw->mbox_up, mbox_regions, rvu->pdev,
--				     reg_base, dir_up, num);
-+				     reg_base, dir_up, num, pf_bmap);
+ 	err = otx2_set_real_num_queues(netdev, qcount, qcount);
  	if (err)
- 		goto exit;
- 
- 	for (i = 0; i < num; i++) {
-+		if (!test_bit(i, pf_bmap))
-+			continue;
-+
- 		mwork = &mw->mbox_wrk[i];
- 		mwork->rvu = rvu;
- 		INIT_WORK(&mwork->work, mbox_handler);
+@@ -709,7 +709,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ err_ptp_destroy:
+ 	otx2_ptp_destroy(vf);
+ err_detach_rsrc:
+-	free_percpu(vf->hw.lmt_info);
++	if (vf->hw.lmt_info)
++		free_percpu(vf->hw.lmt_info);
+ 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+ 		qmem_free(vf->dev, vf->dync_lmt);
+ 	otx2_detach_resources(&vf->mbox);
+@@ -763,7 +764,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
+ 	otx2_shutdown_tc(vf);
+ 	otx2vf_disable_mbox_intr(vf);
+ 	otx2_detach_resources(&vf->mbox);
+-	free_percpu(vf->hw.lmt_info);
++	if (vf->hw.lmt_info)
++		free_percpu(vf->hw.lmt_info);
+ 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
+ 		qmem_free(vf->dev, vf->dync_lmt);
+ 	otx2vf_vfaf_mbox_destroy(vf);
 -- 
 2.25.1
 
