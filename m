@@ -2,77 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE096CF01F
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B8BA6CF069
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbjC2RGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 13:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        id S229686AbjC2RHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 13:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbjC2RGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:06:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFDB5BBE
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 10:06:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF1D0B823DE
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 17:06:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C921C433D2;
-        Wed, 29 Mar 2023 17:05:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680109559;
-        bh=kIZ3/ki6JuYvdvGdQRWk8XN6PRBhJMl2mgQbLGs9tmE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kJq0WN5YxjDqr81/AUBz2RrIvbcRBKaQjINPXYHoDxsMzZzC/HBFtq5csAq3v6C7H
-         9XnqT+HbjB4TS09NkH4C/0CgiuB0axXddUe8mJGnAX0RhO4wOC0J4WS1p0BhEScOEc
-         /GAhp04l0plZMKxfb/2rADFqj69H/EcSQkPndI0ESfAKn4DkQqfIaevKjpkOxSUVhE
-         I8w+i+SVOP0huI7VR5GJKsXBZlp5ErCluniUbhMJeGwzCOevdfCQF10z11pjJSCxg/
-         cuZDnvgEdZKIEZaX2nRAYTmFDod3htRNUgycF8+JB6AIWSTT6PZa7Iq3VIg6YqsDqA
-         bna6aFXAHJgow==
-Date:   Wed, 29 Mar 2023 10:05:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dima Chumak <dchumak@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Leon Romanovsky <leon@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/4] devlink: Add port function attributes to
- enable/disable IPsec crypto and packet offloads
-Message-ID: <20230329100557.40890e35@kernel.org>
-In-Reply-To: <93f74c83-d2e9-3448-9f07-64214cc0f7f8@nvidia.com>
-References: <20230323111059.210634-1-dchumak@nvidia.com>
-        <20230323102331.682ac5d6@kernel.org>
-        <93f74c83-d2e9-3448-9f07-64214cc0f7f8@nvidia.com>
+        with ESMTP id S231237AbjC2RHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:07:15 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3F3728A;
+        Wed, 29 Mar 2023 10:06:57 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TDTk6R009203;
+        Wed, 29 Mar 2023 10:06:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=mcTr6C/VINCIhh/n2bFcYfbZySHmKBzy5wGzLXUqooY=;
+ b=iJo+W/Dvt5j4KOIbYp7CHnI0AnUXazbuiy3/JzwA868IawSvjg/Dex7jQd4CKGPEMkVi
+ v7zmiOunY5aFZm4YTsW4tPoIwZJ0U3F8bHbmUNaMiOw5so14XLvvFgejo8hnzyCNrcCy
+ 7CpuDdIawHbPc5g8HFzZfqLmhae3ds33jRJQgAfgozNP1yTve9BQoqsUJEfArJgbld6h
+ 59P5qZeRp4ayqcMgLxjbDKDYwDi/5/jZlvFYrithspHKnjhiRouyOVrX3rbUDS1EVB1S
+ URVnCeOdwvF7v8lkU3w2GcEU2oJR7f7mZwLTg6nv+b56Bu64gOtP5Z8lmt/VTDHJR+5T UQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3pmdqhkqs9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 29 Mar 2023 10:06:45 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 29 Mar
+ 2023 10:06:43 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
+ Transport; Wed, 29 Mar 2023 10:06:43 -0700
+Received: from hyd1425.marvell.com (unknown [10.29.37.83])
+        by maili.marvell.com (Postfix) with ESMTP id CA0DD3F704E;
+        Wed, 29 Mar 2023 10:06:40 -0700 (PDT)
+From:   Sai Krishna <saikrishnag@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>,
+        <richardcochran@gmail.com>
+CC:     Sai Krishna <saikrishnag@marvell.com>
+Subject: [net PATCH 0/7] octeontx2: Miscellaneous fixes
+Date:   Wed, 29 Mar 2023 22:36:12 +0530
+Message-ID: <20230329170619.183064-1-saikrishnag@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: L3Vm8IAtLGKAWxcxv4pp0bmAlWPUMAdT
+X-Proofpoint-GUID: L3Vm8IAtLGKAWxcxv4pp0bmAlWPUMAdT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-29_10,2023-03-28_02,2023-02-09_01
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Mar 2023 09:42:51 +0200 Dima Chumak wrote:
-> > Is it fine grained? How many keys can each VF allocate?  
-> 
-> When I referred to "fine grained" control, I was talking about the
-> different types of IPsec offload (crypto and packet offload) in the
-> software stack. Specifically, the ip xfrm command has sub-commands for
-> "state" and "policy" that have an "offload" parameter. With ip xfrm
-> state, both crypto and packet offload types are supported, while ip xfrm
-> policy can only be offloaded in packet mode.
-> 
-> The goal is to provide a similar level of granularity for controlling VF
-> IPsec offload capabilities, which would be consistent with the software
-> model. This will allow users to decide if they want both types of
-> offload enabled for a VF, just one of them, or none at all (which is the
-> default).
+This patchset includes following fixes.
 
-Ack, please add a reference or explanation somewhere and fix
-the posting.
+Patch #1 Fix for the race condition while updating APR table 
+ 
+Patch #2 Fix for bit positions in NPC, MCAM table entries
+
+Patch #3 Fix driver crash resulting from invalid interface type
+information retrieved from firmware
+
+Patch #4 Fix incorrect mask used while installing filters inlovling
+fragmented packets
+
+Patch #5 Fixes for NPC field hash extract w.r.t IPV6 hash reduction,
+         IPV6 filed hash configuration, parser confiuration destination 
+         address hash.
+
+Patch #6 Fix for skipping mbox initialization for PFs disabled by firmware.
+
+Patch #7 Fix disabling packet I/O in case of mailbox timeout.
+
+Geetha sowjanya (1):
+  octeontx2-af: Secure APR table update with the lock
+
+Hariprasad Kelam (1):
+  octeontx2-af: Add validation for lmac type
+
+Ratheesh Kannoth (3):
+  octeontx2-af: Fix start and end bit for scan config
+  octeontx2-af: Fix issues with NPC field hash extract
+  octeontx2-af: Skip PFs if not enabled
+
+Subbaraya Sundeep (1):
+  octeontx2-pf: Disable packet I/O for graceful exit
+
+Suman Ghosh (1):
+  octeontx2-af: Update correct mask to filter IPv4 fragments
+
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   |   7 +
+ .../net/ethernet/marvell/octeontx2/af/mbox.c  |   5 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  19 ++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  38 +++++-
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c |   8 +-
+ .../marvell/octeontx2/af/rvu_npc_fs.c         |  28 ++--
+ .../marvell/octeontx2/af/rvu_npc_fs.h         |   4 +
+ .../marvell/octeontx2/af/rvu_npc_hash.c       | 125 ++++++++++--------
+ .../marvell/octeontx2/af/rvu_npc_hash.h       |  10 +-
+ .../marvell/octeontx2/nic/otx2_common.h       |   4 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  11 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_tc.c  |   2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |   8 +-
+ 13 files changed, 181 insertions(+), 88 deletions(-)
+
+-- 
+2.25.1
+
