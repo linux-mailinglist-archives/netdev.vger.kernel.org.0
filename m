@@ -2,140 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 509046CD54B
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6E96CD5B6
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 11:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231303AbjC2Ix6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 04:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        id S229987AbjC2JAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 05:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbjC2Ixy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:53:54 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2050.outbound.protection.outlook.com [40.107.13.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DE940C8;
-        Wed, 29 Mar 2023 01:53:34 -0700 (PDT)
+        with ESMTP id S229817AbjC2JAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 05:00:02 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2135.outbound.protection.outlook.com [40.107.223.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8456B59C7;
+        Wed, 29 Mar 2023 01:59:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZIZlr9fLtco/CfGEnx45R891zqmhO7QW3rYgB4ysuykjCsvbeQz+WunzfMyBryHKlLM0l94eGLaFwOIDQOOLQV9/Gu/tfKounKhPB+NHRJFX33K2MQJWMuW60vgnc3BEgO9MSUwwuW4HhATty0e0Ue61HoolrIbl+6vZm2J6O52Yn8LxevJpI0co3WUs5ax7O3JClj2vt4KwTigkLzESRJXwJ6TUPQVtyjdD7iah/w3QLkzy4zlzDcF3rGwIOi7F2Ici4LiYvq6X7HxTrhy4Qoc62PuUlpr3LybR4sl40RCObs4S2JFml5b/VHNGZlNAezuwAm/orVQVf89nsxIGDg==
+ b=K6qZgtEtZWWzeH0DrYvCfMEu7EBmR//HtcM5DbnSzqefMC7QQ3/gMoti1UCZD9n3NgbLPZwqEyk7QNs8iWf4um6xZGfD+AbFib/19KLImHyyfifx55cB6IXkOHP76YkWE/KnoUJ8YXop8m8C9FqlCQBbgi8E/6rwoSYWFQd3oYpqfT71wKtINU6AoOvGqnERUVLz8+VDoqwHQgG+V3v+Uakn51iVr6jmbQcquiXOt1pyUUod62htzbYATsZnh0f+wZiDHcUVX0lWzyQYwvqcruPhJ9ThZsVolHeaqQNiF8i+T7oObBgsBKSmrPkRVgBVTmQAWF0+9t859AdtzCH2TQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QvSd7dcVqEtXl8d7+Tp/X5T6833dC7VLQ2+OEGCALc4=;
- b=ISr/4pI/LM/fAySvUK+7D1X15yfXYwBwzGVvurvJAxYeYzOJemuM/0m4wQmfyChFjw9UdA3MG7R0q/5KUHHliY8tqCelKGaBOPWjvTWIrxVjQNEphaZkCEjwWYhd3f84WVODJJj5N/ZxFEVzrTgFX3u/wbBdm5H0JGPrOjweHPtQaduH/kvcF5P0JaGyQs2L6w5wr6LlDmwrii291/+opxy7JQh0e0g5kQqOu2GnRKyhtn4yrjCC2RXYfcNWkJCqCCKtCMJFtKVZ2Eri07sjoXk3yHaUeOBl4Wz8xSaNZ6pQkWd9lmEipjASVDX030wZAR6hlQK121/YbIJ7CGKWUA==
+ bh=AuNKC9pH4LO7yqdB+55VHHoIvsBm8d1wUAcsqzYLARI=;
+ b=gW8sMlYtixVcFIF8kcF9vJ2/zDD0A6XD0iGec5rWvmWADZgwVw0Y7OXYQqBoZ0eWBG3SyxyLNm9AhsTZ06Q4lLDjYzjasrYtxwIgmZeGOct/+IzSZDoIkl4kSOzoKXGCGDpU1IyoyJfAOYHhFgfL/rMm7IqzfcCdQNQWVA+fKHORvViuf60C5Ipn6kn7YgObQhenjHuD2FPVsk/UqS4SJ0g9cevDdqNQ5/P4iuuoUzr/alWaC8lbCjU7ZjjsT6RCel+ZbuC8GX5jCQdaHOBlPrd9YfaUQgTvc4Mis/udeq9lUgtqVZpb95beCFavDrSMLI7N8YRu7di7QiSWU7dM8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QvSd7dcVqEtXl8d7+Tp/X5T6833dC7VLQ2+OEGCALc4=;
- b=kmtzEDh4uToYu7UtoFQrKxFUPj+LFRKn+JLGIN09BTdjLZU4DrHeSJazA48ijAZw+QOrv57oqByKz96nunBhKGod9NwJ0p0GjjExJa4o7Ob5usm9SLhWPbKlqnGhQwcimY/XffOoRbbLtNq9SW4C6LTvxGixlWskPGAhoOMtJglFfoKO6h6RLOd9vXArjoA0QIPpFuzXEflOesoEW17d3+jePwv3a+NiPCZWqiJOljiJ48/FiHkEJbxZgIuwraMIyvgRQjjBlzQw8SJb9wTlUYUdZ912GT/418vCc4HnFyRUdsGXgQ2Cp/KAEeZQ8EXf0KCTJlhPAxYs4Z3/23c1Fw==
+ bh=AuNKC9pH4LO7yqdB+55VHHoIvsBm8d1wUAcsqzYLARI=;
+ b=kGRZdpHxQaIIcsmdhBKAFSSfe+Lx1dAAlxq1uqTnf6cDPqo9pcI4LhVLWJ00iu8MX+aQMdQ2PvK6pOea313czwaosrDm4615S4egJHStmYayguX28AYrn9fcp21lMMiO+hbApx/pPB7v+InZizru6r1ZDcYbXHeMW3XCGPCoQJw=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
- by DU0PR04MB9669.eurprd04.prod.outlook.com (2603:10a6:10:316::22) with
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CH2PR13MB3800.namprd13.prod.outlook.com (2603:10b6:610:9c::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Wed, 29 Mar
- 2023 08:53:31 +0000
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::154e:166d:ec25:531b]) by VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::154e:166d:ec25:531b%6]) with mapi id 15.20.6222.033; Wed, 29 Mar 2023
- 08:53:31 +0000
-Message-ID: <f8795f25-718f-9336-266c-ca26c86b0e73@suse.com>
-Date:   Wed, 29 Mar 2023 10:53:30 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v3] xen/netback: use same error messages for same errors
-Content-Language: en-US
-To:     Juergen Gross <jgross@suse.com>
-Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20230329080259.14823-1-jgross@suse.com>
-From:   Jan Beulich <jbeulich@suse.com>
-In-Reply-To: <20230329080259.14823-1-jgross@suse.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0093.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a9::7) To VE1PR04MB6560.eurprd04.prod.outlook.com
- (2603:10a6:803:122::25)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.35; Wed, 29 Mar
+ 2023 08:58:59 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%4]) with mapi id 15.20.6222.028; Wed, 29 Mar 2023
+ 08:58:59 +0000
+Date:   Wed, 29 Mar 2023 10:58:51 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Brett Creeley <brett.creeley@amd.com>
+Cc:     kvm@vger.kernel.org, netdev@vger.kernel.org,
+        alex.williamson@redhat.com, jgg@nvidia.com, yishaih@nvidia.com,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        shannon.nelson@amd.com, drivers@pensando.io
+Subject: Re: [PATCH v6 vfio 5/7] vfio/pds: Add support for dirty page tracking
+Message-ID: <ZCP9y/cmfB4acIOV@corigine.com>
+References: <20230327200553.13951-1-brett.creeley@amd.com>
+ <20230327200553.13951-6-brett.creeley@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230327200553.13951-6-brett.creeley@amd.com>
+X-ClientProxiedBy: AM4P190CA0013.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:200:56::23) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6560:EE_|DU0PR04MB9669:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5a1978ac-6632-4666-b801-08db3033125a
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|CH2PR13MB3800:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6ed571e6-8dc7-462e-cf48-08db3033d595
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: efFBkTqaAKFwfGrnXogBWzhMps+7pJ/MCF20Sar5rBZPIgLYrB+S1+7kZub8G1PLQUNTBbMTSbiI4SCDb8gI1TaiRz4g1tHHUYR87nHdk3ycyTSHVvc3d7M0j4UcS08VfO+VSp8UtaZGIu/wAFgATlUgOBoj/cLnsxkOr7AAS0osS0Y+7uCb8C4AvUVwYzwdDwD5rw/n3HaHS1Wj//8x7uSmljtKYK9NlutO74+yB/nmOfeUP8IK5oWKq5wJeAwAM+D/r7M1T2GeULXdScJg6uaZ/h7kHwjc3wg/YLwrOFavIgrTDJZucbrgAuJ1uSW+igdgEcTovYdF6CtQw7lWhrTj7TiMBBTP7dWx99RB6K0VuEJ7AFLmLXtv3+lSWLEi886IdsihbazNwSyHGKJIh8H/44vn75sXEZRIxVmG0WCkCos3GNeuXh8r9QaByfTTeVX1gulmvvc8kKwCsPleZOop9PRsPbcobD8ETV6Xg409nfH+kutIKI1IqO2nKU0RqssxwYKjlxIlYtuWP16mZNkTp/JzgYa6BnFUczI2cj3lJ4JWu/bGzo5B7YznhsdI++o7mRs1dteBc2O+O/wDvFi6QCs4fe+Jx7+PMFmAMzsa9RJtoc8tXyi6nkoNFrVjHeDpMrvICW14s7MoWp2psQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(136003)(346002)(366004)(396003)(376002)(451199021)(53546011)(6512007)(26005)(6506007)(41300700001)(186003)(6486002)(83380400001)(2616005)(31686004)(478600001)(54906003)(37006003)(6636002)(316002)(4326008)(15650500001)(66476007)(38100700002)(66556008)(4744005)(2906002)(8676002)(66946007)(31696002)(86362001)(5660300002)(36756003)(8936002)(6862004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: u9gWjwQWK20fWcTCi162objiv7GNiK7WLVNWIRVe4aZ1NLplH4V6H6RFQIgOSiR508z3ivjXVtoGqnpqSB/SxAMX65iUWwqY5Faa8m0Dg8ggYq3n6FjhcwpdSN0FjVAZBoa1Ierhy8s9r+Rv12T06QDtQTJHuhyFDkBayk2crD0hsKrar7rK6Stw5Ol91OBY6UGZUFWhQhkbxSEeumIPh4IN01T30PY65cXL2sGtvWiMhTAS3OrvhidNsMGijIX4AMQ0ikB31GD8oki91fJ2yx301yBNTDcVJsXpR+nOCVDS0HhwjgAdgWelCCjOuhVH8s6lZDMSN4P5OeFWA25U0VCoZxjBj2Mb2iSANEPnabL+CLAGbDa2xKN6S9fKHd0e3snr/kvqHul5hc5LzTaKP7xpKCke3gKZOUv5QkRi8cjQ83JaZbWXr69tvEXhfoHE8hrh/R+7NxllMEwUc2gi8Ot0e8Kd1xqMgm9fQ0qjDLlNpne4Gy2v8pNd2kV5xNn2w0Zl+IzaG0tbQBpc7Qe9WcvrMhdNPrYWycGDYrClmr1h3XYRc7qMaZr+Sv+u7Y9OJaJtGp+X6xtDpYmZTJTvxXehZktE6q4a9eUKU+EeJp8ttKo6gF30UtTPoH19obGKLXJgFzofNTqsuD9H/zBLzCICguXMTHbvutmfY6SUdT4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39840400004)(396003)(376002)(366004)(136003)(346002)(451199021)(83380400001)(66946007)(316002)(6486002)(6666004)(2616005)(6512007)(66556008)(478600001)(186003)(2906002)(86362001)(44832011)(6506007)(7416002)(5660300002)(38100700002)(36756003)(41300700001)(8676002)(6916009)(4326008)(66476007)(8936002)(14143004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TS9xYmRheW5VWEp5Nzh3aHZxVFFSZkhYR3dOWEZCdGdXQkVqWEtoOWlwSWlp?=
- =?utf-8?B?eldZaWhiK0l0UHRTTWNmazVHd0tMY2VVSEkyMTRiLy9Vc09LSEJPQjVxWlVx?=
- =?utf-8?B?Qm5WaTd6NjRUVFlGbHIvZkRUMUt4NGFIL2l0QkFXYWpJdUZ5V3BMeFRCVmFh?=
- =?utf-8?B?WWcyaG9HL0VWZE8zUjZXOUdRUzBURzlVNmJiNzVMMjBqSThxUFFkV2dQV3F2?=
- =?utf-8?B?Zml0bG41OGFMOW5ydDcyeTN3K2FiQ2UzRjdtQjRoZkVPUWJqald0UktEc1h4?=
- =?utf-8?B?S3N2c1NPcEFEVzBqRkluUW00NmY4RmxWZUZjTTcwZE9KODdxYmtCc2xGaFdw?=
- =?utf-8?B?ZFBLckVXc3hCZDBDbFEvUWJjUG1lY0R5RjczU04wa3RzWmtBZFRrV0pyUTh6?=
- =?utf-8?B?WEwzbWo4TGM3d3ZmR0t4ZnZaRytSWUVtbVZ0TGJOM3dPQUhOeFVRZGUxMHl2?=
- =?utf-8?B?S3JUUVNkNVJFWkx3VEl5YW5GNXg4bS9FUzBBQ2ZBby8yUkxsQkZjSTRMZGVl?=
- =?utf-8?B?bDFvalBJcjBlMDhrb2hPODZjbGFSMkY4WDNIZ0lxQWhHSUFuNGlSYnQrZnBF?=
- =?utf-8?B?ZnlyUE9haThkTWg3UmJTaXFpaXU1eFgwZzEzOE5DcE9vREsvN09oc2drcVlp?=
- =?utf-8?B?d0xEZ3JKRWpvc0d1OEN4TkhqZmkyckVBNy9oZ0c2c1g4clVheUp1TUdLQmdP?=
- =?utf-8?B?K29rc2o0UVM2KzBjTnM1NXlBQ1JWR3lGUmlqNGtCRm8yaWRLdE0yK05oK3Vh?=
- =?utf-8?B?VW9vS21RMml1M3daV2E1SmQxZHQ3YUFaa2hud1JHcjFDREI1QlNpeHpZMHRa?=
- =?utf-8?B?SkZkVnpiWWU4cnU1RU1Md3d2a0xGZzVZemZOaXU0d2FvdEsva0llSlJHS05l?=
- =?utf-8?B?RWczd3Z0Y0l5SjNnZG56T2JCOXdXczJYMXcxNHpTWVhsaXRvam9jd2QxTzdN?=
- =?utf-8?B?M2lrTjBzZGlSQlczQUhZV2VGdUtpamJreEtVb3ZjQkF1d3ZWZy94d2VYTGFh?=
- =?utf-8?B?eWFSSW1ZZ1Rwb3AydGFieUdacWlwOHVuN0JSYzJKeWVGQmRWOUlXRXVCYmIy?=
- =?utf-8?B?R3MxMkZDTXRCWEUzeXo3ZnRaT0NwL214RDFmaHc3Q0NTTlN4V005K3luYTYw?=
- =?utf-8?B?OE5rOVF6WDhidGlQMEpvZGRhSkRkT3d6ZnNtb1BmSENISHQyeG85MjJvRU9I?=
- =?utf-8?B?UUhQM2JodTVtQjdxSHVLdjNQRlpJdGlyemFpdjJEdXZxQno2OUtxWjQrRG9J?=
- =?utf-8?B?TTlXTjkyUDJsSzM0UWtFdTNzUlpOTGRTc0hPeUN4aVdhU1pKNHpMZEhZU21Q?=
- =?utf-8?B?SkFpQUs3Qm5pMUI4SUdjbktVNnA0UXkrKzVrRDVJU1kyNVM3alQ2M0RPeXpK?=
- =?utf-8?B?eExyVEtEU1UvUmRlcjhFaU83WHNSUjQvekt5ZWRnaklodVFra3k4NEhERmNw?=
- =?utf-8?B?Qk5aUElPaTBrTHZmYnZ5T1k0T3lpYWtoTk1xbXZHdFY4NW1jaElBT3FXSzFp?=
- =?utf-8?B?VWN5Y3BVTXJ3SE9NVkx6YWdBTGlFcnJJc0NzUkpzcUw5Z1VkTTdTSmlMazVS?=
- =?utf-8?B?REhnWDFsZDdjWERhTE1kTjdBWGNwNDdrZzEyV2FRcGFDQUNQS3lqdno1ZVVX?=
- =?utf-8?B?UDIrQ0JWUnZPdG1wYmEyb096Um5CVkFMdmNBcXQ3ZHBtLzlSOWpCcUdkZGo1?=
- =?utf-8?B?Z01SRllaSXlRNUhLYmYzSG5uVWYrcDRVeE9XdkRpUi9LUFdkOWFIMzN5NEYw?=
- =?utf-8?B?Uk41NHFmWExQc0xGRkMrbzNCY1oyNmdJVE4zVmRIM1dGOHhuOGlJVkE2SkI5?=
- =?utf-8?B?UEU0MTgwOHBrcVdGM0hEZXc4aUdKQVJsZlB1S2xtODBiSHZ6blFCNkJ6bGsx?=
- =?utf-8?B?cXR4S1pYalQwbnpZQWVJaUlCYVpKOExucGRSc3lJTzVkQUNZSXhma0V3V0lT?=
- =?utf-8?B?cmN2TWk2eFpXR3hhRDV2KzdhUW1oOUFJOFkvTXlNSWZsRkV0UFUvODgvTkhR?=
- =?utf-8?B?SkxiZWZ1RzFrMWRJbXZGSzlZVXU1RGNLVWw0MEtlYkJGeXlrakNqT3M4dWhJ?=
- =?utf-8?B?MlVMWm1aRkpvVmpWT251S1I2YnV4YkJlbzJGNDRpNnBJdTdia3U1QjVJMzB4?=
- =?utf-8?Q?Tkv68dxnZiReuctMWfU4o/XWS?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a1978ac-6632-4666-b801-08db3033125a
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?K9kcJPELw5EZeKJT9M8c/jJBlLSIz7MfDRkh81rMgdF9sGTkcWfY4yMII6ew?=
+ =?us-ascii?Q?rE3jey0/EcZZa7gn1PWlGn1zh37MoSWRLguyqcIJAjqifgxvPxsZT1t4hRDm?=
+ =?us-ascii?Q?iV6dwXf8qTUtMq2N62lXurP8E1pflgG6O1Fh5CtEE5OmFi7V9bI5QAItr6nq?=
+ =?us-ascii?Q?fpwjqYYpAfJW0qF8QuRjXWzdxXIz2ZSUgWJEBQHbsTbDF+K7rxm2Oo964OEh?=
+ =?us-ascii?Q?1tCuJtf8jTbvMhX5R8ZbknjYMUO2aTJtPqJfbAp66VyKSnhx7OXtt8XNfAQA?=
+ =?us-ascii?Q?fabN0MuizAfLropo1g33RegeMGwsfAb9uMRFMay5hL19WEJlZOXtsanT57E8?=
+ =?us-ascii?Q?TZB6zdz5FjNf5XX2HW4V7/eZmpqnMjLfXsri3TY2lBahXZXT10Ah41lvCAWw?=
+ =?us-ascii?Q?n0fjS3JxoCoYYww5q6sndGR4shDbdRjY0Kxm5hIucYsDXX6cGvgoE7wAenn0?=
+ =?us-ascii?Q?PgAsqDmX9D6X9g/am2krqttd1VROwdIQWR9+TTsQhOAoEdtnUHEIS/Gf+g/J?=
+ =?us-ascii?Q?iBROcYhpUK2LESGyFceZFdMXFWNmCVsv3jTRQU05tpiHFlBFe5jsjeu7UJjR?=
+ =?us-ascii?Q?ps3TjjPqzRii9q3LWytUD9Vn040Mnni1fm9SUJprs7i9vvHsB8HLSyRdOuc6?=
+ =?us-ascii?Q?Tb/z08UtfGcXPgZKgX8pFWXNoTsRJW6CxbhzDIEGNTWKCZEqT4Dk/Mrm+mO+?=
+ =?us-ascii?Q?8zRYG8HLIVgzq3MpBhtZiVHeVchXmrasixS/g0o1pT/kbrX4sEypdYlnzGkh?=
+ =?us-ascii?Q?ThdLmw3pLdq3fOYpEdj2ds8R2mGMCvTdK3om6y//ZqdsjK6dQiFhHFcWjtKk?=
+ =?us-ascii?Q?O7Mwf1RbZZOzsMEIyuPwLc9SJ79J3UlUodVZEkPfLGfMWzBZ6vTGCBqQl3PM?=
+ =?us-ascii?Q?MEXIj/gZ5CIRUHARWzfSKHuD0EuY6YP5paqGDwc5m2jr42TyR4gJyk2h+3ux?=
+ =?us-ascii?Q?en3z5LJX4BXWwbQfWlIm+E7dflH0bY5QfzgPxXqNLpk+BBh9v/2gd5lV2ScF?=
+ =?us-ascii?Q?fGkNrEMK68HGwiN3UNadL6dC/dQwhJqnTfWQ1UK/dcNwUxuVr1KWbVLhQq/s?=
+ =?us-ascii?Q?TpDJG8+xUdNmlPc6sPUgqh7yUaETIJGGuFZHKcOJ+pf6O0QMR4jFJ+dtcgSF?=
+ =?us-ascii?Q?mTrey30whv1/CRQJzTrZ+wn/0g0J2LrKJHvU6jrr6gOu2GywZt6iru1T7FDb?=
+ =?us-ascii?Q?DLiiPfLMTPGX1xv5OxdqFTxlKBMirGg/sVmsvTwjlf7eWl8rdzVuRS58fVL9?=
+ =?us-ascii?Q?FNeteQUptM1Cj8JoqvNhL4iXnEPGRT89+TiE4HWnsSkuzxvDkH1M8tFYt9HP?=
+ =?us-ascii?Q?n7AKCDS+jngbw677T2Ctyn91zFUh33jVqcPg+Vy34BTNrhwT/HWKgKLS3JOg?=
+ =?us-ascii?Q?qj256IQAoobz2qMxqMFR1pKAusTlDTqxUU25GiUYOpD85wZvBZRb4tDgZAHR?=
+ =?us-ascii?Q?d6yUxf9w79lcigcyq10oeAyGTqRgBLkoxSSy2msdZaGxT7D5qgOahMhLhewd?=
+ =?us-ascii?Q?GYfYGlRoAJneIoHan0zCb5zVIHd1RABb+JS84tbhwDrvDfLHwBAWc3ZPRt1G?=
+ =?us-ascii?Q?CIYT0zLbKFvdIZ+AoP1hyb6SDX48a1WCnJtPVIgnA20po81gdvZTqa/lh5IU?=
+ =?us-ascii?Q?oJqcAMgddLsK4RkAjG9GPZWQEc65qrTszB00rQhdHXrCVgJgfD4tlquyNDG9?=
+ =?us-ascii?Q?vUYo0Q=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ed571e6-8dc7-462e-cf48-08db3033d595
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2023 08:53:31.4089
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2023 08:58:59.0813
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: E7QVC5OQ146+3Y8GEjRZ7j3YPPOOY+eFL9qt6rO0fNrUXDoKQ+xSFB7yBUfu8TW8U36AsWUB2xHK8NZoP2l/NA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9669
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: I3SsnzJp/Ij2cnutkdUDq5iiWisVtTKp5ctBWt9FQNYXdWuxnzdIn1DRUU9cJRLQrREJFFrI9aye5AVYTylxcBMyMEG3H/+0Sl/+Qdx9WKc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3800
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.03.2023 10:02, Juergen Gross wrote:
-> Issue the same error message in case an illegal page boundary crossing
-> has been detected in both cases where this is tested.
+On Mon, Mar 27, 2023 at 01:05:51PM -0700, Brett Creeley wrote:
+> In order to support dirty page tracking, the driver has to implement
+> the VFIO subsystem's vfio_log_ops. This includes log_start, log_stop,
+> and log_read_and_clear.
 > 
-> Suggested-by: Jan Beulich <jbeulich@suse.com>
-> Signed-off-by: Juergen Gross <jgross@suse.com>
+> All of the tracker resources are allocated and dirty tracking on the
+> device is started during log_start. The resources are cleaned up and
+> dirty tracking on the device is stopped during log_stop. The dirty
+> pages are determined and reported during log_read_and_clear.
+> 
+> In order to support these callbacks admin queue commands are used.
+> All of the adminq queue command structures and implementations
+> are included as part of this patch.
+> 
+> PDS_LM_CMD_DIRTY_STATUS is added to query the current status of
+> dirty tracking on the device. This includes if it's enabled (i.e.
+> number of regions being tracked from the device's perspective) and
+> the maximum number of regions supported from the device's perspective.
+> 
+> PDS_LM_CMD_DIRTY_ENABLE is added to enable dirty tracking on the
+> specified number of regions and their iova ranges.
+> 
+> PDS_LM_CMD_DIRTY_DISABLE is added to disable dirty tracking for all
+> regions on the device.
+> 
+> PDS_LM_CMD_READ_SEQ and PDS_LM_CMD_DIRTY_WRITE_ACK are added to
+> support reading and acknowledging the currently dirtied pages.
+> 
+> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Hi Brett,
 
+overall this patch looks clean to me.
+I've made a minor comment inline, which you may wish to consider
+if you need to respin the series for some other reason.
 
+> diff --git a/drivers/vfio/pci/pds/dirty.c b/drivers/vfio/pci/pds/dirty.c
+
+...
+
+> +static void
+> +pds_vfio_print_guest_region_info(struct pds_vfio_pci_device *pds_vfio,
+> +				 u8 max_regions)
+> +{
+> +	int len = max_regions * sizeof(struct pds_lm_dirty_region_info);
+> +	struct pds_lm_dirty_region_info *region_info;
+> +	struct pci_dev *pdev = pds_vfio->pdev;
+> +	dma_addr_t regions_dma;
+> +	u8 num_regions;
+> +	int err;
+> +
+> +	region_info = kcalloc(max_regions,
+> +			      sizeof(struct pds_lm_dirty_region_info),
+> +			      GFP_KERNEL);
+> +	if (!region_info)
+> +		return;
+> +
+> +	regions_dma = dma_map_single(pds_vfio->coredev, region_info, len,
+> +				     DMA_FROM_DEVICE);
+> +	if (dma_mapping_error(pds_vfio->coredev, regions_dma)) {
+> +		kfree(region_info);
+> +		return;
+
+nit: I think it would be more idiomatic to use a goto label here, say:
+
+		goto err_out;
+
+> +	}
+> +
+> +	err = pds_vfio_dirty_status_cmd(pds_vfio, regions_dma,
+> +					&max_regions, &num_regions);
+> +	dma_unmap_single(pds_vfio->coredev, regions_dma, len, DMA_FROM_DEVICE);
+
+and here:
+
+	if (err)
+		goto err_out;
+
+> +
+> +	if (!err) {
+
+And move this out of a conditional, into the main block of the function.
+
+> +		int i;
+> +
+> +		for (i = 0; i < num_regions; i++)
+
+The scope of i can handily be limited, now that the kernel has moved to C99.
+
+And it might be slightly nicer to use an unsigned type for it,
+I don't think it can ever be negative.
+
+		for (unsigned i = 0; i < num_regions; i++)
+
+> +			dev_dbg(&pdev->dev, "region_info[%d]: dma_base 0x%llx page_count %u page_size_log2 %u\n",
+> +				i, le64_to_cpu(region_info[i].dma_base),
+> +				le32_to_cpu(region_info[i].page_count),
+> +				region_info[i].page_size_log2);
+> +	}
+> +
+
+err_out:
+
+> +	kfree(region_info);
+> +}
+
+...
