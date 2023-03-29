@@ -2,126 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FF16CD049
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:41:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D8D56CD043
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbjC2Cli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 22:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
+        id S229944AbjC2ClR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 22:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbjC2Clc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:41:32 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80C210E4
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 19:41:15 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id h8so57555046ede.8
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 19:41:15 -0700 (PDT)
+        with ESMTP id S229524AbjC2ClP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:41:15 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136263C04
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 19:40:54 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id d22so8437183pgw.2
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 19:40:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680057673; x=1682649673;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n7z+jxD47MK5ugisO9r4norfloXQoxZKOItHy+2p45I=;
-        b=iIPcaQrxGraZHE89geQkMarUZS8bOZ+oQatuWEEQJe81nEMVp+pug67gCiIL2YPvgO
-         D7e+m6/wRmNX+EptBloY8NgbJT895s8pVGFaJM0oGuo3LGb00JfzABRucP1phEDWLRxW
-         Bxxpn9kup0YCb+h3FnknerJl21k4brC39JNV2FgT21SC0NQJAwLE/VAAj1d5NXnwv8VX
-         XXtYmYI+NsqijK9BhW0QVtQ75lzQnziiNKbykMqdZQOec9c6/IxBCrSnJsYvlLXWfcuF
-         AnAx6tXUCvH/dHusIOPwByBzsm5YGXY3fY4GK/mqrDGdlO5KiIJPuSeZYMaSNkfKIyI/
-         M+cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680057673; x=1682649673;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=gmail.com; s=20210112; t=1680057653;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=n7z+jxD47MK5ugisO9r4norfloXQoxZKOItHy+2p45I=;
-        b=YQQkHMR9n8/Y5MDS9EzST7ZbE6e7+PoSK5ZMdZHICsn90lKNBuNcrg0nEDkYXlAuB1
-         XuL4zlbqeSI2R6zC3hJqj/K0vlOFRt2oWBMlK5c/aCqQhGWUy6rg8jByXXo8vMRgYZ2Z
-         Qrbjj3yH0HNUyTXOt2NJxxmxX0lsTghv8D8nrf2hAKKkZymM16ddkFQuLaKHA8cdtlaN
-         Y6qFVpSbijA0ybUEYHt/Z2qiVKfNFTU881g0kHHUhWRfRsN/TD3mY8YMxUj3uGk2b593
-         uOAyXF3Dh5Aj7qAssTbgtam6yom9sKxNLTgxNGQKQBdj0aoLD7cesfhdTYVOoWRjKFOj
-         P6Ew==
-X-Gm-Message-State: AAQBX9eVAWohF2AqGNadUaUXF9WYoiF1He3l/7Os4tLeEJlFulIDqQqz
-        qP6DkjOaxh44QM2NYu6VmNefU0Ep7dZuRP1wPqA=
-X-Google-Smtp-Source: AKy350ZdlOPJb4zrwE8JG5NtfjT/pYjI/1KizvqfeYZQtgtdZWcDFkiwP54MptGy65a1GWxiLzwu4MrWVTUKzuEobsQ=
-X-Received: by 2002:a17:906:eda6:b0:8dd:70a:3a76 with SMTP id
- sa6-20020a170906eda600b008dd070a3a76mr9379325ejb.11.1680057673544; Tue, 28
- Mar 2023 19:41:13 -0700 (PDT)
+        bh=QrW0Sz8GBPnu6OCGpvxmOnmlGOMzTNgDleQT9EalNAI=;
+        b=OkNDySwxAesxaFth36/Mzl7ekLPFo+oNwgDe+0T5UcDNl4APWs3hQEAjiRkgsnQu0O
+         Yml4M2s5IDKMLveM8Fmnqas1bqJmOpnvHr99BFECnjfS9BY4Q/ci9mG3D9WeV1ZOHsCD
+         NKRcrLV5PdgLeaLzpS8ggduVSObE20ZSboebsUhDG8lm3pPCkEK9lVr1voVDf/uazZHM
+         n/JLYEKjhLXaKZeZht27a+hjxcgRwK+KAF37G79+V9kXgBLFO8SLS/d6DVbNk+1Aygle
+         iRYOBSRft0hvkw9b5VW89WBktQPE96dqVHjjvFcxpWn3GbHONqphIWRLTBvu21w993Ei
+         elng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680057653;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QrW0Sz8GBPnu6OCGpvxmOnmlGOMzTNgDleQT9EalNAI=;
+        b=TPub/XQIMAMFUMTkPkhuncFC4e+EFJwUZURzJoobnxZNjrAz1Clh/8mUHLc6yBxeij
+         bXGe/E1qXzMx9cd41krlvJk6z3pEvUIPYnrsW5wxI4+pnaV9cgYA1WZ3d2KC3otFwNNc
+         Zuts+sDnydowe3vFHpzUmXepne21vymW5dEZf1pkCs3bYbaXd+B9u4QxsiDbBYKLBlbC
+         aGMrvEPnGVAxfiY3xdSAOGJDsfDOJSQ31IMFa0MUKjUH0YCb7Mq1CMYxn7bGbUx4oiLs
+         Ngghwig7fitNQeYgsY+DD2hUZWAFLoJ8mgMIOtjdpRPsKICrQEtb0CDv5VN9tsdwskci
+         yx7w==
+X-Gm-Message-State: AAQBX9fcEDYSj32Ik7EatfEtZIK8vFeufnQTQW57+qIrIe/fqJN12ICG
+        66uLqtz9Mk86B9pNT7tmar9RF8XwXogsJqlabeo=
+X-Google-Smtp-Source: AKy350aAkY1aYMlLD5U7bhBS7K/8pLOtD4lziTaeYRACC24mb9WtgDOLIRpZtUKwdbqqDF95M7VTrd+Sh8/6B1Py9TM=
+X-Received: by 2002:a63:d201:0:b0:503:7be2:19a7 with SMTP id
+ a1-20020a63d201000000b005037be219a7mr4756120pgg.1.1680057653056; Tue, 28 Mar
+ 2023 19:40:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230328235021.1048163-1-edumazet@google.com>
-In-Reply-To: <20230328235021.1048163-1-edumazet@google.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Wed, 29 Mar 2023 10:40:37 +0800
-Message-ID: <CAL+tcoDTQzCm0nh6oLB8w9+YPXeL2_Rk+bwBWECgUA_amMfwGw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/4] net: rps/rfs improvements
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Xing <kernelxing@tencent.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com
+Received: by 2002:a05:6a10:bb07:b0:474:db39:4ff8 with HTTP; Tue, 28 Mar 2023
+ 19:40:52 -0700 (PDT)
+Reply-To: davidllawrence14@gmail.com
+From:   "Mrs. Nelson Philip" <johnkigundu17@gmail.com>
+Date:   Tue, 28 Mar 2023 19:40:52 -0700
+Message-ID: <CA+bdMsgZvv5aUYRsKOb_Bf_CEiANsFT15sn7NE3Xr-pHNCCjLg@mail.gmail.com>
+Subject: Contact my secretary for your Bank Draft!!
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: Yes, score=7.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,
+        MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_HK_NAME_FM_MR_MRS,UNDISC_FREEM,UNDISC_MONEY,XFER_LOTSA_MONEY
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:531 listed in]
+        [list.dnswl.org]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [johnkigundu17[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [johnkigundu17[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [davidllawrence14[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  2.9 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  1.1 MONEY_FREEMAIL_REPTO Lots of money from someone using free
+        *      email?
+        *  0.5 XFER_LOTSA_MONEY Transfer a lot of money
+        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 7:53=E2=80=AFAM Eric Dumazet <edumazet@google.com> =
-wrote:
->
-> Jason Xing attempted to optimize napi_schedule_rps() by avoiding
-> unneeded NET_RX_SOFTIRQ raises: [1], [2]
->
-> This is quite complex to implement properly. I chose to implement
-> the idea, and added a similar optimization in ____napi_schedule()
->
-[...]
-> Overall, in an intensive RPC workload, with 32 TX/RX queues with RFS
-> I was able to observe a ~10% reduction of NET_RX_SOFTIRQ
-> invocations.
->
-> While this had no impact on throughput or cpu costs on this synthetic
-> benchmark, we know that firing NET_RX_SOFTIRQ from softirq handler
-> can force __do_softirq() to wakeup ksoftirqd when need_resched() is true.
-> This can have a latency impact on stressed hosts.
+How are you
 
-Eric, nice work ! You got these numbers.
+I want to inform you that I have succeeded in transferring
+the huge amount of funds under the cooperation of the new
+partner from London and I have written a Bank Draft of $1.9M for
+you.
 
-Could you also put this whole important description above into the 3/4
-patch? I believe it is very useful information if any
-readers/developers try to track this part through git blame. After
-all, I spent a lot of time discovering this point. Thanks.
+Have you received it? In-case you have not, Contact Mr.
+David Lawrence And Ask him for the Bank draft which I kept
+for Compensation okay. His email address
+(davidllawrence@consultant.com)Phone+:+1(945)212-0126
 
-Otherwise it looks good to me. Please add:
-Reviewed-by: Jason Xing <kerneljasonxing@gmail.com>
-
-And I've done tests on this patchset. Please also add:
-Tested-by: Jason Xing <kerneljasonxing@gmail.com>
-
-Thanks!
-
->
-> [1] https://lore.kernel.org/lkml/20230325152417.5403-1-kerneljasonxing@gm=
-ail.com/
-> [2] https://lore.kernel.org/netdev/20230328142112.12493-1-kerneljasonxing=
-@gmail.com/
->
->
-> Eric Dumazet (4):
->   net: napi_schedule_rps() cleanup
->   net: add softnet_data.in_net_rx_action
->   net: optimize napi_schedule_rps()
->   net: optimize ____napi_schedule() to avoid extra NET_RX_SOFTIRQ
->
->  include/linux/netdevice.h |  1 +
->  net/core/dev.c            | 46 ++++++++++++++++++++++++++++++---------
->  2 files changed, 37 insertions(+), 10 deletions(-)
->
-> --
-> 2.40.0.348.gf938b09366-goog
->
+Mrs. Ester Nelson Philipsxxxxx
