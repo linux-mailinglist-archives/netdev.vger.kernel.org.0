@@ -2,182 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D3266CD9D7
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 15:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DEB46CDA18
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 15:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbjC2NBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 09:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
+        id S229900AbjC2NII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 09:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbjC2NBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 09:01:46 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EC9CA;
-        Wed, 29 Mar 2023 06:01:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680094903; x=1711630903;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=M8LKsGXgrEqKUdUv7wna8yZG8GZaTqDF9eASbo6RR20=;
-  b=CWdgPOH2bdOU5xUVqZ48Q0qGQ6waOR3tgi7rGSCjtKECn0CQ8Nf9LG9g
-   WeWBhapWuaAEPdBG/fQSGkQ0RPYq3OxXIeswWrMAyI9r6agxecN+Rr7kX
-   NumRDFgLtyd1YpMXkcbc9Y8Z6/5BNq8I5i+6MLD0K+S0YlCNaFe4wB8yJ
-   M1QYtg1v8P+sb9AOnylEpt2dajgPEIULiCzu/uuS5am24EANbS4VKStaP
-   6cN9iDxxuWkOQy5alNgRkwuf8voS71crP2nGQuJB+9+2hLGhFLK4h5DTG
-   dlYGDXTa2Ejs6s6Z9KseerzjHuhDIJAFmHYVJd0HuKDtnmxJh71zMm0gk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="368638253"
-X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
-   d="scan'208";a="368638253"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 06:01:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="1014010988"
-X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
-   d="scan'208";a="1014010988"
-Received: from ostermam-mobl.amr.corp.intel.com (HELO intel.com) ([10.249.32.144])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 06:01:35 -0700
-Date:   Wed, 29 Mar 2023 15:01:10 +0200
-From:   Andi Shyti <andi.shyti@linux.intel.com>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andi Shyti <andi.shyti@linux.intel.com>
-Subject: Re: [PATCH v6 0/8] drm/i915: use ref_tracker library for tracking
- wakerefs
-Message-ID: <ZCQ2lr6/ITBdBqce@ashyti-mobl2.lan>
-References: <20230224-track_gt-v6-0-0dc8601fd02f@intel.com>
+        with ESMTP id S230095AbjC2NID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 09:08:03 -0400
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F14DD2;
+        Wed, 29 Mar 2023 06:07:53 -0700 (PDT)
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TCf6lM030891;
+        Wed, 29 Mar 2023 13:07:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : subject
+ : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=ukV2puvT6Yb9ovva4Gb5MV+nAbKsW5aWmpTLdH48Cqs=;
+ b=d9Toxc4oMkQthJt0ZHb4DdRIokLJyIOeloP8/zLa1eMM84Ae9GsZmRHMbFrQbJDPF8bI
+ mnbceBeZ+F9nPa/H9bU/pguFOlLWwGMp0ojgticSwOYSShwRutH2pXe29p7de/nrFpkg
+ 2X6sTqcXQ2b8D1NYMcYe/QQXEHvXOPBDONQXMg7t8jkZDS2X0bpfYzB3Y5K/5o1EsbMv
+ 3mdOBu0uq14H/o6gtq1N8bgksUDW/2eOkjdgccMeTU8mhylW3hJJl8xWlGO4bWh8qhRs
+ okFrKJhClz450Lrm6oehabpdw7+o4Kz6oG4Ssr+Usjn67R3laEtqoPSgY8nsmEYRlHew vw== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3pkx4tbha9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 29 Mar 2023 13:07:44 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 32TD7hUN014868
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 29 Mar 2023 13:07:43 GMT
+Received: from srichara-linux.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.42; Wed, 29 Mar 2023 06:07:39 -0700
+From:   Sricharan R <quic_srichara@quicinc.com>
+To:     <mani@kernel.org>, <manivannan.sadhasivam@linaro.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-arm-msm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: qrtr: Do not do DEL_SERVER broadcast after DEL_CLIENT
+Date:   Wed, 29 Mar 2023 18:37:30 +0530
+Message-ID: <1680095250-21032-1-git-send-email-quic_srichara@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230224-track_gt-v6-0-0dc8601fd02f@intel.com>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ---nnJxp7NfEzLz4spvnc47KXR4gg8Zd
+X-Proofpoint-ORIG-GUID: ---nnJxp7NfEzLz4spvnc47KXR4gg8Zd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-29_06,2023-03-28_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
+ spamscore=0 bulkscore=0 phishscore=0 suspectscore=0 impostorscore=0
+ mlxlogscore=999 lowpriorityscore=0 priorityscore=1501 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2303290105
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric, David (Miller),
+When the qrtr socket is released, qrtr_port_remove gets called, which
+broadcasts a DEL_CLIENT. After this DEL_SERVER is also additionally
+broadcasted, which becomes NOP, but triggers the below error msg.
 
-Could you please check the ref_tracker portion of this series?
+"failed while handling packet from 2:-2", since remote node already
+acted upon on receiving the DEL_CLIENT, once again when it receives
+the DEL_SERVER, it returns -ENOENT.
 
-This patch has reached its 6th version, and we need your approval
-to proceed.
+Fixing it by not sending a 'DEL_SERVER' to remote when a 'DEL_CLIENT'
+was sent for that port.
 
-Thank you,
-Andi
+Signed-off-by: Ram Kumar D <quic_ramd@quicinc.com>
+Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+---
+Note: Functionally tested on 5.4 kernel and compile tested on 6.3 TOT
 
-On Wed, Mar 29, 2023 at 09:24:12AM +0200, Andrzej Hajda wrote:
-> Gently ping for network developers, could you look at ref_tracker patches,
-> as the ref_tracker library was developed for network.
-> 
-> This is revived patchset improving ref_tracker library and converting
-> i915 internal tracker to ref_tracker.
-> The old thread ended without consensus about small kernel allocations,
-> which are performed under spinlock.
-> I have tried to solve the problem by splitting the calls, but it results
-> in complicated API, so I went back to original solution.
-> If there are better solutions I am glad to discuss them.
-> Meanwhile I send original patchset with addressed remaining comments.
-> 
-> To: Jani Nikula <jani.nikula@linux.intel.com>
-> To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-> To: Rodrigo Vivi <rodrigo.vivi@intel.com>
-> To: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-> To: David Airlie <airlied@gmail.com>
-> To: Daniel Vetter <daniel@ffwll.ch>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: intel-gfx@lists.freedesktop.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: Chris Wilson <chris@chris-wilson.co.uk>
-> Cc: netdev@vger.kernel.org
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Andi Shyti <andi.shyti@linux.intel.com>
-> Cc: Das, Nirmoy <nirmoy.das@linux.intel.com>
-> Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
-> 
-> ---
-> Changes in v6:
-> - rebased to solve minor conflict and allow CI testing
-> - Link to v5: https://lore.kernel.org/r/20230224-track_gt-v5-0-77be86f2c872@intel.com
-> 
-> Changes in v5 (thx Andi for review):
-> - use *_locked convention instead of __*,
-> - improved commit messages,
-> - re-worked i915 patches, squashed separation and conversion patches,
-> - added tags,
-> - Link to v4: https://lore.kernel.org/r/20230224-track_gt-v4-0-464e8ab4c9ab@intel.com
-> 
-> Changes in v4:
-> - split "Separate wakeref tracking" to smaller parts
-> - fixed typos,
-> - Link to v1-v3: https://patchwork.freedesktop.org/series/100327/
-> 
-> ---
-> Andrzej Hajda (7):
->       lib/ref_tracker: add unlocked leak print helper
->       lib/ref_tracker: improve printing stats
->       lib/ref_tracker: add printing to memory buffer
->       lib/ref_tracker: remove warnings in case of allocation failure
->       drm/i915: Correct type of wakeref variable
->       drm/i915: Replace custom intel runtime_pm tracker with ref_tracker library
->       drm/i915: track gt pm wakerefs
-> 
-> Chris Wilson (1):
->       drm/i915/gt: Hold a wakeref for the active VM
-> 
->  drivers/gpu/drm/i915/Kconfig.debug                 |  19 ++
->  drivers/gpu/drm/i915/display/intel_display_power.c |   2 +-
->  drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c     |   7 +-
->  .../drm/i915/gem/selftests/i915_gem_coherency.c    |  10 +-
->  drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c |  14 +-
->  drivers/gpu/drm/i915/gt/intel_breadcrumbs.c        |  13 +-
->  drivers/gpu/drm/i915/gt/intel_breadcrumbs_types.h  |   3 +-
->  drivers/gpu/drm/i915/gt/intel_context.h            |  15 +-
->  drivers/gpu/drm/i915/gt/intel_context_types.h      |   2 +
->  drivers/gpu/drm/i915/gt/intel_engine_pm.c          |  10 +-
->  drivers/gpu/drm/i915/gt/intel_engine_types.h       |   2 +
->  .../gpu/drm/i915/gt/intel_execlists_submission.c   |   2 +-
->  drivers/gpu/drm/i915/gt/intel_gt_pm.c              |  12 +-
->  drivers/gpu/drm/i915/gt/intel_gt_pm.h              |  38 +++-
->  drivers/gpu/drm/i915/gt/intel_gt_pm_debugfs.c      |   4 +-
->  drivers/gpu/drm/i915/gt/selftest_engine_cs.c       |  20 +-
->  drivers/gpu/drm/i915/gt/selftest_gt_pm.c           |   5 +-
->  drivers/gpu/drm/i915/gt/selftest_reset.c           |  10 +-
->  drivers/gpu/drm/i915/gt/selftest_rps.c             |  17 +-
->  drivers/gpu/drm/i915/gt/selftest_slpc.c            |   5 +-
->  drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c  |  11 +-
->  drivers/gpu/drm/i915/i915_driver.c                 |   2 +-
->  drivers/gpu/drm/i915/i915_pmu.c                    |  16 +-
->  drivers/gpu/drm/i915/intel_runtime_pm.c            | 221 ++-------------------
->  drivers/gpu/drm/i915/intel_runtime_pm.h            |  11 +-
->  drivers/gpu/drm/i915/intel_wakeref.c               |   7 +-
->  drivers/gpu/drm/i915/intel_wakeref.h               |  99 ++++++++-
->  include/linux/ref_tracker.h                        |  31 ++-
->  lib/ref_tracker.c                                  | 179 ++++++++++++++---
->  29 files changed, 456 insertions(+), 331 deletions(-)
-> ---
-> base-commit: d4c9fe2c8c9b66c5e5954f6ded7bc934dd6afe3e
-> change-id: 20230224-track_gt-1b3da8bdacd7
-> 
-> Best regards,
-> -- 
-> Andrzej Hajda <andrzej.hajda@intel.com>
+ net/qrtr/ns.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
+index 722936f..6fbb195 100644
+--- a/net/qrtr/ns.c
++++ b/net/qrtr/ns.c
+@@ -274,7 +274,7 @@ static struct qrtr_server *server_add(unsigned int service,
+ 	return NULL;
+ }
+ 
+-static int server_del(struct qrtr_node *node, unsigned int port)
++static int server_del(struct qrtr_node *node, unsigned int port, bool del_server)
+ {
+ 	struct qrtr_lookup *lookup;
+ 	struct qrtr_server *srv;
+@@ -287,7 +287,7 @@ static int server_del(struct qrtr_node *node, unsigned int port)
+ 	radix_tree_delete(&node->servers, port);
+ 
+ 	/* Broadcast the removal of local servers */
+-	if (srv->node == qrtr_ns.local_node)
++	if (srv->node == qrtr_ns.local_node && del_server)
+ 		service_announce_del(&qrtr_ns.bcast_sq, srv);
+ 
+ 	/* Announce the service's disappearance to observers */
+@@ -373,7 +373,7 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
+ 		}
+ 		slot = radix_tree_iter_resume(slot, &iter);
+ 		rcu_read_unlock();
+-		server_del(node, srv->port);
++		server_del(node, srv->port, true);
+ 		rcu_read_lock();
+ 	}
+ 	rcu_read_unlock();
+@@ -459,10 +459,14 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
+ 		kfree(lookup);
+ 	}
+ 
+-	/* Remove the server belonging to this port */
++	/* Remove the server belonging to this port
++	 * Given that DEL_CLIENT is already broadcasted
++	 * by port_remove, no need to send DEL_SERVER for
++	 * the same port to remote
++	 */
+ 	node = node_get(node_id);
+ 	if (node)
+-		server_del(node, port);
++		server_del(node, port, false);
+ 
+ 	/* Advertise the removal of this client to all local servers */
+ 	local_node = node_get(qrtr_ns.local_node);
+@@ -567,7 +571,7 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
+ 	if (!node)
+ 		return -ENOENT;
+ 
+-	return server_del(node, port);
++	return server_del(node, port, true);
+ }
+ 
+ static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
+-- 
+2.7.4
+
