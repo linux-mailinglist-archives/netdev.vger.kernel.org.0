@@ -2,200 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C4B6CD4D0
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E7A46CD4E3
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231192AbjC2Iho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 04:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S229951AbjC2Ikz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 04:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbjC2Ihl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:37:41 -0400
-Received: from BN6PR00CU002.outbound.protection.outlook.com (mail-eastus2azon11021026.outbound.protection.outlook.com [52.101.57.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F7A10E4;
-        Wed, 29 Mar 2023 01:37:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DMloopnpbrlzx6tIvgTXa4poj0079PPObfmYSRZrccMLKkC+ED3pYLaaUE5Vt9HJswzCieMkjF6GwGtz4QNyN6q2Yy59MHbcyx6hhbAO6VmRpC5Fm1Fs89QZmw14EXyTb7C/qwn+W6yTFU0WYPv9DAPLfh2bC7W4/ab7FUQe5iwqA1LM4Nli5zGHenbrm7kE+mlsIJPWGe5Xf8dQoY1fZ8oE/TiF6WbYUZZmTEf2g2F8olzJt0jyUJXtPZfnixHRtTEtgwIiXsBvxKyKEFUIhyGg+bpV9TE8rwcvRHKC0ot3Glk2XUNYAUk6AWZVBAgUslWWl8qbCuekPZ8rBI8+Dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ubL49LYY3CYuZenm4FRtFViIj3GpwcCkisWsjLwZ6+s=;
- b=V7eOziy9JtJHG5SUtLUMjUfCEQRH5O+Z8N9qRRL78v9TQ5Awh/C7SKV5Uz5OLq39R8K4TmTl8i1ep+3Gc+5C0YPgx1tFxvQceBBKZn84PNgu0LgCE9AAXNNINXa69QDfx6LI9paHti8Ra7uhP9zNEGzZXsk0nSeq7qknSqVaZvuWyknxtWy1F1yUFyV4DjXoXd2b+drMtoMzWZS/LFNmzAlc0ExJRR4GJh5yLDHnh11BwQe71POWds7I0mJhNpeA1PTVb9dy3fYGSaHNAz/4r+oM2bDPqop7j7Zu0P2HeJcIIExGr9ERUBqcTpJyP78OnS0fbfd+Gl4GyrnStnNUXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ubL49LYY3CYuZenm4FRtFViIj3GpwcCkisWsjLwZ6+s=;
- b=ieQySeNtld6NYNEmPxD4XbIuxepA8uAXQN+dHLT8sVBGcMtTDPQNSmfIZO04dh2ddI/qPZVP3XXcW3qf5Wafn8K0uL4EZ1EmmeZYZ6SnEYIb7qlZOkivcU68T2Oj9AU513R6VbbgVs/CqjSMwOyioj1hoKxhDEvH2cFzK+TmlFQ=
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
- by PH8PR21MB3927.namprd21.prod.outlook.com (2603:10b6:510:251::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.9; Wed, 29 Mar
- 2023 08:37:21 +0000
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::2e52:d6aa:9a99:500a]) by SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::2e52:d6aa:9a99:500a%5]) with mapi id 15.20.6277.010; Wed, 29 Mar 2023
- 08:37:20 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     Saurabh Singh Sengar <ssengar@microsoft.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jake Oshins <jakeo@microsoft.com>,
-        "kuba@kernel.org" <kuba@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh@kernel.org" <robh@kernel.org>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Long Li <longli@microsoft.com>,
-        "boqun.feng@gmail.com" <boqun.feng@gmail.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXTERNAL] [PATCH 1/6] PCI: hv: fix a race condition bug in
- hv_pci_query_relations()
-Thread-Topic: [EXTERNAL] [PATCH 1/6] PCI: hv: fix a race condition bug in
- hv_pci_query_relations()
-Thread-Index: AQHZYTE8ycJYvqlEuU6bxR9LLTVmZa8PqarwgAABRpCAAMcOgIAA++dw
-Date:   Wed, 29 Mar 2023 08:37:20 +0000
-Message-ID: <SA1PR21MB13359123DC327D00C2EF47E7BF899@SA1PR21MB1335.namprd21.prod.outlook.com>
-References: <SA1PR21MB133553326FBAD376DE9DB48ABF889@SA1PR21MB1335.namprd21.prod.outlook.com>
- <20230328172445.GA2951931@bhelgaas>
-In-Reply-To: <20230328172445.GA2951931@bhelgaas>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f08b4990-b6f9-4486-a469-f8ba0684ac06;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-29T08:26:20Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|PH8PR21MB3927:EE_
-x-ms-office365-filtering-correlation-id: 7527cc86-4685-4fa5-8d0e-08db3030cfc2
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vWl04fSXDqts3oBo1j4ky5dVVffRwSWnIqNzJp+DdEEzbpSpcb5iWcfWqoRjgzENWyPLi46pTaQt6Q09S/DMPVQSFkpV52oyXlx2P4qDIdn6oG3p0MkNDGYDc/wuzCGlqAgXzEXLYBcszkmTsKO/C6bhw1iBFvhqQPVH++YBLvUA9WXMtbtJ7DyRHX/0B2hdlUgUbnr//fjUTmbje6ArrihJn0x6PgW1WILLDKDKgJTDG353rXPf6PmoTsehKbiKbB6Xm+lT6+dA4ediCqE+ntvQovOFwyxamhbxkw7ExPlJXX9PFvrCRi4uDgtKOq3Hej1tubJ4Ivtocn+iRgQTymF+Upgf1TkRWcdLZ689oppVlokxABYcBBLxLtdjpq1mrF8VI+NvUK8lHJud0jqxpyu7FPD5uqUan2YDHLgC5+u3bW4/Q80H8SVF0u82hR7pvnHuXj6DYw3JE+VowPsUHtDBbLGday1p/58XS9P91bGxG5eHEYb4hmPFQ/lqBZV5Ou+amjnBaVHjit3sNgMCuZUZ0qlO5hoZM+xmAPDDcR7yY9M33cZIwFB7gVSW+D+B13PdRtUwbqwuiAz55UVeYej5ALRkUtuMMRWHXD8NtymGzFO5eUkcisHzJu1hBfSBRlU7btO2M5KEqDoTDGTKrhdU7zGmbAcAiGFpjSGblAw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:cs;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(136003)(396003)(376002)(39860400002)(346002)(451199021)(26005)(82960400001)(122000001)(82950400001)(53546011)(9686003)(38100700002)(186003)(33656002)(8936002)(2906002)(5660300002)(7416002)(6506007)(52536014)(8990500004)(54906003)(38070700005)(10290500003)(478600001)(7696005)(316002)(71200400001)(86362001)(55016003)(4326008)(41300700001)(6916009)(76116006)(64756008)(66556008)(66476007)(66946007)(66446008)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2D+F5MGAWEDrBp1zTdV2gEhBhgYcTtAWzsc1lNWn0q+OCr8Tqgd9H/hJPKbH?=
- =?us-ascii?Q?LWEG81GJEJDDYRF+7h+I8Du6mXeU4gVrbagl1Jz3y4GfzrOcZkEWpqAZUft6?=
- =?us-ascii?Q?7NqqtDxcZRexgGPT/Su9Um1LEQn0HsZRiSgOYrtDuViGEDnrxIpmAdjNSbtQ?=
- =?us-ascii?Q?Ew844UheZnYjpMlY8LwkodYTMh4DNX339ZZKye61epiuBQ6hXDlQ+CR5Mj90?=
- =?us-ascii?Q?4GFkXUA1dwehcw7m55wcO69SkGkYTYS5xgWEkzpEn+/ejz+68tU8W9yvVM/6?=
- =?us-ascii?Q?96TvSeRnfAyl0yt5cLqF/n9VF8jK3kpkZO5eJz0wo5C/uSfLcpi0gNlESTIK?=
- =?us-ascii?Q?rGbrEA5ULPt/shJKD8kzL7BoXM8b0o/S7mkLtnJguWfeZ8GLh5Lc4T8eoVqo?=
- =?us-ascii?Q?bZTsZYbugB2qWto8zzIh4y88Z8a+fLh4709zIPQA6d33EBU10YRuBTu6wJqR?=
- =?us-ascii?Q?lpBNfPr4rb9RtTXvL5xeQEiel6J4qJaU+h1G66LeBt631SBfrPwu4hLL39Wl?=
- =?us-ascii?Q?ODkXxEABWg6rAN1HVxS4gRw+3Jw1YRhPsOajzydGJME91SS/sc3OAZAsrqok?=
- =?us-ascii?Q?fNT8DTstkdPga5fCEC9kvaqpOzxXcxSu6Lz+9FGMeAXLSnj+CKKGNkheR+t2?=
- =?us-ascii?Q?/GaqekmNYVoNIYkzekgmLZq0R283Tdx8hESiZtpGovEUD6E8pNSg6bRVdNY0?=
- =?us-ascii?Q?UU7nO0Vqef9JA5E+C2oWHZA3SdNeF+SQAkGexf5iwIfDGpYGFyIU0sIwyj69?=
- =?us-ascii?Q?pgQbsjOq4TynBtnEQOReyjPLzeXXvQqTUA/ahT8ns1mnOl8IRCJ2OkKXCVW9?=
- =?us-ascii?Q?HYPHURx8w1IERW8g3OjQsp4eUCHSyU9TkT70f2FwkyYiZxlieNZQhaCWyWbZ?=
- =?us-ascii?Q?JZjZF9Bd8dvo6j91Jv9rB7BxNY86lkVWI+BYuogFRVZesMMzfamjGpdAaOBw?=
- =?us-ascii?Q?uWJuB/4YEg6pxCyfnErJFMRMjiRFS6uxBH+pzP/+hJYhowZP13IPuBQFl9Dh?=
- =?us-ascii?Q?r7sH/sgZhFXjQ57pALqu2XamGd9hGXqDXBw5X7kWhadcYC6qxXjt0cKF8OM8?=
- =?us-ascii?Q?j/UpDI4pRKUxuZlqtAjpwWVrlobyhbiGGjAoVdnmrGCkZOJ8vVzMj5azgzNb?=
- =?us-ascii?Q?vWv0cdmlUo7mYuPw6BLpU2MJSo/puVrtb/W+VsQeLDXkb7ZFarLm6bhEX3DT?=
- =?us-ascii?Q?Qkpsk3ek/rFGKkdI/uwhGhZzpng9ywgiXIuVeteOuQYu3YSEOMGSWkIEFhbl?=
- =?us-ascii?Q?SQlnLvYXbKaAwkLo3Gp6DMGQFVXq6yLxIOAPTJWoKQzFCGMfc5U8ihDeupTO?=
- =?us-ascii?Q?QNeR9pUEzrdC0jib4L9K94KYUBif+19tdThkxVkzxvmAh7lod68fNHY5RmY2?=
- =?us-ascii?Q?qNk3Ym11HrP6vU2S0WTklnGxUOn2ClWk2/AtNiYcvwu/6sSQKEfQIY2FbI6R?=
- =?us-ascii?Q?oATZNHgODd64iZ1QCBxiLTmjlD3kh12a9HdDLGdpCNSkuXms22YjTnVwlR2r?=
- =?us-ascii?Q?oER3HNGxvBIeRkSfjOPLcjOSkM4Y/gxau+p28NZkTRnQ6OHoGtIWIxpvcEnq?=
- =?us-ascii?Q?+Npk9oBcpiiu+dMB+rrCVQEXzveDuZocDKmlBALf?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229783AbjC2Iky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:40:54 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AEC12E;
+        Wed, 29 Mar 2023 01:40:48 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id g7so9781378pfu.2;
+        Wed, 29 Mar 2023 01:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680079248;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=T4nFg4zKMGojw1a9EUgiYrx0HzwuMwAbekbAVn3z66s=;
+        b=V4fUz5/MNZNeW1jMG5OcBY4Tpy3nx8pejz1mjjui8TMA8VFc8VTH90eQvkJxcjRK+q
+         qGiV1pS07CiLbAP1AaqcNcR+CoYmiHz3aZBc6RmMTnufrnZ6yrYnW4l/SIZ90x2tR/yq
+         qqU6ywlIXlm77nooDOXfDuoT3iClb8PMr6I1sD5GBrc4Q6n7UX12trb5um9753Y5CujO
+         +tDQgOFl8OCqHAMWEKeuPO39s8ChLyRfjgHKDCOX05VAKhPocYKkTbV8Op1lo6XSMZdX
+         lWPnb20TOnLVjnx/2CNWpkIL6ykc6HjvCCGA1S2Efsb6Jw5jbbX3GUMSCnZf1kBiJS/e
+         Ik1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680079248;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T4nFg4zKMGojw1a9EUgiYrx0HzwuMwAbekbAVn3z66s=;
+        b=jHysOHPDAAjEPRAn+GAlVPT1bnhfqBLa2pGVdMVLx3cIXCrIxuInhR+b0pHzVWfy1R
+         ks7AEM/ORdcw9vXDUOkkgehPy453XhHNC3DzCKrriT1LP6wtKDmvPippnYgWuZE7+8Qh
+         2ElUzVbGVG/pzeYIItje5Z3ury7BAHhRGh5z0s6rH4JNIOLEO9yZ7kI1LMfbMvoiHoaO
+         zNRCZrFNGT8xtZSs/4HPrd45dpp8Frn5EvAo1mT3fGD7xt9iiuMt3GDF6Ma6wjYVCcpv
+         +bAl5/Zh9okZoQ2vuT/h2Sp6iMCqRLH3nJ+a2yw8ii8E+Znvx4iCnu8CMC6KlnkDYFIT
+         Q8vg==
+X-Gm-Message-State: AAQBX9eQjEPLBjpe7flujq2sqkZds+//OgQ7/8vABshPSK+Sj1/NCE1e
+        sNSOTAsA6QXjmrcRG3iZGQY=
+X-Google-Smtp-Source: AKy350ZeSdakn87GYUZYeIzq/R0++5i4nskJlkhQzoG11bTfiOXNzxI+PTUP/mlACh8Rh4Eqqw7oCA==
+X-Received: by 2002:a62:5254:0:b0:626:286d:b701 with SMTP id g81-20020a625254000000b00626286db701mr17920670pfb.20.1680079247947;
+        Wed, 29 Mar 2023 01:40:47 -0700 (PDT)
+Received: from debian.me (subs32-116-206-28-15.three.co.id. [116.206.28.15])
+        by smtp.gmail.com with ESMTPSA id a25-20020a62e219000000b00590ede84b1csm23173046pfi.147.2023.03.29.01.40.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Mar 2023 01:40:47 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 8D8D4106705; Wed, 29 Mar 2023 15:40:44 +0700 (WIB)
+Date:   Wed, 29 Mar 2023 15:40:44 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>, Takashi Iwai <tiwai@suse.de>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [Intel-wired-lan] [REGRESSION] e1000e probe/link detection fails
+ since 6.2 kernel
+Message-ID: <ZCP5jOTNypwG4xK6@debian.me>
+References: <87jzz13v7i.wl-tiwai@suse.de>
+ <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7527cc86-4685-4fa5-8d0e-08db3030cfc2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2023 08:37:20.4891
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HUTwfQD1NP9FjYvz2dYsEEbXTjN2b+k/WeKz5ANBttUR5HXB0BtAnjkmW21woffZRnsmiLCJdb0jzfGOqCO2pA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR21MB3927
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="cyVgV9qP40t8gPzM"
+Content-Disposition: inline
+In-Reply-To: <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
+X-Spam-Status: No, score=1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Bjorn Helgaas <helgaas@kernel.org>
-> Sent: Tuesday, March 28, 2023 10:25 AM
-> To: Dexuan Cui <decui@microsoft.com>
-> ...
-> On Tue, Mar 28, 2023 at 05:38:59AM +0000, Dexuan Cui wrote:
-> > > From: Saurabh Singh Sengar <ssengar@microsoft.com>
-> > > Sent: Monday, March 27, 2023 10:29 PM
-> > > > ...
-> > > > ---
-> >
-> > Please note this special line "---".
-> > Anything after the special line and before the line "diff --git" is dis=
-carded
-> > automaticaly by 'git' and 'patch'.
-> >
-> > > >  drivers/pci/controller/pci-hyperv.c | 13 +++++++++++++
-> > > >  1 file changed, 13 insertions(+)
-> > > >
-> > > > @@ -3635,6 +3641,8 @@ static int hv_pci_probe(struct hv_device *hde=
-v,
-> > > >
-> > > >  retry:
-> > > >  	ret =3D hv_pci_query_relations(hdev);
-> > > > +	printk("hv_pci_query_relations() exited\n");
-> > >
-> > > Can we use pr_* or the appropriate KERN_<LEVEL> in all the printk(s).
-> >
-> > This is not part of the real patch :-)
-> > I just thought the debug code can help understand the issues
-> > resolved by the patches.
-> > I'll remove the debug code to avoid confusion if I need to post v2.
+
+--cyVgV9qP40t8gPzM
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Mar 28, 2023 at 04:39:01PM +0200, Paul Menzel wrote:
+> Does openSUSE Tumbleweed make it easy to bisect the regression at least on
+> =E2=80=9Crc level=E2=80=9D? It be great if narrow it more down, so we kno=
+w it for example
+> regressed in 6.2-rc7.
 >=20
-> I guess that means you *will* post a v2, right? =20
 
-I guess I didn't make myself clear, sorry. The "debug code" is not
-part of the real patch body -- if we run the "patch" program or "git am"
-to apply the patches, the "debug code" is automatically dropped because
-it's between the special "---" line and the real start of the patch body (i=
-.e.
-the "diff --git" line).=20
+Alternatively, can you do bisection using kernel sources from Linus's
+tree (git required)?
 
-So far, IMO I don't have to post v2 because the patch body and the patch
-description (except for the part that's automatically removed by 'patch'
-and 'git') don't need any change.
+--=20
+An old man doll... just what I always wanted! - Clara
 
-> Or do you expect
-> somebody else to remove the debug code?  If you do keep any debug or
-> other logging, use pci_info() (or dev_info()) whenever possible.
+--cyVgV9qP40t8gPzM
+Content-Type: application/pgp-signature; name="signature.asc"
 
-As I explained above, 'patch' and 'git' automatically remove the part that
-don't have to be in the git history.
+-----BEGIN PGP SIGNATURE-----
 
->=20
-> Also capitalize the subject line to match the others in the series.
->=20
-> Bjorn
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZCP5hgAKCRD2uYlJVVFO
+oyl2AP4j+bMThihDAhQDsVmg3q4Dgn/R1Tm/T9ALIQekbXtkvwD+IWh8158WgO5h
+qOc7nN3lZwaB/V+HxGXv7L6aRMBQ3A4=
+=4fBA
+-----END PGP SIGNATURE-----
 
-Thanks for catching this! If this is the only thing to be fixed, I hope the
-PCI folks can help fix this when accepting the patch. If you think I should
-post v2, please let me know.=20
+--cyVgV9qP40t8gPzM--
