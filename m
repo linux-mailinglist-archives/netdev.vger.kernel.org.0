@@ -2,79 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B1AF6CEF56
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 653DE6CEF64
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:30:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbjC2Q2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 12:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56248 "EHLO
+        id S229823AbjC2Q35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 12:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbjC2Q2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:28:47 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6FA423F;
-        Wed, 29 Mar 2023 09:28:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+jXKHUtknIYsW5onYdVNmhni/4ffvAb6VEdjSV93nTE=; b=ozxBKntl/ns+qAe7u20tANVKv9
-        YIlNEYw9i1spyxcvKMyhffdh1Ie71kiyuTFQlms0H0sUa6nlJXM1NFr3+kYxuLyKpJakw6wo4mcct
-        d0GQEsZv9t5QstfXFsQxvX6f6km9k4dK+s+pp9sF2/Zs9af/2rD0YzkP0Xl9U8T0BXek=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1phYf8-008mVT-W7; Wed, 29 Mar 2023 18:28:38 +0200
-Date:   Wed, 29 Mar 2023 18:28:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC PATCH net-next v3 06/15] net: dsa: mt7530: move
- p5_intf_modes() function to mt7530.c
-Message-ID: <38703034-8977-495c-aadd-ea93d13395da@lunn.ch>
-References: <cover.1680105013.git.daniel@makrotopia.org>
- <98fc2eec00985854010e3d0d16ba7f4c924ab49f.1680105013.git.daniel@makrotopia.org>
+        with ESMTP id S229588AbjC2Q34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:29:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BEE065BA
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 09:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680107346;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=LRGCUeVsUs6xmha+0hhW8PleaE0DpIvvn/LbxoOLCm4=;
+        b=C/DJfQhP2XLiWg8JSd6io6PzWVsXhoUvys2a2vU4l/NEl2NUOwLql52/P0SoGn3ojLX2dL
+        B060HS3kErfb9zGgvQ34Am123FW6gY7l909MCHVTPC6e6ljurK3trinpYJ1JD6E5epgfpl
+        GnPIeXxD62QvI+e3qLwSzWztlr1vkDg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-142-SNscpT1SPMeRb3UWBuCMQw-1; Wed, 29 Mar 2023 12:29:01 -0400
+X-MC-Unique: SNscpT1SPMeRb3UWBuCMQw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B9C3F2806046;
+        Wed, 29 Mar 2023 16:28:59 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.45.242.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5FD59492B00;
+        Wed, 29 Mar 2023 16:28:59 +0000 (UTC)
+Received: from [10.1.1.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 368D430736C72;
+        Wed, 29 Mar 2023 18:28:58 +0200 (CEST)
+Subject: [PATCH bpf RFC-V2 0/5] XDP-hints: API change for RX-hash kfunc
+ bpf_xdp_metadata_rx_hash
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, martin.lau@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
+        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
+        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
+        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
+        davem@davemloft.net
+Date:   Wed, 29 Mar 2023 18:28:58 +0200
+Message-ID: <168010726310.3039990.2753040700813178259.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <98fc2eec00985854010e3d0d16ba7f4c924ab49f.1680105013.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 04:58:35PM +0100, Daniel Golle wrote:
-> In preparation of splitting mt7530.c into a driver for MDIO-connected
-> as well as MDIO-accessed built-in switches on one hand and MMIO-accessed
-> built-in switches move the p5_inft_modes() function from mt7530.h to
-> mt7530.c. The function is only needed there and will trigger a compiler
-> warning about a defined but unused function otherwise when including
-> mt7530.h in the to-be-introduced bus-specific drivers.
+Notice targeted 6.3-rc kernel via bpf git tree.
 
-The other way to avoid the warning is to mark it inline. The compiler
-will not warn than. But this solution is also good.
+Current API for bpf_xdp_metadata_rx_hash() returns the raw RSS hash value,
+but doesn't provide information on the RSS hash type (part of 6.3-rc).
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patchset proposal is to use the return value from
+bpf_xdp_metadata_rx_hash() to provide the RSS hash type.
 
-    Andrew
+Alternatively we disable bpf_xdp_metadata_rx_hash() in 6.3-rc, and have
+more time to nitpick the RSS hash-type bits.
+
+---
+
+Jesper Dangaard Brouer (5):
+      xdp: rss hash types representation
+      igc: bpf_xdp_metadata_rx_hash return xdp rss hash type
+      veth: bpf_xdp_metadata_rx_hash return xdp rss hash type
+      mlx5: bpf_xdp_metadata_rx_hash return xdp rss hash type
+      mlx4: bpf_xdp_metadata_rx_hash return xdp rss hash type
+
+
+ drivers/net/ethernet/intel/igc/igc_main.c     | 22 +++++-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 20 ++++-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 61 +++++++++++++-
+ drivers/net/veth.c                            |  7 +-
+ include/linux/mlx5/device.h                   | 14 +++-
+ include/net/xdp.h                             | 79 +++++++++++++++++++
+ net/core/xdp.c                                |  4 +-
+ 7 files changed, 196 insertions(+), 11 deletions(-)
+
+--
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Sr. Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
