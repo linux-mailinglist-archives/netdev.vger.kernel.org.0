@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FCF06CCFD0
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:10:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9CF06CCFD3
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbjC2CK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 22:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
+        id S229529AbjC2CPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 22:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjC2CK4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:10:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5FA10F3
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 19:10:54 -0700 (PDT)
+        with ESMTP id S229451AbjC2CO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:14:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF16271C;
+        Tue, 28 Mar 2023 19:14:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9D5EB819D1
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 02:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E746C433D2;
-        Wed, 29 Mar 2023 02:10:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B661619C4;
+        Wed, 29 Mar 2023 02:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B089AC4339B;
+        Wed, 29 Mar 2023 02:14:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680055852;
-        bh=F1c5m9g0gDKJO+BxV98JGi0JqFdwtToUt61yhGp6OZQ=;
+        s=k20201202; t=1680056097;
+        bh=GMZxOMb07ezvMItY7QupneC0McChBLFio51bQ337A5U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lzOZQcznAlcKiyV6Vfnq6Mc8Sc8cD5eJJmhmycsGaJHnByFnfg8dlSb5a6ubZhmrk
-         uLvNR8v28Fxl35Dmobqp2j1wJcQ6a68cx+9fLCdvqPkk8bvBA0d6SFeSrh9m5uEPs5
-         kgeMfyplL/tQRLNPTV6Dfz7WP1HWCSYQvdIguhLC5t41wj+EWgmGEffx7HSL0J7QuZ
-         4e+dkNpULXDRRl9rj8Xa6oZN2z5kcs6rpcy6Cq4FTOsAF1Q63ZHjgfzNZzgSpXgMIc
-         d9VI4puKnlSN7ileM6GsYWUYGWbetn5z6U4DNc8EpaeT6ZGZfEqyQkURuXpU8tSOZQ
-         Zdjy/622FYIBQ==
-Date:   Tue, 28 Mar 2023 19:10:51 -0700
+        b=LpIuE1MO2g6H75THTzXsOc3+S6/vcszA3x/W5cTb60WxSpTmbOvsznIpG/7Z2jsMO
+         dddgJfzIdZn6rs79r4GnwFunALS+SkqE6ewRTnpBfQl0xOCF+ooaZ7s/Gw8ZWktM5W
+         s5NQOwtE8KxA7Kh5l4ZfW44ljfvv2HDuQsHapvcOHvVZXyAMYUhN79jAPQpqsJNG7I
+         bl6kScmrGyyMH8ZixbCBnx/6m/8AEfxaqcej80pnRGFWkPuzXEQtAOy47hHTCLjTtK
+         F4UxCM37W2GGVx+vOsgT0FMeD9/HR8EcOegB2poNESA2dWShf93Hz+BleM2uQf9qoP
+         xz3S02vx1X3Xw==
+Date:   Tue, 28 Mar 2023 19:14:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Liang He <windhl@126.com>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] rionet: Fix refcounting bugs
-Message-ID: <20230328191051.4ceea7bb@kernel.org>
-In-Reply-To: <20230328045006.2482327-1-windhl@126.com>
-References: <20230328045006.2482327-1-windhl@126.com>
+To:     Ganesh Babu <ganesh.babu@ekinops.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
+Message-ID: <20230328191456.43d2222e@kernel.org>
+In-Reply-To: <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
+References: <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,18 +52,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Mar 2023 12:50:06 +0800 Liang He wrote:
-> In rionet_start_xmit(), we should put the refcount_inc()
-> before we add *skb* into the queue, otherwise it may cause
-> the consumer to prematurely call refcount_dec().
+On Tue, 28 Mar 2023 07:13:03 +0000 Ganesh Babu wrote:
+> From a91f11fe060729d0009a3271e3a92cead88e2656 Mon Sep 17 00:00:00 2001
+> From: "Ganesh Babu" <ganesh.babu@ekinops.com>
+> Date: Wed, 15 Mar 2023 15:01:39 +0530
+> Subject: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
+>=20
+> Increase mif6c_pifi field in mif6ctl struct
+> from 16 to 32 bits to support 32-bit ifindices.
+> The field stores the physical interface (ifindex) for a multicast group.
+> Passing a 32-bit ifindex via MRT6_ADD_MIF socket option
+> from user space can cause unpredictable behavior in PIM6.
+> Changing mif6c_pifi to __u32 allows kernel to handle
+> 32-bit ifindex values without issues.
 
-Are you sure the race can happen? Look around the code, please.
+The patch is not formatted correctly.
+Maybe try git send-email next time?
 
-> Besides, before the next rionet_queue_tx_msg() when we
-> meet the 'RIONET_MAC_MATCH', we should also call
-> refcount_inc() before the skb is added into the queue.
+> diff --git a/include/uapi/linux/mroute6.h b/include/uapi/linux/mroute6.h
+> index 1d90c21a6251..90e6e771beab 100644
+> --- a/include/uapi/linux/mroute6.h
+> +++ b/include/uapi/linux/mroute6.h
+> @@ -75,7 +75,7 @@ struct mif6ctl {
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 mifi_t =C2=A0mif6c_mifi; =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 /* Index of MIF */
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned char mif6c_flags; =C2=A0 =C2=A0 =C2=
+=A0/* MIFF_ flags */
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned char vifc_threshold; =C2=A0 /* ttl l=
+imit */
+> - =C2=A0 =C2=A0 =C2=A0 __u16 =C2=A0 =C2=A0mif6c_pifi; =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0/* the index of the physical IF */
+> + =C2=A0 =C2=A0 =C2=A0 __u32 =C2=A0 =C2=A0mif6c_pifi; =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0/* the index of the physical IF */
 
-And why is that?
+Unfortunately we can't do this. The structure is part of uAPI,
+we can't change it's geometry. The kernel must maintain binary
+backward compatibility.=20
 
-As far as I can tell your patch reorders something that doesn't matter
-and then adds a bug :|
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned int vifc_rate_limit; =C2=A0 /* Rate =
+limiter values (NI) */
+> =C2=A0};
+>=20
+> --
+> 2.11.0
+>=20
+> Signed-off-by: Ganesh Babu <ganesh.babu@ekinops.com>
+> ---
+
