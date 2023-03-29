@@ -2,82 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEDE46CD219
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22EBC6CD22B
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbjC2GaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 02:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S229726AbjC2Gko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 02:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbjC2GaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:30:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977A33C00
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 23:30:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33EF061A7E
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 06:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C0FAC4339B;
-        Wed, 29 Mar 2023 06:30:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680071418;
-        bh=+mPBkyG7ROXIiGP5j05Qq+sOT5prKcATXbgaxY8cpKU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YkdmMjNkGfIbYMIdSIjkENXod8ap7yS3eknKCCDTeouH8p4psxRoSh5hKp9xBJCTt
-         lddFH9DCNg25GNZqyotelxaQnjsZswJDpnMxwMAQztIBzWD+kAu42jiaGIqO7eHE+c
-         KrqyM8NmLVKoLwD8GqgOZtSulVyvhBhPAyW8GMYRqK67l2JLVDV/JDji0UhOOExvSQ
-         4JQ7uqY3ZYrudahd06rrbcYS7RH+NL+eJ16isPfnTKfCeJTa/KGs11wixxRG1VzG78
-         JS0wnPKX7bcY1S5QSajbQXcnxuWYsCD/6fcvyKxGVarCx3WJ4qm0aP/TcwAcC8mq55
-         ET0wCP55dm2Gg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A272E21EE4;
-        Wed, 29 Mar 2023 06:30:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229711AbjC2Gkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:40:43 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69666171E
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 23:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=bp2oMfQvdpfgL+bw/t6/ET9O4Xp
+        sb1NY92VJliw+S7w=; b=RxyhuWsXKrtXlpT7D0AKfoJiQQumEatJPpXrayV7Vf+
+        SCkiCDDZB8zpK0N05igqaRd0fX9FWLw1puxMWJLd52CvBeCeWPxThyiIWuhuBPN0
+        QjrCOC2SHErx/onZzzCedM3UYU3OHHz9QWNibNRK6YjTbCvv6ure8uZMmJEXsOsU
+        =
+Received: (qmail 456570 invoked from network); 29 Mar 2023 08:40:30 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 29 Mar 2023 08:40:30 +0200
+X-UD-Smtp-Session: l3s3148p1@IB9oQAT4vKsujnv6
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v4] smsc911x: only update stats when interface is up
+Date:   Wed, 29 Mar 2023 08:40:10 +0200
+Message-Id: <20230329064010.24657-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: mtk_eth_soc: fix tx throughput regression
- with direct 1G links
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168007141843.30022.119227065684030998.git-patchwork-notify@kernel.org>
-Date:   Wed, 29 Mar 2023 06:30:18 +0000
-References: <20230324140404.95745-1-nbd@nbd.name>
-In-Reply-To: <20230324140404.95745-1-nbd@nbd.name>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, frank-w@public-files.de,
-        daniel@makrotopia.org
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Otherwise the clocks are not enabled and reading registers will OOPS.
+Copy the behaviour from Renesas SH_ETH and use a custom flag because
+using netif_running() is racy. A generic solution still needs to be
+implemented. Tested on a Renesas APE6-EK.
 
-This patch was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Fixes: 1e30b8d755b8 ("net: smsc911x: Make Runtime PM handling more fine-grained")
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
 
-On Fri, 24 Mar 2023 15:04:04 +0100 you wrote:
-> Using the QDMA tx scheduler to throttle tx to line speed works fine for
-> switch ports, but apparently caused a regression on non-switch ports.
-> 
-> Based on a number of tests, it seems that this throttling can be safely
-> dropped without re-introducing the issues on switch ports that the
-> tx scheduling changes resolved.
-> 
-> [...]
+Changes since v3:
+* broken out of a patch series
+* don't use netif_running() but a custom flag
 
-Here is the summary with links:
-  - [net] net: ethernet: mtk_eth_soc: fix tx throughput regression with direct 1G links
-    https://git.kernel.org/netdev/net/c/07b3af42d8d5
+ drivers/net/ethernet/smsc/smsc911x.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
+index a690d139e177..af96986cbc88 100644
+--- a/drivers/net/ethernet/smsc/smsc911x.c
++++ b/drivers/net/ethernet/smsc/smsc911x.c
+@@ -140,6 +140,8 @@ struct smsc911x_data {
+ 
+ 	/* clock */
+ 	struct clk *clk;
++
++	bool is_open;
+ };
+ 
+ /* Easy access to information */
+@@ -1738,6 +1740,8 @@ static int smsc911x_open(struct net_device *dev)
+ 	smsc911x_reg_write(pdata, TX_CFG, TX_CFG_TX_ON_);
+ 
+ 	netif_start_queue(dev);
++	pdata->is_open = true;
++
+ 	return 0;
+ 
+ irq_stop_out:
+@@ -1778,6 +1782,8 @@ static int smsc911x_stop(struct net_device *dev)
+ 		dev->phydev = NULL;
+ 	}
+ 	netif_carrier_off(dev);
++	pdata->is_open = false;
++
+ 	pm_runtime_put(dev->dev.parent);
+ 
+ 	SMSC_TRACE(pdata, ifdown, "Interface stopped");
+@@ -1841,8 +1847,12 @@ smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ static struct net_device_stats *smsc911x_get_stats(struct net_device *dev)
+ {
+ 	struct smsc911x_data *pdata = netdev_priv(dev);
+-	smsc911x_tx_update_txcounters(dev);
+-	dev->stats.rx_dropped += smsc911x_reg_read(pdata, RX_DROP);
++
++	if (pdata->is_open) {
++		smsc911x_tx_update_txcounters(dev);
++		dev->stats.rx_dropped += smsc911x_reg_read(pdata, RX_DROP);
++	}
++
+ 	return &dev->stats;
+ }
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
