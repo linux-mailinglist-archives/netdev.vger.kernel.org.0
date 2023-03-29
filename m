@@ -2,266 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F316CF27D
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A64286CF291
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:57:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbjC2Swv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 14:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
+        id S229762AbjC2S5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 14:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbjC2Swv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:52:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C024C3A
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 11:52:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC11E61DF0
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 18:52:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F149C433D2;
-        Wed, 29 Mar 2023 18:52:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680115959;
-        bh=tJQh8hxzb6cjcoek/HQB41uPjrQD4yyLbq9tcQ3pF/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CIh9Np5aTc+r0EfkzEQ4duxBzRQm8Dzx1YAiCn6RNu64/Yuc3OqsAEWuaFIoym6xk
-         HFXBWb5rmQqWYIrrqQv95U2gJwFu39XrVcwMvYtdTzMdgq/I50srkNm8x7hezqS3Id
-         VMoHQmm6wKtO5KUF/Yxm3+gPC/Hp2DvKMrI6q9UTpi1DSvFIVun56InIF/kllgzIWw
-         AgnFqFyg8bGb3ikrczhI9gV0CIZ+Y7xjSPbbx/uzCU5Hm4nuIzoOVlFq/oBV23uq3r
-         BQftPxXiVQlLJNNUfcCdRcbObLdkaGOK0E7xd522YKu7jTmThfbYtXC0YInYH1TL0D
-         r0/aq3JyLMQFg==
-Date:   Wed, 29 Mar 2023 21:52:35 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Louis Peens <louis.peens@corigine.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yinjun Zhang <yinjun.zhang@corigine.com>
-Subject: Re: [PATCH net-next 2/2] nfp: separate the port's upper state with
- lower phy state
-Message-ID: <20230329185235.GD831478@unreal>
-References: <20230329144548.66708-1-louis.peens@corigine.com>
- <20230329144548.66708-3-louis.peens@corigine.com>
+        with ESMTP id S229511AbjC2S5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:57:31 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA31D5251;
+        Wed, 29 Mar 2023 11:57:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=pM8ulVGVCx+HFUHyjXmlEYig7gRCScbLpQSmmvC68OE=;
+        t=1680116250; x=1681325850; b=PNw3S6f8ByRabHV3al6YN41hitZvJt2utF+nsLvW55Dcga3
+        6zpzke5bUD+5tOG97d3WLaszWhFv0BrZcuDESsmdDRdE/dqhznSnszH2WvEkdUA0eduG3ReKUMoyb
+        hS25FVf8G0+YGU+nRMJ1oVu7bkpjGl3uhM4X74h1TgA6OzdKeWACzMXwLjYIRJuE8RyjVjuEAWCU1
+        FYQm4XFASgYfqzeJASV7/+9YuO2u5glqzpoF7T+VMpC3lUBFvWt8WoGNhdE+rpegTHvJKFtM4resk
+        /SWuYI4PqU/GtQuEnt0FfqTkCEoRjEMVQSD7W9uy0cRYVLjprctE6zcl7pOENk3g==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1phaz9-000CVe-1i;
+        Wed, 29 Mar 2023 20:57:27 +0200
+Message-ID: <37311ab0f31d719a65858de31cec7a840cf8fe40.camel@sipsolutions.net>
+Subject: Re: traceability of wifi packet drops
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Date:   Wed, 29 Mar 2023 20:57:26 +0200
+In-Reply-To: <20230329110205.1202eb60@kernel.org>
+References: <00659771ed54353f92027702c5bbb84702da62ce.camel@sipsolutions.net>
+         <20230327180950.79e064da@kernel.org>
+         <abcf4b9aed8adad05841234dad103ced15f9bfb2.camel@sipsolutions.net>
+         <20230328155826.38e9e077@kernel.org>
+         <8304ec7e430815edf3b79141c90272e36683e085.camel@sipsolutions.net>
+         <20230329110205.1202eb60@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230329144548.66708-3-louis.peens@corigine.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 04:45:48PM +0200, Louis Peens wrote:
-> From: Yinjun Zhang <yinjun.zhang@corigine.com>
-> 
-> For nic application firmware, enable the ports' phy state at the
-> beginning. And by default its state doesn't change in pace with
-> the upper state, unless the ethtool private flag "link_state_detach"
-> is turned off by:
-> 
->  ethtool --set-private-flags <netdev> link_state_detach off
-> 
-> With this separation, we're able to keep the VF state up while
-> bringing down the PF.
+On Wed, 2023-03-29 at 11:02 -0700, Jakub Kicinski wrote:
+>=20
+> No, no what I was trying to say is that instead of using the upper bits
+> to identify the space (with 0 being the current enum skb_drop_reason)
+> we could use entries in enum skb_drop_reason. In hope that it'd make
+> the fine grained subsystem reason seem more like additional information
+> than a completely parallel system.
 
-What does it mean "bringing down the PF"?
+Ah! Looking at your code example ... right, so you'd see "mac80211 drop
+unusable" or "mac80211 drop to monitor", and fine-grained in the higher
+bits.
 
-Thanks
+> But it's just a thought, all of the approaches seem acceptable.
 
-> 
-> Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-> Acked-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: Louis Peens <louis.peens@corigine.com>
-> ---
->  .../ethernet/netronome/nfp/nfp_net_ethtool.c  | 103 ++++++++++++++++++
->  drivers/net/ethernet/netronome/nfp/nic/main.c |  20 ++++
->  2 files changed, 123 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> index dfedb52b7e70..fd4cf865da4a 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-> @@ -841,6 +841,102 @@ static void nfp_net_self_test(struct net_device *netdev, struct ethtool_test *et
->  	netdev_info(netdev, "Test end\n");
->  }
->  
-> +static bool nfp_pflag_get_link_state_detach(struct net_device *netdev)
-> +{
-> +	struct nfp_port *port = nfp_port_from_netdev(netdev);
-> +
-> +	if (!__nfp_port_get_eth_port(port))
-> +		return false;
-> +
-> +	return port->eth_forced;
-> +}
-> +
-> +static int nfp_pflag_set_link_state_detach(struct net_device *netdev, bool en)
-> +{
-> +	struct nfp_port *port = nfp_port_from_netdev(netdev);
-> +	struct nfp_eth_table_port *eth_port;
-> +
-> +	eth_port = __nfp_port_get_eth_port(port);
-> +	if (!eth_port)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (!en) {
-> +		/* When turning link_state_detach off, we need change the lower
-> +		 * phy state if it's different with admin state.
-> +		 * Contrarily, we can leave the lower phy state as it is when
-> +		 * turning the flag on, since it's detached.
-> +		 */
-> +		int err = nfp_eth_set_configured(port->app->cpp, eth_port->index,
-> +						 netif_running(netdev));
-> +		if (err && err != -EOPNOTSUPP)
-> +			return err;
-> +	}
-> +
-> +	port->eth_forced = en;
-> +	return 0;
-> +}
-> +
-> +#define DECLARE_NFP_PFLAG(flag)	{	\
-> +	.name	= #flag,		\
-> +	.get	= nfp_pflag_get_##flag,	\
-> +	.set	= nfp_pflag_set_##flag,	\
-> +	}
-> +
-> +static const struct {
-> +	const char name[ETH_GSTRING_LEN];
-> +	bool (*get)(struct net_device *netdev);
-> +	int (*set)(struct net_device *netdev, bool en);
-> +} nfp_pflags[] = {
-> +	DECLARE_NFP_PFLAG(link_state_detach),
-> +};
-> +
-> +#define NFP_PFLAG_MAX ARRAY_SIZE(nfp_pflags)
-> +
-> +static void nfp_get_pflag_strings(struct net_device *netdev, u8 *data)
-> +{
-> +	for (u32 i = 0; i < NFP_PFLAG_MAX; i++)
-> +		ethtool_sprintf(&data, nfp_pflags[i].name);
-> +}
-> +
-> +static int nfp_get_pflag_count(struct net_device *netdev)
-> +{
-> +	return NFP_PFLAG_MAX;
-> +}
-> +
-> +static u32 nfp_net_get_pflags(struct net_device *netdev)
-> +{
-> +	u32 pflags = 0;
-> +
-> +	for (u32 i = 0; i < NFP_PFLAG_MAX; i++) {
-> +		if (nfp_pflags[i].get(netdev))
-> +			pflags |= BIT(i);
-> +	}
-> +
-> +	return pflags;
-> +}
-> +
-> +static int nfp_net_set_pflags(struct net_device *netdev, u32 pflags)
-> +{
-> +	u32 changed = nfp_net_get_pflags(netdev) ^ pflags;
-> +	int err;
-> +
-> +	for (u32 i = 0; i < NFP_PFLAG_MAX; i++) {
-> +		bool en;
-> +
-> +		if (!(changed & BIT(i)))
-> +			continue;
-> +
-> +		en = !!(pflags & BIT(i));
-> +		err = nfp_pflags[i].set(netdev, en);
-> +		if (err)
-> +			return err;
-> +
-> +		netdev_info(netdev, "%s is %sabled.", nfp_pflags[i].name, en ? "en" : "dis");
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static unsigned int nfp_vnic_get_sw_stats_count(struct net_device *netdev)
->  {
->  	struct nfp_net *nn = netdev_priv(netdev);
-> @@ -1107,6 +1203,9 @@ static void nfp_net_get_strings(struct net_device *netdev,
->  	case ETH_SS_TEST:
->  		nfp_get_self_test_strings(netdev, data);
->  		break;
-> +	case ETH_SS_PRIV_FLAGS:
-> +		nfp_get_pflag_strings(netdev, data);
-> +		break;
->  	}
->  }
->  
-> @@ -1143,6 +1242,8 @@ static int nfp_net_get_sset_count(struct net_device *netdev, int sset)
->  		return cnt;
->  	case ETH_SS_TEST:
->  		return nfp_get_self_test_count(netdev);
-> +	case ETH_SS_PRIV_FLAGS:
-> +		return nfp_get_pflag_count(netdev);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> @@ -2116,6 +2217,8 @@ static const struct ethtool_ops nfp_net_ethtool_ops = {
->  	.set_fecparam		= nfp_port_set_fecparam,
->  	.get_pauseparam		= nfp_port_get_pauseparam,
->  	.set_phys_id		= nfp_net_set_phys_id,
-> +	.get_priv_flags		= nfp_net_get_pflags,
-> +	.set_priv_flags		= nfp_net_set_pflags,
->  };
->  
->  const struct ethtool_ops nfp_port_ethtool_ops = {
-> diff --git a/drivers/net/ethernet/netronome/nfp/nic/main.c b/drivers/net/ethernet/netronome/nfp/nic/main.c
-> index 9dd5afe37f6e..7d8505c033ee 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nic/main.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nic/main.c
-> @@ -6,6 +6,7 @@
->  #include "../nfp_app.h"
->  #include "../nfp_main.h"
->  #include "../nfp_net.h"
-> +#include "../nfp_port.h"
->  #include "main.h"
->  
->  static int nfp_nic_init(struct nfp_app *app)
-> @@ -32,11 +33,30 @@ static void nfp_nic_sriov_disable(struct nfp_app *app)
->  
->  static int nfp_nic_vnic_init(struct nfp_app *app, struct nfp_net *nn)
->  {
-> +	struct nfp_port *port = nn->port;
-> +
-> +	if (port->type == NFP_PORT_PHYS_PORT) {
-> +		/* Enable PHY state here, and its state doesn't change in
-> +		 * pace with the port upper state by default. The behavior
-> +		 * can be modified by ethtool private flag "link_state_detach".
-> +		 */
-> +		int err = nfp_eth_set_configured(app->cpp,
-> +						 port->eth_port->index,
-> +						 true);
-> +		if (err >= 0)
-> +			port->eth_forced = true;
-> +	}
-> +
->  	return nfp_nic_dcb_init(nn);
->  }
->  
->  static void nfp_nic_vnic_clean(struct nfp_app *app, struct nfp_net *nn)
->  {
-> +	struct nfp_port *port = nn->port;
-> +
-> +	if (port->type == NFP_PORT_PHYS_PORT)
-> +		nfp_eth_set_configured(app->cpp, port->eth_port->index, false);
-> +
->  	nfp_nic_dcb_clean(nn);
->  }
->  
-> -- 
-> 2.34.1
-> 
+I _think_ I like the one I prototyped this morning better, I'm not sure
+I like the subsystem =3D=3D existing reason part _that_ much. It ultimately
+doesn't matter much, it just feels odd that you'd be allowed to have a,
+I don't know picking a random example, SKB_DROP_REASON_DUP_FRAG with a
+fine-grained higher bits value?
+
+Not that we'll ever be starved for space ...
+
+> Quick code change perhaps illustrates it best:
+>=20
+
+Yeah, that ends up really looking very similar :-)
+
+Then again thinking about the implementation, we'd not be able to use a
+simple array for the sub-reasons, or at least that'd waste a bunch of
+space, since there are already quite a few 'main' reasons and we'd
+want/need to add the mac80211 ones (with sub-reason) at the end. So that
+makes a big array for the sub-reasons that's very sparsely populated (*)
+Extending with a high 'subsystem' like I did this morning is more
+compact here.
+
+(*) or put the sub-reasons pointer/num with the 'main' reasons into the
+drop_reasons[] array but that would take the same additional space
+
+
+So ... which one do _you_ like better? I think I somewhat prefer the one
+with adding a high bits subsystem, but I can relatively easily rejigger
+my changes from this morning to implement the semantics you had here
+too.
+
+Anyone else have an opinion? :)
+
+johannes
