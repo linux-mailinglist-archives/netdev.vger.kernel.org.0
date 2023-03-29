@@ -2,70 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91ED96CF31C
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 21:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FE666CF336
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 21:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbjC2TYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 15:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
+        id S229579AbjC2Tfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 15:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbjC2TYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 15:24:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2C3125
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 12:24:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27043B82420
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 19:24:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F8B9C4339B;
-        Wed, 29 Mar 2023 19:24:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680117863;
-        bh=1re4Q5568WMPEjtXfKNyfYjoxvK32C4ppODRRoQOEw4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Nbjmvhn4gqIfQH2qBWpbk250xiKHJFBtaYh5LUTGKtIGrbONj5fe5tmmYGoMEeR5g
-         3RmSo7/mgZpeuPqGopbWa7pvsr9Ug2Uq1cUpOTdEJ2wu0cS68G+bwARcKB+UzJOrU6
-         1rbNNRH5SVfHwn5JxhjRoZd5R1RUq6WuQ/CeG4a+i3rx9s5uG2Wq0+K7cIZNEfhJ/v
-         WcvFOzz8j0yoOAyFGWjEvLRnm+W41hUpZZx+2FXbhGHcxvLM8l7XJSmQb7AHMeUaG5
-         yd8rf8zJuHp7sCX7CYn7pWX+iqRZJK7cyMdIl4yCFuP8nS31hEYLhmRWubp4+6zMxA
-         8GVC33CAI0qfw==
-Date:   Wed, 29 Mar 2023 12:24:22 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Louis Peens <louis.peens@corigine.com>
-Cc:     David Miller <davem@davemloft.net>,
+        with ESMTP id S229461AbjC2Tfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 15:35:32 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B565C469C;
+        Wed, 29 Mar 2023 12:35:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9Ip60VxQO8vIEjsVQuk6WZlBLCQN328zDAYmxQho2Uk=; b=oNr9cPXYVHQF9aWQrgtHuUbaL4
+        rrNePszDIqfOYFfGJC50qIve5P6TNCg56eDFOWxZFl5EU4a6rvy6hSSeNXqQEUrqJjaeXThOcY7sP
+        yHibUzHcsx5RDU3sLn98Kg1qzVw5h5E6OXiPoAvByexD169ZM+yrl2MQni+L90RuZtF4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1phbZl-008nTP-Sg; Wed, 29 Mar 2023 21:35:17 +0200
+Date:   Wed, 29 Mar 2023 21:35:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yinjun Zhang <yinjun.zhang@corigine.com>
-Subject: Re: [PATCH net-next 2/2] nfp: separate the port's upper state with
- lower phy state
-Message-ID: <20230329122422.52f305f5@kernel.org>
-In-Reply-To: <20230329144548.66708-3-louis.peens@corigine.com>
-References: <20230329144548.66708-1-louis.peens@corigine.com>
-        <20230329144548.66708-3-louis.peens@corigine.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC PATCH net-next v3 03/15] net: dsa: mt7530: use regmap to
+ access switch register space
+Message-ID: <e8bb79ab-94d2-4e36-9b75-576a47e6c126@lunn.ch>
+References: <cover.1680105013.git.daniel@makrotopia.org>
+ <754322262cd754aee5916954b8e651989b229a09.1680105013.git.daniel@makrotopia.org>
+ <7eb07ed2-2b1c-44fa-b029-0ecad7872fd2@lunn.ch>
+ <ZCSEbUt9kj8Ta6Yc@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCSEbUt9kj8Ta6Yc@makrotopia.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Mar 2023 16:45:48 +0200 Louis Peens wrote:
-> For nic application firmware, enable the ports' phy state at the
-> beginning. And by default its state doesn't change in pace with
-> the upper state, unless the ethtool private flag "link_state_detach"
-> is turned off by:
+On Wed, Mar 29, 2023 at 07:33:17PM +0100, Daniel Golle wrote:
+> On Wed, Mar 29, 2023 at 06:24:21PM +0200, Andrew Lunn wrote:
+> > Thanks for splitting this patchset up. This is much easier to review.
+> > 
+> > > +static u32
+> > > +mt7530_mii_read(struct mt7530_priv *priv, u32 reg)
+> > > +{
+> > > +	int ret;
+> > > +	u32 val;
+> > > +
+> > > +	ret = regmap_read(priv->regmap, reg, &val);
+> > > +	if (ret) {
+> > > +		dev_err(priv->dev,
+> > > +			"failed to read mt7530 register\n");
+> > > +		return ret;
+> > 
+> > This is a u32 function. ret should be negative on error, which is
+> > going to be turned positive in order to return a u32. So you probably
+> > want to make this an int function.
 > 
->  ethtool --set-private-flags <netdev> link_state_detach off
-> 
-> With this separation, we're able to keep the VF state up while
-> bringing down the PF.
+> This is a pre-existing flaw in the code. As we are accessing 32-bit
+> registers there has just never been any meaningful error handling.
 
-This commit message is very confusing. Please rewrite it.
+O.K. At least i would not return the negative error code. Return 0, or
+0xdeadbeef or something. And consider adding a WARN_ON_ONCE() so it is very loud
+when it goes wrong.
+
+> I guess the correct solution would be to not use the return value only
+> to indicate success or error, and use an additional u32* parameter for
+> the read value.
+
+Yes, that is what mv88e6xxx does.
+
+> However, I was hestitating to convert all the calls (they are many) to
+> follow that improved paradigm.
+
+Yes, leave that for another time.
+
+     Andrew
