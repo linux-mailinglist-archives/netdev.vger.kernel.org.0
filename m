@@ -2,184 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 135D46CD47A
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADFBA6CD4BA
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:35:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbjC2IWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 04:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
+        id S231142AbjC2IfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 04:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbjC2IWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:22:18 -0400
-Received: from DM5PR00CU002.outbound.protection.outlook.com (mail-centralusazon11021026.outbound.protection.outlook.com [52.101.62.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E13B5B82;
-        Wed, 29 Mar 2023 01:21:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nxzlDAXKT8Jyv1QYdXvE2WKnvmvVHBTjaJ8L7u+VSLXQalfE+jX8qHtv2k5jRccK+mQOPjqMBFgzAEtpmRyUiAdMF7Ppm+9ocRXP1wab9c6PawNmp/SJF/bu7l28j0xkGvvw1lWAzblzsc5wrwtd1Rb2BgMWMfcQYlafkU0Wz31c6fckVqgx5RXMtjPQPGCL4qabiqobcGbgxDuCUZ19zIpUVVJvK/tzSVIBCSpaEtuQYiXoN+PVzwlANuAybz6A2ghw9Haa5MUx6FlpWyvuklGlupAfD87cq+L9fDWLq75JiXLKG7BpbwmxiLtanc2h5+jxLhx0KrqnDkKTegGciQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+i4kCWKvgSVf0AOw9WBGGh7yOWARMa275NXQbjbxoMU=;
- b=afrbOixHY/Wn37tSepYAaWK8x94Xo8yBx1hZQtDguFnW8aHgw6U8HmQCV5cFxT8z2PSt5/mCWEsz+bEKJPFtC30sGu3aYoo6Gz3w9WtUO1qYklCUZZt+7iNOMkz1rwxXX9v/lSLbRz+fJaf0sBCoKeax6Yn9CcihRvxWCATGHITuqIW8tJkMSuJhkqq4IPzXsFCuofKkSJ+Wo5l2ENq7dhldTjzzpIyQierC74ap1InqFy+9F9k5DbqMU1pxJU0VIJV4y3gZ/DLw1Vy7t6B1ztCoHtqHrqHdQbDFCYF8LoFCN6hsJXOJfePymC+/DSIG1iJENXF0ua/LOYGp+GxTIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+i4kCWKvgSVf0AOw9WBGGh7yOWARMa275NXQbjbxoMU=;
- b=b0RlnQyx1nrVWDrspw3o/Fj9eM7S1y8CEU8DB12Mnxqj2aFXRKeAMMgIEiPJfsEasiMHJwy67Feuy4fwKPuGZrOaCdo58UIV4V1TH6lQ/ov/oo3qlXGuiJvgIpwpJkZvPp8h/Js/MpMwIt789FizwK5qZQnJEPNZ6OOwoiQiCd8=
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
- by SN6PR2101MB1358.namprd21.prod.outlook.com (2603:10b6:805:107::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.5; Wed, 29 Mar
- 2023 08:21:15 +0000
-Received: from SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::2e52:d6aa:9a99:500a]) by SA1PR21MB1335.namprd21.prod.outlook.com
- ([fe80::2e52:d6aa:9a99:500a%5]) with mapi id 15.20.6277.010; Wed, 29 Mar 2023
- 08:21:15 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Long Li <longli@microsoft.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jake Oshins <jakeo@microsoft.com>,
-        "kuba@kernel.org" <kuba@kernel.org>, "kw@linux.com" <kw@linux.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh@kernel.org" <robh@kernel.org>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "boqun.feng@gmail.com" <boqun.feng@gmail.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH 1/6] PCI: hv: fix a race condition bug in
- hv_pci_query_relations()
-Thread-Topic: [PATCH 1/6] PCI: hv: fix a race condition bug in
- hv_pci_query_relations()
-Thread-Index: AQHZYTEw5EIgYDC+IUOtVNpvTo0Kxa8QZ0BAgAD9eoA=
-Date:   Wed, 29 Mar 2023 08:21:14 +0000
-Message-ID: <SA1PR21MB13356B7C8DD4DA9CC20A880ABF899@SA1PR21MB1335.namprd21.prod.outlook.com>
-References: <20230328045122.25850-1-decui@microsoft.com>
- <20230328045122.25850-2-decui@microsoft.com>
- <PH7PR21MB32632E889A7F589C32FE51EDCE889@PH7PR21MB3263.namprd21.prod.outlook.com>
-In-Reply-To: <PH7PR21MB32632E889A7F589C32FE51EDCE889@PH7PR21MB3263.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=90dfa640-62da-43df-b474-aa70d6393cab;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-03-28T16:46:18Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|SN6PR2101MB1358:EE_
-x-ms-office365-filtering-correlation-id: d2502342-feba-4e15-a150-08db302e9030
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8De/SFVB5HPsZnbTZxRY7aedKoj3th48ijOWS6G2VdaKEreeRcV+ditDZXHGuRkCMeqr1n+SO0oAyKMfFhoPJU42NwTCX1Q/y8OHAJENR/YxcmMpmF6+zm4FuhGCEvGQSK7KiFKqPM4OoIZcfhMAcMYVDhvwO06eRaJnfLag/IR1dADfqVyymIdkIRzYFK8jwlqBIUUBncG3+yyVXN6c3uyPCCuDJfSNJSqM8gB+dWqt1fniQlpC0hwLcMjSIaEVKNb4vzFRrtgpqidewtxXErzF3FF3xW4QpUxqcNIxZQ/eNzk6b1nDISaZrkuW64vND55vRM8b45D4Fx90MOifKRaVLLGKY/zCrr4ILqsc/+SahyN5tkNhQHfpFtv8D5XLku0G7TEWjehQ9igsyHT/KkaXu0blD/71kLtHo/ODeLZv8QjWMI1625f7ywsxBczGirpo1ezVPwTemmP6b4KoC3BFKAbcjeRMYjgB8gKiy4Pc7/dpjky4C/8HB2CQc8rvEUlXMfe8B4pOR9RWmQ4/Wr+FuE5KzFSbF+tz7xHQWAcjxHAZ0GNEudYbP3VaLGT+kleu1bHvV9twUjaPykV8+2yc2Hq/9kZsIupfhUgpq9Dypd45BKPayVu2rRzhFJFadkLw6dCrCbUHH1rFl3ODMxouP/Bm6NP3VSijserSJRAha6wv5vmN3KnsV6ZdUySw
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:cs;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(136003)(366004)(396003)(346002)(451199021)(478600001)(5660300002)(64756008)(66476007)(66446008)(66946007)(76116006)(66556008)(10290500003)(4326008)(316002)(921005)(52536014)(82950400001)(82960400001)(122000001)(7416002)(41300700001)(8936002)(186003)(54906003)(26005)(83380400001)(7696005)(8676002)(9686003)(71200400001)(110136005)(6506007)(55016003)(38070700005)(8990500004)(33656002)(38100700002)(86362001)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6HvROvVUHOOq6SnpUtfYj3R/KrrG0E1LHj51QF4YbIzZD1VoN/0UIfH7UhQ4?=
- =?us-ascii?Q?HxaaHFhA/sIti6UfroQt5/iEp1ZFW732KcW77vD47Jl14RhOQocxmK3tfFVi?=
- =?us-ascii?Q?kOK8kpNU1W0an8U2bT5REQvo/vrAbRoc99GSO635YLbdY72wluBCvmA3j3M/?=
- =?us-ascii?Q?Q6GeARqvcKyOE6hv7MW2olOrxNtpJ+0gjD7LtRlePXlSvxuqOH/nnqOFA4TZ?=
- =?us-ascii?Q?XrBYxNENeSN/2bXqqWe9fvanEcnSmD2EslFLFN5WpKL7BwxsaTlJcdpOWPRL?=
- =?us-ascii?Q?TujwQ4FyU6o93PgDuYhcypvD0is/Hy8POi1GKQW+4OGQRiL5ghwjNAxGcKKB?=
- =?us-ascii?Q?rg7n4g4PnxHbFyWYKCPdHP3VQrLHuMVvCmRX3tHE1uUEacUM0wMiZ8J+Dh0W?=
- =?us-ascii?Q?m2SB+0Tp+rH9DGU1c8kjMdnkWyJ3DJzdWsPAEwoJM9ax3wh2rln/F2DTxRi1?=
- =?us-ascii?Q?SgNU4hd0eYjenhUjyh5qRpnajBGtiCS6dPBPa/7Igf+ozdJF8iYCeUEALQhi?=
- =?us-ascii?Q?A5NHFAVpAeHcZ3YtBZhzaq3xdl0ekD8G+EF04gjwHSaOXwpQ5n+3Yyx3GX21?=
- =?us-ascii?Q?//K5FNnPOZREOGBg6xmF9BAs0eCcf3JPl5R7r6fdrc6PYE2ruK2wvzLdPGPS?=
- =?us-ascii?Q?AjHsufQK9KwEFkxARxsJQVH/hVm48AJFZ2idzkImoHvdZEktcCFxQEYuRCsl?=
- =?us-ascii?Q?mKTGQ3XgcaNz2IWZWWYWSqCIzkZjHuCBcKErSdaD7YawNcarocI4A5OBJrZ+?=
- =?us-ascii?Q?MHaSjm9h6a1UuLwF4ZeG/qAHLQi4WF6vvnFoAnPuC74gjDAWVZmNpXlGyVpW?=
- =?us-ascii?Q?wZH3TdEINPOJW7OYRCceuZ4OZHSRGhng9yC49tf7Xrnku7mGE8QLBI1kfsQO?=
- =?us-ascii?Q?la44eD91Vn8MpFMaozl1oGklyFSv3Rcq+tCNTAFloonCBhWWlVQzNtHlK0/4?=
- =?us-ascii?Q?whVMG3SHE83m46HPrgA/P6FT8HUUWULLUarLVRLZ/Pzw/HV9313qjxv/eMxe?=
- =?us-ascii?Q?chnpV7CRAU77z472g6P47BbOn0E8GLqv1Ulyw1/i75Dz2XCBLzL473Qk4Iaj?=
- =?us-ascii?Q?f4K0QfKB+4BkIgssxjlsK6TJL8v51eRiia951yqV3CH5l4Eef+khaFCrJlMR?=
- =?us-ascii?Q?US1dwhv42BTPPzWhMrSDmv6sJZnbyVkiwDtiiQW8CUhwwaiAl8O7k6XVQV02?=
- =?us-ascii?Q?J/gfPsUvRA2BklSd1KXkWTro3EPcWxenb+0My0Yc0ASJwSDM3RZNUZbFLbHo?=
- =?us-ascii?Q?IgUEteJpWrnfJ4SQTC9Uii7ecHOsCHvHeDSaVfXyI0WRv58zLrNzScL85DdM?=
- =?us-ascii?Q?KEurhWHJZtwFtu0WsvxWXMw/rdGedLwcjg0YM3PJULmvm7cCJMt12qv+6QP4?=
- =?us-ascii?Q?JBoGUYA5kFHWd2raJW2SdCzHm3Y0W08znQDwuwV9FNc2DzDRLYE3hqzi1X6Z?=
- =?us-ascii?Q?iwvvFjNxFvFwECQXQaGZZaBrbzpTh/hwIEW/x9SFJr1+3E89RXk/NRbyoy9Q?=
- =?us-ascii?Q?W5AFmifYvMdp60jYQh/kBoRYKI/UKzXskj7cm5Cbbo5cts2XCPdiTMVXBdsm?=
- =?us-ascii?Q?LZgmWG1sBArQPHMb4UGC+zPbqiQt1rQIoGgKQOm3?=
-Content-Type: text/plain; charset="us-ascii"
+        with ESMTP id S229959AbjC2IfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:35:16 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227461AC;
+        Wed, 29 Mar 2023 01:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=QSGdJmu41rSBexFKsnfWQQ23KoebUnJZThHWBcIYgtw=;
+        t=1680078914; x=1681288514; b=oVkVsa8XGCw26wbpNqIUhPKOvzM3diety9fqtr3E1OY6ox+
+        k3C6XdMTx4Xs+xN8gPar9j+uT3O9hJ7A1H+gMQZ4x3AosfLbog9RR2c8d5nqM/S+SKIbE8VF1TwSA
+        m8FrTu5A9SRPjl2LlpMB4GTZldPP+sP6leaFEP0yYI91xtCtcUuf26Vbcoh0RKQPvBAAfuNK6LRbN
+        bcp3CazhhZ+sED5fSkWqDATvnEmASWRwzxANrq4FPBn26+jap0iI0lbBj1lzpoeJBHviiwV3dzdYA
+        NeAlAUEiX4FoGPLj5pvfiHrbUeTf++lhWZn3N+mQPUlgTmCodjbS5VWNE9tApRMw==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1phRGw-0000yB-0W;
+        Wed, 29 Mar 2023 10:35:10 +0200
+Message-ID: <8304ec7e430815edf3b79141c90272e36683e085.camel@sipsolutions.net>
+Subject: Re: traceability of wifi packet drops
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Date:   Wed, 29 Mar 2023 10:35:08 +0200
+In-Reply-To: <20230328155826.38e9e077@kernel.org>
+References: <00659771ed54353f92027702c5bbb84702da62ce.camel@sipsolutions.net>
+         <20230327180950.79e064da@kernel.org>
+         <abcf4b9aed8adad05841234dad103ced15f9bfb2.camel@sipsolutions.net>
+         <20230328155826.38e9e077@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2502342-feba-4e15-a150-08db302e9030
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Mar 2023 08:21:14.8658
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: O7mrIwHVtmikXvbq4wgaxYZxpoMCeBRks6Livw8gJziIUKEIuxGliK09c1ZDiqMglxctD2vcusJUsuXEDv5ndg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR2101MB1358
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Long Li <longli@microsoft.com>
-> Sent: Tuesday, March 28, 2023 9:49 AM
-> > --- a/drivers/pci/controller/pci-hyperv.c
-> > +++ b/drivers/pci/controller/pci-hyperv.c
-> > @@ -3308,6 +3308,19 @@ static int hv_pci_query_relations(struct
-> hv_device
-> > *hdev)
-> >  	if (!ret)
-> >  		ret =3D wait_for_response(hdev, &comp);
-> >
-> > +	/*
-> > +	 * In the case of fast device addition/removal, it's possible that
-> > +	 * vmbus_sendpacket() or wait_for_response() returns -ENODEV but
-> > we
-> > +	 * already got a PCI_BUS_RELATIONS* message from the host and the
-> > +	 * channel callback already scheduled a work to hbus->wq, which can
-> > be
-> > +	 * running survey_child_resources() -> complete(&hbus-
-> > >survey_event),
-> > +	 * even after hv_pci_query_relations() exits and the stack variable
-> > +	 * 'comp' is no longer valid. This can cause a strange hang issue
-> > +	 * or sometimes a page fault. Flush hbus->wq before we exit from
-> > +	 * hv_pci_query_relations() to avoid the issues.
-> > +	 */
-> > +	flush_workqueue(hbus->wq);
+On Tue, 2023-03-28 at 15:58 -0700, Jakub Kicinski wrote:
+> On Tue, 28 Mar 2023 09:37:43 +0200 Johannes Berg wrote:
+> > > My knee jerk idea would be to either use the top 8 bits of the
+> > > skb reason enum to denote the space. And then we'd say 0 is core
+> > > 1 is wifi (enum ieee80211_rx_result) etc. Within the WiFi space=20
+> > > you can use whatever encoding you like. =20
+> >=20
+> > Right. That's not _that_ far from what I proposed above, except you pul=
+l
+> > the core out=20
 >=20
-> Is it possible for PCI_BUS_RELATIONS to be scheduled arrive after calling
-> flush_workqueue(hbus->wq)?
+> Thinking about it again, maybe yours is actually cleaner.
+> Having the subsystem reason on the top bits, I mean.
+> That way after masking the specific bits out the lower bits
+> can still provide a valid "global" drop reason.
 
-It's possible, but that doesn't matter:
+Ah, that's not even what I was thinking, but that would work.
 
-hv_pci_query_relations() is called only once, and it sets hbus->survey_even=
-t
-to point to the stack variable 'comp'. The first survey_child_resources()
-calls complete() for the 'comp' and sets hbus->survey_event to NULL.
+What I was thinking was basically the same as you had, just hadn't
+thought about more subsystems yet and was trying to carve out some bits
+for wifi specifically :-)
 
-When the second survey_child_resources() is called, hbus->survey_event
-is NULL, so survey_child_resources() returns immediately.
+I don't think we'll really end up with a case where we really want to
+use the low bits for a global reason and a wifi specific reason in
+higher bits together - there are basically no applicable reasons that we
+have today ...
 
-According to my test, after hv_pci_enter_d0() posts PCI_BUS_D0ENTRY,
-the guest receives a second PCI_BUS_RELATIONS2 message, which is
-the same as the first PCI_BUS_RELATIONS2 message, which is basically
-a no-op in pci_devices_present_work(), especially with the
-newly-introduced per-hbus state_lock mutex.
+I mean, it basically doesn't make sense to have any of the current
+reasons (such as _IP_CSUM or _IP_INHDR) with a wifi specific reason
+since we wouldn't even go look at the IP header when wifi drops
+something.
+
+The only one that _might_ be relevant would be possibly _PKT_TOO_SMALL
+where wifi has various "reasons" for it to be too small (depending on
+the packet format), but I'm not sure that it would even be helpful to
+have drop monitor report "packet too small" from different layers; today
+it's used from L3/L4, not L2.
+
+
+> The UNUSABLE vs MONITOR bits I'd be tempted to put in the "global"
+> reason, but maybe that's not a great idea given Eric's concern :)
+
+This bit is actually functionally important for us, but to me it doesn't
+matter much where it is.
+
+> Right, drop monitor is good ol' kernel code, we can make it do whatever
+> we want. I was worried that tracing / BPF may tie our hands but they
+> support sparse enums just fine.
+
+Ah, OK, right.
+
+
+
+So after all the discussion, I would revise my proposal to be more like
+yours. Let's say like the below. This will not put the reason string
+into tracing, but I think we can live with that.
+
+johannes
+
+
+
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index c0a3ea806cd5..f884eb0a1d2d 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -343,6 +343,26 @@ enum skb_drop_reason {
+ 	 * used as a real 'reason'
+ 	 */
+ 	SKB_DROP_REASON_MAX,
++
++	/** @SKB_DROP_REASON_SUBSYS_MASK: subsystem mask in drop reasons,
++	 * see &enum skb_drop_reason_subsys
++	 */
++	SKB_DROP_REASON_SUBSYS_MASK =3D 0xff000000,
++};
++
++/**
++ * enum skb_drop_reason_subsys - subsystem tag for (extended) drop reasons
++ */
++enum skb_drop_reason_subsys {
++	/** @SKB_DROP_REASON_SUBSYS_CORE: core drop reasons defined above */
++	SKB_DROP_REASON_SUBSYS_CORE,
++	/** @SKB_DROP_REASON_SUBSYS_MAC80211: mac80211 drop reasons,
++	 * see net/mac80211/dropreason.h
++	 */
++	SKB_DROP_REASON_SUBSYS_MAC80211,
++
++	/** @SKB_DROP_REASON_SUBSYS_NUM: number of subsystems defined */
++	SKB_DROP_REASON_SUBSYS_NUM
+ };
+=20
+ #define SKB_DR_INIT(name, reason)				\
+@@ -358,6 +378,17 @@ enum skb_drop_reason {
+ 			SKB_DR_SET(name, reason);		\
+ 	} while (0)
+=20
+-extern const char * const drop_reasons[];
++struct drop_reason_list {
++	const char * const *reasons;
++	size_t n_reasons;
++};
++
++/* Note: due to dynamic registrations, access must be under RCU */
++extern const struct drop_reason_list __rcu *
++drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM];
++
++void drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,
++				  const struct drop_reason_list *list);
++void drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys);
+=20
+ #endif
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 5a782d1d8fd3..c6c60dc75b2d 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -21,6 +21,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/netlink.h>
+ #include <linux/net_dropmon.h>
++#include <linux/bitfield.h>
+ #include <linux/percpu.h>
+ #include <linux/timer.h>
+ #include <linux/bitops.h>
+@@ -504,8 +505,6 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ign=
+ore,
+ 	if (!nskb)
+ 		return;
+=20
+-	if (unlikely(reason >=3D SKB_DROP_REASON_MAX || reason <=3D 0))
+-		reason =3D SKB_DROP_REASON_NOT_SPECIFIED;
+ 	cb =3D NET_DM_SKB_CB(nskb);
+ 	cb->reason =3D reason;
+ 	cb->pc =3D location;
+@@ -552,9 +551,9 @@ static size_t net_dm_in_port_size(void)
+ }
+=20
+ #define NET_DM_MAX_SYMBOL_LEN 40
++#define NET_DM_MAX_REASON_LEN 50
+=20
+-static size_t net_dm_packet_report_size(size_t payload_len,
+-					enum skb_drop_reason reason)
++static size_t net_dm_packet_report_size(size_t payload_len)
+ {
+ 	size_t size;
+=20
+@@ -576,7 +575,7 @@ static size_t net_dm_packet_report_size(size_t payload_=
+len,
+ 	       /* NET_DM_ATTR_PROTO */
+ 	       nla_total_size(sizeof(u16)) +
+ 	       /* NET_DM_ATTR_REASON */
+-	       nla_total_size(strlen(drop_reasons[reason]) + 1) +
++	       nla_total_size(NET_DM_MAX_REASON_LEN + 1) +
+ 	       /* NET_DM_ATTR_PAYLOAD */
+ 	       nla_total_size(payload_len);
+ }
+@@ -610,6 +609,8 @@ static int net_dm_packet_report_fill(struct sk_buff *ms=
+g, struct sk_buff *skb,
+ 				     size_t payload_len)
+ {
+ 	struct net_dm_skb_cb *cb =3D NET_DM_SKB_CB(skb);
++	const struct drop_reason_list *list =3D NULL;
++	unsigned int subsys, subsys_reason;
+ 	char buf[NET_DM_MAX_SYMBOL_LEN];
+ 	struct nlattr *attr;
+ 	void *hdr;
+@@ -627,9 +628,24 @@ static int net_dm_packet_report_fill(struct sk_buff *m=
+sg, struct sk_buff *skb,
+ 			      NET_DM_ATTR_PAD))
+ 		goto nla_put_failure;
+=20
++	rcu_read_lock();
++	subsys =3D u32_get_bits(cb->reason, SKB_DROP_REASON_SUBSYS_MASK);
++	if (subsys < SKB_DROP_REASON_SUBSYS_NUM)
++		list =3D rcu_dereference(drop_reasons_by_subsys[subsys]);
++	subsys_reason =3D cb->reason & ~SKB_DROP_REASON_SUBSYS_MASK;
++	if (!list ||
++	    subsys_reason >=3D list->n_reasons ||
++	    !list->reasons[subsys_reason] ||
++	    strlen(list->reasons[subsys_reason]) > NET_DM_MAX_REASON_LEN) {
++		list =3D rcu_dereference(drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_C=
+ORE]);
++		subsys_reason =3D SKB_DROP_REASON_NOT_SPECIFIED;
++	}
+ 	if (nla_put_string(msg, NET_DM_ATTR_REASON,
+-			   drop_reasons[cb->reason]))
++			   list->reasons[subsys_reason])) {
++		rcu_read_unlock();
+ 		goto nla_put_failure;
++	}
++	rcu_read_unlock();
+=20
+ 	snprintf(buf, sizeof(buf), "%pS", cb->pc);
+ 	if (nla_put_string(msg, NET_DM_ATTR_SYMBOL, buf))
+@@ -687,9 +703,7 @@ static void net_dm_packet_report(struct sk_buff *skb)
+ 	if (net_dm_trunc_len)
+ 		payload_len =3D min_t(size_t, net_dm_trunc_len, payload_len);
+=20
+-	msg =3D nlmsg_new(net_dm_packet_report_size(payload_len,
+-						  NET_DM_SKB_CB(skb)->reason),
+-			GFP_KERNEL);
++	msg =3D nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
+ 	if (!msg)
+ 		goto out;
+=20
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 050a875d09c5..3449f9acbc6c 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -122,11 +122,59 @@ EXPORT_SYMBOL(sysctl_max_skb_frags);
+=20
+ #undef FN
+ #define FN(reason) [SKB_DROP_REASON_##reason] =3D #reason,
+-const char * const drop_reasons[] =3D {
++static const char * const drop_reasons[] =3D {
+ 	[SKB_CONSUMED] =3D "CONSUMED",
+ 	DEFINE_DROP_REASON(FN, FN)
+ };
+-EXPORT_SYMBOL(drop_reasons);
++
++static const struct drop_reason_list drop_reasons_core =3D {
++	.reasons =3D drop_reasons,
++	.n_reasons =3D ARRAY_SIZE(drop_reasons),
++};
++
++const struct drop_reason_list __rcu *
++drop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM] =3D {
++	[SKB_DROP_REASON_SUBSYS_CORE] =3D &drop_reasons_core,
++};
++EXPORT_SYMBOL(drop_reasons_by_subsys);
++
++/**
++ * drop_reasons_register_subsys - register another drop reason subsystem
++ * @subsys: the subsystem to register, must not be the core
++ * @list: the list of drop reasons within the subsystem, must point to
++ *	a statically initialized list
++ */
++void drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,
++				  const struct drop_reason_list *list)
++{
++	if (WARN(subsys <=3D SKB_DROP_REASON_SUBSYS_CORE ||
++		 subsys >=3D ARRAY_SIZE(drop_reasons_by_subsys),
++		 "invalid subsystem %d\n", subsys))
++		return;
++
++	/* must point to statically allocated memory, so INIT is OK */
++	RCU_INIT_POINTER(drop_reasons_by_subsys[subsys], list);
++}
++EXPORT_SYMBOL_GPL(drop_reasons_register_subsys);
++
++/**
++ * drop_reasons_unregister_subsys - unregister a drop reason subsystem
++ * @subsys: the subsystem to remove, must not be the core
++ *
++ * Note: This will synchronize_rcu() to ensure no users when it returns.
++ */
++void drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys)
++{
++	if (WARN(subsys <=3D SKB_DROP_REASON_SUBSYS_CORE ||
++		 subsys >=3D ARRAY_SIZE(drop_reasons_by_subsys),
++		 "invalid subsystem %d\n", subsys))
++		return;
++
++	RCU_INIT_POINTER(drop_reasons_by_subsys[subsys], NULL);
++
++	synchronize_rcu();
++}
++EXPORT_SYMBOL_GPL(drop_reasons_unregister_subsys);
+=20
+ /**
+  *	skb_panic - private function for out-of-line support
 
