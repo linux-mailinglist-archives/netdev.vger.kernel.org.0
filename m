@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57F8B6CF215
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:26:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6819D6CF217
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229487AbjC2S0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 14:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        id S229616AbjC2S0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 14:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjC2S0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:26:11 -0400
+        with ESMTP id S229517AbjC2S0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:26:13 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E934697;
-        Wed, 29 Mar 2023 11:26:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04EA4697;
+        Wed, 29 Mar 2023 11:26:12 -0700 (PDT)
 Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TEU4Dc018538;
-        Wed, 29 Mar 2023 18:25:47 GMT
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TETw44017461;
+        Wed, 29 Mar 2023 18:25:49 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=Lzu4UVcTLXuXtHWcBLcWf277KyG7v5zkXe3TdU4cGyA=;
- b=ri8tv6zYNiZbBwicSELs8GpcQaYSp8AD8GxlkbBp9lJGrLTlRnZAPe4RMNnUIzERINEe
- Tkp30Yi1+2cwq/wVyH0ctASEhOGjtvyvRBlNtBAyg84nViaxK9BDdglLyyEB0H0Fb5RB
- vDYYdSjyegtDGZo0S8V+ItNDysqFVk5eFBa7NNKU2evDYGS5fYuIY503rTxbqVUs2wqV
- Hufj4JbEnB1oE+jbEOpwhTHyhRiRwvbWlQ5fK/OzHneZ/aB51ufCz9r9eRGKh7ts4LSx
- DBkQfVZ5yS8Lams/qqFZ0hgfNZlaCnapH6FWVugyXwsAHu9UloEnUNM5CFwGhSWxlgso tw== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=corp-2022-7-12;
+ bh=JLjZZTYyJYJMe3QiAlLr02+MhgbjP8RiniXG97TsRPo=;
+ b=dhnDsOKVm4u3ThU4RDqUkja2KckYbG8iZW49yIdP1H+aMjbDiOSr8WNTn5UIevoP3wsO
+ fT/NGW9yT9Neadid61p+LaYGKTY//tammszh4lJLztsC4T9bqOeXrv6Gwg5OFqsV+EIl
+ iO7alpkeepM5E9M25+3YUj+thoFwsmB9hvD9hSujwNEeiHtnplQZUPZPIf3klfa+lxuW
+ rmhl17yYCDzHhlWMKFwbnN7YBo/80c/G1O/fXSkZXlJY9bHKBG67tSAkBwX5td+2PMEX
+ EqOph1JrijbkunnE1xcuSY0y3PI0abnmclTc6SpO2/WAN0Q0XGSGxnsfzbCe5+0PSUAH rg== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pmq538pag-1
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pmq538pam-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Mar 2023 18:25:48 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32THSmid010814;
+        Wed, 29 Mar 2023 18:25:47 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3phqder9nn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 29 Mar 2023 18:25:47 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32THSmib010814;
-        Wed, 29 Mar 2023 18:25:45 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3phqder9kp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Mar 2023 18:25:45 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32TIPQe1004473;
-        Wed, 29 Mar 2023 18:25:45 GMT
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32TIPQe3004473;
+        Wed, 29 Mar 2023 18:25:47 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3phqder9hg-1;
-        Wed, 29 Mar 2023 18:25:45 +0000
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3phqder9hg-2;
+        Wed, 29 Mar 2023 18:25:46 +0000
 From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 To:     davem@davemloft.net
 Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
@@ -50,10 +51,12 @@ Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         socketcan@hartkopp.net, petrm@nvidia.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         anjali.k.kulkarni@oracle.com
-Subject: [PATCH v3 0/7] Process connector bug fixes & enhancements
-Date:   Wed, 29 Mar 2023 11:25:36 -0700
-Message-Id: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
+Subject: [PATCH v3 1/7] netlink: Reverse the patch which removed filtering
+Date:   Wed, 29 Mar 2023 11:25:37 -0700
+Message-Id: <20230329182543.1161480-2-anjali.k.kulkarni@oracle.com>
 X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
+References: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -63,8 +66,8 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwa
  suspectscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 adultscore=0
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2303200000 definitions=main-2303290141
-X-Proofpoint-GUID: vDLi6591kRzl8g0-fnPG4XWANk8a6xDY
-X-Proofpoint-ORIG-GUID: vDLi6591kRzl8g0-fnPG4XWANk8a6xDY
+X-Proofpoint-GUID: Pr4T7Glmq1QnlkJl9lNh77I8LlCg81PZ
+X-Proofpoint-ORIG-GUID: Pr4T7Glmq1QnlkJl9lNh77I8LlCg81PZ
 X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -75,93 +78,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+To use filtering at the connector & cn_proc layers, we need to enable
+filtering in the netlink layer. This reverses the patch which removed
+netlink filtering.
 
-In this series, we add filtering to the proc connector module. This
-is required to fix some bugs and also will enable the addition of event
-based filtering, which will improve performance for anyone interested
-in a subset of process events, as compared to the current approach,
-which is to send all event notifications.
+Signed-off-by: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+---
+ include/linux/netlink.h  |  5 +++++
+ net/netlink/af_netlink.c | 25 +++++++++++++++++++++++--
+ 2 files changed, 28 insertions(+), 2 deletions(-)
 
-Thus, a client can register to listen for only exit or fork or a mix or
-all of the events. This greatly enhances performance - currently, we
-need to listen to all events, and there are 9 different types of events.
-For eg. handling 3 types of events - 8K-forks + 8K-exits + 8K-execs takes
-200ms, whereas handling 2 types - 8K-forks + 8K-exits takes about 150ms,
-and handling just one type - 8K exits takes about 70ms.
-
-Reason why we need the above changes and also a new event type
-PROC_EVENT_NONZERO_EXIT, which is only sent by kernel to a listening
-application when any process exiting has a non-zero exit status is:
-
-Oracle DB runs on a large scale with 100000s of short lived processes,
-starting up and exiting quickly. A process monitoring DB daemon which
-tracks and cleans up after processes that have died without a proper exit
-needs notifications only when a process died with a non-zero exit code
-(which should be rare).
-
-This change will give Oracle DB substantial performance savings - it takes
-50ms to scan about 8K PIDs in /proc, about 500ms for 100K PIDs. DB does
-this check every 3 secs, so over an hour we save 10secs for 100K PIDs.
-
-Measuring the time using pidfds for monitoring 8K process exits took 4
-times longer - 200ms, as compared to 70ms using only exit notifications
-of proc connector. Hence, we cannot use pidfd for our use case.
-
-This kind of a new event could also be useful to other applications like
-Google's lmkd daemon, which needs a killed process's exit notification.
-
-This patch series is organized as follows -
-
-Patch 1 : Needed for patch 3 to work.
-Patch 2 : Needed for patch 3 to work.
-Patch 3 : Fixes some bugs in proc connector, details in the patch.
-Patch 4 : Test code for proc connector.
-Patch 5 : Adds event based filtering for performance enhancements.
-Patch 6 : Needed for patch 7 to work.
-Patch 7 : Allow non-root users access to proc connector events.
-
-v2->v3 changes:
-- Fix comments by Jakub Kicinski to separate netlink (patch 2) (after
-  layering) from connector fixes (patch 3). 
-- Minor fixes suggested by Jakub.
-- Add new multicast group level permissions check at netlink layer.
-  Split this into netlink & connector layers (patches 6 & 7)
-
-v1->v2 changes:
-- Fix comments by Jakub Kicinski to keep layering within netlink and
-  update kdocs.
-- Move non-root users access patch last in series so remaining patches
-  can go in first.
-
-v->v1 changes:
-- Changed commit log in patch 4 as suggested by Christian Brauner
-- Changed patch 4 to make more fine grained access to non-root users
-- Fixed warning in cn_proc.c, 
-  Reported-by: kernel test robot <lkp@intel.com>
-- Fixed some existing warnings in cn_proc.c
-
-Anjali Kulkarni (7):
-  netlink: Reverse the patch which removed filtering
-  netlink: Add new netlink_release function
-  connector/cn_proc: Add filtering to fix some bugs
-  connector/cn_proc: Test code for proc connector
-  connector/cn_proc: Performance improvements
-  netlink: Add multicast group level permissions
-  connector/cn_proc: Allow non-root users access
-
- drivers/connector/cn_proc.c     | 105 +++++++++--
- drivers/connector/connector.c   |  22 ++-
- drivers/w1/w1_netlink.c         |   6 +-
- include/linux/connector.h       |   8 +-
- include/linux/netlink.h         |   7 +
- include/uapi/linux/cn_proc.h    |  62 +++++--
- net/netlink/af_netlink.c        |  56 +++++-
- net/netlink/af_netlink.h        |   6 +
- samples/connector/proc_filter.c | 301 ++++++++++++++++++++++++++++++++
- 9 files changed, 528 insertions(+), 45 deletions(-)
- create mode 100644 samples/connector/proc_filter.c
-
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index c43ac7690eca..866bbc5a4c8d 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -206,6 +206,11 @@ bool netlink_strict_get_check(struct sk_buff *skb);
+ int netlink_unicast(struct sock *ssk, struct sk_buff *skb, __u32 portid, int nonblock);
+ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, __u32 portid,
+ 		      __u32 group, gfp_t allocation);
++int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
++			       __u32 portid, __u32 group, gfp_t allocation,
++			       int (*filter)(struct sock *dsk,
++					     struct sk_buff *skb, void *data),
++			       void *filter_data);
+ int netlink_set_err(struct sock *ssk, __u32 portid, __u32 group, int code);
+ int netlink_register_notifier(struct notifier_block *nb);
+ int netlink_unregister_notifier(struct notifier_block *nb);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index c64277659753..003c7e6ec9be 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1432,6 +1432,8 @@ struct netlink_broadcast_data {
+ 	int delivered;
+ 	gfp_t allocation;
+ 	struct sk_buff *skb, *skb2;
++	int (*tx_filter)(struct sock *dsk, struct sk_buff *skb, void *data);
++	void *tx_data;
+ };
+ 
+ static void do_one_broadcast(struct sock *sk,
+@@ -1485,6 +1487,11 @@ static void do_one_broadcast(struct sock *sk,
+ 			p->delivery_failure = 1;
+ 		goto out;
+ 	}
++	if (p->tx_filter && p->tx_filter(sk, p->skb2, p->tx_data)) {
++		kfree_skb(p->skb2);
++		p->skb2 = NULL;
++		goto out;
++	}
+ 	if (sk_filter(sk, p->skb2)) {
+ 		kfree_skb(p->skb2);
+ 		p->skb2 = NULL;
+@@ -1507,8 +1514,12 @@ static void do_one_broadcast(struct sock *sk,
+ 	sock_put(sk);
+ }
+ 
+-int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+-		      u32 group, gfp_t allocation)
++int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
++			       u32 portid,
++			       u32 group, gfp_t allocation,
++			       int (*filter)(struct sock *dsk,
++					     struct sk_buff *skb, void *data),
++			       void *filter_data)
+ {
+ 	struct net *net = sock_net(ssk);
+ 	struct netlink_broadcast_data info;
+@@ -1527,6 +1538,8 @@ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+ 	info.allocation = allocation;
+ 	info.skb = skb;
+ 	info.skb2 = NULL;
++	info.tx_filter = filter;
++	info.tx_data = filter_data;
+ 
+ 	/* While we sleep in clone, do not allow to change socket list */
+ 
+@@ -1552,6 +1565,14 @@ int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+ 	}
+ 	return -ESRCH;
+ }
++EXPORT_SYMBOL(netlink_broadcast_filtered);
++
++int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
++		      u32 group, gfp_t allocation)
++{
++	return netlink_broadcast_filtered(ssk, skb, portid, group, allocation,
++					  NULL, NULL);
++}
+ EXPORT_SYMBOL(netlink_broadcast);
+ 
+ struct netlink_set_err_data {
 -- 
 2.40.0
 
