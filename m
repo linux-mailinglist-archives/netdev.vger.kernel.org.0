@@ -2,91 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED1AA6CCF7F
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 03:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E420D6CCF80
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 03:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229634AbjC2Bae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 21:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        id S229780AbjC2Bag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 21:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbjC2Bad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 21:30:33 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F3710CE
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:32 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id m6so10749847qvq.0
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:32 -0700 (PDT)
+        with ESMTP id S229484AbjC2Baf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 21:30:35 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C0210CE
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:34 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id 59so10557254qva.11
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1680053432;
-        h=mime-version:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=hHBUUFeHIro5DQAVwsrj0lZozQsmlmn0kmJRJ4aArrk=;
-        b=eeL3hDaD8RX4eu4rsJPNo0hUCoIZf1F0H0tNdd+92bnWsDXsG4qlqnGIrDEId3w2Dj
-         Zj+2iRlMJpXBcK9cZD5bQufSwN3Z9HzdzDyxXRH4IH2XeK8b5IX+iguF3c3a5AkrVn90
-         gmuB3UHS1Y9ppXcYeJlH6vVvHj26AInzXoNmg=
+        d=broadcom.com; s=google; t=1680053433;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=GPZ4DRLXgCe2fCIsUnM5NKh52x4WNSwBcSVU2f5xzr4=;
+        b=KCdX7aKs9Cu4W3XoOzVJw/yb3NgyTMgFPOonjnXVM5wdq4rPrHAOW3k0IbLzcDq9c4
+         MmXShwVDpL1zcS2wGdSpV69M0xuJ/WWCU5YJqg5ayRoGA8rFeHQfm7NyJVZdF5gNZNDF
+         eXsxpsdE8lwyos0gHjYvKIDWptz3CTihRO804=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680053432;
-        h=mime-version:message-id:date:subject:cc:to:from:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hHBUUFeHIro5DQAVwsrj0lZozQsmlmn0kmJRJ4aArrk=;
-        b=Mw2MqH0eE8poFwZTt/rsZt43n3HBCXaEhEH89i6751dRulrhRk15cFV5X2DUzPGuFY
-         Op5qjcOuJPpH2ETmcogckNsNw1u1MOsznFMrRbXH2RFuRGnmwEvmPfNScCCC2CIVwR0n
-         BbmQAne+VXqeBTpaDoJ+4oya2l+adwRGsTEQ4ILgTgXyeiti/M5pWnH1av82ULAfHAMr
-         vkqLb+2B+bw3XwDDFROGKP2TdrW8X6r4XS7oTkeZXTpOvxppq2iDzWBAyKo3vlUJwkee
-         aXtuRZOZvErDsK+C2G+CBSFw8YMUzTh6L74nggZGBlFiR6YAny8yUHJN/3tHvjkhFsIy
-         5OQg==
-X-Gm-Message-State: AAQBX9epxc6UbOeYZnlDLhbTI3K66dBUDYp9BglckWaEdz/fc+WpMLLW
-        Xzm/Szg7VUbr9Yj2HsShR4oEoVGYQEbMWSz6aoE=
-X-Google-Smtp-Source: AKy350Y8Q+PBHEMxiuf2beZCtH0WfLduCZ6S9WmMbj0Cixq1Iy//kLDRlWRO2k/In4GCroVoshr/6w==
-X-Received: by 2002:a05:6214:5190:b0:5aa:ad07:ea58 with SMTP id kl16-20020a056214519000b005aaad07ea58mr27727343qvb.3.1680053431706;
-        Tue, 28 Mar 2023 18:30:31 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680053433;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GPZ4DRLXgCe2fCIsUnM5NKh52x4WNSwBcSVU2f5xzr4=;
+        b=BxAp9fzFMHOUHwDRKFio2S4u0YidyLdfJ3hI3kfU4v9U0yarQJOHERrIDo+lBbU4+w
+         ZVE3ALmXxtLtsijPsk6vrHROAFAx9ExneH4R10/qHHVFq2J6n4N1Sfj4u9JVqVmnd2Dj
+         1iEzLEk+EBYNVXoZhqKlH52JWzLdu/NY8rBhQVb64SqQf5wE4bC5hp8v7j9yXqGSjpe9
+         cfBCyJ1iLpYW3kekdkqArCh9epIxBkCRp5/APGTUJNNDVRIM3WZ0E9N3IILWjp3lH27A
+         ovsA0sCvqnZ8gJh83RQOZPfBkf4RlQvkAueAhxu1ZNZQA+IOXDBDZF5AWGNDyYZJdiaU
+         4nbQ==
+X-Gm-Message-State: AAQBX9ep42/494sK2iwvaFCr92ej40Uv3O71tDI0UD+1S7V/X1QPNASs
+        oVbUjniAc/azMa93XbVS5zYyHQ==
+X-Google-Smtp-Source: AKy350bz4R2euXD7wwBqM625ksg0PibzhAdDYyyo5MaOuQcIUkK/Mp69OogaSJcTO4vBSiYA4i7J7w==
+X-Received: by 2002:a05:6214:c6e:b0:5c2:a8b0:d71a with SMTP id t14-20020a0562140c6e00b005c2a8b0d71amr27809353qvj.43.1680053433478;
+        Tue, 28 Mar 2023 18:30:33 -0700 (PDT)
 Received: from lvnvda1597.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id l15-20020ad4408f000000b005dd8b9345b0sm4223402qvp.72.2023.03.28.18.30.30
+        by smtp.gmail.com with ESMTPSA id l15-20020ad4408f000000b005dd8b9345b0sm4223402qvp.72.2023.03.28.18.30.31
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Mar 2023 18:30:31 -0700 (PDT)
+        Tue, 28 Mar 2023 18:30:32 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 0/3] bnxt_en: 3 Bug fixes
-Date:   Tue, 28 Mar 2023 18:30:18 -0700
-Message-Id: <20230329013021.5205-1-michael.chan@broadcom.com>
+        pabeni@redhat.com, gospo@broadcom.com,
+        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>
+Subject: [PATCH net 1/3] bnxt_en: Fix reporting of test result in ethtool selftest
+Date:   Tue, 28 Mar 2023 18:30:19 -0700
+Message-Id: <20230329013021.5205-2-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20230329013021.5205-1-michael.chan@broadcom.com>
+References: <20230329013021.5205-1-michael.chan@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000901a905f7ffec19"
-X-Spam-Status: No, score=0.8 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+        boundary="00000000000021e0eb05f7ffec00"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000901a905f7ffec19
+--00000000000021e0eb05f7ffec00
 Content-Transfer-Encoding: 8bit
 
-This series contains 3 small bug fixes covering ethtool self test, PCI
-ID string typos, and some missing 200G link speed ethtool reporting logic.
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-Kalesh AP (2):
-  bnxt_en: Fix reporting of test result in ethtool selftest
-  bnxt_en: Fix typo in PCI id to device description string mapping
+When the selftest command fails, driver is not reporting the failure
+by updating the "test->flags" when bnxt_close_nic() fails.
 
-Michael Chan (1):
-  bnxt_en: Add missing 200G link speed reporting
+Fixes: eb51365846bc ("bnxt_en: Add basic ethtool -t selftest support.")
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 8 ++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         | 1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 3 +++
- 3 files changed, 8 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index ec573127b707..7658a06b8d05 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3738,6 +3738,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
+ 		bnxt_ulp_stop(bp);
+ 		rc = bnxt_close_nic(bp, true, false);
+ 		if (rc) {
++			etest->flags |= ETH_TEST_FL_FAILED;
+ 			bnxt_ulp_start(bp, rc);
+ 			return;
+ 		}
 -- 
 2.18.1
 
 
---0000000000000901a905f7ffec19
+--00000000000021e0eb05f7ffec00
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -157,13 +174,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICI56IB1OKaybGGpQoUOeZ0fL8fAPIwa
-ApheTfqCpo39MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-OTAxMzAzMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINwp8jHqd1d/Ty38Pthuvl9Zq/76kC/I
++LCuNyvfFNMGMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
+OTAxMzAzM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQADIFQ21SwYxAA8HWtyw0/3Tcfm5gKa5FH0lYrDexo2FzHV1Qrr
-hjX+2gfxeTROw99O0Xzp/VBIk0g6HGir6Dp10yMt9KBH0Kcl93M9u5IwLxrroaF1PEAiZwp1IV4S
-OEc/A+onCWchyth5Y/dOVqybEsbelIbK07o86noS5lZaph4QKesGfx556LCOhoZFCYxfq4g5MJtL
-t6LAQndrH6ghrqVB0B2UkT1sY7VQOWt72pRmNObQ3hSJYoWNQw477pQlAz+6Es3U9sV00hFZKbme
-egH0z2mA5gS/cvk8V+gGJqllWvD1wajqW0Lgq+nApf2LLpWXTD7tvRGpytHSsWQo
---0000000000000901a905f7ffec19--
+ATANBgkqhkiG9w0BAQEFAASCAQAJ8CApbUa1eOUaecLRwFmKlWuO2ssAtQzZyLr2fuq7boZmckBX
+tVmYCJAimucM+6JhTHG6uajY/Tai1w+n6ofOoHzgrMDqKwwsYd4FZeSGhsFT2Z8MjLAcSZB2Zjpc
+gzIh9OvzIBauoAp69UHIig6W6M2zU7vbN0KYCbZW4tpp3s2+vMVweT1kyfJ316vTvWefAaIJhVSq
+0rW+9C+aElFmYKTyyGQFAhSMHHxL/8iw9wqCk22GdIBlpBO4dp+G/RxCE89PNiHDbp9lRlGdYFPE
+66n8SUE6dKrOi1n02cmG6rIRC5RFSwbfakOqW7GRelzMKml4ipgjOZ8vi6mWhDIR
+--00000000000021e0eb05f7ffec00--
