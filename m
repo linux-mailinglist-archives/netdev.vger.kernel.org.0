@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCC26CD419
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:10:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C08916CD41B
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbjC2IKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 04:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
+        id S230115AbjC2IKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 04:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbjC2IK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:10:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6D54239;
-        Wed, 29 Mar 2023 01:10:27 -0700 (PDT)
+        with ESMTP id S230344AbjC2IKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:10:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB9E1996
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 01:10:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5625561B5A;
-        Wed, 29 Mar 2023 08:10:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9D206C433EF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E402FB8214E
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:10:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A7A38C4339E;
         Wed, 29 Mar 2023 08:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1680077426;
-        bh=jlhpbxOg9G4XA6mXvTUL0TMYClhDe77zuebhO7J62LE=;
+        bh=kpW/S+4voE5Mpl1zzAnFN4v+qHkTH5PWBdkvkOAbhIY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=luJqRGOpwpjMI9TaEfuG4hQXT4HQlc3qivS3w3CYcAtmMA2fA7djiY6PQhpbyq17U
-         JdDXeGdlIlrekERYHdzAZx/T1jg+gOs07dFT9YigZWoi/xTTSbxwxCpE50AklLASn1
-         k4ZSqIzSqgeg51ATTc8e74kffHBuFj1wQo77beWvbLu8oZLMbi0+H+KFKenfrqupTY
-         YTp68UW5NCJ6vModFtODC6+dnMTKCyvSqTrjDpmeVPiGoHPJ+ZF9Dh06GENN7BXLIW
-         oSx0TPp09LtmzpWOi+yecWKQ5Zk/HIpfpkk+Kx1hMwNarYwueT4uGPSD5gL0tCu6Rp
-         9VXPdt5RkvO2A==
+        b=TDqsqaHW43Be8WxyllXsYMSXW0B+zO2uUjsYnGp7ISwHN434oV2rXJT4wTtIOFPsV
+         EDaau5ryFa8K/mVwhiLUC9oCAI0B5U3/WYxAITWZOkdlmmNiIWoVOyg3541WXQtDsp
+         IUdZO7cWq7K/Y+tcYoluGBuGyZ5SoBAM2wh1gla3w7NGN/JLh80HH+AY8dgC36//a8
+         mHgArL/yFmzSNBefNPF+5SRQ0hFUwz7e/Dg/kYtcIGF31reAvFxrLO3t4l0i1UBkbh
+         3mfBX/XPpSewmNbZgqtB4yRq3sdlo5PTgLHB8i+5Mn0QDGyk45s2OBEyZu4wCOrhe4
+         /ZsjtTHq0IWcA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 88381C41612;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 903FAE50D76;
         Wed, 29 Mar 2023 08:10:26 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/4] mptcp: a couple of cleanups and
- improvements
+Subject: Re: [PATCH 0/2] macvlan: Allow some packets to bypass broadcast queue
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168007742655.16006.993088598018364960.git-patchwork-notify@kernel.org>
+Message-Id: <168007742658.16006.9794796649627218191.git-patchwork-notify@kernel.org>
 Date:   Wed, 29 Mar 2023 08:10:26 +0000
-References: <20230324-upstream-net-next-20230324-misc-features-v2-0-fca1471efbaa@tessares.net>
-In-Reply-To: <20230324-upstream-net-next-20230324-misc-features-v2-0-fca1471efbaa@tessares.net>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     mptcp@lists.linux.dev, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, shuah@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, geliang.tang@suse.com
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+References: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
+In-Reply-To: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     netdev@vger.kernel.org
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,26 +59,24 @@ Hello:
 This series was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 27 Mar 2023 12:22:20 +0200 you wrote:
-> Patch 1 removes an unneeded address copy in subflow_syn_recv_sock().
+On Tue, 28 Mar 2023 10:56:57 +0800 you wrote:
+> This patch series allows some packets to bypass the broadcast
+> queue on receive.  Currently all multicast packets are queued
+> on receive and then processed in a work queue.  This is to avoid
+> an unbounded amount of work occurring in the receive path, as
+> one broadcast packet could easily translate into 4,000 packets.
 > 
-> Patch 2 simplifies subflow_syn_recv_sock() to postpone some actions and
-> to avoid a bunch of conditionals.
-> 
-> Patch 3 stops reporting limits that are not taken into account when the
-> userspace PM is used.
+> However, for multicast packets with just one receiver (possible
+> for IPv6 ND), this introduces unnecessary latency as the packet
+> will go to exactly one device.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/4] mptcp: avoid unneeded address copy
-    https://git.kernel.org/netdev/net-next/c/2bb9a37f0e19
-  - [net-next,v2,2/4] mptcp: simplify subflow_syn_recv_sock()
-    https://git.kernel.org/netdev/net-next/c/a88d0092b24b
-  - [net-next,v2,3/4] mptcp: do not fill info not used by the PM in used
-    https://git.kernel.org/netdev/net-next/c/e925a0322ada
-  - [net-next,v2,4/4] selftests: mptcp: add mptcp_info tests
-    https://git.kernel.org/netdev/net-next/c/9095ce97bf8a
+  - [1/2] macvlan: Skip broadcast queue if multicast with single receiver
+    https://git.kernel.org/netdev/net-next/c/d45276e75e90
+  - [2/2] macvlan: Add netlink attribute for broadcast cutoff
+    https://git.kernel.org/netdev/net-next/c/954d1fa1ac93
 
 You are awesome, thank you!
 -- 
