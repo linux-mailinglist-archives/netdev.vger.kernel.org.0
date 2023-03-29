@@ -2,119 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D356CD79E
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 12:26:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5F36CD7A4
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 12:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231559AbjC2K0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 06:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33444 "EHLO
+        id S230253AbjC2K2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 06:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjC2K0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 06:26:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7791A6;
-        Wed, 29 Mar 2023 03:26:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231162AbjC2K2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 06:28:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370E71BFC
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 03:27:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680085637;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jd7WBwFIrNLOyJKQG/L4vTAs7GOnPYLmwP2mwUTLNMw=;
+        b=HOZccEbq8Ev4foRutDJWD7BAyO5CT/PUhUAB9kJTAcQcBaP5tYGMSxOA6ch6EqhEzkih95
+        xl9h31cTQxFi6bh9syAEFeG8cMW/ZMv0Br10mRYFGtW+3GLhUo0wJP6uk/VQz4joysNVaf
+        TagPYpqPxUbZzbft1JNIlxqcm9L+c2Y=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-uxOw9QE-NcyUG3HLHH_hbw-1; Wed, 29 Mar 2023 06:27:14 -0400
+X-MC-Unique: uxOw9QE-NcyUG3HLHH_hbw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC8E1B8222E;
-        Wed, 29 Mar 2023 10:26:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF4AC433EF;
-        Wed, 29 Mar 2023 10:26:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680085605;
-        bh=YYUHL54YAobPiIqzNEEhlZwcJML+B3UvbCk9XC6VgC4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Bl/yieiQa1bn1ziwjaWMFWwRjHRpOurV3Ud47Nrr6IANqzedK3RVPF5m52d4h8FiQ
-         KLFGvI6SQIZJ8g6MOdVX/BlBC+FcdUcCZfkhd0YeH98l6fFGgB3q8FGNy7s0kRMGXI
-         7cWd1ucXTVXjKy4Zv/mtWmKD0hczQ2dzDZ8o8uMjf2OmTRABbJcWUkxKYPLxc0J2NW
-         pAfaOQ87shVwHSshe5FGQo6q+mA7o1Um78XSkAbnqXkWUBJhfbr7790ioSBIOTSeXP
-         JyUy+jA42pyoCtDjiFJENbnvKez0u0hzDte0gqcxQxbDwaEtU9uRCZrmC0/6Knc66y
-         GmmCV4sNEqmlg==
-From:   "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To:     kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
-        Liu Haijun <haijun.liu@mediatek.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7CFF38030D1;
+        Wed, 29 Mar 2023 10:27:13 +0000 (UTC)
+Received: from localhost (unknown [10.43.135.229])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25E34492B00;
+        Wed, 29 Mar 2023 10:27:12 +0000 (UTC)
+Date:   Wed, 29 Mar 2023 12:27:11 +0200
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH] net: wwan: t7xx: do not compile with -Werror by default
-Date:   Wed, 29 Mar 2023 12:26:39 +0200
-Message-Id: <20230329102640.8830-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.40.0
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next] bonding: add software timestamping support
+Message-ID: <ZCQSf6Sc8A8E9ERN@localhost>
+References: <20230329031337.3444547-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230329031337.3444547-1-liuhangbin@gmail.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When playing with various compilers or their versions, some choke on
-the t7xx code. For example (with gcc 13):
- In file included from ./arch/s390/include/generated/asm/rwonce.h:1,
-                  from ../include/linux/compiler.h:247,
-                  from ../include/linux/build_bug.h:5,
-                  from ../include/linux/bits.h:22,
-                  from ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:17:
- In function 'preempt_count',
-     inlined from 't7xx_fsm_append_event' at ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:439:43:
- ../include/asm-generic/rwonce.h:44:26: error: array subscript 0 is outside array bounds of 'const volatile int[0]' [-Werror=array-bounds=]
+On Wed, Mar 29, 2023 at 11:13:37AM +0800, Hangbin Liu wrote:
+> At present, bonding attempts to obtain the timestamp (ts) information of
+> the active slave. However, this feature is only available for mode 1, 5,
+> and 6. For other modes, bonding doesn't even provide support for software
+> timestamping. To address this issue, let's call ethtool_op_get_ts_info
+> when there is no primary active slave. This will enable the use of software
+> timestamping for the bonding interface.
 
-There is no reason for any code in the kernel to be built with -Werror
-by default. Note that we have generic CONFIG_WERROR. OTOH, some drivers
-may want to do this only on per-driver basis. Some do
-CONFIG_DRM_I915_WERROR or alike. But I reused the scsi's:
-  ifdef WARNINGS_BECOME_ERRORS
-approach.
+Would it make sense to check if all devices in the bond support
+SOF_TIMESTAMPING_TX_SOFTWARE before returning it for the bond?
+Applications might expect that a SW TX timestamp will be always
+provided if the capability is reported.
 
-Now, if one wants to build t7xx with -Werror, they may say:
-  make WARNINGS_BECOME_ERRORS=1
-
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-Cc: Intel Corporation <linuxwwan@intel.com>
-Cc: Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>
-Cc: Liu Haijun <haijun.liu@mediatek.com>
-Cc: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-Cc: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc: Loic Poulain <loic.poulain@linaro.org>
-Cc: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
----
- drivers/net/wwan/t7xx/Makefile | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
-index 268ff9e87e5b..29622c2c4533 100644
---- a/drivers/net/wwan/t7xx/Makefile
-+++ b/drivers/net/wwan/t7xx/Makefile
-@@ -1,6 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0-only
- 
-+ifdef WARNINGS_BECOME_ERRORS
- ccflags-y += -Werror
-+endif
- 
- obj-${CONFIG_MTK_T7XX} := mtk_t7xx.o
- mtk_t7xx-y:=	t7xx_pci.o \
 -- 
-2.40.0
+Miroslav Lichvar
 
