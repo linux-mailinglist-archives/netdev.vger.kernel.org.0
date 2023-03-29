@@ -2,186 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F286CEE96
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D94456CEEA2
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231293AbjC2QEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 12:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58462 "EHLO
+        id S229742AbjC2QF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 12:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbjC2QE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:04:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05FE7AB2;
-        Wed, 29 Mar 2023 09:03:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE95561D84;
-        Wed, 29 Mar 2023 16:01:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12245C4339C;
-        Wed, 29 Mar 2023 16:01:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680105706;
-        bh=qcGyMMCG8q3oX9EluJ05zNrLVr7y0RS2BMSTWFdWbQY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=qxD6mvs25qUC0Aygv94Xhxqz08OMzsiT1hKKAi4XfIMhuqZ434Y4B/CbTB+wU80iJ
-         QXs6xzzaM1sqCficfrFMsDwIEJNpRu061PyhK2Qwq9lftS8gwzEfkC+qHW3i5n4zrt
-         MHBq9Bg1POuxqwoWjU5NPNfiHMWs06MJ8AKyaAJ2SJ42hR08gJ1Ik5vfwH9vP+N61N
-         uXY1ZAK43HMvx8VFsKaA3qYw1E3mCPRy86pBQPtzqR4PjnfsJFhCMj1eUsZd6PTUMm
-         bm8MwHk2ZBMLSY+ozhSDnPM6g6g+T+ZHO/kCR+ynJ7Y7Fg0/raqtSi6awVFwk1tamL
-         apfWbvqB5tVnQ==
-Date:   Wed, 29 Mar 2023 11:01:44 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Petr Machata <petrm@nvidia.com>,
+        with ESMTP id S231402AbjC2QEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:04:46 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40500469E;
+        Wed, 29 Mar 2023 09:03:59 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1phYGD-0003Yb-19;
+        Wed, 29 Mar 2023 18:02:54 +0200
+Date:   Wed, 29 Mar 2023 17:02:47 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Amit Cohen <amcohen@nvidia.com>, mlxsw@nvidia.com,
-        linux-pci@vger.kernel.org,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH net-next 6/6] mlxsw: pci: Add support for new reset flow
-Message-ID: <20230329160144.GA2967030@bhelgaas>
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+Subject: [RFC PATCH net-next v3 15/15] dt-bindings: net: dsa:
+ mediatek,mt7530: add mediatek,mt7988-switch
+Message-ID: <9b504e3e88807bfb62022c0877451933d30abeb5.1680105013.git.daniel@makrotopia.org>
+References: <cover.1680105013.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZCBOdunTNYsufhcn@shredder>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <cover.1680105013.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+cc Alex, Lukas for link-disable reset thoughts, beginning of thread:
-https://lore.kernel.org/all/cover.1679502371.git.petrm@nvidia.com/]
+Add documentation for the built-in switch which can be found in the
+MediaTek MT7988 SoC.
 
-On Sun, Mar 26, 2023 at 04:53:58PM +0300, Ido Schimmel wrote:
-> On Thu, Mar 23, 2023 at 11:51:15AM -0500, Bjorn Helgaas wrote:
-> > On Wed, Mar 22, 2023 at 05:49:35PM +0100, Petr Machata wrote:
-> > > From: Amit Cohen <amcohen@nvidia.com>
-> > > 
-> > > The driver resets the device during probe and during a devlink reload.
-> > > The current reset method reloads the current firmware version or a pending
-> > > one, if one was previously flashed using devlink. However, the reset does
-> > > not take down the PCI link, preventing the PCI firmware from being
-> > > upgraded, unless the system is rebooted.
-> > 
-> > Just to make sure I understand this correctly, the above sounds like
-> > "firmware" includes two parts that have different rules for loading:
-> > 
-> >   - Current reset method is completely mlxsw-specific and resets the
-> >     mlxsw core but not the PCIe interface; this loads only firmware
-> >     part A
-> > 
-> >   - A PCIe reset resets both the mlxsw core and the PCIe interface;
-> >     this loads both firmware part A and part B
-> 
-> Yes. A few years ago I had to flash a new firmware in order to test a
-> fix in the PCIe firmware and the bug still reproduced after a devlink
-> reload. Only after a reboot the new PCIe firmware was loaded and the bug
-> was fixed. Bugs in PCIe firmware are not common, but we would like to
-> avoid the scenario where users must reboot the machine in order to load
-> the new firmware.
-> 
-> > > To solve this problem, a new reset command (6) was implemented in the
-> > > firmware. Unlike the current command (1), after issuing the new command
-> > > the device will not start the reset immediately, but only after the PCI
-> > > link was disabled. The driver is expected to wait for 500ms before
-> > > re-enabling the link to give the firmware enough time to start the reset.
-> > 
-> > I guess the idea here is that the mlxsw driver:
-> > 
-> >   - Tells the firmware we're going to reset
-> >     (MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE)
-> > 
-> >   - Saves PCI config state
-> > 
-> >   - Disables the link (mlxsw_pci_link_toggle()), which causes a PCIe
-> >     hot reset
-> > 
-> >   - The firmware notices the link disable and starts its own internal
-> >     reset
-> > 
-> >   - The mlxsw driver waits 500ms
-> >     (MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS)
-> > 
-> >   - Enables link and waits for it to be active
-> >     (mlxsw_pci_link_active_check()
-> > 
-> >   - Waits for device to be ready again (mlxsw_pci_device_id_read())
-> 
-> Correct.
-> 
-> > So the first question is why you don't simply use
-> > pci_reset_function(), since it is supposed to cause a reset and do all
-> > the necessary waiting for the device to be ready.  This is quite
-> > complicated to do correctly; in fact, we still discover issues there
-> > regularly.  There are many special cases in PCIe r6.0, sec 6.6.1, and
-> > it would be much better if we can avoid trying to handle them all in
-> > individual drivers.
-> 
-> I see that this function takes the device lock and I think (didn't try)
-> it will deadlock if we were to replace the current code with it since we
-> also perform a reset during probe where I believe the device lock is
-> already taken.
-> 
-> __pci_reset_function_locked() is another option, but it assumes the
-> device lock was already taken, which is correct during probe, but not
-> when reset is performed as part of devlink reload.
-> 
-> Let's put the locking issues aside and assume we can use
-> __pci_reset_function_locked(). I'm trying to figure out what it can
-> allow us to remove from the driver in favor of common PCI code. It
-> essentially invokes one of the supported reset methods. Looking at my
-> device, I see the following:
-> 
->  # cat /sys/class/pci_bus/0000\:01/device/0000\:01\:00.0/reset_method 
->  pm bus
-> 
-> So I assume it will invoke pci_pm_reset(). I'm not sure it can work for
-> us as our reset procedure requires us to disable the link on the
-> downstream port as a way of notifying the device that it should start
-> the reset procedure.
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 26 +++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-Hmmm, pci_pm_reset() puts the device in D3hot, then back to D0.  Spec
-says that results in "undefined internal Function state," which
-doesn't even sound like a guaranteed reset, but it's what we have, and
-in any case, it does not disable the link.
+diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+index 5ae9cd8f99a24..15953f0e9d1a6 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+@@ -11,16 +11,23 @@ maintainers:
+   - Landen Chao <Landen.Chao@mediatek.com>
+   - DENG Qingfang <dqfext@gmail.com>
+   - Sean Wang <sean.wang@mediatek.com>
++  - Daniel Golle <daniel@makrotopia.org>
+ 
+ description: |
+-  There are two versions of MT7530, standalone and in a multi-chip module.
++  There are three versions of MT7530, standalone, in a multi-chip module and
++  built-into a SoC.
+ 
+   MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
+   MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
+ 
++  The MT7988 SoC comes a built-in switch similar to MT7531 as well as 4 Gigabit
++  Ethernet PHYs and the switch registers are directly mapped into SoC's memory
++  map rather than using MDIO. It comes with an internally connected 10G CPU port
++  and 4 user ports connected to the built-in Gigabit Ethernet PHYs.
++
+   MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
+   and the switch registers are directly mapped into SoC's memory map rather than
+-  using MDIO. The DSA driver currently doesn't support this.
++  using MDIO. The DSA driver currently doesn't support MT7620 variants.
+ 
+   There is only the standalone version of MT7531.
+ 
+@@ -81,6 +88,10 @@ properties:
+           Multi-chip module MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
+         const: mediatek,mt7621
+ 
++      - description:
++          Built-in switch of the MT7988 SoC
++        const: mediatek,mt7988-switch
++
+   reg:
+     maxItems: 1
+ 
+@@ -268,6 +279,17 @@ allOf:
+       required:
+         - mediatek,mcm
+ 
++  - if:
++      properties:
++        compatible:
++          const: mediatek,mt7988-switch
++    then:
++      $ref: "#/$defs/mt7530-dsa-port"
++      properties:
++        gpio-controller: false
++        mediatek,mcm: false
++        reset-names: false
++
+ unevaluatedProperties: false
+ 
+ examples:
+-- 
+2.39.2
 
-> We might be able to use the "device_specific" method and add quirks in
-> "pci_dev_reset_methods". However, I'm not sure what would be the
-> benefit, as it basically means moving the code in
-> mlxsw_pci_link_toggle() to drivers/pci/quirks.c. Also, when the "probe"
-> argument is "true" we can't actually determine if this reset method is
-> supported or not, as we can't query that from the configuration space of
-> the device in the current implementation. It's queried using a command
-> interface that is specific to mlxsw and resides in the driver itself.
-> Not usable from drivers/pci/quirks.c.
-
-Spec (PCIe r6.0, sec 6.6.1) says "Disabling a Link causes Downstream
-components to undergo a hot reset."  That seems like it *could* be a
-general-purpose method of doing a reset, and I don't know why the PCI
-core doesn't support it.  Added Alex and Lukas in case they know.
-
-But it sounds like there's some wrinkle with your device?  I suppose a
-link disable actually causes a reset, but that reset may not trigger
-the firmware reload you need?  If we had a generic "disable link"
-reset method, maybe a device quirk could disable it if necessary?
-
-> > Of course, pci_reset_function() does *not* include details like
-> > MLXSW_PCI_TOGGLE_WAIT_BEFORE_EN_MSECS.
-> > 
-> > I assume that flashing the firmware to the device followed by a power
-> > cycle (without ever doing MLXSW_REG_MRSR_COMMAND_RESET_AT_PCI_DISABLE)
-> > would load the new firmware everywhere.  Can we not do the same with a
-> > PCIe reset?
-> 
-> Yes, that's what we would like to achieve.
-> 
-> Thanks for the feedback!
