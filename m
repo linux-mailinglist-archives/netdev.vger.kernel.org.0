@@ -2,80 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1CF6CD249
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6796CD250
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:51:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbjC2GsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 02:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
+        id S229676AbjC2Gvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 02:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjC2GsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:48:12 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D4F183;
-        Tue, 28 Mar 2023 23:48:10 -0700 (PDT)
-Received: from [IPV6:2003:e9:d70f:381f:5e2f:3bee:d4cb:b76b] (p200300e9d70f381f5e2f3beed4cbb76b.dip0.t-ipconnect.de [IPv6:2003:e9:d70f:381f:5e2f:3bee:d4cb:b76b])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id C4D71C055C;
-        Wed, 29 Mar 2023 08:48:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1680072489;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FzpBKVenZRln9tqXGuSSzQR6z7GWvXYzvV9DnLXT7rs=;
-        b=Fz/BIxj5CIx16ISljnVjcUN8Hq7lgJbDcZL8VthVsB0KQAgWBW7ZXdCDJwgERgpQtP6gCA
-        R3Af4qPV1VtPwiPv/uutDrdeXQOKb/jC22jqRq0XROdhnu0cvKPy465+lOzSjEvdGe98JZ
-        uDPNJEX+qGWme08zdmPKKBhxui0XzEl6N+15bbnjfdP/CdpGW+LW0DOCMFpQ50ajVx9LQ4
-        m8RMWfmohOy5esjCtWQCwOs+tcJ6Nodz33TK8ciIuXQ6hTuQHq8tmQ0FBzm81kSyMx9wlt
-        VkCmdnulpw7OXLCeFFajr8R1P7ztjmw0z79VliKPDACg6lFm9nCWhpV9oOo9Cg==
-Message-ID: <364aac26-21a0-ec36-c549-602b4126296d@datenfreihafen.org>
-Date:   Wed, 29 Mar 2023 08:48:08 +0200
+        with ESMTP id S229481AbjC2Gvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:51:49 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15499ED;
+        Tue, 28 Mar 2023 23:51:48 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id e18so14520061wra.9;
+        Tue, 28 Mar 2023 23:51:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680072706;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wNO5XYtDO9To2qYmyMq2g+OLzkP9KIoauMNo8WVsbjM=;
+        b=qc/ldFUmg+pKlj3x3qaztDtEw2ajppo85yBgRxykjcdJiTRCIIt1JFMcXWPtMMlhQ+
+         QrJEIAaBz1O5mgbfWJJi3OIfchnghb77dvYkwM+ZX87Edo1nAOnu5zqGuLetnUgYSW+D
+         BriDnb/8jyL4sROmYJ9ldSqBE3tx+r9/FSoTrj3UXYh2lsD3tjRIHy96lZSbl503gMbB
+         y0G3yPgTuXHUad9+zqyAunI5ut72VbsuJ6GLhDl0iDT+b5vgnbzYRf1W0ldkhwmeV7Ly
+         bTujQ7BtEzFrlfQRtb3BWOwHEPfA9FAMzFQ5GsMZbXjc/wbkWqOzER0oREXS0ZgGfIkf
+         J/Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680072706;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wNO5XYtDO9To2qYmyMq2g+OLzkP9KIoauMNo8WVsbjM=;
+        b=F23tm3HLetdZdF34JJJo5LeUbEsaxVgEp+x4DlGL08KQhej1fVe3fAtTxpIdxcrQvt
+         VF+wrIiAnRTh681O8GCkgCEWTC8lRWFv+WBx7DIj93Omtl2CwYmOIcDoC+o8urD51XcE
+         qU/qS7lsIg8hU5SLqXJFILrnALHy/sp/ZpJWI/uVGCzr4TTrtWixL5Qn5fD3nbD1ay/Y
+         VtDFdzLtm3B8UmA1isc/Cw2ofP5R+o+qBIm+9d2WgGXw9wh8lOzSKOh9kjM4jOQnH0ZI
+         w1P52AYMMlQQqFFCSfcCAvjNwlUHJW6DbjZzePtN/UE7RlB9TulHoflTsjJpr89mea3F
+         KyLw==
+X-Gm-Message-State: AAQBX9cqMy8IG6zAN4d0+VOS6I7b7Cz2GpyLrJMbDuLfi9u9v3nn4lSw
+        69uORtHaFkUS0+NQ7xne73M=
+X-Google-Smtp-Source: AKy350ZD6q8OH4oGBAzNhlW6NoCd36G3p0py/C6ppvOo0ZriqrCiUvpj9N2FlcY5inL3Ff2L1IzwJQ==
+X-Received: by 2002:adf:e288:0:b0:2ce:a93d:882d with SMTP id v8-20020adfe288000000b002cea93d882dmr14868026wri.11.1680072706471;
+        Tue, 28 Mar 2023 23:51:46 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id d5-20020adfef85000000b002cfed482e9asm29392968wro.61.2023.03.28.23.51.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Mar 2023 23:51:46 -0700 (PDT)
+Date:   Wed, 29 Mar 2023 09:51:37 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Veerasenareddy Burru <vburru@marvell.com>
+Cc:     Abhijit Ayarekar <aayarekar@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] octeon_ep: unlock the correct lock on error path
+Message-ID: <251aa2a2-913e-4868-aac9-0a90fc3eeeda@kili.mountain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: pull-request: ieee802154 for net 2023-03-24
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        alex.aring@gmail.com, miquel.raynal@bootlin.com,
-        netdev@vger.kernel.org
-References: <20230324173931.1812694-1-stefan@datenfreihafen.org>
- <20230327193842.59631f11@kernel.org>
- <605a1c16-0c03-a3be-9aec-12bb4d0113dc@datenfreihafen.org>
- <20230328151418.699f7026@kernel.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20230328151418.699f7026@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+The h and the f letters are swapped so it unlocks the wrong lock.
 
-On 29.03.23 00:14, Jakub Kicinski wrote:
-> On Tue, 28 Mar 2023 09:10:07 +0200 Stefan Schmidt wrote:
->> Sorry for that. I did not update my pull request script when changing
->> the git tree URLs to our team tree. Updated now.
->>
->> The tag is now on the tree above. You want me to send a new pull request
->> or do you take it from here?
-> 
-> Thanks, fresh PR would be better, I can't re-trigger the patchwork
-> checks on an existing one :(
+Fixes: 577f0d1b1c5f ("octeon_ep: add separate mailbox command and response queues")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+Thees vairable nmaes are terirble.  The huamn mnid deos not raed ervey
+lteter by istlef, but the wrod as a wlohe.
 
-Sure, no problem. Sent a v2 just now.
+https://www.dictionary.com/e/typoglycemia/
 
-regards
-Stefan Schmidt
+ drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
+index a4ee6f3ae354..035ead7935c7 100644
+--- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
++++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
+@@ -167,7 +167,7 @@ int octep_ctrl_mbox_send(struct octep_ctrl_mbox *mbox, struct octep_ctrl_mbox_ms
+ 	ci = readl(q->hw_cons);
+ 
+ 	if (octep_ctrl_mbox_circq_space(pi, ci, q->sz) < (msg->hdr.s.sz + mbox_hdr_sz)) {
+-		mutex_unlock(&mbox->f2hq_lock);
++		mutex_unlock(&mbox->h2fq_lock);
+ 		return -EAGAIN;
+ 	}
+ 
+-- 
+2.39.1
+
