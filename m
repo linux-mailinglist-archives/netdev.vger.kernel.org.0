@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9DA6CD23A
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39C2C6CD236
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbjC2GnQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Mar 2023 02:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
+        id S229584AbjC2GnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 02:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbjC2GnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:43:11 -0400
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4C82D4D;
-        Tue, 28 Mar 2023 23:43:10 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id j7so18106989ybg.4;
-        Tue, 28 Mar 2023 23:43:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680072189;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lKFJjwMfkc1/i71R2HfxUaDA6jy7XV8Sy9Jf1rC4YBY=;
-        b=MWcCTSt3gv13Jubt66Ok3Xmn5i/us8Ig7NcpmeBhAFZOeFs60F0pDKeUTTtBFY14qK
-         60RPOonl1SSFBGL0YEMrgWF1rpj6v5t6qGw0s1qJKsdzRBG0vM8oDXORswHzIKmx4/uL
-         fGyThI6mhY4+bsHR5OlR6VXt5CWL/BLdKZyU6/qHMHImxJMSBHwDDIgv513Xmcw2S2ZS
-         PA6nywxEmIrB9Ux5XXrKgLqkVU+JacvB6eoT3wC5bBoTQX9ozpWRgVBPNASacU/pn4TL
-         EnhHg+k7N49y3DvtlxLMpq9ZY28Vz/0uUh9KQ3R/D13D6gFRS+NUl5cULapw57Ovx7ob
-         TU8Q==
-X-Gm-Message-State: AAQBX9cq0k0c6wK2XShLnXs37EGuxDOha1ioTpwVfWl4oE09XJH98ShV
-        v/97WrYv4jOrvX/JK3zfA1wSwOWphCotdg==
-X-Google-Smtp-Source: AKy350bfboB61yZRzgrYHyfbM5JQZBOpONbhLqoQk09etk6lxeglvAy3G/XUwgytopdXOaSrerWe4w==
-X-Received: by 2002:a25:2584:0:b0:997:e3f5:d0cd with SMTP id l126-20020a252584000000b00997e3f5d0cdmr17049991ybl.45.1680072189399;
-        Tue, 28 Mar 2023 23:43:09 -0700 (PDT)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id b32-20020a25aea0000000b00b7767ca749csm3308052ybj.57.2023.03.28.23.43.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Mar 2023 23:43:08 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id n125so18066316ybg.7;
-        Tue, 28 Mar 2023 23:43:08 -0700 (PDT)
-X-Received: by 2002:a05:6902:722:b0:a09:314f:a3ef with SMTP id
- l2-20020a056902072200b00a09314fa3efmr11737007ybt.12.1680072188117; Tue, 28
- Mar 2023 23:43:08 -0700 (PDT)
+        with ESMTP id S229456AbjC2GnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:43:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8FE1722;
+        Tue, 28 Mar 2023 23:43:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 176E561A4F;
+        Wed, 29 Mar 2023 06:43:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A88C4C433D2;
+        Wed, 29 Mar 2023 06:43:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680072186;
+        bh=iwWij85irzDMzCfXOcpjNW3gLpqW6nbVsvgino6SOmU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=i3+rANPe13C+z+HfBKiy99laV8UjrGWB3RgwC6022ya7qqAxZWlnlrOVFhzCSNkMt
+         gJumZFtW4t5s7dBKMMMf/MeJVH/go1HwTszNcYntiQl/u9J626uTHE4xrqGCcUsWUT
+         KbjS13ZmV3erq+w0J7ZvwDMdMoRm1BA3ESz5Tl4fQiABY+Il0Y4oQsFi12UkLT/OFj
+         cL86e6CMHGSoxU+/E5uK8zVWKK2CwF9KO1TEkVLz+HwG1KSKjODB3VasljEHoUvafr
+         oAR977aBGHfSLEbryLrI3t34kw6uaUeMndnNv4N5kUEiRvfhncFPRv/c16KIW7RduD
+         19TgmU4cQdLfA==
+Date:   Wed, 29 Mar 2023 08:43:01 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     linux-fsdevel@vger.kernel.org, Jan Kara <jack@suse.cz>
+Cc:     Amir Goldstein <amir73il@gmail.com>,
+        Matthew Bobrowski <repnop@google.com>,
+        linux-kernel@vger.kernel.org,
+        Alexander Mikhalitsyn <aleksandr.mikhalitsyn@canonical.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3] pidfd: add pidfd_prepare()
+Message-ID: <20230329-strenuous-vindicate-214a05c6ea2e@brauner>
 MIME-Version: 1.0
-References: <20230327073354.1003134-1-mkl@pengutronix.de> <20230327073354.1003134-2-mkl@pengutronix.de>
- <20230328145658.7fdbc394@kernel.org>
-In-Reply-To: <20230328145658.7fdbc394@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 29 Mar 2023 08:42:56 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVsPZS=40+02=msy7bqYE6w41xbPjLKWRR2J43eMWYOxQ@mail.gmail.com>
-Message-ID: <CAMuHMdVsPZS=40+02=msy7bqYE6w41xbPjLKWRR2J43eMWYOxQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 01/11] can: rcar_canfd: Add transceiver support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Simon Horman <simon.horman@corigine.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20230327-pidfd-file-api-v1-0-5c0e9a3158e4@kernel.org>
+ <20230328154516.5qqt7uoewdzwb37m@wittgenstein>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
 
-On Tue, Mar 28, 2023 at 11:57 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Mon, 27 Mar 2023 09:33:44 +0200 Marc Kleine-Budde wrote:
-> > @@ -1836,6 +1849,7 @@ static void rcar_canfd_channel_remove(struct rcar_canfd_global *gpriv, u32 ch)
-> >
-> >  static int rcar_canfd_probe(struct platform_device *pdev)
-> >  {
-> > +     struct phy *transceivers[RCANFD_NUM_CHANNELS] = { 0, };
-> >       const struct rcar_canfd_hw_info *info;
-> >       struct device *dev = &pdev->dev;
-> >       void __iomem *addr;
->
-> [somehow this got stuck in my outgoing mail]
->
-> drivers/net/can/rcar/rcar_canfd.c:1852:59: warning: Using plain integer as NULL pointer
->
-> Could you follow up with a fix fix?
+On Mon, 27 Mar 2023 20:22:50 +0200, Christian Brauner wrote:
+> This adds the pidfd_prepare() helper which allows the caller to reserve
+> a pidfd number and allocates a new pidfd file that stashes the provided
+> struct pid.
+> 
+> This will allow us to remove places that either open code this
+> functionality e.g., during copy_process() or that currently call
+> pidfd_create() but then have to call close_fd() because there are still
+> failure points after pidfd_create() has been called.
+> 
+> [...]
 
-Sure (that one was well hidden in the sparse output)
+Jan, thanks for the reviews.
 
-https://lore.kernel.org/r/7f7b0dde0caa2d2977b4fb5b65b63036e75f5022.1680071972.git.geert+renesas@glider.be
+I've picked this up now. Please note that this series is considered stable and
+has thus been tagged. The reason is that the SCM_PIDFD work in the networking
+depends wants to depend on this work. So they'll get a stable tag,
+
+tree: git://git.kernel.org/pub/scm/linux/kernel/git/brauner/linux.git
+branch: pidfd.file.api
+tag: pidfd.file.api.v6.4
+
+[1/3] pid: add pidfd_prepare()
+      commit: 7021c1b14f83d9151ecaf976eaa6c1d5c6bb5dc7
+[2/3] fork: use pidfd_prepare()
+      commit: 761ce43fda7ebcdf1b1aa8e797ec83fae0e34c47
+[3/3] fanotify: use pidfd_prepare()
+      commit: 909939fc167d82cf09cd93ae44e968be916b6e41
+
 Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Christian
