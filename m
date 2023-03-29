@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86FFC6CF21E
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E674F6CF21C
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbjC2S0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 14:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
+        id S229702AbjC2S0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 14:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbjC2S0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:26:14 -0400
+        with ESMTP id S229603AbjC2S0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:26:15 -0400
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0B44EC1;
-        Wed, 29 Mar 2023 11:26:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6223959F8;
+        Wed, 29 Mar 2023 11:26:14 -0700 (PDT)
 Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TEU4Dd018538;
-        Wed, 29 Mar 2023 18:25:56 GMT
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TEU4De018538;
+        Wed, 29 Mar 2023 18:25:57 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=corp-2022-7-12;
- bh=+tipkxqW6mk4WPUep1JYgOq3dpyY9vLE+NJdyHA501k=;
- b=deuMXEnF77jYr20A0NOe0krl93KUNNRFbfCwEXSFKyc+6a0Nk2sMzJzy/yzV1A8JXBcY
- e68e796EhMjWdG1+NTvMmf0fnumQCBWxsHB8UshvBUWH/Qx2nNkDKUmC1IcrieYMxG7h
- og2mLquaJbBBhMzChFz63n1zCf0SURJZq5zsjx1yDHwJx1jQG+ABZAK9HeUry67/7sTS
- rGhOiPjM4ONVqA4BdSVt9y9FZBHtQbqrj6oGZIGHn2ZPouI5X/NAPtEeKbY9DoGKBSJY
- NQhIilM8eDDi0d2E0FWvFe8IPk8J6Pvkb8DWETj4hwZ2rHmdxQZKLJfOrsOKRSX22o1U Hw== 
+ bh=GC5M1AAloAsnc32WLbYzM+8yiNovVYWfuPZvnbW1NS0=;
+ b=qg9Ko3pz6PLHJmXn8yAHWYa4pefrMF7KjOc9htBPLdxiekL/XkWBoh/9uwkAa4Xkri8V
+ 7/f6JWZrzgy6zd2j5q6WqDRSffYjp+n3YzuVVRwcU0EbeZYapCnjVC9imc2E/+u/JaRl
+ NNcUCcqMj6DNe8x3Ptbj/VXdn0P+wGPRigQb9JlgwxXXKTGIOB8R3DjarSorWEJ5b4FY
+ c7+xxGHlxCgDbEI1WMZ2RMXX5B9IzW6b7DiUN4gXSmQfnKwnSfKvAfFmkSylfdcuzaUx
+ D+QynXVVeW6E2kHeaeLs+TXF2jlp8yIuir0l+WGDUubWjm4OyL+v8/rVXaNMceFl/do6 Dw== 
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pmq538pb2-1
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pmq538pb6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Mar 2023 18:25:55 +0000
+        Wed, 29 Mar 2023 18:25:57 +0000
 Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32THSwG3010828;
-        Wed, 29 Mar 2023 18:25:54 GMT
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32THUQSK010926;
+        Wed, 29 Mar 2023 18:25:56 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3phqder9vv-1
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3phqder9xg-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Mar 2023 18:25:54 +0000
+        Wed, 29 Mar 2023 18:25:56 +0000
 Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32TIPQeB004473;
-        Wed, 29 Mar 2023 18:25:53 GMT
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32TIPQeD004473;
+        Wed, 29 Mar 2023 18:25:55 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3phqder9hg-6;
-        Wed, 29 Mar 2023 18:25:53 +0000
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3phqder9hg-7;
+        Wed, 29 Mar 2023 18:25:55 +0000
 From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 To:     davem@davemloft.net
 Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
@@ -51,9 +51,9 @@ Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         socketcan@hartkopp.net, petrm@nvidia.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         anjali.k.kulkarni@oracle.com
-Subject: [PATCH v3 5/7] connector/cn_proc: Performance improvements
-Date:   Wed, 29 Mar 2023 11:25:41 -0700
-Message-Id: <20230329182543.1161480-6-anjali.k.kulkarni@oracle.com>
+Subject: [PATCH v3 6/7] netlink: Add multicast group level permissions
+Date:   Wed, 29 Mar 2023 11:25:42 -0700
+Message-Id: <20230329182543.1161480-7-anjali.k.kulkarni@oracle.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
 References: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
@@ -66,8 +66,8 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwa
  suspectscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 adultscore=0
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2303200000 definitions=main-2303290141
-X-Proofpoint-GUID: IDEBdNkA2OLgLwWOlwbr3SJVhpzBOQUJ
-X-Proofpoint-ORIG-GUID: IDEBdNkA2OLgLwWOlwbr3SJVhpzBOQUJ
+X-Proofpoint-GUID: rMPjqdIr9HYarEqkGttuexANfBhM82vf
+X-Proofpoint-ORIG-GUID: rMPjqdIr9HYarEqkGttuexANfBhM82vf
 X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -78,331 +78,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the capability to filter messages sent by the proc
-connector on the event type supplied in the message from the client
-to the connector. The client can register to listen for an event type
-given in struct proc_input.
-
-This event based filteting will greatly enhance performance - handling
-8K exits takes about 70ms, whereas 8K-forks + 8K-exits takes about 150ms
-& handling 8K-forks + 8K-exits + 8K-execs takes 200ms. There are currently
-9 different types of events, and we need to listen to all of them. Also,
-measuring the time using pidfds for monitoring 8K process exits took
-much longer - 200ms, as compared to 70ms using only exit notifications of
-proc connector.
-
-We also add a new event type - PROC_EVENT_NONZERO_EXIT, which is
-only sent by kernel to a listening application when any process exiting,
-has a non-zero exit status. This will help the clients like Oracle DB,
-where a monitoring process wants notfications for non-zero process exits
-so it can cleanup after them.
-
-This kind of a new event could also be useful to other applications like
-Google's lmkd daemon, which needs a killed process's exit notification.
-
-The patch takes care that existing clients using old mechanism of not
-sending the event type work without any changes.
-
-cn_filter function checks to see if the event type being notified via
-proc connector matches the event type requested by client, before
-sending(matches) or dropping(does not match) a packet.
-
-The proc_filter.c test file is updated to reflect the new filtering.
+A new field perm_groups is added in netlink_sock to store the protocol's
+multicast group access permissions. This is to allow for a more fine
+grained access control than just at the protocol level. These
+permissions can be supplied by the protocol via the netlink_kernel_cfg.
+A new function netlink_multicast_allowed() is added, which checks if
+the protocol's multicast group has non-root access before allowing bind.
 
 Signed-off-by: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 ---
- drivers/connector/cn_proc.c     | 59 +++++++++++++++++++++++++++++----
- include/uapi/linux/cn_proc.h    | 19 +++++++++++
- samples/connector/proc_filter.c | 47 +++++++++++++++++++++++---
- 3 files changed, 115 insertions(+), 10 deletions(-)
+ include/linux/netlink.h  |  1 +
+ net/netlink/af_netlink.c | 25 +++++++++++++++++++++++--
+ net/netlink/af_netlink.h |  2 ++
+ 3 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/connector/cn_proc.c b/drivers/connector/cn_proc.c
-index 84f38d2bd4b9..35bec1fd7ee0 100644
---- a/drivers/connector/cn_proc.c
-+++ b/drivers/connector/cn_proc.c
-@@ -50,21 +50,44 @@ static DEFINE_PER_CPU(struct local_event, local_event) = {
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index 05a316aa93b4..253cbcd7a290 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -46,6 +46,7 @@ void netlink_table_ungrab(void);
+ struct netlink_kernel_cfg {
+ 	unsigned int	groups;
+ 	unsigned int	flags;
++	long unsigned 	perm_groups;
+ 	void		(*input)(struct sk_buff *skb);
+ 	struct mutex	*cb_mutex;
+ 	int		(*bind)(struct net *net, int group);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index dc7880055705..f31173d28dd0 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -679,6 +679,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
+ 	void (*unbind)(struct net *net, int group);
+ 	void (*release)(struct sock *sock, unsigned long *groups);
+ 	int err = 0;
++	unsigned long perm_groups;
  
- static int cn_filter(struct sock *dsk, struct sk_buff *skb, void *data)
- {
-+	uintptr_t val;
-+	__u32 what, exit_code, *ptr;
- 	enum proc_cn_mcast_op mc_op;
+ 	sock->state = SS_UNCONNECTED;
  
--	if (!dsk)
-+	if (!dsk || !data)
- 		return 0;
+@@ -706,6 +707,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
+ 	bind = nl_table[protocol].bind;
+ 	unbind = nl_table[protocol].unbind;
+ 	release = nl_table[protocol].release;
++	perm_groups = nl_table[protocol].perm_groups;
+ 	netlink_unlock_table();
  
-+	ptr = (__u32 *)data;
-+	what = *ptr++;
-+	exit_code = *ptr;
-+	val = ((struct proc_input *)(dsk->sk_user_data))->event_type;
- 	mc_op = ((struct proc_input *)(dsk->sk_user_data))->mcast_op;
+ 	if (err < 0)
+@@ -722,6 +724,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
+ 	nlk->netlink_bind = bind;
+ 	nlk->netlink_unbind = unbind;
+ 	nlk->netlink_release = release;
++	nlk->perm_groups = perm_groups;
+ out:
+ 	return err;
  
- 	if (mc_op == PROC_CN_MCAST_IGNORE)
- 		return 1;
- 
--	return 0;
-+	if ((__u32)val == PROC_EVENT_ALL)
-+		return 0;
-+	/*
-+	 * Drop packet if we have to report only non-zero exit status
-+	 * (PROC_EVENT_NONZERO_EXIT) and exit status is 0
-+	 */
-+	if (((__u32)val & PROC_EVENT_NONZERO_EXIT) &&
-+	    (what == PROC_EVENT_EXIT)) {
-+		if (exit_code)
-+			return 0;
-+		else
-+			return 1;
-+	}
-+	if ((__u32)val & what)
-+		return 0;
-+	return 1;
+@@ -938,6 +941,20 @@ bool netlink_net_capable(const struct sk_buff *skb, int cap)
  }
+ EXPORT_SYMBOL(netlink_net_capable);
  
- static inline void send_msg(struct cn_msg *msg)
- {
-+	__u32 filter_data[2];
-+
- 	local_lock(&local_event.lock);
- 
- 	msg->seq = __this_cpu_inc_return(local_event.count) - 1;
-@@ -76,8 +99,15 @@ static inline void send_msg(struct cn_msg *msg)
- 	 *
- 	 * If cn_netlink_send() fails, the data is not sent.
- 	 */
-+	filter_data[0] = ((struct proc_event *)msg->data)->what;
-+	if (filter_data[0] == PROC_EVENT_EXIT) {
-+		filter_data[1] =
-+		((struct proc_event *)msg->data)->event_data.exit.exit_code;
-+	} else {
-+		filter_data[1] = 0;
-+	}
- 	cn_netlink_send_mult(msg, msg->len, 0, CN_IDX_PROC, GFP_NOWAIT,
--			     cn_filter, NULL);
-+			     cn_filter, (void *)filter_data);
- 
- 	local_unlock(&local_event.lock);
- }
-@@ -357,12 +387,15 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
- 
- /**
-  * cn_proc_mcast_ctl
-- * @data: message sent from userspace via the connector
-+ * @msg: message sent from userspace via the connector
-+ * @nsp: NETLINK_CB of the client's socket buffer
-  */
- static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 			      struct netlink_skb_parms *nsp)
- {
- 	enum proc_cn_mcast_op mc_op = 0, prev_mc_op = 0;
-+	struct proc_input *pinput = NULL;
-+	enum proc_cn_event ev_type = 0;
- 	int err = 0, initial = 0;
- 	struct sock *sk = NULL;
- 
-@@ -381,11 +414,21 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 		goto out;
- 	}
- 
--	if (msg->len == sizeof(mc_op))
-+	if (msg->len == sizeof(*pinput)) {
-+		pinput = (struct proc_input *)msg->data;
-+		mc_op = pinput->mcast_op;
-+		ev_type = pinput->event_type;
-+	} else if (msg->len == sizeof(mc_op)) {
- 		mc_op = *((enum proc_cn_mcast_op *)msg->data);
--	else
-+		ev_type = PROC_EVENT_ALL;
-+	} else
- 		return;
- 
-+	ev_type = valid_event((enum proc_cn_event)ev_type);
-+
-+	if (ev_type == PROC_EVENT_NONE)
-+		ev_type = PROC_EVENT_ALL;
-+
- 	if (nsp->sk) {
- 		sk = nsp->sk;
- 		if (sk->sk_user_data == NULL) {
-@@ -396,6 +439,8 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 			prev_mc_op =
- 			((struct proc_input *)(sk->sk_user_data))->mcast_op;
- 		}
-+		((struct proc_input *)(sk->sk_user_data))->event_type =
-+			ev_type;
- 		((struct proc_input *)(sk->sk_user_data))->mcast_op = mc_op;
- 	}
- 
-@@ -407,6 +452,8 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
- 	case PROC_CN_MCAST_IGNORE:
- 		if (!initial && (prev_mc_op != PROC_CN_MCAST_IGNORE))
- 			atomic_dec(&proc_event_num_listeners);
-+		((struct proc_input *)(sk->sk_user_data))->event_type =
-+			PROC_EVENT_NONE;
- 		break;
- 	default:
- 		err = EINVAL;
-diff --git a/include/uapi/linux/cn_proc.h b/include/uapi/linux/cn_proc.h
-index 6a06fb424313..f2afb7cc4926 100644
---- a/include/uapi/linux/cn_proc.h
-+++ b/include/uapi/linux/cn_proc.h
-@@ -30,6 +30,15 @@ enum proc_cn_mcast_op {
- 	PROC_CN_MCAST_IGNORE = 2
- };
- 
-+#define PROC_EVENT_ALL (PROC_EVENT_FORK | PROC_EVENT_EXEC | PROC_EVENT_UID |  \
-+			PROC_EVENT_GID | PROC_EVENT_SID | PROC_EVENT_PTRACE | \
-+			PROC_EVENT_COMM | PROC_EVENT_NONZERO_EXIT |           \
-+			PROC_EVENT_COREDUMP | PROC_EVENT_EXIT)
-+
-+/*
-+ * If you add an entry in proc_cn_event, make sure you add it in
-+ * PROC_EVENT_ALL above as well.
-+ */
- enum proc_cn_event {
- 	/* Use successive bits so the enums can be used to record
- 	 * sets of events as well
-@@ -45,15 +54,25 @@ enum proc_cn_event {
- 	/* "next" should be 0x00000400 */
- 	/* "last" is the last process event: exit,
- 	 * while "next to last" is coredumping event
-+	 * before that is report only if process dies
-+	 * with non-zero exit status
- 	 */
-+	PROC_EVENT_NONZERO_EXIT = 0x20000000,
- 	PROC_EVENT_COREDUMP = 0x40000000,
- 	PROC_EVENT_EXIT = 0x80000000
- };
- 
- struct proc_input {
- 	enum proc_cn_mcast_op mcast_op;
-+	enum proc_cn_event event_type;
- };
- 
-+static inline enum proc_cn_event valid_event(enum proc_cn_event ev_type)
++static inline bool netlink_multicast_allowed(unsigned long perm_groups,
++					     unsigned long groups)
 +{
-+	ev_type &= PROC_EVENT_ALL;
-+	return ev_type;
++	int group;
++
++	for (group = 0; group < BITS_PER_TYPE(u32); group++) {
++		if (test_bit(group, &groups)) {
++			if (!test_bit(group, &perm_groups))
++				return false;
++		}
++	}
++	return true;
 +}
 +
- /*
-  * From the user's point of view, the process
-  * ID is the thread group ID and thread ID is the internal
-diff --git a/samples/connector/proc_filter.c b/samples/connector/proc_filter.c
-index 25202f5bc126..63504fc5f002 100644
---- a/samples/connector/proc_filter.c
-+++ b/samples/connector/proc_filter.c
-@@ -15,22 +15,33 @@
- #include <errno.h>
- #include <signal.h>
- 
-+#define FILTER
-+
-+#ifdef FILTER
-+#define NL_MESSAGE_SIZE (sizeof(struct nlmsghdr) + sizeof(struct cn_msg) + \
-+			 sizeof(struct proc_input))
-+#else
- #define NL_MESSAGE_SIZE (sizeof(struct nlmsghdr) + sizeof(struct cn_msg) + \
- 			 sizeof(int))
-+#endif
- 
- #define MAX_EVENTS 1
- 
-+volatile static int interrupted;
-+static int nl_sock, ret_errno, tcount;
-+static struct epoll_event evn;
-+
- #ifdef ENABLE_PRINTS
- #define Printf printf
- #else
- #define Printf
- #endif
- 
--volatile static int interrupted;
--static int nl_sock, ret_errno, tcount;
--static struct epoll_event evn;
--
-+#ifdef FILTER
-+int send_message(struct proc_input *pinp)
-+#else
- int send_message(enum proc_cn_mcast_op mcast_op)
-+#endif
+ static inline int netlink_allowed(const struct socket *sock, unsigned int flag)
  {
- 	char buff[NL_MESSAGE_SIZE];
- 	struct nlmsghdr *hdr;
-@@ -50,8 +61,14 @@ int send_message(enum proc_cn_mcast_op mcast_op)
- 	msg->ack = 0;
- 	msg->flags = 0;
+ 	return (nl_table[sock->sk->sk_protocol].flags & flag) ||
+@@ -1023,8 +1040,11 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
  
-+#ifdef FILTER
-+	msg->len = sizeof(struct proc_input);
-+	((struct proc_input *)msg->data)->mcast_op = pinp->mcast_op;
-+	((struct proc_input *)msg->data)->event_type = pinp->event_type;
-+#else
- 	msg->len = sizeof(int);
- 	*(int *)msg->data = mcast_op;
-+#endif
- 
- 	if (send(nl_sock, hdr, hdr->nlmsg_len, 0) == -1) {
- 		ret_errno = errno;
-@@ -61,7 +78,11 @@ int send_message(enum proc_cn_mcast_op mcast_op)
- 	return 0;
- }
- 
-+#ifdef FILTER
-+int register_proc_netlink(int *efd, struct proc_input *input)
-+#else
- int register_proc_netlink(int *efd, enum proc_cn_mcast_op mcast_op)
-+#endif
- {
- 	struct sockaddr_nl sa_nl;
- 	int err = 0, epoll_fd;
-@@ -92,7 +113,11 @@ int register_proc_netlink(int *efd, enum proc_cn_mcast_op mcast_op)
- 		return -2;
- 	}
- 
-+#ifdef FILTER
-+	err = send_message(input);
-+#else
- 	err = send_message(mcast_op);
-+#endif
- 	if (err < 0)
- 		return err;
- 
-@@ -223,10 +248,19 @@ int main(int argc, char *argv[])
- {
- 	int epoll_fd, err;
- 	struct proc_event proc_ev;
-+#ifdef FILTER
-+	struct proc_input input;
-+#endif
- 
- 	signal(SIGINT, sigint);
- 
-+#ifdef FILTER
-+	input.event_type = PROC_EVENT_NONZERO_EXIT;
-+	input.mcast_op = PROC_CN_MCAST_LISTEN;
-+	err = register_proc_netlink(&epoll_fd, &input);
-+#else
- 	err = register_proc_netlink(&epoll_fd, PROC_CN_MCAST_LISTEN);
-+#endif
- 	if (err < 0) {
- 		if (err == -2)
- 			close(nl_sock);
-@@ -252,7 +286,12 @@ int main(int argc, char *argv[])
+ 	/* Only superuser is allowed to listen multicasts */
+ 	if (groups) {
+-		if (!netlink_allowed(sock, NL_CFG_F_NONROOT_RECV))
+-			return -EPERM;
++		if (!netlink_allowed(sock, NL_CFG_F_NONROOT_RECV)) {
++			if (!netlink_multicast_allowed(nlk->perm_groups,
++						       groups))
++				return -EPERM;
++		}
+ 		err = netlink_realloc_groups(sk);
+ 		if (err)
+ 			return err;
+@@ -2124,6 +2144,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
+ 			nl_table[unit].unbind = cfg->unbind;
+ 			nl_table[unit].release = cfg->release;
+ 			nl_table[unit].flags = cfg->flags;
++			nl_table[unit].perm_groups = cfg->perm_groups;
+ 			if (cfg->compare)
+ 				nl_table[unit].compare = cfg->compare;
  		}
- 	}
- 
-+#ifdef FILTER
-+	input.mcast_op = PROC_CN_MCAST_IGNORE;
-+	send_message(&input);
-+#else
- 	send_message(PROC_CN_MCAST_IGNORE);
-+#endif
- 
- 	close(epoll_fd);
- 	close(nl_sock);
+diff --git a/net/netlink/af_netlink.h b/net/netlink/af_netlink.h
+index 054335a34804..b7880254c716 100644
+--- a/net/netlink/af_netlink.h
++++ b/net/netlink/af_netlink.h
+@@ -29,6 +29,7 @@ struct netlink_sock {
+ 	u32			flags;
+ 	u32			subscriptions;
+ 	u32			ngroups;
++	unsigned long		perm_groups;
+ 	unsigned long		*groups;
+ 	unsigned long		state;
+ 	size_t			max_recvmsg_len;
+@@ -62,6 +63,7 @@ struct netlink_table {
+ 	struct listeners __rcu	*listeners;
+ 	unsigned int		flags;
+ 	unsigned int		groups;
++	unsigned long		perm_groups;
+ 	struct mutex		*cb_mutex;
+ 	struct module		*module;
+ 	int			(*bind)(struct net *net, int group);
 -- 
 2.40.0
 
