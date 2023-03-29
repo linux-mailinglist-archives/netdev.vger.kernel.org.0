@@ -2,171 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66FF96CDD4A
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 16:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E67CE6CEBE4
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 16:42:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbjC2OiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 10:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
+        id S229980AbjC2OmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 10:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbjC2Ohu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 10:37:50 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC1393E8;
-        Wed, 29 Mar 2023 07:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WeCOGn+nivfITQTE7Jx5/QJ8SYyOcW+zRWRaCZ1Is6I=; b=GC4FW0jIT5JXNVPCp+qk900pt+
-        c+7FM+K2IkNqpKeHThA4XXnSfDbzsuI5PfxAu5V53TWYvq7UKdMYox4gc8sHesZhu6ovSfT/FQsWM
-        Fg1OEajGqj40xhN5FZAW6mQNO329ml65j3iywUYjMRFnyNCqRhZH8AuZM4taf9vzmyEqUROk8o2o1
-        CWf1xHrTUVodX76XFGq4YWVaCUj2xq509me4pIOVdLesbkhnIOPq060P1nN07DX6KG6QfPxwtw4iG
-        LB7NkUZXoCl8+Y18yaEk+a8udh0uRvyUTCXCwumraaygP/+PqyfaNGe4NeXbgxkC/Bm3Ol7CATwoB
-        dwFx7f6g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36790)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1phWs4-0000NJ-EA; Wed, 29 Mar 2023 15:33:52 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1phWs0-0007aK-TA; Wed, 29 Mar 2023 15:33:48 +0100
-Date:   Wed, 29 Mar 2023 15:33:48 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
- node for default settings
-Message-ID: <ZCRMTP1QJ0deQhOH@shell.armlinux.org.uk>
-References: <ZB24fDEqwx53Rthm@kuha.fi.intel.com>
- <ZB3YGWTWLYyecgw7@shell.armlinux.org.uk>
- <ZCFvtuyelA+WoeqK@kuha.fi.intel.com>
- <ZCF2BLvGoaD/RGCS@shell.armlinux.org.uk>
- <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
- <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
- <ZCG6D7KV/0W0FUoI@shell.armlinux.org.uk>
- <ZCLZFA964zu/otQJ@kuha.fi.intel.com>
- <ZCLqXRKHh+VjCg8v@shell.armlinux.org.uk>
- <ZCRGHlERlLNuPHgE@kuha.fi.intel.com>
+        with ESMTP id S229686AbjC2Olm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 10:41:42 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2070.outbound.protection.outlook.com [40.107.21.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E3B902C
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 07:38:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NZOvEkh3E/Wfve1Dd2hBBrvBYnW2IaeZCgmdL6OUdUSUULZ4E3/DZSTeibbZMbOp7yLkEqhC+ITNOJf0raRHich90pOXOnDrkznaUMNsiDIhSr9DDNo6Vn2fm9Ri09HkjyMsbDXQPLsXN8fVPkvc21AVgohNFEbFpp0F1RN/PAL2GiIhYdFx1dlulQPA4q+7SgGlwgc+Pm8ED7isWObFy+upW2pYZNmcYbpCbzQG4Kok4qK98U5D1ArdBFQ/aeEcAUsrc0hiFmNzbf5vUQ6iTFilBCEIwjGr1fT/0TD9SniDWcmpAKES/cJBJp+pfOPT3Nko9au86prClX3eMLdL2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W+ce0eG1s4n+kmfizUGJlVKPKWShaVlohzDGUQ4oOGM=;
+ b=ay7iJ6YK86KxkNWn33Bhf9OEgwwExs2N5ytjL+9QZyjKJSLMlOQ+ntCCP56MI40w6qRbKIlK3p7u/scUUM407I+P+muOfWE87DwbNeZTSR+r/sr6VAf+l6TRMQ0/Xu9v4tK6QhayE2rHhdYdQtIDDX3OBld4voB9j6B27HHjNx0cJ5bJwpkusGl0z+MV8oBMf3L8zTH+KwXprGZ3gt4akVs7BDOHiM/fx8LecgWKxg+HmoQoWyeKIIVlX3Jb5mMKPrhB9JGC2cnZzvwz0bvyv2s/78er9//ZVIJm/KvHqONWR3TpIdcvMBP3wZ9giafD2MhT10Y9x2IVq6DFm2f2Ug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W+ce0eG1s4n+kmfizUGJlVKPKWShaVlohzDGUQ4oOGM=;
+ b=Kc2vTq8+8p3MwWJSnfYWwVyb6/xEe6XrhgVzUaM7l2Q2U+bZgi9SflSPSu7im42Ws4kFEXptHgqV4xxRQxEloWRgcRWp+bBeb/DjPZ58/2FVw2oouWMBsnl0AHnDn5U5wOOP8HXO8+CzA6IRGgL96dA/uX/p+STYg/UUbE7Vvftw2tdAFXHTAOnUXa7qro/OZLOw+qugylWwi/DVvRuA2Q6gwPFApXojWoHR3z0oAUfKz9s10VN4TBSDGfgeF8yS7pcjE8YU0SDXLaM4pOF6v3E9dzFQT61eVyFsRF1vaRQZ1KxrNgARg+IQVOjGp1B5zC2BJHw7c976k8SuprdYog==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9)
+ by AM9PR04MB8212.eurprd04.prod.outlook.com (2603:10a6:20b:3b7::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.35; Wed, 29 Mar
+ 2023 14:38:47 +0000
+Received: from VI1PR04MB7104.eurprd04.prod.outlook.com ([fe80::2ea:4a86:9ab7])
+ by VI1PR04MB7104.eurprd04.prod.outlook.com ([fe80::2ea:4a86:9ab7%4]) with
+ mapi id 15.20.6178.041; Wed, 29 Mar 2023 14:38:47 +0000
+Message-ID: <e998a290-6a0b-3eb9-01c8-ad6beb716d13@suse.com>
+Date:   Wed, 29 Mar 2023 16:38:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Content-Language: en-US
+To:     Grant Grundler <grundler@chromium.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Oliver Neukum <oneukum@suse.com>
+Subject: devm_* allocations and your fix net: asix: fix modprobe "sysfs:
+ cannot create duplicate filename"
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0081.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9a::8) To VI1PR04MB7104.eurprd04.prod.outlook.com
+ (2603:10a6:800:126::9)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCRGHlERlLNuPHgE@kuha.fi.intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:EE_|AM9PR04MB8212:EE_
+X-MS-Office365-Filtering-Correlation-Id: e6d93d42-ebf9-4694-2b0a-08db30634e10
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gt24+E9+qp3Qxz0+VGps/LJt7lc26aCKzTfWLDx2IWL9CR8nr2n+tP4fcHLaDzq+tdKJfi7rjdVuUaipA9kGSPV0OKn5LZGp5Yq2tGjPvckJ/iS+hFVlHn1drrfBQAqvR8I7bpkYlRCesX+GREnWI6ZJwdc6V5PVe3/3bNNEFAQBN77cpwXZwZFvwNy3oXyXpH7BJIfiIdmlwlabXfeBY3OERscGob6boupNe/ek42fokDRbCdPng06Kv4T6XoOtvGWNttb3tvp8AQsnwB350M9MU2aOVLlUOx9SKvn6WZbudzQbyhnn3QQlC5SkbpTRhrqUb9BVaIkOz0iyR07keKR6kl5Kd4PCGaFlvmBsHbTdQZL0nnMgLffeNt3cS3YpSBPie2o1NuS2PoFa+FqIo+qhop7Reo9qJYeW3lvceIxwZkoRd2+ZD4gjcbKcB8DlbVoDsXFmo7cqDMYLmdln6hMnpsEjzIUWiprhFBRGpDiLFq/rJVIvKnq4HD9RGx5JVSxu6vaVwFZkE+fOKcAYSWAmfG0U92qtXaiMG9dtaitM6JECJroAq3rcdeTs6D46fJgv0apkldnGFBdKTrivliZIx13ffbM6s8u0fV5YGF40iPZy5qHntkqD6vDhL9OlS6jM/6SybFKmHw7nPGK3Bw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB7104.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(136003)(376002)(366004)(346002)(39860400002)(451199021)(31686004)(6486002)(6666004)(38100700002)(316002)(2616005)(86362001)(2906002)(5660300002)(31696002)(8936002)(4744005)(66476007)(8676002)(66556008)(41300700001)(66946007)(6512007)(6506007)(4326008)(186003)(6916009)(478600001)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L1lsTzVoUFc4cGkyd0gyOG9Fa2lMSWluaVNMaC95NStSdTF2d1ZUNnArL1RN?=
+ =?utf-8?B?RjZDUWpXVzlzQjQvK0FYQnMveHNVdGZiU2c0Z1JsdEF5Y0ZzeGxPQVRCdnRB?=
+ =?utf-8?B?TEh1QVllTEpVeU1BTkhWR2pwWHdiQkhhYTVHb1phWlNXMmZPL0xVbFVCRnFl?=
+ =?utf-8?B?d0ZuMEpGQXRab2ZCSWNtS04zNE9vWG5IeFVic2Z4SWlENWRQd3hUamhXRnlT?=
+ =?utf-8?B?amp0UTFJeTZCOUVqdEpMM2ZsWGdYRTRyeTMxY21mUjk4bFYyQ3YwbHJpcVJs?=
+ =?utf-8?B?VmJ1Q3BzQWNVaHFML2doaWVWTGtSSE8vYlhwaS8wZjNxdCs5alRYbERZeUFL?=
+ =?utf-8?B?S1VGWTI2bXhHNml5SGdPRG40VkhhOWVSYllWeVdieGY2dHV0aFh6NzFrNjcw?=
+ =?utf-8?B?eVBQMHZLZ0tWK1hTL25kbVFxRHVHT2pUdGFqVWg5RHVjS0wwNGxiOGpLSUZ0?=
+ =?utf-8?B?YWVGSldKNmo5QjJnd3NOZHM1NUVOS2xVR0xXUkxCOFhvWjI5UE5ldVZuTGZ1?=
+ =?utf-8?B?M01LVWpNaXM1bEVtNHhhVzJNTm9ETEVBajhQd2VRbTZLcEkrdTdMWU53dGYw?=
+ =?utf-8?B?RUxIaHg5TUxUUnU2UHpta1pnS3h6NkhKV3dSblVYUE1xaXg5R0hxRnJsMHIv?=
+ =?utf-8?B?ZExHT2o2ZXVqUjAwQnhaTHRjZ21qUjllaHFzdU1uWHQrOEFTMTRCcUNZZHlm?=
+ =?utf-8?B?WlBvQXMxU0NtYjV4VVVxUTRUUTJpeVh4M1hVeExzUlpENGNrMjhuZjdQOEdH?=
+ =?utf-8?B?NnFlNTZmK3lkQlVUOGhid2tpb3pPVHF3STltdzd6R0xKdHY3Q2dBUXpDRlJ2?=
+ =?utf-8?B?cXMrQzJNSStqZGdnVUVGbWFZODVTaHgxdlI3NUl4Y3J6dGNpMVpNR2dWeW5M?=
+ =?utf-8?B?YU1RYVRuR2luMDBMV0VXbnlhWDJTWDdsN0pLM0NaNTNHVi9tOHJyMmQ4ZGc1?=
+ =?utf-8?B?SjhoOCtTb1gyMXczaVZENTJXT1Vod1VVR2FWVEFuYW9abFErd0JMS250WWxU?=
+ =?utf-8?B?RHJybnhrL3F0REZPam5CZUp2Q3lKQXErWmhZSWpXemxoWFdQUVdCdGs5VFVE?=
+ =?utf-8?B?RDdJbzlxampjZTg2NVRKNGRtSWNCU0swSUh0ZENnaFlsSllVOXoxZDNaWWZ6?=
+ =?utf-8?B?T1E5TVFQdnUyelc3dEJvVHhwTlQrSHRwL0t4THBqZVprb0sra2RWUTJHeWoz?=
+ =?utf-8?B?VTRUL0YyRTNrRDRGRkRncWZuUjRqcmY3Vjk3OENxTzNYd2ZTZlg3NjdyYVNk?=
+ =?utf-8?B?OGZlNFQyV3pNZlNFWFlnMEUrY1kyU2djTlBWTm5IVEN0VzRSSTdPQVJicTVp?=
+ =?utf-8?B?ZkdOS1FuQTRmb3Exc3NQT1gxUVNXSkFvYmdSY0xXemhwQkUvbjZWSFpHMlZT?=
+ =?utf-8?B?Z3NORWM4ZG5vOUtmSGhiWjMwU0NxTTRrL2VEVnRMR2RlMXQ5bG1LNkVjUWJh?=
+ =?utf-8?B?ajdTNXZnWWJFK2xieXdCMmtHRGl0L2d2MXhmcHRYR2xncWtyNjVGUmNzMjdR?=
+ =?utf-8?B?U1pSOG9KN2ZFOUxsY2EvNWVwMFFzWFhibUxkMzM3L2cyMUR1QWl2UVRPK29U?=
+ =?utf-8?B?eGxxNG1UUkdLZ1VZSVFvRnJSdjdtbGg3Vlc3VGNrekg0bXpJdDRaOWNLM1VP?=
+ =?utf-8?B?dWhZMXVBNlRvaHhBRnY2T1JhUmphUEZhTUxkR1hoWXJ2L2hNZ2tCUEEvekVz?=
+ =?utf-8?B?WGtjRDFTNDB0cytDMncwbUZ6M2J5M1BaRjVvcUgrdGwxV2xhd2tKazZvNWJS?=
+ =?utf-8?B?L1JFVGZHc000bkNlYng0OWZ3dnNhWTFIdmtvL3FKejdZMUNRNG0zM3pvbmVp?=
+ =?utf-8?B?ZkN6R3JNNlJLVXg5VnVVaHVXc3l2RWtqd2NhcmxidnFjeXo2OE5WUjZkMjVu?=
+ =?utf-8?B?L2dBUXZRNW9Pc2VuUENtcmJKT285NzFrVjZvRCt3Y3ZUc0ZkVWFCbEVteVgw?=
+ =?utf-8?B?ampCejZLNWp5aW1XV295ZE5YdTNqMjZQNDR1V2d3UUtnQThsU1kySHdsWitm?=
+ =?utf-8?B?MnE4a3JsODRpV0NXNkZRZU9ySklFQTFkVDBjMnI2MndYRHJYQ1ByYnl6V0M5?=
+ =?utf-8?B?bmtIS3J6MmNIR2tCQlRTcUx0QThubGtxSE4vWklqUkJ0RTlwemljVytScitR?=
+ =?utf-8?B?UXhvUjFBUTAyUVhFYUNNcENVUkpCUFdxZ3prbnF5WDBWcTJ2V3FBMjY0M3g2?=
+ =?utf-8?Q?UDZYK9KQdLddlKMAfUzLfmiILAfA2oWbIPs4MXiUtvA9?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6d93d42-ebf9-4694-2b0a-08db30634e10
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB7104.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2023 14:38:47.5290
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dlXFS8I/H8TRJJGKJEZWLt45pOPS2rCS1FfT2jWa/Z/pi1bhw3V2A/lgNF/dLHMYAiwQd0JWSul3Oi62bFdaeQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8212
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 05:07:26PM +0300, Heikki Krogerus wrote:
-> On Tue, Mar 28, 2023 at 02:23:41PM +0100, Russell King (Oracle) wrote:
-> > On Tue, Mar 28, 2023 at 03:09:56PM +0300, Heikki Krogerus wrote:
-> > > The problem is that the function you are proposing will be exploited
-> > > silently - people will use NULL as the parent without anybody
-> > > noticing. Everything will work for a while, because everybody will
-> > > first only have a single device for that driver. But as time goes by
-> > > and new hardware appears, suddenly there are multiple devices for
-> > > those drivers, and the conflict start to appear.
-> > 
-> > So, an easy solution would be to reject a call to
-> > fwnode_create_named_software_node() when parent is NULL, thereby
-> > preventing named nodes at the root level.
-> > 
-> > > At that point the changes that added the function call will have
-> > > trickled down to the stable trees, so the distros are affected. Now we
-> > > are no longer talking about a simple cleanup that fixes the issue. In
-> > > the unlikely, but possible case, this will turn into ABI problem if
-> > 
-> > There is no such thing as stable APIs for internal kernel interfaces.
-> > 
-> > Documentation/process/stable-api-nonsense.rst
-> > 
-> > > As you pointed out, this kind of risks we have to live with kbojects,
-> > > struct device stuff and many others, but the thing is, with the
-> > > software node and device property APIs right now we don't. So the fact
-> > > that a risk exists in one place just isn't justification to accept the
-> > > same risk absolutely everywhere.
-> > 
-> > Meanwhile, firmware descriptions explicitly permit looking up nodes by
-> > their names, but here we are, with the software node maintainers
-> > basically stating that they don't wish to support creating software
-> > nodes with explicit names.
-> 
-> If you want to name the nodes then you just go ahead and name them,
-> nobody is preventing you and you can already do that, but if you do
-> so, then you will take full responsibility of the entire software node
-> - that is what you are naming here - instead of just the fwnode that
-> it contains. The users of the node can deal with the fwnode alone, but
-> you as the creator of the software node have to take proper ownership
-> of it.
-> 
-> > > Russell, if you have some good arguments for accepting your proposal,
-> > > I assure you I will agree with you, but so far all you have given are
-> > > attacks on a sketch details and statements like that "I think you're
-> > > making a mountain out of a mole". Those just are not good enough.
-> > 
-> > Basically, I think you are outright wrong for all the reasons I have
-> > given in all my emails on this subject.
-> > 
-> > Yes, I accept there is a *slight* risk of abuse, but I see it as no
-> > different from the risk from incorrect usage of any other kernel
-> > internal interface. Therefore I just do not accept your argument
-> > that we should not have this function, and I do not accept your
-> > reasoning.
-> 
-> I would not be so against the function if there wasn't any other way
-> to handle your case, but there is.
-> 
-> You really can not claim that the existing API is in any way inferior,
-> or even more complex, compared to your function before you actually
-> try it. You simply can not make judgement based on a sketch that is
-> basically just showing you the functions and structures that you need.
-> 
-> If there are issues with the API, then we need to of course fix those
-> issues, but please keep in mind that still does not mean we have any
-> need for the function you are proposing.
-> 
-> Please also note that helpers are welcome if you feel we need them. If
-> you want to add for example an allocation routine that duplicates also
-> the properties in one go, then that alone would reduce the complexity
-> needed in the drivers that create the nodes. I think in most cases,
-> possibly also in yours, that alone would allow most stuff to be
-> handled from stack memory.
-> 
-> fwnode_create_software_node() is there just to support the legacy
-> device properties. You really should not be using even that. If you
-> need to deal with software nodes then you deal with them with struct
-> software_node.
+Hi,
 
-You forgot to explain how to free them once they're done, because
-struct swnode will contain a pointer to the struct software_node
-which can be a dangling stale reference - and there's no way for
-code outside swnode.c to know when that reference has gone.
+the fix solves the issue. I have no issues wit it at all.
+But it raises two questions
 
-That is another reason why I prefer my existing solution. That
-problem is taken care of already by the existing code - and as
-it's taken care of there, and properly, there's less possibilities
-for users of swnode to get it wrong.
+1) why is devm_mdiobus_alloc() different in this issue from other devm_* allocations?
+They seem to use the same mechanism.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2) why do you think that this has anything to do with usbnet? That issue should
+arise with any usb device.
+
+	Regards
+		Oliver
