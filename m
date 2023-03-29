@@ -2,92 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C67E6CF003
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:58:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E18EA6CF01D
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbjC2Q6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 12:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
+        id S231134AbjC2RF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 13:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbjC2Q6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:58:02 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F3012E;
-        Wed, 29 Mar 2023 09:58:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=R8xyMlTF2/FzYyTh03m+l1LnTI8sQSiRhFH5N5HuEpA=; b=ijkBTfVvZXrv6nBzfJPXW8aNUp
-        qaivtLM5iW3QischbZkM2AG74yZB/cOKYygm6wv43rNgRkbbUjZQiXr5VoDVkX3cG/OjNq2XqEwaf
-        a/8u2HlEoMobRswu8VKdSnVQFTMbn20ZojCrcQMh9aQZmfbd2fZJYuEDuDpDJ31Tua+c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1phZ7S-008mlq-78; Wed, 29 Mar 2023 18:57:54 +0200
-Date:   Wed, 29 Mar 2023 18:57:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC PATCH net-next v3 14/15] net: dsa: mt7530: introduce driver
- for MT7988 built-in switch
-Message-ID: <8fe9c1b6-a533-4ad9-8a23-4f16547476ed@lunn.ch>
-References: <cover.1680105013.git.daniel@makrotopia.org>
- <371f0586e257d098993847e71d0c916a03c04191.1680105013.git.daniel@makrotopia.org>
+        with ESMTP id S229638AbjC2RF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:05:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33701449A;
+        Wed, 29 Mar 2023 10:05:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE28E61DC6;
+        Wed, 29 Mar 2023 17:05:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF38C433D2;
+        Wed, 29 Mar 2023 17:05:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680109556;
+        bh=T8fWhplWPwZ4OAqvqYb8gn/VvxXqZQz97l6qax8Uj7g=;
+        h=From:Date:Subject:To:Cc:From;
+        b=hmanBQH2TMYgNyzPakCCdf9Vpmc2yZbH/90wWZQ+yRhqDxy8ni75gnIbnheY+EJef
+         Q7TV1K1uGDRUKacpZMlbtIZ3XCMgZYAKJ+wvBTIz9irP1HXsG3w32RxqlucQy7/t+l
+         lin6oHBx62zHTxjoOC7F1MyAW/AJP7Fdddf6vbUYD4X3SonPCKR/HXCMuAk+n6KXF4
+         KrozPxbuiiKMa6YngzOO0Qyc1jnxjpVjoaOZ4AGp/0Ut7Paca3EZpvwZFxInuW7SRk
+         xKWE3QvW+Dw/7+a+ldHPVNLUQAnAfeVUEdGsZzox2BJKR+h+0sQOnLO+k1pjk5chRY
+         TKN66xj6UQj6g==
+From:   Nathan Chancellor <nathan@kernel.org>
+Date:   Wed, 29 Mar 2023 10:05:44 -0700
+Subject: [PATCH wireless-next] wifi: iwlwifi: mvm: Avoid 64-bit division in
+ iwl_mvm_get_crosstimestamp_fw()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <371f0586e257d098993847e71d0c916a03c04191.1680105013.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230329-iwlwifi-ptp-avoid-64-bit-div-v1-1-ad8db8d66bc2@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAOdvJGQC/x2NQQqDMBAAvyJ77oIaadp+pXiIcVMXbAzZkAji3
+ xt7HAZmDhCKTAKv5oBImYU3X6G7NWAX4z+EPFeGvu1Vq/onclkLO8aQApq88Yz3ASdOOHPGzg6
+ 6004r9zBQE5MRwikab5cr8jWSKF4iRHK8/79vKBxpJRH0tCcYz/MHJo1DDpYAAAA=
+To:     gregory.greenman@intel.com, kvalo@kernel.org
+Cc:     nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
+        johannes.berg@intel.com, avraham.stern@intel.com,
+        krishnanand.prabhu@intel.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev,
+        Arnd Bergmann <arnd@arndb.de>,
+        "kernelci.org bot" <bot@kernelci.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2173; i=nathan@kernel.org;
+ h=from:subject:message-id; bh=T8fWhplWPwZ4OAqvqYb8gn/VvxXqZQz97l6qax8Uj7g=;
+ b=owGbwMvMwCEmm602sfCA1DTG02pJDCkq+Z8LY5R4Zhl+kzx7097ULsrCx6khcu6LA/Vai7dn2
+ LgXrZ7VUcrCIMbBICumyFL9WPW4oeGcs4w3Tk2CmcPKBDKEgYtTACbyaS/D/6S05Gc5R7PWHD4n
+ /c76AfsNz7VqB5O8q4vO5k2Z0HT42HFGhp5iLfktC3dI9rBknItMn/AzbZOpCmOLzyKG7zWyfcV
+ yvAA=
+X-Developer-Key: i=nathan@kernel.org; a=openpgp;
+ fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -18,6 +18,7 @@ enum mt753x_id {
->  	ID_MT7530 = 0,
->  	ID_MT7621 = 1,
->  	ID_MT7531 = 2,
-> +	ID_MT7988 = 3,
->  };
->  
->  #define	NUM_TRGMII_CTRL			5
-> @@ -54,11 +55,11 @@ enum mt753x_id {
->  #define  MT7531_MIRROR_PORT_SET(x)	(((x) & MIRROR_MASK) << 16)
->  #define  MT7531_CPU_PMAP_MASK		GENMASK(7, 0)
->  
-> -#define MT753X_MIRROR_REG(id)		(((id) == ID_MT7531) ? \
-> +#define MT753X_MIRROR_REG(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
->  					 MT7531_CFC : MT7530_MFC)
-> -#define MT753X_MIRROR_EN(id)		(((id) == ID_MT7531) ? \
-> +#define MT753X_MIRROR_EN(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
->  					 MT7531_MIRROR_EN : MIRROR_EN)
-> -#define MT753X_MIRROR_MASK(id)		(((id) == ID_MT7531) ? \
-> +#define MT753X_MIRROR_MASK(id)		((((id) == ID_MT7531) || ((id) == ID_MT7988)) ?	\
->  					 MT7531_MIRROR_MASK : MIRROR_MASK)
+There is a 64-bit division in iwl_mvm_get_crosstimestamp_fw(), which
+results in a link failure when building 32-bit architectures with clang:
 
-Are there more devices coming soon? I'm just wondering if these should
-change into static inline functions with a switch statement? The
-current code is not going to scale too much more.
+  ld.lld: error: undefined symbol: __udivdi3
+  >>> referenced by ptp.c
+  >>>               drivers/net/wireless/intel/iwlwifi/mvm/ptp.o:(iwl_mvm_phc_get_crosstimestamp) in archive vmlinux.a
 
-	Andrew
+GCC has optimizations for division by a constant that clang does not
+implement, so this issue is not visible when building with GCC.
+
+Using div_u64() would resolve this issue, but Arnd points out that this
+can be quite expensive and the timestamp is being read at nanosecond
+granularity. Nick pointed out that the result of this division is being
+stored to a 32-bit type anyways, so truncate gp2_10ns first then do the
+division, which elides the need for libcalls.
+
+Fixes: 21fb8da6ebe4 ("wifi: iwlwifi: mvm: read synced time from firmware if supported")
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://github.com/ClangBuiltLinux/linux/issues/1826
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Link: https://lore.kernel.org/6423173a.620a0220.3d5cc.6358@mx.google.com/
+Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c b/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c
+index 5c2bfc8ed88d..cdd6d69c5b68 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c
+@@ -116,7 +116,7 @@ iwl_mvm_get_crosstimestamp_fw(struct iwl_mvm *mvm, u32 *gp2, u64 *sys_time)
+ 
+ 	gp2_10ns = (u64)le32_to_cpu(resp->gp2_timestamp_hi) << 32 |
+ 		le32_to_cpu(resp->gp2_timestamp_lo);
+-	*gp2 = gp2_10ns / 100;
++	*gp2 = (u32)gp2_10ns / 100;
+ 
+ 	*sys_time = (u64)le32_to_cpu(resp->platform_timestamp_hi) << 32 |
+ 		le32_to_cpu(resp->platform_timestamp_lo);
+
+---
+base-commit: 2af3b2a631b194a43551ce119cb71559d8f6b54b
+change-id: 20230329-iwlwifi-ptp-avoid-64-bit-div-1c4717f73f8a
+
+Best regards,
+-- 
+Nathan Chancellor <nathan@kernel.org>
+
