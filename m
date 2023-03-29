@@ -2,151 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8906CF0B3
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 528486CF0BE
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231578AbjC2RKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 13:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S231295AbjC2RKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 13:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231454AbjC2RKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:10:15 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A8165AF;
-        Wed, 29 Mar 2023 10:09:30 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TFobCb032164;
-        Wed, 29 Mar 2023 10:09:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=BlWiti7aiJ9pMybHjerR+p6XbcoliBYcRK+PVTNGv5s=;
- b=ATnMGW4C628CKzUGKGwnLUPdcmkBCWSVeKcKZ1JxEwwroVoKxjDfzO/yjNDY22khH+2v
- B6T74NVptB1sUdl9DH1GwIRMXNerywTF6FBc79Y5VysX4huv0paveGi6rTd2Au3wnS8O
- 3xBkPS7zpQRvttBu9lVL7zNos+p7HFEiq+F4Q/uE673a5SsmXvqCHSfcXrUyy0CBaZXx
- +HjTA4N7E2BkPJ+iBTFOLidGortls55kJYIZAODs1ejrjZsCLWlKUawTqwpTEDq39E/7
- 6l8CZulbjEMjb2UL1cCzy2ITq+aJwc7hpmiDXspZcQlZdK3WUV+fHwbzwCa8bobsD46A bA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3pmhc4a0jv-13
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 29 Mar 2023 10:09:23 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Wed, 29 Mar
- 2023 10:07:08 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.48 via Frontend
- Transport; Wed, 29 Mar 2023 10:07:08 -0700
-Received: from hyd1425.marvell.com (unknown [10.29.37.83])
-        by maili.marvell.com (Postfix) with ESMTP id 73EEA3F704C;
-        Wed, 29 Mar 2023 10:07:05 -0700 (PDT)
-From:   Sai Krishna <saikrishnag@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>,
-        <richardcochran@gmail.com>
-CC:     Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sai Krishna <saikrishnag@marvell.com>
-Subject: [net PATCH 7/7] octeontx2-pf: Disable packet I/O for graceful exit
-Date:   Wed, 29 Mar 2023 22:36:19 +0530
-Message-ID: <20230329170619.183064-8-saikrishnag@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230329170619.183064-1-saikrishnag@marvell.com>
-References: <20230329170619.183064-1-saikrishnag@marvell.com>
+        with ESMTP id S231536AbjC2RKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:10:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B54F6A7A
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 10:09:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8664B823ED
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 17:09:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD78C433EF;
+        Wed, 29 Mar 2023 17:09:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680109779;
+        bh=xV7w7Q0pVqLo/nNFlpe1jdPZ2c7ehLkGmjBGDMfaA+4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Tc+vPrXwkUpUUoQYDVGJabd5B9GwEURLi1pM3qbus2+uTQ6S4iKRZNO0M+IOt7bLR
+         TiFkYPc52EREv49nOEGAwfmLTTrcOkGyRqKxK26MPDdya1AnzFULlCao2mVWoTqygS
+         cL4f5/tRkkoVyEIlkx06H0nB+mA7hzCE7drlwGQo1j+WkCP/LdOCb/+Iy+Ulm5o++Y
+         uzhcDvYPHRKR4RROmyG2HDu0eac+g8RS5ssJJ2hftsYgiuTpLTasGVoU8jiAzurjxs
+         6DBnl51ySyHjbW9kI5LjR3Gfb2Bg6T0sIV826nlwLHplHYV6KYC+iazqCmca5r71EF
+         PGeJpHL7aKMZg==
+Date:   Wed, 29 Mar 2023 10:09:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Dima Chumak <dchumak@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] devlink: Add port function attributes to
+ enable/disable IPsec crypto and packet offloads
+Message-ID: <20230329100938.1f8f8d9f@kernel.org>
+In-Reply-To: <20230329074537.GH831478@unreal>
+References: <20230323111059.210634-1-dchumak@nvidia.com>
+        <20230323100556.6130a7cd@kernel.org>
+        <20230329074537.GH831478@unreal>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: wSBnIlf5MciGRqLFY8xDQsziAqetcQ6P
-X-Proofpoint-GUID: wSBnIlf5MciGRqLFY8xDQsziAqetcQ6P
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-29_10,2023-03-28_02,2023-02-09_01
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+On Wed, 29 Mar 2023 10:45:37 +0300 Leon Romanovsky wrote:
+> On Thu, Mar 23, 2023 at 10:05:56AM -0700, Jakub Kicinski wrote:
+> > On Thu, 23 Mar 2023 13:10:55 +0200 Dima Chumak wrote:  
+> > > Currently, mlx5 PCI VFs are disabled by default for IPsec functionality.
+> > > A user does not have the ability to enable IPsec support for a PCI VF
+> > > device.  
+> > 
+> > Could Mellanox/nVidia figure out a why to get folks trained on posting
+> > patches correctly? IDK how to do that exactly but you have a rather
+> > large employee base, it may be most efficient if you handle that
+> > internally than the community teaching people one by one.  
+> 
+> IDK why Dima postes like he posted, but we guide people and provide nice playground
+> to test submissions internally, but it is not enough. There are always nuances in
+> submission as rules constantly evolve.
 
-At the stage of enabling packet I/O in otx2_open, If mailbox
-timeout occurs then interface ends up in down state where as
-hardware packet I/O is enabled. Hence disable packet I/O also
-before bailing out. This patch also free the LMTST per cpu structure
-on teardown, if the lmt_info pointer is not NULL.
+I'd say that we try to improve the documentation these days more 
+than evolve the rules. The suggestion for how to post user space
+is 2.5 years old:
 
-Fixes: 1ea0166da050 ("octeontx2-pf: Fix the device state on error")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 11 ++++++++++-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c |  8 +++++---
- 2 files changed, 15 insertions(+), 4 deletions(-)
+commit 6f7a1f9c1af30f1eadc0ad9e77ec8ee95c48b2c9
+Author: Jakub Kicinski <kuba@kernel.org>
+Date:   Tue Nov 24 20:15:24 2020 -0800
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 179433d0a54a..52a57d2493dc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1835,13 +1835,22 @@ int otx2_open(struct net_device *netdev)
- 		otx2_dmacflt_reinstall_flows(pf);
- 
- 	err = otx2_rxtx_enable(pf, true);
--	if (err)
-+	/* If a mbox communication error happens at this point then interface
-+	 * will end up in a state such that it is in down state but hardware
-+	 * mcam entries are enabled to receive the packets. Hence disable the
-+	 * packet I/O.
-+	 */
-+	if (err == EIO)
-+		goto err_disable_rxtx;
-+	else if (err)
- 		goto err_tx_stop_queues;
- 
- 	otx2_do_set_rx_mode(pf);
- 
- 	return 0;
- 
-+err_disable_rxtx:
-+	otx2_rxtx_enable(pf, false);
- err_tx_stop_queues:
- 	netif_tx_stop_all_queues(netdev);
- 	netif_carrier_off(netdev);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index ab126f8706c7..6ab4780f12fd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -621,7 +621,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	err = otx2vf_realloc_msix_vectors(vf);
- 	if (err)
--		goto err_mbox_destroy;
-+		goto err_detach_rsrc;
- 
- 	err = otx2_set_real_num_queues(netdev, qcount, qcount);
- 	if (err)
-@@ -709,7 +709,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- err_ptp_destroy:
- 	otx2_ptp_destroy(vf);
- err_detach_rsrc:
--	free_percpu(vf->hw.lmt_info);
-+	if (vf->hw.lmt_info)
-+		free_percpu(vf->hw.lmt_info);
- 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
- 		qmem_free(vf->dev, vf->dync_lmt);
- 	otx2_detach_resources(&vf->mbox);
-@@ -763,7 +764,8 @@ static void otx2vf_remove(struct pci_dev *pdev)
- 	otx2_shutdown_tc(vf);
- 	otx2vf_disable_mbox_intr(vf);
- 	otx2_detach_resources(&vf->mbox);
--	free_percpu(vf->hw.lmt_info);
-+	if (vf->hw.lmt_info)
-+		free_percpu(vf->hw.lmt_info);
- 	if (test_bit(CN10K_LMTST, &vf->hw.cap_flag))
- 		qmem_free(vf->dev, vf->dync_lmt);
- 	otx2vf_vfaf_mbox_destroy(vf);
--- 
-2.25.1
+    Documentation: netdev-FAQ: suggest how to post co-dependent series
 
+> > Or perhaps there's something we can do to improve community docs?  
+> 
+> People don't read them :)
+
+We can make them, but then we'll be the bad guys again :(
