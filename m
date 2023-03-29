@@ -2,102 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B6796CD250
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 08:51:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5E86CD26D
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 09:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbjC2Gvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 02:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
+        id S229747AbjC2HAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 03:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjC2Gvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 02:51:49 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15499ED;
-        Tue, 28 Mar 2023 23:51:48 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id e18so14520061wra.9;
-        Tue, 28 Mar 2023 23:51:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680072706;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wNO5XYtDO9To2qYmyMq2g+OLzkP9KIoauMNo8WVsbjM=;
-        b=qc/ldFUmg+pKlj3x3qaztDtEw2ajppo85yBgRxykjcdJiTRCIIt1JFMcXWPtMMlhQ+
-         QrJEIAaBz1O5mgbfWJJi3OIfchnghb77dvYkwM+ZX87Edo1nAOnu5zqGuLetnUgYSW+D
-         BriDnb/8jyL4sROmYJ9ldSqBE3tx+r9/FSoTrj3UXYh2lsD3tjRIHy96lZSbl503gMbB
-         y0G3yPgTuXHUad9+zqyAunI5ut72VbsuJ6GLhDl0iDT+b5vgnbzYRf1W0ldkhwmeV7Ly
-         bTujQ7BtEzFrlfQRtb3BWOwHEPfA9FAMzFQ5GsMZbXjc/wbkWqOzER0oREXS0ZgGfIkf
-         J/Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680072706;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wNO5XYtDO9To2qYmyMq2g+OLzkP9KIoauMNo8WVsbjM=;
-        b=F23tm3HLetdZdF34JJJo5LeUbEsaxVgEp+x4DlGL08KQhej1fVe3fAtTxpIdxcrQvt
-         VF+wrIiAnRTh681O8GCkgCEWTC8lRWFv+WBx7DIj93Omtl2CwYmOIcDoC+o8urD51XcE
-         qU/qS7lsIg8hU5SLqXJFILrnALHy/sp/ZpJWI/uVGCzr4TTrtWixL5Qn5fD3nbD1ay/Y
-         VtDFdzLtm3B8UmA1isc/Cw2ofP5R+o+qBIm+9d2WgGXw9wh8lOzSKOh9kjM4jOQnH0ZI
-         w1P52AYMMlQQqFFCSfcCAvjNwlUHJW6DbjZzePtN/UE7RlB9TulHoflTsjJpr89mea3F
-         KyLw==
-X-Gm-Message-State: AAQBX9cqMy8IG6zAN4d0+VOS6I7b7Cz2GpyLrJMbDuLfi9u9v3nn4lSw
-        69uORtHaFkUS0+NQ7xne73M=
-X-Google-Smtp-Source: AKy350ZD6q8OH4oGBAzNhlW6NoCd36G3p0py/C6ppvOo0ZriqrCiUvpj9N2FlcY5inL3Ff2L1IzwJQ==
-X-Received: by 2002:adf:e288:0:b0:2ce:a93d:882d with SMTP id v8-20020adfe288000000b002cea93d882dmr14868026wri.11.1680072706471;
-        Tue, 28 Mar 2023 23:51:46 -0700 (PDT)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id d5-20020adfef85000000b002cfed482e9asm29392968wro.61.2023.03.28.23.51.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Mar 2023 23:51:46 -0700 (PDT)
-Date:   Wed, 29 Mar 2023 09:51:37 +0300
-From:   Dan Carpenter <error27@gmail.com>
-To:     Veerasenareddy Burru <vburru@marvell.com>
-Cc:     Abhijit Ayarekar <aayarekar@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] octeon_ep: unlock the correct lock on error path
-Message-ID: <251aa2a2-913e-4868-aac9-0a90fc3eeeda@kili.mountain>
+        with ESMTP id S229592AbjC2HAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 03:00:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F94326AD
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 00:00:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB74BB820AD
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 07:00:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7D97EC4339B;
+        Wed, 29 Mar 2023 07:00:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680073226;
+        bh=ZwnVLwBtlSSHihMMXuRdwpmXa1RHkMOhEoF8k3nsd9U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gH69LXPYoL792meRJCBTJC0KvUjjGF3ef2ZeTEz7W0+hm2E2FYfmBdYKMdnKcPhFQ
+         rQw8CJI3vzmj7j+FXdlrTATwsEbMYreLVJAqsKr4JhGVLwwRx3moeK3odUgu2HsaZA
+         ysvCjAFz1AsA3Y6gKbtZnEfykilT48CbDU8/uL97F+dcDRujwzUqZwOqJBKbRaOFrh
+         FS++ZhJU7Z6hgKyUomhWbHg7y1ta0m/Fv8GIvfH9f7+kqiSPPxjAro2FPUVxeFrkUt
+         /zHSj1OBm4MiRoLHGSrWl2u+kklSnFPwetuS/kOk9gKuum0hJZYt7wuuoyNnHVRR1S
+         0mE85NoDWnRtg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5D0CEC41612;
+        Wed, 29 Mar 2023 07:00:26 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next V2 01/15] lib: cpu_rmap: Avoid use after free on rmap->obj
+ array entries
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168007322637.11543.1690845820853149153.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Mar 2023 07:00:26 +0000
+References: <20230324231341.29808-2-saeed@kernel.org>
+In-Reply-To: <20230324231341.29808-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, saeedm@nvidia.com, netdev@vger.kernel.org,
+        tariqt@nvidia.com, tglx@linutronix.de, elic@nvidia.com,
+        jacob.e.keller@intel.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The h and the f letters are swapped so it unlocks the wrong lock.
+Hello:
 
-Fixes: 577f0d1b1c5f ("octeon_ep: add separate mailbox command and response queues")
-Signed-off-by: Dan Carpenter <error27@gmail.com>
----
-Thees vairable nmaes are terirble.  The huamn mnid deos not raed ervey
-lteter by istlef, but the wrod as a wlohe.
+This series was applied to netdev/net-next.git (main)
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-https://www.dictionary.com/e/typoglycemia/
+On Fri, 24 Mar 2023 16:13:27 -0700 you wrote:
+> From: Eli Cohen <elic@nvidia.com>
+> 
+> When calling irq_set_affinity_notifier() with NULL at the notify
+> argument, it will cause freeing of the glue pointer in the
+> corresponding array entry but will leave the pointer in the array. A
+> subsequent call to free_irq_cpu_rmap() will try to free this entry again
+> leading to possible use after free.
+> 
+> [...]
 
- drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here is the summary with links:
+  - [net-next,V2,01/15] lib: cpu_rmap: Avoid use after free on rmap->obj array entries
+    https://git.kernel.org/netdev/net-next/c/4e0473f1060a
+  - [net-next,V2,02/15] lib: cpu_rmap: Use allocator for rmap entries
+    https://git.kernel.org/netdev/net-next/c/9821d8d4628e
+  - [net-next,V2,03/15] lib: cpu_rmap: Add irq_cpu_rmap_remove to complement irq_cpu_rmap_add
+    https://git.kernel.org/netdev/net-next/c/71f0a2478605
+  - [net-next,V2,04/15] net/mlx5e: Coding style fix, add empty line
+    https://git.kernel.org/netdev/net-next/c/b94616d9c6fd
+  - [net-next,V2,05/15] net/mlx5: Fix wrong comment
+    https://git.kernel.org/netdev/net-next/c/40a252c123c7
+  - [net-next,V2,06/15] net/mlx5: Modify struct mlx5_irq to use struct msi_map
+    https://git.kernel.org/netdev/net-next/c/235a25fe28de
+  - [net-next,V2,07/15] net/mlx5: Use newer affinity descriptor
+    https://git.kernel.org/netdev/net-next/c/bbac70c74183
+  - [net-next,V2,08/15] net/mlx5: Improve naming of pci function vectors
+    https://git.kernel.org/netdev/net-next/c/8bebfd767909
+  - [net-next,V2,09/15] net/mlx5: Refactor completion irq request/release code
+    https://git.kernel.org/netdev/net-next/c/b48a0f72bc3e
+  - [net-next,V2,10/15] net/mlx5: Use dynamic msix vectors allocation
+    https://git.kernel.org/netdev/net-next/c/3354822cde5a
+  - [net-next,V2,11/15] net/mlx5: Move devlink registration before mlx5_load
+    https://git.kernel.org/netdev/net-next/c/fe578cbb2f05
+  - [net-next,V2,12/15] net/mlx5: Refactor calculation of required completion vectors
+    https://git.kernel.org/netdev/net-next/c/1dc85133c207
+  - [net-next,V2,13/15] net/mlx5: Use one completion vector if eth is disabled
+    https://git.kernel.org/netdev/net-next/c/b637ac5db0d0
+  - [net-next,V2,14/15] net/mlx5: Provide external API for allocating vectors
+    https://git.kernel.org/netdev/net-next/c/fb0a6a268dcd
+  - [net-next,V2,15/15] vdpa/mlx5: Support interrupt bypassing
+    (no matching commit)
 
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-index a4ee6f3ae354..035ead7935c7 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c
-@@ -167,7 +167,7 @@ int octep_ctrl_mbox_send(struct octep_ctrl_mbox *mbox, struct octep_ctrl_mbox_ms
- 	ci = readl(q->hw_cons);
- 
- 	if (octep_ctrl_mbox_circq_space(pi, ci, q->sz) < (msg->hdr.s.sz + mbox_hdr_sz)) {
--		mutex_unlock(&mbox->f2hq_lock);
-+		mutex_unlock(&mbox->h2fq_lock);
- 		return -EAGAIN;
- 	}
- 
+You are awesome, thank you!
 -- 
-2.39.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
