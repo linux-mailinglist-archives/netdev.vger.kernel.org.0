@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C28C6CD817
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 13:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 276FD6CD81C
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 13:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbjC2LDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 07:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
+        id S229641AbjC2LEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 07:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbjC2LDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 07:03:46 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B3C40E4
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 04:03:45 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id x3so61455550edb.10
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 04:03:45 -0700 (PDT)
+        with ESMTP id S229605AbjC2LDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 07:03:48 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A1144A6
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 04:03:47 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id y4so61600621edo.2
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 04:03:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112; t=1680087824;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112; t=1680087825;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gTcU5HqVU1XgtuJ2Y8sd/OBjaB0pp67CpHcRkiVabVQ=;
-        b=hp9Oqw5dPokqfYz22NTNm5CHcmPFA2qdpKFsieBHsz4KO70+K4slt8EpuWfc6ep4lp
-         TYCGSsvwp0m6/9lSJ9u4U+XtDTleePGuvm92TS3wFIPH0sKpaOR+VOuBOWyaBcxhIprl
-         FARrFe2ntTy9ipfwq7TB8Aks2TMPoxAFMbsBI3niPkMH2onKdvwgO+mN4vfgYTP4Sk5s
-         560shzhQjKaKxTtm8+F4rijxkDlnGHGpR99TmIHlQ3334L8qfu1uZOGyBadXQSvoPu6v
-         BsxD4OBg21M3czeMY3tXp5tf1EPM98Ho0kDC8lZY6x5niT/b/zLxAS7keWu0ZZTA+kz6
-         8moQ==
+        bh=wrfwKePkllnALnkJ2zV/3yw/+BvIeTv0XWFEcNBw8YA=;
+        b=1dcJ+wPmxC9snk2hmBPEKQoXzNuJWkkqm3ON1LX6qgcNx0LODC4FnhV8ZDgh9qxxHz
+         7bHUxRbbIvcjerza/iEoLvHl/lR3VWp5km9cVI831ypXHNgO0EkUg+sUCcVYo0zNUIf2
+         CjJFDKin+n+wlWQiU4Ggips5+i45qU30QX6d10hw3dKuiBqoNWtEJ+FMk0F3ewl9x3cc
+         RCIG2QP0Djcave7xpgQw7q08JJEQ/ItGsBLMEDkxNn000ZCZ3KQowjl0Yf/4+4/osAFQ
+         rvj/Nc5iwAAUJxjYpbKb6v6nG5yq6R19STcdmxfA1jsF2WqiJFIemuvit3TIY6a1HiGN
+         MGYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680087824;
+        d=1e100.net; s=20210112; t=1680087825;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gTcU5HqVU1XgtuJ2Y8sd/OBjaB0pp67CpHcRkiVabVQ=;
-        b=DZjHBMG7B0GEFmDygmBuhvPivi16q8xVGsORM1MGDDxCjloELFBt/CGsDfrkmudxsJ
-         KcrR4FxUeJCio5uymgsEMPRqql8R/bYiBZghtdkVpO1WM1Xv8LimEQqFahUQJ95UxlPg
-         Vy81+LHgtxQII1Qb9zazSwAzdEajWARiMCbIiml/A5GC7lpSlJG8XX62PD/a3Uj5c3YW
-         aKe+Xb63IX1wsy1oo0O3Y5ElZ1rfCndeRIfqf6fYz8NZswRBnB2UDPYC9bSFUoYdKsQZ
-         0kcbjwULgUPLpypzqjDW5RaMnoWhMLrvBA2EigswtALPcgh5JXlf3IYjWum0QGXVSI+p
-         Ddfg==
-X-Gm-Message-State: AAQBX9cho/yztd/PLWt1By4oniI6lfB5B1fIanURJAh+acIK8U8yDix5
-        r4Vc8/hNQnvsMm1yr0O9T56h5A==
-X-Google-Smtp-Source: AKy350Z+lk0YVQodaLqvLOoFXIYHXTVciDftd4mzJAORAhetfY/MF8nRkPvYHqDZI2pPUaUQRSSdsA==
-X-Received: by 2002:a17:906:4d8b:b0:92f:7c42:8631 with SMTP id s11-20020a1709064d8b00b0092f7c428631mr18787825eju.16.1680087824034;
-        Wed, 29 Mar 2023 04:03:44 -0700 (PDT)
+        bh=wrfwKePkllnALnkJ2zV/3yw/+BvIeTv0XWFEcNBw8YA=;
+        b=pX8YpHs3/TuH9BNYnAJzPnmyzPm7KBY/jD8gyCJ4LsxQIMGZHGQpTR06XaIkZutMPC
+         Y36bNAudeX5sDgRBQg6M2Cn5bKAJulFpLhkHnSJFYYw2CY4TXM5ua4e+aC0GBLX2U0aZ
+         POfyOO+FhnFEGWqcfJ8AruMAeTf2uyXDBOdb4lj5EBt+VJDQQRRH48k15y54RAzdENtc
+         BXNpDw8wTG97m8SdfWVDa8a2hrVJ6t+d3/Q+1/v9hwaVc+7K3mLOfRn7FijOyl+tXEt2
+         sY6J63eyifntTMm8V/z8YrjoxF5aPOSNz9R40AA271/q/U6SmFbs4IIDBtfsRO87snuT
+         6oTQ==
+X-Gm-Message-State: AAQBX9ekfeXmW9dpF7DJHOxlhqT/ymnh2v4eJaV7fwOZS7YllnJYoAaL
+        rf3HzXaxiPKNeqf6sPNFWuOjrg==
+X-Google-Smtp-Source: AKy350Z16UKXumN3KnQDzRbKZJX9u64esHjbx9gtBr5Z8d0SvvEDLi9zU2vbK4QEzPWAONlYBMhi9A==
+X-Received: by 2002:a17:906:71d7:b0:8a6:5720:9101 with SMTP id i23-20020a17090671d700b008a657209101mr20733205ejk.4.1680087825633;
+        Wed, 29 Mar 2023 04:03:45 -0700 (PDT)
 Received: from localhost.localdomain (178-133-100-41.mobile.vf-ua.net. [178.133.100.41])
-        by smtp.gmail.com with ESMTPSA id md12-20020a170906ae8c00b008e68d2c11d8sm16406975ejb.218.2023.03.29.04.03.42
+        by smtp.gmail.com with ESMTPSA id md12-20020a170906ae8c00b008e68d2c11d8sm16406975ejb.218.2023.03.29.04.03.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 04:03:43 -0700 (PDT)
+        Wed, 29 Mar 2023 04:03:45 -0700 (PDT)
 From:   Andrew Melnychenko <andrew@daynix.com>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, mst@redhat.com, jasowang@redhat.com,
@@ -56,9 +56,9 @@ To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org
 Cc:     yan@daynix.com, yuri.benditovich@daynix.com
-Subject: [RFC PATCH 3/5] ebpf: Added declaration/initialization routines.
-Date:   Wed, 29 Mar 2023 13:45:44 +0300
-Message-Id: <20230329104546.108016-4-andrew@daynix.com>
+Subject: [RFC PATCH 4/5] qmp: Added new command to retrieve eBPF blob.
+Date:   Wed, 29 Mar 2023 13:45:45 +0300
+Message-Id: <20230329104546.108016-5-andrew@daynix.com>
 X-Mailer: git-send-email 2.39.1
 In-Reply-To: <20230329104546.108016-1-andrew@daynix.com>
 References: <20230329104546.108016-1-andrew@daynix.com>
@@ -73,131 +73,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now, the binary objects may be retrieved by id/name.
-It would require for future qmp commands that may require specific
-eBPF blob.
+Added command "request-ebpf". This command returns
+eBPF program encoded base64. The program taken from the
+skeleton and essentially is an ELF object that can be
+loaded in the future with libbpf.
 
 Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
 ---
- ebpf/ebpf.c      | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
- ebpf/ebpf.h      | 25 +++++++++++++++++++++++++
- ebpf/ebpf_rss.c  |  4 ++++
- ebpf/meson.build |  1 +
- 4 files changed, 78 insertions(+)
- create mode 100644 ebpf/ebpf.c
- create mode 100644 ebpf/ebpf.h
+ monitor/qmp-cmds.c | 17 +++++++++++++++++
+ qapi/misc.json     | 25 +++++++++++++++++++++++++
+ 2 files changed, 42 insertions(+)
 
-diff --git a/ebpf/ebpf.c b/ebpf/ebpf.c
-new file mode 100644
-index 0000000000..86320d72f5
---- /dev/null
-+++ b/ebpf/ebpf.c
-@@ -0,0 +1,48 @@
-+/*
-+ * QEMU eBPF binary declaration routine.
-+ *
-+ * Developed by Daynix Computing LTD (http://www.daynix.com)
-+ *
-+ * Authors:
-+ *  Andrew Melnychenko <andrew@daynix.com>
-+ *
-+ * This work is licensed under the terms of the GNU GPL, version 2 or
-+ * later.  See the COPYING file in the top-level directory.
-+ */
-+
-+#include "qemu/osdep.h"
-+#include "qemu/queue.h"
+diff --git a/monitor/qmp-cmds.c b/monitor/qmp-cmds.c
+index b0f948d337..8f2fc3e7ec 100644
+--- a/monitor/qmp-cmds.c
++++ b/monitor/qmp-cmds.c
+@@ -32,6 +32,7 @@
+ #include "hw/mem/memory-device.h"
+ #include "hw/intc/intc.h"
+ #include "hw/rdma/rdma.h"
 +#include "ebpf/ebpf.h"
-+
-+struct ElfBinaryDataEntry {
-+    const char *id;
-+    const void * (*fn)(size_t *);
-+
-+    QSLIST_ENTRY(ElfBinaryDataEntry) node;
-+};
-+
-+static QSLIST_HEAD(, ElfBinaryDataEntry) ebpf_elf_obj_list =
-+                                            QSLIST_HEAD_INITIALIZER();
-+
-+void ebpf_register_binary_data(const char *id, const void * (*fn)(size_t *))
-+{
-+    struct ElfBinaryDataEntry *data = NULL;
-+
-+    data = g_malloc0(sizeof(*data));
-+    data->fn = fn;
-+    data->id = id;
-+
-+    QSLIST_INSERT_HEAD(&ebpf_elf_obj_list, data, node);
-+}
-+
-+const void *ebpf_find_binary_by_id(const char *id, size_t *sz)
-+{
-+    struct ElfBinaryDataEntry *it = NULL;
-+    QSLIST_FOREACH(it, &ebpf_elf_obj_list, node) {
-+        if (strcmp(id, it->id) == 0) {
-+            return it->fn(sz);
-+        }
-+    }
-+
-+    return NULL;
-+}
-diff --git a/ebpf/ebpf.h b/ebpf/ebpf.h
-new file mode 100644
-index 0000000000..fd705cb73e
---- /dev/null
-+++ b/ebpf/ebpf.h
-@@ -0,0 +1,25 @@
-+/*
-+ * QEMU eBPF binary declaration routine.
-+ *
-+ * Developed by Daynix Computing LTD (http://www.daynix.com)
-+ *
-+ * Authors:
-+ *  Andrew Melnychenko <andrew@daynix.com>
-+ *
-+ * This work is licensed under the terms of the GNU GPL, version 2 or
-+ * later.  See the COPYING file in the top-level directory.
-+ */
-+
-+#ifndef EBPF_H
-+#define EBPF_H
-+
-+void ebpf_register_binary_data(const char *id, const void * (*fn)(size_t *));
-+const void *ebpf_find_binary_by_id(const char *id, size_t *sz);
-+
-+#define ebpf_binary_init(id, fn)                                           \
-+static void __attribute__((constructor)) ebpf_binary_init_ ## fn(void)     \
-+{                                                                          \
-+    ebpf_register_binary_data(id, fn);                                     \
-+}
-+
-+#endif /* EBPF_H */
-diff --git a/ebpf/ebpf_rss.c b/ebpf/ebpf_rss.c
-index 08015fecb1..b4038725f2 100644
---- a/ebpf/ebpf_rss.c
-+++ b/ebpf/ebpf_rss.c
-@@ -21,6 +21,8 @@
  
- #include "ebpf/ebpf_rss.h"
- #include "ebpf/rss.bpf.skeleton.h"
-+#include "ebpf/ebpf.h"
-+
- #include "trace.h"
- 
- void ebpf_rss_init(struct EBPFRSSContext *ctx)
-@@ -237,3 +239,5 @@ void ebpf_rss_unload(struct EBPFRSSContext *ctx)
-     ctx->obj = NULL;
-     ctx->program_fd = -1;
+ NameInfo *qmp_query_name(Error **errp)
+ {
+@@ -209,3 +210,19 @@ static void __attribute__((__constructor__)) monitor_init_qmp_commands(void)
+                          qmp_marshal_qmp_capabilities,
+                          QCO_ALLOW_PRECONFIG, 0);
  }
 +
-+ebpf_binary_init("rss", rss_bpf__elf_bytes)
-diff --git a/ebpf/meson.build b/ebpf/meson.build
-index 2dd0fd8948..67c3f53aa9 100644
---- a/ebpf/meson.build
-+++ b/ebpf/meson.build
-@@ -1 +1,2 @@
-+softmmu_ss.add(files('ebpf.c'))
- softmmu_ss.add(when: libbpf, if_true: files('ebpf_rss.c'), if_false: files('ebpf_rss-stub.c'))
++EbpfObject *qmp_request_ebpf(const char *id, Error **errp)
++{
++    EbpfObject *ret = NULL;
++    size_t size = 0;
++    const guchar *data = ebpf_find_binary_by_id(id, &size);
++
++    if (data) {
++        ret = g_new0(EbpfObject, 1);
++        ret->object = g_base64_encode(data, size);
++    } else {
++        error_setg(errp, "can't find eBPF object with id: %s", id);
++    }
++
++    return ret;
++}
+diff --git a/qapi/misc.json b/qapi/misc.json
+index 6ddd16ea28..4689802460 100644
+--- a/qapi/misc.json
++++ b/qapi/misc.json
+@@ -618,3 +618,28 @@
+ { 'event': 'VFU_CLIENT_HANGUP',
+   'data': { 'vfu-id': 'str', 'vfu-qom-path': 'str',
+             'dev-id': 'str', 'dev-qom-path': 'str' } }
++
++##
++# @EbpfObject:
++#
++# Structure that holds eBPF ELF object encoded in base64.
++##
++{ 'struct': 'EbpfObject',
++  'data': {'object': 'str'} }
++
++##
++# @request-ebpf:
++#
++# Function returns eBPF object that can be loaded with libbpf.
++# Management applications (g.e. libvirt) may load it and pass file
++# descriptors to QEMU. Which allows running QEMU without BPF capabilities.
++#
++# Returns: RSS eBPF object encoded in base64.
++#
++# Since: 7.3
++#
++##
++{ 'command': 'request-ebpf',
++  'data': { 'id': 'str' },
++  'returns': 'EbpfObject' }
++
 -- 
 2.39.1
 
