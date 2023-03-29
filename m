@@ -2,46 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 661A06CEF7C
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:32:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78D746CEF4F
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbjC2QcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 12:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S229848AbjC2Q1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 12:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbjC2QcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:32:20 -0400
-X-Greylist: delayed 178 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Mar 2023 09:31:53 PDT
-Received: from forwardcorp1b.mail.yandex.net (forwardcorp1b.mail.yandex.net [IPv6:2a02:6b8:c02:900:1:45:d181:df01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A8C6595;
-        Wed, 29 Mar 2023 09:31:53 -0700 (PDT)
-Received: from mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net [IPv6:2a02:6b8:c08:19a8:0:640:4e87:0])
-        by forwardcorp1b.mail.yandex.net (Yandex) with ESMTP id AE410601D5;
-        Wed, 29 Mar 2023 19:26:37 +0300 (MSK)
-Received: from den-plotnikov-w.yandex-team.ru (unknown [2a02:6b8:b081:8006::1:12])
-        by mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id TQLB0205PSw0-V6zF1MzS;
-        Wed, 29 Mar 2023 19:26:37 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1680107197; bh=6xP5y4W5QFPSk1AXfrdVudo8s0DTuSkKJxaO1A8JJHE=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=QuxwFmqIp1IFWlnAJl5VdYchtcy92MtlMfH/WedZ5fRsP06ABM9T9ajgroWbqXD5f
-         3NyMkhITMdt2P/ATDFgqBgOywWc1JcOeKPOWfZl+GqFEQQJBROU+cPNTBk6SVuAY5u
-         jQo4x/iaFBgJ+646MP5cs5crtnA8DBO01owl4SfU=
-Authentication-Results: mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-From:   Denis Plotnikov <den-plotnikov@yandex-team.ru>
-To:     GR-Linux-NIC-Dev@marvell.com
-Cc:     manishc@marvell.com, rahulv@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: [PATCH] net: netxen: report error on version offset reading
-Date:   Wed, 29 Mar 2023 19:26:29 +0300
-Message-Id: <20230329162629.96590-1-den-plotnikov@yandex-team.ru>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229750AbjC2Q1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 12:27:08 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920D0126;
+        Wed, 29 Mar 2023 09:27:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Q02vEpE9IanvR7N3TS+xOq3YegyHFecQ5XDPoym/Loc=; b=h74855VIrQBAeKyzlHsW0m3wu+
+        lIlU++Cr+xfUPWGhQS98kmqJcM+1otMPnRpKcb0OCcSAT3J81JA9Bnf2np1cYcbt7ddXTDWroEirj
+        VgQRYyMLuwzWE5X1fT5Gj1KfUiLogO6ZFIk5pLjFCYGfBNYBfxOokdaSRIf11NSuxipo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1phYdb-008mUE-3Y; Wed, 29 Mar 2023 18:27:03 +0200
+Date:   Wed, 29 Mar 2023 18:27:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC PATCH net-next v3 05/15] net: dsa: mt7530: introduce mutex
+ helpers
+Message-ID: <468587cd-c667-445a-b518-fc2db83ba527@lunn.ch>
+References: <cover.1680105013.git.daniel@makrotopia.org>
+ <118badcdd9741d21e3d367e10c34a2d66ae04f59.1680105013.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <118badcdd9741d21e3d367e10c34a2d66ae04f59.1680105013.git.daniel@makrotopia.org>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,36 +64,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A static analyzer complains for non-checking the function returning value.
-Although, the code looks like not expecting any problems with version
-reading on netxen_p3_has_mn call, it seems the error still may happen.
-So, at least, add error reporting to ease problems investigation.
+On Wed, Mar 29, 2023 at 04:58:22PM +0100, Daniel Golle wrote:
+> As the MDIO bus lock only needs to be involved if actually operating
+> on an MDIO-connected switch we will need to skip locking for built-in
+> switches which are accessed via MMIO.
+> Create helper functions which simplify that upcoming change.
+> 
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 
-Signed-off-by: Denis Plotnikov <den-plotnikov@yandex-team.ru>
----
- drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c b/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
-index 35ec9aab3dc7b..92962dbb73ad0 100644
---- a/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
-+++ b/drivers/net/ethernet/qlogic/netxen/netxen_nic_init.c
-@@ -1192,8 +1192,13 @@ netxen_p3_has_mn(struct netxen_adapter *adapter)
- 	if (NX_IS_REVISION_P2(adapter->ahw.revision_id))
- 		return 1;
- 
--	netxen_rom_fast_read(adapter,
--			NX_FW_VERSION_OFFSET, (int *)&flashed_ver);
-+	if (netxen_rom_fast_read(adapter,
-+			NX_FW_VERSION_OFFSET, (int *)&flashed_ver)) {
-+		printk(KERN_ERR "%s: ERROR on flashed version reading",
-+				netxen_nic_driver_name);
-+		return 0;
-+	}
-+
- 	flashed_ver = NETXEN_DECODE_VERSION(flashed_ver);
- 
- 	if (flashed_ver >= NETXEN_VERSION_CODE(4, 0, 220)) {
--- 
-2.25.1
-
+    Andrew
