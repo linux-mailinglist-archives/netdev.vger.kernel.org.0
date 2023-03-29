@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07EDE6CF54F
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 23:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 541B66CF546
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 23:22:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbjC2VWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 17:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
+        id S229794AbjC2VWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 17:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbjC2VVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 17:21:50 -0400
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D4E558E;
-        Wed, 29 Mar 2023 14:21:49 -0700 (PDT)
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-17ac5ee3f9cso17681114fac.12;
-        Wed, 29 Mar 2023 14:21:49 -0700 (PDT)
+        with ESMTP id S229842AbjC2VVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 17:21:47 -0400
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5019A1;
+        Wed, 29 Mar 2023 14:21:43 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id cm7-20020a056830650700b006a11f365d13so7668014otb.0;
+        Wed, 29 Mar 2023 14:21:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680124909;
+        d=1e100.net; s=20210112; t=1680124903;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=D6kdJkdEvlZGQb1vCK3qYJWmWN2WbnFemR8/3BecZeY=;
-        b=BGL1+h1zAA/NzWp+Iuw9NVD9jKTcIMeSSZQQD3ZbfGKfmYl9V7C7vgotO06xfttpr+
-         Pphta7ltgRoylNsGK7+kTRhVm+pS86phvGxDXFUXwW/ZnI7qYgzXERXs/WVPY5QbJKXE
-         vVbkt9bdn8ktBKeVC9E/weQG0zoyRULcSTwpEIbRvdQxSAJ9WjOyqZAzxqsv9joViwPR
-         S0szwF+2K+Z7gIuixA0KZSTOo0PwdUyJYDSdii3IH7fpnMYDH1Ga7vyjVypEZsOTLk/R
-         bOYB2U9el6aoZ8cA5Cg461g4GrC9fibm9DyQ0f6Q0GwjWTWo6Tgp5E3nzecDfaU1KuQs
-         qkJA==
-X-Gm-Message-State: AAQBX9fbSR/sTM0Cevx2TrB341C+mw/YidKEQQO0UC3VIGv0WiMhGUYi
-        srHNV0g4vozD6Kt9VR91LQ==
-X-Google-Smtp-Source: AKy350Yz8wBQUIa2vxnrxVjt+nPqC1UmY+M1RkG0ncdyC4Riz1moWMsQ9Ah3S0EOekgAOjxhUNzThA==
-X-Received: by 2002:a05:6870:3284:b0:17a:f8b1:8bae with SMTP id q4-20020a056870328400b0017af8b18baemr11963271oac.37.1680124908972;
-        Wed, 29 Mar 2023 14:21:48 -0700 (PDT)
+        bh=kTc/gK9GmP1rEeyJeskNOO/tBqpZ4qwY5m/PbyMALU8=;
+        b=6chlyWDT3cRgughqrwOB33jgJalt+fmIT9dgv/WwW82eeRnrdd0HoJjok1HdH+Xuam
+         D46u548U/W7WTvicSBVMqAijYxYheuI0nbStOfo/6SKeFvX8cZmSC5wWTdD1AjFFCbPg
+         Ke9Mt4mrzFaHq1aMO3YkqaO7Rg0lxrufdjGETxqwqRXL0BGfab6tQzj3wN6roz0lGc1Q
+         IdDzBMPAOY27FNXy5zq0E+plzuX4Cuodzwl+lCrKe3kBmtmxPVe4ZFcwZ2rZcyXFnsfK
+         lriCzslYdsDml8TPhH7jXVW/sC3TNPQD3d8Tr6hYrRsC6vme/yvxg/2L7R+JYuugIfHY
+         8kwg==
+X-Gm-Message-State: AO0yUKW1/56LMILzXzKRYNoa7sduzP0quDiE1Q3u4kijEgGeC9GefwZv
+        yjQAZak5rZmkKcvR2Ayztg==
+X-Google-Smtp-Source: AK7set+ImQpMRKobWrA54g0Rd55UmfWERJrl2wg/MsdZOQM+xtCfqAdTFVRvw6llUMom53yDtU8M2w==
+X-Received: by 2002:a05:6830:1bed:b0:69f:8fe4:38b9 with SMTP id k13-20020a0568301bed00b0069f8fe438b9mr10389551otb.21.1680124902837;
+        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z26-20020a056830129a00b006a1508d348dsm2892795otp.22.2023.03.29.14.21.47
+        by smtp.gmail.com with ESMTPSA id t16-20020a0568301e3000b0069f9209c84dsm9588548otr.60.2023.03.29.14.21.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 14:21:48 -0700 (PDT)
-Received: (nullmailer pid 86895 invoked by uid 1000);
+        Wed, 29 Mar 2023 14:21:42 -0700 (PDT)
+Received: (nullmailer pid 86897 invoked by uid 1000);
         Wed, 29 Mar 2023 21:21:39 -0000
 From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 29 Mar 2023 16:20:44 -0500
-Subject: [PATCH 3/5] net: rfkill-gpio: Add explicit include for of.h
+Date:   Wed, 29 Mar 2023 16:20:45 -0500
+Subject: [PATCH 4/5] serial: 8250_tegra: Add explicit include for of.h
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-acpi-header-cleanup-v1-3-8dc5cd3c610e@kernel.org>
+Message-Id: <20230329-acpi-header-cleanup-v1-4-8dc5cd3c610e@kernel.org>
 References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
 In-Reply-To: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
 To:     "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -70,10 +70,10 @@ Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-tegra@vger.kernel.org, linux-acpi@vger.kernel.org,
         devicetree@vger.kernel.org
 X-Mailer: b4 0.13-dev
-X-Spam-Status: No, score=0.8 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
+X-Spam-Status: No, score=0.7 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -83,25 +83,25 @@ X-Mailing-List: netdev@vger.kernel.org
 With linux/acpi.h no longer implicitly including of.h, add an explicit
 include of of.h to fix the following error:
 
-net/rfkill/rfkill-gpio.c:181:21: error: implicit declaration of function 'of_match_ptr' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+drivers/tty/serial/8250/8250_tegra.c:68:15: error: implicit declaration of function 'of_alias_get_id' [-Werror=implicit-function-declaration]
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- net/rfkill/rfkill-gpio.c | 1 +
+ drivers/tty/serial/8250/8250_tegra.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/net/rfkill/rfkill-gpio.c b/net/rfkill/rfkill-gpio.c
-index 786dbfdad772..e9d1b2f2ff0a 100644
---- a/net/rfkill/rfkill-gpio.c
-+++ b/net/rfkill/rfkill-gpio.c
-@@ -8,6 +8,7 @@
+diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
+index e7cddeec9d8e..2509e7f74ccf 100644
+--- a/drivers/tty/serial/8250/8250_tegra.c
++++ b/drivers/tty/serial/8250/8250_tegra.c
+@@ -11,6 +11,7 @@
+ #include <linux/delay.h>
+ #include <linux/io.h>
  #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/rfkill.h>
 +#include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/clk.h>
+ #include <linux/reset.h>
  #include <linux/slab.h>
+ 
 
 -- 
 2.39.2
