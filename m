@@ -2,146 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4186CD0C0
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 05:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEDF46CD0C1
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 05:38:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbjC2DhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 23:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
+        id S229744AbjC2DiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 23:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbjC2DhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 23:37:07 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B7F30E9
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:37:03 -0700 (PDT)
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S229656AbjC2DiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 23:38:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0C9272A;
+        Tue, 28 Mar 2023 20:38:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 768093F232
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 03:37:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1680061021;
-        bh=7A7ekfj5sQ6iv3lk4aiAagfDfK0Tkfi9yZr2OJnvZnA=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=tN3kNZDPQ5HL9GhHOhsKnlA3BFnPyKXYjswP0d7d6v7ohVCX0waJXU3p55phBLyLH
-         dLpn+JoEdgNfyJLYyRZmz8gaYXPASmJWr19ZwqFKPH2U7d2ey31QL8Oh1PQzvOvHVg
-         71kpGu6ZcLsD3e9LRndP7SLr1q+5PROY/exiD3xgmNkRU6wvCTMZZx4RCld41Tc1wP
-         CtsbwmDVvIwMV6q8NJ8Oc/Tcs35QRm4ZUFYOwsZ0HTx5uuuDxt5fE6B0qE4FRBPM1q
-         HMQt0HE2FHgwybaMeg4wETRj8d1wK0exVxSzTwy7m4tNGr+qB7Ci5rbdZcPHCQpqH0
-         z47oqOBI6mq9A==
-Received: by mail-pl1-f197.google.com with SMTP id kw3-20020a170902f90300b001a274ccf620so134562plb.8
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 20:37:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680061020;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7A7ekfj5sQ6iv3lk4aiAagfDfK0Tkfi9yZr2OJnvZnA=;
-        b=Q5FmpdNaUjf2TQj738yqrIKqv6mGu7NEpzl1X1MZLYL2vmW2qIDMp6296nVK2ev8nu
-         tSjaMNKeJ0Q0o5BesnH20glLWMVmZMhxes/BR2rf795WCLNrGeslS4ge8qHxo5ItVZcp
-         09vgt+QNBm00Y9Gp5klcJUj1aL7baM6O1VjtDDCEheDvmDPr0EAcCyKko72FlV3W6tlx
-         91T7qll2Nx82pc2qGm2WI9xzZwXuJcvGCJBY0ti1NyX0rO3kXe6xJquBxHd+yRr7MR8G
-         XLmAInLkSIY4/2WSYucw3pXbZIZ0QwFmhFzmC5xbcf5WObHuuwOHyuICgcla4NZFU4/g
-         vfzA==
-X-Gm-Message-State: AAQBX9e+IF2nIEIUBfZNjrxeANE6sbACVefsrvNdpvCmPKwyQcsL+cyS
-        umUE+0srZctm9nubc9+aOt7dt45ZiAlTqg4Bjy6yWeJhb6GlLRhY/A5wGUUu4anwF204+XQNiC/
-        foGU2tFQQyHwwPTS+rsVIcZrFaa0Y0P17GG8eqZyLpw==
-X-Received: by 2002:a17:903:41c1:b0:19a:839f:435 with SMTP id u1-20020a17090341c100b0019a839f0435mr1030803ple.3.1680061020114;
-        Tue, 28 Mar 2023 20:37:00 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZwNpRVi3qEQHPCBN74PLckik0mbo8gbXd6/1owgbhrSkYY8egIz6ancjYRKKdr1YsJSS6Iwg==
-X-Received: by 2002:a17:903:41c1:b0:19a:839f:435 with SMTP id u1-20020a17090341c100b0019a839f0435mr1030792ple.3.1680061019795;
-        Tue, 28 Mar 2023 20:36:59 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id jm18-20020a17090304d200b001888cadf8f6sm21759598plb.49.2023.03.28.20.36.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Mar 2023 20:36:59 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 0D5FB61E6A; Tue, 28 Mar 2023 20:36:59 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 05A5E9FB79;
-        Tue, 28 Mar 2023 20:36:59 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next] bonding: add software timestamping support
-In-reply-to: <20230329031337.3444547-1-liuhangbin@gmail.com>
-References: <20230329031337.3444547-1-liuhangbin@gmail.com>
-Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Wed, 29 Mar 2023 11:13:37 +0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D85A561A47;
+        Wed, 29 Mar 2023 03:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0140C433EF;
+        Wed, 29 Mar 2023 03:37:59 +0000 (UTC)
+Date:   Tue, 28 Mar 2023 22:37:57 -0500
+From:   Seth Forshee <sforshee@digitalocean.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     syzbot <syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
+        jiri@resnulli.us, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Subject: Re: [syzbot] [net?] KASAN: slab-use-after-free Write in
+ mini_qdisc_pair_swap
+Message-ID: <ZCOylfbhuk0LeVff@do-x1extreme>
+References: <0000000000006cf87705f79acf1a@google.com>
+ <20230328184733.6707ef73@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <26872.1680061018.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 28 Mar 2023 20:36:58 -0700
-Message-ID: <26873.1680061018@famine>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230328184733.6707ef73@kernel.org>
+X-Spam-Status: No, score=-4.8 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+On Tue, Mar 28, 2023 at 06:47:33PM -0700, Jakub Kicinski wrote:
+> Seth, does this looks related to commit 267463823adb ("net: sch:
+> eliminate unnecessary RCU waits in mini_qdisc_pair_swap()")
+> by any chance?
 
->At present, bonding attempts to obtain the timestamp (ts) information of
->the active slave. However, this feature is only available for mode 1, 5,
->and 6. For other modes, bonding doesn't even provide support for software
->timestamping. To address this issue, let's call ethtool_op_get_ts_info
->when there is no primary active slave. This will enable the use of softwa=
-re
->timestamping for the bonding interface.
+I don't see how it could be. The memory being written is part of the
+qdisc private memory, and tc_new_tfilter() takes a reference to the
+qdisc. If that memory has been freed doesn't it mean that something has
+done an unbalanced qdisc_put()?
 
-	If I'm reading the patch below correctly, the actual functional
-change here is to additionally set SOF_TIMESTAMPING_TX_SOFTWARE in
-so_timestamping for the active-backup, balance-tlb and balance-alb modes
-(or whenever there's no active slave, but that's less interesting).  So,
-this patch only changes the behavior with regards to transmit
-timestamping, correct?
-
-	I'm not objecting to the patch per se, but the description above
-does not appear to correctly describe the change.
-
-	-J
-
->Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
->---
-> drivers/net/bonding/bond_main.c | 4 +---
-> 1 file changed, 1 insertion(+), 3 deletions(-)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index 00646aa315c3..f0856bec59f5 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -5709,9 +5709,7 @@ static int bond_ethtool_get_ts_info(struct net_devi=
-ce *bond_dev,
-> 		}
-> 	}
-> =
-
->-	info->so_timestamping =3D SOF_TIMESTAMPING_RX_SOFTWARE |
->-				SOF_TIMESTAMPING_SOFTWARE;
->-	info->phc_index =3D -1;
->+	ret =3D ethtool_op_get_ts_info(bond_dev, info);
-> =
-
-> out:
-> 	dev_put(real_dev);
->-- =
-
->2.38.1
->
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+> On Thu, 23 Mar 2023 17:52:40 -0700 syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    fff5a5e7f528 Merge tag 'for-linus' of git://git.armlinux.o..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=11884731c80000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=aaa4b45720ca0519
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=b53a9c0d1ea4ad62da8b
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d1497ac80000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11eed636c80000
+> > 
+> > Downloadable assets:
+> > disk image: https://storage.googleapis.com/syzbot-assets/33a184f98b9d/disk-fff5a5e7.raw.xz
+> > vmlinux: https://storage.googleapis.com/syzbot-assets/3d75f967571e/vmlinux-fff5a5e7.xz
+> > kernel image: https://storage.googleapis.com/syzbot-assets/4eeb8edbdc7e/bzImage-fff5a5e7.xz
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
+> > 
+> > ==================================================================
+> > BUG: KASAN: slab-use-after-free in mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
+> > Write of size 8 at addr ffff888045b31308 by task syz-executor690/14901
+> > 
+> > CPU: 0 PID: 14901 Comm: syz-executor690 Not tainted 6.3.0-rc3-syzkaller-00026-gfff5a5e7f528 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+> >  print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:319
+> >  print_report mm/kasan/report.c:430 [inline]
+> >  kasan_report+0x11c/0x130 mm/kasan/report.c:536
+> >  mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
+> >  tcf_chain_head_change_item net/sched/cls_api.c:495 [inline]
+> >  tcf_chain0_head_change.isra.0+0xb9/0x120 net/sched/cls_api.c:509
+> >  tcf_chain_tp_insert net/sched/cls_api.c:1826 [inline]
+> >  tcf_chain_tp_insert_unique net/sched/cls_api.c:1875 [inline]
+> >  tc_new_tfilter+0x1de6/0x2290 net/sched/cls_api.c:2266
+> >  rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+> >  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+> >  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+> >  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+> >  sock_sendmsg_nosec net/socket.c:724 [inline]
+> >  sock_sendmsg+0xde/0x190 net/socket.c:747
+> >  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+> >  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+> >  __sys_sendmmsg+0x18f/0x460 net/socket.c:2641
+> >  __do_sys_sendmmsg net/socket.c:2670 [inline]
+> >  __se_sys_sendmmsg net/socket.c:2667 [inline]
+> >  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2667
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > RIP: 0033:0x7f4f11222579
+> > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 31 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > RSP: 002b:00007f4f11184208 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+> > RAX: ffffffffffffffda RBX: 00007f4f112ab2a8 RCX: 00007f4f11222579
+> > RDX: 040000000000009f RSI: 00000000200002c0 RDI: 0000000000000007
+> > RBP: 00007f4f112ab2a0 R08: 0000000000000000 R09: 0000000000000000
+> > R10: 0000000000000000 R11: 0000000000000246 R12: 00007f4f112ab2ac
+> > R13: 00007fffc8e5214f R14: 00007f4f11184300 R15: 0000000000022000
+> >  </TASK>
+> > 
+> > Allocated by task 14898:
+> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+> >  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+> >  ____kasan_kmalloc mm/kasan/common.c:374 [inline]
+> >  ____kasan_kmalloc mm/kasan/common.c:333 [inline]
+> >  __kasan_kmalloc+0xa2/0xb0 mm/kasan/common.c:383
+> >  kasan_kmalloc include/linux/kasan.h:196 [inline]
+> >  __do_kmalloc_node mm/slab_common.c:967 [inline]
+> >  __kmalloc_node+0x61/0x1a0 mm/slab_common.c:974
+> >  kmalloc_node include/linux/slab.h:610 [inline]
+> >  kzalloc_node include/linux/slab.h:731 [inline]
+> >  qdisc_alloc+0xb0/0xb30 net/sched/sch_generic.c:938
+> >  qdisc_create+0xce/0x1040 net/sched/sch_api.c:1244
+> >  tc_modify_qdisc+0x488/0x1a40 net/sched/sch_api.c:1680
+> >  rtnetlink_rcv_msg+0x43d/0xd50 net/core/rtnetlink.c:6174
+> >  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+> >  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+> >  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+> >  sock_sendmsg_nosec net/socket.c:724 [inline]
+> >  sock_sendmsg+0xde/0x190 net/socket.c:747
+> >  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+> >  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+> >  __sys_sendmmsg+0x18f/0x460 net/socket.c:2641
+> >  __do_sys_sendmmsg net/socket.c:2670 [inline]
+> >  __se_sys_sendmmsg net/socket.c:2667 [inline]
+> >  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2667
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > 
+> > Freed by task 21:
+> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+> >  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+> >  kasan_save_free_info+0x2e/0x40 mm/kasan/generic.c:521
+> >  ____kasan_slab_free mm/kasan/common.c:236 [inline]
+> >  ____kasan_slab_free+0x160/0x1c0 mm/kasan/common.c:200
+> >  kasan_slab_free include/linux/kasan.h:162 [inline]
+> >  slab_free_hook mm/slub.c:1781 [inline]
+> >  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1807
+> >  slab_free mm/slub.c:3787 [inline]
+> >  __kmem_cache_free+0xaf/0x2d0 mm/slub.c:3800
+> >  rcu_do_batch kernel/rcu/tree.c:2112 [inline]
+> >  rcu_core+0x814/0x1960 kernel/rcu/tree.c:2372
+> >  __do_softirq+0x1d4/0x905 kernel/softirq.c:571
+> > 
+> > Last potentially related work creation:
+> >  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+> >  __kasan_record_aux_stack+0xbc/0xd0 mm/kasan/generic.c:491
+> >  __call_rcu_common.constprop.0+0x99/0x7e0 kernel/rcu/tree.c:2622
+> >  qdisc_put_unlocked+0x73/0x90 net/sched/sch_generic.c:1097
+> >  tcf_block_release+0x86/0x90 net/sched/cls_api.c:1362
+> >  tc_new_tfilter+0xa35/0x2290 net/sched/cls_api.c:2331
+> >  rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+> >  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+> >  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+> >  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+> >  sock_sendmsg_nosec net/socket.c:724 [inline]
+> >  sock_sendmsg+0xde/0x190 net/socket.c:747
+> >  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+> >  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+> >  __sys_sendmmsg+0x18f/0x460 net/socket.c:2641
+> >  __do_sys_sendmmsg net/socket.c:2670 [inline]
+> >  __se_sys_sendmmsg net/socket.c:2667 [inline]
+> >  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2667
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > 
+> > The buggy address belongs to the object at ffff888045b31000
+> >  which belongs to the cache kmalloc-1k of size 1024
+> > The buggy address is located 776 bytes inside of
+> >  freed 1024-byte region [ffff888045b31000, ffff888045b31400)
+> > 
+> > The buggy address belongs to the physical page:
+> > page:ffffea000116cc00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888045b37000 pfn:0x45b30
+> > head:ffffea000116cc00 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+> > anon flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+> > raw: 00fff00000010200 ffff888012441dc0 0000000000000000 dead000000000001
+> > raw: ffff888045b37000 000000008010000d 00000001ffffffff 0000000000000000
+> > page dumped because: kasan: bad access detected
+> > page_owner tracks the page as allocated
+> > page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 14184, tgid 14168 (syz-executor690), ts 420322459064, free_ts 15493742100
+> >  prep_new_page mm/page_alloc.c:2552 [inline]
+> >  get_page_from_freelist+0x1190/0x2e20 mm/page_alloc.c:4325
+> >  __alloc_pages+0x1cb/0x4a0 mm/page_alloc.c:5591
+> >  alloc_pages+0x1aa/0x270 mm/mempolicy.c:2283
+> >  alloc_slab_page mm/slub.c:1851 [inline]
+> >  allocate_slab+0x25f/0x390 mm/slub.c:1998
+> >  new_slab mm/slub.c:2051 [inline]
+> >  ___slab_alloc+0xa91/0x1400 mm/slub.c:3193
+> >  __slab_alloc.constprop.0+0x56/0xa0 mm/slub.c:3292
+> >  __slab_alloc_node mm/slub.c:3345 [inline]
+> >  slab_alloc_node mm/slub.c:3442 [inline]
+> >  __kmem_cache_alloc_node+0x136/0x320 mm/slub.c:3491
+> >  kmalloc_trace+0x26/0xe0 mm/slab_common.c:1061
+> >  kmalloc include/linux/slab.h:580 [inline]
+> >  kmalloc_array include/linux/slab.h:635 [inline]
+> >  kcalloc include/linux/slab.h:667 [inline]
+> >  fl_change+0x1cf/0x4ac0 net/sched/cls_flower.c:2175
+> >  tc_new_tfilter+0x97c/0x2290 net/sched/cls_api.c:2310
+> >  rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+> >  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+> >  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+> >  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+> >  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+> >  sock_sendmsg_nosec net/socket.c:724 [inline]
+> >  sock_sendmsg+0xde/0x190 net/socket.c:747
+> >  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+> > page last free stack trace:
+> >  reset_page_owner include/linux/page_owner.h:24 [inline]
+> >  free_pages_prepare mm/page_alloc.c:1453 [inline]
+> >  free_pcp_prepare+0x5d5/0xa50 mm/page_alloc.c:1503
+> >  free_unref_page_prepare mm/page_alloc.c:3387 [inline]
+> >  free_unref_page+0x1d/0x490 mm/page_alloc.c:3482
+> >  free_contig_range+0xb5/0x180 mm/page_alloc.c:9531
+> >  destroy_args+0x6c4/0x920 mm/debug_vm_pgtable.c:1023
+> >  debug_vm_pgtable+0x242a/0x4640 mm/debug_vm_pgtable.c:1403
+> >  do_one_initcall+0x102/0x540 init/main.c:1310
+> >  do_initcall_level init/main.c:1383 [inline]
+> >  do_initcalls init/main.c:1399 [inline]
+> >  do_basic_setup init/main.c:1418 [inline]
+> >  kernel_init_freeable+0x696/0xc00 init/main.c:1638
+> >  kernel_init+0x1e/0x2c0 init/main.c:1526
+> >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+> > 
+> > Memory state around the buggy address:
+> >  ffff888045b31200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >  ffff888045b31280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> > >ffff888045b31300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb  
+> >                       ^
+> >  ffff888045b31380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >  ffff888045b31400: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> > ==================================================================
+> > 
+> > 
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > 
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > syzbot can test patches for this issue, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches
+> 
