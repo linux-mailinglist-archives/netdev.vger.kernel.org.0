@@ -2,114 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1EEC6CEC4F
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3746CEC64
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbjC2PBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 11:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
+        id S230198AbjC2PIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 11:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229686AbjC2PBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:01:54 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5374272A
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:01:47 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-17fcc07d6c4so2443224fac.8
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680102107; x=1682694107;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PL/MziMN1siN83vtIEtm9b9KmvOZZ2R/OSDVgxgM3+Q=;
-        b=lPn1Gjs/+YsrcCk7rEhX+MyA/tybUZ10R7qqvxXe0s0dRhdpf2xK4M58j4Bf4B1sGw
-         lhVmMx2ShJPIL8/uP/gM5WxkSXStk1Q/7cnAiGSzkRbh0rEcbhrDcUyxZ2rgmUi+L5Oj
-         4Gl8Yegt/JAggURlPYcimHAlmXCMBHuNLupj+xpyvMDWqbNqzkGQ2KCi1MYplW6Ccfbj
-         yZgy5KP6EeVTvJK0iR17dfS2eT+EB6F0yIL78MP8ORnuULCOhWVXrtANQymh/vJUmlNr
-         rG8btvrxiIZAMhsB2lG9F0Wjc+7ZMo9a6PYdACr/1LW6Af9we01fu6MsJQdcDhz+azl7
-         /LXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680102107; x=1682694107;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PL/MziMN1siN83vtIEtm9b9KmvOZZ2R/OSDVgxgM3+Q=;
-        b=xJIaUe/qZVa4bP+dy3DHz16WSSFvvg59gtDO0iDypvylACyr1IYBw3NxLxFQg4FQdT
-         xDUUJyzeCYvLTK1ShAPN0LaUNKKzrvAbAGKe1U/mpgC6nZiUaVFcHWc0IcDrzqbasdxv
-         v+Gxiab6l/ispkvh8hQSTeRgR/emhtpsFZUU4Be3N4A5zsBotd0oYBXwYBD7+eAGvDMy
-         QEPKMezb4aqRKf/52+XpjAo45wC4xTqc9yo1rwZSZh7P1Wky8hAF8aZcC0yF4ujWgjU2
-         /hUaDMMd1sKf/q0twubPwVPnG7FOnU4y4Et8ipPOcgkcj8BqsR24s8OLYLc0SMterJwl
-         q8dw==
-X-Gm-Message-State: AAQBX9cfJihQ6txaw71oqC2HIHwNrgTZTXS7A+b0+QTpz7oGpKArF2Gy
-        H3hgZ/IArFFo2PdWCCOK7+Gy6rJRE6+OiA==
-X-Google-Smtp-Source: AK7set9bGVdaXhzzdkHnOIVZOvnaPudTkp+9W5JSSp3s73vhxtvQLFgIFxMqZ7IzvHFHQbBMOlOakA==
-X-Received: by 2002:a05:6870:891f:b0:17a:d300:fd1a with SMTP id i31-20020a056870891f00b0017ad300fd1amr9208813oao.2.1680102107202;
-        Wed, 29 Mar 2023 08:01:47 -0700 (PDT)
-Received: from fabio-Precision-3551.. ([2804:14c:485:4b69:1c2d:271:d34:84ea])
-        by smtp.gmail.com with ESMTPSA id az15-20020a05687c230f00b0016a37572d17sm11927000oac.2.2023.03.29.08.01.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 08:01:46 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     kuba@kernel.org
-Cc:     andrew@lunn.ch, olteanv@gmail.com, netdev@vger.kernel.org,
-        steffen@innosonix.de, Fabio Estevam <festevam@denx.de>
-Subject: [PATCH net] net: dsa: mv88e6xxx: Enable IGMP snooping on user ports only
-Date:   Wed, 29 Mar 2023 12:01:40 -0300
-Message-Id: <20230329150140.701559-1-festevam@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229525AbjC2PIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:08:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5331BD7;
+        Wed, 29 Mar 2023 08:08:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1A00B81B8D;
+        Wed, 29 Mar 2023 15:08:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2ED3C433EF;
+        Wed, 29 Mar 2023 15:08:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680102483;
+        bh=sqyJuVOPn12HXs42svFyLzzMir/9VKtRH5dGYB/kq/A=;
+        h=From:Date:Subject:To:Cc:From;
+        b=ecM66mq11hK3JVb5LbtYd2UcdYMEaT6WOpUIGju10bPLRuZXUoC5+7LFGLHf61/Rm
+         NBDC6y1FYpYt7WDsCrzCRpaBwelMHT0bgO4DnKq+eN7UoNsjAwHYbpwxnx47BqZ/Su
+         cpLJJyVI4h2wWNG14Ev1nNF8qXOyjjKG0MEbJsHOnSplHXSJsl7IuMls/Ygurb6gMC
+         SMjgQkDSI1rgxI4sF49G0e2XL+r09bzGzL4CnDNt7mFrtKUApvSQsR4VbJJWa8JKw2
+         vdOrxQ6R6Q09fZfv/0al2y21rmlN9bEai1TLGwsuNCOBt27DTyI2mPIyOiJvg1/J/l
+         /GGSXAtiXQnVQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+Date:   Wed, 29 Mar 2023 08:08:01 -0700
+Subject: [PATCH net-next] net: ethernet: ti: Fix format specifier in
+ netcp_create_interface()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230329-net-ethernet-ti-wformat-v1-1-83d0f799b553@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAFBUJGQC/x2NSwrDMAxErxK0rsC1Sfq5SulCcZVaizhFFmkg5
+ O61u5vH8GZ2KKzCBe7dDsqrFFlyhfOpg5govxnlVRm888EFf8PMhmyJtQUT/E6LzmRIkeg6hN4
+ N/QWqPVJhHJVyTM2fqRhrKz7Kk2z/ywe0kcybwfM4fuMEsgGMAAAA
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
+        razor@blackwall.org, kerneljasonxing@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2668; i=nathan@kernel.org;
+ h=from:subject:message-id; bh=sqyJuVOPn12HXs42svFyLzzMir/9VKtRH5dGYB/kq/A=;
+ b=owGbwMvMwCEmm602sfCA1DTG02pJDCkqIUEb55980mla2v5HXet9VBKL975fT6fvv5d29ZNYk
+ soyzz3tHaUsDGIcDLJiiizVj1WPGxrOOct449QkmDmsTCBDGLg4BWAiG6sYGS6/PJbdt6nv6u9a
+ 7XvB99JdxeYFtS/efudjJqOriOW/8z4M/6yqXKrWPQg7JhvKk1aZ/0Tu38+q1JgVL/Q8nRQUbJe
+ 85gUA
+X-Developer-Key: i=nathan@kernel.org; a=openpgp;
+ fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Bätz <steffen@innosonix.de>
+After commit 3948b05950fd ("net: introduce a config option to tweak
+MAX_SKB_FRAGS"), clang warns:
 
-Do not set the MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP bit on CPU or DSA ports.
+  drivers/net/ethernet/ti/netcp_core.c:2085:4: warning: format specifies type 'long' but the argument has type 'int' [-Wformat]
+                          MAX_SKB_FRAGS);
+                          ^~~~~~~~~~~~~
+  include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
+          dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                                                 ~~~     ^~~~~~~~~~~
+  include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
+                  _p_func(dev, fmt, ##__VA_ARGS__);                       \
+                               ~~~    ^~~~~~~~~~~
+  include/linux/skbuff.h:352:23: note: expanded from macro 'MAX_SKB_FRAGS'
+  #define MAX_SKB_FRAGS CONFIG_MAX_SKB_FRAGS
+                        ^~~~~~~~~~~~~~~~~~~~
+  ./include/generated/autoconf.h:11789:30: note: expanded from macro 'CONFIG_MAX_SKB_FRAGS'
+  #define CONFIG_MAX_SKB_FRAGS 17
+                               ^~
+  1 warning generated.
 
-This allows the host CPU port to be a regular IGMP listener by sending out
-IGMP Membership Reports, which would otherwise not be forwarded by the
-mv88exxx chip, but directly looped back to the CPU port itself.
+Follow the pattern of the rest of the tree by changing the specifier to
+'%u' and casting MAX_SKB_FRAGS explicitly to 'unsigned int', which
+eliminates the warning.
 
-Fixes: 54d792f257c6 ("net: dsa: Centralise global and port setup code into mv88e6xxx.")
-Signed-off-by: Steffen Bätz <steffen@innosonix.de>
-Signed-off-by: Fabio Estevam <festevam@denx.de>
+Fixes: 3948b05950fd ("net: introduce a config option to tweak MAX_SKB_FRAGS")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
-Changes since RFC:
-- Use dsa_is_user_port() to decide when to set the snoop bit (Andrew).
-- Reword the commit message to differentiate between IGMP snooping and an IGMP listener on
-the bridge.
+I am a little confused as to why the solution for this warning is
+casting to 'unsigned int' rather than just updating all the specifiers
+to be '%d', as I do not see how MAX_SKB_FRAGS can be any type other than
+just 'int' but I figured I would be consistent with the other fixes I
+have seen around this issue.
+---
+ drivers/net/ethernet/ti/netcp_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/net/dsa/mv88e6xxx/chip.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
+index 1bb596a9d8a2..d829113c16ee 100644
+--- a/drivers/net/ethernet/ti/netcp_core.c
++++ b/drivers/net/ethernet/ti/netcp_core.c
+@@ -2081,8 +2081,8 @@ static int netcp_create_interface(struct netcp_device *netcp_device,
+ 	netcp->tx_pool_region_id = temp[1];
+ 
+ 	if (netcp->tx_pool_size < MAX_SKB_FRAGS) {
+-		dev_err(dev, "tx-pool size too small, must be at least %ld\n",
+-			MAX_SKB_FRAGS);
++		dev_err(dev, "tx-pool size too small, must be at least %u\n",
++			(unsigned int)MAX_SKB_FRAGS);
+ 		ret = -ENODEV;
+ 		goto quit;
+ 	}
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index b73d1d6747b7..62a126402983 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3354,9 +3354,14 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 	 * If this is the upstream port for this switch, enable
- 	 * forwarding of unknown unicasts and multicasts.
- 	 */
--	reg = MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP |
--		MV88E6185_PORT_CTL0_USE_TAG | MV88E6185_PORT_CTL0_USE_IP |
-+	reg = MV88E6185_PORT_CTL0_USE_TAG | MV88E6185_PORT_CTL0_USE_IP |
- 		MV88E6XXX_PORT_CTL0_STATE_FORWARDING;
-+	/* Forward any IPv4 IGMP or IPv6 MLD frames received
-+	 * by a USER port to the CPU port to allow snooping.
-+	 */
-+	if (dsa_is_user_port(ds, port))
-+		reg |= MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP;
-+
- 	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
- 	if (err)
- 		return err;
+---
+base-commit: 3b064f541be822dc095991c6dda20a75eb51db5e
+change-id: 20230329-net-ethernet-ti-wformat-acaa86350657
+
+Best regards,
 -- 
-2.34.1
+Nathan Chancellor <nathan@kernel.org>
 
