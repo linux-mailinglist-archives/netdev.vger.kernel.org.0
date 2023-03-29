@@ -2,75 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C78456CF211
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F8B6CF215
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229518AbjC2SVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 14:21:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        id S229487AbjC2S0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 14:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbjC2SVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:21:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D447749D5;
-        Wed, 29 Mar 2023 11:21:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B08061D6F;
-        Wed, 29 Mar 2023 18:21:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A421C433D2;
-        Wed, 29 Mar 2023 18:21:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680114102;
-        bh=9PtUOZiKZ8i7ysVO6JVy+v53+cNNGqvHMWdAAkjxnd4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PqY8z812HDa1h/OBeBoEL6Nt+26vtPX5jfEhOzhyO6toxGjqfSJrgdC+Gz9UUDpD2
-         weTdI7vEu3GlrMcVv5/Ump/76LTDNUTQ3UVPFVPpUfb1Em45usn7msRCf3iVq9BS48
-         aEsSTBUSDm2kLW8sRshOat8tr73NpiBixXZ14mbg3pj85TJ+yUP7vojpxczeO8aKeS
-         6QkFvd8Ht8h8CTjOgJexbCcCRkt7UxzP3ZAEldKrAVTstlcrOOIhD71qbnsYIXrI7g
-         se5fKq5Lu65RUAH3+pCZa4Pcvqp0fhygef6IL/6Zw1+f3mEb/JU/NhJrr7uAAmZKOT
-         1s4BhWkMcyEUw==
-Date:   Wed, 29 Mar 2023 21:21:38 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     Veerasenareddy Burru <vburru@marvell.com>,
-        Abhijit Ayarekar <aayarekar@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] octeon_ep: unlock the correct lock on error path
-Message-ID: <20230329182138.GX831478@unreal>
-References: <251aa2a2-913e-4868-aac9-0a90fc3eeeda@kili.mountain>
+        with ESMTP id S229436AbjC2S0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:26:11 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E934697;
+        Wed, 29 Mar 2023 11:26:11 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32TEU4Dc018538;
+        Wed, 29 Mar 2023 18:25:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2022-7-12; bh=Lzu4UVcTLXuXtHWcBLcWf277KyG7v5zkXe3TdU4cGyA=;
+ b=ri8tv6zYNiZbBwicSELs8GpcQaYSp8AD8GxlkbBp9lJGrLTlRnZAPe4RMNnUIzERINEe
+ Tkp30Yi1+2cwq/wVyH0ctASEhOGjtvyvRBlNtBAyg84nViaxK9BDdglLyyEB0H0Fb5RB
+ vDYYdSjyegtDGZo0S8V+ItNDysqFVk5eFBa7NNKU2evDYGS5fYuIY503rTxbqVUs2wqV
+ Hufj4JbEnB1oE+jbEOpwhTHyhRiRwvbWlQ5fK/OzHneZ/aB51ufCz9r9eRGKh7ts4LSx
+ DBkQfVZ5yS8Lams/qqFZ0hgfNZlaCnapH6FWVugyXwsAHu9UloEnUNM5CFwGhSWxlgso tw== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pmq538pag-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Mar 2023 18:25:47 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32THSmib010814;
+        Wed, 29 Mar 2023 18:25:45 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3phqder9kp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 29 Mar 2023 18:25:45 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 32TIPQe1004473;
+        Wed, 29 Mar 2023 18:25:45 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3phqder9hg-1;
+        Wed, 29 Mar 2023 18:25:45 +0000
+From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        zbr@ioremap.net, brauner@kernel.org, johannes@sipsolutions.net,
+        ecree.xilinx@gmail.com, leon@kernel.org, keescook@chromium.org,
+        socketcan@hartkopp.net, petrm@nvidia.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        anjali.k.kulkarni@oracle.com
+Subject: [PATCH v3 0/7] Process connector bug fixes & enhancements
+Date:   Wed, 29 Mar 2023 11:25:36 -0700
+Message-Id: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
+X-Mailer: git-send-email 2.40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <251aa2a2-913e-4868-aac9-0a90fc3eeeda@kili.mountain>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-29_12,2023-03-28_02,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0
+ suspectscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2303290141
+X-Proofpoint-GUID: vDLi6591kRzl8g0-fnPG4XWANk8a6xDY
+X-Proofpoint-ORIG-GUID: vDLi6591kRzl8g0-fnPG4XWANk8a6xDY
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 09:51:37AM +0300, Dan Carpenter wrote:
-> The h and the f letters are swapped so it unlocks the wrong lock.
-> 
-> Fixes: 577f0d1b1c5f ("octeon_ep: add separate mailbox command and response queues")
-> Signed-off-by: Dan Carpenter <error27@gmail.com>
-> ---
-> Thees vairable nmaes are terirble.  The huamn mnid deos not raed ervey
-> lteter by istlef, but the wrod as a wlohe.
-> 
-> https://www.dictionary.com/e/typoglycemia/
-> 
->  drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+From: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+In this series, we add filtering to the proc connector module. This
+is required to fix some bugs and also will enable the addition of event
+based filtering, which will improve performance for anyone interested
+in a subset of process events, as compared to the current approach,
+which is to send all event notifications.
+
+Thus, a client can register to listen for only exit or fork or a mix or
+all of the events. This greatly enhances performance - currently, we
+need to listen to all events, and there are 9 different types of events.
+For eg. handling 3 types of events - 8K-forks + 8K-exits + 8K-execs takes
+200ms, whereas handling 2 types - 8K-forks + 8K-exits takes about 150ms,
+and handling just one type - 8K exits takes about 70ms.
+
+Reason why we need the above changes and also a new event type
+PROC_EVENT_NONZERO_EXIT, which is only sent by kernel to a listening
+application when any process exiting has a non-zero exit status is:
+
+Oracle DB runs on a large scale with 100000s of short lived processes,
+starting up and exiting quickly. A process monitoring DB daemon which
+tracks and cleans up after processes that have died without a proper exit
+needs notifications only when a process died with a non-zero exit code
+(which should be rare).
+
+This change will give Oracle DB substantial performance savings - it takes
+50ms to scan about 8K PIDs in /proc, about 500ms for 100K PIDs. DB does
+this check every 3 secs, so over an hour we save 10secs for 100K PIDs.
+
+Measuring the time using pidfds for monitoring 8K process exits took 4
+times longer - 200ms, as compared to 70ms using only exit notifications
+of proc connector. Hence, we cannot use pidfd for our use case.
+
+This kind of a new event could also be useful to other applications like
+Google's lmkd daemon, which needs a killed process's exit notification.
+
+This patch series is organized as follows -
+
+Patch 1 : Needed for patch 3 to work.
+Patch 2 : Needed for patch 3 to work.
+Patch 3 : Fixes some bugs in proc connector, details in the patch.
+Patch 4 : Test code for proc connector.
+Patch 5 : Adds event based filtering for performance enhancements.
+Patch 6 : Needed for patch 7 to work.
+Patch 7 : Allow non-root users access to proc connector events.
+
+v2->v3 changes:
+- Fix comments by Jakub Kicinski to separate netlink (patch 2) (after
+  layering) from connector fixes (patch 3). 
+- Minor fixes suggested by Jakub.
+- Add new multicast group level permissions check at netlink layer.
+  Split this into netlink & connector layers (patches 6 & 7)
+
+v1->v2 changes:
+- Fix comments by Jakub Kicinski to keep layering within netlink and
+  update kdocs.
+- Move non-root users access patch last in series so remaining patches
+  can go in first.
+
+v->v1 changes:
+- Changed commit log in patch 4 as suggested by Christian Brauner
+- Changed patch 4 to make more fine grained access to non-root users
+- Fixed warning in cn_proc.c, 
+  Reported-by: kernel test robot <lkp@intel.com>
+- Fixed some existing warnings in cn_proc.c
+
+Anjali Kulkarni (7):
+  netlink: Reverse the patch which removed filtering
+  netlink: Add new netlink_release function
+  connector/cn_proc: Add filtering to fix some bugs
+  connector/cn_proc: Test code for proc connector
+  connector/cn_proc: Performance improvements
+  netlink: Add multicast group level permissions
+  connector/cn_proc: Allow non-root users access
+
+ drivers/connector/cn_proc.c     | 105 +++++++++--
+ drivers/connector/connector.c   |  22 ++-
+ drivers/w1/w1_netlink.c         |   6 +-
+ include/linux/connector.h       |   8 +-
+ include/linux/netlink.h         |   7 +
+ include/uapi/linux/cn_proc.h    |  62 +++++--
+ net/netlink/af_netlink.c        |  56 +++++-
+ net/netlink/af_netlink.h        |   6 +
+ samples/connector/proc_filter.c | 301 ++++++++++++++++++++++++++++++++
+ 9 files changed, 528 insertions(+), 45 deletions(-)
+ create mode 100644 samples/connector/proc_filter.c
+
+-- 
+2.40.0
+
