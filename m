@@ -2,68 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED0DD6CCFDE
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED936CCFF4
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:30:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjC2CRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 22:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
+        id S229765AbjC2CaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 22:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbjC2CRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:17:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB08271C;
-        Tue, 28 Mar 2023 19:17:19 -0700 (PDT)
+        with ESMTP id S229451AbjC2CaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:30:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F76510F0;
+        Tue, 28 Mar 2023 19:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5DC3619C4;
-        Wed, 29 Mar 2023 02:17:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235D6C433EF;
-        Wed, 29 Mar 2023 02:17:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B61C0B81FAC;
+        Wed, 29 Mar 2023 02:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 530B7C433D2;
+        Wed, 29 Mar 2023 02:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680056238;
-        bh=HFOVDJOz0rbImC9oGs5gHJAEVLKuq6QbRug+jFmJR5Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BLYaPxU7FwPY+yezNxX8b+04N3VOjJX1R4VH9FfD2FmrXIPxaWF9GXMx+bR+wGUgq
-         FcTP3nGb5mD360od7UXDV+CsJdl0B/z0xYOLo8t2AueXz9/bvW4nWy0aH19dWvWJCv
-         rngogYAcmgzwCYs3tXrQ/7lJbby6V072F9ly974jhtWzPaAH+94fgAxhMlQNzXni+e
-         /KEc+cgXRrTQnH1mZHNT6HaMDJniM5DwMpw5vejG1mjqLxvp9nMQ9/2q1O7+Q9guV1
-         b7UFbDATJ3YUpZXvh825j2ta0uxs/YMWBNYGBQmv/GtI1SDseD25/1pmvmLmfazqzb
-         9zyosH8AZMpHg==
-Date:   Tue, 28 Mar 2023 19:17:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Samin Guo <samin.guo@starfivetech.com>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Conor Dooley <conor@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Yanhong Wang <yanhong.wang@starfivetech.com>,
-        Tommaso Merciai <tomm.merciai@gmail.com>
-Subject: Re: [net-next v9 5/6] net: stmmac: Add glue layer for StarFive
- JH7110 SoC
-Message-ID: <20230328191716.18a302a1@kernel.org>
-In-Reply-To: <20230328062009.25454-6-samin.guo@starfivetech.com>
-References: <20230328062009.25454-1-samin.guo@starfivetech.com>
-        <20230328062009.25454-6-samin.guo@starfivetech.com>
+        s=k20201202; t=1680057019;
+        bh=QoF+PKmwmMTcX0Hg3+TzEjooPuR5Z8gFjdGStkE1TD8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ILxWoaGoZN8at13CnPBRljcwoALfih+GvV5eSD5kYQv1BArqXXDGL82kP+pP2iVek
+         EmYMnYTAgsoPlnKPEbY00Ymh88B/AMx4P/h6q2Al+14BjmWB0+V8t+EK6b7Lq9uYGj
+         wxT85V9dMVDJUls2BgkT/05uSdIP1ONks1PcwTFqd0O5RYp+uh/EagGEjY3IykK0mm
+         RDrS/Dj1HzKKYtXTJt1TQZdFM0YUbagvbjrafL5Hfj/XIXGbV++kPAkPKKNQ7847ap
+         5K59NjAM7rZzBU8xpJxZU1JyOQggt67EVNFrLTE9v/0vPblCjd91Pwe5LGiwY0w/y1
+         87DqwOK6aQosg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 25BD2E50D74;
+        Wed, 29 Mar 2023 02:30:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [patch V3 0/4] net, refcount: Address dst_entry reference count
+ scalability issues
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168005701914.27658.17147408850533748612.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Mar 2023 02:30:19 +0000
+References: <20230323102649.764958589@linutronix.de>
+In-Reply-To: <20230323102649.764958589@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, torvalds@linuxfoundation.org,
+        x86@kernel.org, wangyang.guo@intel.com, arjan@linux.intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org, will@kernel.org,
+        peterz@infradead.org, boqun.feng@gmail.com, mark.rutland@arm.com,
+        maz@kernel.org, qiuxu.zhuo@intel.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,28 +60,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Mar 2023 14:20:08 +0800 Samin Guo wrote:
-> This adds StarFive dwmac driver support on the StarFive JH7110 SoC.
+Hello:
+
+This series was applied to netdev/net-next.git (main)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 23 Mar 2023 21:55:27 +0100 (CET) you wrote:
+> Hi!
 > 
-> Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
-> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+> This is version 3 of this series. Version 2 can be found here:
+> 
+>      https://lore.kernel.org/lkml/20230307125358.772287565@linutronix.de
+> 
+> Wangyang and Arjan reported a bottleneck in the networking code related to
+> struct dst_entry::__refcnt. Performance tanks massively when concurrency on
+> a dst_entry increases.
+> 
+> [...]
 
-Excellent, now it applies cleanly :)
+Here is the summary with links:
+  - [V3,1/4,V2,1/4] net: dst: Prevent false sharing vs. dst_entry:: __refcnt
+    https://git.kernel.org/netdev/net-next/c/d288a162dd1c
+  - [V3,2/4] atomics: Provide atomic_add_negative() variants
+    https://git.kernel.org/netdev/net-next/c/e5ab9eff46b0
+  - [V3,3/4] atomics: Provide rcuref - scalable reference counting
+    https://git.kernel.org/netdev/net-next/c/ee1ee6db0779
+  - [V3,4/4] net: dst: Switch to rcuref_t reference counting
+    https://git.kernel.org/netdev/net-next/c/bc9d3a9f2afc
 
-Our clang build with W=1 complains that:
-
-drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c:37:2: warning: variable 'rate' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
-        default:
-        ^~~~~~~
-drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c:42:36: note: uninitialized use occurs here
-        err = clk_set_rate(dwmac->clk_tx, rate);
-                                          ^~~~
-drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c:24:20: note: initialize the variable 'rate' to silence this warning
-        unsigned long rate;
-                          ^
-                           = 0
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-not sure how you prefer to fix this. Maybe return early?
