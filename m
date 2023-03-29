@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62DC66CEE34
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 773376CEE45
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231217AbjC2P6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 11:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47294 "EHLO
+        id S230425AbjC2P7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 11:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbjC2P6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:58:37 -0400
+        with ESMTP id S231262AbjC2P6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:58:45 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCBB61AF;
-        Wed, 29 Mar 2023 08:58:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2CF61B6;
+        Wed, 29 Mar 2023 08:58:23 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1phYAv-0003K3-0f;
-        Wed, 29 Mar 2023 17:57:25 +0200
-Date:   Wed, 29 Mar 2023 16:57:21 +0100
+        id 1phYB6-0003Kc-2a;
+        Wed, 29 Mar 2023 17:57:36 +0200
+Date:   Wed, 29 Mar 2023 16:57:32 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -41,9 +41,9 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 Cc:     Sam Shih <Sam.Shih@mediatek.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: [RFC PATCH net-next v3 01/15] net: dsa: mt7530: refactor SGMII PCS
- creation
-Message-ID: <921a8076420545206612e873753edfd0868e7a36.1680105013.git.daniel@makrotopia.org>
+Subject: [RFC PATCH net-next v3 02/15] net: dsa: mt7530: use unlocked regmap
+ accessors
+Message-ID: <1b79468f3043810ff8ec06a66cf8571738a13f72.1680105013.git.daniel@makrotopia.org>
 References: <cover.1680105013.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -57,114 +57,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of macro templates use a dedidated function and allocated
-regmap_config when creating the regmaps for the pcs-mtk-lynxi
-instances.
-This is in preparation to switching to use unlocked regmap accessors
-and have regmap's locking API handle locking for us.
+Instead of wrapping the locked register accessor functions, use the
+unlocked variants and add wrappers to let regmap handle the locking.
+This is a preparation towards being able to always use regmap to
+access switch registers instead of open-coded accessor functions.
 
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.c | 74 +++++++++++++++++++++++++++-------------
- 1 file changed, 50 insertions(+), 24 deletions(-)
+ drivers/net/dsa/mt7530.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index a0d99af897ace..9b88ce5cee5bd 100644
+index 9b88ce5cee5bd..deb0b338b22c2 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -2926,26 +2926,56 @@ static const struct regmap_bus mt7531_regmap_bus = {
- 	.reg_update_bits = mt7530_regmap_update_bits,
+@@ -2899,7 +2899,7 @@ static int mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val
+ {
+ 	struct mt7530_priv *priv = context;
+ 
+-	*val = mt7530_read(priv, reg);
++	*val = mt7530_mii_read(priv, reg);
+ 	return 0;
  };
  
--#define MT7531_PCS_REGMAP_CONFIG(_name, _reg_base) \
--	{				\
--		.name = _name,		\
--		.reg_bits = 16,		\
--		.val_bits = 32,		\
--		.reg_stride = 4,	\
--		.reg_base = _reg_base,	\
--		.max_register = 0x17c,	\
--	}
--
--static const struct regmap_config mt7531_pcs_config[] = {
--	MT7531_PCS_REGMAP_CONFIG("port5", MT7531_SGMII_REG_BASE(5)),
--	MT7531_PCS_REGMAP_CONFIG("port6", MT7531_SGMII_REG_BASE(6)),
--};
-+static int
-+mt7531_create_sgmii(struct mt7530_priv *priv)
-+{
-+	struct regmap_config *mt7531_pcs_config[2];
-+	struct phylink_pcs *pcs;
-+	struct regmap *regmap;
-+	int i, ret = 0;
-+
-+	for (i = 0; i < 2; i++) {
-+		mt7531_pcs_config[i] = devm_kzalloc(priv->dev,
-+						    sizeof(struct regmap_config),
-+						    GFP_KERNEL);
-+		if (!mt7531_pcs_config[i]) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+
-+		mt7531_pcs_config[i]->name = i ? "port6" : "port5";
-+		mt7531_pcs_config[i]->reg_bits = 16;
-+		mt7531_pcs_config[i]->val_bits = 32;
-+		mt7531_pcs_config[i]->reg_stride = 4;
-+		mt7531_pcs_config[i]->reg_base = MT7531_SGMII_REG_BASE(5 + i);
-+		mt7531_pcs_config[i]->max_register = 0x17c;
-+
-+		regmap = devm_regmap_init(priv->dev,
-+					  &mt7531_regmap_bus, priv,
-+					  mt7531_pcs_config[i]);
-+		if (IS_ERR(regmap)) {
-+			ret = PTR_ERR(regmap);
-+			break;
-+		}
-+		pcs = mtk_pcs_lynxi_create(priv->dev, regmap,
-+					   MT7531_PHYA_CTRL_SIGNAL3, 0);
-+		if (!pcs) {
-+			ret = -ENXIO;
-+			break;
-+		}
-+		priv->ports[5 + i].sgmii_pcs = pcs;
-+	}
-+
-+	if (ret && i)
-+		mtk_pcs_lynxi_destroy(priv->ports[5].sgmii_pcs);
-+
-+	return ret;
+@@ -2907,23 +2907,25 @@ static int mt7530_regmap_write(void *context, unsigned int reg, unsigned int val
+ {
+ 	struct mt7530_priv *priv = context;
+ 
+-	mt7530_write(priv, reg, val);
++	mt7530_mii_write(priv, reg, val);
+ 	return 0;
+ };
+ 
+-static int mt7530_regmap_update_bits(void *context, unsigned int reg,
+-				     unsigned int mask, unsigned int val)
++static void
++mt7530_mdio_regmap_lock(void *mdio_lock)
+ {
+-	struct mt7530_priv *priv = context;
++	mutex_lock_nested(mdio_lock, MDIO_MUTEX_NESTED);
 +}
  
+-	mt7530_rmw(priv, reg, mask, val);
+-	return 0;
+-};
++static void
++mt7530_mdio_regmap_unlock(void *mdio_lock)
++{
++	mutex_unlock(mdio_lock);
++}
+ 
+ static const struct regmap_bus mt7531_regmap_bus = {
+ 	.reg_write = mt7530_regmap_write,
+ 	.reg_read = mt7530_regmap_read,
+-	.reg_update_bits = mt7530_regmap_update_bits,
+ };
+ 
  static int
- mt753x_setup(struct dsa_switch *ds)
- {
- 	struct mt7530_priv *priv = ds->priv;
--	struct regmap *regmap;
- 	int i, ret;
+@@ -2949,6 +2951,9 @@ mt7531_create_sgmii(struct mt7530_priv *priv)
+ 		mt7531_pcs_config[i]->reg_stride = 4;
+ 		mt7531_pcs_config[i]->reg_base = MT7531_SGMII_REG_BASE(5 + i);
+ 		mt7531_pcs_config[i]->max_register = 0x17c;
++		mt7531_pcs_config[i]->lock = mt7530_mdio_regmap_lock;
++		mt7531_pcs_config[i]->unlock = mt7530_mdio_regmap_unlock;
++		mt7531_pcs_config[i]->lock_arg = &priv->bus->mdio_lock;
  
- 	/* Initialise the PCS devices */
-@@ -2967,15 +2997,11 @@ mt753x_setup(struct dsa_switch *ds)
- 	if (ret && priv->irq)
- 		mt7530_free_irq_common(priv);
- 
--	if (priv->id == ID_MT7531)
--		for (i = 0; i < 2; i++) {
--			regmap = devm_regmap_init(ds->dev,
--						  &mt7531_regmap_bus, priv,
--						  &mt7531_pcs_config[i]);
--			priv->ports[5 + i].sgmii_pcs =
--				mtk_pcs_lynxi_create(ds->dev, regmap,
--						     MT7531_PHYA_CTRL_SIGNAL3, 0);
--		}
-+	if (priv->id == ID_MT7531) {
-+		ret = mt7531_create_sgmii(priv);
-+		if (ret && priv->irq)
-+			mt7530_free_irq_common(priv);
-+	}
- 
- 	return ret;
- }
+ 		regmap = devm_regmap_init(priv->dev,
+ 					  &mt7531_regmap_bus, priv,
 -- 
 2.39.2
 
