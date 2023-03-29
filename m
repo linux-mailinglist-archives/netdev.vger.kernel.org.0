@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D716CD325
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 09:26:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6B366CD328
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 09:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbjC2H0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 03:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S229692AbjC2H1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 03:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbjC2H0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 03:26:02 -0400
+        with ESMTP id S230098AbjC2H0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 03:26:24 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F5630C2;
-        Wed, 29 Mar 2023 00:25:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4852C3C30;
+        Wed, 29 Mar 2023 00:25:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680074719; x=1711610719;
+  t=1680074731; x=1711610731;
   h=from:date:subject:mime-version:content-transfer-encoding:
    message-id:references:in-reply-to:to:cc;
-  bh=V3l4oFrTXgNaHDsFH5ny9LhlqFRgL1aXxFRyebnTRqc=;
-  b=C1MofU7C1ZfVMroNkoRttYeuJnNsGduSlHpXxTy8Ciy/EqSc0ojn7I3M
-   znLX/kxcYr+4R+9+mXq8pL0WL5I5+pJf5sqOmGlBTEnJoRQVAaBze8ePv
-   yXOZMxX8gR4VIX+KKFGgf94egJCn6cSPzIdI8aYTLXCWYF/FbRrYXcNKA
-   C2Rwrt68cjx8wnyLzTdPGbLEeO3kUIeiL8Nq/9N/osIWsheIw48Yc1ZON
-   rZz/cShwhAOwU0QR56MYGf46tQsjv3lgcyVkfFJrFU8uWQ2Hc6fj8zzT+
-   PF8PfT/Mg9lUj69zfbaX6K4qJ/3OItliJqwbSslxfjv90mhG9CSNGUUNA
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="368569763"
+  bh=LrADJYnQd6OA8VRZxmBcmho+KZF+ugscr5DiCLcs2Nw=;
+  b=cI1ylPpeGux7frQlDRW4Qdljg/ZTLCFIw3UvYAMTdHD3qkIlCliCh3No
+   8VLrPa+LJ6VJsJfEQHP0VvAgLUggRCw4E2GC4N7UX5BnPBjmlbeJ7UjAt
+   69LOoA2dP58yPVl1g/szKbwUGnoE7Z2jo1XcKidSftXlu/eNqqYbqQsi6
+   6P5IO3BLsthuY8NoXT72Ta+YTgwEhjrPCsrn9JE3x/HntQZaB8Ly7RyR0
+   ZA/3yUYEa+lP7F9ckEppH3RsevJLd90wk/pswLusOfvG9bfzQFa5BV295
+   Fj39Wl48XP9xcj9fuQVWkixTlGz2VQYxKOgTOKJP4tU/+12cftZTmdfHv
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="368569785"
 X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
-   d="scan'208";a="368569763"
+   d="scan'208";a="368569785"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 00:24:48 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 00:24:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="827772848"
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="827772913"
 X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
-   d="scan'208";a="827772848"
+   d="scan'208";a="827772913"
 Received: from lab-ah.igk.intel.com ([10.102.138.202])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 00:24:45 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 00:24:48 -0700
 From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Date:   Wed, 29 Mar 2023 09:24:15 +0200
-Subject: [PATCH v6 4/8] lib/ref_tracker: remove warnings in case of allocation failure
+Date:   Wed, 29 Mar 2023 09:24:16 +0200
+Subject: [PATCH v6 5/8] drm/i915: Correct type of wakeref variable
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230224-track_gt-v6-4-0dc8601fd02f@intel.com>
+Message-Id: <20230224-track_gt-v6-5-0dc8601fd02f@intel.com>
 References: <20230224-track_gt-v6-0-0dc8601fd02f@intel.com>
 In-Reply-To: <20230224-track_gt-v6-0-0dc8601fd02f@intel.com>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
@@ -73,40 +73,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Library can handle allocation failures. To avoid allocation warnings
-__GFP_NOWARN has been added everywhere. Moreover GFP_ATOMIC has been
-replaced with GFP_NOWAIT in case of stack allocation on tracker free
-call.
+Wakeref has dedicated type. Assumption it will be int
+compatible forever is incorrect.
 
 Signed-off-by: Andrzej Hajda <andrzej.hajda@intel.com>
 Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
 ---
- lib/ref_tracker.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/ref_tracker.c b/lib/ref_tracker.c
-index cce4614b07940f..cf5609b1ca7936 100644
---- a/lib/ref_tracker.c
-+++ b/lib/ref_tracker.c
-@@ -189,7 +189,7 @@ int ref_tracker_alloc(struct ref_tracker_dir *dir,
- 	unsigned long entries[REF_TRACKER_STACK_ENTRIES];
- 	struct ref_tracker *tracker;
- 	unsigned int nr_entries;
--	gfp_t gfp_mask = gfp;
-+	gfp_t gfp_mask = gfp | __GFP_NOWARN;
- 	unsigned long flags;
+diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
+index 88e881b100cf0a..74d28a3af2d57b 100644
+--- a/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
++++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_submission.c
+@@ -3248,7 +3248,7 @@ static void destroyed_worker_func(struct work_struct *w)
+ 	struct intel_guc *guc = container_of(w, struct intel_guc,
+ 					     submission_state.destroyed_worker);
+ 	struct intel_gt *gt = guc_to_gt(guc);
+-	int tmp;
++	intel_wakeref_t tmp;
  
- 	WARN_ON_ONCE(dir->dead);
-@@ -237,7 +237,8 @@ int ref_tracker_free(struct ref_tracker_dir *dir,
- 		return -EEXIST;
- 	}
- 	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 1);
--	stack_handle = stack_depot_save(entries, nr_entries, GFP_ATOMIC);
-+	stack_handle = stack_depot_save(entries, nr_entries,
-+					GFP_NOWAIT | __GFP_NOWARN);
- 
- 	spin_lock_irqsave(&dir->lock, flags);
- 	if (tracker->dead) {
+ 	with_intel_gt_pm(gt, tmp)
+ 		deregister_destroyed_contexts(guc);
 
 -- 
 2.34.1
