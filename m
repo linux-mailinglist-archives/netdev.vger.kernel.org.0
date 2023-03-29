@@ -2,65 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E18EA6CF01D
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:06:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE096CF01F
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 19:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231134AbjC2RF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 13:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S231138AbjC2RGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 13:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229638AbjC2RF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:05:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33701449A;
-        Wed, 29 Mar 2023 10:05:57 -0700 (PDT)
+        with ESMTP id S231167AbjC2RGD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 13:06:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFDB5BBE
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 10:06:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE28E61DC6;
-        Wed, 29 Mar 2023 17:05:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF38C433D2;
-        Wed, 29 Mar 2023 17:05:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF1D0B823DE
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 17:06:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C921C433D2;
+        Wed, 29 Mar 2023 17:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680109556;
-        bh=T8fWhplWPwZ4OAqvqYb8gn/VvxXqZQz97l6qax8Uj7g=;
-        h=From:Date:Subject:To:Cc:From;
-        b=hmanBQH2TMYgNyzPakCCdf9Vpmc2yZbH/90wWZQ+yRhqDxy8ni75gnIbnheY+EJef
-         Q7TV1K1uGDRUKacpZMlbtIZ3XCMgZYAKJ+wvBTIz9irP1HXsG3w32RxqlucQy7/t+l
-         lin6oHBx62zHTxjoOC7F1MyAW/AJP7Fdddf6vbUYD4X3SonPCKR/HXCMuAk+n6KXF4
-         KrozPxbuiiKMa6YngzOO0Qyc1jnxjpVjoaOZ4AGp/0Ut7Paca3EZpvwZFxInuW7SRk
-         xKWE3QvW+Dw/7+a+ldHPVNLUQAnAfeVUEdGsZzox2BJKR+h+0sQOnLO+k1pjk5chRY
-         TKN66xj6UQj6g==
-From:   Nathan Chancellor <nathan@kernel.org>
-Date:   Wed, 29 Mar 2023 10:05:44 -0700
-Subject: [PATCH wireless-next] wifi: iwlwifi: mvm: Avoid 64-bit division in
- iwl_mvm_get_crosstimestamp_fw()
+        s=k20201202; t=1680109559;
+        bh=kIZ3/ki6JuYvdvGdQRWk8XN6PRBhJMl2mgQbLGs9tmE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kJq0WN5YxjDqr81/AUBz2RrIvbcRBKaQjINPXYHoDxsMzZzC/HBFtq5csAq3v6C7H
+         9XnqT+HbjB4TS09NkH4C/0CgiuB0axXddUe8mJGnAX0RhO4wOC0J4WS1p0BhEScOEc
+         /GAhp04l0plZMKxfb/2rADFqj69H/EcSQkPndI0ESfAKn4DkQqfIaevKjpkOxSUVhE
+         I8w+i+SVOP0huI7VR5GJKsXBZlp5ErCluniUbhMJeGwzCOevdfCQF10z11pjJSCxg/
+         cuZDnvgEdZKIEZaX2nRAYTmFDod3htRNUgycF8+JB6AIWSTT6PZa7Iq3VIg6YqsDqA
+         bna6aFXAHJgow==
+Date:   Wed, 29 Mar 2023 10:05:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dima Chumak <dchumak@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Leon Romanovsky <leon@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] devlink: Add port function attributes to
+ enable/disable IPsec crypto and packet offloads
+Message-ID: <20230329100557.40890e35@kernel.org>
+In-Reply-To: <93f74c83-d2e9-3448-9f07-64214cc0f7f8@nvidia.com>
+References: <20230323111059.210634-1-dchumak@nvidia.com>
+        <20230323102331.682ac5d6@kernel.org>
+        <93f74c83-d2e9-3448-9f07-64214cc0f7f8@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-iwlwifi-ptp-avoid-64-bit-div-v1-1-ad8db8d66bc2@kernel.org>
-X-B4-Tracking: v=1; b=H4sIAOdvJGQC/x2NQQqDMBAAvyJ77oIaadp+pXiIcVMXbAzZkAji3
- xt7HAZmDhCKTAKv5oBImYU3X6G7NWAX4z+EPFeGvu1Vq/onclkLO8aQApq88Yz3ASdOOHPGzg6
- 6004r9zBQE5MRwikab5cr8jWSKF4iRHK8/79vKBxpJRH0tCcYz/MHJo1DDpYAAAA=
-To:     gregory.greenman@intel.com, kvalo@kernel.org
-Cc:     nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
-        johannes.berg@intel.com, avraham.stern@intel.com,
-        krishnanand.prabhu@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev,
-        Arnd Bergmann <arnd@arndb.de>,
-        "kernelci.org bot" <bot@kernelci.org>
-X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2173; i=nathan@kernel.org;
- h=from:subject:message-id; bh=T8fWhplWPwZ4OAqvqYb8gn/VvxXqZQz97l6qax8Uj7g=;
- b=owGbwMvMwCEmm602sfCA1DTG02pJDCkq+Z8LY5R4Zhl+kzx7097ULsrCx6khcu6LA/Vai7dn2
- LgXrZ7VUcrCIMbBICumyFL9WPW4oeGcs4w3Tk2CmcPKBDKEgYtTACbyaS/D/6S05Gc5R7PWHD4n
- /c76AfsNz7VqB5O8q4vO5k2Z0HT42HFGhp5iLfktC3dI9rBknItMn/AzbZOpCmOLzyKG7zWyfcV
- yvAA=
-X-Developer-Key: i=nathan@kernel.org; a=openpgp;
- fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,52 +58,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a 64-bit division in iwl_mvm_get_crosstimestamp_fw(), which
-results in a link failure when building 32-bit architectures with clang:
+On Wed, 29 Mar 2023 09:42:51 +0200 Dima Chumak wrote:
+> > Is it fine grained? How many keys can each VF allocate?  
+> 
+> When I referred to "fine grained" control, I was talking about the
+> different types of IPsec offload (crypto and packet offload) in the
+> software stack. Specifically, the ip xfrm command has sub-commands for
+> "state" and "policy" that have an "offload" parameter. With ip xfrm
+> state, both crypto and packet offload types are supported, while ip xfrm
+> policy can only be offloaded in packet mode.
+> 
+> The goal is to provide a similar level of granularity for controlling VF
+> IPsec offload capabilities, which would be consistent with the software
+> model. This will allow users to decide if they want both types of
+> offload enabled for a VF, just one of them, or none at all (which is the
+> default).
 
-  ld.lld: error: undefined symbol: __udivdi3
-  >>> referenced by ptp.c
-  >>>               drivers/net/wireless/intel/iwlwifi/mvm/ptp.o:(iwl_mvm_phc_get_crosstimestamp) in archive vmlinux.a
-
-GCC has optimizations for division by a constant that clang does not
-implement, so this issue is not visible when building with GCC.
-
-Using div_u64() would resolve this issue, but Arnd points out that this
-can be quite expensive and the timestamp is being read at nanosecond
-granularity. Nick pointed out that the result of this division is being
-stored to a 32-bit type anyways, so truncate gp2_10ns first then do the
-division, which elides the need for libcalls.
-
-Fixes: 21fb8da6ebe4 ("wifi: iwlwifi: mvm: read synced time from firmware if supported")
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://github.com/ClangBuiltLinux/linux/issues/1826
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Link: https://lore.kernel.org/6423173a.620a0220.3d5cc.6358@mx.google.com/
-Suggested-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/mvm/ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c b/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c
-index 5c2bfc8ed88d..cdd6d69c5b68 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ptp.c
-@@ -116,7 +116,7 @@ iwl_mvm_get_crosstimestamp_fw(struct iwl_mvm *mvm, u32 *gp2, u64 *sys_time)
- 
- 	gp2_10ns = (u64)le32_to_cpu(resp->gp2_timestamp_hi) << 32 |
- 		le32_to_cpu(resp->gp2_timestamp_lo);
--	*gp2 = gp2_10ns / 100;
-+	*gp2 = (u32)gp2_10ns / 100;
- 
- 	*sys_time = (u64)le32_to_cpu(resp->platform_timestamp_hi) << 32 |
- 		le32_to_cpu(resp->platform_timestamp_lo);
-
----
-base-commit: 2af3b2a631b194a43551ce119cb71559d8f6b54b
-change-id: 20230329-iwlwifi-ptp-avoid-64-bit-div-1c4717f73f8a
-
-Best regards,
--- 
-Nathan Chancellor <nathan@kernel.org>
-
+Ack, please add a reference or explanation somewhere and fix
+the posting.
