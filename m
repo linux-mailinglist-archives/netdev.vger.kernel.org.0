@@ -2,102 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2078A6CCE7B
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 02:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CEB06CCEC1
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 02:27:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229468AbjC2AHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 20:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
+        id S229540AbjC2A1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 20:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbjC2AHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 20:07:15 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E844D2111
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:13 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id s8so9185567pfk.5
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:13 -0700 (PDT)
+        with ESMTP id S229530AbjC2A1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 20:27:16 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7116813E
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:27:12 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id eh3so56632671edb.11
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:27:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680048432;
+        d=kali.org; s=google; t=1680049631;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iGGacsNROXFqbCSpM1UhzcQ5jzqIVBCAlM6ogL7NNh4=;
-        b=VTIfFadxfKzYc5ZvYAL3hr/jRZaDhvhWlZ6SIL0y9Fgm/Z2ZtuoI2idXK1NbzJs1FR
-         ZcVU5m+AJqmShNj8sjDCsudLbqcUS6wrNIkEUeOzlrYZou9lupXHt7yZ7vW1pDsvChEZ
-         bjkDtyoLgnzyuYolvPa+N1pvLy5abt+KYbu1aCwfS7iZ7LhcnYUJG4G0+c0Z6+tBW+Gi
-         uCQRDFibgLkd4BD33IKTFh+NC4Xfvi+TpTKNwtaxNaLKLLA4K7bp2QNmkHdtBu0npOC/
-         TCJocRcJrU8kb4+q7bvH18i7sMoKzr82iEy3QUL1ynVxshH/QO7IXjjB5By7ngJS8k85
-         3J8g==
+        bh=dEpY2ODUY5mEqcj9vNQ0ZYZkQmo1P7yFLhuPa4WcepM=;
+        b=SfnATT8MDX4N45OHq834fFTpo5bzClAd9VvPwG/QFM41uPnZ1Nvec8zwAzyYHB8V1U
+         5AvfxRBgtbyHq4hulLOe6wKecl2mWADZWNw2gWPb/pWeF2En4DuJ3w28Ju7mS5HpwpwL
+         vaLOX3x18ByQD5sv1yiZlr/lLpQ4SrByuZASqkwqnL6m+NqERyn/nm424Q5Bcy/gQxiG
+         7P9UvUrsxmuL3mwzfGnhrSHe7NmbBqDq24lA8fTQQGlOS9mHXd64ZNAhUdKIih/qt7St
+         uiGgqgie5BtYzXOkOhHLX1bapebmILjuI4x26PlMAGTgjTZyHFc/OvaowzexvcL6/uh/
+         UPtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680048432;
+        d=1e100.net; s=20210112; t=1680049631;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=iGGacsNROXFqbCSpM1UhzcQ5jzqIVBCAlM6ogL7NNh4=;
-        b=OZ0keZLBqQwB0rUPXHztHiIbAPzue6J89K2dcXKXHt7zZFCMv+hIeVX7+ciwhK+6Ty
-         d7umMgtqvHp9LE88W3NGgWOeVlVZa3FTqpOWTCXqxIGCLrCNkRfJWo5/f4v8/zQfzHnv
-         K2bM7rglB7ntnZA+aKSS1Q1XiV58lbSowv3vqXkWcZbHuGgWGLiCSS+IrvI/l6feQLGg
-         eTFIaYNiaB3R4Q9lo81uACqRgv+i4HnSkmKDwyvIBJcNM26rNTW6cKQ363kxhD4ZEWua
-         WoZctGOuz9kUheMaMwK/VdD1xC4FVk4Fn4flSadG/S7DCHSo2yRbY4RJZg8460AOlL+6
-         UNug==
-X-Gm-Message-State: AAQBX9eNxasVx++YQ/KrG3Oxw4HhIuzlYUiz0/+59yk6JjLKJEkwHQwO
-        5dY83wt0YpmZI5PapW45Dqrgbn3NEjKSM5wzgt2ZXQ==
-X-Google-Smtp-Source: AKy350bUMu0iHTUv33wap0R444e3mFWYFCGIT+lU1w7044wJ5ftPQ/VoWuUdw1e8M9FJ+bei5q5l7MVlxGztL94Mtbw=
-X-Received: by 2002:a63:d201:0:b0:503:7be2:19a7 with SMTP id
- a1-20020a63d201000000b005037be219a7mr4656730pgg.1.1680048432551; Tue, 28 Mar
- 2023 17:07:12 -0700 (PDT)
+        bh=dEpY2ODUY5mEqcj9vNQ0ZYZkQmo1P7yFLhuPa4WcepM=;
+        b=fTulgjfPoMYQKKXZhgKq9GbGRzP2CSIKv/0jBkxI58yOBp4GBQEMgolYTHIZodCra1
+         KCJ5huqys6MiuAPcIH8FQUp+I5IU6SoZ/3tgQ/C4PgHDli877kMADjSoATJ8HdIPzMZa
+         2Dk4HN96nQSfYYnJUbEKcWVh+ka4m0z4WX0Ldu0uN5qBxMFnZzdG+9BWt9SJyYZm2NIK
+         iZW2+oTKTx1oXqCTSif2uKcGj8tm29e8OI0LEO61/koUw01A9S4scojis1QotfvTmyuC
+         0aSIhFT+cPTf7p7BnMzB0zTyt9hn/YhxWoWPQ7XnZ0d1GoATjBQTA774SzC5B6k/oMGm
+         P6KQ==
+X-Gm-Message-State: AAQBX9cjqmYhZj8EQ6UXr3vdu+uMwHXHbMnK8K9MWroF2iyUtwSNwfuz
+        Ept41x7iHQkhd4LyGmJUhx2DRF6gM4/eo9a+i7JpYg==
+X-Google-Smtp-Source: AKy350a6b0RNSg0qEukxWpVN2dB5p+ti+B0uqThdB7kAShSe5xvwdydY4q/AP6PYlOkUDiuZPxqS5m+rA0BZBXLXUJM=
+X-Received: by 2002:a17:906:524b:b0:877:747d:4a90 with SMTP id
+ y11-20020a170906524b00b00877747d4a90mr9121390ejm.14.1680049630974; Tue, 28
+ Mar 2023 17:27:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230324225656.3999785-1-sdf@google.com> <20230324225656.3999785-2-sdf@google.com>
- <20230324203340.712824b8@kernel.org>
-In-Reply-To: <20230324203340.712824b8@kernel.org>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 28 Mar 2023 17:07:01 -0700
-Message-ID: <CAKH8qBvPKdRPZpTiihZKhLixcbSyp-UPAOM+0_TuFHOUruSFSQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/4] tools: ynl: support byte-order in cli
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com
+References: <20230326233812.28058-1-steev@kali.org> <20230326233812.28058-5-steev@kali.org>
+ <CABBYNZLh2_dKm1ePH3jMY8=EzsbG1TWkTLsgqY1KyFopLNHN6A@mail.gmail.com>
+In-Reply-To: <CABBYNZLh2_dKm1ePH3jMY8=EzsbG1TWkTLsgqY1KyFopLNHN6A@mail.gmail.com>
+From:   Steev Klimaszewski <steev@kali.org>
+Date:   Tue, 28 Mar 2023 19:26:59 -0500
+Message-ID: <CAKXuJqi_DJ1GEP-rurJqJF5EyooNQO=daBOo0dipCGqS8QV=Dg@mail.gmail.com>
+Subject: Re: [PATCH v8 4/4] arm64: dts: qcom: sc8280xp-x13s: Add bluetooth
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        Mark Pearson <markpearson@lenovo.com>,
+        Johan Hovold <johan@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 8:33=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
->
-> On Fri, 24 Mar 2023 15:56:53 -0700 Stanislav Fomichev wrote:
-> > @@ -250,7 +258,7 @@ genl_family_name_to_id =3D None
-> >                                  if entry_attr.type =3D=3D Netlink.CTRL=
-_ATTR_MCAST_GRP_NAME:
-> >                                      mcast_name =3D entry_attr.as_strz(=
-)
-> >                                  elif entry_attr.type =3D=3D Netlink.CT=
-RL_ATTR_MCAST_GRP_ID:
-> > -                                    mcast_id =3D entry_attr.as_u32()
-> > +                                    mcast_id =3D entry_attr.as_u32(Non=
-e)
->
-> I wonder if it's worth using a default value for the argument:
->
->         def as_u32(self, byte_order=3DNone):
->
-> the number of Nones is very similar to number of meaningful args.
-> And only spec-based decoding needs the arg so new cases beyond
-> the 4 x2 are unlikely.
->
-> > -                decoded =3D attr.as_u64()
-> > +                decoded =3D attr.as_u64(attr_spec.get('byte-order'))
->
-> Could you add a field in class SpecAttr, like is_multi and read
-> a field instead of the get? I'm trying to avoid raw YAML access
-> outside of nlspec.py classes as much as possible.
+Hi Luiz,
 
-Sure, will do this and the above suggestions!
+On Tue, Mar 28, 2023 at 5:24=E2=80=AFPM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Steev,
+>
+> On Sun, Mar 26, 2023 at 4:38=E2=80=AFPM Steev Klimaszewski <steev@kali.or=
+g> wrote:
+> >
+> > The Lenovo Thinkpad X13s has a WCN6855 Bluetooth controller on uart2,
+> > add this.
+> >
+> > Signed-off-by: Steev Klimaszewski <steev@kali.org>
+>
+> I would like to merge this set but this one still doesn't have any
+> Signed-off-by other than yours.
+>
+> --
+> Luiz Augusto von Dentz
+I don't quite follow - should I be adding others S-o-b?  I know that
+Bjorn had previously sent an R-b, and Johan as well, but since the
+code changed, I didn't bring them forward.  If I'm doing something
+wrong, please let me know!
+--steev
