@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99D1F6CDC4D
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 16:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B296CDC56
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 16:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbjC2OWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 10:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
+        id S231367AbjC2OWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 10:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231305AbjC2OUi (ORCPT
+        with ESMTP id S231307AbjC2OUi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 10:20:38 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53AC61AE
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 07:16:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4C449FE
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 07:16:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680099357;
+        s=mimecast20190719; t=1680099362;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wvXdMcltJv+r5QoZnXaavWZcwnuZQd4mm223J864Zdo=;
-        b=Nfun/v3BBcJ8sAaVhaAVTsDrpkxxzvXOLMCaj+DbU528ogXsQDB5QkqTo0BS8PHgg3Vh7R
-        dAW4I2DDMhOzMmlMFrXZUnDAPH0kUPMGtwZ9R0JlpDpuCnyGIBL97OQzi6Aq6HAZYnn7ey
-        OkASfjFAVdaMJNqtvdh+wozlU76Tk+4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=XvqldHWl7xh/L1V+KGWEm9YizW/K8SDxYbPNnLnjdW8=;
+        b=Ybr2SM+ePWuGcCH5JkFM89Bj5/0jQ7z1xCezn7ROF+x1OiznurPEVWoX0vBwv7f0OJfl9J
+        yc2RPOsDqsYnxlmEgT9UT+fZ4jkmG1RYaB1tamdsxFEpOKj5y8pOTXBQC7/Eyiuibifnge
+        v23rexUWAmCvciwWF/6x7zLcJdOlCT8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-Ff5bQfAPN6KgS6uIgJRP1w-1; Wed, 29 Mar 2023 10:15:53 -0400
-X-MC-Unique: Ff5bQfAPN6KgS6uIgJRP1w-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-588-COzuqKOVOGS_OcuoCYtLdA-1; Wed, 29 Mar 2023 10:15:59 -0400
+X-MC-Unique: COzuqKOVOGS_OcuoCYtLdA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 82A463814947;
-        Wed, 29 Mar 2023 14:15:52 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9E5AC811E7C;
+        Wed, 29 Mar 2023 14:15:55 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5750F492B02;
-        Wed, 29 Mar 2023 14:15:50 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 263DD1121330;
+        Wed, 29 Mar 2023 14:15:53 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     Matthew Wilcox <willy@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -52,16 +52,19 @@ Cc:     David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>, linux-nfs@vger.kernel.org
-Subject: [RFC PATCH v2 41/48] sunrpc: Rely on TCP sendmsg + MSG_SPLICE_PAGES to copy unspliceable data
-Date:   Wed, 29 Mar 2023 15:13:47 +0100
-Message-Id: <20230329141354.516864-42-dhowells@redhat.com>
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org
+Subject: [RFC PATCH v2 42/48] nvme: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
+Date:   Wed, 29 Mar 2023 15:13:48 +0100
+Message-Id: <20230329141354.516864-43-dhowells@redhat.com>
 In-Reply-To: <20230329141354.516864-1-dhowells@redhat.com>
 References: <20230329141354.516864-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -72,90 +75,228 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than copying data in svc_tcp_sendmsg() into page fragments, just
-hand in ITER_KVEC iterators as part of the ITER_ITERLIST and rely on TCP to
-copy them if the pages they're residing on are belong to the slab or have a
-zero refcount.
+When transmitting data, call down into TCP using a single sendmsg with
+MSG_SPLICE_PAGES to indicate that content should be spliced rather than
+performing several sendmsg and sendpage calls to transmit header, data
+pages and trailer.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Trond Myklebust <trond.myklebust@hammerspace.com>
-cc: Anna Schumaker <anna@kernel.org>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Jeff Layton <jlayton@kernel.org>
+cc: Keith Busch <kbusch@kernel.org>
+cc: Jens Axboe <axboe@fb.com>
+cc: Christoph Hellwig <hch@lst.de>
+cc: Sagi Grimberg <sagi@grimberg.me>
+cc: Chaitanya Kulkarni <kch@nvidia.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: linux-nfs@vger.kernel.org
+cc: linux-nvme@lists.infradead.org
 cc: netdev@vger.kernel.org
 ---
- net/sunrpc/svcsock.c | 44 ++++++++++++--------------------------------
- 1 file changed, 12 insertions(+), 32 deletions(-)
+ drivers/nvme/host/tcp.c   | 44 ++++++++++++++++++------------------
+ drivers/nvme/target/tcp.c | 47 +++++++++++++++++++++++++--------------
+ 2 files changed, 52 insertions(+), 39 deletions(-)
 
-diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-index f1cc53aad6e0..c1421f6fe57a 100644
---- a/net/sunrpc/svcsock.c
-+++ b/net/sunrpc/svcsock.c
-@@ -1071,47 +1071,27 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
- static int svc_tcp_sendmsg(struct socket *sock, struct xdr_buf *xdr,
- 			   rpc_fraghdr marker, unsigned int *sentp)
- {
--	const struct kvec *head = xdr->head;
--	const struct kvec *tail = xdr->tail;
--	struct iov_iter iters[3];
--	struct bio_vec head_bv, tail_bv;
--	struct msghdr msg = {
--		.msg_flags	= MSG_SPLICE_PAGES,
--	};
--	void *m, *t;
--	int ret, n = 2, size;
-+	struct iov_iter iters[4];
-+	struct kvec marker_kv;
-+	struct msghdr msg = { .msg_flags = MSG_SPLICE_PAGES, };
-+	int ret, n = 0, size;
+diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+index fa32969b532f..cc617692702d 100644
+--- a/drivers/nvme/host/tcp.c
++++ b/drivers/nvme/host/tcp.c
+@@ -979,25 +979,23 @@ static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
+ 	u32 h2cdata_left = req->h2cdata_left;
  
- 	*sentp = 0;
- 	ret = xdr_alloc_bvec(xdr, GFP_KERNEL);
- 	if (ret < 0)
+ 	while (true) {
++		struct bio_vec bvec;
++		struct msghdr msg = { .msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES, };
+ 		struct page *page = nvme_tcp_req_cur_page(req);
+ 		size_t offset = nvme_tcp_req_cur_offset(req);
+ 		size_t len = nvme_tcp_req_cur_length(req);
+ 		bool last = nvme_tcp_pdu_last_send(req, len);
+ 		int req_data_sent = req->data_sent;
+-		int ret, flags = MSG_DONTWAIT;
++		int ret;
+ 
+ 		if (last && !queue->data_digest && !nvme_tcp_queue_more(queue))
+-			flags |= MSG_EOR;
++			msg.msg_flags |= MSG_EOR;
+ 		else
+-			flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++			msg.msg_flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 
+-		if (sendpage_ok(page)) {
+-			ret = kernel_sendpage(queue->sock, page, offset, len,
+-					flags);
+-		} else {
+-			ret = sock_no_sendpage(queue->sock, page, offset, len,
+-					flags);
+-		}
++		bvec_set_page(&bvec, page, len, offset);
++		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, len);
++		ret = sock_sendmsg(queue->sock, &msg);
+ 		if (ret <= 0)
+ 			return ret;
+ 
+@@ -1036,22 +1034,24 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
+ {
+ 	struct nvme_tcp_queue *queue = req->queue;
+ 	struct nvme_tcp_cmd_pdu *pdu = req->pdu;
++	struct bio_vec bvec;
++	struct msghdr msg = { .msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES, };
+ 	bool inline_data = nvme_tcp_has_inline_data(req);
+ 	u8 hdgst = nvme_tcp_hdgst_len(queue);
+ 	int len = sizeof(*pdu) + hdgst - req->offset;
+-	int flags = MSG_DONTWAIT;
+ 	int ret;
+ 
+ 	if (inline_data || nvme_tcp_queue_more(queue))
+-		flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++		msg.msg_flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 	else
+-		flags |= MSG_EOR;
++		msg.msg_flags |= MSG_EOR;
+ 
+ 	if (queue->hdr_digest && !req->offset)
+ 		nvme_tcp_hdgst(queue->snd_hash, pdu, sizeof(*pdu));
+ 
+-	ret = kernel_sendpage(queue->sock, virt_to_page(pdu),
+-			offset_in_page(pdu) + req->offset, len,  flags);
++	bvec_set_virt(&bvec, (void *)pdu + req->offset, len);
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, len);
++	ret = sock_sendmsg(queue->sock, &msg);
+ 	if (unlikely(ret <= 0))
  		return ret;
  
--	m = page_frag_alloc(NULL, sizeof(marker) + head->iov_len + tail->iov_len,
--			    GFP_KERNEL);
--	if (!m)
--		return -ENOMEM;
--
--	memcpy(m, &marker, sizeof(marker));
--	if (head->iov_len)
--		memcpy(m + sizeof(marker), head->iov_base, head->iov_len);
--	bvec_set_virt(&head_bv, m, sizeof(marker) + head->iov_len);
--	iov_iter_bvec(&iters[0], ITER_SOURCE, &head_bv, 1,
--		      sizeof(marker) + head->iov_len);
--
--	iov_iter_bvec(&iters[1], ITER_SOURCE, xdr->bvec,
-+	marker_kv.iov_base = &marker;
-+	marker_kv.iov_len  = sizeof(marker);
-+	iov_iter_kvec(&iters[n++], ITER_SOURCE, &marker_kv, 1, sizeof(marker));
-+	iov_iter_kvec(&iters[n++], ITER_SOURCE, xdr->head, 1, xdr->head->iov_len);
-+	iov_iter_bvec(&iters[n++], ITER_SOURCE, xdr->bvec,
- 		      xdr_buf_pagecount(xdr), xdr->page_len);
+@@ -1075,6 +1075,8 @@ static int nvme_tcp_try_send_data_pdu(struct nvme_tcp_request *req)
+ {
+ 	struct nvme_tcp_queue *queue = req->queue;
+ 	struct nvme_tcp_data_pdu *pdu = req->pdu;
++	struct bio_vec bvec;
++	struct msghdr msg = { .msg_flags = MSG_DONTWAIT | MSG_MORE, };
+ 	u8 hdgst = nvme_tcp_hdgst_len(queue);
+ 	int len = sizeof(*pdu) - req->offset + hdgst;
+ 	int ret;
+@@ -1083,13 +1085,11 @@ static int nvme_tcp_try_send_data_pdu(struct nvme_tcp_request *req)
+ 		nvme_tcp_hdgst(queue->snd_hash, pdu, sizeof(*pdu));
  
--	if (tail->iov_len) {
--		t = page_frag_alloc(NULL, tail->iov_len, GFP_KERNEL);
--		if (!t)
--			return -ENOMEM;
--		memcpy(t, tail->iov_base, tail->iov_len);
--		bvec_set_virt(&tail_bv,  t, tail->iov_len);
--		iov_iter_bvec(&iters[2], ITER_SOURCE, &tail_bv, 1, tail->iov_len);
--		n++;
--	}
-+	if (xdr->tail->iov_len)
-+		iov_iter_kvec(&iters[n++], ITER_SOURCE, xdr->tail, 1, xdr->tail->iov_len);
+ 	if (!req->h2cdata_left)
+-		ret = kernel_sendpage(queue->sock, virt_to_page(pdu),
+-				offset_in_page(pdu) + req->offset, len,
+-				MSG_DONTWAIT | MSG_MORE | MSG_SENDPAGE_NOTLAST);
+-	else
+-		ret = sock_no_sendpage(queue->sock, virt_to_page(pdu),
+-				offset_in_page(pdu) + req->offset, len,
+-				MSG_DONTWAIT | MSG_MORE);
++		msg.msg_flags |= MSG_SPLICE_PAGES | MSG_SENDPAGE_NOTLAST;
++
++	bvec_set_virt(&bvec, (void *)pdu + req->offset, len);
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, len);
++	ret = sock_sendmsg(queue->sock, &msg);
+ 	if (unlikely(ret <= 0))
+ 		return ret;
  
--	size = sizeof(marker) + head->iov_len + xdr->page_len + tail->iov_len;
-+	size = sizeof(marker) + xdr->head->iov_len + xdr->page_len + xdr->tail->iov_len;
- 	iov_iter_iterlist(&msg.msg_iter, ITER_SOURCE, iters, n, size);
+diff --git a/drivers/nvme/target/tcp.c b/drivers/nvme/target/tcp.c
+index d6cc557cc539..00b491abf50f 100644
+--- a/drivers/nvme/target/tcp.c
++++ b/drivers/nvme/target/tcp.c
+@@ -548,13 +548,18 @@ static void nvmet_tcp_execute_request(struct nvmet_tcp_cmd *cmd)
  
- 	ret = sock_sendmsg(sock, &msg);
+ static int nvmet_try_send_data_pdu(struct nvmet_tcp_cmd *cmd)
+ {
++	struct bio_vec bvec;
++	struct msghdr msg = {
++		.msg_flags = (MSG_DONTWAIT | MSG_MORE | MSG_SENDPAGE_NOTLAST |
++			      MSG_SPLICE_PAGES),
++	};
+ 	u8 hdgst = nvmet_tcp_hdgst_len(cmd->queue);
+ 	int left = sizeof(*cmd->data_pdu) - cmd->offset + hdgst;
+ 	int ret;
+ 
+-	ret = kernel_sendpage(cmd->queue->sock, virt_to_page(cmd->data_pdu),
+-			offset_in_page(cmd->data_pdu) + cmd->offset,
+-			left, MSG_DONTWAIT | MSG_MORE | MSG_SENDPAGE_NOTLAST);
++	bvec_set_virt(&bvec, (void *)cmd->data_pdu + cmd->offset, left);
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, left);
++	ret = sock_sendmsg(cmd->queue->sock, &msg);
+ 	if (ret <= 0)
+ 		return ret;
+ 
+@@ -575,17 +580,21 @@ static int nvmet_try_send_data(struct nvmet_tcp_cmd *cmd, bool last_in_batch)
+ 	int ret;
+ 
+ 	while (cmd->cur_sg) {
++		struct bio_vec bvec;
++		struct msghdr msg = {
++			.msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES,
++		};
+ 		struct page *page = sg_page(cmd->cur_sg);
+ 		u32 left = cmd->cur_sg->length - cmd->offset;
+-		int flags = MSG_DONTWAIT;
+ 
+ 		if ((!last_in_batch && cmd->queue->send_list_len) ||
+ 		    cmd->wbytes_done + left < cmd->req.transfer_len ||
+ 		    queue->data_digest || !queue->nvme_sq.sqhd_disabled)
+-			flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++			msg.msg_flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 
+-		ret = kernel_sendpage(cmd->queue->sock, page, cmd->offset,
+-					left, flags);
++		bvec_set_page(&bvec, page, left, cmd->offset);
++		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, left);
++		ret = sock_sendmsg(cmd->queue->sock, &msg);
+ 		if (ret <= 0)
+ 			return ret;
+ 
+@@ -621,18 +630,20 @@ static int nvmet_try_send_data(struct nvmet_tcp_cmd *cmd, bool last_in_batch)
+ static int nvmet_try_send_response(struct nvmet_tcp_cmd *cmd,
+ 		bool last_in_batch)
+ {
++	struct bio_vec bvec;
++	struct msghdr msg = { .msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES, };
+ 	u8 hdgst = nvmet_tcp_hdgst_len(cmd->queue);
+ 	int left = sizeof(*cmd->rsp_pdu) - cmd->offset + hdgst;
+-	int flags = MSG_DONTWAIT;
+ 	int ret;
+ 
+ 	if (!last_in_batch && cmd->queue->send_list_len)
+-		flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++		msg.msg_flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 	else
+-		flags |= MSG_EOR;
++		msg.msg_flags |= MSG_EOR;
+ 
+-	ret = kernel_sendpage(cmd->queue->sock, virt_to_page(cmd->rsp_pdu),
+-		offset_in_page(cmd->rsp_pdu) + cmd->offset, left, flags);
++	bvec_set_virt(&bvec, (void *)cmd->rsp_pdu + cmd->offset, left);
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, left);
++	ret = sock_sendmsg(cmd->queue->sock, &msg);
+ 	if (ret <= 0)
+ 		return ret;
+ 	cmd->offset += ret;
+@@ -649,18 +660,20 @@ static int nvmet_try_send_response(struct nvmet_tcp_cmd *cmd,
+ 
+ static int nvmet_try_send_r2t(struct nvmet_tcp_cmd *cmd, bool last_in_batch)
+ {
++	struct bio_vec bvec;
++	struct msghdr msg = { .msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES, };
+ 	u8 hdgst = nvmet_tcp_hdgst_len(cmd->queue);
+ 	int left = sizeof(*cmd->r2t_pdu) - cmd->offset + hdgst;
+-	int flags = MSG_DONTWAIT;
+ 	int ret;
+ 
+ 	if (!last_in_batch && cmd->queue->send_list_len)
+-		flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++		msg.msg_flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 	else
+-		flags |= MSG_EOR;
++		msg.msg_flags |= MSG_EOR;
+ 
+-	ret = kernel_sendpage(cmd->queue->sock, virt_to_page(cmd->r2t_pdu),
+-		offset_in_page(cmd->r2t_pdu) + cmd->offset, left, flags);
++	bvec_set_virt(&bvec, (void *)cmd->r2t_pdu + cmd->offset, left);
++	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, left);
++	ret = sock_sendmsg(cmd->queue->sock, &msg);
+ 	if (ret <= 0)
+ 		return ret;
+ 	cmd->offset += ret;
 
