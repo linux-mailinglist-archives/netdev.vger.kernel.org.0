@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1BDF6CF1CF
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB9C6CF1CA
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 20:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbjC2SIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 14:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
+        id S230152AbjC2SIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 14:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbjC2SIJ (ORCPT
+        with ESMTP id S230081AbjC2SIJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 14:08:09 -0400
-Received: from mail-ed1-x562.google.com (mail-ed1-x562.google.com [IPv6:2a00:1450:4864:20::562])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7963B527A
+Received: from mail-ed1-x564.google.com (mail-ed1-x564.google.com [IPv6:2a00:1450:4864:20::564])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B1F4236
         for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 11:08:07 -0700 (PDT)
-Received: by mail-ed1-x562.google.com with SMTP id ek18so66806877edb.6
+Received: by mail-ed1-x564.google.com with SMTP id eh3so66713255edb.11
         for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 11:08:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=dectris.com; s=google; t=1680113286;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+R9QiPuepS+iN2C03D2RIlNJyKTPRzGWrbYYFW+ChZA=;
-        b=AjLMyHny1FrLIzhpx8Wy8ca8Gsf8r9QZwhUNhP2mJ3dj3pRNXAli+exviq/Y1+fy6K
-         0DeBtE1yZSTfC/uouv0uCDcp0XWFTmU2qFKmczFSpqNp7xjJH3AsRGdRPYoF+O+XXHK4
-         zUje9uyo9T52Tvq967f0DniahDOV2lqY4FLNU=
+        bh=7l3JqaZ/F1Xw0Z8kRSNKL5fbAB/UmHB3O5Uun2MQO78=;
+        b=MAEEH3HGa7M9V3alShG0dh2Xaw5ztphBzVuDATfWiwHZz9OiqSWIhmfByHZRYFH1Gv
+         B6m8yXnt/TzXSc5GPdCovGkuC2K4kXPOFLB/uUWaVJhTHZAjPVrvLRkSK66nbW5KH2PI
+         81PmW3uYvOvbKdc64Wi6FTaA8LqvXQleGboes=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112; t=1680113286;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+R9QiPuepS+iN2C03D2RIlNJyKTPRzGWrbYYFW+ChZA=;
-        b=J1VnoKasj9HbDi2hLPkuHaIhL97fCHHjnJ0TuVEvu+xe5PhkOXlBGR/e3MB2+tl1iv
-         aydE8yXH+vzPJX97QDcqSF6OiyMD/MMf+ZSadZTQxuaJQ7HQrThYKWoGDoRnNFVU1RsE
-         sZG7U+wavU+ig50y8LUVpB8v+LHx07Dm3cw5+gkuF8gkdhBocY+Z3SGGc71so+Yv0O/9
-         P0xe+0FKm119iKcRvB3Ps4DxgwcdV7NLYgVJakmhf5ThE/qXk0vLB5cEzb6EJa4tjnuL
-         YtludFN+1dpJQqM734/511uQ3gEFBBR+ECHGzHNVR41wJNRsPiuyq/jVU0Vx0Zr49SFq
-         Ow8w==
-X-Gm-Message-State: AAQBX9fbiho1MKK+5nzBW6sLAwSrrceLup4yexH5wP84xEgAUZh47l1T
-        B5xkBF78mwO8Kmu0DNSRrVkovG/JlgHWwrgsQCBOazCArq46
-X-Google-Smtp-Source: AKy350Z8xl29V30bz7kWl/gGI0/sW420P05n1h/ooPNr0SGpSvNFTxzVAm6UCXcBjhThChzQZ/lVXCo9i9an
-X-Received: by 2002:a17:906:a107:b0:932:365a:c1e7 with SMTP id t7-20020a170906a10700b00932365ac1e7mr20591941ejy.67.1680113285822;
-        Wed, 29 Mar 2023 11:08:05 -0700 (PDT)
+        bh=7l3JqaZ/F1Xw0Z8kRSNKL5fbAB/UmHB3O5Uun2MQO78=;
+        b=BDTyyCPVemX324a2uK+TDEOy7AA+qsztQKS6w+Ncb4iiOSPvNjxLL3p+nLO6OoT5qo
+         cbTYDI1YRPpsA+P/LB2eejm3DgpTyhHwghKcXeyKJj1p1vzn2VB8JIXMS6ruP7LB2b7T
+         8AMNNIgrlAHIN6BilILAaKBDCZOfu3ENWjEaP+4+XH2Hfpi7d05+CVk/jJj12zBlqiW1
+         qeNGSbY8d8I0G5x1LfmC8bWnvSC/wtAphrveasUH52qfQhKmV94iqSdeerwRN6ydPNnu
+         H4rynl4UJ6VqbXBR1Ap3tLbOfcT+H6XYgjIU2KyQATUsNgY9Ah34a7BdYMg3Hs5/H6GW
+         njnw==
+X-Gm-Message-State: AAQBX9cxt8kDaxpOuvbwq6E036xg+GY6a0th3PZpBOVhJkpRN/z4lV0k
+        A3/5SsHMk4wJsTwadJ/WPqC6iIe4+iFDxMz/BCDZ1VUogbKA
+X-Google-Smtp-Source: AKy350aQv50ZGqox8uPY+2MEmJO7lJ/IIxyNCBGekrZLoOoqIDUhuBJK1lUho1/76aZAxM3hdDjQ1Y2kqQOp
+X-Received: by 2002:a17:907:c609:b0:93f:9b1b:f303 with SMTP id ud9-20020a170907c60900b0093f9b1bf303mr17483715ejc.75.1680113286692;
+        Wed, 29 Mar 2023 11:08:06 -0700 (PDT)
 Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id m10-20020a1709066d0a00b00920438f59b3sm12072998ejr.154.2023.03.29.11.08.05
+        by smtp-relay.gmail.com with ESMTPS id m10-20020a1709066d0a00b00920438f59b3sm12072998ejr.154.2023.03.29.11.08.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 11:08:05 -0700 (PDT)
+        Wed, 29 Mar 2023 11:08:06 -0700 (PDT)
 X-Relaying-Domain: dectris.com
 From:   Kal Conley <kal.conley@dectris.com>
 To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
@@ -66,9 +66,9 @@ To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
 Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 04/10] selftests: xsk: Deflakify STATS_RX_DROPPED test
-Date:   Wed, 29 Mar 2023 20:04:56 +0200
-Message-Id: <20230329180502.1884307-5-kal.conley@dectris.com>
+Subject: [PATCH bpf-next v2 05/10] selftests: xsk: Disable IPv6 on VETH1
+Date:   Wed, 29 Mar 2023 20:04:57 +0200
+Message-Id: <20230329180502.1884307-6-kal.conley@dectris.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230329180502.1884307-1-kal.conley@dectris.com>
 References: <20230329180502.1884307-1-kal.conley@dectris.com>
@@ -83,56 +83,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix flaky STATS_RX_DROPPED test. The receiver calls getsockopt after
-receiving the last (valid) packet which is not the final packet sent in
-the test (valid and invalid packets are sent in alternating fashion with
-the final packet being invalid). Since the last packet may or may not
-have been dropped already, both outcomes must be allowed.
+This change fixes flakiness in the BIDIRECTIONAL test:
 
-This issue could also be fixed by making sure the last packet sent is
-valid. This alternative is left as an exercise to the reader (or the
-benevolent maintainers of this file).
+    # [is_pkt_valid] expected length [60], got length [90]
+    not ok 1 FAIL: SKB BUSY-POLL BIDIRECTIONAL
 
-This problem was quite visible on certain setups. On one machine this
-failure was observed 50% of the time.
+When IPv6 is enabled, the interface will periodically send MLDv1 and
+MLDv2 packets. These packets can cause the BIDIRECTIONAL test to fail
+since it uses VETH0 for RX.
 
-Also, remove a redundant assignment of pkt_stream->nb_pkts. This field
-is already initialized by __pkt_stream_alloc.
+For other tests, this was not a problem since they only receive on VETH1
+and IPv6 was already disabled on VETH0.
 
-Fixes: 27e934bec35b ("selftests: xsk: make stat tests not spin on getsockopt")
 Signed-off-by: Kal Conley <kal.conley@dectris.com>
 ---
- tools/testing/selftests/bpf/xskxceiver.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/test_xsk.sh | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index 34a1f32fe752..1a4bdd5aa78c 100644
---- a/tools/testing/selftests/bpf/xskxceiver.c
-+++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -633,7 +633,6 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
- 	if (!pkt_stream)
- 		exit_with_error(ENOMEM);
- 
--	pkt_stream->nb_pkts = nb_pkts;
- 	for (i = 0; i < nb_pkts; i++) {
- 		pkt_set(umem, &pkt_stream->pkts[i], (i % umem->num_frames) * umem->frame_size,
- 			pkt_len);
-@@ -1141,7 +1140,14 @@ static int validate_rx_dropped(struct ifobject *ifobject)
- 	if (err)
- 		return TEST_FAILURE;
- 
--	if (stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2)
-+	/* The receiver calls getsockopt after receiving the last (valid)
-+	 * packet which is not the final packet sent in this test (valid and
-+	 * invalid packets are sent in alternating fashion with the final
-+	 * packet being invalid). Since the last packet may or may not have
-+	 * been dropped already, both outcomes must be allowed.
-+	 */
-+	if (stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2 ||
-+	    stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2 - 1)
- 		return TEST_PASS;
- 
- 	return TEST_FAILURE;
+diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+index b077cf58f825..377fb157a57c 100755
+--- a/tools/testing/selftests/bpf/test_xsk.sh
++++ b/tools/testing/selftests/bpf/test_xsk.sh
+@@ -116,6 +116,7 @@ setup_vethPairs() {
+ 	ip link add ${VETH0} numtxqueues 4 numrxqueues 4 type veth peer name ${VETH1} numtxqueues 4 numrxqueues 4
+ 	if [ -f /proc/net/if_inet6 ]; then
+ 		echo 1 > /proc/sys/net/ipv6/conf/${VETH0}/disable_ipv6
++		echo 1 > /proc/sys/net/ipv6/conf/${VETH1}/disable_ipv6
+ 	fi
+ 	if [[ $verbose -eq 1 ]]; then
+ 	        echo "setting up ${VETH1}"
 -- 
 2.39.2
 
