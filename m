@@ -2,580 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F066CF642
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 00:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A05186CF649
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 00:20:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbjC2WRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 18:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
+        id S230263AbjC2WUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 18:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbjC2WRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 18:17:07 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB294C2B
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 15:17:04 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id cp21-20020a17090afb9500b0023c061f2bd0so8280968pjb.5
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 15:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680128224;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RWCvouKyjr8/Iy7pZh/wiibHE207Kqb+lCSzFMvXLQI=;
-        b=Pb+yLXUcblf0hz4v85nhBfhTyQGt9Q/NXC83HGHDa9d9w1lew4BRp/tplYTX6p5Su4
-         Jm/FRA4/DbLjQ1/J/qYPpwOWaHKAcmWhxnPprkksa9nI1ogpKJMhXobM4GScy0IfR7rM
-         gMrmxBA7oDcAqktM6KEB2GjCnSog4XPBulzi1t3oKuhAyXbsmEHKWlj0zjfam8fEliTD
-         HmGpt5gBHNh+TOYVgNMuaAucq1/w1bOhQ2Be1Q1mO4035k0MPYedPC6mBvKBqU55Q5Nr
-         tbOnMB5a01RuaSXPC4jdkopNGvfSbH/Fn01DwsmZXb/AV0Bn5xqwNoFN60OeoiDmSKQB
-         SF1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680128224;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RWCvouKyjr8/Iy7pZh/wiibHE207Kqb+lCSzFMvXLQI=;
-        b=xedupxlQIaAffoceNbffcoj8ecLBexCEKO202s6vx3i/acKbWN3yriueesZ235hC4X
-         G2z93hZLCCKoZ4ZzPCPaUtAu0Pzlv5DSXDFBmMs330qKi/o6G7HNbUNZrcURozqreqax
-         /ZHgWrh9Pn2VHQuIaOUVTbovO+lJSKANYYKtqYlpidyIcL5/tIZCkJGaKnDm75ZhgiFF
-         VVkZBBt/kRx5TetDruNV/DY5K71WkFgcdeE5M3M5kg3E0hBAYPG5II/VbPVoOUKnccLv
-         XDl5imOXdZf+lXBH+oVLJtCkmK4TvD6J8+TWiDvrkPaJgv83xwwO433AB1oRrj52UE6o
-         7wlA==
-X-Gm-Message-State: AAQBX9f4JYKQetCmiT/faaC2vItOQtP9+24p90ZZVbwD+Bg6my/aXaoA
-        FhgFkEK0XYy6SNTv8d1zAu9B+E+dlATdTCKtZ62loF/tBZ021h1LAxnz7HXq/2pl0g62iLHItsX
-        pbez6dUThwiOGZX/xlu9XxrTcGGYUICnSZqIHH75Gwnr7VnP815CzcA==
-X-Google-Smtp-Source: AKy350Z5FdiuHzqRlcTsPNrnUTEn02SDSvrTB4Z7aQOgVy1tmtBhEgwSE58/V0Y794DpO6Tyzly/GEU=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a63:a102:0:b0:513:97bc:5757 with SMTP id
- b2-20020a63a102000000b0051397bc5757mr488299pgf.4.1680128224243; Wed, 29 Mar
- 2023 15:17:04 -0700 (PDT)
-Date:   Wed, 29 Mar 2023 15:16:55 -0700
-In-Reply-To: <20230329221655.708489-1-sdf@google.com>
-Mime-Version: 1.0
-References: <20230329221655.708489-1-sdf@google.com>
-X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
-Message-ID: <20230329221655.708489-5-sdf@google.com>
-Subject: [PATCH net-next v3 4/4] tools: ynl: ethtool testing tool
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229692AbjC2WUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 18:20:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F31354EF1;
+        Wed, 29 Mar 2023 15:20:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8980E61E76;
+        Wed, 29 Mar 2023 22:20:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4FFCC433EF;
+        Wed, 29 Mar 2023 22:20:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680128421;
+        bh=JyQG/UdGv/JO7v6NbzC+gckJ9gXWZR/gb3N62fHlN3w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hrKTp5MmB2mbTquGX/5ZpPhP5pw3Ydn+mJ+lAzR5/LkrmuEhBNHyMieC/CzmCYnb2
+         4mKlcisWNLujAHOKjWPMyf4YsCThFUCy7rA4hkPW/euLcOafyRVpRsTKZhi48tLZxE
+         N11skSTpESB7D+SAXePpYJFJuopvybWrNPLfkwuI62JvmYzouSseD6j1zuOxolczzN
+         W5SG7ARZ9e+XR+0JY67TpZJHU4dQQGtKJ7aSb5eCvGINmAQT/j+BuXjEZ4AInUEl1J
+         nO+QLdCkEPtTnWrQP8UE5SORMlhuTSh0Es3/JbXfFOVqn8oFmJqn11iwcjnXrK03Bl
+         QBoo0QSVLbmpA==
+Date:   Wed, 29 Mar 2023 15:20:19 -0700
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        netdev@vger.kernel.org, regressions@lists.linux.dev,
+        selinux@vger.kernel.org
+Subject: Re: Potential regression/bug in net/mlx5 driver
+Message-ID: <ZCS5oxM/m9LuidL/@x130>
+References: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is what I've been using to see whether the spec makes sense.
-A small subset of getters (mostly the unprivileged ones) is implemented.
-Some setters (channels) also work.
-Setters for messages with bitmasks are not implemented.
+On 28 Mar 19:08, Paul Moore wrote:
+>Hello all,
+>
+>Starting with the v6.3-rcX kernel releases I noticed that my
+>InfiniBand devices were no longer present under /sys/class/infiniband,
+>causing some of my automated testing to fail.  It took me a while to
+>find the time to bisect the issue, but I eventually identified the
+>problematic commit:
+>
+>  commit fe998a3c77b9f989a30a2a01fb00d3729a6d53a4
+>  Author: Shay Drory <shayd@nvidia.com>
+>  Date:   Wed Jun 29 11:38:21 2022 +0300
+>
+>   net/mlx5: Enable management PF initialization
+>
+>   Enable initialization of DPU Management PF, which is a new loopback PF
+>   designed for communication with BMC.
+>   For now Management PF doesn't support nor require most upper layer
+>   protocols so avoid them.
+>
+>   Signed-off-by: Shay Drory <shayd@nvidia.com>
+>   Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+>   Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+>   Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+>
+>I'm not a mlx5 driver expert so I can't really offer much in the way
+>of a fix, but as a quick test I did remove the
+>'mlx5_core_is_management_pf(...)' calls in mlx5/core/dev.c and
+>everything seemed to work okay on my test system (or rather the tests
+>ran without problem).
+>
+>If you need any additional information, or would like me to test a
+>patch, please let me know.
+>
 
-Initially I was trying to make this tool look 1:1 like real ethtool,
-but eventually gave up :-)
+Hi Paul, 
 
-Sample output:
+Our team is looking into this, the current theory is that you have an old
+FW that doesn't have the correct capabilities set.
 
-$ ./tools/net/ynl/ethtool enp0s31f6
-Settings for enp0s31f6:
-Supported ports: [ TP ]
-Supported link modes: 10baseT/Half 10baseT/Full 100baseT/Half
-100baseT/Full 1000baseT/Full
-Supported pause frame use: no
-Supports auto-negotiation: yes
-Supported FEC modes: Not reported
-Speed: Unknown!
-Duplex: Unknown! (255)
-Auto-negotiation: on
-Port: Twisted Pair
-PHYAD: 2
-Transceiver: Internal
-MDI-X: Unknown (auto)
-Current message level: drv probe link
-Link detected: no
+Can you please provide the FW version and the ConnectX device you are
+testing ? 
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/net/ynl/ethtool       | 424 ++++++++++++++++++++++++++++++++++++
- tools/net/ynl/lib/nlspec.py |   9 +
- tools/net/ynl/lib/ynl.py    |  11 +
- 3 files changed, 444 insertions(+)
- create mode 100755 tools/net/ynl/ethtool
+$ devlink dev info
+$ lspci -s <pci_dev> -vv
+since boot:
+$ dmesg 
 
-diff --git a/tools/net/ynl/ethtool b/tools/net/ynl/ethtool
-new file mode 100755
-index 000000000000..5fb1d670693a
---- /dev/null
-+++ b/tools/net/ynl/ethtool
-@@ -0,0 +1,424 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+
-+import argparse
-+import json
-+import pprint
-+import sys
-+import re
-+
-+from lib import YnlFamily
-+
-+def args_to_req(ynl, op_name, args, req):
-+    """
-+    Verify and convert command-line arguments to the ynl-compatible request.
-+    """
-+    valid_attrs = ynl.operation_do_attributes(op_name)
-+    valid_attrs.remove('header') # not user-provided
-+
-+    if len(args) == 0:
-+        print(f'no attributes, expected: {valid_attrs}')
-+        sys.exit(1)
-+
-+    i = 0
-+    while i < len(args):
-+        attr = args[i]
-+        if i + 1 >= len(args):
-+            print(f'expected value for \'{attr}\'')
-+            sys.exit(1)
-+
-+        if attr not in valid_attrs:
-+            print(f'invalid attribute \'{attr}\', expected: {valid_attrs}')
-+            sys.exit(1)
-+
-+        val = args[i+1]
-+        i += 2
-+
-+        req[attr] = val
-+
-+def print_field(reply, *desc):
-+    """
-+    Pretty-print a set of fields from the reply. desc specifies the
-+    fields and the optional type (bool/yn).
-+    """
-+    if len(desc) == 0:
-+        return print_field(reply, *zip(reply.keys(), reply.keys()))
-+
-+    for spec in desc:
-+        try:
-+            field, name, tp = spec
-+        except:
-+            field, name = spec
-+            tp = 'int'
-+
-+        value = reply.get(field, None)
-+        if tp == 'yn':
-+            value = 'yes' if value else 'no'
-+        elif tp == 'bool' or isinstance(value, bool):
-+            value = 'on' if value else 'off'
-+        else:
-+            value = 'n/a' if value is None else value
-+
-+        print(f'{name}: {value}')
-+
-+def print_speed(name, value):
-+    """
-+    Print out the speed-like strings from the value dict.
-+    """
-+    speed_re = re.compile(r'[0-9]+base[^/]+/.+')
-+    speed = [ k for k, v in value.items() if v and speed_re.match(k) ]
-+    print(f'{name}: {" ".join(speed)}')
-+
-+def doit(ynl, args, op_name):
-+    """
-+    Prepare request header, parse arguments and doit.
-+    """
-+    req = {
-+        'header': {
-+          'dev-name': args.device,
-+        },
-+    }
-+
-+    args_to_req(ynl, op_name, args.args, req)
-+    ynl.do(op_name, req)
-+
-+def dumpit(ynl, args, op_name, extra = {}):
-+    """
-+    Prepare request header, parse arguments and dumpit (filtering out the
-+    devices we're not interested in).
-+    """
-+    reply = ynl.dump(op_name, { 'header': {} } | extra)
-+    if not reply:
-+        return {}
-+
-+    for msg in reply:
-+        if msg['header']['dev-name'] == args.device:
-+            if args.json:
-+                pprint.PrettyPrinter().pprint(msg)
-+                sys.exit(0)
-+            msg.pop('header', None)
-+            return msg
-+
-+    print(f"Not supported for device {args.device}")
-+    sys.exit(1)
-+
-+def bits_to_dict(attr):
-+    """
-+    Convert ynl-formatted bitmask to a dict of bit=value.
-+    """
-+    ret = {}
-+    if 'bits' not in attr:
-+        return dict()
-+    if 'bit' not in attr['bits']:
-+        return dict()
-+    for bit in attr['bits']['bit']:
-+        if bit['name'] == '':
-+            continue
-+        name = bit['name']
-+        value = bit.get('value', False)
-+        ret[name] = value
-+    return ret
-+
-+def main():
-+    parser = argparse.ArgumentParser(description='ethtool wannabe')
-+    parser.add_argument('--json', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('--show-priv-flags', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('--set-priv-flags', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('--show-eee', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('--set-eee', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-a', '--show-pause', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-A', '--set-pause', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-c', '--show-coalesce', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-C', '--set-coalesce', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-g', '--show-ring', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-G', '--set-ring', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-k', '--show-features', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-K', '--set-features', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-l', '--show-channels', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-L', '--set-channels', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-T', '--show-time-stamping', action=argparse.BooleanOptionalAction)
-+    parser.add_argument('-S', '--statistics', action=argparse.BooleanOptionalAction)
-+    # TODO: --show-tunnels        tunnel-info-get
-+    # TODO: --show-module         module-get
-+    # TODO: --get-plca-cfg        plca-get
-+    # TODO: --get-plca-status     plca-get-status
-+    # TODO: --show-mm             mm-get
-+    # TODO: --show-fec            fec-get
-+    # TODO: --dump-module-eerpom  module-eeprom-get
-+    # TODO:                       pse-get
-+    # TODO:                       rss-get
-+    parser.add_argument('device', metavar='device', type=str)
-+    parser.add_argument('args', metavar='args', type=str, nargs='*')
-+    global args
-+    args = parser.parse_args()
-+
-+    spec = '/usr/local/google/home/sdf/src/linux/Documentation/netlink/specs/ethtool.yaml'
-+    schema = '/usr/local/google/home/sdf/src/linux/Documentation/netlink/genetlink-legacy.yaml'
-+
-+    ynl = YnlFamily(spec, schema)
-+
-+    if args.set_priv_flags:
-+        # TODO: parse the bitmask
-+        print("not implemented")
-+        return
-+
-+    if args.set_eee:
-+        return doit(ynl, args, 'eee-set')
-+
-+    if args.set_pause:
-+        return doit(ynl, args, 'pause-set')
-+
-+    if args.set_coalesce:
-+        return doit(ynl, args, 'coalesce-set')
-+
-+    if args.set_features:
-+        # TODO: parse the bitmask
-+        print("not implemented")
-+        return
-+
-+    if args.set_channels:
-+        return doit(ynl, args, 'channels-set')
-+
-+    if args.set_ring:
-+        return doit(ynl, args, 'rings-set')
-+
-+    if args.show_priv_flags:
-+        flags = bits_to_dict(dumpit(ynl, args, 'privflags-get')['flags'])
-+        print_field(flags)
-+        return
-+
-+    if args.show_eee:
-+        eee = dumpit(ynl, args, 'eee-get')
-+        ours = bits_to_dict(eee['modes-ours'])
-+        peer = bits_to_dict(eee['modes-peer'])
-+
-+        if 'enabled' in eee:
-+            status = 'enabled' if eee['enabled'] else 'disabled'
-+            if 'active' in eee and eee['active']:
-+                status = status + ' - active'
-+            else:
-+                status = status + ' - inactive'
-+        else:
-+            status = 'not supported'
-+
-+        print(f'EEE status: {status}')
-+        print_field(eee, ('tx-lpi-timer', 'Tx LPI'))
-+        print_speed('Advertised EEE link modes', ours)
-+        print_speed('Link partner advertised EEE link modes', peer)
-+
-+        return
-+
-+    if args.show_pause:
-+        print_field(dumpit(ynl, args, 'pause-get'),
-+                ('autoneg', 'Autonegotiate', 'bool'),
-+                ('rx', 'RX', 'bool'),
-+                ('tx', 'TX', 'bool'))
-+        return
-+
-+    if args.show_coalesce:
-+        print_field(dumpit(ynl, args, 'coalesce-get'))
-+        return
-+
-+    if args.show_features:
-+        reply = dumpit(ynl, args, 'features-get')
-+        available = bits_to_dict(reply['hw'])
-+        requested = bits_to_dict(reply['wanted']).keys()
-+        active = bits_to_dict(reply['active']).keys()
-+        never_changed = bits_to_dict(reply['nochange']).keys()
-+
-+        for f in sorted(available):
-+            value = "off"
-+            if f in active:
-+                value = "on"
-+
-+            fixed = ""
-+            if f not in available or f in never_changed:
-+                fixed = " [fixed]"
-+
-+            req = ""
-+            if f in requested:
-+                if f in active:
-+                    req = " [requested on]"
-+                else:
-+                    req = " [requested off]"
-+
-+            print(f'{f}: {value}{fixed}{req}')
-+
-+        return
-+
-+    if args.show_channels:
-+        reply = dumpit(ynl, args, 'channels-get')
-+        print(f'Channel parameters for {args.device}:')
-+
-+        print(f'Pre-set maximums:')
-+        print_field(reply,
-+            ('rx-max', 'RX'),
-+            ('tx-max', 'TX'),
-+            ('other-max', 'Other'),
-+            ('combined-max', 'Combined'))
-+
-+        print(f'Current hardware settings:')
-+        print_field(reply,
-+            ('rx-count', 'RX'),
-+            ('tx-count', 'TX'),
-+            ('other-count', 'Other'),
-+            ('combined-count', 'Combined'))
-+
-+        return
-+
-+    if args.show_ring:
-+        reply = dumpit(ynl, args, 'channels-get')
-+
-+        print(f'Ring parameters for {args.device}:')
-+
-+        print(f'Pre-set maximums:')
-+        print_field(reply,
-+            ('rx-max', 'RX'),
-+            ('rx-mini-max', 'RX Mini'),
-+            ('rx-jumbo-max', 'RX Jumbo'),
-+            ('tx-max', 'TX'))
-+
-+        print(f'Current hardware settings:')
-+        print_field(reply,
-+            ('rx', 'RX'),
-+            ('rx-mini', 'RX Mini'),
-+            ('rx-jumbo', 'RX Jumbo'),
-+            ('tx', 'TX'))
-+
-+        print_field(reply,
-+            ('rx-buf-len', 'RX Buf Len'),
-+            ('cqe-size', 'CQE Size'),
-+            ('tx-push', 'TX Push', 'bool'))
-+
-+        return
-+
-+    if args.statistics:
-+        print(f'NIC statistics:')
-+
-+        # TODO: pass id?
-+        strset = dumpit(ynl, args, 'strset-get')
-+        pprint.PrettyPrinter().pprint(strset)
-+
-+        req = {
-+          'groups': {
-+            'size': 1,
-+            'bits': {
-+              'bit':
-+                # TODO: support passing the bitmask
-+                #[
-+                  #{ 'name': 'eth-phy', 'value': True },
-+                  { 'name': 'eth-mac', 'value': True },
-+                  #{ 'name': 'eth-ctrl', 'value': True },
-+                  #{ 'name': 'rmon', 'value': True },
-+                #],
-+            },
-+          },
-+        }
-+
-+        rsp = dumpit(ynl, args, 'stats-get', req)
-+        pprint.PrettyPrinter().pprint(rsp)
-+        return
-+
-+    if args.show_time_stamping:
-+        tsinfo = dumpit(ynl, args, 'tsinfo-get')
-+
-+        print(f'Time stamping parameters for {args.device}:')
-+
-+        print('Capabilities:')
-+        [print(f'\t{v}') for v in bits_to_dict(tsinfo['timestamping'])]
-+
-+        print(f'PTP Hardware Clock: {tsinfo["phc-index"]}')
-+
-+        print('Hardware Transmit Timestamp Modes:')
-+        [print(f'\t{v}') for v in bits_to_dict(tsinfo['tx-types'])]
-+
-+        print('Hardware Receive Filter Modes:')
-+        [print(f'\t{v}') for v in bits_to_dict(tsinfo['rx-filters'])]
-+        return
-+
-+    print(f'Settings for {args.device}:')
-+    linkmodes = dumpit(ynl, args, 'linkmodes-get')
-+    ours = bits_to_dict(linkmodes['ours'])
-+
-+    supported_ports = ('TP',  'AUI', 'BNC', 'MII', 'FIBRE', 'Backplane')
-+    ports = [ p for p in supported_ports if ours.get(p, False)]
-+    print(f'Supported ports: [ {" ".join(ports)} ]')
-+
-+    print_speed('Supported link modes', ours)
-+
-+    print_field(ours, ('Pause', 'Supported pause frame use', 'yn'))
-+    print_field(ours, ('Autoneg', 'Supports auto-negotiation', 'yn'))
-+
-+    supported_fec = ('None',  'PS', 'BASER', 'LLRS')
-+    fec = [ p for p in supported_fec if ours.get(p, False)]
-+    fec_str = " ".join(fec)
-+    if len(fec) == 0:
-+        fec_str = "Not reported"
-+
-+    print(f'Supported FEC modes: {fec_str}')
-+
-+    speed = 'Unknown!'
-+    if linkmodes['speed'] > 0 and linkmodes['speed'] < 0xffffffff:
-+        speed = f'{linkmodes["speed"]}Mb/s'
-+    print(f'Speed: {speed}')
-+
-+    duplex_modes = {
-+            0: 'Half',
-+            1: 'Full',
-+    }
-+    duplex = duplex_modes.get(linkmodes["duplex"], None)
-+    if not duplex:
-+        duplex = f'Unknown! ({linkmodes["duplex"]})'
-+    print(f'Duplex: {duplex}')
-+
-+    autoneg = "off"
-+    if linkmodes.get("autoneg", 0) != 0:
-+        autoneg = "on"
-+    print(f'Auto-negotiation: {autoneg}')
-+
-+    ports = {
-+            0: 'Twisted Pair',
-+            1: 'AUI',
-+            2: 'MII',
-+            3: 'FIBRE',
-+            4: 'BNC',
-+            5: 'Directly Attached Copper',
-+            0xef: 'None',
-+    }
-+    linkinfo = dumpit(ynl, args, 'linkinfo-get')
-+    print(f'Port: {ports.get(linkinfo["port"], "Other")}')
-+
-+    print_field(linkinfo, ('phyaddr', 'PHYAD'))
-+
-+    transceiver = {
-+            0: 'Internal',
-+            1: 'External',
-+    }
-+    print(f'Transceiver: {transceiver.get(linkinfo["transceiver"], "Unknown")}')
-+
-+    mdix_ctrl = {
-+            1: 'off',
-+            2: 'on',
-+    }
-+    mdix = mdix_ctrl.get(linkinfo['tp-mdix-ctrl'], None)
-+    if mdix:
-+        mdix = mdix + ' (forced)'
-+    else:
-+        mdix = mdix_ctrl.get(linkinfo['tp-mdix'], 'Unknown (auto)')
-+    print(f'MDI-X: {mdix}')
-+
-+    debug = dumpit(ynl, args, 'debug-get')
-+    msgmask = bits_to_dict(debug.get("msgmask", [])).keys()
-+    print(f'Current message level: {" ".join(msgmask)}')
-+
-+    linkstate = dumpit(ynl, args, 'linkstate-get')
-+    detected_states = {
-+            0: 'no',
-+            1: 'yes',
-+    }
-+    # TODO: wol-get
-+    detected = detected_states.get(linkstate['link'], 'unknown')
-+    print(f'Link detected: {detected}')
-+
-+if __name__ == '__main__':
-+    main()
-diff --git a/tools/net/ynl/lib/nlspec.py b/tools/net/ynl/lib/nlspec.py
-index 0c43022ff7e6..a0241add3839 100644
---- a/tools/net/ynl/lib/nlspec.py
-+++ b/tools/net/ynl/lib/nlspec.py
-@@ -444,6 +444,15 @@ jsonschema = None
- 
-             self.msgs[op.name] = op
- 
-+    def find_operation(self, name):
-+      """
-+      For a given operation name, find and return operation spec.
-+      """
-+      for op in self.yaml['operations']['list']:
-+        if name == op['name']:
-+          return op
-+      return None
-+
-     def resolve(self):
-         self.resolve_up(super())
- 
-diff --git a/tools/net/ynl/lib/ynl.py b/tools/net/ynl/lib/ynl.py
-index 373c0edb5f83..7690e0b0cb3f 100644
---- a/tools/net/ynl/lib/ynl.py
-+++ b/tools/net/ynl/lib/ynl.py
-@@ -527,6 +527,17 @@ genl_family_name_to_id = None
- 
-                 self.handle_ntf(nl_msg, gm)
- 
-+    def operation_do_attributes(self, name):
-+      """
-+      For a given operation name, find and return a supported
-+      set of attributes (as a dict).
-+      """
-+      op = self.find_operation(name)
-+      if not op:
-+        return None
-+
-+      return op['do']['request']['attributes'].copy()
-+
-     def _op(self, method, vals, dump=False):
-         op = self.ops[method]
- 
--- 
-2.40.0.348.gf938b09366-goog
-
+>-- 
+>paul-moore.com
