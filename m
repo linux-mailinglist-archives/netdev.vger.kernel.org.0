@@ -2,192 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 862126CCF82
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 03:30:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C67F6CCF9B
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 03:47:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbjC2Ban (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 21:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        id S229666AbjC2Brk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 21:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbjC2Bai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 21:30:38 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A86730E4
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:37 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id cu4so10662070qvb.3
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1680053436;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LSOTsNA8s0zEJ5lw3OWTgtb5+NHpCMHUdkdh0kFhv0Q=;
-        b=Lx+RAN5wkmqD6z5lcbacFAas/2lrn78a69l69AFkVYsOPSBCYht+2lAmBhQOAx24XM
-         Mz5qNrK3UG1t/+0NGTYk+BNJmHJ4SbrsCUMW5VHUFpOUIUWrbF5sn6bRA+jj9aKqYrGo
-         h1NyAeH3GPUIEdRhtyGPP3LUqcDei6AgSFYKI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680053436;
-        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LSOTsNA8s0zEJ5lw3OWTgtb5+NHpCMHUdkdh0kFhv0Q=;
-        b=l2RgJLbY9Y9f12LaL8kZHXy1GUYCrYwki2tByUXUYP1b2YCN1FXSP0K8acsQ9dHEIF
-         kTOlB4EPMB3+3VlXBXQNEW6NZxvP/r1QU7OMlZ6ZkW5thgtcJQ28yxI6PBIh4I5aAyqB
-         NY6rqmJD3k4UWHnamjSjciY38Sx0vZrhnQE4o57wTUeao1qBF6b2kHdE5uXyfiF2yzNd
-         0KUYthC9YmnExH2HAGYGHafZfm+aW2WKqw68jzBgyPQpjTUceo1FGjfpoLFAcCYFMiW7
-         uaH4Ike6SKD41R/nfXnBWVQetrBKkG7CJxjnTUptULvmbXHw8ev6ENo3cEIDa/6ClelK
-         FTWQ==
-X-Gm-Message-State: AAQBX9furI548NAjSCDhTW7VbRaVWmYoOno+qf+keo/BcawvyVX4lKMx
-        cqWkXC71xTAAvLMX86KylT6PCw==
-X-Google-Smtp-Source: AKy350ZZlHodklbVr5dQZtoIGsNF3Bf9oBiGXwQmzVPxSYiiwp8KAYkmFlVcicuQICPqccQk+gwAHw==
-X-Received: by 2002:a05:6214:402:b0:56e:a88f:70ef with SMTP id z2-20020a056214040200b0056ea88f70efmr34709149qvx.23.1680053436248;
-        Tue, 28 Mar 2023 18:30:36 -0700 (PDT)
-Received: from lvnvda1597.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id l15-20020ad4408f000000b005dd8b9345b0sm4223402qvp.72.2023.03.28.18.30.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Mar 2023 18:30:35 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 3/3] bnxt_en: Add missing 200G link speed reporting
-Date:   Tue, 28 Mar 2023 18:30:21 -0700
-Message-Id: <20230329013021.5205-4-michael.chan@broadcom.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20230329013021.5205-1-michael.chan@broadcom.com>
-References: <20230329013021.5205-1-michael.chan@broadcom.com>
+        with ESMTP id S229563AbjC2Brj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 21:47:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D2F19BF;
+        Tue, 28 Mar 2023 18:47:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43EB9B81E55;
+        Wed, 29 Mar 2023 01:47:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB1DC433D2;
+        Wed, 29 Mar 2023 01:47:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680054454;
+        bh=LZ0/ccHd8zdbfiu17J0ariXaZTElNrcaJd/l8vkyNC8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jCcZDEks+oXY5Iaj8M2CHEDiP+TeyeqOJI+0imjCusqLXkBsOMOLno6WFDELQyiDh
+         U6o38vGW3+ifwGiAhYxJdfPZFfXBCamm/4dXRwsegWLMW5zzf8Z1MNeJkjyXf+MO7F
+         Lnlb0F4SGk6O2bLtiU4GO+sMAulBUEikLl7ebpSwyuzak82fDlAGBuTUKFy0iWBLm0
+         oFF93v/CSWk9X5B7bAqSiIFia0aF3XU0rdJBIqHLkeJnsz4huHKas6ouo4Gk6ICs4O
+         stWmlGCsyluVN7692F+h4w3LXYUM2MEIvt1xGOqueOLCSRLaYHc3xSYfd58nC3opnl
+         h3X2valoBAfrA==
+Date:   Tue, 28 Mar 2023 18:47:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     syzbot <syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com>,
+        Seth Forshee <sforshee@digitalocean.com>
+Cc:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
+        jiri@resnulli.us, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Subject: Re: [syzbot] [net?] KASAN: slab-use-after-free Write in
+ mini_qdisc_pair_swap
+Message-ID: <20230328184733.6707ef73@kernel.org>
+In-Reply-To: <0000000000006cf87705f79acf1a@google.com>
+References: <0000000000006cf87705f79acf1a@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004bf16d05f7ffec8f"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004bf16d05f7ffec8f
-Content-Transfer-Encoding: 8bit
+Seth, does this looks related to commit 267463823adb ("net: sch:
+eliminate unnecessary RCU waits in mini_qdisc_pair_swap()")
+by any chance?
 
-bnxt_fw_to_ethtool_speed() is missing the case statement for 200G
-link speed reported by firmware.  As a result, ethtool will report
-unknown speed when the firmware reports 200G link speed.
+On Thu, 23 Mar 2023 17:52:40 -0700 syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    fff5a5e7f528 Merge tag 'for-linus' of git://git.armlinux.o..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11884731c80000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=aaa4b45720ca0519
+> dashboard link: https://syzkaller.appspot.com/bug?extid=b53a9c0d1ea4ad62da8b
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d1497ac80000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11eed636c80000
+> 
+> Downloadable assets:
+> disk image: https://storage.googleapis.com/syzbot-assets/33a184f98b9d/disk-fff5a5e7.raw.xz
+> vmlinux: https://storage.googleapis.com/syzbot-assets/3d75f967571e/vmlinux-fff5a5e7.xz
+> kernel image: https://storage.googleapis.com/syzbot-assets/4eeb8edbdc7e/bzImage-fff5a5e7.xz
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+b53a9c0d1ea4ad62da8b@syzkaller.appspotmail.com
+> 
+> ==================================================================
+> BUG: KASAN: slab-use-after-free in mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
+> Write of size 8 at addr ffff888045b31308 by task syz-executor690/14901
+> 
+> CPU: 0 PID: 14901 Comm: syz-executor690 Not tainted 6.3.0-rc3-syzkaller-00026-gfff5a5e7f528 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+>  print_address_description.constprop.0+0x2c/0x3c0 mm/kasan/report.c:319
+>  print_report mm/kasan/report.c:430 [inline]
+>  kasan_report+0x11c/0x130 mm/kasan/report.c:536
+>  mini_qdisc_pair_swap+0x1c2/0x1f0 net/sched/sch_generic.c:1573
+>  tcf_chain_head_change_item net/sched/cls_api.c:495 [inline]
+>  tcf_chain0_head_change.isra.0+0xb9/0x120 net/sched/cls_api.c:509
+>  tcf_chain_tp_insert net/sched/cls_api.c:1826 [inline]
+>  tcf_chain_tp_insert_unique net/sched/cls_api.c:1875 [inline]
+>  tc_new_tfilter+0x1de6/0x2290 net/sched/cls_api.c:2266
+>  rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+>  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+>  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+>  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+>  sock_sendmsg_nosec net/socket.c:724 [inline]
+>  sock_sendmsg+0xde/0x190 net/socket.c:747
+>  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+>  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+>  __sys_sendmmsg+0x18f/0x460 net/socket.c:2641
+>  __do_sys_sendmmsg net/socket.c:2670 [inline]
+>  __se_sys_sendmmsg net/socket.c:2667 [inline]
+>  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2667
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> RIP: 0033:0x7f4f11222579
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 31 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f4f11184208 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+> RAX: ffffffffffffffda RBX: 00007f4f112ab2a8 RCX: 00007f4f11222579
+> RDX: 040000000000009f RSI: 00000000200002c0 RDI: 0000000000000007
+> RBP: 00007f4f112ab2a0 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f4f112ab2ac
+> R13: 00007fffc8e5214f R14: 00007f4f11184300 R15: 0000000000022000
+>  </TASK>
+> 
+> Allocated by task 14898:
+>  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+>  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+>  ____kasan_kmalloc mm/kasan/common.c:374 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:333 [inline]
+>  __kasan_kmalloc+0xa2/0xb0 mm/kasan/common.c:383
+>  kasan_kmalloc include/linux/kasan.h:196 [inline]
+>  __do_kmalloc_node mm/slab_common.c:967 [inline]
+>  __kmalloc_node+0x61/0x1a0 mm/slab_common.c:974
+>  kmalloc_node include/linux/slab.h:610 [inline]
+>  kzalloc_node include/linux/slab.h:731 [inline]
+>  qdisc_alloc+0xb0/0xb30 net/sched/sch_generic.c:938
+>  qdisc_create+0xce/0x1040 net/sched/sch_api.c:1244
+>  tc_modify_qdisc+0x488/0x1a40 net/sched/sch_api.c:1680
+>  rtnetlink_rcv_msg+0x43d/0xd50 net/core/rtnetlink.c:6174
+>  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+>  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+>  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+>  sock_sendmsg_nosec net/socket.c:724 [inline]
+>  sock_sendmsg+0xde/0x190 net/socket.c:747
+>  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+>  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+>  __sys_sendmmsg+0x18f/0x460 net/socket.c:2641
+>  __do_sys_sendmmsg net/socket.c:2670 [inline]
+>  __se_sys_sendmmsg net/socket.c:2667 [inline]
+>  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2667
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> Freed by task 21:
+>  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+>  kasan_set_track+0x25/0x30 mm/kasan/common.c:52
+>  kasan_save_free_info+0x2e/0x40 mm/kasan/generic.c:521
+>  ____kasan_slab_free mm/kasan/common.c:236 [inline]
+>  ____kasan_slab_free+0x160/0x1c0 mm/kasan/common.c:200
+>  kasan_slab_free include/linux/kasan.h:162 [inline]
+>  slab_free_hook mm/slub.c:1781 [inline]
+>  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1807
+>  slab_free mm/slub.c:3787 [inline]
+>  __kmem_cache_free+0xaf/0x2d0 mm/slub.c:3800
+>  rcu_do_batch kernel/rcu/tree.c:2112 [inline]
+>  rcu_core+0x814/0x1960 kernel/rcu/tree.c:2372
+>  __do_softirq+0x1d4/0x905 kernel/softirq.c:571
+> 
+> Last potentially related work creation:
+>  kasan_save_stack+0x22/0x40 mm/kasan/common.c:45
+>  __kasan_record_aux_stack+0xbc/0xd0 mm/kasan/generic.c:491
+>  __call_rcu_common.constprop.0+0x99/0x7e0 kernel/rcu/tree.c:2622
+>  qdisc_put_unlocked+0x73/0x90 net/sched/sch_generic.c:1097
+>  tcf_block_release+0x86/0x90 net/sched/cls_api.c:1362
+>  tc_new_tfilter+0xa35/0x2290 net/sched/cls_api.c:2331
+>  rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+>  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+>  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+>  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+>  sock_sendmsg_nosec net/socket.c:724 [inline]
+>  sock_sendmsg+0xde/0x190 net/socket.c:747
+>  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+>  ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
+>  __sys_sendmmsg+0x18f/0x460 net/socket.c:2641
+>  __do_sys_sendmmsg net/socket.c:2670 [inline]
+>  __se_sys_sendmmsg net/socket.c:2667 [inline]
+>  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2667
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> The buggy address belongs to the object at ffff888045b31000
+>  which belongs to the cache kmalloc-1k of size 1024
+> The buggy address is located 776 bytes inside of
+>  freed 1024-byte region [ffff888045b31000, ffff888045b31400)
+> 
+> The buggy address belongs to the physical page:
+> page:ffffea000116cc00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888045b37000 pfn:0x45b30
+> head:ffffea000116cc00 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+> anon flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+> raw: 00fff00000010200 ffff888012441dc0 0000000000000000 dead000000000001
+> raw: ffff888045b37000 000000008010000d 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 14184, tgid 14168 (syz-executor690), ts 420322459064, free_ts 15493742100
+>  prep_new_page mm/page_alloc.c:2552 [inline]
+>  get_page_from_freelist+0x1190/0x2e20 mm/page_alloc.c:4325
+>  __alloc_pages+0x1cb/0x4a0 mm/page_alloc.c:5591
+>  alloc_pages+0x1aa/0x270 mm/mempolicy.c:2283
+>  alloc_slab_page mm/slub.c:1851 [inline]
+>  allocate_slab+0x25f/0x390 mm/slub.c:1998
+>  new_slab mm/slub.c:2051 [inline]
+>  ___slab_alloc+0xa91/0x1400 mm/slub.c:3193
+>  __slab_alloc.constprop.0+0x56/0xa0 mm/slub.c:3292
+>  __slab_alloc_node mm/slub.c:3345 [inline]
+>  slab_alloc_node mm/slub.c:3442 [inline]
+>  __kmem_cache_alloc_node+0x136/0x320 mm/slub.c:3491
+>  kmalloc_trace+0x26/0xe0 mm/slab_common.c:1061
+>  kmalloc include/linux/slab.h:580 [inline]
+>  kmalloc_array include/linux/slab.h:635 [inline]
+>  kcalloc include/linux/slab.h:667 [inline]
+>  fl_change+0x1cf/0x4ac0 net/sched/cls_flower.c:2175
+>  tc_new_tfilter+0x97c/0x2290 net/sched/cls_api.c:2310
+>  rtnetlink_rcv_msg+0x996/0xd50 net/core/rtnetlink.c:6165
+>  netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2574
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
+>  netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
+>  netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
+>  sock_sendmsg_nosec net/socket.c:724 [inline]
+>  sock_sendmsg+0xde/0x190 net/socket.c:747
+>  ____sys_sendmsg+0x334/0x900 net/socket.c:2501
+> page last free stack trace:
+>  reset_page_owner include/linux/page_owner.h:24 [inline]
+>  free_pages_prepare mm/page_alloc.c:1453 [inline]
+>  free_pcp_prepare+0x5d5/0xa50 mm/page_alloc.c:1503
+>  free_unref_page_prepare mm/page_alloc.c:3387 [inline]
+>  free_unref_page+0x1d/0x490 mm/page_alloc.c:3482
+>  free_contig_range+0xb5/0x180 mm/page_alloc.c:9531
+>  destroy_args+0x6c4/0x920 mm/debug_vm_pgtable.c:1023
+>  debug_vm_pgtable+0x242a/0x4640 mm/debug_vm_pgtable.c:1403
+>  do_one_initcall+0x102/0x540 init/main.c:1310
+>  do_initcall_level init/main.c:1383 [inline]
+>  do_initcalls init/main.c:1399 [inline]
+>  do_basic_setup init/main.c:1418 [inline]
+>  kernel_init_freeable+0x696/0xc00 init/main.c:1638
+>  kernel_init+0x1e/0x2c0 init/main.c:1526
+>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:308
+> 
+> Memory state around the buggy address:
+>  ffff888045b31200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff888045b31280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >ffff888045b31300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb  
+>                       ^
+>  ffff888045b31380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>  ffff888045b31400: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> ==================================================================
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
 
-Fixes: 532262ba3b84 ("bnxt_en: ethtool: support PAM4 link speeds up to 200G")
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         | 1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 ++
- 2 files changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index c0628ac1b798..5928430f6f51 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1226,6 +1226,7 @@ struct bnxt_link_info {
- #define BNXT_LINK_SPEED_40GB	PORT_PHY_QCFG_RESP_LINK_SPEED_40GB
- #define BNXT_LINK_SPEED_50GB	PORT_PHY_QCFG_RESP_LINK_SPEED_50GB
- #define BNXT_LINK_SPEED_100GB	PORT_PHY_QCFG_RESP_LINK_SPEED_100GB
-+#define BNXT_LINK_SPEED_200GB	PORT_PHY_QCFG_RESP_LINK_SPEED_200GB
- 	u16			support_speeds;
- 	u16			support_pam4_speeds;
- 	u16			auto_link_speeds;	/* fw adv setting */
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 7658a06b8d05..6bd18eb5137f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -1714,6 +1714,8 @@ u32 bnxt_fw_to_ethtool_speed(u16 fw_link_speed)
- 		return SPEED_50000;
- 	case BNXT_LINK_SPEED_100GB:
- 		return SPEED_100000;
-+	case BNXT_LINK_SPEED_200GB:
-+		return SPEED_200000;
- 	default:
- 		return SPEED_UNKNOWN;
- 	}
--- 
-2.18.1
-
-
---0000000000004bf16d05f7ffec8f
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
-/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
-L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
-kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
-5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
-hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
-E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAhQsnKTcQxcszXk6zodlkC2SEKIve8Q
-uH1MWD3C1H1aMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-OTAxMzAzNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBR7Xr1C+IwqydIqWlUc0QNQ+IWKQKLt+6rHSxGirOt+Ksxatzb
-Y9CyoTDhiYQ/Xv749af7Ned5eAStBzM6QnBX7mHWv+oJ+Y2AIcCmzQKIvkhQ4UiNIkVFtVsH4s0b
-8aaF6DorVBsRk4njGe/i6yeJXBb1nEH1v8NCkriQ+xjbT//MVUbHuZXg2EaKmXCycNc5bWDj2lgs
-AAudgigFeYex1d16YYUyLh2yddXN+k9BTq8MTtjYPY57jsIH+We3DkuHUjqbuJNif1oxV6dmvpdn
-2LpvHI+W1xW5ZNmJOnMpQZRWWzId32YHZZev3k3YahCpvypzf2WjaQd60/J6ZMLw
---0000000000004bf16d05f7ffec8f--
