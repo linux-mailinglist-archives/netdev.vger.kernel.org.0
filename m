@@ -2,156 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E5DE6CECC9
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8866CECDB
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbjC2PZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 11:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        id S230348AbjC2P1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 11:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbjC2PZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:25:43 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061.outbound.protection.outlook.com [40.107.93.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03E3CF
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:25:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nTv4Y/+ATw2i2gyAksYLi0l66lDNY4NY2qBSkWt8qJRHDaYg1cppNdE+paX/onsUNcYcL2NDZ7Mr6GyzgSjKKJVweeAaD6e/ZrEPnDtanc96zFQOPeaqWVZ3iXoWFN6N+axAaf1ITQAYkyN39H6u5JOFTCZ4S8mqL1CY1tPN+jtczjgYprgtaHTv9KSFsRbiF7UmXk94e9ZZKqTs8HnheWE1HvT2WlbpL9MpfU+YmxxU6xo70fB6lqUOTMH6SfsY1abuBtyGllBdVzs+gipyeCut6ro8RbubYEB+M6gV053u4kF3GNNibeoj2fizNLuuAOZSQLzHBpq9MPtuf8x80A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X3Kfn3gWdZ9iv6mve5vQqpH78dE/io+EVwRu9tCSQDw=;
- b=S/BZpnSGB82kFjljl+bCaD3LDVVTTcFLOp1lqZBExRBx1KU4rg/VC1CfcH3+P/IYrQAd/XBlLFQWponfUPLe+kWMnvqJDvbbwe1LrsEE9ytKY0RJDcyQ280HMb/cfx0vHC3QSyDfPJID9NwhlP6SqI6k5hXdkshQiBEc90XrgzQms1C2k1K/lxOxNYxYtalOE14lBqS5ZL+oomgQhxzvuuZ2GXoiJa2ZQfuvsfb34jcIE4iFm8uaRDeBnmXm5EN8Jrzh1BeHpBLR01mlfmEGe3UBi3KxTTVBhu6cQA0XFl26uzPymCiZytr+VG/VUQVWAgG2QVDYxP1C904cXWfuow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X3Kfn3gWdZ9iv6mve5vQqpH78dE/io+EVwRu9tCSQDw=;
- b=IaXcDEzztWiTzXLv+brzoZXHsPTX4UMWkdy/nlqEgDdQIHZkHydwz0WxYBeTHHm2BBg/AFSuLki5kSoocvowfHgFdFzuEK9xLkuzha1BBGS0NTy4f0Lql0v8BGIrQ2Qlr9UfV4W2fhxMPLgaVwPjIrBz2QUOS/EavDpNAx6AVvMQlMXYFkxH+sg+hSCpyVwycGOo30I9kVeLewszF1hEe6DFdFvJfevpuuzjDFDw0uOVV06dzzv7IDQzpKgcgUJ8cIXLoP0+VMwLZXxITN7raG956VhnkF9Zjgrl6ni+La4fnfYcVHPiJ/oyh4kc8c7y50okb9EeZJdQxN9CjzM37w==
-Received: from MN2PR02CA0027.namprd02.prod.outlook.com (2603:10b6:208:fc::40)
- by SN7PR12MB7274.namprd12.prod.outlook.com (2603:10b6:806:2ad::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Wed, 29 Mar
- 2023 15:25:39 +0000
-Received: from BL02EPF000108EA.namprd05.prod.outlook.com
- (2603:10b6:208:fc:cafe::6a) by MN2PR02CA0027.outlook.office365.com
- (2603:10b6:208:fc::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.41 via Frontend
- Transport; Wed, 29 Mar 2023 15:25:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BL02EPF000108EA.mail.protection.outlook.com (10.167.241.203) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6178.30 via Frontend Transport; Wed, 29 Mar 2023 15:25:38 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Wed, 29 Mar 2023
- 08:25:21 -0700
-Received: from localhost.localdomain (10.126.230.37) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Wed, 29 Mar
- 2023 08:25:19 -0700
-From:   Petr Machata <petrm@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229603AbjC2P1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:27:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D49423A
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:26:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680103594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SAnxWyj0HF9TEubrZktRdlGHxAtmrUsyKhC4L4EWNXM=;
+        b=J99tV4Kxsp5kFgfpSaz5U6W2K7BJNsnhbpL2dj3j6I0clQUHKPHhS7sX4F1GkxLb+tdohm
+        sol4cXg/ZL+RWNMnsxBCembRne+aSUMwjisQnLsCl+2z6X7w0SzQDcvtjs21UcBXKF8eH9
+        66tovxXbs4phfdxENtLZms9z/yWLyBI=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-290-9Kj15huUNJuJerGrpyDtOQ-1; Wed, 29 Mar 2023 11:26:32 -0400
+X-MC-Unique: 9Kj15huUNJuJerGrpyDtOQ-1
+Received: by mail-qt1-f199.google.com with SMTP id t15-20020a05622a180f00b003e37dd114e3so10463120qtc.10
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:26:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680103592;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SAnxWyj0HF9TEubrZktRdlGHxAtmrUsyKhC4L4EWNXM=;
+        b=kO123HdjGmWU2oVAXyqY7OVXwgUwWYWBvgvBU8ZHTjmqeQxxAZhud3brIQ9OGW80Ke
+         dZ5M0l8eqvSK+clDZseIb2qhIGdYP+ET3OucMwpDCEMWBtytQi43EU8CUGAehkqhc14k
+         4W22GYbBnRXJoufzvCxr2FnQrdLDflMZGygRJB+9GBfb/qzZbmDZ6TtAbi09zfgt1f/u
+         F+hSVfB/tLSpZ4Qa2ZwYiof0VgPOxDrQgdHu/Q0CZi5E+IzWDiNSewXssShybhW+OMNd
+         Z5XL8JqKNi0OEnWLnDnOZKnsOGWD4uLWg7eBLU5JkP3WU8SACAwjx/UD1+RYgQCP9ErJ
+         2V0Q==
+X-Gm-Message-State: AAQBX9cD2/DpJfNnXFYKv+tI17/W7imY0ZHUDFZcd1nwYE90OjJf257P
+        Ob6IjPLPhaWiYTcTBeFMSUE9qy1lt5HOOhU8OwVaF6XV8fu2Q9weLe3AzQ3zpGVTtDKgzuHResQ
+        NUiVdtoFmuRJMeuiT
+X-Received: by 2002:a05:6214:f2a:b0:56f:6f5:502d with SMTP id iw10-20020a0562140f2a00b0056f06f5502dmr36639203qvb.17.1680103592521;
+        Wed, 29 Mar 2023 08:26:32 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZxaJpZFi0+xc75lnJXuaPFS/Zb38h55Zo17Ek0671TiLDS8tLVTYiz2aCcRZGy84C6wQK1HQ==
+X-Received: by 2002:a05:6214:f2a:b0:56f:6f5:502d with SMTP id iw10-20020a0562140f2a00b0056f06f5502dmr36639169qvb.17.1680103592263;
+        Wed, 29 Mar 2023 08:26:32 -0700 (PDT)
+Received: from debian (2a01cb058918ce00e2c03839ebb8a46a.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:e2c0:3839:ebb8:a46a])
+        by smtp.gmail.com with ESMTPSA id dm40-20020a05620a1d6800b0074411b03972sm5862181qkb.51.2023.03.29.08.26.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Mar 2023 08:26:31 -0700 (PDT)
+Date:   Wed, 29 Mar 2023 17:26:28 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     "Drewek, Wojciech" <wojciech.drewek@intel.com>
+Cc:     Andrea Righi <andrea.righi@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     David Ahern <dsahern@kernel.org>, Ido Schimmel <idosch@nvidia.com>,
-        "Petr Machata" <petrm@nvidia.com>
-Subject: [PATCH net-next] selftests: rtnetlink: Fix do_test_address_proto()
-Date:   Wed, 29 Mar 2023 17:24:53 +0200
-Message-ID: <53a579bc883e1bf2fe490d58427cf22c2d1aa21f.1680102695.git.petrm@nvidia.com>
-X-Mailer: git-send-email 2.39.0
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: selftests: net: l2tp.sh regression starting with 6.1-rc1
+Message-ID: <ZCRYpDehyDxsrnfi@debian>
+References: <ZCQt7hmodtUaBlCP@righiandr-XPS-13-7390>
+ <MW4PR11MB57763144FE1BE9756FD3176BFD899@MW4PR11MB5776.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.37]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000108EA:EE_|SN7PR12MB7274:EE_
-X-MS-Office365-Filtering-Correlation-Id: f82d0686-d64f-4dce-e9f6-08db3069da13
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p2DR+hEZDraFeH9Bsi6j5kgI1juRV1ECbUBrmMYvnoUnv588WHSkTpjjwYT3M9w+eG83OZnjn6MXRxpIxZa8LPI3iwIOkouRkEO13xFJII7T/lIhmH76Rt0crn6ZxmkGTi8H51d94iFzTxt2dtqpSgnh2GvxVdfQWvxwhDtkZbMDWNAOwo77cHIZ7YhOu8rmTVHWC0tfi1RtG12TXWan7kRtmMElorKrEqXRhFV7WL9HgCwWR1nnuEa11Hp899Y+OqKFqmkq0i8wJL77tJy4G6eJg/t1I9mvgHoP0nKL7d5AK6W1nnt+yb5qXleFM7Hy8uE316NORMynr8jtPtz2ZOWq1N8yJAvCozp5mMcBj4hpQZz24T/LSc8gjWAHE3awIygA0fqQPZrDAPrceiSEbo0FcKa4Wr2Z+OAA252dG5C0gDHOQPS1W/PXeMBrwAWx+plnH0zu0K4cmlQh0VgddGQ+41YyB2+bPMofI2QZsNpHS7OsCgl13ZRtzxya3irT216X9V02RXJHFFlZVQJk/nCEXgX4M4sMkY3qV+sjM5RrFs5yJiKJhiMdrl8VK79IDkydht5MhKWuk5E4kY78yK6h3HaVHB1VVmPGUIZvVMn1S7DnHAI18Xp2qCp8XPlDi8Ot0tLmLQrdQNEFSFGvWHeRAJ6spDnPYP4ejVyXZzDv0+DzcYDNI5v/0jbzhF/ndVeKq60z9TEIcLKu7aUC9KVQWGp9iYWpc/lNsdEXUgVLwAF75QUlIbm+SWtzxRHg
-X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(346002)(396003)(39860400002)(376002)(451199021)(36840700001)(40470700004)(46966006)(107886003)(16526019)(186003)(86362001)(26005)(6666004)(5660300002)(70586007)(316002)(70206006)(110136005)(8676002)(8936002)(478600001)(4326008)(36756003)(41300700001)(54906003)(40460700003)(40480700001)(36860700001)(82740400003)(356005)(7636003)(426003)(336012)(2616005)(2906002)(82310400005)(47076005)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2023 15:25:38.9463
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f82d0686-d64f-4dce-e9f6-08db3069da13
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000108EA.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7274
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MW4PR11MB57763144FE1BE9756FD3176BFD899@MW4PR11MB5776.namprd11.prod.outlook.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This selftest was introduced recently in the commit cited below. It misses
-several check_err() invocations to actually verify that the previous
-command succeeded. When these are added, the first one fails, because
-besides the addresses added by hand, there can be a link-local address
-added by the kernel. Adjust the check to expect at least three addresses
-instead of exactly three, and add the missing check_err's.
+On Wed, Mar 29, 2023 at 02:16:37PM +0000, Drewek, Wojciech wrote:
+> Hi,
+> 
+> Modifying UAPI was not a good idea although the patch should not break userspace (related discussion [1]).
+> We could revert this patch with one additional change (include l2tp.h in net/sched/cls_flower.c) but then again,
+> modifying UAPI. This patch was mostly cosmetic anyway.
+> Second option is to try to fix the automatic load. I'm not an expert but I think
+> MODULE_ALIAS_NET_PF_PROTO macro is somehow responsible for that. I noticed some comments saying that
+> "__stringify doesn't like enums" (this macro is using _stringify) and my patch defined IPPROTO_L2TP in enum.
+> We can just replace IPPROTO_L2TP with 115 (where this macro is used) in order to fix this.
+> I'm going to give it a try and will let you know.
 
-Furthermore, the explanatory comments assume that the address with no
-protocol is $addr2, when in fact it is $addr3. Update the comments.
+Yes, the modules aliases now have symbolic names:
 
-Fixes: 6a414fd77f61 ("selftests: rtnetlink: Add an address proto test")
-Signed-off-by: Petr Machata <petrm@nvidia.com>
----
- tools/testing/selftests/net/rtnetlink.sh | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+$ modinfo l2tp_ip l2tp_ip6 | grep alias
+alias:          net-pf-2-proto-IPPROTO_L2TP
+alias:          net-pf-2-proto-2-type-IPPROTO_L2TP
+alias:          net-pf-10-proto-IPPROTO_L2TP
+alias:          net-pf-10-proto-2-type-IPPROTO_L2TP
 
-diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
-index 3b15c686c03f..383ac6fc037d 100755
---- a/tools/testing/selftests/net/rtnetlink.sh
-+++ b/tools/testing/selftests/net/rtnetlink.sh
-@@ -1302,19 +1302,23 @@ do_test_address_proto()
- 
- 	count=$(address_count)
- 	check_err $?
--	(( count == 3 )) # $addr, $addr2 and $addr3
-+	(( count >= 3 )) # $addr, $addr2 and $addr3 plus any kernel addresses
-+	check_err $?
- 
- 	count=$(address_count proto 0)
- 	check_err $?
--	(( count == 1 )) # just $addr2
-+	(( count == 1 )) # just $addr3
-+	check_err $?
- 
- 	count=$(address_count proto 0x11)
- 	check_err $?
--	(( count == 2 )) # $addr and $addr2
-+	(( count == 2 )) # $addr and $addr3
-+	check_err $?
- 
- 	count=$(address_count proto 0xab)
- 	check_err $?
--	(( count == 1 )) # just $addr2
-+	(( count == 1 )) # just $addr3
-+	check_err $?
- 
- 	ip address del dev "$devdummy" "$addr"
- 	ip address del dev "$devdummy" "$addr2"
--- 
-2.39.0
+Therefore, 'request_module("net-pf-%d-proto-%d-type-%d")' can't find
+them.
+
+My personal preference is for the second option: fix module loading by
+using plain numbers in MODULE_ALIAS_*. We can always keep the symbolic
+names in comments.
+
+---- >8 ----
+
+diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
+index 4db5a554bdbd..afe94a390ef0 100644
+--- a/net/l2tp/l2tp_ip.c
++++ b/net/l2tp/l2tp_ip.c
+@@ -680,5 +680,5 @@ MODULE_VERSION("1.0");
+ /* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
+  * enums
+  */
+-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 2, IPPROTO_L2TP);
+-MODULE_ALIAS_NET_PF_PROTO(PF_INET, IPPROTO_L2TP);
++MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 2, 115 /* IPPROTO_L2TP */);
++MODULE_ALIAS_NET_PF_PROTO(PF_INET, 115 /* IPPROTO_L2TP */);
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 2478aa60145f..65d106b41951 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -809,5 +809,5 @@ MODULE_VERSION("1.0");
+ /* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
+  * enums
+  */
+-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 2, IPPROTO_L2TP);
+-MODULE_ALIAS_NET_PF_PROTO(PF_INET6, IPPROTO_L2TP);
++MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 2, 115 /* IPPROTO_L2TP */);
++MODULE_ALIAS_NET_PF_PROTO(PF_INET6, 115 /* IPPROTO_L2TP */);
 
