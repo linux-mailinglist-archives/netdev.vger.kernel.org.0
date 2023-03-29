@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85C6C6CEE5B
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37CC86CEE5D
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 18:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbjC2QAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 12:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        id S230034AbjC2QAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 12:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231396AbjC2P7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:59:42 -0400
+        with ESMTP id S231593AbjC2P7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:59:52 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E425FCA;
-        Wed, 29 Mar 2023 08:59:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46AE525A;
+        Wed, 29 Mar 2023 08:59:21 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1phYCZ-0003PD-0M;
-        Wed, 29 Mar 2023 17:59:07 +0200
-Date:   Wed, 29 Mar 2023 16:59:03 +0100
+        id 1phYCk-0003Pu-2L;
+        Wed, 29 Mar 2023 17:59:19 +0200
+Date:   Wed, 29 Mar 2023 16:59:13 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -41,9 +41,9 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 Cc:     Sam Shih <Sam.Shih@mediatek.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: [RFC PATCH net-next v3 08/15] net: dsa: mt7530: introduce
- mt7530_remove_common helper function
-Message-ID: <e417f0cd6dea15fe7a0305eeaef6b8f94d654f45.1680105013.git.daniel@makrotopia.org>
+Subject: [RFC PATCH net-next v3 09/15] net: dsa: mt7530: split-off common
+ parts from mt7531_setup
+Message-ID: <8e3a00982abc91dfc724ba1a21cbcd9f865f8650.1680105013.git.daniel@makrotopia.org>
 References: <cover.1680105013.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -57,54 +57,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move commonly used parts from mt7530_remove into new
-mt7530_remove_common helper function which will be used by both,
-mt7530_remove and the to-be-introduced mt7988_remove.
+MT7988 shares a significant part of the setup function with MT7531.
+Split-off those parts into a shared function which is going to be used
+also by mt7988_setup.
 
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/dsa/mt7530.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c | 99 ++++++++++++++++++++++------------------
+ 1 file changed, 55 insertions(+), 44 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 32875762b3d96..f84cbd251d1c1 100644
+index f84cbd251d1c1..c9b6b11273683 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -3260,6 +3260,17 @@ mt7530_probe(struct mdio_device *mdiodev)
- 	return dsa_register_switch(priv->ds);
+@@ -2350,12 +2350,65 @@ mt7530_setup(struct dsa_switch *ds)
+ 	return 0;
  }
  
-+static void
-+mt7530_remove_common(struct mt7530_priv *priv)
++static int
++mt7531_setup_common(struct dsa_switch *ds)
 +{
-+	if (priv->irq)
-+		mt7530_free_irq(priv);
++	struct mt7530_priv *priv = ds->priv;
++	struct dsa_port *cpu_dp;
++	int ret, i;
 +
-+	dsa_unregister_switch(priv->ds);
++	/* BPDU to CPU port */
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
++			   BIT(cpu_dp->index));
++		break;
++	}
++	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
++		   MT753X_BPDU_CPU_ONLY);
 +
-+	mutex_destroy(&priv->reg_mutex);
++	/* Enable and reset MIB counters */
++	mt7530_mib_reset(ds);
++
++	for (i = 0; i < MT7530_NUM_PORTS; i++) {
++		/* Disable forwarding by default on all ports */
++		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
++			   PCR_MATRIX_CLR);
++
++		/* Disable learning by default on all ports */
++		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++
++		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
++
++		if (dsa_is_cpu_port(ds, i)) {
++			ret = mt753x_cpu_port_enable(ds, i);
++			if (ret)
++				return ret;
++		} else {
++			mt7530_port_disable(ds, i);
++
++			/* Set default PVID to 0 on all user ports */
++			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
++				   G0_PORT_VID_DEF);
++		}
++
++		/* Enable consistent egress tag */
++		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
++			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
++	}
++
++	/* Flush the FDB table */
++	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
++	if (ret < 0)
++		return ret;
++
++	return 0;
 +}
 +
- static void
- mt7530_remove(struct mdio_device *mdiodev)
+ static int
+ mt7531_setup(struct dsa_switch *ds)
  {
-@@ -3279,15 +3290,10 @@ mt7530_remove(struct mdio_device *mdiodev)
- 		dev_err(priv->dev, "Failed to disable io pwr: %d\n",
- 			ret);
+ 	struct mt7530_priv *priv = ds->priv;
+ 	struct mt7530_dummy_poll p;
+-	struct dsa_port *cpu_dp;
+ 	u32 val, id;
+ 	int ret, i;
  
--	if (priv->irq)
--		mt7530_free_irq(priv);
--
--	dsa_unregister_switch(priv->ds);
-+	mt7530_remove_common(priv);
+@@ -2433,44 +2486,7 @@ mt7531_setup(struct dsa_switch *ds)
+ 	mt7531_ind_c45_phy_write(priv, MT753X_CTRL_PHY_ADDR, MDIO_MMD_VEND2,
+ 				 CORE_PLL_GROUP4, val);
  
- 	for (i = 0; i < 2; ++i)
- 		mtk_pcs_lynxi_destroy(priv->ports[5 + i].sgmii_pcs);
+-	/* BPDU to CPU port */
+-	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+-		mt7530_rmw(priv, MT7531_CFC, MT7531_CPU_PMAP_MASK,
+-			   BIT(cpu_dp->index));
+-		break;
+-	}
+-	mt7530_rmw(priv, MT753X_BPC, MT753X_BPDU_PORT_FW_MASK,
+-		   MT753X_BPDU_CPU_ONLY);
 -
--	mutex_destroy(&priv->reg_mutex);
+-	/* Enable and reset MIB counters */
+-	mt7530_mib_reset(ds);
+-
+-	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+-		/* Disable forwarding by default on all ports */
+-		mt7530_rmw(priv, MT7530_PCR_P(i), PCR_MATRIX_MASK,
+-			   PCR_MATRIX_CLR);
+-
+-		/* Disable learning by default on all ports */
+-		mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
+-
+-		mt7530_set(priv, MT7531_DBG_CNT(i), MT7531_DIS_CLR);
+-
+-		if (dsa_is_cpu_port(ds, i)) {
+-			ret = mt753x_cpu_port_enable(ds, i);
+-			if (ret)
+-				return ret;
+-		} else {
+-			mt7530_port_disable(ds, i);
+-
+-			/* Set default PVID to 0 on all user ports */
+-			mt7530_rmw(priv, MT7530_PPBV1_P(i), G0_PORT_VID_MASK,
+-				   G0_PORT_VID_DEF);
+-		}
+-
+-		/* Enable consistent egress tag */
+-		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+-			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+-	}
++	mt7531_setup_common(ds);
+ 
+ 	/* Setup VLAN ID 0 for VLAN-unaware bridges */
+ 	ret = mt7530_setup_vlan0(priv);
+@@ -2480,11 +2496,6 @@ mt7531_setup(struct dsa_switch *ds)
+ 	ds->assisted_learning_on_cpu_port = true;
+ 	ds->mtu_enforcement_ingress = true;
+ 
+-	/* Flush the FDB table */
+-	ret = mt7530_fdb_cmd(priv, MT7530_FDB_FLUSH, NULL);
+-	if (ret < 0)
+-		return ret;
+-
+ 	return 0;
  }
  
- static void mt7530_shutdown(struct mdio_device *mdiodev)
 -- 
 2.39.2
 
