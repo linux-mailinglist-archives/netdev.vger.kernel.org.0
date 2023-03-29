@@ -2,120 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 811BC6CCE72
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 02:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42B6D6CCE7A
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 02:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbjC2AAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 20:00:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S229883AbjC2AHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 20:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbjC2AAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 20:00:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56FC3AB2
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:00:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86DF3618E5
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 00:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED0AC433EF;
-        Wed, 29 Mar 2023 00:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680048018;
-        bh=Mijmn0E6UMWQju4f0vYRQr2/LdVH1UK3bbX/RbEp0E0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sZhKIlSiOEEAAdwpxFhKjlZ1hMlMZ5n8StpTuK93HoSYfafMT0ptGCbUBOjze6Wrc
-         NnQjerbZFkykn33TG+P89B/itTzTJ76Z0WErGPzonNTHg74AZzG+E22GgjTJU4SA4Z
-         QUkXV/CCN4nrA6CKEFciMgIIw4uVTBMzlCah1ymW8Ur4OTeaGD7OfqHjU4kmauZgTM
-         VPSdYJOL4qhEmNpf3OirLK1u/Iu0T1PXToLzRJKMpAfSGonMKn1o7cjepuYX7Gt72D
-         xOuHz8Ofd0Hak6xpInfWtnS03desCOdrTmlefjUHDvfr+FR7GrmL5I80oooN7fIOcb
-         9IIZ59ar8okrQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, Thomas Voegtle <tv@lio96.de>,
-        aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
-        keescook@chromium.org
-Subject: [PATCH net] bnx2x: use the right build_skb() helper
-Date:   Tue, 28 Mar 2023 17:00:13 -0700
-Message-Id: <20230329000013.2734957-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229468AbjC2AHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 20:07:09 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5861B0
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:08 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id a16so12451915pjs.4
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680048428;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=95oOalITgfprQFCC8+m+Ju2257CFa9b2zeXfGuyW2XU=;
+        b=aqrrfdJS4mAdimmndN3T04Zhg0AJMtQBFsa0b6to2GpL6u4a1AtsC4X+OflAVWtHqh
+         /YJsEtDORVnnQbf41Kucx9TlTdMCQg6tMUIIFTA+t0jrEoZUVfU/esS82ewz8exQcEJ8
+         v3cPDKUjtrbfcIYkHOO93bbwan+Eyw06kchbjUdpLsX7uZSB+yNUbmFiTdjB0VMCQawX
+         24nwzUqT5fpC5bcKuzAeGm/sG5PLIbTYhu9qG/DzpzCH+8Y/S9KzQqeriWmTputE7ljf
+         8IpPq8wnAQQ56hb/WCzlOGNl5IkYWDLGLSdgJb/mR6FG7/1rc+aUYu2KP/IWEXFOxhYg
+         7C/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680048428;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=95oOalITgfprQFCC8+m+Ju2257CFa9b2zeXfGuyW2XU=;
+        b=KSVrEBMJ8qn0tVSCdrRc3fLZ3vGfzPO/PCHL7SMQWWVb5bCLvc5iRntJbrLo/T/Kne
+         bZS69JyXASNIMIKvJxrqfk3sNMjJxKEUB/Kmag91ogcQRhGopWRSBSVforGhl67hIWRV
+         L6iXToy/h/t/LI6SDEePr/JqEnMI12EsqSp9P8R+AT31gKazUN8hcOtkPUr9oaZZUBiy
+         CEsV3VuXAiEAoczGlgybynmFW4Ubx/tFb34M+jvXWjIDXqThB3PxIT7I5zRo+XL4lEjY
+         eBH/BXMS5XfFjYjUZxZmUkcF8mC52199odDYbyGGjDtcY89E//K362zy91NybBheizzm
+         c64Q==
+X-Gm-Message-State: AAQBX9f9AhJkvp47LXgyrBnnZCd+kcqEBM+o2WX3JBB8cllmswo3SbZm
+        4pUhAukLdoKEv8UOVHxa3CGrSQgS1j2Db5luk9KhjA==
+X-Google-Smtp-Source: AKy350ZcchhiYc5mfbbMoSG7scAna95+vIXAy+yerISOHalXtsoIx2bCE9aqTSk639ohJKiouWBA1nn3CJbY5dqpA8Y=
+X-Received: by 2002:a17:902:dace:b0:1a0:41ea:b9ba with SMTP id
+ q14-20020a170902dace00b001a041eab9bamr6653612plx.8.1680048428320; Tue, 28 Mar
+ 2023 17:07:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230324225656.3999785-1-sdf@google.com> <20230324225656.3999785-5-sdf@google.com>
+ <20230324203543.3998a487@kernel.org>
+In-Reply-To: <20230324203543.3998a487@kernel.org>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 28 Mar 2023 17:06:57 -0700
+Message-ID: <CAKH8qBsGotuK2brjmtZXmdXitbCJ532o18c4Rfhu_B993kcWGw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] tools: ynl: ethtool testing tool
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-build_skb() no longer accepts slab buffers. Since slab use is fairly
-uncommon we prefer the drivers to call a separate slab_build_skb()
-function appropriately.
+On Fri, Mar 24, 2023 at 8:35=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Fri, 24 Mar 2023 15:56:56 -0700 Stanislav Fomichev wrote:
+> > +def args_to_req(ynl, op_name, args, req):
+> > +  """
+> > +  Verify and convert command-line arguments to the ynl-compatible requ=
+est.
+> > +  """
+> > +  valid_attrs =3D ynl.operation_do_attributes(op_name)
+> > +  valid_attrs.remove('header') # not user-provided
+> > +
+> > +  if len(args) =3D=3D 0:
+> > +    print(f'no attributes, expected: {valid_attrs}')
+> > +    sys.exit(1)
+>
+> Could you re-format with 4 char indentation? To keep it consistent with
+> the rest of ynl?
 
-bnx2x uses the old semantics where size of 0 meant buffer from slab.
-It sets the fp->rx_frag_size to 0 for MTUs which don't fit in a page.
-It needs to call slab_build_skb().
-
-This fixes the WARN_ONCE() of incorrect API use seen with bnx2x.
-
-Reported-by: Thomas Voegtle <tv@lio96.de>
-Link: https://lore.kernel.org/all/b8f295e4-ba57-8bfb-7d9c-9d62a498a727@lio96.de/
-Fixes: ce098da1497c ("skbuff: Introduce slab_build_skb()")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: aelior@marvell.com
-CC: skalluru@marvell.com
-CC: manishc@marvell.com
-CC: keescook@chromium.org
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index 16c490692f42..12083b9679b5 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -672,6 +672,18 @@ static int bnx2x_fill_frag_skb(struct bnx2x *bp, struct bnx2x_fastpath *fp,
- 	return 0;
- }
- 
-+static struct sk_buff *
-+bnx2x_build_skb(const struct bnx2x_fastpath *fp, void *data)
-+{
-+	struct sk_buff *skb;
-+
-+	if (fp->rx_frag_size)
-+		skb = build_skb(data, fp->rx_frag_size);
-+	else
-+		skb = slab_build_skb(data);
-+	return skb;
-+}
-+
- static void bnx2x_frag_free(const struct bnx2x_fastpath *fp, void *data)
- {
- 	if (fp->rx_frag_size)
-@@ -779,7 +791,7 @@ static void bnx2x_tpa_stop(struct bnx2x *bp, struct bnx2x_fastpath *fp,
- 	dma_unmap_single(&bp->pdev->dev, dma_unmap_addr(rx_buf, mapping),
- 			 fp->rx_buf_size, DMA_FROM_DEVICE);
- 	if (likely(new_data))
--		skb = build_skb(data, fp->rx_frag_size);
-+		skb = bnx2x_build_skb(fp, data);
- 
- 	if (likely(skb)) {
- #ifdef BNX2X_STOP_ON_ERROR
-@@ -1046,7 +1058,7 @@ static int bnx2x_rx_int(struct bnx2x_fastpath *fp, int budget)
- 						 dma_unmap_addr(rx_buf, mapping),
- 						 fp->rx_buf_size,
- 						 DMA_FROM_DEVICE);
--				skb = build_skb(data, fp->rx_frag_size);
-+				skb = bnx2x_build_skb(fp, data);
- 				if (unlikely(!skb)) {
- 					bnx2x_frag_free(fp, data);
- 					bnx2x_fp_qstats(bp, fp)->
--- 
-2.39.2
-
+Sorry, I was somehow assuming that whatever my vim does is the right
+way to go :-( Fixed my config and will reindent.
