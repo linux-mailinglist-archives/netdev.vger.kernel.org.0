@@ -2,51 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAC66CD988
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 14:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10FEF6CD9A6
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 14:52:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbjC2Mrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 08:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
+        id S230029AbjC2MwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 08:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229916AbjC2Mrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 08:47:32 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C9A4202
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 05:47:26 -0700 (PDT)
-Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PmmWW5NkGzrV9S;
-        Wed, 29 Mar 2023 20:46:15 +0800 (CST)
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Wed, 29 Mar
- 2023 20:47:24 +0800
-Subject: Re: [PATCH net-next 4/4] net: optimize ____napi_schedule() to avoid
- extra NET_RX_SOFTIRQ
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229781AbjC2MwP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 08:52:15 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4BD61707;
+        Wed, 29 Mar 2023 05:52:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680094328; x=1711630328;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JYQNzSG0sA9n+CdvfVfHs6vcGajSiMyhZ3Q5AzZfSCo=;
+  b=RRTHrU/oFSs89W/43FaVNfM+usW/H0ELylUqieByxM3kZVGaRQqSKrSD
+   43acC61kD9OMsclr+oh3pg71PodKFMWWOlXhMKGAgzGcdgSUdlD4BxR1R
+   9/+8t3dcasdqlAMkjZk7VzCTHj6jZ61bEaCT7+QqC5WLsVsPmeH18viBq
+   xlFBhm0JgiiyA0DRgkwRNC6AaELDRtmHDwChsr3x+1KMwQxXRDhz6+VjH
+   QTILU4en0hPT6am7NsgAR6usnVw/XbQF3inaCrE6Qpe2+gidj4NIPRbqh
+   Ed1+PyeLHLPAGpBH8kgJ8bH+iagvhaCFx5MdwIRVtMewbKYXRRG8qUXuW
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="324769433"
+X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
+   d="scan'208";a="324769433"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 05:52:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10663"; a="677768924"
+X-IronPort-AV: E=Sophos;i="5.98,300,1673942400"; 
+   d="scan'208";a="677768924"
+Received: from ostermam-mobl.amr.corp.intel.com (HELO intel.com) ([10.249.32.144])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 05:52:02 -0700
+Date:   Wed, 29 Mar 2023 14:51:37 +0200
+From:   Andi Shyti <andi.shyti@linux.intel.com>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Jason Xing <kernelxing@tencent.com>, <netdev@vger.kernel.org>,
-        <eric.dumazet@gmail.com>
-References: <20230328235021.1048163-1-edumazet@google.com>
- <20230328235021.1048163-5-edumazet@google.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <fa860d02-0310-2666-1043-6909dc68ea01@huawei.com>
-Date:   Wed, 29 Mar 2023 20:47:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        Dmitry Vyukov <dvyukov@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andi Shyti <andi.shyti@linux.intel.com>
+Subject: Re: [PATCH v6 2/8] lib/ref_tracker: improve printing stats
+Message-ID: <ZCQ0WSnZ9L2NFsvA@ashyti-mobl2.lan>
+References: <20230224-track_gt-v6-0-0dc8601fd02f@intel.com>
+ <20230224-track_gt-v6-2-0dc8601fd02f@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20230328235021.1048163-5-edumazet@google.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230224-track_gt-v6-2-0dc8601fd02f@intel.com>
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,80 +71,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2023/3/29 7:50, Eric Dumazet wrote:
-> ____napi_schedule() adds a napi into current cpu softnet_data poll_list,
-> then raises NET_RX_SOFTIRQ to make sure net_rx_action() will process it.
-> 
-> Idea of this patch is to not raise NET_RX_SOFTIRQ when being called indirectly
-> from net_rx_action(), because we can process poll_list from this point,
-> without going to full softirq loop.
-> 
-> This needs a change in net_rx_action() to make sure we restart
-> its main loop if sd->poll_list was updated without NET_RX_SOFTIRQ
-> being raised.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Jason Xing <kernelxing@tencent.com>
-> ---
->  net/core/dev.c | 22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index f34ce93f2f02e7ec71f5e84d449fa99b7a882f0c..0c4b21291348d4558f036fb05842dab023f65dc3 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4360,7 +4360,11 @@ static inline void ____napi_schedule(struct softnet_data *sd,
->  	}
->  
->  	list_add_tail(&napi->poll_list, &sd->poll_list);
-> -	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> +	/* If not called from net_rx_action()
-> +	 * we have to raise NET_RX_SOFTIRQ.
-> +	 */
-> +	if (!sd->in_net_rx_action)
+Hi Andrzej,
 
-It seems sd->in_net_rx_action may be read/writen by different CPUs at the same
-time, does it need something like READ_ONCE()/WRITE_ONCE() to access
-sd->in_net_rx_action?
+[...]
 
-> +		__raise_softirq_irqoff(NET_RX_SOFTIRQ);
->  }
+> -void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
+> -				  unsigned int display_limit)
+> +struct ref_tracker_dir_stats {
+> +	int total;
+> +	int count;
+> +	struct {
+> +		depot_stack_handle_t stack_handle;
+> +		unsigned int count;
+> +	} stacks[];
+> +};
+> +
+> +static struct ref_tracker_dir_stats *
+> +ref_tracker_get_stats(struct ref_tracker_dir *dir, unsigned int limit)
+>  {
+> +	struct ref_tracker_dir_stats *stats;
+>  	struct ref_tracker *tracker;
+> -	unsigned int i = 0;
 >  
->  #ifdef CONFIG_RPS
-> @@ -6648,6 +6652,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
->  	LIST_HEAD(list);
->  	LIST_HEAD(repoll);
+> -	lockdep_assert_held(&dir->lock);
+> +	stats = kmalloc(struct_size(stats, stacks, limit),
+> +			GFP_NOWAIT | __GFP_NOWARN);
+> +	if (!stats)
+> +		return ERR_PTR(-ENOMEM);
+> +	stats->total = 0;
+> +	stats->count = 0;
 >  
-> +start:
->  	sd->in_net_rx_action = true;
->  	local_irq_disable();
->  	list_splice_init(&sd->poll_list, &list);
-> @@ -6659,9 +6664,18 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
->  		skb_defer_free_flush(sd);
->  
->  		if (list_empty(&list)) {
-> -			sd->in_net_rx_action = false;
-> -			if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
-> -				goto end;
-> +			if (list_empty(&repoll)) {
-> +				sd->in_net_rx_action = false;
-> +				barrier();
-
-Do we need a stronger barrier to prevent out-of-order execution
-from cpu?
-Do we need a barrier between list_add_tail() and sd->in_net_rx_action
-checking in ____napi_schedule() to pair with the above barrier?
-
-> +				/* We need to check if ____napi_schedule()
-> +				 * had refilled poll_list while
-> +				 * sd->in_net_rx_action was true.
-> +				 */
-> +				if (!list_empty(&sd->poll_list))
-> +					goto start;
-> +				if (!sd_has_rps_ipi_waiting(sd))
-> +					goto end;
-> +			}
->  			break;
+>  	list_for_each_entry(tracker, &dir->list, head) {
+> -		if (i < display_limit) {
+> -			pr_err("leaked reference.\n");
+> -			if (tracker->alloc_stack_handle)
+> -				stack_depot_print(tracker->alloc_stack_handle);
+> -			i++;
+> -		} else {
+> -			break;
+> +		depot_stack_handle_t stack = tracker->alloc_stack_handle;
+> +		int i;
+> +
+> +		++stats->total;
+> +		for (i = 0; i < stats->count; ++i)
+> +			if (stats->stacks[i].stack_handle == stack)
+> +				break;
+> +		if (i >= limit)
+> +			continue;
+> +		if (i >= stats->count) {
+> +			stats->stacks[i].stack_handle = stack;
+> +			stats->stacks[i].count = 0;
+> +			++stats->count;
 >  		}
+> +		++stats->stacks[i].count;
+> +	}
+> +
+> +	return stats;
+> +}
+> +
+> +void ref_tracker_dir_print_locked(struct ref_tracker_dir *dir,
+> +				  unsigned int display_limit)
+> +{
+> +	struct ref_tracker_dir_stats *stats;
+> +	unsigned int i = 0, skipped;
+> +	depot_stack_handle_t stack;
+> +	char *sbuf;
+> +
+> +	lockdep_assert_held(&dir->lock);
+> +
+> +	if (list_empty(&dir->list))
+> +		return;
+> +
+> +	stats = ref_tracker_get_stats(dir, display_limit);
+> +	if (IS_ERR(stats)) {
+> +		pr_err("%s@%pK: couldn't get stats, error %pe\n",
+> +		       dir->name, dir, stats);
+> +		return;
+>  	}
+> +
+> +	sbuf = kmalloc(STACK_BUF_SIZE, GFP_NOWAIT | __GFP_NOWARN);
+> +
+> +	for (i = 0, skipped = stats->total; i < stats->count; ++i) {
+> +		stack = stats->stacks[i].stack_handle;
+> +		if (sbuf && !stack_depot_snprint(stack, sbuf, STACK_BUF_SIZE, 4))
+> +			sbuf[0] = 0;
+> +		pr_err("%s@%pK has %d/%d users at\n%s\n", dir->name, dir,
+> +		       stats->stacks[i].count, stats->total, sbuf);
+> +		skipped -= stats->stacks[i].count;
+> +	}
+> +
+> +	if (skipped)
+> +		pr_err("%s@%pK skipped reports about %d/%d users.\n",
+> +		       dir->name, dir, skipped, stats->total);
+> +
+> +	kfree(sbuf);
+> +
+> +	kfree(stats);
+
+There's a chance of confusion here because
+ref_tracker_get_stats() might need a ref_tracker_put_stats() to
+go with it.
+
+When you allocate in one function and free in another without a
+clear pair (get/put, alloc/free, etc.), it can be hard to notice
+and could lead to mistakes.
+
+But in this simple situation, it's not a big problem, and I'm not
+sure if having the put side is really needed.
+
+Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com> 
+
+Thanks,
+Andi
+
+>  }
+>  EXPORT_SYMBOL(ref_tracker_dir_print_locked);
 >  
 > 
+> -- 
+> 2.34.1
