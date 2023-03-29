@@ -2,85 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A746CF3EA
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 21:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6006CF406
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 22:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbjC2T7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 15:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        id S229814AbjC2UH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 16:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbjC2T7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 15:59:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9A976B4
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 12:58:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680119925;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ecTnf3KeDQi7q3K7p6hKfLoadym9ahVP+2pdGSG48Gg=;
-        b=c+3u2bzdSEO8t/U9mYsbpB6f8qyaupLBMyPd3r/HmC9wF+NE/dSuuwSe8Yk9I0PfHtWJ+x
-        zkNnvAbb131OtJHv2g8ViDmEzbR+kEOUtq5LY3G0Z5PNTQhwylfPyR2paxLvdw6Zrj4A/J
-        zxEvd6BfL9B/daa90z+E95QZO9YhPRg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-176-gz5LOUmVOWWK5Iep8J-iEg-1; Wed, 29 Mar 2023 15:58:40 -0400
-X-MC-Unique: gz5LOUmVOWWK5Iep8J-iEg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 79BCA185A78B;
-        Wed, 29 Mar 2023 19:58:39 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 06C82C15BA0;
-        Wed, 29 Mar 2023 19:58:36 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <6F2985FF-2474-4F36-BD94-5F8E97E46AC2@oracle.com>
-References: <6F2985FF-2474-4F36-BD94-5F8E97E46AC2@oracle.com> <20230329141354.516864-1-dhowells@redhat.com> <20230329141354.516864-41-dhowells@redhat.com>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>
-Subject: Re: [RFC PATCH v2 40/48] sunrpc: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
+        with ESMTP id S229610AbjC2UH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 16:07:56 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C280B2
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 13:07:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1680120476; x=1711656476;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BZq5puEFo2KMcZd/TQA6RBN+NYsfqkzNvTOe+4GnDuM=;
+  b=J9XowR6UbeXeNeHpmlRv3Zdf4uyniINp7c83tagmHXJZ5Z0VrTQaxxoE
+   iBq1+LbJV0Gn6onW5n5EoN7cldUeiq91DwssmGxOohX8zHgJisZasIIiM
+   YMXUb4gohDfgwKaih6zB8Sw55xyqpi4ybGMYpfrt3gyxuz12lFjfloB0y
+   w=;
+X-IronPort-AV: E=Sophos;i="5.98,301,1673913600"; 
+   d="scan'208";a="314758590"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2023 20:07:52 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id 18A63C1727;
+        Wed, 29 Mar 2023 20:07:51 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.22; Wed, 29 Mar 2023 20:07:41 +0000
+Received: from 88665a182662.ant.amazon.com (10.106.101.9) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 29 Mar 2023 20:07:38 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kuniyu@amazon.com>
+CC:     <davem@davemloft.net>, <edumazet@google.com>,
+        <kerneljasonxing@gmail.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v2 net-next] tcp: Refine SYN handling for PAWS.
+Date:   Wed, 29 Mar 2023 13:07:30 -0700
+Message-ID: <20230329200730.78159-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230328184257.62219-1-kuniyu@amazon.com>
+References: <20230328184257.62219-1-kuniyu@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <535891.1680119916.1@warthog.procyon.org.uk>
-Date:   Wed, 29 Mar 2023 20:58:36 +0100
-Message-ID: <535892.1680119916@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.106.101.9]
+X-ClientProxiedBy: EX19D042UWB004.ant.amazon.com (10.13.139.150) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Chuck,
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+Date:   Tue, 28 Mar 2023 11:42:57 -0700
+> Our Network Load Balancer (NLB) [0] has multiple nodes with different
+> IP addresses, and each node forwards TCP flows from clients to backend
+> targets.  NLB has an option to preserve the client's source IP address
+> and port when routing packets to backend targets. [1]
+> 
+> When a client connects to two different NLB nodes, they may select the
+> same backend target.  Then, if the client has used the same source IP
+> and port, the two flows at the backend side will have the same 4-tuple.
+> 
+> While testing around such cases, I saw these sequences on the backend
+> target.
+> 
+> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 2819965599, win 62727, options [mss 8365,sackOK,TS val 1029816180 ecr 0,nop,wscale 7], length 0
+> IP 10.0.3.249.10000 > 10.0.0.215.60000: Flags [S.], seq 3040695044, ack 2819965600, win 62643, options [mss 8961,sackOK,TS val 1224784076 ecr 1029816180,nop,wscale 7], length 0
+> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [.], ack 1, win 491, options [nop,nop,TS val 1029816181 ecr 1224784076], length 0
+> IP 10.0.0.215.60000 > 10.0.3.249.10000: Flags [S], seq 2681819307, win 62727, options [mss 8365,sackOK,TS val 572088282 ecr 0,nop,wscale 7], length 0
+> IP 10.0.3.249.10000 > 10.0.0.215.60000: Flags [.], ack 1, win 490, options [nop,nop,TS val 1224794914 ecr 1029816181,nop,nop,sack 1 {4156821004:4156821005}], length 0
+> 
+> It seems to be working correctly, but the last ACK was generated by
+> tcp_send_dupack() and PAWSEstab was increased.  This is because the
+> second connection has a smaller timestamp than the first one.
+> 
+> In this case, we should send a dup ACK in tcp_send_challenge_ack()
+> to increase the correct counter and rate-limit it properly.
+> 
+> Let's check the SYN flag after the PAWS tests to avoid adding unnecessary
+> overhead for most packets.
+> 
+> Link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html [0]
+> Link: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation [1]
+> Fixes: 0c24604b68fc ("tcp: implement RFC 5961 4.2")
 
-Do you have a simple AF_TLS test to hand?
-
-David
-
+Sorry, I forgot to remove Fixes tag.
+I'll post v3.
