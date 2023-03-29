@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7A46CD4E3
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE4326CD4F5
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 10:43:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbjC2Ikz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 04:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
+        id S230107AbjC2InR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 04:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbjC2Iky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:40:54 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AEC12E;
-        Wed, 29 Mar 2023 01:40:48 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id g7so9781378pfu.2;
-        Wed, 29 Mar 2023 01:40:48 -0700 (PDT)
+        with ESMTP id S229864AbjC2InQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 04:43:16 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641361716;
+        Wed, 29 Mar 2023 01:43:14 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id u20so9764870pfk.12;
+        Wed, 29 Mar 2023 01:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680079248;
+        d=gmail.com; s=20210112; t=1680079394;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=T4nFg4zKMGojw1a9EUgiYrx0HzwuMwAbekbAVn3z66s=;
-        b=V4fUz5/MNZNeW1jMG5OcBY4Tpy3nx8pejz1mjjui8TMA8VFc8VTH90eQvkJxcjRK+q
-         qGiV1pS07CiLbAP1AaqcNcR+CoYmiHz3aZBc6RmMTnufrnZ6yrYnW4l/SIZ90x2tR/yq
-         qqU6ywlIXlm77nooDOXfDuoT3iClb8PMr6I1sD5GBrc4Q6n7UX12trb5um9753Y5CujO
-         +tDQgOFl8OCqHAMWEKeuPO39s8ChLyRfjgHKDCOX05VAKhPocYKkTbV8Op1lo6XSMZdX
-         lWPnb20TOnLVjnx/2CNWpkIL6ykc6HjvCCGA1S2Efsb6Jw5jbbX3GUMSCnZf1kBiJS/e
-         Ik1w==
+        bh=qAkrUB7euHbox3v7PniPVKEwDjGJe30NY4iWbdoH0eQ=;
+        b=irr7FA6utBPpPz/5zJXbIJCT2Q+4ojhBzwGf4kNFvchrW6lv4H9d86AXROqxDEMrVO
+         chkl5Frsv2fKA0ZrHeh/IfpRPEcYYW+vFhOodmsrCxuTnJ6apmKiJMKU4LG2iS+3Z3Vs
+         2TSuO+asfb7cmCsCCiO6u+cyIU1MDcVS1NEJt8IOGhmJRU0iGxSclduXzz9sRHTA6rrw
+         IGlChkjyUbIRugm/X6iRnCljRiZmPNweLgf7Ki0sCM+IdL6QvBwbWUM0FBP5AHsujnbH
+         DuFUdgLFKF//7wfVwTBtdHJaB3dKucztCT+xexWpq7dpw1WVNt5XIdHqKqJ1bLwdoAZh
+         MUJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680079248;
+        d=1e100.net; s=20210112; t=1680079394;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T4nFg4zKMGojw1a9EUgiYrx0HzwuMwAbekbAVn3z66s=;
-        b=jHysOHPDAAjEPRAn+GAlVPT1bnhfqBLa2pGVdMVLx3cIXCrIxuInhR+b0pHzVWfy1R
-         ks7AEM/ORdcw9vXDUOkkgehPy453XhHNC3DzCKrriT1LP6wtKDmvPippnYgWuZE7+8Qh
-         2ElUzVbGVG/pzeYIItje5Z3ury7BAHhRGh5z0s6rH4JNIOLEO9yZ7kI1LMfbMvoiHoaO
-         zNRCZrFNGT8xtZSs/4HPrd45dpp8Frn5EvAo1mT3fGD7xt9iiuMt3GDF6Ma6wjYVCcpv
-         +bAl5/Zh9okZoQ2vuT/h2Sp6iMCqRLH3nJ+a2yw8ii8E+Znvx4iCnu8CMC6KlnkDYFIT
-         Q8vg==
-X-Gm-Message-State: AAQBX9eQjEPLBjpe7flujq2sqkZds+//OgQ7/8vABshPSK+Sj1/NCE1e
-        sNSOTAsA6QXjmrcRG3iZGQY=
-X-Google-Smtp-Source: AKy350ZeSdakn87GYUZYeIzq/R0++5i4nskJlkhQzoG11bTfiOXNzxI+PTUP/mlACh8Rh4Eqqw7oCA==
-X-Received: by 2002:a62:5254:0:b0:626:286d:b701 with SMTP id g81-20020a625254000000b00626286db701mr17920670pfb.20.1680079247947;
-        Wed, 29 Mar 2023 01:40:47 -0700 (PDT)
+        bh=qAkrUB7euHbox3v7PniPVKEwDjGJe30NY4iWbdoH0eQ=;
+        b=yvBmFsJwFNrbMy7YprHVG4ylZgcm9ZReEYM9LqwOF11kBWXWshnnDZZu04wK8tMp7B
+         bl0z+4GSSOHNy5Q5bNgzXNA+CbhG+tRc8+3h+4CQ4nLbSZDbbvAe4VTlbhFz72s9Ara/
+         C0yb2T+ld6CdmMgavnAFkaX5jYX64dOxPJ8oOMIf3V4DBJLLBvgmWSLofMyE8j1Mu/Af
+         7GYdBCGCHykLY6fLuGbGuQrQFn2uusMAt+20EASw08VhVW0rrgr4iRfrAs77MGYzFOHz
+         VtBqQS9fmHC3Ny/I6qe4vYGk+ZSJ4ArUbnLjufTm4+d3GiJLTaoDR39io0au4TM/CIHM
+         61Zg==
+X-Gm-Message-State: AAQBX9c/1e7EJYHVyJjkTg7YZEE7fr10sno1dbCnN99rKLSGYuYhF32b
+        sIPan0XZ+nlhO95WsGxd6h0=
+X-Google-Smtp-Source: AKy350Yi+FDtNs7I7ur07WPq3PMIY+FGuuQTrqAVCmZswBPeFKnK7Y3Ten8e6jx+gYtFseIR6XFIaA==
+X-Received: by 2002:a62:5b44:0:b0:625:4b46:e019 with SMTP id p65-20020a625b44000000b006254b46e019mr1347521pfb.9.1680079393750;
+        Wed, 29 Mar 2023 01:43:13 -0700 (PDT)
 Received: from debian.me (subs32-116-206-28-15.three.co.id. [116.206.28.15])
-        by smtp.gmail.com with ESMTPSA id a25-20020a62e219000000b00590ede84b1csm23173046pfi.147.2023.03.29.01.40.47
+        by smtp.gmail.com with ESMTPSA id jk1-20020a170903330100b001a1d5d47105sm7445188plb.53.2023.03.29.01.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Mar 2023 01:40:47 -0700 (PDT)
+        Wed, 29 Mar 2023 01:43:13 -0700 (PDT)
 Received: by debian.me (Postfix, from userid 1000)
-        id 8D8D4106705; Wed, 29 Mar 2023 15:40:44 +0700 (WIB)
-Date:   Wed, 29 Mar 2023 15:40:44 +0700
+        id C006B10670B; Wed, 29 Mar 2023 15:43:10 +0700 (WIB)
+Date:   Wed, 29 Mar 2023 15:43:10 +0700
 From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>, Takashi Iwai <tiwai@suse.de>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [Intel-wired-lan] [REGRESSION] e1000e probe/link detection fails
- since 6.2 kernel
-Message-ID: <ZCP5jOTNypwG4xK6@debian.me>
+To:     Takashi Iwai <tiwai@suse.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     regressions@lists.linux.dev, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [REGRESSION] e1000e probe/link detection fails since 6.2 kernel
+Message-ID: <ZCP6Hhs21zzpzBQE@debian.me>
 References: <87jzz13v7i.wl-tiwai@suse.de>
- <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cyVgV9qP40t8gPzM"
+        protocol="application/pgp-signature"; boundary="635VUw/DoI3CBtIu"
 Content-Disposition: inline
-In-Reply-To: <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
+In-Reply-To: <87jzz13v7i.wl-tiwai@suse.de>
 X-Spam-Status: No, score=1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS autolearn=no
@@ -79,33 +77,91 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---cyVgV9qP40t8gPzM
+--635VUw/DoI3CBtIu
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 28, 2023 at 04:39:01PM +0200, Paul Menzel wrote:
-> Does openSUSE Tumbleweed make it easy to bisect the regression at least on
-> =E2=80=9Crc level=E2=80=9D? It be great if narrow it more down, so we kno=
-w it for example
-> regressed in 6.2-rc7.
+On Tue, Mar 28, 2023 at 02:40:33PM +0200, Takashi Iwai wrote:
+> Hi,
+>=20
+> we've got a regression report for e1000e device on Lenovo T460p since
+> 6.2 kernel (with openSUSE Tumbleweed).  The details are found in
+>   https://bugzilla.opensuse.org/show_bug.cgi?id=3D1209254
+>=20
+> It seems that the driver can't detect the 1000Mbps but only 10/100Mbps
+> link, eventually making the device unusable.
+>=20
+> On 6.1.12:
+> [    5.119117] e1000e: Intel(R) PRO/1000 Network Driver
+> [    5.119120] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> [    5.121754] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) =
+set to dynamic conservative mode
+> [    7.905526] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): Failed t=
+o disable ULP
+> [    7.988925] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): register=
+ed PHC clock
+> [    8.069935] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 5=
+0:7b:9d:cf:13:43
+> [    8.069942] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connec=
+tion
+> [    8.072691] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: 1000FF=
+-0FF
+> [   11.643919] e1000e 0000:00:1f.6 eth0: NIC Link is Up 1000 Mbps Full Du=
+plex, Flow Control: None
+> [   15.437437] e1000e 0000:00:1f.6 eth0: NIC Link is Up 1000 Mbps Full Du=
+plex, Flow Control: None
+>=20
+> On 6.2.4:
+> [    4.344140] e1000e: Intel(R) PRO/1000 Network Driver
+> [    4.344143] e1000e: Copyright(c) 1999 - 2015 Intel Corporation.
+> [    4.344933] e1000e 0000:00:1f.6: Interrupt Throttling Rate (ints/sec) =
+set to dynamic conservative mode
+> [    7.113334] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): Failed t=
+o disable ULP
+> [    7.201715] e1000e 0000:00:1f.6 0000:00:1f.6 (uninitialized): register=
+ed PHC clock
+> [    7.284038] e1000e 0000:00:1f.6 eth0: (PCI Express:2.5GT/s:Width x1) 5=
+0:7b:9d:cf:13:43
+> [    7.284044] e1000e 0000:00:1f.6 eth0: Intel(R) PRO/1000 Network Connec=
+tion
+> [    7.284125] e1000e 0000:00:1f.6 eth0: MAC: 12, PHY: 12, PBA No: 1000FF=
+-0FF
+> [   10.897973] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Dupl=
+ex, Flow Control: None
+> [   10.897977] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> [   14.710059] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Dupl=
+ex, Flow Control: None
+> [   14.710064] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> [   59.894807] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Dupl=
+ex, Flow Control: None
+> [   59.894812] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+> [   63.808662] e1000e 0000:00:1f.6 eth0: NIC Link is Up 10 Mbps Full Dupl=
+ex, Flow Control: None
+> [   63.808668] e1000e 0000:00:1f.6 eth0: 10/100 speed: disabling TSO
+>=20
+> The same problem persists with 6.3-rc3.
 >=20
 
-Alternatively, can you do bisection using kernel sources from Linus's
-tree (git required)?
+I'm adding this to regzbot:
+
+#regzbot ^introduced: v6.1.12..v6.2.4
+#regzbot: e1000 probe/link detection fails since v6.2
+
+Thanks.
 
 --=20
 An old man doll... just what I always wanted! - Clara
 
---cyVgV9qP40t8gPzM
+--635VUw/DoI3CBtIu
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZCP5hgAKCRD2uYlJVVFO
-oyl2AP4j+bMThihDAhQDsVmg3q4Dgn/R1Tm/T9ALIQekbXtkvwD+IWh8158WgO5h
-qOc7nN3lZwaB/V+HxGXv7L6aRMBQ3A4=
-=4fBA
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZCP6HgAKCRD2uYlJVVFO
+o8AHAQDFjzDRV29C1MwVXjNV+kbHZ1vxTvB6tFYmWn0YDTmtkwEAqupmkIIt1wg8
+KgBw0VHxmNcJ4aCYAV9pZe8nMRr9pwg=
+=+9Nm
 -----END PGP SIGNATURE-----
 
---cyVgV9qP40t8gPzM--
+--635VUw/DoI3CBtIu--
