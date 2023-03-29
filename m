@@ -2,47 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9CF06CCFD3
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0DD6CCFDE
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbjC2CPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 22:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33486 "EHLO
+        id S229705AbjC2CRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 22:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjC2CO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:14:59 -0400
+        with ESMTP id S229611AbjC2CRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:17:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF16271C;
-        Tue, 28 Mar 2023 19:14:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB08271C;
+        Tue, 28 Mar 2023 19:17:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B661619C4;
-        Wed, 29 Mar 2023 02:14:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B089AC4339B;
-        Wed, 29 Mar 2023 02:14:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5DC3619C4;
+        Wed, 29 Mar 2023 02:17:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235D6C433EF;
+        Wed, 29 Mar 2023 02:17:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680056097;
-        bh=GMZxOMb07ezvMItY7QupneC0McChBLFio51bQ337A5U=;
+        s=k20201202; t=1680056238;
+        bh=HFOVDJOz0rbImC9oGs5gHJAEVLKuq6QbRug+jFmJR5Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LpIuE1MO2g6H75THTzXsOc3+S6/vcszA3x/W5cTb60WxSpTmbOvsznIpG/7Z2jsMO
-         dddgJfzIdZn6rs79r4GnwFunALS+SkqE6ewRTnpBfQl0xOCF+ooaZ7s/Gw8ZWktM5W
-         s5NQOwtE8KxA7Kh5l4ZfW44ljfvv2HDuQsHapvcOHvVZXyAMYUhN79jAPQpqsJNG7I
-         bl6kScmrGyyMH8ZixbCBnx/6m/8AEfxaqcej80pnRGFWkPuzXEQtAOy47hHTCLjTtK
-         F4UxCM37W2GGVx+vOsgT0FMeD9/HR8EcOegB2poNESA2dWShf93Hz+BleM2uQf9qoP
-         xz3S02vx1X3Xw==
-Date:   Tue, 28 Mar 2023 19:14:56 -0700
+        b=BLYaPxU7FwPY+yezNxX8b+04N3VOjJX1R4VH9FfD2FmrXIPxaWF9GXMx+bR+wGUgq
+         FcTP3nGb5mD360od7UXDV+CsJdl0B/z0xYOLo8t2AueXz9/bvW4nWy0aH19dWvWJCv
+         rngogYAcmgzwCYs3tXrQ/7lJbby6V072F9ly974jhtWzPaAH+94fgAxhMlQNzXni+e
+         /KEc+cgXRrTQnH1mZHNT6HaMDJniM5DwMpw5vejG1mjqLxvp9nMQ9/2q1O7+Q9guV1
+         b7UFbDATJ3YUpZXvh825j2ta0uxs/YMWBNYGBQmv/GtI1SDseD25/1pmvmLmfazqzb
+         9zyosH8AZMpHg==
+Date:   Tue, 28 Mar 2023 19:17:16 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ganesh Babu <ganesh.babu@ekinops.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
-Message-ID: <20230328191456.43d2222e@kernel.org>
-In-Reply-To: <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
-References: <PAZP264MB4064279CBAB0D7672726F4A1FC889@PAZP264MB4064.FRAP264.PROD.OUTLOOK.COM>
+To:     Samin Guo <samin.guo@starfivetech.com>
+Cc:     <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Conor Dooley <conor@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Yanhong Wang <yanhong.wang@starfivetech.com>,
+        Tommaso Merciai <tomm.merciai@gmail.com>
+Subject: Re: [net-next v9 5/6] net: stmmac: Add glue layer for StarFive
+ JH7110 SoC
+Message-ID: <20230328191716.18a302a1@kernel.org>
+In-Reply-To: <20230328062009.25454-6-samin.guo@starfivetech.com>
+References: <20230328062009.25454-1-samin.guo@starfivetech.com>
+        <20230328062009.25454-6-samin.guo@starfivetech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -52,50 +71,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Mar 2023 07:13:03 +0000 Ganesh Babu wrote:
-> From a91f11fe060729d0009a3271e3a92cead88e2656 Mon Sep 17 00:00:00 2001
-> From: "Ganesh Babu" <ganesh.babu@ekinops.com>
-> Date: Wed, 15 Mar 2023 15:01:39 +0530
-> Subject: [PATCH] net: mroute6.h: change type of mif6c_pifi to __u32
->=20
-> Increase mif6c_pifi field in mif6ctl struct
-> from 16 to 32 bits to support 32-bit ifindices.
-> The field stores the physical interface (ifindex) for a multicast group.
-> Passing a 32-bit ifindex via MRT6_ADD_MIF socket option
-> from user space can cause unpredictable behavior in PIM6.
-> Changing mif6c_pifi to __u32 allows kernel to handle
-> 32-bit ifindex values without issues.
+On Tue, 28 Mar 2023 14:20:08 +0800 Samin Guo wrote:
+> This adds StarFive dwmac driver support on the StarFive JH7110 SoC.
+> 
+> Tested-by: Tommaso Merciai <tomm.merciai@gmail.com>
+> Co-developed-by: Emil Renner Berthing <kernel@esmil.dk>
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
 
-The patch is not formatted correctly.
-Maybe try git send-email next time?
+Excellent, now it applies cleanly :)
 
-> diff --git a/include/uapi/linux/mroute6.h b/include/uapi/linux/mroute6.h
-> index 1d90c21a6251..90e6e771beab 100644
-> --- a/include/uapi/linux/mroute6.h
-> +++ b/include/uapi/linux/mroute6.h
-> @@ -75,7 +75,7 @@ struct mif6ctl {
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 mifi_t =C2=A0mif6c_mifi; =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 /* Index of MIF */
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned char mif6c_flags; =C2=A0 =C2=A0 =C2=
-=A0/* MIFF_ flags */
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned char vifc_threshold; =C2=A0 /* ttl l=
-imit */
-> - =C2=A0 =C2=A0 =C2=A0 __u16 =C2=A0 =C2=A0mif6c_pifi; =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0/* the index of the physical IF */
-> + =C2=A0 =C2=A0 =C2=A0 __u32 =C2=A0 =C2=A0mif6c_pifi; =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0/* the index of the physical IF */
+Our clang build with W=1 complains that:
 
-Unfortunately we can't do this. The structure is part of uAPI,
-we can't change it's geometry. The kernel must maintain binary
-backward compatibility.=20
+drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c:37:2: warning: variable 'rate' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+        default:
+        ^~~~~~~
+drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c:42:36: note: uninitialized use occurs here
+        err = clk_set_rate(dwmac->clk_tx, rate);
+                                          ^~~~
+drivers/net/ethernet/stmicro/stmmac/dwmac-starfive.c:24:20: note: initialize the variable 'rate' to silence this warning
+        unsigned long rate;
+                          ^
+                           = 0
 
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 unsigned int vifc_rate_limit; =C2=A0 /* Rate =
-limiter values (NI) */
-> =C2=A0};
->=20
-> --
-> 2.11.0
->=20
-> Signed-off-by: Ganesh Babu <ganesh.babu@ekinops.com>
-> ---
 
+not sure how you prefer to fix this. Maybe return early?
