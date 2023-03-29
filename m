@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCDD96CCFCE
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:09:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCF06CCFD0
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 04:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229807AbjC2CJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 22:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        id S229522AbjC2CK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 22:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbjC2CJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:09:10 -0400
-Received: from cstnet.cn (smtp80.cstnet.cn [159.226.251.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E43FF10F3;
-        Tue, 28 Mar 2023 19:09:08 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.125])
-        by APP-01 (Coremail) with SMTP id qwCowAAnLkq+nSNkVe5rGA--.3137S2;
-        Wed, 29 Mar 2023 10:09:02 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     simon.horman@corigine.com
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: Re: [PATCH 1/2] Bluetooth: 6LoWPAN: Modify the error handling in the loop
-Date:   Wed, 29 Mar 2023 10:09:00 +0800
-Message-Id: <20230329020900.33013-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229451AbjC2CK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 22:10:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5FA10F3
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 19:10:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9D5EB819D1
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 02:10:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E746C433D2;
+        Wed, 29 Mar 2023 02:10:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680055852;
+        bh=F1c5m9g0gDKJO+BxV98JGi0JqFdwtToUt61yhGp6OZQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lzOZQcznAlcKiyV6Vfnq6Mc8Sc8cD5eJJmhmycsGaJHnByFnfg8dlSb5a6ubZhmrk
+         uLvNR8v28Fxl35Dmobqp2j1wJcQ6a68cx+9fLCdvqPkk8bvBA0d6SFeSrh9m5uEPs5
+         kgeMfyplL/tQRLNPTV6Dfz7WP1HWCSYQvdIguhLC5t41wj+EWgmGEffx7HSL0J7QuZ
+         4e+dkNpULXDRRl9rj8Xa6oZN2z5kcs6rpcy6Cq4FTOsAF1Q63ZHjgfzNZzgSpXgMIc
+         d9VI4puKnlSN7ileM6GsYWUYGWbetn5z6U4DNc8EpaeT6ZGZfEqyQkURuXpU8tSOZQ
+         Zdjy/622FYIBQ==
+Date:   Tue, 28 Mar 2023 19:10:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Liang He <windhl@126.com>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] rionet: Fix refcounting bugs
+Message-ID: <20230328191051.4ceea7bb@kernel.org>
+In-Reply-To: <20230328045006.2482327-1-windhl@126.com>
+References: <20230328045006.2482327-1-windhl@126.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAAnLkq+nSNkVe5rGA--.3137S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kw17ZFyruFW8Cw1DJFWDJwb_yoW8JF4xpr
-        4xGa4vy3Z8XF18Grs2y3s7Wa4rC395Kr15XrZY9w10kw1avr1Iyr4rta4ruFyIkr1ku3yY
-        vrsY9F1kCw1DZaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02
-        628vn2kIc2xKxwCY1x0262kKe7AKxVWUtVW8ZwCY02Avz4vE14v_Gr1l42xK82IYc2Ij64
-        vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8G
-        jcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2I
-        x0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK
-        8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUFxhLDUUUU
-X-Originating-IP: [124.16.138.125]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-0.0 required=5.0 tests=RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 21, 2023 at 00:09:11AM +0800, Simon Horman wrote:
->On Mon, Mar 20, 2023 at 02:31:55PM +0800, Jiasheng Jiang wrote:
->> Return the error when send_pkt fails in order to avoid the error being
->> overwritten.
->> Moreover, remove the redundant 'ret'.
->> 
->> Fixes: 9c238ca8ec79 ("Bluetooth: 6lowpan: Check transmit errors for multicast packets")
->> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> 
-> I see that the error handling is imperfect - only the most recent
-> error value is returned.
-> 
-> But I think this patch introduces a behavioural change: if
-> an error occurs then no attempt is made to send the
-> multicast packet to devices that follow in the list of peers.
-> 
-> If so, I'd want to be sure that behaviour is desirable.
+On Tue, 28 Mar 2023 12:50:06 +0800 Liang He wrote:
+> In rionet_start_xmit(), we should put the refcount_inc()
+> before we add *skb* into the queue, otherwise it may cause
+> the consumer to prematurely call refcount_dec().
 
-I think it's a matter of trade-offs.
-The original error handling can complete the remaining correct tasks.
-However, my patch can avoid resource waste, because if the an
-error occurs, the rest is likely to go wrong.
-For example, if a memory allocation fails because of the insufficient
-memory, the next memory allocation will likely fails too.
-Maybe it is better to use different error handlings depending on the
-type of errors:
-Immediately return "ENOMEM" errors and continue execute if the other errors occur.
+Are you sure the race can happen? Look around the code, please.
 
-Thanks,
-Jiang
+> Besides, before the next rionet_queue_tx_msg() when we
+> meet the 'RIONET_MAC_MATCH', we should also call
+> refcount_inc() before the skb is added into the queue.
 
+And why is that?
+
+As far as I can tell your patch reorders something that doesn't matter
+and then adds a bug :|
