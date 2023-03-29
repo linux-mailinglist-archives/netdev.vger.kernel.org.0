@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF9A6CCF81
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 03:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 862126CCF82
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 03:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229484AbjC2Bai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 21:30:38 -0400
+        id S229811AbjC2Ban (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 21:30:43 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbjC2Bah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 21:30:37 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E38D2700
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:36 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id x8so10585551qvr.9
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:36 -0700 (PDT)
+        with ESMTP id S229795AbjC2Bai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 21:30:38 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A86730E4
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:37 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id cu4so10662070qvb.3
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 18:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1680053435;
+        d=broadcom.com; s=google; t=1680053436;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=6DhcSilinZ1LtTGTCjdzprrAJKc/11NK/YGuLnTWbMU=;
-        b=bOew8CLjV269QsAeSefvznnMUs7wwaZ/lfDrFZ2SUNGID0LjjEunhpPaNjg43WTyBf
-         IVCjPbNWF9yS8Zfk+WqjPEoMmFa2xjbkkg0ikKYVOxw5EgMApCcHXGYMaej/e7SOK6Vg
-         O06O0Rm33Vp48ap45ocmguT34WzK6Pw2DR8Cw=
+        bh=LSOTsNA8s0zEJ5lw3OWTgtb5+NHpCMHUdkdh0kFhv0Q=;
+        b=Lx+RAN5wkmqD6z5lcbacFAas/2lrn78a69l69AFkVYsOPSBCYht+2lAmBhQOAx24XM
+         Mz5qNrK3UG1t/+0NGTYk+BNJmHJ4SbrsCUMW5VHUFpOUIUWrbF5sn6bRA+jj9aKqYrGo
+         h1NyAeH3GPUIEdRhtyGPP3LUqcDei6AgSFYKI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680053435;
+        d=1e100.net; s=20210112; t=1680053436;
         h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6DhcSilinZ1LtTGTCjdzprrAJKc/11NK/YGuLnTWbMU=;
-        b=BPOeL/9xjSGCwfMZfqKxARYwb7WJBsnEkiUJvPnlf1p1V37B95QzV0OY7y1Xig2zAO
-         62rSDhBWwsCKBe9vziARX8sm/mR5Nu+zKLAjOhhkAe+LiLOVieCqkvkkgsxv5PN0kqFk
-         4qPzlZ0hSTXEDjxJYJk9T2uCgUGHdSp0OB9HxBYMGoCO61veYeaCHTjRf4U/tGwi0aoW
-         vdrxj1eohaLGMx5/nElxxvQZnnki4s4nktfoh8Yh5BkvddIot69z0D7PFg+KHUBam08e
-         g/Uj53RxO5Sy5k5ERgVKy7Pr1uIA/6YOtuEzvsos+tpJj9dCScAUGBFXOSoEU0lnQ4d7
-         63Ew==
-X-Gm-Message-State: AAQBX9dWg/nToKAlzHrYC1c9dQvjmSvUb5uAG3H32fyfVqCBBEJSfCzq
-        P/2eAcXmkJ9tV665/dw6aJSL9TbtpfVHdRpSoSY=
-X-Google-Smtp-Source: AKy350YnfAAULKZOPMG0lxdKBxcUOAGWzX/aS8IjZj/PKLw9ZGO09GB8/vZfqXu+cyZDQYFJe/iueg==
-X-Received: by 2002:ad4:5c4c:0:b0:5b2:fb2:4b1d with SMTP id a12-20020ad45c4c000000b005b20fb24b1dmr30893912qva.12.1680053434974;
-        Tue, 28 Mar 2023 18:30:34 -0700 (PDT)
+        bh=LSOTsNA8s0zEJ5lw3OWTgtb5+NHpCMHUdkdh0kFhv0Q=;
+        b=l2RgJLbY9Y9f12LaL8kZHXy1GUYCrYwki2tByUXUYP1b2YCN1FXSP0K8acsQ9dHEIF
+         kTOlB4EPMB3+3VlXBXQNEW6NZxvP/r1QU7OMlZ6ZkW5thgtcJQ28yxI6PBIh4I5aAyqB
+         NY6rqmJD3k4UWHnamjSjciY38Sx0vZrhnQE4o57wTUeao1qBF6b2kHdE5uXyfiF2yzNd
+         0KUYthC9YmnExH2HAGYGHafZfm+aW2WKqw68jzBgyPQpjTUceo1FGjfpoLFAcCYFMiW7
+         uaH4Ike6SKD41R/nfXnBWVQetrBKkG7CJxjnTUptULvmbXHw8ev6ENo3cEIDa/6ClelK
+         FTWQ==
+X-Gm-Message-State: AAQBX9furI548NAjSCDhTW7VbRaVWmYoOno+qf+keo/BcawvyVX4lKMx
+        cqWkXC71xTAAvLMX86KylT6PCw==
+X-Google-Smtp-Source: AKy350ZZlHodklbVr5dQZtoIGsNF3Bf9oBiGXwQmzVPxSYiiwp8KAYkmFlVcicuQICPqccQk+gwAHw==
+X-Received: by 2002:a05:6214:402:b0:56e:a88f:70ef with SMTP id z2-20020a056214040200b0056ea88f70efmr34709149qvx.23.1680053436248;
+        Tue, 28 Mar 2023 18:30:36 -0700 (PDT)
 Received: from lvnvda1597.lvn.broadcom.net ([192.19.161.250])
-        by smtp.gmail.com with ESMTPSA id l15-20020ad4408f000000b005dd8b9345b0sm4223402qvp.72.2023.03.28.18.30.33
+        by smtp.gmail.com with ESMTPSA id l15-20020ad4408f000000b005dd8b9345b0sm4223402qvp.72.2023.03.28.18.30.35
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 28 Mar 2023 18:30:34 -0700 (PDT)
+        Tue, 28 Mar 2023 18:30:35 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, gospo@broadcom.com,
-        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net 2/3] bnxt_en: Fix typo in PCI id to device description string mapping
-Date:   Tue, 28 Mar 2023 18:30:20 -0700
-Message-Id: <20230329013021.5205-3-michael.chan@broadcom.com>
+        pabeni@redhat.com, gospo@broadcom.com
+Subject: [PATCH net 3/3] bnxt_en: Add missing 200G link speed reporting
+Date:   Tue, 28 Mar 2023 18:30:21 -0700
+Message-Id: <20230329013021.5205-4-michael.chan@broadcom.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20230329013021.5205-1-michael.chan@broadcom.com>
 References: <20230329013021.5205-1-michael.chan@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000377c4f05f7ffec3c"
+        boundary="0000000000004bf16d05f7ffec8f"
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
@@ -69,48 +67,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000377c4f05f7ffec3c
+--0000000000004bf16d05f7ffec8f
 Content-Transfer-Encoding: 8bit
 
-From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+bnxt_fw_to_ethtool_speed() is missing the case statement for 200G
+link speed reported by firmware.  As a result, ethtool will report
+unknown speed when the firmware reports 200G link speed.
 
-Fix 57502 and 57508 NPAR description string entries.  The typos
-caused these devices to not match up with lspci output.
-
-Fixes: 49c98421e6ab ("bnxt_en: Add PCI IDs for 57500 series NPAR devices.")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Fixes: 532262ba3b84 ("bnxt_en: ethtool: support PAM4 link speeds up to 200G")
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         | 1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 ++
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index e2e2c986c82b..c23e3b397bcf 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -175,12 +175,12 @@ static const struct pci_device_id bnxt_pci_tbl[] = {
- 	{ PCI_VDEVICE(BROADCOM, 0x1750), .driver_data = BCM57508 },
- 	{ PCI_VDEVICE(BROADCOM, 0x1751), .driver_data = BCM57504 },
- 	{ PCI_VDEVICE(BROADCOM, 0x1752), .driver_data = BCM57502 },
--	{ PCI_VDEVICE(BROADCOM, 0x1800), .driver_data = BCM57508_NPAR },
-+	{ PCI_VDEVICE(BROADCOM, 0x1800), .driver_data = BCM57502_NPAR },
- 	{ PCI_VDEVICE(BROADCOM, 0x1801), .driver_data = BCM57504_NPAR },
--	{ PCI_VDEVICE(BROADCOM, 0x1802), .driver_data = BCM57502_NPAR },
--	{ PCI_VDEVICE(BROADCOM, 0x1803), .driver_data = BCM57508_NPAR },
-+	{ PCI_VDEVICE(BROADCOM, 0x1802), .driver_data = BCM57508_NPAR },
-+	{ PCI_VDEVICE(BROADCOM, 0x1803), .driver_data = BCM57502_NPAR },
- 	{ PCI_VDEVICE(BROADCOM, 0x1804), .driver_data = BCM57504_NPAR },
--	{ PCI_VDEVICE(BROADCOM, 0x1805), .driver_data = BCM57502_NPAR },
-+	{ PCI_VDEVICE(BROADCOM, 0x1805), .driver_data = BCM57508_NPAR },
- 	{ PCI_VDEVICE(BROADCOM, 0xd802), .driver_data = BCM58802 },
- 	{ PCI_VDEVICE(BROADCOM, 0xd804), .driver_data = BCM58804 },
- #ifdef CONFIG_BNXT_SRIOV
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index c0628ac1b798..5928430f6f51 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1226,6 +1226,7 @@ struct bnxt_link_info {
+ #define BNXT_LINK_SPEED_40GB	PORT_PHY_QCFG_RESP_LINK_SPEED_40GB
+ #define BNXT_LINK_SPEED_50GB	PORT_PHY_QCFG_RESP_LINK_SPEED_50GB
+ #define BNXT_LINK_SPEED_100GB	PORT_PHY_QCFG_RESP_LINK_SPEED_100GB
++#define BNXT_LINK_SPEED_200GB	PORT_PHY_QCFG_RESP_LINK_SPEED_200GB
+ 	u16			support_speeds;
+ 	u16			support_pam4_speeds;
+ 	u16			auto_link_speeds;	/* fw adv setting */
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 7658a06b8d05..6bd18eb5137f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1714,6 +1714,8 @@ u32 bnxt_fw_to_ethtool_speed(u16 fw_link_speed)
+ 		return SPEED_50000;
+ 	case BNXT_LINK_SPEED_100GB:
+ 		return SPEED_100000;
++	case BNXT_LINK_SPEED_200GB:
++		return SPEED_200000;
+ 	default:
+ 		return SPEED_UNKNOWN;
+ 	}
 -- 
 2.18.1
 
 
---000000000000377c4f05f7ffec3c
+--0000000000004bf16d05f7ffec8f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,13 +181,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIERPMWqF2XB2gu9oBQzBocEPYQ+Pq3p9
-c3hYdegbp8HTMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
-OTAxMzAzNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAhQsnKTcQxcszXk6zodlkC2SEKIve8Q
+uH1MWD3C1H1aMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIzMDMy
+OTAxMzAzNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBzoQAz0k9ZKHgdx4w0Ir4XES5d5Y/hSCyOQPFSbf8NNI5jTMTx
-sH/HOBLXB2gCpy+d8B6b2B70WAU2ZQ1O+PYZY5Ov/m68lBGV/EAoyP9A/C23aaJYivK4BFyC9gzZ
-A4zE4ExGVcOzkJi1WfcX6GUAogybExgK6sGGsoECq8hbX+m7haqUIQddvK2v4dE452Xd/stbynhJ
-HO2npv2rg4V8eLl8FcwjlCdX1zfLdMuZNzUrg5fWnv2tPKU1v948E3ARwF51BJeucn4EYdTqVDMy
-L0cKRFLPSCyIIKxhxKWRhhsHp+dTM71mhoqghCMOhW7ACE+NR5Ua1rLs9GDt5EK8
---000000000000377c4f05f7ffec3c--
+ATANBgkqhkiG9w0BAQEFAASCAQBR7Xr1C+IwqydIqWlUc0QNQ+IWKQKLt+6rHSxGirOt+Ksxatzb
+Y9CyoTDhiYQ/Xv749af7Ned5eAStBzM6QnBX7mHWv+oJ+Y2AIcCmzQKIvkhQ4UiNIkVFtVsH4s0b
+8aaF6DorVBsRk4njGe/i6yeJXBb1nEH1v8NCkriQ+xjbT//MVUbHuZXg2EaKmXCycNc5bWDj2lgs
+AAudgigFeYex1d16YYUyLh2yddXN+k9BTq8MTtjYPY57jsIH+We3DkuHUjqbuJNif1oxV6dmvpdn
+2LpvHI+W1xW5ZNmJOnMpQZRWWzId32YHZZev3k3YahCpvypzf2WjaQd60/J6ZMLw
+--0000000000004bf16d05f7ffec8f--
