@@ -2,110 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B5B06CF408
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 22:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 020176CF3AD
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 21:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbjC2UJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 16:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S230457AbjC2TvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 15:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbjC2UJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 16:09:00 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1B930F0
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 13:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=jVC71MKka5GwL22KLFhsCqjy1I9i
-        gdQGt6oQsMi8/RU=; b=k15j8HHtG64h8Y/Yv4CTHSsDk7wcd6SuYASYOluR7ez9
-        x9Ju76ikKEI4WHD77d0aI7PO+9x5ebECu507mVjsKTHpvIw5Np9C+hUQeHIr+b9t
-        hvIrSq4y4u1t9CHl0JkVYnvpu5e2NLKzNoA3nyTBlfovBLlXME+6ad6OEr1uIak=
-Received: (qmail 658237 invoked from network); 29 Mar 2023 21:48:56 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 29 Mar 2023 21:48:56 +0200
-X-UD-Smtp-Session: l3s3148p1@X5gvRA/4BtIgAQnoAF81ABGoRcrvNTIr
-Date:   Wed, 29 Mar 2023 21:48:55 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v4] smsc911x: only update stats when interface is up
-Message-ID: <ZCSWJxuu1EY/zBFm@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org
-References: <20230329064010.24657-1-wsa+renesas@sang-engineering.com>
- <20230329123958.045c9861@kernel.org>
+        with ESMTP id S230221AbjC2TvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 15:51:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9856A74;
+        Wed, 29 Mar 2023 12:50:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62A2261E26;
+        Wed, 29 Mar 2023 19:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B1450C4339B;
+        Wed, 29 Mar 2023 19:50:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680119423;
+        bh=2BMeM8dD3hziGXEFErJyFqPV9onZ6X8OoaehGvFbk7A=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JuSOEnsguHz56oDMcKCeWXRXqi1iFmbhRiTkod5lT612eIYeRuQNdVanAEaMzRcEd
+         9w4M873hYQHRAbtb2gizEuAqh6NezpgtvXW6wlEO7yaLTrQENpEmk63uzuLkcbRvAZ
+         0aHX0i4stFuPY8Y2hfxfeFtkT5qZPEjkw/h64tOT6RrGE/QpHT5hpCtBRi6gbmrdKh
+         E5zCdZu2yhToBrliNxgX9GbxrJcr74A0eDrS3m6RMG/dziwLgma9/IWovNiqW4d3cy
+         y37QjRtBE6ImwpBOGzkkARsno9mJtMX96GfZMls2eZONNgX0G+VbALY2etnBZ00Ydt
+         GjYAMfKey+4sQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 93217E50D75;
+        Wed, 29 Mar 2023 19:50:23 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="GaZuoAIg4Gz9odJu"
-Content-Disposition: inline
-In-Reply-To: <20230329123958.045c9861@kernel.org>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v8 0/4] Add WCN6855 Bluetooth support
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <168011942359.31352.12230106748890164488.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Mar 2023 19:50:23 +0000
+References: <20230326233812.28058-1-steev@kali.org>
+In-Reply-To: <20230326233812.28058-1-steev@kali.org>
+To:     Steev Klimaszewski <steev@kali.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, agross@kernel.org,
+        andersson@kernel.org, konrad.dybcio@linaro.org,
+        marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        sven@svenpeter.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        markpearson@lenovo.com, quic_tjiang@quicinc.com, johan@kernel.org
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---GaZuoAIg4Gz9odJu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series was applied to bluetooth/bluetooth-next.git (master)
+by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
 
-On Wed, Mar 29, 2023 at 12:39:58PM -0700, Jakub Kicinski wrote:
-> On Wed, 29 Mar 2023 08:40:10 +0200 Wolfram Sang wrote:
-> > Otherwise the clocks are not enabled and reading registers will OOPS.
-> > Copy the behaviour from Renesas SH_ETH and use a custom flag because
-> > using netif_running() is racy. A generic solution still needs to be
-> > implemented. Tested on a Renesas APE6-EK.
->=20
-> Hm, so you opted to not add the flag in the core?
-> To keep the backport small? I think we should just add it..
-> Clearly multiple drivers would benefit and it's not a huge change.
+On Sun, 26 Mar 2023 18:38:08 -0500 you wrote:
+> First things first, I do not have access to the specs nor the schematics, so a
+> lot of this was done via guess work, looking at the acpi tables, and looking at
+> how a similar device (wcn6750) was added.
+> 
+> This patchset has 2 patchsets that it depends on, for the bindings so that they
+> pass dtbs_check, as well as adding in the needed regulators to make bluetooth
+> work.
+> 
+> [...]
 
-I did it this way for two reasons. First, yes, this is a minimal patch
-for backporting. No dependency on core changes, very easy. Second, this
-is a solution I could develop quickly. I am interested in finding
-another solution, but I guess it needs more time, especially as it
-probably touches 15 drivers. I created an action item for it. I hope
-I'll be able to work on it somewhen. But for now, I just need the SMSC
-bug fixed and need to move to the next issue. If we later have the
-generic solution, converting this driver also won't make a lot of a
-difference.
+Here is the summary with links:
+  - [v8,1/4] dt-bindings: net: Add WCN6855 Bluetooth
+    https://git.kernel.org/bluetooth/bluetooth-next/c/5c63b28b9107
+  - [v8,2/4] Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6855
+    https://git.kernel.org/bluetooth/bluetooth-next/c/e5a3f2af0036
+  - [v8,3/4] arm64: dts: qcom: sc8280xp: Define uart2
+    (no matching commit)
+  - [v8,4/4] arm64: dts: qcom: sc8280xp-x13s: Add bluetooth
+    (no matching commit)
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
---GaZuoAIg4Gz9odJu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQklicACgkQFA3kzBSg
-KbZMkA/8CWM8Ei0PxOxZQ3W35STQePadi2e4+Uuydqfb7kc3xVhWa7MGrzyqFCKq
-RyfjFDd2Xeo6UQOJE5UPjO8IdilZPnGAtJTSVRkXr5xPU4ozE3syuD4JkumHa2nx
-lFtbl8+x4d5aNwlTqUGw48yxOTHB40bzNMPbAL3xP7L1VIiMcRUBy5LIgaTG36nh
-Wu7rWm7zx73p7OYIiV7G2aTTOQRd0uoQ9PC3HoHE10s9ps6ulGOOpSyz4fJuXn3c
-v7/pGTX6kCbxnFE5wlH4BwECG2bRid0/i6ZwWKJWK2W2HvXujZReo2eHdaAzEytb
-DpNwGCKpPouf1NbNby8/yCoc/ncUPhC0x1uCbqOM+Il2olzh617xPDzvxV6388hn
-HMMbL7MoNs+FXSllv7kKVxgrXfH5rhtFlvo1c5odL2/DKExuVoN2fCDya5aCAQTs
-OhaZnfANPyhfZStnQSvPpzfeeIWXhvMOz+Pi9VlrZxAbEAdjPwJr+241GFI+J1V8
-U6UmuA77jaut4oHFGEFqP6sJcSx/olxmyphiGF4DRXO2/9UQ8cjiq4m7rZNtbaas
-ZVHUFdDy+Zmt976KrJXjtVL4HoRkZb95UZkBigC6FWNjPvwCfpnRyEwLCHihNfBL
-iGAgrMVUgxM7MZTVxrzNyPdLLOt3VqIcifSmLCx31qU5vgwMNes=
-=xZu0
------END PGP SIGNATURE-----
-
---GaZuoAIg4Gz9odJu--
