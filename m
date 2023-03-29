@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B6D6CCE7A
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 02:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2078A6CCE7B
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 02:07:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbjC2AHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Mar 2023 20:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
+        id S229468AbjC2AHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Mar 2023 20:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbjC2AHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 20:07:09 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5861B0
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:08 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id a16so12451915pjs.4
-        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:08 -0700 (PDT)
+        with ESMTP id S229668AbjC2AHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Mar 2023 20:07:15 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E844D2111
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:13 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id s8so9185567pfk.5
+        for <netdev@vger.kernel.org>; Tue, 28 Mar 2023 17:07:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680048428;
+        d=google.com; s=20210112; t=1680048432;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=95oOalITgfprQFCC8+m+Ju2257CFa9b2zeXfGuyW2XU=;
-        b=aqrrfdJS4mAdimmndN3T04Zhg0AJMtQBFsa0b6to2GpL6u4a1AtsC4X+OflAVWtHqh
-         /YJsEtDORVnnQbf41Kucx9TlTdMCQg6tMUIIFTA+t0jrEoZUVfU/esS82ewz8exQcEJ8
-         v3cPDKUjtrbfcIYkHOO93bbwan+Eyw06kchbjUdpLsX7uZSB+yNUbmFiTdjB0VMCQawX
-         24nwzUqT5fpC5bcKuzAeGm/sG5PLIbTYhu9qG/DzpzCH+8Y/S9KzQqeriWmTputE7ljf
-         8IpPq8wnAQQ56hb/WCzlOGNl5IkYWDLGLSdgJb/mR6FG7/1rc+aUYu2KP/IWEXFOxhYg
-         7C/g==
+        bh=iGGacsNROXFqbCSpM1UhzcQ5jzqIVBCAlM6ogL7NNh4=;
+        b=VTIfFadxfKzYc5ZvYAL3hr/jRZaDhvhWlZ6SIL0y9Fgm/Z2ZtuoI2idXK1NbzJs1FR
+         ZcVU5m+AJqmShNj8sjDCsudLbqcUS6wrNIkEUeOzlrYZou9lupXHt7yZ7vW1pDsvChEZ
+         bjkDtyoLgnzyuYolvPa+N1pvLy5abt+KYbu1aCwfS7iZ7LhcnYUJG4G0+c0Z6+tBW+Gi
+         uCQRDFibgLkd4BD33IKTFh+NC4Xfvi+TpTKNwtaxNaLKLLA4K7bp2QNmkHdtBu0npOC/
+         TCJocRcJrU8kb4+q7bvH18i7sMoKzr82iEy3QUL1ynVxshH/QO7IXjjB5By7ngJS8k85
+         3J8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680048428;
+        d=1e100.net; s=20210112; t=1680048432;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=95oOalITgfprQFCC8+m+Ju2257CFa9b2zeXfGuyW2XU=;
-        b=KSVrEBMJ8qn0tVSCdrRc3fLZ3vGfzPO/PCHL7SMQWWVb5bCLvc5iRntJbrLo/T/Kne
-         bZS69JyXASNIMIKvJxrqfk3sNMjJxKEUB/Kmag91ogcQRhGopWRSBSVforGhl67hIWRV
-         L6iXToy/h/t/LI6SDEePr/JqEnMI12EsqSp9P8R+AT31gKazUN8hcOtkPUr9oaZZUBiy
-         CEsV3VuXAiEAoczGlgybynmFW4Ubx/tFb34M+jvXWjIDXqThB3PxIT7I5zRo+XL4lEjY
-         eBH/BXMS5XfFjYjUZxZmUkcF8mC52199odDYbyGGjDtcY89E//K362zy91NybBheizzm
-         c64Q==
-X-Gm-Message-State: AAQBX9f9AhJkvp47LXgyrBnnZCd+kcqEBM+o2WX3JBB8cllmswo3SbZm
-        4pUhAukLdoKEv8UOVHxa3CGrSQgS1j2Db5luk9KhjA==
-X-Google-Smtp-Source: AKy350ZcchhiYc5mfbbMoSG7scAna95+vIXAy+yerISOHalXtsoIx2bCE9aqTSk639ohJKiouWBA1nn3CJbY5dqpA8Y=
-X-Received: by 2002:a17:902:dace:b0:1a0:41ea:b9ba with SMTP id
- q14-20020a170902dace00b001a041eab9bamr6653612plx.8.1680048428320; Tue, 28 Mar
- 2023 17:07:08 -0700 (PDT)
+        bh=iGGacsNROXFqbCSpM1UhzcQ5jzqIVBCAlM6ogL7NNh4=;
+        b=OZ0keZLBqQwB0rUPXHztHiIbAPzue6J89K2dcXKXHt7zZFCMv+hIeVX7+ciwhK+6Ty
+         d7umMgtqvHp9LE88W3NGgWOeVlVZa3FTqpOWTCXqxIGCLrCNkRfJWo5/f4v8/zQfzHnv
+         K2bM7rglB7ntnZA+aKSS1Q1XiV58lbSowv3vqXkWcZbHuGgWGLiCSS+IrvI/l6feQLGg
+         eTFIaYNiaB3R4Q9lo81uACqRgv+i4HnSkmKDwyvIBJcNM26rNTW6cKQ363kxhD4ZEWua
+         WoZctGOuz9kUheMaMwK/VdD1xC4FVk4Fn4flSadG/S7DCHSo2yRbY4RJZg8460AOlL+6
+         UNug==
+X-Gm-Message-State: AAQBX9eNxasVx++YQ/KrG3Oxw4HhIuzlYUiz0/+59yk6JjLKJEkwHQwO
+        5dY83wt0YpmZI5PapW45Dqrgbn3NEjKSM5wzgt2ZXQ==
+X-Google-Smtp-Source: AKy350bUMu0iHTUv33wap0R444e3mFWYFCGIT+lU1w7044wJ5ftPQ/VoWuUdw1e8M9FJ+bei5q5l7MVlxGztL94Mtbw=
+X-Received: by 2002:a63:d201:0:b0:503:7be2:19a7 with SMTP id
+ a1-20020a63d201000000b005037be219a7mr4656730pgg.1.1680048432551; Tue, 28 Mar
+ 2023 17:07:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230324225656.3999785-1-sdf@google.com> <20230324225656.3999785-5-sdf@google.com>
- <20230324203543.3998a487@kernel.org>
-In-Reply-To: <20230324203543.3998a487@kernel.org>
+References: <20230324225656.3999785-1-sdf@google.com> <20230324225656.3999785-2-sdf@google.com>
+ <20230324203340.712824b8@kernel.org>
+In-Reply-To: <20230324203340.712824b8@kernel.org>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Tue, 28 Mar 2023 17:06:57 -0700
-Message-ID: <CAKH8qBsGotuK2brjmtZXmdXitbCJ532o18c4Rfhu_B993kcWGw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/4] tools: ynl: ethtool testing tool
+Date:   Tue, 28 Mar 2023 17:07:01 -0700
+Message-ID: <CAKH8qBvPKdRPZpTiihZKhLixcbSyp-UPAOM+0_TuFHOUruSFSQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/4] tools: ynl: support byte-order in cli
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         pabeni@redhat.com
@@ -70,24 +70,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 8:35=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
+On Fri, Mar 24, 2023 at 8:33=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
 ote:
 >
-> On Fri, 24 Mar 2023 15:56:56 -0700 Stanislav Fomichev wrote:
-> > +def args_to_req(ynl, op_name, args, req):
-> > +  """
-> > +  Verify and convert command-line arguments to the ynl-compatible requ=
-est.
-> > +  """
-> > +  valid_attrs =3D ynl.operation_do_attributes(op_name)
-> > +  valid_attrs.remove('header') # not user-provided
-> > +
-> > +  if len(args) =3D=3D 0:
-> > +    print(f'no attributes, expected: {valid_attrs}')
-> > +    sys.exit(1)
+> On Fri, 24 Mar 2023 15:56:53 -0700 Stanislav Fomichev wrote:
+> > @@ -250,7 +258,7 @@ genl_family_name_to_id =3D None
+> >                                  if entry_attr.type =3D=3D Netlink.CTRL=
+_ATTR_MCAST_GRP_NAME:
+> >                                      mcast_name =3D entry_attr.as_strz(=
+)
+> >                                  elif entry_attr.type =3D=3D Netlink.CT=
+RL_ATTR_MCAST_GRP_ID:
+> > -                                    mcast_id =3D entry_attr.as_u32()
+> > +                                    mcast_id =3D entry_attr.as_u32(Non=
+e)
 >
-> Could you re-format with 4 char indentation? To keep it consistent with
-> the rest of ynl?
+> I wonder if it's worth using a default value for the argument:
+>
+>         def as_u32(self, byte_order=3DNone):
+>
+> the number of Nones is very similar to number of meaningful args.
+> And only spec-based decoding needs the arg so new cases beyond
+> the 4 x2 are unlikely.
+>
+> > -                decoded =3D attr.as_u64()
+> > +                decoded =3D attr.as_u64(attr_spec.get('byte-order'))
+>
+> Could you add a field in class SpecAttr, like is_multi and read
+> a field instead of the get? I'm trying to avoid raw YAML access
+> outside of nlspec.py classes as much as possible.
 
-Sorry, I was somehow assuming that whatever my vim does is the right
-way to go :-( Fixed my config and will reindent.
+Sure, will do this and the above suggestions!
