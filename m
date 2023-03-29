@@ -2,101 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DB5B6CEC27
-	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 16:52:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1EEC6CEC4F
+	for <lists+netdev@lfdr.de>; Wed, 29 Mar 2023 17:01:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbjC2OwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 10:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
+        id S230242AbjC2PBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 11:01:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbjC2OwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 10:52:04 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C583F2
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 07:51:53 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id h14so6869522ilj.0
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 07:51:53 -0700 (PDT)
+        with ESMTP id S229686AbjC2PBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 11:01:54 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5374272A
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:01:47 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-17fcc07d6c4so2443224fac.8
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 08:01:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680101512;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=IRLFVArb9YTeIujavBGhsrWcOeSWzavLVjHwZZ6E+c8=;
-        b=mnTkw52FfCbZP5v4Ez4gzP2KNbYiEJrygBQ21P+me8r1Rxx7spJyUH2QYdtfxzxBTw
-         nuzFs+OqYxQ5jDbAfFy2KBJca4rXDxVbplaJKvPIjnhpE6LSVl+6tU8++x95J++CA4eG
-         bDEUmQklgLpMggPXkHpBt3Jr6TpF/vE0R7haWTujAUve8jBUq4aygLRs0nRG0JdfB85N
-         ZYuTae3XD+2za23fQRFMgSFdo1SflY8LSngf+qH71Ezk4s3VouTn+BFwX1iZ8+51h9Rr
-         ecNGetVjIHPcQJPecwIuy2vlG6EMotxaIQLfrQFRiw801yctCrqd3J/yz6kfns4kXUVO
-         bIgw==
+        d=gmail.com; s=20210112; t=1680102107; x=1682694107;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PL/MziMN1siN83vtIEtm9b9KmvOZZ2R/OSDVgxgM3+Q=;
+        b=lPn1Gjs/+YsrcCk7rEhX+MyA/tybUZ10R7qqvxXe0s0dRhdpf2xK4M58j4Bf4B1sGw
+         lhVmMx2ShJPIL8/uP/gM5WxkSXStk1Q/7cnAiGSzkRbh0rEcbhrDcUyxZ2rgmUi+L5Oj
+         4Gl8Yegt/JAggURlPYcimHAlmXCMBHuNLupj+xpyvMDWqbNqzkGQ2KCi1MYplW6Ccfbj
+         yZgy5KP6EeVTvJK0iR17dfS2eT+EB6F0yIL78MP8ORnuULCOhWVXrtANQymh/vJUmlNr
+         rG8btvrxiIZAMhsB2lG9F0Wjc+7ZMo9a6PYdACr/1LW6Af9we01fu6MsJQdcDhz+azl7
+         /LXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680101512;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=IRLFVArb9YTeIujavBGhsrWcOeSWzavLVjHwZZ6E+c8=;
-        b=2ikcwC9ck/e1Oj3zLjKFS6MyXKEehQv0tKCYVsQ1DU2b8dHGvPBoXSNfsQdOUiIuas
-         eiHkzIqBm564R0CrhlvA2eZe1p3INFe8N42tA0H3a4FkZrms5yX+wucUAUahQgm/2HB3
-         rikog9zMfFIL4UtAuLsVGzAhlQUkbyGwaUGKEqBeM/Vj/xYfpDnlQAZaEIsiQqV1kMww
-         wwsUFCnRrKSVri+hHWARhWTHiNyJsaZYP7j+CejeabD8IZIwO26geMEQEu6Gny9BQRAH
-         il3EBCvLBDxj+u28mzYtjKE0N3hBBvU7Ow/DVmxmPIfFMqs9e3GXh3LMG2XbFeH5I00+
-         OM0w==
-X-Gm-Message-State: AAQBX9eXcKEu6wfH+Vw23d4l3BOuI4u96TMja98KmmQ/kuFCJnMBeWpn
-        eVGkpC5VeO1S+Qhi/YT81RnnOgKOi4Ln0Q==
-X-Google-Smtp-Source: AKy350atJUzA7z43aU90Nq0ei8OHdSfu3e5YuSg0RLrGDmHLioh4It33+h+JGy9Cu1+8znAwNz4cXw==
-X-Received: by 2002:a05:6e02:4d2:b0:326:1cf1:a9ce with SMTP id f18-20020a056e0204d200b003261cf1a9cemr4833765ils.29.1680101512469;
-        Wed, 29 Mar 2023 07:51:52 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:7ed0:9428:49f2:b7cb:5336? ([2601:282:800:7ed0:9428:49f2:b7cb:5336])
-        by smtp.googlemail.com with ESMTPSA id x3-20020a056638248300b003ee9720740esm10542938jat.153.2023.03.29.07.51.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Mar 2023 07:51:51 -0700 (PDT)
-Message-ID: <b52bb122-b5e2-cff1-1c0a-ad8a855e278d@gmail.com>
-Date:   Wed, 29 Mar 2023 08:51:50 -0600
+        d=1e100.net; s=20210112; t=1680102107; x=1682694107;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PL/MziMN1siN83vtIEtm9b9KmvOZZ2R/OSDVgxgM3+Q=;
+        b=xJIaUe/qZVa4bP+dy3DHz16WSSFvvg59gtDO0iDypvylACyr1IYBw3NxLxFQg4FQdT
+         xDUUJyzeCYvLTK1ShAPN0LaUNKKzrvAbAGKe1U/mpgC6nZiUaVFcHWc0IcDrzqbasdxv
+         v+Gxiab6l/ispkvh8hQSTeRgR/emhtpsFZUU4Be3N4A5zsBotd0oYBXwYBD7+eAGvDMy
+         QEPKMezb4aqRKf/52+XpjAo45wC4xTqc9yo1rwZSZh7P1Wky8hAF8aZcC0yF4ujWgjU2
+         /hUaDMMd1sKf/q0twubPwVPnG7FOnU4y4Et8ipPOcgkcj8BqsR24s8OLYLc0SMterJwl
+         q8dw==
+X-Gm-Message-State: AAQBX9cfJihQ6txaw71oqC2HIHwNrgTZTXS7A+b0+QTpz7oGpKArF2Gy
+        H3hgZ/IArFFo2PdWCCOK7+Gy6rJRE6+OiA==
+X-Google-Smtp-Source: AK7set9bGVdaXhzzdkHnOIVZOvnaPudTkp+9W5JSSp3s73vhxtvQLFgIFxMqZ7IzvHFHQbBMOlOakA==
+X-Received: by 2002:a05:6870:891f:b0:17a:d300:fd1a with SMTP id i31-20020a056870891f00b0017ad300fd1amr9208813oao.2.1680102107202;
+        Wed, 29 Mar 2023 08:01:47 -0700 (PDT)
+Received: from fabio-Precision-3551.. ([2804:14c:485:4b69:1c2d:271:d34:84ea])
+        by smtp.gmail.com with ESMTPSA id az15-20020a05687c230f00b0016a37572d17sm11927000oac.2.2023.03.29.08.01.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Mar 2023 08:01:46 -0700 (PDT)
+From:   Fabio Estevam <festevam@gmail.com>
+To:     kuba@kernel.org
+Cc:     andrew@lunn.ch, olteanv@gmail.com, netdev@vger.kernel.org,
+        steffen@innosonix.de, Fabio Estevam <festevam@denx.de>
+Subject: [PATCH net] net: dsa: mv88e6xxx: Enable IGMP snooping on user ports only
+Date:   Wed, 29 Mar 2023 12:01:40 -0300
+Message-Id: <20230329150140.701559-1-festevam@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.7.2
-Subject: Re: [PATCH iproute2-next] macvlan: Add bclim parameter
-Content-Language: en-US
-To:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org
-References: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
- <ZCJYxDy1fgCm+cbj@gondor.apana.org.au>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <ZCJYxDy1fgCm+cbj@gondor.apana.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/27/23 9:02 PM, Herbert Xu wrote:
-> @@ -67,6 +68,12 @@ static int bc_queue_len_arg(const char *arg)
->  	return -1;
->  }
->  
-> +static int bclim_arg(const char *arg)
-> +{
-> +	fprintf(stderr, "Error: illegal value for \"bclen\": \"%s\"\n", arg);
+From: Steffen Bätz <steffen@innosonix.de>
 
-s/bclen/bclim/?
+Do not set the MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP bit on CPU or DSA ports.
 
-> +	return -1;
-> +}
-> +
->  static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
->  			  struct nlmsghdr *n)
->  {
-> @@ -168,6 +175,15 @@ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
->  				return bc_queue_len_arg(*argv);
->  			}
->  			addattr32(n, 1024, IFLA_MACVLAN_BC_QUEUE_LEN, bc_queue_len);
-> +		} else if (matches(*argv, "bclim") == 0) {
+This allows the host CPU port to be a regular IGMP listener by sending out
+IGMP Membership Reports, which would otherwise not be forwarded by the
+mv88exxx chip, but directly looped back to the CPU port itself.
 
-we stopped accepting new uses of `matches`; make this strcmp.
+Fixes: 54d792f257c6 ("net: dsa: Centralise global and port setup code into mv88e6xxx.")
+Signed-off-by: Steffen Bätz <steffen@innosonix.de>
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+---
+Changes since RFC:
+- Use dsa_is_user_port() to decide when to set the snoop bit (Andrew).
+- Reword the commit message to differentiate between IGMP snooping and an IGMP listener on
+the bridge.
 
+ drivers/net/dsa/mv88e6xxx/chip.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index b73d1d6747b7..62a126402983 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3354,9 +3354,14 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 	 * If this is the upstream port for this switch, enable
+ 	 * forwarding of unknown unicasts and multicasts.
+ 	 */
+-	reg = MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP |
+-		MV88E6185_PORT_CTL0_USE_TAG | MV88E6185_PORT_CTL0_USE_IP |
++	reg = MV88E6185_PORT_CTL0_USE_TAG | MV88E6185_PORT_CTL0_USE_IP |
+ 		MV88E6XXX_PORT_CTL0_STATE_FORWARDING;
++	/* Forward any IPv4 IGMP or IPv6 MLD frames received
++	 * by a USER port to the CPU port to allow snooping.
++	 */
++	if (dsa_is_user_port(ds, port))
++		reg |= MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP;
++
+ 	err = mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
+ 	if (err)
+ 		return err;
+-- 
+2.34.1
 
