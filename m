@@ -2,46 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7077E6CF9FA
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 06:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBEC6CF9FB
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 06:08:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbjC3EGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 00:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        id S229567AbjC3EIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 00:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbjC3EGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 00:06:37 -0400
+        with ESMTP id S229461AbjC3EID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 00:08:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92F25272;
-        Wed, 29 Mar 2023 21:06:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423314EEA
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 21:08:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64202B82338;
-        Thu, 30 Mar 2023 04:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B891C433EF;
-        Thu, 30 Mar 2023 04:06:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED4BEB82338
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 04:08:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42BF6C433D2;
+        Thu, 30 Mar 2023 04:08:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680149194;
-        bh=cWovLLY/QzBK8HVyLhNR1l5TL9fvrIqFqju9NMQW51k=;
+        s=k20201202; t=1680149280;
+        bh=Chnva3TDpfXtFTuM31fD3VabzdJxL+deMXecCo+u+Co=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZDFPyj0kZOcN70YJukiaht+4R96ciHWp36kuDhyTZvQCNg6OkBfHzzFA9NTUHpmG0
-         CE2qnk8K3dTtVHJ5UYF2C/NjxT3CiHTjv3ssN9KemoD+gZVlRJYU9CW2HC4tB09Rzt
-         bSqgh6nNpI4IvofBMPJ7x0Mn7my04GU6UhQaOusi7lfs/yuRPTwLxZJkMbGhsjudfB
-         84c088nj4doJ0i5QyNHAmMXa06sNStK2VB5m2MArER2xOIZcUtMWt9+XXrgS3Dxl+2
-         wiDAgKKCMFIgMPROz+5hwBdDi/1/Ru+rlX7C+7JuPuMiq7nfWtfKDC6vI8BOvzapQr
-         ahSZ46B9Sjevw==
-Date:   Wed, 29 Mar 2023 21:06:33 -0700
+        b=LeNH6Gz8UDUHl5rKvoXyIJ9Y55SW1Qu7qVOJ3aQXz4xZlOkutKI5hHqa1AqiQZJ6F
+         bkFIB1lmS+KYT/Dz1lvieLIRNd0oyl+vw87SFiUATUKk9YWURoe53HV7Y04x5OVSeq
+         xGjI58Vsv7mrIE07/VrH0UE9KaWaBvCq5q5ESlid2tm13Rg5BGCve1p1W18NbHw5X7
+         ZRV0ujsw2Ab0xhkJM9WzIhwHQ2Rp3vtBMMtFxqhPdIQBv04OI/mRIykshrRHe/MMG4
+         NXRH3VwA6V80wZC4fGABi8TKAIWTDFrcSI3Fi7BXVQ8cHieyDeCDKlTy3w4EMoiLUb
+         7uyKTi+U18tUQ==
+Date:   Wed, 29 Mar 2023 21:07:59 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] mac80211: use the new drop reasons
- infrastructure
-Message-ID: <20230329210633.39cca656@kernel.org>
-In-Reply-To: <34e43da3694e2d627555af0149ebe438e1ed2938.camel@sipsolutions.net>
-References: <20230329214620.131636-1-johannes@sipsolutions.net>
-        <20230329234613.5bcb4d8dcade.Iea29d70af97ce2ed590a00dbebee2ab4d013dfd5@changeid>
-        <34e43da3694e2d627555af0149ebe438e1ed2938.camel@sipsolutions.net>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>, netdev@vger.kernel.org,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next] bonding: add software timestamping support
+Message-ID: <20230329210759.1a8f9df4@kernel.org>
+In-Reply-To: <ZCUDFyNQoulZRsRQ@Laptop-X1>
+References: <20230329031337.3444547-1-liuhangbin@gmail.com>
+        <ZCQSf6Sc8A8E9ERN@localhost>
+        <ZCUDFyNQoulZRsRQ@Laptop-X1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,15 +59,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Mar 2023 23:56:31 +0200 Johannes Berg wrote:
-> > +	drop_reasons_unregister_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_MONITOR);
-> > +	drop_reasons_unregister_subsys(SKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE);
-> > +
-> >  	rcu_barrier();  
+On Thu, 30 Mar 2023 11:33:43 +0800 Hangbin Liu wrote:
+> On Wed, Mar 29, 2023 at 12:27:11PM +0200, Miroslav Lichvar wrote:
+> > On Wed, Mar 29, 2023 at 11:13:37AM +0800, Hangbin Liu wrote:  
+> > > At present, bonding attempts to obtain the timestamp (ts) information of
+> > > the active slave. However, this feature is only available for mode 1, 5,
+> > > and 6. For other modes, bonding doesn't even provide support for software
+> > > timestamping. To address this issue, let's call ethtool_op_get_ts_info
+> > > when there is no primary active slave. This will enable the use of software
+> > > timestamping for the bonding interface.  
+> > 
+> > Would it make sense to check if all devices in the bond support
+> > SOF_TIMESTAMPING_TX_SOFTWARE before returning it for the bond?
+> > Applications might expect that a SW TX timestamp will be always
+> > provided if the capability is reported.  
 > 
-> This is making me think that perhaps we don't want synchronize_rcu()
-> inside drop_reasons_unregister_subsys(), since I have two now and also
-> already have an rcu_barrier() ... so maybe just document that it's
-> needed?
+> In my understanding this is a software feature, no need for hardware support.
+> In __sock_tx_timestamp() it will set skb tx_flags when we have
+> SOF_TIMESTAMPING_TX_SOFTWARE flag. Do I understand wrong?
 
-premature optimization? some workload is reloading mac80211 in a loop?
+Driver needs to call skb_tx_timestamp(), so unlike with Rx there's
+something to do for the driver.
