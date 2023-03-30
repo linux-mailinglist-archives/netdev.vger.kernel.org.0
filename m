@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9AF56CFE8F
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 10:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F636CFE98
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 10:40:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbjC3Iii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 04:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
+        id S229459AbjC3Ikz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 04:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbjC3Ii0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 04:38:26 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3674472AB;
-        Thu, 30 Mar 2023 01:38:23 -0700 (PDT)
-Received: from lhrpeml500005.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PnGx448Glz6J7dB;
-        Thu, 30 Mar 2023 16:36:40 +0800 (CST)
-Received: from localhost (10.202.227.76) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 30 Mar
- 2023 09:38:20 +0100
-Date:   Thu, 30 Mar 2023 09:38:20 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229680AbjC3Ikx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 04:40:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FCB5B92;
+        Thu, 30 Mar 2023 01:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680165652; x=1711701652;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E/3JzKj/ftYcVD0rt0pT36PrSlnk43aIECQPEWDRFIQ=;
+  b=JzOZt2KAvux5JvhmzLaD49g9OsmPW1NlqS614U/OhUtOKB0ucZmwGVZb
+   DQM0qYQ261UnYGAKP6QYC+jxAmbesyRwBuLWy/f8CPV0woDtn8apC0/PP
+   XvuLiybS6AEOqRp/uCSziOSvQGYLJrAkiXCRi9U4mnt6gvM+53ykOnwz7
+   Bmsj9Rl4nZdNaVEyCOvNYfiXh71eF0Y8ZGdMACBd2mAtv7jy74HjPfhxf
+   dsGlzedwvC961EtrystnMTBFzD3333Wr9JyV+cJvb/evW30WneRY3F1Yv
+   dkuUfqZ1AKdoQlclVoq6Uxg0QQ6RzZxCY617n55me/f5WSCrD0E9xc7TT
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="343559359"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="343559359"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 01:40:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="684618810"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="684618810"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by orsmga002.jf.intel.com with ESMTP; 30 Mar 2023 01:40:46 -0700
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "Marc Zyngier" <maz@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-staging@lists.linux.dev>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <linux-acpi@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 2/5] staging: iio: resolver: ad2s1210: Add explicit
- include for of.h
-Message-ID: <20230330093820.0000639d@Huawei.com>
-In-Reply-To: <20230329-acpi-header-cleanup-v1-2-8dc5cd3c610e@kernel.org>
-References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org>
-        <20230329-acpi-header-cleanup-v1-2-8dc5cd3c610e@kernel.org>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-w64-mingw32)
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch
+Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
+Subject: [PATCH net v4 0/3]  Fix PHY handle no longer parsing
+Date:   Thu, 30 Mar 2023 16:39:57 +0800
+Message-Id: <20230330084000.3292487-1-michael.wei.hong.sit@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.227.76]
-X-ClientProxiedBy: lhrpeml500001.china.huawei.com (7.191.163.213) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=AC_FROM_MANY_DOTS,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,32 +70,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Mar 2023 16:20:43 -0500
-Rob Herring <robh@kernel.org> wrote:
+After the fixed link support was introduced, it is observed that PHY
+no longer attach to the MAC properly. So we introduce a helper
+function to determine if the MAC should expect to connect to a PHY
+and proceed accordingly.
 
-> With linux/acpi.h no longer implicitly including of.h, add an explicit
-> include of of.h to fix the following error:
-> 
-> drivers/staging/iio/resolver/ad2s1210.c:706:21: error: implicit declaration of function 'of_match_ptr' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Michael Sit Wei Hong (3):
+  net: phylink: add phylink_expects_phy() method
+  net: stmmac: check if MAC needs to attach to a PHY
+  net: stmmac: remove redundant fixup to support fixed-link mode
 
-> ---
->  drivers/staging/iio/resolver/ad2s1210.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-> index e4cf42438487..eb364639fa58 100644
-> --- a/drivers/staging/iio/resolver/ad2s1210.c
-> +++ b/drivers/staging/iio/resolver/ad2s1210.c
-> @@ -7,6 +7,7 @@
->  #include <linux/types.h>
->  #include <linux/mutex.h>
->  #include <linux/device.h>
-> +#include <linux/of.h>
->  #include <linux/spi/spi.h>
->  #include <linux/slab.h>
->  #include <linux/sysfs.h>
-> 
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c   |  1 -
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c   |  4 +++-
+ drivers/net/phy/phylink.c                       | 17 +++++++++++++++++
+ include/linux/phylink.h                         |  1 +
+ 4 files changed, 21 insertions(+), 2 deletions(-)
+
+v2: Initialize fwnode before using the variable
+v3: Introduced phylink_expects_phy() method as suggested by Russell King
+    remove xpcs_an_inband fixup instead of moving the fixed-link check
+    as suggested by Andrew Lunn
+v4: Modify phylink_expects_phy() to check for more complete set of
+    conditions when no PHY is needed and return false if met.
+-- 
+2.34.1
 
