@@ -2,223 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D936D09CA
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 611AA6D0A39
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233230AbjC3Pf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 11:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        id S233296AbjC3Pot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 11:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233209AbjC3Pfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:35:50 -0400
-Received: from DM4PR02CU001-vft-obe.outbound.protection.outlook.com (mail-centralusazon11012001.outbound.protection.outlook.com [52.101.63.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D287BD30D;
-        Thu, 30 Mar 2023 08:35:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WIKp9hyfIQS+1a4hLTAyjrbNYB16T13Q/JKPGH5nYhqKtQAFPbb/W3TyFmp9MCcIFrZhEiCpF/RgYu8cYm+AqFi1UrlEsHyzBUmwOG+BfroKeGgktOkmw1Trb9yk4cHxOU1CK4wwhY2lliaLfKDnSdQOzojtzHA1+U715qeFeUgR9tBWgF/O09H/jIrdBYQN959xpWtkAfVCKnWobAxD5kVG1YzwJG+wpTORWY0+SCm0lYtUulIdNXBme8+JKX56u8TliOTBXKlL+bvaOkp8e2JlDC8dYr+dZQrIgkj6jl70Hxtlx3WE7qS346d0um6tGIPCJZ7mEC26FHMWwtJ4ig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MouLZf9ei+oMqmBiK9Q6uzI8EWuh0SHZ6LbkWv+XEVM=;
- b=L5F+9D38qvCXdHWGQbXOsPU1xH3zUiHkhLUnOnzW/G546fM/Asjr662oPlSrXLoj6AsQ3TKOVDy7KCZzYBXQAxkvrqQ60hKbFlp5UqGtgddUK37JE5ioMMqwnw99ix2uaQ5zMCc0q8i+ngm+dZGuA9rYPnHWpj8WLsucLYww/VH4y6C7d1RD7btYN1PYPS/uKQDoSKs3lEXOizUIo48Xh8VmwV/6dEECd7aawyQd6v6qEo5+/bFF38lLOMAHKa62ubyiJbz2F05H9MQrZNFGDv2Pm9do6S8G2unImeZ5+jjligq///St1xpNzOBqTxKnfXX3mqHEVKm/Oq2uTzfu6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MouLZf9ei+oMqmBiK9Q6uzI8EWuh0SHZ6LbkWv+XEVM=;
- b=mInmLmWDdHYBit8AfqJxObpUxWPFtzSNxK2VzUl3VAX6K6V7CClYPIIgeuDOEPTLd9X7ZNqO6ZKjIJjhVX+HKX3Ahu4dWRMpAZzSW77Cok93gJe7KzcwALTwKXp9zo+kx+iCfY78S79ZNeiwItSmwCCrtffBs4sqmA+SZMn3jHU=
-Received: from BYAPR05MB3960.namprd05.prod.outlook.com (2603:10b6:a02:88::12)
- by SN6PR05MB4509.namprd05.prod.outlook.com (2603:10b6:805:2b::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.33; Thu, 30 Mar
- 2023 15:35:13 +0000
-Received: from BYAPR05MB3960.namprd05.prod.outlook.com
- ([fe80::8cb8:9578:d0c0:83d3]) by BYAPR05MB3960.namprd05.prod.outlook.com
- ([fe80::8cb8:9578:d0c0:83d3%7]) with mapi id 15.20.6222.035; Thu, 30 Mar 2023
- 15:35:12 +0000
-From:   Vishnu Dasa <vdasa@vmware.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        Arseniy Krasnov <avkrasnov@sberdevices.ru>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        with ESMTP id S233297AbjC3Poq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:44:46 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582E972A2;
+        Thu, 30 Mar 2023 08:44:00 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 475B91C000B;
+        Thu, 30 Mar 2023 15:43:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1680191033;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mxSLpWEbD6iCaY1bClhTliWZNcDCwnBI24U2WjZF5sI=;
+        b=BzQ3N/OLMPmzsI4qIXqE68Tp/ZOV22sikVJXpzurDHD/IJsCnESN0R4Mdtsk0k4KkwgoX4
+        3ZMGD6GT5ou3v3qVdGM5yTtIJznmG2YnpO4UcnvWdAc/e0Elf3+KdRJZ+1xUTk/DOsNKX3
+        b277DsSZP8XwE/kZYADmFXjlzc47nTqbzMV4+FVvd94Whqtirx7MS1RqsFCs02xfMfe3vv
+        TZ2wk33qBpsAdQpFYAddMb8UlxcNU265/WGyLSfi2v3wSLIJLPVf9ae+1wGSGAxjonZOZ+
+        4qIEXKgECx8EkBQtyImPgfgWGSH2Qf+Za5FPyrlR/2BGRM7SB3vf1UNMevUAQg==
+Date:   Thu, 30 Mar 2023 17:44:27 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Pv-drivers <Pv-drivers@vmware.com>
-Subject: Re: [RFC PATCH v2 2/3] vsock/vmci: convert VMCI error code to -ENOMEM
-Thread-Topic: [RFC PATCH v2 2/3] vsock/vmci: convert VMCI error code to
- -ENOMEM
-Thread-Index: AQHZYtbL7ZUSdfIRlkizlTLuphx4kK8S+uEAgAB504A=
-Date:   Thu, 30 Mar 2023 15:35:12 +0000
-Message-ID: <554FE762-95AF-4D14-8BF8-BEC610937C77@vmware.com>
-References: <60abc0da-0412-6e25-eeb0-8e32e3ec21e7@sberdevices.ru>
- <94d33849-d3c1-7468-72df-f87f897bafd2@sberdevices.ru>
- <wzkkagpfxfi7nioixpcmz4uscxojilwhuj4joslwevkm25m6h7@z4yl33oe7wqu>
-In-Reply-To: <wzkkagpfxfi7nioixpcmz4uscxojilwhuj4joslwevkm25m6h7@z4yl33oe7wqu>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR05MB3960:EE_|SN6PR05MB4509:EE_
-x-ms-office365-filtering-correlation-id: 9deaaaa9-056e-4a09-14e6-08db31345a5c
-x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QfpFLJWkR1M4Ltvfo0eu0YIUDuu7N1rMmsRJ31sJfo5fB++pOAZSR/pWdhKsia9STIfdva7Jhjqe4aSdraReZFHQ55EhiZAKZj9Tkzg66oR/Dulu2TsFJkwVDmJ38/qmMLSTak5EyYBVUJnfz1zr4TQLbmTv3iWDhOC22UjB+l6GsYSRnypL6pJzY+zHBkP3/nPIbQRknUr1TWWpn49V1JgfCDcboe0VYh+uH7aLYjk0aPLf7BVaYa/gK4L0Ib4sg6RY3OKr1VAspL10Htmw+Ye8NWSwyPdbdAUFjxmHSSijFENFgGZX4mh15OsC08y4jVqyXCl19oycNlk7tFD7klqtbZYjSkylIrp/xb/ps2CjPz/VqX1zyfiphybxUO2ku1/7VkLyJbd5Db1IyWQg8uyLr0JJ33JpCOzzamD8h85Qaos158GV7olwxuwDDA3iuUusVo4HNJYPSadYKtrMaeOVPAXea9NVOl0t5j+zQqkqYxGf5K8tHd3IkLO6LPeNIEdMSu93ivxCvDQtypfAIzojWHMZqQrxlUBtME09FWtpli14DEr5n1E1kD4iIwgvqBc9ed8sts7tSglmA6lpDIwKdjzCvFM2sOhAX3iJVN0df6NdAzZlHhHzLj7K3SPE7Dh4tcH+CecscDTlUkdhgw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR05MB3960.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(366004)(376002)(136003)(451199021)(8936002)(41300700001)(76116006)(6506007)(7416002)(5660300002)(110136005)(122000001)(38100700002)(86362001)(38070700005)(66476007)(36756003)(71200400001)(91956017)(66446008)(66946007)(8676002)(6486002)(6512007)(54906003)(66556008)(4326008)(316002)(478600001)(83380400001)(2616005)(33656002)(53546011)(107886003)(186003)(64756008)(2906002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2fPWiubcTQFvCreHFJeLQxYm5ud5E7l10Gcabhe0kEnMowEhUVq2Q1/NvsVc?=
- =?us-ascii?Q?Ugx0nf1YgZuwzldJ08Z4c+Wjv7mnFkYqdpv01Mkyk97guX84Pql1GiMUO7WU?=
- =?us-ascii?Q?0z0bW8WApeHI2Rh6iP40RoPpDr/qAuYg7Z9m6ex1M/fb0emKLw9FPDTGuL3p?=
- =?us-ascii?Q?ZXWTrMfsxplKp0MUIxV6+P1UfDX/rdVFS/aotpJ+r57gs/4VCofj2GQ8aFxz?=
- =?us-ascii?Q?OPJohCoNpQ3pZ+ptUlOa6H9cYS7ZkzzN66BinsA1FCDnajPp3WUGIJyzDX+V?=
- =?us-ascii?Q?kkZZyle76VDtj2PRpH6rc7U0ySz+M+HMeKx8zl52Mx4pEF4fEFI3tHajRKdl?=
- =?us-ascii?Q?wOcb2bGXyjtzMYN1UpeAHZcehIq+HO0/D/Ok7RDIDXYVrDqVU1TwQDLE89ob?=
- =?us-ascii?Q?2OvlXeKngfIraktqiZcSRhxmP0mqD4p+hwACZheYbxSUkJiSvvU12yG2kM1d?=
- =?us-ascii?Q?lvUtMMJdSYSQR5Qm6c64nRtbpsDpko5/cxfkGeAPPSUOYsWoNQTgxQlxJWQ3?=
- =?us-ascii?Q?zHzfpyT5Mo2YgLfBaEgmBmZ1juSMN1GUhETmd/eZB9SCIUgLB4oMr7fCBgWl?=
- =?us-ascii?Q?sW+AIU8l6X5sHokYLbeanO9NJtoljdjOOYKpcRLLORoRsrxMSiRXrZSSVByZ?=
- =?us-ascii?Q?o6epSKWofgy58LjsTHpN51jegPWrJHceJVx0MtRYCJe0ZdLQZbmQ8RRk+v80?=
- =?us-ascii?Q?kgtLUANh3W1g/E3cn40CirlSDfdrELjqpTDCzD96Nphq49B+tTPRP2rdC2z2?=
- =?us-ascii?Q?4DqdncEImpCorkRvleES00FXtsgwgWxnYWlE0r271uFqGGDHmKAqLPblCEbF?=
- =?us-ascii?Q?PwelxskysmESYTG+ZHhS/ExMlH0eWTDj9KhcIj1w1plmG6ENODU6ucCZc5hg?=
- =?us-ascii?Q?5TSn+XwHi0ROEXLBgekv4qwE5q09XVFWR/CSTfU6tzM8xxodwJko822/ESw0?=
- =?us-ascii?Q?LmrymOWcQ5J4jyBxC9ZjquMxwEPIyB1hXwmystsF7ORtnoMxlBleL3a4tChh?=
- =?us-ascii?Q?UZQlcKYuF4gb7eOxcjewF0XhAXmVrOctsrQBdyqTlVw8G+zK7rhaduPq7Uzw?=
- =?us-ascii?Q?H+FH18zWlgG2tnK3ZwxMuaOGtwNQwtrgxhfdnim6i9TCUL5hu/iwBvFMmzLi?=
- =?us-ascii?Q?SxafGCp0u1xVht5ozFpF4oXQHr0gLXfCR2NkYa3k5S/8+2bo6R2YoroM05fh?=
- =?us-ascii?Q?8BciBPSsTZi2TdnWK8ngZOwEKZn/zrl2rNeigevzZLsg44wPFaSoyPBaxQNE?=
- =?us-ascii?Q?TPRbLQve2AjL8GpwVxACOk3G06Ud8w9xrBrb9FpAGgDtu8N+Zgo7GyAIvEMD?=
- =?us-ascii?Q?lQVWDWYmwMxczQsFgLhjkx8MdBc1TO52A3Ow1HImHZLVIqZOiVOtiuNDivM6?=
- =?us-ascii?Q?Op3iTXgzTYtFpArOEUR3E7sg4O0tbCkfP2J1BqQI35JlMjhJPrTTM+YF101s?=
- =?us-ascii?Q?XIPt39hyiaf5m5IwVa7S1lO2qnlb5hZI7dd87hfoDLuh9F7pLoxCSSOQ5bAr?=
- =?us-ascii?Q?N4xo/Jaut2XKSCBg26uHlMh7y9j/GR4k8XWRkkVCRhsTRTuUuY8GFxIJwB3/?=
- =?us-ascii?Q?b1MsOZuNvzpYKw+2a0TSwPg3MT4nDPJScRTCCvesbqUAI7DNAcFriTMlpILc?=
- =?us-ascii?Q?fZTAQpGs59LxwgSdIvzedG6aycGLMWBW0gsDsgAybdNt?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0757DC12ED527046A5FA535E775C5322@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Alexis =?UTF-8?B?TG90aG9yw6k=?= <alexis.lothore@bootlin.com>
+Subject: Re: [PATCH net-next 1/2] net: dsa: rzn1-a5psw: enable DPBU for CPU
+ port and fix STP states
+Message-ID: <20230330174427.0310276a@fixe.home>
+In-Reply-To: <20230330151653.atzd5ptacral6syx@skbuf>
+References: <20230330083408.63136-1-clement.leger@bootlin.com>
+        <20230330083408.63136-1-clement.leger@bootlin.com>
+        <20230330083408.63136-2-clement.leger@bootlin.com>
+        <20230330083408.63136-2-clement.leger@bootlin.com>
+        <20230330151653.atzd5ptacral6syx@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR05MB3960.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9deaaaa9-056e-4a09-14e6-08db31345a5c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2023 15:35:12.6896
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JefU7zpMhXU7JnCUCe0BPGFR2d9BwqA9P5ZlB89IP44dNfs6L8iRAfTvsRwJZVjnwJMamZAEnQuMbl4jxiDNxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR05MB4509
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Le Thu, 30 Mar 2023 18:16:53 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
+> Have you considered adding some Fixes: tags and sending to the "net" tree?
 
-> On Mar 30, 2023, at 1:19 AM, Stefano Garzarella <sgarzare@redhat.com> wro=
-te:
->=20
-> !! External Email
->=20
-> On Thu, Mar 30, 2023 at 10:07:36AM +0300, Arseniy Krasnov wrote:
->> This adds conversion of VMCI specific error code to general -ENOMEM. It
->> is needed, because af_vsock.c passes error value returned from transport
->> to the user.
->>=20
->> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->> ---
->> net/vmw_vsock/vmci_transport.c | 19 ++++++++++++++++---
->> 1 file changed, 16 insertions(+), 3 deletions(-)
->>=20
->> diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transpo=
-rt.c
->> index 36eb16a40745..45de3e75597f 100644
->> --- a/net/vmw_vsock/vmci_transport.c
->> +++ b/net/vmw_vsock/vmci_transport.c
->> @@ -1831,10 +1831,17 @@ static ssize_t vmci_transport_stream_dequeue(
->>      size_t len,
->>      int flags)
->> {
->> +      int err;
->=20
-> Please, use the same type returned by the function.
->=20
->> +
->>      if (flags & MSG_PEEK)
->> -              return vmci_qpair_peekv(vmci_trans(vsk)->qpair, msg, len,=
- 0);
->> +              err =3D vmci_qpair_peekv(vmci_trans(vsk)->qpair, msg, len=
-, 0);
->>      else
->> -              return vmci_qpair_dequev(vmci_trans(vsk)->qpair, msg, len=
-, 0);
->> +              err =3D vmci_qpair_dequev(vmci_trans(vsk)->qpair, msg, le=
-n, 0);
->> +
->> +      if (err < 0)
->> +              err =3D -ENOMEM;
->> +
->> +      return err;
->> }
->>=20
->> static ssize_t vmci_transport_stream_enqueue(
->> @@ -1842,7 +1849,13 @@ static ssize_t vmci_transport_stream_enqueue(
->>      struct msghdr *msg,
->>      size_t len)
->> {
->> -      return vmci_qpair_enquev(vmci_trans(vsk)->qpair, msg, len, 0);
->> +      int err;
->=20
-> Ditto.
->=20
->> +
->> +      err =3D vmci_qpair_enquev(vmci_trans(vsk)->qpair, msg, len, 0);
->> +      if (err < 0)
->> +              err =3D -ENOMEM;
->> +
->> +      return err;
->> }
->=20
-> @Vishnu: should we backport the change for
-> vmci_transport_stream_enqueue() to stable branches?
->=20
-> In this case I would split this patch and I would send the
-> vmci_transport_stream_enqueue() change to the net branch including:
->=20
-> Fixes: c43170b7e157 ("vsock: return errors other than -ENOMEM to socket")
-
-Yes, good point.  It would be better to do it this way for correctness.
-
-Thanks,
-Vishnu
+I wasn't sure if due to the refactoring that should go directly to the
+net tree but I'll do that. But since they are fixes, that's the way to
+go.
 
 >=20
-> Thanks,
-> Stefano
+> >  drivers/net/dsa/rzn1_a5psw.c | 53 +++++++++++++++++++++++++++++-------
+> >  drivers/net/dsa/rzn1_a5psw.h |  4 ++-
+> >  2 files changed, 46 insertions(+), 11 deletions(-)
+> >=20
+> > diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
+> > index 919027cf2012..bbc1424ed416 100644
+> > --- a/drivers/net/dsa/rzn1_a5psw.c
+> > +++ b/drivers/net/dsa/rzn1_a5psw.c
+> > @@ -120,6 +120,22 @@ static void a5psw_port_mgmtfwd_set(struct a5psw *a=
+5psw, int port, bool enable)
+> >  	a5psw_port_pattern_set(a5psw, port, A5PSW_PATTERN_MGMTFWD, enable);
+> >  }
+> > =20
+> > +static void a5psw_port_tx_enable(struct a5psw *a5psw, int port, bool e=
+nable)
+> > +{
+> > +	u32 mask =3D A5PSW_PORT_ENA_TX(port);
+> > +	u32 reg =3D enable ? mask : 0;
+> > +
+> > +	/* Even though the port TX is disabled through TXENA bit in the
+> > +	 * PORT_ENA register it can still send BPDUs. This depends on the tag=
+ =20
 >=20
+> s/register/register,/
 >=20
-> !! External Email: This email originated from outside of the organization=
-. Do not click links or open attachments unless you recognize the sender.
+> > +	 * configuration added when sending packets from the CPU port to the
+> > +	 * switch port. Indeed, when using forced forwarding without filterin=
+g,
+> > +	 * even disabled port will be able to send packets that are tagged. T=
+his =20
+>=20
+> s/port/ports/
+>=20
+> > +	 * allows to implement STP support when ports are in a state were =20
+>=20
+> s/were/where/
+>=20
+> > +	 * forwarding traffic should be stopped but BPDUs should still be sen=
+t. =20
+>=20
+> To be absolutely clear, when talking about BPDUs, is it applicable
+> effectively only to STP protocol frames, or to any management traffic
+> sent by tag_rzn1_a5psw.c which has A5PSW_CTRL_DATA_FORCE_FORWARD set?
+
+The documentation uses BPDUs but this is to be understood as in a
+broader sense for "management frames" since it matches all the MAC with
+"01-80-c2-00-00-XX".=20
+
+>=20
+> > +	 */
+> > +	a5psw_reg_rmw(a5psw, A5PSW_CMD_CFG(port), mask, reg);
+> > +}
+> > +
+> >  static void a5psw_port_enable_set(struct a5psw *a5psw, int port, bool =
+enable)
+> >  {
+> >  	u32 port_ena =3D 0;
+> > @@ -292,6 +308,18 @@ static int a5psw_set_ageing_time(struct dsa_switch=
+ *ds, unsigned int msecs)
+> >  	return 0;
+> >  }
+> > =20
+> > +static void a5psw_port_learning_set(struct a5psw *a5psw, int port,
+> > +				    bool learning, bool blocked)
+> > +{
+> > +	u32 mask =3D A5PSW_INPUT_LEARN_DIS(port) | A5PSW_INPUT_LEARN_BLOCK(po=
+rt);
+> > +	u32 reg =3D 0;
+> > +
+> > +	reg |=3D !learning ? A5PSW_INPUT_LEARN_DIS(port) : 0;
+> > +	reg |=3D blocked ? A5PSW_INPUT_LEARN_BLOCK(port) : 0;
+> > +
+> > +	a5psw_reg_rmw(a5psw, A5PSW_INPUT_LEARN, mask, reg);
+> > +} =20
+>=20
+> Would it be useful to have independent functions for "learning" and
+> "blocked", for when learning will be made configurable?
+
+You are right, If we allow configuring it through bridge_flags(), this
+clearly needs to be split up from blocking support.
+
+>=20
+> > +
+> >  static void a5psw_flooding_set_resolution(struct a5psw *a5psw, int por=
+t,
+> >  					  bool set)
+> >  {
+> > @@ -344,28 +372,33 @@ static void a5psw_port_bridge_leave(struct dsa_sw=
+itch *ds, int port,
+> > =20
+> >  static void a5psw_port_stp_state_set(struct dsa_switch *ds, int port, =
+u8 state)
+> >  {
+> > -	u32 mask =3D A5PSW_INPUT_LEARN_DIS(port) | A5PSW_INPUT_LEARN_BLOCK(po=
+rt);
+> >  	struct a5psw *a5psw =3D ds->priv;
+> > -	u32 reg =3D 0;
+> > +	bool learn, block;
+> > =20
+> >  	switch (state) {
+> >  	case BR_STATE_DISABLED:
+> >  	case BR_STATE_BLOCKING:
+> > -		reg |=3D A5PSW_INPUT_LEARN_DIS(port);
+> > -		reg |=3D A5PSW_INPUT_LEARN_BLOCK(port);
+> > -		break;
+> >  	case BR_STATE_LISTENING:
+> > -		reg |=3D A5PSW_INPUT_LEARN_DIS(port);
+> > +		block =3D true;
+> > +		learn =3D false;
+> > +		a5psw_port_tx_enable(a5psw, port, false);
+> >  		break;
+> >  	case BR_STATE_LEARNING:
+> > -		reg |=3D A5PSW_INPUT_LEARN_BLOCK(port);
+> > +		block =3D true;
+> > +		learn =3D true;
+> > +		a5psw_port_tx_enable(a5psw, port, false);
+> >  		break;
+> >  	case BR_STATE_FORWARDING:
+> > -	default:
+> > +		block =3D false;
+> > +		learn =3D true;
+> > +		a5psw_port_tx_enable(a5psw, port, true);
+> >  		break;
+> > +	default:
+> > +		dev_err(ds->dev, "invalid STP state: %d\n", state);
+> > +		return;
+> >  	}
+> > =20
+> > -	a5psw_reg_rmw(a5psw, A5PSW_INPUT_LEARN, mask, reg);
+> > +	a5psw_port_learning_set(a5psw, port, learn, block); =20
+>=20
+> To be consistent, could you add a "bool tx_enabled" and a single call to
+> a5psw_port_tx_enable() at the end? "block" could also be named "!rx_enabl=
+ed"
+> for some similarity and clarity regarding what it does.
+
+That seems reasonnable even though they do not act on the same
+registers but have the same corresponding effect (stopping
+ingress/egress traffic but with an exception for BPDU).
+
+>=20
+> >  }
+> > =20
+> >  static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
+> > @@ -673,7 +706,7 @@ static int a5psw_setup(struct dsa_switch *ds)
+> >  	}
+> > =20
+> >  	/* Configure management port */
+> > -	reg =3D A5PSW_CPU_PORT | A5PSW_MGMT_CFG_DISCARD;
+> > +	reg =3D A5PSW_CPU_PORT | A5PSW_MGMT_CFG_ENABLE;
+> >  	a5psw_reg_writel(a5psw, A5PSW_MGMT_CFG, reg);
+> > =20
+> >  	/* Set pattern 0 to forward all frame to mgmt port */
+> > diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
+> > index c67abd49c013..04d9486dbd21 100644
+> > --- a/drivers/net/dsa/rzn1_a5psw.h
+> > +++ b/drivers/net/dsa/rzn1_a5psw.h
+> > @@ -19,6 +19,8 @@
+> >  #define A5PSW_PORT_OFFSET(port)		(0x400 * (port))
+> > =20
+> >  #define A5PSW_PORT_ENA			0x8
+> > +#define A5PSW_PORT_ENA_TX_SHIFT		0 =20
+>=20
+> either use it in the A5PSW_PORT_ENA_TX() definition, or remove it.
+>=20
+> > +#define A5PSW_PORT_ENA_TX(port)		BIT(port)
+> >  #define A5PSW_PORT_ENA_RX_SHIFT		16
+> >  #define A5PSW_PORT_ENA_TX_RX(port)	(BIT((port) + A5PSW_PORT_ENA_RX_SHI=
+FT) | \
+> >  					 BIT(port))
+> > @@ -36,7 +38,7 @@
+> >  #define A5PSW_INPUT_LEARN_BLOCK(p)	BIT(p)
+> > =20
+> >  #define A5PSW_MGMT_CFG			0x20
+> > -#define A5PSW_MGMT_CFG_DISCARD		BIT(7)
+> > +#define A5PSW_MGMT_CFG_ENABLE		BIT(6)
+> > =20
+> >  #define A5PSW_MODE_CFG			0x24
+> >  #define A5PSW_MODE_STATS_RESET		BIT(31)
+> > --=20
+> > 2.39.2
+> >  =20
+>=20
 
 
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
