@@ -2,134 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06C336CFB78
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10DBA6CFB86
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:30:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbjC3GZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 02:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
+        id S230245AbjC3GaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 02:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjC3GZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:25:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92752720;
-        Wed, 29 Mar 2023 23:25:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229529AbjC3GaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:30:20 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6684ED2;
+        Wed, 29 Mar 2023 23:30:19 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 445FDB825F0;
-        Thu, 30 Mar 2023 06:25:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8807C433EF;
-        Thu, 30 Mar 2023 06:24:55 +0000 (UTC)
-Date:   Thu, 30 Mar 2023 11:54:45 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Sricharan R <quic_srichara@quicinc.com>
-Cc:     mani@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: qrtr: Do not do DEL_SERVER broadcast after
- DEL_CLIENT
-Message-ID: <20230330062445.GB9876@thinkpad>
-References: <1680095250-21032-1-git-send-email-quic_srichara@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1680095250-21032-1-git-send-email-quic_srichara@quicinc.com>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 38DFB21ACB;
+        Thu, 30 Mar 2023 06:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1680157818; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lPdUL7qsCC5+xZw5fm9Qxx3Ah7+ai3R7LDJZ+y2oQ5M=;
+        b=vWoXmQ4r6gReR9gXr7IlAMvNNzEL+/vGjugdoeKOYolj7qENuhhBs7MJqpWUtcBJPDJ6u2
+        a2zSvUBOPhAWDiOCappyC2SeQG9Q4my8MSheNF8A15F5xfh1bW1NDI4KeIR9wNiyYEZr9T
+        D/bCjfn/s5lmxaxzCVgFyY9kCXPF+LQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1680157818;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lPdUL7qsCC5+xZw5fm9Qxx3Ah7+ai3R7LDJZ+y2oQ5M=;
+        b=VNhpj/+xmy/ycFf3JWfM1xQ/qc9MtV1rddXogg2OzUf6F+fV2ogV9sIQu0UTRjyBGih+nx
+        hgT8+WRvcV4OJKDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EF5CF138FF;
+        Thu, 30 Mar 2023 06:30:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id SL5tOXksJWTZWwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Thu, 30 Mar 2023 06:30:17 +0000
+Date:   Thu, 30 Mar 2023 08:30:17 +0200
+Message-ID: <87wn2yn43q.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [Intel-wired-lan] [REGRESSION] e1000e probe/link detection fails since 6.2 kernel
+In-Reply-To: <20230329121232.7873ad95@kernel.org>
+References: <87jzz13v7i.wl-tiwai@suse.de>
+        <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
+        <ZCP5jOTNypwG4xK6@debian.me>
+        <87a5zwosd7.wl-tiwai@suse.de>
+        <20230329121232.7873ad95@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=ISO-2022-JP
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 06:37:30PM +0530, Sricharan R wrote:
-> When the qrtr socket is released, qrtr_port_remove gets called, which
-> broadcasts a DEL_CLIENT. After this DEL_SERVER is also additionally
-> broadcasted, which becomes NOP, but triggers the below error msg.
+On Wed, 29 Mar 2023 21:12:32 +0200,
+Jakub Kicinski wrote:
 > 
-> "failed while handling packet from 2:-2", since remote node already
-> acted upon on receiving the DEL_CLIENT, once again when it receives
-> the DEL_SERVER, it returns -ENOENT.
+> On Wed, 29 Mar 2023 10:48:36 +0200 Takashi Iwai wrote:
+> > On Wed, 29 Mar 2023 10:40:44 +0200,
+> > Bagas Sanjaya wrote:
+> > > 
+> > > On Tue, Mar 28, 2023 at 04:39:01PM +0200, Paul Menzel wrote:  
+> > > > Does openSUSE Tumbleweed make it easy to bisect the regression at least on
+> > > > $B!H(Brc level$B!I(B? It be great if narrow it more down, so we know it for example
+> > > > regressed in 6.2-rc7.
+> > > >   
+> > > 
+> > > Alternatively, can you do bisection using kernel sources from Linus's
+> > > tree (git required)?  
+> > 
+> > That'll be a last resort, if no one has idea at all :)
 > 
-> Fixing it by not sending a 'DEL_SERVER' to remote when a 'DEL_CLIENT'
-> was sent for that port.
-> 
+> I had a quick look yesterday, there's only ~6 or so commits to e1000e.
+> Should be a fairly quick bisection, hopefully?
 
-Can you share the qrtr trace when this happens to help me understand the flow?
+*IFF* it's an e1000e-specific bug, right?
 
-- Mani
+Through a quick glance, the only significant change in e1000e is the
+commit 1060707e3809
+    ptp: introduce helpers to adjust by scaled parts per million
 
-> Signed-off-by: Ram Kumar D <quic_ramd@quicinc.com>
-> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
-> ---
-> Note: Functionally tested on 5.4 kernel and compile tested on 6.3 TOT
-> 
->  net/qrtr/ns.c | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-> index 722936f..6fbb195 100644
-> --- a/net/qrtr/ns.c
-> +++ b/net/qrtr/ns.c
-> @@ -274,7 +274,7 @@ static struct qrtr_server *server_add(unsigned int service,
->  	return NULL;
->  }
->  
-> -static int server_del(struct qrtr_node *node, unsigned int port)
-> +static int server_del(struct qrtr_node *node, unsigned int port, bool del_server)
->  {
->  	struct qrtr_lookup *lookup;
->  	struct qrtr_server *srv;
-> @@ -287,7 +287,7 @@ static int server_del(struct qrtr_node *node, unsigned int port)
->  	radix_tree_delete(&node->servers, port);
->  
->  	/* Broadcast the removal of local servers */
-> -	if (srv->node == qrtr_ns.local_node)
-> +	if (srv->node == qrtr_ns.local_node && del_server)
->  		service_announce_del(&qrtr_ns.bcast_sq, srv);
->  
->  	/* Announce the service's disappearance to observers */
-> @@ -373,7 +373,7 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
->  		}
->  		slot = radix_tree_iter_resume(slot, &iter);
->  		rcu_read_unlock();
-> -		server_del(node, srv->port);
-> +		server_del(node, srv->port, true);
->  		rcu_read_lock();
->  	}
->  	rcu_read_unlock();
-> @@ -459,10 +459,14 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
->  		kfree(lookup);
->  	}
->  
-> -	/* Remove the server belonging to this port */
-> +	/* Remove the server belonging to this port
-> +	 * Given that DEL_CLIENT is already broadcasted
-> +	 * by port_remove, no need to send DEL_SERVER for
-> +	 * the same port to remote
-> +	 */
->  	node = node_get(node_id);
->  	if (node)
-> -		server_del(node, port);
-> +		server_del(node, port, false);
->  
->  	/* Advertise the removal of this client to all local servers */
->  	local_node = node_get(qrtr_ns.local_node);
-> @@ -567,7 +571,7 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
->  	if (!node)
->  		return -ENOENT;
->  
-> -	return server_del(node, port);
-> +	return server_del(node, port, true);
->  }
->  
->  static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
-> -- 
-> 2.7.4
-> 
+Others are only for MTP/ADP and new devices, which must be irrelevant.
+The tracing must be irrelevant, and the kmap change must be OK.
 
--- 
-மணிவண்ணன் சதாசிவம்
+Can 1060707e3809 be the cause of such a bug?
+
+
+thanks,
+
+Takashi
