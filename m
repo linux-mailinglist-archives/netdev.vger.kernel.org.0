@@ -2,118 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 247926D0C93
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 19:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E9E26D0CBA
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 19:25:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbjC3RTz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 30 Mar 2023 13:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
+        id S232441AbjC3RZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 13:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232253AbjC3RTq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 13:19:46 -0400
-Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98BAE048
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 10:19:43 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-PtyqyyTfOKqoXX5TWfu2lw-1; Thu, 30 Mar 2023 13:19:24 -0400
-X-MC-Unique: PtyqyyTfOKqoXX5TWfu2lw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S232399AbjC3RZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 13:25:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A34EC4D
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 10:25:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D109780C8C1;
-        Thu, 30 Mar 2023 17:19:23 +0000 (UTC)
-Received: from hog (unknown [10.39.192.141])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D8C332166B33;
-        Thu, 30 Mar 2023 17:19:22 +0000 (UTC)
-Date:   Thu, 30 Mar 2023 19:19:21 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Emeel Hakim <ehakim@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for
- VLAN interface
-Message-ID: <ZCXEmUQgswOBoRqR@hog>
-References: <20230329122107.22658-1-ehakim@nvidia.com>
- <20230329122107.22658-2-ehakim@nvidia.com>
- <ZCROr7DhsoRyU1qP@hog>
- <20230329184201.GB831478@unreal>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 363CF6212D
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E187C433EF;
+        Thu, 30 Mar 2023 17:25:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680197106;
+        bh=YM0v4eaeKHQ1bnz6FwcmsrLI1BUtds5k0Ahl7g2zAnQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WsB8ItIbbwOflodLshtDZCnJen6ZRl9S2NZPgmRHez/jnfHH8Z5qwu9tgPLr2b0ie
+         bzSLDHC8c8cSbPVTapJRyTXLewIEsLGJI+UmkyApwaKLOMkbNiZPKQeKkyTM+gStAF
+         Z3NHsjF+iwpbKDcFsHer3HpLl7JxVGSTGt392YhjCK6KzuyokPKzkVgMzlWQ75BrU7
+         +4D50Dx7viNTpADeevNyrGxbqOhtEZs3Hg6TLA2F5p/b7WxYjtFTYh6kuMMyuWEWQS
+         a0PWgk8MPUZKqG3cZw9Z7q47wiDOrhq+nney5oIAXleUKUI/FTBkukTRnkLMiEdFQ4
+         OJFzg95Sib4bw==
+Date:   Thu, 30 Mar 2023 10:25:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        shiraz.saleem@intel.com, emil.s.tantilov@intel.com,
+        willemb@google.com, decot@google.com, joshua.a.hay@intel.com,
+        sridhar.samudrala@intel.com
+Subject: Re: [Intel-wired-lan] [PATCH net-next 00/15] Introduce IDPF driver
+Message-ID: <20230330102505.6d3b88da@kernel.org>
+In-Reply-To: <ZCV6fZfuX5O8sRtA@nvidia.com>
+References: <20230329140404.1647925-1-pavan.kumar.linga@intel.com>
+        <ZCV6fZfuX5O8sRtA@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20230329184201.GB831478@unreal>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.6 required=5.0 tests=RCVD_IN_DNSWL_LOW,RDNS_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-03-29, 21:42:01 +0300, Leon Romanovsky wrote:
-> On Wed, Mar 29, 2023 at 04:43:59PM +0200, Sabrina Dubroca wrote:
-> > 2023-03-29, 15:21:04 +0300, Emeel Hakim wrote:
-> > > Add support for MACsec offload operations for VLAN driver
-> > > to allow offloading MACsec when VLAN's real device supports
-> > > Macsec offload by forwarding the offload request to it.
-> > > 
-> > > Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
-> > > ---
-> > > V1 -> V2: - Consult vlan_features when adding NETIF_F_HW_MACSEC.
-> > 
-> > Uh? You're not actually doing that? You also dropped the
-> > changes to vlan_dev_fix_features without explaining why.
+On Thu, 30 Mar 2023 09:03:09 -0300 Jason Gunthorpe wrote:
+> On Wed, Mar 29, 2023 at 07:03:49AM -0700, Pavan Kumar Linga wrote:
+> > This patch series introduces the Infrastructure Data Path Function (IDPF)
+> > driver. It is used for both physical and virtual functions. Except for
+> > some of the device operations the rest of the functionality is the same
+> > for both PF and VF. IDPF uses virtchnl version2 opcodes and structures
+> > defined in the virtchnl2 header file which helps the driver to learn
+> > the capabilities and register offsets from the device Control Plane (CP)
+> > instead of assuming the default values.  
 > 
-> vlan_dev_fix_features() relies on real_dev->vlan_features which was set
-> in mlx5 part of this patch.
+> Isn't IDPF currently being "standardized" at OASIS?
 > 
->   643 static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
->   644         netdev_features_t features)
->   645 {
->   ...
->   649
->   650         lower_features = netdev_intersect_features((real_dev->vlan_features |
->   651                                                     NETIF_F_RXCSUM),
->   652                                                    real_dev->features);
+> Has a standard been ratified? Isn't it rather premature to merge a
+> driver for a standard that doesn't exist?
 > 
-> This part ensure that once real_dev->vlan_features and real_dev->features have NETIF_F_HW_MACSEC,
-> the returned features will include NETIF_F_HW_MACSEC too.
+> Publicly posting pre-ratification work is often against the IP
+> policies of standards orgs, are you even legally OK to post this?
+> 
+> Confused,
 
-Ok, thanks.
-
-But back to the issue of vlan_features, in vlan_dev_init: I'm not
-convinced NETIF_F_HW_MACSEC should be added to hw_features based on
-->features. That would result in a new vlan device that can't offload
-macsec at all if it was created at the wrong time (while the lower
-device's macsec offload was temporarily disabled). AFAIU,
-vlandev->hw_features should be based on realdev->vlan_features. I
-don't see a reason to advertise a feature in the vlan device if we
-won't ever be able to turn it on because it's not in ->vlan_features
-("grmbl why can't I enable it, ethtool says it's here?!").
-
-
-Emeel, I'm not a maintainer, but I don't think you should be reposting
-until the existing discussion has settled down.
-
-> > 
-> > [...]
-> > > @@ -572,6 +573,9 @@ static int vlan_dev_init(struct net_device *dev)
-> > >  			   NETIF_F_HIGHDMA | NETIF_F_SCTP_CRC |
-> > >  			   NETIF_F_ALL_FCOE;
-> > >  
-> > > +	if (real_dev->features & NETIF_F_HW_MACSEC)
-> > > +		dev->hw_features |= NETIF_F_HW_MACSEC;
-> > > +
-> > >  	dev->features |= dev->hw_features | NETIF_F_LLTX;
-> > >  	netif_inherit_tso_max(dev, real_dev);
-> > >  	if (dev->features & NETIF_F_VLAN_FEATURES)
-
--- 
-Sabrina
-
+And you called me politically motivated in the discussion about RDMA :|
+Vendor posts a driver, nothing special as far as netdev is concerned.
