@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4D96D0C47
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 19:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E576D0C49
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 19:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbjC3RI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 13:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34166 "EHLO
+        id S232132AbjC3RJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 13:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232001AbjC3RIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 13:08:48 -0400
+        with ESMTP id S232180AbjC3RIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 13:08:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C91419B1
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 10:07:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5B4198C
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 10:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680196076;
+        s=mimecast20190719; t=1680196082;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QsEJuXGS7h5UzWyfV3tZvj1EZ/1kj1uGT+GUV/uonTg=;
-        b=ZGciLBeHx5WTPkYEEjH2+oLMGDi7IJcCx+YIkNUleyQatKJliGxcFg5tCvV7ldc0js+jxX
-        xyYL4FWVdrKilOxuif1VGZ/Wkxb3usanO+eD7/11RYRgqapIxE6Yz28LJ6WpTs9ETHkWzy
-        wkHmWhakp4BpLbtAumT0Lb90zErZLQ4=
+        bh=NZoFlTLlLEFnWNA/e5RUGygzU5KPyB6B2U1PTeQjWe4=;
+        b=WnwgCtqppdJ3oYYa9rQu5zfxaDug4Mwud25OD+uZ43Mbst0KcS2ZMQuLxp9zK+SnKMW9D6
+        3+OjuqkDo4XJCj/UcosW80MGtX6P3mz0WRAfVY5zMaDBRZKDWSUIowbiH3vtkmPE0Hxa4R
+        60URHSgIkWCPHi7rnWiCoPQJ2LxrduQ=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-464-PL9fhRh3OziV1AH8E_BKTA-1; Thu, 30 Mar 2023 13:07:53 -0400
-X-MC-Unique: PL9fhRh3OziV1AH8E_BKTA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+ us-mta-452-aug2f9xDNsKg0k9hF4gfzg-1; Thu, 30 Mar 2023 13:07:58 -0400
+X-MC-Unique: aug2f9xDNsKg0k9hF4gfzg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2DC6F185A78B;
-        Thu, 30 Mar 2023 17:07:52 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C643A101A54F;
+        Thu, 30 Mar 2023 17:07:56 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.45.242.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C02412166B33;
-        Thu, 30 Mar 2023 17:07:51 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 860244042AC0;
+        Thu, 30 Mar 2023 17:07:56 +0000 (UTC)
 Received: from [10.1.1.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id D3F9B30736C72;
-        Thu, 30 Mar 2023 19:07:50 +0200 (CEST)
-Subject: [PATCH bpf RFC-V3 2/5] mlx5: bpf_xdp_metadata_rx_hash add xdp rss
+        by firesoul.localdomain (Postfix) with ESMTP id E2D5430736C72;
+        Thu, 30 Mar 2023 19:07:55 +0200 (CEST)
+Subject: [PATCH bpf RFC-V3 3/5] veth: bpf_xdp_metadata_rx_hash add xdp rss
  hash type
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     bpf@vger.kernel.org, Stanislav Fomichev <sdf@google.com>
@@ -53,15 +53,15 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
         edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
         davem@davemloft.net
-Date:   Thu, 30 Mar 2023 19:07:50 +0200
-Message-ID: <168019607082.3557870.9567318700335733457.stgit@firesoul>
+Date:   Thu, 30 Mar 2023 19:07:55 +0200
+Message-ID: <168019607588.3557870.8079404138352729694.stgit@firesoul>
 In-Reply-To: <168019602958.3557870.9960387532660882277.stgit@firesoul>
 References: <168019602958.3557870.9960387532660882277.stgit@firesoul>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -72,167 +72,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update API for bpf_xdp_metadata_rx_hash() with arg for xdp rss hash type
-via mapping table.
+Update API for bpf_xdp_metadata_rx_hash() with arg for xdp rss hash type.
 
-The mlx5 hardware can also identify and RSS hash IPSEC.  This indicate
-hash includes SPI (Security Parameters Index) as part of IPSEC hash.
+The veth driver currently only support XDP-hints based on SKB code path.
+The SKB have lost information about the RSS hash type, by compressing
+the information down to a single bitfield skb->l4_hash, that only knows
+if this was a L4 hash value.
 
-Extend xdp core enum xdp_rss_hash_type with IPSEC hash type.
+In preparation for veth, the xdp_rss_hash_type have an L4 indication
+bit that allow us to return a meaningful L4 indication when working
+with SKB based packets.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c |   63 +++++++++++++++++++++-
- include/linux/mlx5/device.h                      |   14 ++++-
- include/net/xdp.h                                |    3 +
- 3 files changed, 76 insertions(+), 4 deletions(-)
+ drivers/net/veth.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index c5dae48b7932..0abfed0ff3e5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -34,6 +34,7 @@
- #include <net/xdp_sock_drv.h>
- #include "en/xdp.h"
- #include "en/params.h"
-+#include <linux/bitfield.h>
- 
- int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
- {
-@@ -169,14 +170,72 @@ static int mlx5e_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index c1178915496d..f5381e7c9310 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1648,14 +1648,19 @@ static int veth_xdp_rx_timestamp(const struct xdp_md *ctx, u64 *timestamp)
  	return 0;
  }
  
--static int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
-+/* Mapping HW RSS Type bits CQE_RSS_HTYPE_IP + CQE_RSS_HTYPE_L4 into 4-bits*/
-+#define RSS_TYPE_MAX_TABLE	16 /* 4-bits max 16 entries */
-+#define RSS_L4		GENMASK(1,0)
-+#define RSS_L3		GENMASK(3,2) /* Same as CQE_RSS_HTYPE_IP */
+-static int veth_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash)
++static int veth_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
++			    enum xdp_rss_hash_type *rss_type)
 +
-+/* Valid combinations of CQE_RSS_HTYPE_IP + CQE_RSS_HTYPE_L4 sorted numerical */
-+enum mlx5_rss_hash_type {
-+	RSS_TYPE_NO_HASH	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IP_NONE)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
-+	RSS_TYPE_L3_IPV4	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
-+	RSS_TYPE_L4_IPV4_TCP	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_TCP)),
-+	RSS_TYPE_L4_IPV4_UDP	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_UDP)),
-+	RSS_TYPE_L4_IPV4_IPSEC	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV4)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_IPSEC)),
-+	RSS_TYPE_L3_IPV6	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_NONE)),
-+	RSS_TYPE_L4_IPV6_TCP	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_TCP)),
-+	RSS_TYPE_L4_IPV6_UDP	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_UDP)),
-+	RSS_TYPE_L4_IPV6_IPSEC	= (FIELD_PREP_CONST(RSS_L3, CQE_RSS_IPV6)| \
-+				   FIELD_PREP_CONST(RSS_L4, CQE_RSS_L4_IPSEC)),
-+} mlx5_rss_hash_type;
-+
-+/* Invalid combinations will simply return zero, allows no boundry checks */
-+static const enum xdp_rss_hash_type mlx5_xdp_rss_type[RSS_TYPE_MAX_TABLE] = {
-+	[RSS_TYPE_NO_HASH]	= XDP_RSS_TYPE_NONE,
-+	[1]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+	[2]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+	[3]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+	[RSS_TYPE_L3_IPV4]	= XDP_RSS_TYPE_L3_IPV4,
-+	[RSS_TYPE_L4_IPV4_TCP]	= XDP_RSS_TYPE_L4_IPV4_TCP,
-+	[RSS_TYPE_L4_IPV4_UDP]	= XDP_RSS_TYPE_L4_IPV4_UDP,
-+	[RSS_TYPE_L4_IPV4_IPSEC]= XDP_RSS_TYPE_L4_IPV4_IPSEC,
-+	[RSS_TYPE_L3_IPV6]	= XDP_RSS_TYPE_L3_IPV6,
-+	[RSS_TYPE_L4_IPV6_TCP]	= XDP_RSS_TYPE_L4_IPV6_TCP,
-+	[RSS_TYPE_L4_IPV6_UDP]  = XDP_RSS_TYPE_L4_IPV6_UDP,
-+	[RSS_TYPE_L4_IPV6_IPSEC]= XDP_RSS_TYPE_L4_IPV6_IPSEC,
-+	[12]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+	[13]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+	[14]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+	[15]			= XDP_RSS_TYPE_NONE, /* Implicit zero */
-+};
-+
-+static int mlx5e_xdp_rx_hash(const struct xdp_md *ctx, u32 *hash,
-+			     enum xdp_rss_hash_type *rss_type)
  {
- 	const struct mlx5e_xdp_buff *_ctx = (void *)ctx;
-+	const struct mlx5_cqe64 *cqe = _ctx->cqe;
-+	u32 hash_type, l4_type, ip_type, lookup;
+ 	struct veth_xdp_buff *_ctx = (void *)ctx;
++	struct sk_buff *skb = _ctx->skb;
  
- 	if (unlikely(!(_ctx->xdp.rxq->dev->features & NETIF_F_RXHASH)))
+-	if (!_ctx->skb)
++	if (!skb)
  		return -ENODATA;
  
--	*hash = be32_to_cpu(_ctx->cqe->rss_hash_result);
-+	*hash = be32_to_cpu(cqe->rss_hash_result);
-+
-+	hash_type = cqe->rss_hash_type;
-+	BUILD_BUG_ON(CQE_RSS_HTYPE_IP != RSS_L3); /* same mask */
-+	ip_type = hash_type & CQE_RSS_HTYPE_IP;
-+	l4_type = FIELD_GET(CQE_RSS_HTYPE_L4, hash_type);
-+	lookup = ip_type | l4_type;
-+	*rss_type = mlx5_xdp_rss_type[lookup];
+-	*hash = skb_get_hash(_ctx->skb);
++	*hash = skb_get_hash(skb);
++	*rss_type = skb->l4_hash ? XDP_RSS_TYPE_L4_ANY : XDP_RSS_TYPE_NONE;
 +
  	return 0;
  }
  
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 71b06ebad402..27aa9ae10996 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -36,6 +36,7 @@
- #include <linux/types.h>
- #include <rdma/ib_verbs.h>
- #include <linux/mlx5/mlx5_ifc.h>
-+#include <linux/bitfield.h>
- 
- #if defined(__LITTLE_ENDIAN)
- #define MLX5_SET_HOST_ENDIANNESS	0
-@@ -980,14 +981,23 @@ enum {
- };
- 
- enum {
--	CQE_RSS_HTYPE_IP	= 0x3 << 2,
-+	CQE_RSS_HTYPE_IP	= GENMASK(3,2),
- 	/* cqe->rss_hash_type[3:2] - IP destination selected for hash
- 	 * (00 = none,  01 = IPv4, 10 = IPv6, 11 = Reserved)
- 	 */
--	CQE_RSS_HTYPE_L4	= 0x3 << 6,
-+	CQE_RSS_IP_NONE		= 0x0,
-+	CQE_RSS_IPV4		= 0x1,
-+	CQE_RSS_IPV6		= 0x2,
-+	CQE_RSS_RESERVED	= 0x3,
-+
-+	CQE_RSS_HTYPE_L4	= GENMASK(7,6),
- 	/* cqe->rss_hash_type[7:6] - L4 destination selected for hash
- 	 * (00 = none, 01 = TCP. 10 = UDP, 11 = IPSEC.SPI
- 	 */
-+	CQE_RSS_L4_NONE		= 0x0,
-+	CQE_RSS_L4_TCP		= 0x1,
-+	CQE_RSS_L4_UDP		= 0x2,
-+	CQE_RSS_L4_IPSEC	= 0x3,
- };
- 
- enum {
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 130091a55a6f..0260e680006a 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -461,14 +461,17 @@ enum xdp_rss_hash_type {
- 	XDP_RSS_TYPE_L4_IPV4_TCP     = XDP_RSS_L3_IPV4 | XDP_RSS_L4 | XDP_RSS_L4_TCP,
- 	XDP_RSS_TYPE_L4_IPV4_UDP     = XDP_RSS_L3_IPV4 | XDP_RSS_L4 | XDP_RSS_L4_UDP,
- 	XDP_RSS_TYPE_L4_IPV4_SCTP    = XDP_RSS_L3_IPV4 | XDP_RSS_L4 | XDP_RSS_L4_SCTP,
-+	XDP_RSS_TYPE_L4_IPV4_IPSEC   = XDP_RSS_L3_IPV4 | XDP_RSS_L4 | XDP_RSS_L4_IPSEC,
- 
- 	XDP_RSS_TYPE_L4_IPV6_TCP     = XDP_RSS_L3_IPV6 | XDP_RSS_L4 | XDP_RSS_L4_TCP,
- 	XDP_RSS_TYPE_L4_IPV6_UDP     = XDP_RSS_L3_IPV6 | XDP_RSS_L4 | XDP_RSS_L4_UDP,
- 	XDP_RSS_TYPE_L4_IPV6_SCTP    = XDP_RSS_L3_IPV6 | XDP_RSS_L4 | XDP_RSS_L4_SCTP,
-+	XDP_RSS_TYPE_L4_IPV6_IPSEC   = XDP_RSS_L3_IPV6 | XDP_RSS_L4 | XDP_RSS_L4_IPSEC,
- 
- 	XDP_RSS_TYPE_L4_IPV6_TCP_EX  = XDP_RSS_TYPE_L4_IPV6_TCP |XDP_RSS_L3_DYNHDR,
- 	XDP_RSS_TYPE_L4_IPV6_UDP_EX  = XDP_RSS_TYPE_L4_IPV6_UDP |XDP_RSS_L3_DYNHDR,
- 	XDP_RSS_TYPE_L4_IPV6_SCTP_EX = XDP_RSS_TYPE_L4_IPV6_SCTP|XDP_RSS_L3_DYNHDR,
-+	XDP_RSS_TYPE_L4_IPV6_IPSEC_EX= XDP_RSS_TYPE_L4_IPV6_IPSEC|XDP_RSS_L3_DYNHDR,
- };
- 
- #ifdef CONFIG_NET
 
 
