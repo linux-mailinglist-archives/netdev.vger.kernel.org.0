@@ -2,62 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3B966D043F
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 14:01:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15B0A6D0444
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 14:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231402AbjC3MBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 08:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34974 "EHLO
+        id S229640AbjC3MDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 08:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230413AbjC3MBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 08:01:50 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F13F2D4F
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:01:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=LIeIeVO/W19N3NLTD2InDSEwsi/LTsc1lCmV6Hlbseg=; b=qDRsduEa6zBocLjpVp2UzoMqv0
-        b2cp8slphvIwvF9XvV17wTlNxNman5dlTOGYG9ryaMXvy1AEXBxBD+RK4/FwXMw1yE7uGriB2/O/a
-        RSiA2ZaIH8J8KH8veu5JLY780ZkOcjHwWfF2tgHVCTcIFAt4OlubE1IWYUPeUdW9OE7s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1phqyM-008sM1-Ko; Thu, 30 Mar 2023 14:01:42 +0200
-Date:   Thu, 30 Mar 2023 14:01:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Buzarra, Arturo" <Arturo.Buzarra@digi.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] net: phy: return EPROBE_DEFER if PHY is not accessible
-Message-ID: <943ee78c-e40a-4682-a271-65d40b69314f@lunn.ch>
-References: <20230317121646.19616-1-arturo.buzarra@digi.com>
- <3e904a01-7ea8-705c-bf7a-05059729cebf@gmail.com>
- <DS7PR10MB4926EBB7DAA389E69A4E2FC1FA809@DS7PR10MB4926.namprd10.prod.outlook.com>
- <74cef958-9513-40d7-8da4-7a566ba47291@lunn.ch>
- <DS7PR10MB49260FFA60F0B3A5AB7AD69EFA879@DS7PR10MB4926.namprd10.prod.outlook.com>
- <156b7aee-b61a-40b9-ac51-59bcaef0c129@lunn.ch>
- <ZBxjs4arSTq4cDgf@shell.armlinux.org.uk>
- <DS7PR10MB4926A59970F3DEAE76542FFFFA8E9@DS7PR10MB4926.namprd10.prod.outlook.com>
+        with ESMTP id S230458AbjC3MDq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 08:03:46 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63DDA24E
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:03:44 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id x3so75408696edb.10
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:03:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680177823; x=1682769823;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=JslQDnTl2qT8x35HKGKb2Xj5kaoLGPxcLTVbku0+hKM=;
+        b=oo5tJwMH2aEA7gKnHjKP146I33lqxVCXdO1/kv+hA2jWHIxLCw7tnX1oj9hI5CpRfM
+         JOISNoEGfjwf7TLRPmHyqsM/BGuAim+gWJ+wVTlbfW1+JXiLL/VOTHZDqDyVwMyf7dBM
+         f6ubI2KSCjNOg89Ohcm6nqqNGQOxFk6CJQOIK2tuepaDd7D2kbzEV6g/wHu4F03gX5p3
+         NqscSxPqVo0uQPvQXMb3uHBLwhlZWIqUgUtWnyYJnPyP/Or2Qo9rZXgBPyOTnV+lbess
+         CUIF9EkJVG3nhK/w0DbwGlzRcktqJyCfhBE0ZEYJX/cNtIH9s6tZY1af7F/Oz/lWazKK
+         oHQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680177823; x=1682769823;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JslQDnTl2qT8x35HKGKb2Xj5kaoLGPxcLTVbku0+hKM=;
+        b=D5C1UnZ+iVXxBT7gDX5wfADhI7xAiwvJfS2SkfmuVFXZXu+5RfZfDGMLN5oPuAzORw
+         qEq7qLnW07B4dlY67gJ9UsvKp1MrF0yVbQpXed+0PUV60jRADisHCGndEAuA9hWqUFLw
+         T10l30uRZ7/n+mGePag5adcfpfEgnrhdk0xhP5Lii5jy0VyXqxnqRpD33kMrSRSeiCVp
+         MEyPeun6t0QLOSYbyVo0oYUad0M6RjsLYYU1IWApQPCnxmZCsg8vDt7ZZK1Xmvu+VCNO
+         b9ISvoBwO27Q/wuBDGG3+vKfe5BYczdWB4Wv4OCw/zioXvgedkknwy0hv1gdBE4Ia7Mt
+         aTeg==
+X-Gm-Message-State: AAQBX9eZACK4eaxJ3WpCCfNOdBPmfZijcDJ/rQspkknV7Rmh/D5n4gRz
+        5Wnoxh1GZfwYyJI6xH6ZGL3k8oU7h23T05JN2bYSVs1u
+X-Google-Smtp-Source: AKy350a/erRgznMmLEkmPt1J5008sB7z0DfcInJKPZqEKWmFMeEhjg38K58Df+X8IovYmpZr5h1uocYjBkYzsrljpn8=
+X-Received: by 2002:a50:9f47:0:b0:502:1f98:e14c with SMTP id
+ b65-20020a509f47000000b005021f98e14cmr11331759edf.4.1680177823356; Thu, 30
+ Mar 2023 05:03:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DS7PR10MB4926A59970F3DEAE76542FFFFA8E9@DS7PR10MB4926.namprd10.prod.outlook.com>
+References: <20230328235021.1048163-1-edumazet@google.com> <20230328235021.1048163-5-edumazet@google.com>
+ <CAL+tcoAEZ3nGfk6OVMY3O0W_c37cUMw94ugUNJsRaFuQz8_TbA@mail.gmail.com> <bbda81c4ca4d9d3ee458f4f2e1d58b2c3326732f.camel@redhat.com>
+In-Reply-To: <bbda81c4ca4d9d3ee458f4f2e1d58b2c3326732f.camel@redhat.com>
+From:   Jason Xing <kerneljasonxing@gmail.com>
+Date:   Thu, 30 Mar 2023 20:03:07 +0800
+Message-ID: <CAL+tcoAqfB_o9wS3c3GUwGs_1pQ22O89Y3DKtgwKaqcWuhTL5g@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/4] net: optimize ____napi_schedule() to avoid
+ extra NET_RX_SOFTIRQ
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Xing <kernelxing@tencent.com>, netdev@vger.kernel.org,
+        eric.dumazet@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Regardless, what do you think reading 0x0000 or 0xFFFF should be
-> considered as a PHY error?
+On Thu, Mar 30, 2023 at 7:39=E2=80=AFPM Paolo Abeni <pabeni@redhat.com> wro=
+te:
+>
+> On Thu, 2023-03-30 at 17:50 +0800, Jason Xing wrote:
+> > On Wed, Mar 29, 2023 at 7:53=E2=80=AFAM Eric Dumazet <edumazet@google.c=
+om> wrote:
+> > >
+> > > ____napi_schedule() adds a napi into current cpu softnet_data poll_li=
+st,
+> > > then raises NET_RX_SOFTIRQ to make sure net_rx_action() will process =
+it.
+> > >
+> > > Idea of this patch is to not raise NET_RX_SOFTIRQ when being called i=
+ndirectly
+> > > from net_rx_action(), because we can process poll_list from this poin=
+t,
+> > > without going to full softirq loop.
+> > >
+> > > This needs a change in net_rx_action() to make sure we restart
+> > > its main loop if sd->poll_list was updated without NET_RX_SOFTIRQ
+> > > being raised.
+> > >
+> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > Cc: Jason Xing <kernelxing@tencent.com>
+> > > ---
+> > >  net/core/dev.c | 22 ++++++++++++++++++----
+> > >  1 file changed, 18 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > index f34ce93f2f02e7ec71f5e84d449fa99b7a882f0c..0c4b21291348d4558f036=
+fb05842dab023f65dc3 100644
+> > > --- a/net/core/dev.c
+> > > +++ b/net/core/dev.c
+> > > @@ -4360,7 +4360,11 @@ static inline void ____napi_schedule(struct so=
+ftnet_data *sd,
+> > >         }
+> > >
+> > >         list_add_tail(&napi->poll_list, &sd->poll_list);
+> > > -       __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+> > > +       /* If not called from net_rx_action()
+> > > +        * we have to raise NET_RX_SOFTIRQ.
+> > > +        */
+> > > +       if (!sd->in_net_rx_action)
+> > > +               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+> > >  }
+> > >
+> > >  #ifdef CONFIG_RPS
+> > > @@ -6648,6 +6652,7 @@ static __latent_entropy void net_rx_action(stru=
+ct softirq_action *h)
+> > >         LIST_HEAD(list);
+> > >         LIST_HEAD(repoll);
+> > >
+> > > +start:
+> > >         sd->in_net_rx_action =3D true;
+> > >         local_irq_disable();
+> > >         list_splice_init(&sd->poll_list, &list);
+> > > @@ -6659,9 +6664,18 @@ static __latent_entropy void net_rx_action(str=
+uct softirq_action *h)
+> > >                 skb_defer_free_flush(sd);
+> > >
+> > >                 if (list_empty(&list)) {
+> > > -                       sd->in_net_rx_action =3D false;
+> > > -                       if (!sd_has_rps_ipi_waiting(sd) && list_empty=
+(&repoll))
+> > > -                               goto end;
+> > > +                       if (list_empty(&repoll)) {
+> > > +                               sd->in_net_rx_action =3D false;
+> > > +                               barrier();
+> > > +                               /* We need to check if ____napi_sched=
+ule()
+> > > +                                * had refilled poll_list while
+> > > +                                * sd->in_net_rx_action was true.
+> > > +                                */
+> > > +                               if (!list_empty(&sd->poll_list))
+> > > +                                       goto start;
+> >
+> > I noticed that since we decide to go back and restart this loop, it
+> > would be better to check the time_limit. More than that,
+> > skb_defer_free_flush() can consume some time which is supposed to take
+> > into account.
+>
+> Note that we can have a __napi_schedule() invocation with sd-
+> >in_net_rx_action only after executing the napi_poll() call below and
+> thus after the related time check (that is - after performing at least
+> one full iteration of the main for(;;) loop).
 
-It is clearly a hack to work around the missing clock. Sorry, but no.
+Hello Paolo,
 
-   Andrew
+It also took me for a while to consider. I'm not that sure if we
+should check again so I added "just for consideration".
+
+Thanks,
+Jason
+
+>
+> I don't think another check right here is needed.
+>
+> Thanks,
+>
+> Paolo
+>
