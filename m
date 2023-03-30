@@ -2,172 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5936D03B4
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 13:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2AB6D0439
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 14:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231204AbjC3LpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 07:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        id S231664AbjC3MBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 08:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbjC3LpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 07:45:07 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71256A5D3
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 04:44:44 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id h187so6428803iof.7
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 04:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680176668;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2RONu2RZBNLLDub3ywrjKSonV/K6wEcd/t7CVxMvR2g=;
-        b=rst5GuAKuiF5fjwagYk5jSZQoy0UWXU7Z3LMCkwykrsGX6Xo9/TxxCNIxMtGw7r6MJ
-         SjTPSnfc9IKUd5NHfRF+L5yRuoZ8dUdJ8Hmxkiv8s27bCgLUpDWpBf+isxaTuareLRz1
-         Y0kHy/ZtAVBCs3OgOk0oY7DHNVwr3aNg5nyxVLKxtZNLrgvQufwLt4A0DSWBISY+jvs0
-         q1TABfFdELWgbcgOzJe3B9Hgi6cHeHtMLCN9oHEFx9W69L8L+Lfd/1uyi3JIDgF0+2LJ
-         Y2YCS+o/JPztCJHSvTT/mrvWiZw5GfhwdXifxEkpGztB3meatJzvEDp0KIq9JMdHLDwP
-         YLgQ==
+        with ESMTP id S231304AbjC3MBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 08:01:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC610A24F
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:00:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680177617;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=y4kBL+83QToteVgKil7VO5tgjxZqNxgaDRNr3gcrywg=;
+        b=ENMSWLoTjVs1LrAvziK5C5RSczhBFWJKD5LtXB4vRmV7hGgtx9qnCCes0k5qkVIY7MujD+
+        NBMPpOUsZK6M08YghFb9ZFKYRqnZJPy1EdDdo9oknbbSw3nh8RRrmyqT1lzhny3c1bG+Y4
+        yjh8dhItAWX+u7zturFc3/it6dHIGTg=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-319-K-6tmKRzORCJ3zA-bcv5Tw-1; Thu, 30 Mar 2023 08:00:15 -0400
+X-MC-Unique: K-6tmKRzORCJ3zA-bcv5Tw-1
+Received: by mail-qk1-f198.google.com with SMTP id c186-20020a379ac3000000b007484744a472so8439915qke.22
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:00:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680176668;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2RONu2RZBNLLDub3ywrjKSonV/K6wEcd/t7CVxMvR2g=;
-        b=ZxpIrbe/4eLzlafpxIqpTBaSfgxO6YAkyczyR5SYYdxdIg6Jbfh02zcuFQL0HxAv6C
-         evMdcbavRxdZoCGIJlONcZfiI0jgXS7cpV7VQjEV8KJy/tP260j2LsosPzS7XVAdtGbt
-         ykLu2bg1KbkxMrGtnMoJNak4XVm4WPHEKkWqERkYXjl4HclH/JlaM/PV2wuZkOIRz6Ig
-         JE0avQ8yZZpjvBCFgWicqiQIXWrKYPcxdhNhlQbxr6qzEdfLA2zEJi/CQRZMNKl1hm0y
-         1aGjWoCP0A663taDyNK/usPU2rNmHAJsVnKAc/VqFLbuNcosGn3kpZPPLCUynKfBpLci
-         887Q==
-X-Gm-Message-State: AO0yUKWnvAeuqu3QeTLrskEjsl8FUnknUdx6NEcGvlCxmxGB3lYCenlG
-        m6hRm6VLbVPXcdn6uXVeTWLd9zmVE5kDG5hcaN/m9w==
-X-Google-Smtp-Source: AK7set+W7TKyDVptyqLv290aCYpcXrSVqj8SBPsqEgNQ7Qjfe5FrECzx+OnEjhMZGdgjHkIpHQTFfOvYKEcLj8I3FAY=
-X-Received: by 2002:a5e:c810:0:b0:74c:bb62:6763 with SMTP id
- y16-20020a5ec810000000b0074cbb626763mr8605550iol.1.1680176667631; Thu, 30 Mar
- 2023 04:44:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230328235021.1048163-1-edumazet@google.com> <20230328235021.1048163-5-edumazet@google.com>
- <CAL+tcoAEZ3nGfk6OVMY3O0W_c37cUMw94ugUNJsRaFuQz8_TbA@mail.gmail.com> <bbda81c4ca4d9d3ee458f4f2e1d58b2c3326732f.camel@redhat.com>
-In-Reply-To: <bbda81c4ca4d9d3ee458f4f2e1d58b2c3326732f.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 30 Mar 2023 13:44:16 +0200
-Message-ID: <CANn89iJaGs6pzTkkzW6eXDtKTcxCHVhz3MdRTQpW12zqY+7+jw@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/4] net: optimize ____napi_schedule() to avoid
- extra NET_RX_SOFTIRQ
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jason Xing <kerneljasonxing@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        d=1e100.net; s=20210112; t=1680177615; x=1682769615;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=y4kBL+83QToteVgKil7VO5tgjxZqNxgaDRNr3gcrywg=;
+        b=g7aKOnTU1uigL6gplX60/cnRn5BrQTsE32VzhI7Xvysv35bonJuicxIrP4EEO3cMgT
+         8KyIUclwTmnRC6BOMOVlA4uMmVcc/CyVDRZTbRMKeaC6oQvuaSc/C0wXHWL953LM09vs
+         bP/ENbaYXbGxUvYOuBHEr2MF+vZh+AgM17f5FRIrhpbQnyg2Zl5WMePGKb0bpE++T6/m
+         ThiI7QsD1QkBs9jj8x1KzfMk/76E8No648bTfdNTtwXx1CvsBTyEicE6QY7cq9F6Z8Dg
+         acNmNb4DiLJwCgSKy48RgzIbGAN645gZgR0WRu3xJH4G/bvQSMfUZlGa6TDJeKRHisDa
+         VWeg==
+X-Gm-Message-State: AAQBX9dfQI1WueKPv2NedmyJbjhPmNKO9icF5Aov5nPZzqnUS4M+enIc
+        NILlTxOAPzezg4h0KwugCsE2ag5d44LA3amlM6bGK99gFWHGfw2aERTE47JRP8120VP7o+KRYwv
+        f61Le5+GR48Rc6ExWTTrInMXp
+X-Received: by 2002:a05:622a:1815:b0:3e6:30c4:656f with SMTP id t21-20020a05622a181500b003e630c4656fmr3382252qtc.3.1680177615248;
+        Thu, 30 Mar 2023 05:00:15 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZsHaKjIuC84GXaAXjkM9JM90iIamxuSWXB5xzRL6fwcpPAZ7ZkIYl8hCrmXXt/5ZFlO14V9w==
+X-Received: by 2002:a05:622a:1815:b0:3e6:30c4:656f with SMTP id t21-20020a05622a181500b003e630c4656fmr3382202qtc.3.1680177614894;
+        Thu, 30 Mar 2023 05:00:14 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-228-125.dyn.eolo.it. [146.241.228.125])
+        by smtp.gmail.com with ESMTPSA id 4-20020a05620a048400b007468bf8362esm13619101qkr.66.2023.03.30.05.00.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 05:00:14 -0700 (PDT)
+Message-ID: <4c10487da3a217bcfa9f5d7c515ab4a300c84949.camel@redhat.com>
+Subject: Re: [PATCH v3] xen/netback: use same error messages for same errors
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Juergen Gross <jgross@suse.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jason Xing <kernelxing@tencent.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com
+        xen-devel@lists.xenproject.org, Jan Beulich <jbeulich@suse.com>
+Date:   Thu, 30 Mar 2023 14:00:11 +0200
+In-Reply-To: <20230329080259.14823-1-jgross@suse.com>
+References: <20230329080259.14823-1-jgross@suse.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 1:39=E2=80=AFPM Paolo Abeni <pabeni@redhat.com> wro=
-te:
->
-> On Thu, 2023-03-30 at 17:50 +0800, Jason Xing wrote:
-> > On Wed, Mar 29, 2023 at 7:53=E2=80=AFAM Eric Dumazet <edumazet@google.c=
-om> wrote:
-> > >
-> > > ____napi_schedule() adds a napi into current cpu softnet_data poll_li=
-st,
-> > > then raises NET_RX_SOFTIRQ to make sure net_rx_action() will process =
-it.
-> > >
-> > > Idea of this patch is to not raise NET_RX_SOFTIRQ when being called i=
-ndirectly
-> > > from net_rx_action(), because we can process poll_list from this poin=
-t,
-> > > without going to full softirq loop.
-> > >
-> > > This needs a change in net_rx_action() to make sure we restart
-> > > its main loop if sd->poll_list was updated without NET_RX_SOFTIRQ
-> > > being raised.
-> > >
-> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > > Cc: Jason Xing <kernelxing@tencent.com>
-> > > ---
-> > >  net/core/dev.c | 22 ++++++++++++++++++----
-> > >  1 file changed, 18 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index f34ce93f2f02e7ec71f5e84d449fa99b7a882f0c..0c4b21291348d4558f036=
-fb05842dab023f65dc3 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -4360,7 +4360,11 @@ static inline void ____napi_schedule(struct so=
-ftnet_data *sd,
-> > >         }
-> > >
-> > >         list_add_tail(&napi->poll_list, &sd->poll_list);
-> > > -       __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> > > +       /* If not called from net_rx_action()
-> > > +        * we have to raise NET_RX_SOFTIRQ.
-> > > +        */
-> > > +       if (!sd->in_net_rx_action)
-> > > +               __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> > >  }
-> > >
-> > >  #ifdef CONFIG_RPS
-> > > @@ -6648,6 +6652,7 @@ static __latent_entropy void net_rx_action(stru=
-ct softirq_action *h)
-> > >         LIST_HEAD(list);
-> > >         LIST_HEAD(repoll);
-> > >
-> > > +start:
-> > >         sd->in_net_rx_action =3D true;
-> > >         local_irq_disable();
-> > >         list_splice_init(&sd->poll_list, &list);
-> > > @@ -6659,9 +6664,18 @@ static __latent_entropy void net_rx_action(str=
-uct softirq_action *h)
-> > >                 skb_defer_free_flush(sd);
-> > >
-> > >                 if (list_empty(&list)) {
-> > > -                       sd->in_net_rx_action =3D false;
-> > > -                       if (!sd_has_rps_ipi_waiting(sd) && list_empty=
-(&repoll))
-> > > -                               goto end;
-> > > +                       if (list_empty(&repoll)) {
-> > > +                               sd->in_net_rx_action =3D false;
-> > > +                               barrier();
-> > > +                               /* We need to check if ____napi_sched=
-ule()
-> > > +                                * had refilled poll_list while
-> > > +                                * sd->in_net_rx_action was true.
-> > > +                                */
-> > > +                               if (!list_empty(&sd->poll_list))
-> > > +                                       goto start;
-> >
-> > I noticed that since we decide to go back and restart this loop, it
-> > would be better to check the time_limit. More than that,
-> > skb_defer_free_flush() can consume some time which is supposed to take
-> > into account.
->
-> Note that we can have a __napi_schedule() invocation with sd-
-> >in_net_rx_action only after executing the napi_poll() call below and
-> thus after the related time check (that is - after performing at least
-> one full iteration of the main for(;;) loop).
->
-> I don't think another check right here is needed.
+Hello,
 
-I was about to say the same thing.
+On Wed, 2023-03-29 at 10:02 +0200, Juergen Gross wrote:
+> Issue the same error message in case an illegal page boundary crossing
+> has been detected in both cases where this is tested.
+>=20
+> Suggested-by: Jan Beulich <jbeulich@suse.com>
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-Back to READ_ONCE() and WRITE_ONCE(), I originally had them in my tree,
-then simply realized they were not needed and confusing as a matter of fact=
-.
+As this was intended to be part of:
 
-barrier() is the right thing here, and only one is needed, because
-others are implicit,
-because before hitting reads, we must call out of line functions.
+xen/netback: fix issue introduced recently
+
+I'm going to apply this one on net, unless someone screams very loudly,
+very soon :)
+
+thanks!
+
+Paolo
+
