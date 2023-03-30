@@ -2,97 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89DD66D0C8F
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 19:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 247926D0C93
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 19:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232296AbjC3RTN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 30 Mar 2023 13:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
+        id S231429AbjC3RTz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 30 Mar 2023 13:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbjC3RTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 13:19:08 -0400
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3983CE1A2;
-        Thu, 30 Mar 2023 10:19:05 -0700 (PDT)
-Received: by mail-ed1-f41.google.com with SMTP id eg48so79228577edb.13;
-        Thu, 30 Mar 2023 10:19:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680196743;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/sK01N/HcAzey7kutWyAm0fiwuXpPIV0t8lDayMPKNs=;
-        b=4r8n6zZoDCBwTrqlp6Wpc0Opn4JmZTEDhm+FmJNJeKI6a+Pv+Q3RRlFjsr1uHrpUiY
-         0HSzyc61/TnpDx/H/pVUreWsdyBdtGV+x4Csmimk+qL4CaKEQMubSejsU5t7TkBMumlV
-         tqiiK1nGmdaZLimos68yQmt1f3rcJRT4uVCgkc47+ucCL1iL7lmNy8YFh9nBs7zOXLG6
-         sZIPb3oDVkR5WJ++wT5no7X6p2SqTJUDaasZwkK9CcE/cbpVuFmpool7B2KL62Td03OE
-         GGEkFXgbAdf8+ln3IVOVQxQlslyu5WkIMOajXpclKe5atWNr3Gqhro3KV1qkmKwGqKii
-         +B/g==
-X-Gm-Message-State: AAQBX9c/Q3e3+Ef2ddBZtuqGNsgJGTlZ/KKCVMs9gQtpXl2WcW/c8ddy
-        DbjroA3ziOmH0T8o6RJuuzwZjXfwszhnQIk8fr4=
-X-Google-Smtp-Source: AKy350YytQ1yNiR6W3Bf1WUTGN6F1FlrOPm5tq5wq5gaK9i6al6bWOGltYKF/XedV9kSLG6QNcyQIMF5Rh1uNWAeOVs=
-X-Received: by 2002:a17:907:a0cd:b0:947:4b15:51e5 with SMTP id
- hw13-20020a170907a0cd00b009474b1551e5mr1794105ejc.2.1680196743353; Thu, 30
- Mar 2023 10:19:03 -0700 (PDT)
+        with ESMTP id S232253AbjC3RTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 13:19:46 -0400
+Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B98BAE048
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 10:19:43 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-PtyqyyTfOKqoXX5TWfu2lw-1; Thu, 30 Mar 2023 13:19:24 -0400
+X-MC-Unique: PtyqyyTfOKqoXX5TWfu2lw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D109780C8C1;
+        Thu, 30 Mar 2023 17:19:23 +0000 (UTC)
+Received: from hog (unknown [10.39.192.141])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D8C332166B33;
+        Thu, 30 Mar 2023 17:19:22 +0000 (UTC)
+Date:   Thu, 30 Mar 2023 19:19:21 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Emeel Hakim <ehakim@nvidia.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for
+ VLAN interface
+Message-ID: <ZCXEmUQgswOBoRqR@hog>
+References: <20230329122107.22658-1-ehakim@nvidia.com>
+ <20230329122107.22658-2-ehakim@nvidia.com>
+ <ZCROr7DhsoRyU1qP@hog>
+ <20230329184201.GB831478@unreal>
 MIME-Version: 1.0
-References: <20230329-acpi-header-cleanup-v1-0-8dc5cd3c610e@kernel.org> <ZCUon17pXpgBr0eQ@kroah.com>
-In-Reply-To: <ZCUon17pXpgBr0eQ@kroah.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 30 Mar 2023 19:18:52 +0200
-Message-ID: <CAJZ5v0jKA9GQULe360ZnwiKc4HRHcLJR=LxDwwm7DGP59JU_rw@mail.gmail.com>
-Subject: Re: [PATCH 0/5] Remove acpi.h implicit include of of.h
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     Len Brown <lenb@kernel.org>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Marc Zyngier <maz@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-acpi@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20230329184201.GB831478@unreal>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.6 required=5.0 tests=RCVD_IN_DNSWL_LOW,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 8:13 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Mar 29, 2023 at 04:20:41PM -0500, Rob Herring wrote:
-> > In the process of cleaning up DT includes, I found that some drivers
-> > using DT functions could build without any explicit DT include. I traced
-> > the include to be coming from acpi.h via irqdomain.h.
-> >
-> > I was pleasantly surprised that there were not 100s or even 10s of
-> > warnings when breaking the include chain. So here's the resulting
-> > series.
-> >
-> > I'd suggest Rafael take the whole series. Alternatively,the fixes can be
-> > applied in 6.4 and then the last patch either after rc1 or the
-> > following cycle.
-> >
-> > Signed-off-by: Rob Herring <robh@kernel.org>
->
-> Nice cleanup, all are:
->
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+2023-03-29, 21:42:01 +0300, Leon Romanovsky wrote:
+> On Wed, Mar 29, 2023 at 04:43:59PM +0200, Sabrina Dubroca wrote:
+> > 2023-03-29, 15:21:04 +0300, Emeel Hakim wrote:
+> > > Add support for MACsec offload operations for VLAN driver
+> > > to allow offloading MACsec when VLAN's real device supports
+> > > Macsec offload by forwarding the offload request to it.
+> > > 
+> > > Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+> > > ---
+> > > V1 -> V2: - Consult vlan_features when adding NETIF_F_HW_MACSEC.
+> > 
+> > Uh? You're not actually doing that? You also dropped the
+> > changes to vlan_dev_fix_features without explaining why.
+> 
+> vlan_dev_fix_features() relies on real_dev->vlan_features which was set
+> in mlx5 part of this patch.
+> 
+>   643 static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
+>   644         netdev_features_t features)
+>   645 {
+>   ...
+>   649
+>   650         lower_features = netdev_intersect_features((real_dev->vlan_features |
+>   651                                                     NETIF_F_RXCSUM),
+>   652                                                    real_dev->features);
+> 
+> This part ensure that once real_dev->vlan_features and real_dev->features have NETIF_F_HW_MACSEC,
+> the returned features will include NETIF_F_HW_MACSEC too.
 
-All applied as 6.4 material with the tags collected so far, thanks!
+Ok, thanks.
+
+But back to the issue of vlan_features, in vlan_dev_init: I'm not
+convinced NETIF_F_HW_MACSEC should be added to hw_features based on
+->features. That would result in a new vlan device that can't offload
+macsec at all if it was created at the wrong time (while the lower
+device's macsec offload was temporarily disabled). AFAIU,
+vlandev->hw_features should be based on realdev->vlan_features. I
+don't see a reason to advertise a feature in the vlan device if we
+won't ever be able to turn it on because it's not in ->vlan_features
+("grmbl why can't I enable it, ethtool says it's here?!").
+
+
+Emeel, I'm not a maintainer, but I don't think you should be reposting
+until the existing discussion has settled down.
+
+> > 
+> > [...]
+> > > @@ -572,6 +573,9 @@ static int vlan_dev_init(struct net_device *dev)
+> > >  			   NETIF_F_HIGHDMA | NETIF_F_SCTP_CRC |
+> > >  			   NETIF_F_ALL_FCOE;
+> > >  
+> > > +	if (real_dev->features & NETIF_F_HW_MACSEC)
+> > > +		dev->hw_features |= NETIF_F_HW_MACSEC;
+> > > +
+> > >  	dev->features |= dev->hw_features | NETIF_F_LLTX;
+> > >  	netif_inherit_tso_max(dev, real_dev);
+> > >  	if (dev->features & NETIF_F_VLAN_FEATURES)
+
+-- 
+Sabrina
+
