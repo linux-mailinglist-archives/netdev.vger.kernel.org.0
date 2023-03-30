@@ -2,203 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1862E6D00D7
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B826D00FD
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231267AbjC3KNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 06:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
+        id S230496AbjC3KT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 06:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbjC3KN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:13:26 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8453F83DA;
-        Thu, 30 Mar 2023 03:13:19 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32U3lCdO020366;
-        Thu, 30 Mar 2023 03:13:13 -0700
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2171.outbound.protection.outlook.com [104.47.57.171])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3pn2ty1pp5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Mar 2023 03:13:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NtJIFkXj4ntK0EFPjkcAw81WvdUiTA5VwkTVPG4RKWY3WXSV1709IdaQ6/BWpN4B1VQE4XKmIb+ithuxAZSJDzyrw8mWvTVXrz/8Z8wbWVoaXgYcTcILPeGKBEDYw4H3m3nBsJTadAXYQ/fijfKwuyUy6FL22MtJkNmydSl4B254axY6w6y+yMmYU65v/ZrCAt1xb6yBUko0gAn3xs8CQjWC51WnAO2Cr0mK7HSiws9oNTwLjOIgAnDBgdw9uWQkqVbOWSyWIEtzPVk+DL/aR1Ue+Bm8/LgTvsx8Gu0A6aLt57rvB5eG7nd553c4oASr0OZCLbVacvQkx/Dlg7d/XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eiCj98tplvwohP+199R41Ufw0szY4dFKLhgX3u1tArc=;
- b=Viat6hj0b3oWe4lXeU3xOUKBISv2B5MBZArKh/VXAvH2uVd8mI73xQUmjY4Yp1+RRHy56G5SbhdfStAl5F7kQ94Q3SVBG6sJVeRDPqX6H05uLK58rKdK2kmzsN9QxFrMJiEdV+xd5FW6DJwrAns+cG4XN7JiixJMGeXthMdj7lpTYzrlK+ro1Hpl+M0pdm3JwTc7DJtZZys29ftH0sbE8IB0icaXDekBDA30c+m1CJZMt/ftomJXee88zmNLgL9WX6i/DPxxcyzkfBgHWFT59sL78KEXHBtPF+rs4TnMoUdtSQ0p76jpIjMycmjw3UeylRU99bMUNc0Fxl75/2bUIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eiCj98tplvwohP+199R41Ufw0szY4dFKLhgX3u1tArc=;
- b=kklhn8lOaMrd38pMMJVxQT1nFBLR7aZdfGUbkle+YSBfYN8ImWMWqxioCEkRnbigU5God2upk6la8mXjuK9m91fWEQOA4e8yYBSNae1tKhbCytMFDsksIGQE//SizGkF4ti4sYPTHQlJBH/d/sAjUHk6APeFtOmYJSi42FgGfG8=
-Received: from BY3PR18MB4707.namprd18.prod.outlook.com (2603:10b6:a03:3ca::23)
- by SN7PR18MB3919.namprd18.prod.outlook.com (2603:10b6:806:f5::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Thu, 30 Mar
- 2023 10:13:10 +0000
-Received: from BY3PR18MB4707.namprd18.prod.outlook.com
- ([fe80::bfe5:6d08:3a10:6251]) by BY3PR18MB4707.namprd18.prod.outlook.com
- ([fe80::bfe5:6d08:3a10:6251%3]) with mapi id 15.20.6222.035; Thu, 30 Mar 2023
- 10:13:10 +0000
-From:   Sai Krishna Gajula <saikrishnag@marvell.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Hariprasad Kelam <hkelam@marvell.com>
-Subject: Re: [net PATCH 3/7] octeontx2-af: Add validation for lmac type
-Thread-Topic: [net PATCH 3/7] octeontx2-af: Add validation for lmac type
-Thread-Index: AQHZYvA698tMiSoOKkG9zrn76D6ClQ==
-Date:   Thu, 30 Mar 2023 10:13:10 +0000
-Message-ID: <BY3PR18MB47076BEBC13E5C0A36083C43A08E9@BY3PR18MB4707.namprd18.prod.outlook.com>
-References: <20230329170619.183064-1-saikrishnag@marvell.com>
- <20230329170619.183064-4-saikrishnag@marvell.com>
- <20230330061840.GM831478@unreal>
-In-Reply-To: <20230330061840.GM831478@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcc2Fpa3Jpc2hu?=
- =?us-ascii?Q?YWdcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZi?=
- =?us-ascii?Q?ODRiYTI5ZTM1Ylxtc2dzXG1zZy03NzhjM2EwNi1jZWUzLTExZWQtYWQxYy0x?=
- =?us-ascii?Q?Y2MxMGM0MGQ5ZTRcYW1lLXRlc3RcNzc4YzNhMDgtY2VlMy0xMWVkLWFkMWMt?=
- =?us-ascii?Q?MWNjMTBjNDBkOWU0Ym9keS50eHQiIHN6PSIzMzEyIiB0PSIxMzMyNDY0NDc4?=
- =?us-ascii?Q?ODcxNTQ5MTYiIGg9IlhHTXRUcFlEQk5oTjhhNElQalh2b3FvUk5Dcz0iIGlk?=
- =?us-ascii?Q?PSIiIGJsPSIwIiBibz0iMSIgY2k9ImNBQUFBRVJIVTFSU1JVRk5DZ1VBQUhZ?=
- =?us-ascii?Q?SUFBRGtmdVU1OEdMWkFVSXdMeVVNVXF0UVFqQXZKUXhTcTFBTkFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFIQUFBQUFHQ0FBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFFQUFRQUJBQUFBMUZIM2FBQUFBQUFBQUFBQUFBQUFBSjRBQUFCaEFH?=
- =?us-ascii?Q?UUFaQUJ5QUdVQWN3QnpBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR01BZFFCekFIUUFid0J0QUY4?=
- =?us-ascii?Q?QWNBQmxBSElBY3dCdkFHNEFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQVFBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFB?=
- =?us-ascii?Q?Q0FBQUFBQUNlQUFBQVl3QjFBSE1BZEFCdkFHMEFYd0J3QUdnQWJ3QnVBR1VB?=
- =?us-ascii?Q?YmdCMUFHMEFZZ0JsQUhJQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFKNEFBQUJq?=
- =?us-ascii?Q?QUhVQWN3QjBBRzhBYlFCZkFITUFjd0J1QUY4QVpBQmhBSE1BYUFCZkFIWUFN?=
- =?us-ascii?Q?QUF5QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
-x-dg-rorf: true
-x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdB?=
- =?us-ascii?Q?QUFHTUFkUUJ6QUhRQWJ3QnRBRjhBY3dCekFHNEFYd0JyQUdVQWVRQjNBRzhB?=
- =?us-ascii?Q?Y2dCa0FITUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQVFBQUFBQUFBQUFDQUFBQUFBQ2VBQUFBWXdCMUFITUFkQUJ2?=
- =?us-ascii?Q?QUcwQVh3QnpBSE1BYmdCZkFHNEFid0JrQUdVQWJBQnBBRzBBYVFCMEFHVUFj?=
- =?us-ascii?Q?Z0JmQUhZQU1BQXlBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUJBQUFB?=
- =?us-ascii?Q?QUFBQUFBSUFBQUFBQUo0QUFBQmpBSFVBY3dCMEFHOEFiUUJmQUhNQWN3QnVB?=
- =?us-ascii?Q?RjhBY3dCd0FHRUFZd0JsQUY4QWRnQXdBRElBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFu?=
- =?us-ascii?Q?Z0FBQUdRQWJBQndBRjhBY3dCckFIa0FjQUJsQUY4QVl3Qm9BR0VBZEFCZkFH?=
- =?us-ascii?Q?MEFaUUJ6QUhNQVlRQm5BR1VBWHdCMkFEQUFNZ0FBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFDZUFBQUFaQUJzQUhBQVh3?=
- =?us-ascii?Q?QnpBR3dBWVFCakFHc0FYd0JqQUdnQVlRQjBBRjhBYlFCbEFITUFjd0JoQUdj?=
- =?us-ascii?Q?QVpRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
-x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCa0FHd0Fj?=
- =?us-ascii?Q?QUJmQUhRQVpRQmhBRzBBY3dCZkFHOEFiZ0JsQUdRQWNnQnBBSFlBWlFCZkFH?=
- =?us-ascii?Q?WUFhUUJzQUdVQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR1VBYlFCaEFHa0FiQUJmQUdFQVpB?=
- =?us-ascii?Q?QmtBSElBWlFCekFITUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBRHdBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFBQ0FB?=
- =?us-ascii?Q?QUFBQUNlQUFBQWJRQmhBSElBZGdCbEFHd0FiQUJmQUhBQWNnQnZBR29BWlFC?=
- =?us-ascii?Q?akFIUUFYd0JqQUc4QVpBQmxBSE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFKNEFBQUJ0QUdF?=
- =?us-ascii?Q?QWNnQjJBR1VBYkFCc0FGOEFkQUJsQUhJQWJRQnBBRzRBZFFCekFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBRUFBQUFBQUFBQUFnQUFBQUFBIi8+PC9tZXRhPg=3D=3D?=
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY3PR18MB4707:EE_|SN7PR18MB3919:EE_
-x-ms-office365-filtering-correlation-id: 531f764c-2ddd-4828-2a36-08db31075d77
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zA4gbCwg8y+EZicXJDeXv19zbh2Guoqd6Kzt6tXLaSfsKVYnSenzzoNTeaTh1pJDguBOO82lY03pPcXn66zVZoDQ1r5UTbIvC0Eiii7NU8cA0RYe3y6kadWuhLNTPX42ZQGcQMeqr7k/j/XELeGTaVLq9wZ7M5N58CQqozQdsHHAk7iVvExPywnPZbU4ajuzNfK7HjhQIDU9E6E6Yv2PxNqitgcn6q7xbbKT3VtLt0QTBpEKFbM34E2AyENIvVN2yCNkCm4F8UJYf6Bx7hsngZxI9DLJhVfzh8yecz0EpPyqOpq5req/GpKVGBxqzLnd66wR4mSjVzJavIe8dIF3ZwWjWKxsD2f4Is10jrWtUpd17cK8bjQDCnQyq6NfnsmHSClqqN4eCZoOuUFqTVlu7NDT010dp6qNNPdZEawI38s4KP3REWcU3rRE7LcvFwrBljOso9UMKKpx6CSTlWw3kXPSB8jbdOL3KBckIvjQ4GfSODsaS/oV77Z1dXg/WzMDe5KHqP1AQSXjWvCZVBjsa6Vz2QGGrNPF0O4kLgZ+zioqJy8KvABXXYOfcBkw6qbXFoRMq4fBz/ofj5orNOnwao9dXXgGbvfNJUxrKCl5DnT9QsGC0ZifO5NKxNXFlCxa
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR18MB4707.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(376002)(136003)(39860400002)(396003)(451199021)(5660300002)(8936002)(52536014)(41300700001)(2906002)(86362001)(66476007)(76116006)(66556008)(8676002)(66946007)(6916009)(4326008)(66446008)(64756008)(316002)(478600001)(54906003)(45080400002)(71200400001)(7696005)(107886003)(9686003)(6506007)(26005)(186003)(53546011)(122000001)(83380400001)(33656002)(38100700002)(38070700005)(55016003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3MA3L1UpOQdUb2tDRekZBKl+ADYGrcI5DXjZvylIeuSc8ogGFgvvmgezqAhz?=
- =?us-ascii?Q?Qtg/HN4zXPUxK8gMxe5sP5Nw/2ghuoIRVAmFXxgxJJ5bU4PdBtLQqcRDlVec?=
- =?us-ascii?Q?VqQfPABnknmm3h1ohLWd32jFWWtmN2MZHXs+0dZL5GyzRwZvSqAYSEpu3rgG?=
- =?us-ascii?Q?9hQ5tZg9yybmko1pSY9Q5AK0DOm0xI5H3jMBVCFTN9pdmj3bMaLMotUwZ8o/?=
- =?us-ascii?Q?A9VYUh6TUwQKsrWpYXOzb48GhekksVLYyQSADVtOVGNboBqpghrn92vrYVad?=
- =?us-ascii?Q?7EgOc8rjy2jEkyQ++ozYiL6esgiD9jFzdkkP0TPQ9QRwRZlawAzusR+KOMCq?=
- =?us-ascii?Q?nbEwqaPuSV1cDr8ojBIoSWxsGWv+6rrnpeJz5dr67jiu/2h6vu+re2LqJhwj?=
- =?us-ascii?Q?vOzXqVi2mTBp4LhUmCuMsXiSAUPdPcT6vijtzuAr1pcjqWhIn+Sl7M/uQ5+E?=
- =?us-ascii?Q?zXjEp0oTUyM2Vv/Uafuon+9TjkEpmmSor0u8vxTwknTq1aH3DmF0pbjCuB7V?=
- =?us-ascii?Q?e3QeHUxBeXTAfNFKV9dTpAv5oyn4P5KiKdRMuh8aHetrr3dz0gIcXweqIYgc?=
- =?us-ascii?Q?aess4L/yRRVFze7JEiKDycxhtgkrtPMc0cvK52mQbj6MPDKBstqprMbjP/yR?=
- =?us-ascii?Q?2TStk0np+xsbbUOc7FRrz6xH2ZXt0daDW0aiavhmcXckbXKjOPze5P2AVum6?=
- =?us-ascii?Q?UuoCpFjyoDyQIIyy1mTCifdDW/vCJFX6nkgePR7pwJFFZAW4+CtQlXMy9M+v?=
- =?us-ascii?Q?9tl0B066pCss2xy8ZcnWSAnzCZXwbYBjj8qK6EyPmo6+d48yr07rtuFqvum2?=
- =?us-ascii?Q?c5gPCSDqWXuYN/lk3Tqfz4dnmdC5CjkcqXTY0zLlUMYe66Gy5IqVCjbeYDfc?=
- =?us-ascii?Q?nBxO7KBET0rSaOJjiPUVRC7+4G60kgYJC2wf5tD7ASmojdZkSomMAquAckDF?=
- =?us-ascii?Q?vkdEBTE21TpcfhwtzXraie59ASLexNqLMMQC9xCygPsC9jAGtot7ECyJQpjY?=
- =?us-ascii?Q?iqaYQ3uMffYlU2fQzf1Ce54OMxSH7zUq6uCJy/Oy4Q4XQSNNEzkOnA7LpknQ?=
- =?us-ascii?Q?0X3thh1OaLWegpKRGrwRsKmft/hWj/8vzBi7IxSFdmjUfFoudCVFCAI/gmZ1?=
- =?us-ascii?Q?NqWnruYsojGtrGQdcLGdUkQVfpV8dAoHDPlmW2ixN76KOzZSrBY2zABAxWCU?=
- =?us-ascii?Q?eWMZij5CKgGXs/VE1Adw6h9MXgHdc9SDfrVYC8R1Avns6AK5kMVIscWNQRAS?=
- =?us-ascii?Q?X+9K87mwnmx2COt3Ta4q0Ndcaf5e2g5AJ1BCeKJqhGQnbv+IY2AAA7gEOu4o?=
- =?us-ascii?Q?74yJXjR5gxMsyJhWV5DaALFSlys79C2BjX3xQqGxb1x9f5p+x1AFOy89NzCV?=
- =?us-ascii?Q?ndZSrbTr94wIFz5e55faRItlvqsGPCk4qnc18/aebLulOgy63wGnP94k3nDM?=
- =?us-ascii?Q?hTE5znifPbNQi8qEMVktZOQVYcr1mRdJVqCRrTujlWP4gcmfbP8ExxBXASjP?=
- =?us-ascii?Q?1CO0P8Gyk6LpcDn1piJPldSLbisoN0LcYh6v1REyg3dweeZRJElQFABpdJ1l?=
- =?us-ascii?Q?3wXqq2v9HapCPwsnKi9L/C1U+AdB9gp96tr1CZNv?=
-Content-Type: text/plain; charset="us-ascii"
+        with ESMTP id S230374AbjC3KTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:19:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E796D86A8
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:18:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680171501;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5G4KlQgalZLZCJDa8edjfg+cOTUz1wNZ1RGVK9EOjxg=;
+        b=GQpYV71nkcsOOCZQ/91FMHhhnuDQk8cpiSfdMyaKXI0c2e7TG6b0+VLC618d7LhwH3P2NH
+        6Sb17nMXYyQfnYzRD90OnM0eEZPynMegiJFkguckvnnkPJ00NC954nRj4NaAleL2bYm8h1
+        sBjrclE8sejZn0uLB4nyQn9hOBFZRFU=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-541-kFcPItbiMDuwww6aihaPGw-1; Thu, 30 Mar 2023 06:18:20 -0400
+X-MC-Unique: kFcPItbiMDuwww6aihaPGw-1
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-57c67ea348eso12362126d6.1
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:18:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680171499;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5G4KlQgalZLZCJDa8edjfg+cOTUz1wNZ1RGVK9EOjxg=;
+        b=HmeVkW+KweEIjhV03qCDtdfrb/NRptSy2Nw2WFbOVfQyGN6U2XvgwBiSM3toabKCQM
+         9hHJn9o9al4Z5A/ql2XydV255RE3WsZqj2/ZKzasam8CR77mWpnwfNWNhJRWZkJ9N4Yl
+         ygjVF/1DXWSUeheazqHAfBbYJiQyD0a09uZtJyFSO+ATpmpv5kvBtS0XrbDa3aKcwrOF
+         3sdLNfvJjQipNmKYef3riQWzoAWbemGju1eB58zrzsCCGZeKW7+8+ZTw9enj1DfP9X8f
+         qRk3TJIoa1//xdxVoPowgEaw6D5x7wNbR4+UXUCXH2btgee67ERmHdNvDiMRGSiK66/F
+         1zyg==
+X-Gm-Message-State: AAQBX9fU+rmlHKf7DNtgMyZJXT/Df1deLO0mh5tgj63w79sLr2+/NsoN
+        qtcg6Zu1PvqTkSAOGIBt82G8+wGMgvk+Wa6iXpAUySTzzTSoCmVujcky8pDO2vkw4fLitMvtDS1
+        sKzCJMGdTY4NxCuo179H1uQ6/
+X-Received: by 2002:a05:6214:5089:b0:57d:747b:1f7 with SMTP id kk9-20020a056214508900b0057d747b01f7mr1974009qvb.1.1680171499607;
+        Thu, 30 Mar 2023 03:18:19 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bvx8K/owgkDcL8x2YcXmXFmidn7E2vZNaiTvyyPaK6M4yc/CbTywaTxcrJm2j30ZXWyITBOQ==
+X-Received: by 2002:a05:6214:5089:b0:57d:747b:1f7 with SMTP id kk9-20020a056214508900b0057d747b01f7mr1973988qvb.1.1680171499214;
+        Thu, 30 Mar 2023 03:18:19 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-228-125.dyn.eolo.it. [146.241.228.125])
+        by smtp.gmail.com with ESMTPSA id f17-20020ac84711000000b003e635f0fdb4sm169635qtp.53.2023.03.30.03.18.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 03:18:18 -0700 (PDT)
+Message-ID: <3155cdb517e0db77d8664e5623c9d39e437fd796.camel@redhat.com>
+Subject: Re: [PATCH net-next 7/8] virtio_net: introduce
+ receive_mergeable_xdp()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Date:   Thu, 30 Mar 2023 12:18:15 +0200
+In-Reply-To: <20230328120412.110114-8-xuanzhuo@linux.alibaba.com>
+References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
+         <20230328120412.110114-8-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY3PR18MB4707.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 531f764c-2ddd-4828-2a36-08db31075d77
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2023 10:13:10.5370
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0AZ2m5hTpQFeDG/SSaeCf03IQkBeKwQqO0YYhzDOj6EJAKHXXI87GDmUPxfMTE2J9h/H/7CWDSCobL6dl6lhkw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR18MB3919
-X-Proofpoint-GUID: vvxJghEN0bJPHJpi2OKhBZRMRC5PTKrO
-X-Proofpoint-ORIG-GUID: vvxJghEN0bJPHJpi2OKhBZRMRC5PTKrO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-30_04,2023-03-30_01,2023-02-09_01
-X-Spam-Status: No, score=-0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -206,83 +88,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please see inline,
+Hi,
 
-> -----Original Message-----
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Thursday, March 30, 2023 11:49 AM
-> To: Sai Krishna Gajula <saikrishnag@marvell.com>
-> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> pabeni@redhat.com; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
-> Sunil Kovvuri Goutham <sgoutham@marvell.com>;
-> richardcochran@gmail.com; Hariprasad Kelam <hkelam@marvell.com>
-> Subject: Re: [net PATCH 3/7] octeontx2-af: Add validation for lmac type
-=20
-> > From: Hariprasad Kelam <hkelam@marvell.com>
-> >
-> > Upon physical link change, firmware reports to the kernel about the
-> > change along with the details like speed, lmac_type_id, etc.
-> > Kernel derives lmac_type based on lmac_type_id received from firmware.
-> >
-> > In a few scenarios, firmware returns an invalid lmac_type_id, which is
-> > resulting in below kernel panic. This patch adds the missing
-> > validation of the lmac_type_id field.
-> >
-> > Internal error: Oops: 96000005 [#1] PREEMPT SMP
-> > [   35.321595] Modules linked in:
-> > [   35.328982] CPU: 0 PID: 31 Comm: kworker/0:1 Not tainted
-> > 5.4.210-g2e3169d8e1bc-dirty #17
-> > [   35.337014] Hardware name: Marvell CN103XX board (DT)
-> > [   35.344297] Workqueue: events work_for_cpu_fn
-> > [   35.352730] pstate: 40400089 (nZcv daIf +PAN -UAO)
-> > [   35.360267] pc : strncpy+0x10/0x30
-> > [   35.366595] lr : cgx_link_change_handler+0x90/0x180
-> >
-> > Fixes: 61071a871ea6 ("octeontx2-af: Forward CGX link notifications to
-> > PFs")
-> > Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-> > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> > Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
-> > ---
-> >  drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > index 724df6398bbe..180aa84cf1c3 100644
-> > --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > @@ -1231,6 +1231,13 @@ static inline void link_status_user_format(u64
-> lstat,
-> >  	linfo->an =3D FIELD_GET(RESP_LINKSTAT_AN, lstat);
-> >  	linfo->fec =3D FIELD_GET(RESP_LINKSTAT_FEC, lstat);
-> >  	linfo->lmac_type_id =3D FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, lstat);
-> > +
-> > +	if (linfo->lmac_type_id >=3D LMAC_MODE_MAX) {
-> > +		dev_err(&cgx->pdev->dev, "Unknown lmac_type_id %d
-> reported by firmware on cgx port%d:%d",
-> > +			linfo->lmac_type_id, cgx->cgx_id, lmac_id);
-> > +		return;
+On Tue, 2023-03-28 at 20:04 +0800, Xuan Zhuo wrote:
+> The purpose of this patch is to simplify the receive_mergeable().
+> Separate all the logic of XDP into a function.
 >=20
-> You are keeping old lmac_type, which is out-of-sync now.
-> Why don't you do something like that?
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  drivers/net/virtio_net.c | 128 +++++++++++++++++++++++----------------
+>  1 file changed, 76 insertions(+), 52 deletions(-)
 >=20
-> if (linfo->lmac_type_id >=3D LMAC_MODE_MAX) {
->   strncpy(linfo->lmac_type, "Unknown", LMACTYPE_STR_LEN - 1);
->   return;
-> }
->=20
->=20
-We will add the proposed change (Unknown). Since we need to know the firmwa=
-re reported lmac type ID is proper or not, we will keep dev_err also.
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 136131a7868a..c8978d8d8adb 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1316,6 +1316,63 @@ static void *mergeable_xdp_prepare(struct virtnet_=
+info *vi,
+>  	return page_address(xdp_page) + VIRTIO_XDP_HEADROOM;
+>  }
+> =20
+> +static struct sk_buff *receive_mergeable_xdp(struct net_device *dev,
+> +					     struct virtnet_info *vi,
+> +					     struct receive_queue *rq,
+> +					     struct bpf_prog *xdp_prog,
+> +					     void *buf,
+> +					     void *ctx,
+> +					     unsigned int len,
+> +					     unsigned int *xdp_xmit,
+> +					     struct virtnet_rq_stats *stats)
+> +{
+> +	struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf;
+> +	int num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
+> +	struct page *page =3D virt_to_head_page(buf);
+> +	int offset =3D buf - page_address(page);
+> +	unsigned int xdp_frags_truesz =3D 0;
+> +	struct sk_buff *head_skb;
+> +	unsigned int frame_sz;
+> +	struct xdp_buff xdp;
+> +	void *data;
+> +	u32 act;
+> +	int err;
+> +
+> +	data =3D mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_b=
+uf, &page,
+> +				     offset, &len, hdr);
+> +	if (!data)
+> +		goto err_xdp;
+> +
+> +	err =3D virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame_=
+sz,
+> +					 &num_buf, &xdp_frags_truesz, stats);
+> +	if (unlikely(err))
+> +		goto err_xdp;
+> +
+> +	act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
+> +
+> +	switch (act) {
+> +	case VIRTNET_XDP_RES_PASS:
+> +		head_skb =3D build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
+> +		if (unlikely(!head_skb))
+> +			goto err_xdp;
+> +		return head_skb;
+> +
+> +	case VIRTNET_XDP_RES_CONSUMED:
+> +		return NULL;
+> +
+> +	case VIRTNET_XDP_RES_DROP:
+> +		break;
+> +	}
+> +
+> +err_xdp:
+> +	put_page(page);
+> +	mergeable_buf_free(rq, num_buf, dev, stats);
+> +
+> +	stats->xdp_drops++;
+> +	stats->drops++;
+> +	return NULL;
+> +}
+> +
+>  static struct sk_buff *receive_mergeable(struct net_device *dev,
+>  					 struct virtnet_info *vi,
+>  					 struct receive_queue *rq,
+> @@ -1325,21 +1382,22 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+>  					 unsigned int *xdp_xmit,
+>  					 struct virtnet_rq_stats *stats)
+>  {
+> -	struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf;
+> -	int num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
+> -	struct page *page =3D virt_to_head_page(buf);
+> -	int offset =3D buf - page_address(page);
+> -	struct sk_buff *head_skb, *curr_skb;
+> -	struct bpf_prog *xdp_prog;
+>  	unsigned int truesize =3D mergeable_ctx_to_truesize(ctx);
+>  	unsigned int headroom =3D mergeable_ctx_to_headroom(ctx);
+>  	unsigned int tailroom =3D headroom ? sizeof(struct skb_shared_info) : 0=
+;
+>  	unsigned int room =3D SKB_DATA_ALIGN(headroom + tailroom);
+> -	unsigned int frame_sz;
+> -	int err;
+> +	struct virtio_net_hdr_mrg_rxbuf *hdr;
+> +	struct sk_buff *head_skb, *curr_skb;
+> +	struct bpf_prog *xdp_prog;
+> +	struct page *page;
+> +	int num_buf;
+> +	int offset;
+> =20
+>  	head_skb =3D NULL;
+>  	stats->bytes +=3D len - vi->hdr_len;
+> +	hdr =3D buf;
+> +	num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
+> +	page =3D virt_to_head_page(buf);
+> =20
+>  	if (unlikely(len > truesize - room)) {
+>  		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
+> @@ -1348,51 +1406,21 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+>  		goto err_skb;
+>  	}
+> =20
+> -	if (likely(!vi->xdp_enabled)) {
+> -		xdp_prog =3D NULL;
+> -		goto skip_xdp;
+> -	}
+> -
+> -	rcu_read_lock();
+> -	xdp_prog =3D rcu_dereference(rq->xdp_prog);
+> -	if (xdp_prog) {
+> -		unsigned int xdp_frags_truesz =3D 0;
+> -		struct xdp_buff xdp;
+> -		void *data;
+> -		u32 act;
+> -
+> -		data =3D mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_=
+buf, &page,
+> -					     offset, &len, hdr);
+> -		if (!data)
+> -			goto err_xdp;
+> -
+> -		err =3D virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame=
+_sz,
+> -						 &num_buf, &xdp_frags_truesz, stats);
+> -		if (unlikely(err))
+> -			goto err_xdp;
+> -
+> -		act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
+> -
+> -		switch (act) {
+> -		case VIRTNET_XDP_RES_PASS:
+> -			head_skb =3D build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz)=
+;
+> -			if (unlikely(!head_skb))
+> -				goto err_xdp;
+> -
+> +	if (likely(vi->xdp_enabled)) {
+
+This changes the branch prediction hint compared to the existing code;
+as we currently have:
+	if (likely(!vi->xdp_enabled)) {
+
+
+and I think it would be better avoid such change.
 
 Thanks,
-Sai
 
-> > +	}
-> > +
-> >  	lmac_string =3D cgx_lmactype_string[linfo->lmac_type_id];
-> >  	strncpy(linfo->lmac_type, lmac_string, LMACTYPE_STR_LEN - 1);  }
-> > --
-> > 2.25.1
-> >
+Paolo
+
