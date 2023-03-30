@@ -2,111 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F2C96D074E
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 15:51:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C4CE6D0752
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 15:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbjC3Nvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 09:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        id S231894AbjC3NwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 09:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbjC3Nvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 09:51:42 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2122.outbound.protection.outlook.com [40.107.244.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3030E5266
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 06:51:41 -0700 (PDT)
+        with ESMTP id S231708AbjC3NwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 09:52:23 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2129.outbound.protection.outlook.com [40.107.223.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269A55266
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 06:52:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ca8n86UKba1E4KVO0m8V2MhNk83C2xJtrz5HMLWBP04JYrs59GUnpJDXUCRwvc/WkWq+/DHdH3tHTdzfU38YZtTbk6BpBMKTXf8I7tdmWhiHyxHNiM2U3aspCXkLGGO049BpbuXM/xZ4v8EK/gg6L0VZym1Snb90eQCPCVTs2zmOmbYwDm0tUZtyB4/LO4LjNsKHP8pzLgh13eeKjhgiJA628r18WK9pRfOv9SKfyeArUBgJuE7ULRja7XTWDTHKRP8Bn90j+lzbIOevnAaxpF2EryPQ5u//6J2cxxU0JJr/b7hFIQyNp/1vxdGCSJZpV+T3yFAYkcXIWOJ8artpsg==
+ b=Q6wCratNLf+nC0jrTowjOgp5zErwbFxaCJDARCQM+nko9fWeXy4fw1H6Dwk3VaRcNV+29tUwezafDKrFVy7cn4MvoPr8UO+gsuO8QnSStw0MjWkIVglUEOrFjO2AFKxj19JWCjTQ6rqkXgU4ayO8OAnlRJvOoXSd2OQQCgSFBe4UU/KLHZBIkeWUtBPeA6uQkac+mzggjx9lw/+ybcbRANXUz3KDgI5tntMyO2a2hpnIsReEX7TDx8AXTZi5uzfmGgrTbFbufUUfwJq+LqTcMn5cViayPWr6BBJFJ8i1GjW4Cu6hXYdDU0gIj0NTM4bb8pLjC6qQ3hwLRwi55DaFyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XCCHNYaOAuhXVTjZcvHzI8MMvLDqrO+efkgI6ftmYm4=;
- b=lgV2XOandHe4Wn37cQtTajlVBz0RbjoJPZY9IDH8g1XRY5OnLhuxPB4QfffJF8f6I2rdRuwAtbxLuw45fyzun5SL3su7Z24pDObkS+6+1KGa46W94P+4kH1h2wZX0kejhFAN3/0/2kKQ05C/NhldTKVo5H/r9l5dp8CuDpM67FmPTrzPunxk55RzFwg2R35+uDzqbtQ7+aFSvjkYM1h24H+RR6ZfLZUFJ2quRDdfB7MRTu3sKXlyl0LDP2yS69eYJAMbZqRSub/BNGCVhwUQYx1I7UagqNfmzEYItv1EH26aiNo/Ra6Jgutf9MJ0BiqtqdXo/x0d3zInDMLtUCkIOg==
+ bh=R0vcW/XmHFh42heHRSnLby17oQY3A7GsPUazqEAyXy4=;
+ b=G4kLMqTsAhyV3Ih7PsfLGDjeN66t7tkAruZIrOlrQ497LfY9VJlASFi6lqTU3gjAYnWOefGomWXnodPzgvnrzC5J2VLgQefH7U6bfPXiLXAHJoqesdaokKG3sX2T/o7ksyGEVdzS2yIArDsD+4rex2rsRhyiR7vdsrTfYjcu/aLUYwmlgPJ1W1IuiW31a/lv+QRJPOnmNAn/lM/Q/AOW+fxUgCryIwJ7d1BTsbKd4M58y91shoy//DDtWh5cCOSz+WbM4S92sfVYXEzlKzyAl4H5xjGGEANXupwgQ4kEKlaaAqShmhRO13ZmPjqgdwA/kL3rwiHsigF7qZkPqRVAdQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XCCHNYaOAuhXVTjZcvHzI8MMvLDqrO+efkgI6ftmYm4=;
- b=U0ew2PlchzrjbCO7RG12BpoZYX79root9jbiBrQ/hAhmJzgFM6XgyP2dvi0QlGxygiEvQpNU4uwoBE1tgiQ80YgFYMis3WcFNxYaSpjdN92EXVLCbVGGbWTrIxDCDfR9NuU2e9H2fAoBfSsICs8Gq4lY3Kge2UojHQ/wVSBC7ao=
+ bh=R0vcW/XmHFh42heHRSnLby17oQY3A7GsPUazqEAyXy4=;
+ b=uqZ8Xc+/C/RD566/gLDykhNGsxuAvj801HiLYAMfddIGjWMH0pKi3vk47GzoPyD30l3oF3hChMhwsauTC6BfSzc9lEFNZgT1sBNZUot6HiEh3qFC6pdM/887m7QtV9cYybVBWV5zFt3lujJVANb3OX8Goo8A9LTgiOaXEL7PnHc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by SA1PR13MB4863.namprd13.prod.outlook.com (2603:10b6:806:1a3::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22; Thu, 30 Mar
- 2023 13:51:38 +0000
+ 2023 13:52:20 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.021; Thu, 30 Mar 2023
- 13:51:38 +0000
-Date:   Thu, 30 Mar 2023 15:51:30 +0200
+ 13:52:20 +0000
+Date:   Thu, 30 Mar 2023 15:52:14 +0200
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
 Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: fix db type confusion in host fdb/mdb
- add/del
-Message-ID: <ZCWT4tK6aNBshFcl@corigine.com>
-References: <20230329133819.697642-1-vladimir.oltean@nxp.com>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net] net: dsa: sync unicast and multicast addresses for
+ VLAN filters too
+Message-ID: <ZCWUDm3UyQmGKUSl@corigine.com>
+References: <20230329151821.745752-1-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230329133819.697642-1-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: AS4P190CA0030.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d0::20) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230329151821.745752-1-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: AS4P189CA0019.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5db::10) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA1PR13MB4863:EE_
-X-MS-Office365-Filtering-Correlation-Id: df94255f-6914-4b7d-5243-08db3125e1dd
+X-MS-Office365-Filtering-Correlation-Id: 3b82973c-5107-4586-65b6-08db3125fb34
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wyzWGM+kcVcf1UuMRhBFZiplHYllNEdqWhLSZIUkV89xHo5BlFfuGWdVmv6rv3JL6R8C2uAWdLaEJgHGFzRJvJpJ3VCzvN3IVG2L0D6mguc7bP+DxJZCRzmMpCDbFgso2jQ1z65In9dbG7fGJHdoXMwNI6C64yb+UO5h3CJ13feahA1k53122CCMoELtrjyKWDbHbFSkwvE7/Re5oE0nAGjrx8+/EVu25XL5qXtJ7IYoFOLtfQJJcdf6arxPaJ720HccncZKVaTksT9dYzpJTCU2n5zQOh5m3tohQ6sszhNApw/Lqf1GxiOYQ4ozSftuNGRRXIwkFG0awtttHe7Ujv8ukGE/nDHr21aYnIdrKoMqtNGmWpB+Q9lKkGrE4qb0gzWUnf1PIzVH8nqlDytUCXZOggE4vSznffmNoSWAhtK0GiqtsfMHLp91Zufv+CXDnVHshNLMs6TTZwLySVyS+wcikAld6e/ayzsjDihpwqYgfhQ6A2pGLMxM/PTpxk81buqhjwjQR2/wYXNuQtPB7NJHqDaKIcSpPIGLMOa6w99w8HOZjO3QJRjAHcYBbuvv92+xBQ36uczA8E8+lSj/QP94+4BRwTXwvPUltgfPs0g=
+X-Microsoft-Antispam-Message-Info: EsHixP/4eSU3xjK6lP8ka2OLKc3RduvcJkMoQkSGNXxh+vMUK5nbxmkYvQ8QXAXzhZrdNmkSzI6aB6danMSRfzg7MCJ80SH/RrRXR8epe6ptE2eWGcZBH6z27zjXsXw6AvzDZAMd23OI/8nNJoCcb2wv7sjAL7Buu51LORGzKOVwNaEJ98Ay7th6MX4Hn1ZQDF2Zo5BvhLTA9qTMziWcPkewvKJ4anrPjJvulTpJJ5FdijCpnWVajHHc2tb11BeARAOeR6xJUXq0b71K/9FEx05sp1W0yAc7Q7gjVJDOhS0Pr5t3ktONwzmfIgKY2S6zkL8YRBLSwww8RLtcpCdXd0D6Wm+Q9L1wKPCZx5oBOybFyQVFwinqR8vr+eo7jzQdf9sjo03TI/Zvndp3zgF/qdFew1COKx/IoxrUUYslDHFF4GUcCmt8iGQC73WJoZSABSqfkMhn11+t+RuQuHYRWWCjFjZPvQf69WEtuVcRIyaXesZIfBwhowRIdR2hFIj1MRAhBB3AHN/OalDm1qLuP3YeEnQjdzgS5rdAVTjWSb/38vZ3f3WcksSKeBTVijibu+R37gVY2CeyDoJXLkByG0XVin8LGOmkjo27P9j1ts8=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(396003)(376002)(136003)(39840400004)(451199021)(36756003)(86362001)(2906002)(6666004)(2616005)(6512007)(478600001)(83380400001)(6506007)(6916009)(4326008)(66946007)(54906003)(66556008)(316002)(8936002)(41300700001)(8676002)(6486002)(186003)(66476007)(38100700002)(44832011)(5660300002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uDURKyHN5lqrCxykXAihZsT76uXB5Zvamd5r/ok6CjSYLvffhiHDAFIevnod?=
- =?us-ascii?Q?hnGjj2LMN6cQdK6N6NwzhJgD2g47kFvIA9quP5Tvg2Vt9cuX8sQ8jXZX1/By?=
- =?us-ascii?Q?cModz+B5eQlbja+TUYNVQRWf6zJRfStVIf7D8lo8pX5vh2VK4k9grU3ZOT5N?=
- =?us-ascii?Q?F6OkzdprxMTBNgdCwl4tmAMcqezpw3ypcxCJbwiHH98u5juPsek/BxWdFsc5?=
- =?us-ascii?Q?IA7Cd5sEtQwhkJZlRlprcG/nBhaDjjbGgabsN8I/gkNGjJhXvz/qkO8THtIQ?=
- =?us-ascii?Q?RFmMk/AZ3cWxUnS5FyJLWrH1wdXrB8iuWBf0SCdXHDO4t+UNcRZxLe4W2qat?=
- =?us-ascii?Q?dDKGLzqAQW9YA2N0f3/gXN9LeyrbU4z2Vv1sCHDZQrK6bLMejeIJ1fBHJ+be?=
- =?us-ascii?Q?QWg4j8Gw982Gr4qrSDkZfnYbk5oa1hT9wGfXSnfsS7qu+oWTBfH+p3oLNZK5?=
- =?us-ascii?Q?vSmTzzJVG9+LEJ81Any5/FgqdDX88KRPUXZOZ5Lrsoh8mk9Bmlj6qSRoQmU1?=
- =?us-ascii?Q?Ok1bg0w9YZdwJ9wxNy0MZzXtA+p9qjqXubk7+OJ7WYRnFWl3cM5aWGsKcQhT?=
- =?us-ascii?Q?fBF/bp5uFs9NIphX99DOwwvHcar4fLJlw7HH1JUzcpOyDUTmSaZJD3mXsjnX?=
- =?us-ascii?Q?cwC/1/ySUCxJaFVsN6uYMmdVVunws5geP0zDjFXx1H0RlnI3jyqyOWfTk5TN?=
- =?us-ascii?Q?1TJPRt/38liVJr92YaQ3g/gDDs/TSi6SLrlDTVncOh/HsF//xbiQ0rqNLN0g?=
- =?us-ascii?Q?yFHMe9mH4DMe7XMsv8kOTt/YmrSyWDm7RFhP8h8iYtvkwKzvFMJc9LheQ5Ql?=
- =?us-ascii?Q?GzJQj8CLqRvV21nUqGBYLDLYtNhVXlGTd5OMJVfkBf1W760w6uqVpqbI1iwv?=
- =?us-ascii?Q?ORSSPy4tbasA5V1eLNviveW5pxHF4ICmqnMIsz/RkHb9anDqK9aYk8WMTOI7?=
- =?us-ascii?Q?BwitYcM5n52PeitficM2EjvaNsDF0FJdBny1DKKPalxq6GwOtyBZoX2XV55r?=
- =?us-ascii?Q?NGetgs3jilf5kByl9N3ytS5I1ruaf0ZRBsLRAY9AP++yMktSSjJ+VLWgMdFl?=
- =?us-ascii?Q?zeW7CEYO3lsuBF3XyqQXlAuHbv4PYopkvBiWdv5hX9OW8MM5MOTr47Dd1LFu?=
- =?us-ascii?Q?FMOKaS89YuqtKRYhkrWefK2Eq7wVDGslRTubFrlswwjRIEt9hF/tviQvamVm?=
- =?us-ascii?Q?ZIiLzwB1gL5HLKqdCmnQRlVQ3wMAdge7dwBRvda+TP7tywWbBIcSm/2FHF5K?=
- =?us-ascii?Q?Tbo7gzACeTgy61Uy49VvjT4QTXDYvMActzoB9VvjcREfl1I8vPkEE0h6loLs?=
- =?us-ascii?Q?G3ZLVaayz99soo+JN/4DeZcZcmzh/HLVKYalQ1VLMsMM7fEi7434ic3tPX+/?=
- =?us-ascii?Q?QBWGNlWtqXPX7UZ1JUORaJOcj9xzbxPt6ykph4zExYBHAqNAAuHGOVCIJ8Wl?=
- =?us-ascii?Q?YXJJZOEc+Q6XkfFc/FLo8I8r0qZmH5OFaGNxVxHzMYy1yeAf3jEuG05sGwb9?=
- =?us-ascii?Q?+y1V/PFO6HzdIznGcD8SEIsLcwnaRu7R51LdT8u1JJ/Vl0tX8BPb+D9YB519?=
- =?us-ascii?Q?jYar2krtVJYEYRX790MqxuMUD2zAKKem0e9LrOyAWPZz4CuW0wGmj2vCkMvK?=
- =?us-ascii?Q?xddptLjTK0h92UD6GgP+MuY3WdMeJd1+VnfsVtzCx8Krph/ZzCRIi8wpw+ME?=
- =?us-ascii?Q?Y3zK4w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xusZHJCl5cAK424MaX/ssDInY2q6Rpv+6bwrtT0SRD/5yyk/HxZX+sXyRFUE?=
+ =?us-ascii?Q?E0+mYNIDQuhIzMGcJZnLc5aFNm7CJJp/N61sC6ysoxuZe/FvM7TaoaKagfHE?=
+ =?us-ascii?Q?EfKirh6+EkWOt921QhXMqtZPWErF4HT2fEGuu0MWWe1peOWcz9fjd6hxqzSz?=
+ =?us-ascii?Q?65z1WYQeYen816j8LMwoDakpIK4Dt/sFpndqJNQ+IofrwvOcV+bUoeNTbn/e?=
+ =?us-ascii?Q?wZ/BHpdSh/0sLAC0Hu/kzZfDuqM0h41ebFwhl9aFSBP/FPvDPzMyF9gbxdv9?=
+ =?us-ascii?Q?Gq3ky8IJSu7/Pnog0dCfmDzuYkZGNo5fK5BToRB/v5REVUiUfzJn+vdexBJo?=
+ =?us-ascii?Q?qvVAI1Gn0ynTJRILDbtmLge0sifjgTe2hvp0E3QgEYoulcmRpQPDLp/rTLxc?=
+ =?us-ascii?Q?tniTTMaZkF9dwOdxE12tUzeoChsKBXZeo9c1Jgx7ZyQihUpKg2XAvcyyiE0c?=
+ =?us-ascii?Q?y0tmelusUB5xKqNKX5SsMcwIiQ6FD6D5uaugezSvVHNhN/TqPt/ySf6Ch60g?=
+ =?us-ascii?Q?P2oRBnd0gl757QmW+YL+IXdwqtt43FnBlUzdOhLplIC9ag1MG6QqJQgEb7RQ?=
+ =?us-ascii?Q?1gyp2nZSjYwFEBxiyzpdeJeOh8QrrNYxy1QpuTZCtat2nWTr7OKHHb2/rXrM?=
+ =?us-ascii?Q?/lT1vK4LTrLIDWx2GL5PPTHGhGIQ6PaNlGduiSq2KHBu04DEP8bQaiEva2Dq?=
+ =?us-ascii?Q?UMhS/OH37hmoQG/k8yAgoMU0n6nLxSNXE2H77+Qqo7lcjqqC3pkx30U1DHoa?=
+ =?us-ascii?Q?2vf7RsTlZSXENbo+iZOOVNhcUV92CfNowx/SER25iIJlPjOi8wGv7Qud5nvi?=
+ =?us-ascii?Q?q1hRTf8hiGCvYKwcNK+6DYLXcHi84r/6NUDyAxt1C+9Z05FMnOUDWw4V5ddf?=
+ =?us-ascii?Q?kyn8dwFFaDVfdNPjd7NiDzHW3sdul/ppFFJthFOl4pwHvjP6njCXzxLWByp+?=
+ =?us-ascii?Q?59moUYuVuUK3orhH27spGoEuFc6ZmRCqjFCJouHnjUdac0DEN2ooscjAnvr4?=
+ =?us-ascii?Q?0OC+7hqUUUkORJ48+EpY3CF0lYLjT6zb232Wbq/li5HaozPDM2WKrhfxxujI?=
+ =?us-ascii?Q?EurAKYibsQitI5EmiK8u1WF+ZGtAMEvCHZVv61e/IX3pu7Wg6tSeH37cyNzk?=
+ =?us-ascii?Q?sUHFkhWy17uZ+uLxqe6OKf07afr6sgb2vsHIMbswU2DcPMbAOhP0enhv3NzM?=
+ =?us-ascii?Q?zR9d9phMe6gs/s0+ZPuxRXiTFKSlpbHqmV7oxbK0jRM+UV4fj5/f1UXrEmhn?=
+ =?us-ascii?Q?LOjreWqjxiYR8E5PtMHu3Aq2Zz+edXg7FbHm2GMrB/4NEHZS6YnWRv1FSDtV?=
+ =?us-ascii?Q?KTe3Sn8GqdZYPkw+Jj1FTBBzTJNiBOb5JRtSgu5x44G6Wo208ZVWjM6v4hA9?=
+ =?us-ascii?Q?yOkVAijX1h5/lmIc28B303n97iLWfX7KejXpdL4/IQUSxTwMDPC9f+SK39f7?=
+ =?us-ascii?Q?K9iESH9lBMEuc6u9dywccYWuf5Kn2uV4Cp71SovFlC9F3XUEiQmX25EsGXL9?=
+ =?us-ascii?Q?F0lSa2TEjO7EjJrkXYRVLvzmTWgC5Sx5AiEUVR01EqI7k09IElQuAt49d7se?=
+ =?us-ascii?Q?NzvKFZ3SUupW3d3/OWi97+WlCjup+FsQZ2h+bfCAyB8RNNQDAJvn1gBCEvM5?=
+ =?us-ascii?Q?pX1ujHGVPld8IWV6yATf+ThvTVyD8yjunKDsBUa8LKr/5uYoFJ8ZVoYCuVqj?=
+ =?us-ascii?Q?hSGo8g=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df94255f-6914-4b7d-5243-08db3125e1dd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b82973c-5107-4586-65b6-08db3125fb34
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 13:51:37.9532
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 13:52:20.3339
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 86bI7ZJbjPFygeSDaSSaeSrGJrXSVUF9H1a2KkyVqFJ2Tg9j3wQwROPgUGjzL3MWVAMqOZ+fpAhzYhictj5uVI/EZGfXqzwSFZlv7VfH/GU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: DS9Xli4B2J6byBiC6CAviymHcpj2YkQ5oKGMqRyhwpgvy0rSAcMpObZw/a6t0IaqPqEdkz6Cj5TeQUAAy+wTt/q0QJntQklROQYQWsiIS+s=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR13MB4863
 X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -117,94 +118,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 04:38:19PM +0300, Vladimir Oltean wrote:
-> We have the following code paths:
+On Wed, Mar 29, 2023 at 06:18:21PM +0300, Vladimir Oltean wrote:
+> If certain conditions are met, DSA can install all necessary MAC
+> addresses on the CPU ports as FDB entries and disable flooding towards
+> the CPU (we call this RX filtering).
 > 
-> Host FDB (unicast RX filtering):
+> There is one corner case where this does not work.
 > 
-> dsa_port_standalone_host_fdb_add()   dsa_port_bridge_host_fdb_add()
->                |                                     |
->                +--------------+         +------------+
->                               |         |
->                               v         v
->                          dsa_port_host_fdb_add()
+> ip link add br0 type bridge vlan_filtering 1 && ip link set br0 up
+> ip link set swp0 master br0 && ip link set swp0 up
+> ip link add link swp0 name swp0.100 type vlan id 100
+> ip link set swp0.100 up && ip addr add 192.168.100.1/24 dev swp0.100
 > 
-> dsa_port_standalone_host_fdb_del()   dsa_port_bridge_host_fdb_del()
->                |                                     |
->                +--------------+         +------------+
->                               |         |
->                               v         v
->                          dsa_port_host_fdb_del()
+> Traffic through swp0.100 is broken, because the bridge turns on VLAN
+> filtering in the swp0 port (causing RX packets to be classified to the
+> FDB database corresponding to the VID from their 802.1Q header), and
+> although the 8021q module does call dev_uc_add() towards the real
+> device, that API is VLAN-unaware, so it only contains the MAC address,
+> not the VID; and DSA's current implementation of ndo_set_rx_mode() is
+> only for VID 0 (corresponding to FDB entries which are installed in an
+> FDB database which is only hit when the port is VLAN-unaware).
 > 
-> Host MDB (multicast RX filtering):
+> It's interesting to understand why the bridge does not turn on
+> IFF_PROMISC for its swp0 bridge port, and it may appear at first glance
+> that this is a regression caused by the logic in commit 2796d0c648c9
+> ("bridge: Automatically manage port promiscuous mode."). After all,
+> a bridge port needs to have IFF_PROMISC by its very nature - it needs to
+> receive and forward frames with a MAC DA different from the bridge
+> ports' MAC addresses.
 > 
-> dsa_port_standalone_host_mdb_add()   dsa_port_bridge_host_mdb_add()
->                |                                     |
->                +--------------+         +------------+
->                               |         |
->                               v         v
->                          dsa_port_host_mdb_add()
+> While that may be true, when the bridge is VLAN-aware *and* it has a
+> single port, there is no real reason to enable promiscuity even if that
+> is an automatic port, with flooding and learning (there is nowhere for
+> packets to go except to the BR_FDB_LOCAL entries), and this is how the
+> corner case appears. Adding a second automatic interface to the bridge
+> would make swp0 promisc as well, and would mask the corner case.
 > 
-> dsa_port_standalone_host_mdb_del()   dsa_port_bridge_host_mdb_del()
->                |                                     |
->                +--------------+         +------------+
->                               |         |
->                               v         v
->                          dsa_port_host_mdb_del()
+> Given the dev_uc_add() / ndo_set_rx_mode() API is what it is (it doesn't
+> pass a VLAN ID), the only way to address that problem is to install host
+> FDB entries for the cartesian product of RX filtering MAC addresses and
+> VLAN RX filters.
 > 
-> The logic added by commit 5e8a1e03aa4d ("net: dsa: install secondary
-> unicast and multicast addresses as host FDB/MDB") zeroes out
-> db.bridge.num if the switch doesn't support ds->fdb_isolation
-> (the majority doesn't). This is done for a reason explained in commit
-> c26933639b54 ("net: dsa: request drivers to perform FDB isolation").
-> 
-> Taking a single code path as example - dsa_port_host_fdb_add() - the
-> others are similar - the problem is that this function handles:
-> - DSA_DB_PORT databases, when called from
->   dsa_port_standalone_host_fdb_add()
-> - DSA_DB_BRIDGE databases, when called from
->   dsa_port_bridge_host_fdb_add()
-> 
-> So, if dsa_port_host_fdb_add() were to make any change on the
-> "bridge.num" attribute of the database, this would only be correct for a
-> DSA_DB_BRIDGE, and a type confusion for a DSA_DB_PORT bridge.
-> 
-> However, this bug is without consequences, for 2 reasons:
-> 
-> - dsa_port_standalone_host_fdb_add() is only called from code which is
->   (in)directly guarded by dsa_switch_supports_uc_filtering(ds), and that
->   function only returns true if ds->fdb_isolation is set. So, the code
->   only executed for DSA_DB_BRIDGE databases.
-> 
-> - Even if the code was not dead for DSA_DB_PORT, we have the following
->   memory layout:
-> 
-> struct dsa_bridge {
-> 	struct net_device *dev;
-> 	unsigned int num;
-> 	bool tx_fwd_offload;
-> 	refcount_t refcount;
-> };
-> 
-> struct dsa_db {
-> 	enum dsa_db_type type;
-> 
-> 	union {
-> 		const struct dsa_port *dp; // DSA_DB_PORT
-> 		struct dsa_lag lag;
-> 		struct dsa_bridge bridge; // DSA_DB_BRIDGE
-> 	};
-> };
-> 
-> So, the zeroization of dsa_db :: bridge :: num on a dsa_db structure of
-> type DSA_DB_PORT would access memory which is unused, because we only
-> use dsa_db :: dp for DSA_DB_PORT, and this is mapped at the same address
-> with dsa_db :: dev for DSA_DB_BRIDGE, thanks to the union definition.
-> 
-> It is correct to fix up dsa_db :: bridge :: num only from code paths
-> that come from the bridge / switchdev, so move these there.
-> 
+> Fixes: 7569459a52c9 ("net: dsa: manage flooding on the CPU ports")
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+There is a lot of boilerplate in these code-paths.
+But ok.
 
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
