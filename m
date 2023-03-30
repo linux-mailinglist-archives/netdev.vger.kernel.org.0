@@ -2,186 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 529A86D003A
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 11:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00C5A6D0046
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 11:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229453AbjC3Jx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 05:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
+        id S229835AbjC3JzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 05:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbjC3JxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 05:53:14 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3634E83D4;
-        Thu, 30 Mar 2023 02:53:12 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A96F5C0010;
-        Thu, 30 Mar 2023 09:53:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1680169991;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qUGJbrLrPXEKOIeXx4NxTcTVc2hCXi7yu4QEbXuzUQg=;
-        b=W8XKeyYSRkf9gcV/InEiRGIXlbnJDtkAChrARsUjGLYd+Dr+rcNX2IiQk4dBGXAL2o2FrX
-        N1F5dElPR0hSoWyPAYhEfHPxlccWgMXNljHeUe0F39o3nn7DALh+o9k7GEoD29VwIWXNCk
-        2XjHx5SAYS9Arw7QPAjBDpcp/72PFIRIWwEWokkpcibMt6THqGDrHJvenac8pXC0AOZWWp
-        WuM8AlKymUZMCeK923FRn3KZUANDjUiHKJRs4dxjWDiMxFsr+TCnHHV0+otdMw4r2WR8I8
-        Ssapw2Ud1c1cC0YHAlPAINt2PvNmrLtNIT0Va6gaLqv59Hnf4GGBRLOH39N/eg==
-Date:   Thu, 30 Mar 2023 11:53:07 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rafael@kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee@kernel.org>, davem@davemloft.net,
+        with ESMTP id S230293AbjC3Jyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 05:54:49 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA87130
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 02:54:46 -0700 (PDT)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DAAF53F22F
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 09:54:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1680170084;
+        bh=T7mBxCfafRtBzm4CcOSBFKfHm4zEVrLF2OE++FUVsZo=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ag+7bLwMLaQXgW057zXwxFJ2XPUwqi7UPRiylQLC16my+OGXlQKJWW41+F11Ai49a
+         p8ACLZ2aK1/ACHlWzRnJ/vaD6hZZS/VmdZU3Z9BptjsNFCm8I98XfQTCgXdmosR3Np
+         InGzyfszFYFgx/XyPnhVYlmbQM5sp3DhnAUqZnENfY2l/dJClV4OwQoya9jLFNmmaf
+         UKwukcDPgwR4yAzW83j43QIUqOhmFMmyJCwo5qOacVqdKFMHb22GUvEBwcdNIYKbhB
+         k4pTq6AM0eRMNH0DOOtrBimJAAd9xBkdhownS71bQu+4O1gZlPe18j1fexLpWmYhhl
+         f00bt79uQlXvA==
+Received: by mail-ed1-f71.google.com with SMTP id x35-20020a50baa6000000b005021d1b1e9eso26618664ede.13
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 02:54:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680170084; x=1682762084;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=T7mBxCfafRtBzm4CcOSBFKfHm4zEVrLF2OE++FUVsZo=;
+        b=JVEnIxpGYoPwrx2IQUYir6agUrHNLCAYHsDJhPoJNj/qQcJURUrCou6K+9e+oo7oee
+         YO+pxH0Yt+ymfotZ9e9hchT+JJZ3L6w6UXeJmVO4N9xfpIQyPxZc80VoKRtu5V8ga/zt
+         zd60pi1gJb1anT9c1AXEqiOnzQhAc614s4BYUYE6NRz347lpDOMjIwThuTjbFvto3Qm5
+         nqIvsyfsbVUWmszbGv1M60SnXoEVu0ZhH3Jl2IqEQyuk93s4b7R1p1C57skhI9pkzrxM
+         lSi8iT6oDHXm2WXvnvl1gBtgdehElygS/bN5RSZ87dMWKsHPHfZXBGdj0SIM1d7oWX7M
+         uixw==
+X-Gm-Message-State: AAQBX9dI8pTJbWswub+4+0BxEdZRBCpP35twCXfRZVFythgdl5tRf3ES
+        bjqsQjPlMQ4nCbSfFMluc34wP0aYWc8jJL/ISvVxUnq8a2hQpeA5VE0cS53zjFYBgrpRtQs1DB9
+        79NUDKYCODzug/Hh5R6H72+DwQ8BG9IYgog==
+X-Received: by 2002:a17:907:9a0c:b0:947:6fae:5d27 with SMTP id kr12-20020a1709079a0c00b009476fae5d27mr993706ejc.56.1680170084557;
+        Thu, 30 Mar 2023 02:54:44 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bKhnnWvol18CEKvEou2r/IMLnBhwUZQdPMuSULagsmAa7GsWb+yLs5E05+GXwlM3D3VmFXXg==
+X-Received: by 2002:a17:907:9a0c:b0:947:6fae:5d27 with SMTP id kr12-20020a1709079a0c00b009476fae5d27mr993692ejc.56.1680170084289;
+        Thu, 30 Mar 2023 02:54:44 -0700 (PDT)
+Received: from righiandr-XPS-13-7390.homenet.telecomitalia.it (host-79-33-132-140.retail.telecomitalia.it. [79.33.132.140])
+        by smtp.gmail.com with ESMTPSA id lj24-20020a170906f9d800b00932ba722482sm16703862ejb.149.2023.03.30.02.54.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 02:54:44 -0700 (PDT)
+From:   Andrea Righi <andrea.righi@canonical.com>
+To:     David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        thomas.petazzoni@bootlin.com
-Subject: Re: [RFC 4/7] mfd: ocelot-spi: Change the regmap stride to reflect
- the real one
-Message-ID: <20230330115307.01d3dd6e@pc-7.home>
-In-Reply-To: <ZB3kNXpNm9DTRxHH@euler>
-References: <20230324093644.464704-1-maxime.chevallier@bootlin.com>
-        <20230324093644.464704-5-maxime.chevallier@bootlin.com>
-        <c87cd0b0-9ea4-493d-819d-217334c299dd@lunn.ch>
-        <20230324134817.50358271@pc-7.home>
-        <ZB3GQpdd/AicB84K@euler>
-        <ZB3kNXpNm9DTRxHH@euler>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.37; x86_64-redhat-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] l2tp: generate correct module alias strings
+Date:   Thu, 30 Mar 2023 11:54:42 +0200
+Message-Id: <20230330095442.363201-1-andrea.righi@canonical.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 24 Mar 2023 10:56:05 -0700
-Colin Foster <colin.foster@in-advantage.com> wrote:
+Commit 65b32f801bfb ("uapi: move IPPROTO_L2TP to in.h") moved the
+definition of IPPROTO_L2TP from a define to an enum, but since
+__stringify doesn't work properly with enums, we ended up breaking the
+modalias strings for the l2tp modules:
 
-> On Fri, Mar 24, 2023 at 08:48:18AM -0700, Colin Foster wrote:
-> > Hi Maxime,
-> > 
-> > On Fri, Mar 24, 2023 at 01:48:17PM +0100, Maxime Chevallier wrote:  
-> > > Hello Andrew,
-> > > 
-> > > On Fri, 24 Mar 2023 13:11:07 +0100
-> > > Andrew Lunn <andrew@lunn.ch> wrote:
-> > >   
-> > > > >  	.reg_bits = 24,
-> > > > > -	.reg_stride = 4,
-> > > > > +	.reg_stride = 1,
-> > > > >  	.reg_shift = REGMAP_DOWNSHIFT(2),
-> > > > >  	.val_bits = 32,    
-> > > > 
-> > > > This does not look like a bisectable change? Or did it never
-> > > > work before?  
-> > > 
-> > > Actually this works in all cases because of "regmap: check for
-> > > alignment on translated register addresses" in this series.
-> > > Before this series, I think using a stride of 1 would have worked
-> > > too, as any 4-byte-aligned accesses are also 1-byte aligned.
-> > > 
-> > > But that's also why I need review on this, my understanding is
-> > > that reg_stride is used just as a check for alignment, and I
-> > > couldn't test this ocelot-related patch on the real HW, so please
-> > > take it with a grain of salt :(  
-> > 
-> > You're exactly right. reg_stride wasn't used anywhere in the
-> > ocelot-spi path before this patch series. When I build against
-> > patch 3 ("regmap: allow upshifting register addresses before
-> > performing operations") ocelot-spi breaks.
-> > 
-> > [    3.207711] ocelot-soc spi0.0: error -EINVAL: Error initializing
-> > SPI bus
-> > 
-> > When I build against the whole series, or even just up to patch 4
-> > ("mfd: ocelot-spi: Change the regmap stride to reflect the real
-> > one") functionality returns.
-> > 
-> > If you keep patch 4 and apply it before patch 2, everything should
-> > work.  
-> 
-> I replied too soon, before looking more into patch 2.
-> 
-> Some context from that patch:
-> 
-> --- a/drivers/base/regmap/regmap.c
-> +++ b/drivers/base/regmap/regmap.c
-> @@ -2016,7 +2016,7 @@ int regmap_write(struct regmap *map, unsigned
-> int reg, unsigned int val) {
->         int ret;
-> 
-> -       if (!IS_ALIGNED(reg, map->reg_stride))
-> +       if (!IS_ALIGNED(regmap_reg_addr(map, reg), map->reg_stride))
->                 return -EINVAL;
-> 
->         map->lock(map->lock_arg);
-> 
-> 
-> I don't know whether checking IS_ALIGNED before or after the shift is
-> the right thing to do. My initial intention was to perform the shift
-> at the last possible moment before calling into the read / write
-> routines. That way it wouldn't interfere with any underlying regcache
-> mechanisms (which aren't used by ocelot-spi)
-> 
-> But to me it seems like patch 2 changes this expected behavior, so the
-> two patches should be squashed.
-> 
-> 
-> ... Thinking more about it ...
-> 
-> 
-> In ocelot-spi, at the driver layer, we're accessing two registers.
-> They'd be at address 0x71070000 and 0x71070004. The driver uses those
-> addresses, so there's a stride of 4. I can't access 0x71070001.
->
-> The fact that the translation from "address" to "bits that go out the
-> SPI bus" shifts out the last two bits and hacks off a couple of the
-> MSBs doesn't seem like it should affect the 'reg_stride'.
-> 
-> 
-> So maybe patches 2 and 4 should be dropped, and your patch 6
-> alterra_tse_main should use a reg_stride of 1? That has a subtle
-> benefit of not needing an additional operation or two from
-> regmap_reg_addr().
-> 
-> Would that cause any issues? Hopefully there isn't something I'm
-> missing.
+ $ modinfo l2tp_ip l2tp_ip6 | grep alias
+ alias:          net-pf-2-proto-IPPROTO_L2TP
+ alias:          net-pf-2-proto-2-type-IPPROTO_L2TP
+ alias:          net-pf-10-proto-IPPROTO_L2TP
+ alias:          net-pf-10-proto-2-type-IPPROTO_L2TP
 
-Well here I guess it's also about the semantic of reg_stride. Should it
-represent the alignment constraints of the register address we feed as
-an input to a regmap_read/regmap_write operation, or the alignment
-constraints of the underlying bus ? This is kind of a new concern, as
-we are now translating register addresses.
+Use the resolved number directly in MODULE_ALIAS_*() macros (as we
+already do with SOCK_DGRAM) to fix the alias strings:
 
-I asked myself the same question, so I'm very open for discussion, but
-my gut feeling is that the reg_stride is there to make sure we don't
-perform an access whose alignment won't work with the bus we are using,
-so using a stride of 1 on a memory-mapped device with 2 or 4 byte
-register alignment is a bit counter-intuitive.
+$ modinfo l2tp_ip l2tp_ip6 | grep alias
+alias:          net-pf-2-proto-115
+alias:          net-pf-2-proto-115-type-2
+alias:          net-pf-10-proto-115
+alias:          net-pf-10-proto-115-type-2
 
-Thanks a lot for the review, suggestions and tests !
+Moreover, fix the ordering of the parameters passed to
+MODULE_ALIAS_NET_PF_PROTO_TYPE() by switching proto and type.
 
-Best regards,
+Fixes: 65b32f801bfb ("uapi: move IPPROTO_L2TP to in.h")
+Link: https://lore.kernel.org/lkml/ZCQt7hmodtUaBlCP@righiandr-XPS-13-7390
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+---
+ net/l2tp/l2tp_ip.c  | 8 ++++----
+ net/l2tp/l2tp_ip6.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-Maxime
-
-> 
-> (Aside: I'm now curious how the compiler will optimize
-> regmap_reg_addr())
-> 
-> 
-> Colin
+diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
+index 4db5a554bdbd..41a74fc84ca1 100644
+--- a/net/l2tp/l2tp_ip.c
++++ b/net/l2tp/l2tp_ip.c
+@@ -677,8 +677,8 @@ MODULE_AUTHOR("James Chapman <jchapman@katalix.com>");
+ MODULE_DESCRIPTION("L2TP over IP");
+ MODULE_VERSION("1.0");
+ 
+-/* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
+- * enums
++/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
++ * because __stringify doesn't like enums
+  */
+-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 2, IPPROTO_L2TP);
+-MODULE_ALIAS_NET_PF_PROTO(PF_INET, IPPROTO_L2TP);
++MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 115, 2);
++MODULE_ALIAS_NET_PF_PROTO(PF_INET, 115);
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 2478aa60145f..5137ea1861ce 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -806,8 +806,8 @@ MODULE_AUTHOR("Chris Elston <celston@katalix.com>");
+ MODULE_DESCRIPTION("L2TP IP encapsulation for IPv6");
+ MODULE_VERSION("1.0");
+ 
+-/* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
+- * enums
++/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
++ * because __stringify doesn't like enums
+  */
+-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 2, IPPROTO_L2TP);
+-MODULE_ALIAS_NET_PF_PROTO(PF_INET6, IPPROTO_L2TP);
++MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 115, 2);
++MODULE_ALIAS_NET_PF_PROTO(PF_INET6, 115);
+-- 
+2.39.2
 
