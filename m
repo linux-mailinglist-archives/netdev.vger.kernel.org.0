@@ -2,124 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB42C6D0D92
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7E66D0D9E
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229585AbjC3SQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 14:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
+        id S230035AbjC3STA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 14:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjC3SQk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:16:40 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2287D306;
-        Thu, 30 Mar 2023 11:16:38 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id by14so1365476ljb.12;
-        Thu, 30 Mar 2023 11:16:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680200197;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=D9h2GvUNNoLQAB8LDpXTAOuV+zteZS3OOQfkay6SCnQ=;
-        b=GVCrY1TUpJ9FmQOJgtwEpuW8SU3t65Qd7/THjNZ+CwyTKHuHSzz3Bpec41R4qLqSvQ
-         M3XurktFxv/n/JHFMsOE4zhzn5bzmkHup48j+jrb0ixvqh1bUnHeHO5hXqACzy6I6L80
-         b7F+/floOZbeFeCwUBllaojfIq/LHyb+FquDYWcFq8hCHf1wxOWInG6qv4OIvE3rFJM2
-         xRuAlWb+yXpGwIc063hC8uc8IGmhTB1KEBy/Y8CX4ueB91j8Fp+zBYmYwsy4a1TdKGFx
-         oXzUkPhp7uUivnKkAwn54MlntgNPY408GLY3VLrA6V5vXS+5u5Eb/DOpySvTATd6buT5
-         Vl6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680200197;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=D9h2GvUNNoLQAB8LDpXTAOuV+zteZS3OOQfkay6SCnQ=;
-        b=fTcL5eelOXOf1GXS/XefP67RSbyt5uE0wo4rvZUPHHOsOkn/bFUADbPq276vp3K62V
-         5oWA9z0liaAOI5u0Jk00ivrDdljBRK++hF6VONHrK+6DG6yDTNBjxXSYWW7oYjAc3PXz
-         7jaOAlrkf+GtYf0JqUdH+2LdSU20sV1Ct7RdsR/rvQ3qLVYw99tyZJW7iSAOj1ugOrQb
-         Arj3QL9ylqP38ZzLCozOMoy/HSLNaAzpc6E/vesL8yHH4c+PAGQrzkFc2U+Kid1tvXNG
-         DUZMiu2i8YrQYPMN6Ch9ji4T8OLO0HeSCfOQRRrghF51TZjzCKf0lHzJaVwb8xv6ZlSm
-         WaFA==
-X-Gm-Message-State: AAQBX9e/ZhjjoWHht7feg08gHAEG5Jt2ClHTKez5YP4EOhLjmH/c4jl4
-        HEvuG6EouJJUBOk+MGSCMDGL1zxkB8XGGoJzNmI=
-X-Google-Smtp-Source: AKy350Yqc4ilqAsTqUl0WSGgkMAXCRaM87jJ1cjkCjT4KKrGsB28GvRHHn4Khc1dR28W4j5uEReLow8XgRr0LXEcMug=
-X-Received: by 2002:a2e:8697:0:b0:295:acea:5875 with SMTP id
- l23-20020a2e8697000000b00295acea5875mr2300855lji.2.1680200196984; Thu, 30 Mar
- 2023 11:16:36 -0700 (PDT)
+        with ESMTP id S229448AbjC3SS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:18:59 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FD7E3BD
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:18:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G/K6ks5CjtuyOa+YP9tuDKE2Tkse62knqINLzb7zs8+3XsjVhs1oIn1meoNhAf2GuTpNn+QyahncsB+H8oDFyqPyl2UqmHXeiZtTmM3BNU1SF5fbWUnhyjvBFuc10xRFhQ6bdQmWMQ6ndhLOMxdJKTKP0bWN5UaT7c8I+498GUXi0seTt2i3HTnbl7UhfipM861atexb98Ixcmn1PyV7G9vxgVnmKMuVLdNqbqsAXYiScuQtgcBmMUue4fdcYxeEagyxz2K4RSdpK1X0judFzLPxE9IFv7YCTtmmLVNbgROpBfrCR9n3P2glSRREtLCLs3VGACDkXh8j+XA0V7peBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DXGeslU2PmLb42aju5gM6H8NEPOb0XF5cLsC+uVMzjU=;
+ b=ZUxsLa/dEMpSz/X6n+kehJ8oia+R0MP/ZP8ULTf1EnFP0FhQW06Tdcos21x44wo0h0hEtSBVEUybZkFMXjo8KqI/zJE7Fyvd50xrcBMYpPy+flA88ENqyY2mFoArBi4Wx1SuMXQWf0qLk/0ayFrAzVkCACo1Lkd884og8eEI6z0J4s1yIYtsm/Of350Hy2R4nskj7b88QDvEmTEZd9B61vGJdhTBLlNCD1OrS7j0BYqssybjjRAZUgmQgo4BZbdEm/+rfINm89bvQVUIHIvWsLJ4uf2IUsVgc+8RIHxRvHiGkv7CeFmuWdcWnBPyM2OH+peILuAeWpYJT+GlLPOdLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DXGeslU2PmLb42aju5gM6H8NEPOb0XF5cLsC+uVMzjU=;
+ b=lixik5ey9U1At80LRsyv+MRwBv+0PXoNQmnx4YpWbbDyggtdgWED9EuAShLf5u/LomwYyJApJW43mQRWjsEhPA+sZI+Mdtm5LY2CfPyqW9tJnqtjeWAFEPiJ5nrF3Ft7Y16xHNhVbq7fsmc2IdInFG3v1QIQLsCrN54OgU8ADmgBokTOGd+yqvJJwI9OGlFHl0uvxYuqjDuRN2RTmEd8yTbqDslk18U2M8YphyGuZZVoxqEXMRpJDX9bfF3lNeWayfz4cK3izJIcgAoDTndM9nmqqxbiV5S2915jSgWFfNGdo4KGNZ3y7NwRC2aJIgXP9ajrCOwPU1rHFrZkXLJSaQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3127.namprd12.prod.outlook.com (2603:10b6:a03:d8::33)
+ by DM6PR12MB4313.namprd12.prod.outlook.com (2603:10b6:5:21e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Thu, 30 Mar
+ 2023 18:18:55 +0000
+Received: from BYAPR12MB3127.namprd12.prod.outlook.com
+ ([fe80::ebc5:c372:d99a:fdb5]) by BYAPR12MB3127.namprd12.prod.outlook.com
+ ([fe80::ebc5:c372:d99a:fdb5%4]) with mapi id 15.20.6222.033; Thu, 30 Mar 2023
+ 18:18:55 +0000
+Message-ID: <60bd2658-2bf6-0091-1dfa-171ab4fea3c2@nvidia.com>
+Date:   Thu, 30 Mar 2023 11:18:53 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.1
+Subject: Re: [PATCH net-next] ethtool: reset #lanes when lanes is omitted
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, mkubecek@suse.cz,
+        mlxsw@nvidia.com, idosch@nvidia.com,
+        Danielle Ratson <danieller@nvidia.com>
+References: <6e02aaab-18fe-692d-52cb-71212db44ade@nvidia.com>
+ <20230330103856.4f725998@kernel.org>
+From:   Andy Roulin <aroulin@nvidia.com>
+In-Reply-To: <20230330103856.4f725998@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR11CA0062.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::39) To BYAPR12MB3127.namprd12.prod.outlook.com
+ (2603:10b6:a03:d8::33)
 MIME-Version: 1.0
-References: <20230330095714.v13.1.I9b4e4818bab450657b19cda3497d363c9baa616e@changeid>
- <168019982448.20045.10207710004218277745.git-patchwork-notify@kernel.org>
-In-Reply-To: <168019982448.20045.10207710004218277745.git-patchwork-notify@kernel.org>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 30 Mar 2023 11:16:25 -0700
-Message-ID: <CABBYNZLcS3uEkYgkokR5a0YHRfdJczm5XFbxXCEUfmrZg3ifnw@mail.gmail.com>
-Subject: Re: [PATCH v13 1/4] Bluetooth: Add support for hci devcoredump
-To:     patchwork-bot+bluetooth@kernel.org
-Cc:     Manish Mandlik <mmandlik@google.com>, marcel@holtmann.org,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org, abhishekpandit@chromium.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        johan.hedberg@gmail.com, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3127:EE_|DM6PR12MB4313:EE_
+X-MS-Office365-Filtering-Correlation-Id: b96a4af2-fcb7-4e60-d1fb-08db314b392c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HTkJdBfjMJmBOLbGXdjdt4cCYGUh92to7BaRHRpAbg30i0AT08MPW8mWHEuPryQcntSlN6XFxtEuAR5d0GEaxl5M4sJZmOv0DRCEjkbodmQa6Pul3YztJRM6HlmRHYf4TUGYP45ZUiQQqnjkUh2eZXFE6zOfcA0Pn3f2zAo7C34ZRbip0DyPIT1k6m21My8Q4NRynQhrm1WMVR+SyArhOY0cukqfBJ+JWrLPf1DaeT4zH7i82jk+0S+fvyG84AAWZCsJJ5JnWm3cO2vBXMc+XCOwCl899w2UXmELPRj/ssA3kW/CN2JonCuKtjzKoi1XqOpg+ddgiyWpapY1sfMig2WXCZVmETzhnJrgIQ7yjHWUnmuOmCOhLekfuuNPgLNtDyREfJru68EeOAlUh9j/w9P+6v1xv3DpdfTwsEiIG6AhO7NIdFdMOjJZDg0VziMtn1THLSRk1LKNqM9UCLEdwsUZos7aqlVRTcCjA3vSLSKejxFXxSJirU2K5kgSgVdesqO5WHoTq0qL4ywzKiBSPhNmNpQHAa4yM67bDs+8cu1eNrAjRulDbJIuMTBGCUnBH1p4fkjoEKDy7DttpNCpfA1Jxa4B4Z78JFuujJM7YEBG9IkoRuT6JscDrB1OCL3FZYk5ndvtjRko+WaSjuZh0w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3127.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(366004)(376002)(346002)(136003)(396003)(451199021)(4744005)(2616005)(26005)(6486002)(478600001)(186003)(316002)(107886003)(6512007)(53546011)(6506007)(2906002)(5660300002)(8936002)(6916009)(38100700002)(66556008)(4326008)(41300700001)(86362001)(31696002)(8676002)(66476007)(36756003)(66946007)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VkIvbmRPd3laVEJRT2tmajd6L1h6QTIxTVJlVUw3M2N0R3F2NGZqd29WcXNK?=
+ =?utf-8?B?ZGVsdXN5U1NiOHpqOVpvV2d3QmVZY0hvSVJobmJFQUxOb1hKSnpkSFdHekdy?=
+ =?utf-8?B?VElUYXhncmRzdGY3Vm1JT2ZtL2FwdjAvb2FmYm9ORDd2ZjJFWGxYQmFQLzBG?=
+ =?utf-8?B?Yk91bEF5Z1pkdmZaUkhtTlZtN2l1bys4bWF2MFpxaFNRRXBNajRzamF5QTRi?=
+ =?utf-8?B?S2w2S3poT1IyVlhiSmYvWnpYdmtlQktyNEVPTWRnT01PMjhmV3NZT1QxeEpi?=
+ =?utf-8?B?eWhRWk5BUHB6aG41SE5WWkhVR1Vzdk9kcHRBR0F6L2UxT2xraXZkdjZNVE5L?=
+ =?utf-8?B?c0d3MENOVk1ncVlvTlM2d29vQTRkemt3N0Q0V0ZNQ2Q0UWIxaFlaT0xiVEhO?=
+ =?utf-8?B?Ty8wWklxY01UdWdoZ2hVeDFpcTQ3WE9Td1RVM0c3L2wwcFVTOVZOMDNQZ3JU?=
+ =?utf-8?B?bHZqZzJyNEZDQ3FBNkNBS2lOM2x2NmVQWURXQ20xNmhnSUpNTHhBMm5TTTVK?=
+ =?utf-8?B?YmZ5YTlpbHJpTHR5OWIwekVnaW43MDVrVzhWTlZ5TlJkeEticUxFQ2FMZkRW?=
+ =?utf-8?B?Y2lXZ29RTGY1bVVwOCtLNnE4UE5IMkZGeGcvRWNnUEVCbVR6a1NRSnlzM2lP?=
+ =?utf-8?B?dlIzTEFlQlBTNlE3VUZlTFJJZzlMY2dSZGZtSnJwc2FkUjN6Yk1zdTdHOTBo?=
+ =?utf-8?B?clRsYU9mQ2lxT3B3NXFZcy9KM3JuTmRvaTI3K1B2RFNVc1o3YlpqaGtHWTdw?=
+ =?utf-8?B?bzVQZjhHUFZkWVRrYmUvQ2ljNHNOK0xOVVl2dnkzMmIxWWo1QUk1anBKL1Zj?=
+ =?utf-8?B?NmJwL044Wm1wNUwxanYwT29HK1NSajJwUmpKQXZqWVd4Q09MdlBlR1RFc1Rs?=
+ =?utf-8?B?eEI5ck1CK1FDb2ZteDhPZDdibjBDRlRiZmUrbU1Qd0JqeS8vQk56SVpRSHhL?=
+ =?utf-8?B?OXFvZjd5Z1NocG4vVm5sRUxtbGJrcXlFc3R1SlJhZk8reU80WnZpeEd3VEFW?=
+ =?utf-8?B?V0N1bTJQM1FxR0svZTYvYm01Ni9ZQ2JKR3c0RlVmQ2YvblhHOGJzcWhmQitl?=
+ =?utf-8?B?RlNaR3l3dWNaVDRIcEM2TUN0NDJpWGVMVVlDUWliNzdHUm5PbVJVclprNHVj?=
+ =?utf-8?B?NEZCTGdyL1hYdkYvb0pBTXpDVU82anV0SSsxZEpXUFpYTDRLQ0tYQjRCejZE?=
+ =?utf-8?B?T2lOa3BKS3RHVzdzMjV3SEhNOUVoSjNZdlNKTEo1TklacHp0VVFEOFltaTdq?=
+ =?utf-8?B?U2dqWUFtUmlpQTVUalB0R0JIVFpkZzN1akNscnROVHRNdXhBaVNhSlBDL2dr?=
+ =?utf-8?B?eGZvYldtVEthdkhIdlJZMDBFV1d4VzdMaG82dUdVWmxnZk1yY0l5MEYrc0x0?=
+ =?utf-8?B?MkM1SXA1M0tnQTZmNXVJZ21ibUxEeDNqekhyL2FKKzBmOExpOWlzeUZCdlAy?=
+ =?utf-8?B?QjF5bmlacW92NEI0dkFscnM3ZkpUT2ZMQ2h1WnBHV05ORC9raWFnQkRaazE1?=
+ =?utf-8?B?amZ5RTdTT2FqdkdFNGQ5RUNnZWN4RnpLMGpaNVFqQ2c2bkQ1NkhFN0lEMFF4?=
+ =?utf-8?B?NVlEUGRlWWZkQ2ZlME9YaEdKbngwWU1nNmhTVnU1emdvbFl1d3loRWFCbnVn?=
+ =?utf-8?B?UHRKSzY5dzlDa25Mb2VPRFRtVWFEd3dwalpuZlNUa1FsRDkzNXNySTI5UUdl?=
+ =?utf-8?B?YzlnbmhyeFlZa0dZb1JPSkpiNVpFN1RDQ0lpL21nSFNjRDQyOTl5czR0cy9E?=
+ =?utf-8?B?cldybzNKeTBxMExDYVJGbkZUVU5nSTIwaEU0S3dFVTA3bWROVHdXTXZBTnFv?=
+ =?utf-8?B?NCt2OFlJTmNoUU0yRjRNOHMyaU9udHBjVFppbjZlSTkyOHBKeUV6NmJpeFlV?=
+ =?utf-8?B?UmllNXRKOFYvSzJhRUdZbytIcHVxZ0pKTXUxWml1blU5WW1Jd3dqRnVsTzBB?=
+ =?utf-8?B?U1ZCWGZBL1U4amZTM3FRb0VsZCtXaU1jaEc2TEMwSXAwYXVIRXcweGZuSHA2?=
+ =?utf-8?B?QTh3SFoyT3RBdUx5UW50L0lpNFc0RFI5OEtvejNCRTg2OXVQd0dsZytGMVZv?=
+ =?utf-8?B?RmNQU3ZTZTJXT21qSnhSL1R6c243MG41YUNQM3JUb3NydnNUQjVYZlIvVUZX?=
+ =?utf-8?Q?B87Y3PadOOu3sG8tGM2DQhngS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b96a4af2-fcb7-4e60-d1fb-08db314b392c
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3127.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 18:18:55.6220
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8ZJYGpWuKqMpT03YG8P4ZLPi2IHLqZAWy4hN1Y9ZTrJWwXsW98PcMg+Hcb1+8ZeDnsD/fHNJBtlZAsLYj5/C3w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4313
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
-
-On Thu, Mar 30, 2023 at 11:10=E2=80=AFAM <patchwork-bot+bluetooth@kernel.or=
-g> wrote:
->
-> Hello:
->
-> This series was applied to bluetooth/bluetooth-next.git (master)
-> by Luiz Augusto von Dentz <luiz.von.dentz@intel.com>:
->
-> On Thu, 30 Mar 2023 09:58:23 -0700 you wrote:
-> > From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> >
-> > Add devcoredump APIs to hci core so that drivers only have to provide
-> > the dump skbs instead of managing the synchronization and timeouts.
-> >
-> > The devcoredump APIs should be used in the following manner:
-> >  - hci_devcoredump_init is called to allocate the dump.
-> >  - hci_devcoredump_append is called to append any skbs with dump data
-> >    OR hci_devcoredump_append_pattern is called to insert a pattern.
-> >  - hci_devcoredump_complete is called when all dump packets have been
-> >    sent OR hci_devcoredump_abort is called to indicate an error and
-> >    cancel an ongoing dump collection.
-> >
-> > [...]
->
-> Here is the summary with links:
->   - [v13,1/4] Bluetooth: Add support for hci devcoredump
->     (no matching commit)
-
-Note that I did a small change to convert from bt_dev_info to
-bt_dev_dbg that is why the no matching commit is shown above.
-
->   - [v13,2/4] Bluetooth: Add vhci devcoredump support
->     https://git.kernel.org/bluetooth/bluetooth-next/c/d5d5df6da0aa
->   - [v13,3/4] Bluetooth: btusb: Add btusb devcoredump support
->     https://git.kernel.org/bluetooth/bluetooth-next/c/1078959dcb5c
->   - [v13,4/4] Bluetooth: btintel: Add Intel devcoredump support
->     https://git.kernel.org/bluetooth/bluetooth-next/c/0b93eeba4454
->
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
->
+On 3/30/23 10:38 AM, Jakub Kicinski wrote:
+> On Thu, 30 Mar 2023 09:56:58 -0700 Andy Roulin wrote:
+>> Subject: [PATCH net-next] ethtool: reset #lanes when lanes is omitted
+> 
+> This should have been tagged for net, right?
 >
 
+Yes, sorry, I will resend.
 
---=20
-Luiz Augusto von Dentz
+>> If the number of lanes was forced and then subsequently the user
+>> omits this parameter, the ksettings->lanes is reset. The driver
+>> should then reset the number of lanes to the device's default
+>> for the specified speed.
+>>
+>> However, although the ksettings->lanes is set to 0, the mod variable
+>> is not set to true to indicate the driver and userspace should be
+>> notified of the changes.
+>>
+>> Fixes: 012ce4dd3102 ("ethtool: Extend link modes settings uAPI with lanes")
+>> Signed-off-by: Andy Roulin <aroulin@nvidia.com>
+>> Reviewed-by: Danielle Ratson <danieller@nvidia.com>
+
