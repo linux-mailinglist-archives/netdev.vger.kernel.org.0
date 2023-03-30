@@ -2,120 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B79C6D0519
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 14:43:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E07FD6D0553
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 14:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbjC3Mnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 08:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S231599AbjC3Mw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 08:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231151AbjC3Mnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 08:43:32 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D55191;
-        Thu, 30 Mar 2023 05:43:31 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id h8so75934664ede.8;
-        Thu, 30 Mar 2023 05:43:30 -0700 (PDT)
+        with ESMTP id S231616AbjC3Mwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 08:52:55 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2100C7D9A
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:52:54 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id l7so13912327qvh.5
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 05:52:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680180209;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=n/8td5sRl3oLpjvJWr+SauyjMW5J+/af8DNO0aQQsj4=;
-        b=R6I/30BG5UPA5FkYjKVUOSk8ON+L56EIBLONKVcUcG66As/OewLwhMJOEZ7pH/CLIF
-         lw5Ldo93TyCnbouWW7sn6r3X1q4G9eBsDkqM7EGHS++EvGHXZ1BPDKRnhCkRnHpH3k7W
-         toyOaQ8AdiCXYmHXxTqfMSFBKgw1bzxE4IuGtB3xQgGZ5fyVGYpbDHx/jTc/43Plix+k
-         TfXLtwH042/qHJ2RMlQ5OwK2exvA5LqhC/2Bcjao6WLpg3vfRYD38I+FcWic3HWgUBY4
-         0OuxkiVp/bNVDNwReIudGNhx0j7PVxoWzHj4bgO+e68KZRf4WBgjXUwtpjuoIHRN3Bwa
-         nxMg==
+        d=gmail.com; s=20210112; t=1680180773; x=1682772773;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gXOBCEw1Lnwy7kHJBjlq4sPchl5Pyfy8g4HHGRcRKcg=;
+        b=HrkcrC035zq1esDwOlf96QfhO2bEQd8K8LAZU8fF3Eov8WyGhOJ5F7w0IWQ+AlHn0/
+         cEgQhJ1bXpb+z5dQcrAY0VBX9F8Wur+sqHkCBAUifC8AxpGMTDo2WQ8H4SB3tYfY5AGY
+         GKDwTgkNOfkchKM/C64FHS+HbMwWXhwXxavgiKe260TBOc0/wnpnq3KMsYPmiK7sc3Sq
+         mce5zCUwutpKmJc9naREyx+YNOvq5hzyatVBnMZU5QXQu2a4g4+vxVzSh3RbWtzrGp12
+         d2Z8lkLCXv8Dwb8JaFvdZE9vSU120knjrfOqwkLZ7frjFfD2j6Q/2AFdJkHI7VZKcVnA
+         pY3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680180209;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=n/8td5sRl3oLpjvJWr+SauyjMW5J+/af8DNO0aQQsj4=;
-        b=HsAYBc8E7hOiKEWqL0JQAimJWb5p0rSsnvOZESP7nFcnFLu4lgd60lTErPp9XGT/ni
-         Tmmip6TMJ/gPtlbLoPWbksUIZ4BWYy5094mk3NoUmH5+FI7fQw+x+KrCTXDj/uJIm5Ei
-         I0eAMstzM0c7H5ZUp3UBjuCKhwaIJ9TaBEsT2UM8+5dUXeN85BSrOcyDGyu0HTqczY4/
-         x6WpA4CrGsLkgVQ7U5qFvS5YDW5KV3LrBLtrLDq56smC8Yde60dIH05UrC8ifbPP7RmD
-         nR5E1+NobuG4R2kcN7Tcf+c7e/3TCrcX98eogNiEnbc4XRaiXmPf6Ug2PVjFV8ySa5uZ
-         JnjA==
-X-Gm-Message-State: AAQBX9dXktRk2c2zrTasGjTmaDh3f5uPa8kxTbrC/lj2HoMLgpBK4orY
-        Q+UDhbNGu+BcLIFxKunUbqo=
-X-Google-Smtp-Source: AKy350YI2msvuHetohhT7eQ5t1xlC1RudA+4E9BCOndXuD6L8J5sWGjktS0WAdrtvGBAhM/oS9ONAg==
-X-Received: by 2002:aa7:cf19:0:b0:501:dc02:1956 with SMTP id a25-20020aa7cf19000000b00501dc021956mr24516457edy.29.1680180209442;
-        Thu, 30 Mar 2023 05:43:29 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id q30-20020a50aa9e000000b004fadc041e13sm18202433edc.42.2023.03.30.05.43.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 05:43:29 -0700 (PDT)
-Date:   Thu, 30 Mar 2023 15:43:26 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 2/6] net: dsa: propagate flags down towards
- drivers
-Message-ID: <20230330124326.v5mqg7do25tz6izk@skbuf>
-References: <20230318141010.513424-1-netdev@kapio-technology.com>
- <20230318141010.513424-3-netdev@kapio-technology.com>
- <20230327115206.jk5q5l753aoelwus@skbuf>
- <87355qb48h.fsf@kapio-technology.com>
- <20230327160009.bdswnalizdv2u77z@skbuf>
- <87pm8tooe1.fsf@kapio-technology.com>
- <20230327225933.plm5raegywbe7g2a@skbuf>
- <87ileljfwo.fsf@kapio-technology.com>
- <20230328114943.4mibmn2icutcio4m@skbuf>
- <87cz4slkx5.fsf@kapio-technology.com>
+        d=1e100.net; s=20210112; t=1680180773; x=1682772773;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gXOBCEw1Lnwy7kHJBjlq4sPchl5Pyfy8g4HHGRcRKcg=;
+        b=EJtZsEyOGuw+4PltsdA/vp/gKQXjWEKhcSojr9DarEmUL/efqifPd33bsw6du/OAEU
+         ltGL5Qz+2DLrHEl6a9QAZpGvyYAETI662AvhXR6kaFRttI3EZTGE3JGJuQztDmSKA0kz
+         ZlwZbJeuwQafWcAm9oc+KDLim74p0elxuwfVTD9o2s2vkOvlNlFDUzkIxyMITeBN9eAt
+         ZZaO+AY3h1xtF+6mhJcwFd0ANiRwrKBNaqVMZeJbZyItxSUBGRRH3i0GLt8VJLu1nkly
+         FmQUWQXbvAFgzsF00YHbsRysdIx8kwrywXpDRL9Vz/b5xWEJdxmcWkLWtnsu0I8vqvcU
+         jSsA==
+X-Gm-Message-State: AAQBX9cN78NBUOP2HKWABFoWXFrOLkAWWGZVG2iEx9SZ0rYxKBgLOQdE
+        dchCBCt/2EC9WLstzAl6VsE=
+X-Google-Smtp-Source: AKy350ZEh7Vaz37IbPdzwyxS9nrfvTwKbI1qIA3cpYoYg/fK6v+wbXExJYC4u8BZu2utZLfJa8UTVQ==
+X-Received: by 2002:a05:6214:27c2:b0:5db:4e49:b2bd with SMTP id ge2-20020a05621427c200b005db4e49b2bdmr9463128qvb.18.1680180773248;
+        Thu, 30 Mar 2023 05:52:53 -0700 (PDT)
+Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id do2-20020a056214096200b005e147356c5dsm29701qvb.125.2023.03.30.05.52.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Mar 2023 05:52:52 -0700 (PDT)
+Message-ID: <a9ed1380-b06b-5170-18fd-3bdf702e8d3b@gmail.com>
+Date:   Thu, 30 Mar 2023 05:52:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87cz4slkx5.fsf@kapio-technology.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Enable IGMP snooping on user
+ ports only
+Content-Language: en-US
+To:     Fabio Estevam <festevam@gmail.com>, kuba@kernel.org
+Cc:     andrew@lunn.ch, olteanv@gmail.com, netdev@vger.kernel.org,
+        steffen@innosonix.de, Fabio Estevam <festevam@denx.de>
+References: <20230329150140.701559-1-festevam@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230329150140.701559-1-festevam@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 28, 2023 at 09:45:26PM +0200, Hans Schultz wrote:
-> So the solution would be to not let the DSA layer send the
-> SWITCHDEV_FDB_OFFLOADED event in the case when the new dynamic flag is
-> set?
 
-I have never said that.
+
+On 3/29/2023 8:01 AM, Fabio Estevam wrote:
+> From: Steffen Bätz <steffen@innosonix.de>
+> 
+> Do not set the MV88E6XXX_PORT_CTL0_IGMP_MLD_SNOOP bit on CPU or DSA ports.
+> 
+> This allows the host CPU port to be a regular IGMP listener by sending out
+> IGMP Membership Reports, which would otherwise not be forwarded by the
+> mv88exxx chip, but directly looped back to the CPU port itself.
+> 
+> Fixes: 54d792f257c6 ("net: dsa: Centralise global and port setup code into mv88e6xxx.")
+> Signed-off-by: Steffen Bätz <steffen@innosonix.de>
+> Signed-off-by: Fabio Estevam <festevam@denx.de>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
