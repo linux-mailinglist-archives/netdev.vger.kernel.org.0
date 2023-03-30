@@ -2,128 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5EA6CFAFE
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 07:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB22A6CFB1D
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbjC3Fzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 01:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
+        id S229975AbjC3GBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 02:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbjC3Fzi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 01:55:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD691BE1;
-        Wed, 29 Mar 2023 22:55:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03D6B61ED4;
-        Thu, 30 Mar 2023 05:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0947C433D2;
-        Thu, 30 Mar 2023 05:55:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680155736;
-        bh=jePcfN0x3909Hzntn86C67kAOB+wuqEjPSGL6lUh7Zc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RnEwa2LVs76papoofedcMKqAycv5hXhBhVCjFU8YU+SjshRamZXvT3tpfGPjiacPD
-         xWylfk9c94ox2VywaLKRVB4hJFXQO6oWuwOR9zZ7kzrpwaTzt5eCvtAbOYW2FSIdVm
-         2WmggUnl3VEIc0s5ZlTWF9BxDbFyj/tS2jwKs9CYhjDKOMPg3LvDb85g4eyTf/qtmp
-         F7qqh7FCubnT3OkKJ4gxP0J3BvTKdfmOvO2BpNRpIKvBONeHMf7Lv57q3LwGxLc8hG
-         74qlDf8010lvWpM3gKE29NF6nPqgiqNYQoYSxtev3a196k/8nvAgPLyuXtqYOrKW0d
-         E/VjZooPXKAtQ==
-Date:   Thu, 30 Mar 2023 08:55:32 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Sai Krishna <saikrishnag@marvell.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sgoutham@marvell.com,
-        richardcochran@gmail.com, Geetha sowjanya <gakula@marvell.com>
-Subject: Re: [net PATCH 1/7] octeontx2-af: Secure APR table update with the
- lock
-Message-ID: <20230330055532.GK831478@unreal>
-References: <20230329170619.183064-1-saikrishnag@marvell.com>
- <20230329170619.183064-2-saikrishnag@marvell.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230329170619.183064-2-saikrishnag@marvell.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229679AbjC3GBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:01:12 -0400
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D6749D8;
+        Wed, 29 Mar 2023 23:01:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VezRvjN_1680156065;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VezRvjN_1680156065)
+          by smtp.aliyun-inc.com;
+          Thu, 30 Mar 2023 14:01:06 +0800
+Message-ID: <1680156056.4424767-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 16/16] virtio_net: separating the virtio code
+Date:   Thu, 30 Mar 2023 14:00:56 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230328092847.91643-1-xuanzhuo@linux.alibaba.com>
+ <20230328092847.91643-17-xuanzhuo@linux.alibaba.com>
+ <20230329211552.27efa412@kernel.org>
+In-Reply-To: <20230329211552.27efa412@kernel.org>
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 10:36:13PM +0530, Sai Krishna wrote:
-> From: Geetha sowjanya <gakula@marvell.com>
-> 
-> APR table contains the lmtst base address of PF/VFs.
-> These entries are updated by the PF/VF during the
-> device probe. Due to race condition while updating the
-> entries are getting corrupted. Hence secure the APR
-> table update with the lock.
+On Wed, 29 Mar 2023 21:15:52 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 28 Mar 2023 17:28:47 +0800 Xuan Zhuo wrote:
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +
+> > +#ifndef __VIRTNET_VIRTIO_H__
+> > +#define __VIRTNET_VIRTIO_H__
+> > +
+> > +int virtnet_register_virtio_driver(void);
+> > +void virtnet_unregister_virtio_driver(void);
+> > +#endif
+>
+> nit: this header needs to be added in the previous patch,
+> otherwise there is a transient build warning there.
 
-However, I don't see rsrc_lock in probe path.
-otx2_probe()
- -> cn10k_lmtst_init()
-  -> lmt_base/lmstst is updated with and without mbox.lock.
+Will fix.
 
-Where did you take rsrc_lock in probe flow?
-
-Thanks
-
-> 
-> Fixes: 893ae97214c3 ("octeontx2-af: cn10k: Support configurable LMTST regions")
-> Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
-> index 4ad9ff025c96..8530250f6fba 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
-> @@ -142,16 +142,17 @@ int rvu_mbox_handler_lmtst_tbl_setup(struct rvu *rvu,
->  	 * region, if so, convert that IOVA to physical address and
->  	 * populate LMT table with that address
->  	 */
-> +	mutex_lock(&rvu->rsrc_lock);
->  	if (req->use_local_lmt_region) {
->  		err = rvu_get_lmtaddr(rvu, req->hdr.pcifunc,
->  				      req->lmt_iova, &lmt_addr);
->  		if (err < 0)
-> -			return err;
-> +			goto error;
->  
->  		/* Update the lmt addr for this PFFUNC in the LMT table */
->  		err = rvu_update_lmtaddr(rvu, req->hdr.pcifunc, lmt_addr);
->  		if (err)
-> -			return err;
-> +			goto error;
->  	}
->  
->  	/* Reconfiguring lmtst map table in lmt region shared mode i.e. make
-> @@ -181,7 +182,7 @@ int rvu_mbox_handler_lmtst_tbl_setup(struct rvu *rvu,
->  		 */
->  		err = rvu_update_lmtaddr(rvu, req->hdr.pcifunc, val);
->  		if (err)
-> -			return err;
-> +			goto error;
->  	}
->  
->  	/* This mailbox can also be used to update word1 of APR_LMT_MAP_ENTRY_S
-> @@ -230,6 +231,7 @@ int rvu_mbox_handler_lmtst_tbl_setup(struct rvu *rvu,
->  	}
->  
->  error:
-> +	mutex_unlock(&rvu->rsrc_lock);
->  	return err;
->  }
->  
-> -- 
-> 2.25.1
-> 
+Thanks.
