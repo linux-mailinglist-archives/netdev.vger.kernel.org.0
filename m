@@ -2,251 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9BA6CF8D2
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 03:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C72F6CF8D7
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 03:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbjC3Bqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 21:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S229470AbjC3Bs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 21:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbjC3Bqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 21:46:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9824EEF
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 18:45:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680140745;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kv0JdKs3b/J2KtWtqtGbcl417IkaIZ3v3L6FuRPDYCY=;
-        b=h/Uqi4yGR08up02Zp61RPKEXUyJbWh7djpHoEcS1vpEhk5cFUREN3od4Xp+SOdecmDEp++
-        uRgLPTR3Yt7sFw0/BDaNmO/dn5DO0A+6D1F3gB53VMxX1BYQ7LoJ6B7eRRcmnLeH68Ig62
-        AKn6DIFn+JwzjwWji6sVZEp/xxaVCdA=
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
- [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-378-2Z1y8UzaMBOtwvn0L1_TZw-1; Wed, 29 Mar 2023 21:45:44 -0400
-X-MC-Unique: 2Z1y8UzaMBOtwvn0L1_TZw-1
-Received: by mail-pg1-f199.google.com with SMTP id h8-20020a654688000000b0050fa9ced8e3so4828252pgr.18
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 18:45:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680140743;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kv0JdKs3b/J2KtWtqtGbcl417IkaIZ3v3L6FuRPDYCY=;
-        b=4a7zJYq8JjVnSN94ZZvyzqqk70nW22BFt/yoEmTmuIwEOoZ4IWkLE6CMjKK0Gxn4L0
-         j3FXOMZkoEELhrtD7E6SIFhWJ8Sm6ePvwHPfOu2BMaZeMSw4lU29K55n74MfwT8XfCAJ
-         su5ARII8K3xoouxUh6vgYxIGVeQ6VeoJtOhBz2Rz4rZ7PLx8OYeJ281zzA6GsHWLXeCC
-         vw6DDiI/h338hDZpDI5zlgWlNmFjdsTVk76fs65gbv9xkIghvGi3thgf+XEQrMCQMYAD
-         +I2itvGg4qB9vAOj1PenFa3nxwQhWuLksX6r/A980SOSMLJ4bBdBtMUkexOBDLI02H2i
-         IdXA==
-X-Gm-Message-State: AAQBX9fbnZActRCyD1PjOugHilk/WDpx/RvKam0pFXMSbXN/EQSxTBtV
-        PFnFdTLMK8drUM4pK9H/8WpMFWsbVJYnxxA4zfTJLmvyX3HhQ4OIOBWe3JILUmjBSRhGWQoNdMd
-        bLVMg+pYWAbZXQhD0
-X-Received: by 2002:a17:903:22d2:b0:19a:7217:32a9 with SMTP id y18-20020a17090322d200b0019a721732a9mr4636116plg.26.1680140743028;
-        Wed, 29 Mar 2023 18:45:43 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZC7R/sqsXLmXMgRh5yYmDYt07re8Mz0pqFOB7hKr/eVqrBonJ1fWeZySGpK6QRntg/4jjpKg==
-X-Received: by 2002:a17:903:22d2:b0:19a:7217:32a9 with SMTP id y18-20020a17090322d200b0019a721732a9mr4636092plg.26.1680140742679;
-        Wed, 29 Mar 2023 18:45:42 -0700 (PDT)
-Received: from [10.72.12.51] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id jj2-20020a170903048200b0019fea4bb887sm23709042plb.157.2023.03.29.18.45.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Mar 2023 18:45:42 -0700 (PDT)
-Message-ID: <7f7947d6-2a03-688b-dc5e-3887553f0106@redhat.com>
-Date:   Thu, 30 Mar 2023 09:45:32 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [RFC PATCH v2 37/48] ceph: Use sendmsg(MSG_SPLICE_PAGES) rather
- than sendpage()
-Content-Language: en-US
-To:     David Howells <dhowells@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229877AbjC3Bsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 21:48:52 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2104.outbound.protection.outlook.com [40.107.223.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D254EEF
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 18:48:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Qj9Z8RUdm+OZK2+C1kiVUGOX2BOprA88sFDPYGIiNGeCSwiLY6v90vjwMeh9EZ+sDTPLBXMrpa4xzXetMsKUkO2mN4q3BGJKT5GcuSR2qrOynBlaGLnGT+3PW7Zlw8A791hTCgldzQ2FydmGJT4brbgFyhmnKHN8GBNxPKzuLNpHPG2A0oltpOw6B3TCEPFeLll8R3Q0xf+UocDZasgFWgtUDxTIf+igFhgzo3+z3xZu94n23/kcJqh1quL7uvNqT7n4DC996G4UYNWH6KXN5/0VWduq6snBiUbXbHTZmUS8gRpZlzXqMjb3gE3lfGvEEFmzrWIjwQNLJYd76plUXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Xv+/BLpHe/NH/jsLqD5a2cyB7USico1hXGsTb+yz9xw=;
+ b=Kj9eeypcJM5ImeW6bgZD+1jr+1TqoZD8HrvVg5GY6q2y5fmm4KkuQiOIATJtao2lErojchoNF/VN94umcXMT2liyiSel9eHA6gIVgsub3P73N65/oKRrwrg3WpjserWurEFoufx0vJmv/1S7xauA95HPtgNrVInlDL8/M8CKHormjzguQYidza9/tiy+PfFmovy+fp9cLuJ+SU1sUM41+DHalzNU8xyzmCtRRAxlvsuTL5q4DA88w0xajaGCCvae8lrFUagbHeP6QPfaz1eSYgpnMJd0qGd1hg3n0Fy1RfumF9WXaQnClzWIqBe2Cos0SoIktSaoZYIsNfFyuuPdLg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Xv+/BLpHe/NH/jsLqD5a2cyB7USico1hXGsTb+yz9xw=;
+ b=OmlcsJo/BBkzTJE3zCkeZaIhHDBn8G0HcH9K6AUlU5wgLff4m/LWYkK/tepDwkWng1QBz12nWPYKARE+/jF2lG5meaWNn4pMkpoXX0fxhgd/586R1BavQjfXdEq7mJ3q0N5Tth86Vv/EtHyz2eCFtMICIrnQ+QmzNrt4D3L5VJM=
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
+ by PH7PR13MB5456.namprd13.prod.outlook.com (2603:10b6:510:131::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.35; Thu, 30 Mar
+ 2023 01:48:47 +0000
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::8795:a7ba:c526:3be6]) by DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::8795:a7ba:c526:3be6%9]) with mapi id 15.20.6222.035; Thu, 30 Mar 2023
+ 01:48:47 +0000
+From:   Yinjun Zhang <yinjun.zhang@corigine.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Louis Peens <louis.peens@corigine.com>
+CC:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org
-References: <20230329141354.516864-1-dhowells@redhat.com>
- <20230329141354.516864-38-dhowells@redhat.com>
-From:   Xiubo Li <xiubli@redhat.com>
-In-Reply-To: <20230329141354.516864-38-dhowells@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        oss-drivers <oss-drivers@corigine.com>
+Subject: RE: [PATCH net-next 2/2] nfp: separate the port's upper state with
+ lower phy state
+Thread-Topic: [PATCH net-next 2/2] nfp: separate the port's upper state with
+ lower phy state
+Thread-Index: AQHZYk07XTN/U7MQDkW8TxKgBUt5LK8SGqWAgAByUjA=
+Date:   Thu, 30 Mar 2023 01:48:47 +0000
+Message-ID: <DM6PR13MB3705AF84B6782F064CE3D6BEFC8E9@DM6PR13MB3705.namprd13.prod.outlook.com>
+References: <20230329144548.66708-1-louis.peens@corigine.com>
+ <20230329144548.66708-3-louis.peens@corigine.com>
+ <20230329185235.GD831478@unreal>
+In-Reply-To: <20230329185235.GD831478@unreal>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM6PR13MB3705:EE_|PH7PR13MB5456:EE_
+x-ms-office365-filtering-correlation-id: 16832b36-162a-4533-b48b-08db30c0e73b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kMMthG6CsNrnIDSTqwKpuULOpGV9GoC3Jbfnt7aUITVGDsderwjpFQBs9Nw2+ckPOkabnAWDjCPJGxQUDK+LSU0uO2USlKCzs75rDfq/ahc5EF8S4WDCRaixfScYpngKHrWStN4Xq3LfjrYLNnGvsszwg39cZDEwJMQdOwQVgAGZPNbmxjlbiLJRgNO+XJY1E7i2mDp+ILn0UFiPlCmxbUhATkAbxBsozvZWoL6ND8sWzbD6kKLPdJrK4PsGxlKOxCH19AFzIhJ+wPyZOKf/j+LokLg7BiP+p4ZKCxrAk7poH4QRxqcnSV+o9GZ91VR/mPtgumF5cItczL47I+bUjfI/JhDTlP8uqgd0rofReSMA7ciOeD1gI8a+e1SOiPzxy6f85VZGj4U6cAV1o69Zyx5WkiBd/lnCfcAXYfomjYICHUwrf0zwIgiYRTrFyALadl1MYHl2toBmJLfBLiDfXnnbdYn499eYJUd7GPyzo2JRlNxX15KLRuJNxKfKdJi7Vg8NUgkPkeF1GlOfJOCgoW8PIdoul/rgN89jzM0v4HH80kln4Gi2vrNGl03BEHkZlTzzbCjtbXRWIjd6haSGxZUi/tOMED0sDB/9q3PCZDs4plK8Ax9+XTpAWHwyy6yVEEmLRIR3JPIIjIFljFsX8Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(39840400004)(346002)(366004)(396003)(376002)(451199021)(52536014)(5660300002)(186003)(55016003)(8676002)(41300700001)(8936002)(66476007)(66556008)(66446008)(64756008)(66946007)(76116006)(4326008)(33656002)(71200400001)(7696005)(122000001)(38070700005)(86362001)(38100700002)(44832011)(9686003)(83380400001)(316002)(26005)(6506007)(2906002)(4744005)(478600001)(107886003)(54906003)(110136005)(6636002)(20673002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iKVit51oCi8vegUwkzMwXrorvK+QXzqVZZl6iMEMAbgH8ohQ1hui3dtUJIqD?=
+ =?us-ascii?Q?ZdCvN020iTxOP7QE4+/80OgNAifVCZrmqxav5bfR1szOE4lq/ACpPIWCAxgz?=
+ =?us-ascii?Q?riZXEhiyO6vZEJTDvfYsug6yz/Jyg35D0bhr2U5EQjURkdJNTdQd63BQuvhq?=
+ =?us-ascii?Q?5GmCa8+XM70hVajlf6Vd/kVXGJ0cgGz4tU1LNf9dXLVY200bKUxQxQr0K+3K?=
+ =?us-ascii?Q?OPwj43bVhUf19pNLB24NDq/65PBngvHafqtNkYhAICXw6I9vbI5NmEZgZ5H0?=
+ =?us-ascii?Q?BhphSBoZs9pSKNUioMf4x5lbAREEajl8WemAI0nqFZK4hA4fFo4V31wkzoPs?=
+ =?us-ascii?Q?IHtZM9QMlW6gs0Rnj6JN8+FpkQcjZmd4jzq3elojj9q67/Qv7sAJlj+H3R5Z?=
+ =?us-ascii?Q?FOGm5sKcFPWRpmZRexrLK5siQm4Epa8w4n62QrDVik/KjJxTfsUlEfZ9e7OS?=
+ =?us-ascii?Q?SIH2GQgNi9iOXsB4gcluGRZFwZ17hQWn9T1mrUxive8TaDtmKuAklr9vf2JI?=
+ =?us-ascii?Q?RbgnHmZaPA2y/Zoy0yrdE9nxLFx8y4YTHpkmzOhVMtUEenh3RvXVFbyVlGqr?=
+ =?us-ascii?Q?v0LlJPukcsz+wT5eKmZ5zSTz+ZLWomUi0UJpdssUHvloYvFJ2yO2mqQfZyZF?=
+ =?us-ascii?Q?v/bUKcIZeztWglMHsWfvLn6+dHWhiTdNqW9Ti7V2XovA13uyq+ZcZEaVqH2t?=
+ =?us-ascii?Q?tbrCbqQHwXbmV8ajQ8tmTBBgZKWDgxoKesRUDwiC+/i+F0OhUDv+9EqC22E4?=
+ =?us-ascii?Q?GTIYa+8QMB4lsuhPTV1u0FZVycdCCVgNk7yPdRU+wjcsSXg0zXFxsoiWDIUo?=
+ =?us-ascii?Q?aiBJAkzmcpTsdFHq5OqMLHBnP25c0x6vWXFcFuaeKgVA1+YhATM83+cHbE5F?=
+ =?us-ascii?Q?uS5hMJkKPVFxY+S3dK+QbjQP83ilkLW82OHUarcAOqAcRzPZvVixeyxGe2HR?=
+ =?us-ascii?Q?mBz5AHdm7aDQglteSMUDVRxHUthqhfkf7CTV1UR3mWokbw8JRytGAjliBDe0?=
+ =?us-ascii?Q?kUspPDsBDNLvHTJ/60mkfTtzQcqxtZ05kJHWrihgiLrSn+ejuyuoAI3k1BHa?=
+ =?us-ascii?Q?ESzRryofJwjR7x8XxeRNuSdEypqz4y/E84U7JfSm+yiVI9r3362LMcAwD/v5?=
+ =?us-ascii?Q?qV2GnlBNvhP8/4Z/hWQ31V6uEQ+xmaFNZENYz5wpy51z6YJuTjH9UMYeHVBT?=
+ =?us-ascii?Q?ZFHrur+6EzBXBCAssxPuUEsx9LTFQurOSddjP/hP5qsSj1I93MY6MMhxyGiK?=
+ =?us-ascii?Q?32VWlh/6y+b/2CtRzt3XrqtUzGEIY0XqlkkQPPjMihourLDf9J21l5hv+3lw?=
+ =?us-ascii?Q?WcWPxgi2n2Uqo9AAU1mi7eVHDC/YKzzvel31FSRPtIAgMsMx2db0FTGH+MOh?=
+ =?us-ascii?Q?i2Ct1aoyq4KEUpGd0drc8lk/xkMEPQl4xTIOUqUKWbEDvzqEIFv+FprjZr6H?=
+ =?us-ascii?Q?9PEzq1lujDcPyoPIktk7/xvQQxRSZ4TmdHKaGJyUv4puRzWF/fr4Rd+tgljX?=
+ =?us-ascii?Q?yYaiYUJOirk5bPr3f7p0jSum36onVq2sqKlvIOaFnTGNp6jzoFirwwcDO76D?=
+ =?us-ascii?Q?6+ipxbW1uaNTs8lIIjb52iFRpj7it3xjkyo1NVZO?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16832b36-162a-4533-b48b-08db30c0e73b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2023 01:48:47.3825
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NTEQq8VtKqpIiS+KSOMbUFb4jd5h+MaTlyIjhcxkUI+e8+tF+w9a7B9Y+JUZVN8MKlX11BNfcs/zbDTbqV93LKaySg4v2n2IR5hGI4VuzhI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5456
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David,
+On Wed, 29 Mar 2023 21:52:35 +0300, Leon Romanovsky wrote:
+> On Wed, Mar 29, 2023 at 04:45:48PM +0200, Louis Peens wrote:
+> > From: Yinjun Zhang <yinjun.zhang@corigine.com>
+> >
+> > For nic application firmware, enable the ports' phy state at the
+> > beginning. And by default its state doesn't change in pace with
+> > the upper state, unless the ethtool private flag "link_state_detach"
+> > is turned off by:
+> >
+> >  ethtool --set-private-flags <netdev> link_state_detach off
+> >
+> > With this separation, we're able to keep the VF state up while
+> > bringing down the PF.
+>=20
+> What does it mean "bringing down the PF"?
 
-BTW, will this two patch depend on the others in this patch series ?
+Sorry for confusing, it means if-down/admin-down the uplink port.=20
+I'll rewrite the commit message as Jakub suggested.
 
-I am planing to run a test with these two later.
-
-Thanks
-
-- Xiubo
-
-On 29/03/2023 22:13, David Howells wrote:
-> Use sendmsg() and MSG_SPLICE_PAGES rather than sendpage in ceph when
-> transmitting data.  For the moment, this can only transmit one page at a
-> time because of the architecture of net/ceph/, but if
-> write_partial_message_data() can be given a bvec[] at a time by the
-> iteration code, this would allow pages to be sent in a batch.
->
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Ilya Dryomov <idryomov@gmail.com>
-> cc: Xiubo Li <xiubli@redhat.com>
-> cc: Jeff Layton <jlayton@kernel.org>
-> cc: "David S. Miller" <davem@davemloft.net>
-> cc: Eric Dumazet <edumazet@google.com>
-> cc: Jakub Kicinski <kuba@kernel.org>
-> cc: Paolo Abeni <pabeni@redhat.com>
-> cc: Jens Axboe <axboe@kernel.dk>
-> cc: Matthew Wilcox <willy@infradead.org>
-> cc: ceph-devel@vger.kernel.org
-> cc: netdev@vger.kernel.org
-> ---
->   net/ceph/messenger_v2.c | 89 +++++++++--------------------------------
->   1 file changed, 18 insertions(+), 71 deletions(-)
->
-> diff --git a/net/ceph/messenger_v2.c b/net/ceph/messenger_v2.c
-> index 301a991dc6a6..1637a0c21126 100644
-> --- a/net/ceph/messenger_v2.c
-> +++ b/net/ceph/messenger_v2.c
-> @@ -117,91 +117,38 @@ static int ceph_tcp_recv(struct ceph_connection *con)
->   	return ret;
->   }
->   
-> -static int do_sendmsg(struct socket *sock, struct iov_iter *it)
-> -{
-> -	struct msghdr msg = { .msg_flags = CEPH_MSG_FLAGS };
-> -	int ret;
-> -
-> -	msg.msg_iter = *it;
-> -	while (iov_iter_count(it)) {
-> -		ret = sock_sendmsg(sock, &msg);
-> -		if (ret <= 0) {
-> -			if (ret == -EAGAIN)
-> -				ret = 0;
-> -			return ret;
-> -		}
-> -
-> -		iov_iter_advance(it, ret);
-> -	}
-> -
-> -	WARN_ON(msg_data_left(&msg));
-> -	return 1;
-> -}
-> -
-> -static int do_try_sendpage(struct socket *sock, struct iov_iter *it)
-> -{
-> -	struct msghdr msg = { .msg_flags = CEPH_MSG_FLAGS };
-> -	struct bio_vec bv;
-> -	int ret;
-> -
-> -	if (WARN_ON(!iov_iter_is_bvec(it)))
-> -		return -EINVAL;
-> -
-> -	while (iov_iter_count(it)) {
-> -		/* iov_iter_iovec() for ITER_BVEC */
-> -		bvec_set_page(&bv, it->bvec->bv_page,
-> -			      min(iov_iter_count(it),
-> -				  it->bvec->bv_len - it->iov_offset),
-> -			      it->bvec->bv_offset + it->iov_offset);
-> -
-> -		/*
-> -		 * sendpage cannot properly handle pages with
-> -		 * page_count == 0, we need to fall back to sendmsg if
-> -		 * that's the case.
-> -		 *
-> -		 * Same goes for slab pages: skb_can_coalesce() allows
-> -		 * coalescing neighboring slab objects into a single frag
-> -		 * which triggers one of hardened usercopy checks.
-> -		 */
-> -		if (sendpage_ok(bv.bv_page)) {
-> -			ret = sock->ops->sendpage(sock, bv.bv_page,
-> -						  bv.bv_offset, bv.bv_len,
-> -						  CEPH_MSG_FLAGS);
-> -		} else {
-> -			iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bv, 1, bv.bv_len);
-> -			ret = sock_sendmsg(sock, &msg);
-> -		}
-> -		if (ret <= 0) {
-> -			if (ret == -EAGAIN)
-> -				ret = 0;
-> -			return ret;
-> -		}
-> -
-> -		iov_iter_advance(it, ret);
-> -	}
-> -
-> -	return 1;
-> -}
-> -
->   /*
->    * Write as much as possible.  The socket is expected to be corked,
->    * so we don't bother with MSG_MORE/MSG_SENDPAGE_NOTLAST here.
->    *
->    * Return:
-> - *   1 - done, nothing (else) to write
-> + *  >0 - done, nothing (else) to write
->    *   0 - socket is full, need to wait
->    *  <0 - error
->    */
->   static int ceph_tcp_send(struct ceph_connection *con)
->   {
-> +	struct msghdr msg = {
-> +		.msg_iter	= con->v2.out_iter,
-> +		.msg_flags	= CEPH_MSG_FLAGS,
-> +	};
->   	int ret;
->   
-> +	if (WARN_ON(!iov_iter_is_bvec(&con->v2.out_iter)))
-> +		return -EINVAL;
-> +
-> +	if (con->v2.out_iter_sendpage)
-> +		msg.msg_flags |= MSG_SPLICE_PAGES;
-> +
->   	dout("%s con %p have %zu try_sendpage %d\n", __func__, con,
->   	     iov_iter_count(&con->v2.out_iter), con->v2.out_iter_sendpage);
-> -	if (con->v2.out_iter_sendpage)
-> -		ret = do_try_sendpage(con->sock, &con->v2.out_iter);
-> -	else
-> -		ret = do_sendmsg(con->sock, &con->v2.out_iter);
-> +
-> +	ret = sock_sendmsg(con->sock, &msg);
-> +	if (ret > 0)
-> +		iov_iter_advance(&con->v2.out_iter, ret);
-> +	else if (ret == -EAGAIN)
-> +		ret = 0;
-> +
->   	dout("%s con %p ret %d left %zu\n", __func__, con, ret,
->   	     iov_iter_count(&con->v2.out_iter));
->   	return ret;
->
--- 
-Best Regards,
-
-Xiubo Li (李秀波)
-
-Email: xiubli@redhat.com/xiubli@ibm.com
-Slack: @Xiubo Li
+>=20
+> Thanks
+>=20
 
