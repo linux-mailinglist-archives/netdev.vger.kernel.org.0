@@ -2,153 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E21116CFA94
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 07:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B52556CFA9D
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 07:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230076AbjC3FIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 01:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
+        id S229675AbjC3FQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 01:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbjC3FIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 01:08:38 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2061.outbound.protection.outlook.com [40.107.92.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A485266;
-        Wed, 29 Mar 2023 22:08:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O+9M8TPdW4yVe3vRGfUjbQ8FiYon62KTFDMHw8clCvJWhNYjV+NUJcWR590gG8vEs87xh4aKMtI4Dwuvt0woI/zswa1TZV1c7ocZ3QHgg+VDTuF+YIn4sTUpaQNtFWVCv5SKruYTzRwsHQa5iqtJdzsH9aE5CcA3Y2vrCGY7YXQNhcCM5PK9MDH3yNspT3A+JLtRpFexcQojzbjMOQqeFmpf2uoiqt1cVXq67CUChNutOV8fZK9JLl3VSSrxSUwcaU4cVfeeQ7kzRtinciJF4foN6EUO/ZcUetM+QrK32PcU9aLdlnPnQb4Mp4Muj81oGw5RiF+uASYho626YxqlVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5kvfvhMmBCpP0T+woqtHZssw0rNJLMHpPhpjh5m9wig=;
- b=UQxRrGl0Xn2f1Tueov7h7tso+mtBJeXfRJFR4v975dFmaPI4OZmUDmR57p5BcnQXqW9dXxMpy0FC4GxC3FFk4DbOU6SNKPWazJHZvhmNWzY22LUO6g/8fytxNMjFJ5mQ6NalYD7dQaJYcnByndzHnoG8hNPJFVTkzwYzIsUz12L1mESPjsuE749kY8krKdmkM9kD1S3fmehqq5wtnvhva0M1GdwEVdHExwaaoFSPlnHY230L6b9ZMlfsKk0LjPI7LqFVXAnh+GWA13uEThsh9SG603jPcFGjisyRLxMTva2o6cLeJWozubvyrUxwW+WQRaeiJnfeMgVQn89UMXg4Bg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=microchip.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5kvfvhMmBCpP0T+woqtHZssw0rNJLMHpPhpjh5m9wig=;
- b=434ZM8706bVYVRhvmojznh6NWoOtPAHQBeg1vgL/VyGJiwfUzOs1Zik7rGB1DyryF8FkD3ctzoRuEoElHqZYMze+0qdDTrU1XeP+zH+0jnFopY5qlTMxRI6Jd2jkfWelVzgvuHXvMzSOyjukk2GZsVKlzF5n9ITTJjOfDUrCBb0=
-Received: from BN9PR03CA0135.namprd03.prod.outlook.com (2603:10b6:408:fe::20)
- by IA1PR12MB8077.namprd12.prod.outlook.com (2603:10b6:208:3f4::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Thu, 30 Mar
- 2023 05:08:30 +0000
-Received: from BN8NAM11FT091.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fe:cafe::d9) by BN9PR03CA0135.outlook.office365.com
- (2603:10b6:408:fe::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20 via Frontend
- Transport; Thu, 30 Mar 2023 05:08:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT091.mail.protection.outlook.com (10.13.176.134) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6254.22 via Frontend Transport; Thu, 30 Mar 2023 05:08:30 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 30 Mar
- 2023 00:08:29 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 30 Mar
- 2023 00:08:29 -0500
-Received: from xhdharinik40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.34 via Frontend
- Transport; Thu, 30 Mar 2023 00:08:26 -0500
-From:   Harini Katakam <harini.katakam@amd.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
-        <andrei.pistirica@microchip.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@amd.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@amd.com>
-Subject: [PATCH net-next v4 3/3] net: macb: Optimize reading HW timestamp
-Date:   Thu, 30 Mar 2023 10:38:09 +0530
-Message-ID: <20230330050809.19180-4-harini.katakam@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230330050809.19180-1-harini.katakam@amd.com>
-References: <20230330050809.19180-1-harini.katakam@amd.com>
+        with ESMTP id S229456AbjC3FQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 01:16:49 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E11B05245;
+        Wed, 29 Mar 2023 22:16:45 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id 31F0C5FD25;
+        Thu, 30 Mar 2023 08:16:42 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1680153402;
+        bh=gsOfma4lyrnLfMCE/+bHkDrhbc8nxtLfnG2vBKGjSSM=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=Qw8MY1vtgsYAnokKaNQqF8gVvlA5wi0remxRsT75tXYda5TGvQy4mxmjusPuL0XIv
+         D/8qWwy+2FQivrGj1phwfwvd98P41Bq6htKNX2cyXIK89jey8YknwPNQ9Bbryct0Py
+         4b9lEKRnUkhCGLYN8ENfIVQ5kUkrSu6BOVBSVFoJOIuH359eW0KhE9MFPgehEfRisl
+         S6FeTgCEQ7i1G5dNYuVxhVBOTJFcMa7OkvMbEmLFUQMxuB/wtQa1HyYvK9rSVGvsOJ
+         lmCeJRo/4NbDFyV6vQbfF6jXGQDX+r9/l4aPRxoL4AOqDhqaewHnTLkken4D1GOhFC
+         hn7Hm3wKlTRrw==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 30 Mar 2023 08:16:36 +0300 (MSK)
+Message-ID: <3083bb71-45bd-0738-14b6-fe2860c61b09@sberdevices.ru>
+Date:   Thu, 30 Mar 2023 08:13:12 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT091:EE_|IA1PR12MB8077:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cb14454-f9ed-46f0-3c14-08db30dccda3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r0IhKUV3F2u0zqlW3gmzQjTO3V5EQNyXSEAqb4UoHk0QrP4ZXRaEuUPtfgb6pF0hp8ELfSP6tbxv48Txd2Pvip9P8ALcn3iDZO09RNqdDvLRve0H09o+q5zx1Ct/HZTx7AneFfvxfDWbcYBRuzsV93ofBP89U9XZ3O1jcNk+5ubplpdl992EzOSLP0TiHEg0UuNHbJHxNwhUoEnJPjnSdrfuY/rNm6rDBWQvTJLSdp21LxTTt21MaGN3ggSEuho0Xrfu7CDg+DcJTmClXpB44SxodNWW+qVTdJiyU+YEMK8hVUo2bVDsCn2nExvBYi9VCegARt0o/NdAsI3q0fCTLbzmyOG/faOv31czXvCklrl4KFvHQIcAvRi17TP0uoDIdY4JAePpaN+l1BuHdBUFuqtBRfDb9m2VfKTG1nAypJu+FWnB0dpdxIUIZ/ScGQNzjaYPAXCnxWIPOeKYSrj+657Nj4hCjzQ6kipXFnVQ9QFk0JZKpIvHStiylzrunbwssVJfGqEX/Y/PChWR7z3G1v4DsSc/qH42DjSrY/KSyPbQOVqxasCHC/pALNLtm6ZWtkOjgk2YV27vs0PBlDseFYm3wK0gVdx9E1MYRhPtIAqGYDS0MWJ6oWUQ/u9NH5Jmps5fBJDrAZ+cG8hnhiulGj7jObeSoyVlc6iwG48lJBGzX1tPSzChf9gn7nPwPQJgIW3Qh5L9/6+jChU7WwIoMPxw/UA2dN3wNdubeJOLsMM=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(136003)(346002)(39860400002)(451199021)(40470700004)(36840700001)(46966006)(316002)(110136005)(40460700003)(36860700001)(478600001)(54906003)(82310400005)(81166007)(36756003)(82740400003)(356005)(86362001)(5660300002)(8936002)(70586007)(4326008)(7416002)(44832011)(70206006)(8676002)(2906002)(40480700001)(41300700001)(426003)(1076003)(186003)(6666004)(26005)(336012)(83380400001)(2616005)(47076005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 05:08:30.3553
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cb14454-f9ed-46f0-3c14-08db30dccda3
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT091.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8077
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v1 1/2] vsock: return errors other than -ENOMEM to
+ socket
+Content-Language: en-US
+To:     Vishnu Dasa <vdasa@vmware.com>,
+        Stefano Garzarella <sgarzare@redhat.com>
+CC:     Bryan Tan <bryantan@vmware.com>,
+        Pv-drivers <Pv-drivers@vmware.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+References: <97f19214-ba04-c47e-7486-72e8aa16c690@sberdevices.ru>
+ <99da938b-3e67-150c-2f74-41d917a95950@sberdevices.ru>
+ <itjmw7vh3a7ggbodsu4mksu2hqbpdpxmu6cpexbra66nfhsw4x@hzpuzwldkfx5>
+ <CAGxU2F648TyvAJN+Zk6YCnGUhn=0W_MZTox7RxQ45zHmHHO0SA@mail.gmail.com>
+ <0f0a8603-e8a1-5fb2-23d9-5773c808ef85@sberdevices.ru>
+ <ak74j6l2qesrixxmw7pfw56najqhdn32lv3xfxcb53nvmkyi3x@fr25vo2jlvbj>
+ <64451c35-5442-73cb-4398-2b907dd810cc@sberdevices.ru>
+ <B25B4275-957C-4052-B089-3714B6A7B0A3@vmware.com>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <B25B4275-957C-4052-B089-3714B6A7B0A3@vmware.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/30 01:24:00 #21043458
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Harini Katakam <harini.katakam@xilinx.com>
 
-The seconds input from BD (6 bits) just needs to be ORed with the
-upper bits from timer in this function. Avoid addition operation
-every single time. Seconds rollover handling is left untouched.
 
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
----
-v4:
-No change
-v3:
-No change
-v2:
-- Update HW timestamp logic to remove sec_rollover variable as per
-Cladiu's comment
-- Remove Richard Cochran's ACK on original patch as the patch changed
+On 30.03.2023 00:44, Vishnu Dasa wrote:
+> 
+> 
+>> On Mar 28, 2023, at 4:20 AM, Arseniy Krasnov <AVKrasnov@sberdevices.ru> wrote:
+>>
+>> !! External Email
+>>
+>> On 28.03.2023 14:19, Stefano Garzarella wrote:
+>>> On Tue, Mar 28, 2023 at 01:42:19PM +0300, Arseniy Krasnov wrote:
+>>>>
+>>>>
+>>>> On 28.03.2023 12:42, Stefano Garzarella wrote:
+>>>>> I pressed send too early...
+>>>>>
+>>>>> CCing Bryan, Vishnu, and pv-drivers@vmware.com
+>>>>>
+>>>>> On Tue, Mar 28, 2023 at 11:39 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>>>>>>
+>>>>>> On Sun, Mar 26, 2023 at 01:13:11AM +0300, Arseniy Krasnov wrote:
+>>>>>>> This removes behaviour, where error code returned from any transport
+>>>>>>> was always switched to ENOMEM. This works in the same way as:
+>>>>>>> commit
+>>>>>>> c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
+>>>>>>> but for receive calls.
+>>>>>>>
+>>>>>>> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>>>>>>> ---
+>>>>>>> net/vmw_vsock/af_vsock.c | 4 ++--
+>>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>>>>>>> index 19aea7cba26e..9262e0b77d47 100644
+>>>>>>> --- a/net/vmw_vsock/af_vsock.c
+>>>>>>> +++ b/net/vmw_vsock/af_vsock.c
+>>>>>>> @@ -2007,7 +2007,7 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
+>>>>>>>
+>>>>>>>              read = transport->stream_dequeue(vsk, msg, len - copied, flags);
+>>>>>>
+>>>>>> In vmci_transport_stream_dequeue() vmci_qpair_peekv() and
+>>>>>> vmci_qpair_dequev() return VMCI_ERROR_* in case of errors.
+>>>>>>
+>>>>>> Maybe we should return -ENOMEM in vmci_transport_stream_dequeue() if
+>>>>>> those functions fail to keep the same behavior.
+>>>>
+>>>> Yes, seems i missed it, because several months ago we had similar question for send
+>>>> logic:
+>>>> https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.spinics.net%2Flists%2Fkernel%2Fmsg4611091.html&data=05%7C01%7Cvdasa%40vmware.com%7C3b17793425384debe75708db2f7eec8c%7Cb39138ca3cee4b4aa4d6cd83d9dd62f0%7C0%7C0%7C638155994413494900%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=MMfFcKuFFvMcJrbToKvWvIB%2FZmzp%2BdGGVWFVWztuSzg%3D&reserved=0
+>>>> And it was ok to not handle VMCI send path in this way. So i think current implementation
+>>>> for tx is a little bit buggy, because VMCI specific error from 'vmci_qpair_enquev()' is
+>>>> returned to af_vsock.c. I think error conversion must be added to VMCI transport for tx
+>>>> also.
+>>>
+>>> Good point!
+>>>
+>>> These are negative values, so there are no big problems, but I don't
+>>> know what the user expects in this case.
+>>>
+>>> @Vishnu Do we want to return an errno to the user or a VMCI_ERROR_*?
+>>
+>> Small remark, as i can see, VMCI_ERROR_ is not exported to user in include/uapi,
+>> so IIUC user won't be able to interpret such values correctly.
+>>
+>> Thanks, Arseniy
+> 
+> Let's just return -ENOMEM from vmci transport in case of error in
+> vmci_transport_stream_enqueue and vmci_transport_stream_dequeue.
+> 
+> @Arseniy,
+> Could you please add a separate patch in this set to handle the above?
 
- drivers/net/ethernet/cadence/macb_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sure, ack, in the next few days!
 
-diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
-index f962a95068a0..51d26fa190d7 100644
---- a/drivers/net/ethernet/cadence/macb_ptp.c
-+++ b/drivers/net/ethernet/cadence/macb_ptp.c
-@@ -258,6 +258,8 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
- 	 */
- 	gem_tsu_get_time(&bp->ptp_clock_info, &tsu, NULL);
- 
-+	ts->tv_sec |= ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
-+
- 	/* If the top bit is set in the timestamp,
- 	 * but not in 1588 timer, it has rolled over,
- 	 * so subtract max size
-@@ -266,8 +268,6 @@ static int gem_hw_timestamp(struct macb *bp, u32 dma_desc_ts_1,
- 	    !(tsu.tv_sec & (GEM_DMA_SEC_TOP >> 1)))
- 		ts->tv_sec -= GEM_DMA_SEC_TOP;
- 
--	ts->tv_sec += ((~GEM_DMA_SEC_MASK) & tsu.tv_sec);
--
- 	return 0;
- }
- 
--- 
-2.17.1
+Thanks, Arseniy
 
+> 
+> Thanks,
+> Vishnu
+> 
+>>
+>>>
+>>> In both cases I think we should do the same for both enqueue and
+>>> dequeue.
+>>>
+>>>>
+>>>> Good thing is that Hyper-V uses general error codes.
+>>>
+>>> Yeah!
+>>>
+>>> Thanks,
+>>> Stefano
+>>>
+>>>>
+>>>> Thanks, Arseniy
+>>>>>>
+>>>>>> CCing Bryan, Vishnu, and pv-drivers@vmware.com
+>>>>>>
+>>>>>> The other transports seem okay to me.
+>>>>>>
+>>>>>> Thanks,
+>>>>>> Stefano
+>>>>>>
+>>>>>>>              if (read < 0) {
+>>>>>>> -                      err = -ENOMEM;
+>>>>>>> +                      err = read;
+>>>>>>>                      break;
+>>>>>>>              }
+>>>>>>>
+>>>>>>> @@ -2058,7 +2058,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+>>>>>>>      msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
+>>>>>>>
+>>>>>>>      if (msg_len < 0) {
+>>>>>>> -              err = -ENOMEM;
+>>>>>>> +              err = msg_len;
+>>>>>>>              goto out;
+>>>>>>>      }
+>>>>>>>
+>>>>>>> --
+>>>>>>> 2.25.1
+>>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+>> !! External Email: This email originated from outside of the organization. Do not click links or open attachments unless you recognize the sender.
+> 
+> 
