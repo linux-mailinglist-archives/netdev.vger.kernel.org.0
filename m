@@ -2,52 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 365A06D0E12
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB326D0E13
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbjC3SuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 14:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
+        id S229564AbjC3Su0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 14:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbjC3SuX (ORCPT
+        with ESMTP id S229798AbjC3SuX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:50:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE950E050
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:50:19 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8D9D33C
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C5716217C
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDEC3B829E7
         for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 18:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BD364C4339C;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AE4C5C433D2;
         Thu, 30 Mar 2023 18:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1680202218;
-        bh=g061aUJvljjulHFokRqHYcj1E0+OZVAo/p09l72DH3g=;
+        bh=CRyaHUr/HY9YNRsthVVCD/w+meEA/ttqh8fIGWAqRj8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=F8ejELQ+kmnNAVKp7xEXTtsziKEtWv36T7KuXHhsHkWkCyO0M0TolamMYPeajzV8Y
-         B7ZtPn8l19r2iKpK8A4rOUQwf3mZ5+O2119aYRC6yLv8UFCF8DV3T5eOF01RgKYh/r
-         2wkLAPSMlwjhB92UCMhEO70CsEqeCBgGQqbWkmN3rCzJwUh2XzGBhJD25tMeqo4eX2
-         75Yr4ClINDK2tjh43lV6zRrXl8/6j7/A5caODnBizx5PLSLul5mYbnHrZyI1/Jfgpa
-         cmO+79oo45mondEBC8W4tH/hFzcWDuM1fG+PKSnIg+p7h/S2XW4U0/XwcP+ZT30Nva
-         T5oZBXX651Ckw==
+        b=Q5EgtiBY5sSSawVSC+U58j6fxCKMUVghA6jYBlxLC9Zu/Kw3y1GuSnzNft/C3Wmcb
+         NgFrUCif4kkpxa3WBw9RH4JWb0rBZ8lnmFM4xr1DdRsoL65Ad0laI5XqtBpsg/s0OI
+         lgU/m2iavSamDnqJdmmOcNO559mYjDEtXUiV1edlWEBc9hyEJcM+W0a8nL3xBDFvRf
+         GetiUJIp5qpA4rjA412+rfdJnLopTJWS0/Wo38MOSOEqsVjGG+0TUKekIgKSV0XAJl
+         sOE9Ic5/5crU3CUWI9YoGYKuvDieXOSVG1QvRHTRTiJk8ORzmnPzj2xiIiUICOjUkn
+         4bLfnpvbEZBbw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 97BF7C41612;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8D943E2A037;
         Thu, 30 Mar 2023 18:50:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 1/3] net: ethernet: mtk_eth_soc: fix flow block
- refcounting logic
+Subject: Re: [PATCH net] net: mvneta: fix potential double-frees in
+ mvneta_txq_sw_deinit()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168020221861.6825.13155238714164252504.git-patchwork-notify@kernel.org>
+Message-Id: <168020221856.6825.13004510044660053984.git-patchwork-notify@kernel.org>
 Date:   Thu, 30 Mar 2023 18:50:18 +0000
-References: <20230330120840.52079-1-nbd@nbd.name>
-In-Reply-To: <20230330120840.52079-1-nbd@nbd.name>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+References: <E1phUe5-00EieL-7q@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1phUe5-00EieL-7q@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, kabel@kernel.org,
+        thomas.petazzoni@bootlin.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,27 +60,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (main)
+This patch was applied to netdev/net.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 30 Mar 2023 14:08:38 +0200 you wrote:
-> Since we call flow_block_cb_decref on FLOW_BLOCK_UNBIND, we also need to
-> call flow_block_cb_incref for a newly allocated cb.
-> Also fix the accidentally inverted refcount check on unbind.
+On Wed, 29 Mar 2023 13:11:17 +0100 you wrote:
+> Reported on the Turris forum, mvneta provokes kernel warnings in the
+> architecture DMA mapping code when mvneta_setup_txqs() fails to
+> allocate memory. This happens because when mvneta_cleanup_txqs() is
+> called in the mvneta_stop() path, we leave pointers in the structure
+> that have been freed.
 > 
-> Fixes: 502e84e2382d ("net: ethernet: mtk_eth_soc: add flow offloading support")
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> Then on mvneta_open(), we call mvneta_setup_txqs(), which starts
+> allocating memory. On memory allocation failure, mvneta_cleanup_txqs()
+> will walk all the queues freeing any non-NULL pointers - which includes
+> pointers that were previously freed in mvneta_stop().
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2,1/3] net: ethernet: mtk_eth_soc: fix flow block refcounting logic
-    https://git.kernel.org/netdev/net/c/8c1cb87c2a5c
-  - [net,v2,2/3] net: ethernet: mtk_eth_soc: fix L2 offloading with DSA untag offload
-    https://git.kernel.org/netdev/net/c/5f36ca1b841f
-  - [net,v2,3/3] net: ethernet: mtk_eth_soc: add missing ppe cache flush when deleting a flow
-    https://git.kernel.org/netdev/net/c/924531326e2d
+  - [net] net: mvneta: fix potential double-frees in mvneta_txq_sw_deinit()
+    https://git.kernel.org/netdev/net/c/2960a2d33b02
 
 You are awesome, thank you!
 -- 
