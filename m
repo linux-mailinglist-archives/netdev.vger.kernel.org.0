@@ -2,276 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F80E6D00CD
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:13:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560B86D00AC
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231234AbjC3KNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 06:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55732 "EHLO
+        id S229792AbjC3KJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 06:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbjC3KNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:13:05 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B130B83FF;
-        Thu, 30 Mar 2023 03:12:49 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32UA0M4Y013662;
-        Thu, 30 Mar 2023 05:00:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680170422;
-        bh=6GMbdDm1SZ1Eo3auyHRNsEcTbQyAIEfFJdEYlXDQaco=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=hg5aVMWwHjNhX08MQ90BfTmq2CPB0tkFdj2SB9IL5NYvkMp/TnDcWI/fmD03wdEyp
-         V79Ch8e1ZzneMLzFcBMSLKrrK2hXWmuwG4bW3iiK4QsARXoey+KtVmo6V6AgyXevDG
-         1nFg3PIGzwT48X99N7hQK0ZyJZaCudMvpAfywipA=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32UA0M8m014047
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 30 Mar 2023 05:00:22 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Thu, 30
- Mar 2023 05:00:22 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Thu, 30 Mar 2023 05:00:22 -0500
-Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32UA0Hle008916;
-        Thu, 30 Mar 2023 05:00:17 -0500
-Message-ID: <4e239000-c5f7-a42e-157e-5b668c6b2908@ti.com>
-Date:   Thu, 30 Mar 2023 15:30:16 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [EXTERNAL] Re: [PATCH v5 3/5] soc: ti: pruss: Add
- pruss_cfg_read()/update() API
+        with ESMTP id S229680AbjC3KJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:09:10 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5906E93;
+        Thu, 30 Mar 2023 03:09:09 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32U6f0O8005361;
+        Thu, 30 Mar 2023 03:09:02 -0700
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3pmhc4d0xg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Mar 2023 03:09:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nbIJMxS98rk/YSwbZrsHRoataEcjEZHe2G5aJOKq5fJ8AJa+8EaiAa6iWKQglZJurytB4maqkI4HE9wErrWPGPTsnPnpnym0FSa4HJHtUVSNKiAbdl1eMikvrj8l977qmpRX5QGmnNGUF2DpB7mbitpedVC6TYm7cVgrs9d4MltYtO2wdlulvtHk4pENiM1KU6kQVCJXd5R6juMWsbez9H+L6M/WvUYCKLll+OEYYyXeUS2bBF7cCyvEnTxSn6X0r5eC+QwkONzjcUvh8EVJAJCUSpJRMtAln3aaJYKscNNo4G9kS2qd60S2JoHRRcwAilqoot+qONOZ8s7wn2q84w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HiwQ6P0LbvPPsnUkMUzEx3vgciy3yYOsebCKfh2Y1Rs=;
+ b=PJFXjCGqFUTA1aQ2k9JNNF5EmIkbTZUFFPMWHhNzDk2QP4vYxWATd5nCPHt6u4cW1z09nTAnCRIRO9RRPNj0qqM4rpUzUiyaPhYrQI00+d1sA+hfxD56FtzslEAXvwpsPFlY0w74VCEWS7NFzaMwUftunERbNN53RzbjIoJfy6WIepGJnHhvOZspDEaNdpn02fv/O4ErZCf/HZjEhBUIg2exLDMaMSFX8kSfFCyzrjzsS73b3iAhXQZjtAowlG1CvqhBMZjsFGVZN7Iz24SlvEjO5LvvbekYopDr+F+PerRk4auc8zY5GX3nodMsfEnG35ZI/+v+CPhB5oGtJ4TRVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HiwQ6P0LbvPPsnUkMUzEx3vgciy3yYOsebCKfh2Y1Rs=;
+ b=OKPCpFLlBKyGdUr/wzh60AJNdCuiwE3pTGfx9ntWLkYyq+n/4CI9CeX/2iY34Vz2vNVdcuDqpOSy5BPo61xRnYcxmwxtHiGN0EesfW1N8TtiKMQgUoO5Y4MpUy6hwIvqJh36ePFRvZ+9tzKYs0AIDmg1LvmpmoQ/+f7MeEMmYrY=
+Received: from BY3PR18MB4707.namprd18.prod.outlook.com (2603:10b6:a03:3ca::23)
+ by SN7PR18MB3919.namprd18.prod.outlook.com (2603:10b6:806:f5::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Thu, 30 Mar
+ 2023 10:08:59 +0000
+Received: from BY3PR18MB4707.namprd18.prod.outlook.com
+ ([fe80::bfe5:6d08:3a10:6251]) by BY3PR18MB4707.namprd18.prod.outlook.com
+ ([fe80::bfe5:6d08:3a10:6251%3]) with mapi id 15.20.6222.035; Thu, 30 Mar 2023
+ 10:08:59 +0000
+From:   Sai Krishna Gajula <saikrishnag@marvell.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Hariprasad Kelam <hkelam@marvell.com>
+Subject: RE: [EXT] Re: [net PATCH 3/7] octeontx2-af: Add validation for lmac
+ type
+Thread-Topic: [EXT] Re: [net PATCH 3/7] octeontx2-af: Add validation for lmac
+ type
+Thread-Index: AQHZYmDeXzOo7CyzoU608CFuRZt47a8S2i4AgAA9ijA=
+Date:   Thu, 30 Mar 2023 10:08:59 +0000
+Message-ID: <BY3PR18MB470786C30C037BFD519147C3A08E9@BY3PR18MB4707.namprd18.prod.outlook.com>
+References: <20230329170619.183064-1-saikrishnag@marvell.com>
+ <20230329170619.183064-4-saikrishnag@marvell.com>
+ <20230330061840.GM831478@unreal>
+In-Reply-To: <20230330061840.GM831478@unreal>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        MD Danish Anwar <danishanwar@ti.com>
-CC:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>, <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230323062451.2925996-1-danishanwar@ti.com>
- <20230323062451.2925996-4-danishanwar@ti.com> <20230327210126.GC3158115@p14s>
-From:   Md Danish Anwar <a0501179@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <20230327210126.GC3158115@p14s>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcc2Fpa3Jpc2hu?=
+ =?us-ascii?Q?YWdcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZi?=
+ =?us-ascii?Q?ODRiYTI5ZTM1Ylxtc2dzXG1zZy1lMGRlM2RjYi1jZWUyLTExZWQtYWQxYy0x?=
+ =?us-ascii?Q?Y2MxMGM0MGQ5ZTRcYW1lLXRlc3RcZTBkZTNkY2MtY2VlMi0xMWVkLWFkMWMt?=
+ =?us-ascii?Q?MWNjMTBjNDBkOWU0Ym9keS50eHQiIHN6PSIzNDg3IiB0PSIxMzMyNDY0NDUz?=
+ =?us-ascii?Q?NjA0OTY4MTUiIGg9IkRoZ09tL1gwbGdBSW0ySTVUazZsTGdHOVRpTT0iIGlk?=
+ =?us-ascii?Q?PSIiIGJsPSIwIiBibz0iMSIgY2k9ImNBQUFBRVJIVTFSU1JVRk5DZ1VBQUhZ?=
+ =?us-ascii?Q?SUFBQ3Z3RXVqNzJMWkFZMENXbVFEdnloeGpRSmFaQU8vS0hFTkFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFIQUFBQUFHQ0FBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFFQUFRQUJBQUFBMUZIM2FBQUFBQUFBQUFBQUFBQUFBSjRBQUFCaEFH?=
+ =?us-ascii?Q?UUFaQUJ5QUdVQWN3QnpBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR01BZFFCekFIUUFid0J0QUY4?=
+ =?us-ascii?Q?QWNBQmxBSElBY3dCdkFHNEFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQVFBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFB?=
+ =?us-ascii?Q?Q0FBQUFBQUNlQUFBQVl3QjFBSE1BZEFCdkFHMEFYd0J3QUdnQWJ3QnVBR1VB?=
+ =?us-ascii?Q?YmdCMUFHMEFZZ0JsQUhJQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFKNEFBQUJq?=
+ =?us-ascii?Q?QUhVQWN3QjBBRzhBYlFCZkFITUFjd0J1QUY4QVpBQmhBSE1BYUFCZkFIWUFN?=
+ =?us-ascii?Q?QUF5QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+x-dg-rorf: true
+x-dg-refone: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBRUFBQUFBQUFBQUFnQUFBQUFBbmdB?=
+ =?us-ascii?Q?QUFHTUFkUUJ6QUhRQWJ3QnRBRjhBY3dCekFHNEFYd0JyQUdVQWVRQjNBRzhB?=
+ =?us-ascii?Q?Y2dCa0FITUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQVFBQUFBQUFBQUFDQUFBQUFBQ2VBQUFBWXdCMUFITUFkQUJ2?=
+ =?us-ascii?Q?QUcwQVh3QnpBSE1BYmdCZkFHNEFid0JrQUdVQWJBQnBBRzBBYVFCMEFHVUFj?=
+ =?us-ascii?Q?Z0JmQUhZQU1BQXlBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUJBQUFB?=
+ =?us-ascii?Q?QUFBQUFBSUFBQUFBQUo0QUFBQmpBSFVBY3dCMEFHOEFiUUJmQUhNQWN3QnVB?=
+ =?us-ascii?Q?RjhBY3dCd0FHRUFZd0JsQUY4QWRnQXdBRElBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFu?=
+ =?us-ascii?Q?Z0FBQUdRQWJBQndBRjhBY3dCckFIa0FjQUJsQUY4QVl3Qm9BR0VBZEFCZkFH?=
+ =?us-ascii?Q?MEFaUUJ6QUhNQVlRQm5BR1VBWHdCMkFEQUFNZ0FBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFDZUFBQUFaQUJzQUhBQVh3?=
+ =?us-ascii?Q?QnpBR3dBWVFCakFHc0FYd0JqQUdnQVlRQjBBRjhBYlFCbEFITUFjd0JoQUdj?=
+ =?us-ascii?Q?QVpRQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+x-dg-reftwo: =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFJQUFBQUFBSjRBQUFCa0FHd0Fj?=
+ =?us-ascii?Q?QUJmQUhRQVpRQmhBRzBBY3dCZkFHOEFiZ0JsQUdRQWNnQnBBSFlBWlFCZkFH?=
+ =?us-ascii?Q?WUFhUUJzQUdVQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR1VBYlFCaEFHa0FiQUJmQUdFQVpB?=
+ =?us-ascii?Q?QmtBSElBWlFCekFITUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBRHdBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFBQ0FB?=
+ =?us-ascii?Q?QUFBQUNlQUFBQWJRQmhBSElBZGdCbEFHd0FiQUJmQUhBQWNnQnZBR29BWlFC?=
+ =?us-ascii?Q?akFIUUFYd0JqQUc4QVpBQmxBSE1BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFKNEFBQUJ0QUdF?=
+ =?us-ascii?Q?QWNnQjJBR1VBYkFCc0FGOEFkQUJsQUhJQWJRQnBBRzRBZFFCekFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBRUFBQUFBQUFBQUFnQUFBQUFBIi8+PC9tZXRhPg=3D=3D?=
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BY3PR18MB4707:EE_|SN7PR18MB3919:EE_
+x-ms-office365-filtering-correlation-id: 2dbf4141-c78c-4fe8-7362-08db3106c7c6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: O/3tcki14kBPv2pI+MkPm9efP7/ScKh/PTJtFqWxPK/uakNbQOZUwVKzY1zK5HeakyRYYkZJachrn2Yz3AWgiVzrkFQfFAg7DNogFgPTPer7bh/6rFwAkKy0aL5n/5+i3WHLv6F/xYwgL6tPlc4iuziGyegVs4FYgHVom5WeeGOYumNyyjDnV9AewbAGVYarHX6I0OWJFjxr5ifHZGpZ2nKOF8OGMZs/EAD9M2X6bUaMdh8os2pv3EnEMpwlfSbtt5h6hzCGDo/Z2HvLINNjg8zxMqL+qidGMTN+F7emMVGmStZh0MiSn9C95pou7RhgrlBcdHm2BP9fhEn4Ge1ZYB3QIkhklLjhYBgwFfQsvULFGuIXqPBEW7dKn48/F9xmo2CyFjVamF8JDPsZrIzsXDbkExRJDc7+UWhI1+uRttjHgZyk+Ke53LyGgoAdplTKhhGgu/b4lGmCKD5MF8Vz2WK+cNmZlMlrU96qkDK8pLjFFmxbksEJ3XNfnT3gC0AiH3GtfB/F7Rq6wrGL4w29uesYRD9OwJW7jxtElYcBo0gjVfowJ+ev4G/BRmNUG4cyPqUWxZ1HttE9BH8fOPvl4g30DzPRCeErzw5455OI02lBOlIhg/n+4cwN15+1/AWK
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR18MB4707.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(346002)(376002)(136003)(39860400002)(396003)(451199021)(5660300002)(8936002)(52536014)(41300700001)(2906002)(86362001)(66476007)(76116006)(66556008)(8676002)(66946007)(6916009)(4326008)(66446008)(64756008)(316002)(478600001)(54906003)(45080400002)(71200400001)(7696005)(107886003)(9686003)(6506007)(26005)(186003)(53546011)(122000001)(83380400001)(33656002)(38100700002)(38070700005)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?R7aGBCUwzNmLNfSr4keOtqRJ7JUBTUDeeZQmmmVQKaw/aWrOaI9mgqFCOnnk?=
+ =?us-ascii?Q?2bvg4M+92XKl1uDnkzDJ+YsPOT8dMk/a8Rmml+QCcmKwSeYIU6tQG3NqILxh?=
+ =?us-ascii?Q?Vu4CDszorUVw3sCYNsiysx5FIwVi4zkU/BqrvGXgtdtlOIrbCg7rCuaWiNTw?=
+ =?us-ascii?Q?vxmgo8x+oM9B09NtnWnssXWAIVbYbZ7Jx7Ux2rP4cLaFEUKfwL1mCLmzVFXE?=
+ =?us-ascii?Q?sifm9AuXIp4r7dVo4uf29Q19AURSQXn7nWETeuPeIKOp05akyY3kTOrULy1c?=
+ =?us-ascii?Q?vVRT+wNgcTgIqniojXYDoiyxNTiPmFcywVqW7+J52HzoPFgQ8XrGW33L0u3N?=
+ =?us-ascii?Q?Fq+7tAyXbtRQnDZFiTC5lr+v2ji5T5M4O9CZN+oKyyjNEebBHvelKnX6OyEc?=
+ =?us-ascii?Q?riohYLLRljZUG2n15wCCBvA0CVb89xnnzqRlGvPCTyeT9oenayLyZA3Yo9aQ?=
+ =?us-ascii?Q?YeCxvTNO5Y9hpSxCSUGbtkIxQ9SDm8IfsvT0Cr+/PLp7fNbEzSdyucDzqkO1?=
+ =?us-ascii?Q?Jg6s35uYFZ9Fe5l+olEhEVFeamLUMlaH4c10ANMB99tnGtsR0gaZu7Ls/mWL?=
+ =?us-ascii?Q?EBXme6gO48HysGO9YNVI1BnzNGkAvfDCm0UFTOjRGfmXFBVG/DMh4LZDc7XS?=
+ =?us-ascii?Q?JBC09Z+uH+bAJgUqXpDurBdZhy2+WMCQKshl+mZMvcAJb7+mwjl0iPGcPMl/?=
+ =?us-ascii?Q?UTT0i773gLZJ9HCpNoOoUloH7N/o222jFJwM46+mtWUg+9cMkty2hQK5mKh2?=
+ =?us-ascii?Q?DDxVQDMlKABjDoBcjN8j2nznPo2j6XpyooOQHhEfe0jcD03AJKgP/CU6ibON?=
+ =?us-ascii?Q?4QpGdLAm9IJRcFeVHFSjyrmrkHGFovf+Wznx0fG8vFgzbxmvyCqtZ1vEDzZP?=
+ =?us-ascii?Q?C0ehHS1HNnMUVMSzLya4iozMhnzRCCgEjCkTSOjTv2Og9kYMhPbBgjMDHhVd?=
+ =?us-ascii?Q?kki/RerSVCf82omRqC9dKJt+7jhn4KVVDC8ooODUC0qDW1Nbl/yDcaWb0S45?=
+ =?us-ascii?Q?R8bw6sFzHAIUFK9NgHOpRzFf0DOq3Xql9J0gPVmUb5zoz0vLJ3rE1oZAnEZ7?=
+ =?us-ascii?Q?BZW4PvB6wUdEOLF6OiZIk35Jbq4DnPxo60t9UxSuTPAoz9sslTNfiu5JOQut?=
+ =?us-ascii?Q?rWARLL+T2VehiWGV+LWRYRmfUBBrZF3aFSLO3b54ds7ZgVtx6UXQFB3ecOe8?=
+ =?us-ascii?Q?PJXKk16wJLrlRG3RfNeElFk4pUqs6s7lSJEaL7bJOXgrKlfCIgCSMSDPpOi6?=
+ =?us-ascii?Q?jzwqt5OMgQRHUVNvEv2vrJ/8rNKDgeskHbvvSFYY9PPdKKUN9qPv8djeWpgk?=
+ =?us-ascii?Q?gP/g+xM9pUYgJEXFMHh2vlX/NV2OkucHQ3PxiG+x8Nmg4ujQ17JVqNJR2yYa?=
+ =?us-ascii?Q?whDignQbB/QROlRUNWWuzZSKQrbk1Zt3KoozhUrNAG8YdIT6bplmt/yo58ix?=
+ =?us-ascii?Q?QRA6mdYaVY8kQVko0sw8wFNvM26dlEdS/AbFdJ4M3fUtw5v0aIFZ3ElrqL9V?=
+ =?us-ascii?Q?YrtE4dBmVp8C9OiCYTsbIzJKC2th6ZFPEmY4AX+qvvwsPrJ7f0cZtkd/dQ3I?=
+ =?us-ascii?Q?uJBwFnaD7H4ebL153IV17UahTerSWvUI8YUyv9PH?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY3PR18MB4707.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2dbf4141-c78c-4fe8-7362-08db3106c7c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2023 10:08:59.4106
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: B+KIycUjQWSnQI07jF4Tb9N8ZYfb0KFHHbeL0cCEieCk+DIylelY0N3mizUohL4YLqTmuv7Z3sLUEzrNQllI1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR18MB3919
+X-Proofpoint-ORIG-GUID: eAM2zbAwG2YQr0eAOr3jfSDJcfBhpVNl
+X-Proofpoint-GUID: eAM2zbAwG2YQr0eAOr3jfSDJcfBhpVNl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-03-30_04,2023-03-30_01,2023-02-09_01
+X-Spam-Status: No, score=-0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mathieu,
+Please see inline.
 
-On 28/03/23 02:31, Mathieu Poirier wrote:
-> On Thu, Mar 23, 2023 at 11:54:49AM +0530, MD Danish Anwar wrote:
->> From: Suman Anna <s-anna@ti.com>
->>
->> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
->> the PRUSS platform driver to read and program respectively a register
->> within the PRUSS CFG sub-module represented by a syscon driver.
->>
->> These APIs are internal to PRUSS driver. Various useful registers
->> and macros for certain register bit-fields and their values have also
->> been added.
->>
->> Signed-off-by: Suman Anna <s-anna@ti.com>
->> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
->> ---
->>  drivers/soc/ti/pruss.c |   1 +
->>  drivers/soc/ti/pruss.h | 112 +++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 113 insertions(+)
->>  create mode 100644 drivers/soc/ti/pruss.h
->>
-> 
-> This patch doesn't compile without warnings.
-> 
+> -----Original Message-----
+> From: Leon Romanovsky <leon@kernel.org>
+> Sent: Thursday, March 30, 2023 11:49 AM
+> To: Sai Krishna Gajula <saikrishnag@marvell.com>
+> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
+> pabeni@redhat.com; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> Sunil Kovvuri Goutham <sgoutham@marvell.com>;
+> richardcochran@gmail.com; Hariprasad Kelam <hkelam@marvell.com>
+> Subject: [EXT] Re: [net PATCH 3/7] octeontx2-af: Add validation for lmac =
+type
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> On Wed, Mar 29, 2023 at 10:36:15PM +0530, Sai Krishna wrote:
+> > From: Hariprasad Kelam <hkelam@marvell.com>
+> >
+> > Upon physical link change, firmware reports to the kernel about the
+> > change along with the details like speed, lmac_type_id, etc.
+> > Kernel derives lmac_type based on lmac_type_id received from firmware.
+> >
+> > In a few scenarios, firmware returns an invalid lmac_type_id, which is
+> > resulting in below kernel panic. This patch adds the missing
+> > validation of the lmac_type_id field.
+> >
+> > Internal error: Oops: 96000005 [#1] PREEMPT SMP
+> > [   35.321595] Modules linked in:
+> > [   35.328982] CPU: 0 PID: 31 Comm: kworker/0:1 Not tainted
+> > 5.4.210-g2e3169d8e1bc-dirty #17
+> > [   35.337014] Hardware name: Marvell CN103XX board (DT)
+> > [   35.344297] Workqueue: events work_for_cpu_fn
+> > [   35.352730] pstate: 40400089 (nZcv daIf +PAN -UAO)
+> > [   35.360267] pc : strncpy+0x10/0x30
+> > [   35.366595] lr : cgx_link_change_handler+0x90/0x180
+> >
+> > Fixes: 61071a871ea6 ("octeontx2-af: Forward CGX link notifications to
+> > PFs")
+> > Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+> > Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> > Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
+> > ---
+> >  drivers/net/ethernet/marvell/octeontx2/af/cgx.c | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> > b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> > index 724df6398bbe..180aa84cf1c3 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> > @@ -1231,6 +1231,13 @@ static inline void link_status_user_format(u64
+> lstat,
+> >  	linfo->an =3D FIELD_GET(RESP_LINKSTAT_AN, lstat);
+> >  	linfo->fec =3D FIELD_GET(RESP_LINKSTAT_FEC, lstat);
+> >  	linfo->lmac_type_id =3D FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, lstat);
+> > +
+> > +	if (linfo->lmac_type_id >=3D LMAC_MODE_MAX) {
+> > +		dev_err(&cgx->pdev->dev, "Unknown lmac_type_id %d
+> reported by firmware on cgx port%d:%d",
+> > +			linfo->lmac_type_id, cgx->cgx_id, lmac_id);
+> > +		return;
+>=20
+> You are keeping old lmac_type, which is out-of-sync now.
+> Why don't you do something like that?
+>=20
+> if (linfo->lmac_type_id >=3D LMAC_MODE_MAX) {
+>   strncpy(linfo->lmac_type, "Unknown", LMACTYPE_STR_LEN - 1);
+>   return;
+> }
+>=20
+>=20
+We will add the proposed change (Unknown). Since we need to know the firmwa=
+re reported lmac type ID is proper or not, we will keep dev_err also.
+> > +	}
+> > +
+> >  	lmac_string =3D cgx_lmactype_string[linfo->lmac_type_id];
+> >  	strncpy(linfo->lmac_type, lmac_string, LMACTYPE_STR_LEN - 1);  }
+> > --
+> > 2.25.1
+> >
+Thanks,
+Sai
 
-I checked the warnings. Below are the warnings that I am getting for these patch.
-
-In file included from drivers/soc/ti/pruss.c:24:
-drivers/soc/ti/pruss.h:103:12: warning: ‘pruss_cfg_update’ defined but not used
-[-Wunused-function]
-  103 | static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
-      |            ^~~~~~~~~~~~~~~~
-drivers/soc/ti/pruss.h:84:12: warning: ‘pruss_cfg_read’ defined but not used
-[-Wunused-function]
-   84 | static int pruss_cfg_read(struct pruss *pruss, unsigned int reg,
-unsigned int *val)
-
-These warnings are coming because pruss_cfg_read() / update() APIs are
-introduced in this patch but they are used later.
-
-One way to resolve this warning is to make this API "inline". I compiled after
-making these APIs inline, it got compiled without any warnings.
-
-The other solution is to merge a user API of these APIs in this patch. Patch 4
-and 5 introduces some APIs that uses pruss_cfg_read() / update() APIs. If we
-squash patch 5 (as patch 5 uses both read() and update() APIs where as patch 4
-only uses update() API) with this patch and make it a single patch where
-pruss_cfg_read() / update() is introduced as well as used, then this warning
-will be resolved.
-
-I still think making these APIs "inline" is a better option as these APIs
-implement very simple one line logic and can be made inline.
-
-Please let me know what do you think and which approach sounds better.
-
-
->> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
->> index 126b672b9b30..2fa7df667592 100644
->> --- a/drivers/soc/ti/pruss.c
->> +++ b/drivers/soc/ti/pruss.c
->> @@ -21,6 +21,7 @@
->>  #include <linux/regmap.h>
->>  #include <linux/remoteproc.h>
->>  #include <linux/slab.h>
->> +#include "pruss.h"
->>  
->>  /**
->>   * struct pruss_private_data - PRUSS driver private data
->> diff --git a/drivers/soc/ti/pruss.h b/drivers/soc/ti/pruss.h
->> new file mode 100644
->> index 000000000000..4626d5f6b874
->> --- /dev/null
->> +++ b/drivers/soc/ti/pruss.h
->> @@ -0,0 +1,112 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * PRU-ICSS Subsystem user interfaces
->> + *
->> + * Copyright (C) 2015-2023 Texas Instruments Incorporated - http://www.ti.com
->> + *	MD Danish Anwar <danishanwar@ti.com>
->> + */
->> +
->> +#ifndef _SOC_TI_PRUSS_H_
->> +#define _SOC_TI_PRUSS_H_
->> +
->> +#include <linux/bits.h>
->> +#include <linux/regmap.h>
->> +
->> +/*
->> + * PRU_ICSS_CFG registers
->> + * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
->> + */
->> +#define PRUSS_CFG_REVID         0x00
->> +#define PRUSS_CFG_SYSCFG        0x04
->> +#define PRUSS_CFG_GPCFG(x)      (0x08 + (x) * 4)
->> +#define PRUSS_CFG_CGR           0x10
->> +#define PRUSS_CFG_ISRP          0x14
->> +#define PRUSS_CFG_ISP           0x18
->> +#define PRUSS_CFG_IESP          0x1C
->> +#define PRUSS_CFG_IECP          0x20
->> +#define PRUSS_CFG_SCRP          0x24
->> +#define PRUSS_CFG_PMAO          0x28
->> +#define PRUSS_CFG_MII_RT        0x2C
->> +#define PRUSS_CFG_IEPCLK        0x30
->> +#define PRUSS_CFG_SPP           0x34
->> +#define PRUSS_CFG_PIN_MX        0x40
->> +
->> +/* PRUSS_GPCFG register bits */
->> +#define PRUSS_GPCFG_PRU_GPO_SH_SEL              BIT(25)
->> +
->> +#define PRUSS_GPCFG_PRU_DIV1_SHIFT              20
->> +#define PRUSS_GPCFG_PRU_DIV1_MASK               GENMASK(24, 20)
->> +
->> +#define PRUSS_GPCFG_PRU_DIV0_SHIFT              15
->> +#define PRUSS_GPCFG_PRU_DIV0_MASK               GENMASK(15, 19)
->> +
->> +#define PRUSS_GPCFG_PRU_GPO_MODE                BIT(14)
->> +#define PRUSS_GPCFG_PRU_GPO_MODE_DIRECT         0
->> +#define PRUSS_GPCFG_PRU_GPO_MODE_SERIAL         BIT(14)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_SB                  BIT(13)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_DIV1_SHIFT          8
->> +#define PRUSS_GPCFG_PRU_GPI_DIV1_MASK           GENMASK(12, 8)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_DIV0_SHIFT          3
->> +#define PRUSS_GPCFG_PRU_GPI_DIV0_MASK           GENMASK(7, 3)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_POSITIVE   0
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_NEGATIVE   BIT(2)
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE            BIT(2)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_MODE_MASK           GENMASK(1, 0)
->> +#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT          0
->> +
->> +#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT           26
->> +#define PRUSS_GPCFG_PRU_MUX_SEL_MASK            GENMASK(29, 26)
->> +
->> +/* PRUSS_MII_RT register bits */
->> +#define PRUSS_MII_RT_EVENT_EN                   BIT(0)
->> +
->> +/* PRUSS_SPP register bits */
->> +#define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
->> +#define PRUSS_SPP_PRU1_PAD_HP_EN                BIT(0)
->> +#define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
->> +
->> +/**
->> + * pruss_cfg_read() - read a PRUSS CFG sub-module register
->> + * @pruss: the pruss instance handle
->> + * @reg: register offset within the CFG sub-module
->> + * @val: pointer to return the value in
->> + *
->> + * Reads a given register within the PRUSS CFG sub-module and
->> + * returns it through the passed-in @val pointer
->> + *
->> + * Return: 0 on success, or an error code otherwise
->> + */
->> +static int pruss_cfg_read(struct pruss *pruss, unsigned int reg, unsigned int *val)
->> +{
->> +	if (IS_ERR_OR_NULL(pruss))
->> +		return -EINVAL;
->> +
->> +	return regmap_read(pruss->cfg_regmap, reg, val);
->> +}
->> +
->> +/**
->> + * pruss_cfg_update() - configure a PRUSS CFG sub-module register
->> + * @pruss: the pruss instance handle
->> + * @reg: register offset within the CFG sub-module
->> + * @mask: bit mask to use for programming the @val
->> + * @val: value to write
->> + *
->> + * Programs a given register within the PRUSS CFG sub-module
->> + *
->> + * Return: 0 on success, or an error code otherwise
->> + */
->> +static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->> +			    unsigned int mask, unsigned int val)
->> +{
->> +	if (IS_ERR_OR_NULL(pruss))
->> +		return -EINVAL;
->> +
->> +	return regmap_update_bits(pruss->cfg_regmap, reg, mask, val);
->> +}
->> +
->> +#endif  /* _SOC_TI_PRUSS_H_ */
->> -- 
->> 2.25.1
->>
-
--- 
-Thanks and Regards,
-Danish.
