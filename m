@@ -2,124 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B31D76D013F
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:32:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02C646D0157
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:35:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229862AbjC3KcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 06:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S230015AbjC3Kf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 06:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbjC3KcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:32:03 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED7A19F;
-        Thu, 30 Mar 2023 03:31:59 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 550331883A12;
-        Thu, 30 Mar 2023 10:31:57 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 3F89F2500389;
-        Thu, 30 Mar 2023 10:31:57 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 342579B403F6; Thu, 30 Mar 2023 10:31:57 +0000 (UTC)
-X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
-Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 821C49B403E4;
-        Thu, 30 Mar 2023 10:31:56 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 6/6] selftests: forwarding: add dynamic FDB
- test
-In-Reply-To: <ZCUuMosWbyq1pK8R@shredder>
-References: <20230318141010.513424-1-netdev@kapio-technology.com>
- <20230318141010.513424-7-netdev@kapio-technology.com>
- <ZBgdAo8mxwnl+pEE@shredder> <87a5zzh65p.fsf@kapio-technology.com>
- <ZCMYbRqd+qZaiHfu@shredder> <87fs9ollmn.fsf@kapio-technology.com>
- <ZCUuMosWbyq1pK8R@shredder>
-Date:   Thu, 30 Mar 2023 12:29:18 +0200
-Message-ID: <87mt3u7csh.fsf@kapio-technology.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229807AbjC3KfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:35:25 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E027C170C;
+        Thu, 30 Mar 2023 03:35:23 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7A2C81FEBF;
+        Thu, 30 Mar 2023 10:35:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1680172522; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gkIZ+XM+mZxqivNdtYPp+H6kD5za7YStD4JUihghJco=;
+        b=PHZkns74uCye98DCA/r8dxQW0mlpIVNtomLw4bBzAhGClfN0Fe5/yQ1PEfmCRloVNn4N7p
+        5rIsfvO2UwYfhwWu1nI98kriNhKwI9SSiHFmSvbup9nkOss0NsKQW1DQAYh+yCVMQbrzs9
+        Bn0a60havtQWsQw+XY/sPmrbNWj+YMo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1680172522;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gkIZ+XM+mZxqivNdtYPp+H6kD5za7YStD4JUihghJco=;
+        b=zetrntkdx62RC4gL1eDjmM4AT0cdLgRGb/YXcM2VQXZJPHaCbTTpv/5WdrFyGEoPluHIGR
+        qaOM4+5qeBuzuNCg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4AF71133E0;
+        Thu, 30 Mar 2023 10:35:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id V5eREeplJWQgLAAAMHmgww
+        (envelope-from <tiwai@suse.de>); Thu, 30 Mar 2023 10:35:22 +0000
+Date:   Thu, 30 Mar 2023 12:35:21 +0200
+Message-ID: <87edp6msra.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Sasha Neftin <sasha.neftin@intel.com>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [Intel-wired-lan] [REGRESSION] e1000e probe/link detection fails since 6.2 kernel
+In-Reply-To: <87wn2yn43q.wl-tiwai@suse.de>
+References: <87jzz13v7i.wl-tiwai@suse.de>
+        <652a9a96-f499-f31f-2a55-3c80b6ac9c75@molgen.mpg.de>
+        <ZCP5jOTNypwG4xK6@debian.me>
+        <87a5zwosd7.wl-tiwai@suse.de>
+        <20230329121232.7873ad95@kernel.org>
+        <87wn2yn43q.wl-tiwai@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=ISO-2022-JP
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 09:37, Ido Schimmel <idosch@nvidia.com> wrote:
-> On Tue, Mar 28, 2023 at 09:30:08PM +0200, Hans Schultz wrote:
->> 
->> Sorry, but I have sent you several emails telling you about the problems
->> I have with running the selftests due to changes in the phy etc. Maybe
->> you have just not received all those emails?
->> 
->> Have you checked spamfilters?
->> 
->> With the kernels now, I cannot even test with the software bridge and
->> selftests as the compile fails - probably due to changes in uapi headers
->> compared to what the packages my system uses expects.
->
-> My spam filters are fine. I saw your emails where you basically said
-> that you are too lazy to setup a VM to test your patches and that your
-> time is more valuable than mine, which is why I should be testing them.
-> Stop making your problems our problems. It's hardly the first time. If
-> you are unable to test your patches, then invest the time in fixing your
-> setup instead of submitting completely broken patches and making it our
-> problem to test and fix them. I refuse to invest time in reviewing /
-> testing / reworking your submissions as long as you insist on doing less
-> than the bare minimum.
->
-> Good luck
+On Thu, 30 Mar 2023 08:30:17 +0200,
+Takashi Iwai wrote:
+> 
+> On Wed, 29 Mar 2023 21:12:32 +0200,
+> Jakub Kicinski wrote:
+> > 
+> > On Wed, 29 Mar 2023 10:48:36 +0200 Takashi Iwai wrote:
+> > > On Wed, 29 Mar 2023 10:40:44 +0200,
+> > > Bagas Sanjaya wrote:
+> > > > 
+> > > > On Tue, Mar 28, 2023 at 04:39:01PM +0200, Paul Menzel wrote:  
+> > > > > Does openSUSE Tumbleweed make it easy to bisect the regression at least on
+> > > > > “rc level”? It be great if narrow it more down, so we know it for example
+> > > > > regressed in 6.2-rc7.
+> > > > >   
+> > > > 
+> > > > Alternatively, can you do bisection using kernel sources from Linus's
+> > > > tree (git required)?  
+> > > 
+> > > That'll be a last resort, if no one has idea at all :)
+> > 
+> > I had a quick look yesterday, there's only ~6 or so commits to e1000e.
+> > Should be a fairly quick bisection, hopefully?
+> 
+> *IFF* it's an e1000e-specific bug, right?
+> 
+> Through a quick glance, the only significant change in e1000e is the
+> commit 1060707e3809
+>     ptp: introduce helpers to adjust by scaled parts per million
+> 
+> Others are only for MTP/ADP and new devices, which must be irrelevant.
+> The tracing must be irrelevant, and the kmap change must be OK.
+> 
+> Can 1060707e3809 be the cause of such a bug?
 
-I never said or indicated that my time is more valuable than yours. I
-have a VM to run these things that some have spent countless hours to
-develop with the right tools etc installed and set up. Fixing that
-system will take quite many hours for me, so I am asking for some simple
-assistance from someone who already has a system running supporting the
-newest kernel.
+The bug reporter updated the entry and informed that this can be
+false-positive; the problem could be triggered with the older kernel
+out of sudden.  So he closed the bug as WORKSFORME.
 
-Alternatively if there is an open sourced system available that would be
-great.
+#regzbot invalid: Problems likely not in kernel changes
 
-As this patch-set is for the community and some companies that would
-like to use it and not for myself, I am asking for some help from the
-community with a task that when someone has the system in place should
-not take more than 15-20 minutes, maybe even less.
+
+thanks,
+
+Takashi
