@@ -2,185 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A42A6D1186
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 23:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1AA6D1193
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 23:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbjC3Vz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 17:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37964 "EHLO
+        id S230269AbjC3V5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 17:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbjC3VzZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 17:55:25 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520BBF772;
-        Thu, 30 Mar 2023 14:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1680213324; x=1711749324;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OjeCvB9tNeU8DjEsNgAC0pFUIzbXpFWwjPaeRcBgyjQ=;
-  b=piqIu2cf8ZWoqBKkXqzDK/pIcd9ktDJIaMz/22AKX73N6JjGsc3e+jYE
-   jS10Jtp+Sn3siCHmH9JiPtHhZ4pbSQ3p6J6hVrdD/slds1025h8nVuMDG
-   fJDEIelDjEcP5azqx9tvVg5apRE0C2uqwSKYNxdIlRHuAKfyGbOU7UaOw
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.98,306,1673913600"; 
-   d="scan'208";a="199450011"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-189d700f.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 21:55:21 +0000
-Received: from EX19MTAUWB002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-m6i4x-189d700f.us-west-2.amazon.com (Postfix) with ESMTPS id 52F6840D79;
-        Thu, 30 Mar 2023 21:55:19 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.25; Thu, 30 Mar 2023 21:55:19 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.106.100.11) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 30 Mar 2023 21:55:16 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <threeearcat@gmail.com>
-CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>, <kuniyu@amazon.com>
-Subject: Re: general protection fault in raw_seq_start
-Date:   Thu, 30 Mar 2023 14:55:07 -0700
-Message-ID: <20230330215507.56509-1-kuniyu@amazon.com>
+        with ESMTP id S230260AbjC3V5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 17:57:07 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B25F772;
+        Thu, 30 Mar 2023 14:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.de; s=s31663417;
+        t=1680213406; i=w_armin@gmx.de;
+        bh=ic4HTDK6Iq7x8nk9DY+eRr5Awk+6mr0CRuqgp5VhbNo=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=NC7q6t1NytDZ4r2LfYrF/5cs2/qtg/10P/yNJG2/ponjVp2nwCQn/rVGITR7EoGBC
+         0sjSC4lbtSJsNxJ22TIcDD7l+bkKsIOy4sRu9Bz6zw8p1FWeCE6bzNsxq5WZ3K6V0P
+         geVb0FXQHIjjNutCfEC8lNSUmmQfdOU9UT8El084BmTklPASjmi+RJ1QLeFpele39r
+         XgRO2i625tGTvQIe03CeAIJMXgpYjYxfIIvJFbJM58ZaSrgUc1D3vIddVsH3hHekBe
+         TFEtsCEuQ037c6lqncfeRrmvDuBn1b0aSX8RJk5zZUxWXP49/lYjZb5hhw6joapXXV
+         UEiQfvlL2PEjw==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1MORAU-1q4e0W31EE-00Py3d; Thu, 30 Mar 2023 23:56:46 +0200
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     stf_xl@wp.pl, helmut.schaa@googlemail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] wifi: rt2x00: Fix memory leak when handling surveys
+Date:   Thu, 30 Mar 2023 23:56:37 +0200
+Message-Id: <20230330215637.4332-1-W_Armin@gmx.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <ZCA2mGV_cmq7lIfV@dragonet>
-References: <ZCA2mGV_cmq7lIfV@dragonet>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.106.100.11]
-X-ClientProxiedBy: EX19D040UWB004.ant.amazon.com (10.13.138.91) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Sd3Km1kcwGR3YWvYoH7Brf3Mf42OOCdPaMAyUIuegDPaOkEgHLZ
+ 3ATsYBXV+20fb9FAygSTBM2ZZRb08WOmo/IorU9TiyLLfwrv+6662Ti0Wkc/XCQVz2Dqv8J
+ SSEO9AeT9i+CEmYTI8TrCKQAorad5JaEWc4GCvjMXA7xoEHPHujUH0M3phNK1ekE18l/61d
+ 4vWflekAZlGGBeK1Rhvrg==
+UI-OutboundReport: notjunk:1;M01:P0:C1Ld/vHPjbI=;HN0OG48kUP6d7QDjBqPSV51t7Eu
+ QuZSTC0i6slz1ZjJFe+gO1ebjuaIYCkc7Voq8GQewUJlnd84OhhkObDMtzfDASoy7SmARA1fu
+ BsFVdzqBNRAdIX8qQIrtR7Qp86gKW/QAhxR5mgtGmxRMuxoTbRQyCGQUG4pg95JOsjcj3l0zU
+ tdlYJCHZ5wepy4X8PRVD073krk9HJ8ntifuAGitOX9IsUogAZZC2lu0Yq2z9dXHq6/homuRZb
+ qccBMy07bTcFYs6gCQIJfAPoLALVHPQ2iNqeVydKIFo9/vO9PNnegyEou4fZJS7E7eU6AFG95
+ GadbvgmcQoSdVAU7Nwj5ZC+xevT/tlIVIUSAbuB6iitajDoXbCVkk653x40B6v6KIr4yYvR8c
+ gHg0OXr9xVUgYcQqR3umcZNoYszFZseYTHEQZ7+OnwT8C7pvgAg3s+h1X2HbJpugR9HNxut/k
+ mCC72u8pJLjyOY1HSEQjBTK9Xswo9pQsZAV8m0huxMXXEx9WGvq+yRWoPaVqAIzs8lHyr3bJE
+ PO8f97Ps2UxNG4Hs5cbTXfVbtDo9kkL9N23use5+wXd/PavBtSvxS98w78zFRrgqAnZ82U5xg
+ 1uLJaOtICZ5Tyj912xZn00KHM+hzQcfNI6w+yfkdOyjyAgOCAKBafSsyjlgbLsWIvMjjzyeN0
+ JW6dNikojG1jaZ+lP90IDk1+en2cBK6tl1nFXob6mrEulvT+VUc8BtmzDjevzO22/cuW3l1BC
+ CnErVBEq+5T/Of8WnCSyYDx+MmbRTacHlKMjc2nSrLMfNncmev4HInCm8AH6qzwedaXnqSu5y
+ RgDhSDS4N+3Yy47pqCuhZu2CkH2nZWNhdOwHd8UJyzjAKKUVkl6nK0t8E9ZMt2OF+0YL/EE/G
+ j3ghcBgMa80a/q2ex/OG9zpHRsRX1OoozF48ZS3ulOluKKBPfHRQRI5CdH7CHmklVakh3BISI
+ 5MPFgo6fuGqLS6bSY+Ovx8XQvus=
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   "Dae R. Jeong" <threeearcat@gmail.com>
-Date:   Sun, 26 Mar 2023 21:12:08 +0900
-> Hi,
-> 
-> We observed an issue "general protection fault in raw_seq_start"
-> during fuzzing.
-> 
-> Unfortunately, we have not found a reproducer for the crash yet. We
-> will inform you if we have any update on this crash.
-> Detailed crash information is attached below.
-> 
-> Best regards,
-> Dae R. Jeong
-> 
-> -----
-> 
-> - Kernel version
->   6.2
-> 
-> - Last executed input
->   unshare(0x40060200)
->   r0 = syz_open_procfs(0x0, &(0x7f0000002080)='net/raw\x00')
->   socket$inet_icmp_raw(0x2, 0x3, 0x1)
->   ppoll(0x0, 0x0, 0x0, 0x0, 0x0)
->   socket$inet_icmp_raw(0x2, 0x3, 0x1)
->   pread64(r0, &(0x7f0000000000)=""/10, 0xa, 0x10000000007f)
+When removing a rt2x00 device, its associated channel surveys
+are not freed, causing a memory leak observable with kmemleak:
 
-Thanks for reporting the issue.
+unreferenced object 0xffff9620f0881a00 (size 512):
+  comm "systemd-udevd", pid 2290, jiffies 4294906974 (age 33.768s)
+  hex dump (first 32 bytes):
+    70 44 12 00 00 00 00 00 92 8a 00 00 00 00 00 00  pD..............
+    00 00 00 00 00 00 00 00 ab 87 01 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffffb0ed858b>] __kmalloc+0x4b/0x130
+    [<ffffffffc1b0f29b>] rt2800_probe_hw+0xc2b/0x1380 [rt2800lib]
+    [<ffffffffc1a9496e>] rt2800usb_probe_hw+0xe/0x60 [rt2800usb]
+    [<ffffffffc1ae491a>] rt2x00lib_probe_dev+0x21a/0x7d0 [rt2x00lib]
+    [<ffffffffc1b3b83e>] rt2x00usb_probe+0x1be/0x980 [rt2x00usb]
+    [<ffffffffc05981e2>] usb_probe_interface+0xe2/0x310 [usbcore]
+    [<ffffffffb13be2d5>] really_probe+0x1a5/0x410
+    [<ffffffffb13be5c8>] __driver_probe_device+0x78/0x180
+    [<ffffffffb13be6fe>] driver_probe_device+0x1e/0x90
+    [<ffffffffb13be972>] __driver_attach+0xd2/0x1c0
+    [<ffffffffb13bbc57>] bus_for_each_dev+0x77/0xd0
+    [<ffffffffb13bd2a2>] bus_add_driver+0x112/0x210
+    [<ffffffffb13bfc6c>] driver_register+0x5c/0x120
+    [<ffffffffc0596ae8>] usb_register_driver+0x88/0x150 [usbcore]
+    [<ffffffffb0c011c4>] do_one_initcall+0x44/0x220
+    [<ffffffffb0d6134c>] do_init_module+0x4c/0x220
 
-It seems we need to use RCU variant in raw_get_first().
-I'll post a patch.
+Fix this by freeing the channel surveys on device removal.
 
----
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 3cf68695b40d..fe0d1ad20b35 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -957,7 +957,7 @@ static struct sock *raw_get_first(struct seq_file *seq, int bucket)
- 	for (state->bucket = bucket; state->bucket < RAW_HTABLE_SIZE;
- 			++state->bucket) {
- 		hlist = &h->ht[state->bucket];
--		sk_nulls_for_each(sk, hnode, hlist) {
-+		sk_nulls_for_each_rcu(sk, hnode, hlist) {
- 			if (sock_net(sk) == seq_file_net(seq))
- 				return sk;
- 		}
----
+Tested with a RT3070 based USB wireless adapter.
 
-Thanks,
-Kuniyuki
+Fixes: 5447626910f5 ("rt2x00: save survey for every channel visited")
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ drivers/net/wireless/ralink/rt2x00/rt2x00dev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c b/drivers/net/=
+wireless/ralink/rt2x00/rt2x00dev.c
+index 3a035afcf7f9..9a9cfd0ce402 100644
+=2D-- a/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c
+@@ -1091,6 +1091,7 @@ static void rt2x00lib_remove_hw(struct rt2x00_dev *r=
+t2x00dev)
+ 	}
 
+ 	kfree(rt2x00dev->spec.channels_info);
++	kfree(rt2x00dev->chan_survey);
+ }
 
-> 
-> - Crash report
-> general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-> CPU: 2 PID: 20952 Comm: syz-executor.0 Not tainted 6.2.0-g048ec869bafd-dirty #7
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-> RIP: 0010:read_pnet include/net/net_namespace.h:383 [inline]
-> RIP: 0010:sock_net include/net/sock.h:649 [inline]
-> RIP: 0010:raw_get_next net/ipv4/raw.c:974 [inline]
-> RIP: 0010:raw_get_idx net/ipv4/raw.c:986 [inline]
-> RIP: 0010:raw_seq_start+0x431/0x800 net/ipv4/raw.c:995
-> Code: ef e8 33 3d 94 f7 49 8b 6d 00 4c 89 ef e8 b7 65 5f f7 49 89 ed 49 83 c5 98 0f 84 9a 00 00 00 48 83 c5 c8 48 89 e8 48 c1 e8 03 <42> 80 3c 30 00 74 08 48 89 ef e8 00 3d 94 f7 4c 8b 7d 00 48 89 ef
-> RSP: 0018:ffffc9001154f9b0 EFLAGS: 00010206
-> RAX: 0000000000000005 RBX: 1ffff1100302c8fd RCX: 0000000000000000
-> RDX: 0000000000000028 RSI: ffffc9001154f988 RDI: ffffc9000f77a338
-> RBP: 0000000000000029 R08: ffffffff8a50ffb4 R09: fffffbfff24b6bd9
-> R10: fffffbfff24b6bd9 R11: 0000000000000000 R12: ffff88801db73b78
-> R13: fffffffffffffff9 R14: dffffc0000000000 R15: 0000000000000030
-> FS:  00007f843ae8e700(0000) GS:ffff888063700000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000055bb9614b35f CR3: 000000003c672000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  seq_read_iter+0x4c6/0x10f0 fs/seq_file.c:225
->  seq_read+0x224/0x320 fs/seq_file.c:162
->  pde_read fs/proc/inode.c:316 [inline]
->  proc_reg_read+0x23f/0x330 fs/proc/inode.c:328
->  vfs_read+0x31e/0xd30 fs/read_write.c:468
->  ksys_pread64 fs/read_write.c:665 [inline]
->  __do_sys_pread64 fs/read_write.c:675 [inline]
->  __se_sys_pread64 fs/read_write.c:672 [inline]
->  __x64_sys_pread64+0x1e9/0x280 fs/read_write.c:672
->  do_syscall_x64 arch/x86/entry/common.c:51 [inline]
->  do_syscall_64+0x4e/0xa0 arch/x86/entry/common.c:82
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x478d29
-> Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f843ae8dbe8 EFLAGS: 00000246 ORIG_RAX: 0000000000000011
-> RAX: ffffffffffffffda RBX: 0000000000791408 RCX: 0000000000478d29
-> RDX: 000000000000000a RSI: 0000000020000000 RDI: 0000000000000003
-> RBP: 00000000f477909a R08: 0000000000000000 R09: 0000000000000000
-> R10: 000010000000007f R11: 0000000000000246 R12: 0000000000791740
-> R13: 0000000000791414 R14: 0000000000791408 R15: 00007ffc2eb48a50
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:read_pnet include/net/net_namespace.h:383 [inline]
-> RIP: 0010:sock_net include/net/sock.h:649 [inline]
-> RIP: 0010:raw_get_next net/ipv4/raw.c:974 [inline]
-> RIP: 0010:raw_get_idx net/ipv4/raw.c:986 [inline]
-> RIP: 0010:raw_seq_start+0x431/0x800 net/ipv4/raw.c:995
-> Code: ef e8 33 3d 94 f7 49 8b 6d 00 4c 89 ef e8 b7 65 5f f7 49 89 ed 49 83 c5 98 0f 84 9a 00 00 00 48 83 c5 c8 48 89 e8 48 c1 e8 03 <42> 80 3c 30 00 74 08 48 89 ef e8 00 3d 94 f7 4c 8b 7d 00 48 89 ef
-> RSP: 0018:ffffc9001154f9b0 EFLAGS: 00010206
-> RAX: 0000000000000005 RBX: 1ffff1100302c8fd RCX: 0000000000000000
-> RDX: 0000000000000028 RSI: ffffc9001154f988 RDI: ffffc9000f77a338
-> RBP: 0000000000000029 R08: ffffffff8a50ffb4 R09: fffffbfff24b6bd9
-> R10: fffffbfff24b6bd9 R11: 0000000000000000 R12: ffff88801db73b78
-> R13: fffffffffffffff9 R14: dffffc0000000000 R15: 0000000000000030
-> FS:  00007f843ae8e700(0000) GS:ffff888063700000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f92ff166000 CR3: 000000003c672000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ static const struct ieee80211_tpt_blink rt2x00_tpt_blink[] =3D {
+=2D-
+2.30.2
+
