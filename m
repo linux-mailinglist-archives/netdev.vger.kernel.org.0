@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8747A6CFF71
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 11:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46B2E6CFF93
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 11:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbjC3JKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 05:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S229500AbjC3JPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 05:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbjC3JKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 05:10:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF4165AC;
-        Thu, 30 Mar 2023 02:10:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D9EE61F99;
-        Thu, 30 Mar 2023 09:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D0391C433EF;
-        Thu, 30 Mar 2023 09:10:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680167418;
-        bh=ymeU3o8/9PtiSs8Vgt+JPAOcdnOCe8xU/f65yNA3Nr8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VKBzjsXzDtCajcfNjW7LDQt0aXdN2NYsALF978kVb5EYiBE9Qxc06JgVk5MEYHYT6
-         YxyMZleDD0aZC1OskKUKnVHdvoUj7dDluQ9wdRrY0xGc+E8q9FYD6p8XFKTDFfFXQ8
-         DdBMWp3PZRmP8kjqukhrKd1eU3jHL4tKaLpz07xv6WpR4YIEQFbscoMr5pDODkaGD/
-         r/WGfEsQ7zDLEnx+Ra27je39Xkazr6Jfw7TMaRKgrSys9x8b1YDBtE/0kWITACuYGG
-         6SApGFSkjzP3I1awQHW1pYkHlm3co4Udy1NTDx8yCb3wRSqoijBzYZQBUzpMcFUc1j
-         GglCdxJ/xeVpw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF9F0E49FA7;
-        Thu, 30 Mar 2023 09:10:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229581AbjC3JPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 05:15:05 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6841725;
+        Thu, 30 Mar 2023 02:15:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680167704; x=1711703704;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g22zFmNySSWgZmeT+/AthuzFeH0QQevQ7c24N5MEm5U=;
+  b=NlOnyY069PBzNUgXa6OVMaGn/8JPVWc6ghLNM4OLIgDjPKp2kSfYV9ow
+   HgZbdLnmzYFioKkmjE95g+ChLy3cnn3HJ17fHjkuEcCFu9X6JeinasNUo
+   GjTABfRYrSsn1Yyr/kQJaKob/hKGryx2jkuMRDxxammlspA1xDFwbO+Rk
+   lttaD6WJenYM3FH6j/MZBhisK6PnGJP7GTrXVRr/t+SBuRws23KLv/LIk
+   u6KyTMXHxYFDv2elfZiaWOjR81eKnEWWE1OuKjrF6bf8y/Z0CPzUG6qCf
+   d+5RZ4UrEFX9S75Kn9nNi1wIRJIv5OrLf4BUMul2Fb+jOS+NK2XXDNDcu
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="325038851"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="325038851"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 02:15:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10664"; a="678125351"
+X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
+   d="scan'208";a="678125351"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by orsmga007.jf.intel.com with ESMTP; 30 Mar 2023 02:14:47 -0700
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch
+Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
+Subject: [PATCH net v5 0/3] Fix PHY handle no longer parsing
+Date:   Thu, 30 Mar 2023 17:14:01 +0800
+Message-Id: <20230330091404.3293431-1-michael.wei.hong.sit@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/3] fix header length on skb merging
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168016741871.21198.8299198857300036519.git-patchwork-notify@kernel.org>
-Date:   Thu, 30 Mar 2023 09:10:18 +0000
-References: <0683cc6e-5130-484c-1105-ef2eb792d355@sberdevices.ru>
-In-Reply-To: <0683cc6e-5130-484c-1105-ef2eb792d355@sberdevices.ru>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        bobby.eshleman@bytedance.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
-        oxffffaa@gmail.com, avkrasnov@sberdevices.ru
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=1.3 required=5.0 tests=AC_FROM_MANY_DOTS,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+After the fixed link support was introduced, it is observed that PHY
+no longer attach to the MAC properly. So we introduce a helper
+function to determine if the MAC should expect to connect to a PHY
+and proceed accordingly.
 
-This series was applied to netdev/net.git (main)
-by Paolo Abeni <pabeni@redhat.com>:
+Michael Sit Wei Hong (3):
+  net: phylink: add phylink_expects_phy() method
+  net: stmmac: check if MAC needs to attach to a PHY
+  net: stmmac: remove redundant fixup to support fixed-link mode
 
-On Tue, 28 Mar 2023 14:30:10 +0300 you wrote:
-> Hello,
-> 
-> this patchset fixes appending newly arrived skbuff to the last skbuff of
-> the socket's queue during rx path. Problem fires when we are trying to
-> append data to skbuff which was already processed in dequeue callback
-> at least once. Dequeue callback calls function 'skb_pull()' which changes
-> 'skb->len'. In current implementation 'skb->len' is used to update length
-> in header of last skbuff after new data was copied to it. This is bug,
-> because value in header is used to calculate 'rx_bytes'/'fwd_cnt' and
-> thus must be constant during skbuff lifetime. Here is example, we have
-> two skbuffs: skb0 with length 10 and skb1 with length 4.
-> 
-> [...]
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c |  1 -
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 +++-
+ drivers/net/phy/phylink.c                     | 19 +++++++++++++++++++
+ include/linux/phylink.h                       |  1 +
+ 4 files changed, 23 insertions(+), 2 deletions(-)
 
-Here is the summary with links:
-  - [net,v2,1/3] virtio/vsock: fix header length on skb merging
-    https://git.kernel.org/netdev/net/c/f7154d967bc4
-  - [net,v2,2/3] virtio/vsock: WARN_ONCE() for invalid state of socket
-    https://git.kernel.org/netdev/net/c/b8d2f61fdf2a
-  - [net,v2,3/3] test/vsock: new skbuff appending test
-    https://git.kernel.org/netdev/net/c/25209a3209ec
-
-You are awesome, thank you!
+v2: Initialize fwnode before using the variable
+v3: Introduced phylink_expects_phy() method as suggested by Russell King
+    remove xpcs_an_inband fixup instead of moving the fixed-link check
+    as suggested by Andrew Lunn
+v4: Modify phylink_expects_phy() to check for more complete set of
+    conditions when no PHY is needed and return false if met.
+v5: Enhance phylink_expects_phy() description.
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
