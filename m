@@ -2,90 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 784BA6CF91E
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 04:27:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C605F6CF926
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 04:33:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbjC3C1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 22:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53866 "EHLO
+        id S229530AbjC3Cds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 22:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjC3C1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 22:27:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974984C2D
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 19:27:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 421A3B82583
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 02:27:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A712C433D2;
-        Thu, 30 Mar 2023 02:27:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680143254;
-        bh=ZsDWsVt11/2IHfBwYZ9LW7kROO2uoVu9ogqnpHpawVg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GP8Uw23HJL4hDn9JQ920QdCxrxc526K7ryAK6KEE8oRJV5n7tkJYhWFyaHT/LyYLb
-         QkMk7v0o3YjRA0No9OedTTLQHhcjsssiYFiY59xHmTgwdVpNH7h1I+XBuDo9ijM4am
-         0WkiU1dNYxaPTyKDNpgMas7P/heQ35Clwd3oS1SYc5lQPednrqIeLLKuDmDpDrGca9
-         U5rv1STRhu9RnMKLP4ZiySPTXatvOtbvGH4c0bVJ+Hn4lbVnhco4jDm8rOYK9KNGG9
-         har/VNSnL2hAhY/Xr2GxY5biSQQGiGr/fBV0kWLkyBH4QINSj53YdFUakVSWWMiPNS
-         yWIUsIkm/L8Yw==
-Date:   Wed, 29 Mar 2023 19:27:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <shannon.nelson@amd.com>
-Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
-        drivers@pensando.io, leon@kernel.org, jiri@resnulli.us
-Subject: Re: [PATCH v6 net-next 01/14] pds_core: initial framework for
- pds_core PF driver
-Message-ID: <20230329192733.7473953c@kernel.org>
-In-Reply-To: <45c28c76-688c-5f49-4a30-f6cb6eab0dce@amd.com>
-References: <20230324190243.27722-1-shannon.nelson@amd.com>
-        <20230324190243.27722-2-shannon.nelson@amd.com>
-        <20230325163952.0eb18d3b@kernel.org>
-        <0e4411a3-a25c-4369-3528-5757b42108e1@amd.com>
-        <20230327174347.0246ff3d@kernel.org>
-        <822ec781-ce1e-35ef-d448-a3078f68c04f@amd.com>
-        <20230328151700.526ea042@kernel.org>
-        <45c28c76-688c-5f49-4a30-f6cb6eab0dce@amd.com>
+        with ESMTP id S229461AbjC3Cdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 22:33:47 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407C24C2F
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 19:33:46 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Pn6sk0xR9zKpyv;
+        Thu, 30 Mar 2023 10:33:14 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 30 Mar
+ 2023 10:33:43 +0800
+Subject: Re: [PATCH net-next 4/4] net: optimize ____napi_schedule() to avoid
+ extra NET_RX_SOFTIRQ
+To:     Eric Dumazet <edumazet@google.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Xing <kernelxing@tencent.com>, <netdev@vger.kernel.org>,
+        <eric.dumazet@gmail.com>
+References: <20230328235021.1048163-1-edumazet@google.com>
+ <20230328235021.1048163-5-edumazet@google.com>
+ <fa860d02-0310-2666-1043-6909dc68ea01@huawei.com>
+ <CANn89iLmugenUSDAQT9ryHTG9tRuKUfYgc8OqPMQwVv-1-ajNg@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <8610abc4-65c6-6808-e5d4-c2da8083595a@huawei.com>
+Date:   Thu, 30 Mar 2023 10:33:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <CANn89iLmugenUSDAQT9ryHTG9tRuKUfYgc8OqPMQwVv-1-ajNg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Mar 2023 13:53:23 -0700 Shannon Nelson wrote:
-> The devlink alloc and registration are obviously a part of the probe and=
-=20
-> thus device control setup, so I=E2=80=99m not sure why this is an issue.
->=20
-> As is suggested in coding style, the smaller functions make for easier=20
-> reading, and keeps the related locking in a nice little package.  Having=
-=20
-> the devlink registration code gathered in one place in the devlink.c=20
-> file seems to follow most conventions, which then allows the helper=20
-> functions to be static to that file.  This seems to be what about half=20
-> the drivers that use devlink have chosen to do.
+On 2023/3/29 23:47, Eric Dumazet wrote:
+> On Wed, Mar 29, 2023 at 2:47 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2023/3/29 7:50, Eric Dumazet wrote:
+>>> ____napi_schedule() adds a napi into current cpu softnet_data poll_list,
+>>> then raises NET_RX_SOFTIRQ to make sure net_rx_action() will process it.
+>>>
+>>> Idea of this patch is to not raise NET_RX_SOFTIRQ when being called indirectly
+>>> from net_rx_action(), because we can process poll_list from this point,
+>>> without going to full softirq loop.
+>>>
+>>> This needs a change in net_rx_action() to make sure we restart
+>>> its main loop if sd->poll_list was updated without NET_RX_SOFTIRQ
+>>> being raised.
+>>>
+>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>>> Cc: Jason Xing <kernelxing@tencent.com>
+>>> ---
+>>>  net/core/dev.c | 22 ++++++++++++++++++----
+>>>  1 file changed, 18 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/net/core/dev.c b/net/core/dev.c
+>>> index f34ce93f2f02e7ec71f5e84d449fa99b7a882f0c..0c4b21291348d4558f036fb05842dab023f65dc3 100644
+>>> --- a/net/core/dev.c
+>>> +++ b/net/core/dev.c
+>>> @@ -4360,7 +4360,11 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+>>>       }
+>>>
+>>>       list_add_tail(&napi->poll_list, &sd->poll_list);
+>>> -     __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>>> +     /* If not called from net_rx_action()
+>>> +      * we have to raise NET_RX_SOFTIRQ.
+>>> +      */
+>>> +     if (!sd->in_net_rx_action)
+>>
+>> It seems sd->in_net_rx_action may be read/writen by different CPUs at the same
+>> time, does it need something like READ_ONCE()/WRITE_ONCE() to access
+>> sd->in_net_rx_action?
+> 
+> You probably missed the 2nd patch, explaining the in_net_rx_action is
+> only read and written by the current (owning the percpu var) cpu.
+> 
+> Have you found a caller that is not providing to ____napi_schedule( sd
+> = this_cpu_ptr(&softnet_data)) ?
 
-It is precisely the painful experience of dealing with those drivers
-when refactoring devlink code which makes me ask you to do it right.
+You are right.
 
-> Sure, I could move that function into main.c and make the helper=20
-> functions more public if that is what you=E2=80=99re looking for.  This s=
-eems to=20
-> be the choice for a few of the other drivers.
->=20
-> Or are you looking to have all of the devlink.c code get rolled into main=
-.c?
+The one small problem I see is that ____napi_schedule() call by a irq handle
+may preempt the running net_rx_action() in the current cpu, I am not sure if
+it worth handling, given that it is expected that the irq should be disabled
+when net_rx_action() is running?
+Do we need to protect against buggy hw or unbehaved driver?
 
-Not all of the code, but don't wrap parts of probe/remove into
-out-of-sight helpers. It will lead to other devlink code collecting
-in the same functions regardless of whether it's the right stage of=20
-initialization. Having devlink.c as an entry point for the ops is=20
-perfectly fine, OTOH.
+> 
+> 
+> 
+>>
+>>> +             __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>>>  }
+>>>
+>>>  #ifdef CONFIG_RPS
+>>> @@ -6648,6 +6652,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+>>>       LIST_HEAD(list);
+>>>       LIST_HEAD(repoll);
+>>>
+>>> +start:
+>>>       sd->in_net_rx_action = true;
+>>>       local_irq_disable();
+>>>       list_splice_init(&sd->poll_list, &list);
+>>> @@ -6659,9 +6664,18 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+>>>               skb_defer_free_flush(sd);
+>>>
+>>>               if (list_empty(&list)) {
+>>> -                     sd->in_net_rx_action = false;
+>>> -                     if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
+>>> -                             goto end;
+>>> +                     if (list_empty(&repoll)) {
+>>> +                             sd->in_net_rx_action = false;
+>>> +                             barrier();
+>>
+>> Do we need a stronger barrier to prevent out-of-order execution
+>> from cpu?
+> 
+> We do not need more than barrier() to make sure local cpu wont move this
+> write after the following code.
+
+Is there any reason why we need the barrier() if we are not depending
+on how list_empty() is coded?
+It seems not obvious to me at least:)
+
+> 
+> It should not, even without the barrier(), because of the way
+> list_empty() is coded,
+> but a barrier() makes things a bit more explicit.
+
+In that case, a comment explaining that may help a lot.
+
+Thanks.
+
+> 
+>> Do we need a barrier between list_add_tail() and sd->in_net_rx_action
+>> checking in ____napi_schedule() to pair with the above barrier?
+> 
+> I do not think so.
+> 
+> While in ____napi_schedule(), sd->in_net_rx_action is stable
+> because we run with hardware IRQ masked.
+> 
+> Thanks.
+> 
+> 
+> 
