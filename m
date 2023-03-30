@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADEF06D0EAD
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 21:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82416D0EA9
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 21:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbjC3TYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 15:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
+        id S232078AbjC3TYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 15:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231596AbjC3TXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 15:23:44 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2058.outbound.protection.outlook.com [40.107.102.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA749CA21
+        with ESMTP id S231558AbjC3TXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 15:23:42 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2057.outbound.protection.outlook.com [40.107.212.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAC2E3A5
         for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 12:23:39 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lgdW2ugcXnK9ObjII//64leqKaUUVGVUSVR9Eq1KuudXT0bgzzAMU7Xt3kMJ1myl/kCy1F01X7aBaOB8nA8ccatwkZpUCI6DTLpvzvP0sderYcdYaVLNt7gBR6RcCaviJWIFEOvAcpg45llMUGuUuBChi3UtSKPGr0Ce8ItLQYuZrHGjmvdg5zncR9V7I3ueOiY9/2LP6udloCfI5cFfRaVWkQSJrJgsS/AHPgXrB9jp3ikfYuUNMsBbEJyYgAHGzPw9f8hyHKmDZ9o+TISSzmBIDaMxnUKFAcPArfGgkUi0HfNK752laTouLDiBBvLRnjKETSOTVtS4FMxhF22TVA==
+ b=cu5jPgikd3zms9hK9ug164OjXyJlAu3eewxemm2essFndhhculempcKAhMo8tx3r1LoCBzfKD3u5S47RNCZiVOt418ioXUIqxwMGY0Q18I7LAksJXNVeKsYRksgzc9mJExX2cwcMiJlkt5wxMdfU0RPaj1urrFaCwJJazYIpCgFUTbdYf3zNlw2E5tEPawlAh/nFz3sukmmo4iAHhTtfLDC4GvRbCFCPCpbpZpiIFpGdXMf3P2141XlQeErlGQAdYs7I3T9I46QxX4A2stwY+zdVN03gxV8zPZpa0D/rXg5rfLZ+x7ymK6ErnFE2rebuzGj6k+iYB/WmbozovAOdJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3zSqZeUH/n4pfJ/2hc2A86NpYiziJQxvn+Tv+fxobtI=;
- b=ZkID6QaWHqG6UwmUqiyx66/G9IC9bt+nEwp9XeGPQNR0iRi0Uzt/W9tn+P+IaYOwHc2xaIvcito5d0bXuHJNsdosRRSof87uFBboAbC/94i5jehqn3Wzb2kZtOQSzfzubjW6a8Qgj6yBdEOLtKg+2waykvlUqsQvjqIVoum4irGDjLk1GiIsVDGNDSMqnf/T+QDr5deqTdQZJCRmCpgmdA22uVRAePdSIDxfQ/8f+5bBNTllNbL/WNqq4asur6jGBBwFiSCJ5BWmpggBvaBRxqpGybZkAHKzhjQtuMJhpo5fwfUjR3wIs0IXXoKOtfSCglx6hCjxNWrN7KsLqH4JeQ==
+ bh=1HzbvJeGkpHPb27Mrl1mBU+qGOsxG5I1t0kp0czj4Zs=;
+ b=MsbpKGo3/TRMMeA5s7u43KPB1pfv6Qw0+SFdjbu3H6tIMm2krQc1ziXab40sFpb4+ksntWaTwgzBN5jCnEI6YsWwM10f7YG4Cn5lIEvrm/xZNKV1D6Ce/KrdS0SNpYVSV32hOArZQLFWKi8IYILW43vMDrmk5b3a4Apyb63WKx7SskE0Wsp7mGdYM4GX60wUFS2YSeiSf1kOfyURxK0j/Sp22R1a9oJaph3hcYLQ6q/sMAAwgFDlb/HdUzH199Up8MleMI3MVUFWAYCGaQBQD+fMbsZoegaWQv76tOUwJJ7l4lalqT+3QLDM3A11GM7PrX6zT3/35jyla8MSownFyQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3zSqZeUH/n4pfJ/2hc2A86NpYiziJQxvn+Tv+fxobtI=;
- b=qWtKua2HxWvo+Fu6b6TlEXlwi+Hz4PO+MGA29cp+m6W/Rc1KXJ8n8/1RnjQaFwbYSW0m9ZROuZMlkWCQMmjLH2H8m6fM4CKW5yZ0P0w7wHkoVrZGXFofxhxKGR8/+/fyCzfHU7w5eRVlkpZXJDc9iyyrUWtIA+aN26tmitejo8s=
-Received: from MW4PR03CA0032.namprd03.prod.outlook.com (2603:10b6:303:8e::7)
- by LV2PR12MB5967.namprd12.prod.outlook.com (2603:10b6:408:170::14) with
+ bh=1HzbvJeGkpHPb27Mrl1mBU+qGOsxG5I1t0kp0czj4Zs=;
+ b=2VqhvDjGJ0/e9R5tgxLcis2RN1TtU1Q0vafABoPCYSK5mLm6nnzlpTPYTh8JqsHZuCvrEFDemC3gEBkkchulsP2i+c5lLBgIh8AKGLe11q/VjIBo5nZFuV1jAayF1/JnrYBOcvQmzub/P8lnrUh/O2Z+t7Anoxa3oULWuGCuCTY=
+Received: from MW4PR03CA0056.namprd03.prod.outlook.com (2603:10b6:303:8e::31)
+ by SJ1PR12MB6268.namprd12.prod.outlook.com (2603:10b6:a03:455::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Thu, 30 Mar
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Thu, 30 Mar
  2023 19:23:36 +0000
 Received: from CO1NAM11FT114.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8e:cafe::7b) by MW4PR03CA0032.outlook.office365.com
- (2603:10b6:303:8e::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22 via Frontend
+ (2603:10b6:303:8e:cafe::a5) by MW4PR03CA0056.outlook.office365.com
+ (2603:10b6:303:8e::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20 via Frontend
  Transport; Thu, 30 Mar 2023 19:23:36 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
@@ -48,18 +48,18 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  CO1NAM11FT114.mail.protection.outlook.com (10.13.174.103) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6254.22 via Frontend Transport; Thu, 30 Mar 2023 19:23:35 +0000
+ 15.20.6254.22 via Frontend Transport; Thu, 30 Mar 2023 19:23:36 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 30 Mar
- 2023 14:23:33 -0500
+ 2023 14:23:34 -0500
 From:   Shannon Nelson <shannon.nelson@amd.com>
 To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
         <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
 CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH v7 net-next 05/14] pds_core: set up device and adminq
-Date:   Thu, 30 Mar 2023 12:23:03 -0700
-Message-ID: <20230330192313.62018-6-shannon.nelson@amd.com>
+Subject: [PATCH v7 net-next 06/14] pds_core: Add adminq processing and commands
+Date:   Thu, 30 Mar 2023 12:23:04 -0700
+Message-ID: <20230330192313.62018-7-shannon.nelson@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230330192313.62018-1-shannon.nelson@amd.com>
 References: <20230330192313.62018-1-shannon.nelson@amd.com>
@@ -70,23 +70,23 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT114:EE_|LV2PR12MB5967:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2daefa99-85a2-4c43-859e-08db3154423f
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT114:EE_|SJ1PR12MB6268:EE_
+X-MS-Office365-Filtering-Correlation-Id: f76a17bb-5422-4a11-91d5-08db315442af
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KZoiuo3Nh1BT3YATACjjNoWHZkfvNn0tIRBZBBDiq+n6o4Ct2/FHBIDsDOEY3bK0+7WlKvUNNtRRezhb4xrcIOkrqCk5K3mtrd624N5ZcNoj0+EtWwF92KwPOQbDsmz7AewblLDbqmxU8laA6DBuItalMhSpGZcov2ZuIa4ttWrGi9KqXilfs7N84IYu/vwmBRRxppnvnGu58DfHyGwJqssakJu62YEpEiXtwoef5YmYRoos5C3pfMwWcKJwk/PegXYznmvtqCUF+4133ZD5VxiOcooZWqujIhe/yrIjQFpO2jWv08rJxeo534Lda+AEH5pGNtqL1D+v8Lo3lkqOY6eUW+HgkERaUSehgjxNudnG71uAha4wwo7W05vOs2w5xFOQ+NOjNS369qfVTRYa7Ie7K4fcBFPmqyytzzchfnRGVHFb5IqDO16XzkSqRNi83M0EoMCef9dscPrQnZkv8eY5JcOgwH3hCC3+7EJCVXe5QHmZcdgAWT0u6GjGy2Wfl+rJI94K15m7bQ/JcYu8A5HVtTFR+wJP+mIRmk4OAVT4+RJms3psAVnlw9ODDqpt7JppqTHzfDG/IquwFYe8AzEKv0xhLNw7LkkZeOe9ux86ytAzueIu6elcmsrpROZdnp4JxzY4K9g2M1EBHPq0FPufg+vQFaP3YZuAfX38Feg6PXEEz6YW9pjJCoizoqhI7jwaiWkBl4kBnoJBjb7R74r2gkodyCHiRMWOKd3AuEQ=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(346002)(39860400002)(376002)(451199021)(46966006)(36840700001)(40470700004)(26005)(336012)(16526019)(1076003)(186003)(83380400001)(6666004)(47076005)(2616005)(426003)(316002)(54906003)(110136005)(70206006)(41300700001)(8676002)(70586007)(36860700001)(4326008)(44832011)(81166007)(356005)(5660300002)(2906002)(30864003)(8936002)(82740400003)(478600001)(82310400005)(36756003)(86362001)(40460700003)(40480700001)(36900700001)(579004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: NBkWfoNzLVjAX8bHZPj+81d9tWKyMBlN6NYTEOEqhg1x3rEMVqOMnbFf3ZV++uLXwfnIiMadTemOn/6QBBUqf5KmnwhMs7U++cmdC1UjbU0BVDuLQ01OBYZtUA0pS7973VqxW+pwg5No7r6JTg7wlIiEjS5OFM4h1E0q993kRNw03JlMMx0V9y9D9PgF0NyEvlEFx7OYaT7fS3DIbU5a92PGkeHOd7zZslFaaTPrykCzQe6rI2AK+moYy3tfhq/5O4XN70jgPc7vZzR/Tt9Hejw6NLSPO7jzJYcr6x+DuT/h7cBjgILE/Z00UkePCIim8PYZcGAksdanmCYlRfdiE02amUBu30ZtPtWi031dDcytG6w1Q4Ct6FhKvRpWuC7M5tdnH9dyTElLjQsuKbfx8b9oVvU6ocFkpr9ceDuSVc1ZS0kMLA6v7F3uX4J+LBMQ44TaqzRs02+m2+xfPz9HWJh2DHnjbzXUP6lOREJmo31AGqlSbkRh/eNArFznBHHxMFv6Y2WPt4L6TSMU9UnN2AU3TpxLSfOurUHu/f2229J0Bx1OWtRyUQKBdXyxZ0ckZR13Legkz2Be+67kbSpng2T0NGWaNZqQnyBrOfGEVcfHrrjPuY/5jgLAbx+2IlyNoQm+24eQmYOO3BfsngcMVNYTcVAonszSEPrZ/u/6HI4q84+F0uc+X8d0ea6GsWtyloSsCA1ReijbBpJjl98le3TWo4bGTuect1dYlpccHDc=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(396003)(346002)(376002)(136003)(451199021)(46966006)(40470700004)(36840700001)(83380400001)(426003)(336012)(2616005)(26005)(47076005)(6666004)(478600001)(16526019)(186003)(41300700001)(82740400003)(36860700001)(54906003)(70586007)(4326008)(8676002)(70206006)(1076003)(356005)(81166007)(2906002)(44832011)(5660300002)(82310400005)(8936002)(36756003)(86362001)(40460700003)(40480700001)(110136005)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 19:23:35.9967
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 19:23:36.7154
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2daefa99-85a2-4c43-859e-08db3154423f
+X-MS-Exchange-CrossTenant-Network-Message-Id: f76a17bb-5422-4a11-91d5-08db315442af
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT114.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5967
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6268
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
@@ -97,1604 +97,371 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set up the basic adminq and notifyq services.  These are used
-mostly by the client drivers for feature configuration.
+Add the service routines for submitting and processing
+the adminq messages and for handling notifyq events.
 
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
 ---
- drivers/net/ethernet/amd/pds_core/core.c    | 444 +++++++++++++-
- drivers/net/ethernet/amd/pds_core/core.h    | 154 +++++
- drivers/net/ethernet/amd/pds_core/debugfs.c |  76 +++
- drivers/net/ethernet/amd/pds_core/devlink.c |  53 ++
- drivers/net/ethernet/amd/pds_core/main.c    |  17 +-
- include/linux/pds/pds_adminq.h              | 637 ++++++++++++++++++++
- 6 files changed, 1377 insertions(+), 4 deletions(-)
- create mode 100644 include/linux/pds/pds_adminq.h
+ drivers/net/ethernet/amd/pds_core/Makefile |   1 +
+ drivers/net/ethernet/amd/pds_core/adminq.c | 289 +++++++++++++++++++++
+ drivers/net/ethernet/amd/pds_core/core.c   |  11 -
+ include/linux/pds/pds_adminq.h             |   8 +
+ 4 files changed, 298 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/net/ethernet/amd/pds_core/adminq.c
 
-diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
-index a9918c34018f..09c9bd8bf477 100644
---- a/drivers/net/ethernet/amd/pds_core/core.c
-+++ b/drivers/net/ethernet/amd/pds_core/core.c
-@@ -1,10 +1,370 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright(c) 2023 Advanced Micro Devices, Inc */
+diff --git a/drivers/net/ethernet/amd/pds_core/Makefile b/drivers/net/ethernet/amd/pds_core/Makefile
+index eaca8557ba66..ef76dcd7fccd 100644
+--- a/drivers/net/ethernet/amd/pds_core/Makefile
++++ b/drivers/net/ethernet/amd/pds_core/Makefile
+@@ -6,6 +6,7 @@ obj-$(CONFIG_PDS_CORE) := pds_core.o
+ pds_core-y := main.o \
+ 	      devlink.o \
+ 	      dev.o \
++	      adminq.o \
+ 	      core.o
  
-+#include <linux/pci.h>
-+#include <linux/vmalloc.h>
+ pds_core-$(CONFIG_DEBUG_FS) += debugfs.o
+diff --git a/drivers/net/ethernet/amd/pds_core/adminq.c b/drivers/net/ethernet/amd/pds_core/adminq.c
+new file mode 100644
+index 000000000000..f9fb04308eff
+--- /dev/null
++++ b/drivers/net/ethernet/amd/pds_core/adminq.c
+@@ -0,0 +1,289 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2023 Advanced Micro Devices, Inc */
 +
- #include "core.h"
- 
++#include "core.h"
++
++struct pdsc_wait_context {
++	struct pdsc_qcq *qcq;
++	struct completion wait_completion;
++};
++
++static int pdsc_process_notifyq(struct pdsc_qcq *qcq)
++{
++	union pds_core_notifyq_comp *comp;
++	struct pdsc *pdsc = qcq->pdsc;
++	struct pdsc_cq *cq = &qcq->cq;
++	struct pdsc_cq_info *cq_info;
++	int nq_work = 0;
++	u64 eid;
++
++	cq_info = &cq->info[cq->tail_idx];
++	comp = cq_info->comp;
++	eid = le64_to_cpu(comp->event.eid);
++	while (eid > pdsc->last_eid) {
++		u16 ecode = le16_to_cpu(comp->event.ecode);
++
++		switch (ecode) {
++		case PDS_EVENT_LINK_CHANGE:
++			dev_info(pdsc->dev, "NotifyQ LINK_CHANGE ecode %d eid %lld\n",
++				 ecode, eid);
++			break;
++
++		case PDS_EVENT_RESET:
++			dev_info(pdsc->dev, "NotifyQ RESET ecode %d eid %lld\n",
++				 ecode, eid);
++			break;
++
++		case PDS_EVENT_XCVR:
++			dev_info(pdsc->dev, "NotifyQ XCVR ecode %d eid %lld\n",
++				 ecode, eid);
++			break;
++
++		default:
++			dev_info(pdsc->dev, "NotifyQ ecode %d eid %lld\n",
++				 ecode, eid);
++			break;
++		}
++
++		pdsc->last_eid = eid;
++		cq->tail_idx = (cq->tail_idx + 1) & (cq->num_descs - 1);
++		cq_info = &cq->info[cq->tail_idx];
++		comp = cq_info->comp;
++		eid = le64_to_cpu(comp->event.eid);
++
++		nq_work++;
++	}
++
++	qcq->accum_work += nq_work;
++
++	return nq_work;
++}
++
++void pdsc_process_adminq(struct pdsc_qcq *qcq)
++{
++	union pds_core_adminq_comp *comp;
++	struct pdsc_queue *q = &qcq->q;
++	struct pdsc *pdsc = qcq->pdsc;
++	struct pdsc_cq *cq = &qcq->cq;
++	struct pdsc_q_info *q_info;
++	unsigned long irqflags;
++	int nq_work = 0;
++	int aq_work = 0;
++	int credits;
++
++	/* Don't process AdminQ when shutting down */
++	if (pdsc->state & BIT_ULL(PDSC_S_STOPPING_DRIVER)) {
++		dev_err(pdsc->dev, "%s: called while PDSC_S_STOPPING_DRIVER\n",
++			__func__);
++		return;
++	}
++
++	/* Check for NotifyQ event */
++	nq_work = pdsc_process_notifyq(&pdsc->notifyqcq);
++
++	/* Check for empty queue, which can happen if the interrupt was
++	 * for a NotifyQ event and there are no new AdminQ completions.
++	 */
++	if (q->tail_idx == q->head_idx)
++		goto credits;
++
++	/* Find the first completion to clean,
++	 * run the callback in the related q_info,
++	 * and continue while we still match done color
++	 */
++	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
++	comp = cq->info[cq->tail_idx].comp;
++	while (pdsc_color_match(comp->color, cq->done_color)) {
++		q_info = &q->info[q->tail_idx];
++		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
++
++		/* Copy out the completion data */
++		memcpy(q_info->dest, comp, sizeof(*comp));
++
++		complete_all(&q_info->wc->wait_completion);
++
++		if (cq->tail_idx == cq->num_descs - 1)
++			cq->done_color = !cq->done_color;
++		cq->tail_idx = (cq->tail_idx + 1) & (cq->num_descs - 1);
++		comp = cq->info[cq->tail_idx].comp;
++
++		aq_work++;
++	}
++	spin_unlock_irqrestore(&pdsc->adminq_lock, irqflags);
++
++	qcq->accum_work += aq_work;
++
++credits:
++	/* Return the interrupt credits, one for each completion */
++	credits = nq_work + aq_work;
++	if (credits)
++		pds_core_intr_credits(&pdsc->intr_ctrl[qcq->intx],
++				      credits,
++				      PDS_CORE_INTR_CRED_REARM);
++}
++
 +void pdsc_work_thread(struct work_struct *work)
 +{
-+	/* stub */
++	struct pdsc_qcq *qcq = container_of(work, struct pdsc_qcq, work);
++
++	pdsc_process_adminq(qcq);
 +}
 +
 +irqreturn_t pdsc_adminq_isr(int irq, void *data)
 +{
-+	/* stub */
++	struct pdsc_qcq *qcq = data;
++	struct pdsc *pdsc = qcq->pdsc;
++
++	/* Don't process AdminQ when shutting down */
++	if (pdsc->state & BIT_ULL(PDSC_S_STOPPING_DRIVER)) {
++		dev_err(pdsc->dev, "%s: called while PDSC_S_STOPPING_DRIVER\n",
++			__func__);
++		return IRQ_HANDLED;
++	}
++
++	queue_work(pdsc->wq, &qcq->work);
++	pds_core_intr_mask(&pdsc->intr_ctrl[irq], PDS_CORE_INTR_MASK_CLEAR);
++
 +	return IRQ_HANDLED;
 +}
 +
-+void pdsc_intr_free(struct pdsc *pdsc, int index)
++static int __pdsc_adminq_post(struct pdsc *pdsc,
++			      struct pdsc_qcq *qcq,
++			      union pds_core_adminq_cmd *cmd,
++			      union pds_core_adminq_comp *comp,
++			      struct pdsc_wait_context *wc)
 +{
-+	struct pdsc_intr_info *intr_info;
-+
-+	if (index >= pdsc->nintrs || index < 0) {
-+		WARN(true, "bad intr index %d\n", index);
-+		return;
-+	}
-+
-+	intr_info = &pdsc->intr_info[index];
-+	if (!intr_info->vector)
-+		return;
-+	dev_dbg(pdsc->dev, "%s: idx %d vec %d name %s\n",
-+		__func__, index, intr_info->vector, intr_info->name);
-+
-+	pds_core_intr_mask(&pdsc->intr_ctrl[index], PDS_CORE_INTR_MASK_SET);
-+	pds_core_intr_clean(&pdsc->intr_ctrl[index]);
-+
-+	free_irq(intr_info->vector, intr_info->data);
-+
-+	memset(intr_info, 0, sizeof(*intr_info));
-+}
-+
-+int pdsc_intr_alloc(struct pdsc *pdsc, char *name,
-+		    irq_handler_t handler, void *data)
-+{
-+	struct pdsc_intr_info *intr_info;
-+	unsigned int index;
-+	int err;
-+
-+	/* Find the first available interrupt */
-+	for (index = 0; index < pdsc->nintrs; index++)
-+		if (!pdsc->intr_info[index].vector)
-+			break;
-+	if (index >= pdsc->nintrs) {
-+		dev_warn(pdsc->dev, "%s: no intr, index=%d nintrs=%d\n",
-+			 __func__, index, pdsc->nintrs);
-+		return -ENOSPC;
-+	}
-+
-+	pds_core_intr_clean_flags(&pdsc->intr_ctrl[index],
-+				  PDS_CORE_INTR_CRED_RESET_COALESCE);
-+
-+	intr_info = &pdsc->intr_info[index];
-+
-+	intr_info->index = index;
-+	intr_info->data = data;
-+	strscpy(intr_info->name, name, sizeof(intr_info->name));
-+
-+	/* Get the OS vector number for the interrupt */
-+	err = pci_irq_vector(pdsc->pdev, index);
-+	if (err < 0) {
-+		dev_err(pdsc->dev, "failed to get intr vector index %d: %pe\n",
-+			index, ERR_PTR(err));
-+		goto err_out_free_intr;
-+	}
-+	intr_info->vector = err;
-+
-+	/* Init the device's intr mask */
-+	pds_core_intr_clean(&pdsc->intr_ctrl[index]);
-+	pds_core_intr_mask_assert(&pdsc->intr_ctrl[index], 1);
-+	pds_core_intr_mask(&pdsc->intr_ctrl[index], PDS_CORE_INTR_MASK_SET);
-+
-+	/* Register the isr with a name */
-+	err = request_irq(intr_info->vector, handler, 0, intr_info->name, data);
-+	if (err) {
-+		dev_err(pdsc->dev, "failed to get intr irq vector %d: %pe\n",
-+			intr_info->vector, ERR_PTR(err));
-+		goto err_out_free_intr;
-+	}
-+
-+	return index;
-+
-+err_out_free_intr:
-+	pdsc_intr_free(pdsc, index);
-+	return err;
-+}
-+
-+static void pdsc_qcq_intr_free(struct pdsc *pdsc, struct pdsc_qcq *qcq)
-+{
-+	if (!(qcq->flags & PDS_CORE_QCQ_F_INTR) ||
-+	    qcq->intx == PDS_CORE_INTR_INDEX_NOT_ASSIGNED)
-+		return;
-+
-+	pdsc_intr_free(pdsc, qcq->intx);
-+	qcq->intx = PDS_CORE_INTR_INDEX_NOT_ASSIGNED;
-+}
-+
-+static int pdsc_qcq_intr_alloc(struct pdsc *pdsc, struct pdsc_qcq *qcq)
-+{
-+	char name[PDSC_INTR_NAME_MAX_SZ];
++	struct pdsc_queue *q = &qcq->q;
++	struct pdsc_q_info *q_info;
++	unsigned long irqflags;
++	unsigned int avail;
++	int ret = 0;
 +	int index;
 +
-+	if (!(qcq->flags & PDS_CORE_QCQ_F_INTR)) {
-+		qcq->intx = PDS_CORE_INTR_INDEX_NOT_ASSIGNED;
-+		return 0;
++	spin_lock_irqsave(&pdsc->adminq_lock, irqflags);
++
++	/* Check for space in the queue */
++	avail = q->tail_idx;
++	if (q->head_idx >= avail)
++		avail += q->num_descs - q->head_idx - 1;
++	else
++		avail -= q->head_idx + 1;
++	if (!avail) {
++		ret = -ENOSPC;
++		goto err_out_unlock;
 +	}
 +
-+	snprintf(name, sizeof(name), "%s-%d-%s",
-+		 PDS_CORE_DRV_NAME, pdsc->pdev->bus->number, qcq->q.name);
-+	index = pdsc_intr_alloc(pdsc, name, pdsc_adminq_isr, qcq);
-+	if (index < 0)
-+		return index;
-+	qcq->intx = index;
++	/* Check that the FW is running */
++	if (!pdsc_is_fw_running(pdsc)) {
++		u8 fw_status = ioread8(&pdsc->info_regs->fw_status);
 +
-+	return 0;
++		dev_info(pdsc->dev, "%s: post failed - fw not running %#02x:\n",
++			 __func__, fw_status);
++		ret = -ENXIO;
++
++		goto err_out_unlock;
++	}
++
++	/* Post the request */
++	index = q->head_idx;
++	q_info = &q->info[index];
++	q_info->wc = wc;
++	q_info->dest = comp;
++	memcpy(q_info->desc, cmd, sizeof(*cmd));
++
++	dev_dbg(pdsc->dev, "head_idx %d tail_idx %d\n",
++		q->head_idx, q->tail_idx);
++	dev_dbg(pdsc->dev, "post admin queue command:\n");
++	dynamic_hex_dump("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
++			 cmd, sizeof(*cmd), true);
++
++	q->head_idx = (q->head_idx + 1) & (q->num_descs - 1);
++
++	pds_core_dbell_ring(pdsc->kern_dbpage,
++			    q->hw_type, q->dbval | q->head_idx);
++	ret = index;
++
++err_out_unlock:
++	spin_unlock_irqrestore(&pdsc->adminq_lock, irqflags);
++	return ret;
 +}
 +
-+void pdsc_qcq_free(struct pdsc *pdsc, struct pdsc_qcq *qcq)
++int pdsc_adminq_post(void *pdsc_void,
++		     union pds_core_adminq_cmd *cmd,
++		     union pds_core_adminq_comp *comp,
++		     bool fast_poll)
 +{
-+	struct device *dev = pdsc->dev;
-+
-+	if (!(qcq && qcq->pdsc))
-+		return;
-+
-+	pdsc_debugfs_del_qcq(qcq);
-+
-+	pdsc_qcq_intr_free(pdsc, qcq);
-+
-+	if (qcq->q_base) {
-+		dma_free_coherent(dev, qcq->q_size,
-+				  qcq->q_base, qcq->q_base_pa);
-+		qcq->q_base = NULL;
-+		qcq->q_base_pa = 0;
-+	}
-+
-+	if (qcq->cq_base) {
-+		dma_free_coherent(dev, qcq->cq_size,
-+				  qcq->cq_base, qcq->cq_base_pa);
-+		qcq->cq_base = NULL;
-+		qcq->cq_base_pa = 0;
-+	}
-+
-+	if (qcq->cq.info) {
-+		vfree(qcq->cq.info);
-+		qcq->cq.info = NULL;
-+	}
-+	if (qcq->q.info) {
-+		vfree(qcq->q.info);
-+		qcq->q.info = NULL;
-+	}
-+
-+	qcq->pdsc = NULL;
-+	memset(&qcq->q, 0, sizeof(qcq->q));
-+	memset(&qcq->cq, 0, sizeof(qcq->cq));
-+}
-+
-+static void pdsc_q_map(struct pdsc_queue *q, void *base, dma_addr_t base_pa)
-+{
-+	struct pdsc_q_info *cur;
-+	unsigned int i;
-+
-+	q->base = base;
-+	q->base_pa = base_pa;
-+
-+	for (i = 0, cur = q->info; i < q->num_descs; i++, cur++)
-+		cur->desc = base + (i * q->desc_size);
-+}
-+
-+static void pdsc_cq_map(struct pdsc_cq *cq, void *base, dma_addr_t base_pa)
-+{
-+	struct pdsc_cq_info *cur;
-+	unsigned int i;
-+
-+	cq->base = base;
-+	cq->base_pa = base_pa;
-+
-+	for (i = 0, cur = cq->info; i < cq->num_descs; i++, cur++)
-+		cur->comp = base + (i * cq->desc_size);
-+}
-+
-+int pdsc_qcq_alloc(struct pdsc *pdsc, unsigned int type, unsigned int index,
-+		   const char *name, unsigned int flags, unsigned int num_descs,
-+		   unsigned int desc_size, unsigned int cq_desc_size,
-+		   unsigned int pid, struct pdsc_qcq *qcq)
-+{
-+	struct device *dev = pdsc->dev;
-+	dma_addr_t cq_base_pa = 0;
-+	dma_addr_t q_base_pa = 0;
-+	void *q_base, *cq_base;
-+	int err;
-+
-+	qcq->q.info = vzalloc(num_descs * sizeof(*qcq->q.info));
-+	if (!qcq->q.info) {
-+		err = -ENOMEM;
-+		goto err_out;
-+	}
-+
-+	qcq->pdsc = pdsc;
-+	qcq->flags = flags;
-+	INIT_WORK(&qcq->work, pdsc_work_thread);
-+
-+	qcq->q.type = type;
-+	qcq->q.index = index;
-+	qcq->q.num_descs = num_descs;
-+	qcq->q.desc_size = desc_size;
-+	qcq->q.tail_idx = 0;
-+	qcq->q.head_idx = 0;
-+	qcq->q.pid = pid;
-+	snprintf(qcq->q.name, sizeof(qcq->q.name), "%s%u", name, index);
-+
-+	err = pdsc_qcq_intr_alloc(pdsc, qcq);
-+	if (err)
-+		goto err_out_free_q_info;
-+
-+	qcq->cq.info = vzalloc(num_descs * sizeof(*qcq->cq.info));
-+	if (!qcq->cq.info) {
-+		err = -ENOMEM;
-+		goto err_out_free_irq;
-+	}
-+
-+	qcq->cq.bound_intr = &pdsc->intr_info[qcq->intx];
-+	qcq->cq.num_descs = num_descs;
-+	qcq->cq.desc_size = cq_desc_size;
-+	qcq->cq.tail_idx = 0;
-+	qcq->cq.done_color = 1;
-+
-+	if (flags & PDS_CORE_QCQ_F_NOTIFYQ) {
-+		/* q & cq need to be contiguous in case of notifyq */
-+		qcq->q_size = PDS_PAGE_SIZE +
-+			      ALIGN(num_descs * desc_size, PDS_PAGE_SIZE) +
-+			      ALIGN(num_descs * cq_desc_size, PDS_PAGE_SIZE);
-+		qcq->q_base = dma_alloc_coherent(dev,
-+						 qcq->q_size + qcq->cq_size,
-+						 &qcq->q_base_pa,
-+						 GFP_KERNEL);
-+		if (!qcq->q_base) {
-+			err = -ENOMEM;
-+			goto err_out_free_cq_info;
-+		}
-+		q_base = PTR_ALIGN(qcq->q_base, PDS_PAGE_SIZE);
-+		q_base_pa = ALIGN(qcq->q_base_pa, PDS_PAGE_SIZE);
-+		pdsc_q_map(&qcq->q, q_base, q_base_pa);
-+
-+		cq_base = PTR_ALIGN(q_base +
-+				    ALIGN(num_descs * desc_size, PDS_PAGE_SIZE),
-+				    PDS_PAGE_SIZE);
-+		cq_base_pa = ALIGN(qcq->q_base_pa +
-+				   ALIGN(num_descs * desc_size, PDS_PAGE_SIZE),
-+				   PDS_PAGE_SIZE);
-+
-+	} else {
-+		/* q DMA descriptors */
-+		qcq->q_size = PDS_PAGE_SIZE + (num_descs * desc_size);
-+		qcq->q_base = dma_alloc_coherent(dev, qcq->q_size,
-+						 &qcq->q_base_pa,
-+						 GFP_KERNEL);
-+		if (!qcq->q_base) {
-+			err = -ENOMEM;
-+			goto err_out_free_cq_info;
-+		}
-+		q_base = PTR_ALIGN(qcq->q_base, PDS_PAGE_SIZE);
-+		q_base_pa = ALIGN(qcq->q_base_pa, PDS_PAGE_SIZE);
-+		pdsc_q_map(&qcq->q, q_base, q_base_pa);
-+
-+		/* cq DMA descriptors */
-+		qcq->cq_size = PDS_PAGE_SIZE + (num_descs * cq_desc_size);
-+		qcq->cq_base = dma_alloc_coherent(dev, qcq->cq_size,
-+						  &qcq->cq_base_pa,
-+						  GFP_KERNEL);
-+		if (!qcq->cq_base) {
-+			err = -ENOMEM;
-+			goto err_out_free_q;
-+		}
-+		cq_base = PTR_ALIGN(qcq->cq_base, PDS_PAGE_SIZE);
-+		cq_base_pa = ALIGN(qcq->cq_base_pa, PDS_PAGE_SIZE);
-+	}
-+
-+	pdsc_cq_map(&qcq->cq, cq_base, cq_base_pa);
-+	qcq->cq.bound_q = &qcq->q;
-+
-+	pdsc_debugfs_add_qcq(pdsc, qcq);
-+
-+	return 0;
-+
-+err_out_free_q:
-+	dma_free_coherent(dev, qcq->q_size, qcq->q_base, qcq->q_base_pa);
-+err_out_free_cq_info:
-+	vfree(qcq->cq.info);
-+err_out_free_irq:
-+	pdsc_qcq_intr_free(pdsc, qcq);
-+err_out_free_q_info:
-+	vfree(qcq->q.info);
-+	memset(qcq, 0, sizeof(*qcq));
-+err_out:
-+	dev_err(dev, "qcq alloc of %s%d failed %d\n", name, index, err);
-+	return err;
-+}
-+
-+static int pdsc_core_init(struct pdsc *pdsc)
-+{
-+	union pds_core_dev_comp comp = { 0 };
-+	union pds_core_dev_cmd cmd = {
-+		.init.opcode = PDS_CORE_CMD_INIT,
++	struct pdsc_wait_context wc = {
++		.wait_completion =
++			COMPLETION_INITIALIZER_ONSTACK(wc.wait_completion),
 +	};
-+	struct pds_core_dev_init_data_out cido;
-+	struct pds_core_dev_init_data_in cidi;
-+	u32 dbid_count;
-+	u32 dbpage_num;
-+	size_t sz;
-+	int err;
-+
-+	cidi.adminq_q_base = cpu_to_le64(pdsc->adminqcq.q_base_pa);
-+	cidi.adminq_cq_base = cpu_to_le64(pdsc->adminqcq.cq_base_pa);
-+	cidi.notifyq_cq_base = cpu_to_le64(pdsc->notifyqcq.cq.base_pa);
-+	cidi.flags = cpu_to_le32(PDS_CORE_QINIT_F_IRQ | PDS_CORE_QINIT_F_ENA);
-+	cidi.intr_index = cpu_to_le16(pdsc->adminqcq.intx);
-+	cidi.adminq_ring_size = ilog2(pdsc->adminqcq.q.num_descs);
-+	cidi.notifyq_ring_size = ilog2(pdsc->notifyqcq.q.num_descs);
-+
-+	mutex_lock(&pdsc->devcmd_lock);
-+
-+	sz = min_t(size_t, sizeof(cidi), sizeof(pdsc->cmd_regs->data));
-+	memcpy_toio(&pdsc->cmd_regs->data, &cidi, sz);
-+
-+	err = pdsc_devcmd_locked(pdsc, &cmd, &comp, pdsc->devcmd_timeout);
-+
-+	sz = min_t(size_t, sizeof(cido), sizeof(pdsc->cmd_regs->data));
-+	memcpy_fromio(&cido, &pdsc->cmd_regs->data, sz);
-+
-+	mutex_unlock(&pdsc->devcmd_lock);
-+
-+	pdsc->hw_index = le32_to_cpu(cido.core_hw_index);
-+
-+	dbid_count = le32_to_cpu(pdsc->dev_ident.ndbpgs_per_lif);
-+	dbpage_num = pdsc->hw_index * dbid_count;
-+	pdsc->kern_dbpage = pdsc_map_dbpage(pdsc, dbpage_num);
-+	if (!pdsc->kern_dbpage) {
-+		dev_err(pdsc->dev, "Cannot map dbpage, aborting\n");
-+		return -ENOMEM;
-+	}
-+
-+	pdsc->adminqcq.q.hw_type = cido.adminq_hw_type;
-+	pdsc->adminqcq.q.hw_index = le32_to_cpu(cido.adminq_hw_index);
-+	pdsc->adminqcq.q.dbval = PDS_CORE_DBELL_QID(pdsc->adminqcq.q.hw_index);
-+
-+	pdsc->notifyqcq.q.hw_type = cido.notifyq_hw_type;
-+	pdsc->notifyqcq.q.hw_index = le32_to_cpu(cido.notifyq_hw_index);
-+	pdsc->notifyqcq.q.dbval = PDS_CORE_DBELL_QID(pdsc->notifyqcq.q.hw_index);
-+
-+	pdsc->last_eid = 0;
-+
-+	return err;
-+}
-+
- int pdsc_setup(struct pdsc *pdsc, bool init)
- {
-+	int numdescs;
- 	int err = 0;
- 
- 	if (init)
-@@ -14,17 +374,60 @@ int pdsc_setup(struct pdsc *pdsc, bool init)
- 	if (err)
- 		return err;
- 
-+	/* Scale the descriptor ring length based on number of CPUs and VFs */
-+	numdescs = max_t(int, PDSC_ADMINQ_MIN_LENGTH, num_online_cpus());
-+	numdescs += 2 * pci_sriov_get_totalvfs(pdsc->pdev);
-+	numdescs = roundup_pow_of_two(numdescs);
-+	err = pdsc_qcq_alloc(pdsc, PDS_CORE_QTYPE_ADMINQ, 0, "adminq",
-+			     PDS_CORE_QCQ_F_CORE | PDS_CORE_QCQ_F_INTR,
-+			     numdescs,
-+			     sizeof(union pds_core_adminq_cmd),
-+			     sizeof(union pds_core_adminq_comp),
-+			     0, &pdsc->adminqcq);
-+	if (err)
-+		goto err_out_teardown;
-+
-+	err = pdsc_qcq_alloc(pdsc, PDS_CORE_QTYPE_NOTIFYQ, 0, "notifyq",
-+			     PDS_CORE_QCQ_F_NOTIFYQ,
-+			     PDSC_NOTIFYQ_LENGTH,
-+			     sizeof(struct pds_core_notifyq_cmd),
-+			     sizeof(union pds_core_notifyq_comp),
-+			     0, &pdsc->notifyqcq);
-+	if (err)
-+		goto err_out_teardown;
-+
-+	/* NotifyQ rides on the AdminQ interrupt */
-+	pdsc->notifyqcq.intx = pdsc->adminqcq.intx;
-+
-+	/* Set up the Core with the AdminQ and NotifyQ info */
-+	err = pdsc_core_init(pdsc);
-+	if (err)
-+		goto err_out_teardown;
-+
- 	clear_bit(PDSC_S_FW_DEAD, &pdsc->state);
- 	return 0;
-+
-+err_out_teardown:
-+	pdsc_teardown(pdsc, init);
-+	return err;
- }
- 
- void pdsc_teardown(struct pdsc *pdsc, bool removing)
- {
-+	int i;
-+
- 	pdsc_devcmd_reset(pdsc);
-+	pdsc_qcq_free(pdsc, &pdsc->notifyqcq);
-+	pdsc_qcq_free(pdsc, &pdsc->adminqcq);
- 
--	if (removing) {
--		kfree(pdsc->intr_info);
--		pdsc->intr_info = NULL;
-+	if (pdsc->intr_info) {
-+		for (i = 0; i < pdsc->nintrs; i++)
-+			pdsc_intr_free(pdsc, i);
-+
-+		if (removing) {
-+			kfree(pdsc->intr_info);
-+			pdsc->intr_info = NULL;
-+		}
- 	}
- 
- 	if (pdsc->kern_dbpage) {
-@@ -35,6 +438,36 @@ void pdsc_teardown(struct pdsc *pdsc, bool removing)
- 	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
- }
- 
-+int pdsc_start(struct pdsc *pdsc)
-+{
-+	pds_core_intr_mask(&pdsc->intr_ctrl[pdsc->adminqcq.intx],
-+			   PDS_CORE_INTR_MASK_CLEAR);
-+
-+	return 0;
-+}
-+
-+static void pdsc_mask_interrupts(struct pdsc *pdsc)
-+{
-+	int i;
-+
-+	if (!pdsc->intr_info)
-+		return;
-+
-+	/* Mask interrupts that are in use */
-+	for (i = 0; i < pdsc->nintrs; i++)
-+		if (pdsc->intr_info[i].vector)
-+			pds_core_intr_mask(&pdsc->intr_ctrl[i],
-+					   PDS_CORE_INTR_MASK_SET);
-+}
-+
-+void pdsc_stop(struct pdsc *pdsc)
-+{
-+	if (pdsc->wq)
-+		flush_workqueue(pdsc->wq);
-+
-+	pdsc_mask_interrupts(pdsc);
-+}
-+
- static void pdsc_fw_down(struct pdsc *pdsc)
- {
- 	mutex_lock(&pdsc->config_lock);
-@@ -47,6 +480,7 @@ static void pdsc_fw_down(struct pdsc *pdsc)
- 
- 	devlink_health_report(pdsc->fw_reporter, "FW down reported", pdsc);
- 
-+	pdsc_mask_interrupts(pdsc);
- 	pdsc_teardown(pdsc, PDSC_TEARDOWN_RECOVERY);
- 
- 	mutex_unlock(&pdsc->config_lock);
-@@ -68,6 +502,10 @@ static void pdsc_fw_up(struct pdsc *pdsc)
- 	if (err)
- 		goto err_out;
- 
-+	err = pdsc_start(pdsc);
-+	if (err)
-+		goto err_out;
-+
- 	mutex_unlock(&pdsc->config_lock);
- 
- 	pdsc->fw_recoveries++;
-diff --git a/drivers/net/ethernet/amd/pds_core/core.h b/drivers/net/ethernet/amd/pds_core/core.h
-index d111354234fa..3c6067695230 100644
---- a/drivers/net/ethernet/amd/pds_core/core.h
-+++ b/drivers/net/ethernet/amd/pds_core/core.h
-@@ -9,11 +9,15 @@
- 
- #include <linux/pds/pds_common.h>
- #include <linux/pds/pds_core_if.h>
-+#include <linux/pds/pds_adminq.h>
- #include <linux/pds/pds_intr.h>
- 
- #define PDSC_DRV_DESCRIPTION	"AMD/Pensando Core Driver"
- 
- #define PDSC_WATCHDOG_SECS	5
-+#define PDSC_QUEUE_NAME_MAX_SZ  32
-+#define PDSC_ADMINQ_MIN_LENGTH	16	/* must be a power of two */
-+#define PDSC_NOTIFYQ_LENGTH	64	/* must be a power of two */
- #define PDSC_TEARDOWN_RECOVERY	false
- #define PDSC_TEARDOWN_REMOVING	true
- #define PDSC_SETUP_RECOVERY	false
-@@ -33,6 +37,28 @@ struct pdsc_devinfo {
- 	char serial_num[PDS_CORE_DEVINFO_SERIAL_BUFLEN + 1];
- };
- 
-+struct pdsc_queue {
-+	struct pdsc_q_info *info;
-+	u64 dbval;
-+	u16 head_idx;
-+	u16 tail_idx;
-+	u8 hw_type;
-+	unsigned int index;
-+	unsigned int num_descs;
-+	u64 dbell_count;
-+	u64 features;
-+	unsigned int type;
-+	unsigned int hw_index;
-+	union {
-+		void *base;
-+		struct pds_core_admin_cmd *adminq;
-+	};
-+	dma_addr_t base_pa;	/* must be page aligned */
-+	unsigned int desc_size;
-+	unsigned int pid;
-+	char name[PDSC_QUEUE_NAME_MAX_SZ];
-+};
-+
- #define PDSC_INTR_NAME_MAX_SZ		32
- 
- struct pdsc_intr_info {
-@@ -42,6 +68,61 @@ struct pdsc_intr_info {
- 	void *data;
- };
- 
-+struct pdsc_cq_info {
-+	void *comp;
-+};
-+
-+struct pdsc_buf_info {
-+	struct page *page;
-+	dma_addr_t dma_addr;
-+	u32 page_offset;
-+	u32 len;
-+};
-+
-+struct pdsc_q_info {
-+	union {
-+		void *desc;
-+		struct pdsc_admin_cmd *adminq_desc;
-+	};
-+	unsigned int bytes;
-+	unsigned int nbufs;
-+	struct pdsc_buf_info bufs[PDS_CORE_MAX_FRAGS];
-+	struct pdsc_wait_context *wc;
-+	void *dest;
-+};
-+
-+struct pdsc_cq {
-+	struct pdsc_cq_info *info;
-+	struct pdsc_queue *bound_q;
-+	struct pdsc_intr_info *bound_intr;
-+	u16 tail_idx;
-+	bool done_color;
-+	unsigned int num_descs;
-+	unsigned int desc_size;
-+	void *base;
-+	dma_addr_t base_pa;	/* must be page aligned */
-+} ____cacheline_aligned_in_smp;
-+
-+struct pdsc_qcq {
++	unsigned long poll_interval = 1;
++	unsigned long poll_jiffies;
++	unsigned long time_limit;
++	unsigned long time_start;
++	unsigned long time_done;
++	unsigned long remaining;
 +	struct pdsc *pdsc;
-+	void *q_base;
-+	dma_addr_t q_base_pa;	/* might not be page aligned */
-+	void *cq_base;
-+	dma_addr_t cq_base_pa;	/* might not be page aligned */
-+	u32 q_size;
-+	u32 cq_size;
-+	bool armed;
-+	unsigned int flags;
++	int err = 0;
++	int index;
 +
-+	struct work_struct work;
-+	struct pdsc_queue q;
-+	struct pdsc_cq cq;
-+	int intx;
++	pdsc = (struct pdsc *)pdsc_void;
 +
-+	u32 accum_work;
-+	struct dentry *dentry;
-+};
-+
- /* No state flags set means we are in a steady running state */
- enum pdsc_state_flags {
- 	PDSC_S_FW_DEAD,		    /* stopped, wait on startup or recovery */
-@@ -81,6 +162,7 @@ struct pdsc {
- 	unsigned int devcmd_timeout;
- 	struct mutex devcmd_lock;	/* lock for dev_cmd operations */
- 	struct mutex config_lock;	/* lock for configuration operations */
-+	spinlock_t adminq_lock;		/* lock for adminq operations */
- 	struct pds_core_dev_info_regs __iomem *info_regs;
- 	struct pds_core_dev_cmd_regs __iomem *cmd_regs;
- 	struct pds_core_intr __iomem *intr_ctrl;
-@@ -88,12 +170,65 @@ struct pdsc {
- 	u64 __iomem *db_pages;
- 	dma_addr_t phy_db_pages;
- 	u64 __iomem *kern_dbpage;
-+
-+	struct pdsc_qcq adminqcq;
-+	struct pdsc_qcq notifyqcq;
-+	u64 last_eid;
- };
- 
-+/** enum pds_core_dbell_bits - bitwise composition of dbell values.
-+ *
-+ * @PDS_CORE_DBELL_QID_MASK:	unshifted mask of valid queue id bits.
-+ * @PDS_CORE_DBELL_QID_SHIFT:	queue id shift amount in dbell value.
-+ * @PDS_CORE_DBELL_QID:		macro to build QID component of dbell value.
-+ *
-+ * @PDS_CORE_DBELL_RING_MASK:	unshifted mask of valid ring bits.
-+ * @PDS_CORE_DBELL_RING_SHIFT:	ring shift amount in dbell value.
-+ * @PDS_CORE_DBELL_RING:	macro to build ring component of dbell value.
-+ *
-+ * @PDS_CORE_DBELL_RING_0:		ring zero dbell component value.
-+ * @PDS_CORE_DBELL_RING_1:		ring one dbell component value.
-+ * @PDS_CORE_DBELL_RING_2:		ring two dbell component value.
-+ * @PDS_CORE_DBELL_RING_3:		ring three dbell component value.
-+ *
-+ * @PDS_CORE_DBELL_INDEX_MASK:	bit mask of valid index bits, no shift needed.
-+ */
-+enum pds_core_dbell_bits {
-+	PDS_CORE_DBELL_QID_MASK		= 0xffffff,
-+	PDS_CORE_DBELL_QID_SHIFT		= 24,
-+
-+#define PDS_CORE_DBELL_QID(n) \
-+	(((u64)(n) & PDS_CORE_DBELL_QID_MASK) << PDS_CORE_DBELL_QID_SHIFT)
-+
-+	PDS_CORE_DBELL_RING_MASK		= 0x7,
-+	PDS_CORE_DBELL_RING_SHIFT		= 16,
-+
-+#define PDS_CORE_DBELL_RING(n) \
-+	(((u64)(n) & PDS_CORE_DBELL_RING_MASK) << PDS_CORE_DBELL_RING_SHIFT)
-+
-+	PDS_CORE_DBELL_RING_0		= 0,
-+	PDS_CORE_DBELL_RING_1		= PDS_CORE_DBELL_RING(1),
-+	PDS_CORE_DBELL_RING_2		= PDS_CORE_DBELL_RING(2),
-+	PDS_CORE_DBELL_RING_3		= PDS_CORE_DBELL_RING(3),
-+
-+	PDS_CORE_DBELL_INDEX_MASK		= 0xffff,
-+};
-+
-+static inline void pds_core_dbell_ring(u64 __iomem *db_page,
-+				       enum pds_core_logical_qtype qtype,
-+				       u64 val)
-+{
-+	writeq(val, &db_page[qtype]);
-+}
-+
- void pdsc_queue_health_check(struct pdsc *pdsc);
- int pdsc_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
- 			      struct devlink_fmsg *fmsg,
- 			      struct netlink_ext_ack *extack);
-+int pdsc_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-+		     struct netlink_ext_ack *extack);
-+
-+void __iomem *pdsc_map_dbpage(struct pdsc *pdsc, int page_num);
- 
- #ifdef CONFIG_DEBUG_FS
- void pdsc_debugfs_create(void);
-@@ -102,6 +237,8 @@ void pdsc_debugfs_add_dev(struct pdsc *pdsc);
- void pdsc_debugfs_del_dev(struct pdsc *pdsc);
- void pdsc_debugfs_add_ident(struct pdsc *pdsc);
- void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
-+void pdsc_debugfs_add_qcq(struct pdsc *pdsc, struct pdsc_qcq *qcq);
-+void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq);
- #else
- static inline void pdsc_debugfs_create(void) { }
- static inline void pdsc_debugfs_destroy(void) { }
-@@ -109,6 +246,9 @@ static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) { }
- static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) { }
- static inline void pdsc_debugfs_add_ident(struct pdsc *pdsc) { }
- static inline void pdsc_debugfs_add_irqs(struct pdsc *pdsc) { }
-+static inline void pdsc_debugfs_add_qcq(struct pdsc *pdsc,
-+					struct pdsc_qcq *qcq) { }
-+static inline void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq) { }
- #endif
- 
- int pdsc_err_to_errno(enum pds_core_status_code code);
-@@ -123,8 +263,22 @@ int pdsc_devcmd_reset(struct pdsc *pdsc);
- int pdsc_dev_reinit(struct pdsc *pdsc);
- int pdsc_dev_init(struct pdsc *pdsc);
- 
-+int pdsc_intr_alloc(struct pdsc *pdsc, char *name,
-+		    irq_handler_t handler, void *data);
-+void pdsc_intr_free(struct pdsc *pdsc, int index);
-+void pdsc_qcq_free(struct pdsc *pdsc, struct pdsc_qcq *qcq);
-+int pdsc_qcq_alloc(struct pdsc *pdsc, unsigned int type, unsigned int index,
-+		   const char *name, unsigned int flags, unsigned int num_descs,
-+		   unsigned int desc_size, unsigned int cq_desc_size,
-+		   unsigned int pid, struct pdsc_qcq *qcq);
- int pdsc_setup(struct pdsc *pdsc, bool init);
- void pdsc_teardown(struct pdsc *pdsc, bool removing);
-+int pdsc_start(struct pdsc *pdsc);
-+void pdsc_stop(struct pdsc *pdsc);
- void pdsc_health_thread(struct work_struct *work);
- 
-+void pdsc_process_adminq(struct pdsc_qcq *qcq);
-+void pdsc_work_thread(struct work_struct *work);
-+irqreturn_t pdsc_adminq_isr(int irq, void *data);
-+
- #endif /* _PDSC_H_ */
-diff --git a/drivers/net/ethernet/amd/pds_core/debugfs.c b/drivers/net/ethernet/amd/pds_core/debugfs.c
-index 1f68614ef7f4..7168c3bd661b 100644
---- a/drivers/net/ethernet/amd/pds_core/debugfs.c
-+++ b/drivers/net/ethernet/amd/pds_core/debugfs.c
-@@ -102,4 +102,80 @@ void pdsc_debugfs_add_irqs(struct pdsc *pdsc)
- 	debugfs_create_file("irqs", 0400, pdsc->dentry, pdsc, &irqs_fops);
- }
- 
-+static const struct debugfs_reg32 intr_ctrl_regs[] = {
-+	{ .name = "coal_init", .offset = 0, },
-+	{ .name = "mask", .offset = 4, },
-+	{ .name = "credits", .offset = 8, },
-+	{ .name = "mask_on_assert", .offset = 12, },
-+	{ .name = "coal_timer", .offset = 16, },
-+};
-+
-+void pdsc_debugfs_add_qcq(struct pdsc *pdsc, struct pdsc_qcq *qcq)
-+{
-+	struct dentry *qcq_dentry, *q_dentry, *cq_dentry;
-+	struct dentry *intr_dentry;
-+	struct debugfs_regset32 *intr_ctrl_regset;
-+	struct pdsc_intr_info *intr = &pdsc->intr_info[qcq->intx];
-+	struct pdsc_queue *q = &qcq->q;
-+	struct pdsc_cq *cq = &qcq->cq;
-+
-+	qcq_dentry = debugfs_create_dir(q->name, pdsc->dentry);
-+	if (IS_ERR_OR_NULL(qcq_dentry))
-+		return;
-+	qcq->dentry = qcq_dentry;
-+
-+	debugfs_create_x64("q_base_pa", 0400, qcq_dentry, &qcq->q_base_pa);
-+	debugfs_create_x32("q_size", 0400, qcq_dentry, &qcq->q_size);
-+	debugfs_create_x64("cq_base_pa", 0400, qcq_dentry, &qcq->cq_base_pa);
-+	debugfs_create_x32("cq_size", 0400, qcq_dentry, &qcq->cq_size);
-+	debugfs_create_x32("accum_work", 0400, qcq_dentry, &qcq->accum_work);
-+
-+	q_dentry = debugfs_create_dir("q", qcq->dentry);
-+	if (IS_ERR_OR_NULL(q_dentry))
-+		return;
-+
-+	debugfs_create_u32("index", 0400, q_dentry, &q->index);
-+	debugfs_create_u32("num_descs", 0400, q_dentry, &q->num_descs);
-+	debugfs_create_u32("desc_size", 0400, q_dentry, &q->desc_size);
-+	debugfs_create_u32("pid", 0400, q_dentry, &q->pid);
-+
-+	debugfs_create_u16("tail", 0400, q_dentry, &q->tail_idx);
-+	debugfs_create_u16("head", 0400, q_dentry, &q->head_idx);
-+
-+	cq_dentry = debugfs_create_dir("cq", qcq->dentry);
-+	if (IS_ERR_OR_NULL(cq_dentry))
-+		return;
-+
-+	debugfs_create_x64("base_pa", 0400, cq_dentry, &cq->base_pa);
-+	debugfs_create_u32("num_descs", 0400, cq_dentry, &cq->num_descs);
-+	debugfs_create_u32("desc_size", 0400, cq_dentry, &cq->desc_size);
-+	debugfs_create_bool("done_color", 0400, cq_dentry, &cq->done_color);
-+	debugfs_create_u16("tail", 0400, cq_dentry, &cq->tail_idx);
-+
-+	if (qcq->flags & PDS_CORE_QCQ_F_INTR) {
-+		intr_dentry = debugfs_create_dir("intr", qcq->dentry);
-+		if (IS_ERR_OR_NULL(intr_dentry))
-+			return;
-+
-+		debugfs_create_u32("index", 0400, intr_dentry, &intr->index);
-+		debugfs_create_u32("vector", 0400, intr_dentry, &intr->vector);
-+
-+		intr_ctrl_regset = kzalloc(sizeof(*intr_ctrl_regset),
-+					   GFP_KERNEL);
-+		if (!intr_ctrl_regset)
-+			return;
-+		intr_ctrl_regset->regs = intr_ctrl_regs;
-+		intr_ctrl_regset->nregs = ARRAY_SIZE(intr_ctrl_regs);
-+		intr_ctrl_regset->base = &pdsc->intr_ctrl[intr->index];
-+
-+		debugfs_create_regset32("intr_ctrl", 0400, intr_dentry,
-+					intr_ctrl_regset);
++	wc.qcq = &pdsc->adminqcq;
++	index = __pdsc_adminq_post(pdsc, &pdsc->adminqcq, cmd, comp, &wc);
++	if (index < 0) {
++		err = index;
++		goto err_out;
 +	}
-+};
 +
-+void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq)
-+{
-+	debugfs_remove_recursive(qcq->dentry);
-+	qcq->dentry = NULL;
++	time_start = jiffies;
++	time_limit = time_start + HZ * pdsc->devcmd_timeout;
++	do {
++		/* Timeslice the actual wait to catch IO errors etc early */
++		poll_jiffies = msecs_to_jiffies(poll_interval);
++		remaining = wait_for_completion_timeout(&wc.wait_completion,
++							poll_jiffies);
++		if (remaining)
++			break;
++
++		if (!pdsc_is_fw_running(pdsc)) {
++			u8 fw_status = ioread8(&pdsc->info_regs->fw_status);
++
++			dev_dbg(pdsc->dev, "%s: post wait failed - fw not running %#02x:\n",
++				__func__, fw_status);
++			err = -ENXIO;
++			break;
++		}
++
++		/* When fast_poll is not requested, prevent aggressive polling
++		 * on failures due to timeouts by doing exponential back off.
++		 */
++		if (!fast_poll && poll_interval < PDSC_ADMINQ_MAX_POLL_INTERVAL)
++			poll_interval <<= 1;
++	} while (time_before(jiffies, time_limit));
++	time_done = jiffies;
++	dev_dbg(pdsc->dev, "%s: elapsed %d msecs\n",
++		__func__, jiffies_to_msecs(time_done - time_start));
++
++	/* Check the results */
++	if (time_after_eq(time_done, time_limit))
++		err = -ETIMEDOUT;
++
++	dev_dbg(pdsc->dev, "read admin queue completion idx %d:\n", index);
++	dynamic_hex_dump("comp ", DUMP_PREFIX_OFFSET, 16, 1,
++			 comp, sizeof(*comp), true);
++
++	if (remaining && comp->status)
++		err = pdsc_err_to_errno(comp->status);
++
++err_out:
++	if (err) {
++		dev_dbg(pdsc->dev, "%s: opcode %d status %d err %pe\n",
++			__func__, cmd->opcode, comp->status, ERR_PTR(err));
++		if (err == -ENXIO || err == -ETIMEDOUT)
++			pdsc_queue_health_check(pdsc);
++	}
++
++	return err;
 +}
- #endif /* CONFIG_DEBUG_FS */
-diff --git a/drivers/net/ethernet/amd/pds_core/devlink.c b/drivers/net/ethernet/amd/pds_core/devlink.c
-index 717fcbf91aee..a4e60cddcafa 100644
---- a/drivers/net/ethernet/amd/pds_core/devlink.c
-+++ b/drivers/net/ethernet/amd/pds_core/devlink.c
-@@ -3,6 +3,59 @@
++EXPORT_SYMBOL_GPL(pdsc_adminq_post);
+diff --git a/drivers/net/ethernet/amd/pds_core/core.c b/drivers/net/ethernet/amd/pds_core/core.c
+index 09c9bd8bf477..3b33939b9d4d 100644
+--- a/drivers/net/ethernet/amd/pds_core/core.c
++++ b/drivers/net/ethernet/amd/pds_core/core.c
+@@ -6,17 +6,6 @@
  
  #include "core.h"
  
-+int pdsc_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
-+		     struct netlink_ext_ack *extack)
-+{
-+	union pds_core_dev_cmd cmd = {
-+		.fw_control.opcode = PDS_CORE_CMD_FW_CONTROL,
-+		.fw_control.oper = PDS_CORE_FW_GET_LIST,
-+	};
-+	struct pds_core_fw_list_info fw_list;
-+	struct pdsc *pdsc = devlink_priv(dl);
-+	union pds_core_dev_comp comp;
-+	char buf[16];
-+	int listlen;
-+	int err;
-+	int i;
-+
-+	mutex_lock(&pdsc->devcmd_lock);
-+	err = pdsc_devcmd_locked(pdsc, &cmd, &comp, pdsc->devcmd_timeout * 2);
-+	memcpy_fromio(&fw_list, pdsc->cmd_regs->data, sizeof(fw_list));
-+	mutex_unlock(&pdsc->devcmd_lock);
-+	if (err && err != -EIO)
-+		return err;
-+
-+	listlen = fw_list.num_fw_slots;
-+	for (i = 0; i < listlen; i++) {
-+		snprintf(buf, sizeof(buf), "fw.%s",
-+			 fw_list.fw_names[i].slotname);
-+		err = devlink_info_version_stored_put(req, buf,
-+						      fw_list.fw_names[i].fw_version);
-+	}
-+
-+	err = devlink_info_version_running_put(req,
-+					       DEVLINK_INFO_VERSION_GENERIC_FW,
-+					       pdsc->dev_info.fw_version);
-+	if (err)
-+		return err;
-+
-+	snprintf(buf, sizeof(buf), "0x%x", pdsc->dev_info.asic_type);
-+	err = devlink_info_version_fixed_put(req,
-+					     DEVLINK_INFO_VERSION_GENERIC_ASIC_ID,
-+					     buf);
-+	if (err)
-+		return err;
-+
-+	snprintf(buf, sizeof(buf), "0x%x", pdsc->dev_info.asic_rev);
-+	err = devlink_info_version_fixed_put(req,
-+					     DEVLINK_INFO_VERSION_GENERIC_ASIC_REV,
-+					     buf);
-+	if (err)
-+		return err;
-+
-+	return devlink_info_serial_number_put(req, pdsc->dev_info.serial_num);
-+}
-+
- int pdsc_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
- 			      struct devlink_fmsg *fmsg,
- 			      struct netlink_ext_ack *extack)
-diff --git a/drivers/net/ethernet/amd/pds_core/main.c b/drivers/net/ethernet/amd/pds_core/main.c
-index 45ed9e9ecc6b..c7b9a92bd622 100644
---- a/drivers/net/ethernet/amd/pds_core/main.c
-+++ b/drivers/net/ethernet/amd/pds_core/main.c
-@@ -157,6 +157,13 @@ static int pdsc_map_bars(struct pdsc *pdsc)
- 	return err;
- }
- 
-+void __iomem *pdsc_map_dbpage(struct pdsc *pdsc, int page_num)
-+{
-+	return pci_iomap_range(pdsc->pdev,
-+			       pdsc->bars[PDS_CORE_PCI_BAR_DBELL].res_index,
-+			       (u64)page_num << PAGE_SHIFT, PAGE_SIZE);
-+}
-+
- static int pdsc_init_vf(struct pdsc *vf)
+-void pdsc_work_thread(struct work_struct *work)
+-{
+-	/* stub */
+-}
+-
+-irqreturn_t pdsc_adminq_isr(int irq, void *data)
+-{
+-	/* stub */
+-	return IRQ_HANDLED;
+-}
+-
+ void pdsc_intr_free(struct pdsc *pdsc, int index)
  {
- 	return -1;
-@@ -198,6 +205,7 @@ static int pdsc_init_pf(struct pdsc *pdsc)
- 
- 	mutex_init(&pdsc->devcmd_lock);
- 	mutex_init(&pdsc->config_lock);
-+	spin_lock_init(&pdsc->adminq_lock);
- 
- 	mutex_lock(&pdsc->config_lock);
- 	set_bit(PDSC_S_FW_DEAD, &pdsc->state);
-@@ -205,6 +213,9 @@ static int pdsc_init_pf(struct pdsc *pdsc)
- 	err = pdsc_setup(pdsc, PDSC_SETUP_INIT);
- 	if (err)
- 		goto err_out_unmap_bars;
-+	err = pdsc_start(pdsc);
-+	if (err)
-+		goto err_out_teardown;
- 
- 	mutex_unlock(&pdsc->config_lock);
- 
-@@ -216,7 +227,7 @@ static int pdsc_init_pf(struct pdsc *pdsc)
- 		dev_warn(pdsc->dev, "Failed to create fw reporter: %pe\n", hr);
- 		err = PTR_ERR(hr);
- 		devl_unlock(dl);
--		goto err_out_teardown;
-+		goto err_out_stop;
- 	}
- 	pdsc->fw_reporter = hr;
- 
-@@ -228,6 +239,8 @@ static int pdsc_init_pf(struct pdsc *pdsc)
- 
- 	return 0;
- 
-+err_out_stop:
-+	pdsc_stop(pdsc);
- err_out_teardown:
- 	pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
- err_out_unmap_bars:
-@@ -249,6 +262,7 @@ static int pdsc_init_pf(struct pdsc *pdsc)
- }
- 
- static const struct devlink_ops pdsc_dl_ops = {
-+	.info_get	= pdsc_dl_info_get,
- };
- 
- static const struct devlink_ops pdsc_dl_vf_ops = {
-@@ -353,6 +367,7 @@ static void pdsc_remove(struct pci_dev *pdev)
- 		mutex_lock(&pdsc->config_lock);
- 		set_bit(PDSC_S_STOPPING_DRIVER, &pdsc->state);
- 
-+		pdsc_stop(pdsc);
- 		pdsc_teardown(pdsc, PDSC_TEARDOWN_REMOVING);
- 		mutex_unlock(&pdsc->config_lock);
- 		mutex_destroy(&pdsc->config_lock);
+ 	struct pdsc_intr_info *intr_info;
 diff --git a/include/linux/pds/pds_adminq.h b/include/linux/pds/pds_adminq.h
-new file mode 100644
-index 000000000000..9cd58b7f5fb2
---- /dev/null
+index 9cd58b7f5fb2..797d93fd0473 100644
+--- a/include/linux/pds/pds_adminq.h
 +++ b/include/linux/pds/pds_adminq.h
-@@ -0,0 +1,637 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+@@ -4,6 +4,8 @@
+ #ifndef _PDS_CORE_ADMINQ_H_
+ #define _PDS_CORE_ADMINQ_H_
+ 
++#define PDSC_ADMINQ_MAX_POLL_INTERVAL	256
 +
-+#ifndef _PDS_CORE_ADMINQ_H_
-+#define _PDS_CORE_ADMINQ_H_
+ enum pds_core_adminq_flags {
+ 	PDS_AQ_FLAG_FASTPOLL	= BIT(1),	/* completion poll at 1ms */
+ };
+@@ -634,4 +636,10 @@ static inline u8 pdsc_color_match(u8 color, u8 done_color)
+ {
+ 	return (!!(color & PDS_COMP_COLOR_MASK)) == done_color;
+ }
 +
-+enum pds_core_adminq_flags {
-+	PDS_AQ_FLAG_FASTPOLL	= BIT(1),	/* completion poll at 1ms */
-+};
++int pdsc_adminq_post(void *pdsc,
++		     union pds_core_adminq_cmd *cmd,
++		     union pds_core_adminq_comp *comp,
++		     bool fast_poll);
 +
-+/*
-+ * enum pds_core_adminq_opcode - AdminQ command opcodes
-+ * These commands are only processed on AdminQ, not available in devcmd
-+ */
-+enum pds_core_adminq_opcode {
-+	PDS_AQ_CMD_NOP			= 0,
-+
-+	/* Client control */
-+	PDS_AQ_CMD_CLIENT_REG		= 6,
-+	PDS_AQ_CMD_CLIENT_UNREG		= 7,
-+	PDS_AQ_CMD_CLIENT_CMD		= 8,
-+
-+	/* LIF commands */
-+	PDS_AQ_CMD_LIF_IDENTIFY		= 20,
-+	PDS_AQ_CMD_LIF_INIT		= 21,
-+	PDS_AQ_CMD_LIF_RESET		= 22,
-+	PDS_AQ_CMD_LIF_GETATTR		= 23,
-+	PDS_AQ_CMD_LIF_SETATTR		= 24,
-+	PDS_AQ_CMD_LIF_SETPHC		= 25,
-+
-+	PDS_AQ_CMD_RX_MODE_SET		= 30,
-+	PDS_AQ_CMD_RX_FILTER_ADD	= 31,
-+	PDS_AQ_CMD_RX_FILTER_DEL	= 32,
-+
-+	/* Queue commands */
-+	PDS_AQ_CMD_Q_IDENTIFY		= 39,
-+	PDS_AQ_CMD_Q_INIT		= 40,
-+	PDS_AQ_CMD_Q_CONTROL		= 41,
-+
-+	/* SR/IOV commands */
-+	PDS_AQ_CMD_VF_GETATTR		= 60,
-+	PDS_AQ_CMD_VF_SETATTR		= 61,
-+};
-+
-+/*
-+ * enum pds_core_notifyq_opcode - NotifyQ event codes
-+ */
-+enum pds_core_notifyq_opcode {
-+	PDS_EVENT_LINK_CHANGE		= 1,
-+	PDS_EVENT_RESET			= 2,
-+	PDS_EVENT_XCVR			= 5,
-+	PDS_EVENT_CLIENT		= 6,
-+};
-+
-+#define PDS_COMP_COLOR_MASK  0x80
-+
-+/**
-+ * struct pds_core_notifyq_event - Generic event reporting structure
-+ * @eid:   event number
-+ * @ecode: event code
-+ *
-+ * This is the generic event report struct from which the other
-+ * actual events will be formed.
-+ */
-+struct pds_core_notifyq_event {
-+	__le64 eid;
-+	__le16 ecode;
-+};
-+
-+/**
-+ * struct pds_core_link_change_event - Link change event notification
-+ * @eid:		event number
-+ * @ecode:		event code = PDS_EVENT_LINK_CHANGE
-+ * @link_status:	link up/down, with error bits
-+ * @link_speed:		speed of the network link
-+ *
-+ * Sent when the network link state changes between UP and DOWN
-+ */
-+struct pds_core_link_change_event {
-+	__le64 eid;
-+	__le16 ecode;
-+	__le16 link_status;
-+	__le32 link_speed;	/* units of 1Mbps: e.g. 10000 = 10Gbps */
-+};
-+
-+/**
-+ * struct pds_core_reset_event - Reset event notification
-+ * @eid:		event number
-+ * @ecode:		event code = PDS_EVENT_RESET
-+ * @reset_code:		reset type
-+ * @state:		0=pending, 1=complete, 2=error
-+ *
-+ * Sent when the NIC or some subsystem is going to be or
-+ * has been reset.
-+ */
-+struct pds_core_reset_event {
-+	__le64 eid;
-+	__le16 ecode;
-+	u8     reset_code;
-+	u8     state;
-+};
-+
-+/**
-+ * struct pds_core_client_event - Client event notification
-+ * @eid:		event number
-+ * @ecode:		event code = PDS_EVENT_CLIENT
-+ * @client_id:          client to sent event to
-+ * @client_event:       wrapped event struct for the client
-+ *
-+ * Sent when an event needs to be passed on to a client
-+ */
-+struct pds_core_client_event {
-+	__le64 eid;
-+	__le16 ecode;
-+	__le16 client_id;
-+	u8     client_event[54];
-+};
-+
-+/**
-+ * struct pds_core_notifyq_cmd - Placeholder for building qcq
-+ * @data:      anonymous field for building the qcq
-+ */
-+struct pds_core_notifyq_cmd {
-+	__le32 data;	/* Not used but needed for qcq structure */
-+};
-+
-+/*
-+ * union pds_core_notifyq_comp - Overlay of notifyq event structures
-+ */
-+union pds_core_notifyq_comp {
-+	struct {
-+		__le64 eid;
-+		__le16 ecode;
-+	};
-+	struct pds_core_notifyq_event     event;
-+	struct pds_core_link_change_event link_change;
-+	struct pds_core_reset_event       reset;
-+	u8     data[64];
-+};
-+
-+/**
-+ * struct pds_core_client_reg_cmd - Register a new client with DSC
-+ * @opcode:         opcode PDS_AQ_CMD_CLIENT_REG
-+ * @rsvd:           word boundary padding
-+ * @devname:        text name of client device
-+ * @vif_type:       what type of device (enum pds_core_vif_types)
-+ *
-+ * Tell the DSC of the new client, and receive a client_id from DSC.
-+ */
-+struct pds_core_client_reg_cmd {
-+	u8     opcode;
-+	u8     rsvd[3];
-+	char   devname[32];
-+	u8     vif_type;
-+};
-+
-+/**
-+ * struct pds_core_client_reg_comp - Client registration completion
-+ * @status:     Status of the command (enum pdc_core_status_code)
-+ * @rsvd:       Word boundary padding
-+ * @comp_index: Index in the descriptor ring for which this is the completion
-+ * @client_id:  New id assigned by DSC
-+ * @rsvd1:      Word boundary padding
-+ * @color:      Color bit
-+ */
-+struct pds_core_client_reg_comp {
-+	u8     status;
-+	u8     rsvd;
-+	__le16 comp_index;
-+	__le16 client_id;
-+	u8     rsvd1[9];
-+	u8     color;
-+};
-+
-+/**
-+ * struct pds_core_client_unreg_cmd - Unregister a client from DSC
-+ * @opcode:     opcode PDS_AQ_CMD_CLIENT_UNREG
-+ * @rsvd:       word boundary padding
-+ * @client_id:  id of client being removed
-+ *
-+ * Tell the DSC this client is going away and remove its context
-+ * This uses the generic completion.
-+ */
-+struct pds_core_client_unreg_cmd {
-+	u8     opcode;
-+	u8     rsvd;
-+	__le16 client_id;
-+};
-+
-+/**
-+ * struct pds_core_client_request_cmd - Pass along a wrapped client AdminQ cmd
-+ * @opcode:     opcode PDS_AQ_CMD_CLIENT_CMD
-+ * @rsvd:       word boundary padding
-+ * @client_id:  id of client being removed
-+ * @client_cmd: the wrapped client command
-+ *
-+ * Proxy post an adminq command for the client.
-+ * This uses the generic completion.
-+ */
-+struct pds_core_client_request_cmd {
-+	u8     opcode;
-+	u8     rsvd;
-+	__le16 client_id;
-+	u8     client_cmd[60];
-+};
-+
-+#define PDS_CORE_MAX_FRAGS		16
-+
-+#define PDS_CORE_QCQ_F_INITED		BIT(0)
-+#define PDS_CORE_QCQ_F_SG		BIT(1)
-+#define PDS_CORE_QCQ_F_INTR		BIT(2)
-+#define PDS_CORE_QCQ_F_TX_STATS		BIT(3)
-+#define PDS_CORE_QCQ_F_RX_STATS		BIT(4)
-+#define PDS_CORE_QCQ_F_NOTIFYQ		BIT(5)
-+#define PDS_CORE_QCQ_F_CMB_RINGS	BIT(6)
-+#define PDS_CORE_QCQ_F_CORE		BIT(7)
-+
-+enum pds_core_lif_type {
-+	PDS_CORE_LIF_TYPE_DEFAULT = 0,
-+};
-+
-+/**
-+ * union pds_core_lif_config - LIF configuration
-+ * @state:	    LIF state (enum pds_core_lif_state)
-+ * @rsvd:           Word boundary padding
-+ * @name:	    LIF name
-+ * @rsvd2:          Word boundary padding
-+ * @features:	    LIF features active (enum pds_core_hw_features)
-+ * @queue_count:    Queue counts per queue-type
-+ * @words:          Full union buffer size
-+ */
-+union pds_core_lif_config {
-+	struct {
-+		u8     state;
-+		u8     rsvd[3];
-+		char   name[PDS_CORE_IFNAMSIZ];
-+		u8     rsvd2[12];
-+		__le64 features;
-+		__le32 queue_count[PDS_CORE_QTYPE_MAX];
-+	} __packed;
-+	__le32 words[64];
-+};
-+
-+/**
-+ * struct pds_core_lif_status - LIF status register
-+ * @eid:	     most recent NotifyQ event id
-+ * @rsvd:            full struct size
-+ */
-+struct pds_core_lif_status {
-+	__le64 eid;
-+	u8     rsvd[56];
-+};
-+
-+/**
-+ * struct pds_core_lif_info - LIF info structure
-+ * @config:	LIF configuration structure
-+ * @status:	LIF status structure
-+ */
-+struct pds_core_lif_info {
-+	union pds_core_lif_config config;
-+	struct pds_core_lif_status status;
-+};
-+
-+/**
-+ * struct pds_core_lif_identity - LIF identity information (type-specific)
-+ * @features:		LIF features (see enum pds_core_hw_features)
-+ * @version:		Identify structure version
-+ * @hw_index:		LIF hardware index
-+ * @rsvd:		Word boundary padding
-+ * @max_nb_sessions:	Maximum number of sessions supported
-+ * @rsvd2:		buffer padding
-+ * @config:		LIF config struct with features, q counts
-+ */
-+struct pds_core_lif_identity {
-+	__le64 features;
-+	u8     version;
-+	u8     hw_index;
-+	u8     rsvd[2];
-+	__le32 max_nb_sessions;
-+	u8     rsvd2[120];
-+	union pds_core_lif_config config;
-+};
-+
-+/**
-+ * struct pds_core_lif_identify_cmd - Get LIF identity info command
-+ * @opcode:	Opcode PDS_AQ_CMD_LIF_IDENTIFY
-+ * @type:	LIF type (enum pds_core_lif_type)
-+ * @client_id:	Client identifier
-+ * @ver:	Version of identify returned by device
-+ * @rsvd:       Word boundary padding
-+ * @ident_pa:	DMA address to receive identity info
-+ *
-+ * Firmware will copy LIF identity data (struct pds_core_lif_identity)
-+ * into the buffer address given.
-+ */
-+struct pds_core_lif_identify_cmd {
-+	u8     opcode;
-+	u8     type;
-+	__le16 client_id;
-+	u8     ver;
-+	u8     rsvd[3];
-+	__le64 ident_pa;
-+};
-+
-+/**
-+ * struct pds_core_lif_identify_comp - LIF identify command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @ver:	Version of identify returned by device
-+ * @bytes:	Bytes copied into the buffer
-+ * @rsvd:       Word boundary padding
-+ * @color:      Color bit
-+ */
-+struct pds_core_lif_identify_comp {
-+	u8     status;
-+	u8     ver;
-+	__le16 bytes;
-+	u8     rsvd[11];
-+	u8     color;
-+};
-+
-+/**
-+ * struct pds_core_lif_init_cmd - LIF init command
-+ * @opcode:	Opcode PDS_AQ_CMD_LIF_INIT
-+ * @type:	LIF type (enum pds_core_lif_type)
-+ * @client_id:	Client identifier
-+ * @rsvd:       Word boundary padding
-+ * @info_pa:	Destination address for LIF info (struct pds_core_lif_info)
-+ */
-+struct pds_core_lif_init_cmd {
-+	u8     opcode;
-+	u8     type;
-+	__le16 client_id;
-+	__le32 rsvd;
-+	__le64 info_pa;
-+};
-+
-+/**
-+ * struct pds_core_lif_init_comp - LIF init command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:       Word boundary padding
-+ * @hw_index:	Hardware index of the initialized LIF
-+ * @rsvd1:      Word boundary padding
-+ * @color:      Color bit
-+ */
-+struct pds_core_lif_init_comp {
-+	u8 status;
-+	u8 rsvd;
-+	__le16 hw_index;
-+	u8     rsvd1[11];
-+	u8     color;
-+};
-+
-+/**
-+ * struct pds_core_lif_reset_cmd - LIF reset command
-+ * Will reset only the specified LIF.
-+ * @opcode:	Opcode PDS_AQ_CMD_LIF_RESET
-+ * @rsvd:       Word boundary padding
-+ * @client_id:	Client identifier
-+ */
-+struct pds_core_lif_reset_cmd {
-+	u8     opcode;
-+	u8     rsvd;
-+	__le16 client_id;
-+};
-+
-+/**
-+ * enum pds_core_lif_attr - List of LIF attributes
-+ * @PDS_CORE_LIF_ATTR_STATE:		LIF state attribute
-+ * @PDS_CORE_LIF_ATTR_NAME:		LIF name attribute
-+ * @PDS_CORE_LIF_ATTR_FEATURES:		LIF features attribute
-+ * @PDS_CORE_LIF_ATTR_STATS_CTRL:	LIF statistics control attribute
-+ */
-+enum pds_core_lif_attr {
-+	PDS_CORE_LIF_ATTR_STATE		= 0,
-+	PDS_CORE_LIF_ATTR_NAME		= 1,
-+	PDS_CORE_LIF_ATTR_FEATURES	= 4,
-+	PDS_CORE_LIF_ATTR_STATS_CTRL	= 6,
-+};
-+
-+/**
-+ * struct pds_core_lif_setattr_cmd - Set LIF attributes on the NIC
-+ * @opcode:	Opcode PDS_AQ_CMD_LIF_SETATTR
-+ * @attr:	Attribute type (enum pds_core_lif_attr)
-+ * @client_id:	Client identifier
-+ * @state:	LIF state (enum pds_core_lif_state)
-+ * @name:	The name string, 0 terminated
-+ * @features:	Features (enum pds_core_hw_features)
-+ * @stats_ctl:	Stats control commands (enum pds_core_stats_ctl_cmd)
-+ * @rsvd:       Command Buffer padding
-+ */
-+struct pds_core_lif_setattr_cmd {
-+	u8     opcode;
-+	u8     attr;
-+	__le16 client_id;
-+	union {
-+		u8      state;
-+		char    name[PDS_CORE_IFNAMSIZ];
-+		__le64  features;
-+		u8      stats_ctl;
-+		u8      rsvd[60];
-+	} __packed;
-+};
-+
-+/**
-+ * struct pds_core_lif_setattr_comp - LIF set attr command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:       Word boundary padding
-+ * @comp_index: Index in the descriptor ring for which this is the completion
-+ * @features:	Features (enum pds_core_hw_features)
-+ * @rsvd2:      Word boundary padding
-+ * @color:	Color bit
-+ */
-+struct pds_core_lif_setattr_comp {
-+	u8     status;
-+	u8     rsvd;
-+	__le16 comp_index;
-+	union {
-+		__le64  features;
-+		u8      rsvd2[11];
-+	} __packed;
-+	u8     color;
-+};
-+
-+/**
-+ * struct pds_core_lif_getattr_cmd - Get LIF attributes from the NIC
-+ * @opcode:	Opcode PDS_AQ_CMD_LIF_GETATTR
-+ * @attr:	Attribute type (enum pds_core_lif_attr)
-+ * @client_id:	Client identifier
-+ */
-+struct pds_core_lif_getattr_cmd {
-+	u8     opcode;
-+	u8     attr;
-+	__le16 client_id;
-+};
-+
-+/**
-+ * struct pds_core_lif_getattr_comp - LIF get attr command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:       Word boundary padding
-+ * @comp_index: Index in the descriptor ring for which this is the completion
-+ * @state:	LIF state (enum pds_core_lif_state)
-+ * @name:	LIF name string, 0 terminated
-+ * @features:	Features (enum pds_core_hw_features)
-+ * @rsvd2:      Word boundary padding
-+ * @color:	Color bit
-+ */
-+struct pds_core_lif_getattr_comp {
-+	u8     status;
-+	u8     rsvd;
-+	__le16 comp_index;
-+	union {
-+		u8      state;
-+		__le64  features;
-+		u8      rsvd2[11];
-+	} __packed;
-+	u8     color;
-+};
-+
-+/**
-+ * union pds_core_q_identity - Queue identity information
-+ * @version:	Queue type version that can be used with FW
-+ * @supported:	Bitfield of queue versions, first bit = ver 0
-+ * @rsvd:       Word boundary padding
-+ * @features:	Queue features
-+ * @desc_sz:	Descriptor size
-+ * @comp_sz:	Completion descriptor size
-+ * @rsvd2:      Word boundary padding
-+ */
-+struct pds_core_q_identity {
-+	u8      version;
-+	u8      supported;
-+	u8      rsvd[6];
-+#define PDS_CORE_QIDENT_F_CQ	0x01	/* queue has completion ring */
-+	__le64  features;
-+	__le16  desc_sz;
-+	__le16  comp_sz;
-+	u8      rsvd2[6];
-+};
-+
-+/**
-+ * struct pds_core_q_identify_cmd - queue identify command
-+ * @opcode:	Opcode PDS_AQ_CMD_Q_IDENTIFY
-+ * @type:	Logical queue type (enum pds_core_logical_qtype)
-+ * @client_id:	Client identifier
-+ * @ver:	Highest queue type version that the driver supports
-+ * @rsvd:       Word boundary padding
-+ * @ident_pa:   DMA address to receive the data (struct pds_core_q_identity)
-+ */
-+struct pds_core_q_identify_cmd {
-+	u8     opcode;
-+	u8     type;
-+	__le16 client_id;
-+	u8     ver;
-+	u8     rsvd[3];
-+	__le64 ident_pa;
-+};
-+
-+/**
-+ * struct pds_core_q_identify_comp - queue identify command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:       Word boundary padding
-+ * @comp_index:	Index in the descriptor ring for which this is the completion
-+ * @ver:	Queue type version that can be used with FW
-+ * @rsvd1:      Word boundary padding
-+ * @color:      Color bit
-+ */
-+struct pds_core_q_identify_comp {
-+	u8     status;
-+	u8     rsvd;
-+	__le16 comp_index;
-+	u8     ver;
-+	u8     rsvd1[10];
-+	u8     color;
-+};
-+
-+/**
-+ * struct pds_core_q_init_cmd - Queue init command
-+ * @opcode:	  Opcode PDS_AQ_CMD_Q_INIT
-+ * @type:	  Logical queue type
-+ * @client_id:	  Client identifier
-+ * @ver:	  Queue type version
-+ * @rsvd:         Word boundary padding
-+ * @index:	  (LIF, qtype) relative admin queue index
-+ * @intr_index:	  Interrupt control register index, or Event queue index
-+ * @pid:	  Process ID
-+ * @flags:
-+ *    IRQ:	  Interrupt requested on completion
-+ *    ENA:	  Enable the queue.  If ENA=0 the queue is initialized
-+ *		  but remains disabled, to be later enabled with the
-+ *		  Queue Enable command. If ENA=1, then queue is
-+ *		  initialized and then enabled.
-+ * @cos:	  Class of service for this queue
-+ * @ring_size:	  Queue ring size, encoded as a log2(size), in
-+ *		  number of descriptors.  The actual ring size is
-+ *		  (1 << ring_size).  For example, to select a ring size
-+ *		  of 64 descriptors write ring_size = 6. The minimum
-+ *		  ring_size value is 2 for a ring of 4 descriptors.
-+ *		  The maximum ring_size value is 12 for a ring of 4k
-+ *		  descriptors. Values of ring_size <2 and >12 are
-+ *		  reserved.
-+ * @ring_base:	  Queue ring base address
-+ * @cq_ring_base: Completion queue ring base address
-+ */
-+struct pds_core_q_init_cmd {
-+	u8     opcode;
-+	u8     type;
-+	__le16 client_id;
-+	u8     ver;
-+	u8     rsvd[3];
-+	__le32 index;
-+	__le16 pid;
-+	__le16 intr_index;
-+	__le16 flags;
-+#define PDS_CORE_QINIT_F_IRQ	0x01	/* Request interrupt on completion */
-+#define PDS_CORE_QINIT_F_ENA	0x02	/* Enable the queue */
-+	u8     cos;
-+#define PDS_CORE_QSIZE_MIN_LG2	2
-+#define PDS_CORE_QSIZE_MAX_LG2	12
-+	u8     ring_size;
-+	__le64 ring_base;
-+	__le64 cq_ring_base;
-+} __packed;
-+
-+/**
-+ * struct pds_core_q_init_comp - Queue init command completion
-+ * @status:	Status of the command (enum pds_core_status_code)
-+ * @rsvd:       Word boundary padding
-+ * @comp_index:	Index in the descriptor ring for which this is the completion
-+ * @hw_index:	Hardware Queue ID
-+ * @hw_type:	Hardware Queue type
-+ * @rsvd2:      Word boundary padding
-+ * @color:	Color
-+ */
-+struct pds_core_q_init_comp {
-+	u8     status;
-+	u8     rsvd;
-+	__le16 comp_index;
-+	__le32 hw_index;
-+	u8     hw_type;
-+	u8     rsvd2[6];
-+	u8     color;
-+};
-+
-+union pds_core_adminq_cmd {
-+	u8     opcode;
-+	u8     bytes[64];
-+
-+	struct pds_core_client_reg_cmd     client_reg;
-+	struct pds_core_client_unreg_cmd   client_unreg;
-+	struct pds_core_client_request_cmd client_request;
-+
-+	struct pds_core_lif_identify_cmd  lif_ident;
-+	struct pds_core_lif_init_cmd      lif_init;
-+	struct pds_core_lif_reset_cmd     lif_reset;
-+	struct pds_core_lif_setattr_cmd   lif_setattr;
-+	struct pds_core_lif_getattr_cmd   lif_getattr;
-+
-+	struct pds_core_q_identify_cmd    q_ident;
-+	struct pds_core_q_init_cmd        q_init;
-+};
-+
-+union pds_core_adminq_comp {
-+	struct {
-+		u8     status;
-+		u8     rsvd;
-+		__le16 comp_index;
-+		u8     rsvd2[11];
-+		u8     color;
-+	};
-+	u32    words[4];
-+
-+	struct pds_core_client_reg_comp   client_reg;
-+
-+	struct pds_core_lif_identify_comp lif_ident;
-+	struct pds_core_lif_init_comp     lif_init;
-+	struct pds_core_lif_setattr_comp  lif_setattr;
-+	struct pds_core_lif_getattr_comp  lif_getattr;
-+
-+	struct pds_core_q_identify_comp   q_ident;
-+	struct pds_core_q_init_comp       q_init;
-+};
-+
-+#ifndef __CHECKER__
-+static_assert(sizeof(union pds_core_adminq_cmd) == 64);
-+static_assert(sizeof(union pds_core_adminq_comp) == 16);
-+static_assert(sizeof(union pds_core_notifyq_comp) == 64);
-+#endif /* __CHECKER__ */
-+
-+/* The color bit is a 'done' bit for the completion descriptors
-+ * where the meaning alternates between '1' and '0' for alternating
-+ * passes through the completion descriptor ring.
-+ */
-+static inline u8 pdsc_color_match(u8 color, u8 done_color)
-+{
-+	return (!!(color & PDS_COMP_COLOR_MASK)) == done_color;
-+}
-+#endif /* _PDS_CORE_ADMINQ_H_ */
+ #endif /* _PDS_CORE_ADMINQ_H_ */
 -- 
 2.17.1
 
