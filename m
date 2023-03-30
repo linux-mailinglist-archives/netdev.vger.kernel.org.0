@@ -2,158 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 341C16D0119
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B31D76D013F
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:32:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231317AbjC3KXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 06:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42494 "EHLO
+        id S229862AbjC3KcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 06:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231307AbjC3KXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:23:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF7183DC
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:23:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680171788;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=59FDE+8LM1RTgNxCSNxSrwpKtHARF1ER91IIjRZ5nx4=;
-        b=c/Tfi6O+Q5UPXfRx7n428Eho3OILFOGFH4Jipf7jlUg9nyijGHjAesM44GUN45lkKypUZ0
-        tmNP7VgAjtpkkC7TUmdbOefSkJjt0nPZRRWBmOcRhAeeG32zRp+QG12q2AsKbWjc72VXkx
-        yOlkwoT6GnkcdK8H86zoJOC+7POqaew=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-6-DUSP2QJKP0mZGdRsZKyjJw-1; Thu, 30 Mar 2023 06:23:07 -0400
-X-MC-Unique: DUSP2QJKP0mZGdRsZKyjJw-1
-Received: by mail-qv1-f71.google.com with SMTP id pr2-20020a056214140200b005b3ed9328a3so7984456qvb.10
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:23:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680171786;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=59FDE+8LM1RTgNxCSNxSrwpKtHARF1ER91IIjRZ5nx4=;
-        b=jr9yWs5XEA9ih30HrK6BHgoHmyeVPcB46WSF/RYGrYRiQYP8rqrGoOMS1NeYpK/KuU
-         mikW2FaQyz7/6qZNXe/aRtKOdi7mNPE8far2cgN5fc+3W9kifAX4yenH4+dDHzOLMTKc
-         1uJX8cpDpH2V/CmlxiWEJuM+M4bSWnm/Fgtm2gW89Esce9/tcFYtG6lR4y5buiSFD/Yc
-         oJOL1HWEo6FkLmwnIRjmqRB0MfaODZsyixmPoa5CeSEaEtICwLJkeOiMmSnCQ00IrfOi
-         5ggnKd49LU2XDSN1dcCNzpIE5YYt+QSrPPh6lz7V/vZnVL/LKDMUGKu84oPmJaaZkOrj
-         doPw==
-X-Gm-Message-State: AO0yUKWaosYvQONVAVSqCTO8iagIxczfG13lDu3ggBQa63IoD/BRosQ8
-        zssDaSqi4vlxlGuXN+cwTv/PS9d2gmQHggSi72FkL4F0tahn9nSn1wGys6cIdm/SY6+i4bH+KwE
-        DXXiMQZP4a8LhWeeV
-X-Received: by 2002:a05:622a:14c7:b0:3ba:151a:d300 with SMTP id u7-20020a05622a14c700b003ba151ad300mr35694847qtx.60.1680171786535;
-        Thu, 30 Mar 2023 03:23:06 -0700 (PDT)
-X-Google-Smtp-Source: AK7set9hwJzPdjL3B3XEC/SRjMmxy4i5zJ3rFc0P7bDk8NNBjognN6HOVj4HrMl2WPZD3H6XIItrvA==
-X-Received: by 2002:a05:622a:14c7:b0:3ba:151a:d300 with SMTP id u7-20020a05622a14c700b003ba151ad300mr35694825qtx.60.1680171786267;
-        Thu, 30 Mar 2023 03:23:06 -0700 (PDT)
-Received: from debian (2a01cb058918ce003af3a313a65b3409.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:3af3:a313:a65b:3409])
-        by smtp.gmail.com with ESMTPSA id d140-20020a376892000000b007467a4d8691sm15500145qkc.47.2023.03.30.03.23.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 03:23:05 -0700 (PDT)
-Date:   Thu, 30 Mar 2023 12:23:02 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Andrea Righi <andrea.righi@canonical.com>
-Cc:     David Miller <davem@davemloft.net>,
+        with ESMTP id S229486AbjC3KcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:32:03 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED7A19F;
+        Thu, 30 Mar 2023 03:31:59 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 550331883A12;
+        Thu, 30 Mar 2023 10:31:57 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 3F89F2500389;
+        Thu, 30 Mar 2023 10:31:57 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 342579B403F6; Thu, 30 Mar 2023 10:31:57 +0000 (UTC)
+X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
+Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 821C49B403E4;
+        Thu, 30 Mar 2023 10:31:56 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Wojciech Drewek <wojciech.drewek@intel.com>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] l2tp: generate correct module alias strings
-Message-ID: <ZCVjBkdySj5BhMja@debian>
-References: <20230330095442.363201-1-andrea.righi@canonical.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 6/6] selftests: forwarding: add dynamic FDB
+ test
+In-Reply-To: <ZCUuMosWbyq1pK8R@shredder>
+References: <20230318141010.513424-1-netdev@kapio-technology.com>
+ <20230318141010.513424-7-netdev@kapio-technology.com>
+ <ZBgdAo8mxwnl+pEE@shredder> <87a5zzh65p.fsf@kapio-technology.com>
+ <ZCMYbRqd+qZaiHfu@shredder> <87fs9ollmn.fsf@kapio-technology.com>
+ <ZCUuMosWbyq1pK8R@shredder>
+Date:   Thu, 30 Mar 2023 12:29:18 +0200
+Message-ID: <87mt3u7csh.fsf@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230330095442.363201-1-andrea.righi@canonical.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 11:54:42AM +0200, Andrea Righi wrote:
-> Commit 65b32f801bfb ("uapi: move IPPROTO_L2TP to in.h") moved the
-> definition of IPPROTO_L2TP from a define to an enum, but since
-> __stringify doesn't work properly with enums, we ended up breaking the
-> modalias strings for the l2tp modules:
-> 
->  $ modinfo l2tp_ip l2tp_ip6 | grep alias
->  alias:          net-pf-2-proto-IPPROTO_L2TP
->  alias:          net-pf-2-proto-2-type-IPPROTO_L2TP
->  alias:          net-pf-10-proto-IPPROTO_L2TP
->  alias:          net-pf-10-proto-2-type-IPPROTO_L2TP
-> 
-> Use the resolved number directly in MODULE_ALIAS_*() macros (as we
-> already do with SOCK_DGRAM) to fix the alias strings:
-> 
-> $ modinfo l2tp_ip l2tp_ip6 | grep alias
-> alias:          net-pf-2-proto-115
-> alias:          net-pf-2-proto-115-type-2
-> alias:          net-pf-10-proto-115
-> alias:          net-pf-10-proto-115-type-2
-> 
-> Moreover, fix the ordering of the parameters passed to
-> MODULE_ALIAS_NET_PF_PROTO_TYPE() by switching proto and type.
+On Thu, Mar 30, 2023 at 09:37, Ido Schimmel <idosch@nvidia.com> wrote:
+> On Tue, Mar 28, 2023 at 09:30:08PM +0200, Hans Schultz wrote:
+>> 
+>> Sorry, but I have sent you several emails telling you about the problems
+>> I have with running the selftests due to changes in the phy etc. Maybe
+>> you have just not received all those emails?
+>> 
+>> Have you checked spamfilters?
+>> 
+>> With the kernels now, I cannot even test with the software bridge and
+>> selftests as the compile fails - probably due to changes in uapi headers
+>> compared to what the packages my system uses expects.
+>
+> My spam filters are fine. I saw your emails where you basically said
+> that you are too lazy to setup a VM to test your patches and that your
+> time is more valuable than mine, which is why I should be testing them.
+> Stop making your problems our problems. It's hardly the first time. If
+> you are unable to test your patches, then invest the time in fixing your
+> setup instead of submitting completely broken patches and making it our
+> problem to test and fix them. I refuse to invest time in reviewing /
+> testing / reworking your submissions as long as you insist on doing less
+> than the bare minimum.
+>
+> Good luck
 
-Thanks!
+I never said or indicated that my time is more valuable than yours. I
+have a VM to run these things that some have spent countless hours to
+develop with the right tools etc installed and set up. Fixing that
+system will take quite many hours for me, so I am asking for some simple
+assistance from someone who already has a system running supporting the
+newest kernel.
 
-Just to be explicit to the maintainers, this patch is for the net tree
-(next time, you can use [PATCH net] to make that clear).
+Alternatively if there is an open sourced system available that would be
+great.
 
-> Fixes: 65b32f801bfb ("uapi: move IPPROTO_L2TP to in.h")
-> Link: https://lore.kernel.org/lkml/ZCQt7hmodtUaBlCP@righiandr-XPS-13-7390
-> Signed-off-by: Guillaume Nault <gnault@redhat.com>
-> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
-> ---
->  net/l2tp/l2tp_ip.c  | 8 ++++----
->  net/l2tp/l2tp_ip6.c | 8 ++++----
->  2 files changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
-> index 4db5a554bdbd..41a74fc84ca1 100644
-> --- a/net/l2tp/l2tp_ip.c
-> +++ b/net/l2tp/l2tp_ip.c
-> @@ -677,8 +677,8 @@ MODULE_AUTHOR("James Chapman <jchapman@katalix.com>");
->  MODULE_DESCRIPTION("L2TP over IP");
->  MODULE_VERSION("1.0");
->  
-> -/* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
-> - * enums
-> +/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
-> + * because __stringify doesn't like enums
->   */
-> -MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 2, IPPROTO_L2TP);
-> -MODULE_ALIAS_NET_PF_PROTO(PF_INET, IPPROTO_L2TP);
-> +MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 115, 2);
-> +MODULE_ALIAS_NET_PF_PROTO(PF_INET, 115);
-> diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-> index 2478aa60145f..5137ea1861ce 100644
-> --- a/net/l2tp/l2tp_ip6.c
-> +++ b/net/l2tp/l2tp_ip6.c
-> @@ -806,8 +806,8 @@ MODULE_AUTHOR("Chris Elston <celston@katalix.com>");
->  MODULE_DESCRIPTION("L2TP IP encapsulation for IPv6");
->  MODULE_VERSION("1.0");
->  
-> -/* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
-> - * enums
-> +/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
-> + * because __stringify doesn't like enums
->   */
-> -MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 2, IPPROTO_L2TP);
-> -MODULE_ALIAS_NET_PF_PROTO(PF_INET6, IPPROTO_L2TP);
-> +MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 115, 2);
-> +MODULE_ALIAS_NET_PF_PROTO(PF_INET6, 115);
-> -- 
-> 2.39.2
-> 
-
+As this patch-set is for the community and some companies that would
+like to use it and not for myself, I am asking for some help from the
+community with a task that when someone has the system in place should
+not take more than 15-20 minutes, maybe even less.
