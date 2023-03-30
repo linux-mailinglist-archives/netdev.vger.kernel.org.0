@@ -2,88 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68E8F6CFB1A
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C29146CFB24
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:01:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbjC3GBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 02:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        id S230020AbjC3GB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 02:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbjC3GBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:01:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6475F5B8E;
-        Wed, 29 Mar 2023 23:01:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BF3161ED4;
-        Thu, 30 Mar 2023 06:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C247C433EF;
-        Thu, 30 Mar 2023 06:01:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1680156069;
-        bh=qI0qsnXqQKDOWulB+WAd4HD4/HMrD9/ycIJ/oMxn0oY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gBG+RraMJnoaJWwhflk/lEn1nnjxorrS4ILTHNm5k7sN7GcM4uvwQB2NhBuiN9CO6
-         KkpJI0eVOSpavtgNjSqbyg3YjCRFUotud59NNMsfWoNaCe8uHXBKzAi5jCwz9+ebXs
-         zZX2pR1sN6zvf/hVSnT/pO0Zjac3PWr7xxG3dlsw=
-Date:   Thu, 30 Mar 2023 08:01:07 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     linux-kernel@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] mISDN: remove unneeded mISDN_class_release()
-Message-ID: <ZCUlo1jcPeU4K_AI@kroah.com>
-References: <20230329060127.2688492-1-gregkh@linuxfoundation.org>
- <ZCST8vuQDEo9GhsS@corigine.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCST8vuQDEo9GhsS@corigine.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S230037AbjC3GBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:01:40 -0400
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C71A6A54;
+        Wed, 29 Mar 2023 23:01:26 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VezSI9h_1680156082;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VezSI9h_1680156082)
+          by smtp.aliyun-inc.com;
+          Thu, 30 Mar 2023 14:01:23 +0800
+Message-ID: <1680156071.4256074-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 12/16] virtio_net: introduce virtnet_get_netdev()
+Date:   Thu, 30 Mar 2023 14:01:11 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230328092847.91643-1-xuanzhuo@linux.alibaba.com>
+ <20230328092847.91643-13-xuanzhuo@linux.alibaba.com>
+ <20230329212203.3c3bf199@kernel.org>
+In-Reply-To: <20230329212203.3c3bf199@kernel.org>
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 09:39:30PM +0200, Simon Horman wrote:
-> On Wed, Mar 29, 2023 at 08:01:27AM +0200, Greg Kroah-Hartman wrote:
-> > The mISDN_class_release() is not needed at all, as the class structure
-> > is static, and it does not actually do anything either, so it is safe to
-> > remove as struct class does not require a release callback.
-> > 
-> > Cc: Karsten Keil <isdn@linux-pingi.de>
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> > Note: I would like to take this through the driver-core tree as I have
-> > later struct class cleanups that depend on this change being made to the
-> > tree if that's ok with the maintainer of this file.
-> > 
-> >  drivers/isdn/mISDN/core.c | 6 ------
-> >  1 file changed, 6 deletions(-)
-> 
-> I assume this will hit the following in drivers/base/class.c:class_release():
-> 
->         if (class->class_release)
->                 class->class_release(class);
->         else
-> 		pr_debug("class '%s' does not have a release() function, "
-> 		"be careful\n", class->name);
-> 
-> So I also assume that you are being careful :)
+On Wed, 29 Mar 2023 21:22:03 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 28 Mar 2023 17:28:43 +0800 Xuan Zhuo wrote:
+> > +const struct net_device_ops *virtnet_get_netdev(void)
+> > +{
+> > +	return &virtnet_netdev;
+> > +}
+>
+> Why not just make the virtnet_netdev symbol visible?
+> Many drivers do that.
+>
+> If you prefer the function maybe virtnet_get_ndos() would be a better
+> name for example? The current name sounds like it will get a... well..
+> a netdev. And it gets ops.
 
-Yes, I am :)
 
-I need to remove that debug line soon as I'm moving all struct class
-instances to be static and in read-only memory, which would mean that no
-release function is needed at all for them.  Give me a few hundred more
-commits to get there...
+Will fix.
 
-thanks for the review!
-
-greg k-h
+Thanks.
