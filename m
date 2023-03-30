@@ -2,182 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C42326CFBDE
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D30F6CFBDF
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbjC3Grg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 02:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
+        id S230074AbjC3Grf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 02:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbjC3Grf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:47:35 -0400
-Received: from mail.fintek.com.tw (mail.fintek.com.tw [59.120.186.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A7340C9;
-        Wed, 29 Mar 2023 23:47:30 -0700 (PDT)
-Received: from vmMailSRV.fintek.com.tw ([192.168.1.1])
-        by mail.fintek.com.tw with ESMTP id 32U6kGAt030478;
-        Thu, 30 Mar 2023 14:46:16 +0800 (+08)
-        (envelope-from peter_hong@fintek.com.tw)
-Received: from [192.168.1.132] (192.168.1.132) by vmMailSRV.fintek.com.tw
- (192.168.1.1) with Microsoft SMTP Server id 14.3.498.0; Thu, 30 Mar 2023
- 14:46:16 +0800
-Message-ID: <8f43fc07-39b1-4b1b-9dc6-257eb00c3a81@fintek.com.tw>
-Date:   Thu, 30 Mar 2023 14:46:16 +0800
+        with ESMTP id S229925AbjC3Grd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:47:33 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDA961AE
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 23:47:31 -0700 (PDT)
+Received: from dggpemm500005.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4PnDVW5y7WzKq3d;
+        Thu, 30 Mar 2023 14:46:59 +0800 (CST)
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.21; Thu, 30 Mar
+ 2023 14:47:29 +0800
+Subject: Re: [PATCH net-next 4/4] net: optimize ____napi_schedule() to avoid
+ extra NET_RX_SOFTIRQ
+To:     Eric Dumazet <edumazet@google.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Xing <kernelxing@tencent.com>, <netdev@vger.kernel.org>,
+        <eric.dumazet@gmail.com>
+References: <20230328235021.1048163-1-edumazet@google.com>
+ <20230328235021.1048163-5-edumazet@google.com>
+ <fa860d02-0310-2666-1043-6909dc68ea01@huawei.com>
+ <CANn89iLmugenUSDAQT9ryHTG9tRuKUfYgc8OqPMQwVv-1-ajNg@mail.gmail.com>
+ <8610abc4-65c6-6808-e5d4-c2da8083595a@huawei.com>
+ <CANn89iJCYSA_LmpTRXz3rWRgYYHgiGsia_utwTxZa03ct7hfiQ@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <670bbde5-9d39-092d-bb3b-aab2be56853c@huawei.com>
+Date:   Thu, 30 Mar 2023 14:47:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH V3] can: usb: f81604: add Fintek F81604 support
+In-Reply-To: <CANn89iJCYSA_LmpTRXz3rWRgYYHgiGsia_utwTxZa03ct7hfiQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-CC:     <wg@grandegger.com>, <mkl@pengutronix.de>,
-        <michal.swiatkowski@linux.intel.com>,
-        <Steen.Hegelund@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <frank.jungclaus@esd.eu>, <linux-kernel@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <hpeter+linux_kernel@gmail.com>
-References: <20230327051048.11589-1-peter_hong@fintek.com.tw>
- <CAMZ6Rq+ps1tLii1VfYyAqfD4ck_TGWBUo_ouK_vLfhoNEg-BPg@mail.gmail.com>
- <5bdee736-7868-81c3-e63f-a28787bd0007@fintek.com.tw>
- <CAMZ6Rq++N9ui5srP2uBYz0FPXttBYd2m982K8X-ESCC=qu1dAQ@mail.gmail.com>
-From:   Peter Hong <peter_hong@fintek.com.tw>
-In-Reply-To: <CAMZ6Rq++N9ui5srP2uBYz0FPXttBYd2m982K8X-ESCC=qu1dAQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.1.132]
-X-TM-AS-Product-Ver: SMEX-12.5.0.2055-9.0.1002-27534.001
-X-TM-AS-Result: No-6.128700-8.000000-10
-X-TMASE-MatchedRID: xcONGPdDH5r/9O/B1c/Qy3UVR7WQKpLPC/ExpXrHizwN76LiU8zntn38
-        DhskX88zx3iFO+XIjdu/eowh/j6Um43oygjMeK7edXu122+iJtqRgLeuORRdEr5TVqwOzxj8g9t
-        cUGEsbFi/s1GDQQhvSgZ9zGXanbSHylZSvmQ+LQ/cgUVP3Cp+vTKEtjy6tQe+TPm/MsQarwPL8H
-        XOTyBD/Epqkmsma/qjSStLDpMKadI6Vyyhf+5DyC9iVDu7EPf8KCXi8INqrihLWMri+QqmsfcLT
-        3NnoHhsA8l7UD+NOVgaHZJ0H9OHSy22mMFMFtfH8IK7yRWPRNHJ5SXtoJPLyBS1r4tCARkw3LFu
-        yqUR8Gz2kn1T4rnnxUrF/mVEVKMJOgYgCO6OAmY1yhbbA7We00SHIG5/MB3rGPh40PSDz6yGPne
-        COFgqRISbWwTw5+ybBK8aOafFdfy/WXZS/HqJ2lZ0V5tYhzdWxEHRux+uk8hxKpvEGAbTDsD+t6
-        ElWayBm+xY9xpNA0vfYqmHh24tZjg+MjKEa72hNRzQ9pfg2bVN+6bP0i/wWntZotgvfkXTjSn/v
-        dN28UuTh4s9IQvhLK8HNTat3IL0MX9Za3DD1UB2TpWhzRt8y+UdbwqxQvmt
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.128700-8.000000
-X-TMASE-Version: SMEX-12.5.0.2055-9.0.1002-27534.001
-X-TM-SNTS-SMTP: 9803C5386770317E68586C722A5D039EB0BE9672EA7B5719D78991E0136CAF842000:8
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL: mail.fintek.com.tw 32U6kGAt030478
-X-Spam-Status: No, score=0.0 required=5.0 tests=NICE_REPLY_A,SPF_PASS,
-        T_SPF_HELO_TEMPERROR autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vincent,
-
-Vincent MAILHOL 於 2023/3/28 下午 12:49 寫道:
->>>> +static int f81604_set_reset_mode(struct net_device *netdev)
->>>> +{
->>>> +       struct f81604_port_priv *priv = netdev_priv(netdev);
->>>> +       int status, i;
->>>> +       u8 tmp;
->>>> +
->>>> +       /* disable interrupts */
->>>> +       status = f81604_set_sja1000_register(priv->dev, netdev->dev_id,
->>>> +                                            SJA1000_IER, IRQ_OFF);
->>>> +       if (status)
->>>> +               return status;
->>>> +
->>>> +       for (i = 0; i < F81604_SET_DEVICE_RETRY; i++) {
->>> Thanks for removing F81604_USB_MAX_RETRY.
->>>
->>> Yet, I still would like to understand why you need one hundred tries?
->>> Is this some paranoiac safenet? Or does the device really need so many
->>> attempts to operate reliably? If those are needed, I would like to
->>> understand the root cause.
->> This section is copy from sja1000.c. In my test, the operation/reset may
->> retry 1 times.
->> I'll reduce it from 100 to 10 times.
-> Is it because the device is not ready? Does this only appear at
-> startup or at random?
-
-I'm using ip link up/down to test open/close(). It's may not ready so fast.
-but the maximum retry is only 1 for test 10000 times.
-
->>>> +static int f81604_set_termination(struct net_device *netdev, u16 term)
->>>> +{
->>>> +       struct f81604_port_priv *port_priv = netdev_priv(netdev);
->>>> +       struct f81604_priv *priv;
->>>> +       u8 mask, data = 0;
->>>> +       int r;
->>>> +
->>>> +       priv = usb_get_intfdata(port_priv->intf);
->>>> +
->>>> +       if (netdev->dev_id == 0)
->>>> +               mask = F81604_CAN0_TERM;
->>>> +       else
->>>> +               mask = F81604_CAN1_TERM;
->>>> +
->>>> +       if (term == F81604_TERMINATION_ENABLED)
->>>> +               data = mask;
->>>> +
->>>> +       mutex_lock(&priv->mutex);
->>> Did you witness a race condition?
->>>
->>> As far as I know, this call back is only called while the network
->>> stack big kernel lock (a.k.a. rtnl_lock) is being hold.
->>> If you have doubt, try adding a:
->>>
->>>     ASSERT_RTNL()
->>>
->>> If this assert works, then another mutex is not needed.
->> It had added ASSERT_RTNL() into f81604_set_termination(). It only assert
->> in f81604_probe() -> f81604_set_termination(), not called via ip command:
->>       ip link set dev can0 type can termination 120
->>       ip link set dev can0 type can termination 0
+On 2023/3/30 10:57, Eric Dumazet wrote:
+> On Thu, Mar 30, 2023 at 4:33 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
 >>
->> so I'll still use mutex on here.
-> Sorry, do you mean that the assert throws warnings for f81604_probe()
-> -> f81604_set_termination() but that it is OK (no warning) for ip
-> command?
->
-> I did not see that you called f81604_set_termination() internally.
-> Indeed, rtnl_lock is not held in probe(). But I think it is still OK.
-> In f81604_probe() you call f81604_set_termination() before
-> register_candev(). If the device is not yet registered,
-> f81604_set_termination() can not yet be called via ip command. Can you
-> describe more precisely where you think there is a concurrency issue?
-> I still do not see it.
+>> On 2023/3/29 23:47, Eric Dumazet wrote:
+>>> On Wed, Mar 29, 2023 at 2:47 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>
+>>>> On 2023/3/29 7:50, Eric Dumazet wrote:
+>>>>> ____napi_schedule() adds a napi into current cpu softnet_data poll_list,
+>>>>> then raises NET_RX_SOFTIRQ to make sure net_rx_action() will process it.
+>>>>>
+>>>>> Idea of this patch is to not raise NET_RX_SOFTIRQ when being called indirectly
+>>>>> from net_rx_action(), because we can process poll_list from this point,
+>>>>> without going to full softirq loop.
+>>>>>
+>>>>> This needs a change in net_rx_action() to make sure we restart
+>>>>> its main loop if sd->poll_list was updated without NET_RX_SOFTIRQ
+>>>>> being raised.
+>>>>>
+>>>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>>>>> Cc: Jason Xing <kernelxing@tencent.com>
+>>>>> ---
+>>>>>  net/core/dev.c | 22 ++++++++++++++++++----
+>>>>>  1 file changed, 18 insertions(+), 4 deletions(-)
+>>>>>
+>>>>> diff --git a/net/core/dev.c b/net/core/dev.c
+>>>>> index f34ce93f2f02e7ec71f5e84d449fa99b7a882f0c..0c4b21291348d4558f036fb05842dab023f65dc3 100644
+>>>>> --- a/net/core/dev.c
+>>>>> +++ b/net/core/dev.c
+>>>>> @@ -4360,7 +4360,11 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+>>>>>       }
+>>>>>
+>>>>>       list_add_tail(&napi->poll_list, &sd->poll_list);
+>>>>> -     __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>>>>> +     /* If not called from net_rx_action()
+>>>>> +      * we have to raise NET_RX_SOFTIRQ.
+>>>>> +      */
+>>>>> +     if (!sd->in_net_rx_action)
+>>>>
+>>>> It seems sd->in_net_rx_action may be read/writen by different CPUs at the same
+>>>> time, does it need something like READ_ONCE()/WRITE_ONCE() to access
+>>>> sd->in_net_rx_action?
+>>>
+>>> You probably missed the 2nd patch, explaining the in_net_rx_action is
+>>> only read and written by the current (owning the percpu var) cpu.
+>>>
+>>> Have you found a caller that is not providing to ____napi_schedule( sd
+>>> = this_cpu_ptr(&softnet_data)) ?
+>>
+>> You are right.
+>>
+>> The one small problem I see is that ____napi_schedule() call by a irq handle
+>> may preempt the running net_rx_action() in the current cpu, I am not sure if
+>> it worth handling, given that it is expected that the irq should be disabled
+>> when net_rx_action() is running?
+> 
+> And what will happen ? If the interrupts comes before
+> 
+> in_net_rx_action = val;
+> 
+> The interrupt handler will see the old value, this is fine really in all points.
+> 
+> If it comes after the assignment, the interrupt handler will see the new value,
+> because a cpu can not reorder its own reads/writes.
+> 
+> Otherwise simple things like this would fail:
+> 
+> a = 2;
+> b = a ;
+> assert (b == 2) ;
+> 
+> 
+> 1) Note that the local_irq_disable(); after the first
+> 
+> sd->in_net_rx_action = true;
+> 
+> in net_rx_action() already provides a strong barrier.
+> 
+> 2) sd->in_net_rx_action = false before the barrier() is enough to
+> provide needed safety for _this_ cpu.
+> 
+> 3) Final sd->in_net_rx_action = false; at the end of net_rx_action()
+> is performed while hard irq are masked.
+> 
+> 
+> 
+> 
+>> Do we need to protect against buggy hw or unbehaved driver?
+> 
+> If you think there is an issue please elaborate with the exact call
+> site/ interruption point, because I do not see any.
 
-Sorry, I had inverse the mean of ASSERT_RTNL(). It like you said.
-     f81604_probe() not held rtnl_lock.
-     ip set terminator will held rtnl_lock.
+I was thinking if load/store tearing and out of out-of-order execution
+would make something go wrong here.
 
-Due to f81604_set_termination() will called by f81604_probe() to 
-initialize, it may need mutex in
-situation as following:
+For load/store tearing, in_net_rx_action in 'struct softnet_data' is a
+bool, so I think it should be ok here, it would be better to make it
+clear by using READ_ONCE()/WRITE_ONCE()?
+LWN article about load/store tearing:
+https://lwn.net/Articles/793253/
 
-User is setting can0 terminator when f81604_probe() complete generate 
-can0 and generating can1.
-So IMO, the mutex may needed.
+For out-of-order execution, I am not sure if it is really a problem
+for irq preempting softirq in the same CPU yet, for example, for the below code,
+if list_empty(&sd->poll_list) checking is executed out-of-order with
+"sd->in_net_rx_action = false", and the irq which calls ____napi_schedule()
+preempt between list_empty(&sd->poll_list) checking and "sd->in_net_rx_action = false",
+then ____napi_schedule() will not raise softirq as sd->in_net_rx_action is
+still true, after irq finishs, as list_empty(&sd->poll_list) is already
+checked, it may not goto 'start' in net_rx_action().
 
->>>> +               port_priv->can.do_get_berr_counter = f81604_get_berr_counter;
->>>> +               port_priv->can.ctrlmode_supported =
->>>> +                       CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_3_SAMPLES |
->>>> +                       CAN_CTRLMODE_ONE_SHOT | CAN_CTRLMODE_BERR_REPORTING |
->>>> +                       CAN_CTRLMODE_CC_LEN8_DLC | CAN_CTRLMODE_PRESUME_ACK;
->>> Did you test the CAN_CTRLMODE_CC_LEN8_DLC feature? Did you confirm
->>> that you can send and receive DLC greater than 8?
->> Sorry, I had misunderstand the define. This device is only support 0~8
->> data length,
->    ^^^^^^^^^^^
->
-> Data length or Data Length Code (DLC)? Classical CAN maximum data
-> length is 8 but maximum DLC is 15 (and DLC 8 to 15 mean a data length
-> of 8).
->
 
-This device can't support DLC > 8. It's only support 0~8.
++				sd->in_net_rx_action = false;
++				barrier();
++				/* We need to check if ____napi_schedule()
++				 * had refilled poll_list while
++				 * sd->in_net_rx_action was true.
++				 */
++				if (!list_empty(&sd->poll_list))
 
-Thanks
 
+
+> 
+> 
+>>
+>>>
+>>>
+>>>
+>>>>
+>>>>> +             __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+>>>>>  }
+>>>>>
+>>>>>  #ifdef CONFIG_RPS
+>>>>> @@ -6648,6 +6652,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+>>>>>       LIST_HEAD(list);
+>>>>>       LIST_HEAD(repoll);
+>>>>>
+>>>>> +start:
+>>>>>       sd->in_net_rx_action = true;
+>>>>>       local_irq_disable();
+>>>>>       list_splice_init(&sd->poll_list, &list);
+>>>>> @@ -6659,9 +6664,18 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+>>>>>               skb_defer_free_flush(sd);
+>>>>>
+>>>>>               if (list_empty(&list)) {
+>>>>> -                     sd->in_net_rx_action = false;
+>>>>> -                     if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
+>>>>> -                             goto end;
+>>>>> +                     if (list_empty(&repoll)) {
+>>>>> +                             sd->in_net_rx_action = false;
+>>>>> +                             barrier();
+>>>>
+>>>> Do we need a stronger barrier to prevent out-of-order execution
+>>>> from cpu?
+>>>
+>>> We do not need more than barrier() to make sure local cpu wont move this
+>>> write after the following code.
+>>
+>> Is there any reason why we need the barrier() if we are not depending
+>> on how list_empty() is coded?
+>> It seems not obvious to me at least:)
+>>
+>>>
+>>> It should not, even without the barrier(), because of the way
+>>> list_empty() is coded,
+>>> but a barrier() makes things a bit more explicit.
+>>
+>> In that case, a comment explaining that may help a lot.
+>>
+>> Thanks.
+>>
+>>>
+>>>> Do we need a barrier between list_add_tail() and sd->in_net_rx_action
+>>>> checking in ____napi_schedule() to pair with the above barrier?
+>>>
+>>> I do not think so.
+>>>
+>>> While in ____napi_schedule(), sd->in_net_rx_action is stable
+>>> because we run with hardware IRQ masked.
+>>>
+>>> Thanks.
+>>>
+>>>
+>>>
+> .
+> 
