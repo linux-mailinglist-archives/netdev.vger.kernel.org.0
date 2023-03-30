@@ -2,98 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31CAE6D0A4C
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E866D0A4D
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:47:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbjC3Pqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 11:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
+        id S233321AbjC3Pri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 11:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233269AbjC3Pqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:46:37 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9EF9EE0;
-        Thu, 30 Mar 2023 08:46:13 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-177b78067ffso20163427fac.7;
-        Thu, 30 Mar 2023 08:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680191169;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=oJBA/37IIjC6kfXilx3ayeeRAXqubi70BYpfspioK0o=;
-        b=e4W0o7k7kelgvpOZr2/E8GJHvFZmR4jWQoKaNlO/ScW3aRqbohQBhlFFSLjjBXdQkj
-         Z+4LwHXSa5auE17/Hpp+4cMRo/uOoUMIIHjR9iv8GT/OQu1rDVVmeWlJtz+qM6NGPeRb
-         FPwJbN/NsmI6zSkW0VxQuPTWQzylzqQgsLOQMj3QCi4nCOSkFxd4RSlVOM8fHmzpohFA
-         E4SjNpow7JLhrsxdOk/Fp59HTNAn0hI04FO3plsg0kxdS2p4+E/wIDC2I16oFPshbPOF
-         2GWWDcmBF6a2I5kVQcPKACgiouSJtNpHeoCX/awIzarjCOGPxpVjM1wdPiWAWIM7fZ1n
-         CboQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680191169;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oJBA/37IIjC6kfXilx3ayeeRAXqubi70BYpfspioK0o=;
-        b=LWzWxyopjX5QOIEfUe72Ifr9ZOjkoNPEwJ52AgFE3nwYf4kt+LM+Dm+PMftW9FLRR+
-         nkZ5q7ZxwMj/Ca82u0ojdOsKRD9LgL6x63EgaVAebAqPzIEJkzfzs4J9m7nJX9R3hMWE
-         fo6XaBnC3dkOk+tPEj3eI0V0XEBMCHlVr99TRnE1WgiwPmkHT/tfFBTYnJZz1oMC6gvt
-         nPPHdzoPZth/+yeZN6bVOhXpLQJbspi8D10ecDECwGf3GiWm/welHVFlfgGv9AbD5JRc
-         VqfRisfnh4ZBaAqg51D20H4z0KcD7AKvQ9BbE50g57bq/E2O6osFhBDiIHyCLxrEuPCN
-         tfKw==
-X-Gm-Message-State: AO0yUKWhTdnjCQNuvyLjyQJpYuForC91hjUMBboiaMUfRTcnyQFCTmtL
-        P0uT8wRX05v2dFI1hREDGdA=
-X-Google-Smtp-Source: AKy350YGYVi0onCiOEL6jfuix4ot7d1BxrNLqI2LpurPhxw4Jz1gz5Er+kGSZMhfmR80lpKgRK1/dA==
-X-Received: by 2002:a05:6871:795:b0:17a:d863:4cfc with SMTP id o21-20020a056871079500b0017ad8634cfcmr16832470oap.38.1680191169514;
-        Thu, 30 Mar 2023 08:46:09 -0700 (PDT)
-Received: from [192.168.1.119] ([216.130.59.33])
-        by smtp.gmail.com with ESMTPSA id tw16-20020a056871491000b0017ae909afe8sm39016oab.34.2023.03.30.08.46.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Mar 2023 08:46:09 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <e81e65f7-9a55-5e28-a2fa-516e93d8e45d@lwfinger.net>
-Date:   Thu, 30 Mar 2023 10:46:07 -0500
+        with ESMTP id S233227AbjC3Prh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:47:37 -0400
+Received: from forwardcorp1b.mail.yandex.net (forwardcorp1b.mail.yandex.net [IPv6:2a02:6b8:c02:900:1:45:d181:df01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC02D9777;
+        Thu, 30 Mar 2023 08:47:14 -0700 (PDT)
+Received: from mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net [IPv6:2a02:6b8:c0c:7f29:0:640:9a2b:0])
+        by forwardcorp1b.mail.yandex.net (Yandex) with ESMTP id B932D5FC8F;
+        Thu, 30 Mar 2023 18:47:11 +0300 (MSK)
+Received: from den-plotnikov-w.yandex-team.ru (unknown [2a02:6b8:b081:8002::1:4])
+        by mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 3lLKP30OeqM0-eth6G5p0;
+        Thu, 30 Mar 2023 18:47:11 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1680191231; bh=tC5GEPVXxrpQQqeYqSc0uqWbQAmF/7QDNrrnUxUxgl4=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=Fq9FSOTMLPVX2DdZQ13SB7rSBFbGiAEZOzc/0GEkIdH/mzF5jD4tRtUvZDsIv1jah
+         wEBQPynQx2oi/c4YpOGzzWs/f5w5pJp5RJiuR1KEaJ/c/C54erUg/fj6bjSUN7+NOj
+         DGRsE7zOcczXMlxMXorqxI+YkEm2SSd0JGiDC9hM=
+Authentication-Results: mail-nwsmtp-smtp-corp-main-44.iva.yp-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+From:   Denis Plotnikov <den-plotnikov@yandex-team.ru>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, rajur@chelsio.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, den-plotnikov@yandex-team.ru
+Subject: [PATCH] cxgb4: do conversion after string check
+Date:   Thu, 30 Mar 2023 18:47:03 +0300
+Message-Id: <20230330154703.36958-1-den-plotnikov@yandex-team.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH] b43legacy: Remove the unused function prev_slot()
-Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20230330021841.67724-1-jiapeng.chong@linux.alibaba.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <20230330021841.67724-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/29/23 21:18, Jiapeng Chong wrote:
-> The function prev_slot is defined in the dma.c file, but not called
-> elsewhere, so remove this unused function.
-> 
-> drivers/net/wireless/broadcom/b43legacy/dma.c:130:19: warning: unused function 'prev_slot'.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4642
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->   drivers/net/wireless/broadcom/b43legacy/dma.c | 8 --------
->   1 file changed, 8 deletions(-)
+Static code analyzer complains to uncheck return value.
+Indeed, the return value of kstrtouint "must be checked"
+as the comment says.
+Moreover, it looks like the string conversion  should be
+after "end of string" or "new line" check.
+This patch fixes these issues.
 
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Denis Plotnikov <den-plotnikov@yandex-team.ru>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Thanks,
-
-Larry
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index 14e0d989c3ba5..a8d3616630cc6 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -1576,9 +1576,11 @@ inval:				count = -EINVAL;
+ 		}
+ 		if (*word == '@') {
+ 			end = (char *)word + 1;
+-			ret = kstrtouint(end, 10, &j);
+ 			if (*end && *end != '\n')
+ 				goto inval;
++			ret = kstrtouint(end, 10, &j);
++			if (ret)
++				goto inval;
+ 			if (j & 7)          /* doesn't start at multiple of 8 */
+ 				goto inval;
+ 			j /= 8;
+-- 
+2.25.1
 
