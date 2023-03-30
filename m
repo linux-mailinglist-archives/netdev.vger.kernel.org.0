@@ -2,82 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B826D00FD
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 341C16D0119
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbjC3KT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 06:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
+        id S231317AbjC3KXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 06:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbjC3KTZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:19:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E796D86A8
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:18:22 -0700 (PDT)
+        with ESMTP id S231307AbjC3KXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:23:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF7183DC
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:23:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680171501;
+        s=mimecast20190719; t=1680171788;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5G4KlQgalZLZCJDa8edjfg+cOTUz1wNZ1RGVK9EOjxg=;
-        b=GQpYV71nkcsOOCZQ/91FMHhhnuDQk8cpiSfdMyaKXI0c2e7TG6b0+VLC618d7LhwH3P2NH
-        6Sb17nMXYyQfnYzRD90OnM0eEZPynMegiJFkguckvnnkPJ00NC954nRj4NaAleL2bYm8h1
-        sBjrclE8sejZn0uLB4nyQn9hOBFZRFU=
+        bh=59FDE+8LM1RTgNxCSNxSrwpKtHARF1ER91IIjRZ5nx4=;
+        b=c/Tfi6O+Q5UPXfRx7n428Eho3OILFOGFH4Jipf7jlUg9nyijGHjAesM44GUN45lkKypUZ0
+        tmNP7VgAjtpkkC7TUmdbOefSkJjt0nPZRRWBmOcRhAeeG32zRp+QG12q2AsKbWjc72VXkx
+        yOlkwoT6GnkcdK8H86zoJOC+7POqaew=
 Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
  [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-541-kFcPItbiMDuwww6aihaPGw-1; Thu, 30 Mar 2023 06:18:20 -0400
-X-MC-Unique: kFcPItbiMDuwww6aihaPGw-1
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-57c67ea348eso12362126d6.1
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:18:20 -0700 (PDT)
+ us-mta-6-DUSP2QJKP0mZGdRsZKyjJw-1; Thu, 30 Mar 2023 06:23:07 -0400
+X-MC-Unique: DUSP2QJKP0mZGdRsZKyjJw-1
+Received: by mail-qv1-f71.google.com with SMTP id pr2-20020a056214140200b005b3ed9328a3so7984456qvb.10
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:23:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680171499;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5G4KlQgalZLZCJDa8edjfg+cOTUz1wNZ1RGVK9EOjxg=;
-        b=HmeVkW+KweEIjhV03qCDtdfrb/NRptSy2Nw2WFbOVfQyGN6U2XvgwBiSM3toabKCQM
-         9hHJn9o9al4Z5A/ql2XydV255RE3WsZqj2/ZKzasam8CR77mWpnwfNWNhJRWZkJ9N4Yl
-         ygjVF/1DXWSUeheazqHAfBbYJiQyD0a09uZtJyFSO+ATpmpv5kvBtS0XrbDa3aKcwrOF
-         3sdLNfvJjQipNmKYef3riQWzoAWbemGju1eB58zrzsCCGZeKW7+8+ZTw9enj1DfP9X8f
-         qRk3TJIoa1//xdxVoPowgEaw6D5x7wNbR4+UXUCXH2btgee67ERmHdNvDiMRGSiK66/F
-         1zyg==
-X-Gm-Message-State: AAQBX9fU+rmlHKf7DNtgMyZJXT/Df1deLO0mh5tgj63w79sLr2+/NsoN
-        qtcg6Zu1PvqTkSAOGIBt82G8+wGMgvk+Wa6iXpAUySTzzTSoCmVujcky8pDO2vkw4fLitMvtDS1
-        sKzCJMGdTY4NxCuo179H1uQ6/
-X-Received: by 2002:a05:6214:5089:b0:57d:747b:1f7 with SMTP id kk9-20020a056214508900b0057d747b01f7mr1974009qvb.1.1680171499607;
-        Thu, 30 Mar 2023 03:18:19 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bvx8K/owgkDcL8x2YcXmXFmidn7E2vZNaiTvyyPaK6M4yc/CbTywaTxcrJm2j30ZXWyITBOQ==
-X-Received: by 2002:a05:6214:5089:b0:57d:747b:1f7 with SMTP id kk9-20020a056214508900b0057d747b01f7mr1973988qvb.1.1680171499214;
-        Thu, 30 Mar 2023 03:18:19 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-228-125.dyn.eolo.it. [146.241.228.125])
-        by smtp.gmail.com with ESMTPSA id f17-20020ac84711000000b003e635f0fdb4sm169635qtp.53.2023.03.30.03.18.16
+        d=1e100.net; s=20210112; t=1680171786;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=59FDE+8LM1RTgNxCSNxSrwpKtHARF1ER91IIjRZ5nx4=;
+        b=jr9yWs5XEA9ih30HrK6BHgoHmyeVPcB46WSF/RYGrYRiQYP8rqrGoOMS1NeYpK/KuU
+         mikW2FaQyz7/6qZNXe/aRtKOdi7mNPE8far2cgN5fc+3W9kifAX4yenH4+dDHzOLMTKc
+         1uJX8cpDpH2V/CmlxiWEJuM+M4bSWnm/Fgtm2gW89Esce9/tcFYtG6lR4y5buiSFD/Yc
+         oJOL1HWEo6FkLmwnIRjmqRB0MfaODZsyixmPoa5CeSEaEtICwLJkeOiMmSnCQ00IrfOi
+         5ggnKd49LU2XDSN1dcCNzpIE5YYt+QSrPPh6lz7V/vZnVL/LKDMUGKu84oPmJaaZkOrj
+         doPw==
+X-Gm-Message-State: AO0yUKWaosYvQONVAVSqCTO8iagIxczfG13lDu3ggBQa63IoD/BRosQ8
+        zssDaSqi4vlxlGuXN+cwTv/PS9d2gmQHggSi72FkL4F0tahn9nSn1wGys6cIdm/SY6+i4bH+KwE
+        DXXiMQZP4a8LhWeeV
+X-Received: by 2002:a05:622a:14c7:b0:3ba:151a:d300 with SMTP id u7-20020a05622a14c700b003ba151ad300mr35694847qtx.60.1680171786535;
+        Thu, 30 Mar 2023 03:23:06 -0700 (PDT)
+X-Google-Smtp-Source: AK7set9hwJzPdjL3B3XEC/SRjMmxy4i5zJ3rFc0P7bDk8NNBjognN6HOVj4HrMl2WPZD3H6XIItrvA==
+X-Received: by 2002:a05:622a:14c7:b0:3ba:151a:d300 with SMTP id u7-20020a05622a14c700b003ba151ad300mr35694825qtx.60.1680171786267;
+        Thu, 30 Mar 2023 03:23:06 -0700 (PDT)
+Received: from debian (2a01cb058918ce003af3a313a65b3409.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:3af3:a313:a65b:3409])
+        by smtp.gmail.com with ESMTPSA id d140-20020a376892000000b007467a4d8691sm15500145qkc.47.2023.03.30.03.23.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 03:18:18 -0700 (PDT)
-Message-ID: <3155cdb517e0db77d8664e5623c9d39e437fd796.camel@redhat.com>
-Subject: Re: [PATCH net-next 7/8] virtio_net: introduce
- receive_mergeable_xdp()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 30 Mar 2023 03:23:05 -0700 (PDT)
+Date:   Thu, 30 Mar 2023 12:23:02 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Andrea Righi <andrea.righi@canonical.com>
+Cc:     David Miller <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Date:   Thu, 30 Mar 2023 12:18:15 +0200
-In-Reply-To: <20230328120412.110114-8-xuanzhuo@linux.alibaba.com>
-References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
-         <20230328120412.110114-8-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] l2tp: generate correct module alias strings
+Message-ID: <ZCVjBkdySj5BhMja@debian>
+References: <20230330095442.363201-1-andrea.righi@canonical.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230330095442.363201-1-andrea.righi@canonical.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -88,170 +81,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Mar 30, 2023 at 11:54:42AM +0200, Andrea Righi wrote:
+> Commit 65b32f801bfb ("uapi: move IPPROTO_L2TP to in.h") moved the
+> definition of IPPROTO_L2TP from a define to an enum, but since
+> __stringify doesn't work properly with enums, we ended up breaking the
+> modalias strings for the l2tp modules:
+> 
+>  $ modinfo l2tp_ip l2tp_ip6 | grep alias
+>  alias:          net-pf-2-proto-IPPROTO_L2TP
+>  alias:          net-pf-2-proto-2-type-IPPROTO_L2TP
+>  alias:          net-pf-10-proto-IPPROTO_L2TP
+>  alias:          net-pf-10-proto-2-type-IPPROTO_L2TP
+> 
+> Use the resolved number directly in MODULE_ALIAS_*() macros (as we
+> already do with SOCK_DGRAM) to fix the alias strings:
+> 
+> $ modinfo l2tp_ip l2tp_ip6 | grep alias
+> alias:          net-pf-2-proto-115
+> alias:          net-pf-2-proto-115-type-2
+> alias:          net-pf-10-proto-115
+> alias:          net-pf-10-proto-115-type-2
+> 
+> Moreover, fix the ordering of the parameters passed to
+> MODULE_ALIAS_NET_PF_PROTO_TYPE() by switching proto and type.
 
-On Tue, 2023-03-28 at 20:04 +0800, Xuan Zhuo wrote:
-> The purpose of this patch is to simplify the receive_mergeable().
-> Separate all the logic of XDP into a function.
->=20
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Thanks!
+
+Just to be explicit to the maintainers, this patch is for the net tree
+(next time, you can use [PATCH net] to make that clear).
+
+> Fixes: 65b32f801bfb ("uapi: move IPPROTO_L2TP to in.h")
+> Link: https://lore.kernel.org/lkml/ZCQt7hmodtUaBlCP@righiandr-XPS-13-7390
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
 > ---
->  drivers/net/virtio_net.c | 128 +++++++++++++++++++++++----------------
->  1 file changed, 76 insertions(+), 52 deletions(-)
->=20
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 136131a7868a..c8978d8d8adb 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -1316,6 +1316,63 @@ static void *mergeable_xdp_prepare(struct virtnet_=
-info *vi,
->  	return page_address(xdp_page) + VIRTIO_XDP_HEADROOM;
->  }
-> =20
-> +static struct sk_buff *receive_mergeable_xdp(struct net_device *dev,
-> +					     struct virtnet_info *vi,
-> +					     struct receive_queue *rq,
-> +					     struct bpf_prog *xdp_prog,
-> +					     void *buf,
-> +					     void *ctx,
-> +					     unsigned int len,
-> +					     unsigned int *xdp_xmit,
-> +					     struct virtnet_rq_stats *stats)
-> +{
-> +	struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf;
-> +	int num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
-> +	struct page *page =3D virt_to_head_page(buf);
-> +	int offset =3D buf - page_address(page);
-> +	unsigned int xdp_frags_truesz =3D 0;
-> +	struct sk_buff *head_skb;
-> +	unsigned int frame_sz;
-> +	struct xdp_buff xdp;
-> +	void *data;
-> +	u32 act;
-> +	int err;
-> +
-> +	data =3D mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_b=
-uf, &page,
-> +				     offset, &len, hdr);
-> +	if (!data)
-> +		goto err_xdp;
-> +
-> +	err =3D virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame_=
-sz,
-> +					 &num_buf, &xdp_frags_truesz, stats);
-> +	if (unlikely(err))
-> +		goto err_xdp;
-> +
-> +	act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
-> +
-> +	switch (act) {
-> +	case VIRTNET_XDP_RES_PASS:
-> +		head_skb =3D build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz);
-> +		if (unlikely(!head_skb))
-> +			goto err_xdp;
-> +		return head_skb;
-> +
-> +	case VIRTNET_XDP_RES_CONSUMED:
-> +		return NULL;
-> +
-> +	case VIRTNET_XDP_RES_DROP:
-> +		break;
-> +	}
-> +
-> +err_xdp:
-> +	put_page(page);
-> +	mergeable_buf_free(rq, num_buf, dev, stats);
-> +
-> +	stats->xdp_drops++;
-> +	stats->drops++;
-> +	return NULL;
-> +}
-> +
->  static struct sk_buff *receive_mergeable(struct net_device *dev,
->  					 struct virtnet_info *vi,
->  					 struct receive_queue *rq,
-> @@ -1325,21 +1382,22 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
->  					 unsigned int *xdp_xmit,
->  					 struct virtnet_rq_stats *stats)
->  {
-> -	struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf;
-> -	int num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
-> -	struct page *page =3D virt_to_head_page(buf);
-> -	int offset =3D buf - page_address(page);
-> -	struct sk_buff *head_skb, *curr_skb;
-> -	struct bpf_prog *xdp_prog;
->  	unsigned int truesize =3D mergeable_ctx_to_truesize(ctx);
->  	unsigned int headroom =3D mergeable_ctx_to_headroom(ctx);
->  	unsigned int tailroom =3D headroom ? sizeof(struct skb_shared_info) : 0=
-;
->  	unsigned int room =3D SKB_DATA_ALIGN(headroom + tailroom);
-> -	unsigned int frame_sz;
-> -	int err;
-> +	struct virtio_net_hdr_mrg_rxbuf *hdr;
-> +	struct sk_buff *head_skb, *curr_skb;
-> +	struct bpf_prog *xdp_prog;
-> +	struct page *page;
-> +	int num_buf;
-> +	int offset;
-> =20
->  	head_skb =3D NULL;
->  	stats->bytes +=3D len - vi->hdr_len;
-> +	hdr =3D buf;
-> +	num_buf =3D virtio16_to_cpu(vi->vdev, hdr->num_buffers);
-> +	page =3D virt_to_head_page(buf);
-> =20
->  	if (unlikely(len > truesize - room)) {
->  		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
-> @@ -1348,51 +1406,21 @@ static struct sk_buff *receive_mergeable(struct n=
-et_device *dev,
->  		goto err_skb;
->  	}
-> =20
-> -	if (likely(!vi->xdp_enabled)) {
-> -		xdp_prog =3D NULL;
-> -		goto skip_xdp;
-> -	}
-> -
-> -	rcu_read_lock();
-> -	xdp_prog =3D rcu_dereference(rq->xdp_prog);
-> -	if (xdp_prog) {
-> -		unsigned int xdp_frags_truesz =3D 0;
-> -		struct xdp_buff xdp;
-> -		void *data;
-> -		u32 act;
-> -
-> -		data =3D mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &frame_sz, &num_=
-buf, &page,
-> -					     offset, &len, hdr);
-> -		if (!data)
-> -			goto err_xdp;
-> -
-> -		err =3D virtnet_build_xdp_buff_mrg(dev, vi, rq, &xdp, data, len, frame=
-_sz,
-> -						 &num_buf, &xdp_frags_truesz, stats);
-> -		if (unlikely(err))
-> -			goto err_xdp;
-> -
-> -		act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_xmit, stats);
-> -
-> -		switch (act) {
-> -		case VIRTNET_XDP_RES_PASS:
-> -			head_skb =3D build_skb_from_xdp_buff(dev, vi, &xdp, xdp_frags_truesz)=
-;
-> -			if (unlikely(!head_skb))
-> -				goto err_xdp;
-> -
-> +	if (likely(vi->xdp_enabled)) {
-
-This changes the branch prediction hint compared to the existing code;
-as we currently have:
-	if (likely(!vi->xdp_enabled)) {
-
-
-and I think it would be better avoid such change.
-
-Thanks,
-
-Paolo
+>  net/l2tp/l2tp_ip.c  | 8 ++++----
+>  net/l2tp/l2tp_ip6.c | 8 ++++----
+>  2 files changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
+> index 4db5a554bdbd..41a74fc84ca1 100644
+> --- a/net/l2tp/l2tp_ip.c
+> +++ b/net/l2tp/l2tp_ip.c
+> @@ -677,8 +677,8 @@ MODULE_AUTHOR("James Chapman <jchapman@katalix.com>");
+>  MODULE_DESCRIPTION("L2TP over IP");
+>  MODULE_VERSION("1.0");
+>  
+> -/* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
+> - * enums
+> +/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
+> + * because __stringify doesn't like enums
+>   */
+> -MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 2, IPPROTO_L2TP);
+> -MODULE_ALIAS_NET_PF_PROTO(PF_INET, IPPROTO_L2TP);
+> +MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET, 115, 2);
+> +MODULE_ALIAS_NET_PF_PROTO(PF_INET, 115);
+> diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+> index 2478aa60145f..5137ea1861ce 100644
+> --- a/net/l2tp/l2tp_ip6.c
+> +++ b/net/l2tp/l2tp_ip6.c
+> @@ -806,8 +806,8 @@ MODULE_AUTHOR("Chris Elston <celston@katalix.com>");
+>  MODULE_DESCRIPTION("L2TP IP encapsulation for IPv6");
+>  MODULE_VERSION("1.0");
+>  
+> -/* Use the value of SOCK_DGRAM (2) directory, because __stringify doesn't like
+> - * enums
+> +/* Use the values of SOCK_DGRAM (2) as type and IPPROTO_L2TP (115) as protocol,
+> + * because __stringify doesn't like enums
+>   */
+> -MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 2, IPPROTO_L2TP);
+> -MODULE_ALIAS_NET_PF_PROTO(PF_INET6, IPPROTO_L2TP);
+> +MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_INET6, 115, 2);
+> +MODULE_ALIAS_NET_PF_PROTO(PF_INET6, 115);
+> -- 
+> 2.39.2
+> 
 
