@@ -2,131 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C19E6D0958
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B6D6D095C
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbjC3PV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 11:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37908 "EHLO
+        id S232889AbjC3PVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 11:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbjC3PVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:21:22 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFBDD33F;
-        Thu, 30 Mar 2023 08:20:17 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1phu4P-0006b7-1L;
-        Thu, 30 Mar 2023 17:20:09 +0200
-Date:   Thu, 30 Mar 2023 16:20:05 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        =?utf-8?B?QXLEsW7DpyDDnG5hbA==?= <arinc.unal@arinc9.com>,
+        with ESMTP id S232875AbjC3PVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:21:46 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7391710;
+        Thu, 30 Mar 2023 08:20:47 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id c18so18370309ple.11;
+        Thu, 30 Mar 2023 08:20:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680189622;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=9BJN6KvGFEdtYQeDXwsGBPAtMtBePoD/1g7P1KUhX/c=;
+        b=qwC2UA0fLhzbMLvZBRgkV30OtZGXFjlTkuzK/W+vR+5lm131gMRwGpPNk/pG9wrmr2
+         S+wT7xyopxuNbEeKsxfMNqCeiwljp5x9fcGCbyfeXO4chfb/PeOWkVOpGGvazgM6xpzS
+         yAAoK8QtRoifTLzahzcxMiT81TlXlWRWJp4EHi7NSMHIg6HqdHXl8306ttYi45RQcUFW
+         blzrKfmbL87anADROIWA4C/HWYuiewFzkOXhKw9I8tJ4KgEbhPQkf99Je487GyzV9nIU
+         VMZPpWhdIQOLSnccmtuj1xwM70E2Wi8BLHMzYdko3+dtV93kxpDtfrrqdoDke5qYoCG6
+         J2Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680189622;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9BJN6KvGFEdtYQeDXwsGBPAtMtBePoD/1g7P1KUhX/c=;
+        b=AOYfmIVvvLc/R/s4sm8QBFt6rfBZp6qRBU4uCvEcXpQxdl7v0UPi9CT1vFZuErNx2B
+         afCb+bAo0ePVEgwFXM71VEvOxLkwtDijuvEdRCVRlJ6elXfucONXZ5jqB90mBRR6Y4Kq
+         kY1S40kEbTXzHsmLG8PNpCz3YJBYu2Up8p6YotpBreiwhK28KBc02xWbHrE6krk+b4a6
+         zYOqeVngV942E+bJgLtt4GXwjEJnQ1HyKsgJlQow5c2NKgyM5MfQ52mSoGmbRD5c++MU
+         +2Zp3SdKeYOdVU3W5fz24udAN/RUsV90KSW37B3O1K0eEf8t+R2pF4jSkaIwv7UZJpAq
+         tR3Q==
+X-Gm-Message-State: AAQBX9fxYsy8LCBEv3MYmKbS0mEGEXf9oDMQh6M+Ioggd/LHp4IlOs8x
+        Tka4SEQSle+lIdb+EXUTA0U=
+X-Google-Smtp-Source: AKy350br4StkSNKgNvDcGnehHHFVF5xuH1kYdhsE8iAgh6EQrMOwWFYjG1iBg+rAcggIp3+OVxMBmg==
+X-Received: by 2002:a17:902:e2d3:b0:199:1b8a:42a8 with SMTP id l19-20020a170902e2d300b001991b8a42a8mr19616659plc.6.1680189622380;
+        Thu, 30 Mar 2023 08:20:22 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id c19-20020a170902b69300b001a279237e73sm2806213pls.152.2023.03.30.08.20.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 08:20:22 -0700 (PDT)
+Date:   Thu, 30 Mar 2023 18:20:08 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH net-next 03/15] net: dsa: mt7530: use unlocked regmap
- accessors
-Message-ID: <4fcca663d13c38679b615d4a1a76bf5d5d885304.1680180959.git.daniel@makrotopia.org>
-References: <cover.1680180959.git.daniel@makrotopia.org>
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Alexis =?utf-8?Q?Lothor=C3=A9?= <alexis.lothore@bootlin.com>
+Subject: Re: [PATCH net-next 2/2] net: dsa: rzn1-a5psw: disable learning for
+ standalone ports
+Message-ID: <20230330152008.ji5mrwbpzklylpck@skbuf>
+References: <20230330083408.63136-1-clement.leger@bootlin.com>
+ <20230330083408.63136-3-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <cover.1680180959.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230330083408.63136-3-clement.leger@bootlin.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of wrapping the locked register accessor functions, use the
-unlocked variants and add locking wrapper functions to let regmap
-handle the locking.
+On Thu, Mar 30, 2023 at 10:34:08AM +0200, Clément Léger wrote:
+> When port are in standalone mode, they should have learning disabled to
+> avoid adding new entries in the MAC lookup table which might be used by
+> other bridge ports to forward packets. While adding that, also make sure
+> learning is enabled for CPU port.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
 
-This is a preparation towards being able to always use regmap to
-access switch registers instead of open-coded accessor functions.
-
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/net/dsa/mt7530.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 5685c71bc9173..d8b041d79f2b7 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2900,7 +2900,7 @@ static int mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val
- {
- 	struct mt7530_priv *priv = context;
- 
--	*val = mt7530_read(priv, reg);
-+	*val = mt7530_mii_read(priv, reg);
- 	return 0;
- };
- 
-@@ -2908,23 +2908,25 @@ static int mt7530_regmap_write(void *context, unsigned int reg, unsigned int val
- {
- 	struct mt7530_priv *priv = context;
- 
--	mt7530_write(priv, reg, val);
-+	mt7530_mii_write(priv, reg, val);
- 	return 0;
- };
- 
--static int mt7530_regmap_update_bits(void *context, unsigned int reg,
--				     unsigned int mask, unsigned int val)
-+static void
-+mt7530_mdio_regmap_lock(void *mdio_lock)
- {
--	struct mt7530_priv *priv = context;
-+	mutex_lock_nested(mdio_lock, MDIO_MUTEX_NESTED);
-+}
- 
--	mt7530_rmw(priv, reg, mask, val);
--	return 0;
--};
-+static void
-+mt7530_mdio_regmap_unlock(void *mdio_lock)
-+{
-+	mutex_unlock(mdio_lock);
-+}
- 
- static const struct regmap_bus mt7531_regmap_bus = {
- 	.reg_write = mt7530_regmap_write,
- 	.reg_read = mt7530_regmap_read,
--	.reg_update_bits = mt7530_regmap_update_bits,
- };
- 
- static int
-@@ -2950,6 +2952,9 @@ mt7531_create_sgmii(struct mt7530_priv *priv)
- 		mt7531_pcs_config[i]->reg_stride = 4;
- 		mt7531_pcs_config[i]->reg_base = MT7531_SGMII_REG_BASE(5 + i);
- 		mt7531_pcs_config[i]->max_register = 0x17c;
-+		mt7531_pcs_config[i]->lock = mt7530_mdio_regmap_lock;
-+		mt7531_pcs_config[i]->unlock = mt7530_mdio_regmap_unlock;
-+		mt7531_pcs_config[i]->lock_arg = &priv->bus->mdio_lock;
- 
- 		regmap = devm_regmap_init(priv->dev,
- 					  &mt7531_regmap_bus, priv,
--- 
-2.39.2
-
+Usually I prefer this kind of change to be treated as a bug and
+backported to older trees, because we see reports of setups which don't
+work due to it. For example, see commit 15f7cfae912e ("net: dsa:
+microchip: make learning configurable and keep it off while standalone")
+which has a Fixes: tag.
