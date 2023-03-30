@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBD26D0225
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 12:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D1EF6D0269
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 13:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229988AbjC3Ku5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 06:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        id S231231AbjC3LCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 07:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbjC3Kue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 06:50:34 -0400
+        with ESMTP id S231464AbjC3LCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 07:02:35 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D058A46
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:48:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24E0903D
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 04:01:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680173308;
+        s=mimecast20190719; t=1680174097;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TIDod7ZXofypu7NUVBtHJ0EV23P25HL2cdjDfrBqZcY=;
-        b=EEGX9ygGl2/KM2idIK/zK1yLxa/XlNdgT2RdXsHKMzJj/l3mGRUEM3z8HtfV/RJDHV5edO
-        USKY024T5geePx2ldqw0FYT8gA9QTRvs9gsGOIjnEfbF2A6Zc9ZOKHkbqvg9ceX/KGQLid
-        E7Dh2qW3epa9kE8F3hp16o2dISe1aCc=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=XGbfN1W3Kwf6sp2kgyQhaTWhRNIKeR5/vaFI9hlCa40=;
+        b=ih7pt34n16cdhm6kh/0Zzy1S0eemPwqsWWOt3+Tnek1xste7p3FhnIDhdlp4PlC9mT43yk
+        o9FOn8A7LQlpEQOwg/DqY+9yaFKNDf+xRDUVZHjrCf6NqszJFeJ/ZbdU547HJM+7eiQpY8
+        RShkafnNfNw+Yt/ImHPrYFRc/hV4RQw=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-260-qq0uigCxNZutEr_ci040Fg-1; Thu, 30 Mar 2023 06:48:27 -0400
-X-MC-Unique: qq0uigCxNZutEr_ci040Fg-1
-Received: by mail-qv1-f70.google.com with SMTP id r4-20020ad44044000000b005ad0ce58902so7969209qvp.5
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:48:27 -0700 (PDT)
+ us-mta-580-CJ-YHKBoMP2n3c7kxpLUog-1; Thu, 30 Mar 2023 07:01:35 -0400
+X-MC-Unique: CJ-YHKBoMP2n3c7kxpLUog-1
+Received: by mail-qt1-f197.google.com with SMTP id v7-20020a05622a188700b003e0e27bbc2eso12153599qtc.8
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 04:01:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680173306; x=1682765306;
+        d=1e100.net; s=20210112; t=1680174095;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=TIDod7ZXofypu7NUVBtHJ0EV23P25HL2cdjDfrBqZcY=;
-        b=vipambic1Mdqsc6WI4jrnNv1ecH0GsbjcRVssCO2Os3Y2BlJlZJmOqOAg7bMKAEDU1
-         w+E8f2MinQDEtYdsNKGy96cMo8W8P/IsXwr5+LcXtKYBm4GTyQp4r6+epULJv60MvIxk
-         SRLye0Sw++dgsqUzNWARs+PbXjH50WRuCT9t+BrbtHBUp55Ean269D3M0BBBxSxLe4po
-         LibcG0HqkFE0rQFkyI/Ew8SxR7K9iY0tRLnfq7kcU5cHR45xHllanjmryX4ngac2ljXb
-         YjpT98pLwem9vOWfUM45eKohNth14jifb9Ro7g7iBQo6iT/8mGhqATkN+olZdWCOOkhU
-         AeTA==
-X-Gm-Message-State: AAQBX9dKlIRM5Z7Qgr6W4Fp1JVfJCAzWKDIkoMql2T5JBvVNVhq+hVUF
-        5OYHYKpd4IBtXlFKXs15QLyiPhVozkyjUFTl3d8sbPxiM0SERNdxJz9NcZ13kavlJQthHWhXYnw
-        vTMvOJI406BG5u+7+
-X-Received: by 2002:a05:6214:4005:b0:5ab:af50:eb45 with SMTP id kd5-20020a056214400500b005abaf50eb45mr34992155qvb.3.1680173306621;
-        Thu, 30 Mar 2023 03:48:26 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YDY67tBy0o9RQ5k6yj5iqQLAx/6owd7X3mSyyUGV6oV18zIIWEsjIBgDH+/vr4WGfXsj8SYQ==
-X-Received: by 2002:a05:6214:4005:b0:5ab:af50:eb45 with SMTP id kd5-20020a056214400500b005abaf50eb45mr34992135qvb.3.1680173306396;
-        Thu, 30 Mar 2023 03:48:26 -0700 (PDT)
+        bh=XGbfN1W3Kwf6sp2kgyQhaTWhRNIKeR5/vaFI9hlCa40=;
+        b=pS/PG9uNAnbK5+VNXTq0alsODfyusPP3Lgt21JcckFUF1DgUgosVoJtq+4KMo5W0Lh
+         h0pfSk8Bzif4X6itEmpOXeYZ11g3mZlNvVowR4KuvHGyMqtKZQAG9mNrzSQOSLC7vN19
+         PXCbECePqGDyDJz7+JvAXFbwzcQ9kJXP7mdyo2e1zHA+ADPAX0oxgbR40cScwL30BnET
+         ooq9m3Mh0zICx3tLb6ovy+VGVi+uI/CO06/CkE0/UP8MN91uBLpMJtwqmPMt3ZPaOO/U
+         /6/W2bnRcqthxNORqMeU8PKUm3uG3gsB1duNzI8bF7cif0g9YfW+kc6gvMsa/M7C0vKO
+         ZAcw==
+X-Gm-Message-State: AAQBX9fp2yU0QvGoxnKvBsupnFZ8fbnujfFlwUFk9iHH/gBb9pCVZKZo
+        5zK1BaY1Wf+3xG0JTjvW2UgbMcOFW0jSVplnvZGFu7VTEzBaxSpYY2XgDwvMThMoOWesudCI1Tz
+        Xl+mlgULg3FMd9ehK
+X-Received: by 2002:a05:6214:2608:b0:5ac:463b:a992 with SMTP id gu8-20020a056214260800b005ac463ba992mr2120036qvb.0.1680174095213;
+        Thu, 30 Mar 2023 04:01:35 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZkERrlJSsp9Gcbng9jDefFXi6Cw3WbVbDVKIZE+wkr8Ik77FNVusUA1P05bBuGiUaxnsZWMA==
+X-Received: by 2002:a05:6214:2608:b0:5ac:463b:a992 with SMTP id gu8-20020a056214260800b005ac463ba992mr2119959qvb.0.1680174094523;
+        Thu, 30 Mar 2023 04:01:34 -0700 (PDT)
 Received: from gerbillo.redhat.com (146-241-228-125.dyn.eolo.it. [146.241.228.125])
-        by smtp.gmail.com with ESMTPSA id l2-20020a0cee22000000b005dd8b9345d4sm5231323qvs.108.2023.03.30.03.48.23
+        by smtp.gmail.com with ESMTPSA id a18-20020a0cefd2000000b005dd8b93456esm5340732qvt.6.2023.03.30.04.01.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 03:48:26 -0700 (PDT)
-Message-ID: <343825bad568ec0a21c283f876585585b040da9f.camel@redhat.com>
-Subject: Re: [PATCH net-next 8/8] virtio_net: introduce receive_small_xdp()
+        Thu, 30 Mar 2023 04:01:34 -0700 (PDT)
+Message-ID: <e9e362e3a571bc32afb344cf35b54395e741de90.camel@redhat.com>
+Subject: Re: [PATCH net-next v2] net/core: add optional threading for
+ backlog processing
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+To:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Date:   Thu, 30 Mar 2023 12:48:22 +0200
-In-Reply-To: <20230328120412.110114-9-xuanzhuo@linux.alibaba.com>
-References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
-         <20230328120412.110114-9-xuanzhuo@linux.alibaba.com>
+        Eric Dumazet <edumazet@google.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 30 Mar 2023 13:01:31 +0200
+In-Reply-To: <20230328161642.3d2f101c@kernel.org>
+References: <20230328195925.94495-1-nbd@nbd.name>
+         <20230328161642.3d2f101c@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
@@ -87,27 +82,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2023-03-28 at 20:04 +0800, Xuan Zhuo wrote:
-> @@ -949,15 +1042,11 @@ static struct sk_buff *receive_small(struct net_de=
-vice *dev,
->  {
->  	struct sk_buff *skb;
->  	struct bpf_prog *xdp_prog;
-> -	unsigned int xdp_headroom =3D (unsigned long)ctx;
-> -	unsigned int header_offset =3D VIRTNET_RX_PAD + xdp_headroom;
-> +	unsigned int header_offset =3D VIRTNET_RX_PAD;
->  	unsigned int headroom =3D vi->hdr_len + header_offset;
+On Tue, 2023-03-28 at 16:16 -0700, Jakub Kicinski wrote:
+> On Tue, 28 Mar 2023 21:59:25 +0200 Felix Fietkau wrote:
+> > When dealing with few flows or an imbalance on CPU utilization, static =
+RPS
+> > CPU assignment can be too inflexible. Add support for enabling threaded=
+ NAPI
+> > for backlog processing in order to allow the scheduler to better balanc=
+e
+> > processing. This helps better spread the load across idle CPUs.
+>=20
+> Can you share some numbers vs a system where RPS only spreads to=20
+> the cores which are not running NAPI?
+>=20
+> IMHO you're putting a lot of faith in the scheduler and you need=20
+> to show that it actually does what you say it will do.
 
-This changes (reduces) the headroom for non-xpd-pass skbs.
+I have the same feeling. From your description I think some gain is
+possible if there are no other processes running except
+ksoftirq/rps/threaded napi.=C2=A0
 
-[...]
-> +	buf +=3D header_offset;
-> +	memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
+I guess that the above is expect average state for a small s/w router,
+but if/when routing daemon/igmp proxy/local web server kicks-in you
+should notice a measurable higher latency (compared to plain RPS in the
+same scenario)???
 
-AFAICS, that also means that receive_small(), for such packets, will
-look for the virtio header in a different location. Is that expected?
-
-Thanks.
+Cheers,
 
 Paolo
 
