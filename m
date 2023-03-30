@@ -2,78 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C76E6CFB74
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C336CFB78
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 08:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbjC3GXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 02:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
+        id S230126AbjC3GZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 02:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbjC3GXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:23:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989E32720;
-        Wed, 29 Mar 2023 23:23:37 -0700 (PDT)
+        with ESMTP id S229453AbjC3GZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 02:25:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92752720;
+        Wed, 29 Mar 2023 23:25:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28649B825E9;
-        Thu, 30 Mar 2023 06:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E141C4339B;
-        Thu, 30 Mar 2023 06:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680157414;
-        bh=35+b81mwaRluJ6TgE8e0K/buT6xsMedun7q+hsyUAnU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EnIhxxT7pm5ZfPOPsdbIksn3dfqxaSREYNxpueJoxt8WHzM+fpGOZUTq0XOrssizK
-         aJpn3HY3ysCnoQzkyNyQhGLiQXN6YnhRYc3QVmRTPc9v8b/sBGbI4ZZprLzaqgCKvE
-         v/X48DKsW9tO6Ka6akF8lBvH4DkoLxK5VWcO2FtTrvt8REa4KPCpQXPCGR4fIW2U8t
-         zbXswVAh/WbDS52pZ6ENoRS/C5ZSYiBWTKX+8y9H66ILGuxNRDlew1aO0Orba6vKr5
-         oD3VpCtKS0cI4cuugvY7Fdg2k4SS3oSANMVtBB47cFSwO9Y7PsveQsKWMufg7n1GGH
-         TYEuy8o5J/kKA==
-Date:   Thu, 30 Mar 2023 09:23:30 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Sai Krishna <saikrishnag@marvell.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sgoutham@marvell.com,
-        richardcochran@gmail.com, Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: Re: [net PATCH 7/7] octeontx2-pf: Disable packet I/O for graceful
- exit
-Message-ID: <20230330062330.GP831478@unreal>
-References: <20230329170619.183064-1-saikrishnag@marvell.com>
- <20230329170619.183064-8-saikrishnag@marvell.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 445FDB825F0;
+        Thu, 30 Mar 2023 06:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8807C433EF;
+        Thu, 30 Mar 2023 06:24:55 +0000 (UTC)
+Date:   Thu, 30 Mar 2023 11:54:45 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Sricharan R <quic_srichara@quicinc.com>
+Cc:     mani@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: qrtr: Do not do DEL_SERVER broadcast after
+ DEL_CLIENT
+Message-ID: <20230330062445.GB9876@thinkpad>
+References: <1680095250-21032-1-git-send-email-quic_srichara@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20230329170619.183064-8-saikrishnag@marvell.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1680095250-21032-1-git-send-email-quic_srichara@quicinc.com>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 10:36:19PM +0530, Sai Krishna wrote:
-> From: Subbaraya Sundeep <sbhatta@marvell.com>
+On Wed, Mar 29, 2023 at 06:37:30PM +0530, Sricharan R wrote:
+> When the qrtr socket is released, qrtr_port_remove gets called, which
+> broadcasts a DEL_CLIENT. After this DEL_SERVER is also additionally
+> broadcasted, which becomes NOP, but triggers the below error msg.
 > 
-> At the stage of enabling packet I/O in otx2_open, If mailbox
-> timeout occurs then interface ends up in down state where as
-> hardware packet I/O is enabled. Hence disable packet I/O also
-> before bailing out. This patch also free the LMTST per cpu structure
-> on teardown, if the lmt_info pointer is not NULL.
+> "failed while handling packet from 2:-2", since remote node already
+> acted upon on receiving the DEL_CLIENT, once again when it receives
+> the DEL_SERVER, it returns -ENOENT.
 > 
-> Fixes: 1ea0166da050 ("octeontx2-pf: Fix the device state on error")
-> Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-> Signed-off-by: Sai Krishna <saikrishnag@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 11 ++++++++++-
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c |  8 +++++---
->  2 files changed, 15 insertions(+), 4 deletions(-)
+> Fixing it by not sending a 'DEL_SERVER' to remote when a 'DEL_CLIENT'
+> was sent for that port.
 > 
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Can you share the qrtr trace when this happens to help me understand the flow?
+
+- Mani
+
+> Signed-off-by: Ram Kumar D <quic_ramd@quicinc.com>
+> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+> ---
+> Note: Functionally tested on 5.4 kernel and compile tested on 6.3 TOT
+> 
+>  net/qrtr/ns.c | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
+> index 722936f..6fbb195 100644
+> --- a/net/qrtr/ns.c
+> +++ b/net/qrtr/ns.c
+> @@ -274,7 +274,7 @@ static struct qrtr_server *server_add(unsigned int service,
+>  	return NULL;
+>  }
+>  
+> -static int server_del(struct qrtr_node *node, unsigned int port)
+> +static int server_del(struct qrtr_node *node, unsigned int port, bool del_server)
+>  {
+>  	struct qrtr_lookup *lookup;
+>  	struct qrtr_server *srv;
+> @@ -287,7 +287,7 @@ static int server_del(struct qrtr_node *node, unsigned int port)
+>  	radix_tree_delete(&node->servers, port);
+>  
+>  	/* Broadcast the removal of local servers */
+> -	if (srv->node == qrtr_ns.local_node)
+> +	if (srv->node == qrtr_ns.local_node && del_server)
+>  		service_announce_del(&qrtr_ns.bcast_sq, srv);
+>  
+>  	/* Announce the service's disappearance to observers */
+> @@ -373,7 +373,7 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
+>  		}
+>  		slot = radix_tree_iter_resume(slot, &iter);
+>  		rcu_read_unlock();
+> -		server_del(node, srv->port);
+> +		server_del(node, srv->port, true);
+>  		rcu_read_lock();
+>  	}
+>  	rcu_read_unlock();
+> @@ -459,10 +459,14 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
+>  		kfree(lookup);
+>  	}
+>  
+> -	/* Remove the server belonging to this port */
+> +	/* Remove the server belonging to this port
+> +	 * Given that DEL_CLIENT is already broadcasted
+> +	 * by port_remove, no need to send DEL_SERVER for
+> +	 * the same port to remote
+> +	 */
+>  	node = node_get(node_id);
+>  	if (node)
+> -		server_del(node, port);
+> +		server_del(node, port, false);
+>  
+>  	/* Advertise the removal of this client to all local servers */
+>  	local_node = node_get(qrtr_ns.local_node);
+> @@ -567,7 +571,7 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
+>  	if (!node)
+>  		return -ENOENT;
+>  
+> -	return server_del(node, port);
+> +	return server_del(node, port, true);
+>  }
+>  
+>  static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
+> -- 
+> 2.7.4
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
