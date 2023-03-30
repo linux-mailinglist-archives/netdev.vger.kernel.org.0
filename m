@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EDEE6D086B
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 16:37:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83EA96D087B
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 16:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbjC3OhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 10:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45076 "EHLO
+        id S232523AbjC3Okp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 10:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbjC3OhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 10:37:23 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B59F5BA0;
-        Thu, 30 Mar 2023 07:37:23 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S232118AbjC3Okm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 10:40:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7703AB2
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 07:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680187196;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=O3V/Opjj7Xto80R0YuRGPZTCgbXp6rtl0lkxbOZukAg=;
+        b=PlIwE+u4EFOrKIHDKF3i7JgwvcYm7KQ8dmbrWtgiULAFTDOpdBvjumyGNB1M5CXayB/hMI
+        2rtPl0zOucLvstahXttNBE4rUp9wF2CX4biM7kAZ2xw+mK3wouPwABMjZWPWVTZippEtfx
+        L6cYn+fdICrujOnTmoOuVYmw3s4Yfso=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-E0MKE2P4Mqa-h5CUMt8wSA-1; Thu, 30 Mar 2023 10:39:51 -0400
+X-MC-Unique: E0MKE2P4Mqa-h5CUMt8wSA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id B5EE6219D1;
-        Thu, 30 Mar 2023 14:37:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1680187041; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=BspglNfkJsUS3r3lZLHtaMvBOeJH8poZYcalK2MjJCo=;
-        b=ZRAEANHjfjlm+/1Rnu369fVYRGG3XxIkifyQlbE3ZuIbYhwGZdqXQoaJDUvHqFAsCsVGad
-        22CfTKt2mh5JQZsCYRDwYU22l70i2nVCesaVFhopS0uS4yOGOdTfopvbtVfxKp5C1ftrLL
-        MFnaVDjZU/YjU+0gbN+NHeuqa5dczuM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1680187041;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=BspglNfkJsUS3r3lZLHtaMvBOeJH8poZYcalK2MjJCo=;
-        b=gyFQC9v0shXwm3T/y/HeCn0C4d119rgfEFucqMMGOqrVyBl7wbuh4WK0NA5byfaYwBZfUu
-        r2OOy8DwATUs8TCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 95841133E0;
-        Thu, 30 Mar 2023 14:37:21 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id YvK2I6GeJWRkMAAAMHmgww
-        (envelope-from <tiwai@suse.de>); Thu, 30 Mar 2023 14:37:21 +0000
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] ath11k: pci: Add more MODULE_FIRMWARE() entries
-Date:   Thu, 30 Mar 2023 16:37:18 +0200
-Message-Id: <20230330143718.19511-1-tiwai@suse.de>
-X-Mailer: git-send-email 2.35.3
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 510DD884340;
+        Thu, 30 Mar 2023 14:39:50 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 699CEC15BA0;
+        Thu, 30 Mar 2023 14:39:48 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <64259aca22046_21883920890@willemb.c.googlers.com.notmuch>
+References: <64259aca22046_21883920890@willemb.c.googlers.com.notmuch> <20230329141354.516864-1-dhowells@redhat.com> <20230329141354.516864-17-dhowells@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v2 16/48] ip, udp: Support MSG_SPLICE_PAGES
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <838853.1680187186.1@warthog.procyon.org.uk>
+Date:   Thu, 30 Mar 2023 15:39:46 +0100
+Message-ID: <838854.1680187186@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As there are a few more models supported by the driver, let's add the
-missing MODULE_FIRMWARE() entries for them.  The lack of them resulted
-in the missing device enablement on some systems, such as the
-installation image of openSUSE.
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
-While we are at it, use the wildcard instead of listing each firmware
-files individually for each.
+> > diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> 
+> A non-RFC version would require the same for ipv6, of course.
 
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
----
+I missed the fact that ipv6 had it's own version of __ip_append_data() despite
+sharing tcp_sendmsg().  Could __ip_append_data() and __ip6_append_data() be
+shared?  I guess that the v6_cork, the flowi6 and the ipcm6_cookie might
+prevent that.
 
-I can rewrite without wildcards if it's preferred, too.
-But IMO this makes easier to maintain.
-
- drivers/net/wireless/ath/ath11k/pci.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 0aeef2948ff5..379f7946a29e 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -1039,7 +1039,8 @@ module_exit(ath11k_pci_exit);
- MODULE_DESCRIPTION("Driver support for Qualcomm Technologies 802.11ax WLAN PCIe devices");
- MODULE_LICENSE("Dual BSD/GPL");
- 
--/* QCA639x 2.0 firmware files */
--MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/" ATH11K_BOARD_API2_FILE);
--MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/" ATH11K_AMSS_FILE);
--MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/" ATH11K_M3_FILE);
-+/* firmware files */
-+MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/*");
-+MODULE_FIRMWARE(ATH11K_FW_DIR "/QCN9074/hw1.0/*");
-+MODULE_FIRMWARE(ATH11K_FW_DIR "/WCN6855/hw2.0/*");
-+MODULE_FIRMWARE(ATH11K_FW_DIR "/WCN6855/hw2.1/*");
--- 
-2.35.3
+David
 
