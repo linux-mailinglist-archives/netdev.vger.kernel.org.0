@@ -2,113 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 327686CF8AA
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 03:25:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C176CF8B4
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 03:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbjC3BZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 21:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        id S229806AbjC3B2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 21:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjC3BZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 21:25:39 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF4A4ECD;
-        Wed, 29 Mar 2023 18:25:38 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Pn5M62mk7zKnsL;
-        Thu, 30 Mar 2023 09:25:06 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Thu, 30 Mar 2023 09:25:35 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <mani@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <andersson@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: qrtr: Fix a refcount bug in qrtr_recvmsg()
-Date:   Thu, 30 Mar 2023 09:25:32 +0800
-Message-ID: <20230330012532.1065159-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229549AbjC3B2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 21:28:00 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011EE3C20
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 18:27:57 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id i6so21745566ybu.8
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 18:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore.com; s=google; t=1680139676;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jho8W7YSQzUbooC871CiN2fQ18tijCVdPUEwj85iKm0=;
+        b=KOYBZ/u48rOd+IsZVeMsFdp85CDSm1058bc2+S9Qo9B4ojfATOWHk6eI9PKYKgIUWg
+         bUViNpL5mzoXsVaxgd7Jct7Wm0sEtXluc9jXiG+NRg/UpI4oWh2kw7Su8ZTqws/zkU05
+         A1/ZUFjWOrqBHxSZLB6/Mk8IpNPtZs2+Cg0lb864DFfinixsoKQJ2cwBGAWPQyiqvtqk
+         mjOj/VmiT7quQiDIggtEgM/JV29y/cNo2QsT399OEf9v1QfTfZXUrrpc/kLj+3C7HXcM
+         W50JvBoLii7zRjk6nJ0ZUZasc9mXCE/cIZWG/RjJUmCpXa2OPa06ciDdK0tqk1IIB6ZC
+         Vv9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680139676;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jho8W7YSQzUbooC871CiN2fQ18tijCVdPUEwj85iKm0=;
+        b=69MWx0LaJznAajPkQgE7K8sR2zfvTwP9oyM7nQZJ9vutlLrkcXyTPAB6LWkv0xCzS0
+         S5WZWiIF7QpF3OdEOhPKTIvqJVWTbVZk+bYseImbG04lw0+nipspBM128Mta/ZPku+BC
+         kxA3aMBl3zdXMocOFjpkJm2TPAuOeSJoe3r4hkQXxQloOzCItXzYpiIa0m4/xNhBWeIU
+         9OxCEgt/0ILCAWvuT8yQkSr08VcPPWjh3WNymf73NuRPGH6ahqMLdw6EvLKxqte1Rcpe
+         oPLET+Vpfr7bHF8TcFsjbhxD/OeadvLtR6gLcdGR9DQzgPSQYGteyHnZUdCquHsmZMyJ
+         7iCw==
+X-Gm-Message-State: AAQBX9cEqmz6uja0LcOSAXncvz8deqxEggmPd2W5yw/5CivpheeypkFQ
+        STaUL9fzovkoLxkW7vgv6a0PCIVLg226XKODi0I9
+X-Google-Smtp-Source: AKy350ZzJMRdMe6pmI6/jyTpF92QZFOJ+PtQmHL9y+rsNYlOUGfoHKAq2YuT14lXf4r3U7saeU7oUkvjwm82kTcxUIs=
+X-Received: by 2002:a25:abee:0:b0:b68:7a4a:5258 with SMTP id
+ v101-20020a25abee000000b00b687a4a5258mr14300450ybi.3.1680139676105; Wed, 29
+ Mar 2023 18:27:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <CAHC9VhQ7A4+msL38WpbOMYjAqLp0EtOjeLh4Dc6SQtD6OUvCQg@mail.gmail.com>
+ <ZCS5oxM/m9LuidL/@x130>
+In-Reply-To: <ZCS5oxM/m9LuidL/@x130>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 29 Mar 2023 21:27:45 -0400
+Message-ID: <CAHC9VhTvQLa=+Ykwmr_Uhgjrc6dfi24ou=NBsACkhwZN7X4EtQ@mail.gmail.com>
+Subject: Re: Potential regression/bug in net/mlx5 driver
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Shay Drory <shayd@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        netdev@vger.kernel.org, regressions@lists.linux.dev,
+        selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported a bug as following:
+On Wed, Mar 29, 2023 at 6:20=E2=80=AFPM Saeed Mahameed <saeed@kernel.org> w=
+rote:
+> On 28 Mar 19:08, Paul Moore wrote:
+> >Hello all,
+> >
+> >Starting with the v6.3-rcX kernel releases I noticed that my
+> >InfiniBand devices were no longer present under /sys/class/infiniband,
+> >causing some of my automated testing to fail.  It took me a while to
+> >find the time to bisect the issue, but I eventually identified the
+> >problematic commit:
+> >
+> >  commit fe998a3c77b9f989a30a2a01fb00d3729a6d53a4
+> >  Author: Shay Drory <shayd@nvidia.com>
+> >  Date:   Wed Jun 29 11:38:21 2022 +0300
+> >
+> >   net/mlx5: Enable management PF initialization
+> >
+> >   Enable initialization of DPU Management PF, which is a new loopback P=
+F
+> >   designed for communication with BMC.
+> >   For now Management PF doesn't support nor require most upper layer
+> >   protocols so avoid them.
+> >
+> >   Signed-off-by: Shay Drory <shayd@nvidia.com>
+> >   Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+> >   Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+> >   Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> >
+> >I'm not a mlx5 driver expert so I can't really offer much in the way
+> >of a fix, but as a quick test I did remove the
+> >'mlx5_core_is_management_pf(...)' calls in mlx5/core/dev.c and
+> >everything seemed to work okay on my test system (or rather the tests
+> >ran without problem).
+> >
+> >If you need any additional information, or would like me to test a
+> >patch, please let me know.
+>
+> Hi Paul,
+>
+> Our team is looking into this, the current theory is that you have an old
+> FW that doesn't have the correct capabilities set.
 
-refcount_t: addition on 0; use-after-free.
-...
-RIP: 0010:refcount_warn_saturate+0x17c/0x1f0 lib/refcount.c:25
-...
-Call Trace:
- <TASK>
- __refcount_add include/linux/refcount.h:199 [inline]
- __refcount_inc include/linux/refcount.h:250 [inline]
- refcount_inc include/linux/refcount.h:267 [inline]
- kref_get include/linux/kref.h:45 [inline]
- qrtr_node_acquire net/qrtr/af_qrtr.c:202 [inline]
- qrtr_node_lookup net/qrtr/af_qrtr.c:398 [inline]
- qrtr_send_resume_tx net/qrtr/af_qrtr.c:1003 [inline]
- qrtr_recvmsg+0x85f/0x990 net/qrtr/af_qrtr.c:1070
- sock_recvmsg_nosec net/socket.c:1017 [inline]
- sock_recvmsg+0xe2/0x160 net/socket.c:1038
- qrtr_ns_worker+0x170/0x1700 net/qrtr/ns.c:688
- process_one_work+0x991/0x15c0 kernel/workqueue.c:2390
- worker_thread+0x669/0x1090 kernel/workqueue.c:2537
+That's very possible; I installed this card many years ago and haven't
+updated the FW once.  I'm happy to update the FW (do you have a
+pointer/how-to?), but it might be good to identify a fix first as I'm
+guessing there will be others like me ...
 
-It occurs in the concurrent scenario of qrtr_recvmsg() and
-qrtr_endpoint_unregister() as following:
+> Can you please provide the FW version and the ConnectX device you are
+> testing ?
+>
+> $ devlink dev info
 
-	cpu0					cpu1
-qrtr_recvmsg				qrtr_endpoint_unregister
-qrtr_send_resume_tx			qrtr_node_release
-qrtr_node_lookup			mutex_lock(&qrtr_node_lock)
-spin_lock_irqsave(&qrtr_nodes_lock, )	refcount_dec_and_test(&node->ref) [node->ref == 0]
-radix_tree_lookup [node != NULL]	__qrtr_node_release
-qrtr_node_acquire			spin_lock_irqsave(&qrtr_nodes_lock, )
-kref_get(&node->ref) [WARNING]		...
-					mutex_unlock(&qrtr_node_lock)
+% devlink dev info; echo $?
+0
 
-Use qrtr_node_lock to protect qrtr_node_lookup() implementation, this
-is actually improving the protection of node reference.
+No output and no error code.  However, I do see the following in dmesg:
 
-Fixes: 0a7e0d0ef054 ("net: qrtr: Migrate node lookup tree to spinlock")
-Reported-by: syzbot+a7492efaa5d61b51db23@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=a7492efaa5d61b51db23
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/qrtr/af_qrtr.c | 2 ++
- 1 file changed, 2 insertions(+)
+[  255.251124] mlx5_core 0000:00:08.0: mlx5_fw_version_query:823:(pid
+959): fw query isn't supported by the FW
 
-diff --git a/net/qrtr/af_qrtr.c b/net/qrtr/af_qrtr.c
-index 5c2fb992803b..3a70255c8d02 100644
---- a/net/qrtr/af_qrtr.c
-+++ b/net/qrtr/af_qrtr.c
-@@ -393,10 +393,12 @@ static struct qrtr_node *qrtr_node_lookup(unsigned int nid)
- 	struct qrtr_node *node;
- 	unsigned long flags;
- 
-+	mutex_lock(&qrtr_node_lock);
- 	spin_lock_irqsave(&qrtr_nodes_lock, flags);
- 	node = radix_tree_lookup(&qrtr_nodes, nid);
- 	node = qrtr_node_acquire(node);
- 	spin_unlock_irqrestore(&qrtr_nodes_lock, flags);
-+	mutex_unlock(&qrtr_node_lock);
- 
- 	return node;
- }
--- 
-2.25.1
+... which appears to support your theory about ancient hardware.
 
+> $ lspci -s <pci_dev> -vv
+
+While there is only one physical card, there are two PCI devices (it's
+a dual port card).  I'm only copying the first device since I'm
+guessing that's really all you need:
+
+% lspci -s 00:07.0 -vv
+00:07.0 Infiniband controller: Mellanox Technologies MT27700 Family [Connec=
+tX-4]
+       Subsystem: Mellanox Technologies Device 0010
+       Physical Slot: 7
+       Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+                Stepping- SERR+ FastB2B- DisINTx+
+       Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=3Dfast >TAbort-
+               <TAbort- <MAbort- >SERR- <PERR- INTx-
+       Latency: 0, Cache Line Size: 64 bytes
+       Interrupt: pin A routed to IRQ 11
+       Region 0: Memory at fa000000 (64-bit, prefetchable) [size=3D32M]
+       Expansion ROM at fe900000 [disabled] [size=3D1M]
+       Capabilities: [60] Express (v2) Endpoint, MSI 00
+               DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s
+                       unlimited, L1 unlimited
+                       ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+
+                       SlotPowerLimit 25W
+               DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+                       RlxdOrd- ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLReset=
+-
+                       MaxPayload 256 bytes, MaxReadReq 512 bytes
+               DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr-
+                       TransPend-
+               LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM not supported
+                       ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
+               LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+                       ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+               LnkSta: Speed 8GT/s, Width x8
+                       TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+               DevCap2: Completion Timeout: Range ABCD, TimeoutDis+ NROPrPr=
+P-
+                        LTR- 10BitTagComp+ 10BitTagReq- OBFF Not Supported,
+                        ExtFmt- EETLPPrefix- EmergencyPowerReduction
+                        Not Supported, EmergencyPowerReductionInit-
+                        FRS- TPHComp- ExtTPHComp-
+               AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+               DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR-
+                        10BitTagReq- OBFF Disabled,
+               AtomicOpsCtl: ReqEn-
+               LnkSta2: Current De-emphasis Level: -6dB, EqualizationComple=
+te+
+                        EqualizationPhase1+ EqualizationPhase2+
+                        EqualizationPhase3+ LinkEqualizationRequest-
+                        Retimer- 2Retimers- CrosslinkRes: unsupported
+       Capabilities: [48] Vital Product Data
+               Product Name: CX454A - ConnectX-4 QSFP28
+               Read-only fields:
+                       [PN] Part number: MCX454A-FCAT
+                       [EC] Engineering changes: AB
+                       [SN] Serial number: MT1730X05081
+                       [V0] Vendor specific: PCIeGen3 x8
+                       [RV] Reserved: checksum good, 0 byte(s) reserved
+               End
+       Capabilities: [9c] MSI-X: Enable+ Count=3D64 Masked-
+               Vector table: BAR=3D0 offset=3D00002000
+               PBA: BAR=3D0 offset=3D00003000
+       Capabilities: [c0] Vendor Specific Information: Len=3D18 <?>
+       Capabilities: [40] Power Management version 3
+               Flags: PMEClk- DSI- D1- D2- AuxCurrent=3D375mA
+                      PME(D0-,D1-,D2-,D3hot-,D3cold+)
+               Status: D0 NoSoftRst+ PME-Enable- DSel=3D0 DScale=3D0 PME-
+       Kernel driver in use: mlx5_core
+       Kernel modules: mlx5_core
+
+> since boot:
+> $ dmesg
+
+% devlink dev info
+% dmesg | grep mlx5
+[    4.739691] mlx5_core 0000:00:07.0: firmware version: 12.18.1000
+[    4.740134] mlx5_core 0000:00:07.0: 63.008 Gb/s available PCIe
+bandwidth (8.0GT/s PCIe x8 link)
+[    7.048567] mlx5_core 0000:00:07.0: Port module event: module 0,
+Cable plugged
+[    7.211879] mlx5_core 0000:00:08.0: firmware version: 12.18.1000
+[    7.212309] mlx5_core 0000:00:08.0: 63.008 Gb/s available PCIe
+bandwidth (8.0GT/s PCIe x8 link)
+[    7.897218] mlx5_core 0000:00:08.0: Port module event: module 1,
+Cable plugged
+[   10.875388] mlx5_core 0000:00:07.0 ibs7: renamed from ib0
+[   10.995115] mlx5_core 0000:00:08.0 ibs8: renamed from ib0
+[  181.471663] mlx5_core 0000:00:07.0: mlx5_fw_version_query:823:(pid
+918): fw query isn't supported by the FW
+[  181.472286] mlx5_core 0000:00:08.0: mlx5_fw_version_query:823:(pid
+918): fw query isn't supported by the FW
+
+--=20
+paul-moore.com
