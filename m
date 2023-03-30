@@ -2,165 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC146D0E34
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2C276D0E31
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231745AbjC3S5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 14:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59142 "EHLO
+        id S231742AbjC3S5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 14:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231764AbjC3S5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:57:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF7DEE
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:56:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680202592;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I0okzHNuuHJ7nFnN8RcKBErkj+TCd+hop8cnDkGfnQ8=;
-        b=ARTAAqK31qFFasoV2/kjw7npHJP7Tb6+tGjzUfrtc/GmWhe9mGKLCJZOITCn7n+OJ9Fzyc
-        R7rH99zrC01FU3vfhgLxG2giBq1WQ+fLbwC8m29YRbTYCl5B1bux61u2FXrqwUSjOlJ0xQ
-        mo1eD7fa4pbatjfeMrcgYrW/FLMFygI=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-32-HtBEZaA_Or-FVvLAaTQqmg-1; Thu, 30 Mar 2023 14:56:22 -0400
-X-MC-Unique: HtBEZaA_Or-FVvLAaTQqmg-1
-Received: by mail-lf1-f69.google.com with SMTP id b10-20020a056512060a00b004eaf5a72b99so7742938lfe.17
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:56:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680202581;
-        h=content-transfer-encoding:in-reply-to:references:to
-         :content-language:subject:cc:user-agent:mime-version:date:message-id
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=I0okzHNuuHJ7nFnN8RcKBErkj+TCd+hop8cnDkGfnQ8=;
-        b=FSRhO8JLQcynH1mRMnDzAq36NpFaq/yyonXXqEpwyT0KNFIJy+lOzpxxPJrFOhEJxF
-         pQeOVUaRpLP/bIBG4tVafIJPFRN6PDMiXk1XljPxjdljTbtxYs1fomCwUdbap/Ol5Fnb
-         3X8J7FuePQYyRMfSrnySACFVIoXkv6vZAohFuHzCvAJ6hzKRp0Mz+mfMOoEWbyI7qvS/
-         gUCdumzY5UR9s32vTJJQuGGwMf9BqGC0fi3G5h2nBgVSDALVqv34J1junfniw7lls4BZ
-         X2Y705VHfWgZ1ZwRI291rYLnhjVra+hCiqAyKrx28DkxTPsxi65K6kX9+TBqLn3Alsk6
-         nC4w==
-X-Gm-Message-State: AAQBX9fQrKESTf8ih5lphfe6uGXmgzB9tXl4iB39GFNOjHk68Wpp0zjV
-        y+3CwAwR2iIuYhKmRptm7H51O6LwRhjPEgaOFnxiDm3YTcXzXSdtOJzif0LQx/XDeVgVtEWI0vV
-        oQRQA9JPWc8pJKXqg
-X-Received: by 2002:a05:6512:250:b0:4e9:ccff:daa6 with SMTP id b16-20020a056512025000b004e9ccffdaa6mr7178097lfo.30.1680202581353;
-        Thu, 30 Mar 2023 11:56:21 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Zqt3JN5UFdxjITpltBXX6C9yIP1DjUue3LM+nCC5N3ax4dDfLfhxQFL/UiF4ELYpZEKGrQtg==
-X-Received: by 2002:a05:6512:250:b0:4e9:ccff:daa6 with SMTP id b16-20020a056512025000b004e9ccffdaa6mr7178073lfo.30.1680202581033;
-        Thu, 30 Mar 2023 11:56:21 -0700 (PDT)
-Received: from [192.168.42.100] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id u1-20020a056512040100b004dc53353d15sm48564lfk.281.2023.03.30.11.56.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Mar 2023 11:56:20 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <04256caf-aa28-7e0a-59b1-ecf2b237c96f@redhat.com>
-Date:   Thu, 30 Mar 2023 20:56:19 +0200
+        with ESMTP id S231737AbjC3S5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:57:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95860CDF9
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:57:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37F8FB829FD
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 18:57:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AF57C433EF;
+        Thu, 30 Mar 2023 18:57:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680202621;
+        bh=4RJd1IdA2kR1huaXVwlSHJWvCwTUzJg0W7oHFZRnCdU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Owq50qmbooXe0kWqCFfpJKy6yXai8+QLEC6giwK97VrJgB9TZtUKRbhpCbtGwe/OV
+         GuZkrMM03LnSIILULbt0afu+iU50Ao8c0MdQK099rTf0QmAKVg7e3mWZHGPcCrrzr9
+         L47dUJEQwcBC9kdQQtFgBJs331hx+o+y/po9dcO3Wg6Xzqr/+DUKYySu8tzFgNOiXX
+         4GnvBHMOcbA3CIXZk+tuFpbeq5YVbVfTvK7A0rGHgN3q2RAXcLXWiGgoFxNCtqKQuJ
+         kXGOif550CZUQ7rwm+7YWhoZg+RBKoAABgpYOrYHKEwaDt6bW54AZkV9I3Ql35upGD
+         ZDASljLGH8o6Q==
+Date:   Thu, 30 Mar 2023 21:56:56 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     Emeel Hakim <ehakim@nvidia.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for
+ VLAN interface
+Message-ID: <20230330185656.GZ831478@unreal>
+References: <20230329122107.22658-1-ehakim@nvidia.com>
+ <20230329122107.22658-2-ehakim@nvidia.com>
+ <ZCROr7DhsoRyU1qP@hog>
+ <20230329184201.GB831478@unreal>
+ <ZCXEmUQgswOBoRqR@hog>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.lau@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexandr.lobakin@intel.com,
-        larysa.zaremba@intel.com, xdp-hints@xdp-project.net,
-        anthony.l.nguyen@intel.com, yoong.siang.song@intel.com,
-        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com, kuba@kernel.org,
-        edumazet@google.com, john.fastabend@gmail.com, hawk@kernel.org,
-        davem@davemloft.net
-Subject: Re: [PATCH bpf RFC-V3 1/5] xdp: rss hash types representation
-Content-Language: en-US
-To:     Stanislav Fomichev <sdf@google.com>
-References: <168019602958.3557870.9960387532660882277.stgit@firesoul>
- <168019606574.3557870.15629824904085210321.stgit@firesoul>
- <ZCXWerysZL1XwVfX@google.com>
-In-Reply-To: <ZCXWerysZL1XwVfX@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZCXEmUQgswOBoRqR@hog>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 30, 2023 at 07:19:21PM +0200, Sabrina Dubroca wrote:
+> 2023-03-29, 21:42:01 +0300, Leon Romanovsky wrote:
+> > On Wed, Mar 29, 2023 at 04:43:59PM +0200, Sabrina Dubroca wrote:
+> > > 2023-03-29, 15:21:04 +0300, Emeel Hakim wrote:
+> > > > Add support for MACsec offload operations for VLAN driver
+> > > > to allow offloading MACsec when VLAN's real device supports
+> > > > Macsec offload by forwarding the offload request to it.
+> > > > 
+> > > > Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+> > > > ---
+> > > > V1 -> V2: - Consult vlan_features when adding NETIF_F_HW_MACSEC.
+> > > 
+> > > Uh? You're not actually doing that? You also dropped the
+> > > changes to vlan_dev_fix_features without explaining why.
+> > 
+> > vlan_dev_fix_features() relies on real_dev->vlan_features which was set
+> > in mlx5 part of this patch.
+> > 
+> >   643 static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
+> >   644         netdev_features_t features)
+> >   645 {
+> >   ...
+> >   649
+> >   650         lower_features = netdev_intersect_features((real_dev->vlan_features |
+> >   651                                                     NETIF_F_RXCSUM),
+> >   652                                                    real_dev->features);
+> > 
+> > This part ensure that once real_dev->vlan_features and real_dev->features have NETIF_F_HW_MACSEC,
+> > the returned features will include NETIF_F_HW_MACSEC too.
+> 
+> Ok, thanks.
+> 
+> But back to the issue of vlan_features, in vlan_dev_init: I'm not
+> convinced NETIF_F_HW_MACSEC should be added to hw_features based on
+> ->features. That would result in a new vlan device that can't offload
+> macsec at all if it was created at the wrong time (while the lower
+> device's macsec offload was temporarily disabled). 
 
-On 30/03/2023 20.35, Stanislav Fomichev wrote:
-> On 03/30, Jesper Dangaard Brouer wrote:
->> The RSS hash type specifies what portion of packet data NIC hardware used
->> when calculating RSS hash value. The RSS types are focused on Internet
->> traffic protocols at OSI layers L3 and L4. L2 (e.g. ARP) often get hash
->> value zero and no RSS type. For L3 focused on IPv4 vs. IPv6, and L4
->> primarily TCP vs UDP, but some hardware supports SCTP.
-> 
->> Hardware RSS types are differently encoded for each hardware NIC. Most
->> hardware represent RSS hash type as a number. Determining L3 vs L4 often
->> requires a mapping table as there often isn't a pattern or sorting
->> according to ISO layer.
-> 
->> The patch introduce a XDP RSS hash type (enum xdp_rss_hash_type) that
->> contain combinations to be used by drivers, which gets build up with bits
->> from enum xdp_rss_type_bits. Both enum xdp_rss_type_bits and
->> xdp_rss_hash_type get exposed to BPF via BTF, and it is up to the
->> BPF-programmer to match using these defines.
-> 
->> This proposal change the kfunc API bpf_xdp_metadata_rx_hash() adding
->> a pointer value argument for provide the RSS hash type.
-> 
->> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->> ---
->>   include/linux/netdevice.h |    3 ++-
->>   include/net/xdp.h         |   46 +++++++++++++++++++++++++++++++++++++++++++++
->>   net/core/xdp.c            |   10 +++++++++-
->>   3 files changed, 57 insertions(+), 2 deletions(-)
-> 
+Sorry, I'm new to this netdev features zoo, but if I read correctly 
+Documentation/networking/netdev-features.rst, the ->features is the list
+of enabled ones:
 
-[...]
->> diff --git a/net/core/xdp.c b/net/core/xdp.c
->> index 528d4b37983d..38d2dee16b47 100644
->> --- a/net/core/xdp.c
->> +++ b/net/core/xdp.c
->> @@ -734,14 +734,22 @@ __bpf_kfunc int 
->> bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx, u64 *tim
->>    * bpf_xdp_metadata_rx_hash - Read XDP frame RX hash.
->>    * @ctx: XDP context pointer.
->>    * @hash: Return value pointer.
->> + * @rss_type: Return value pointer for RSS type.
->> + *
->> + * The RSS hash type (@rss_type) specifies what portion of packet headers NIC
->> + * hardware were used when calculating RSS hash value.  The type combinations
->> + * are defined via &enum xdp_rss_hash_type and individual bits can be decoded
->> + * via &enum xdp_rss_type_bits.
->>    *
->>    * Return:
->>    * * Returns 0 on success or ``-errno`` on error.
->>    * * ``-EOPNOTSUPP`` : means device driver doesn't implement kfunc
->>    * * ``-ENODATA``    : means no RX-hash available for this frame
->>    */
->> -__bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, 
->> u32 *hash)
->> +__bpf_kfunc int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, 
->> u32 *hash,
->> +                     enum xdp_rss_hash_type *rss_type)
->>   {
-> 
-> [..]
-> 
->> +    BTF_TYPE_EMIT(enum xdp_rss_type_bits);
-> 
-> nit: Do we still need this with an extra argument?
-> 
+   29  2. netdev->features set contains features which are currently enabled
+   30     for a device.  This should be changed only by network core or in
+   31     error paths of ndo_set_features callback.
 
-Yes, unfortunately (compiler optimizes out enum xdp_rss_type_bits).
-Do notice the difference xdp_rss_type_bits vs xdp_rss_hash_type.
-We don't need it for "xdp_rss_hash_type" but need it for 
-"xdp_rss_type_bits".
+And user will have a chance to disable it for VLAN because it was added
+to ->hw_features:
 
---Jesper
+   24  1. netdev->hw_features set contains features whose state may possibly
+   25     be changed (enabled or disabled) for a particular device by user's
+   26     request.  This set should be initialized in ndo_init callback and not
+   27     changed later.
 
+So how can VLAN be created with NETIF_F_HW_MACSEC while real_dev mcasec
+offload is disabled?
+
+> AFAIU, vlandev->hw_features should be based on realdev->vlan_features. 
+
+Is this macsec offloaded VLAN can be called "child VLAN device"?
+
+   33  3. netdev->vlan_features set contains features whose state is inherited
+   34     by child VLAN devices (limits netdev->features set).  This is currently
+   35     used for all VLAN devices whether tags are stripped or inserted in
+   36     hardware or software.
+
+> I don't see a reason to advertise a feature in the vlan device if we
+> won't ever be able to turn it on because it's not in ->vlan_features
+> ("grmbl why can't I enable it, ethtool says it's here?!").
+> 
+> 
+> Emeel, I'm not a maintainer, but I don't think you should be reposting
+> until the existing discussion has settled down.
+> 
+> > > 
+> > > [...]
+> > > > @@ -572,6 +573,9 @@ static int vlan_dev_init(struct net_device *dev)
+> > > >  			   NETIF_F_HIGHDMA | NETIF_F_SCTP_CRC |
+> > > >  			   NETIF_F_ALL_FCOE;
+> > > >  
+> > > > +	if (real_dev->features & NETIF_F_HW_MACSEC)
+> > > > +		dev->hw_features |= NETIF_F_HW_MACSEC;
+> > > > +
+> > > >  	dev->features |= dev->hw_features | NETIF_F_LLTX;
+> > > >  	netif_inherit_tso_max(dev, real_dev);
+> > > >  	if (dev->features & NETIF_F_VLAN_FEATURES)
+> 
+> -- 
+> Sabrina
+> 
