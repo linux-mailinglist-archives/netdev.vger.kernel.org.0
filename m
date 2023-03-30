@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 657186CFDA9
+	by mail.lfdr.de (Postfix) with ESMTP id B707A6CFDAA
 	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 10:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbjC3IDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 04:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S229987AbjC3IDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 04:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbjC3IDg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 04:03:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78B172A5
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 01:03:18 -0700 (PDT)
+        with ESMTP id S230147AbjC3IDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 04:03:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEFC76A6
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 01:03:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F156DB82623
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 08:03:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 415DFC433EF;
-        Thu, 30 Mar 2023 08:03:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F90961F15
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 08:03:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D6BC433EF;
+        Thu, 30 Mar 2023 08:03:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680163395;
-        bh=LHkTwYYAYbCOt75ZIEBv3HfupXZ90RttxDvMaM1P2qk=;
+        s=k20201202; t=1680163399;
+        bh=+88X3lmrhIPV77V6GZO5db66ySEEd6tgSIWB0Iuq0o0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tOyywx0SfIA+2F3QkVeNZcfspCa3wXDKL2s6OoF5NrGgEhc09QDRXVrffeuAwR6I2
-         Qd6LBWpz0Ld6o8GNj97GOB/cfpQymn8mTu1N/mwIYlEe1864sKaEyHVVMbEUVflSkP
-         mgHfElMSM+KAcHRNBQh7repLmAxhlSYeNLplj6Opd01oiaSSPeHKb9lvtQa2HmYdqy
-         Q59EVNYxPsj3f1lPVAx0qups8zz4b2TQ0f+wpiCmMasT4rBxo2issx71/DofzC3z6j
-         PBPyOwNc/mLHVM+TwmJwm57tgstwqzKBLhiT7y++4HjomD7sykkAXAzVdHrFa1QYVg
-         BiY90YSWXPdgA==
+        b=WgPen6+Mqqfg4l4UIdA4iGO3H9ZbdXNQNbOvuBRWcxTYSnPjwtIUhEiTxWkh3PygK
+         DrlQSNrM9xBq7WSABBHtrrjj//eELuYydf7vuZRwzGl84TJU7HqMAIlYJhYUA5Cc0I
+         S3RE9gLZKCsh+O3G086mKaq/D6ANXK81yqplVrAzjLV3r/e8napm1FEBpEhCkW59UY
+         qENgEe3ZTFcCt/FsHCEreQ/FOPP65H2Q0+DhzcI53a0vxliIjiZpFLzNI1njff1dCc
+         cvMjvuhweGyD02ZQTfgwPiy81lh/n9vAD85XQ7gSCS752Gm0b+v3EE3uZp5tQR/ZbA
+         EuSJVP6+bJ0bw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>
@@ -41,16 +41,16 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH net-next 09/10] net/mlx5e: Generalize IPsec work structs
-Date:   Thu, 30 Mar 2023 11:02:30 +0300
-Message-Id: <285a1550242363de181bab3a07a69296f66ad9a8.1680162300.git.leonro@nvidia.com>
+Subject: [PATCH net-next 10/10] net/mlx5e: Simulate missing IPsec TX limits hardware functionality
+Date:   Thu, 30 Mar 2023 11:02:31 +0300
+Message-Id: <94a5d82c0c399747117d8a558f9beebfbcf26154.1680162300.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1680162300.git.leonro@nvidia.com>
 References: <cover.1680162300.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,265 +60,239 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-IPsec logic has two work structs which are submitted to same workqueue.
-As a preparation to addition of new work which needs to be submitted
-too, let's generalize struct mlx5e_ipsec_work.
+ConnectX-7 devices don't have ability to send TX hard/soft limits
+events. As a possible workaround, let's rely on existing infrastructure
+and use periodic check of cached flow counter. In these periodic checks,
+we call to xfrm_state_check_expire() to check and mark state accordingly.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
+Once the state is marked as XFRM_STATE_EXPIRED, the SA flow rule is
+changed to drop all the traffic.
+
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec.c       | 84 ++++++++++++-------
- .../mellanox/mlx5/core/en_accel/ipsec.h       | 11 +--
- .../mlx5/core/en_accel/ipsec_offload.c        | 19 ++---
- 3 files changed, 66 insertions(+), 48 deletions(-)
+ .../mellanox/mlx5/core/en_accel/ipsec.c       | 65 ++++++++++++++++++-
+ .../mellanox/mlx5/core/en_accel/ipsec.h       |  8 +++
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 31 +++++++--
+ 3 files changed, 99 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index fa66f4f3cba7..89d5802888a9 100644
+index 89d5802888a9..bb5e9f5b904e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -406,14 +406,16 @@ static int mlx5e_xfrm_validate_state(struct mlx5_core_dev *mdev,
+@@ -40,6 +40,8 @@
+ #include "ipsec.h"
+ #include "ipsec_rxtx.h"
+ 
++#define MLX5_IPSEC_RESCHED msecs_to_jiffies(1000)
++
+ static struct mlx5e_ipsec_sa_entry *to_ipsec_sa_entry(struct xfrm_state *x)
+ {
+ 	return (struct mlx5e_ipsec_sa_entry *)x->xso.offload_handle;
+@@ -50,6 +52,28 @@ static struct mlx5e_ipsec_pol_entry *to_ipsec_pol_entry(struct xfrm_policy *x)
+ 	return (struct mlx5e_ipsec_pol_entry *)x->xdo.offload_handle;
+ }
+ 
++static void mlx5e_ipsec_handle_tx_limit(struct work_struct *_work)
++{
++	struct mlx5e_ipsec_dwork *dwork =
++		container_of(_work, struct mlx5e_ipsec_dwork, dwork.work);
++	struct mlx5e_ipsec_sa_entry *sa_entry = dwork->sa_entry;
++	struct xfrm_state *x = sa_entry->x;
++
++	spin_lock(&x->lock);
++	xfrm_state_check_expire(x);
++	if (x->km.state == XFRM_STATE_EXPIRED) {
++		sa_entry->attrs.drop = true;
++		mlx5e_accel_ipsec_fs_modify(sa_entry);
++	}
++	spin_unlock(&x->lock);
++
++	if (sa_entry->attrs.drop)
++		return;
++
++	queue_delayed_work(sa_entry->ipsec->wq, &dwork->dwork,
++			   MLX5_IPSEC_RESCHED);
++}
++
+ static bool mlx5e_ipsec_update_esn_state(struct mlx5e_ipsec_sa_entry *sa_entry)
+ {
+ 	struct xfrm_state *x = sa_entry->x;
+@@ -464,6 +488,31 @@ static int mlx5_ipsec_create_work(struct mlx5e_ipsec_sa_entry *sa_entry)
  	return 0;
  }
  
--static void _update_xfrm_state(struct work_struct *work)
-+static void mlx5e_ipsec_modify_state(struct work_struct *_work)
- {
--	struct mlx5e_ipsec_modify_state_work *modify_work =
--		container_of(work, struct mlx5e_ipsec_modify_state_work, work);
--	struct mlx5e_ipsec_sa_entry *sa_entry = container_of(
--		modify_work, struct mlx5e_ipsec_sa_entry, modify_work);
-+	struct mlx5e_ipsec_work *work =
-+		container_of(_work, struct mlx5e_ipsec_work, work);
-+	struct mlx5e_ipsec_sa_entry *sa_entry = work->sa_entry;
-+	struct mlx5_accel_esp_xfrm_attrs *attrs;
- 
--	mlx5_accel_esp_modify_xfrm(sa_entry, &modify_work->attrs);
-+	attrs = &((struct mlx5e_ipsec_sa_entry *)work->data)->attrs;
-+
-+	mlx5_accel_esp_modify_xfrm(sa_entry, attrs);
- }
- 
- static void mlx5e_ipsec_set_esn_ops(struct mlx5e_ipsec_sa_entry *sa_entry)
-@@ -432,6 +434,36 @@ static void mlx5e_ipsec_set_esn_ops(struct mlx5e_ipsec_sa_entry *sa_entry)
- 	sa_entry->set_iv_op = mlx5e_ipsec_set_iv;
- }
- 
-+static int mlx5_ipsec_create_work(struct mlx5e_ipsec_sa_entry *sa_entry)
++static int mlx5e_ipsec_create_dwork(struct mlx5e_ipsec_sa_entry *sa_entry)
 +{
 +	struct xfrm_state *x = sa_entry->x;
-+	struct mlx5e_ipsec_work *work;
++	struct mlx5e_ipsec_dwork *dwork;
 +
-+	switch (x->xso.type) {
-+	case XFRM_DEV_OFFLOAD_CRYPTO:
-+		if (!(x->props.flags & XFRM_STATE_ESN))
-+			return 0;
-+		break;
-+	default:
++	if (x->xso.type != XFRM_DEV_OFFLOAD_PACKET)
 +		return 0;
-+	}
 +
-+	work = kzalloc(sizeof(*work), GFP_KERNEL);
-+	if (!work)
++	if (x->xso.dir != XFRM_DEV_OFFLOAD_OUT)
++		return 0;
++
++	if (x->lft.soft_packet_limit == XFRM_INF &&
++	    x->lft.hard_packet_limit == XFRM_INF)
++		return 0;
++
++	dwork = kzalloc(sizeof(*dwork), GFP_KERNEL);
++	if (!dwork)
 +		return -ENOMEM;
 +
-+	work->data = kzalloc(sizeof(*sa_entry), GFP_KERNEL);
-+	if (!work->data) {
-+		kfree(work);
-+		return -ENOMEM;
-+	}
-+
-+	INIT_WORK(&work->work, mlx5e_ipsec_modify_state);
-+	work->sa_entry = sa_entry;
-+	sa_entry->work = work;
++	dwork->sa_entry = sa_entry;
++	INIT_DELAYED_WORK(&dwork->dwork, mlx5e_ipsec_handle_tx_limit);
++	sa_entry->dwork = dwork;
 +	return 0;
 +}
 +
  static int mlx5e_xfrm_add_state(struct xfrm_state *x,
  				struct netlink_ext_ack *extack)
  {
-@@ -467,10 +499,15 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
- 		mlx5e_ipsec_update_esn_state(sa_entry);
+@@ -504,10 +553,14 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
+ 	if (err)
+ 		goto err_xfrm;
  
- 	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &sa_entry->attrs);
-+
-+	err = mlx5_ipsec_create_work(sa_entry);
++	err = mlx5e_ipsec_create_dwork(sa_entry);
 +	if (err)
-+		goto err_xfrm;
++		goto release_work;
 +
  	/* create hw context */
  	err = mlx5_ipsec_create_sa_ctx(sa_entry);
  	if (err)
--		goto err_xfrm;
-+		goto release_work;
+-		goto release_work;
++		goto release_dwork;
  
  	err = mlx5e_accel_ipsec_fs_add_rule(sa_entry);
  	if (err)
-@@ -486,16 +523,6 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
+@@ -523,6 +576,10 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
  		goto err_add_rule;
  
  	mlx5e_ipsec_set_esn_ops(sa_entry);
--
--	switch (x->xso.type) {
--	case XFRM_DEV_OFFLOAD_CRYPTO:
--		if (x->props.flags & XFRM_STATE_ESN)
--			INIT_WORK(&sa_entry->modify_work.work,
--				  _update_xfrm_state);
--		break;
--	default:
--		break;
--	}
++
++	if (sa_entry->dwork)
++		queue_delayed_work(ipsec->wq, &sa_entry->dwork->dwork,
++				   MLX5_IPSEC_RESCHED);
  out:
  	x->xso.offload_handle = (unsigned long)sa_entry;
  	return 0;
-@@ -504,6 +531,8 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
+@@ -531,6 +588,8 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x,
  	mlx5e_accel_ipsec_fs_del_rule(sa_entry);
  err_hw_ctx:
  	mlx5_ipsec_free_sa_ctx(sa_entry);
-+release_work:
-+	kfree(sa_entry->work);
++release_dwork:
++	kfree(sa_entry->dwork);
+ release_work:
+ 	kfree(sa_entry->work);
  err_xfrm:
- 	kfree(sa_entry);
- 	NL_SET_ERR_MSG_MOD(extack, "Device failed to offload this policy");
-@@ -530,17 +559,12 @@ static void mlx5e_xfrm_free_state(struct xfrm_state *x)
- 	if (x->xso.flags & XFRM_DEV_OFFLOAD_FLAG_ACQ)
- 		goto sa_entry_free;
+@@ -562,8 +621,12 @@ static void mlx5e_xfrm_free_state(struct xfrm_state *x)
+ 	if (sa_entry->work)
+ 		cancel_work_sync(&sa_entry->work->work);
  
--	switch (x->xso.type) {
--	case XFRM_DEV_OFFLOAD_CRYPTO:
--		if (x->props.flags & XFRM_STATE_ESN)
--			cancel_work_sync(&sa_entry->modify_work.work);
--		break;
--	default:
--		break;
--	}
-+	if (sa_entry->work)
-+		cancel_work_sync(&sa_entry->work->work);
- 
++	if (sa_entry->dwork)
++		cancel_delayed_work_sync(&sa_entry->dwork->dwork);
++
  	mlx5e_accel_ipsec_fs_del_rule(sa_entry);
  	mlx5_ipsec_free_sa_ctx(sa_entry);
-+	kfree(sa_entry->work);
++	kfree(sa_entry->dwork);
+ 	kfree(sa_entry->work);
  sa_entry_free:
  	kfree(sa_entry);
- }
-@@ -626,16 +650,18 @@ static bool mlx5e_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
- static void mlx5e_xfrm_advance_esn_state(struct xfrm_state *x)
- {
- 	struct mlx5e_ipsec_sa_entry *sa_entry = to_ipsec_sa_entry(x);
--	struct mlx5e_ipsec_modify_state_work *modify_work =
--		&sa_entry->modify_work;
-+	struct mlx5e_ipsec_work *work = sa_entry->work;
-+	struct mlx5e_ipsec_sa_entry *sa_entry_shadow;
- 	bool need_update;
- 
- 	need_update = mlx5e_ipsec_update_esn_state(sa_entry);
- 	if (!need_update)
- 		return;
- 
--	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &modify_work->attrs);
--	queue_work(sa_entry->ipsec->wq, &modify_work->work);
-+	sa_entry_shadow = work->data;
-+	memset(sa_entry_shadow, 0x00, sizeof(*sa_entry_shadow));
-+	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &sa_entry_shadow->attrs);
-+	queue_work(sa_entry->ipsec->wq, &work->work);
- }
- 
- static void mlx5e_xfrm_update_curlft(struct xfrm_state *x)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 8d5ce65def9f..ab48fb9b4698 100644
+index ab48fb9b4698..52890d7dce6b 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -136,8 +136,8 @@ struct mlx5e_ipsec_tx;
+@@ -93,6 +93,7 @@ struct mlx5_accel_esp_xfrm_attrs {
+ 	struct upspec upspec;
+ 	u8 dir : 2;
+ 	u8 type : 2;
++	u8 drop : 1;
+ 	u8 family;
+ 	struct mlx5_replay_esn replay_esn;
+ 	u32 authsize;
+@@ -140,6 +141,11 @@ struct mlx5e_ipsec_work {
+ 	void *data;
+ };
  
- struct mlx5e_ipsec_work {
- 	struct work_struct work;
--	struct mlx5e_ipsec *ipsec;
--	u32 id;
++struct mlx5e_ipsec_dwork {
++	struct delayed_work dwork;
 +	struct mlx5e_ipsec_sa_entry *sa_entry;
-+	void *data;
- };
- 
++};
++
  struct mlx5e_ipsec_aso {
-@@ -176,11 +176,6 @@ struct mlx5e_ipsec_rule {
- 	struct mlx5_fc *fc;
- };
- 
--struct mlx5e_ipsec_modify_state_work {
--	struct work_struct		work;
--	struct mlx5_accel_esp_xfrm_attrs attrs;
--};
--
- struct mlx5e_ipsec_limits {
- 	u64 round;
- 	u8 soft_limit_hit : 1;
-@@ -197,7 +192,7 @@ struct mlx5e_ipsec_sa_entry {
- 	u32 ipsec_obj_id;
+ 	u8 __aligned(64) ctx[MLX5_ST_SZ_BYTES(ipsec_aso)];
+ 	dma_addr_t dma_addr;
+@@ -193,6 +199,7 @@ struct mlx5e_ipsec_sa_entry {
  	u32 enc_key_id;
  	struct mlx5e_ipsec_rule ipsec_rule;
--	struct mlx5e_ipsec_modify_state_work modify_work;
-+	struct mlx5e_ipsec_work *work;
+ 	struct mlx5e_ipsec_work *work;
++	struct mlx5e_ipsec_dwork *dwork;
  	struct mlx5e_ipsec_limits limits;
  };
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index c974c6153d89..5fddb86bb35e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -417,18 +417,12 @@ static void mlx5e_ipsec_handle_event(struct work_struct *_work)
- {
- 	struct mlx5e_ipsec_work *work =
- 		container_of(_work, struct mlx5e_ipsec_work, work);
-+	struct mlx5e_ipsec_sa_entry *sa_entry = work->data;
- 	struct mlx5_accel_esp_xfrm_attrs *attrs;
--	struct mlx5e_ipsec_sa_entry *sa_entry;
- 	struct mlx5e_ipsec_aso *aso;
--	struct mlx5e_ipsec *ipsec;
- 	int ret;
+@@ -235,6 +242,7 @@ int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry);
+ void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_ipsec_sa_entry *sa_entry);
+ int mlx5e_accel_ipsec_fs_add_pol(struct mlx5e_ipsec_pol_entry *pol_entry);
+ void mlx5e_accel_ipsec_fs_del_pol(struct mlx5e_ipsec_pol_entry *pol_entry);
++void mlx5e_accel_ipsec_fs_modify(struct mlx5e_ipsec_sa_entry *sa_entry);
  
--	sa_entry = xa_load(&work->ipsec->sadb, work->id);
--	if (!sa_entry)
--		goto out;
--
--	ipsec = sa_entry->ipsec;
--	aso = ipsec->aso;
-+	aso = sa_entry->ipsec->aso;
- 	attrs = &sa_entry->attrs;
- 
- 	spin_lock(&sa_entry->x->lock);
-@@ -448,7 +442,6 @@ static void mlx5e_ipsec_handle_event(struct work_struct *_work)
- 
- unlock:
- 	spin_unlock(&sa_entry->x->lock);
--out:
- 	kfree(work);
- }
- 
-@@ -456,6 +449,7 @@ static int mlx5e_ipsec_event(struct notifier_block *nb, unsigned long event,
- 			     void *data)
- {
- 	struct mlx5e_ipsec *ipsec = container_of(nb, struct mlx5e_ipsec, nb);
-+	struct mlx5e_ipsec_sa_entry *sa_entry;
- 	struct mlx5_eqe_obj_change *object;
- 	struct mlx5e_ipsec_work *work;
- 	struct mlx5_eqe *eqe = data;
-@@ -470,13 +464,16 @@ static int mlx5e_ipsec_event(struct notifier_block *nb, unsigned long event,
- 	if (type != MLX5_GENERAL_OBJECT_TYPES_IPSEC)
- 		return NOTIFY_DONE;
- 
-+	sa_entry = xa_load(&ipsec->sadb, be32_to_cpu(object->obj_id));
-+	if (!sa_entry)
-+		return NOTIFY_DONE;
+ int mlx5_ipsec_create_sa_ctx(struct mlx5e_ipsec_sa_entry *sa_entry);
+ void mlx5_ipsec_free_sa_ctx(struct mlx5e_ipsec_sa_entry *sa_entry);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index 0539640a4d88..b47794d4146e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -926,9 +926,12 @@ static int rx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	flow_act.crypto.type = MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC;
+ 	flow_act.crypto.obj_id = sa_entry->ipsec_obj_id;
+ 	flow_act.flags |= FLOW_ACT_NO_APPEND;
+-	flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
+-			   MLX5_FLOW_CONTEXT_ACTION_CRYPTO_DECRYPT |
++	flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_CRYPTO_DECRYPT |
+ 			   MLX5_FLOW_CONTEXT_ACTION_COUNT;
++	if (attrs->drop)
++		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_DROP;
++	else
++		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
+ 	dest[0].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+ 	dest[0].ft = rx->ft.status;
+ 	dest[1].type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
+@@ -1018,9 +1021,13 @@ static int tx_add_rule(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	flow_act.crypto.type = MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC;
+ 	flow_act.crypto.obj_id = sa_entry->ipsec_obj_id;
+ 	flow_act.flags |= FLOW_ACT_NO_APPEND;
+-	flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
+-			   MLX5_FLOW_CONTEXT_ACTION_CRYPTO_ENCRYPT |
++	flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_CRYPTO_ENCRYPT |
+ 			   MLX5_FLOW_CONTEXT_ACTION_COUNT;
++	if (attrs->drop)
++		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_DROP;
++	else
++		flow_act.action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
 +
- 	work = kmalloc(sizeof(*work), GFP_ATOMIC);
- 	if (!work)
- 		return NOTIFY_DONE;
- 
- 	INIT_WORK(&work->work, mlx5e_ipsec_handle_event);
--	work->ipsec = ipsec;
--	work->id = be32_to_cpu(object->obj_id);
-+	work->data = sa_entry;
- 
- 	queue_work(ipsec->wq, &work->work);
- 	return NOTIFY_OK;
+ 	dest[0].ft = tx->ft.status;
+ 	dest[0].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+ 	dest[1].type = MLX5_FLOW_DESTINATION_TYPE_COUNTER;
+@@ -1430,3 +1437,19 @@ int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec)
+ 	kfree(ipsec->tx);
+ 	return err;
+ }
++
++void mlx5e_accel_ipsec_fs_modify(struct mlx5e_ipsec_sa_entry *sa_entry)
++{
++	struct mlx5e_ipsec_sa_entry sa_entry_shadow = {};
++	int err;
++
++	memcpy(&sa_entry_shadow, sa_entry, sizeof(*sa_entry));
++	memset(&sa_entry_shadow.ipsec_rule, 0x00, sizeof(sa_entry->ipsec_rule));
++
++	err = mlx5e_accel_ipsec_fs_add_rule(&sa_entry_shadow);
++	if (err)
++		return;
++
++	mlx5e_accel_ipsec_fs_del_rule(sa_entry);
++	memcpy(sa_entry, &sa_entry_shadow, sizeof(*sa_entry));
++}
 -- 
 2.39.2
 
