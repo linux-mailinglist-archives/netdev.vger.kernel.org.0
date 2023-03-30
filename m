@@ -2,67 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 020696CF967
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 05:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235BE6CF96B
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 05:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229510AbjC3DEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Mar 2023 23:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        id S229436AbjC3DHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Mar 2023 23:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjC3DEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 23:04:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4524EFC
-        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 20:04:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A63661EBB
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 03:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13BD2C433D2;
-        Thu, 30 Mar 2023 03:04:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680145444;
-        bh=bmOrKU/nzFYLkXC2fA27BNW1yuYm9r77HWjhle3CrAY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YoDFjHHD96B33DUsd/+FglmrrIlYJ4qjXXN/3GPOZGuaR4z8+ECGxJsoEip8rsn8z
-         /J4/HgHLKM5cZ0sLvL7L7ckrMSZXM2NRrKoO3mN7mDeoWre/RIsEnPj0Qy5yCqOIOy
-         31iJzDjRRnrvUGY1NveMo+Y4CTmaC8CCrgMEstfP1KBJdRfdzGqJ3Ac8fbhQyb7Xhd
-         L4j+gTCcX+2/u4Wawb/NdUDQPTcPm+Nzh8gJt6cknPmgCV2lO8U7+9gaee5rdgKNwD
-         3BnYNpaMi9m9ZWmJB1k5z+D/IUdI9BcXP1hq6w3IEBkqlCC8vWEpewfBmeDGtXgq/H
-         Kn775qtrMpSzA==
-Date:   Wed, 29 Mar 2023 20:04:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Xing <kernelxing@tencent.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com
-Subject: Re: [PATCH net-next 0/4] net: rps/rfs improvements
-Message-ID: <20230329200403.095be0f7@kernel.org>
-In-Reply-To: <20230328235021.1048163-1-edumazet@google.com>
-References: <20230328235021.1048163-1-edumazet@google.com>
+        with ESMTP id S229452AbjC3DHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Mar 2023 23:07:35 -0400
+Received: from 167-179-156-38.a7b39c.syd.nbn.aussiebb.net (167-179-156-38.a7b39c.syd.nbn.aussiebb.net [167.179.156.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87E6524E
+        for <netdev@vger.kernel.org>; Wed, 29 Mar 2023 20:07:30 -0700 (PDT)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+        by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1phidJ-00ACw7-Nx; Thu, 30 Mar 2023 11:07:26 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Thu, 30 Mar 2023 11:07:25 +0800
+Date:   Thu, 30 Mar 2023 11:07:25 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: [v2 PATCH iproute2-next] macvlan: Add bclim parameter
+Message-ID: <ZCT87VZFkWNLujT9@gondor.apana.org.au>
+References: <ZCJXefIhSrd7Hm2Z@gondor.apana.org.au>
+ <ZCJYxDy1fgCm+cbj@gondor.apana.org.au>
+ <b52bb122-b5e2-cff1-1c0a-ad8a855e278d@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b52bb122-b5e2-cff1-1c0a-ad8a855e278d@gmail.com>
+X-Spam-Status: No, score=4.3 required=5.0 tests=HELO_DYNAMIC_IPADDR2,
+        PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,SPF_PASS,TVD_RCVD_IP
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Mar 2023 23:50:17 +0000 Eric Dumazet wrote:
-> Overall, in an intensive RPC workload, with 32 TX/RX queues with RFS
-> I was able to observe a ~10% reduction of NET_RX_SOFTIRQ
-> invocations.
+v2 fixes a typo on bclen/bclim and switches matches to strcmp.
 
-small clarification on the testing:
+---8<---
+This patch adds support for setting the broadcast queueing threshold
+on macvlan devices.  This controls which multicast packets will be
+processed in a workqueue instead of inline.
 
-invocations == calls to net_rx_action()
-or
-invocations == calls to __raise_softirq_irqoff(NET_RX_SOFTIRQ)
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+---
 
-?
+ include/uapi/linux/if_link.h |    1 +
+ ip/iplink_macvlan.c          |   26 ++++++++++++++++++++++++--
+ man/man8/ip-link.8.in        |   18 ++++++++++++++++++
+ 3 files changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index d61bd32d..71ddffc6 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -633,6 +633,7 @@ enum {
+ 	IFLA_MACVLAN_MACADDR_COUNT,
+ 	IFLA_MACVLAN_BC_QUEUE_LEN,
+ 	IFLA_MACVLAN_BC_QUEUE_LEN_USED,
++	IFLA_MACVLAN_BC_CUTOFF,
+ 	__IFLA_MACVLAN_MAX,
+ };
+ 
+diff --git a/ip/iplink_macvlan.c b/ip/iplink_macvlan.c
+index 0f13637d..6bdc76d1 100644
+--- a/ip/iplink_macvlan.c
++++ b/ip/iplink_macvlan.c
+@@ -26,13 +26,14 @@
+ static void print_explain(struct link_util *lu, FILE *f)
+ {
+ 	fprintf(f,
+-		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN]\n"
++		"Usage: ... %s mode MODE [flag MODE_FLAG] MODE_OPTS [bcqueuelen BC_QUEUE_LEN] [bclim BCLIM]\n"
+ 		"\n"
+ 		"MODE: private | vepa | bridge | passthru | source\n"
+ 		"MODE_FLAG: null | nopromisc | nodst\n"
+ 		"MODE_OPTS: for mode \"source\":\n"
+ 		"\tmacaddr { { add | del } <macaddr> | set [ <macaddr> [ <macaddr>  ... ] ] | flush }\n"
+-		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n",
++		"BC_QUEUE_LEN: Length of the rx queue for broadcast/multicast: [0-4294967295]\n"
++		"BCLIM: Threshold for broadcast queueing: 32-bit integer\n",
+ 		lu->id
+ 	);
+ }
+@@ -67,6 +68,12 @@ static int bc_queue_len_arg(const char *arg)
+ 	return -1;
+ }
+ 
++static int bclim_arg(const char *arg)
++{
++	fprintf(stderr, "Error: illegal value for \"bclim\": \"%s\"\n", arg);
++	return -1;
++}
++
+ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
+ 			  struct nlmsghdr *n)
+ {
+@@ -168,6 +175,15 @@ static int macvlan_parse_opt(struct link_util *lu, int argc, char **argv,
+ 				return bc_queue_len_arg(*argv);
+ 			}
+ 			addattr32(n, 1024, IFLA_MACVLAN_BC_QUEUE_LEN, bc_queue_len);
++		} else if (!strcmp(*argv, "bclim")) {
++			__s32 bclim;
++			NEXT_ARG();
++
++			if (get_s32(&bclim, *argv, 0)) {
++				return bclim_arg(*argv);
++			}
++			addattr_l(n, 1024, IFLA_MACVLAN_BC_CUTOFF,
++				  &bclim, sizeof(bclim));
+ 		} else if (matches(*argv, "help") == 0) {
+ 			explain(lu);
+ 			return -1;
+@@ -245,6 +261,12 @@ static void macvlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[]
+ 		print_luint(PRINT_ANY, "usedbcqueuelen", "usedbcqueuelen %lu ", bc_queue_len);
+ 	}
+ 
++	if (tb[IFLA_MACVLAN_BC_CUTOFF] &&
++		RTA_PAYLOAD(tb[IFLA_MACVLAN_BC_CUTOFF]) >= sizeof(__s32)) {
++		__s32 bclim = rta_getattr_s32(tb[IFLA_MACVLAN_BC_CUTOFF]);
++		print_int(PRINT_ANY, "bclim", "bclim %d ", bclim);
++	}
++
+ 	/* in source mode, there are more options to print */
+ 
+ 	if (mode != MACVLAN_MODE_SOURCE)
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index c8c65657..bec1b78b 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -1479,6 +1479,7 @@ the following additional arguments are supported:
+ .BR mode " { " private " | " vepa " | " bridge " | " passthru
+ .RB " [ " nopromisc " ] | " source " [ " nodst " ] } "
+ .RB " [ " bcqueuelen " { " LENGTH " } ] "
++.RB " [ " bclim " " LIMIT " ] "
+ 
+ .in +8
+ .sp
+@@ -1537,6 +1538,13 @@ will be the maximum length that any macvlan interface has requested.
+ When listing device parameters both the bcqueuelen parameter
+ as well as the actual used bcqueuelen are listed to better help
+ the user understand the setting.
++
++.BR bclim " " LIMIT
++- Set the threshold for broadcast queueing.
++.BR LIMIT " must be a 32-bit integer."
++Setting this to -1 disables broadcast queueing altogether.  Otherwise
++a multicast address will be queued as broadcast if the number of devices
++using it is greater than the given value.
+ .in -8
+ 
+ .TP
+@@ -2699,6 +2707,9 @@ Update the broadcast/multicast queue length.
+ [
+ .BI bcqueuelen "  LENGTH  "
+ ]
++[
++.BI bclim " LIMIT "
++]
+ 
+ .in +8
+ .BI bcqueuelen " LENGTH "
+@@ -2712,6 +2723,13 @@ will be the maximum length that any macvlan interface has requested.
+ When listing device parameters both the bcqueuelen parameter
+ as well as the actual used bcqueuelen are listed to better help
+ the user understand the setting.
++
++.BI bclim " LIMIT "
++- Set the threshold for broadcast queueing.
++.IR LIMIT " must be a 32-bit integer."
++Setting this to -1 disables broadcast queueing altogether.  Otherwise
++a multicast address will be queued as broadcast if the number of devices
++using it is greater than the given value.
+ .in -8
+ 
+ .TP
+
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
