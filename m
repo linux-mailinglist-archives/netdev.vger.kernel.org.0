@@ -2,102 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07B6D6D095C
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 588646D0962
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 17:22:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232889AbjC3PVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 11:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
+        id S232910AbjC3PWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 11:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbjC3PVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:21:46 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7391710;
-        Thu, 30 Mar 2023 08:20:47 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id c18so18370309ple.11;
-        Thu, 30 Mar 2023 08:20:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680189622;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=9BJN6KvGFEdtYQeDXwsGBPAtMtBePoD/1g7P1KUhX/c=;
-        b=qwC2UA0fLhzbMLvZBRgkV30OtZGXFjlTkuzK/W+vR+5lm131gMRwGpPNk/pG9wrmr2
-         S+wT7xyopxuNbEeKsxfMNqCeiwljp5x9fcGCbyfeXO4chfb/PeOWkVOpGGvazgM6xpzS
-         yAAoK8QtRoifTLzahzcxMiT81TlXlWRWJp4EHi7NSMHIg6HqdHXl8306ttYi45RQcUFW
-         blzrKfmbL87anADROIWA4C/HWYuiewFzkOXhKw9I8tJ4KgEbhPQkf99Je487GyzV9nIU
-         VMZPpWhdIQOLSnccmtuj1xwM70E2Wi8BLHMzYdko3+dtV93kxpDtfrrqdoDke5qYoCG6
-         J2Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680189622;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9BJN6KvGFEdtYQeDXwsGBPAtMtBePoD/1g7P1KUhX/c=;
-        b=AOYfmIVvvLc/R/s4sm8QBFt6rfBZp6qRBU4uCvEcXpQxdl7v0UPi9CT1vFZuErNx2B
-         afCb+bAo0ePVEgwFXM71VEvOxLkwtDijuvEdRCVRlJ6elXfucONXZ5jqB90mBRR6Y4Kq
-         kY1S40kEbTXzHsmLG8PNpCz3YJBYu2Up8p6YotpBreiwhK28KBc02xWbHrE6krk+b4a6
-         zYOqeVngV942E+bJgLtt4GXwjEJnQ1HyKsgJlQow5c2NKgyM5MfQ52mSoGmbRD5c++MU
-         +2Zp3SdKeYOdVU3W5fz24udAN/RUsV90KSW37B3O1K0eEf8t+R2pF4jSkaIwv7UZJpAq
-         tR3Q==
-X-Gm-Message-State: AAQBX9fxYsy8LCBEv3MYmKbS0mEGEXf9oDMQh6M+Ioggd/LHp4IlOs8x
-        Tka4SEQSle+lIdb+EXUTA0U=
-X-Google-Smtp-Source: AKy350br4StkSNKgNvDcGnehHHFVF5xuH1kYdhsE8iAgh6EQrMOwWFYjG1iBg+rAcggIp3+OVxMBmg==
-X-Received: by 2002:a17:902:e2d3:b0:199:1b8a:42a8 with SMTP id l19-20020a170902e2d300b001991b8a42a8mr19616659plc.6.1680189622380;
-        Thu, 30 Mar 2023 08:20:22 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id c19-20020a170902b69300b001a279237e73sm2806213pls.152.2023.03.30.08.20.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Mar 2023 08:20:22 -0700 (PDT)
-Date:   Thu, 30 Mar 2023 18:20:08 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S232806AbjC3PWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 11:22:42 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289BFCDF6;
+        Thu, 30 Mar 2023 08:21:46 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1phu5F-0006cb-3D;
+        Thu, 30 Mar 2023 17:21:02 +0200
+Date:   Thu, 30 Mar 2023 16:20:57 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        =?utf-8?B?QXLEsW7DpyDDnG5hbA==?= <arinc.unal@arinc9.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Alexis =?utf-8?Q?Lothor=C3=A9?= <alexis.lothore@bootlin.com>
-Subject: Re: [PATCH net-next 2/2] net: dsa: rzn1-a5psw: disable learning for
- standalone ports
-Message-ID: <20230330152008.ji5mrwbpzklylpck@skbuf>
-References: <20230330083408.63136-1-clement.leger@bootlin.com>
- <20230330083408.63136-3-clement.leger@bootlin.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
+Subject: [PATCH net-next 04/15] net: dsa: mt7530: use regmap to access switch
+ register space
+Message-ID: <1763ab54a479458c4bb84342f32d4a2e379f1d26.1680180959.git.daniel@makrotopia.org>
+References: <cover.1680180959.git.daniel@makrotopia.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230330083408.63136-3-clement.leger@bootlin.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <cover.1680180959.git.daniel@makrotopia.org>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 10:34:08AM +0200, Clément Léger wrote:
-> When port are in standalone mode, they should have learning disabled to
-> avoid adding new entries in the MAC lookup table which might be used by
-> other bridge ports to forward packets. While adding that, also make sure
-> learning is enabled for CPU port.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
+Use regmap API to access the switch register space.
 
-Usually I prefer this kind of change to be treated as a bug and
-backported to older trees, because we see reports of setups which don't
-work due to it. For example, see commit 15f7cfae912e ("net: dsa:
-microchip: make learning configurable and keep it off while standalone")
-which has a Fixes: tag.
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+---
+ drivers/net/dsa/mt7530.c | 91 +++++++++++++++++++++++++---------------
+ drivers/net/dsa/mt7530.h |  2 +
+ 2 files changed, 60 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index d8b041d79f2b7..e27a0e551cec0 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -183,9 +183,9 @@ core_clear(struct mt7530_priv *priv, u32 reg, u32 val)
+ }
+ 
+ static int
+-mt7530_mii_write(struct mt7530_priv *priv, u32 reg, u32 val)
++mt7530_regmap_write(void *context, unsigned int reg, unsigned int val)
+ {
+-	struct mii_bus *bus = priv->bus;
++	struct mii_bus *bus = context;
+ 	u16 page, r, lo, hi;
+ 	int ret;
+ 
+@@ -197,24 +197,34 @@ mt7530_mii_write(struct mt7530_priv *priv, u32 reg, u32 val)
+ 	/* MT7530 uses 31 as the pseudo port */
+ 	ret = bus->write(bus, 0x1f, 0x1f, page);
+ 	if (ret < 0)
+-		goto err;
++		return ret;
+ 
+ 	ret = bus->write(bus, 0x1f, r,  lo);
+ 	if (ret < 0)
+-		goto err;
++		return ret;
+ 
+ 	ret = bus->write(bus, 0x1f, 0x10, hi);
+-err:
++	return ret;
++}
++
++static int
++mt7530_mii_write(struct mt7530_priv *priv, u32 reg, u32 val)
++{
++	int ret;
++
++	ret = regmap_write(priv->regmap, reg, val);
++
+ 	if (ret < 0)
+-		dev_err(&bus->dev,
++		dev_err(priv->dev,
+ 			"failed to write mt7530 register\n");
++
+ 	return ret;
+ }
+ 
+-static u32
+-mt7530_mii_read(struct mt7530_priv *priv, u32 reg)
++static int
++mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val)
+ {
+-	struct mii_bus *bus = priv->bus;
++	struct mii_bus *bus = context;
+ 	u16 page, r, lo, hi;
+ 	int ret;
+ 
+@@ -223,17 +233,32 @@ mt7530_mii_read(struct mt7530_priv *priv, u32 reg)
+ 
+ 	/* MT7530 uses 31 as the pseudo port */
+ 	ret = bus->write(bus, 0x1f, 0x1f, page);
+-	if (ret < 0) {
++	if (ret < 0)
++		return ret;
++
++	lo = bus->read(bus, 0x1f, r);
++	hi = bus->read(bus, 0x1f, 0x10);
++
++	*val = (hi << 16) | (lo & 0xffff);
++
++	return 0;
++}
++
++static u32
++mt7530_mii_read(struct mt7530_priv *priv, u32 reg)
++{
++	int ret;
++	u32 val;
++
++	ret = regmap_read(priv->regmap, reg, &val);
++	if (ret) {
+ 		WARN_ON_ONCE(1);
+-		dev_err(&bus->dev,
++		dev_err(priv->dev,
+ 			"failed to read mt7530 register\n");
+ 		return 0;
+ 	}
+ 
+-	lo = bus->read(bus, 0x1f, r);
+-	hi = bus->read(bus, 0x1f, 0x10);
+-
+-	return (hi << 16) | (lo & 0xffff);
++	return val;
+ }
+ 
+ static void
+@@ -2896,22 +2921,6 @@ static const struct phylink_pcs_ops mt7530_pcs_ops = {
+ 	.pcs_an_restart = mt7530_pcs_an_restart,
+ };
+ 
+-static int mt7530_regmap_read(void *context, unsigned int reg, unsigned int *val)
+-{
+-	struct mt7530_priv *priv = context;
+-
+-	*val = mt7530_mii_read(priv, reg);
+-	return 0;
+-};
+-
+-static int mt7530_regmap_write(void *context, unsigned int reg, unsigned int val)
+-{
+-	struct mt7530_priv *priv = context;
+-
+-	mt7530_mii_write(priv, reg, val);
+-	return 0;
+-};
+-
+ static void
+ mt7530_mdio_regmap_lock(void *mdio_lock)
+ {
+@@ -2924,7 +2933,7 @@ mt7530_mdio_regmap_unlock(void *mdio_lock)
+ 	mutex_unlock(mdio_lock);
+ }
+ 
+-static const struct regmap_bus mt7531_regmap_bus = {
++static const struct regmap_bus mt7530_regmap_bus = {
+ 	.reg_write = mt7530_regmap_write,
+ 	.reg_read = mt7530_regmap_read,
+ };
+@@ -2957,7 +2966,7 @@ mt7531_create_sgmii(struct mt7530_priv *priv)
+ 		mt7531_pcs_config[i]->lock_arg = &priv->bus->mdio_lock;
+ 
+ 		regmap = devm_regmap_init(priv->dev,
+-					  &mt7531_regmap_bus, priv,
++					  &mt7530_regmap_bus, priv->bus,
+ 					  mt7531_pcs_config[i]);
+ 		if (IS_ERR(regmap)) {
+ 			ret = PTR_ERR(regmap);
+@@ -3128,6 +3137,7 @@ MODULE_DEVICE_TABLE(of, mt7530_of_match);
+ static int
+ mt7530_probe(struct mdio_device *mdiodev)
+ {
++	static struct regmap_config *regmap_config;
+ 	struct mt7530_priv *priv;
+ 	struct device_node *dn;
+ 
+@@ -3207,6 +3217,21 @@ mt7530_probe(struct mdio_device *mdiodev)
+ 	mutex_init(&priv->reg_mutex);
+ 	dev_set_drvdata(&mdiodev->dev, priv);
+ 
++	regmap_config = devm_kzalloc(&mdiodev->dev, sizeof(*regmap_config),
++				     GFP_KERNEL);
++	if (!regmap_config)
++		return -ENOMEM;
++
++	regmap_config->reg_bits = 16;
++	regmap_config->val_bits = 32;
++	regmap_config->reg_stride = 4;
++	regmap_config->max_register = MT7530_CREV;
++	regmap_config->disable_locking = true;
++	priv->regmap = devm_regmap_init(priv->dev, &mt7530_regmap_bus,
++					priv->bus, regmap_config);
++	if (IS_ERR(priv->regmap))
++		return PTR_ERR(priv->regmap);
++
+ 	return dsa_register_switch(priv->ds);
+ }
+ 
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index c5d29f3fc1d80..39aaca50961bd 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -754,6 +754,7 @@ struct mt753x_info {
+  * @dev:		The device pointer
+  * @ds:			The pointer to the dsa core structure
+  * @bus:		The bus used for the device and built-in PHY
++ * @regmap:		The regmap instance representing all switch registers
+  * @rstc:		The pointer to reset control used by MCM
+  * @core_pwr:		The power supplied into the core
+  * @io_pwr:		The power supplied into the I/O
+@@ -774,6 +775,7 @@ struct mt7530_priv {
+ 	struct device		*dev;
+ 	struct dsa_switch	*ds;
+ 	struct mii_bus		*bus;
++	struct regmap		*regmap;
+ 	struct reset_control	*rstc;
+ 	struct regulator	*core_pwr;
+ 	struct regulator	*io_pwr;
+-- 
+2.39.2
+
