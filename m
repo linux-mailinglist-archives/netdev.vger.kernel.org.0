@@ -2,202 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69EFA6D0E07
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 121266D0E15
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 20:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231578AbjC3SpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 14:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48434 "EHLO
+        id S229862AbjC3Sus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 14:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230082AbjC3SpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:45:05 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2109.outbound.protection.outlook.com [40.107.20.109])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F6EB47F;
-        Thu, 30 Mar 2023 11:45:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UpHAGJDyFIBhUHuvcfyFnHDCKaQvvW/8cP7aMVAz0UwpbhTy4mfdbmKmK5oAk8MOmDKGkWzRPyH8qSI96Ix0AyvDC7E8yyHnoQWkiZ7G7r/myesVN8MuxFZx+IBokbCOTXhhylPvCRry2BGLwgy0Dw9C+mhfOXiPhyWJy02Req+kM0ClV6OztGGLH3+mc1KEcwduAfoJgx0qlFjeeJP3HjHZGff7aTDVls/Iphq2S1YjbWOlwWogNEtS3FBuOWmQyCuyksglqJuiMQ3Fosm91NXBaD5mZ7b/4hTHNqVidgSVYI9TEIIEO4zgKQBV6Xg4y+W/D6dCdQIRc2GoExeBGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6lXP6130WUEDWyBIhEjdhpaQ2JobBbDafyi4XRQ/dIc=;
- b=kO7mELR2KBBkamacYBOtbc/K4murOtbBupDHL12A6vpE27Z1sI00c0qVs2GTHhSC1z0ryn3rdCqmkzhoJttN91rlYmdzsir9moRG2ukhfj9GKChHwDm2Wi3EK3vY0uAbbJldj1yN0VjFfGTjWAnDemA+a2QlI5GvIIMSRScdRNnVo1YNeyo1gZ+jhnMZ3vRVOEYDwitLPQoPmwSPg1vVX/VsOBB1Yqh6my4JQS81LWuNW7r2wOPu8l4NC8pK3FUTFyf1CvyheKPupbqILNIAzpmQTsUZmM8HPopdju+Q1CxtzsHG+yup5fc+tagfKZNvdlcmiYiTFA+yrPlhg4XPkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
- is 80.151.164.27) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu; dmarc=none
- action=none header.from=esd.eu; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6lXP6130WUEDWyBIhEjdhpaQ2JobBbDafyi4XRQ/dIc=;
- b=jTo9pCRaMM5EhyMEVdl0nTYLRFLEIobgNhOUe6kwNAsyDzE1vES/yNeSuDd+x8zKdp+8p+zgLTfnvAdBCPaIvFiTa24UblG3f9RwMc1sXQqjn3tHSBpju5v+YHL5/RuJD5Hmu+yshES2ExFSwposQ540XNeuIyiJeWZn+qS+0ok=
-Received: from ZR0P278CA0182.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:44::15)
- by DU0PR03MB9079.eurprd03.prod.outlook.com (2603:10a6:10:466::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.30; Thu, 30 Mar
- 2023 18:44:59 +0000
-Received: from VI1EUR06FT055.eop-eur06.prod.protection.outlook.com
- (2603:10a6:910:44:cafe::bd) by ZR0P278CA0182.outlook.office365.com
- (2603:10a6:910:44::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22 via Frontend
- Transport; Thu, 30 Mar 2023 18:44:57 +0000
-X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
- 80.151.164.27) smtp.mailfrom=esd.eu; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=esd.eu;
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning esd.eu
- discourages use of 80.151.164.27 as permitted sender)
-Received: from esd-s7.esd (80.151.164.27) by
- VI1EUR06FT055.mail.protection.outlook.com (10.13.6.226) with Microsoft SMTP
- Server id 15.20.6222.22 via Frontend Transport; Thu, 30 Mar 2023 18:44:57
- +0000
-Received: from esd-s20.esd.local (jenkins.esd.local [10.0.0.190])
-        by esd-s7.esd (Postfix) with ESMTPS id 93AD47C1635;
-        Thu, 30 Mar 2023 20:44:57 +0200 (CEST)
-Received: by esd-s20.esd.local (Postfix, from userid 2046)
-        id 7C3292E0158; Thu, 30 Mar 2023 20:44:57 +0200 (CEST)
-From:   Frank Jungclaus <frank.jungclaus@esd.eu>
-To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Frank Jungclaus <frank.jungclaus@esd.eu>
-Subject: [PATCH] can: esd_usb: Add support for CAN_CTRLMODE_BERR_REPORTING
-Date:   Thu, 30 Mar 2023 20:44:46 +0200
-Message-Id: <20230330184446.2802135-1-frank.jungclaus@esd.eu>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229795AbjC3Sur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 14:50:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B91ED314
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:50:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680202203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6UQrNZxjfu3FW/I6sK8C7BOJKbvCETQxYVwKUqa4gLk=;
+        b=DwQnv4bTJJN9t4L8QMofCOGi5WIdzofjE6DnSOP2NSeLlje2i7Hfqd55PQNCWtyxWRsRXT
+        P/6Ypj4bdlptSan8qUqhuziiGeqOfuT5pkJlgBTcR1bQaECj4bDdl2j5f1HpTNsRrsXXSp
+        C5QhWzR+clLohBEV59HQRZQyG5DXIEU=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-47-d-MvNd5TPNSGbuPq-V0Xpg-1; Thu, 30 Mar 2023 14:50:01 -0400
+X-MC-Unique: d-MvNd5TPNSGbuPq-V0Xpg-1
+Received: by mail-il1-f198.google.com with SMTP id h19-20020a056e021d9300b00318f6b50475so12697501ila.21
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 11:50:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680202201;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6UQrNZxjfu3FW/I6sK8C7BOJKbvCETQxYVwKUqa4gLk=;
+        b=O61UWbf7lX99wrVVsq6ripvlswN13SEUTX36oCFzWJs9nnZHQwfbUGoKRVAPAsBxPy
+         1UeDi9NuiSbBBWU48AXgdo1+TJg4GLIaxEwimWwi5gX52r2fFNbyyfDkKZnBC2vbCYx+
+         2ZGk6BEDGO0JJb3bNObDaz6b8xGKrqRdy8unrgkpqzEBuGULcYoMHO/E0fvY8IArP/5N
+         I/gXySgGsrXsYWzkhLursYviM+Le/PZj6J6h+uGoBUWtfAA7OdnT1gtPHHu8WoINawvh
+         EhQul5aCkJrKZIL7rzszQwlH321OpaxFjMOIq4zvNi5VmN/RJfDmksAyJkCyv6Shbe2I
+         9cTg==
+X-Gm-Message-State: AO0yUKXqi3CA3EzBb5zvOCM5XwQXvsWzKy2CL0tc90kIsf/40XOz/eCG
+        3JVrq8plLXPyKTYs9SUf+C0JbrE9SqUSNKj1fr4ZibGNfkLZ0cMCzG5bS46GMlpQKCmheE8bewv
+        sqcxUyNhGUgpZJ1wG
+X-Received: by 2002:a05:6602:228a:b0:71f:8124:de52 with SMTP id d10-20020a056602228a00b0071f8124de52mr19922009iod.9.1680202200961;
+        Thu, 30 Mar 2023 11:50:00 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+vN+F+C7td9wLCa+FeJA73rOKlyidR7N4iFHFTnKNmuaGWlPkmBzorrxlU0FHERL7D4mtk8Q==
+X-Received: by 2002:a05:6602:228a:b0:71f:8124:de52 with SMTP id d10-20020a056602228a00b0071f8124de52mr19921997iod.9.1680202200702;
+        Thu, 30 Mar 2023 11:50:00 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id k14-20020a02660e000000b003c4e65fd6dfsm78865jac.176.2023.03.30.11.49.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Mar 2023 11:49:59 -0700 (PDT)
+Date:   Thu, 30 Mar 2023 12:49:58 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Petr Machata <petrm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Amit Cohen <amcohen@nvidia.com>, mlxsw@nvidia.com,
+        linux-pci@vger.kernel.org, Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH net-next 6/6] mlxsw: pci: Add support for new reset flow
+Message-ID: <20230330124958.15a34c3d.alex.williamson@redhat.com>
+In-Reply-To: <ZCVHtk/wqTAR4Ejd@shredder>
+References: <ZCBOdunTNYsufhcn@shredder>
+        <20230329160144.GA2967030@bhelgaas>
+        <20230329111001.44a8c8e0.alex.williamson@redhat.com>
+        <ZCVHtk/wqTAR4Ejd@shredder>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1EUR06FT055:EE_|DU0PR03MB9079:EE_
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 750108e8-1343-4610-26c7-08db314edc73
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9t/507usxWORTmYEQq7LjXxW4qLQF9L5UakPnlxhgtNlsDZvOJa/iSwrw34f93pFFZlG7gQLpXyt+8plWqrjDYo13rsAbML+vvZkDDqExmAbc1fX8MsoiSxTVXiVNekZycVmkqoun/Cnv4wWYU+l/d5AkfiiZULdKfsoWhzmJfv6gXmwE1oyIhuhMhhxxtz/P+JKOyix9LI5E/WLrZ5AV+reO089E84O3qh+3se73BvtKrxvQQNzvuEI7JsrYD0l3HoEFhs6K6ssMC1cf3+qAcA4wHTg5VqfDMsv0qqFnDvOQvvJf5dLDKUBUtj/NsiiLb4QclCl1CiqPh5bvvdfrvzqQrlnxIJ5BWXaLjHhw5nY+tKYAfgLJ81ZqGqC2fi9OpvhJUjl/tXD7kB/3/oyRWrQyXdUzfDUYiajXCZLgfvL7a3F54mkBy3d+yvlGfmaWEu6Ralmr3ZSnLJaQYiRjbJumO2xn4pgJ0UfHu1r5f8bCbM/W9eAr6jIBGFkkksW7w0EyIduw9/7t6fycEQTLA7GB/o6KMyDx3Z6lFkyDbewCQgxxW/kZvnEyEV1CDeFf2ZEEXEKhXTn93us0EwpdW4plB8CSQYFD8IVQClBMHLVOrLaV4J96gSJ0gE0w9Wqi3PSTqxs2i4mYm3rp/0f5Kp0ev+Lu6c5t5OAFlfyex0=
-X-Forefront-Antispam-Report: CIP:80.151.164.27;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:p5097a41b.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39840400004)(376002)(346002)(451199021)(46966006)(36840700001)(6266002)(26005)(41300700001)(186003)(1076003)(40480700001)(6666004)(83380400001)(2616005)(336012)(47076005)(478600001)(42186006)(54906003)(316002)(110136005)(36860700001)(44832011)(70206006)(4326008)(70586007)(2906002)(8676002)(86362001)(81166007)(356005)(82310400005)(36756003)(5660300002)(8936002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 18:44:57.7863
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 750108e8-1343-4610-26c7-08db314edc73
-X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[80.151.164.27];Helo=[esd-s7.esd]
-X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT055.eop-eur06.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB9079
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Announce that the driver supports CAN_CTRLMODE_BERR_REPORTING by means
-of priv->can.ctrlmode_supported. Until now berr reporting always has
-been active without taking care of the berr-reporting parameter given
-to an "ip link set ..." command.
+On Thu, 30 Mar 2023 11:26:30 +0300
+Ido Schimmel <idosch@nvidia.com> wrote:
 
-Additionally apply some changes to function esd_usb_rx_event():
-- If berr reporting is off and it is also no state change, then
-immediately return.
-- Unconditionally (even in case of the above "immediate return") store
-tx- and rx-error counters, so directly use priv->bec.txerr and
-priv->bec.rxerr instead of intermediate variables.
-- Not directly related, but to better point out the linkage between a
-failed alloc_can_err_skb() and stats->rx_dropped++:
-Move the increment of the rx_dropped statistic counter (back) to
-directly behind the err_skb allocation.
+> On Wed, Mar 29, 2023 at 11:10:01AM -0600, Alex Williamson wrote:
+> > I think we don't have it because it's unclear how it's actually
+> > different from a secondary bus reset from the bridge control register,
+> > which is what "bus" would do when selected for the example above.  Per
+> > the spec, both must cause a hot reset.  It seems this device needs a
+> > significantly longer delay though.  
+> 
+> Assuming you are referring to the 2ms sleep in
+> pci_reset_secondary_bus(), then yes. In our case, after disabling the
+> link on the downstream port we need to wait for 500ms before enabling
+> it.
+> 
+> > Note that hot resets can be generated by a userspace driver with
+> > ownership of the device and will make use of the pci-core reset
+> > mechanisms.  Therefore if there is not a device specific reset, we'll
+> > use the standard delays and the device ought not to get itself wedged
+> > if the link becomes active at an unexpected point relative to a
+> > firmware update.  This might be a point in favor of a device specific
+> > reset solution in pci-core.  Thanks,  
+> 
+> I assume you referring to something like this:
+> 
+> # echo 1 > /sys/class/pci_bus/0000:03/device/0000:03:00.0/reset
+> 
+> Doesn't seem to have any effect (network ports remain up, at least).
+> Anyway, this device is completely managed by the kernel, not a user
+> space driver. I'm not aware of anyone using this method to reset the
+> device.
 
-Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
----
- drivers/net/can/usb/esd_usb.c | 35 ++++++++++++++++++++---------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
+The pci-sysfs reset attribute is only meant to reset the linked device,
+so if this is a single function device then it might be accessing bus
+reset, but it also might be using FLR or PM reset.  There's a
+reset_method attribute to determine and select.
 
-diff --git a/drivers/net/can/usb/esd_usb.c b/drivers/net/can/usb/esd_usb.c
-index e78bb468115a..d33bac3a6c10 100644
---- a/drivers/net/can/usb/esd_usb.c
-+++ b/drivers/net/can/usb/esd_usb.c
-@@ -237,14 +237,23 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
- 	if (id == ESD_EV_CAN_ERROR_EXT) {
- 		u8 state = msg->rx.ev_can_err_ext.status;
- 		u8 ecc = msg->rx.ev_can_err_ext.ecc;
--		u8 rxerr = msg->rx.ev_can_err_ext.rec;
--		u8 txerr = msg->rx.ev_can_err_ext.tec;
-+
-+		priv->bec.rxerr = msg->rx.ev_can_err_ext.rec;
-+		priv->bec.txerr = msg->rx.ev_can_err_ext.tec;
- 
- 		netdev_dbg(priv->netdev,
- 			   "CAN_ERR_EV_EXT: dlc=%#02x state=%02x ecc=%02x rec=%02x tec=%02x\n",
--			   msg->rx.dlc, state, ecc, rxerr, txerr);
-+			   msg->rx.dlc, state, ecc,
-+			   priv->bec.rxerr, priv->bec.txerr);
-+
-+		/* if berr-reporting is off, only pass through on state change ... */
-+		if (!(priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
-+		    state == priv->old_state)
-+			return;
- 
- 		skb = alloc_can_err_skb(priv->netdev, &cf);
-+		if (!skb)
-+			stats->rx_dropped++;
- 
- 		if (state != priv->old_state) {
- 			enum can_state tx_state, rx_state;
-@@ -265,14 +274,14 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
- 				break;
- 			default:
- 				new_state = CAN_STATE_ERROR_ACTIVE;
--				txerr = 0;
--				rxerr = 0;
-+				priv->bec.txerr = 0;
-+				priv->bec.rxerr = 0;
- 				break;
- 			}
- 
- 			if (new_state != priv->can.state) {
--				tx_state = (txerr >= rxerr) ? new_state : 0;
--				rx_state = (txerr <= rxerr) ? new_state : 0;
-+				tx_state = (priv->bec.txerr >= priv->bec.rxerr) ? new_state : 0;
-+				rx_state = (priv->bec.txerr <= priv->bec.rxerr) ? new_state : 0;
- 				can_change_state(priv->netdev, cf,
- 						 tx_state, rx_state);
- 			}
-@@ -304,17 +313,12 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
- 			cf->data[3] = ecc & SJA1000_ECC_SEG;
- 		}
- 
--		priv->bec.txerr = txerr;
--		priv->bec.rxerr = rxerr;
--
- 		if (skb) {
- 			cf->can_id |= CAN_ERR_CNT;
--			cf->data[6] = txerr;
--			cf->data[7] = rxerr;
-+			cf->data[6] = priv->bec.txerr;
-+			cf->data[7] = priv->bec.rxerr;
- 
- 			netif_rx(skb);
--		} else {
--			stats->rx_dropped++;
- 		}
- 	}
- }
-@@ -1016,7 +1020,8 @@ static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
- 
- 	priv->can.state = CAN_STATE_STOPPED;
- 	priv->can.ctrlmode_supported = CAN_CTRLMODE_LISTENONLY |
--		CAN_CTRLMODE_CC_LEN8_DLC;
-+		CAN_CTRLMODE_CC_LEN8_DLC |
-+		CAN_CTRLMODE_BERR_REPORTING;
- 
- 	if (le16_to_cpu(dev->udev->descriptor.idProduct) ==
- 	    USB_CANUSBM_PRODUCT_ID)
+In any case, if the device is unaffected, that suggests we're dealing
+with a device that doesn't comply with PCIe reset standards, which
+might suggests it needs a device specific reset or to flag broken reset
+methods regardless.
 
-base-commit: db88681c4885b8f2f07241c6f3f1fcf2d773754e
--- 
-2.25.1
+Note that QEMU is a vfio-pci userspace driver, so assigning the device
+to a VM, where kernel drivers in the guest are managing the device is a
+use case of userspace drivers which should have a functional reset
+mechanism to avoid data leakage between userspace sessions.
+ 
+> If I understand Bjorn and you correctly, we have two options:
+> 
+> 1. Keep the current implementation inside the driver.
+> 
+> 2. Call __pci_reset_function_locked() from the driver and move the link
+> toggling to drivers/pci/quirks.c as a "device_specific" method.
+> 
+> Personally, I don't see any benefit in 2, but we can try to implement
+> it, see if it even works and then decide.
+
+The second option enables use cases like above, where the PCI-core can
+perform an effective reset of the device rather than embedding that
+into a specific driver.  Even if not intended as a primary use case,
+it's a more complete solution and avoids potentially unhappy users that
+assume such use cases are available.  Thanks,
+
+Alex
 
