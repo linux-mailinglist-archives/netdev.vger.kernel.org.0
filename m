@@ -2,78 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 622956D07C7
-	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 16:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0D516D0770
+	for <lists+netdev@lfdr.de>; Thu, 30 Mar 2023 15:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232025AbjC3OMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 10:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        id S232192AbjC3N5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 09:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbjC3OMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 10:12:33 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C35049753;
-        Thu, 30 Mar 2023 07:12:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680185549; x=1711721549;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=kO4E2os91lsLJi4GETLgzZoX+IuPasmc8YqBoRB7b00=;
-  b=YjmVZbB9p8GOqedbjsJWgP5gK4UzjooKWaQ5jHxbMfBMwIkGfr7CDHt5
-   i4MDk2mGjtNCZam3vNk9mTEZwKqBYDwQ1ODciIxUf+upwS4f+loWLFV0P
-   /YUwR+g/dZLkywCzFHqvdvMJS6JG6Hfap5szhRDxXTbdWNaCcJeQSbSQA
-   NwScCxiX9LJ4iPv8AdVKlf/eu8gaTC8fuwUvZ2933E6kvryWMjDECmcSH
-   bzaQlmsPjFUu4R5dfb9Pts+LqfgLmrg350CY6riomvqwk4QKAuClRRXNa
-   HZPjkkOpXog5AO/ofRQhdw2bpP3vHlueqSTe9UY3jJLZoI+l6KdqvyvFF
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="343651670"
-X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
-   d="scan'208";a="343651670"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2023 06:54:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="828344122"
-X-IronPort-AV: E=Sophos;i="5.98,303,1673942400"; 
-   d="scan'208";a="828344122"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 30 Mar 2023 06:54:52 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Thu, 30 Mar 2023 16:54:51 +0300
-Date:   Thu, 30 Mar 2023 16:54:51 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
- node for default settings
-Message-ID: <ZCWUq3yEn74JRW0w@kuha.fi.intel.com>
-References: <ZB3YGWTWLYyecgw7@shell.armlinux.org.uk>
- <ZCFvtuyelA+WoeqK@kuha.fi.intel.com>
- <ZCF2BLvGoaD/RGCS@shell.armlinux.org.uk>
- <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
- <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
- <ZCG6D7KV/0W0FUoI@shell.armlinux.org.uk>
- <ZCLZFA964zu/otQJ@kuha.fi.intel.com>
- <ZCLqXRKHh+VjCg8v@shell.armlinux.org.uk>
- <ZCRGHlERlLNuPHgE@kuha.fi.intel.com>
- <ZCRMTP1QJ0deQhOH@shell.armlinux.org.uk>
+        with ESMTP id S232084AbjC3N5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 09:57:46 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2046.outbound.protection.outlook.com [40.107.95.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4463B6EB8
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 06:57:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jNFBuoiq39Y/jW/fgoa/minZwDTPeXAUQTfAWTGVhrDcldwJVBDPk6dCFAwx38Hm5k6xU3dK/diIqgcHxE9+/Lg+OfH0tSjw5G2k24+7lBvlqosk1rxvrc1lf5fwBR5rOP0a/0laoOPdSZHTpYCUU+DgCa54bQ8H5fsE65v9ftT7Wobqux266JsaM+pkxdQwUQP6mCT9lFkE+av/lGQvG6PfE4ljMAaZ/LTwwWk+G42c66kKK5peR6szmJivSBEl30bCd04ryhIFaJfEjeOd49QOnRbJsLgrBwse3c0ftzluRDk2XEHL7oLHZRxwmOlCIWBzenrhrkEfm3Crb0fe1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=x4ASn5c0ABW9vEihQZZ9PuxD0BOdh88lPaocWCXvj+g=;
+ b=iDJdkysDlhoG6h1qwzSLLG0e9ovRHZl82svn4RNCo9/xBT8c9+5eQ5k7A5afwF0PxfLeKBNOeT1WgRpP9D5skDV2h3KRc1XTCRf46Qd2/h456qUGL6ATePFD4rpwZKfElUIFrb7/QaFQExa1PCpTgoEiwX3AWfYmhDeJDcRRgFSPbQpgMs5LRwQgWA8WHngmhKeVKKQPQbFUDWsuoqSvCMMKpy6fqn8vVHJwZ9uT1ybWp2pFxESmCmwslZaJ8CXolIzXj+hbZUs6QYRILuPug+lL4Ecq3k4jznqUz99i9xv2eQ7iFNHV3480h4yMODwMbrgcFWAv4RVngHfg/tYEiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x4ASn5c0ABW9vEihQZZ9PuxD0BOdh88lPaocWCXvj+g=;
+ b=BeER4svuqd6wLSI99wKiHiP4emioSkHHjNW1lwl2hP0aNwET8no9u9Hs8fjTj/vJcUJHZ1xNdMyv2YwsGcB9IsNutq5NIAxxDjgOat4IAXs5m8tnRPcRV5d3sXO0CEeT5qOCnKwVpbvzi1IGOnD9XCw493cio2Wvxg/H1XV+03R5RlfU8bZGxs+u+QQs7myL/n2Z5En2xeCRDMMrwhiCzmvaCO7xJI1qpnLeZfOTuoJshye+RbKvvxu5l8AFYnP2BvXVIzExLULEouyyM+js8jyx1t+pitlASTmgxMDMrDRifP97gdRhrlly4mUnV6M8ppF8CUUBic9u+cciGQkXBA==
+Received: from DS7PR03CA0091.namprd03.prod.outlook.com (2603:10b6:5:3b7::6) by
+ IA1PR12MB6282.namprd12.prod.outlook.com (2603:10b6:208:3e6::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6222.33; Thu, 30 Mar
+ 2023 13:57:43 +0000
+Received: from DS1PEPF0000E633.namprd02.prod.outlook.com
+ (2603:10b6:5:3b7:cafe::9b) by DS7PR03CA0091.outlook.office365.com
+ (2603:10b6:5:3b7::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22 via Frontend
+ Transport; Thu, 30 Mar 2023 13:57:43 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS1PEPF0000E633.mail.protection.outlook.com (10.167.17.137) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6178.30 via Frontend Transport; Thu, 30 Mar 2023 13:57:42 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.5; Thu, 30 Mar 2023
+ 06:57:25 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.37; Thu, 30 Mar
+ 2023 06:57:25 -0700
+Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server id 15.2.986.37 via Frontend Transport; Thu, 30 Mar
+ 2023 06:57:23 -0700
+From:   Emeel Hakim <ehakim@nvidia.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <sd@queasysnail.net>
+CC:     <netdev@vger.kernel.org>, <leon@kernel.org>,
+        Emeel Hakim <ehakim@nvidia.com>
+Subject: [PATCH net-next v3 0/4] Support MACsec VLAN
+Date:   Thu, 30 Mar 2023 16:57:11 +0300
+Message-ID: <20230330135715.23652-1-ehakim@nvidia.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCRMTP1QJ0deQhOH@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E633:EE_|IA1PR12MB6282:EE_
+X-MS-Office365-Filtering-Correlation-Id: 85219df3-e1c7-4a54-f96b-08db3126bba2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YDtzO2//HZFF1xhMd8avtSmyKNKx1oR9busWcnXlxrIYtnbh1AKglYbvJulrJryND2tmJCfRWaeowHSwy8HIBLbTSRb5Hb7Cun5MRQACMmJm0LfG8QFSqShjR5K9Kyu5gqw5JU1DPLRBa7U+XT6c9AKjboCCwP4IqPImG4eLapURkN1wbmCZ4UGNSD2vhckeAT7Cmix+IVYQaiNx9xeNYQqadXKQYLoZ1rPUGto7GR2fPkF/BZ8VaL+Bepqay64mIBPzxg3w+qh9eNaAPWNlStcL9n4eNnW3U9lcyQyWJ7p896Wghw7Ga1C/tizjkAfU6eG9rkg9bse7gOAa5yWsf/+bZtWvj/CJkuu83Kwv89mY0QTAyH6c9+tAufc+VsJlxm9R29lYDiG2pWgH31Gtv9rw4mcx/6HcTKGCDxd66gV0CXY2fSA0aLf5ZzXf3RT+xCwjUl1OPjDiT+cv12Ota5RvOlxh6zS0lgdhSSroTufF9iyZ+GH/TKlihSMhJpaGyt12Q+yBhRLbYE2yjTruxz6Ut/0l2Ikw8EqKgcZSV0qRNOScHWtsdtn6oigWN0wBzqe6JOkhmbAo00Drc6YIcnOn55MBQiW13RJc7St00wmoH/UxVm1MaCJaqNmNyVTYy7fVk7p8TJ1YDnoJceqt3WI7HVCt14roPiAdWWI/cPiVJP+MmGvfE8+WCbH60bfw2YapKMYdduHO/gcKzRA92R/7iHJgKm6dy53HuRuyFPIvwMAjvn+seEmt/QoEHush
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230028)(4636009)(136003)(396003)(39860400002)(376002)(346002)(451199021)(46966006)(36840700001)(40470700004)(6666004)(107886003)(7696005)(1076003)(26005)(110136005)(316002)(70206006)(478600001)(186003)(47076005)(36860700001)(54906003)(83380400001)(70586007)(8676002)(336012)(2616005)(426003)(41300700001)(7636003)(356005)(4326008)(82740400003)(5660300002)(2906002)(40460700003)(8936002)(86362001)(40480700001)(82310400005)(36756003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 13:57:42.8033
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85219df3-e1c7-4a54-f96b-08db3126bba2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E633.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6282
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,121 +102,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 03:33:48PM +0100, Russell King (Oracle) wrote:
-> On Wed, Mar 29, 2023 at 05:07:26PM +0300, Heikki Krogerus wrote:
-> > On Tue, Mar 28, 2023 at 02:23:41PM +0100, Russell King (Oracle) wrote:
-> > > On Tue, Mar 28, 2023 at 03:09:56PM +0300, Heikki Krogerus wrote:
-> > > > The problem is that the function you are proposing will be exploited
-> > > > silently - people will use NULL as the parent without anybody
-> > > > noticing. Everything will work for a while, because everybody will
-> > > > first only have a single device for that driver. But as time goes by
-> > > > and new hardware appears, suddenly there are multiple devices for
-> > > > those drivers, and the conflict start to appear.
-> > > 
-> > > So, an easy solution would be to reject a call to
-> > > fwnode_create_named_software_node() when parent is NULL, thereby
-> > > preventing named nodes at the root level.
-> > > 
-> > > > At that point the changes that added the function call will have
-> > > > trickled down to the stable trees, so the distros are affected. Now we
-> > > > are no longer talking about a simple cleanup that fixes the issue. In
-> > > > the unlikely, but possible case, this will turn into ABI problem if
-> > > 
-> > > There is no such thing as stable APIs for internal kernel interfaces.
-> > > 
-> > > Documentation/process/stable-api-nonsense.rst
-> > > 
-> > > > As you pointed out, this kind of risks we have to live with kbojects,
-> > > > struct device stuff and many others, but the thing is, with the
-> > > > software node and device property APIs right now we don't. So the fact
-> > > > that a risk exists in one place just isn't justification to accept the
-> > > > same risk absolutely everywhere.
-> > > 
-> > > Meanwhile, firmware descriptions explicitly permit looking up nodes by
-> > > their names, but here we are, with the software node maintainers
-> > > basically stating that they don't wish to support creating software
-> > > nodes with explicit names.
-> > 
-> > If you want to name the nodes then you just go ahead and name them,
-> > nobody is preventing you and you can already do that, but if you do
-> > so, then you will take full responsibility of the entire software node
-> > - that is what you are naming here - instead of just the fwnode that
-> > it contains. The users of the node can deal with the fwnode alone, but
-> > you as the creator of the software node have to take proper ownership
-> > of it.
-> > 
-> > > > Russell, if you have some good arguments for accepting your proposal,
-> > > > I assure you I will agree with you, but so far all you have given are
-> > > > attacks on a sketch details and statements like that "I think you're
-> > > > making a mountain out of a mole". Those just are not good enough.
-> > > 
-> > > Basically, I think you are outright wrong for all the reasons I have
-> > > given in all my emails on this subject.
-> > > 
-> > > Yes, I accept there is a *slight* risk of abuse, but I see it as no
-> > > different from the risk from incorrect usage of any other kernel
-> > > internal interface. Therefore I just do not accept your argument
-> > > that we should not have this function, and I do not accept your
-> > > reasoning.
-> > 
-> > I would not be so against the function if there wasn't any other way
-> > to handle your case, but there is.
-> > 
-> > You really can not claim that the existing API is in any way inferior,
-> > or even more complex, compared to your function before you actually
-> > try it. You simply can not make judgement based on a sketch that is
-> > basically just showing you the functions and structures that you need.
-> > 
-> > If there are issues with the API, then we need to of course fix those
-> > issues, but please keep in mind that still does not mean we have any
-> > need for the function you are proposing.
-> > 
-> > Please also note that helpers are welcome if you feel we need them. If
-> > you want to add for example an allocation routine that duplicates also
-> > the properties in one go, then that alone would reduce the complexity
-> > needed in the drivers that create the nodes. I think in most cases,
-> > possibly also in yours, that alone would allow most stuff to be
-> > handled from stack memory.
-> > 
-> > fwnode_create_software_node() is there just to support the legacy
-> > device properties. You really should not be using even that. If you
-> > need to deal with software nodes then you deal with them with struct
-> > software_node.
-> 
-> You forgot to explain how to free them once they're done, because
-> struct swnode will contain a pointer to the struct software_node
-> which can be a dangling stale reference - and there's no way for
-> code outside swnode.c to know when that reference has gone.
-> 
-> That is another reason why I prefer my existing solution. That
-> problem is taken care of already by the existing code - and as
-> it's taken care of there, and properly, there's less possibilities
-> for users of swnode to get it wrong.
+Dear maintainers,
 
-We need an improved release mechanism, yes.
+This patch series introduces support for hardware (HW) offload MACsec
+devices with VLAN configuration. The patches address both scenarios
+where the VLAN header is both the inner and outer header for MACsec.
 
-My idea with the new dynamic allocation routine was that it could be
-introduced together with a release callback that we add to the struct
-software_node.
+The changes include:
 
-The idea of adding the release callback to the structure was actually
-considered already some time ago - I think it was discussed at least
-shortly also on the public ACPI mailing list. The idea back then
-included a default release function that simply frees the struct
-software_node instance. That default release function we could then
-assign to the release callback in that new software node
-allocation/creation routine. That way the drivers should be able to
-continue to rely on the underlying code to take care of freeing the
-node instance.
+1. Adding MACsec offload operation for VLAN.
+2. Considering VLAN when accessing MACsec net device.
+3. Currently offloading MACsec when it's configured over VLAN with
+current MACsec TX steering rules would wrongly insert the MACsec sec tag
+after inserting the VLAN header. This resulted in an ETHERNET | SECTAG |
+VLAN packet when ETHERNET | VLAN | SECTAG is configured. The patche
+handles this issue when configuring steering rules.
+4. Adding MACsec rx_handler change support in case of a marked skb and a
+mismatch on the dst MAC address.
 
-Back then there was nobody who really needed that functionality, so
-nobody even tried to implement it. Now we of course clearly do need
-something like it.
+Please review these changes and let me know if you have any feedback or
+concerns.
 
-I think the release callback together with the default release
-function should work. Let me know what you guys think.
+Updates since v1:
+- Consult vlan_features when adding NETIF_F_HW_MACSEC.
+- Allow grep for the functions.
+- Add helper function to get the macsec operation to allow the compiler
+  to make some choice.
 
-thanks,
+Updates since v2:
+- Don't use macros to allow direct navigattion from mdo functions to its implementation.
+- Make the vlan_get_macsec_ops argument a const.
+- Check if the specific mdo function is available before calling it.
+
+Thanks,
+Emeel
+
+Emeel Hakim (4):
+  vlan: Add MACsec offload operations for VLAN interface
+  net/mlx5: Support MACsec over VLAN
+  net/mlx5: Consider VLAN interface in MACsec TX steering rules
+  macsec: Add MACsec rx_handler change support
+
+ .../mellanox/mlx5/core/en_accel/macsec.c      |  42 +++--
+ .../mellanox/mlx5/core/en_accel/macsec_fs.c   |   7 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   1 +
+ drivers/net/macsec.c                          |   9 ++
+ net/8021q/vlan_dev.c                          | 153 ++++++++++++++++++
+ 5 files changed, 196 insertions(+), 16 deletions(-)
 
 -- 
-heikki
+2.21.3
+
