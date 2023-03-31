@@ -2,156 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEB576D2923
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 22:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE236D2965
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 22:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232720AbjCaUJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 16:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
+        id S233134AbjCaU0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 16:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbjCaUJa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 16:09:30 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA6821A8E;
-        Fri, 31 Mar 2023 13:09:24 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id w13so6173891oik.2;
-        Fri, 31 Mar 2023 13:09:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680293364;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uPkpKFxk7BcOpgUzJha9+qhAMS2yt0UsXgxPanJmeeY=;
-        b=t3/ZYXkRBRznCSyV2h7lSIl9/GFG0cskiooUOZlzkDUalq7T6tDwYov1wwIDnvaSbo
-         zqHDrVllyBVLj2+IatjCnzz61aEsGGNIwqC3lcwbuq0OIXdqaGt0Fehw3uNiVix619Co
-         pwL99kFu+VdXa55ML+pKG2/yl72wk339YuXM5LBqhYyo+dXdVqrNBsRSIbaMnRT1AJvl
-         oWVYMwyMsjAODn8G1YLWSr2IvHiN/TV3WWYzcXtNe6bJLdOoBCHU9KK7Q2VoAZkhA/ch
-         cM4UGAMX2EF0EkCIk74XnFcoNG1CNDrH9gJYq/rHrqsEz/eXJiOUQD/BR173h1TNzhmV
-         7Sqg==
-X-Gm-Message-State: AAQBX9eLd92E7Dwtm8+G11mhX48CW2aJIcN1q+AQxhv8K3dDy42UdLTP
-        UNtToaeOy6mtLKsINeCvpA==
-X-Google-Smtp-Source: AKy350ZNGbtu+wZO9GEFh09+Q8jTGjD4N+L1g95Cjk+YUOMacEt1LSoNV3wAfsJboJEXfnqNLSWQmw==
-X-Received: by 2002:a05:6808:208a:b0:389:8075:4c0b with SMTP id s10-20020a056808208a00b0038980754c0bmr1936699oiw.1.1680293363988;
-        Fri, 31 Mar 2023 13:09:23 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id c5-20020a4aacc5000000b00524f381f681sm1203954oon.27.2023.03.31.13.09.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Mar 2023 13:09:23 -0700 (PDT)
-Received: (nullmailer pid 2156389 invoked by uid 1000);
-        Fri, 31 Mar 2023 20:09:22 -0000
-Date:   Fri, 31 Mar 2023 15:09:22 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@linaro.org>,
-        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [net-next PATCH v6 10/16] dt-bindings: leds: Document support
- for generic ethernet LEDs
-Message-ID: <20230331200922.GA2123749-robh@kernel.org>
-References: <20230327141031.11904-1-ansuelsmth@gmail.com>
- <20230327141031.11904-11-ansuelsmth@gmail.com>
+        with ESMTP id S231701AbjCaU0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 16:26:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA642221D;
+        Fri, 31 Mar 2023 13:26:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680294388; x=1711830388;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JigzRH1XS4gxfuOXH7Yq62hsAr9z5CZh7n41T3Wd6XQ=;
+  b=I2zUmQwKweaM5V7rc6DRnfNR8IurJwcME+weaIu8a1WF5F96sd+TUBQX
+   95/X8uggowmCcQ0FhiO0yCrKZpQHs+6KXvB9E3vpyG+uSUZFDDZxZPceK
+   k0Rkz26SbxPLSaKPkcKQxoACsd3CGUVwRVXiBahwIeH92RR9Vk9+1xdkz
+   hIYDxfz4FOAS2iN+Hi+aklMQV6P8FTF9cW1bN6Ivl3UxK7wY6CLxZI3u9
+   CMlTwQ1KY+yAavnUImDF6zK0hcvFTnXSGaebh3XcLv95DUOE63c7qyLZM
+   F/WHnWRPRKfphaifAgSEM0IMkP6zPIuIWqGSp2KKLF/lcveBcdGY0TaFU
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="341569011"
+X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
+   d="scan'208";a="341569011"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 13:26:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="678738121"
+X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
+   d="scan'208";a="678738121"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 31 Mar 2023 13:25:56 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1piLJr-000M8f-07;
+        Fri, 31 Mar 2023 20:25:55 +0000
+Date:   Sat, 01 Apr 2023 04:25:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-acpi@vger.kernel.org,
+        bpf@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 4b0f4525dc4fe8af17b3daefe585f0c2eb0fe0a5
+Message-ID: <642741a2.Iacn1LRMRFiPMcQb%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230327141031.11904-11-ansuelsmth@gmail.com>
-X-Spam-Status: No, score=0.8 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 04:10:25PM +0200, Christian Marangi wrote:
-> Add documentation for support of generic ethernet LEDs.
-> These LEDs are ethernet port LED and are controllable by the ethernet
-> controller or the ethernet PHY.
-> 
-> A port may expose multiple LEDs and reg is used to provide an index to
-> differentiate them.
-> Ethernet port LEDs follow generic LED implementation.
-> 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  .../bindings/leds/leds-ethernet.yaml          | 76 +++++++++++++++++++
->  1 file changed, 76 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/leds/leds-ethernet.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/leds/leds-ethernet.yaml b/Documentation/devicetree/bindings/leds/leds-ethernet.yaml
-> new file mode 100644
-> index 000000000000..0a03d65beea0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/leds/leds-ethernet.yaml
-> @@ -0,0 +1,76 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/leds/leds-ethernet.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Common properties for the ethernet port LED.
-> +
-> +maintainers:
-> +  - Christian Marangi <ansuelsmth@gmail.com>
-> +
-> +description:
-> +  Bindings for the LEDs present in ethernet port and controllable by
-> +  the ethernet controller or the ethernet PHY regs.
-> +
-> +  These LEDs provide the same feature of a normal LED and follow
-> +  the same LED definitions.
-> +
-> +  An ethernet port may expose multiple LEDs, reg binding is used to
-> +  differentiate them.
-> +
-> +properties:
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +patternProperties:
-> +  '^led@[a-f0-9]+$':
-> +    $ref: /schemas/leds/common.yaml#
-> +
-> +    properties:
-> +      reg:
-> +        maxItems: 1
-> +        description:
-> +          This define the LED index in the PHY or the MAC. It's really
-> +          driver dependent and required for ports that define multiple
-> +          LED for the same port.
-> +
-> +    required:
-> +      - reg
-> +
-> +    unevaluatedProperties: false
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 4b0f4525dc4fe8af17b3daefe585f0c2eb0fe0a5  Add linux-next specific files for 20230331
 
-This does nothing to help the issues I raised. If the 'led' nodes have 
-custom properties, then you need a schema for the 'led' nodes and just 
-the 'led' nodes. Not a schema for the 'leds' container node.
+Error/Warning reports:
 
-If your not going to allow extending, then this can all be 1 file like 
-you had (with unevaluatedProperties added of course).
+https://lore.kernel.org/oe-kbuild-all/202303161521.jbGbaFjJ-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202304010037.jagzIuJZ-lkp@intel.com
 
-Rob
+Error/Warning: (recently discovered and may have been fixed)
+
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_validation.c:351:13: warning: variable 'bw_needed' set but not used [-Wunused-but-set-variable]
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_validation.c:352:25: warning: variable 'link' set but not used [-Wunused-but-set-variable]
+drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c:148:31: error: implicit declaration of function 'pci_msix_can_alloc_dyn' [-Werror=implicit-function-declaration]
+drivers/net/wireless/legacy/ray_cs.c:628:17: warning: 'strncpy' specified bound 32 equals destination size [-Wstringop-truncation]
+
+Unverified Error/Warning (likely false positive, please contact us if interested):
+
+drivers/acpi/property.c:985 acpi_data_prop_read_single() error: potentially dereferencing uninitialized 'obj'.
+drivers/cdx/cdx.c:393:20: error: initialization of 'ssize_t (*)(const struct bus_type *, const char *, size_t)' {aka 'long int (*)(const struct bus_type *, const char *, long unsigned int)'} from incompatible pointer type 'ssize_t (*)(struct bus_type *, const char *, size_t)' {aka 'long int (*)(struct bus_type *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
+kernel/bpf/verifier.c:10148:11: warning: Assigned value is garbage or undefined [clang-analyzer-core.uninitialized.Assign]
+lib/cpu_rmap.c:272:2: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- alpha-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|   `-- drivers-net-wireless-legacy-ray_cs.c:warning:strncpy-specified-bound-equals-destination-size
+|-- alpha-randconfig-r003-20230329
+|   `-- drivers-net-ethernet-mellanox-mlx5-core-pci_irq.c:error:implicit-declaration-of-function-pci_msix_can_alloc_dyn
+|-- arc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arc-buildonly-randconfig-r005-20230329
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm64-allyesconfig
+|   |-- drivers-cdx-cdx.c:error:initialization-of-ssize_t-(-)(const-struct-bus_type-const-char-size_t)-aka-long-int-(-)(const-struct-bus_type-const-char-long-unsigned-int)-from-incompatible-pointer-type-ssize
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm64-buildonly-randconfig-r001-20230329
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- i386-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- i386-randconfig-m021
+|   `-- drivers-acpi-property.c-acpi_data_prop_read_single()-error:potentially-dereferencing-uninitialized-obj-.
+|-- ia64-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|   `-- drivers-net-wireless-legacy-ray_cs.c:warning:strncpy-specified-bound-equals-destination-size
+|-- loongarch-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- loongarch-defconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- loongarch-randconfig-r014-20230329
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- mips-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- mips-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- powerpc-allmodconfig
+clang_recent_errors
+`-- s390-randconfig-c005-20230329
+    |-- kernel-bpf-verifier.c:warning:Assigned-value-is-garbage-or-undefined-clang-analyzer-core.uninitialized.Assign
+    `-- lib-cpu_rmap.c:warning:Use-of-memory-after-it-is-freed-clang-analyzer-unix.Malloc
+
+elapsed time: 867m
+
+configs tested: 100
+configs skipped: 6
+
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allyesconfig   gcc  
+arc          buildonly-randconfig-r005-20230329   gcc  
+arc                                 defconfig   gcc  
+arc                  randconfig-r033-20230329   gcc  
+arc                  randconfig-r043-20230329   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm                                 defconfig   gcc  
+arm                  randconfig-r034-20230329   clang
+arm                  randconfig-r046-20230329   gcc  
+arm64                            allyesconfig   gcc  
+arm64        buildonly-randconfig-r001-20230329   gcc  
+arm64        buildonly-randconfig-r002-20230329   gcc  
+arm64                               defconfig   gcc  
+arm64                randconfig-r001-20230329   gcc  
+arm64                randconfig-r003-20230329   gcc  
+arm64                randconfig-r013-20230329   clang
+csky                                defconfig   gcc  
+hexagon              randconfig-r041-20230329   clang
+hexagon              randconfig-r045-20230329   clang
+i386                             allyesconfig   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                          randconfig-a001   gcc  
+i386                          randconfig-a002   clang
+i386                          randconfig-a003   gcc  
+i386                          randconfig-a004   clang
+i386                          randconfig-a005   gcc  
+i386                          randconfig-a006   clang
+i386                          randconfig-a011   clang
+i386                          randconfig-a012   gcc  
+i386                          randconfig-a013   clang
+i386                          randconfig-a014   gcc  
+i386                          randconfig-a015   clang
+i386                          randconfig-a016   gcc  
+ia64                             allmodconfig   gcc  
+ia64                                defconfig   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch            randconfig-r004-20230329   gcc  
+loongarch            randconfig-r006-20230329   gcc  
+loongarch            randconfig-r014-20230329   gcc  
+m68k                             allmodconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                 randconfig-r023-20230331   gcc  
+microblaze           randconfig-r022-20230331   gcc  
+microblaze           randconfig-r024-20230331   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips         buildonly-randconfig-r004-20230329   clang
+mips                 randconfig-r036-20230329   clang
+nios2                               defconfig   gcc  
+nios2                randconfig-r016-20230329   gcc  
+parisc       buildonly-randconfig-r006-20230329   gcc  
+parisc                              defconfig   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                               defconfig   gcc  
+riscv                randconfig-r032-20230329   gcc  
+riscv                randconfig-r035-20230329   gcc  
+riscv                randconfig-r042-20230329   clang
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r002-20230329   gcc  
+s390                 randconfig-r044-20230329   clang
+sh                               allmodconfig   gcc  
+sparc                               defconfig   gcc  
+sparc                randconfig-r005-20230329   gcc  
+sparc64      buildonly-randconfig-r003-20230329   gcc  
+sparc64              randconfig-r012-20230329   gcc  
+sparc64              randconfig-r026-20230331   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                            allnoconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64                        randconfig-a001   clang
+x86_64                        randconfig-a002   gcc  
+x86_64                        randconfig-a003   clang
+x86_64                        randconfig-a004   gcc  
+x86_64                        randconfig-a005   clang
+x86_64                        randconfig-a006   gcc  
+x86_64                        randconfig-a011   gcc  
+x86_64                        randconfig-a012   clang
+x86_64                        randconfig-a013   gcc  
+x86_64                        randconfig-a014   clang
+x86_64                        randconfig-a015   gcc  
+x86_64                        randconfig-a016   clang
+x86_64                               rhel-8.3   gcc  
+xtensa               randconfig-r021-20230331   gcc  
+xtensa               randconfig-r031-20230329   gcc  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
