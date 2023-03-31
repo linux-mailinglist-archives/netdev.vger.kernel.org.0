@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 390346D1AF0
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9030E6D1AEC
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231450AbjCaI5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        id S231326AbjCaI5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbjCaI5O (ORCPT
+        with ESMTP id S230082AbjCaI5O (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:57:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BCD10FA;
-        Fri, 31 Mar 2023 01:57:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629318A5E;
+        Fri, 31 Mar 2023 01:57:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91D5EB82D63;
-        Fri, 31 Mar 2023 08:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6477C4339B;
-        Fri, 31 Mar 2023 08:57:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1012625B4;
+        Fri, 31 Mar 2023 08:57:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF612C433D2;
+        Fri, 31 Mar 2023 08:57:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680253030;
-        bh=nfqhbMG0lxmbbjcxNP04AkwjjwaQZsVAQxrkkGDhnNY=;
+        s=k20201202; t=1680253032;
+        bh=HhmtS11lifJh0p+DxBrhsUr+GJEThbU7xivKAEBKBvg=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-        b=k0XuSiOiAktREiH2nau3/FnqnJTuNgZeIabvaGankpNCYZwxbkfdhQ0/7qFVmbQ09
-         x5ZT9GEtyYfuNNu0bpzh48ZesmBsE33e/2bAoE3XTJNgCMN0OYhATafkAaBb1U4U2G
-         leoF9TZkIYlJxywgZqpekpOtywA440DUD3JI1agl6w42aSFSbI0XZ6DVbwq2FqKJQG
-         h+4GQE1Wk2CvpBbdEqofsEnLekV2wJyIFNdpV6y4YnPZC9yac8G+u0aIt/+z8EWB4d
-         H0rt3RPYdFmH9JwTThUYXaRXu4aNfNtefYGcVCoQuOJsBzUAMuoDyq6qO/J7I/VP6T
-         KKaz3ydTSiHwg==
+        b=BJrJ1NIrp4FCUZh2GsNJwgyd6vGiR91fyJlzgaWsDECOTs1ayW+nzbYmZ4BpLGJgu
+         NXs4OjHAEewh/T5XB+HAkIPIefDmVo8f/tHcbY9mgIG9jVgsal3JemId+TXk0LJXz0
+         qidf3Xd8SKSlD7NRatlGUf+b3lfmUqaboEbEz4KlW8JkAsg2/WG1PQPSF3lkXzhHVn
+         LWW8UuXMrY/dYBx29yRZuj9T7rRKsA0VzPrZo2GwYYQfcbNNuP7SCHtI7s/0bmkjGx
+         nEaDe7XtwEHef5maTH/RSGl7Tu5IqmyJ3cGB1nF1BRaOFJZ2EDI1WgE7o7ePGfqNvv
+         56EV1c62UClxA==
 From:   Simon Horman <horms@kernel.org>
-Date:   Fri, 31 Mar 2023 10:56:56 +0200
-Subject: [PATCH vhost 2/3] vringh: address kdoc warnings
+Date:   Fri, 31 Mar 2023 10:56:57 +0200
+Subject: [PATCH vhost 3/3] MAINTAINERS: add vringh.h to Virtio Core and Net
+ Drivers
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230331-vhost-fixes-v1-2-1f046e735b9e@kernel.org>
+Message-Id: <20230331-vhost-fixes-v1-3-1f046e735b9e@kernel.org>
 References: <20230331-vhost-fixes-v1-0-1f046e735b9e@kernel.org>
 In-Reply-To: <20230331-vhost-fixes-v1-0-1f046e735b9e@kernel.org>
 To:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -47,8 +48,8 @@ Cc:     Eli Cohen <elic@nvidia.com>, Si-Wei Liu <si-wei.liu@oracle.com>,
         Parav Pandit <parav@nvidia.com>, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 X-Mailer: b4 0.12.2
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,78 +57,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Address some minor kdoc warnings in vring.h.
-* Place kdoc for 'struct vringh_config_ops' immediately before the structure
-* Add missing documentation of members of 'vringh_iov' and 'vringh_kiov'
-
-Warnings flagged by:
- $ ./scripts/kernel-doc -none include/linux/vringh.h
- include/linux/vringh.h:68: error: Cannot parse struct or union!
- include/linux/vringh.h:92: warning: Function parameter or member 'iov' not described in 'vringh_iov'
- include/linux/vringh.h:92: warning: Function parameter or member 'consumed' not described in 'vringh_iov'
- include/linux/vringh.h:92: warning: Function parameter or member 'i' not described in 'vringh_iov'
- include/linux/vringh.h:92: warning: Function parameter or member 'used' not described in 'vringh_iov'
- include/linux/vringh.h:92: warning: Function parameter or member 'max_num' not described in 'vringh_iov'
- include/linux/vringh.h:104: warning: Function parameter or member 'iov' not described in 'vringh_kiov'
- include/linux/vringh.h:104: warning: Function parameter or member 'consumed' not described in 'vringh_kiov'
- include/linux/vringh.h:104: warning: Function parameter or member 'i' not described in 'vringh_kiov'
- include/linux/vringh.h:104: warning: Function parameter or member 'used' not described in 'vringh_kiov'
- include/linux/vringh.h:104: warning: Function parameter or member 'max_num' not described in 'vringh_kiov'
+vringh.h doesn't seem to belong to any section in MAINTAINERS.
+Add it to Virtio Core and Net Drivers, which seems to be the most
+appropriate section to me.
 
 Signed-off-by: Simon Horman <horms@kernel.org>
 ---
- include/linux/vringh.h | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/vringh.h b/include/linux/vringh.h
-index 1991a02c6431..9f3e7012a255 100644
---- a/include/linux/vringh.h
-+++ b/include/linux/vringh.h
-@@ -54,6 +54,9 @@ struct vringh {
- 	void (*notify)(struct vringh *);
- };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 91201c2b8190..7cf548302c56 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -22095,6 +22095,7 @@ F:	drivers/vdpa/
+ F:	drivers/virtio/
+ F:	include/linux/vdpa.h
+ F:	include/linux/virtio*.h
++F:	include/linux/vringh.h
+ F:	include/uapi/linux/virtio_*.h
+ F:	tools/virtio/
  
-+struct virtio_device;
-+typedef void vrh_callback_t(struct virtio_device *, struct vringh *);
-+
- /**
-  * struct vringh_config_ops - ops for creating a host vring from a virtio driver
-  * @find_vrhs: find the host vrings and instantiate them
-@@ -65,8 +68,6 @@ struct vringh {
-  *	Returns 0 on success or error status
-  * @del_vrhs: free the host vrings found by find_vrhs().
-  */
--struct virtio_device;
--typedef void vrh_callback_t(struct virtio_device *, struct vringh *);
- struct vringh_config_ops {
- 	int (*find_vrhs)(struct virtio_device *vdev, unsigned nhvrs,
- 			 struct vringh *vrhs[], vrh_callback_t *callbacks[]);
-@@ -81,6 +82,12 @@ struct vringh_range {
- 
- /**
-  * struct vringh_iov - iovec mangler.
-+ * @iov: array of iovecs to operate on
-+ * @consumed: number of bytes consumed within iov[i]
-+ * @i: index of current iovec
-+ * @used: number of iovecs present in @iov
-+ * @max_num: maximum number of iovecs.
-+ *           corresponds to allocated memory of @iov
-  *
-  * Mangles iovec in place, and restores it.
-  * Remaining data is iov + i, of used - i elements.
-@@ -93,6 +100,12 @@ struct vringh_iov {
- 
- /**
-  * struct vringh_kiov - kvec mangler.
-+ * @iov: array of iovecs to operate on
-+ * @consumed: number of bytes consumed within iov[i]
-+ * @i: index of current iovec
-+ * @used: number of iovecs present in @iov
-+ * @max_num: maximum number of iovecs.
-+ *           corresponds to allocated memory of @iov
-  *
-  * Mangles kvec in place, and restores it.
-  * Remaining data is iov + i, of used - i elements.
 
 -- 
 2.30.2
