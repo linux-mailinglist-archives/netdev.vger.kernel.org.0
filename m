@@ -2,59 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8452E6D2AE6
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 00:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6327C6D2B32
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 00:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbjCaWGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 18:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
+        id S231858AbjCaWRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 18:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233153AbjCaWGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 18:06:36 -0400
+        with ESMTP id S231241AbjCaWRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 18:17:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4870120619;
-        Fri, 31 Mar 2023 15:06:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2802C177
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 15:17:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE963B8326D;
-        Fri, 31 Mar 2023 22:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6514CC433EF;
-        Fri, 31 Mar 2023 22:06:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87D97B83271
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 22:17:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB01C433EF;
+        Fri, 31 Mar 2023 22:17:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680300392;
-        bh=KDwb7fsPK92TjAEvcMkgy5oGXqF/5crJUrOmoCb1hGg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=DrkfUMZEdL6QXbLjIa3FesA4KT10pvoubz+MJ5JNG3zqmmKrqCJDxlsBQzbDKqbUI
-         ll0J9u3Cg1tN8yvtGpwXmLPNY+u1kwEmZ0Uxcg5v1pesVLcZpNEKIiqgTXhKqv2deg
-         pR+bhQ9FS5SM0ELO+JrghoDYwKfkwD9Ycd+TpcxKpOIWFNaxiaVhTR36YraLQdUZSX
-         SZkgWy4RtOjZ7AceevQirL7ZOq1nfCEQfg0pZzSbb/kazQiELMMoR1kS9FGQfhlw+O
-         Jp9ICZ59qZaju3KXgG7Pj4n3pFMoMONzyn+Az13HvYmacNh9/S++OPC+PK8TIsgYKT
-         FPHMaINrjhtaA==
-Date:   Fri, 31 Mar 2023 17:06:30 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        bjorn@helgaas.com, LKML <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org, Stefan Roese <sr@denx.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-pci@vger.kernel.org,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 5.4 182/389] PCI/portdrv: Dont disable AER reporting in
- get_port_device_capability()
-Message-ID: <20230331220630.GA3151299@bhelgaas>
+        s=k20201202; t=1680301034;
+        bh=PO81GQ+cHDoeljK/vys7vnWNFMQhEaqiBpo55cdMq/s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B410ycR4opPZkGelqE8Zzg7JUUXwDs16cRyc25rx0OPFXpjd9hWXxuYf4ekJekvKr
+         y7XRtxVwz3zSIZ/M0rlNLLmaJTASJAMt1+HimtZfK9WfPfGgHBXL8gONq7xKspNVFy
+         CrA5qOwuzMmqH2/NTN/XjmPD02SQGu7yJTFFX7ti8LZQ+MSBZ8MD7l82Outz3ld1bO
+         Ymhqub/wSr5rfzlpuGpVf4ba7S3vh9jMUOq8ksxNxpRE5p3D3vCoGg7t+bavIcEZbi
+         VtKn0+gZqUOBaQtUY+5yAPAoJC8m3ItXvybgG4PbfFagubiOzvXqzk14RsV6xHtQEh
+         XbabiNZeKNURQ==
+Date:   Fri, 31 Mar 2023 15:17:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     davem@davemloft.net, brouer@redhat.com, netdev@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org
+Subject: Re: [RFC net-next 1/2] page_pool: allow caching from safely
+ localized NAPI
+Message-ID: <20230331151712.2ccd8317@kernel.org>
+In-Reply-To: <20230331120643.09ce0e59@kernel.org>
+References: <20230331043906.3015706-1-kuba@kernel.org>
+        <c646d51c-4e91-bd86-9a5b-97b5a1ce33d0@redhat.com>
+        <20230331120643.09ce0e59@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9dfa04c4-e0cc-f265-5935-254f43db931b@candelatech.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -64,68 +56,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+cc iwlwifi folks]
-
-Re: 8795e182b02d ("PCI/portdrv: Don't disable AER reporting in
-get_port_device_capability()")
-
-On Wed, Mar 29, 2023 at 04:17:29PM -0700, Ben Greear wrote:
-> On 8/30/22 3:16 PM, Ben Greear wrote:
-> ...
-
-> I notice this patch appears to be in 6.2.6 kernel, and my kernel logs are
-> full of spam and system is unstable.  Possibly the unstable part is related
-> to something else, but the log spam is definitely extreme.
+On Fri, 31 Mar 2023 12:06:43 -0700 Jakub Kicinski wrote:
+> > Make sense, but do read the comment above struct pp_alloc_cache.
+> > The sizing of pp_alloc_cache is important for this trick/heuristic to
+> > work, meaning the pp_alloc_cache have enough room.
+> > It is definitely on purpose that pp_alloc_cache have 128 elements and is
+> > only refill'ed with 64 elements, which leaves room for this kind of
+> > trick.  But if Eric's deferred skb freeing have more than 64 pages to
+> > free, then we will likely fallback to ptr_ring recycling.
+> > 
+> > Code wise, I suggest that you/we change page_pool_put_page_bulk() to
+> > have a variant that 'allow_direct' (looking at code below, you might
+> > already do this as this patch over-steer 'allow_direct').  Using the
+> > bulk API, would then bulk into ptr_ring in the cases we cannot use
+> > direct cache.  
 > 
-> These systems are fairly stable on 5.19-ish kernels without the patch in
-> question.
+> Interesting point, let me re-run some tests with the statistics enabled.
+> For a simple stream test I think it may just be too steady to trigger
+> over/underflow. Each skb will carry at most 18 pages, and driver should
+> only produce 64 packets / consume 64 pages. Each NAPI cycle will start
+> by flushing the deferred free. So unless there is a hiccup either at the
+> app or NAPI side - the flows of pages in each direction should be steady
+> enough to do well with just 128 cache entries. Let me get the data and
+> report back.
 
-Hmmm, I was going to thank you for the report, but looking closer, I
-see that you reported this last August [1] and we *should* have
-pursued it with the iwlwifi folks or figured out what the PCI core is
-doing wrong, but I totally dropped the ball.  Sorry about that.
+I patched the driver a bit to use page pool for HW-GRO.
+Below are recycle stats with HW-GRO and with SW GRO + XDP_PASS (packet per page).
 
-To make sure we're all on the same page, we're talking about
-8795e182b02d ("PCI/portdrv: Don't disable AER reporting in
-get_port_device_capability()") [2],
-which is present in v6.0 and later [3] but not v5.19.16 [4].
+		HW-GRO				page=page
+		before		after		before		after
+recycle:
+cached:			0	138669686		0	150197505
+cache_full:		0	   223391		0	    74582
+ring:		138551933         9997191	149299454		0
+ring_full: 		0             488	     3154	   127590
+released_refcnt:	0		0		0		0
 
-> Here is sample of the spam:
-> 
-> [ 1675.547023] pcieport 0000:03:02.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [ 1675.556851] pcieport 0000:03:02.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [ 1675.563904] pcieport 0000:03:02.0:    [20] UnsupReq               (First)
-> [ 1675.569398] pcieport 0000:03:02.0: AER:   TLP Header: 34000000 05001f10 00000000 88c888c8
-> [ 1675.576296] iwlwifi 0000:05:00.0: AER: can't recover (no error_detected callback)
+alloc:
+fast:		136491361	148615710	146969587	150322859
+slow:		     1772	     1799	      144	      105
+slow_high_order:	0		0		0		0
+empty:		     1772	     1799	      144	      105
+refill:		  2165245	   156302	  2332880	     2128
+waive:			0		0		0		0
 
-The TLP header says this is an LTR message from 05:00.0.  Apparently
-the bridge above 05:00.0 is 03:02.0, which logged an Unsupported
-Request error for the message, probably because 03:02.0 doesn't have
-LTR enabled.
-
-Can you collect the output of "sudo lspci -vv"?  Does this happen even
-before loading the iwlwifi driver?  I assume there are no hotplug
-events before this happens?
-
-The PCI core enables LTR during enumeration for every device for which
-LTR is supported and enabled along the entire path up to a Root Port.
-If it does that wrong, you might see errors even before loading
-iwlwifi.
-
-I see that iwlwifi *reads* PCI_EXP_DEVCTL2_LTR_EN in
-iwl_pcie_apm_config(), which should be safe.  I don't see any writes,
-but the iwlwifi experts should know more about this.  There are a
-couple paths that do this, which looks somehow related:
-
-  __iwl_mvm_mac_start
-    iwl_mvm_up
-      iwl_mvm_config_ltr
-        if (trans->ltr_enabled)
-          iwl_mvm_send_cmd_pdu(mvm, LTR_CONFIG, ...)
-
-Bjorn
-
-[1] https://lore.kernel.org/all/47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com/#t
-[2] https://git.kernel.org/linus/8795e182b02d
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/pci/pcie/portdrv_core.c?id=v6.0#n223
-[4] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/drivers/pci/pcie/portdrv_core.c?id=v5.19.16#n223
+Which seems to confirm that for this trivial test the cache sizing is
+good enough, and I won't see any benefit from batching (as cache is only
+full respectively 0.16% and 0.05% of the time).
