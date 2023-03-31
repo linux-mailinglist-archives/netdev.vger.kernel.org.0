@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4A7C6D2547
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:19:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E016D25E0
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:42:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233543AbjCaQTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 12:19:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
+        id S230252AbjCaQmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 12:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233407AbjCaQSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:18:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A03FD4FA2
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:12:22 -0700 (PDT)
+        with ESMTP id S231757AbjCaQmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:42:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC7423680
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:37:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680279103;
+        s=mimecast20190719; t=1680280629;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=V7IwXZpp4caT5icSmRzfTKcX2kIg430bJYtEqUuaqXc=;
-        b=TGf1+sUTpzZ1q2YPwYW1QjbEoAU6RtF3MnAwdeFcWhNliuv8nBjwMVjnJenSRKqJpDxKfl
-        9gyUPyq1KmCKvfScplb5l4pgUt/0gEAHEuXJ5axZVgHhClzomzK4kKplezQvl2Ed8vQYCp
-        5d1fDhT87kGmopQ+ryHLE5nf3bfqHDk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7fCBjYGLxHqikc/tNao5Lfq+HewWC5ZgTjyFTAyeW0Q=;
+        b=PEtnKC7P0Cm9lXn3Z3f+5Y5kteGRZq3QsyuzyDCmDsjJXjKMl7/rwtfyOww994hRZnWo8k
+        x5qsZa9sEK1y7t4nQEAT5Xj0XXM1R86dl/J8Gi5BfvNxz03PPak/Te+KVTCu9+HK8tQWaa
+        N2uLlr2GUhmmH2PG57tvMGg/PsKQR8c=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-499-KUirUmF0P5GTXUc33yxBYQ-1; Fri, 31 Mar 2023 12:11:41 -0400
-X-MC-Unique: KUirUmF0P5GTXUc33yxBYQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+ us-mta-47-U_ILvhbNNGasHHvG4A8zOg-1; Fri, 31 Mar 2023 12:11:44 -0400
+X-MC-Unique: U_ILvhbNNGasHHvG4A8zOg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2135D10119EB;
-        Fri, 31 Mar 2023 16:11:40 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3770D3C0F38A;
+        Fri, 31 Mar 2023 16:11:43 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 120582166B33;
-        Fri, 31 Mar 2023 16:11:37 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AF40D140E94F;
+        Fri, 31 Mar 2023 16:11:40 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     Matthew Wilcox <willy@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -52,16 +52,17 @@ Cc:     David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Tom Herbert <tom@herbertland.com>,
-        Tom Herbert <tom@quantonium.net>
-Subject: [PATCH v3 50/55] kcm: Use sendmsg(MSG_SPLICE_PAGES) rather then sendpage
-Date:   Fri, 31 Mar 2023 17:09:09 +0100
-Message-Id: <20230331160914.1608208-51-dhowells@redhat.com>
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Jan Karcher <jaka@linux.ibm.com>, linux-s390@vger.kernel.org
+Subject: [PATCH v3 51/55] smc: Drop smc_sendpage() in favour of smc_sendmsg() + MSG_SPLICE_PAGES
+Date:   Fri, 31 Mar 2023 17:09:10 +0100
+Message-Id: <20230331160914.1608208-52-dhowells@redhat.com>
 In-Reply-To: <20230331160914.1608208-1-dhowells@redhat.com>
 References: <20230331160914.1608208-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -72,56 +73,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When transmitting data, call down into TCP using a single sendmsg with
-MSG_SPLICE_PAGES to indicate that content should be spliced rather than
-performing several sendmsg and sendpage calls to transmit header, data
-pages and trailer.
+Drop the smc_sendpage() code as smc_sendmsg() just passes the call down to
+the underlying TCP socket and smc_tx_sendpage() is just a wrapper around
+its sendmsg implementation.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Tom Herbert <tom@herbertland.com>
-cc: Tom Herbert <tom@quantonium.net>
+cc: Karsten Graul <kgraul@linux.ibm.com>
+cc: Wenjia Zhang <wenjia@linux.ibm.com>
+cc: Jan Karcher <jaka@linux.ibm.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
+cc: linux-s390@vger.kernel.org
 cc: netdev@vger.kernel.org
 ---
- net/kcm/kcmsock.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ net/smc/af_smc.c    | 29 -----------------------------
+ net/smc/smc_stats.c |  2 +-
+ net/smc/smc_stats.h |  1 -
+ net/smc/smc_tx.c    | 16 ----------------
+ net/smc/smc_tx.h    |  2 --
+ 5 files changed, 1 insertion(+), 49 deletions(-)
 
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index d77d28fbf389..9c9d379aafb1 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -641,6 +641,10 @@ static int kcm_write_msgs(struct kcm_sock *kcm)
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index a4cccdfdc00a..d4113c8a7cda 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -3125,34 +3125,6 @@ static int smc_ioctl(struct socket *sock, unsigned int cmd,
+ 	return put_user(answ, (int __user *)arg);
+ }
  
- 		for (fragidx = 0; fragidx < skb_shinfo(skb)->nr_frags;
- 		     fragidx++) {
-+			struct bio_vec bvec;
-+			struct msghdr msg = {
-+				.msg_flags = MSG_DONTWAIT | MSG_SPLICE_PAGES,
-+			};
- 			skb_frag_t *frag;
+-static ssize_t smc_sendpage(struct socket *sock, struct page *page,
+-			    int offset, size_t size, int flags)
+-{
+-	struct sock *sk = sock->sk;
+-	struct smc_sock *smc;
+-	int rc = -EPIPE;
+-
+-	smc = smc_sk(sk);
+-	lock_sock(sk);
+-	if (sk->sk_state != SMC_ACTIVE) {
+-		release_sock(sk);
+-		goto out;
+-	}
+-	release_sock(sk);
+-	if (smc->use_fallback) {
+-		rc = kernel_sendpage(smc->clcsock, page, offset,
+-				     size, flags);
+-	} else {
+-		lock_sock(sk);
+-		rc = smc_tx_sendpage(smc, page, offset, size, flags);
+-		release_sock(sk);
+-		SMC_STAT_INC(smc, sendpage_cnt);
+-	}
+-
+-out:
+-	return rc;
+-}
+-
+ /* Map the affected portions of the rmbe into an spd, note the number of bytes
+  * to splice in conn->splice_pending, and press 'go'. Delays consumer cursor
+  * updates till whenever a respective page has been fully processed.
+@@ -3224,7 +3196,6 @@ static const struct proto_ops smc_sock_ops = {
+ 	.sendmsg	= smc_sendmsg,
+ 	.recvmsg	= smc_recvmsg,
+ 	.mmap		= sock_no_mmap,
+-	.sendpage	= smc_sendpage,
+ 	.splice_read	= smc_splice_read,
+ };
  
- 			frag_offset = 0;
-@@ -651,11 +655,12 @@ static int kcm_write_msgs(struct kcm_sock *kcm)
- 				goto out;
- 			}
+diff --git a/net/smc/smc_stats.c b/net/smc/smc_stats.c
+index e80e34f7ac15..ca14c0f3a07d 100644
+--- a/net/smc/smc_stats.c
++++ b/net/smc/smc_stats.c
+@@ -227,7 +227,7 @@ static int smc_nl_fill_stats_tech_data(struct sk_buff *skb,
+ 			      SMC_NLA_STATS_PAD))
+ 		goto errattr;
+ 	if (nla_put_u64_64bit(skb, SMC_NLA_STATS_T_SENDPAGE_CNT,
+-			      smc_tech->sendpage_cnt,
++			      0,
+ 			      SMC_NLA_STATS_PAD))
+ 		goto errattr;
+ 	if (nla_put_u64_64bit(skb, SMC_NLA_STATS_T_CORK_CNT,
+diff --git a/net/smc/smc_stats.h b/net/smc/smc_stats.h
+index 84b7ecd8c05c..b60fe1eb37ab 100644
+--- a/net/smc/smc_stats.h
++++ b/net/smc/smc_stats.h
+@@ -71,7 +71,6 @@ struct smc_stats_tech {
+ 	u64			clnt_v2_succ_cnt;
+ 	u64			srv_v1_succ_cnt;
+ 	u64			srv_v2_succ_cnt;
+-	u64			sendpage_cnt;
+ 	u64			urg_data_cnt;
+ 	u64			splice_cnt;
+ 	u64			cork_cnt;
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index f4b6a71ac488..d31ce8209fa2 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -298,22 +298,6 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+ 	return rc;
+ }
  
--			ret = kernel_sendpage(psock->sk->sk_socket,
--					      skb_frag_page(frag),
--					      skb_frag_off(frag) + frag_offset,
--					      skb_frag_size(frag) - frag_offset,
--					      MSG_DONTWAIT);
-+			bvec_set_page(&bvec,
-+				      skb_frag_page(frag),
-+				      skb_frag_size(frag) - frag_offset,
-+				      skb_frag_off(frag) + frag_offset);
-+			iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, bvec.bv_len);
-+			ret = sock_sendmsg(psock->sk->sk_socket, &msg);
- 			if (ret <= 0) {
- 				if (ret == -EAGAIN) {
- 					/* Save state to try again when there's
+-int smc_tx_sendpage(struct smc_sock *smc, struct page *page, int offset,
+-		    size_t size, int flags)
+-{
+-	struct msghdr msg = {.msg_flags = flags};
+-	char *kaddr = kmap(page);
+-	struct kvec iov;
+-	int rc;
+-
+-	iov.iov_base = kaddr + offset;
+-	iov.iov_len = size;
+-	iov_iter_kvec(&msg.msg_iter, ITER_SOURCE, &iov, 1, size);
+-	rc = smc_tx_sendmsg(smc, &msg, size);
+-	kunmap(page);
+-	return rc;
+-}
+-
+ /***************************** sndbuf consumer *******************************/
+ 
+ /* sndbuf consumer: actual data transfer of one target chunk with ISM write */
+diff --git a/net/smc/smc_tx.h b/net/smc/smc_tx.h
+index 34b578498b1f..a59f370b8b43 100644
+--- a/net/smc/smc_tx.h
++++ b/net/smc/smc_tx.h
+@@ -31,8 +31,6 @@ void smc_tx_pending(struct smc_connection *conn);
+ void smc_tx_work(struct work_struct *work);
+ void smc_tx_init(struct smc_sock *smc);
+ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len);
+-int smc_tx_sendpage(struct smc_sock *smc, struct page *page, int offset,
+-		    size_t size, int flags);
+ int smc_tx_sndbuf_nonempty(struct smc_connection *conn);
+ void smc_tx_sndbuf_nonfull(struct smc_sock *smc);
+ void smc_tx_consumer_update(struct smc_connection *conn, bool force);
 
