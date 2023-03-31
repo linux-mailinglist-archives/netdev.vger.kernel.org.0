@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 876B06D1474
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:56:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16E706D1470
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:56:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbjCaA4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 20:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
+        id S229846AbjCaA4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 20:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbjCaAzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:55:47 -0400
+        with ESMTP id S229852AbjCaAzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:55:46 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DD9113D3
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:55:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37A510402
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:55:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PR4xrm8c68/VGo9jp6k6Bup9hDdIAvVszf2q+o3lSgQ=; b=JRdZ5knePZzDYc/RtkberWlWK7
-        pvMcmJ2sTfD2sjymxf5NNLpyZt0fIj47TClN7bPxVt1YvMrzuTVn4BPG3lh1t0GVzQAcqiQznfv6z
-        ZETjG1HEAZaTxhtPsyi+Ggu4ahlf8hMPLxNHIlKpuiaL//+kAbKyflsPCQrqvtE0Bso4=;
+        bh=YL6xhcBVXuty3K6N6oEf9aHPNv9O56x7qsv4scpFW3s=; b=s6fOmYUnX9SlbAcrc9aYDf3QI9
+        QzUtRqnFtOriJtfnhcPDqcbtay68iSksvtWZCU5qsNLsEuO9dFe/pdF9lRdTXcZLnNrL+nAvlO6Hi
+        IEK4OD4FqpgV1m0oIhf+xfZeMx7p1wG5/cZyNoFh/GlUjf2qCG2XG8fMsYNnaexe0QTY=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pi33L-008xL3-Qo; Fri, 31 Mar 2023 02:55:39 +0200
+        id 1pi33L-008xL7-Ru; Fri, 31 Mar 2023 02:55:39 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -32,9 +32,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Oleksij Rempel <linux@rempel-privat.de>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [RFC/RFTv3 15/24] net: dsa: mt7530: Swap to using phydev->eee_active
-Date:   Fri, 31 Mar 2023 02:55:09 +0200
-Message-Id: <20230331005518.2134652-16-andrew@lunn.ch>
+Subject: [RFC/RFTv3 16/24] net: dsa: b53: Swap to using phydev->eee_active
+Date:   Fri, 31 Mar 2023 02:55:10 +0200
+Message-Id: <20230331005518.2134652-17-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230331005518.2134652-1-andrew@lunn.ch>
 References: <20230331005518.2134652-1-andrew@lunn.ch>
@@ -54,22 +54,25 @@ within the phydev structure.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/b53/b53_common.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index a0d99af897ac..19d089eadcd0 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2753,7 +2753,7 @@ static void mt753x_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 			mcr |= PMCR_RX_FC_EN;
- 	}
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 3464ce5e7470..5984733e4d0d 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -2218,10 +2218,7 @@ EXPORT_SYMBOL(b53_eee_enable_set);
+  */
+ int b53_eee_init(struct dsa_switch *ds, int port, struct phy_device *phy)
+ {
+-	int ret;
+-
+-	ret = phy_init_eee(phy, false);
+-	if (ret)
++	if (!phy->eee_active)
+ 		return 0;
  
--	if (mode == MLO_AN_PHY && phydev && phy_init_eee(phydev, false) >= 0) {
-+	if (mode == MLO_AN_PHY && phydev && phydev->eee_active) {
- 		switch (speed) {
- 		case SPEED_1000:
- 			mcr |= PMCR_FORCE_EEE1G;
+ 	b53_eee_enable_set(ds, port, true);
 -- 
 2.40.0
 
