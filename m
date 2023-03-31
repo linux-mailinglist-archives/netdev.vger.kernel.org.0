@@ -2,66 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC156D160F
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 05:37:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9726D1611
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 05:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbjCaDhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 23:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45806 "EHLO
+        id S229891AbjCaDjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 23:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbjCaDh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 23:37:29 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADBECA31
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 20:37:27 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id h11so10903861ild.11
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 20:37:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680233847;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Cv3DDt2YXYJQ3O9UOkTSWSu6E5S+HFfVIJXGhYVqsvI=;
-        b=Rdr0rnrAvrry39V45LQiy/IDVMhDc9OpNDv/229Xz0jatqWTAaOwrrVZB3ToqZp6na
-         P0mE1imfk5qziQiJLtADZDhAkdQJhThJQ+gEWDWNiAbwHYjsFDlSfa8H0ul1i+kBpmYc
-         DsPbDrc++4hD7hiXKn/WSerQ12En4I12jLJxbyOg54DSrWCIrPO/BXgbwaAe2RT2U8HI
-         EfKWau+c9IrgQ4pq3s+tCoYb6u6ilfZhniw6Ij0mS8cAMZ1b0viTygmbSZzWEzu8W3jT
-         uk0esVXTFatq+tgFlgpaVKQEa2Ag7/xM8yMH+aub7L+m8ipgkV9PYEUGHWYUNI+iWD8h
-         Dx/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680233847;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Cv3DDt2YXYJQ3O9UOkTSWSu6E5S+HFfVIJXGhYVqsvI=;
-        b=Uam3z4Ipl3lmPgtCCg51IRe3UPLQge5tjLU5JQWVdhIREZsoJFO5wjImmvvcOA9BZj
-         OSEqmaSvaFd5UK3STje7MQS1f/4qYQw6iIrWGI0yvHUO12J2LnR3r0VCFrubG8ukInoE
-         pBFjC07C+9NFdEV6W6IVRwzVB7ELGgYE2hqthAePeAmemQdLcDpWYcBcvb+GV2yoUFXJ
-         cNYaUb1c0j/7Ho9zy8m0uINGebLWIqBVUrz/xmCPTSVEv3W//5JZj3RjRNkfV39wvV2Q
-         kCD70a+pMyyQ38IWtEvl6bo+RYvdl1/J3O8abj4R8VZvby3HyRTwQVreo+CH0CxmkzVi
-         2Y6A==
-X-Gm-Message-State: AAQBX9fM3Dm1myQFoZKgNyvn8j1qa0XF9SChZIQfQw6crnDSXBdMuAE1
-        YkjH+5Dn45EpMPPqzD33zrahUTsQsb5uIOtoXxujUA==
-X-Google-Smtp-Source: AKy350Ywl2FlBm/Gpjbo0uWLwjjTFHvPnUfpCyOxgIIGEFg+mIEj9+tCHAQPna+77WXYc34vIYV2Tn5FMISfhl7/n/M=
-X-Received: by 2002:a05:6e02:e43:b0:323:24cc:6345 with SMTP id
- l3-20020a056e020e4300b0032324cc6345mr13042317ilk.2.1680233846707; Thu, 30 Mar
- 2023 20:37:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230330192534.2307410-1-edumazet@google.com> <20230330130828.4aa7f911@kernel.org>
-In-Reply-To: <20230330130828.4aa7f911@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 31 Mar 2023 05:37:15 +0200
-Message-ID: <CANn89i+S0_qL_1Xy6J6Q9D1-vMFSCEUZDQh8f+8C9Q8e5n=rLQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: tsq: avoid using a tasklet if possible
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        with ESMTP id S229877AbjCaDjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 23:39:07 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351B5C656;
+        Thu, 30 Mar 2023 20:39:05 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R871e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0Vf0WLRw_1680233941;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vf0WLRw_1680233941)
+          by smtp.aliyun-inc.com;
+          Fri, 31 Mar 2023 11:39:02 +0800
+Message-ID: <1680233916.7234168-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v3 3/4] virtio: fix up virtio_disable_cb
+Date:   Fri, 31 Mar 2023 11:38:36 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Willem de Bruijn <willemb@google.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jakub Kicinski <kuba@kernel.org>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+References: <20210526082423.47837-1-mst@redhat.com>
+ <20210526082423.47837-4-mst@redhat.com>
+ <1680156457.5551112-5-xuanzhuo@linux.alibaba.com>
+ <20230330024220-mutt-send-email-mst@kernel.org>
+ <1680159261.1588428-1-xuanzhuo@linux.alibaba.com>
+ <20230330100219-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230330100219-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
         USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,107 +45,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 10:08=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> w=
-rote:
->
-> On Thu, 30 Mar 2023 19:25:34 +0000 Eric Dumazet wrote:
-> > Instead of always defer TCP Small Queue handling to a tasklet
-> > we can try to lock the socket and immediately call tcp_tsq_handler()
+On Thu, 30 Mar 2023 10:04:03 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Thu, Mar 30, 2023 at 02:54:21PM +0800, Xuan Zhuo wrote:
+> > On Thu, 30 Mar 2023 02:44:44 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > > On Thu, Mar 30, 2023 at 02:07:37PM +0800, Xuan Zhuo wrote:
+> > > > On Wed, 26 May 2021 04:24:40 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > > > > virtio_disable_cb is currently a nop for split ring with event index.
+> > > > > This is because it used to be always called from a callback when we know
+> > > > > device won't trigger more events until we update the index.  However,
+> > > > > now that we run with interrupts enabled a lot we also poll without a
+> > > > > callback so that is different: disabling callbacks will help reduce the
+> > > > > number of spurious interrupts.
+> > > > > Further, if using event index with a packed ring, and if being called
+> > > > > from a callback, we actually do disable interrupts which is unnecessary.
+> > > > >
+> > > > > Fix both issues by tracking whenever we get a callback. If that is
+> > > > > the case disabling interrupts with event index can be a nop.
+> > > > > If not the case disable interrupts. Note: with a split ring
+> > > > > there's no explicit "no interrupts" value. For now we write
+> > > > > a fixed value so our chance of triggering an interupt
+> > > > > is 1/ring size. It's probably better to write something
+> > > > > related to the last used index there to reduce the chance
+> > > > > even further. For now I'm keeping it simple.
+> > > >
+> > > >
+> > > > Don't understand, is this patch necessary? For this patch set, we can do without
+> > > > this patch.
+> > > >
+> > > > So doest this patch optimize virtqueue_disable_cb() by reducing a modification of
+> > > > vring_used_event(&vq-> split.vring)?
+> > > >
+> > > > Or I miss something.
+> > > >
+> > > > Thanks.
+> > >
+> > > Before this patch virtqueue_disable_cb did nothing at all
+> > > for the common case of event index enabled, so
+> > > calling it from virtio net would not help matters.
 > >
-> > In my experiments on a 100Gbit NIC with FQ qdisc, number of times
-> > tcp_tasklet_func() is fired per second goes from ~70,000 to ~1,000.
+> > I agree with these codes:
 > >
-> > This reduces number of ksoftirqd wakeups and thus extra cpu
-> > costs and latencies.
+> > -		if (!vq->event)
+> > +		if (vq->event)
+> > +			/* TODO: this is a hack. Figure out a cleaner value to write. */
+> > +			vring_used_event(&vq->split.vring) = 0x0;
+> > +		else
+> >
+> >
+> > I just don't understand event_triggered.
 >
-> Oh, you posted already. LMK what you think about other locks,
-> I reckon we should apply this patch... just maybe around -rc1
-> to give ourselves plenty of time to find the broken drivers?
+>
+> The comment near it says it all:
+>         /* Hint for event idx: already triggered no need to disable. */
+> the write into event idx is potentially expensive since it can
+> invalidate cache for another processor (depending on the CPU).
 
-Agreed, this can wait.
+Yes, I agree.
 
-I will post a v2 RFC with the additional logic, then I will audit
-napi_consume_skb() callers.
-(BTW this logic removes one indirect call to tcp_wfree())
+Thanks.
 
-Thanks
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index a0a91a988272710470cd20f22e02e49476513239..7efdda889b001fdd2cb941e40d1=
-318a6b80b78bb
-100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -339,6 +339,7 @@ int tcp_send_mss(struct sock *sk, int *size_goal,
-int flags);
- void tcp_push(struct sock *sk, int flags, int mss_now, int nonagle,
-              int size_goal);
- void tcp_release_cb(struct sock *sk);
-+void __tcp_wfree(struct sk_buff *skb, bool trylock);
- void tcp_wfree(struct sk_buff *skb);
- void tcp_write_timer_handler(struct sock *sk);
- void tcp_delack_timer_handler(struct sock *sk);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 050a875d09c5535e0cb2e52c9c65f3febd0385d6..2b09c247721144696a937a928a7=
-b8af7f1ad01db
-100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -1242,6 +1242,9 @@ void napi_skb_free_stolen_head(struct sk_buff *skb)
-        napi_skb_cache_put(skb);
- }
-
-+/*
-+ * Note: callers must not lock the TX queue.
-+ */
- void napi_consume_skb(struct sk_buff *skb, int budget)
- {
-        /* Zero budget indicate non-NAPI context called us, like netpoll */
-@@ -1260,6 +1263,10 @@ void napi_consume_skb(struct sk_buff *skb, int budge=
-t)
-
-        /* if SKB is a clone, don't handle this case */
-        if (skb->fclone !=3D SKB_FCLONE_UNAVAILABLE) {
-+               if (skb->destructor =3D=3D tcp_wfree) {
-+                       __tcp_wfree(skb, true);
-+                       skb->destructor =3D NULL;
-+               }
-                __kfree_skb(skb);
-                return;
-        }
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 470bb840bb6b6fb457f96d5c00fdfd11b414482f..63ff79f92a2d44c403bd5218508=
-75839f18a0c20
-100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1139,7 +1139,7 @@ void __init tcp_tasklet_init(void)
-  * We can't xmit new skbs from this context, as we might already
-  * hold qdisc lock.
-  */
--void tcp_wfree(struct sk_buff *skb)
-+void __tcp_wfree(struct sk_buff *skb, bool trylock)
- {
-        struct sock *sk =3D skb->sk;
-        struct tcp_sock *tp =3D tcp_sk(sk);
-@@ -1171,7 +1171,7 @@ void tcp_wfree(struct sk_buff *skb)
-        } while (!try_cmpxchg(&sk->sk_tsq_flags, &oval, nval));
-
-        /* attempt to grab socket lock. */
--       if (spin_trylock_bh(&sk->sk_lock.slock)) {
-+       if (trylock && spin_trylock_bh(&sk->sk_lock.slock)) {
-                clear_bit(TSQ_QUEUED, &sk->sk_tsq_flags);
-                tcp_tsq_handler_locked(sk);
-                spin_unlock_bh(&sk->sk_lock.slock);
-@@ -1190,6 +1190,11 @@ void tcp_wfree(struct sk_buff *skb)
-        sk_free(sk);
- }
-
-+void tcp_wfree(struct sk_buff *skb)
-+{
-+       __tcp_wfree(skb, false);
-+}
-+
- /* Note: Called under soft irq.
-  * We can call TCP stack right away, unless socket is owned by user.
-  */
+>
+> > >
+> > > But the patch is from 2021, isn't it a bit too late to argue?
+> > > If you have a cleanup or an optimization in mind, please
+> > > post a patch.
+> >
+> > Sorry, I just have some problems, I don't oppose it. At least it can reduce the
+> > modification of vring_used_event(&vq->split.vring). I think it is also beneficial.
+> >
+> > Thanks very much.
+> >
+> >
+> > >
+> > > > >
+> > > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > > > ---
+> > > > >  drivers/virtio/virtio_ring.c | 26 +++++++++++++++++++++++++-
+> > > > >  1 file changed, 25 insertions(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > > > > index 71e16b53e9c1..88f0b16b11b8 100644
+> > > > > --- a/drivers/virtio/virtio_ring.c
+> > > > > +++ b/drivers/virtio/virtio_ring.c
+> > > > > @@ -113,6 +113,9 @@ struct vring_virtqueue {
+> > > > >  	/* Last used index we've seen. */
+> > > > >  	u16 last_used_idx;
+> > > > >
+> > > > > +	/* Hint for event idx: already triggered no need to disable. */
+> > > > > +	bool event_triggered;
+> > > > > +
+> > > > >  	union {
+> > > > >  		/* Available for split ring */
+> > > > >  		struct {
+> > > > > @@ -739,7 +742,10 @@ static void virtqueue_disable_cb_split(struct virtqueue *_vq)
+> > > > >
+> > > > >  	if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
+> > > > >  		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+> > > > > -		if (!vq->event)
+> > > > > +		if (vq->event)
+> > > > > +			/* TODO: this is a hack. Figure out a cleaner value to write. */
+> > > > > +			vring_used_event(&vq->split.vring) = 0x0;
+> > > > > +		else
+> > > > >  			vq->split.vring.avail->flags =
+> > > > >  				cpu_to_virtio16(_vq->vdev,
+> > > > >  						vq->split.avail_flags_shadow);
+> > > > > @@ -1605,6 +1611,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+> > > > >  	vq->weak_barriers = weak_barriers;
+> > > > >  	vq->broken = false;
+> > > > >  	vq->last_used_idx = 0;
+> > > > > +	vq->event_triggered = false;
+> > > > >  	vq->num_added = 0;
+> > > > >  	vq->packed_ring = true;
+> > > > >  	vq->use_dma_api = vring_use_dma_api(vdev);
+> > > > > @@ -1919,6 +1926,12 @@ void virtqueue_disable_cb(struct virtqueue *_vq)
+> > > > >  {
+> > > > >  	struct vring_virtqueue *vq = to_vvq(_vq);
+> > > > >
+> > > > > +	/* If device triggered an event already it won't trigger one again:
+> > > > > +	 * no need to disable.
+> > > > > +	 */
+> > > > > +	if (vq->event_triggered)
+> > > > > +		return;
+> > > > > +
+> > > > >  	if (vq->packed_ring)
+> > > > >  		virtqueue_disable_cb_packed(_vq);
+> > > > >  	else
+> > > > > @@ -1942,6 +1955,9 @@ unsigned virtqueue_enable_cb_prepare(struct virtqueue *_vq)
+> > > > >  {
+> > > > >  	struct vring_virtqueue *vq = to_vvq(_vq);
+> > > > >
+> > > > > +	if (vq->event_triggered)
+> > > > > +		vq->event_triggered = false;
+> > > > > +
+> > > > >  	return vq->packed_ring ? virtqueue_enable_cb_prepare_packed(_vq) :
+> > > > >  				 virtqueue_enable_cb_prepare_split(_vq);
+> > > > >  }
+> > > > > @@ -2005,6 +2021,9 @@ bool virtqueue_enable_cb_delayed(struct virtqueue *_vq)
+> > > > >  {
+> > > > >  	struct vring_virtqueue *vq = to_vvq(_vq);
+> > > > >
+> > > > > +	if (vq->event_triggered)
+> > > > > +		vq->event_triggered = false;
+> > > > > +
+> > > > >  	return vq->packed_ring ? virtqueue_enable_cb_delayed_packed(_vq) :
+> > > > >  				 virtqueue_enable_cb_delayed_split(_vq);
+> > > > >  }
+> > > > > @@ -2044,6 +2063,10 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+> > > > >  	if (unlikely(vq->broken))
+> > > > >  		return IRQ_HANDLED;
+> > > > >
+> > > > > +	/* Just a hint for performance: so it's ok that this can be racy! */
+> > > > > +	if (vq->event)
+> > > > > +		vq->event_triggered = true;
+> > > > > +
+> > > > >  	pr_debug("virtqueue callback for %p (%p)\n", vq, vq->vq.callback);
+> > > > >  	if (vq->vq.callback)
+> > > > >  		vq->vq.callback(&vq->vq);
+> > > > > @@ -2083,6 +2106,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+> > > > >  	vq->weak_barriers = weak_barriers;
+> > > > >  	vq->broken = false;
+> > > > >  	vq->last_used_idx = 0;
+> > > > > +	vq->event_triggered = false;
+> > > > >  	vq->num_added = 0;
+> > > > >  	vq->use_dma_api = vring_use_dma_api(vdev);
+> > > > >  #ifdef DEBUG
+> > > > > --
+> > > > > MST
+> > > > >
+> > > > > _______________________________________________
+> > > > > Virtualization mailing list
+> > > > > Virtualization@lists.linux-foundation.org
+> > > > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> > >
+>
