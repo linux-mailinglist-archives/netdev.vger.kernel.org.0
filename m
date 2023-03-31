@@ -2,113 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 168D36D171B
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 08:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AFAA6D171D
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 08:03:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbjCaGC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 02:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
+        id S230023AbjCaGDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 02:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbjCaGC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 02:02:28 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D42CA18
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 23:02:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=oTBeSyANGvYTvZGv/yjKbgHwqoOH
-        PgLHtmNhf4S1oEo=; b=rPtmrypJ6xxitPxAbhDbTQYB8H5YJST13c52+PaCWJB9
-        bJUxKakDT3sHhQf94TOxhoNZimxkEZiM7qnJrzRPl7CrZuju4WRrRxs5Alw44odP
-        4niiDirM3GMLHqZy4TFBpvmJlJL9DKlH3goTK/fTJGhTehb1KRu7vvduUEyi19k=
-Received: (qmail 1176182 invoked from network); 31 Mar 2023 08:02:22 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 31 Mar 2023 08:02:22 +0200
-X-UD-Smtp-Session: l3s3148p1@drDW8yv4gokujnv6
-Date:   Fri, 31 Mar 2023 08:02:21 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Steen.Hegelund@microchip.com
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        steve.glendinning@shawell.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        geert+renesas@glider.be, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v4] smsc911x: only update stats when interface is up
-Message-ID: <ZCZ3bSlOF9Sm4DJ2@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Steen.Hegelund@microchip.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, steve.glendinning@shawell.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, geert+renesas@glider.be,
-        linux-kernel@vger.kernel.org
-References: <20230329064010.24657-1-wsa+renesas@sang-engineering.com>
- <CRIP4UR9M4IS.V7ZOZHKV9QRX@den-dk-m31857>
+        with ESMTP id S229529AbjCaGDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 02:03:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D44BA
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 23:03:16 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 62F7421AD8;
+        Fri, 31 Mar 2023 06:03:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1680242595; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6LJLdpTifbWu/NCZqsThk4lhL367AO5FzmVb5gHQL1I=;
+        b=EvfitK98rEkxTjr9Gf5JVZ8YVrIFBKyst9v8/QgRdtlRN1EjqHNyAXgrHP++rzUEzNAPNn
+        Yc7efdCR0IvTnixcjRdl63Y8qw+qg+CixKZw+YROUofcSbhjitWhsZRVV/TRiP69KZO8QD
+        2YrlZFgLG65yWPccVKWHd7NdoC/2qdw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1680242595;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6LJLdpTifbWu/NCZqsThk4lhL367AO5FzmVb5gHQL1I=;
+        b=6szLB+9qXktTeIlghC8MGiUpZtjZgfPVbaO3F3Fhzq+BAhKjMyUTF1AbwdVgxHQu3uRnlD
+        KGqyjHP1CLLEO0Aw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9C6E7133B6;
+        Fri, 31 Mar 2023 06:03:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id pnSoI5R3JmTyTAAAMHmgww
+        (envelope-from <hare@suse.de>); Fri, 31 Mar 2023 06:03:00 +0000
+Message-ID: <7f057726-8777-2fd3-a207-b3cd96076cb9@suse.de>
+Date:   Fri, 31 Mar 2023 08:03:00 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ZPUO7quT3QOZiRXY"
-Content-Disposition: inline
-In-Reply-To: <CRIP4UR9M4IS.V7ZOZHKV9QRX@den-dk-m31857>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH 10/18] nvme-tcp: fixup send workflow for kTLS
+To:     Jakub Kicinski <kuba@kernel.org>, Sagi Grimberg <sagi@grimberg.me>
+Cc:     Christoph Hellwig <hch@lst.de>, Boris Pismenny <borisp@nvidia.com>,
+        john.fastabend@gmail.com, Paolo Abeni <pabeni@redhat.com>,
+        Keith Busch <kbusch@kernel.org>,
+        linux-nvme@lists.infradead.org,
+        Chuck Lever <chuck.lever@oracle.com>,
+        kernel-tls-handshake@lists.linux.dev,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20230329135938.46905-1-hare@suse.de>
+ <20230329135938.46905-11-hare@suse.de>
+ <634385cc-35af-eca0-edcb-1196a95d1dfa@grimberg.me>
+ <20230330224920.3a47fec9@kernel.org>
+Content-Language: en-US
+From:   Hannes Reinecke <hare@suse.de>
+In-Reply-To: <20230330224920.3a47fec9@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 3/31/23 07:49, Jakub Kicinski wrote:
+> On Thu, 30 Mar 2023 18:24:04 +0300 Sagi Grimberg wrote:
+>>> kTLS does not support MSG_EOR flag for sendmsg(), and in general
+>>> is really picky about invalid MSG_XXX flags.
+>>
+>> CC'ing TLS folks.
+>>
+>> Can't tls simply ignore MSG_EOR instead of consumers having to be
+>> careful over it?
+> 
+> I think we can support EOR, I don't see any fundamental problem there.
+> 
+>>> So ensure that the MSG_EOR flags is blanked out for TLS, and that
+>>> the MSG_SENDPAGE_LAST is only set if we actually do sendpage().
+>>
+>> You mean MSG_SENDPAGE_NOTLAST.
+>>
+>> It is also a bit annoying that a tls socket dictates different behavior
+>> than a normal socket.
+>>
+>> The current logic is rather simple:
+>> if more data comming:
+>> 	flags = MSG_MORE | MSG_SENDPAGE_NOTLAST
+>> else:
+>> 	flags = MSG_EOR
+>>
+>> Would like to keep it that way for tls as well. Can someone
+>> explain why this is a problem with tls?
+> 
+> Some of the flags are call specific, others may be internal to the
+> networking stack (e.g. the DECRYPTED flag). Old protocols didn't do
+> any validation because people coded more haphazardly in the 90s.
+> This lack of validation is a major source of technical debt :(
 
---ZPUO7quT3QOZiRXY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A-ha. So what is the plan?
+Should the stack validate flags?
+And should the rules for validating be the same for all protocols?
 
+Cheers,
 
-> > +       if (pdata->is_open) {
->=20
-> Couldn't you just use netif_carrier_ok() here and drop the is_open
-> variable?
+Hannes
+-- 
+Dr. Hannes Reinecke                Kernel Storage Architect
+hare@suse.de                              +49 911 74053 688
+SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), Geschäftsführer: Ivo Totev, Andrew
+Myers, Andrew McDonald, Martje Boudien Moerman
 
-=46rom my research, I can't:
-
-1) netif_carrier_ok() uses __LINK_STATE_NOCARRIER
-2) __LINK_STATE_NOCARRIER gets cleared in netif_carrier_on()
-3) netif_carrier_on() is this code:
-
-	if (test_and_clear_bit(__LINK_STATE_NOCARRIER, &dev->state)) {
-		if (dev->reg_state =3D=3D NETREG_UNINITIALIZED)
-			return;
-		atomic_inc(&dev->carrier_up_count);
-		linkwatch_fire_event(dev);
-		if (netif_running(dev))
-			__netdev_watchdog_up(dev);
-	}
-
-4) Notice the last if. It checks netif_running(). So, it is possible to
-have the carrier on and the device not opened yet.
-5) Sadly, no cigar. If I didn't miss something...
-
-But thanks for the suggestion! Happy hacking,
-
-   Wolfram
-
-
---ZPUO7quT3QOZiRXY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmQmd2kACgkQFA3kzBSg
-KbaWBA//fNTM7DoeNK5082KA1GRiby93GS14IGQqwOJbugpYLk+36OilPukr+Egm
-pRjLvfTjZ8Dw5r+DlxPopbMQpjWH2+vlTgFVa11AmZszqQI4P4l4HDLP/tHcBQ3w
-o0GyFDzD3t/ZJArRXJJX9CytuVBnZQ5l06Uu+PPg6xjysxna+JKd+1SMxMVU+gA8
-i/jWBkfstKjLQhp7x78n+wDTG/i2GBTlMo9SayQVxQbYk1h9XdWuq9vdaLe4xVgb
-LLQ5DwFw+KrTQdHd0Va6+ESxYsD0hljd8I2ICjJrARELVzzb7ZMimArO1LVWaqPy
-/OoBSgSJRSV/7pqoLm84E4Jdpr2lkI4AZM70t6HoXOF/DRubSanrx8/C23ATKzhx
-mwL9iMm17+bYZELNG9Ny9QEYm5Sup1sprcyU2BBAH0TRRQ6w7KcHkv7eLwS8WCBj
-mu0pf1gcDrNng2xO9CqdyXdPeiRGWWXAuqzdHqRxnxvxr0yqnlyR78g/stf2kmc5
-ow0soo4idGQZPH2mkqZu9gw9HK6nikful1xY8gzv3rDZMfs70rnS53uN84qUmY63
-kIkd+8EvDo8vTXr+dWeE/q2Wv8QN2AU29/Lj+IGs3OHf2UluumNioQliYHB7b+l7
-TZ8hs/Bu8S6BQPNE4tZRiooHsgx7HRJSdXPPUgr7ykndQ5+G2pg=
-=mITd
------END PGP SIGNATURE-----
-
---ZPUO7quT3QOZiRXY--
