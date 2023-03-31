@@ -2,74 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB2B66D25A0
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2EF6D25A5
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbjCaQdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 12:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48114 "EHLO
+        id S232375AbjCaQea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 12:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232589AbjCaQdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:33:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF39236B9
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:29:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680280142;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+ZSAJKtt/ag5B+38eGABocjAtCkqVzXfR0mPd/YeFX8=;
-        b=XcChonvQpQK/EqVoWs2aayqvD7vgO4nDFT2PUgWANhaK0DruarDiOEi0qKsRoEBDehiZ1U
-        pKphT4LbOFJ1Ku/IiLlOUssKPJ3hpZ+xyILAUpug3sre0DxfrGcPzjK1FUU/wp4amg8Amx
-        VcJHqnjVc78OgY0svdNoajzG2dFgPag=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-410-FhZ9Z2msPdG2BL3PnIP12g-1; Fri, 31 Mar 2023 12:28:59 -0400
-X-MC-Unique: FhZ9Z2msPdG2BL3PnIP12g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7E639885624;
-        Fri, 31 Mar 2023 16:28:58 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8342C40BC797;
-        Fri, 31 Mar 2023 16:28:56 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20230331160914.1608208-30-dhowells@redhat.com>
-References: <20230331160914.1608208-30-dhowells@redhat.com> <20230331160914.1608208-1-dhowells@redhat.com>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Trivial TLS client
-MIME-Version: 1.0
+        with ESMTP id S232411AbjCaQdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:33:49 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E1323B62
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:30:41 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id j15-20020a17090a318f00b0023fe33f8825so7362994pjb.9
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680280241;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FuU0X18NA2vfKqA+27nNi+qvFb7A+8NhIy9/ITvEFps=;
+        b=eikErdC7IICJhhwmuS6mSRXF9PSaDCK6Hb502DIcMwEihqM3SSqInbY02vh2KRmxbw
+         L1DPPI2JRFX2033gNwvIYJ6+uFY3/kUAG/pKGK9m4P76ZcYNz+LIbNzzjOi8Pft+M6eR
+         ikfClExVxzr+Za2HW407xqBShUtz/gdVuzG9jQFeQPXIvrWVct4wiqYT8P8aiCMK8QyO
+         v2+f5fwWFSlrbUe6TH2pN/7jDwaJR8vXFTuO/GGq+56r43sdlHzugjX3lXX7nH07I4Hm
+         1nJq2+JVACzeE4/YfsjdKpyoPGU0YN/jMfdiXAs1vPLTsAWfTLTbZKHoNIbXKI7UuMLB
+         VhHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680280241;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FuU0X18NA2vfKqA+27nNi+qvFb7A+8NhIy9/ITvEFps=;
+        b=scnvvKIBGPXdFhtkiZbK3VK8pfQjeFXc9081gWI1jCSDhIStCYtElHN+FTQ4Er+2PH
+         O/+3B5VbFvVRc0T55OA96yQTjRzaj0GR167MClBqWO6b7CsrxvatQ9JNB9rhsd/okIRl
+         vclH5dAtzLNQfgrZK/2Hc2FEP3flfvOTxKEaOzfzWVv2CRxlD3sVYSg2QRyX/iFmGPs1
+         iRb0O7IOoafKgS9l7jM33EXLCWVn0NVIfWEKZwFpyVi8oZ7IL04JKo2pHwPld7jDewgr
+         dXRfCZacORpqlMd4PQAGJPXCPPHVbxrUcqMzGNH6N7c+7tGbBYMT/bUUEmqOenOjA2u3
+         O4vQ==
+X-Gm-Message-State: AAQBX9fGr0ftHKRIjy6Zj5o3OxMoHk5AZ/5bEGNpuFhDMLi8IpGO/R4+
+        vWpuvXetdJcbE0n+DVNd9b+6/wU=
+X-Google-Smtp-Source: AKy350YqrZGH7LT9CkWwnnCK5H2FURN0Q8DDSeBB4aSbUucJfZ3SItP8t85KLXk3UlddQxE5yS0f9b4=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:90b:d85:b0:240:d8d8:12c4 with SMTP id
+ bg5-20020a17090b0d8500b00240d8d812c4mr1364835pjb.3.1680280241163; Fri, 31 Mar
+ 2023 09:30:41 -0700 (PDT)
+Date:   Fri, 31 Mar 2023 09:30:39 -0700
+In-Reply-To: <168027495947.3941176.6690238098903275241.stgit@firesoul>
+Mime-Version: 1.0
+References: <168027495947.3941176.6690238098903275241.stgit@firesoul>
+Message-ID: <ZCcKr69B+HKJdFEl@google.com>
+Subject: Re: [PATCH bpf V4 0/5] XDP-hints: API change for RX-hash kfunc bpf_xdp_metadata_rx_hash
+From:   Stanislav Fomichev <sdf@google.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org,
+        "Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?=" <toke@redhat.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        martin.lau@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        alexandr.lobakin@intel.com, larysa.zaremba@intel.com,
+        xdp-hints@xdp-project.net, anthony.l.nguyen@intel.com,
+        yoong.siang.song@intel.com, boon.leong.ong@intel.com,
+        intel-wired-lan@lists.osuosl.org, pabeni@redhat.com,
+        jesse.brandeburg@intel.com, kuba@kernel.org, edumazet@google.com,
+        john.fastabend@gmail.com, hawk@kernel.org, davem@davemloft.net,
+        tariqt@nvidia.com
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1610448.1680280135.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 31 Mar 2023 17:28:55 +0100
-Message-ID: <1610449.1680280135@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,123 +75,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here's a trivial TLS client program for testing this.
+On 03/31, Jesper Dangaard Brouer wrote:
+> Current API for bpf_xdp_metadata_rx_hash() returns the raw RSS hash value,
+> but doesn't provide information on the RSS hash type (part of 6.3-rc).
+> 
+> This patchset proposal is to change the function call signature via adding
+> a pointer value argument for providing the RSS hash type.
 
-David
----
-/*
- * TLS-over-TCP send client
- */
+Acked-by: Stanislav Fomichev <sdf@google.com>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/stat.h>
-#include <sys/sendfile.h>
-#include <linux/tls.h>
-
-#define OSERROR(X, Y) do { if ((long)(X) =3D=3D -1) { perror(Y); exit(1); =
-} } while(0)
-
-static unsigned char buffer[4096] __attribute__((aligned(4096)));
-
-static void set_tls(int sock)
-{
-	struct tls12_crypto_info_aes_gcm_128 crypto_info;
-
-	crypto_info.info.version =3D TLS_1_2_VERSION;
-	crypto_info.info.cipher_type =3D TLS_CIPHER_AES_GCM_128;
-	memset(crypto_info.iv,		0, TLS_CIPHER_AES_GCM_128_IV_SIZE);
-	memset(crypto_info.rec_seq,	0, TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE);
-	memset(crypto_info.key,		0, TLS_CIPHER_AES_GCM_128_KEY_SIZE);
-	memset(crypto_info.salt,	0, TLS_CIPHER_AES_GCM_128_SALT_SIZE);
-
-	OSERROR(setsockopt(sock, SOL_TCP, TCP_ULP, "tls", sizeof("tls")),
-		"TCP_ULP");
-	OSERROR(setsockopt(sock, SOL_TLS, TLS_TX, &crypto_info, sizeof(crypto_inf=
-o)),
-		"TLS_TX");
-	OSERROR(setsockopt(sock, SOL_TLS, TLS_RX, &crypto_info, sizeof(crypto_inf=
-o)),
-		"TLS_RX");
-}
-
-int main(int argc, char *argv[])
-{
-	struct sockaddr_in sin =3D { .sin_family =3D AF_INET, .sin_port =3D htons=
-(5556) };
-	struct hostent *h;
-	struct stat st;
-	ssize_t r, o;
-	int sf =3D 0;
-	int cfd, fd;
-
-	if (argc > 1 && strcmp(argv[1], "-s") =3D=3D 0) {
-		sf =3D 1;
-		argc--;
-		argv++;
-	}
-	=
-
-	if (argc !=3D 3) {
-		fprintf(stderr, "tcp-send [-s] <server> <file>\n");
-		exit(2);
-	}
-
-	h =3D gethostbyname(argv[1]);
-	if (!h) {
-		fprintf(stderr, "%s: %s\n", argv[1], hstrerror(h_errno));
-		exit(3);
-	}
-
-	if (!h->h_addr_list[0]) {
-		fprintf(stderr, "%s: No addresses\n", argv[1]);
-		exit(3);
-	}
-
-	memcpy(&sin.sin_addr, h->h_addr_list[0], h->h_length);
-	=
-
-	cfd =3D socket(AF_INET, SOCK_STREAM, 0);
-	OSERROR(cfd, "socket");
-	OSERROR(connect(cfd, (struct sockaddr *)&sin, sizeof(sin)), "connect");
-	set_tls(cfd);
-
-	fd =3D open(argv[2], O_RDONLY);
-	OSERROR(fd, argv[2]);
-	OSERROR(fstat(fd, &st), argv[2]);
-
-	if (!sf) {
-		for (;;) {
-			r =3D read(fd, buffer, sizeof(buffer));
-			OSERROR(r, argv[2]);
-			if (r =3D=3D 0)
-				break;
-
-			o =3D 0;
-			do {
-				ssize_t w =3D write(cfd, buffer + o, r - o);
-				OSERROR(w, "write");
-				o +=3D w;
-			} while (o < r);
-		}
-	} else {
-		off_t off =3D 0;
-		r =3D sendfile(cfd, fd, &off, st.st_size);
-		OSERROR(r, "sendfile");
-		if (r !=3D st.st_size) {
-			fprintf(stderr, "Short sendfile\n");
-			exit(1);
-		}
-	}
-
-	OSERROR(close(cfd), "close/c");
-	OSERROR(close(fd), "close/f");
-	return 0;
-}
-
+> ---
+> 
+> Jesper Dangaard Brouer (5):
+>       xdp: rss hash types representation
+>       mlx5: bpf_xdp_metadata_rx_hash add xdp rss hash type
+>       veth: bpf_xdp_metadata_rx_hash add xdp rss hash type
+>       mlx4: bpf_xdp_metadata_rx_hash add xdp rss hash type
+>       selftests/bpf: Adjust bpf_xdp_metadata_rx_hash for new arg
+> 
+> 
+>  drivers/net/ethernet/mellanox/mlx4/en_rx.c    | 22 ++++++-
+>  drivers/net/ethernet/mellanox/mlx4/mlx4_en.h  |  3 +-
+>  .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 63 ++++++++++++++++++-
+>  drivers/net/veth.c                            | 11 +++-
+>  include/linux/mlx5/device.h                   | 14 ++++-
+>  include/linux/netdevice.h                     |  3 +-
+>  include/net/xdp.h                             | 48 ++++++++++++++
+>  net/core/xdp.c                                | 10 ++-
+>  .../selftests/bpf/prog_tests/xdp_metadata.c   |  2 +
+>  .../selftests/bpf/progs/xdp_hw_metadata.c     | 14 +++--
+>  .../selftests/bpf/progs/xdp_metadata.c        |  6 +-
+>  .../selftests/bpf/progs/xdp_metadata2.c       |  7 ++-
+>  tools/testing/selftests/bpf/xdp_hw_metadata.c |  2 +-
+>  tools/testing/selftests/bpf/xdp_metadata.h    |  1 +
+>  14 files changed, 182 insertions(+), 24 deletions(-)
+> 
+> --
+> 
