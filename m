@@ -2,114 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 660046D2468
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 17:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0600B6D248D
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 17:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbjCaPti (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 11:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
+        id S232897AbjCaP7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 11:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232565AbjCaPta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 11:49:30 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2101.outbound.protection.outlook.com [40.107.220.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C787B20C1B
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 08:49:22 -0700 (PDT)
+        with ESMTP id S232973AbjCaP7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 11:59:51 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2123.outbound.protection.outlook.com [40.107.102.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628511A44F
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 08:59:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GqQWthoHWXK/mNfHKGpEW+m//seA1ROu6UsTwmZIr7JTjSHOcwEQkp4K6CrAV/RoOAFx+bM1lkLh7NOimusDIBMS8ErVs+wy2pzhwzjubA4A2IJFQvvX9QTCOdEjq/uavR71BOUlpc9EQOLKS+qaAeuqYbFSmQ4gHArYWrIPEjmaMvGPZILJwJMP+hYw/OolT3EK6184awcJd3nRKsStoDPXeF6Mo5zcyaMcAS30HEJN+q3UYkbSqhx6urlY5XXpUJEQ6v6jWsjIN+JxSFVcpmzPJ1EpMiSA3sjf10K4ywuFy+jWNXBo5n9BwejJEGHIc5iHmofYRtxzR7TlQAAyXg==
+ b=ZmghHmrK+PK0QKKRPMDjnMlVdBWpa1is8TqH/NRRgIbibkzTsuKaMhoVfF1fBR4tOVHSIH6xolENIgjtjZnf13y2zjNbX+DuqeGG1zVl5/OKCpsd/v78OYitb+BkEXlMmZc6mzsIqHuwAGdm36mG5bOY/mJstdHeXSkcGc/X6+PxcPAXscmKio2MsBfndxRoba4iq3BWkt8VAOq58VyUWLhd+NQhofZrsrsJXi4Id3kUsxaQPhd4yeZVvh/M7XvFV/rUO+1ugAiFLwnC1/gJLx5MH7MhMq8QYsta2NsQA0KYa9ChOPbNx3uSrsPTHQuZrfHWvKhS/hL2PTY7kv3/Rg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lh1tIdbqO97iPLYbdtCGuBjSoXbkKiGxrsy52NYxkWA=;
- b=TZDKu0YFUXTLhsBPyZrx9tMAeJnh9FZrWf4sWc2dbnNMguUBXQWfqD8Kt6qT00QXQPEaopMyzLmSz0IEryuc8nPwDVKfGMLMwzVXu9dSwyONj7PyPl9AQ4ziEd5JKYrqJIBpYVSDArz4eDQ+Q2IJu+47bJI5ZOTCWuBPmyXjQjqqzZdMy5a0Pvt/xdc4p9uarmo7QJGUNJX8q/uVPLjZAVX3R6tv+z7d/+I2XBKhoL/HhpM1sOI7ZKul9wvrBWUbRVhN5Jvea4vzNxSGpnYxFHX9AmN3yI+MR7ZjdcPwSMzAU8OX4/cMZ62TE7M8QH6r0nCK5425/1Vj7Cig/W7lyA==
+ bh=7zD0dgzNjNtWnphm8aUe0uy2+QERwfXudHjfVsY5EJg=;
+ b=QmUYDtZlDBWGC9ntihOfO1DctySMnH114bwy4kSgo0fY6ivwycm8BB0rFs6kN/m31YAb77vavq3d+Q8Mbo7bzQlHA6hJWyY0dhBimpVSlLX8CA4n+qqutSFpDlnMn80GvOLOTbvzmdf2/ujsgdksFhD8a0HRj4arlnccJzOxKRX67rBSZEBHWPpeJugsFl7HnUkXon1fuit/UE5LYKyqxx68lxrZb6kmJMBVRed6+fefsETLQauxBd54wTFnKiQV1FJBPdCo9R6PvKWIZn5HaMhCPg+jxddJQdcHy2/NCl5JVwJND0UIVcO/0pJYkwCZ2TPa6fgNJk+MzI/NvoPjCw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lh1tIdbqO97iPLYbdtCGuBjSoXbkKiGxrsy52NYxkWA=;
- b=jJfqYDYNo5/ZrhHKluf0Neh9JQWOa0b+uCjgie6NPITLVOA/mBN/ucCc0hkLcXLCMrDGekiaXTHX1z/og+aPPEzB+4TjSxOVZA3O+FLtA/XYCOFvwmQuDfb3lMbTL9uWTVjU3o+pqcEGSQv6x7fS9g9toCfKSh+/RB2v2CCeqHs=
+ bh=7zD0dgzNjNtWnphm8aUe0uy2+QERwfXudHjfVsY5EJg=;
+ b=qWKfI7NO0K7N+YXaLt6UaZxPoUzwXpAgT+9EDMotlKJm3uFSiRJSjceE6x8qDrfhQvgwu5Ry+XPL6qsazXy5pYDbFqDkL6pyeRNqcxYfm+VoIV3bZ228dD/46DXh2ohItTCFDNaZMtNUijn0+XfDE3q4+5PliNyuJrZ4rmXa++0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN0PR13MB5151.namprd13.prod.outlook.com (2603:10b6:408:152::22) with
+ by BL3PR13MB5108.namprd13.prod.outlook.com (2603:10b6:208:353::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.24; Fri, 31 Mar
- 2023 15:49:20 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20; Fri, 31 Mar
+ 2023 15:59:46 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.021; Fri, 31 Mar 2023
- 15:49:20 +0000
-Date:   Fri, 31 Mar 2023 17:49:13 +0200
+ 15:59:46 +0000
+Date:   Fri, 31 Mar 2023 17:59:37 +0200
 From:   Simon Horman <simon.horman@corigine.com>
 To:     Pavan Kumar Linga <pavan.kumar.linga@intel.com>
 Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         shiraz.saleem@intel.com, emil.s.tantilov@intel.com,
         willemb@google.com, decot@google.com, joshua.a.hay@intel.com,
         sridhar.samudrala@intel.com, Alan Brady <alan.brady@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
         Phani Burra <phani.r.burra@intel.com>
-Subject: Re: [Intel-wired-lan] [PATCH net-next 07/15] idpf: configure
- resources for TX queues
-Message-ID: <ZCcA+a/f+D5hu2GC@corigine.com>
+Subject: Re: [Intel-wired-lan] [PATCH net-next 09/15] idpf: initialize
+ interrupts and enable vport
+Message-ID: <ZCcDabCHzjXeN+xI@corigine.com>
 References: <20230329140404.1647925-1-pavan.kumar.linga@intel.com>
- <20230329140404.1647925-8-pavan.kumar.linga@intel.com>
+ <20230329140404.1647925-10-pavan.kumar.linga@intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230329140404.1647925-8-pavan.kumar.linga@intel.com>
-X-ClientProxiedBy: AS4P189CA0037.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:5dd::8) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <20230329140404.1647925-10-pavan.kumar.linga@intel.com>
+X-ClientProxiedBy: AS4P190CA0011.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5de::13) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BN0PR13MB5151:EE_
-X-MS-Office365-Filtering-Correlation-Id: 43629e8b-cb23-48a5-fb4a-08db31ff7dd3
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5108:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3ef34c3b-6247-45a7-0a17-08db3200f2f6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /TcypfBw/WqufUOANNKmMdTO2aAum9X/+oFjD8jG5Dk7O0oR2vS+//f8FvfT6zMo0QO3nVwq9jA+Bo6ZDg95gmK9QfEHTrldR63RQlPjiOqM0oKNdH2BVhlKu+Ok7WhRvn3127zhKZgFW73EUwMPofZyWp+Jq3gfBQJNxbJIrEDPUkzGb7Ew3rqbdfydS0AWw4WVCk0bLJXaLd23iFsrftaA43sRrN9OxSrIPrfxvwsY05vQLh+NDkXRho8xxklDLzP/K/sMYhafl2ujH267FfNVIrd1GyItFEOF/AL6o+H3N8JO2prtbtE+50mrsnbuIO8OEQ+FhGVDhbZMs3giPee/10H4irKCJ0aFHUdVm4c+zgufuFToDzexaSKYp5VDhExcfRd2+NJiQfP5m/CSZd3450UTloy8voPktgOkCB9ZknUYUphjQSSyn6JXjX2oMj8wzrPaPHMU7BHv/KuQvdf792dc/2xXYYjhQxxuYFlM6OAeVZjUVwsCx0Ab7PnQny5AzSUGNhGk9zYO80wPylSFcX2og8y4xyPPUqDzShpUl47EFfqL63GgQsv0qKeHzmKs07AS5Wg+QNvarRLaD0qI+5gIlRiHN1Z57SpfQwY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39840400004)(396003)(376002)(366004)(451199021)(478600001)(54906003)(316002)(83380400001)(2616005)(6512007)(6506007)(36756003)(186003)(38100700002)(86362001)(6666004)(6486002)(44832011)(6916009)(41300700001)(7416002)(4326008)(66476007)(66556008)(66946007)(8676002)(8936002)(5660300002)(2906002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: d2PzpU1mD+PwQd0YwJPde56tAeROOZD6RfpK3BhFzjRRqzSPsCFrbH1DhBhYM/3G23gbvGs8w+dGYpz9580bhTP30XR2ET75YYTI2iI2/D5zbYDcldpL0DAnBshSrRmuXcceieENZ75SuQoS7Lbvue/pnl54rhDD13XzsuiPruw83JRBBTPVl35hIgOaoEZY09FIqlxG+i2ViKNgOEpzDTfgAj0cPVOf2d4Ih6O2ba8hewBd7VB8KDeSZaxhnzR7o5tTb5rn9+GydIs/3Ywrl6pxohY7cHLclAlyAp6IRPQnYekORWEfRcd4c02HKcpAGBB1sXlJvatBS5FvBbXtKZuwB7A+De2PX5PZDVjYZiJVwP14D0Pr/1ghf/sT59KEXomRHMq0ziF45OSJsPEuPKSMJFTu4MZAK4nXC/U1zON58eaQuDmOE0kKC4NHssPUWbd6wRD1WozkmY/eSmxFOLnBN4CLNPxjyE35sPsATXok83MKNfSbdzytYkuBwoOA+8Zw6Td9NXowKXa0fVhK4FVkwqDGwb+ljNh+tHkjYz6jdw0vjokE2btRUh48P46ri5dHWEUBaCBsqvNQ4uHXppQevggM2N+sQZLgJ6/2up8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(376002)(136003)(39840400004)(396003)(451199021)(44832011)(5660300002)(7416002)(8936002)(86362001)(2906002)(41300700001)(8676002)(66476007)(66556008)(6916009)(66946007)(4326008)(2616005)(54906003)(316002)(478600001)(36756003)(6486002)(6666004)(6512007)(6506007)(186003)(83380400001)(38100700002)(67856001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WCZdv5AfCF1k612g2awv5zwTbPKJ1qQ1LRe5slcu1FR2sJBK2Zc4BEpM1uBm?=
- =?us-ascii?Q?07PMLvOxFXy2PxPTMSkphCNM2uvRRwlbQQO9NICHNLiKMB6YOpz/J2uFhjGq?=
- =?us-ascii?Q?MizJ7rztHd4wbqIPSxT0kDoVp0OtJJaVjYaRYEYSyP1b+0uQhQJDdUhM61rc?=
- =?us-ascii?Q?rXGDLgUzOcjDmRAYqyc50FTMKLBr0xHVhMTJeVNQWEwQ2GIGOzW0Y5/o3x49?=
- =?us-ascii?Q?+2qyWMSwyIueTD20NrmSQgKUBn/oYJHf0jzNnloEKhtP9kdC8DEm0/KpdRWz?=
- =?us-ascii?Q?98s63X03blkhH03vxMJTfEEgsuL4ByRqeQeM+O37W4+UxfTBXTP+yq7e/hoq?=
- =?us-ascii?Q?6kfxvrWvBGytRs8N8ITU9DGTebicaJELBReIXm8gsi6tnVEfS1IZVtGpe4Le?=
- =?us-ascii?Q?5C1zzydLQ7PIW/crNlaNUuc9PkCNV/QtS3NLHZxkTEa1gh+KPq8u7v/mbaTg?=
- =?us-ascii?Q?apfT0vHoUGQzIYLnb2CWxE7ATxRZbPnlTD+JtDEKv6CLb8odEM+majz1jvYT?=
- =?us-ascii?Q?6fhNC7ha2d+7fjybsZdx4d5dJy1MvmUuoE4w1ez/rnGKHfAUR28oDv2Thjwj?=
- =?us-ascii?Q?w268m6QAyOSkP4xXOqVH7vwpBMj3/QnjFWvuVHJZ/SPEF9/EU9RzwcV6TfVD?=
- =?us-ascii?Q?Vli1YLMbXNJKtBXSBDnqwbtOVMTIbMU1m+sRZnbXekSlhp/8gdx3BVSFRywY?=
- =?us-ascii?Q?nS+783zvuzsUPJHK13bcm4auIVmbqtOh7iAk/auceSuRHqeDWINWphVKKnHI?=
- =?us-ascii?Q?J2OCXfpVdozEij+B/A805f+A8Iw6yChZDgFmqr32/uQAimNA/QOpUEZsZpGX?=
- =?us-ascii?Q?/8lgmEhZCAbuZbqt7I034Zdf8cSbdC3PvvnQfh8jSs6fc7wmlJhAhJnX9eT2?=
- =?us-ascii?Q?VD9J2rrY05R30Aky8BEVaBznNYXULCXriIOBEXyuMH6cg932XCR6zebS5ITL?=
- =?us-ascii?Q?0kNpGSDJfgQrXNHU/RCe+21wuNwpC8073ItxzOQwMnJD0PuBr9j7f9u++uLh?=
- =?us-ascii?Q?qQ3fN9dht5yEpbbTKiXvdcmBJc1l1pQuNmpV7UeCTJBF4Bx7Z2enGws+Vcwq?=
- =?us-ascii?Q?za1NhKufpS9YbVt7nsf9flqRdpEc3HSFEANGyX1QmKWKbYemYxJXMycvC4g2?=
- =?us-ascii?Q?MemDfU7mhAKqKfhhDtWu2G3kXXCAUboe+K6SQF8nJM4QhMhlX0JIQdQs1YVm?=
- =?us-ascii?Q?R7IP7J05ukUn/mmKa1K77aAojrJGZjZWfu2QFcWgLXl/hS//KvmP4sgR9PxF?=
- =?us-ascii?Q?Ndun74nV14kWgjJ67xP+xXkOt4UjDAeVyCWPMuTowgwXsrv+/wLzsuTgBKRA?=
- =?us-ascii?Q?BFz+1p+v8n76sefhJlbb55/cUweoMN8ksjaa7L3CjKl/SIuIchvTRK4ZV84Q?=
- =?us-ascii?Q?oudTJn8xWh0Be6duKT5n30zLSyooFWR9pw4419ecsiO9D2htrQyWzhQe8Rjw?=
- =?us-ascii?Q?UvumTYTOoc7ipoeRHZWYluWLBIFugeKgAxZj/v9IHGOC7+uHtfqJAwFlMdr2?=
- =?us-ascii?Q?4warNgnooiLfBGJBNEPSXvRLKaZwTwGalViM20XuFLoLbOzTGb/gE5+d8xi4?=
- =?us-ascii?Q?8zSI/dfQHRpTfd2WIVSCsv74ZHn41pGAL8PSaEXB0QOWpvPvO4L8Ggd6HO4b?=
- =?us-ascii?Q?iFbntGaxe06L2fUt0tHPh4hQk64kK0RzzrmVZ1Ov7sNDGLby9/XsxDMe0uf8?=
- =?us-ascii?Q?RwmbsQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TNHyZkXn12PR7C/eEVTDa+imDu+9vHwsdW2lntnoGoRBMu6zoJJWreT/JcsZ?=
+ =?us-ascii?Q?p85Zi2ikuPHlD7HvZsCGeMwU60ZyFOKzb1tugrgwRyv34s8wjEe8kgV7LWDj?=
+ =?us-ascii?Q?RwgeiWskk+OIiXAMreVQXPFlwxbd7LvOKLwfKu9x6klyshrzbePVgjF3RnZ3?=
+ =?us-ascii?Q?oPR2nyhCVflKEiaAomZouietGvf/hNjx14Q44FDQkY1FXa7jIbHC0cnnhO3Z?=
+ =?us-ascii?Q?2Cf1H+4QOT6j+h4HfkKxS0ugqGESo9qowfovXUlqBlkNjpgpEwFE0BkFUfR9?=
+ =?us-ascii?Q?AetE7Y3tZcYoof3JqWySsMWS+RPLMxSmNGSTwPDSKrjfrjB9H0W+TYtfvpzQ?=
+ =?us-ascii?Q?+fotvwJ+tohEfPm3lbFxoEgfNvpH0sr1xAnPvFaRhse/sECkVTTmIH2wpGWl?=
+ =?us-ascii?Q?2fDad5+JfiQoJqU2hjaQZqHu5cAxpXfrkTLeoB+MaPcVaIZGdPHxiRtOtGoM?=
+ =?us-ascii?Q?J/o6jSnc5Xg17COdXPhZa5SIVnX7/gZb8nw/gIChIJ7yWlExfXreJPjsUhzA?=
+ =?us-ascii?Q?3SW4e/1Vj6/i+/L4vmGmqD/l1xWyOWpy8VDvfqFxsLgw+Loz11G4NU2l5Wxy?=
+ =?us-ascii?Q?5x9ssr8Z6c5Thn4qbP+q4cWUdU3ZnT09z+WMrXnrMdul+PWtxWYCgk7COYAm?=
+ =?us-ascii?Q?FMwG4DqMyhjRoqaIp5/Wjqkf8HABNDtpmayLDQtjbWdojdbDNwVsOo4Huj0Z?=
+ =?us-ascii?Q?Uan7IP7C8MyylBxd7dkZTonJN4epu77XBnmF5h5ptYAyvN2KqUdF+5IX7ZZb?=
+ =?us-ascii?Q?Wf0PtUtBrtduBcXx6LJB7NoFSzEZpTDa83QE0xCVG/r3Dq7nMKEA5A4cJBhd?=
+ =?us-ascii?Q?LUNN2vVZ18No6igQQDrb7TmiLLvb8fA8Ffr6Cha0CFjaGbV26KSXkkHotIqD?=
+ =?us-ascii?Q?rKMbYJXEQzKLVP5L6ohEb6R3/T8OZ+PCCl7kYDgIH8jDmXpUR6FJ5YTWv4aO?=
+ =?us-ascii?Q?AypfXlVH0CY79zwoBhWGn47+9S4Bsls4d0bLq0DVT3v+TC7BvEq++9o/z4DF?=
+ =?us-ascii?Q?hM5TPIyVHltbAcr5f/gdm8MKgLLI0bR2l5i3EoNWNVs2BzNpgCzsCQS3KX+V?=
+ =?us-ascii?Q?9IfBkbUkR4xZvpwwzFnstpjHeiKvqNehvFFKFyNq03fKrZMqnuRwqjD11PkD?=
+ =?us-ascii?Q?VqQczLp4pns1Q9qDFEW7NJVsdWmUJ3cEJA6BEsoJ4U081HYgMyXCcqfN0KhK?=
+ =?us-ascii?Q?L2fr0PjOXtwC7xb/zXa526gi7QioWw7QtoWixI43x8B5miOVpQH4p2lZx/Uz?=
+ =?us-ascii?Q?HM2rU7g89Rfogrv6GPYYvLAL7Pr+p1z4/O9Qo5IYy6t/D8WFlZs3IWsz3Grq?=
+ =?us-ascii?Q?iyWxqlhGQXxQkqu0sHreu84gPVvs4iiDaJWyeY/I/614IENsNt+Qoa5umldT?=
+ =?us-ascii?Q?NrfF0Sx4LpeXlO5YIPzwLlNpFP8c97LDUgVacVIVbY9iFUa0rFW1VkM4Ffoz?=
+ =?us-ascii?Q?gr8+Y+z9aXqbtFUc3m++/L1DmHNenIlH/4Oh+VxdhvnpMgvdneJn6zMmlEim?=
+ =?us-ascii?Q?+yWUePrTSCJyvNCRyCx872K7cn5YssGm5fy0aiORYFQlSZE2rHhGJcakBqFc?=
+ =?us-ascii?Q?dsvNy60/ZwWwf9/sam2orFK5WIte/h8FYL7JmI5s9DZT6huzh2cwmjReRWwg?=
+ =?us-ascii?Q?kshW817H52wJ5whhbCjasfy0t88k7Toe/Zg9GxCIVvLuNa8DyavbakB0ntpT?=
+ =?us-ascii?Q?Orp1SA=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43629e8b-cb23-48a5-fb4a-08db31ff7dd3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ef34c3b-6247-45a7-0a17-08db3200f2f6
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 15:49:20.2563
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 15:59:46.3184
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3a7W8IOJWg7Eyeo2QESOqv1uRwZn/TjpVrjgc7FgVdtrhvc4pmwH857oowXfjoggt4sXebjPB+E8OqHwr+vWZAeTkxrL/i/BbvjIs7jhObg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR13MB5151
+X-MS-Exchange-CrossTenant-UserPrincipalName: s+21YCih2aldNB/7kekEKbnDSyGX2Qoyp016cBFG/RWBGvqKEJyWYE8UbEF8thEZj+t1GYQz1KiuhQJ7FY9CbmzfWOKWBGMLX1dub7oKEhk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5108
 X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
@@ -119,87 +119,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 29, 2023 at 07:03:56AM -0700, Pavan Kumar Linga wrote:
-> From: Alan Brady <alan.brady@intel.com>
+On Wed, Mar 29, 2023 at 07:03:58AM -0700, Pavan Kumar Linga wrote:
+> To further continue 'vport open', initialize all the resources
+> required for the interrupts. To start with, initialize the
+> queue vector indices with the ones received from the device
+> Control Plane. Now that all the TX and RX queues are initialized,
+> map the RX descriptor and buffer queues as well as TX completion
+> queues to the allocated vectors. Initialize and enable the napi
+> handler for the napi polling. Finally, request the IRQs for the
+> interrupt vectors from the stack and setup the interrupt handler.
 > 
-> IDPF supports two queue models i.e. single queue which is a traditional
-> queueing model as well as split queue model. In single queue model,
-> the same descriptor queue is used by SW to post descriptors to the HW,
-> HW to post completed descriptors to SW. In split queue model, "TX Queues"
-> are used to pass buffers from SW to HW and "TX Completion Queues"
-> are used to post descriptor completions from HW to SW. Device supports
-> asymmetric ratio of TX queues to TX completion queues. Considering
-> this, queue group mechanism is used i.e. some TX queues are grouped
-> together which will be serviced by only one TX completion queue
-> per TX queue group.
+> Once the interrupt init is done, send 'map queue vector', 'enable
+> queues' and 'enable vport' virtchnl messages to the CP to complete
+> the 'vport open' flow.
 > 
-> Add all the resources required for the TX queues initialization.
-> To start with, allocate memory for the TX queue groups, TX queues and
-> TX completion queues. Then, allocate the descriptors for both TX and
-> TX completion queues, and bookkeeping buffers for TX queues alone.
-> Also, allocate queue vectors for the vport and initialize the TX queue
-> related fields for each queue vector.
-> 
-> Initialize the queue parameters such as q_id, q_type and tail register
-> offset with the info received from the device control plane (CP).
-> Once all the TX queues are configured, send config TX queue virtchnl
-> message to the CP with all the TX queue context information.
-> 
+> Co-developed-by: Alan Brady <alan.brady@intel.com>
 > Signed-off-by: Alan Brady <alan.brady@intel.com>
-> Co-developed-by: Alice Michael <alice.michael@intel.com>
-> Signed-off-by: Alice Michael <alice.michael@intel.com>
 > Co-developed-by: Joshua Hay <joshua.a.hay@intel.com>
 > Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
+> Co-developed-by: Madhu Chittim <madhu.chittim@intel.com>
+> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
 > Co-developed-by: Phani Burra <phani.r.burra@intel.com>
 > Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-> Co-developed-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
 > Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
 > Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 
-Another spelling nit from me.
+Spelling from me again.
+I think I'll stop there and just mention that you might want to consider
+adding ./checkpatch.pl --codespell to your CI.
+
+
+> diff --git a/drivers/net/ethernet/intel/idpf/idpf_lib.c b/drivers/net/ethernet/intel/idpf/idpf_lib.c
 
 ...
 
-> diff --git a/drivers/net/ethernet/intel/idpf/idpf_txrx.h b/drivers/net/ethernet/intel/idpf/idpf_txrx.h
+> +/**
+> + * idpf_up_complete - Complete interface up sequence
+> + * @vport: virtual port strucutre
+> + *
+> + * Returns 0 on success, negative on failure.
+> + */
 
-...
-
-> +/* queue associated with a vport */
-> +struct idpf_queue {
-> +	struct device *dev;		/* Used for DMA mapping */
-> +	struct idpf_vport *vport;	/* Backreference to associated vport */
-> +	struct idpf_txq_group *txq_grp;
-> +	/* bufq: Used as group id, either 0 or 1, on clean bufq uses this
-> +	 *       index to determine which group of refill queues to clean.
-> +	 *       Bufqs are use in splitq only.
-> +	 * txq: Index to map between txq group and hot path Tx ptrs stored in
-> +	 *      vport. Used in both singleq/splitq
-> +	 */
-> +	u16 idx;
-> +	/* Used for both queue models single and split. In splitq model relevant
-> +	 * only to txq
-> +	 */
-> +	void __iomem *tail;
-> +	/* Used in both singleq and splitq */
-> +	struct idpf_tx_buf *tx_buf;
-> +	u16 q_type;
-> +	/* Queue id(Tx/Tx compl/Rx/Bufq) */
-> +	u32 q_id;
-> +	u16 desc_count;		/* Number of descriptors */
-> +
-> +	/* Relevant in both split & single txq & bufq */
-> +	u16 next_to_use;
-> +	/* In split q model only relevant for tx complq and rxq */
-> +	u16 next_to_clean;	/* used in interrupt processing */
-> +	/* Used only for Rx. In splitq model only relevant to rxq */
-> +	u16 next_to_alloc;
-> +	/* Generation bit check stored, as HW flips the bit at Queue end */
-> +	DECLARE_BITMAP(flags, __IDPF_Q_FLAGS_NBITS);
-> +
-> +	/* Used for both queue models single and split. In splitq model relavant
-> +	 * only to Tx compl Q and Rx compl Q
-> +	 */
-
-s/relavant/relevant/
+s/strucutre/structure/
 
 ...
