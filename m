@@ -2,360 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7336D6D1ED4
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 13:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B2E6D1EF2
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 13:29:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbjCaLPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 07:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S231186AbjCaL34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 07:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231368AbjCaLPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 07:15:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EBB9014
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 04:14:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680261275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rntwKt7pHia2LoN8Fq5XmoSbaAuHcKiDb197ZWHd7ws=;
-        b=MXD0L/j92YilcdTFH03yhfgkQLE777RoQHamgEsza+xqexf4lsK1gjHcX+BpL0556T582b
-        vN59rNBmgpmGejlUraqRKyOiBl66/2IkTJ9qE9SNvwT0c4eikMOaxTjnV1Q6Oovc88vOOs
-        5EqmPCdKYYeF1NGtkxt7+zgOLE0fdJs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-330--5F1c4I7PyuUWSO43PG2hg-1; Fri, 31 Mar 2023 07:14:32 -0400
-X-MC-Unique: -5F1c4I7PyuUWSO43PG2hg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DBAD2101A54F;
-        Fri, 31 Mar 2023 11:14:31 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.194.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3492740B3ED9;
-        Fri, 31 Mar 2023 11:14:30 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, richardcochran@gmail.com,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Yalin Li <yalli@redhat.com>
-Subject: [PATCH v6 net-next 4/4] sfc: remove expired unicast PTP filters
-Date:   Fri, 31 Mar 2023 13:14:04 +0200
-Message-Id: <20230331111404.17256-5-ihuguet@redhat.com>
-In-Reply-To: <20230331111404.17256-1-ihuguet@redhat.com>
-References: <20230331111404.17256-1-ihuguet@redhat.com>
+        with ESMTP id S229538AbjCaL3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 07:29:55 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B82E1D847;
+        Fri, 31 Mar 2023 04:29:54 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32VBThDr036476;
+        Fri, 31 Mar 2023 06:29:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1680262183;
+        bh=AWxRcTapgEXEsS1tZkD66ZRxOvSctPgIGCDYmV2iX+E=;
+        h=From:To:CC:Subject:Date;
+        b=ZnMwgTTLzf7YRCSGa1/y7zw5qudotrAv/oio7R/6BCCbJHjSNajh6Ookp1qu75DaX
+         m8UAXXTOg8+gkBIU5BvTK5Qdpd4gD3JtupQoA6aOUc/anjuUUnYb4+syzik2SCJyph
+         jZT9StZxPJ1EKNb+HOx5o5i0ft6qIlmOOYO6zVsc=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32VBThdB122292
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Mar 2023 06:29:43 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 31
+ Mar 2023 06:29:43 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 31 Mar 2023 06:29:43 -0500
+Received: from fllv0122.itg.ti.com (fllv0122.itg.ti.com [10.247.120.72])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32VBThFG118290;
+        Fri, 31 Mar 2023 06:29:43 -0500
+Received: from localhost (a0501179-pc.dhcp.ti.com [10.24.69.114])
+        by fllv0122.itg.ti.com (8.14.7/8.14.7) with ESMTP id 32VBTfbN014969;
+        Fri, 31 Mar 2023 06:29:42 -0500
+From:   MD Danish Anwar <danishanwar@ti.com>
+To:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
+        Roger Quadros <rogerq@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        MD Danish Anwar <danishanwar@ti.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Nishanth Menon <nm@ti.com>
+CC:     <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <srk@ti.com>, <devicetree@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v6 0/4] Introduce PRU platform consumer API
+Date:   Fri, 31 Mar 2023 16:59:37 +0530
+Message-ID: <20230331112941.823410-1-danishanwar@ti.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Filters inserted to support unicast PTP mode might become unused after
-some time, so we need to remove them to avoid accumulating many of them.
+Hi All,
+The Programmable Real-Time Unit and Industrial Communication Subsystem (PRU-ICSS
+or simply PRUSS) on various TI SoCs consists of dual 32-bit RISC cores
+(Programmable Real-Time Units, or PRUs) for program execution.
 
-Refresh the expiration time of a filter each time it's used. Then check
-periodically if any filter hasn't been used for a long time (30s) and
-remove it.
+There are 3 foundation components for TI PRUSS subsystem: the PRUSS platform
+driver, the PRUSS INTC driver and the PRUSS remoteproc driver. All of them have
+already been merged and can be found under:
+1) drivers/soc/ti/pruss.c
+   Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+2) drivers/irqchip/irq-pruss-intc.c
+   Documentation/devicetree/bindings/interrupt-controller/ti,pruss-intc.yaml
+3) drivers/remoteproc/pru_rproc.c
+   Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
 
-Reported-by: Yalin Li <yalli@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/ptp.c | 97 +++++++++++++++++++++++++---------
- 1 file changed, 72 insertions(+), 25 deletions(-)
+The programmable nature of the PRUs provide flexibility to implement custom
+peripheral interfaces, fast real-time responses, or specialized data handling.
+Example of a PRU consumer drivers will be: 
+  - Software UART over PRUSS
+  - PRU-ICSS Ethernet EMAC
 
-diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
-index b495f3d0616b..0c40571133cb 100644
---- a/drivers/net/ethernet/sfc/ptp.c
-+++ b/drivers/net/ethernet/sfc/ptp.c
-@@ -75,6 +75,9 @@
- /* How long an unmatched event or packet can be held */
- #define PKT_EVENT_LIFETIME_MS		10
- 
-+/* How long unused unicast filters can be held */
-+#define UCAST_FILTER_EXPIRY_JIFFIES	msecs_to_jiffies(30000)
-+
- /* Offsets into PTP packet for identification.  These offsets are from the
-  * start of the IP header, not the MAC header.  Note that neither PTP V1 nor
-  * PTP V2 permit the use of IPV4 options.
-@@ -218,6 +221,7 @@ struct efx_ptp_timeset {
-  * @ether_type: Network protocol of the filter (ETHER_P_IP / ETHER_P_IPV6)
-  * @loc_port: UDP port of the filter (PTP_EVENT_PORT / PTP_GENERAL_PORT)
-  * @loc_host: IPv4/v6 address of the filter
-+ * @expiry: time when the filter expires, in jiffies
-  * @handle: Handle ID for the MCDI filters table
-  */
- struct efx_ptp_rxfilter {
-@@ -225,6 +229,7 @@ struct efx_ptp_rxfilter {
- 	__be16 ether_type;
- 	__be16 loc_port;
- 	__be32 loc_host[4];
-+	unsigned long expiry;
- 	int handle;
- };
- 
-@@ -242,6 +247,7 @@ struct efx_ptp_rxfilter {
-  * @rx_evts: Instantiated events (on evt_list and evt_free_list)
-  * @workwq: Work queue for processing pending PTP operations
-  * @work: Work task
-+ * @cleanup_work: Work task for periodic cleanup
-  * @reset_required: A serious error has occurred and the PTP task needs to be
-  *                  reset (disable, enable).
-  * @rxfilters_mcast: Receive filters for multicast PTP packets
-@@ -313,6 +319,7 @@ struct efx_ptp_data {
- 	struct efx_ptp_event_rx rx_evts[MAX_RECEIVE_EVENTS];
- 	struct workqueue_struct *workwq;
- 	struct work_struct work;
-+	struct delayed_work cleanup_work;
- 	bool reset_required;
- 	struct list_head rxfilters_mcast;
- 	struct list_head rxfilters_ucast;
-@@ -1318,8 +1325,8 @@ static inline void efx_ptp_process_rx(struct efx_nic *efx, struct sk_buff *skb)
- 	local_bh_enable();
- }
- 
--static bool efx_ptp_filter_exists(struct list_head *filter_list,
--				  struct efx_filter_spec *spec)
-+static struct efx_ptp_rxfilter *
-+efx_ptp_find_filter(struct list_head *filter_list, struct efx_filter_spec *spec)
- {
- 	struct efx_ptp_rxfilter *rxfilter;
- 
-@@ -1327,10 +1334,19 @@ static bool efx_ptp_filter_exists(struct list_head *filter_list,
- 		if (rxfilter->ether_type == spec->ether_type &&
- 		    rxfilter->loc_port == spec->loc_port &&
- 		    !memcmp(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host)))
--			return true;
-+			return rxfilter;
- 	}
- 
--	return false;
-+	return NULL;
-+}
-+
-+static void efx_ptp_remove_one_filter(struct efx_nic *efx,
-+				      struct efx_ptp_rxfilter *rxfilter)
-+{
-+	efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
-+				  rxfilter->handle);
-+	list_del(&rxfilter->list);
-+	kfree(rxfilter);
- }
- 
- static void efx_ptp_remove_filters(struct efx_nic *efx,
-@@ -1338,12 +1354,8 @@ static void efx_ptp_remove_filters(struct efx_nic *efx,
- {
- 	struct efx_ptp_rxfilter *rxfilter, *tmp;
- 
--	list_for_each_entry_safe(rxfilter, tmp, filter_list, list) {
--		efx_filter_remove_id_safe(efx, EFX_FILTER_PRI_REQUIRED,
--					  rxfilter->handle);
--		list_del(&rxfilter->list);
--		kfree(rxfilter);
--	}
-+	list_for_each_entry_safe(rxfilter, tmp, filter_list, list)
-+		efx_ptp_remove_one_filter(efx, rxfilter);
- }
- 
- static void efx_ptp_init_filter(struct efx_nic *efx,
-@@ -1358,13 +1370,18 @@ static void efx_ptp_init_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_filter(struct efx_nic *efx,
- 				 struct list_head *filter_list,
--				 struct efx_filter_spec *spec)
-+				 struct efx_filter_spec *spec,
-+				 unsigned long expiry)
- {
-+	struct efx_ptp_data *ptp = efx->ptp_data;
- 	struct efx_ptp_rxfilter *rxfilter;
- 	int rc;
- 
--	if (efx_ptp_filter_exists(filter_list, spec))
-+	rxfilter = efx_ptp_find_filter(filter_list, spec);
-+	if (rxfilter) {
-+		rxfilter->expiry = expiry;
- 		return 0;
-+	}
- 
- 	rxfilter = kzalloc(sizeof(*rxfilter), GFP_KERNEL);
- 	if (!rxfilter)
-@@ -1378,8 +1395,12 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 	rxfilter->ether_type = spec->ether_type;
- 	rxfilter->loc_port = spec->loc_port;
- 	memcpy(rxfilter->loc_host, spec->loc_host, sizeof(spec->loc_host));
-+	rxfilter->expiry = expiry;
- 	list_add(&rxfilter->list, filter_list);
- 
-+	queue_delayed_work(ptp->workwq, &ptp->cleanup_work,
-+			   UCAST_FILTER_EXPIRY_JIFFIES + 1);
-+
- 	return 0;
- 
- fail:
-@@ -1389,24 +1410,26 @@ static int efx_ptp_insert_filter(struct efx_nic *efx,
- 
- static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx,
- 				      struct list_head *filter_list,
--				      __be32 addr, u16 port)
-+				      __be32 addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv4_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, filter_list, &spec);
-+	return efx_ptp_insert_filter(efx, filter_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_ipv6_filter(struct efx_nic *efx,
- 				      struct list_head *filter_list,
--				      struct in6_addr *addr, u16 port)
-+				      struct in6_addr *addr, u16 port,
-+				      unsigned long expiry)
- {
- 	struct efx_filter_spec spec;
- 
- 	efx_ptp_init_filter(efx, &spec);
- 	efx_filter_set_ipv6_local(&spec, IPPROTO_UDP, addr, htons(port));
--	return efx_ptp_insert_filter(efx, filter_list, &spec);
-+	return efx_ptp_insert_filter(efx, filter_list, &spec, expiry);
- }
- 
- static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
-@@ -1419,7 +1442,7 @@ static int efx_ptp_insert_eth_multicast_filter(struct efx_nic *efx)
- 	efx_filter_set_eth_local(&spec, EFX_FILTER_VID_UNSPEC, addr);
- 	spec.match_flags |= EFX_FILTER_MATCH_ETHER_TYPE;
- 	spec.ether_type = htons(ETH_P_1588);
--	return efx_ptp_insert_filter(efx, &ptp->rxfilters_mcast, &spec);
-+	return efx_ptp_insert_filter(efx, &ptp->rxfilters_mcast, &spec, 0);
- }
- 
- static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
-@@ -1434,12 +1457,14 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 	 * that there is no packet re-ordering.
- 	 */
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_EVENT_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
- 	rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_mcast,
--					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT);
-+					htonl(PTP_ADDR_IPV4), PTP_GENERAL_PORT,
-+					0);
- 	if (rc < 0)
- 		goto fail;
- 
-@@ -1450,12 +1475,12 @@ static int efx_ptp_insert_multicast_filters(struct efx_nic *efx)
- 		struct in6_addr ipv6_addr = {{PTP_ADDR_IPV6}};
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_EVENT_PORT);
-+						&ipv6_addr, PTP_EVENT_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_mcast,
--						&ipv6_addr, PTP_GENERAL_PORT);
-+						&ipv6_addr, PTP_GENERAL_PORT, 0);
- 		if (rc < 0)
- 			goto fail;
- 
-@@ -1491,32 +1516,35 @@ static int efx_ptp_insert_unicast_filter(struct efx_nic *efx,
- 					 struct sk_buff *skb)
- {
- 	struct efx_ptp_data *ptp = efx->ptp_data;
-+	unsigned long expiry;
- 	int rc;
- 
- 	if (!efx_ptp_valid_unicast_event_pkt(skb))
- 		return -EINVAL;
- 
-+	expiry = jiffies + UCAST_FILTER_EXPIRY_JIFFIES;
-+
- 	if (skb->protocol == htons(ETH_P_IP)) {
- 		__be32 addr = ip_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto out;
- 
- 		rc = efx_ptp_insert_ipv4_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 	} else if (efx_ptp_use_mac_tx_timestamps(efx)) {
- 		/* IPv6 PTP only supported by devices with MAC hw timestamp */
- 		struct in6_addr *addr = &ipv6_hdr(skb)->saddr;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_EVENT_PORT);
-+						addr, PTP_EVENT_PORT, expiry);
- 		if (rc < 0)
- 			goto out;
- 
- 		rc = efx_ptp_insert_ipv6_filter(efx, &ptp->rxfilters_ucast,
--						addr, PTP_GENERAL_PORT);
-+						addr, PTP_GENERAL_PORT, expiry);
- 	} else {
- 		return -EOPNOTSUPP;
- 	}
-@@ -1627,6 +1655,23 @@ static void efx_ptp_worker(struct work_struct *work)
- 		efx_ptp_process_rx(efx, skb);
- }
- 
-+static void efx_ptp_cleanup_worker(struct work_struct *work)
-+{
-+	struct efx_ptp_data *ptp =
-+		container_of(work, struct efx_ptp_data, cleanup_work.work);
-+	struct efx_ptp_rxfilter *rxfilter, *tmp;
-+
-+	list_for_each_entry_safe(rxfilter, tmp, &ptp->rxfilters_ucast, list) {
-+		if (time_is_before_jiffies(rxfilter->expiry))
-+			efx_ptp_remove_one_filter(ptp->efx, rxfilter);
-+	}
-+
-+	if (!list_empty(&ptp->rxfilters_ucast)) {
-+		queue_delayed_work(ptp->workwq, &ptp->cleanup_work,
-+				   UCAST_FILTER_EXPIRY_JIFFIES + 1);
-+	}
-+}
-+
- static const struct ptp_clock_info efx_phc_clock_info = {
- 	.owner		= THIS_MODULE,
- 	.name		= "sfc",
-@@ -1685,6 +1730,7 @@ int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
- 	}
- 
- 	INIT_WORK(&ptp->work, efx_ptp_worker);
-+	INIT_DELAYED_WORK(&ptp->cleanup_work, efx_ptp_cleanup_worker);
- 	ptp->config.flags = 0;
- 	ptp->config.tx_type = HWTSTAMP_TX_OFF;
- 	ptp->config.rx_filter = HWTSTAMP_FILTER_NONE;
-@@ -1776,6 +1822,7 @@ void efx_ptp_remove(struct efx_nic *efx)
- 	(void)efx_ptp_disable(efx);
- 
- 	cancel_work_sync(&efx->ptp_data->work);
-+	cancel_delayed_work_sync(&efx->ptp_data->cleanup_work);
- 	if (efx->ptp_data->pps_workwq)
- 		cancel_work_sync(&efx->ptp_data->pps_work);
- 
+In order to make usage of common PRU resources and allow the consumer drivers 
+to configure the PRU hardware for specific usage the PRU API is introduced.
+
+This is the v6 of the old patch series [1].
+
+Changes from v5 [1] to v6:
+*) Added Reviewed by tags of Roger and Tony to the patches.
+*) Added Acked by tag of Mathieu to patch 2 of this series.
+*) Added NULL check for @mux in pruss_cfg_get_gpmux() API.
+*) Added comment to the pruss_get() function documentation mentioning it is
+expected the caller will have done a pru_rproc_get() on @rproc.
+*) Fixed compilation warning "warning: ‘pruss_cfg_update’ defined but not used"
+in patch 3 by squashing patch 3 [7] and patch 5 [8] of previous revision
+together. Squashed patch 5 instead of patch 4 with patch 3 because patch 5 uses
+both read() and update() APIs where as patch 4 only uses update() API.
+Previously pruss_cfg_read()/update() APIs were intoroduced in patch 3
+and used in patch 4 and 5. Now these APIs are introduced as well as used in 
+patch 3.
+
+Changes from v4 [2] to v5:
+*) Addressed Roger's comment to change function argument in API 
+pruss_cfg_xfr_enable(). Instead of asking user to calcualte mask, now user
+will just provide the pru_type and mask will be calcualted inside the API.
+*) Moved enum pru_type from pru_rproc.c to include/linux/remoteproc/pruss.h
+in patch 4 / 5.
+*) Moved enum pruss_gpi_mode from patch 3/5 to patch 4/5 to introduce this
+enum in same patch as the API using it.
+*) Moved enum pruss_gp_mux_sel from patch 3/5 to patch 5/5 to introduce this
+enum in same patch as the API using it.
+*) Created new headefile drivers/soc/ti/pruss.h, private to PRUSS as asked by
+Roger. Moved all private definitions and pruss_cfg_read () / update ()
+APIs to this newly added headerfile.
+*) Renamed include/linux/pruss_driver.h to include/linux/pruss_internal.h as
+suggested by Andrew and Roger.
+
+Changes from v3 [3] to v4:
+*) Added my SoB tags in all patches as earlier SoB tags were missing in few
+patches.
+*) Added Roger's RB tags in 3 patches.
+*) Addressed Roger's comment in patch 4/5 of this series. Added check for 
+   invalid GPI mode in pruss_cfg_gpimode() API.
+*) Removed patch [4] from this series as that patch is no longer required.
+*) Made pruss_cfg_read() and pruss_cfg_update() APIs internal to pruss.c by
+   removing EXPORT_SYMBOL_GPL and making them static. Now these APIs are 
+   internal to pruss.c and PRUSS CFG space is not exposed.
+*) Moved APIs pruss_cfg_gpimode(), pruss_cfg_miirt_enable(), 
+   pruss_cfg_xfr_enable(), pruss_cfg_get_gpmux(), pruss_cfg_set_gpmux() to
+   pruss.c file as they are using APIs pruss_cfg_read / update. 
+   Defined these APIs in pruss.h file as other drivers use these APIs to 
+   perform respective operations.
+
+Changes from v2 to v3:
+*) No functional changes, the old series has been rebased on linux-next (tag:
+next-20230306).
+
+This series depends on another series which is already merged in the remoteproc
+tree [5] and is part of v6.3-rc1. This series and the remoteproc series form 
+the PRUSS consumer API which can be used by consumer drivers to utilize the 
+PRUs.
+
+One example of the consumer driver is the PRU-ICSSG ethernet driver [6],which 
+depends on this series and the remoteproc series [5].
+
+[1] https://lore.kernel.org/all/20230323062451.2925996-1-danishanwar@ti.com/
+[2] https://lore.kernel.org/all/20230313111127.1229187-1-danishanwar@ti.com/
+[3] https://lore.kernel.org/all/20230306110934.2736465-1-danishanwar@ti.com/
+[4] https://lore.kernel.org/all/20230306110934.2736465-6-danishanwar@ti.com/
+[5] https://lore.kernel.org/all/20230106121046.886863-1-danishanwar@ti.com/#t
+[6] https://lore.kernel.org/all/20230210114957.2667963-1-danishanwar@ti.com/
+[7] https://lore.kernel.org/all/20230323062451.2925996-4-danishanwar@ti.com/
+[8] https://lore.kernel.org/all/20230323062451.2925996-6-danishanwar@ti.com/
+
+Thanks and Regards,
+Md Danish Anwar
+
+Andrew F. Davis (1):
+  soc: ti: pruss: Add pruss_{request,release}_mem_region() API
+
+Suman Anna (2):
+  soc: ti: pruss: Add pruss_cfg_read()/update(),
+    pruss_cfg_get_gpmux()/set_gpmux() APIs
+  soc: ti: pruss: Add helper functions to set GPI mode, MII_RT_event and
+    XFR
+
+Tero Kristo (1):
+  soc: ti: pruss: Add pruss_get()/put() API
+
+ drivers/remoteproc/pru_rproc.c                |  17 +-
+ drivers/soc/ti/pruss.c                        | 260 +++++++++++++++++-
+ drivers/soc/ti/pruss.h                        | 112 ++++++++
+ .../{pruss_driver.h => pruss_internal.h}      |  34 +--
+ include/linux/remoteproc/pruss.h              | 141 ++++++++++
+ 5 files changed, 522 insertions(+), 42 deletions(-)
+ create mode 100644 drivers/soc/ti/pruss.h
+ rename include/linux/{pruss_driver.h => pruss_internal.h} (58%)
+
 -- 
-2.39.2
+2.25.1
 
