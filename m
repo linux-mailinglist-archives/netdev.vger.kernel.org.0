@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAF446D2145
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C79816D2147
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232770AbjCaNOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 09:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
+        id S232777AbjCaNOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 09:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232775AbjCaNOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:14:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC091A955;
-        Fri, 31 Mar 2023 06:13:57 -0700 (PDT)
+        with ESMTP id S232774AbjCaNOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:14:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72CA20C2F;
+        Fri, 31 Mar 2023 06:14:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42640B82F6F;
-        Fri, 31 Mar 2023 13:13:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B09AAC4339C;
-        Fri, 31 Mar 2023 13:13:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16797B82F6A;
+        Fri, 31 Mar 2023 13:14:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8137FC433EF;
+        Fri, 31 Mar 2023 13:13:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680268435;
-        bh=4cHdHnyTAhlO3f0cK1byiul6wL08Fc18njzb8Jp2zLw=;
+        s=k20201202; t=1680268438;
+        bh=N4DT9nDSliiFONQaT3jUyRHewbKeqGxRRHMjesy9rxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VBsKpbWD8FtuvEtQqWYtSO10q+cA3UyyeHUuVAUDglQuekLueAoxi1dmLXQfl77ji
-         HX6C3pEoOYXO6Kqu69oB1ZtcwD8DUrxAIhBKAPgiw2+3eK41O0eWHS32/fYJ3xADxB
-         anmlaPvXPwwEJoG2/LojRVs1+4aKdwC9zjLOMVOnoGT5z4Hk6RzZ2hHF77ZR8ZVdI3
-         iau0np5uRiI1FQ6szkcfJeh3xaP8oUAnffnUveMAjOIt9qqNf0gy8KjIHPT3t8Jj2g
-         /D9g40ssIf1YoFjbJv6VGqIl5mr/5UGf+qhDTjeUd6bWw/1TH1CK7KV3kFXX93pMjj
-         rtKh/sd3PYi1g==
+        b=jNYohSc0UcD9cddo/U7K31IbDSvz89gZSLvZUWkQXOqF/wvHNss9OWZIWy0Rq7ujh
+         asHIMyuS2EWDoGW5Q27wlCkiRcb+erpnHE0iB8GXLwfA20nfmsRrrqmVwXsP04/DpG
+         DrItq8R/XuQzqr2j/RlAbTeuWjl0h2trtxpfX//x3fqbgjfnpzhKrs8phEm4gT1yxZ
+         4IwlTQA4lbC35RVkD10iAi6Qh6CYRipo6KIrP/10HcGB9EHiiJnVeG68ePOmMhlchC
+         2d5sGpxfxMw7zDbNYuXhIsDpPGZ8wAaJtJZmNEllw+dYoHlAZNSUBDWwNRTzjJ470W
+         xA9wjZNMTyuKw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
@@ -40,16 +40,16 @@ Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH v2 net-next 07/10] arm64: dts: mt7986: move ilm in a dedicated node
-Date:   Fri, 31 Mar 2023 15:12:43 +0200
-Message-Id: <b58a1517a81d1d0d591936832a07e5a723934fde.1680268101.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 08/10] net: ethernet: mtk_wed: move dlm a dedicated dts node
+Date:   Fri, 31 Mar 2023 15:12:44 +0200
+Message-Id: <ba52543d377b0be558175ab4aaa9b6761e3760a4.1680268101.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1680268101.git.lorenzo@kernel.org>
 References: <cover.1680268101.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,83 +57,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the ilm memory region is not part of the MT7986 RAM SoC, move ilm
+Since the dlm memory region is not part of the MT7986 RAM SoC, move dlm
 in a deidicated syscon node.
+Keep backward-compatibility with older dts version where dlm was defined
+as reserved-memory child node.
 
-Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 34 +++++++++++------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_wed.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index 668b6cfa6a3d..a0d96d232ee5 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -89,16 +89,6 @@ wo_emi1: wo-emi@4fd40000 {
- 			no-map;
- 		};
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+index 95d890870984..e479ff924ed6 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+@@ -799,6 +799,24 @@ mtk_wed_rro_alloc(struct mtk_wed_device *dev)
+ 	struct device_node *np;
+ 	int index;
  
--		wo_ilm0: wo-ilm@151e0000 {
--			reg = <0 0x151e0000 0 0x8000>;
--			no-map;
--		};
--
--		wo_ilm1: wo-ilm@151f0000 {
--			reg = <0 0x151f0000 0 0x8000>;
--			no-map;
--		};
--
- 		wo_data: wo-data@4fd80000 {
- 			reg = <0 0x4fd80000 0 0x240000>;
- 			no-map;
-@@ -454,11 +444,10 @@ wed0: wed@15010000 {
- 			reg = <0 0x15010000 0 0x1000>;
- 			interrupt-parent = <&gic>;
- 			interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
--			memory-region = <&wo_emi0>, <&wo_ilm0>, <&wo_dlm0>,
--					<&wo_data>;
--			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
--					      "wo-data";
-+			memory-region = <&wo_emi0>, <&wo_dlm0>, <&wo_data>;
-+			memory-region-names = "wo-emi", "wo-dlm", "wo-data";
- 			mediatek,wo-ccif = <&wo_ccif0>;
-+			mediatek,wo-ilm = <&wo_ilm0>;
- 			mediatek,wo-cpuboot = <&wo_cpuboot>;
- 		};
- 
-@@ -468,11 +457,10 @@ wed1: wed@15011000 {
- 			reg = <0 0x15011000 0 0x1000>;
- 			interrupt-parent = <&gic>;
- 			interrupts = <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>;
--			memory-region = <&wo_emi1>, <&wo_ilm1>, <&wo_dlm1>,
--					<&wo_data>;
--			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
--					      "wo-data";
-+			memory-region = <&wo_emi1>, <&wo_dlm1>, <&wo_data>;
-+			memory-region-names = "wo-emi", "wo-dlm", "wo-data";
- 			mediatek,wo-ccif = <&wo_ccif1>;
-+			mediatek,wo-ilm = <&wo_ilm1>;
- 			mediatek,wo-cpuboot = <&wo_cpuboot>;
- 		};
- 
-@@ -490,6 +478,16 @@ wo_ccif1: syscon@151ad000 {
- 			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
- 		};
- 
-+		wo_ilm0: syscon@151e0000 {
-+			compatible = "mediatek,mt7986-wo-ilm", "syscon";
-+			reg = <0 0x151e0000 0 0x8000>;
-+		};
++	np = of_parse_phandle(dev->hw->node, "mediatek,wo-dlm", 0);
++	if (np) {
++		struct resource res;
++		int ret;
 +
-+		wo_ilm1: syscon@151f0000 {
-+			compatible = "mediatek,mt7986-wo-ilm", "syscon";
-+			reg = <0 0x151f0000 0 0x8000>;
-+		};
++		ret = of_address_to_resource(np, 0, &res);
++		of_node_put(np);
 +
- 		wo_cpuboot: syscon@15194000 {
- 			compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
- 			reg = <0 0x15194000 0 0x1000>;
++		if (ret < 0)
++			return ret;
++
++		dev->rro.miod_phys = res.start;
++		goto out;
++	}
++
++	/* For backward compatibility, we need to check if DLM
++	 * node is defined through reserved memory property.
++	 */
+ 	index = of_property_match_string(dev->hw->node, "memory-region-names",
+ 					 "wo-dlm");
+ 	if (index < 0)
+@@ -815,6 +833,7 @@ mtk_wed_rro_alloc(struct mtk_wed_device *dev)
+ 		return -ENODEV;
+ 
+ 	dev->rro.miod_phys = rmem->base;
++out:
+ 	dev->rro.fdbk_phys = MTK_WED_MIOD_COUNT + dev->rro.miod_phys;
+ 
+ 	return mtk_wed_rro_ring_alloc(dev, &dev->rro.ring,
 -- 
 2.39.2
 
