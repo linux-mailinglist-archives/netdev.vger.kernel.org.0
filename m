@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C13256D24B3
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ECF46D24AE
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232741AbjCaQKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 12:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        id S232273AbjCaQKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 12:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232214AbjCaQKW (ORCPT
+        with ESMTP id S232204AbjCaQKW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:10:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7261520629
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:09:32 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E161D1FD1D
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:09:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680278971;
+        s=mimecast20190719; t=1680278973;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=s7FY6IkB7NRnaaunO8kQ3wM8dgoy+C5dVBJnz6ApgXk=;
-        b=BmHl6c3yHz2nqdMfBY4tlSLuwP9JAUQzzXaAVgfezYAWe7RG3UNG717rcDynLaltMcTi+o
-        9ad9mokSWfMeL3PUDtwW6ii4cAFpdQ2ziMV1QstPl7FjuEnAQZlA3+K3OsJZM8JR8Cm0RO
-        UpY8y9+A8+bEFdBrKm8kjhgj5uuag3g=
+        bh=2Rqs8gKWnfX7IQPFFFiE2mTLNitfAQsbWxPFIoMuGvc=;
+        b=BdqHGmseG17RWOz6ED0RpRM4Q7/yWDwrWJX2jljjGNQs7khi0lHvNVx7Kmzrq5yGkefDn0
+        Zb2gwvX1WixrqcF2cMVNerFz6imUYMdk3WY3a+QDyg+HDsZuZDxzi0kwMB+APF6fVQ7Qbl
+        bmeipAZo2mxyfBMSZdy/BRJnqEQ+GHE=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-364-gA1T6ksvPKuG1wGWcmZ53Q-1; Fri, 31 Mar 2023 12:09:28 -0400
-X-MC-Unique: gA1T6ksvPKuG1wGWcmZ53Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+ us-mta-543-0AgUVjoEOGGNrIUOLBBj-A-1; Fri, 31 Mar 2023 12:09:30 -0400
+X-MC-Unique: 0AgUVjoEOGGNrIUOLBBj-A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 12E9D1C05159;
-        Fri, 31 Mar 2023 16:09:27 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A4A9029ABA19;
+        Fri, 31 Mar 2023 16:09:29 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 15A39140E94F;
-        Fri, 31 Mar 2023 16:09:24 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A92CCC15BB8;
+        Fri, 31 Mar 2023 16:09:27 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     Matthew Wilcox <willy@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -52,15 +52,15 @@ Cc:     David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org
-Subject: [PATCH v3 02/55] iov_iter: Remove last_offset member
-Date:   Fri, 31 Mar 2023 17:08:21 +0100
-Message-Id: <20230331160914.1608208-3-dhowells@redhat.com>
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: [PATCH v3 03/55] net: Declare MSG_SPLICE_PAGES internal sendmsg() flag
+Date:   Fri, 31 Mar 2023 17:08:22 +0100
+Message-Id: <20230331160914.1608208-4-dhowells@redhat.com>
 In-Reply-To: <20230331160914.1608208-1-dhowells@redhat.com>
 References: <20230331160914.1608208-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -71,36 +71,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the removal of ITER_PIPE, the last_offset member of struct iov_iter is
-no longer used, so remove it and un-unionise the remaining member.
+Declare MSG_SPLICE_PAGES, an internal sendmsg() flag, that hints to a
+network protocol that it should splice pages from the source iterator
+rather than copying the data if it can.  This flag is added to a list that
+is cleared by sendmsg and recvmsg syscalls on entry.
+
+This is intended as a replacement for the ->sendpage() op, allowing a way
+to splice in several multipage folios in one go.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: Alexander Viro <viro@zeniv.linux.org.uk>
-cc: Jeff Layton <jlayton@kernel.org>
-cc: linux-nfs@vger.kernel.org
-cc: linux-fsdevel@vger.kernel.org
-cc: linux-mm@kvack.org
 cc: netdev@vger.kernel.org
 ---
- include/linux/uio.h | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ include/linux/socket.h | 3 +++
+ net/socket.c           | 2 ++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 74598426edb4..2d8a70cb9b26 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -43,10 +43,7 @@ struct iov_iter {
- 	bool nofault;
- 	bool data_source;
- 	bool user_backed;
--	union {
--		size_t iov_offset;
--		int last_offset;
--	};
-+	size_t iov_offset;
- 	size_t count;
- 	union {
- 		const struct iovec *iov;
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 13c3a237b9c9..bd1cc3238851 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -327,6 +327,7 @@ struct ucred {
+ 					  */
+ 
+ #define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
++#define MSG_SPLICE_PAGES 0x8000000	/* Splice the pages from the iterator in sendmsg() */
+ #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
+ #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
+ 					   descriptor received through
+@@ -337,6 +338,8 @@ struct ucred {
+ #define MSG_CMSG_COMPAT	0		/* We never have 32 bit fixups */
+ #endif
+ 
++/* Flags to be cleared on entry by sendmsg and sendmmsg syscalls */
++#define MSG_INTERNAL_SENDMSG_FLAGS (MSG_SPLICE_PAGES)
+ 
+ /* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
+ #define SOL_IP		0
+diff --git a/net/socket.c b/net/socket.c
+index 6bae8ce7059e..0c39ce57d603 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2139,6 +2139,7 @@ int __sys_sendto(int fd, void __user *buff, size_t len, unsigned int flags,
+ 		msg.msg_name = (struct sockaddr *)&address;
+ 		msg.msg_namelen = addr_len;
+ 	}
++	flags &= ~MSG_INTERNAL_SENDMSG_FLAGS;
+ 	if (sock->file->f_flags & O_NONBLOCK)
+ 		flags |= MSG_DONTWAIT;
+ 	msg.msg_flags = flags;
+@@ -2486,6 +2487,7 @@ static int ____sys_sendmsg(struct socket *sock, struct msghdr *msg_sys,
+ 	}
+ 	msg_sys->msg_flags = flags;
+ 
++	flags &= ~MSG_INTERNAL_SENDMSG_FLAGS;
+ 	if (sock->file->f_flags & O_NONBLOCK)
+ 		msg_sys->msg_flags |= MSG_DONTWAIT;
+ 	/*
 
