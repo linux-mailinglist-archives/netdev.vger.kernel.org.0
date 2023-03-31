@@ -2,62 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A0EB6D1D7E
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 11:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1CDC6D1DDE
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 12:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232606AbjCaJ4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 05:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S230389AbjCaKVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 06:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbjCaJy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 05:54:57 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB3E1DFB1;
-        Fri, 31 Mar 2023 02:54:38 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1EB7B6603192;
-        Fri, 31 Mar 2023 10:54:37 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1680256477;
-        bh=uO0m8n14JLI7IWscEOpkhxVDFLw0lJfH0RRYJJ0etvg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=QO+tIyI2Vr3sxGboyaTqWX9ggHX4L20aTc8kN94LcMlW0vENMEuNnej/sb8+uNu1b
-         AI87DzJcK3IrbmE21XuNt61EF1MmpcYbUQc2sbQyfGQyWjFe+eBjvpUqo1Dy+orlIK
-         tX4fOIPY7SYJeufHNmlp86G0KrV/z2W3/XpZPPxM1xi4He9FNRtrO9bVSXmte6xoaB
-         StHcmqRm1Z56HLhlLsVNkJPCDOsJRvWQGuFN1dNH8VfQ7zC3vR2qTWjEuls2VvP+/M
-         C8Yfn+4JvusQ2JJSjP28Y7m0sEfhP05R/l1v7+6QX1BBxdDHZdOPmn1V6KgJBEdf/j
-         aiEAVq82o/oug==
-Message-ID: <abb74f12-a1c0-7d5f-ad11-c9c892a38fe2@collabora.com>
-Date:   Fri, 31 Mar 2023 11:54:34 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v7 09/19] clk: mediatek: Add MT8188 ipesys clock support
-Content-Language: en-US
-To:     "Garmin.Chang" <Garmin.Chang@mediatek.com>,
+        with ESMTP id S230385AbjCaKU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 06:20:56 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3581F7B4;
+        Fri, 31 Mar 2023 03:17:09 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1piBoc-0001PC-0s;
+        Fri, 31 Mar 2023 12:17:02 +0200
+Date:   Fri, 31 Mar 2023 11:16:44 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-clk@vger.kernel.org, netdev@vger.kernel.org
-References: <20230331082131.12517-1-Garmin.Chang@mediatek.com>
- <20230331082131.12517-10-Garmin.Chang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20230331082131.12517-10-Garmin.Chang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Subject: Re: [PATCH net-next 14/15] net: dsa: mt7530: introduce driver for
+ MT7988 built-in switch
+Message-ID: <ZCazDBJvFvjcQfKo@makrotopia.org>
+References: <cover.1680180959.git.daniel@makrotopia.org>
+ <fef2cb2fe3d2b70fa46e93107a0c862f53bb3bfa.1680180959.git.daniel@makrotopia.org>
+ <6a7c5f81-a8a3-27b5-4af3-7175a3313f9a@arinc9.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6a7c5f81-a8a3-27b5-4af3-7175a3313f9a@arinc9.com>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,12 +62,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il 31/03/23 10:21, Garmin.Chang ha scritto:
-> Add MT8188 ipesys clock controller which provides clock gate
-> control for Image Process Engine.
+On Fri, Mar 31, 2023 at 08:50:28AM +0300, Arınç ÜNAL wrote:
+> On 30.03.2023 18:23, Daniel Golle wrote:
+> > Add driver for the built-in Gigabit Ethernet switch which can be found
+> > in the MediaTek MT7988 SoC.
+> > 
+> > The switch shares most of its design with MT7530 and MT7531, but has
+> > it's registers mapped into the SoCs register space rather than being
+> > connected externally or internally via MDIO.
+> > 
+> > Introduce a new platform driver to support that.
+> > 
+> > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> > ---
+> >   MAINTAINERS                   |   2 +
+> >   drivers/net/dsa/Kconfig       |  12 ++++
+> >   drivers/net/dsa/Makefile      |   1 +
+> >   drivers/net/dsa/mt7530-mmio.c | 101 ++++++++++++++++++++++++++++++++++
+> >   drivers/net/dsa/mt7530.c      |  86 ++++++++++++++++++++++++++++-
+> >   drivers/net/dsa/mt7530.h      |  12 ++--
+> >   6 files changed, 206 insertions(+), 8 deletions(-)
+> >   create mode 100644 drivers/net/dsa/mt7530-mmio.c
+> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 14924aed15ca7..674673dbdfd8b 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -13174,9 +13174,11 @@ MEDIATEK SWITCH DRIVER
+> >   M:	Sean Wang <sean.wang@mediatek.com>
+> >   M:	Landen Chao <Landen.Chao@mediatek.com>
+> >   M:	DENG Qingfang <dqfext@gmail.com>
+> > +M:	Daniel Golle <daniel@makrotopia.org>
+> >   L:	netdev@vger.kernel.org
+> >   S:	Maintained
+> >   F:	drivers/net/dsa/mt7530-mdio.c
+> > +F:	drivers/net/dsa/mt7530-mmio.c
+> >   F:	drivers/net/dsa/mt7530.*
+> >   F:	net/dsa/tag_mtk.c
+> > diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+> > index c2551b13324c2..de4d86e37973f 100644
+> > --- a/drivers/net/dsa/Kconfig
+> > +++ b/drivers/net/dsa/Kconfig
+> > @@ -52,6 +52,18 @@ config NET_DSA_MT7530
+> >   	  Multi-chip module MT7530 in MT7621AT, MT7621DAT, MT7621ST and
+> >   	  MT7623AI SoCs is supported as well.
+> > +config NET_DSA_MT7988
+> > +	tristate "MediaTek MT7988 built-in Ethernet switch support"
+> > +	select NET_DSA_MT7530_COMMON
+> > +	depends on HAS_IOMEM
+> > +	help
+> > +	  This enables support for the built-in Ethernet switch found
+> > +	  in the MediaTek MT7988 SoC.
+> > +	  The switch is a similar design as MT7531, however, unlike
+> > +	  other MT7530 and MT7531 the switch registers are directly
+> > +	  mapped into the SoCs register space rather than being accessible
+> > +	  via MDIO.
+> > +
+> >   config NET_DSA_MV88E6060
+> >   	tristate "Marvell 88E6060 ethernet switch chip support"
+> >   	select NET_DSA_TAG_TRAILER
+> > diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+> > index 71250d7dd41af..103a33e20de4b 100644
+> > --- a/drivers/net/dsa/Makefile
+> > +++ b/drivers/net/dsa/Makefile
+> > @@ -8,6 +8,7 @@ endif
+> >   obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
+> >   obj-$(CONFIG_NET_DSA_MT7530_COMMON) += mt7530.o
+> >   obj-$(CONFIG_NET_DSA_MT7530)	+= mt7530-mdio.o
+> > +obj-$(CONFIG_NET_DSA_MT7988)	+= mt7530-mmio.o
 > 
-> Signed-off-by: Garmin.Chang <Garmin.Chang@mediatek.com>
+> I'm not fond of this way. Wouldn't it be better if we split the mdio and
+> mmio drivers to separate modules and kept switch hardware support on
+> mt7530.c?
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+You mean this in terms of Kconfig symbols?
+Because the way you describe is basically what I'm doing here:
+ * mt7530.c is the shared/common switch hardware driver
+ * mt7530-mdio.c contains the MDIO accessors and MDIO device drivers for
+   MT7530, MT7531, MT7621, MT7623, ...
+ * mt7530-mmio.c contains the platform device driver for in-SoC switches
+   which are accessed via MMIO, ie. MT7988 (and yes, this could be
+   extended to also support MT7620A/N).
+
+In early drafts I also named the Kconfig symbols
+CONFIG_NET_DSA_MT7530 for mt7530.c (ie. the common part)
+CONFIG_NET_DSA_MT7530_MDIO for the MDIO driver
+CONFIG_NET_DSA_MT7530_MMIO for the MMIO driver
+
+However, as existing kernel configurations expect CONFIG_NET_DSA_MT7530 to
+select the MDIO driver, I decided it would be better to hide the symbol of
+the common part and have CONFIG_NET_DSA_MT7530 select the MDIO driver like
+it was before.
+
+Hence I decided to go with
+CONFIG_NET_DSA_MT7530 selects the MDIO driver, just like before
+CONFIG_NET_DSA_MT7988 selects the new MMIO driver
+CONFIG_NET_DSA_MT7530_COMMON is hidden, selected by both of the above
+
+> 
+> The mmio driver could be useful in the future for the MT7530 on the MT7620
+> SoCs or generally new hardware that would use MMIO to be controlled.
+> 
+
+Sure, it would be a bit confusing once we add support for MT7620A/N (if
+that ever happens...), then CONFIG_NET_DSA_MT7988 would need to be
+selected to support this ancient MIPS SoC...
+
+If you are planning to work on support for MT7620A/N feel free to suggest
+a better way to name the Kconfig symbols.
+
+> Luiz did this for the Realtek switches that use MDIO and SMI to be
+> controlled.
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/realtek/Kconfig
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/realtek/Makefile
+
+Are you suggesting to split-off a device-specific driver which would
+then select the access-method driver (MDIO vs. MMIO) and the 
+common/shared driver? To me this looks like overkill for MT7530, given
+that the designs of all MT7530 are pretty similar, ie. same tag format
+and also otherwise very similar.
 
 
+Thank you for reviewing!
+
+
+Daniel
