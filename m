@@ -2,89 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9BD6D20CA
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 14:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46C716D20CD
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 14:48:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232605AbjCaMrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 08:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        id S232601AbjCaMsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 08:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbjCaMrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 08:47:41 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22972063F
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 05:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=CsmjTgEV6kFloiv2nSNJQ7iVO39BaGcPQE7Ysr1Ve5M=; b=Piq5Vu742q/i7TjQRniZkQMYAw
-        0uCe5buWkTKs7lil83VY7ImPOJp7LDc0cp0kXZi1p+eoi7OmbMCIBy0ibVsi+snzl+wpiqcRPV80S
-        rwiJnTXTUyu9dJbeA0feHYEWx1KcJuWnICj0VeIkD/VgxSknSWI7VEZQXDr1c6uMfcDQ=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=Maecks.lan)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1piE9s-008vKV-55
-        for netdev@vger.kernel.org; Fri, 31 Mar 2023 14:47:08 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Subject: [PATCH v3 net-next 2/2] net: ethernet: mtk_eth_soc: mtk_ppe: prefer newly added l2 flows
-Date:   Fri, 31 Mar 2023 14:47:07 +0200
-Message-Id: <20230331124707.40296-2-nbd@nbd.name>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230331124707.40296-1-nbd@nbd.name>
-References: <20230331124707.40296-1-nbd@nbd.name>
+        with ESMTP id S230292AbjCaMrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 08:47:48 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E58420C26;
+        Fri, 31 Mar 2023 05:47:33 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id r7-20020a17090b050700b002404be7920aso21215786pjz.5;
+        Fri, 31 Mar 2023 05:47:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680266852; x=1682858852;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OqUYhSGRw5YT8iDoGAqI3M+kGEuzH4CgDPrq5HJmMlo=;
+        b=arIMMAW4UvQuLPJj9yBXalo3hYDZJ/l55bemBovJJKePIK8YAfIjqVKi5MZr4pCTU8
+         EauIYm+Y1CKrJAY84rVBjjKWtN+LIr9yQGItv96OappdwVyxGCvFTRDozVBJXQSCP91j
+         2WIBrNTK40wRON0H3UTDqH9rqv6FQPm1YYXArKZj27b5YXyTHbUBEXruyX9vU6b8YIS2
+         iTyiZxTI51PjLumj2pKB8ZDzjoscaEg+fA0rBqnIoOg6rE1bZwb8rlt3VjDFpAnYK8MK
+         FxMvSz7TUlWoKcPZ63aK1NRMaexxx7Gjf4k/7W20yg35WCDDteeyM0EOkqreGtgLfMqW
+         1wzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680266852; x=1682858852;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OqUYhSGRw5YT8iDoGAqI3M+kGEuzH4CgDPrq5HJmMlo=;
+        b=sM5kkiCqUpPR/u50plo58DFlADeW8n9Eh/fc/GPp1DXfe0R519guDRmqVjREob/1dR
+         bs1mi3pCuJAwaxW1zfi7QhA8AJwYzZgAyPpbPKWnS3go3mO1rx6GuLFFl03bF0i91gl9
+         PoIyArdBBUi01fbnCFSbuU4U70g5JbuKOFmUF8JZJGk91MyrmYhVK+P4wCHpNi/4xjp4
+         5kAnXd5WyqJf9kZMQusgIq1zHGq6sSc3PdSDTlEd4Elu87sDA2/Rta3e0/SeWhiZfSRc
+         DYHhGXnPK2qRxcwI7pByIgsvnZF48DJf9djwn+vQam8nRA6dubSfLG/P64VR1fF7X7ao
+         NvTg==
+X-Gm-Message-State: AAQBX9eZyuMTjC5gRLAaF+A/fdQ6+Pp5OEMnI40mI20Ipf3LeWW6oJEd
+        risJphxKAQKwHXWHvokDfHw=
+X-Google-Smtp-Source: AKy350b2gHhbYe3CC3qYV2mkOa4IyNcZ+slnwuhriPpW/Z/TFifSZiuNwIjANjtZBL3J6VF1pKhYQA==
+X-Received: by 2002:a17:902:ce92:b0:1a2:1042:cadc with SMTP id f18-20020a170902ce9200b001a21042cadcmr31686978plg.18.1680266851824;
+        Fri, 31 Mar 2023 05:47:31 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:e51f:9935:aaf2:6b7? ([2600:8802:b00:4a48:e51f:9935:aaf2:6b7])
+        by smtp.gmail.com with ESMTPSA id p11-20020a1709026b8b00b001a22f9087e8sm1514508plk.51.2023.03.31.05.47.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Mar 2023 05:47:31 -0700 (PDT)
+Message-ID: <97687def-aca0-b1c5-68b6-e00079613c90@gmail.com>
+Date:   Fri, 31 Mar 2023 05:47:29 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [RFC net-next] net: phy: introduce phy_reg_field interface
+Content-Language: en-US
+To:     "Radu Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20230331123259.567627-1-radu-nicolae.pirea@oss.nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20230331123259.567627-1-radu-nicolae.pirea@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a device is roaming between interfaces and a new flow entry is
-created, we should assume that its output device is more up to date than
-whatever entry existed already.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
-v2: fix patch description
- drivers/net/ethernet/mediatek/mtk_ppe.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index f9c9f2ea4206..dd9581334b05 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -635,10 +635,20 @@ void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- static int
- mtk_foe_entry_commit_l2(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
-+	struct mtk_flow_entry *prev;
-+
- 	entry->type = MTK_FLOW_TYPE_L2;
- 
--	return rhashtable_insert_fast(&ppe->l2_flows, &entry->l2_node,
--				      mtk_flow_l2_ht_params);
-+	prev = rhashtable_lookup_get_insert_fast(&ppe->l2_flows, &entry->l2_node,
-+						 mtk_flow_l2_ht_params);
-+	if (likely(!prev))
-+		return 0;
-+
-+	if (IS_ERR(prev))
-+		return PTR_ERR(prev);
-+
-+	return rhashtable_replace_fast(&ppe->l2_flows, &prev->l2_node,
-+				       &entry->l2_node, mtk_flow_l2_ht_params);
- }
- 
- int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
+On 3/31/2023 5:32 AM, Radu Pirea (OSS) wrote:
+> Some PHYs can be heavily modified between revisions, and the addresses of
+> the registers are changed and the register fields are moved from one
+> register to another.
+> 
+> To integrate more PHYs in the same driver with the same register fields,
+> but these register fields were located in different registers at
+> different offsets, I introduced the phy_reg_fied structure.
+> 
+> phy_reg_fied structure abstracts the register fields differences.
+> 
+> Signed-off-by: Radu Pirea (OSS) <radu-nicolae.pirea@oss.nxp.com>
+
+You know how it goes: a framework without its user will not be accepted 
+unless an user of that framework also shows up. Can you post both?
 -- 
-2.39.0
-
+Florian
