@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E80C66D1AD9
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4A76D1AE9
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231213AbjCaIwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
+        id S230269AbjCaI5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230302AbjCaIwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:52:39 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2E06D338
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:52:37 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id e9so7020009ljq.4
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:52:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680252756;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7jypaeq3aGRlS5bQnlUqvvtZS/6KlIqAhZDD/eEODHU=;
-        b=UVAN9q26acRYUP6EqsVjsXDhwEGt0ntXO3aIC3my8pIjihNznNFn6MHmPyhjxiX89D
-         AOfZn1D8novdogR4YC9/m0QRw87dGrfpQkDoANT0cyKa5cXZ5MHe+llgGUbOf2QEL9mV
-         87mYvRp6bC3GpHXEuwPR4Efhx6J6g1k1zmP3LtPv1xmqzJcFoWuZ74A4KSK7AHBVzNVk
-         dDPX63pxR7BPJFRjKxjHuciqOvRmn95LAHQxEJ7hbuPjxeN8vdZAHoBwQKL/j6ZHcnoN
-         FuIG4wA9sSR1rhSdsOUj2AJvGF/y4zrl+g2ek+llR7sfa35ga0gJnexGO0S6HzbnEGJT
-         YW6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680252756;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7jypaeq3aGRlS5bQnlUqvvtZS/6KlIqAhZDD/eEODHU=;
-        b=XVbDiG7ttS6cIFpg1836IE5Tf0ewxOJZlXyyHeckhLZcSDkpIh9F24EuZw3b+2uRtx
-         sJu3j/lNpgraBt6HNIviQy0YaNGfFAVi7Ce3U4Foq/lsa1fByVJzXcyQ6+4GoiZnWJv/
-         tC5dLgwNt1jopPBShtg//jYed3j1jNqSgWaAAW+rAzdsLQqjZ5m9HWHHM8JyEuMdrSOl
-         AjqpC7K5BQSi8gm8p3WGOjdVU8sE/ojxjoiZnDGs/EdSH27wCUpHETYMxIu1v4Xbsaai
-         QgPsNjukWkUSbGR/5SDS5Ml9JUsCka6VbXZnfgcyAahlR+WrzbJxF9PPMxBNNxdiUG3v
-         yn9w==
-X-Gm-Message-State: AAQBX9dykp4DQ9e8hJzp9evtw+CK/HRW3y7UxuXHUkLdxMCdAVYYZebA
-        /cxSpldZdkUqs32KShkgWeYWndS+pWM9O7J3Ywo=
-X-Google-Smtp-Source: AKy350ZYdPAOwb5YcjbUtsrUjfCFIoL5A/rOTnHUwm9tFhUqi5aDkvfqycWa54AO/gMVHj0bcooGTw==
-X-Received: by 2002:a2e:b611:0:b0:2a5:fe8c:ba57 with SMTP id r17-20020a2eb611000000b002a5fe8cba57mr4539046ljn.32.1680252756071;
-        Fri, 31 Mar 2023 01:52:36 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id v14-20020a2e990e000000b00295b59fba40sm267121lji.25.2023.03.31.01.52.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Mar 2023 01:52:35 -0700 (PDT)
-Message-ID: <57d6de05-2f6a-3262-cf91-19b55a697c63@linaro.org>
-Date:   Fri, 31 Mar 2023 10:52:34 +0200
+        with ESMTP id S229792AbjCaI5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:57:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D3F10FA;
+        Fri, 31 Mar 2023 01:57:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AC2DB82D63;
+        Fri, 31 Mar 2023 08:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D770C433EF;
+        Fri, 31 Mar 2023 08:57:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680253026;
+        bh=CAT6KkoFOdkDmRKgKe2FQBByWj2FqpqeE79EKukAtJY=;
+        h=From:Subject:Date:To:Cc:From;
+        b=ZWnWYw7Yc7Qvn6VjyEEWYMm0mhFSfyznrFKE1LZ8R7MtPvZZaCzSid1aKSfGL6wOf
+         Gd+tE0eePjhLFlhga4N1RkDHDbaY6Xr+ccKKzZo+If3vH60oC8FtpVjT/4J1szxeuA
+         TFzZmyBI4DAu3RBTYoBLoNrqQZ9UayArmeZOAkqjHpNO9kAJybZylG/Bx9YlyEb8hr
+         CAMEzMeRnQG/gLyQzTwKhVNZBHKjIpImKC73+eBBx89keiIVlHvLHB3G9QcYW2ku9r
+         FC6uyyvAcUeBo+tLQfWQGozt7Q7G/9LGZIxFe9k8s6pSswEbKAal5wiSMo/qJTM+K9
+         LCqCIy98e1j9g==
+From:   Simon Horman <horms@kernel.org>
+Subject: [PATCH vhost 0/3] vhost: minor kdoc fixes and MAINTAINERS update
+Date:   Fri, 31 Mar 2023 10:56:54 +0200
+Message-Id: <20230331-vhost-fixes-v1-0-1f046e735b9e@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH] dt-bindings: net: fec: add power-domains property
-Content-Language: en-US
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, wei.fang@nxp.com,
-        shenwei.wang@nxp.com, xiaoning.wang@nxp.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>
-References: <20230328061518.1985981-1-peng.fan@oss.nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230328061518.1985981-1-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-B4-Tracking: v=1; b=H4sIAFagJmQC/x2LQQqDQAwAvyI5G9CNCu1XxEPU2A3IWjYqBfHvD
+ R5nmLnAJKsYvIsLspxquiWHuixgipw+gjo7Q6gCVUQ1nnGzHRf9iSHR3C6BuXt1DfgxsgmOmdM
+ U/UnHurr8ZnlqNz08Nwz3/QeAplrKeQAAAA==
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     Eli Cohen <elic@nvidia.com>, Si-Wei Liu <si-wei.liu@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Parav Pandit <parav@nvidia.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/03/2023 08:15, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Add optional power domains property
+Hi,
 
-This we see from the diff. You should explain why.
+this short aims to address some minor issues:
 
+PATCH 1/3: Addresses kdoc and spelling issues in vhost.h
+PATCH 2/3: Addresses kdoc in vring.h
+PATCH 3/3: Adds vring.h to MAINTAINERS
 
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
+There are no functional changes in this series.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+Simon Horman (3):
+      vdpa: address kdoc warnings
+      vringh: address kdoc warnings
+      MAINTAINERS: add vringh.h to Virtio Core and Net Drivers
 
-Best regards,
-Krzysztof
+ MAINTAINERS            |  1 +
+ include/linux/vdpa.h   | 14 +++++++++++---
+ include/linux/vringh.h | 17 +++++++++++++++--
+ 3 files changed, 27 insertions(+), 5 deletions(-)
+
+base-commit: da617cd8d90608582eb8d0b58026f31f1a9bfb1d
 
