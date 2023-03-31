@@ -2,256 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CE236D2965
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 22:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182666D2984
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 22:34:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233134AbjCaU0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 16:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S231879AbjCaUeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 16:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231701AbjCaU0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 16:26:32 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA642221D;
-        Fri, 31 Mar 2023 13:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680294388; x=1711830388;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JigzRH1XS4gxfuOXH7Yq62hsAr9z5CZh7n41T3Wd6XQ=;
-  b=I2zUmQwKweaM5V7rc6DRnfNR8IurJwcME+weaIu8a1WF5F96sd+TUBQX
-   95/X8uggowmCcQ0FhiO0yCrKZpQHs+6KXvB9E3vpyG+uSUZFDDZxZPceK
-   k0Rkz26SbxPLSaKPkcKQxoACsd3CGUVwRVXiBahwIeH92RR9Vk9+1xdkz
-   hIYDxfz4FOAS2iN+Hi+aklMQV6P8FTF9cW1bN6Ivl3UxK7wY6CLxZI3u9
-   CMlTwQ1KY+yAavnUImDF6zK0hcvFTnXSGaebh3XcLv95DUOE63c7qyLZM
-   F/WHnWRPRKfphaifAgSEM0IMkP6zPIuIWqGSp2KKLF/lcveBcdGY0TaFU
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="341569011"
-X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
-   d="scan'208";a="341569011"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 13:26:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="678738121"
-X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
-   d="scan'208";a="678738121"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 31 Mar 2023 13:25:56 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1piLJr-000M8f-07;
-        Fri, 31 Mar 2023 20:25:55 +0000
-Date:   Sat, 01 Apr 2023 04:25:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-acpi@vger.kernel.org,
-        bpf@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 4b0f4525dc4fe8af17b3daefe585f0c2eb0fe0a5
-Message-ID: <642741a2.Iacn1LRMRFiPMcQb%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S229967AbjCaUeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 16:34:05 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04491B7C3;
+        Fri, 31 Mar 2023 13:34:03 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1piLRa-0007Dg-1j;
+        Fri, 31 Mar 2023 22:33:54 +0200
+Date:   Fri, 31 Mar 2023 21:33:50 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sam Shih <Sam.Shih@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Subject: Re: [PATCH net-next 14/15] net: dsa: mt7530: introduce driver for
+ MT7988 built-in switch
+Message-ID: <ZCdDrrynf5fg16VM@makrotopia.org>
+References: <cover.1680180959.git.daniel@makrotopia.org>
+ <fef2cb2fe3d2b70fa46e93107a0c862f53bb3bfa.1680180959.git.daniel@makrotopia.org>
+ <6a7c5f81-a8a3-27b5-4af3-7175a3313f9a@arinc9.com>
+ <ZCazDBJvFvjcQfKo@makrotopia.org>
+ <7d0acaef-0cec-91b9-a5c6-d094b71e3dbd@arinc9.com>
+ <28d048c9-6389-749b-d0eb-18a9c2d83c4e@arinc9.com>
+ <56adf82a-3db0-5909-e948-e21717e3fe03@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <56adf82a-3db0-5909-e948-e21717e3fe03@arinc9.com>
+X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 4b0f4525dc4fe8af17b3daefe585f0c2eb0fe0a5  Add linux-next specific files for 20230331
+On Fri, Mar 31, 2023 at 11:07:51PM +0300, Arınç ÜNAL wrote:
+> On 31.03.2023 16:18, Arınç ÜNAL wrote:
+> > On 31.03.2023 15:06, Arınç ÜNAL wrote:
+> > > On 31.03.2023 13:16, Daniel Golle wrote:
+> > > > On Fri, Mar 31, 2023 at 08:50:28AM +0300, Arınç ÜNAL wrote:
+> > > > > On 30.03.2023 18:23, Daniel Golle wrote:
+> > > > > > Add driver for the built-in Gigabit Ethernet switch which can be found
+> > > > > > in the MediaTek MT7988 SoC.
+> > > > > > 
+> > > > > > The switch shares most of its design with MT7530 and MT7531, but has
+> > > > > > it's registers mapped into the SoCs register space rather than being
+> > > > > > connected externally or internally via MDIO.
+> > > > > > 
+> > > > > > Introduce a new platform driver to support that.
+> > > > > > 
+> > > > > > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> > > > > > ---
+> > > > > >    MAINTAINERS                   |   2 +
+> > > > > >    drivers/net/dsa/Kconfig       |  12 ++++
+> > > > > >    drivers/net/dsa/Makefile      |   1 +
+> > > > > >    drivers/net/dsa/mt7530-mmio.c | 101
+> > > > > > ++++++++++++++++++++++++++++++++++
+> > > > > >    drivers/net/dsa/mt7530.c      |  86 ++++++++++++++++++++++++++++-
+> > > > > >    drivers/net/dsa/mt7530.h      |  12 ++--
+> > > > > >    6 files changed, 206 insertions(+), 8 deletions(-)
+> > > > > >    create mode 100644 drivers/net/dsa/mt7530-mmio.c
+> > > > > > 
+> > > > > > diff --git a/MAINTAINERS b/MAINTAINERS
+> > > > > > index 14924aed15ca7..674673dbdfd8b 100644
+> > > > > > --- a/MAINTAINERS
+> > > > > > +++ b/MAINTAINERS
+> > > > > > @@ -13174,9 +13174,11 @@ MEDIATEK SWITCH DRIVER
+> > > > > >    M:    Sean Wang <sean.wang@mediatek.com>
+> > > > > >    M:    Landen Chao <Landen.Chao@mediatek.com>
+> > > > > >    M:    DENG Qingfang <dqfext@gmail.com>
+> > > > > > +M:    Daniel Golle <daniel@makrotopia.org>
+> > > > > >    L:    netdev@vger.kernel.org
+> > > > > >    S:    Maintained
+> > > > > >    F:    drivers/net/dsa/mt7530-mdio.c
+> > > > > > +F:    drivers/net/dsa/mt7530-mmio.c
+> > > > > >    F:    drivers/net/dsa/mt7530.*
+> > > > > >    F:    net/dsa/tag_mtk.c
+> > > > > > diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+> > > > > > index c2551b13324c2..de4d86e37973f 100644
+> > > > > > --- a/drivers/net/dsa/Kconfig
+> > > > > > +++ b/drivers/net/dsa/Kconfig
+> > > > > > @@ -52,6 +52,18 @@ config NET_DSA_MT7530
+> > > > > >          Multi-chip module MT7530 in MT7621AT, MT7621DAT, MT7621ST and
+> > > > > >          MT7623AI SoCs is supported as well.
+> > > > > > +config NET_DSA_MT7988
+> > > > > > +    tristate "MediaTek MT7988 built-in Ethernet switch support"
+> > > > > > +    select NET_DSA_MT7530_COMMON
+> > > > > > +    depends on HAS_IOMEM
+> > > > > > +    help
+> > > > > > +      This enables support for the built-in Ethernet switch found
+> > > > > > +      in the MediaTek MT7988 SoC.
+> > > > > > +      The switch is a similar design as MT7531, however, unlike
+> > > > > > +      other MT7530 and MT7531 the switch registers are directly
+> > > > > > +      mapped into the SoCs register space rather than
+> > > > > > being accessible
+> > > > > > +      via MDIO.
+> > > > > > +
+> > > > > >    config NET_DSA_MV88E6060
+> > > > > >        tristate "Marvell 88E6060 ethernet switch chip support"
+> > > > > >        select NET_DSA_TAG_TRAILER
+> > > > > > diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+> > > > > > index 71250d7dd41af..103a33e20de4b 100644
+> > > > > > --- a/drivers/net/dsa/Makefile
+> > > > > > +++ b/drivers/net/dsa/Makefile
+> > > > > > @@ -8,6 +8,7 @@ endif
+> > > > > >    obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
+> > > > > >    obj-$(CONFIG_NET_DSA_MT7530_COMMON) += mt7530.o
+> > > > > >    obj-$(CONFIG_NET_DSA_MT7530)    += mt7530-mdio.o
+> > > > > > +obj-$(CONFIG_NET_DSA_MT7988)    += mt7530-mmio.o
+> > > > > 
+> > > > > I'm not fond of this way. Wouldn't it be better if we split
+> > > > > the mdio and
+> > > > > mmio drivers to separate modules and kept switch hardware support on
+> > > > > mt7530.c?
+> > > > 
+> > > > You mean this in terms of Kconfig symbols?
+> > > > Because the way you describe is basically what I'm doing here:
+> > > >   * mt7530.c is the shared/common switch hardware driver
+> > > >   * mt7530-mdio.c contains the MDIO accessors and MDIO device
+> > > > drivers for
+> > > >     MT7530, MT7531, MT7621, MT7623, ...
+> > > >   * mt7530-mmio.c contains the platform device driver for in-SoC
+> > > > switches
+> > > >     which are accessed via MMIO, ie. MT7988 (and yes, this could be
+> > > >     extended to also support MT7620A/N).
+> > > 
+> > > Ok great.
+> > > 
+> > > > 
+> > > > In early drafts I also named the Kconfig symbols
+> > > > CONFIG_NET_DSA_MT7530 for mt7530.c (ie. the common part)
+> > > > CONFIG_NET_DSA_MT7530_MDIO for the MDIO driver
+> > > > CONFIG_NET_DSA_MT7530_MMIO for the MMIO driver
+> > > > 
+> > > > However, as existing kernel configurations expect
+> > > > CONFIG_NET_DSA_MT7530 to
+> > > > select the MDIO driver, I decided it would be better to hide the
+> > > > symbol of
+> > > > the common part and have CONFIG_NET_DSA_MT7530 select the MDIO
+> > > > driver like
+> > > > it was before.
+> > > 
+> > > You can "imply NET_DSA_MT7530_MDIO" from NET_DSA_MT7530 so the MDIO
+> > > driver is also enabled when NET_DSA_MT7530 is selected. For example,
+> > > on Realtek, both MDIO and SMI drivers are enabled by default when
+> > > either of the main drivers are selected.
+> > > 
+> > > config NET_DSA_MT7530
+> > >      tristate "MediaTek MT7530 and MT7531 Ethernet switch support"
+> > >      select NET_DSA_TAG_MTK
+> > >      select MEDIATEK_GE_PHY
+> > >      select PCS_MTK_LYNXI
+> > >      imply NET_DSA_MT7530_MDIO
+> > >      imply NET_DSA_MT7530_MMIO
+> > 
+> > The final kconfig should look like this:
+> > 
+> > config NET_DSA_MT7530
+> >      tristate "MediaTek MT7530 and MT7531 Ethernet switch support"
+> >      select NET_DSA_TAG_MTK
+> >      select MEDIATEK_GE_PHY
+> >      select PCS_MTK_LYNXI
+> 
+> Looks like PCS_MTK_LYNXI is used on NET_DSA_MT7530_MDIO instead now. I also
+> see '#include <linux/pcs/pcs-mtk-lynxi.h>' on mt7530.c but don't see any
+> functions called on it. Leftover?
 
-Error/Warning reports:
+Yes, you are right, it's only used in mt7530-mdio.c and the #include in
+mt7530.c is a left-over which I shall remove.
 
-https://lore.kernel.org/oe-kbuild-all/202303161521.jbGbaFjJ-lkp@intel.com
-https://lore.kernel.org/oe-kbuild-all/202304010037.jagzIuJZ-lkp@intel.com
+> 
+> >      imply NET_DSA_MT7530_MDIO
+> >      imply NET_DSA_MT7530_MMIO
+> >      help
+> >        This enables support for the MediaTek MT7530 and MT7531 Ethernet
+> >        switch chips. Multi-chip module MT7530 in MT7621AT, MT7621DAT,
+> >        MT7621ST and MT7623AI SoCs, and built-in switch in MT7688 SoC is
+> >        supported.
+> > 
+> > config NET_DSA_MT7530_MDIO
+> >      tristate "MediaTek MT7530 MDIO interface driver"
+> 
+> Should go here:
+> 
+> select PCS_MTK_LYNXI
 
-Error/Warning: (recently discovered and may have been fixed)
+Yeah, in Kconfig I had taken care of this already, but forgot to remove
+the include in mt7530.c...
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_validation.c:351:13: warning: variable 'bw_needed' set but not used [-Wunused-but-set-variable]
-drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_validation.c:352:25: warning: variable 'link' set but not used [-Wunused-but-set-variable]
-drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c:148:31: error: implicit declaration of function 'pci_msix_can_alloc_dyn' [-Werror=implicit-function-declaration]
-drivers/net/wireless/legacy/ray_cs.c:628:17: warning: 'strncpy' specified bound 32 equals destination size [-Wstringop-truncation]
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
-
-drivers/acpi/property.c:985 acpi_data_prop_read_single() error: potentially dereferencing uninitialized 'obj'.
-drivers/cdx/cdx.c:393:20: error: initialization of 'ssize_t (*)(const struct bus_type *, const char *, size_t)' {aka 'long int (*)(const struct bus_type *, const char *, long unsigned int)'} from incompatible pointer type 'ssize_t (*)(struct bus_type *, const char *, size_t)' {aka 'long int (*)(struct bus_type *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
-kernel/bpf/verifier.c:10148:11: warning: Assigned value is garbage or undefined [clang-analyzer-core.uninitialized.Assign]
-lib/cpu_rmap.c:272:2: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|   `-- drivers-net-wireless-legacy-ray_cs.c:warning:strncpy-specified-bound-equals-destination-size
-|-- alpha-randconfig-r003-20230329
-|   `-- drivers-net-ethernet-mellanox-mlx5-core-pci_irq.c:error:implicit-declaration-of-function-pci_msix_can_alloc_dyn
-|-- arc-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- arc-buildonly-randconfig-r005-20230329
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- arm-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- arm-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- arm64-allyesconfig
-|   |-- drivers-cdx-cdx.c:error:initialization-of-ssize_t-(-)(const-struct-bus_type-const-char-size_t)-aka-long-int-(-)(const-struct-bus_type-const-char-long-unsigned-int)-from-incompatible-pointer-type-ssize
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- arm64-buildonly-randconfig-r001-20230329
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- i386-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- i386-randconfig-m021
-|   `-- drivers-acpi-property.c-acpi_data_prop_read_single()-error:potentially-dereferencing-uninitialized-obj-.
-|-- ia64-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|   `-- drivers-net-wireless-legacy-ray_cs.c:warning:strncpy-specified-bound-equals-destination-size
-|-- loongarch-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- loongarch-defconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- loongarch-randconfig-r014-20230329
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- mips-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- mips-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
-|-- powerpc-allmodconfig
-clang_recent_errors
-`-- s390-randconfig-c005-20230329
-    |-- kernel-bpf-verifier.c:warning:Assigned-value-is-garbage-or-undefined-clang-analyzer-core.uninitialized.Assign
-    `-- lib-cpu_rmap.c:warning:Use-of-memory-after-it-is-freed-clang-analyzer-unix.Malloc
-
-elapsed time: 867m
-
-configs tested: 100
-configs skipped: 6
-
-tested configs:
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allyesconfig   gcc  
-arc          buildonly-randconfig-r005-20230329   gcc  
-arc                                 defconfig   gcc  
-arc                  randconfig-r033-20230329   gcc  
-arc                  randconfig-r043-20230329   gcc  
-arm                              allmodconfig   gcc  
-arm                              allyesconfig   gcc  
-arm                                 defconfig   gcc  
-arm                  randconfig-r034-20230329   clang
-arm                  randconfig-r046-20230329   gcc  
-arm64                            allyesconfig   gcc  
-arm64        buildonly-randconfig-r001-20230329   gcc  
-arm64        buildonly-randconfig-r002-20230329   gcc  
-arm64                               defconfig   gcc  
-arm64                randconfig-r001-20230329   gcc  
-arm64                randconfig-r003-20230329   gcc  
-arm64                randconfig-r013-20230329   clang
-csky                                defconfig   gcc  
-hexagon              randconfig-r041-20230329   clang
-hexagon              randconfig-r045-20230329   clang
-i386                             allyesconfig   gcc  
-i386                              debian-10.3   gcc  
-i386                                defconfig   gcc  
-i386                          randconfig-a001   gcc  
-i386                          randconfig-a002   clang
-i386                          randconfig-a003   gcc  
-i386                          randconfig-a004   clang
-i386                          randconfig-a005   gcc  
-i386                          randconfig-a006   clang
-i386                          randconfig-a011   clang
-i386                          randconfig-a012   gcc  
-i386                          randconfig-a013   clang
-i386                          randconfig-a014   gcc  
-i386                          randconfig-a015   clang
-i386                          randconfig-a016   gcc  
-ia64                             allmodconfig   gcc  
-ia64                                defconfig   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch            randconfig-r004-20230329   gcc  
-loongarch            randconfig-r006-20230329   gcc  
-loongarch            randconfig-r014-20230329   gcc  
-m68k                             allmodconfig   gcc  
-m68k                                defconfig   gcc  
-m68k                 randconfig-r023-20230331   gcc  
-microblaze           randconfig-r022-20230331   gcc  
-microblaze           randconfig-r024-20230331   gcc  
-mips                             allmodconfig   gcc  
-mips                             allyesconfig   gcc  
-mips         buildonly-randconfig-r004-20230329   clang
-mips                 randconfig-r036-20230329   clang
-nios2                               defconfig   gcc  
-nios2                randconfig-r016-20230329   gcc  
-parisc       buildonly-randconfig-r006-20230329   gcc  
-parisc                              defconfig   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-riscv                            allmodconfig   gcc  
-riscv                             allnoconfig   gcc  
-riscv                               defconfig   gcc  
-riscv                randconfig-r032-20230329   gcc  
-riscv                randconfig-r035-20230329   gcc  
-riscv                randconfig-r042-20230329   clang
-riscv                          rv32_defconfig   gcc  
-s390                             allmodconfig   gcc  
-s390                             allyesconfig   gcc  
-s390                                defconfig   gcc  
-s390                 randconfig-r002-20230329   gcc  
-s390                 randconfig-r044-20230329   clang
-sh                               allmodconfig   gcc  
-sparc                               defconfig   gcc  
-sparc                randconfig-r005-20230329   gcc  
-sparc64      buildonly-randconfig-r003-20230329   gcc  
-sparc64              randconfig-r012-20230329   gcc  
-sparc64              randconfig-r026-20230331   gcc  
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   gcc  
-x86_64                            allnoconfig   gcc  
-x86_64                           allyesconfig   gcc  
-x86_64                              defconfig   gcc  
-x86_64                                  kexec   gcc  
-x86_64                        randconfig-a001   clang
-x86_64                        randconfig-a002   gcc  
-x86_64                        randconfig-a003   clang
-x86_64                        randconfig-a004   gcc  
-x86_64                        randconfig-a005   clang
-x86_64                        randconfig-a006   gcc  
-x86_64                        randconfig-a011   gcc  
-x86_64                        randconfig-a012   clang
-x86_64                        randconfig-a013   gcc  
-x86_64                        randconfig-a014   clang
-x86_64                        randconfig-a015   gcc  
-x86_64                        randconfig-a016   clang
-x86_64                               rhel-8.3   gcc  
-xtensa               randconfig-r021-20230331   gcc  
-xtensa               randconfig-r031-20230329   gcc  
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Thank you for spotting this. I'll soon post v2 which includes these fixes.
