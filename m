@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A0DF6D192C
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CB5A6D1929
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231376AbjCaIAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
+        id S231258AbjCaIAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231199AbjCaIA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:00:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1BF1A974;
-        Fri, 31 Mar 2023 01:00:22 -0700 (PDT)
+        with ESMTP id S231240AbjCaIAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:00:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A27B743
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:00:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E789CCE2D89;
-        Fri, 31 Mar 2023 08:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F1C37C433AE;
-        Fri, 31 Mar 2023 08:00:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6E5262481
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 08:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 371BAC433B3;
+        Fri, 31 Mar 2023 08:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1680249618;
-        bh=W5/T8PFfQT4Kt2TSL/5tLnyXbGGwTe53FTh2jn5ZVBY=;
+        bh=+hJCPn95vBf2ZQHRzXfqfye7BMJ+ICYDpBa6honoU6k=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jcWoBrIMaP0a3vkd/dl+/0K8gWXF4ownzC+VQMS5lyZOLSCud/2WcFR/EQurj15i4
-         W+134QKpodbrW74WhF2FWKNHD47Zmti/tg8Xsz7hmceANiqNamlfGQY+Lc3Q+LHFSS
-         qEIDxxjp+Ieg7cS1wmdkSvrcstGcR5eObvtVCH4Dta+WWjcYe8JIobCQX0Zp/50KDw
-         yVVqk2QswZ4QW1vvhFd4TwzJPmnAlgR2LKMuMb15aSipUK5GIkUKyOgFtrYynuKkDr
-         gGx/iklOu7hagN2xK+e4wKKOmUCr7UL9KNpneWowrcc4EWk7+Ra0TLFeoD1vtjMAmX
-         k2YeyjmmPYBiQ==
+        b=EscSXB26hpoydFrNdWs6auA5atOq02Txl9hj5GHocvlwyZhNnmlgZeYXNTgn94ql+
+         MtIOGgfWQBYkvsMw44obrpxHvWhU/jVBn2IHS6mdHvwsoiDGPjl/C3BOQZ4DbkWDG+
+         KxV+9k/G/URY154jGXcxHJJkNF4v/d811bxRMlSO0FdOvhaMZ0fXsm5ldtBtM3WNI3
+         zEK8wzdNfQkFdav8x35/WPiTk5fhhfKtOznYJpt6Ou+hH7htfQvH007jSFQSWHDqEu
+         dkgw7PcLbXdS6QQd4LWfhq/xXsB54/mhoEc3fSUsCe9VrYhv/fOvw1pJwZP9zixrY4
+         aglMHikwYNl0w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D719EC73FE0;
-        Fri, 31 Mar 2023 08:00:17 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23AFDC73FE0;
+        Fri, 31 Mar 2023 08:00:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3] virtio/vsock: fix leaks due to missing skb owner
+Subject: Re: [PATCH] macvlan: Fix mc_filter calculation
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168024961787.12593.9775298884302736023.git-patchwork-notify@kernel.org>
-Date:   Fri, 31 Mar 2023 08:00:17 +0000
-References: <20230327-vsock-fix-leak-v3-1-292cfc257531@bytedance.com>
-In-Reply-To: <20230327-vsock-fix-leak-v3-1-292cfc257531@bytedance.com>
-To:     Bobby Eshleman <bobby.eshleman@bytedance.com>
-Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xiyou.wangcong@gmail.com
+Message-Id: <168024961814.12593.1746365574776871917.git-patchwork-notify@kernel.org>
+Date:   Fri, 31 Mar 2023 08:00:18 +0000
+References: <ZCP6rRY+gargYJit@gondor.apana.org.au>
+In-Reply-To: <ZCP6rRY+gargYJit@gondor.apana.org.au>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     patchwork-bot+netdevbpf@kernel.org, netdev@vger.kernel.org
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -60,22 +56,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (main)
+This patch was applied to netdev/net-next.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 29 Mar 2023 16:51:58 +0000 you wrote:
-> This patch sets the skb owner in the recv and send path for virtio.
-> 
-> For the send path, this solves the leak caused when
-> virtio_transport_purge_skbs() finds skb->sk is always NULL and therefore
-> never matches it with the current socket. Setting the owner upon
-> allocation fixes this.
+On Wed, 29 Mar 2023 16:45:33 +0800 you wrote:
+> On Wed, Mar 29, 2023 at 08:10:26AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
+> >
+> > Here is the summary with links:
+> >   - [1/2] macvlan: Skip broadcast queue if multicast with single receiver
+> >     https://git.kernel.org/netdev/net-next/c/d45276e75e90
+> >   - [2/2] macvlan: Add netlink attribute for broadcast cutoff
+> >     https://git.kernel.org/netdev/net-next/c/954d1fa1ac93
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v3] virtio/vsock: fix leaks due to missing skb owner
-    https://git.kernel.org/netdev/net/c/f9d2b1e146e0
+  - macvlan: Fix mc_filter calculation
+    https://git.kernel.org/netdev/net-next/c/ae63ad9b2cc7
 
 You are awesome, thank you!
 -- 
