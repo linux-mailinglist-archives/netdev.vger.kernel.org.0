@@ -2,122 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8FD56D1872
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:20:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B5E6D189D
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231417AbjCaHUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 03:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S230172AbjCaHbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 03:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbjCaHUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:20:50 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6668199B;
-        Fri, 31 Mar 2023 00:20:37 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 329B310000B;
-        Fri, 31 Mar 2023 07:20:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1680247236;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lvzFWPZoJbLjpy//fTibrFofFCEXYcZpmebSixK3cBs=;
-        b=O3ZkNbvUJXhH5fmvvWcwQEU9rY3Ql+KX8lGFpCYP2IsDYH0oKTMzhpweSO6ojDYChu2iXD
-        ooy5LClYRAN0tOCa3Fkq9sMU1GbykBwVU60bQ0F78vEHr5S4IsLMGpKvsYxAw0xuZfv2+/
-        GHBIKViSGkMhiQGpRcY+XhMPoueYo9r3Edj4fO6pKxTDMvqOTg81rQVNJ94V57mwWYCA29
-        MxD9PN1ImCvGdUimG+2enxy1XmUxzvmgSxTq9dHwCWi0E7qtajVtr2Ga9SI6YDTp3nUcfg
-        PJKU0PR1ZPw2kmY6UQz6q62KA9j73NIATKCkXqiRtcd+L5xSnkzJn9K52r0q7Q==
-Date:   Fri, 31 Mar 2023 09:21:12 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230131AbjCaHbs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:31:48 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC2E191C1;
+        Fri, 31 Mar 2023 00:31:42 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Vf1OBz8_1680247898;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0Vf1OBz8_1680247898)
+          by smtp.aliyun-inc.com;
+          Fri, 31 Mar 2023 15:31:39 +0800
+Message-ID: <1680247317.9193828-3-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH 00/16] virtio-net: split virtio-net.c
+Date:   Fri, 31 Mar 2023 15:21:57 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Alexis =?UTF-8?B?TG90aG9yw6k=?= <alexis.lothore@bootlin.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: rzn1-a5psw: enable DPBU for CPU
- port and fix STP states
-Message-ID: <20230331092112.3de13883@fixe.home>
-In-Reply-To: <20230330165123.4n2bmvuaixfz34tb@skbuf>
-References: <20230330083408.63136-1-clement.leger@bootlin.com>
-        <20230330083408.63136-1-clement.leger@bootlin.com>
-        <20230330083408.63136-2-clement.leger@bootlin.com>
-        <20230330083408.63136-2-clement.leger@bootlin.com>
-        <20230330151653.atzd5ptacral6syx@skbuf>
-        <20230330174427.0310276a@fixe.home>
-        <20230330165123.4n2bmvuaixfz34tb@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.36; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <20230328092847.91643-1-xuanzhuo@linux.alibaba.com>
+ <20230330015412-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20230330015412-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Thu, 30 Mar 2023 19:51:23 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+On Thu, 30 Mar 2023 02:17:43 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Tue, Mar 28, 2023 at 05:28:31PM +0800, Xuan Zhuo wrote:
+> > Considering the complexity of virtio-net.c and the new features we want
+> > to add, it is time to split virtio-net.c into multiple independent
+> > module files.
+> >
+> > This is beneficial to the maintenance and adding new functions.
+> >
+> > And AF_XDP support will be added later, then a separate xsk.c file will
+> > be added.
+> >
+> > This patchset split virtio-net.c into these parts:
+> >
+> > * virtnet.c:         virtio net device ops (napi, tx, rx, device ops, ...)
+> > * virtnet_common.c:  virtio net common code
+> > * virtnet_ethtool.c: virtio net ethtool callbacks
+> > * virtnet_ctrl.c:    virtio net ctrl queue command APIs
+> > * virtnet_virtio.c:  virtio net virtio callbacks/ops (driver register, virtio probe, virtio free, ...)
+> >
+> > Please review.
+> >
+> > Thanks.
+>
+>
+> I don't feel this is an improvement as presented, will need more work
+> to make code placement more logical.
 
-> On Thu, Mar 30, 2023 at 05:44:27PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Le Thu, 30 Mar 2023 18:16:53 +0300,
-> > Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
-> >  =20
-> > > Have you considered adding some Fixes: tags and sending to the "net" =
-tree? =20
-> >=20
-> > I wasn't sure if due to the refactoring that should go directly to the
-> > net tree but I'll do that. But since they are fixes, that's the way to
-> > go. =20
->=20
-> My common sense says that code quality comes first, and so, the code
-> looks however it needs to look, keeping in mind that it still needs to
-> be a punctual fix for the problem. This doesn't change the fact that
-> it's a fix for an an observable bug, and so, it's a candidate for 'net'.
+Yes, this does need some time and energy. But I think this always need to do,
+just when to do it. I think it is currently an opportunity.
 
-Agreed.
 
->=20
-> That's just my opinion though, others may disagree.
->=20
-> > > To be absolutely clear, when talking about BPDUs, is it applicable
-> > > effectively only to STP protocol frames, or to any management traffic
-> > > sent by tag_rzn1_a5psw.c which has A5PSW_CTRL_DATA_FORCE_FORWARD set?=
- =20
-> >=20
-> > The documentation uses BPDUs but this is to be understood as in a
-> > broader sense for "management frames" since it matches all the MAC with
-> > "01-80-c2-00-00-XX".  =20
->=20
-> And even so, is it just for frames sent to "01-80-c2-00-00-XX", or for
-> all frames sent with A5PSW_CTRL_DATA_FORCE_FORWARD? Other switch
-> families can inject whatever they want into ports that are in the
-> BLOCKING STP state.
+>
+> For example where do I find code to update rq stats?
+> Rx data path should be virtnet.c?
+> No it's in virtnet_ethtool.c because rq stats can be
+> accessed by ethtool.
 
-Forced forwarded to disabled ports will only apply to management
-frames. At least this is what the documentation says for forced
-forwarding (section 4.5.5.4, Table 4.234):
+That's what I do.
 
-Normal frames will be filtered always (i.e. can never be transmitted to
-disabled ports).
+> A bunch of stuff seems to be in headers just because of technicalities.
+> virtio common seems to be a dumping ground with no guiding principle at
+> all.
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Yes, I agree, with the development of time, common will indeed become a dumping
+group. This is something we should pay attention to after this.
+
+
+> drivers/net/virtio/virtnet_virtio.c is weird with
+> virt repeated three times in the path.
+
+Any good idea.
+
+>
+> These things only get murkier with time, at the point of reorg
+> I would expect very logical placement, since
+> without clear guiding rule finding where something is becomes harder but
+> more importantly we'll now get endless heartburn about where does each new
+> function go.
+>
+>
+> The reorg is unfortunately not free - for example git log --follow will
+> no longer easily match virtio because --follow works with exactly one
+> path.
+
+One day we will face this problem.
+
+> It's now also extra work to keep headers self-consistent.
+
+Can we make it simpler, first complete the split.
+
+
+> So it better be a big improvement to be worth it.
+
+
+Or about split, do you have any better thoughts? Or do you think we have always
+been like this and make Virtio-Net more and more complicated?
+
+
+Thanks.
+
+>
+>
+>
+>
+> > Xuan Zhuo (16):
+> >   virtio_net: add a separate directory for virtio-net
+> >   virtio_net: move struct to header file
+> >   virtio_net: add prefix to the struct inside header file
+> >   virtio_net: separating cpu-related funs
+> >   virtio_net: separate virtnet_ctrl_set_queues()
+> >   virtio_net: separate virtnet_ctrl_set_mac_address()
+> >   virtio_net: remove lock from virtnet_ack_link_announce()
+> >   virtio_net: separating the APIs of cq
+> >   virtio_net: introduce virtnet_rq_update_stats()
+> >   virtio_net: separating the funcs of ethtool
+> >   virtio_net: introduce virtnet_dev_rx_queue_group()
+> >   virtio_net: introduce virtnet_get_netdev()
+> >   virtio_net: prepare for virtio
+> >   virtio_net: move virtnet_[en/dis]able_delayed_refill to header file
+> >   virtio_net: add APIs to register/unregister virtio driver
+> >   virtio_net: separating the virtio code
+> >
+> >  MAINTAINERS                                   |    2 +-
+> >  drivers/net/Kconfig                           |    8 +-
+> >  drivers/net/Makefile                          |    2 +-
+> >  drivers/net/virtio/Kconfig                    |   11 +
+> >  drivers/net/virtio/Makefile                   |   10 +
+> >  .../net/{virtio_net.c => virtio/virtnet.c}    | 2368 ++---------------
+> >  drivers/net/virtio/virtnet.h                  |  213 ++
+> >  drivers/net/virtio/virtnet_common.c           |  138 +
+> >  drivers/net/virtio/virtnet_common.h           |   14 +
+> >  drivers/net/virtio/virtnet_ctrl.c             |  272 ++
+> >  drivers/net/virtio/virtnet_ctrl.h             |   45 +
+> >  drivers/net/virtio/virtnet_ethtool.c          |  578 ++++
+> >  drivers/net/virtio/virtnet_ethtool.h          |    8 +
+> >  drivers/net/virtio/virtnet_virtio.c           |  880 ++++++
+> >  drivers/net/virtio/virtnet_virtio.h           |    8 +
+> >  15 files changed, 2366 insertions(+), 2191 deletions(-)
+> >  create mode 100644 drivers/net/virtio/Kconfig
+> >  create mode 100644 drivers/net/virtio/Makefile
+> >  rename drivers/net/{virtio_net.c => virtio/virtnet.c} (50%)
+> >  create mode 100644 drivers/net/virtio/virtnet.h
+> >  create mode 100644 drivers/net/virtio/virtnet_common.c
+> >  create mode 100644 drivers/net/virtio/virtnet_common.h
+> >  create mode 100644 drivers/net/virtio/virtnet_ctrl.c
+> >  create mode 100644 drivers/net/virtio/virtnet_ctrl.h
+> >  create mode 100644 drivers/net/virtio/virtnet_ethtool.c
+> >  create mode 100644 drivers/net/virtio/virtnet_ethtool.h
+> >  create mode 100644 drivers/net/virtio/virtnet_virtio.c
+> >  create mode 100644 drivers/net/virtio/virtnet_virtio.h
+> >
+> > --
+> > 2.32.0.3.g01195cf9f
+>
