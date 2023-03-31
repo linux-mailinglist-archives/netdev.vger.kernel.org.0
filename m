@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20BAD6D251D
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B78E66D251E
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:16:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233317AbjCaQQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 12:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60780 "EHLO
+        id S233395AbjCaQQT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 12:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbjCaQPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:15:11 -0400
+        with ESMTP id S233385AbjCaQPi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:15:38 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA9624AEC
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:10:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7264C24431
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:10:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680279049;
+        s=mimecast20190719; t=1680279051;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qgrsaUecWqqjS48xBO3DK0ifte08BTz2ZXAzew8KrV0=;
-        b=MhzwnM/Sf8/ug2PrOb4iRm104bG3aBUo0vHl704bsw85/uI7/upQfwioLQDxEEC+wxclCy
-        f3fGW0lQN8XKpD/wZAG1axFHK21/QO6p175qmYhQdviYZ25b7SrSSz/FCiNyXSbaebs313
-        ZdK275BwMMNs6KT6vwZjE5QRwykRA2E=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=wy1bl7/wKEZT2hBAqmE7Plq7HNXSqd6J/GoEc2iata8=;
+        b=JA3ZD2plQ2Z/EZnGdembztG1+rF7E4nmEd/n6yK6VRnOSfRKvuScy47XMbnjeT/F1Kv5+X
+        tRGyiFJM+EOdehCuBNEqrIUYlZfsOpWP673w/ZFA6ACZ4MgJU+T3rCGCnSXzQB3KeOj/sT
+        WLyxot8H3vrpKmhglXHKfe7U2d9YaGQ=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-146-u0t01DzwNZa0rrcf5yQq9A-1; Fri, 31 Mar 2023 12:10:46 -0400
-X-MC-Unique: u0t01DzwNZa0rrcf5yQq9A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+ us-mta-408-TWrdWqY9OgKCvKHcSyW2Nw-1; Fri, 31 Mar 2023 12:10:48 -0400
+X-MC-Unique: TWrdWqY9OgKCvKHcSyW2Nw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 875E28028AD;
-        Fri, 31 Mar 2023 16:10:44 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1E33329ABA17;
+        Fri, 31 Mar 2023 16:10:47 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 745581415139;
-        Fri, 31 Mar 2023 16:10:42 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 223762166B33;
+        Fri, 31 Mar 2023 16:10:45 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     Matthew Wilcox <willy@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -52,16 +52,15 @@ Cc:     David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH v3 30/55] tls/sw: Convert tls_sw_sendpage() to use MSG_SPLICE_PAGES
-Date:   Fri, 31 Mar 2023 17:08:49 +0100
-Message-Id: <20230331160914.1608208-31-dhowells@redhat.com>
+        Ayush Sawal <ayush.sawal@chelsio.com>
+Subject: [PATCH v3 31/55] chelsio: Support MSG_SPLICE_PAGES
+Date:   Fri, 31 Mar 2023 17:08:50 +0100
+Message-Id: <20230331160914.1608208-32-dhowells@redhat.com>
 In-Reply-To: <20230331160914.1608208-1-dhowells@redhat.com>
 References: <20230331160914.1608208-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -72,239 +71,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert tls_sw_sendpage() and tls_sw_sendpage_locked() to use sendmsg()
-with MSG_SPLICE_PAGES rather than directly splicing in the pages itself.
-
-[!] Note that tls_sw_sendpage_locked() appears to have the wrong locking
-    upstream.  I think the caller will only hold the socket lock, but it
-    should hold tls_ctx->tx_lock too.
+Make Chelsio's TLS offload sendmsg() support MSG_SPLICE_PAGES, splicing in
+pages from the source iterator if possible and copying the data in
+otherwise.
 
 This allows ->sendpage() to be replaced by something that can handle
 multiple multipage folios in a single transaction.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Chuck Lever <chuck.lever@oracle.com>
-cc: Boris Pismenny <borisp@nvidia.com>
-cc: John Fastabend <john.fastabend@gmail.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: Eric Dumazet <edumazet@google.com>
+cc: Ayush Sawal <ayush.sawal@chelsio.com>
 cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
+cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
 cc: netdev@vger.kernel.org
 ---
- net/tls/tls_sw.c | 158 +++++++++--------------------------------------
- 1 file changed, 28 insertions(+), 130 deletions(-)
+ .../chelsio/inline_crypto/chtls/chtls_io.c    | 60 ++++++++++++++++++-
+ 1 file changed, 59 insertions(+), 1 deletion(-)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index ce0c289e68ca..256824fca651 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -972,7 +972,7 @@ static int rls_sw_sendmsg_splice(struct sock *sk, struct msghdr *msg,
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
+index ae6b17b96bf1..ca3daf5df95c 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
+@@ -1092,7 +1092,65 @@ int chtls_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 		if (copy > size)
+ 			copy = size;
  
--int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
-+static int tls_sw_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- {
- 	long timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
-@@ -995,13 +995,6 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	int ret = 0;
- 	int pending;
- 
--	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL |
--			       MSG_CMSG_COMPAT))
--		return -EOPNOTSUPP;
--
--	mutex_lock(&tls_ctx->tx_lock);
--	lock_sock(sk);
--
- 	if (unlikely(msg->msg_controllen)) {
- 		ret = tls_process_cmsg(sk, msg, &record_type);
- 		if (ret) {
-@@ -1202,155 +1195,60 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 
- send_end:
- 	ret = sk_stream_error(sk, msg->msg_flags, ret);
--
--	release_sock(sk);
--	mutex_unlock(&tls_ctx->tx_lock);
- 	return copied > 0 ? copied : ret;
- }
- 
--static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
--			      int offset, size_t size, int flags)
-+int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- {
--	long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
--	struct tls_prot_info *prot = &tls_ctx->prot_info;
--	unsigned char record_type = TLS_RECORD_TYPE_DATA;
--	struct sk_msg *msg_pl;
--	struct tls_rec *rec;
--	int num_async = 0;
--	ssize_t copied = 0;
--	bool full_record;
--	int record_room;
--	int ret = 0;
--	bool eor;
--
--	eor = !(flags & MSG_SENDPAGE_NOTLAST);
--	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
--
--	/* Call the sk_stream functions to manage the sndbuf mem. */
--	while (size > 0) {
--		size_t copy, required_size;
--
--		if (sk->sk_err) {
--			ret = -sk->sk_err;
--			goto sendpage_end;
--		}
--
--		if (ctx->open_rec)
--			rec = ctx->open_rec;
--		else
--			rec = ctx->open_rec = tls_get_rec(sk);
--		if (!rec) {
--			ret = -ENOMEM;
--			goto sendpage_end;
--		}
--
--		msg_pl = &rec->msg_plaintext;
--
--		full_record = false;
--		record_room = TLS_MAX_PAYLOAD_SIZE - msg_pl->sg.size;
--		copy = size;
--		if (copy >= record_room) {
--			copy = record_room;
--			full_record = true;
--		}
--
--		required_size = msg_pl->sg.size + copy + prot->overhead_size;
--
--		if (!sk_stream_memory_free(sk))
--			goto wait_for_sndbuf;
--alloc_payload:
--		ret = tls_alloc_encrypted_msg(sk, required_size);
--		if (ret) {
--			if (ret != -ENOSPC)
--				goto wait_for_memory;
--
--			/* Adjust copy according to the amount that was
--			 * actually allocated. The difference is due
--			 * to max sg elements limit
--			 */
--			copy -= required_size - msg_pl->sg.size;
--			full_record = true;
--		}
--
--		sk_msg_page_add(msg_pl, page, copy, offset);
--		sk_mem_charge(sk, copy);
--
--		offset += copy;
--		size -= copy;
--		copied += copy;
--
--		tls_ctx->pending_open_record_frags = true;
--		if (full_record || eor || sk_msg_full(msg_pl)) {
--			ret = bpf_exec_tx_verdict(msg_pl, sk, full_record,
--						  record_type, &copied, flags);
--			if (ret) {
--				if (ret == -EINPROGRESS)
--					num_async++;
--				else if (ret == -ENOMEM)
--					goto wait_for_memory;
--				else if (ret != -EAGAIN) {
--					if (ret == -ENOSPC)
--						ret = 0;
--					goto sendpage_end;
--				}
--			}
--		}
--		continue;
--wait_for_sndbuf:
--		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
--wait_for_memory:
--		ret = sk_stream_wait_memory(sk, &timeo);
--		if (ret) {
--			if (ctx->open_rec)
--				tls_trim_both_msgs(sk, msg_pl->sg.size);
--			goto sendpage_end;
--		}
-+	int ret;
- 
--		if (ctx->open_rec)
--			goto alloc_payload;
--	}
-+	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL |
-+			       MSG_CMSG_COMPAT | MSG_SPLICE_PAGES |
-+			       MSG_SENDPAGE_NOTLAST | MSG_SENDPAGE_NOPOLICY))
-+		return -EOPNOTSUPP;
- 
--	if (num_async) {
--		/* Transmit if any encryptions have completed */
--		if (test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask)) {
--			cancel_delayed_work(&ctx->tx_work.work);
--			tls_tx_records(sk, flags);
--		}
--	}
--sendpage_end:
--	ret = sk_stream_error(sk, flags, ret);
--	return copied > 0 ? copied : ret;
-+	mutex_lock(&tls_ctx->tx_lock);
-+	lock_sock(sk);
-+	ret = tls_sw_sendmsg_locked(sk, msg, size);
-+	release_sock(sk);
-+	mutex_unlock(&tls_ctx->tx_lock);
-+	return ret;
- }
- 
- int tls_sw_sendpage_locked(struct sock *sk, struct page *page,
- 			   int offset, size_t size, int flags)
- {
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
+-		if (skb_tailroom(skb) > 0) {
++		if (msg->msg_flags & MSG_SPLICE_PAGES) {
++			struct page *page, **pages = &page;
++			ssize_t part;
++			size_t off, spliced = 0;
++			bool put = false;
++			int i;
 +
- 	if (flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL |
- 		      MSG_SENDPAGE_NOTLAST | MSG_SENDPAGE_NOPOLICY |
- 		      MSG_NO_SHARED_FRAGS))
- 		return -EOPNOTSUPP;
-+	if (flags & MSG_SENDPAGE_NOTLAST)
-+		msg.msg_flags |= MSG_MORE;
- 
--	return tls_sw_do_sendpage(sk, page, offset, size, flags);
-+	bvec_set_page(&bvec, page, offset, size);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return tls_sw_sendmsg_locked(sk, &msg, size);
- }
- 
- int tls_sw_sendpage(struct sock *sk, struct page *page,
- 		    int offset, size_t size, int flags)
- {
--	struct tls_context *tls_ctx = tls_get_ctx(sk);
--	int ret;
-+	struct bio_vec bvec;
-+	struct msghdr msg = { .msg_flags = flags | MSG_SPLICE_PAGES, };
- 
- 	if (flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL |
- 		      MSG_SENDPAGE_NOTLAST | MSG_SENDPAGE_NOPOLICY))
- 		return -EOPNOTSUPP;
-+	if (flags & MSG_SENDPAGE_NOTLAST)
-+		msg.msg_flags |= MSG_MORE;
- 
--	mutex_lock(&tls_ctx->tx_lock);
--	lock_sock(sk);
--	ret = tls_sw_do_sendpage(sk, page, offset, size, flags);
--	release_sock(sk);
--	mutex_unlock(&tls_ctx->tx_lock);
--	return ret;
-+	bvec_set_page(&bvec, page, offset, size);
-+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+	return tls_sw_sendmsg(sk, &msg, size);
- }
- 
- static int
++			do {
++				i = skb_shinfo(skb)->nr_frags;
++				part = iov_iter_extract_pages(&msg->msg_iter, &pages,
++							      copy - spliced, 1, 0, &off);
++				if (part <= 0) {
++					err = part ?: -EIO;
++					goto do_fault;
++				}
++
++				if (!sendpage_ok(page)) {
++					const void *p = kmap_local_page(page);
++					void *q;
++
++					q = page_frag_memdup(NULL, p + off, part,
++							     sk->sk_allocation, ULONG_MAX);
++					kunmap_local(p);
++					if (!q) {
++						iov_iter_revert(&msg->msg_iter, part);
++						return -ENOMEM;
++					}
++					page = virt_to_page(q);
++					off = offset_in_page(q);
++					put = true;
++				}
++
++				if (skb_can_coalesce(skb, i, page, off)) {
++					skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], part);
++					spliced += part;
++					if (put)
++						put_page(page);
++				} else if (i < MAX_SKB_FRAGS) {
++					if (!put)
++						get_page(page);
++					skb_fill_page_desc(skb, i, page, off, spliced);
++					spliced += part;
++					put = false;
++				} else {
++					if (put)
++						put_page(page);
++					if (!spliced)
++						goto new_buf;
++					break;
++				}
++			} while (spliced < copy);
++
++			copy = spliced;
++			skb->len += copy;
++			skb->data_len += copy;
++			skb->truesize += copy;
++			sk->sk_wmem_queued += copy;
++			
++		} else if (skb_tailroom(skb) > 0) {
+ 			copy = min(copy, skb_tailroom(skb));
+ 			if (is_tls_tx(csk))
+ 				copy = min_t(int, copy, csk->tlshws.txleft);
 
