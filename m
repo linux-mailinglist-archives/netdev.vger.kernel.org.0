@@ -2,84 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E186D2A56
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:49:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 295916D2A7F
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233297AbjCaVt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 17:49:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
+        id S232917AbjCaV7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 17:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233217AbjCaVsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:48:33 -0400
+        with ESMTP id S232373AbjCaV7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:59:38 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076D22441E
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:46:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954892369F
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:58:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680299212;
+        s=mimecast20190719; t=1680299896;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SF6uNcTaL1XWIdtjfUNctRW8ZpoxmAhgGf/gHeHXnR4=;
-        b=PHbNOuyuwZhAWZUn5ykpfojQpQV+7Td6F+9qxcRTEs9bh/jtWeiHy31TKrGSkytSC65byB
-        WOun7hHfVbARGrbzDlCSZtifHoMbNBzLRCBTVZfQLSPFwyDLaW8jdzRSNGN6GFOr9eYZdK
-        p5U3pTvM+aTX6g1IKICkwaW3nr0CWp4=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7tV7oZA0rf1CWc0Q6Zc1vdOEds4O2Q0Uu3zvNJJAMp4=;
+        b=a2ysPphvUiPkh5g0+KU786AtEMG9H/ZcNY83xwH/g005r983pC+LSVyK2GBjR9iXB1rXSi
+        +WL9rpa6KQ0NfcFR+TiAhVhB2Z7hLD8I0+EMWC/YK8w4u8wJMr7d0Sy5DYjUBrs+ztjyiq
+        bS7u1A8bnAuvX63b2pmbmHiDCIutuRc=
 Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
  [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-297-aSqYBR_WN7-M0HcSNs-Wxw-1; Fri, 31 Mar 2023 17:46:50 -0400
-X-MC-Unique: aSqYBR_WN7-M0HcSNs-Wxw-1
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-17e7104c589so12085249fac.19
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:46:50 -0700 (PDT)
+ us-mta-391-0xegcdkPOwe8cPkoSc7LDg-1; Fri, 31 Mar 2023 17:58:15 -0400
+X-MC-Unique: 0xegcdkPOwe8cPkoSc7LDg-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-177c9cc7db5so12196475fac.15
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:58:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680299210;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SF6uNcTaL1XWIdtjfUNctRW8ZpoxmAhgGf/gHeHXnR4=;
-        b=DEpl7YbduWMyGdCuPjubK42g0n2k5guP0q43JiqKVbbj7k9taG1wTiOlNbz5hPvVaS
-         rdElzKYb/dZq9RA6zZg4dHxYYr3wpt4ufiEEKiurFOgcD4nVXKHbe9cqF8fv2I/sQhux
-         fw8ypSLCNwCAwo7TbolyRd6MR71bzjdoqI6u9gtzCnQgQ3hlqVnMvU9PJwWNNuw68dUj
-         hDjcVI2ngMF+Sa7VeK2vdO2etUjTLia4/2tx0Og2BFKktd5IKD/pJTJKPMt+etrK41sv
-         wPrLWWZcIRVq7LMLmUjQejmnMi85hpvZgDeEgnf2wxNLeX2dQaOR/qIEcLnoxAIKhVyr
-         tXYA==
-X-Gm-Message-State: AAQBX9eV6EAjDt2gYGYJcjHHqwClV9PYhqLAq3ZFvS/oJ5Lri5+AOCxO
-        SZJQR/b7pkQuKeq4plDkgZRqSpru9ey3ZO2HDmOBT9+6bLWBCp252zlgxCEk46mhy3krEL8ANl5
-        Kzz++kSHJ6Gzr/w/T
-X-Received: by 2002:a4a:cb03:0:b0:53b:b277:1c6 with SMTP id r3-20020a4acb03000000b0053bb27701c6mr5861075ooq.1.1680299209761;
-        Fri, 31 Mar 2023 14:46:49 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YodnCnuVbHODzjvYpa9jdWr5kkK2bL/4oS9Q4SCp3T0rqRVpuQlfgUdxCOSAO7jzPHipt1hg==
-X-Received: by 2002:a4a:cb03:0:b0:53b:b277:1c6 with SMTP id r3-20020a4acb03000000b0053bb27701c6mr5861058ooq.1.1680299209542;
-        Fri, 31 Mar 2023 14:46:49 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680299895;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7tV7oZA0rf1CWc0Q6Zc1vdOEds4O2Q0Uu3zvNJJAMp4=;
+        b=Qcr247BgNnQ3d0/DjObRFGudEbo49DCQUnFa1t3OSGEcVrqMKKfX645aBmPl30gIHf
+         4SZrGTTx2PNHjmdlCUQ9CH4WkSwApZPuXiEkX0vxM2BmV/KYNr0bZOxCYbM1EEgfAZ9y
+         d9nOAI+bjzyUhQFoUA8oTZFZkJpbC9D8MuRgWu9gu7Z7ZJ8TuJim/lXB05IQkL8dfkqX
+         KtpZcTcADcRScEvkKDdFwYOKGFWY2ZBKrIXeA9+bViluyMb65357xXUyZg1lJ49lW0bT
+         Zg6vEJZVqE0c2byLHvAm3EJrKzNiR3UsqU6LpJR7y6tF1ifCZ1lITME36Zauzh7BDGcs
+         qXnw==
+X-Gm-Message-State: AAQBX9fCnCzMa+kwoPY8urnxm9noroyEeSE7ESlRTSBjCZd6K98PvQBI
+        lZ6WsT8XccUgVAsu4zKCLk7u/pMPzCwWbyw3kzDLzohN0Rb/tyW1wPB0XyZFTa79uyMNDcj18Y6
+        D06D4jzfZa+47zXte
+X-Received: by 2002:a05:6808:317:b0:389:802c:e05c with SMTP id i23-20020a056808031700b00389802ce05cmr2914620oie.36.1680299893299;
+        Fri, 31 Mar 2023 14:58:13 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZfSnIHSiAs6qQFCSFg5oXHvf1l57MZRo45w4kEano5Uf6AfeqYj1UlImKAN6fHj3KUzjv9+A==
+X-Received: by 2002:a05:6808:317:b0:389:802c:e05c with SMTP id i23-20020a056808031700b00389802ce05cmr2914579oie.36.1680299891595;
+        Fri, 31 Mar 2023 14:58:11 -0700 (PDT)
 Received: from halaney-x13s.attlocal.net (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
-        by smtp.gmail.com with ESMTPSA id x80-20020a4a4153000000b0053d9be4be68sm1328531ooa.19.2023.03.31.14.46.46
+        by smtp.gmail.com with ESMTPSA id g11-20020a4a894b000000b0053bb2ae3a78sm1299277ooi.24.2023.03.31.14.58.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Mar 2023 14:46:49 -0700 (PDT)
+        Fri, 31 Mar 2023 14:58:11 -0700 (PDT)
 From:   Andrew Halaney <ahalaney@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
-        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
-        samuel@sholland.org, mturquette@baylibre.com,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
-        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
-        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
-        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
-        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        richardcochran@gmail.com, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        netdev@vger.kernel.org, bmasney@redhat.com, echanude@redhat.com,
+        ncai@quicinc.com, jsuraj@qti.qualcomm.com, hisunil@quicinc.com,
         Andrew Halaney <ahalaney@redhat.com>
-Subject: [PATCH net-next v3 11/12] net: stmmac: dwmac-qcom-ethqos: Use loopback_en for all speeds
-Date:   Fri, 31 Mar 2023 16:45:48 -0500
-Message-Id: <20230331214549.756660-12-ahalaney@redhat.com>
+Subject: [PATCH v3 0/3] Add EMAC3 support for sa8540p-ride (devicetree/clk bits)
+Date:   Fri, 31 Mar 2023 16:58:01 -0500
+Message-Id: <20230331215804.783439-1-ahalaney@redhat.com>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230331214549.756660-1-ahalaney@redhat.com>
-References: <20230331214549.756660-1-ahalaney@redhat.com>
 MIME-Version: 1.0
 Content-type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -93,133 +81,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It seems that this variable should be used for all speeds, not just
-1000/100.
+This is a forward port / upstream refactor of code delivered
+downstream by Qualcomm over at [0] to enable the DWMAC5 based
+implementation called EMAC3 on the sa8540p-ride dev board.
 
-While at it refactor it slightly to be more readable, including fixing
-the typo in the variable name.
+From what I can tell with the board schematic in hand,
+as well as the code delivered, the main changes needed are:
 
-Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
----
+    1. A new address space layout for /dwmac5/EMAC3 MTL/DMA regs
+    2. A new programming sequence required for the EMAC3 base platforms
 
-Changes since v2:
-    * None
-Changes since v1:
-    * Use a consistent subject prefix with other stmmac changes in series (myself)
 
- .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 36 +++++++++----------
- 1 file changed, 17 insertions(+), 19 deletions(-)
+This series addresses the devicetree and clock changes to support this
+hardware bringup.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-index abec6dd27992..ec9e93147716 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c
-@@ -78,7 +78,7 @@ struct ethqos_emac_por {
- struct ethqos_emac_driver_data {
- 	const struct ethqos_emac_por *por;
- 	unsigned int num_por;
--	bool rgmii_config_looback_en;
-+	bool rgmii_config_loopback_en;
- };
- 
- struct qcom_ethqos {
-@@ -91,7 +91,7 @@ struct qcom_ethqos {
- 
- 	const struct ethqos_emac_por *por;
- 	unsigned int num_por;
--	bool rgmii_config_looback_en;
-+	bool rgmii_config_loopback_en;
- };
- 
- static int rgmii_readl(struct qcom_ethqos *ethqos, unsigned int offset)
-@@ -183,7 +183,7 @@ static const struct ethqos_emac_por emac_v2_3_0_por[] = {
- static const struct ethqos_emac_driver_data emac_v2_3_0_data = {
- 	.por = emac_v2_3_0_por,
- 	.num_por = ARRAY_SIZE(emac_v2_3_0_por),
--	.rgmii_config_looback_en = true,
-+	.rgmii_config_loopback_en = true,
- };
- 
- static const struct ethqos_emac_por emac_v2_1_0_por[] = {
-@@ -198,7 +198,7 @@ static const struct ethqos_emac_por emac_v2_1_0_por[] = {
- static const struct ethqos_emac_driver_data emac_v2_1_0_data = {
- 	.por = emac_v2_1_0_por,
- 	.num_por = ARRAY_SIZE(emac_v2_1_0_por),
--	.rgmii_config_looback_en = false,
-+	.rgmii_config_loopback_en = false,
- };
- 
- static int ethqos_dll_configure(struct qcom_ethqos *ethqos)
-@@ -281,6 +281,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- {
- 	int phase_shift;
- 	int phy_mode;
-+	int loopback;
- 
- 	/* Determine if the PHY adds a 2 ns TX delay or the MAC handles it */
- 	phy_mode = device_get_phy_mode(&ethqos->pdev->dev);
-@@ -294,6 +295,12 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 	rgmii_updatel(ethqos, RGMII_CONFIG2_TX_TO_RX_LOOPBACK_EN,
- 		      0, RGMII_IO_MACRO_CONFIG2);
- 
-+	/* Determine if this platform wants loopback enabled after programming */
-+	if (ethqos->rgmii_config_loopback_en)
-+		loopback = RGMII_CONFIG_LOOPBACK_EN;
-+	else
-+		loopback = 0;
-+
- 	/* Select RGMII, write 0 to interface select */
- 	rgmii_updatel(ethqos, RGMII_CONFIG_INTF_SEL,
- 		      0, RGMII_IO_MACRO_CONFIG);
-@@ -326,12 +333,8 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_PRG_DLY_EN,
- 			      SDCC_DDR_CONFIG_PRG_DLY_EN,
- 			      SDCC_HC_REG_DDR_CONFIG);
--		if (ethqos->rgmii_config_looback_en)
--			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
--				      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
--		else
--			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
--				      0, RGMII_IO_MACRO_CONFIG);
-+		rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
-+			      loopback, RGMII_IO_MACRO_CONFIG);
- 		break;
- 
- 	case SPEED_100:
-@@ -363,13 +366,8 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 		rgmii_updatel(ethqos, SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_EN,
- 			      SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_EN,
- 			      SDCC_HC_REG_DDR_CONFIG);
--		if (ethqos->rgmii_config_looback_en)
--			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
--				      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
--		else
--			rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
--				      0, RGMII_IO_MACRO_CONFIG);
--
-+		rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
-+			      loopback, RGMII_IO_MACRO_CONFIG);
- 		break;
- 
- 	case SPEED_10:
-@@ -403,7 +401,7 @@ static int ethqos_rgmii_macro_init(struct qcom_ethqos *ethqos)
- 			      SDCC_DDR_CONFIG_EXT_PRG_RCLK_DLY_EN,
- 			      SDCC_HC_REG_DDR_CONFIG);
- 		rgmii_updatel(ethqos, RGMII_CONFIG_LOOPBACK_EN,
--			      RGMII_CONFIG_LOOPBACK_EN, RGMII_IO_MACRO_CONFIG);
-+			      loopback, RGMII_IO_MACRO_CONFIG);
- 		break;
- 	default:
- 		dev_err(&ethqos->pdev->dev,
-@@ -548,7 +546,7 @@ static int qcom_ethqos_probe(struct platform_device *pdev)
- 	data = of_device_get_match_data(&pdev->dev);
- 	ethqos->por = data->por;
- 	ethqos->num_por = data->num_por;
--	ethqos->rgmii_config_looback_en = data->rgmii_config_looback_en;
-+	ethqos->rgmii_config_loopback_en = data->rgmii_config_loopback_en;
- 
- 	ethqos->rgmii_clk = devm_clk_get(&pdev->dev, "rgmii");
- 	if (IS_ERR(ethqos->rgmii_clk)) {
+As requested[1], it has been split up by compile time / maintainer tree.
+The associated v3 of the netdev specific changes can be found at [2].
+Together, they result in the ethernet controller working for
+both controllers on this platform.
+
+[0] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/commit/510235ad02d7f0df478146fb00d7a4ba74821b17
+[1] https://lore.kernel.org/netdev/20230320202802.4e7dc54c@kernel.org/
+[2] https://lore.kernel.org/netdev/20230331214549.756660-1-ahalaney@redhat.com/T/#m0afcad0e8031c02bcb5dbfb86cb8acfc287968fe
+
+v2: https://lore.kernel.org/netdev/20230320221617.236323-1-ahalaney@redhat.com/
+v1: https://lore.kernel.org/netdev/20230313165620.128463-1-ahalaney@redhat.com/
+
+Thanks,
+Andrew
+
+Andrew Halaney (3):
+  clk: qcom: gcc-sc8280xp: Add EMAC GDSCs
+  arm64: dts: qcom: sc8280xp: Add ethernet nodes
+  arm64: dts: qcom: sa8540p-ride: Add ethernet nodes
+
+ arch/arm64/boot/dts/qcom/sa8540p-ride.dts     | 181 ++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi        |  59 ++++++
+ drivers/clk/qcom/gcc-sc8280xp.c               |  18 ++
+ include/dt-bindings/clock/qcom,gcc-sc8280xp.h |   2 +
+ 4 files changed, 260 insertions(+)
+
 -- 
 2.39.2
 
