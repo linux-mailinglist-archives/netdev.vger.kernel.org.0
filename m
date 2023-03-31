@@ -2,130 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C1C6D1C11
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 11:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF6156D1C19
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 11:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbjCaJYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 05:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
+        id S231718AbjCaJ02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 05:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjCaJYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 05:24:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9EF1A457
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 02:24:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680254640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pDlKauzTuoDqgzcqRWI0/gxf1vVb1NHhoGy1u+TdmTA=;
-        b=iqoXrsFZ1LDNwWm1i/DskkteTD879TPLfqVridAagZi/JUUYQYcIgq9o4EaG6OINAJkTnp
-        OgZmOGDuRhP9r25Sp4sufYEPcTQw9QrLC/j0/LkjMf0Vgpq1gfSGkizOYPenUsluAVEKSM
-        G+T5gCePhTx8jrgqZBP/rJ1oHyeUnFE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-526-LTZVv6yUN--cqtNNWmyceQ-1; Fri, 31 Mar 2023 05:23:48 -0400
-X-MC-Unique: LTZVv6yUN--cqtNNWmyceQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 52178280A32A;
-        Fri, 31 Mar 2023 09:23:48 +0000 (UTC)
-Received: from calimero.vinschen.de (unknown [10.39.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 315CA202701E;
-        Fri, 31 Mar 2023 09:23:48 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 33188A80CAB; Fri, 31 Mar 2023 11:23:47 +0200 (CEST)
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
-Subject: [PATCH net] net: stmmac: fix up RX flow hash indirection table when setting channels
-Date:   Fri, 31 Mar 2023 11:23:47 +0200
-Message-Id: <20230331092347.268996-1-vinschen@redhat.com>
+        with ESMTP id S231417AbjCaJ0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 05:26:23 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD1D1D2DD;
+        Fri, 31 Mar 2023 02:26:22 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32V9Q0Wg056198;
+        Fri, 31 Mar 2023 04:26:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1680254760;
+        bh=gIvlurnr4TzVrOK7Fbvtp8wI7+jYvwfr27GEkxvhbPA=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=IzQLNJF/SDsPyx/Fc36h8FywkXOM7ig6ENaHw0drRrR8/BCcEQ3GLTmNVII8rDi4z
+         YSialPbAahobwZCkpZxpUIc+bdY4YQWjx3kK3ed8ZGMkBLrZzeHbHtIoMWyOhu5fK7
+         pIdSENoXx9/uSowHlqOExZDjNIG6gK5rAxGt2wNo=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32V9Q0H8016793
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Mar 2023 04:26:00 -0500
+Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 31
+ Mar 2023 04:26:00 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 31 Mar 2023 04:26:00 -0500
+Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32V9PuHs031936;
+        Fri, 31 Mar 2023 04:25:57 -0500
+Message-ID: <7a9c96f4-6a94-4a2c-18f5-95f7246e10d5@ti.com>
+Date:   Fri, 31 Mar 2023 14:55:56 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.4
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable USXGMII
+ mode for J784S4 CPSW9G
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+References: <20230331065110.604516-1-s-vadapalli@ti.com>
+ <20230331065110.604516-3-s-vadapalli@ti.com>
+ <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
+ <54c3964b-5dd8-c55e-08db-61df4a07797c@ti.com>
+ <ZCaYve8wYl15YRxh@shell.armlinux.org.uk>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <ZCaYve8wYl15YRxh@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-stmmac_reinit_queues() fails to fix up the RX hash.  Even if the number
-of channels gets restricted, the output of `ethtool -x' indicates that
-all RX queues are used:
+Russell,
 
-  $ ethtool -l enp0s29f2
-  Channel parameters for enp0s29f2:
-  Pre-set maximums:
-  RX:		8
-  TX:		8
-  Other:		n/a
-  Combined:	n/a
-  Current hardware settings:
-  RX:		8
-  TX:		8
-  Other:		n/a
-  Combined:	n/a
-  $ ethtool -x enp0s29f2
-  RX flow hash indirection table for enp0s29f2 with 8 RX ring(s):
-      0:      0     1     2     3     4     5     6     7
-      8:      0     1     2     3     4     5     6     7
-  [...]
-  $ ethtool -L enp0s29f2 rx 3
-  $ ethtool -x enp0s29f2
-  RX flow hash indirection table for enp0s29f2 with 3 RX ring(s):
-      0:      0     1     2     3     4     5     6     7
-      8:      0     1     2     3     4     5     6     7
-  [...]
+On 31/03/23 13:54, Russell King (Oracle) wrote:
+> On Fri, Mar 31, 2023 at 01:35:10PM +0530, Siddharth Vadapalli wrote:
+>> Hello Russell,
+>>
+>> Thank you for reviewing the patch.
+>>
+>> On 31/03/23 13:27, Russell King (Oracle) wrote:
+>>> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
+>>>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
+>>>> extra_modes member of the J784S4 SoC data. Additionally, configure the
+>>>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
+>>>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
+>>>> "phylink_config".
+>>>
+>>> I don't think TI "get" phylink at all...
+>>>
+>>>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>>> index 4b4d06199b45..ab33e6fe5b1a 100644
+>>>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+>>>>  		mac_control |= CPSW_SL_CTL_GIG;
+>>>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
+>>>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+>>>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
+>>>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
+>>>
+>>> The configuration of the interface mode should *not* happen in
+>>> mac_link_up(), but should happen in e.g. mac_config().
+>>
+>> I will move all the interface mode associated configurations to mac_config() in
+>> the v2 series.
+> 
+> Looking at the whole of mac_link_up(), could you please describe what
+> effect these bits are having:
+> 
+> 	CPSW_SL_CTL_GIG
+> 	CPSW_SL_CTL_EXT_EN
+> 	CPSW_SL_CTL_IFCTL_A
 
-Fix this by setting the indirection table according to the number
-of specified queues.  The result is now as expected:
+CPSW_SL_CTL_GIG corresponds to enabling Gigabit mode (full duplex only).
+CPSW_SL_CTL_EXT_EN when set enables in-band mode of operation and when cleared
+enables forced mode of operation.
+CPSW_SL_CTL_IFCTL_A is used to set the RMII link speed (0=10 mbps, 1=100 mbps).
 
-  $ ethtool -L enp0s29f2 rx 3
-  $ ethtool -x enp0s29f2
-  RX flow hash indirection table for enp0s29f2 with 3 RX ring(s):
-      0:      0     1     2     0     1     2     0     1
-      8:      2     0     1     2     0     1     2     0
-  [...]
-
-Tested on Intel Elkhart Lake.
-
-Fixes: 0366f7e06a6b ("net: stmmac: add ethtool support for get/set channels")
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index c5e74097d9ab..2218b1882f39 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -6948,7 +6948,7 @@ static void stmmac_napi_del(struct net_device *dev)
- int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	int ret = 0;
-+	int ret = 0, i;
- 
- 	if (netif_running(dev))
- 		stmmac_release(dev);
-@@ -6957,6 +6957,8 @@ int stmmac_reinit_queues(struct net_device *dev, u32 rx_cnt, u32 tx_cnt)
- 
- 	priv->plat->rx_queues_to_use = rx_cnt;
- 	priv->plat->tx_queues_to_use = tx_cnt;
-+	for (i = 0; i < ARRAY_SIZE(priv->rss.table); i++)
-+		priv->rss.table[i] = ethtool_rxfh_indir_default(i, rx_cnt);
- 
- 	stmmac_napi_add(dev);
- 
--- 
-2.39.2
-
+Regards,
+Siddharth.
