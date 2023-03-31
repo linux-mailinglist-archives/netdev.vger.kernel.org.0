@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DDD6D2A7E
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B4F6D2A8B
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 00:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233283AbjCaV7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 17:59:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
+        id S233384AbjCaV77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 17:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232990AbjCaV7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:59:36 -0400
+        with ESMTP id S233403AbjCaV7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:59:44 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF8F23FFA
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:58:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ACDCDC9
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:58:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680299905;
+        s=mimecast20190719; t=1680299909;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rCiyg9dGBB6UNsno9U8qc2bm6rLIrDesgavseN/0KQA=;
-        b=MphePYqVzunN0IIh48DSki9QkeoqZKkqnPnmpIWZOfG8oUcq9FTA3VE72z0Fw7JVk6HIJZ
-        dC7+893N4ga9Omo+KlJtnFRM84R9hgAdJ7oH8sJoqO9CijUst0Mcl2WGkiOwfDNk+r4GbN
-        UxMizQzfiAb5WxjKUzNqngrpi+2BgIo=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=dtvlaUsuOBNnhs3AQ92aPIaKuLGL5kAklD70GeG4yxs=;
+        b=JR5Xr6W3j1T8Z5rVDoYUNWdD11KqoHZR4SshaC6PRWvEJWWplnNVh6RSIDLawRv5rC2G5V
+        upqUz5Zm6t3eiSnXd/MGNrpp4SXMSJsMPgOZUg/u35yZndm8kYHLdxx+GrVJi5zzdX45qR
+        z9EPtuqhZjQGiOG+wDRR71dDb1Wr9uE=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-591-6SDanuQlOXuce51pn_HALQ-1; Fri, 31 Mar 2023 17:58:23 -0400
-X-MC-Unique: 6SDanuQlOXuce51pn_HALQ-1
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-17abfe9fd10so11958979fac.0
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:58:23 -0700 (PDT)
+ us-mta-657-MgnHmg2JPaSu7e6XMsMfmw-1; Fri, 31 Mar 2023 17:58:27 -0400
+X-MC-Unique: MgnHmg2JPaSu7e6XMsMfmw-1
+Received: by mail-oo1-f72.google.com with SMTP id d2-20020a4a5202000000b0053b5874f94aso6452574oob.3
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:58:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680299903;
+        d=1e100.net; s=20210112; t=1680299906;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rCiyg9dGBB6UNsno9U8qc2bm6rLIrDesgavseN/0KQA=;
-        b=0OaKWa7yWqLbI+BBxl4QBcSV2DiC683/2aHyj0WO/d3QjdzcBPJjUf4HZqubXB3bNq
-         PSqCNJtFQ6UtcL7Iil8EzGZiD1koQrggY6VdvKgdIBVNV131t5EmSvWNZZKMrnvqQJFH
-         j+OZF8nGvIhcc6CW8qnBCfkFcd9aIoo0K1FeSY17aZnEpDvXODeOb1vKXbshuq2o9gqt
-         oZYqQ2NQgYEA55/kIKwwB/1AQxL5CqwbHj+9Lalo32jR4MQXznbTZ1xeMU8GyqpW3FVp
-         2BW3c+MN6I0VFpDdgBbSdpLdj/rLO7v0/IhiQnU8NwYCtKQjCH6pKviCL9mamlQKAMeF
-         KQUw==
-X-Gm-Message-State: AAQBX9cy966VoIN9w/TBf+lh9K5o1JAayirX1GqiAkzAdGpjQJaGOKCn
-        pNZg8TqTEj7OXk0If+2fs+1Ez5enCfLiz7y55FbwPK7UtW9CydkPp1mZBBigVogrbR+py0exjtc
-        UIi+/tFAKEDLqSSUM
-X-Received: by 2002:aca:2102:0:b0:389:7b6b:7a3d with SMTP id 2-20020aca2102000000b003897b6b7a3dmr3094796oiz.45.1680299903094;
-        Fri, 31 Mar 2023 14:58:23 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YHcYwEaPVb0PTs80nVmJ1lYDlQIT7UZ7m71p1JiRK2YwqEicxxTtQZwuTV/I6TW/X77Zlb9Q==
-X-Received: by 2002:aca:2102:0:b0:389:7b6b:7a3d with SMTP id 2-20020aca2102000000b003897b6b7a3dmr3094773oiz.45.1680299902865;
-        Fri, 31 Mar 2023 14:58:22 -0700 (PDT)
+        bh=dtvlaUsuOBNnhs3AQ92aPIaKuLGL5kAklD70GeG4yxs=;
+        b=jeJ6VNv/ebGMqBTxB1W5LcAX7rgfLSd+xnnSQVfWc57H1Ev/4EjAjIASdLAxvFhabh
+         BHCW8E+cG/HS7ewV+ePU612d6ZG74JEsMGOQPWGZnlbeoyThSaVgWlMJdlpB/kEfKHTp
+         4Yw2c/vxqEnl9iu0pNFx5SdQq8o3et5TMi54HBc9SFbos0dotziIIAU+YlxPiRYMkqSY
+         bgBTKqSNPi2X20nRZK7QB/8B8mLTF85jYUfNrciw8FoLMt6pQKa1b61TTvrfn4Xy7q2I
+         87eWR9rKo5HPE5rjS5LiLOodXsLXv/+JUGf7olyQJIkUOyirGW8Dqsi/jYxYD+oFC/VP
+         0Lyg==
+X-Gm-Message-State: AO0yUKWc4cTESdChVzoAaqZY7+eOFiZb3iq9ukqVMrdOFc8kP1x8NbZ0
+        Slh8kmiiqjFPqZVhhpXLb81oWrkkogTlZRRRN3hhiaHLdkPs5ruRgSc+AZsNsZLiNMHwx95NEaj
+        muETvrz55q5i0ta/G
+X-Received: by 2002:a4a:5291:0:b0:520:331d:9514 with SMTP id d139-20020a4a5291000000b00520331d9514mr13579911oob.1.1680299906454;
+        Fri, 31 Mar 2023 14:58:26 -0700 (PDT)
+X-Google-Smtp-Source: AK7set+TK42AynW8tKNUKi0xOljXNnE7dxT5w546BuQvwYGmXJyefwQ/4guiX20WF0fdgNHrp69cag==
+X-Received: by 2002:a4a:5291:0:b0:520:331d:9514 with SMTP id d139-20020a4a5291000000b00520331d9514mr13579889oob.1.1680299906227;
+        Fri, 31 Mar 2023 14:58:26 -0700 (PDT)
 Received: from halaney-x13s.attlocal.net (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
-        by smtp.gmail.com with ESMTPSA id g11-20020a4a894b000000b0053bb2ae3a78sm1299277ooi.24.2023.03.31.14.58.21
+        by smtp.gmail.com with ESMTPSA id g11-20020a4a894b000000b0053bb2ae3a78sm1299277ooi.24.2023.03.31.14.58.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Mar 2023 14:58:22 -0700 (PDT)
+        Fri, 31 Mar 2023 14:58:25 -0700 (PDT)
 From:   Andrew Halaney <ahalaney@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
@@ -65,9 +65,9 @@ Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
         netdev@vger.kernel.org, bmasney@redhat.com, echanude@redhat.com,
         ncai@quicinc.com, jsuraj@qti.qualcomm.com, hisunil@quicinc.com,
         Andrew Halaney <ahalaney@redhat.com>
-Subject: [PATCH v3 1/3] clk: qcom: gcc-sc8280xp: Add EMAC GDSCs
-Date:   Fri, 31 Mar 2023 16:58:02 -0500
-Message-Id: <20230331215804.783439-2-ahalaney@redhat.com>
+Subject: [PATCH v3 2/3] arm64: dts: qcom: sc8280xp: Add ethernet nodes
+Date:   Fri, 31 Mar 2023 16:58:03 -0500
+Message-Id: <20230331215804.783439-3-ahalaney@redhat.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230331215804.783439-1-ahalaney@redhat.com>
 References: <20230331215804.783439-1-ahalaney@redhat.com>
@@ -84,72 +84,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the EMAC GDSCs to allow the EMAC hardware to be enabled.
+This platform has 2 MACs integrated in it, go ahead and describe them.
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
 ---
 
 Changes since v2:
-    * Add Konrad's Reviewed-by
+    * Fix spacing (Konrad)
 
 Changes since v1:
-    * Add Stephen's Acked-by
-    * Explicitly tested on x13s laptop with no noticeable side effect (Konrad)
+    * None
 
- drivers/clk/qcom/gcc-sc8280xp.c               | 18 ++++++++++++++++++
- include/dt-bindings/clock/qcom,gcc-sc8280xp.h |  2 ++
- 2 files changed, 20 insertions(+)
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 59 ++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
-diff --git a/drivers/clk/qcom/gcc-sc8280xp.c b/drivers/clk/qcom/gcc-sc8280xp.c
-index b3198784e1c3..04a99dbaa57e 100644
---- a/drivers/clk/qcom/gcc-sc8280xp.c
-+++ b/drivers/clk/qcom/gcc-sc8280xp.c
-@@ -6873,6 +6873,22 @@ static struct gdsc usb30_sec_gdsc = {
- 	.pwrsts = PWRSTS_RET_ON,
- };
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+index 42bfa9fa5b96..f28ea86b128d 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+@@ -761,6 +761,65 @@ soc: soc@0 {
+ 		ranges = <0 0 0 0 0x10 0>;
+ 		dma-ranges = <0 0 0 0 0x10 0>;
  
-+static struct gdsc emac_0_gdsc = {
-+	.gdscr = 0xaa004,
-+	.pd = {
-+		.name = "emac_0_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+};
++		ethernet0: ethernet@20000 {
++			compatible = "qcom,sc8280xp-ethqos";
++			reg = <0x0 0x00020000 0x0 0x10000>,
++			      <0x0 0x00036000 0x0 0x100>;
++			reg-names = "stmmaceth", "rgmii";
 +
-+static struct gdsc emac_1_gdsc = {
-+	.gdscr = 0xba004,
-+	.pd = {
-+		.name = "emac_1_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+};
++			clocks = <&gcc GCC_EMAC0_AXI_CLK>,
++				 <&gcc GCC_EMAC0_SLV_AHB_CLK>,
++				 <&gcc GCC_EMAC0_PTP_CLK>,
++				 <&gcc GCC_EMAC0_RGMII_CLK>;
++			clock-names = "stmmaceth",
++				      "pclk",
++				      "ptp_ref",
++				      "rgmii";
 +
- static struct clk_regmap *gcc_sc8280xp_clocks[] = {
- 	[GCC_AGGRE_NOC_PCIE0_TUNNEL_AXI_CLK] = &gcc_aggre_noc_pcie0_tunnel_axi_clk.clkr,
- 	[GCC_AGGRE_NOC_PCIE1_TUNNEL_AXI_CLK] = &gcc_aggre_noc_pcie1_tunnel_axi_clk.clkr,
-@@ -7351,6 +7367,8 @@ static struct gdsc *gcc_sc8280xp_gdscs[] = {
- 	[USB30_MP_GDSC] = &usb30_mp_gdsc,
- 	[USB30_PRIM_GDSC] = &usb30_prim_gdsc,
- 	[USB30_SEC_GDSC] = &usb30_sec_gdsc,
-+	[EMAC_0_GDSC] = &emac_0_gdsc,
-+	[EMAC_1_GDSC] = &emac_1_gdsc,
- };
- 
- static const struct clk_rcg_dfs_data gcc_dfs_clocks[] = {
-diff --git a/include/dt-bindings/clock/qcom,gcc-sc8280xp.h b/include/dt-bindings/clock/qcom,gcc-sc8280xp.h
-index cb2fb638825c..721105ea4fad 100644
---- a/include/dt-bindings/clock/qcom,gcc-sc8280xp.h
-+++ b/include/dt-bindings/clock/qcom,gcc-sc8280xp.h
-@@ -492,5 +492,7 @@
- #define USB30_MP_GDSC					9
- #define USB30_PRIM_GDSC					10
- #define USB30_SEC_GDSC					11
-+#define EMAC_0_GDSC					12
-+#define EMAC_1_GDSC					13
- 
- #endif
++			interrupts = <GIC_SPI 946 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 936 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "macirq", "eth_lpi";
++			iommus = <&apps_smmu 0x4c0 0xf>;
++			power-domains = <&gcc EMAC_0_GDSC>;
++
++			snps,tso;
++			snps,pbl = <32>;
++			rx-fifo-depth = <4096>;
++			tx-fifo-depth = <4096>;
++
++			status = "disabled";
++		};
++
++		ethernet1: ethernet@23000000 {
++			compatible = "qcom,sc8280xp-ethqos";
++			reg = <0x0 0x23000000 0x0 0x10000>,
++			      <0x0 0x23016000 0x0 0x100>;
++			reg-names = "stmmaceth", "rgmii";
++
++			clocks = <&gcc GCC_EMAC1_AXI_CLK>,
++				 <&gcc GCC_EMAC1_SLV_AHB_CLK>,
++				 <&gcc GCC_EMAC1_PTP_CLK>,
++				 <&gcc GCC_EMAC1_RGMII_CLK>;
++			clock-names = "stmmaceth",
++				      "pclk",
++				      "ptp_ref",
++				      "rgmii";
++
++			interrupts = <GIC_SPI 929 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 919 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "macirq", "eth_lpi";
++
++			iommus = <&apps_smmu 0x40 0xf>;
++			power-domains = <&gcc EMAC_1_GDSC>;
++
++			snps,tso;
++			snps,pbl = <32>;
++			rx-fifo-depth = <4096>;
++			tx-fifo-depth = <4096>;
++
++			status = "disabled";
++		};
++
+ 		gcc: clock-controller@100000 {
+ 			compatible = "qcom,gcc-sc8280xp";
+ 			reg = <0x0 0x00100000 0x0 0x1f0000>;
 -- 
 2.39.2
 
