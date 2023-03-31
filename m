@@ -2,100 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8669C6D29B3
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B52246D29C9
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:08:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231770AbjCaVB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 17:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        id S230193AbjCaVIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 17:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbjCaVBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:01:25 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59E51D2E3
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:01:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=XromMjU24NB/gF+AwdswgIFUBAjfaDk+WGupOCyfYFI=; b=JXuZ7wfKLRpQ7KV5EUQFx04xwB
-        Gm0IkJlmotywoLm5Gc8US7nqte4S1eCrt8XJPT2+aBEvAnrIVjogbcnS+TrZhARF19714Yj2DbYDV
-        mv5+hoTDA55ee5oFrjAJtmsK8By7CczCTSg/t2ejdeM++vqZfdzTDkSC48BM667gmAIE=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=nf.local)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1piLs8-0094EL-MV; Fri, 31 Mar 2023 23:01:20 +0200
-Message-ID: <2380a961-ca3e-7693-fc90-11a0a5aa454b@nbd.name>
-Date:   Fri, 31 Mar 2023 23:01:20 +0200
+        with ESMTP id S233055AbjCaVIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:08:01 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA8351D850
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:07:50 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id q206so14204983pgq.9
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:07:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680296870; x=1682888870;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b3HBmEpRE2H5FpBYUp+3+9Ba8fJkZe2jGi9zQ9TL+bQ=;
+        b=W789RceUy8yw1kmhSKR4L5nPOIoAT3j88Yf2vZLzGDSOKDFs8+WB3FKKBLvSNDsvpg
+         5yBxh6cHNeNV4d9Co77o6M93ilUKffiHQQA5DGe5KaDB4ab/QkQON6uY1MwWcwJT49Lb
+         SttW+5/pBvEal8cv5/iMRqbzAn6Os/yaxNIcdGhouK78bicF3ACG8XcMZd9ekA9V6ugt
+         a+RfhCadtDECM9RUZigUSV0QLHClHF7DTypl5S/WCPa5DLOimseRYoBaTml98jUztxsR
+         q/du97bxRyu9X4dLA3P2gUMVh/tdsGRxG4cW+Ajr8EJa8NoGbaI4XOoMNSLmOMyAlh82
+         1/cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680296870; x=1682888870;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=b3HBmEpRE2H5FpBYUp+3+9Ba8fJkZe2jGi9zQ9TL+bQ=;
+        b=o+tHStR1JlWT+igySbWSDSkMsbCWh3RkThk0tdtSdOnMRPg92cxd787qS1lccIAZxY
+         KVVHRPpiXEe5ZfVGEFmEaI0T0f/cJ5xUYIjC+OnEqMLqWOhzpTBqE8FHe3otkfvCPIPB
+         HRwAzQc7FZzco5MDgykHsnjcbCYQJKrzMftWY5zEAAsrg0bSyGMVOpYogipOueet4KX8
+         QiToKT3NiMNaQ9amRkQJptlASw94/jhLyQjXvNs15Ei3IzDo8swwv3a8y1bjl/kMy0bv
+         K6//TwwsxhKz2lvJsKP/57U8kKooYpBhpC6TdK3f9YlTX5lRHgg8t+0EhsBR3RP9RBhv
+         JcUA==
+X-Gm-Message-State: AAQBX9cb9PdSQXqrVjXMA/U+6+2DGDyvexEo/fpdalQvX2CeEnhRytwk
+        P2Au8WbfHj1uhspRnkjYW9q6dbypHHpFhWGDdIE=
+X-Google-Smtp-Source: AKy350anRsfCLJkK+6go7iAS3sjtY50Uy4g6rt48MvbV6wCnxfGDtJ+/VnYLuDaAHD/e9L+vh5drPrTUww+Yab2/Nno=
+X-Received: by 2002:a63:582:0:b0:513:a9b2:9612 with SMTP id
+ 124-20020a630582000000b00513a9b29612mr1935357pgf.6.1680296870327; Fri, 31 Mar
+ 2023 14:07:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.0
-Subject: Re: [PATCH v3 net-next 1/2] net: ethernet: mtk_eth_soc: add code for
- offloading flows from wlan devices
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     netdev@vger.kernel.org
-References: <20230331124707.40296-1-nbd@nbd.name>
- <ZCdEvEJTJewWnuU9@corigine.com>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <ZCdEvEJTJewWnuU9@corigine.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230331205759.92309-1-shenwei.wang@nxp.com> <20230331205759.92309-2-shenwei.wang@nxp.com>
+In-Reply-To: <20230331205759.92309-2-shenwei.wang@nxp.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 31 Mar 2023 18:07:38 -0300
+Message-ID: <CAOMZO5BwVWCMyiFG+HbjxeSvo+8x+1JtSmLmLmXWrWrsg6Cc7A@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] net: stmmac: dwmac-imx: use platform specific
+ reset for imx93 SoCs
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Wong Vee Khee <veekhee@apple.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Revanth Kumar Uppala <ruppala@nvidia.com>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Andrey Konovalov <andrey.konovalov@linaro.org>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31.03.23 22:38, Simon Horman wrote:
-> On Fri, Mar 31, 2023 at 02:47:06PM +0200, Felix Fietkau wrote:
->> WED version 2 (on MT7986 and later) can offload flows originating from
->> wireless devices.
->> In order to make that work, ndo_setup_tc needs to be implemented on the
->> netdevs. This adds the required code to offload flows coming in from WED,
->> while keeping track of the incoming wed index used for selecting the
->> correct PPE device.
->> 
->> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> 
-> ...
-> 
->> diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-> 
-> ...
-> 
->> +static int
->> +mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
->> +{
->> +	struct flow_cls_offload *cls = type_data;
->> +	struct mtk_mac *mac = netdev_priv(dev);
-> 
-> This does not compile because dev is undefined at this point.
-Yes, I had fixed that, but forgot to amend the commit before sending it 
-out. Sorry about that.
+Hi Shenwei,
 
-> ...
-> 
->> +static int
->> +mtk_wed_setup_tc_block(struct mtk_wed_hw *hw, struct net_device *dev,
->> +		       struct flow_block_offload *f)
->> +{
->> +	struct mtk_wed_flow_block_priv *priv;
->> +	static LIST_HEAD(block_cb_list);
->> +	struct flow_block_cb *block_cb;
->> +	struct mtk_eth *eth = hw->eth;
->> +	bool register_block = false;
-> 
-> gcc-12 with W=1 tellsme that register_block is unused.
-> It should be removed.
-Right. Will send v4 tomorrow.
+On Fri, Mar 31, 2023 at 5:58=E2=80=AFPM Shenwei Wang <shenwei.wang@nxp.com>=
+ wrote:
+>
+> The patch addresses an issue with the reset logic on the i.MX93 SoC, whic=
+h
+> requires configuration of the correct interface speed under RMII mode to
+> complete the reset. The patch implements a fix_soc_reset function and use=
+s
+> it specifically for the i.MX93 SoCs.
+>
+> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> ---
+>  .../net/ethernet/stmicro/stmmac/dwmac-imx.c   | 29 ++++++++++++++++++-
+>  1 file changed, 28 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/ne=
+t/ethernet/stmicro/stmmac/dwmac-imx.c
+> index ac8580f501e2..3dfd13840535 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
+> @@ -19,9 +19,9 @@
+>  #include <linux/pm_wakeirq.h>
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
+> -#include <linux/stmmac.h>
+>
+>  #include "stmmac_platform.h"
+> +#include "common.h"
 
-Thanks,
+These changes in the header seem to be unrelated.
 
-- Felix
+Apart from that:
+
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
