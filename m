@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D1E46D16C8
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 07:28:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE0776D16CC
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 07:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbjCaF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 01:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56474 "EHLO
+        id S229853AbjCaFao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 01:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCaF2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 01:28:43 -0400
+        with ESMTP id S229437AbjCaFam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 01:30:42 -0400
 Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D505A11EAD;
-        Thu, 30 Mar 2023 22:28:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1680240471; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F8911EAD;
+        Thu, 30 Mar 2023 22:30:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1680240483; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=L06KcmfBNR7A0LWsD9ZHLpL03rDdGFbcptnk4FioS1o3vRP68W8krzV9Y0I9NWuiIaR2GIh64mXKOHPiIQKfe/hzuAih4QE/mcXojbXOFoT2QavtCD4WmMsNxNzBvPuGh5Z2JQe1PW4V+Nd3vXz1inPJsl2IOE9qLRXMHewrQrk=
+        b=RvVlYFb2Zc0ZD6oJndJIpkFaslzjtpFWroTKZjzsPwpHXL/Iz/BJQt3fMn54XG00SsRKmaUJ164I0I5O5/VbeZ+K2YG2xgfTKCSAu4uMFKShv+XUf18cjBOPLnDgMY2V4J2Sehhlra5t5rwPrYUrj2nWeunSxcb3gwRehmfm7/Y=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1680240471; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Lf3DvMAV/sNzJPuHjjqRoBkj47OvRM2awPuqcku5fzU=; 
-        b=nQGHypyeNGi6aTq6tTqQ8nws5kYkWD67rV8B82ul4Mp7LlJzRsxVgj75lI/nCbKmmXhpvEBjA/WMuMv3xlA/e003WUkSJyZqqbqf5Y1FqQlniEB5f5oU8/QWAJ9/eOoYNOR9uarNKCETkwn9xV+DB4YPnaXoHrPCMaXIl6KLFFo=
+        t=1680240483; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=hpTD1E9VRcVfFYExIFfN1WLmbr3kxCe8d45/97E43fA=; 
+        b=C/z4frI54y1q3KH4u0ZoZS8Qn7UuLKxUGBMApFmcxnkInVHiOZFSKo2N/WZKlWT6c+4elLz6V+6vTebplMWR0BSSsvcq2WS0uQbJOQDCvd5g2Lxv8QWLf9vrVpE0QJzvh/k5kr2L7tGPVX0mNcRNW+bfL6fATpp8GLIoZ+zp7Y4=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1680240471;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1680240483;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=Lf3DvMAV/sNzJPuHjjqRoBkj47OvRM2awPuqcku5fzU=;
-        b=AViDsNjdJKXnzidguIx6dv+Nl7fObcxbOHw4MOtcU1pOSt+nnlmPKMIWPRCHvkkA
-        15t35e6w+S8EiAaDaki6zRRA0Ckn+Fhip7p4dSQtpHGvl5ZmUEXuGYDkf1LiiRIDFPz
-        g0wj2BnLutnaZLE+sTL5KoWI2ZETrZokfvI17R+k=
+        bh=hpTD1E9VRcVfFYExIFfN1WLmbr3kxCe8d45/97E43fA=;
+        b=Eaa8QaJQsJE8DiBURs0KtniURPYINspWvFU9zob4oUgh7Bx8lrOIU4eU4opoBYMc
+        XZBKrfT66eY8jB42S6/rb6dmk6taeWYgHVt0h/fE+mbJjU/ixHPFXqzRB0zRqkKZ16o
+        nzRUt4CgPyJxV6CiQzpIn0y8gSMI/2elmlUQw9wA=
 Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1680240470694189.91428087746; Thu, 30 Mar 2023 22:27:50 -0700 (PDT)
-Message-ID: <c11c86e4-5f8e-5b9b-1db5-e3861b2bade6@arinc9.com>
-Date:   Fri, 31 Mar 2023 08:27:43 +0300
+        with SMTPS id 1680240481481381.87214760805136; Thu, 30 Mar 2023 22:28:01 -0700 (PDT)
+Message-ID: <a7ab2828-dc03-4847-c947-c7685841f884@arinc9.com>
+Date:   Fri, 31 Mar 2023 08:27:54 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH net-next 00/15] net: dsa: add support for MT7988
-To:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
+Subject: Re: [PATCH 15/15] dt-bindings: net: dsa: mediatek,mt7530: add
+ mediatek,mt7988-switch
+Content-Language: en-US
+To:     Daniel Golle <daniel@makrotopia.org>, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -61,9 +65,9 @@ Cc:     Sam Shih <Sam.Shih@mediatek.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
 References: <cover.1680180959.git.daniel@makrotopia.org>
-Content-Language: en-US
+ <80a853f182eac24735338f3c1f505e5f580053ca.1680180959.git.daniel@makrotopia.org>
 From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <cover.1680180959.git.daniel@makrotopia.org>
+In-Reply-To: <80a853f182eac24735338f3c1f505e5f580053ca.1680180959.git.daniel@makrotopia.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-ZohoMailClient: External
@@ -77,33 +81,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.03.2023 18:19, Daniel Golle wrote:
-> The MediaTek MT7988 SoC comes with a built-in switch very similar to
-> previous MT7530 and MT7531. However, the switch address space is mapped
-> into the SoCs memory space rather than being connected via MDIO.
-> Using MMIO simplifies register access and also removes the need for a bus
-> lock, and for that reason also makes interrupt handling more light-weight.
+On 30.03.2023 18:23, Daniel Golle wrote:
+> Add documentation for the built-in switch which can be found in the
+> MediaTek MT7988 SoC.
 > 
-> Note that this is different from previous SoCs like MT7621 and MT7623N
-> which also came with an integrated MT7530-like switch which yet had to be
-> accessed via MDIO.
-
-MT7623NI does not come with the MT7530 switch. MT7623AI does.
-
-It's not an MT7530-like switch, it's the MT7530 switch, which is part of 
-the multi-chip module, in a chip-stack package.
-
-To be more specific, it's only the MT7621AT, MT7621DAT, and MT7621ST 
-SoCs. MT7621NT SoC don't have it.
-
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 26 +++++++++++++++++--
+>   1 file changed, 24 insertions(+), 2 deletions(-)
 > 
-> Split-off the part of the driver registering an MDIO driver, then add
-> another module acting as MMIO/platform driver.
-> 
-> The whole series has been tested on various MediaTek boards:
->   * MT7623A + MT7530 (BPi-R2)
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index 5ae9cd8f99a24..15953f0e9d1a6 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -11,16 +11,23 @@ maintainers:
+>     - Landen Chao <Landen.Chao@mediatek.com>
+>     - DENG Qingfang <dqfext@gmail.com>
+>     - Sean Wang <sean.wang@mediatek.com>
+> +  - Daniel Golle <daniel@makrotopia.org>
 
-BPI-R2 has MT7623NI SoC, not MT7623AI. The MT7530 switch in this device 
-is standalone.
+Please put it in alphabetical order by the first name.
+
+>   
+>   description: |
+> -  There are two versions of MT7530, standalone and in a multi-chip module.
+> +  There are three versions of MT7530, standalone, in a multi-chip module and
+> +  built-into a SoC.
+
+I assume you put this to point out the situation with MT7988?
+
+This brings to light an underlying problem with the description as the 
+MT7620 SoCs described below have the MT7530 switch built into the SoC, 
+instead of being part of the MCM.
+
+The switch IP on MT7988 is for sure not MT7530 so either fix this and 
+the text below as a separate patch or let me handle it.
+
+>   
+>     MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
+>     MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
+>   
+> +  The MT7988 SoC comes a built-in switch similar to MT7531 as well as 4 Gigabit
+
+s/comes a/comes with a
+
+> +  Ethernet PHYs and the switch registers are directly mapped into SoC's memory
+> +  map rather than using MDIO. It comes with an internally connected 10G CPU port
+> +  and 4 user ports connected to the built-in Gigabit Ethernet PHYs.
+
+Are you sure this is not the MT7531 IP built into the SoC, like MT7530 
+on the MT7620 SoCs? Maybe DENG Qingfang would like to clarify as they 
+did for MT7530.
+
+> +
+>     MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
+>     and the switch registers are directly mapped into SoC's memory map rather than
+> -  using MDIO. The DSA driver currently doesn't support this.
+> +  using MDIO. The DSA driver currently doesn't support MT7620 variants.
+>   
+>     There is only the standalone version of MT7531.
+
+Can you put the MT7988 information below here instead.
+
+>   
+> @@ -81,6 +88,10 @@ properties:
+>             Multi-chip module MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
+>           const: mediatek,mt7621
+>   
+> +      - description:
+> +          Built-in switch of the MT7988 SoC
+> +        const: mediatek,mt7988-switch
+> +
+>     reg:
+>       maxItems: 1
+>   
+> @@ -268,6 +279,17 @@ allOf:
+>         required:
+>           - mediatek,mcm
+>   
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          const: mediatek,mt7988-switch
+> +    then:
+> +      $ref: "#/$defs/mt7530-dsa-port"
+
+The CPU ports bindings for MT7530 don't match the characteristics of the 
+switch on the MT7988 SoC you described above. We need new definitions 
+for the CPU ports on the switch on the MT7988 SoC.
+
+What's the CPU port number? Does it accept rgmii or only the 10G phy-mode?
+
+> +      properties:
+> +        gpio-controller: false
+> +        mediatek,mcm: false
+> +        reset-names: false
+
+I'd rather not add reset-names here and do:
+
+   - if:
+       required:
+         - mediatek,mcm
+     then:
+       properties:
+         reset-gpios: false
+
+       required:
+         - resets
+         - reset-names
+     else:
+       properties:
+         resets: false
+         reset-names: false
+
+I can handle this if you'd like.
 
 Arınç
