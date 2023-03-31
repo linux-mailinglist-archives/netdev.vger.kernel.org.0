@@ -2,52 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D306D26AD
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 19:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AD36D26BA
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 19:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbjCaRa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 13:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        id S230332AbjCaReO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 13:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbjCaRa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 13:30:57 -0400
-Received: from smtp-8faf.mail.infomaniak.ch (smtp-8faf.mail.infomaniak.ch [IPv6:2001:1600:3:17::8faf])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3089F1D2CA
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 10:30:54 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Pp6l121lpzMqR6x;
-        Fri, 31 Mar 2023 19:30:53 +0200 (CEST)
-Received: from unknown by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Pp6l0421rzMpqPr;
-        Fri, 31 Mar 2023 19:30:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1680283853;
-        bh=48PJInuIliMAXlUYsxYTA8stA5dTlSv7rxJqGVVbJm4=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=UlROYnn69+qWcWv1EsSLuJYTfmenKH9SXEv6pejekdjFZwa3VhjL7xSPMFN/KWTEI
-         AQ4s9M+g3LdW/DFxTQwmGp8lrOs8OH23mf2HvENS7DMa/AwfoY4fsAmh1MOT0QRlc2
-         19GpfgYox5d9q9KI/36zcA//b0FobwaiSwZ0V8z4=
-Message-ID: <01bdfa52-3bac-4703-6caa-d83ea5990c87@digikod.net>
-Date:   Fri, 31 Mar 2023 19:30:51 +0200
+        with ESMTP id S229967AbjCaReN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 13:34:13 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D3F1DFB7;
+        Fri, 31 Mar 2023 10:34:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FE46kLz9uJjW5SKgCGzgfu0ngHsZTKPhOoZMpfKXsLWgbW/ZJMeyYHrX0DcTADnAJOaLFU8up+AmgmNLCmeys7WJsA/uT4z3qFVpl8UxAAAooVHd3RSdYluiQ0HHE60O3BgYjOcB/CnUdi9uk7AEvtNdRQK7xgEIE14xo+KR/tk+6vGxaotLYpqITjZuk36z+YEu0G3oBVKp+2aQrvZH1PaQIF/KIyvNAD/SWYfJBdmsxy2/kimPgnGGt3GdfY5gsedIP5OD8IlOuz1wR2qos2ma4k/00I6xdW2x8iSCTMvD8DyMb9NThfb5kuRsalF00T6JbRRTHUvGHdaVj5Ye+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QSLuyk1uuwO09VNuKuVBkl1XKKaCqQ51pP511L4Ggg4=;
+ b=UCyLt8CREmMWoA7boQp59sZ1DhLOKpFU54TETKmwnEh0jhVqs10rwZ8JEjDYlUdBod+ev5J9SvM4x6EjRiZFTEU5cy5WORwR91tyOCiQkHtm+NvrLCQCtzN53+KtOABk20+GGGgmtC1HlL1qSoapVfCVHJPnOx2X3eBo1z2AZqZUHBmrAwsF6413s+Ni2arelqoFkCw2IspwE9ShNXAePq5mWhNVBxd9KyBSIvzEmMQLX1PK/GNCQqAceQfwlDyhBTIW2pNJf9HNz2y1jLz830K5RMX0k+nPedMiX+V58xYRv8BquYaG+Zn38hAd0/HNudRoi33TRTbWCQItH3S/4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QSLuyk1uuwO09VNuKuVBkl1XKKaCqQ51pP511L4Ggg4=;
+ b=MvLjzsZAARkTme48Pua6M4rO+AgE47hqgkAHJ7i5LbuIqXaHP3oYxZoudO4fyKS1Wge/OEMLv2SQgGZHgeDD4zQXZ99fLGuPS393nBloVN4Pm6Wb/0fCC3A16B+tht2Dxd4r8hG9T6i2fpUVtXrDgFj9LRw+3f0UwTlyeyE98Ps=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ2PR13MB6070.namprd13.prod.outlook.com (2603:10b6:a03:4fd::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.24; Fri, 31 Mar
+ 2023 17:34:04 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.021; Fri, 31 Mar 2023
+ 17:34:04 +0000
+Date:   Fri, 31 Mar 2023 19:33:57 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Chenyuan Mi <michenyuan@huawei.com>
+Cc:     isdn@linux-pingi.de, marcel@holtmann.org, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cmtp: fix argument error
+Message-ID: <ZCcZhZXuGXqnIjiZ@corigine.com>
+References: <20230331064520.1320749-1-michenyuan@huawei.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230331064520.1320749-1-michenyuan@huawei.com>
+Organisation: Horms Solutions BV
+X-ClientProxiedBy: AS4PR09CA0006.eurprd09.prod.outlook.com
+ (2603:10a6:20b:5e0::16) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
- support
-Content-Language: en-US
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
- <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
- <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
-In-Reply-To: <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Infomaniak-Routing: alpha
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ2PR13MB6070:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1aee3e91-97a0-4bd6-ef81-08db320e1f79
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /EPjzq0UCa633aRSUFeJyUt2LrSYT/0kHxJ98pF25rHJU6PrFgbgxtqcRSjrX6wgLHccQ5JnJcfoCp8ideBevYkN5OLqpWTQN4LTuwz4L4k40Sk7OoxkTQnaniTx+8l47g/wAfA+DWDhECuFjwWFwxvgB1jO//qkn4JiefCvoQqKdz99utwQijfrGx+Eir+TOoMzOvGRWtNYTWZxXr41Ufm3DwxPfxNjg1VjtQPxrlcao1PQ25AoKtrxs0re+9EKtsRvb+1w1Vzzv2MPVJUr2wKExoM9BgnyZaUuKTU7Bs26uTRbe+VsXznpFoCAFaRUgq5jkmdsc5/XGc314WP1Bgfi+9eB2D3yy8e4+L4BDAmR1+WnwOCN/zrWn+NOFu7nOlUeYr9clRzcu7WBNOX/p2G1fhe6dtBBltzzgavOkmm4lemNKTv/ewrzhPGyuz6NJYL/YTlwCuqy17H1r56sMVCqDkGfZPweKCnsnXtw7dRTDeyjDKPHl1OzsCKe5/0uDd8LurBbClvFQZ3cNkuWYn1CpOpCgkGohMp3ddM81Ik=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(376002)(39840400004)(136003)(366004)(346002)(451199021)(2616005)(316002)(6666004)(478600001)(6506007)(6512007)(66946007)(8676002)(186003)(4326008)(6916009)(83380400001)(6486002)(66556008)(66476007)(5660300002)(7416002)(41300700001)(8936002)(44832011)(2906002)(38100700002)(36756003)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wguVCwWq6rVbycae1YF+x/HhYKmAwWi6iXTf3fgtFLlQlUyQBcALQVdIu1k5?=
+ =?us-ascii?Q?2sEusWLq3nw1/gFx9ak0WSvpxhn7Y6PnArjEP0h8PQ2HUMWSt0r4+3Rxr6A8?=
+ =?us-ascii?Q?2Xa3I8d3VFI+lp+tqzo6UdolF+Lqo032eNAhtdWun76Y4x+lj+2jn/YpHOJG?=
+ =?us-ascii?Q?/QbzbryUrrUb7umepTQMvayVtOfbRqFKq56tBkT6lcYANlvuPKu+RiqwdLRE?=
+ =?us-ascii?Q?wayvj8E+jWBysyzTdu62VeyA7swIWvnQOEdGRYQ4Phu8VdDrUYqeKtzsuHiZ?=
+ =?us-ascii?Q?63VvBX3EfYuiqld/v9Soh8632Gw3Kdp31dVvnDIXny3xHqKrBljseQmRra6k?=
+ =?us-ascii?Q?bjvHtqjo437PQLGmkEv0TPvRcRWGbAghQ32oanmfeaGBscqnMkePpQH0j5EF?=
+ =?us-ascii?Q?9/YZkB+PGuDf1KIP2L7iit/Zdz7DfhJYrHn3coGDLA71IJ+ddfX54H611xOY?=
+ =?us-ascii?Q?P0Gx692BWFOpH7U3Sh1ew3pwZFbrM3k47cY7K1qd7fGn+XYbffXI91C5NzcI?=
+ =?us-ascii?Q?+11g2Rtmi3RsoNLfOs3VIhcR6zJ0HJIBcztDGjiOZo7ECUntJXOJS3gbMjQL?=
+ =?us-ascii?Q?Y4GH2NIgpPu5ftUjMd/j+QXqeqrf7Y0fUg2EI46FTRn/q0swXd2UGh6nw8kX?=
+ =?us-ascii?Q?H9SuAyQltYqHYtiPY2EohwROA8X8TDojm8SNY3WRDZz50t/PvkyqxQoipPNP?=
+ =?us-ascii?Q?M2Y2M62HXuRx7kNdVSdfGNgVzUzzu5Z+dicCmjjS/eDr4VqbF3yAlgcaDcCK?=
+ =?us-ascii?Q?i7XlOO71LDvHPbv0RdL9cTYVr9wT79ns31mvx+N5GWR5SXHkx9K4M/p0qs/A?=
+ =?us-ascii?Q?6VOzxTYxdpBW3BTQo1LOpzesTBUvwhgoPVNalGUoXk6aZ++hw7LJnV6OOWiK?=
+ =?us-ascii?Q?oViW5bQwZidYxg+xFR+Y/NVYf6x1CPufqkf2WccPskc2s48YoKi9wcG/a22O?=
+ =?us-ascii?Q?5Sk0SL7OZMjRNIzc2Oj1jrmxTcCPJFreIOHfZHkVg8HqtIftpeRqG7AgvpQE?=
+ =?us-ascii?Q?LDFtKG0yqqnhIIIWPmFoO9MSq4NWAsPH3yxqz1n4uy31VLXvClanjMDYGlur?=
+ =?us-ascii?Q?5b6pbZvxYlOwLgGOxJoXR3ACOQOyk7gB6BP6RgL42wIm+wELP8wQEZK7qeEW?=
+ =?us-ascii?Q?iIOpZBU0TnZdUkt0NQHzBX8f8TlEOmwPKsTKK6LMPrA3poZRoENCJI1KGbcr?=
+ =?us-ascii?Q?ag3RjbehwVc3o7wuMyFZ2yw3vdKqadNKzqk0LtZ2myNX8vMmJsoppCJFNhbK?=
+ =?us-ascii?Q?suXs+5nAxzH0caWVjNruSzdyse6dpBkFM8J2Q9SrFntPw19Bj9Q7FiepXc7r?=
+ =?us-ascii?Q?4tbG3A7YkojDoo/7x+OFQf5DqrwDZ011t62jCxn3j07m7ovsZ/mfob5KIQ34?=
+ =?us-ascii?Q?AZN6abYuwdxCMvW/A6kbiO6DDWnr/YDAqdNHqa4eifeASF+BxuOK9CUPdst5?=
+ =?us-ascii?Q?elR0f7N9kHKgRz8XHn+hRVr41rZYKMDcwZcyZiExnyDqMW67Z4Rj9Y2tg/G6?=
+ =?us-ascii?Q?qUFt3r/LWCsuqDd4sGuZIH/3gBux3B3OB7GITGsVl18bawm6N6CXSKWSLyEH?=
+ =?us-ascii?Q?ARYYpiOc2+wx3F/3KRNcq7a7cXtQjbIyvSpH29JHvmC8JOoP+vR5ZEnk2Bjm?=
+ =?us-ascii?Q?RkTW3hjMKpnkrifkaaNZKTyCs7Vh8NP8YQPJ2FtRdqS2FWOX15h+ToaNNJS1?=
+ =?us-ascii?Q?4jNvYg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1aee3e91-97a0-4bd6-ef81-08db320e1f79
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 17:34:04.4960
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IUevW7V/7t41/xBjVKIC4jIZ3gJMJ5jd3u5j9YULEubORjhpgASQEOa+T+rdvVmylIh8QtOabij1WlnKqORHXeVFhvCs+7ItYY7HkhLRVcs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR13MB6070
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,233 +116,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Mar 31, 2023 at 02:45:20PM +0800, Chenyuan Mi wrote:
+> Fix this issue by using BTPROTO_CMTP as argument instead of BTPROTO_HIDP.
 
-On 31/03/2023 19:24, Mickaël Salaün wrote:
-> 
-> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
->> This commit adds network rules support in the ruleset management
->> helpers and the landlock_create_ruleset syscall.
->> Refactor user space API to support network actions. Add new network
->> access flags, network rule and network attributes. Increment Landlock
->> ABI version. Expand access_masks_t to u32 to be sure network access
->> rights can be stored. Implement socket_bind() and socket_connect()
->> LSM hooks, which enable to restrict TCP socket binding and connection
->> to specific ports.
->>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->>
->> Changes since v9:
->> * Changes UAPI port field to __u64.
->> * Moves shared code into check_socket_access().
->> * Adds get_raw_handled_net_accesses() and
->> get_current_net_domain() helpers.
->> * Minor fixes.
->>
->> Changes since v8:
->> * Squashes commits.
->> * Refactors commit message.
->> * Changes UAPI port field to __be16.
->> * Changes logic of bind/connect hooks with AF_UNSPEC families.
->> * Adds address length checking.
->> * Minor fixes.
->>
->> Changes since v7:
->> * Squashes commits.
->> * Increments ABI version to 4.
->> * Refactors commit message.
->> * Minor fixes.
->>
->> Changes since v6:
->> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
->>     because it OR values.
->> * Makes landlock_add_net_access_mask() more resilient incorrect values.
->> * Refactors landlock_get_net_access_mask().
->> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
->>     LANDLOCK_NUM_ACCESS_FS as value.
->> * Updates access_masks_t to u32 to support network access actions.
->> * Refactors landlock internal functions to support network actions with
->>     landlock_key/key_type/id types.
->>
->> Changes since v5:
->> * Gets rid of partial revert from landlock_add_rule
->> syscall.
->> * Formats code with clang-format-14.
->>
->> Changes since v4:
->> * Refactors landlock_create_ruleset() - splits ruleset and
->> masks checks.
->> * Refactors landlock_create_ruleset() and landlock mask
->> setters/getters to support two rule types.
->> * Refactors landlock_add_rule syscall add_rule_path_beneath
->> function by factoring out get_ruleset_from_fd() and
->> landlock_put_ruleset().
->>
->> Changes since v3:
->> * Splits commit.
->> * Adds network rule support for internal landlock functions.
->> * Adds set_mask and get_mask for network.
->> * Adds rb_root root_net_port.
->>
->> ---
->>    include/uapi/linux/landlock.h                |  49 +++++
->>    security/landlock/Kconfig                    |   1 +
->>    security/landlock/Makefile                   |   2 +
->>    security/landlock/limits.h                   |   6 +-
->>    security/landlock/net.c                      | 198 +++++++++++++++++++
->>    security/landlock/net.h                      |  26 +++
->>    security/landlock/ruleset.c                  |  52 ++++-
->>    security/landlock/ruleset.h                  |  63 +++++-
->>    security/landlock/setup.c                    |   2 +
->>    security/landlock/syscalls.c                 |  72 ++++++-
->>    tools/testing/selftests/landlock/base_test.c |   2 +-
->>    11 files changed, 450 insertions(+), 23 deletions(-)
->>    create mode 100644 security/landlock/net.c
->>    create mode 100644 security/landlock/net.h
-> 
-> [...]
-> 
->> diff --git a/security/landlock/net.c b/security/landlock/net.c
-> 
-> [...]
-> 
->> +static int check_addrlen(const struct sockaddr *const address, int addrlen)
-> 
-> const int addrlen
-> 
->> +{
->> +	if (addrlen < offsetofend(struct sockaddr, sa_family))
->> +		return -EINVAL;
->> +	switch (address->sa_family) {
->> +	case AF_UNSPEC:
->> +	case AF_INET:
->> +		if (addrlen < sizeof(struct sockaddr_in))
->> +			return -EINVAL;
->> +		return 0;
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +	case AF_INET6:
->> +		if (addrlen < SIN6_LEN_RFC2133)
->> +			return -EINVAL;
->> +		return 0;
->> +#endif
->> +	}
->> +	WARN_ON_ONCE(1);
->> +	return 0;
->> +}
->> +
->> +static u16 get_port(const struct sockaddr *const address)
->> +{
->> +	/* Gets port value in host byte order. */
->> +	switch (address->sa_family) {
->> +	case AF_UNSPEC:
->> +	case AF_INET: {
->> +		const struct sockaddr_in *const sockaddr =
->> +			(struct sockaddr_in *)address;
->> +		return ntohs(sockaddr->sin_port);
-> 
-> Storing ports in big endian (in rulesets) would avoid converting them
-> every time the kernel checks a socket port. The above comment should
-> then be updated too.
+Thanks for your patch. Some things you may want to consider:
 
-You can then return a __be16 type here and at least also use __be16 in 
-check_socket_access().
+* I think it would be good to describe what the effect of this problem is,
+  if it can be observed. And if not, say so. I think it would
+  also be useful to state how the problem was found. F.e. using a tool, or
+  by inspection.
 
-> 
-> 
->> +	}
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +	case AF_INET6: {
->> +		const struct sockaddr_in6 *const sockaddr_ip6 =
->> +			(struct sockaddr_in6 *)address;
->> +		return ntohs(sockaddr_ip6->sin6_port);
->> +	}
->> +#endif
->> +	}
->> +	WARN_ON_ONCE(1);
->> +	return 0;
->> +}
->> +
->> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
->> +			       access_mask_t access_request)
->> +{
->> +	int ret;
->> +	bool allowed = false;
->> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
->> +	const struct landlock_rule *rule;
->> +	access_mask_t handled_access;
->> +	const struct landlock_id id = {
->> +		.key.data = port,
->> +		.type = LANDLOCK_KEY_NET_PORT,
->> +	};
->> +	const struct landlock_ruleset *const domain = get_current_net_domain();
->> +
->> +	if (WARN_ON_ONCE(!domain))
->> +		return 0;
->> +	if (WARN_ON_ONCE(domain->num_layers < 1))
->> +		return -EACCES;
->> +	/* Check if it's a TCP socket. */
->> +	if (sock->type != SOCK_STREAM)
->> +		return 0;
->> +
->> +	ret = check_addrlen(address, addrlen);
->> +	if (ret)
->> +		return ret;
->> +
->> +	switch (address->sa_family) {
->> +	case AF_UNSPEC:
->> +		/*
->> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
->> +		 * association, which have the same effect as closing the
->> +		 * connection while retaining the socket object (i.e., the file
->> +		 * descriptor).  As for dropping privileges, closing
->> +		 * connections is always allowed.
->> +		 */
->> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
->> +			return 0;
->> +
->> +		/*
->> +		 * For compatibility reason, accept AF_UNSPEC for bind
->> +		 * accesses (mapped to AF_INET) only if the address is
->> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
->> +		 * required to not wrongfully return -EACCES instead of
->> +		 * -EAFNOSUPPORT.
->> +		 */
->> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
->> +			const struct sockaddr_in *const sockaddr =
->> +				(struct sockaddr_in *)address;
->> +
->> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
->> +				return -EAFNOSUPPORT;
->> +		}
->> +
->> +		fallthrough;
->> +	case AF_INET:
->> +#if IS_ENABLED(CONFIG_IPV6)
->> +	case AF_INET6:
->> +#endif
->> +		rule = landlock_find_rule(domain, id);
->> +		handled_access = landlock_init_layer_masks(
->> +			domain, access_request, &layer_masks,
->> +			LANDLOCK_KEY_NET_PORT);
->> +		allowed = landlock_unmask_layers(rule, handled_access,
->> +						 &layer_masks,
->> +						 ARRAY_SIZE(layer_masks));
->> +	}
->> +	return allowed ? 0 : -EACCES;
->> +}
->> +
->> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
->> +			    int addrlen)
->> +{
->> +	return check_socket_access(sock, address, addrlen, get_port(address),
->> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
->> +}
->> +
->> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
->> +			       int addrlen)
->> +{
->> +	return check_socket_access(sock, address, addrlen, get_port(address),
->> +				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
->> +}
-> 
-> [...]
+* As this is described as a fix, it should probably have a fixes tag.
+  I think it would be:
+
+Fixes: 8c8de589cedd ("Bluetooth: Added /proc/net/cmtp via bt_procfs_init()")
+> Signed-off-by: Chenyuan Mi <michenyuan@huawei.com>
+> ---
+>  net/bluetooth/cmtp/sock.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Code change looks good.
+
+> diff --git a/net/bluetooth/cmtp/sock.c b/net/bluetooth/cmtp/sock.c
+> index 96d49d9fae96..cf4370055ce2 100644
+> --- a/net/bluetooth/cmtp/sock.c
+> +++ b/net/bluetooth/cmtp/sock.c
+> @@ -250,7 +250,7 @@ int cmtp_init_sockets(void)
+>  	err = bt_procfs_init(&init_net, "cmtp", &cmtp_sk_list, NULL);
+>  	if (err < 0) {
+>  		BT_ERR("Failed to create CMTP proc file");
+> -		bt_sock_unregister(BTPROTO_HIDP);
+> +		bt_sock_unregister(BTPROTO_CMTP);
+>  		goto error;
+>  	}
+>  
+> -- 
+> 2.25.1
