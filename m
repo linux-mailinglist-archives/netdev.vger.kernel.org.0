@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1FB76D2592
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB2B66D25A0
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbjCaQcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 12:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
+        id S232048AbjCaQdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 12:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232705AbjCaQcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:32:35 -0400
+        with ESMTP id S232589AbjCaQdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:33:33 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BC82658F
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:28:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF39236B9
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:29:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680280071;
+        s=mimecast20190719; t=1680280142;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dzj4wq9FaG2NZQlDvyNIG6SZjlNuX69PXAW+edzOmqo=;
-        b=ehrq3tuJBAWvtDb0F7anbqvs2HzTMms9GQTEiJJenLsp6NQ32cjuGEux3JckP7n8R403zq
-        mGRVXhXVvmGdwFtIsQqeUcNUL1ZvGaor+yEUVJ6bt0JiWVqSthGwfUK4z3lADA7jqF785T
-        uC++4cr4H5tr0wZ3zb5Q72lV+zGIZbk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=+ZSAJKtt/ag5B+38eGABocjAtCkqVzXfR0mPd/YeFX8=;
+        b=XcChonvQpQK/EqVoWs2aayqvD7vgO4nDFT2PUgWANhaK0DruarDiOEi0qKsRoEBDehiZ1U
+        pKphT4LbOFJ1Ku/IiLlOUssKPJ3hpZ+xyILAUpug3sre0DxfrGcPzjK1FUU/wp4amg8Amx
+        VcJHqnjVc78OgY0svdNoajzG2dFgPag=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-E3iaPG3wNlaU_2VbzkuVhw-1; Fri, 31 Mar 2023 12:27:48 -0400
-X-MC-Unique: E3iaPG3wNlaU_2VbzkuVhw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-410-FhZ9Z2msPdG2BL3PnIP12g-1; Fri, 31 Mar 2023 12:28:59 -0400
+X-MC-Unique: FhZ9Z2msPdG2BL3PnIP12g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2D2331C0879A;
-        Fri, 31 Mar 2023 16:27:47 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7E639885624;
+        Fri, 31 Mar 2023 16:28:58 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2A3E4492C3E;
-        Fri, 31 Mar 2023 16:27:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8342C40BC797;
+        Fri, 31 Mar 2023 16:28:56 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
@@ -59,14 +59,14 @@ Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         Boris Pismenny <borisp@nvidia.com>,
         John Fastabend <john.fastabend@gmail.com>
-Subject: Trivial TLS server
+Subject: Trivial TLS client
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1610390.1680280064.1@warthog.procyon.org.uk>
+Content-ID: <1610448.1680280135.1@warthog.procyon.org.uk>
 Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 31 Mar 2023 17:27:44 +0100
-Message-ID: <1610391.1680280064@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.10
+Date:   Fri, 31 Mar 2023 17:28:55 +0100
+Message-ID: <1610449.1680280135@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -77,12 +77,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Here's a trivial TLS server that can be used to test this.
+Here's a trivial TLS client program for testing this.
 
 David
 ---
 /*
- * TLS-over-TCP sink server
+ * TLS-over-TCP send client
  */
 
 #include <stdio.h>
@@ -90,14 +90,17 @@ David
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <sys/stat.h>
+#include <sys/sendfile.h>
 #include <linux/tls.h>
 
 #define OSERROR(X, Y) do { if ((long)(X) =3D=3D -1) { perror(Y); exit(1); =
 } } while(0)
 
-static unsigned char buffer[512 * 1024] __attribute__((aligned(4096)));
+static unsigned char buffer[4096] __attribute__((aligned(4096)));
 
 static void set_tls(int sock)
 {
@@ -124,20 +127,73 @@ int main(int argc, char *argv[])
 {
 	struct sockaddr_in sin =3D { .sin_family =3D AF_INET, .sin_port =3D htons=
 (5556) };
-	int sfd, afd;
+	struct hostent *h;
+	struct stat st;
+	ssize_t r, o;
+	int sf =3D 0;
+	int cfd, fd;
 
-	sfd =3D socket(AF_INET, SOCK_STREAM, 0);
-	OSERROR(sfd, "socket");
-	OSERROR(bind(sfd, (struct sockaddr *)&sin, sizeof(sin)), "bind");
-	OSERROR(listen(sfd, 1), "listen");
+	if (argc > 1 && strcmp(argv[1], "-s") =3D=3D 0) {
+		sf =3D 1;
+		argc--;
+		argv++;
+	}
+	=
 
-	for (;;) {
-		afd =3D accept(sfd, NULL, NULL);
-		if (afd !=3D -1) {
-			set_tls(afd);
-			while (read(afd, buffer, sizeof(buffer)) > 0) {}
-			close(afd);
+	if (argc !=3D 3) {
+		fprintf(stderr, "tcp-send [-s] <server> <file>\n");
+		exit(2);
+	}
+
+	h =3D gethostbyname(argv[1]);
+	if (!h) {
+		fprintf(stderr, "%s: %s\n", argv[1], hstrerror(h_errno));
+		exit(3);
+	}
+
+	if (!h->h_addr_list[0]) {
+		fprintf(stderr, "%s: No addresses\n", argv[1]);
+		exit(3);
+	}
+
+	memcpy(&sin.sin_addr, h->h_addr_list[0], h->h_length);
+	=
+
+	cfd =3D socket(AF_INET, SOCK_STREAM, 0);
+	OSERROR(cfd, "socket");
+	OSERROR(connect(cfd, (struct sockaddr *)&sin, sizeof(sin)), "connect");
+	set_tls(cfd);
+
+	fd =3D open(argv[2], O_RDONLY);
+	OSERROR(fd, argv[2]);
+	OSERROR(fstat(fd, &st), argv[2]);
+
+	if (!sf) {
+		for (;;) {
+			r =3D read(fd, buffer, sizeof(buffer));
+			OSERROR(r, argv[2]);
+			if (r =3D=3D 0)
+				break;
+
+			o =3D 0;
+			do {
+				ssize_t w =3D write(cfd, buffer + o, r - o);
+				OSERROR(w, "write");
+				o +=3D w;
+			} while (o < r);
+		}
+	} else {
+		off_t off =3D 0;
+		r =3D sendfile(cfd, fd, &off, st.st_size);
+		OSERROR(r, "sendfile");
+		if (r !=3D st.st_size) {
+			fprintf(stderr, "Short sendfile\n");
+			exit(1);
 		}
 	}
+
+	OSERROR(close(cfd), "close/c");
+	OSERROR(close(fd), "close/f");
+	return 0;
 }
 
