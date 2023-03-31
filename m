@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DC9C6D19D8
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 742F46D19DD
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbjCaI3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51070 "EHLO
+        id S230059AbjCaIaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjCaI3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:29:50 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF381AE
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:29:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=XEtkwoJ1NZByZ5V1hQ4v+wxmvSQyMvfDrHGJhCYQCOE=; b=PjAGuGs2XQkhMN2Nb1BNSvnoLr
-        Mmqs+LWrYyvrQh1aXv4HA25mzL/LxqAdN37gUO5a/DmfJBHbMWoXdZe9+VF+7dKTho1RJ6jNBC6kS
-        9caGfr9K99gFk27V0pbqFa/yN9/8yjbTSXGoWd5+Yzg1UIPGYkMioT+SpYp0W1WT6Ryg=;
-Received: from p54ae9730.dip0.t-ipconnect.de ([84.174.151.48] helo=Maecks.lan)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1piA8o-008qbG-IN; Fri, 31 Mar 2023 10:29:46 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Cc:     Daniel Golle <daniel@makrotopia.org>
-Subject: [PATCH net-next 3/3] net: ethernet: mtk_eth_soc: fix ppe flow accounting for v1 hardware
-Date:   Fri, 31 Mar 2023 10:29:45 +0200
-Message-Id: <20230331082945.75075-3-nbd@nbd.name>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230331082945.75075-1-nbd@nbd.name>
-References: <20230331082945.75075-1-nbd@nbd.name>
+        with ESMTP id S229909AbjCaIaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:30:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9EA138;
+        Fri, 31 Mar 2023 01:30:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1256162500;
+        Fri, 31 Mar 2023 08:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 61B0CC4339C;
+        Fri, 31 Mar 2023 08:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680251418;
+        bh=7QfrtLvbG0uJ1TrCowUePYGhhQQUz93oXvSuBWFYU8o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ae0pi98Q+nasfAkHWYoHFcUb1h3gd1I5498Awcf5IwdmEGh7GD4ZPF9jsoqQx/yIw
+         9w5rU7q3/PxYPTF94G+oPnL85S8RtxB/CuMKVpwe8PY62/tE1W7Sed41cMyJ8ynUi3
+         9wVuID9XBwlozlUy9dwwHabO3JAJuvjZP/lPiAadqwVa6r6F6bdkuWIHFtFS3Kn4jh
+         sExqIpRUQLXFdUbkOdMHbxh1bKl1dmnhKEkLA9Xehv47SjYWaKhQzhLgsdSL3qUMzQ
+         n6zMhpTvZtq1EGyOdbOdSXvezORCgnohYSrn58Kt02/nsp1SO4tHDnc1IGx+pPo75c
+         NT2I2gwMXzFgA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4723BC73FE2;
+        Fri, 31 Mar 2023 08:30:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net v5 0/3] Fix PHY handle no longer parsing
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168025141828.29195.16930878780114551946.git-patchwork-notify@kernel.org>
+Date:   Fri, 31 Mar 2023 08:30:18 +0000
+References: <20230330091404.3293431-1-michael.wei.hong.sit@intel.com>
+In-Reply-To: <20230330091404.3293431-1-michael.wei.hong.sit@intel.com>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        boon.leong.ong@intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
+        hong.aun.looi@intel.com, weifeng.voon@intel.com,
+        peter.jun.ann.lai@intel.com
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Older chips (like MT7622) use a different bit in ib2 to enable hardware
-counter support.
+Hello:
 
-Fixes: 3fbe4d8c0e53 ("net: ethernet: mtk_eth_soc: ppe: add support for flow accounting")
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/net/ethernet/mediatek/mtk_ppe.c | 10 ++++++++--
- drivers/net/ethernet/mediatek/mtk_ppe.h |  3 ++-
- 2 files changed, 10 insertions(+), 3 deletions(-)
+This series was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 64e8dc8d814b..5cfa45ba66dd 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -640,6 +640,7 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
- 	struct mtk_eth *eth = ppe->eth;
- 	u16 timestamp = mtk_eth_timestamp(eth);
- 	struct mtk_foe_entry *hwe;
-+	u32 val;
- 
- 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
- 		entry->ib1 &= ~MTK_FOE_IB1_BIND_TIMESTAMP_V2;
-@@ -656,8 +657,13 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
- 	wmb();
- 	hwe->ib1 = entry->ib1;
- 
--	if (ppe->accounting)
--		*mtk_foe_entry_ib2(eth, hwe) |= MTK_FOE_IB2_MIB_CNT;
-+	if (ppe->accounting) {
-+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
-+			val = MTK_FOE_IB2_MIB_CNT_V2;
-+		else
-+			val = MTK_FOE_IB2_MIB_CNT;
-+		*mtk_foe_entry_ib2(eth, hwe) |= val;
-+	}
- 
- 	dma_wmb();
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index 13dd7988e95c..321aea4bde85 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -55,9 +55,10 @@ enum {
- #define MTK_FOE_IB2_PSE_QOS		BIT(4)
- #define MTK_FOE_IB2_DEST_PORT		GENMASK(7, 5)
- #define MTK_FOE_IB2_MULTICAST		BIT(8)
-+#define MTK_FOE_IB2_MIB_CNT		BIT(10)
- 
- #define MTK_FOE_IB2_WDMA_QID2		GENMASK(13, 12)
--#define MTK_FOE_IB2_MIB_CNT		BIT(15)
-+#define MTK_FOE_IB2_MIB_CNT_V2		BIT(15)
- #define MTK_FOE_IB2_WDMA_DEVIDX		BIT(16)
- #define MTK_FOE_IB2_WDMA_WINFO		BIT(17)
- 
+On Thu, 30 Mar 2023 17:14:01 +0800 you wrote:
+> After the fixed link support was introduced, it is observed that PHY
+> no longer attach to the MAC properly. So we introduce a helper
+> function to determine if the MAC should expect to connect to a PHY
+> and proceed accordingly.
+> 
+> Michael Sit Wei Hong (3):
+>   net: phylink: add phylink_expects_phy() method
+>   net: stmmac: check if MAC needs to attach to a PHY
+>   net: stmmac: remove redundant fixup to support fixed-link mode
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v5,1/3] net: phylink: add phylink_expects_phy() method
+    https://git.kernel.org/netdev/net/c/653a180957a8
+  - [net,v5,2/3] net: stmmac: check if MAC needs to attach to a PHY
+    https://git.kernel.org/netdev/net/c/fe2cfbc96803
+  - [net,v5,3/3] net: stmmac: remove redundant fixup to support fixed-link mode
+    https://git.kernel.org/netdev/net/c/6fc21a6ed595
+
+You are awesome, thank you!
 -- 
-2.39.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
