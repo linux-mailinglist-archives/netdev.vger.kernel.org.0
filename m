@@ -2,57 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74CEE6D1EDD
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 13:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E975C6D1ECD
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 13:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbjCaLQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 07:16:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
+        id S231256AbjCaLMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 07:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231579AbjCaLQL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 07:16:11 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA9E1BF49
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 04:16:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680261369; x=1711797369;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GKEtYWjNirEGuyeRCC7Qy9NzuIMsPPdd1v6WdXAAx7Y=;
-  b=FiJ39IFklRtvXvtGT9fA+GyeoFK6CEGOmRFFWT5jhjSm7uVPAKZwRJWG
-   81fIqY9irbaXQX6tjYDOwngSQC1L907WUpHTPxI+zCWw3eRubWgOjPWyD
-   hr+LDzVVmilrG89FPivhc0kwmRZkgvnz2iGrwz+u+htBQ6RrLDoxESymX
-   poihQcrsytUfwo2BZOXyTmEeEfo2wwDL6ps7vaiCxwnje7qZTs/Mv02H/
-   ApRaR+XHBwQqXmHo1NRkLSWg+ilZgX4RF1C9VeToKd/q7LjnAi8CLMftC
-   4IcGnp2ZYlkFl3PbThuslGmCO/BUUIgvPzGuwBE4iWe8S9g3z7KGj/FMp
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="404145498"
-X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
-   d="scan'208";a="404145498"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 04:16:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10665"; a="931124347"
-X-IronPort-AV: E=Sophos;i="5.98,307,1673942400"; 
-   d="scan'208";a="931124347"
-Received: from wasp.igk.intel.com ([10.102.20.192])
-  by fmsmga006.fm.intel.com with ESMTP; 31 Mar 2023 04:16:07 -0700
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, wojciech.drewek@intel.com,
-        piotr.raczynski@intel.com,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: [PATCH net-next 4/4] ice: use src VSI instead of src MAC in slow-path
-Date:   Fri, 31 Mar 2023 12:57:47 +0200
-Message-Id: <20230331105747.89612-5-michal.swiatkowski@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230331105747.89612-1-michal.swiatkowski@linux.intel.com>
-References: <20230331105747.89612-1-michal.swiatkowski@linux.intel.com>
+        with ESMTP id S231146AbjCaLMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 07:12:30 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707992D52;
+        Fri, 31 Mar 2023 04:12:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qLb75RwFmgNl6ZqqzFCzpYGIZT6emt47PE/6Jtu3p9w=; b=F7ksBtKCQ1QP1A/Qottd+yLJan
+        YVB9I94f9E9gnJnskzXMzP0BBVReI96RgSnd/c56hrnDJV6dk1s6OGVqc2Np7AaYQs1irSmd2SShM
+        dj443eUXA5BCB+WISZL6WwaSSXU4J4vcSNoGJAw+JQrzvHoZsLcDlgDiSTTF/5t+ZYe1LFbRg7WOm
+        VbVsgM0Rhx0t+h/Pt9dlj7/sfbbT7y1XwbDKEkBHEgWQY5fu73Rjkq0w/mgSdWhwfmy/sK3GsJyXv
+        1cn+mkyr3WaevuJnnfXoC0v2Jesgwk/+2Fj3Rlv4sdY4PA4gFeftylulnFgxUXHIjD01wlNqUS+uf
+        ANUChXig==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59146)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1piCg8-0004qq-3E; Fri, 31 Mar 2023 12:12:20 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1piCg7-00016m-4t; Fri, 31 Mar 2023 12:12:19 +0100
+Date:   Fri, 31 Mar 2023 12:12:19 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srk@ti.com
+Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable
+ USXGMII mode for J784S4 CPSW9G
+Message-ID: <ZCbAE7IIc8HcOdxl@shell.armlinux.org.uk>
+References: <20230331065110.604516-1-s-vadapalli@ti.com>
+ <20230331065110.604516-3-s-vadapalli@ti.com>
+ <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
+ <54c3964b-5dd8-c55e-08db-61df4a07797c@ti.com>
+ <ZCaYve8wYl15YRxh@shell.armlinux.org.uk>
+ <7a9c96f4-6a94-4a2c-18f5-95f7246e10d5@ti.com>
+ <ZCasBMNxaWk2+XVO@shell.armlinux.org.uk>
+ <dea9ae26-e7f2-1052-58cd-f7975165aa96@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dea9ae26-e7f2-1052-58cd-f7975165aa96@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,368 +66,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The use of a source  MAC to direct packets from the VF to the
-corresponding port representor is only ok if there is only one
-MAC on a VF. To support this functionality when the number
-of MACs on a VF is greater, it is necessary to match a source
-VSI instead of a source MAC.
+On Fri, Mar 31, 2023 at 04:23:16PM +0530, Siddharth Vadapalli wrote:
+> 
+> 
+> On 31/03/23 15:16, Russell King (Oracle) wrote:
+> > On Fri, Mar 31, 2023 at 02:55:56PM +0530, Siddharth Vadapalli wrote:
+> >> Russell,
+> >>
+> >> On 31/03/23 13:54, Russell King (Oracle) wrote:
+> >>> On Fri, Mar 31, 2023 at 01:35:10PM +0530, Siddharth Vadapalli wrote:
+> >>>> Hello Russell,
+> >>>>
+> >>>> Thank you for reviewing the patch.
+> >>>>
+> >>>> On 31/03/23 13:27, Russell King (Oracle) wrote:
+> >>>>> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
+> >>>>>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
+> >>>>>> extra_modes member of the J784S4 SoC data. Additionally, configure the
+> >>>>>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
+> >>>>>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
+> >>>>>> "phylink_config".
+> >>>>>
+> >>>>> I don't think TI "get" phylink at all...
+> >>>>>
+> >>>>>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >>>>>> index 4b4d06199b45..ab33e6fe5b1a 100644
+> >>>>>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >>>>>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >>>>>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+> >>>>>>  		mac_control |= CPSW_SL_CTL_GIG;
+> >>>>>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
+> >>>>>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+> >>>>>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
+> >>>>>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
+> >>>>>
+> >>>>> The configuration of the interface mode should *not* happen in
+> >>>>> mac_link_up(), but should happen in e.g. mac_config().
+> >>>>
+> >>>> I will move all the interface mode associated configurations to mac_config() in
+> >>>> the v2 series.
+> >>>
+> >>> Looking at the whole of mac_link_up(), could you please describe what
+> >>> effect these bits are having:
+> >>>
+> >>> 	CPSW_SL_CTL_GIG
+> >>> 	CPSW_SL_CTL_EXT_EN
+> >>> 	CPSW_SL_CTL_IFCTL_A
+> >>
+> >> CPSW_SL_CTL_GIG corresponds to enabling Gigabit mode (full duplex only).
+> >> CPSW_SL_CTL_EXT_EN when set enables in-band mode of operation and when cleared
+> >> enables forced mode of operation.
+> >> CPSW_SL_CTL_IFCTL_A is used to set the RMII link speed (0=10 mbps, 1=100 mbps).
+> > 
+> > Okay, so I would do in mac_link_up():
+> > 
+> > 	/* RMII needs to be manually configured for 10/100Mbps */
+> > 	if (interface == PHY_INTERFACE_MODE_RMII && speed == SPEED_100)
+> > 		mac_control |= CPSW_SL_CTL_IFCTL_A;
+> > 
+> > 	if (speed == SPEED_1000)
+> > 		mac_control |= CPSW_SL_CTL_GIG;
+> > 	if (duplex)
+> > 		mac_control |= CPSW_SL_CTL_FULLDUPLEX;
+> > 
+> > I would also make mac_link_up() do a read-modify-write operation to
+> > only affect the bits that it is changing.
+> 
+> This is the current implementation except for the SGMII mode associated
+> operation that I had recently added. I will fix that. Also, the
+> cpsw_sl_ctl_set() function which writes the mac_control value performs a read
+> modify write operation.
+> 
+> > 
+> > Now, for SGMII, I would move setting CPSW_SL_CTL_EXT_EN to mac_config()
+> > to enable in-band mode - don't we want in-band mode enabled all the
+> > time while in SGMII mode so the PHY gets the response from the MAC?
+> 
+> Thank you for pointing it out. I will move that to mac_config().
+> 
+> > 
+> > Lastly, for RGMII at 10Mbps, you seem to suggest that you need RGMII
+> > in-band mode enabled for that - but if you need RGMII in-band for
+> > 10Mbps, wouldn't it make sense for the other speeds as well? If so,
+> > wouldn't that mean that CPSW_SL_CTL_EXT_EN can always be set for
+> > RGMII no matter what speed is being used?
+> 
+> The CPSW MAC does not support forced mode at 10 Mbps RGMII. For this reason, if
+> RGMII 10 Mbps is requested, it is set to in-band mode.
 
-Let's use the new switch API that allows matching on metadata.
+What I'm saying is that if we have in-band signalling that is reliable
+for a particular interface mode, why not always use it, rather than
+singling out one specific speed as an exception? Does it not work in
+100Mbps and 1Gbps?
 
-If MAC isn't used in match criteria there is no need to handle adding
-rule after virtchnl command. Instead add new rule while port representor
-is being configured.
-
-Remove rule_added field, checking for sp_rule can be used instead.
-Remove also checking for switchdev running in deleting rule as it can be
-call from unroll context when running flag isn't set. Checking for
-sp_rule cover both context (with and without running flag).
-
-Rules are added in eswitch configuration flow, so there is no need to
-have replay function.
-
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_eswitch.c  | 75 +++++++------------
- drivers/net/ethernet/intel/ice/ice_eswitch.h  | 14 ----
- .../ethernet/intel/ice/ice_protocol_type.h    |  4 +-
- drivers/net/ethernet/intel/ice/ice_repr.c     | 17 -----
- drivers/net/ethernet/intel/ice/ice_repr.h     |  5 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   |  6 ++
- drivers/net/ethernet/intel/ice/ice_switch.h   |  1 +
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   |  3 -
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |  8 --
- 9 files changed, 37 insertions(+), 96 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 2c80d57331d0..69fc25a213ef 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -10,16 +10,15 @@
- #include "ice_tc_lib.h"
- 
- /**
-- * ice_eswitch_add_vf_mac_rule - add adv rule with VF's MAC
-+ * ice_eswitch_add_vf_sp_rule - add adv rule with VF's VSI index
-  * @pf: pointer to PF struct
-  * @vf: pointer to VF struct
-- * @mac: VF's MAC address
-  *
-  * This function adds advanced rule that forwards packets with
-- * VF's MAC address (src MAC) to the corresponding switchdev ctrl VSI queue.
-+ * VF's VSI index to the corresponding switchdev ctrl VSI queue.
-  */
--int
--ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
-+static int
-+ice_eswitch_add_vf_sp_rule(struct ice_pf *pf, struct ice_vf *vf)
- {
- 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;
- 	struct ice_adv_rule_info rule_info = { 0 };
-@@ -32,11 +31,9 @@ ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
- 	if (!list)
- 		return -ENOMEM;
- 
--	list[0].type = ICE_MAC_OFOS;
--	ether_addr_copy(list[0].h_u.eth_hdr.src_addr, mac);
--	eth_broadcast_addr(list[0].m_u.eth_hdr.src_addr);
-+	ice_rule_add_src_vsi_metadata(&list[0]);
- 
--	rule_info.sw_act.flag |= ICE_FLTR_TX;
-+	rule_info.sw_act.flag = ICE_FLTR_TX;
- 	rule_info.sw_act.vsi_handle = ctrl_vsi->idx;
- 	rule_info.sw_act.fltr_act = ICE_FWD_TO_Q;
- 	rule_info.sw_act.fwd_id.q_id = hw->func_caps.common_cap.rxq_first_id +
-@@ -44,63 +41,31 @@ ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
- 	rule_info.flags_info.act |= ICE_SINGLE_ACT_LB_ENABLE;
- 	rule_info.flags_info.act_valid = true;
- 	rule_info.tun_type = ICE_SW_TUN_AND_NON_TUN;
-+	rule_info.src_vsi = vf->lan_vsi_idx;
- 
- 	err = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info,
--			       vf->repr->mac_rule);
-+			       &vf->repr->sp_rule);
- 	if (err)
--		dev_err(ice_pf_to_dev(pf), "Unable to add VF mac rule in switchdev mode for VF %d",
-+		dev_err(ice_pf_to_dev(pf), "Unable to add VF slow-path rule in switchdev mode for VF %d",
- 			vf->vf_id);
--	else
--		vf->repr->rule_added = true;
- 
- 	kfree(list);
- 	return err;
- }
- 
- /**
-- * ice_eswitch_replay_vf_mac_rule - replay adv rule with VF's MAC
-- * @vf: pointer to vF struct
-- *
-- * This function replays VF's MAC rule after reset.
-- */
--void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf)
--{
--	int err;
--
--	if (!ice_is_switchdev_running(vf->pf))
--		return;
--
--	if (is_valid_ether_addr(vf->hw_lan_addr)) {
--		err = ice_eswitch_add_vf_mac_rule(vf->pf, vf,
--						  vf->hw_lan_addr);
--		if (err) {
--			dev_err(ice_pf_to_dev(vf->pf), "Failed to add MAC %pM for VF %d\n, error %d\n",
--				vf->hw_lan_addr, vf->vf_id, err);
--			return;
--		}
--		vf->num_mac++;
--
--		ether_addr_copy(vf->dev_lan_addr, vf->hw_lan_addr);
--	}
--}
--
--/**
-- * ice_eswitch_del_vf_mac_rule - delete adv rule with VF's MAC
-+ * ice_eswitch_del_vf_sp_rule - delete adv rule with VF's VSI index
-  * @vf: pointer to the VF struct
-  *
-- * Delete the advanced rule that was used to forward packets with the VF's MAC
-- * address (src MAC) to the corresponding switchdev ctrl VSI queue.
-+ * Delete the advanced rule that was used to forward packets with the VF's VSI
-+ * index to the corresponding switchdev ctrl VSI queue.
-  */
--void ice_eswitch_del_vf_mac_rule(struct ice_vf *vf)
-+static void ice_eswitch_del_vf_sp_rule(struct ice_vf *vf)
- {
--	if (!ice_is_switchdev_running(vf->pf))
-+	if (!vf->repr)
- 		return;
- 
--	if (!vf->repr->rule_added)
--		return;
--
--	ice_rem_adv_rule_by_id(&vf->pf->hw, vf->repr->mac_rule);
--	vf->repr->rule_added = false;
-+	ice_rem_adv_rule_by_id(&vf->pf->hw, &vf->repr->sp_rule);
- }
- 
- /**
-@@ -236,6 +201,7 @@ ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
- 		ice_vsi_update_security(vsi, ice_vsi_ctx_set_antispoof);
- 		metadata_dst_free(vf->repr->dst);
- 		vf->repr->dst = NULL;
-+		ice_eswitch_del_vf_sp_rule(vf);
- 		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr,
- 					       ICE_FWD_TO_VSI);
- 
-@@ -269,10 +235,18 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
- 			goto err;
- 		}
- 
-+		if (ice_eswitch_add_vf_sp_rule(pf, vf)) {
-+			ice_fltr_add_mac_and_broadcast(vsi,
-+						       vf->hw_lan_addr,
-+						       ICE_FWD_TO_VSI);
-+			goto err;
-+		}
-+
- 		if (ice_vsi_update_security(vsi, ice_vsi_ctx_clear_antispoof)) {
- 			ice_fltr_add_mac_and_broadcast(vsi,
- 						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
-+			ice_eswitch_del_vf_sp_rule(vf);
- 			metadata_dst_free(vf->repr->dst);
- 			vf->repr->dst = NULL;
- 			goto err;
-@@ -282,6 +256,7 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
- 			ice_fltr_add_mac_and_broadcast(vsi,
- 						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
-+			ice_eswitch_del_vf_sp_rule(vf);
- 			metadata_dst_free(vf->repr->dst);
- 			vf->repr->dst = NULL;
- 			ice_vsi_update_security(vsi, ice_vsi_ctx_set_antispoof);
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-index 6a413331572b..b18bf83a2f5b 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-@@ -20,11 +20,6 @@ bool ice_is_eswitch_mode_switchdev(struct ice_pf *pf);
- void ice_eswitch_update_repr(struct ice_vsi *vsi);
- 
- void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf);
--int
--ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf,
--			    const u8 *mac);
--void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf);
--void ice_eswitch_del_vf_mac_rule(struct ice_vf *vf);
- 
- void ice_eswitch_set_target_vsi(struct sk_buff *skb,
- 				struct ice_tx_offload_params *off);
-@@ -34,15 +29,6 @@ ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev);
- static inline void ice_eswitch_release(struct ice_pf *pf) { }
- 
- static inline void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf) { }
--static inline void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf) { }
--static inline void ice_eswitch_del_vf_mac_rule(struct ice_vf *vf) { }
--
--static inline int
--ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf,
--			    const u8 *mac)
--{
--	return -EOPNOTSUPP;
--}
- 
- static inline void
- ice_eswitch_set_target_vsi(struct sk_buff *skb,
-diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-index 20f66be9ba5f..1b739e096d27 100644
---- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-@@ -256,7 +256,9 @@ struct ice_nvgre_hdr {
-  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  *
-  * Source VSI = Source VSI of packet loopbacked in switch (for egress) (10b).
-- *
-+ */
-+#define ICE_MDID_SOURCE_VSI_MASK 0x3ff
-+/*
-  * MDID 20
-  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  * |A|B|C|D|E|F|R|R|G|H|I|J|K|L|M|N|
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
-index fd1f8b0ad0ab..e30e12321abd 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.c
-@@ -298,14 +298,6 @@ static int ice_repr_add(struct ice_vf *vf)
- 	if (!repr)
- 		return -ENOMEM;
- 
--#ifdef CONFIG_ICE_SWITCHDEV
--	repr->mac_rule = kzalloc(sizeof(*repr->mac_rule), GFP_KERNEL);
--	if (!repr->mac_rule) {
--		err = -ENOMEM;
--		goto err_alloc_rule;
--	}
--#endif
--
- 	repr->netdev = alloc_etherdev(sizeof(struct ice_netdev_priv));
- 	if (!repr->netdev) {
- 		err =  -ENOMEM;
-@@ -351,11 +343,6 @@ static int ice_repr_add(struct ice_vf *vf)
- 	free_netdev(repr->netdev);
- 	repr->netdev = NULL;
- err_alloc:
--#ifdef CONFIG_ICE_SWITCHDEV
--	kfree(repr->mac_rule);
--	repr->mac_rule = NULL;
--err_alloc_rule:
--#endif
- 	kfree(repr);
- 	vf->repr = NULL;
- 	return err;
-@@ -376,10 +363,6 @@ static void ice_repr_rem(struct ice_vf *vf)
- 	ice_devlink_destroy_vf_port(vf);
- 	free_netdev(vf->repr->netdev);
- 	vf->repr->netdev = NULL;
--#ifdef CONFIG_ICE_SWITCHDEV
--	kfree(vf->repr->mac_rule);
--	vf->repr->mac_rule = NULL;
--#endif
- 	kfree(vf->repr);
- 	vf->repr = NULL;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.h b/drivers/net/ethernet/intel/ice/ice_repr.h
-index 378a45bfa256..5a28bb42f72a 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.h
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.h
-@@ -13,9 +13,8 @@ struct ice_repr {
- 	struct net_device *netdev;
- 	struct metadata_dst *dst;
- #ifdef CONFIG_ICE_SWITCHDEV
--	/* info about slow path MAC rule  */
--	struct ice_rule_query_data *mac_rule;
--	u8 rule_added;
-+	/* info about slow path rule  */
-+	struct ice_rule_query_data sp_rule;
- #endif
- };
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 8c2bbfd2613f..76f5a817929a 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -6007,6 +6007,12 @@ void ice_rule_add_vlan_metadata(struct ice_adv_lkup_elem *lkup)
- 		cpu_to_be16(ICE_PKT_VLAN_MASK);
- }
- 
-+void ice_rule_add_src_vsi_metadata(struct ice_adv_lkup_elem *lkup)
-+{
-+	lkup->type = ICE_HW_METADATA;
-+	lkup->m_u.metadata.source_vsi = cpu_to_be16(ICE_MDID_SOURCE_VSI_MASK);
-+}
-+
- /**
-  * ice_add_adv_rule - helper function to create an advanced switch rule
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 245d4ad4e9bc..fbd0936750af 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -344,6 +344,7 @@ ice_free_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
- /* Switch/bridge related commands */
- void ice_rule_add_tunnel_metadata(struct ice_adv_lkup_elem *lkup);
- void ice_rule_add_vlan_metadata(struct ice_adv_lkup_elem *lkup);
-+void ice_rule_add_src_vsi_metadata(struct ice_adv_lkup_elem *lkup);
- int
- ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 		 u16 lkups_cnt, struct ice_adv_rule_info *rinfo,
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 68142facc85d..294e91c3453c 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -670,8 +670,6 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 	 */
- 	ice_vf_clear_all_promisc_modes(vf, vsi);
- 
--	ice_eswitch_del_vf_mac_rule(vf);
--
- 	ice_vf_fdir_exit(vf);
- 	ice_vf_fdir_init(vf);
- 	/* clean VF control VSI when resetting VF since it should be setup
-@@ -697,7 +695,6 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 	}
- 
- 	ice_eswitch_update_repr(vsi);
--	ice_eswitch_replay_vf_mac_rule(vf);
- 
- 	/* if the VF has been reset allow it to come up again */
- 	ice_mbx_clear_malvf(&vf->mbx_info);
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 97243c616d5d..dcf628b1fccd 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -3730,7 +3730,6 @@ static int ice_vc_repr_add_mac(struct ice_vf *vf, u8 *msg)
- 
- 	for (i = 0; i < al->num_elements; i++) {
- 		u8 *mac_addr = al->list[i].addr;
--		int result;
- 
- 		if (!is_unicast_ether_addr(mac_addr) ||
- 		    ether_addr_equal(mac_addr, vf->hw_lan_addr))
-@@ -3742,13 +3741,6 @@ static int ice_vc_repr_add_mac(struct ice_vf *vf, u8 *msg)
- 			goto handle_mac_exit;
- 		}
- 
--		result = ice_eswitch_add_vf_mac_rule(pf, vf, mac_addr);
--		if (result) {
--			dev_err(ice_pf_to_dev(pf), "Failed to add MAC %pM for VF %d\n, error %d\n",
--				mac_addr, vf->vf_id, result);
--			goto handle_mac_exit;
--		}
--
- 		ice_vfhw_mac_add(vf, &al->list[i]);
- 		vf->num_mac++;
- 		break;
 -- 
-2.39.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
