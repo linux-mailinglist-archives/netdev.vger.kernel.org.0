@@ -2,80 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BBEF6D195F
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 186EB6D1972
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:09:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231450AbjCaIGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        id S230094AbjCaIJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbjCaIG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:06:28 -0400
-X-Greylist: delayed 93879 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 31 Mar 2023 01:06:18 PDT
-Received: from forwardcorp1a.mail.yandex.net (forwardcorp1a.mail.yandex.net [IPv6:2a02:6b8:c0e:500:1:45:d181:df01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CFC1C1F4;
-        Fri, 31 Mar 2023 01:06:17 -0700 (PDT)
-Received: from mail-nwsmtp-smtp-corp-main-83.vla.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-83.vla.yp-c.yandex.net [IPv6:2a02:6b8:c18:1421:0:640:53a0:0])
-        by forwardcorp1a.mail.yandex.net (Yandex) with ESMTP id E0BFB60412;
-        Fri, 31 Mar 2023 11:06:15 +0300 (MSK)
-Received: from den-plotnikov-w.yandex-team.ru (unknown [2a02:6b8:b081:b509::1:8])
-        by mail-nwsmtp-smtp-corp-main-83.vla.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 56FrmA0Od0U0-3fNi8o71;
-        Fri, 31 Mar 2023 11:06:15 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1680249975; bh=+sWL6z24WHkI1mHsF//PDU19LhlB9QYnVo3MDVRJCvs=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=HOgrJ+JVfs5Ft5A1WbeXah7jZLHc3X71KUOXPA80G94ozeiBdqzUkdt6/y4fKh4GG
-         IyXGXERoVppbXUwD+3yHmqlEqeAQ/QQV2Lky4B6gJcf3FPikxLVi0HNo0p5mW4z0dN
-         n5B8wncTzqFWDoip329rX0uGcytcKjeGwAENjKlU=
-Authentication-Results: mail-nwsmtp-smtp-corp-main-83.vla.yp-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-From:   Denis Plotnikov <den-plotnikov@yandex-team.ru>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, shshaikh@marvell.com,
-        manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, den-plotnikov@yandex-team.ru
-Subject: [PATCH] qlcnic: check pci_reset_function result
-Date:   Fri, 31 Mar 2023 11:06:05 +0300
-Message-Id: <20230331080605.42961-1-den-plotnikov@yandex-team.ru>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229629AbjCaIJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:09:26 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA8126BD;
+        Fri, 31 Mar 2023 01:09:16 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id E758E18844A7;
+        Fri, 31 Mar 2023 08:09:14 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id C2F5F2503962;
+        Fri, 31 Mar 2023 08:09:14 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id B5F069B403E2; Fri, 31 Mar 2023 08:09:14 +0000 (UTC)
+X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
+Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id C9DC291201E3;
+        Fri, 31 Mar 2023 08:09:13 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Ido Schimmel <idosch@nvidia.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
+        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 6/6] selftests: forwarding: add dynamic FDB
+ test
+In-Reply-To: <20230330192714.oqosvifrftirshej@skbuf>
+References: <20230318141010.513424-1-netdev@kapio-technology.com>
+ <20230318141010.513424-7-netdev@kapio-technology.com>
+ <ZBgdAo8mxwnl+pEE@shredder> <87a5zzh65p.fsf@kapio-technology.com>
+ <ZCMYbRqd+qZaiHfu@shredder> <874jq22h2u.fsf@kapio-technology.com>
+ <20230330192714.oqosvifrftirshej@skbuf>
+Date:   Fri, 31 Mar 2023 10:06:34 +0200
+Message-ID: <871ql5mjjp.fsf@kapio-technology.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Static code analyzer complains to unchecked return value.
-It seems that pci_reset_function return something meaningful
-only if "reset_methods" is set.
-Even if reset_methods isn't used check the return value to avoid
-possible bugs leading to undefined behavior in the future.
+On Thu, Mar 30, 2023 at 22:27, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Thu, Mar 30, 2023 at 09:07:53PM +0200, Hans Schultz wrote:
+>> Not true, it reveals that I forgot to put it in the patch, that's all. As
+>> I cannot run several of these tests because of memory constraints I link
+>> the file to a copy in a rw area where I modify the list and just run one
+>> of the subtests at a time. If I try to run the whole it always fails
+>> after a couple of sub-tests with an error.
+>> 
+>> It seems to me that these scripts are quite memory consuming as they
+>> accumulate memory consuption in relation to what is loaded along the
+>> way. A major problem with my system.
+>
+> I'm sorry for perhaps asking something entirely obvious, but have you tried:
+>
+> kernel-dir $ rsync -avr tools/testing/selftests/ root@$board:selftests/
+> board $ cd selftests/drivers/net/dsa/
+> board $ ./bridge_locked_port.sh lan0 lan1 lan2 lan3
+>
+> ?
+>
+> This is how I always run them, and it worked fine with both Debian
+> (where it's easy to add missing packages to the rootfs) or with a more
+> embedded-oriented Buildroot.
 
-Signed-off-by: Denis Plotnikov <den-plotnikov@yandex-team.ru>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+The memory problems are of course on the embedded target. In that case I
+think it would be a very good idea to do something to design the system
+better, so that it frees memory between the subtests.
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
-index 87f76bac2e463..39ecfc1a1dbd0 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
-@@ -628,7 +628,9 @@ int qlcnic_fw_create_ctx(struct qlcnic_adapter *dev)
- 	int i, err, ring;
- 
- 	if (dev->flags & QLCNIC_NEED_FLR) {
--		pci_reset_function(dev->pdev);
-+		err = pci_reset_function(dev->pdev);
-+		if (err && err != -ENOTTY)
-+			return err;
- 		dev->flags &= ~QLCNIC_NEED_FLR;
- 	}
- 
--- 
-2.25.1
-
+If all tests are always run on the bridge only, I think they don't make
+much sense as these patchsets are directed towards switchcores.
