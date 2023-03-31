@@ -2,115 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6156D211F
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D2256D2126
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:07:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbjCaNGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 09:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        id S232734AbjCaNHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 09:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232688AbjCaNGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:06:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1F2191E3
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 06:05:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680267920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hgW8cTlK+PJOT8RKw+ZUtnYCCPaowJ5bRdHT0sOdQqU=;
-        b=GKAcC+rzVs1W5lZ8eR44P9KPI686kEUBsrNi4GXoHT7Aopd+thSYit76fQCkFJdRjpPR6W
-        wwkOldCmk1kz2zfJF25QFsJSPyvSrs8kWlrbJh1609u9ATxQ+hjKEM0W+czda0PGsfkwxa
-        al89+n5fFwfOKpPkLkY1CbYTQ9u7OJk=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-83-QOllCAyINCiz5T1nmVITNg-1; Fri, 31 Mar 2023 09:05:18 -0400
-X-MC-Unique: QOllCAyINCiz5T1nmVITNg-1
-Received: by mail-pg1-f198.google.com with SMTP id p1-20020a631e41000000b0050bdffd4995so6730012pgm.16
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 06:05:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680267918;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hgW8cTlK+PJOT8RKw+ZUtnYCCPaowJ5bRdHT0sOdQqU=;
-        b=LXJG6WWZekn89ribjS/ej/YW0h9H9qtceYCVMvGWIDoP+WK7hBtPaxJVMMmStfnKRm
-         Hl7RYN4JWSK/wp9EWZwj6K6mDCXT1b6Uge3iChVqmveG8XJK7xdp5MtM2dRb59N+iRGr
-         X5z/XX2Ch0MhpiY0cpFt2FVCBs762LxZBsv3axxbSCwgFpNjfdljLDnMMLcoGQSE5KC/
-         2z8mhN5m4Hwe5TYFQ/+ChjWpJWLkSDFHApWr8wCV0pJYElydIkEH0l6cAqW/byLuRxR+
-         baGFjaBgSZdRKKznKF5uiKzm/WhURXTyPS8T7yP8aKHab0fJLsMPRppzkUO1asrnFjvN
-         8V9Q==
-X-Gm-Message-State: AAQBX9cbW235VVjANw9q1hHjFEp6ZHUdBE3Ot+bOExFM+jMYwcmdkEf2
-        NPOxi6XA28xuFkkNqQZvOnsZL7gAs8I1oK4MU91mQyY3zmKc/dw5SnNt8KZ/JDYb9GUXFRWoD3u
-        L1uY3Iv26AdhFQFfB
-X-Received: by 2002:a17:90b:4a50:b0:240:59e8:6dad with SMTP id lb16-20020a17090b4a5000b0024059e86dadmr25379905pjb.25.1680267917837;
-        Fri, 31 Mar 2023 06:05:17 -0700 (PDT)
-X-Google-Smtp-Source: AKy350Y9PfdWxol+rufcZcwbvwQ1DYEPsLuXLElCIM70TdWdw8rbW3NRn8loQ1UIz8coXa9Ci2UCbA==
-X-Received: by 2002:a17:90b:4a50:b0:240:59e8:6dad with SMTP id lb16-20020a17090b4a5000b0024059e86dadmr25379876pjb.25.1680267917496;
-        Fri, 31 Mar 2023 06:05:17 -0700 (PDT)
-Received: from [10.72.12.135] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d4-20020a17090ac24400b002407750c3c3sm1409435pjx.37.2023.03.31.06.05.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Mar 2023 06:05:17 -0700 (PDT)
-Message-ID: <94f0894d-f72c-daa3-10e2-e83e0e15a759@redhat.com>
-Date:   Fri, 31 Mar 2023 09:05:01 -0400
+        with ESMTP id S232690AbjCaNHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:07:54 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB625B9D;
+        Fri, 31 Mar 2023 06:07:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=dX3+b7a2mtO46tzZW0WpCYT+JGnzFjdHoWuKzr8mDGc=; b=rrGuzRFYsnrsLy+qaZsXgGfv9I
+        YdG+uYn89vS8lLaeuGQvA+TjsJT2/y9E//EL1HDO0GIqmFestJaIOK9bzCeFepIffW/DoB8vUuN+d
+        qGplyBpGd2QUPPcI7KpTJi5s9TYC3g8Y1WVumgh7j+GTob3iT9CGWOC0NGMkWkowRudQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1piETm-0091tW-Gq; Fri, 31 Mar 2023 15:07:42 +0200
+Date:   Fri, 31 Mar 2023 15:07:42 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Radu Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next] net: phy: introduce phy_reg_field interface
+Message-ID: <d001e708-b5ac-4aa5-9624-4d9ae375d282@lunn.ch>
+References: <20230331123259.567627-1-radu-nicolae.pirea@oss.nxp.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [RFC PATCH v2 37/48] ceph: Use sendmsg(MSG_SPLICE_PAGES) rather
- than sendpage()
-To:     David Howells <dhowells@redhat.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org
-References: <7f7947d6-2a03-688b-dc5e-3887553f0106@redhat.com>
- <20230329141354.516864-1-dhowells@redhat.com>
- <20230329141354.516864-38-dhowells@redhat.com>
- <709552.1680158901@warthog.procyon.org.uk>
-Content-Language: en-US
-From:   Xiubo Li <xiubli@redhat.com>
-In-Reply-To: <709552.1680158901@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230331123259.567627-1-radu-nicolae.pirea@oss.nxp.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Mar 31, 2023 at 03:32:59PM +0300, Radu Pirea (OSS) wrote:
+> Some PHYs can be heavily modified between revisions, and the addresses of
+> the registers are changed and the register fields are moved from one
+> register to another.
+> 
+> To integrate more PHYs in the same driver with the same register fields,
+> but these register fields were located in different registers at
+> different offsets, I introduced the phy_reg_fied structure.
 
-On 3/30/23 02:48, David Howells wrote:
-> Xiubo Li <xiubli@redhat.com> wrote:
->
->> BTW, will this two patch depend on the others in this patch series ?
-> Yes.  You'll need patches that affect TCP at least so that TCP supports
-> MSG_SPLICE_PAGES, so 04-08 and perhaps 09.  It's also on top of the patches
-> that remove ITER_PIPE on my iov-extract branch, but I don't think that should
-> affect you.
+Maybe you are solving the wrong problem. Maybe you should be telling
+the hardware/firmware engineers not to do this!
 
-Okay, I will check that.
+How many drivers can actually use this?	I don't	really want to
+encourage vendors to make such a mess of their hardware, so i'm
+wondering if this should be hidden away in the driver, if there	is
+only one driver which needs it.	If there are multiple drivers which
+can use this, please do	modify at least	one other driver to use	it,
+hence showing it is generic.
 
-Thanks.
+> +int phy_read_reg_field(struct phy_device *phydev,
+> +		       const struct phy_reg_field *reg_field)
+> +{
+> +	u16 mask;
+> +	int ret;
+> +
+> +	if (reg_field->size == 0) {
+> +		phydev_warn(phydev, "Trying to read a reg field of size 0.");
+> +		return -EINVAL;
+> +	}
+> +
+> +	phy_lock_mdio_bus(phydev);
+> +	if (reg_field->mmd)
+> +		ret = __phy_read_mmd(phydev, reg_field->devad,
+> +				     reg_field->reg);
+> +	else
+> +		ret = __phy_read(phydev, reg_field->reg);
+> +	phy_unlock_mdio_bus(phydev);
+> +
 
+Could you please explain the locking. It appears you are trying to
+protect reg_field->mmd? Does that really change? Especially since you
+have _const_ struct phy_reg_field *
 
-> David
->
-
+      Andrew
