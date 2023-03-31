@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 804056D1A91
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 211716D1ACB
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231940AbjCaImH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
+        id S231873AbjCaIue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231690AbjCaIlp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:41:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7DD1D871;
-        Fri, 31 Mar 2023 01:41:17 -0700 (PDT)
+        with ESMTP id S231765AbjCaIu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:50:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFDB1BF7C;
+        Fri, 31 Mar 2023 01:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B85E562558;
-        Fri, 31 Mar 2023 08:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0B507C433A0;
-        Fri, 31 Mar 2023 08:40:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCDD3B82D5A;
+        Fri, 31 Mar 2023 08:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7C980C43445;
+        Fri, 31 Mar 2023 08:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680252019;
-        bh=MFc42CRC11od6L4dhbhC0cOLgdVUVYfS+K7b97A2Tcc=;
+        s=k20201202; t=1680252618;
+        bh=wxIPqkwYPdKr0won1ENYznNgmtYMu1BdaFxQtzmUVWw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MMNjDr+mSAYGmag1SbgumSybts688xcU4ggJx8yq1vAB5eldjoySBrbzwWFD2u21E
-         0dq1wiI/YtPuCIha7U0A5ssV7Zw3TmcS9+CojYDhtPUTRugUJaOEXELc9ACWI3hoPo
-         mZ02BBrrVTYHlCUo0Z15Q3Rv60pejrYA5pb0mIFTeO2mHLKrl7X8PDcEe3u+qjdjde
-         /P5J3ZbGOfALN0+bCZpdXcJAlnYQnYz7T7+FJxOGYRuoLovw9scg2E5Co0XXSVPJeM
-         +oWIw385fbHrOrcdrXbNls5BLwCaeT3kZzEwgQn72yauvGRxNJoVMoX4UdJDiWVVfJ
-         LysVN3t4N2Dfw==
+        b=O/v88uFsbirSgv/7d67K6FfcIreC32+lYznPk5c4WDPn/N0JGP0vYhJ36RFTuWK/x
+         tIygVQ1dFVMquIY9IWV1WeT8F2oz8dYaUw0RRXGvHH4m8w5I9LZfToNSFaYx8FmnPD
+         xpQ0VtE5uFl1Cluet+zOig+4E6FGVGL7Sx6LOVnjxWW4rhympPnK+F21v0/lttdxAr
+         7FI4y7FgshUo91mBd487vG+yTWMqdp9BXKJqmafm3CTWjwTAjRk1i26gtZnzc0rjAd
+         ex3HDH2rCDqiRIchO7GkQo/ZeKC+meYJfZKydXgzCUGW1hIJCrLyfbVUdfQllDC4Q6
+         fk8/NURbvYZcQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DA98EC73FE2;
-        Fri, 31 Mar 2023 08:40:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6254AC0C40E;
+        Fri, 31 Mar 2023 08:50:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: wwan: t7xx: do not compile with -Werror
+Subject: Re: [PATCH net] vsock/vmci: convert VMCI error code to -ENOMEM on send
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168025201889.3875.15656293557332805344.git-patchwork-notify@kernel.org>
-Date:   Fri, 31 Mar 2023 08:40:18 +0000
-References: <20230331063515.947-1-jirislaby@kernel.org>
-In-Reply-To: <20230331063515.947-1-jirislaby@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     kuba@kernel.org, linux-kernel@vger.kernel.org,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
-        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Message-Id: <168025261839.9284.14988415059370438454.git-patchwork-notify@kernel.org>
+Date:   Fri, 31 Mar 2023 08:50:18 +0000
+References: <2c3aeeac-2fcb-16f6-41cd-c0ca4e6a6d3e@sberdevices.ru>
+In-Reply-To: <2c3aeeac-2fcb-16f6-41cd-c0ca4e6a6d3e@sberdevices.ru>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        bobby.eshleman@bytedance.com, bryantan@vmware.com,
+        vdasa@vmware.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
+        oxffffaa@gmail.com, avkrasnov@sberdevices.ru, pv-drivers@vmware.com
 X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -65,23 +65,21 @@ Hello:
 This patch was applied to netdev/net.git (main)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 31 Mar 2023 08:35:15 +0200 you wrote:
-> When playing with various compilers or their versions, some choke on
-> the t7xx code. For example (with gcc 13):
->  In file included from ./arch/s390/include/generated/asm/rwonce.h:1,
->                   from ../include/linux/compiler.h:247,
->                   from ../include/linux/build_bug.h:5,
->                   from ../include/linux/bits.h:22,
->                   from ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:17:
->  In function 'preempt_count',
->      inlined from 't7xx_fsm_append_event' at ../drivers/net/wwan/t7xx/t7xx_state_monitor.c:439:43:
->  ../include/asm-generic/rwonce.h:44:26: error: array subscript 0 is outside array bounds of 'const volatile int[0]' [-Werror=array-bounds=]
+On Fri, 31 Mar 2023 10:56:41 +0300 you wrote:
+> This adds conversion of VMCI specific error code to general -ENOMEM. It
+> is needed, because af_vsock.c passes error value returned from transport
+> to the user, which does not expect to get VMCI_ERROR_* values.
+> 
+> Fixes: c43170b7e157 ("vsock: return errors other than -ENOMEM to socket")
+> Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+> Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - net: wwan: t7xx: do not compile with -Werror
-    https://git.kernel.org/netdev/net/c/362f0b6678ad
+  - [net] vsock/vmci: convert VMCI error code to -ENOMEM on send
+    https://git.kernel.org/netdev/net/c/ffa5395a7901
 
 You are awesome, thank you!
 -- 
