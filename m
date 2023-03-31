@@ -2,113 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 210226D18E7
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3577B6D18EF
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbjCaHqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 03:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        id S231276AbjCaHqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 03:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbjCaHqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:46:23 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D30E1A943;
-        Fri, 31 Mar 2023 00:46:18 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 63BFC188443E;
-        Fri, 31 Mar 2023 07:46:15 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 3241325038AA;
-        Fri, 31 Mar 2023 07:46:15 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 21C839B403F4; Fri, 31 Mar 2023 07:46:15 +0000 (UTC)
-X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
-Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 6920D91201E3;
-        Fri, 31 Mar 2023 07:46:14 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 6/6] selftests: forwarding: add dynamic FDB
- test
-In-Reply-To: <20230330192714.oqosvifrftirshej@skbuf>
-References: <20230318141010.513424-1-netdev@kapio-technology.com>
- <20230318141010.513424-7-netdev@kapio-technology.com>
- <ZBgdAo8mxwnl+pEE@shredder> <87a5zzh65p.fsf@kapio-technology.com>
- <ZCMYbRqd+qZaiHfu@shredder> <874jq22h2u.fsf@kapio-technology.com>
- <20230330192714.oqosvifrftirshej@skbuf>
-Date:   Fri, 31 Mar 2023 09:43:34 +0200
-Message-ID: <874jq1mkm1.fsf@kapio-technology.com>
+        with ESMTP id S230388AbjCaHq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:46:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3401A952
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 00:45:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680248741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ijuijWfOviH3p+YNIe7G3DYHHIm8VDsoLsYWWShhetc=;
+        b=Q1y5wMc2zk2H523GR3Q4ltmFSrX4DtQhtzHM4XQ8qeK+p4zfoM85mWujiguGG/lg6VU50J
+        BMCDRO//W9+CQFWJFinnTcJAH49Ui1LhSo3dT/iq/mb5BvpYseFtdifyBRmIXzepQgHrD3
+        KJUvzX93xTNn7ABlm2qneC4VTI+N6Zs=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-299-9c0Lf8R6ME6FELrZ8vi8qA-1; Fri, 31 Mar 2023 03:45:39 -0400
+X-MC-Unique: 9c0Lf8R6ME6FELrZ8vi8qA-1
+Received: by mail-ed1-f71.google.com with SMTP id k30-20020a50ce5e000000b00500544ebfb1so30455113edj.7
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 00:45:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680248738;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ijuijWfOviH3p+YNIe7G3DYHHIm8VDsoLsYWWShhetc=;
+        b=SOGkUMRbEnyX4OzSDRrfpH7bbED+c4IWMynVnX8wxbsUiGcrHUulntpIDFFCCKoF9K
+         QrCwoaSic3MqKGuUX3Yv68QY+rZN+ZoiMpPqN1ocriNXdAJAZ0plYIswz9L6v8yQCpEp
+         OmHde4NwAT5ckIVE0/11xEqbJ+9LHactQ+x4Cogw7vp9f6KbDq/X16eOe8xvAUj3ArCv
+         ij+ti7Wv388O+jSNx/GB3fqVc+uvBUVr0BSdRBtqDI56VUWGSS6Xsz3zJBPxNP9ja3zZ
+         j1gXyweqAAWrnOTjMe3Lj+gCKsPbw35V4W9tCxqzqtNprljPK5zixsqINi8Eqts8sLAu
+         bjIA==
+X-Gm-Message-State: AAQBX9fpTyMxXiHCQkrlMhxMDbDQXgqfnD/PCaPwnzVJqRvKX+tgD9c1
+        AA/7AyxQr0hsm2mCI644T6HWMColPKQnELOr2uOLXtnIGmFQIJKAEgL4B85hgxYTswcmlsFQIgZ
+        ldRH4i42Q/jQRAYek
+X-Received: by 2002:a17:906:5785:b0:93d:1c2b:bd23 with SMTP id k5-20020a170906578500b0093d1c2bbd23mr28486737ejq.39.1680248738074;
+        Fri, 31 Mar 2023 00:45:38 -0700 (PDT)
+X-Google-Smtp-Source: AKy350YS3/z+4R+xl2x92XT2RXYCogfvtYmw2I34NDhSWzTMLR1o5S98t+qcxg+NZzy9Jd9gHuGQoQ==
+X-Received: by 2002:a17:906:5785:b0:93d:1c2b:bd23 with SMTP id k5-20020a170906578500b0093d1c2bbd23mr28486717ejq.39.1680248737742;
+        Fri, 31 Mar 2023 00:45:37 -0700 (PDT)
+Received: from sgarzare-redhat (host-82-57-51-130.retail.telecomitalia.it. [82.57.51.130])
+        by smtp.gmail.com with ESMTPSA id dx21-20020a170906a85500b008d044ede804sm677526ejb.163.2023.03.31.00.45.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Mar 2023 00:45:37 -0700 (PDT)
+Date:   Fri, 31 Mar 2023 09:45:33 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        Jason Wang <jasowang@redhat.com>, eperezma@redhat.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, stefanha@redhat.com,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v4 5/9] vringh: support VA with iotlb
+Message-ID: <3jqstd75xs6f2pn7pwjxnkphhan5bk25er3ord4rw63545htu7@vgngick7zfco>
+References: <20230324153607.46836-1-sgarzare@redhat.com>
+ <20230324153919.47633-1-sgarzare@redhat.com>
+ <ZCWIXZbeWanvPJA3@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <ZCWIXZbeWanvPJA3@corigine.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 22:27, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Thu, Mar 30, 2023 at 09:07:53PM +0200, Hans Schultz wrote:
->> Not true, it reveals that I forgot to put it in the patch, that's all. As
->> I cannot run several of these tests because of memory constraints I link
->> the file to a copy in a rw area where I modify the list and just run one
->> of the subtests at a time. If I try to run the whole it always fails
->> after a couple of sub-tests with an error.
->> 
->> It seems to me that these scripts are quite memory consuming as they
->> accumulate memory consuption in relation to what is loaded along the
->> way. A major problem with my system.
+On Thu, Mar 30, 2023 at 03:02:21PM +0200, Simon Horman wrote:
+>On Fri, Mar 24, 2023 at 04:39:19PM +0100, Stefano Garzarella wrote:
+>> vDPA supports the possibility to use user VA in the iotlb messages.
+>> So, let's add support for user VA in vringh to use it in the vDPA
+>> simulators.
+>>
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 >
-> I'm sorry for perhaps asking something entirely obvious, but have you tried:
+>...
 >
-> kernel-dir $ rsync -avr tools/testing/selftests/ root@$board:selftests/
-> board $ cd selftests/drivers/net/dsa/
-> board $ ./bridge_locked_port.sh lan0 lan1 lan2 lan3
+>> +/**
+>> + * vringh_init_iotlb_va - initialize a vringh for a ring with IOTLB containing
+>> + *                        user VA.
+>> + * @vrh: the vringh to initialize.
+>> + * @features: the feature bits for this ring.
+>> + * @num: the number of elements.
+>> + * @weak_barriers: true if we only need memory barriers, not I/O.
+>> + * @desc: the userpace descriptor pointer.
+>> + * @avail: the userpace avail pointer.
+>> + * @used: the userpace used pointer.
 >
-> ?
->
-> This is how I always run them, and it worked fine with both Debian
-> (where it's easy to add missing packages to the rootfs) or with a more
-> embedded-oriented Buildroot.
+>nit: s/userpace/userspace/
 
-I am not entirely clear of your idea. You need somehow to boot into a
-system with the patched net-next kernel or you have a virtual machine
-boot into a virtual OS. I guess it is the last option you refer to using
-Debian?
+Oops, good catch!
+
+Copy & past typos also present in the documentation of vringh_init_kern
+and vringh_init_iotlb.
+
+I will fix this patch and send a separate patch to fix the other two.
+
+Thanks,
+Stefano
+
