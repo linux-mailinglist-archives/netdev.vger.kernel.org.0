@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4CB6D162C
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 06:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E836D162F
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 06:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229450AbjCaEA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 00:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+        id S229787AbjCaECs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 00:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbjCaEA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 00:00:26 -0400
+        with ESMTP id S229437AbjCaECq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 00:02:46 -0400
 Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55894EC76
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 21:00:25 -0700 (PDT)
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72386EC76
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 21:02:45 -0700 (PDT)
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B1B073F235
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 04:00:23 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B5BFE3F20F
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 04:02:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1680235223;
-        bh=GwiURaocYez2zh6XY5BVbkTmVDxUeX2P821vG18oTdk=;
+        s=20210705; t=1680235363;
+        bh=4yyPvCUsMNZQ1ROrWpH6d5JSFBxxAuRO1CE8CGiYGw8=;
         h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
          Content-Type:Date:Message-ID;
-        b=Nak+P4ptWD5vH/zzPPVeCuAhmmifOch7pgzqmzFi9tgVBc02alw5LC+cn1gzN6lw3
-         CGmdf/COqq66FcjbOmQ4Fz0T6qYRy9Drq+sBS+O2hTDcD2TzcdR/VYUiEBx6Iq3e0d
-         GfsEIcAZute/Xe0oQPFFBc1NZZbPZjyH2ox4QX3gS+lW6Z2Ke7aNsM2mPrfj498vVn
-         LZ2Hjy32ez2Js8ktEVIDvcN29zbMQUEyGCshQprp1IfjPj3dN5XZgnMOQPhTPgPWb5
-         CvD2QIj8h7U9QnzIgpPqEu9Q9TEqXOpofE7JfFOZV87gjl7AKFihKrXLLQTgC9ge4P
-         y5uh49EdY8LfA==
-Received: by mail-pj1-f70.google.com with SMTP id d13-20020a17090ad98d00b00240922fdb7cso5909208pjv.6
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 21:00:23 -0700 (PDT)
+        b=nhlBmRFR3S8OTbGYhDO68XeZCIXbXZhpjlFH/ggvM0nf5DMMFdTwgHqSdFrLjFg1l
+         NFhyWLvmqP6NUIwQ3/1k76koR1S98Mw4C1TCnLjo87cxJHLYdLKSYTZfH1niPJl/DZ
+         h9hJ5uphwtgwkpnputjFoAafamfIw21289RtCH5o7jLBOqMLBUz0sL3Px8GCdpiHOg
+         q72bGULoiT5pP0nGIrOS9vuXc3em15862qWUtSYwUDy9yz+VxDBjaorL3nnbXJJlr2
+         QUJHj7w8eYmBUkXIzBqXnsAsicCVwbyYte0xZxd4cTUmAH98yXxBj5GR/0MtRbj9+q
+         QnhG8YTnCzQIg==
+Received: by mail-pl1-f199.google.com with SMTP id u18-20020a170902e5d200b001a1d70ea3b6so12186372plf.6
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 21:02:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680235222;
+        d=1e100.net; s=20210112; t=1680235362;
         h=message-id:date:content-transfer-encoding:content-id:mime-version
          :comments:references:in-reply-to:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GwiURaocYez2zh6XY5BVbkTmVDxUeX2P821vG18oTdk=;
-        b=f2B4AvZAO5MU40ZPEtX4MQbiiT/VXitke4EhSI7V2AenBfyv1AgvAVXu+It7h39rrE
-         TO9OeJaLcs1yvBmqTOQAc4SIkI4g+oNVdvvsuhGpGhR96hydiybAsGh4b2kJ3qB/2lpk
-         xPsXivxmrKrP7RaElcwAwu8H2qb8Ep6m6fqOWJruvxTjZeEuDVO9zDIt0jDkYvp76iUt
-         tTWElupe7R1JZPBDF0HUS8GmQVYc+9zZrbC5qRicG8LAHKCfFV9i1NsrFFVlW3aAKWIn
-         kEp11Am8kM91MrdV0j6gjkVLcFuQtahfWM1v9HtjzWT2gdIGfKCZui6UMlqlr4K0HkQm
-         rYHg==
-X-Gm-Message-State: AAQBX9csMUhgnm6zRcbebHuwgjuxcjxfv+A6MfUCjKzihsSKpwKKhXGw
-        VD+YrQZiM39mILjFmscLk4ugW3pCnnjKZt7JelZjel5BpcmQTp2557k5cIyavpMUhoRfzAsBpHY
-        Owcd9KHjj/FCACdAQkUB2h9rGriUQi9HeDQ==
-X-Received: by 2002:a17:902:d2cb:b0:1a1:db10:7ba3 with SMTP id n11-20020a170902d2cb00b001a1db107ba3mr35687922plc.2.1680235221910;
-        Thu, 30 Mar 2023 21:00:21 -0700 (PDT)
-X-Google-Smtp-Source: AKy350bYTmFulhF6P+A2B4Y2ybUhT1SGWj5f1EJu0vexkGqrARqBDN0ROI+CXBnLxn+Vhy2f+3HtKA==
-X-Received: by 2002:a17:902:d2cb:b0:1a1:db10:7ba3 with SMTP id n11-20020a170902d2cb00b001a1db107ba3mr35687877plc.2.1680235221423;
-        Thu, 30 Mar 2023 21:00:21 -0700 (PDT)
+        bh=4yyPvCUsMNZQ1ROrWpH6d5JSFBxxAuRO1CE8CGiYGw8=;
+        b=XY6kvtUDtwSdC3Clq7fnI2tuMOYzXpxFdajr0cvgD3ewbmh+rtQ3j41Wbu1tSt9fyL
+         2XNtvlWTQvevEMEBlnQLvJ+PlDXE2+mAvhyayPGjVZrTZ4TOcS60Dbm4OSL6ee/dtIGY
+         LQtWL9q+Uh2OOQUPFvjlUKjXhIKsT7qf5XfRHB7eFwetROhphGPi45Y0Fp3PZGFWDOcX
+         7BBLAvLPq9HNblUgQSstqmWTukPuIdVrHyNpBrcTxDrLAitnh0a6KwNYqzSmeo/jzlG2
+         fI3JCSLEC4nUnMGDh5PGtt5xUUTThsj8YlaUsvJQdoZ9MFQ5qjAii6Nvgn0rni3xze4z
+         v0hg==
+X-Gm-Message-State: AAQBX9dSeadyBU7YLl3hUzaB/gvNa77Q5L0VhLFgO5gh+Te/LQR04JcM
+        xx7g8+74n1py2Nj3NLP5WPuhO01ci/QtzdYljvytF/gTcfk5QNpUVe3js2pZmWTrvr+jUIUSJzT
+        YueWMdP8OaXpOAJZhqgCwQwLca3QDGSzAUw==
+X-Received: by 2002:a17:902:d411:b0:1a2:85f0:e73f with SMTP id b17-20020a170902d41100b001a285f0e73fmr4913902ple.35.1680235362432;
+        Thu, 30 Mar 2023 21:02:42 -0700 (PDT)
+X-Google-Smtp-Source: AKy350ZJdc/e2SWhZtwXsL8uRI8bhxg9LPyw2+jT22mlyNU7+WR0yAOAA00KMPL9Rew4xNm0Db3J8w==
+X-Received: by 2002:a17:902:d411:b0:1a2:85f0:e73f with SMTP id b17-20020a170902d41100b001a285f0e73fmr4913888ple.35.1680235362146;
+        Thu, 30 Mar 2023 21:02:42 -0700 (PDT)
 Received: from famine.localdomain ([50.125.80.253])
-        by smtp.gmail.com with ESMTPSA id r3-20020a170902be0300b0019abb539cddsm497121pls.10.2023.03.30.21.00.20
+        by smtp.gmail.com with ESMTPSA id t16-20020a170902b21000b0019a997bca5csm473084plr.121.2023.03.30.21.02.41
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 30 Mar 2023 21:00:21 -0700 (PDT)
+        Thu, 30 Mar 2023 21:02:41 -0700 (PDT)
 Received: by famine.localdomain (Postfix, from userid 1000)
-        id 8C7FE60080; Thu, 30 Mar 2023 21:00:20 -0700 (PDT)
+        id 6457060080; Thu, 30 Mar 2023 21:02:41 -0700 (PDT)
 Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 847619FB79;
-        Thu, 30 Mar 2023 21:00:20 -0700 (PDT)
+        by famine.localdomain (Postfix) with ESMTP id 5CF999FB79;
+        Thu, 30 Mar 2023 21:02:41 -0700 (PDT)
 From:   Jay Vosburgh <jay.vosburgh@canonical.com>
 To:     Hangbin Liu <liuhangbin@gmail.com>
 cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
@@ -69,18 +69,18 @@ cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jonathan Toppins <jtoppins@redhat.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>, Liang Li <liali@redhat.com>
-Subject: Re: [PATCH net 3/3] selftests: bonding: add arp validate test
-In-reply-to: <20230329101859.3458449-4-liuhangbin@gmail.com>
-References: <20230329101859.3458449-1-liuhangbin@gmail.com> <20230329101859.3458449-4-liuhangbin@gmail.com>
+Subject: Re: [PATCH net 1/3] bonding: fix ns validation on backup slaves
+In-reply-to: <20230329101859.3458449-2-liuhangbin@gmail.com>
+References: <20230329101859.3458449-1-liuhangbin@gmail.com> <20230329101859.3458449-2-liuhangbin@gmail.com>
 Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
-   message dated "Wed, 29 Mar 2023 18:18:59 +0800."
+   message dated "Wed, 29 Mar 2023 18:18:57 +0800."
 X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <21314.1680235220.1@famine>
+Content-ID: <21416.1680235361.1@famine>
 Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 30 Mar 2023 21:00:20 -0700
-Message-ID: <21315.1680235220@famine>
+Date:   Thu, 30 Mar 2023 21:02:41 -0700
+Message-ID: <21417.1680235361@famine>
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -92,100 +92,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hangbin Liu <liuhangbin@gmail.com> wrote:
 
->This patch add bonding arp validate tests with mode active backup,
->monitor arp_ip_target and ns_ip6_target. It also checks mii_status
->to make sure all slaves are UP.
+>When arp_validate is set to 2, 3, or 6, validation is performed for
+>backup slaves as well. As stated in the bond documentation, validation
+>involves checking the broadcast ARP request sent out via the active
+>slave. This helps determine which slaves are more likely to function in
+>the event of an active slave failure.
 >
+>However, when the target is an IPv6 address, the NS message sent from
+>the active interface is not checked on backup slaves. Additionally,
+>based on the bond_arp_rcv() rule b, we must reverse the saddr and daddr
+>when checking the NS message.
+>
+>Note that when checking the NS message, the destination address is a
+>multicast address. Therefore, we must convert the target address to
+>solicited multicast in the bond_get_targets_ip6() function.
+>
+>Prior to the fix, the backup slaves had a mii status of "down", but
+>after the fix, all of the slaves' mii status was updated to "UP".
+>
+>Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
 >Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
 Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 
 >---
-> .../drivers/net/bonding/bond_options.sh       | 55 +++++++++++++++++++
-> 1 file changed, 55 insertions(+)
+> drivers/net/bonding/bond_main.c | 5 +++--
+> include/net/bonding.h           | 8 ++++++--
+> 2 files changed, 9 insertions(+), 4 deletions(-)
 >
->diff --git a/tools/testing/selftests/drivers/net/bonding/bond_options.sh =
-b/tools/testing/selftests/drivers/net/bonding/bond_options.sh
->index 431ce0e45e3c..4909d529210c 100755
->--- a/tools/testing/selftests/drivers/net/bonding/bond_options.sh
->+++ b/tools/testing/selftests/drivers/net/bonding/bond_options.sh
->@@ -5,6 +5,7 @@
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index 236e5219c811..8cc9a74789b7 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -3269,7 +3269,8 @@ static int bond_na_rcv(const struct sk_buff *skb, s=
+truct bonding *bond,
 > =
 
-> ALL_TESTS=3D"
-> 	prio
->+	arp_validate
-> "
+> 	combined =3D skb_header_pointer(skb, 0, sizeof(_combined), &_combined);
+> 	if (!combined || combined->ip6.nexthdr !=3D NEXTHDR_ICMP ||
+>-	    combined->icmp6.icmp6_type !=3D NDISC_NEIGHBOUR_ADVERTISEMENT)
+>+	    (combined->icmp6.icmp6_type !=3D NDISC_NEIGHBOUR_SOLICITATION &&
+>+	     combined->icmp6.icmp6_type !=3D NDISC_NEIGHBOUR_ADVERTISEMENT))
+> 		goto out;
 > =
 
-> REQUIRE_MZ=3Dno
->@@ -207,6 +208,60 @@ prio()
-> 	done
+> 	saddr =3D &combined->ip6.saddr;
+>@@ -3291,7 +3292,7 @@ static int bond_na_rcv(const struct sk_buff *skb, s=
+truct bonding *bond,
+> 	else if (curr_active_slave &&
+> 		 time_after(slave_last_rx(bond, curr_active_slave),
+> 			    curr_active_slave->last_link_up))
+>-		bond_validate_na(bond, slave, saddr, daddr);
+>+		bond_validate_na(bond, slave, daddr, saddr);
+> 	else if (curr_arp_slave &&
+> 		 bond_time_in_interval(bond, slave_last_tx(curr_arp_slave), 1))
+> 		bond_validate_na(bond, slave, saddr, daddr);
+>diff --git a/include/net/bonding.h b/include/net/bonding.h
+>index ea36ab7f9e72..c3843239517d 100644
+>--- a/include/net/bonding.h
+>+++ b/include/net/bonding.h
+>@@ -761,13 +761,17 @@ static inline int bond_get_targets_ip(__be32 *targe=
+ts, __be32 ip)
+> #if IS_ENABLED(CONFIG_IPV6)
+> static inline int bond_get_targets_ip6(struct in6_addr *targets, struct =
+in6_addr *ip)
+> {
+>+	struct in6_addr mcaddr;
+> 	int i;
+> =
+
+>-	for (i =3D 0; i < BOND_MAX_NS_TARGETS; i++)
+>-		if (ipv6_addr_equal(&targets[i], ip))
+>+	for (i =3D 0; i < BOND_MAX_NS_TARGETS; i++) {
+>+		addrconf_addr_solict_mult(&targets[i], &mcaddr);
+>+		if ((ipv6_addr_equal(&targets[i], ip)) ||
+>+		    (ipv6_addr_equal(&mcaddr, ip)))
+> 			return i;
+> 		else if (ipv6_addr_any(&targets[i]))
+> 			break;
+>+	}
+> =
+
+> 	return -1;
 > }
-> =
-
->+arp_validate_test()
->+{
->+	local param=3D"$1"
->+	RET=3D0
->+
->+	# create bond
->+	bond_reset "${param}"
->+
->+	bond_check_connection
->+	[ $RET -ne 0 ] && log_test "arp_validate" "$retmsg"
->+
->+	# wait for a while to make sure the mii status stable
->+	sleep 5
->+	for i in $(seq 0 2); do
->+		mii_status=3D$(cmd_jq "ip -n ${s_ns} -j -d link show eth$i" ".[].linki=
-nfo.info_slave_data.mii_status")
->+		if [ ${mii_status} !=3D "UP" ]; then
->+			RET=3D1
->+			log_test "arp_validate" "interface eth$i mii_status $mii_status"
->+		fi
->+	done
->+}
->+
->+arp_validate_arp()
->+{
->+	local mode=3D$1
->+	local val
->+	for val in $(seq 0 6); do
->+		arp_validate_test "mode $mode arp_interval 1000 arp_ip_target ${sw_ip4=
-} arp_validate $val"
->+		log_test "arp_validate" "mode $mode arp_ip_target arp_validate $val"
->+	done
->+}
->+
->+arp_validate_ns()
->+{
->+	local mode=3D$1
->+	local val
->+
->+	if skip_ns; then
->+		log_test_skip "arp_validate ns" "Current iproute or kernel doesn't sup=
-port bond option 'ns_ip6_target'."
->+		return 0
->+	fi
->+
->+	for val in $(seq 0 6); do
->+		arp_validate_test "mode $mode arp_interval 1000 ns_ip6_target ${sw_ip6=
-} arp_validate $val"
->+		log_test "arp_validate" "mode $mode ns_ip6_target arp_validate $val"
->+	done
->+}
->+
->+arp_validate()
->+{
->+	arp_validate_arp "active-backup"
->+	arp_validate_ns "active-backup"
->+}
->+
-> trap cleanup EXIT
-> =
-
-> setup_prepare
 >-- =
 
 >2.38.1
