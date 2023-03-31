@@ -2,179 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E696D2105
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 14:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C6156D211F
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:06:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232658AbjCaM7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 08:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        id S232711AbjCaNGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 09:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232649AbjCaM7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 08:59:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0C31BCE
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 05:59:15 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1piELT-0007HC-29; Fri, 31 Mar 2023 14:59:07 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1piELS-0002LD-Oy; Fri, 31 Mar 2023 14:59:06 +0200
-Date:   Fri, 31 Mar 2023 14:59:06 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
-        kvalo@kernel.org, pkshih@realtek.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] wifi: rtw88: Move register access from
- rtw_bf_assoc() outside the RCU
-Message-ID: <20230331125906.GF15436@pengutronix.de>
-References: <20230108211324.442823-1-martin.blumenstingl@googlemail.com>
- <20230108211324.442823-2-martin.blumenstingl@googlemail.com>
+        with ESMTP id S232688AbjCaNGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:06:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1F2191E3
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 06:05:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680267920;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hgW8cTlK+PJOT8RKw+ZUtnYCCPaowJ5bRdHT0sOdQqU=;
+        b=GKAcC+rzVs1W5lZ8eR44P9KPI686kEUBsrNi4GXoHT7Aopd+thSYit76fQCkFJdRjpPR6W
+        wwkOldCmk1kz2zfJF25QFsJSPyvSrs8kWlrbJh1609u9ATxQ+hjKEM0W+czda0PGsfkwxa
+        al89+n5fFwfOKpPkLkY1CbYTQ9u7OJk=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-83-QOllCAyINCiz5T1nmVITNg-1; Fri, 31 Mar 2023 09:05:18 -0400
+X-MC-Unique: QOllCAyINCiz5T1nmVITNg-1
+Received: by mail-pg1-f198.google.com with SMTP id p1-20020a631e41000000b0050bdffd4995so6730012pgm.16
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 06:05:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680267918;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hgW8cTlK+PJOT8RKw+ZUtnYCCPaowJ5bRdHT0sOdQqU=;
+        b=LXJG6WWZekn89ribjS/ej/YW0h9H9qtceYCVMvGWIDoP+WK7hBtPaxJVMMmStfnKRm
+         Hl7RYN4JWSK/wp9EWZwj6K6mDCXT1b6Uge3iChVqmveG8XJK7xdp5MtM2dRb59N+iRGr
+         X5z/XX2Ch0MhpiY0cpFt2FVCBs762LxZBsv3axxbSCwgFpNjfdljLDnMMLcoGQSE5KC/
+         2z8mhN5m4Hwe5TYFQ/+ChjWpJWLkSDFHApWr8wCV0pJYElydIkEH0l6cAqW/byLuRxR+
+         baGFjaBgSZdRKKznKF5uiKzm/WhURXTyPS8T7yP8aKHab0fJLsMPRppzkUO1asrnFjvN
+         8V9Q==
+X-Gm-Message-State: AAQBX9cbW235VVjANw9q1hHjFEp6ZHUdBE3Ot+bOExFM+jMYwcmdkEf2
+        NPOxi6XA28xuFkkNqQZvOnsZL7gAs8I1oK4MU91mQyY3zmKc/dw5SnNt8KZ/JDYb9GUXFRWoD3u
+        L1uY3Iv26AdhFQFfB
+X-Received: by 2002:a17:90b:4a50:b0:240:59e8:6dad with SMTP id lb16-20020a17090b4a5000b0024059e86dadmr25379905pjb.25.1680267917837;
+        Fri, 31 Mar 2023 06:05:17 -0700 (PDT)
+X-Google-Smtp-Source: AKy350Y9PfdWxol+rufcZcwbvwQ1DYEPsLuXLElCIM70TdWdw8rbW3NRn8loQ1UIz8coXa9Ci2UCbA==
+X-Received: by 2002:a17:90b:4a50:b0:240:59e8:6dad with SMTP id lb16-20020a17090b4a5000b0024059e86dadmr25379876pjb.25.1680267917496;
+        Fri, 31 Mar 2023 06:05:17 -0700 (PDT)
+Received: from [10.72.12.135] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d4-20020a17090ac24400b002407750c3c3sm1409435pjx.37.2023.03.31.06.05.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 31 Mar 2023 06:05:17 -0700 (PDT)
+Message-ID: <94f0894d-f72c-daa3-10e2-e83e0e15a759@redhat.com>
+Date:   Fri, 31 Mar 2023 09:05:01 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230108211324.442823-2-martin.blumenstingl@googlemail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [RFC PATCH v2 37/48] ceph: Use sendmsg(MSG_SPLICE_PAGES) rather
+ than sendpage()
+To:     David Howells <dhowells@redhat.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org
+References: <7f7947d6-2a03-688b-dc5e-3887553f0106@redhat.com>
+ <20230329141354.516864-1-dhowells@redhat.com>
+ <20230329141354.516864-38-dhowells@redhat.com>
+ <709552.1680158901@warthog.procyon.org.uk>
+Content-Language: en-US
+From:   Xiubo Li <xiubli@redhat.com>
+In-Reply-To: <709552.1680158901@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 08, 2023 at 10:13:22PM +0100, Martin Blumenstingl wrote:
-> USB and (upcoming) SDIO support may sleep in the read/write handlers.
-> Shrink the RCU critical section so it only cover the call to
-> ieee80211_find_sta() and finding the ic_vht_cap/vht_cap based on the
-> found station. This moves the chip's BFEE configuration outside the
-> rcu_read_lock section and thus prevent "scheduling while atomic" or
-> "Voluntary context switch within RCU read-side critical section!"
-> warnings when accessing the registers using an SDIO card (which is
-> where this issue has been spotted in the real world - but it also
-> affects USB cards).
 
-Unfortunately this introduces a regression on my RTW8821CU chip. With
-this it constantly looses connection to the AP and reconnects shortly
-after:
+On 3/30/23 02:48, David Howells wrote:
+> Xiubo Li <xiubli@redhat.com> wrote:
+>
+>> BTW, will this two patch depend on the others in this patch series ?
+> Yes.  You'll need patches that affect TCP at least so that TCP supports
+> MSG_SPLICE_PAGES, so 04-08 and perhaps 09.  It's also on top of the patches
+> that remove ITER_PIPE on my iov-extract branch, but I don't think that should
+> affect you.
 
-[  199.771143] wlan0: authenticate with b0:be:76:5e:7b:34
-[  201.447301] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
-[  201.456789] wlan0: authenticated
-[  201.462356] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
-[  201.477263] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
-[  201.512995] wlan0: associated
-[  213.790399] wlan0: authenticate with b0:be:76:5e:7b:34
-[  215.467302] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
-[  215.470532] wlan0: authenticated
-[  215.490355] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
-[  215.503777] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
-[  215.539608] wlan0: associated
-[  227.770596] wlan0: authenticate with b0:be:76:5e:7b:34
-[  229.443302] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
-[  229.451209] wlan0: authenticated
-[  229.462487] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
-[  229.476077] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
-[  229.513499] wlan0: associated
-[  241.738494] wlan0: authenticate with b0:be:76:5e:7b:34
-[  243.407301] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
-[  243.411207] wlan0: authenticated
-[  243.423213] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
-[  243.439822] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
-[  243.476731] wlan0: associated
+Okay, I will check that.
 
-I haven't got any further information yet, I just realized this when I
-rebased my own RTW88 bugfix series from v6.2.2 to v6.3-rc4 before
-sending it.
+Thanks.
 
-RTW8723D and RTW8822CU seem unaffected though.
 
-Sascha
+> David
+>
 
-> 
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
-> v1 -> v2:
-> - Added Ping-Ke's Reviewed-by (thank you!)
-> 
-> v2 -> v3:
-> - Added Sascha's Tested-by (thank you!)
-> - added "wifi" prefix to the subject and reworded the title accordingly
-> 
-> 
->  drivers/net/wireless/realtek/rtw88/bf.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/bf.c b/drivers/net/wireless/realtek/rtw88/bf.c
-> index 038a30b170ef..c827c4a2814b 100644
-> --- a/drivers/net/wireless/realtek/rtw88/bf.c
-> +++ b/drivers/net/wireless/realtek/rtw88/bf.c
-> @@ -49,19 +49,23 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
->  
->  	sta = ieee80211_find_sta(vif, bssid);
->  	if (!sta) {
-> +		rcu_read_unlock();
-> +
->  		rtw_warn(rtwdev, "failed to find station entry for bss %pM\n",
->  			 bssid);
-> -		goto out_unlock;
-> +		return;
->  	}
->  
->  	ic_vht_cap = &hw->wiphy->bands[NL80211_BAND_5GHZ]->vht_cap;
->  	vht_cap = &sta->deflink.vht_cap;
->  
-> +	rcu_read_unlock();
-> +
->  	if ((ic_vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE) &&
->  	    (vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE)) {
->  		if (bfinfo->bfer_mu_cnt >= chip->bfer_mu_max_num) {
->  			rtw_dbg(rtwdev, RTW_DBG_BF, "mu bfer number over limit\n");
-> -			goto out_unlock;
-> +			return;
->  		}
->  
->  		ether_addr_copy(bfee->mac_addr, bssid);
-> @@ -75,7 +79,7 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
->  		   (vht_cap->cap & IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE)) {
->  		if (bfinfo->bfer_su_cnt >= chip->bfer_su_max_num) {
->  			rtw_dbg(rtwdev, RTW_DBG_BF, "su bfer number over limit\n");
-> -			goto out_unlock;
-> +			return;
->  		}
->  
->  		sound_dim = vht_cap->cap &
-> @@ -98,9 +102,6 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
->  
->  		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
->  	}
-> -
-> -out_unlock:
-> -	rcu_read_unlock();
->  }
->  
->  void rtw_bf_init_bfer_entry_mu(struct rtw_dev *rtwdev,
-> -- 
-> 2.39.0
-> 
-> 
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
