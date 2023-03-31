@@ -2,50 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E65D86D1795
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 08:40:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CACE6D1796
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 08:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230124AbjCaGks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 02:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
+        id S229832AbjCaGkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 02:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbjCaGkr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 02:40:47 -0400
+        with ESMTP id S229909AbjCaGks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 02:40:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DB1191E2
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792DA1B366
         for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 23:40:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2D96623AF
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 06:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E857C433D2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ED74623A2
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 06:40:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5795EC4339B;
         Fri, 31 Mar 2023 06:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1680244819;
-        bh=nhIE0opza93RN19T71/bfQYKInHoe+JovfAPFBcxwXg=;
+        bh=0RjMs++z/4Bg2YHWrF7Rn+pRGv4Rdd53KTBhVX/yI8E=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=d13JnbEy3w/swc13MkriuIVFKhmZFG2vdBcYq+lnOHI9x4tDwekuIwlECow3IEK66
-         KyOUVMarWMrByxVOmR/L6KT6/ouJ59yQ8E2tIbyuilKfgBO+UWnXxogWzEIW8IR7T3
-         guS4NVWeL7BmLu8KwP3l/Fc6HF9u6fjD7faizaLe88HuqdPCYDA1DpJirHTK/HwWOc
-         V0aRXtVju6i9PqwC3bFg1teN6jOL4VExeHzKv0qrfp5loG3sEsZSdMOu5EMHDaUwBH
-         N/i33qIcKTveaywqz7IxEJPCuEhF08JfM0Kpliv/oIVxPt0r6kFbsLvBEIQd1QUWXT
-         KlkfZICGRaZKA==
+        b=fVq+LlO7yQiigKUjwY1ZEmznGTG28OZ8YRfX/r5yKvFCPRRRpNyI7QLvBScqn6xAj
+         BiTrgaWvu4FeTayO9wfCsDtcQ1ihB78RLcqMUzjHY3S10wMcl6Wk1HaMKR68Yt/U6B
+         kQ//VC4J+xjcHCMQU0TDxlxOjFHHVg8uxDbMZBv1fkpX9JfQ3gsnrZ7rot29+ewNTo
+         w3bVWaPWTz8XxXNne3aknZFSjIrT42LQiGGD4r8pychIXwOwq5jsPjxSS6Vu+Xo32g
+         4uzIvvtOPPg1XfWJGv2llyyAQQndVwtbo5uwDwPVMXTtuJyVFQ09pzieUX09GyqKiW
+         g8fgBrO6oIrJw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 472F4C395C3;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3D85CC73FE0;
         Fri, 31 Mar 2023 06:40:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/4] tools: ynl: fill in some gaps of ethtool spec
+Subject: Re: [PATCH net-next] octeontx2-af: update type of prof fields in
+ nix_aw_enq_req
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168024481928.5026.14285386257176451722.git-patchwork-notify@kernel.org>
+Message-Id: <168024481924.5026.13451121678104405717.git-patchwork-notify@kernel.org>
 Date:   Fri, 31 Mar 2023 06:40:19 +0000
-References: <20230329221655.708489-1-sdf@google.com>
-In-Reply-To: <20230329221655.708489-1-sdf@google.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
+References: <20230329112356.458072-1-horms@kernel.org>
+In-Reply-To: <20230329112356.458072-1-horms@kernel.org>
+To:     Simon Horman <horms@kernel.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, sgoutham@marvell.com, lcherian@marvell.com,
+        gakula@marvell.com, jerinj@marvell.com, hkelam@marvell.com,
+        sbhatta@marvell.com, richardcochran@gmail.com,
+        keescook@chromium.org, netdev@vger.kernel.org
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
@@ -57,28 +61,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (main)
+This patch was applied to netdev/net-next.git (main)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 29 Mar 2023 15:16:51 -0700 you wrote:
-> I was trying to fill in the spec while exploring ethtool API for some
-> related work. I don't think I'll have the patience to fill in the rest,
-> so decided to share whatever I currently have.
+On Wed, 29 Mar 2023 13:23:56 +0200 you wrote:
+> Update type of prof and prof_mask fields in nix_as_enq_req
+> from u64 to struct nix_bandprof_s, which is 128 bits wide.
 > 
-> Patches 1-2 add the be16 + spec.
-> Patches 3-4 implement an ethtool-like python tool to test the spec.
+> This is to address warnings with compiling with gcc-12 W=1
+> regarding string fortification.
+> 
+> Although the union of which these fields are a member is 128bits
+> wide, and thus writing a 128bit entity is safe, the compiler flags
+> a problem as the field being written is only 64 bits wide.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3,1/4] tools: ynl: support byte-order in cli
-    https://git.kernel.org/netdev/net-next/c/9f7cc57fe550
-  - [net-next,v3,2/4] tools: ynl: populate most of the ethtool spec
-    https://git.kernel.org/netdev/net-next/c/a353318ebf24
-  - [net-next,v3,3/4] tools: ynl: replace print with NlError
-    https://git.kernel.org/netdev/net-next/c/48993e22d23a
-  - [net-next,v3,4/4] tools: ynl: ethtool testing tool
-    https://git.kernel.org/netdev/net-next/c/f3d07b02b2b8
+  - [net-next] octeontx2-af: update type of prof fields in nix_aw_enq_req
+    https://git.kernel.org/netdev/net-next/c/709d0b880cea
 
 You are awesome, thank you!
 -- 
