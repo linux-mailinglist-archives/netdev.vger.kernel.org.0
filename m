@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71BFA6D1E5E
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 12:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63C556D1E69
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 12:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbjCaKyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 06:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56426 "EHLO
+        id S231781AbjCaK4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 06:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbjCaKyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 06:54:03 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F731D84D;
-        Fri, 31 Mar 2023 03:54:01 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id n19so12645169wms.0;
-        Fri, 31 Mar 2023 03:54:01 -0700 (PDT)
+        with ESMTP id S231624AbjCaK4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 06:56:25 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237081D86D;
+        Fri, 31 Mar 2023 03:56:13 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id h17so21939435wrt.8;
+        Fri, 31 Mar 2023 03:56:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680260040;
+        d=gmail.com; s=20210112; t=1680260172;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=3J+3+QpiG0rZpOXhX+ZLI6+BIv55R5IPb8nvts5K8P4=;
-        b=DIb00x/wP2+VNwtse4AjeksMmJYcP/m3kkgofcXigSzJbtsa8dp4dAO21pZFD7qQUU
-         15qFAwsU+bZkjUqKIh4QmamsHAqhlpNn8EnTq0aOcnxQO1dC3p5x2P5dIJFuEDxirDrj
-         nMVEnclZDcNibiIh1V24XwNVjSIzq6Yifjq2o6lVNaJe4i+UADRgncqdhM2i9ivNJ+/I
-         FjujLjbEGo8OMQSOQJBKWbQBTvzLG7tMkh5PsvQFvauSGA4Q3eMQSqDweHbsVM9M6cCW
-         93vkolzYF1L0Tdxate2IKdw+vcQiHtO4wQvD85QFVhLTBSwP4OtIs/WJpny77DbsfMFU
-         xHzA==
+        bh=Pqmnq8xzZa2lyHXyUpObVSAYBy1mnUzOiASQNzSsq1g=;
+        b=QDM2PWvm87vJ3RBhg9ErLSog6GEvxd/aECLGrRIkxjjCc47hgT80288j24Dk+6xjVv
+         UEUExJ869nFUJgpFweDD9C7mpTALZa142ujLEu+PRqeeX7DvnvNL5K8HoU6GzuUg0RTE
+         kIlWUX4DKZla58KFRtz2ixSIPr/w9J9SSbSaqREJK67rZjlFHLqD+DfsCtwxNQklMpBH
+         ljMygivHqbQ79QHaVlz4nhKExKTFvOzh9+EIPOOLF8Ep+RZMbDTKYm+B72smb9uAIBb6
+         2US56v/Kxj0kA3y82U1V4Tb5fXrqAsh15MLP9lswnx8b3jyMAKqhq4W9ltj2Lo11nN30
+         6PKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680260040;
+        d=1e100.net; s=20210112; t=1680260172;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3J+3+QpiG0rZpOXhX+ZLI6+BIv55R5IPb8nvts5K8P4=;
-        b=jKP5eAlmLzof6QcLKCTbc1gKusliTqcnS+QnPwmIiCzGORMkqGBkFMuFvL9pHs1iJJ
-         ynawUDqvDWlJiNAUYMSrmnLEFM6xBt4Vwavp2+0m1O7YTkyIOLCzZGlu8QSeD8E/UWhO
-         ebu65AyVKhtoIy4Y7d0BFH+uv4JQqAKfMX7g3hbfptnkzdXTZq0+3JkfmgLQleoGLEg+
-         8axmQ8MIOwHvd3LjFXB5YchK4leXTLDjOHyhX+/5Ogs7zskGj3A12IbrF/Lq1I+89TI2
-         XousNlJPWz5ustFEbddqKSXrxMGUhJAVPo97ZaeWwE2S+Aad1hhJ0evz21/fiPVbjWFO
-         Y1PA==
-X-Gm-Message-State: AO0yUKWNKaqFMP/cqtodD1q7rxcDs4ts0iZMfQ0T7b7Bpwj0U8Mv8O9S
-        U0J7gyGu25VzDwazw1iVcTMVIO1K8CgTWQ==
-X-Google-Smtp-Source: AK7set/6UKDxNUN/UAOYCRqLFd1+/gfqy+fFYklR/RihAmzcjc7b7iRIySxIy8jSOxMBFSTH9pG8Eg==
-X-Received: by 2002:a1c:7911:0:b0:3ee:5754:f14b with SMTP id l17-20020a1c7911000000b003ee5754f14bmr20711685wme.3.1680260040071;
-        Fri, 31 Mar 2023 03:54:00 -0700 (PDT)
+        bh=Pqmnq8xzZa2lyHXyUpObVSAYBy1mnUzOiASQNzSsq1g=;
+        b=OFJr3HZvTjSOWooRUJHNMhV8YL4SO9P5K+lX4JWlxRjX1Svcp6K5MYv2UczWnecPqb
+         ERiVeICudIJN26a7N8fevExi0xDQwSpOjrcsxrN9nSnRuzGdXCVSKCeULg4IvEFB3ahN
+         BjcHkVDvQDlH6cq+Pk97MByzvzlUSw68B9BuCpVePDte1dQ9xeqLxblYu92iqs8YvcG3
+         uTGFJg4ldB9jHSXtK5ruRq2iR95kTht9vquptqyuZcnkxkytQLCX03Mukxs6Ik9T26Og
+         mbd8H6/0tj1Kk6z0ARJkOiP9LI81D+Dy1rQZatRZOHFFrDW2z9MEzAWwU3O5B32b+eI4
+         Fk1w==
+X-Gm-Message-State: AAQBX9d/vkupaF3bBVFIf+GySPngST5CfXF4xcUq+c7So0LUMABUYL9k
+        IlgOxSmBawZIxcB0UJ4nx5I=
+X-Google-Smtp-Source: AKy350bjkArNEhmupglrT3ehOhjiY0S0rZcbOJKvYhK/laZUWUToLhEdQrcMcm4Z880g2mEcZsGN0g==
+X-Received: by 2002:a5d:49d0:0:b0:2cf:2dcc:3421 with SMTP id t16-20020a5d49d0000000b002cf2dcc3421mr20544873wrs.5.1680260172315;
+        Fri, 31 Mar 2023 03:56:12 -0700 (PDT)
 Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id l24-20020a1c7918000000b003e203681b26sm2273068wme.29.2023.03.31.03.53.58
+        by smtp.gmail.com with ESMTPSA id r16-20020adfdc90000000b002cff06039d7sm1897271wrj.39.2023.03.31.03.56.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 31 Mar 2023 03:53:59 -0700 (PDT)
-Message-ID: <5defb636-1f0f-6a6c-3c10-e8960b7d4399@gmail.com>
-Date:   Fri, 31 Mar 2023 12:53:57 +0200
+        Fri, 31 Mar 2023 03:56:11 -0700 (PDT)
+Message-ID: <82091587-3d4a-eec2-b3d0-7635dc9ef7b0@gmail.com>
+Date:   Fri, 31 Mar 2023 12:56:10 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH net-next 04/10] arm64: dts: mt7986: move cpuboot in a
+Subject: Re: [PATCH net-next 07/10] arm64: dts: mt7986: move ilm in a
  dedicated node
 Content-Language: en-US
 To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
@@ -65,9 +65,9 @@ Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         daniel@makrotopia.org, krzysztof.kozlowski+dt@linaro.org,
         robh+dt@kernel.org, devicetree@vger.kernel.org
 References: <cover.1679330630.git.lorenzo@kernel.org>
- <61e2445f79d8642e7749dac409e2b93b96667610.1679330630.git.lorenzo@kernel.org>
+ <5e1168bc8fd29f4871f81d8e4a9fd43a2c3be146.1679330630.git.lorenzo@kernel.org>
 From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <61e2445f79d8642e7749dac409e2b93b96667610.1679330630.git.lorenzo@kernel.org>
+In-Reply-To: <5e1168bc8fd29f4871f81d8e4a9fd43a2c3be146.1679330630.git.lorenzo@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -82,9 +82,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 20/03/2023 17:57, Lorenzo Bianconi wrote:
-> Since the cpuboot memory region is not part of the RAM SoC, move cpuboot
-> in a deidicated syscon node.
+On 20/03/2023 17:58, Lorenzo Bianconi wrote:
+> Since the ilm memory region is not part of the RAM SoC, move ilm in a
+> deidicated syscon node.
 > This patch helps to keep backward-compatibility with older version of
 > uboot codebase where we have a limit of 8 reserved-memory dts child
 > nodes.
@@ -94,63 +94,74 @@ On 20/03/2023 17:57, Lorenzo Bianconi wrote:
 Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 > ---
->   arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 21 +++++++++++----------
->   1 file changed, 11 insertions(+), 10 deletions(-)
+>   arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 34 +++++++++++------------
+>   1 file changed, 16 insertions(+), 18 deletions(-)
 > 
 > diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> index 51944690e790..668b6cfa6a3d 100644
+> index 668b6cfa6a3d..a0d96d232ee5 100644
 > --- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
 > +++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> @@ -113,12 +113,6 @@ wo_dlm1: wo-dlm@151f8000 {
->   			reg = <0 0x151f8000 0 0x2000>;
+> @@ -89,16 +89,6 @@ wo_emi1: wo-emi@4fd40000 {
 >   			no-map;
 >   		};
-> -
-> -		wo_boot: wo-boot@15194000 {
-> -			reg = <0 0x15194000 0 0x1000>;
+>   
+> -		wo_ilm0: wo-ilm@151e0000 {
+> -			reg = <0 0x151e0000 0 0x8000>;
 > -			no-map;
 > -		};
 > -
->   	};
->   
->   	timer {
-> @@ -461,10 +455,11 @@ wed0: wed@15010000 {
+> -		wo_ilm1: wo-ilm@151f0000 {
+> -			reg = <0 0x151f0000 0 0x8000>;
+> -			no-map;
+> -		};
+> -
+>   		wo_data: wo-data@4fd80000 {
+>   			reg = <0 0x4fd80000 0 0x240000>;
+>   			no-map;
+> @@ -454,11 +444,10 @@ wed0: wed@15010000 {
+>   			reg = <0 0x15010000 0 0x1000>;
 >   			interrupt-parent = <&gic>;
 >   			interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
->   			memory-region = <&wo_emi0>, <&wo_ilm0>, <&wo_dlm0>,
-> -					<&wo_data>, <&wo_boot>;
-> +					<&wo_data>;
->   			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
-> -					      "wo-data", "wo-boot";
-> +					      "wo-data";
+> -			memory-region = <&wo_emi0>, <&wo_ilm0>, <&wo_dlm0>,
+> -					<&wo_data>;
+> -			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
+> -					      "wo-data";
+> +			memory-region = <&wo_emi0>, <&wo_dlm0>, <&wo_data>;
+> +			memory-region-names = "wo-emi", "wo-dlm", "wo-data";
 >   			mediatek,wo-ccif = <&wo_ccif0>;
-> +			mediatek,wo-cpuboot = <&wo_cpuboot>;
+> +			mediatek,wo-ilm = <&wo_ilm0>;
+>   			mediatek,wo-cpuboot = <&wo_cpuboot>;
 >   		};
 >   
->   		wed1: wed@15011000 {
-> @@ -474,10 +469,11 @@ wed1: wed@15011000 {
+> @@ -468,11 +457,10 @@ wed1: wed@15011000 {
+>   			reg = <0 0x15011000 0 0x1000>;
 >   			interrupt-parent = <&gic>;
 >   			interrupts = <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>;
->   			memory-region = <&wo_emi1>, <&wo_ilm1>, <&wo_dlm1>,
-> -					<&wo_data>, <&wo_boot>;
-> +					<&wo_data>;
->   			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
-> -					      "wo-data", "wo-boot";
-> +					      "wo-data";
+> -			memory-region = <&wo_emi1>, <&wo_ilm1>, <&wo_dlm1>,
+> -					<&wo_data>;
+> -			memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
+> -					      "wo-data";
+> +			memory-region = <&wo_emi1>, <&wo_dlm1>, <&wo_data>;
+> +			memory-region-names = "wo-emi", "wo-dlm", "wo-data";
 >   			mediatek,wo-ccif = <&wo_ccif1>;
-> +			mediatek,wo-cpuboot = <&wo_cpuboot>;
+> +			mediatek,wo-ilm = <&wo_ilm1>;
+>   			mediatek,wo-cpuboot = <&wo_cpuboot>;
 >   		};
 >   
->   		wo_ccif0: syscon@151a5000 {
-> @@ -494,6 +490,11 @@ wo_ccif1: syscon@151ad000 {
+> @@ -490,6 +478,16 @@ wo_ccif1: syscon@151ad000 {
 >   			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
 >   		};
 >   
-> +		wo_cpuboot: syscon@15194000 {
-> +			compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
-> +			reg = <0 0x15194000 0 0x1000>;
+> +		wo_ilm0: syscon@151e0000 {
+> +			compatible = "mediatek,mt7986-wo-ilm", "syscon";
+> +			reg = <0 0x151e0000 0 0x8000>;
 > +		};
 > +
->   		eth: ethernet@15100000 {
->   			compatible = "mediatek,mt7986-eth";
->   			reg = <0 0x15100000 0 0x80000>;
+> +		wo_ilm1: syscon@151f0000 {
+> +			compatible = "mediatek,mt7986-wo-ilm", "syscon";
+> +			reg = <0 0x151f0000 0 0x8000>;
+> +		};
+> +
+>   		wo_cpuboot: syscon@15194000 {
+>   			compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
+>   			reg = <0 0x15194000 0 0x1000>;
