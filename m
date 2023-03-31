@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DEF76D2539
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D926D254B
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 18:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbjCaQSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 12:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45978 "EHLO
+        id S233513AbjCaQTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 12:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233454AbjCaQRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:17:49 -0400
+        with ESMTP id S233509AbjCaQS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 12:18:29 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C5B2782D
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:11:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1D022204
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 09:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680279074;
+        s=mimecast20190719; t=1680279077;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mcxOsbWhFQyukCMWrPOKlIpXJGoD9GGTGJfL3NnBqs4=;
-        b=dfTsbcSKut/DQpIdmO+hZIOUX8TCee/7cDEyOQ/eIsXh3C99iDxj7q6fI2DV3kBW4+dFJg
-        uegJaN2XBiaWPjw7jhM/O+LF17LFy/uXE2oc7QZm8g1xFiHKcuMYL7IPiYrIPp9lETGXLM
-        Isp9lh11a67Sx8SvQENyByCdl65JEUQ=
+        bh=gZm+OH3nuU2w5lgBIDJ5zMpRPGFGHnStb+oddo8E9cs=;
+        b=RBrFM4XYpM+ziuhf1hmIjqOm1JH2sgRenm2aeUvUQNqeGwURuTu+ZpQYnktwtpn23CfVWO
+        rngOoa4wbVWsg07Nh50IzF8uT3kBHkIR5JuWJPgUPYm+LvoDF/9iuH5lMWHOyp9BaANXlp
+        18DQ1GXM2h2F+VkLGiAXzzgv7+sgs9Q=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-519-amCcfeoRO16U4csq6Trr-w-1; Fri, 31 Mar 2023 12:11:11 -0400
-X-MC-Unique: amCcfeoRO16U4csq6Trr-w-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+ us-mta-641-aQ6YNqtSNLCDJnr_-8NcqQ-1; Fri, 31 Mar 2023 12:11:12 -0400
+X-MC-Unique: aQ6YNqtSNLCDJnr_-8NcqQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BE84088904E;
-        Fri, 31 Mar 2023 16:11:08 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83939802D1A;
+        Fri, 31 Mar 2023 16:11:11 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97DD02166B33;
-        Fri, 31 Mar 2023 16:11:06 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AF014020C82;
+        Fri, 31 Mar 2023 16:11:09 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     Matthew Wilcox <willy@infradead.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -52,16 +52,16 @@ Cc:     David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Xiubo Li <xiubli@redhat.com>, ceph-devel@vger.kernel.org
-Subject: [PATCH v3 39/55] ceph: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
-Date:   Fri, 31 Mar 2023 17:08:58 +0100
-Message-Id: <20230331160914.1608208-40-dhowells@redhat.com>
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org
+Subject: [PATCH v3 40/55] iscsi: Use sendmsg(MSG_SPLICE_PAGES) rather than sendpage
+Date:   Fri, 31 Mar 2023 17:08:59 +0100
+Message-Id: <20230331160914.1608208-41-dhowells@redhat.com>
 In-Reply-To: <20230331160914.1608208-1-dhowells@redhat.com>
 References: <20230331160914.1608208-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -72,130 +72,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use sendmsg() and MSG_SPLICE_PAGES rather than sendpage in ceph when
-transmitting data.  For the moment, this can only transmit one page at a
-time because of the architecture of net/ceph/, but if
-write_partial_message_data() can be given a bvec[] at a time by the
-iteration code, this would allow pages to be sent in a batch.
+Use sendmsg() with MSG_SPLICE_PAGES rather than sendpage.  This allows
+multiple pages and multipage folios to be passed through.
+
+TODO: iscsit_fe_sendpage_sg() should perhaps set up a bio_vec array for the
+entire set of pages it's going to transfer plus two for the header and
+trailer and page fragments to hold the header and trailer - and then call
+sendmsg once for the entire message.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Ilya Dryomov <idryomov@gmail.com>
-cc: Xiubo Li <xiubli@redhat.com>
-cc: Jeff Layton <jlayton@kernel.org>
+cc: "Martin K. Petersen" <martin.petersen@oracle.com>
 cc: "David S. Miller" <davem@davemloft.net>
 cc: Eric Dumazet <edumazet@google.com>
 cc: Jakub Kicinski <kuba@kernel.org>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
-cc: ceph-devel@vger.kernel.org
+cc: linux-scsi@vger.kernel.org
+cc: target-devel@vger.kernel.org
 cc: netdev@vger.kernel.org
 ---
- net/ceph/messenger_v1.c | 58 ++++++++++++++---------------------------
- 1 file changed, 19 insertions(+), 39 deletions(-)
+ drivers/scsi/iscsi_tcp.c                 | 31 ++++++++++++------------
+ drivers/scsi/iscsi_tcp.h                 |  2 +-
+ drivers/target/iscsi/iscsi_target_util.c | 14 ++++++-----
+ 3 files changed, 24 insertions(+), 23 deletions(-)
 
-diff --git a/net/ceph/messenger_v1.c b/net/ceph/messenger_v1.c
-index d664cb1593a7..b2d801a49122 100644
---- a/net/ceph/messenger_v1.c
-+++ b/net/ceph/messenger_v1.c
-@@ -74,37 +74,6 @@ static int ceph_tcp_sendmsg(struct socket *sock, struct kvec *iov,
- 	return r;
- }
+diff --git a/drivers/scsi/iscsi_tcp.c b/drivers/scsi/iscsi_tcp.c
+index c76f82fb8b63..cf3eb55d2a76 100644
+--- a/drivers/scsi/iscsi_tcp.c
++++ b/drivers/scsi/iscsi_tcp.c
+@@ -301,35 +301,37 @@ static int iscsi_sw_tcp_xmit_segment(struct iscsi_tcp_conn *tcp_conn,
  
--/*
-- * @more: either or both of MSG_MORE and MSG_SENDPAGE_NOTLAST
-- */
--static int ceph_tcp_sendpage(struct socket *sock, struct page *page,
--			     int offset, size_t size, int more)
--{
--	ssize_t (*sendpage)(struct socket *sock, struct page *page,
--			    int offset, size_t size, int flags);
--	int flags = MSG_DONTWAIT | MSG_NOSIGNAL | more;
--	int ret;
--
--	/*
--	 * sendpage cannot properly handle pages with page_count == 0,
--	 * we need to fall back to sendmsg if that's the case.
--	 *
--	 * Same goes for slab pages: skb_can_coalesce() allows
--	 * coalescing neighboring slab objects into a single frag which
--	 * triggers one of hardened usercopy checks.
--	 */
--	if (sendpage_ok(page))
--		sendpage = sock->ops->sendpage;
--	else
--		sendpage = sock_no_sendpage;
--
--	ret = sendpage(sock, page, offset, size, flags);
--	if (ret == -EAGAIN)
--		ret = 0;
--
--	return ret;
--}
--
- static void con_out_kvec_reset(struct ceph_connection *con)
- {
- 	BUG_ON(con->v1.out_skip);
-@@ -464,7 +433,6 @@ static int write_partial_message_data(struct ceph_connection *con)
- 	struct ceph_msg *msg = con->out_msg;
- 	struct ceph_msg_data_cursor *cursor = &msg->cursor;
- 	bool do_datacrc = !ceph_test_opt(from_msgr(con->msgr), NOCRC);
--	int more = MSG_MORE | MSG_SENDPAGE_NOTLAST;
- 	u32 crc;
+ 	while (!iscsi_tcp_segment_done(tcp_conn, segment, 0, r)) {
+ 		struct scatterlist *sg;
++		struct msghdr msg = {};
++		union {
++			struct kvec kv;
++			struct bio_vec bv;
++		} vec;
+ 		unsigned int offset, copy;
+-		int flags = 0;
  
- 	dout("%s %p msg %p\n", __func__, con, msg);
-@@ -482,6 +450,10 @@ static int write_partial_message_data(struct ceph_connection *con)
+ 		r = 0;
+ 		offset = segment->copied;
+ 		copy = segment->size - offset;
+ 
+ 		if (segment->total_copied + segment->size < segment->total_size)
+-			flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
++			msg.msg_flags |= MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 
+ 		if (tcp_sw_conn->queue_recv)
+-			flags |= MSG_DONTWAIT;
++			msg.msg_flags |= MSG_DONTWAIT;
+ 
+-		/* Use sendpage if we can; else fall back to sendmsg */
+ 		if (!segment->data) {
++			if (tcp_conn->iscsi_conn->datadgst_en)
++				msg.msg_flags |= MSG_SPLICE_PAGES;
+ 			sg = segment->sg;
+ 			offset += segment->sg_offset + sg->offset;
+-			r = tcp_sw_conn->sendpage(sk, sg_page(sg), offset,
+-						  copy, flags);
++			bvec_set_page(&vec.bv, sg_page(sg), copy, offset);
++			iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &vec.bv, 1, copy);
+ 		} else {
+-			struct msghdr msg = { .msg_flags = flags };
+-			struct kvec iov = {
+-				.iov_base = segment->data + offset,
+-				.iov_len = copy
+-			};
+-
+-			r = kernel_sendmsg(sk, &msg, &iov, 1, copy);
++			vec.kv.iov_base = segment->data + offset;
++			vec.kv.iov_len  = copy;
++			iov_iter_kvec(&msg.msg_iter, ITER_SOURCE, &vec.kv, 1, copy);
+ 		}
+ 
++		r = sock_sendmsg(sk, &msg);
+ 		if (r < 0) {
+ 			iscsi_tcp_segment_unmap(segment);
+ 			return r;
+@@ -746,7 +748,6 @@ iscsi_sw_tcp_conn_bind(struct iscsi_cls_session *cls_session,
+ 	sock_no_linger(sk);
+ 
+ 	iscsi_sw_tcp_conn_set_callbacks(conn);
+-	tcp_sw_conn->sendpage = tcp_sw_conn->sock->ops->sendpage;
+ 	/*
+ 	 * set receive state machine into initial state
  	 */
- 	crc = do_datacrc ? le32_to_cpu(msg->footer.data_crc) : 0;
- 	while (cursor->total_resid) {
-+		struct bio_vec bvec;
-+		struct msghdr msghdr = {
-+			.msg_flags = MSG_SPLICE_PAGES | MSG_SENDPAGE_NOTLAST,
-+		};
- 		struct page *page;
- 		size_t page_offset;
- 		size_t length;
-@@ -494,9 +466,12 @@ static int write_partial_message_data(struct ceph_connection *con)
+@@ -778,8 +779,6 @@ static int iscsi_sw_tcp_conn_set_param(struct iscsi_cls_conn *cls_conn,
+ 			mutex_unlock(&tcp_sw_conn->sock_lock);
+ 			return -ENOTCONN;
+ 		}
+-		tcp_sw_conn->sendpage = conn->datadgst_en ?
+-			sock_no_sendpage : tcp_sw_conn->sock->ops->sendpage;
+ 		mutex_unlock(&tcp_sw_conn->sock_lock);
+ 		break;
+ 	case ISCSI_PARAM_MAX_R2T:
+diff --git a/drivers/scsi/iscsi_tcp.h b/drivers/scsi/iscsi_tcp.h
+index 68e14a344904..d6ec08d7eb63 100644
+--- a/drivers/scsi/iscsi_tcp.h
++++ b/drivers/scsi/iscsi_tcp.h
+@@ -48,7 +48,7 @@ struct iscsi_sw_tcp_conn {
+ 	uint32_t		sendpage_failures_cnt;
+ 	uint32_t		discontiguous_hdr_cnt;
  
- 		page = ceph_msg_data_next(cursor, &page_offset, &length);
- 		if (length == cursor->total_resid)
--			more = MSG_MORE;
--		ret = ceph_tcp_sendpage(con->sock, page, page_offset, length,
--					more);
-+			msghdr.msg_flags |= MSG_MORE;
-+
-+		bvec_set_page(&bvec, page, length, page_offset);
-+		iov_iter_bvec(&msghdr.msg_iter, ITER_SOURCE, &bvec, 1, length);
-+
-+		ret = sock_sendmsg(con->sock, &msghdr);
- 		if (ret <= 0) {
- 			if (do_datacrc)
- 				msg->footer.data_crc = cpu_to_le32(crc);
-@@ -526,7 +501,10 @@ static int write_partial_message_data(struct ceph_connection *con)
-  */
- static int write_partial_skip(struct ceph_connection *con)
+-	ssize_t (*sendpage)(struct socket *, struct page *, int, size_t, int);
++	bool			can_splice_to_tcp;
+ };
+ 
+ struct iscsi_sw_tcp_host {
+diff --git a/drivers/target/iscsi/iscsi_target_util.c b/drivers/target/iscsi/iscsi_target_util.c
+index 26dc8ed3045b..c7d58e41ac3b 100644
+--- a/drivers/target/iscsi/iscsi_target_util.c
++++ b/drivers/target/iscsi/iscsi_target_util.c
+@@ -1078,6 +1078,8 @@ int iscsit_fe_sendpage_sg(
+ 	struct iscsit_conn *conn)
  {
--	int more = MSG_MORE | MSG_SENDPAGE_NOTLAST;
+ 	struct scatterlist *sg = cmd->first_data_sg;
 +	struct bio_vec bvec;
-+	struct msghdr msghdr = {
-+		.msg_flags = MSG_SPLICE_PAGES | MSG_SENDPAGE_NOTLAST | MSG_MORE,
-+	};
- 	int ret;
- 
- 	dout("%s %p %d left\n", __func__, con, con->v1.out_skip);
-@@ -534,9 +512,11 @@ static int write_partial_skip(struct ceph_connection *con)
- 		size_t size = min(con->v1.out_skip, (int)PAGE_SIZE);
- 
- 		if (size == con->v1.out_skip)
--			more = MSG_MORE;
--		ret = ceph_tcp_sendpage(con->sock, ceph_zero_page, 0, size,
--					more);
-+			msghdr.msg_flags &= ~MSG_SENDPAGE_NOTLAST;
-+		bvec_set_page(&bvec, ZERO_PAGE(0), size, 0);
-+		iov_iter_bvec(&msghdr.msg_iter, ITER_SOURCE, &bvec, 1, size);
++	struct msghdr msghdr = { .msg_flags = MSG_SPLICE_PAGES,	};
+ 	struct kvec iov;
+ 	u32 tx_hdr_size, data_len;
+ 	u32 offset = cmd->first_data_sg_off;
+@@ -1121,17 +1123,17 @@ int iscsit_fe_sendpage_sg(
+ 		u32 space = (sg->length - offset);
+ 		u32 sub_len = min_t(u32, data_len, space);
+ send_pg:
+-		tx_sent = conn->sock->ops->sendpage(conn->sock,
+-					sg_page(sg), sg->offset + offset, sub_len, 0);
++		bvec_set_page(&bvec, sg_page(sg), sub_len, sg->offset + offset);
++		iov_iter_bvec(&msghdr.msg_iter, ITER_SOURCE, &bvec, 1, sub_len);
 +
-+		ret = sock_sendmsg(con->sock, &msghdr);
- 		if (ret <= 0)
- 			goto out;
- 		con->v1.out_skip -= ret;
++		tx_sent = conn->sock->ops->sendmsg(conn->sock, &msghdr, sub_len);
+ 		if (tx_sent != sub_len) {
+ 			if (tx_sent == -EAGAIN) {
+-				pr_err("tcp_sendpage() returned"
+-						" -EAGAIN\n");
++				pr_err("sendmsg/splice returned -EAGAIN\n");
+ 				goto send_pg;
+ 			}
+ 
+-			pr_err("tcp_sendpage() failure: %d\n",
+-					tx_sent);
++			pr_err("sendmsg/splice failure: %d\n", tx_sent);
+ 			return -1;
+ 		}
+ 
 
