@@ -2,57 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A296D191B
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77AB66D1930
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:01:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbjCaH5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 03:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
+        id S231255AbjCaIBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbjCaH5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:57:30 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D828E;
-        Fri, 31 Mar 2023 00:57:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9HMl4MEjvqaPIdUJu0K+33CaechDV7nVjN2BnBU1dnU=; b=wE1BrfRBF1zeaAPoKMHirLuiyJ
-        E+TekPHfXivAuvDLYPjtrAw64TXnAhX6e6IrmMaswJEATHOHJ2uzarVfgm2uYheTlTWoTo2RZ+V6n
-        45Fc3WXmumiW0Lm0vvM//tKKRRPXq68aCv5dlpcuPQaYryHnBUg+jyxZ1lRtcp023SAU2kq8fTpNp
-        zJ6zRt1w++N1EOGAreDAbd4mnTIQD/V9QlbZC5Z2iay26Bs8Uv9hse3bL05UXwVBbavkyvYmz8TuK
-        W94Vbjd6S5H3cBIs8wioJxXx3U99GaWC1wuD1lo29BT7Nio1ivU2eIWESuI1eRX79X0bfM4V+o1n2
-        b2yp822Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56232)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pi9dP-0004E8-3a; Fri, 31 Mar 2023 08:57:19 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pi9dN-0000yO-9o; Fri, 31 Mar 2023 08:57:17 +0100
-Date:   Fri, 31 Mar 2023 08:57:17 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srk@ti.com
-Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable
- USXGMII mode for J784S4 CPSW9G
-Message-ID: <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
-References: <20230331065110.604516-1-s-vadapalli@ti.com>
- <20230331065110.604516-3-s-vadapalli@ti.com>
+        with ESMTP id S230314AbjCaIBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:01:07 -0400
+Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424C0B743;
+        Fri, 31 Mar 2023 01:00:49 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mx.sberdevices.ru (Postfix) with ESMTP id A069F5FD37;
+        Fri, 31 Mar 2023 11:00:47 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1680249647;
+        bh=LrSavz6ZxpB+cGyjOWLRxU20+S4IOL/y4TU59q9/XlE=;
+        h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+        b=poU6mGAfk7nbEuTTIq2mMI71b3NM9BhoGdFZh2w3el1H8YLBkmlAAW8g/R6ddKZKi
+         v8F6D5y0HbfDd7hgLJlFP+Nb+Osmtz2vhzpagU9a6ROzqJgAoaQn6BR6X4pTD4JGhJ
+         glUIxr9nt+k+y/enFleOS9/ejoQml45u6npbizpxBwa2Wc9QSGM8dl1g84uh/O/xad
+         ie2EtnuoiY6LsaSYxQ8to6cwashNHzv0pyGWSpRFeRoKqzB//jIcdOy1je/UrTZxKV
+         QT8vc1COewVPvpmNrMKklkXXhkxa2fNqJjO/NtNH3h2yb+vkg2gHLegsY/YDgtThph
+         1JjlUG68wLSdA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mx.sberdevices.ru (Postfix) with ESMTP;
+        Fri, 31 Mar 2023 11:00:47 +0300 (MSK)
+Message-ID: <69ae1718-0c99-a4a1-645f-5c87271d6bd6@sberdevices.ru>
+Date:   Fri, 31 Mar 2023 10:57:21 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230331065110.604516-3-s-vadapalli@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.7.1
+Subject: Re: [RFC PATCH v3 2/4] vsock/vmci: convert VMCI error code to -ENOMEM
+ on receive
+Content-Language: en-US
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
+        <pv-drivers@vmware.com>
+References: <4d34fac8-7170-5a3e-5043-42a9f7e4b5b3@sberdevices.ru>
+ <9fd06ca5-ace9-251d-34af-aca4db9c3ee0@sberdevices.ru>
+ <7pypi573nxgwz7vrgd2cwcrtha4abijutlsgtnxrwcgaatdjbz@cwnq5dlurfhs>
+From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
+In-Reply-To: <7pypi573nxgwz7vrgd2cwcrtha4abijutlsgtnxrwcgaatdjbz@cwnq5dlurfhs>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/03/31 05:18:00 #21105108
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,62 +77,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
-> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
-> extra_modes member of the J784S4 SoC data. Additionally, configure the
-> MAC Control register for supporting USXGMII mode. Also, for USXGMII
-> mode, include MAC_5000FD in the "mac_capabilities" member of struct
-> "phylink_config".
 
-I don't think TI "get" phylink at all...
 
-> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> index 4b4d06199b45..ab33e6fe5b1a 100644
-> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
->  		mac_control |= CPSW_SL_CTL_GIG;
->  	if (interface == PHY_INTERFACE_MODE_SGMII)
->  		mac_control |= CPSW_SL_CTL_EXT_EN;
-> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
-> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
+On 31.03.2023 10:12, Stefano Garzarella wrote:
+> On Thu, Mar 30, 2023 at 11:18:36PM +0300, Arseniy Krasnov wrote:
+>>
+>>
+>> On 30.03.2023 23:13, Arseniy Krasnov wrote:
+>>> This adds conversion of VMCI specific error code to general -ENOMEM. It
+>>> is needed, because af_vsock.c passes error value returned from transport
+>>> to the user, which does not expect to get VMCI_ERROR_* values.
+>>
+>> @Stefano, I have some doubts about this commit message, as it says "... af_vsock.c
+>> passes error value returned from transport to the user ...", but this
+>> behaviour is implemented only in the next patch. Is it ok, if both patches
+>> are in a single patchset?
+> 
+> Yes indeed it is not clear. In my opinion we can do one of these 2
+> things:
+> 
+> 1. Update the message, where we can say that this is a preparation patch
+>    for the next changes where af_vsock.c will directly return transport
+>    values to the user, so we need to return an errno.
+> 
+> 2. Merge this patch and patch 3 in a single patch.
+> 
+> Both are fine for my point of view, take your choice ;-)
 
-The configuration of the interface mode should *not* happen in
-mac_link_up(), but should happen in e.g. mac_config().
+Ok! Thanks for this!
 
->  	if (speed == SPEED_10 && phy_interface_mode_is_rgmii(interface))
->  		/* Can be used with in band mode only */
->  		mac_control |= CPSW_SL_CTL_EXT_EN;
-> @@ -2175,6 +2177,7 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
->  
->  	case PHY_INTERFACE_MODE_QSGMII:
->  	case PHY_INTERFACE_MODE_SGMII:
-> +	case PHY_INTERFACE_MODE_USXGMII:
->  		if (common->pdata.extra_modes & BIT(port->slave.phy_if)) {
->  			__set_bit(port->slave.phy_if,
->  				  port->slave.phylink_config.supported_interfaces);
-> @@ -2182,6 +2185,9 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
->  			dev_err(dev, "selected phy-mode is not supported\n");
->  			return -EOPNOTSUPP;
->  		}
-> +		/* For USXGMII mode, enable MAC_5000FD */
-> +		if (port->slave.phy_if == PHY_INTERFACE_MODE_USXGMII)
-> +			port->slave.phylink_config.mac_capabilities |= MAC_5000FD;
+Thanks, Arseniy
 
-MAC capabilities should not be conditional in the interface mode.
-Phylink already knows the capabilities of each interface mode, and
-will mask the mac_capabilities accordingly. Phylink wants to know
-what speeds the MAC itself is capable of unbound by the interface
-mode.
-
-The interface modes that you already support (RGMII, RMII, QSGMII
-and SGMII) do not support anything faster than 1G, so only
-mac_capabilities up to and including 1G speeds will be permitted
-for those interface modes internally by phylink.
-
-So, making this conditional on USXGMII is just repeating logic that
-is already present internally in phylink.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> 
+> Thanks,
+> Stefano
+> 
