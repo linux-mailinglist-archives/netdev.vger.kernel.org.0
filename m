@@ -2,78 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8209A6D1F2F
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 13:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75FFB6D1F50
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 13:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232042AbjCaLfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 07:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        id S231330AbjCaLki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 07:40:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbjCaLe5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 07:34:57 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B661EFD8;
-        Fri, 31 Mar 2023 04:34:39 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32VBYXHL081175;
-        Fri, 31 Mar 2023 06:34:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680262473;
-        bh=GvCcYXn6ovoAura2uB/dpDoFgd16j6cQ/c1lMJFYme4=;
-        h=Date:Subject:From:To:CC:References:In-Reply-To;
-        b=AJ10w/SaEiUKg/SVuJPLY4cO9HhIX8CAB/QB3lfUx4SML5yZydsWkeLwOu0jQEYXR
-         OLyHoDd8yKjWvLj0Y+6ILzFCmda05Bsuq+vMWFSJl0ngJ7JgDrZsHNBCtcHce7awsR
-         EU7mIBhB+XaGFP7DbHrzUElKoLyKhv57B5wMNEu4=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32VBYXVj028519
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 31 Mar 2023 06:34:33 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 31
- Mar 2023 06:34:33 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Fri, 31 Mar 2023 06:34:32 -0500
-Received: from [10.24.69.114] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32VBYRIv123330;
-        Fri, 31 Mar 2023 06:34:28 -0500
-Message-ID: <cca8cffb-b6f6-2fbb-f7a2-151b4380b2f6@ti.com>
-Date:   Fri, 31 Mar 2023 17:04:27 +0530
+        with ESMTP id S230193AbjCaLkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 07:40:35 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC8A191FB;
+        Fri, 31 Mar 2023 04:40:22 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id v6-20020a05600c470600b003f034269c96so3417538wmo.4;
+        Fri, 31 Mar 2023 04:40:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680262820;
+        h=mime-version:user-agent:message-id:date:subject:to:from:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=DFpj03qdDMfbyM7+XZ1x+NUK4s93aePSD7Bo/WXr5U0=;
+        b=YBnjIHnh64eLbmE7oA24eR+VbM8xRR8GQ7de0OxwmFViM07spJQl/T3fMTbn/ZKxM2
+         ymHqvxfTHftMOK+9hl7UZQl5U+4Qcmfi7NMjlQyz9rQ8rl5tivyboK5yLvfi6veevB9W
+         xqCOxuX6TZmVoVcqgaG9x/kcAzteVh/9ECyRw+S0ll/vXh8Y6CSAWkqPD+q/AFdf3JAr
+         TS9chWDaa8U6wMZT0QnstjvZX7D64cndKnbElRj3Lb75gQi6va3TcX7/yUZy4CXPhFnu
+         70mV//VRCAGKlo4SWms9YSckapBFB1HTvfCcVp55ujfYSWl5+yPydNY2ogplctIf5A+X
+         M2Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680262820;
+        h=mime-version:user-agent:message-id:date:subject:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DFpj03qdDMfbyM7+XZ1x+NUK4s93aePSD7Bo/WXr5U0=;
+        b=xp1MZbMlepuYb6ZS8Ihn5f8/M/rtvWLK7JfPwkYi5/v374i54Lq3JhbFEgmddKDDwM
+         /adSnZ4Oow18W4CtEalmYh4Urx/dfcQxxmNUWIzHGkpWO6qpFG/lBtSPAk+26b2JoV80
+         +DyrmVmBI/ADpVRTsuvJqsGYQ4Ftj2dAWqjmatPD/eINjMP3bL69CbdWS9haBa9VSX8a
+         TiXGA/lV9ZxDcYGzHZHPUef3uFzQxBn3NhZ4uuRHYGzALWrMdqMgAxVrD5oh4RSqlyrx
+         QNQRiRn+DLETwOvuCeHkwvDNEH8JKfQ3Em8BrT1uUV0/l4rA8yl4+E1khkPdPpYIFPa7
+         n7Uw==
+X-Gm-Message-State: AO0yUKWuXrbbqtMajzYvyVrd8FQ5j/sWAWP8fQ+stD5opPCEGrSXI6C7
+        AlaORR1O3GLgkDDp6hb9dUK0sJQ4pPDaRw==
+X-Google-Smtp-Source: AK7set8bDb6+r3v4tyns18bK6BzcZCWbbumTW68hqJai8c01CT4OVwzyKlv+MXyA5H8hmWPPqmR4cA==
+X-Received: by 2002:a7b:cd0d:0:b0:3e2:589:2512 with SMTP id f13-20020a7bcd0d000000b003e205892512mr20301404wmj.21.1680262820454;
+        Fri, 31 Mar 2023 04:40:20 -0700 (PDT)
+Received: from imac ([88.97.103.74])
+        by smtp.gmail.com with ESMTPSA id g20-20020a05600c4ed400b003ee8a1bc220sm9861274wmq.1.2023.03.31.04.40.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Mar 2023 04:40:19 -0700 (PDT)
+From:   Donald Hunter <donald.hunter@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [BUG] net, pci: 6.3-rc1-4 hangs during boot on PowerEdge R620 with igb
+Date:   Fri, 31 Mar 2023 12:40:11 +0100
+Message-ID: <m2fs9lgndw.fsf@gmail.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [EXTERNAL] Re: [PATCH v5 3/5] soc: ti: pruss: Add
- pruss_cfg_read()/update() API
-Content-Language: en-US
-From:   Md Danish Anwar <a0501179@ti.com>
-To:     Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     MD Danish Anwar <danishanwar@ti.com>,
-        "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>, <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230323062451.2925996-1-danishanwar@ti.com>
- <20230323062451.2925996-4-danishanwar@ti.com> <20230327210126.GC3158115@p14s>
- <4e239000-c5f7-a42e-157e-5b668c6b2908@ti.com>
- <CANLsYkxcprFh4SNxb=TkTLT7PNR6=QPFW5HhqPouPP3+oYk7Sg@mail.gmail.com>
- <10ad5344-e8ae-eb8e-eb1e-6431b3e09384@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <10ad5344-e8ae-eb8e-eb1e-6431b3e09384@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Type: text/plain
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,79 +69,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mathieu,
+The 6.3-rc1 and later release candidates are hanging during boot on our
+Dell PowerEdge R620 servers with Intel I350 nics (igb).
 
-On 31/03/23 15:52, Md Danish Anwar wrote:
-> On 30/03/23 19:51, Mathieu Poirier wrote:
->> On Thu, 30 Mar 2023 at 04:00, Md Danish Anwar <a0501179@ti.com> wrote:
->>>
->>> Hi Mathieu,
->>>
->>> On 28/03/23 02:31, Mathieu Poirier wrote:
->>>> On Thu, Mar 23, 2023 at 11:54:49AM +0530, MD Danish Anwar wrote:
->>>>> From: Suman Anna <s-anna@ti.com>
->>>>>
->>>>> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
->>>>> the PRUSS platform driver to read and program respectively a register
->>>>> within the PRUSS CFG sub-module represented by a syscon driver.
->>>>>
->>>>> These APIs are internal to PRUSS driver. Various useful registers
->>>>> and macros for certain register bit-fields and their values have also
->>>>> been added.
->>>>>
->>>>> Signed-off-by: Suman Anna <s-anna@ti.com>
->>>>> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>>> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->>>>> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->>>>> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
->>>>> ---
->>>>>  drivers/soc/ti/pruss.c |   1 +
->>>>>  drivers/soc/ti/pruss.h | 112 +++++++++++++++++++++++++++++++++++++++++
->>>>>  2 files changed, 113 insertions(+)
->>>>>  create mode 100644 drivers/soc/ti/pruss.h
->>>>>
->>>>
->>>> This patch doesn't compile without warnings.
->>>>
->>>
->>> I checked the warnings. Below are the warnings that I am getting for these patch.
->>>
->>> In file included from drivers/soc/ti/pruss.c:24:
->>> drivers/soc/ti/pruss.h:103:12: warning: ‘pruss_cfg_update’ defined but not used
->>> [-Wunused-function]
->>>   103 | static int pruss_cfg_update(struct pruss *pruss, unsigned int reg,
->>>       |            ^~~~~~~~~~~~~~~~
->>> drivers/soc/ti/pruss.h:84:12: warning: ‘pruss_cfg_read’ defined but not used
->>> [-Wunused-function]
->>>    84 | static int pruss_cfg_read(struct pruss *pruss, unsigned int reg,
->>> unsigned int *val)
->>>
->>> These warnings are coming because pruss_cfg_read() / update() APIs are
->>> introduced in this patch but they are used later.
->>>
->>> One way to resolve this warning is to make this API "inline". I compiled after
->>> making these APIs inline, it got compiled without any warnings.
->>>
->>> The other solution is to merge a user API of these APIs in this patch. Patch 4
->>> and 5 introduces some APIs that uses pruss_cfg_read() / update() APIs. If we
->>> squash patch 5 (as patch 5 uses both read() and update() APIs where as patch 4
->>> only uses update() API) with this patch and make it a single patch where
->>> pruss_cfg_read() / update() is introduced as well as used, then this warning
->>> will be resolved.
->>>
->>
->> The proper way to do this is to introduce new APIs only when they are needed.
->>
-> 
-> Sure, Mathieu. I will squash this patch with patch 5 ( as it uses both update()
-> and read() APIs) so that these APIs are introduced and used in the same patch.
-> 
+After bisecting from v6.2 to v6.3-rc1, I isolated the problem to:
 
-I have sent next revision [v6] of these patch-set addressing your comments.
-Please have a look at that.
+[6fffbc7ae1373e10b989afe23a9eeb9c49fe15c3] PCI: Honor firmware's device
+disabled status
 
-[v6] https://lore.kernel.org/all/20230331112941.823410-1-danishanwar@ti.com/
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 1779582fb500..b1d80c1d7a69 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1841,6 +1841,8 @@ int pci_setup_device(struct pci_dev *dev)
+ 
+        pci_set_of_node(dev);
+        pci_set_acpi_fwnode(dev);
++       if (dev->dev.fwnode && !fwnode_device_is_available(dev->dev.fwnode))
++               return -ENODEV;
+ 
+        pci_dev_assign_slot(dev);
+ 
 
--- 
-Thanks and Regards,
-Danish.
+I have verified that reverting 6fffbc7ae1373e10b989afe23a9eeb9c49fe15c3
+resolves the issue on v6.3-rc4.
+
+Here's the kernel log from v6.3.0-rc1:
+
+igb: Intel(R) Gigabit Ethernet Network Driver
+igb: Copyright (c) 2007-2014 Intel Corporation.
+igb 0000:07:00.0: can't derive routing for PCI INT D
+igb 0000:07:00.0: PCI INT D: no GSI
+igb 0000:07:00.0 0000:07:00.0 (uninitialized): PCIe link lost
+------------[ cut here ]------------
+igb: Failed to read reg 0x18!
+WARNING: CPU: 23 PID: 814 at drivers/net/ethernet/intel/igb/igb_main.c:745 igb_rd32+0x78/0x90 [igb]
+Modules linked in: igb(+) fjes(-) mei rapl intel_cstate mdio intel_uncore ipmi_si iTCO_wdt intel_pmc_bxt ipmi_devi>
+CPU: 23 PID: 814 Comm: systemd-udevd Not tainted 6.3.0-rc1 #1
+Hardware name: Dell Inc. PowerEdge R620/01W23F, BIOS 2.2.2 01/16/2014
+RIP: 0010:igb_rd32+0x78/0x90 [igb]
+Code: 48 c7 c6 f5 56 d3 c0 e8 96 51 f9 c8 48 8b bb 28 ff ff ff e8 3a 46 b6 c8 84 c0 74 c9 89 ee 48 c7 c7 18 64 d3 >
+RSP: 0018:ffffab6a07d37b10 EFLAGS: 00010286
+RAX: 000000000000001d RBX: ffff900385208f18 RCX: 0000000000000000
+RDX: 0000000000000002 RSI: ffffffff8a8ba498 RDI: 00000000ffffffff
+RBP: 0000000000000018 R08: 0000000000000000 R09: ffffab6a07d379b8
+R10: 0000000000000003 R11: ffffffff8b143de8 R12: ffff8ffc4518b0d0
+R13: ffff9003852089c0 R14: ffff900385208f18 R15: ffff900385208000
+FS:  00007faa81c07b40(0000) GS:ffff900b5fcc0000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007faa811c3594 CR3: 000000010c6c0001 CR4: 00000000001706e0
+Call Trace:
+ <TASK>
+ igb_get_invariants_82575+0x92/0xec0 [igb]
+ igb_probe+0x3bd/0x1510 [igb]
+ local_pci_probe+0x41/0x90
+ pci_device_probe+0xb3/0x220
+ really_probe+0x1a2/0x400
+ ? __pfx___driver_attach+0x10/0x10
+ __driver_probe_device+0x78/0x170
+ driver_probe_device+0x1f/0x90
+ __driver_attach+0xce/0x1c0
+ bus_for_each_dev+0x74/0xb0
+ bus_add_driver+0x112/0x210
+ driver_register+0x55/0x100
+ ? __pfx_init_module+0x10/0x10 [igb]
+ do_one_initcall+0x59/0x230
+ do_init_module+0x4a/0x210
+ __do_sys_finit_module+0x93/0xf0
+ do_syscall_64+0x5b/0x80
+ ? do_syscall_64+0x67/0x80
+ ? syscall_exit_to_user_mode_prepare+0x18e/0x1c0
+ ? syscall_exit_to_user_mode+0x17/0x40
+ ? do_syscall_64+0x67/0x80
+ ? syscall_exit_to_user_mode+0x17/0x40
+ ? do_syscall_64+0x67/0x80
+ ? __irq_exit_rcu+0x3d/0x140
+ ? common_interrupt+0x61/0xd0
+ entry_SYSCALL_64_after_hwframe+0x72/0xdc
+RIP: 0033:0x7faa81b0b27d
+Code: 5d c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c >
+RSP: 002b:00007fff03879908 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+RAX: ffffffffffffffda RBX: 00005594ac692a60 RCX: 00007faa81b0b27d
+RDX: 0000000000000000 RSI: 00007faa8224d43c RDI: 000000000000000e
+RBP: 00007faa8224d43c R08: 0000000000000000 R09: 00005594ac758fc0
+R10: 000000000000000e R11: 0000000000000246 R12: 0000000000020000
+R13: 00005594ac690480 R14: 0000000000000000 R15: 00005594ac693450
+ </TASK>
+ 
