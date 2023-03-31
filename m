@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7876F6D1466
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC4E6D146F
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:56:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229871AbjCaAzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 20:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
+        id S229928AbjCaA4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 20:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbjCaAzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:55:45 -0400
+        with ESMTP id S229867AbjCaAzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:55:47 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A925BCA17
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:55:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3623F1043E
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:55:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8WDLBBqJq5l0AmISc/9zZPZwrAzUFEnsfM0T9gAF5Vk=; b=uzOnVaECDzYTODSq9+Wd8g+j0d
-        P+ymUBsCiEHmdHoc8PenQ9h8LrcIDywEb3HRDdfI0fWGKTjRpIxPwAFLLIjxfc3wTzvZhHGgwjRdo
-        o120ezkAun+GcCzXDD49NTCQc20B8Au9FcRm5rXpuhcjt7Auf5gMpLltXrVkunYZVqvU=;
+        bh=1/dbEsXqGx48zAli55PJOIiTxiYPYrEPuTGpZjjHHLI=; b=OjNq+Iv8jJis45LH3HPNEs3D3w
+        iNPv+Dnw7OyUMU643v/u0bwSCIA5ro8o8QOu1Phk8YoaAPSSZme1+eO1Q/6JZppG3XnBHLxy4+g6L
+        IV95vUWrC3qPeH1Ei4DAJUvrpr8K2TtuMBDI/ejKigyj/Vi4i/W7oVJvkSe0npC2svmc=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1pi33L-008xLF-Tz; Fri, 31 Mar 2023 02:55:39 +0200
+        id 1pi33L-008xLJ-V1; Fri, 31 Mar 2023 02:55:39 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -32,9 +32,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Oleksij Rempel <linux@rempel-privat.de>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [RFC/RFTv3 18/24] net: phy: remove unused phy_init_eee()
-Date:   Fri, 31 Mar 2023 02:55:12 +0200
-Message-Id: <20230331005518.2134652-19-andrew@lunn.ch>
+Subject: [RFC/RFTv3 19/24] net: usb: lan78xx: Fixup EEE
+Date:   Fri, 31 Mar 2023 02:55:13 +0200
+Message-Id: <20230331005518.2134652-20-andrew@lunn.ch>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230331005518.2134652-1-andrew@lunn.ch>
 References: <20230331005518.2134652-1-andrew@lunn.ch>
@@ -49,72 +49,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are no users left of phy_init_eee(), and it is often wrongly
-used. So remove it.
+The enabling/disabling of EEE in the MAC should happen as a result of
+auto negotiation. So move the enable/disable into
+lan783xx_phy_link_status_change() which gets called by phylib when
+there is a change in link status.
+
+lan78xx_set_eee() now just programs the hardware with the LTI
+timer value, and passed everything else to phylib, so it can correctly
+setup the PHY.
+
+lan743x_get_eee() relies on phylib doing most of the work, the
+MAC driver just adds the LTI timer value.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/phy.c | 34 ----------------------------------
- include/linux/phy.h   |  1 -
- 2 files changed, 35 deletions(-)
+v3: Fixup compiler error, missing read in read/modify/write.
+---
+ drivers/net/usb/lan78xx.c | 42 +++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index f4da7a5440e3..a70de8dbe6b6 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -1517,40 +1517,6 @@ void phy_mac_interrupt(struct phy_device *phydev)
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index c458c030fadf..729183e57080 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1690,17 +1690,10 @@ static int lan78xx_get_eee(struct net_device *net, struct ethtool_eee *edata)
+ 
+ 	ret = lan78xx_read_reg(dev, MAC_CR, &buf);
+ 	if (buf & MAC_CR_EEE_EN_) {
+-		edata->eee_enabled = true;
+-		edata->eee_active = !!(edata->advertised &
+-				       edata->lp_advertised);
+-		edata->tx_lpi_enabled = true;
+ 		/* EEE_TX_LPI_REQ_DLY & tx_lpi_timer are same uSec unit */
+ 		ret = lan78xx_read_reg(dev, EEE_TX_LPI_REQ_DLY, &buf);
+ 		edata->tx_lpi_timer = buf;
+ 	} else {
+-		edata->eee_enabled = false;
+-		edata->eee_active = false;
+-		edata->tx_lpi_enabled = false;
+ 		edata->tx_lpi_timer = 0;
+ 	}
+ 
+@@ -1721,24 +1714,16 @@ static int lan78xx_set_eee(struct net_device *net, struct ethtool_eee *edata)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (edata->eee_enabled) {
+-		ret = lan78xx_read_reg(dev, MAC_CR, &buf);
+-		buf |= MAC_CR_EEE_EN_;
+-		ret = lan78xx_write_reg(dev, MAC_CR, buf);
+-
+-		phy_ethtool_set_eee(net->phydev, edata);
+-
+-		buf = (u32)edata->tx_lpi_timer;
+-		ret = lan78xx_write_reg(dev, EEE_TX_LPI_REQ_DLY, buf);
+-	} else {
+-		ret = lan78xx_read_reg(dev, MAC_CR, &buf);
+-		buf &= ~MAC_CR_EEE_EN_;
+-		ret = lan78xx_write_reg(dev, MAC_CR, buf);
+-	}
++	ret = phy_ethtool_set_eee(net->phydev, edata);
++	if (ret < 0)
++		goto out;
+ 
++	buf = (u32)edata->tx_lpi_timer;
++	ret = lan78xx_write_reg(dev, EEE_TX_LPI_REQ_DLY, buf);
++out:
+ 	usb_autopm_put_interface(dev->intf);
+ 
+-	return 0;
++	return ret;
  }
- EXPORT_SYMBOL(phy_mac_interrupt);
  
--/**
-- * phy_init_eee - init and check the EEE feature
-- * @phydev: target phy_device struct
-- * @clk_stop_enable: PHY may stop the clock during LPI
-- *
-- * Description: it checks if the Energy-Efficient Ethernet (EEE)
-- * is supported by looking at the MMD registers 3.20 and 7.60/61
-- * and it programs the MMD register 3.0 setting the "Clock stop enable"
-- * bit if required.
-- */
--int phy_init_eee(struct phy_device *phydev, bool clk_stop_enable)
--{
--	int ret;
--
--	if (!phydev->drv)
--		return -EIO;
--
--	ret = genphy_c45_eee_is_active(phydev, NULL, NULL, NULL);
--	if (ret < 0)
--		return ret;
--	if (!ret)
--		return -EPROTONOSUPPORT;
--
--	if (clk_stop_enable)
--		/* Configure the PHY to stop receiving xMII
--		 * clock while it is signaling LPI.
--		 */
--		ret = phy_set_bits_mmd(phydev, MDIO_MMD_PCS, MDIO_CTRL1,
--				       MDIO_PCS_CTRL1_CLKSTOP_EN);
--
--	return ret < 0 ? ret : 0;
--}
--EXPORT_SYMBOL(phy_init_eee);
--
- /**
-  * phy_get_eee_err - report the EEE wake error count
-  * @phydev: target phy_device struct
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 4c3d80311c04..af199fcc52b2 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1848,7 +1848,6 @@ int phy_unregister_fixup(const char *bus_id, u32 phy_uid, u32 phy_uid_mask);
- int phy_unregister_fixup_for_id(const char *bus_id);
- int phy_unregister_fixup_for_uid(u32 phy_uid, u32 phy_uid_mask);
+ static u32 lan78xx_get_link(struct net_device *net)
+@@ -2114,7 +2099,20 @@ static void lan78xx_remove_mdio(struct lan78xx_net *dev)
  
--int phy_init_eee(struct phy_device *phydev, bool clk_stop_enable);
- int phy_get_eee_err(struct phy_device *phydev);
- int phy_eee_clk_stop_enable(struct phy_device *phydev);
- int phy_ethtool_set_eee(struct phy_device *phydev, struct ethtool_eee *data);
+ static void lan78xx_link_status_change(struct net_device *net)
+ {
++	struct lan78xx_net *dev = netdev_priv(net);
+ 	struct phy_device *phydev = net->phydev;
++	u32 data;
++	int ret;
++
++	ret = lan78xx_read_reg(dev, MAC_CR, &data);
++	if (ret < 0)
++		return;
++
++	if (phydev->eee_active)
++		data |=  MAC_CR_EEE_EN_;
++	else
++		data &= ~MAC_CR_EEE_EN_;
++	lan78xx_write_reg(dev, MAC_CR, data);
+ 
+ 	phy_print_status(phydev);
+ }
 -- 
 2.40.0
 
