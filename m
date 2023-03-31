@@ -2,80 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB11E6D17EA
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9426D1806
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 09:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbjCaHAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 03:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
+        id S230412AbjCaHET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 03:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230344AbjCaHAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:00:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0FFAD0D;
-        Fri, 31 Mar 2023 00:00:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31485B82C40;
-        Fri, 31 Mar 2023 07:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 905A7C4339B;
-        Fri, 31 Mar 2023 07:00:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680246018;
-        bh=2W/QIdXtpCkPeXuD1+dLf9+7F6p8aZMu99EW74DldQU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DyZRFCfvU+twZs5X+p4jvMj10JLnf3zA8fP3zz0s5FL/DdXM1a6GmYr3/X+AkeEG+
-         u9A1MWlhQ9e2uPcWuez0fqsJFb8klgywJasvgFDWVOGPwO+yzAXbzc78s05HHj0vbd
-         n4cdP7uuvrBSMgR3W0IszUgDc+dlb3OKnN9I0w0PuSnt9jLMtVD4nJUHukg0ERj34e
-         SmwoCQBIIXd/c8SYdGS4k/aon6CZCP75PqyQRqDeWv/0XmhnxTdQM2k1iRmligouoQ
-         HkUwhXpvkmDtfN6TEmR2gzuDuHYy6ym77H2nza9JETsCCUBBkyy65+4TShoVdb7iy1
-         049H5CkAKeE8g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 76882C73FE0;
-        Fri, 31 Mar 2023 07:00:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230372AbjCaHEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 03:04:09 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6A6DBC0;
+        Fri, 31 Mar 2023 00:04:04 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id h17so21344740wrt.8;
+        Fri, 31 Mar 2023 00:04:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680246242;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Q76zbQtochwncIhZQ7riDl3gHgHlJYYkEWfwyJ/lNpY=;
+        b=qKNvf2gF/MwZtKDkInE84Zi4oN4T3JqsKXqmTGpzkCucunNaUfwyUCHpSL2cAZoRX6
+         OtY4Q5KPpWKWOhBPIGoTq8xDYVm0nEPh7hcO26GpLxwJ3af/vGAK/tBkM7ka0jCpRYSH
+         u8KoEtAbnY5BE+jADqIiQiFzINGe3znwoPqx9bYMzokq/Cx9ct8FO47Ap94YLaT3zFdz
+         dIeUsOdWc6GhhU5n32Gf/E6MUL7HGbG3p6d/3AnFvztYiyoBZFFFnLvLHirzOJnPngd4
+         CGp4BD5074ugTr+OoXZUxl3FYKbmaA8km5QB11ZC/7Fg5OXx6PV6qSCVWvTw0fOAnSxe
+         nK/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680246242;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q76zbQtochwncIhZQ7riDl3gHgHlJYYkEWfwyJ/lNpY=;
+        b=icf0gQQ/c6cO3qUlHclDaiTBsqnVgJaBthYms6YpBfuhkybw6Q3nTwPPRYa7f8wtVo
+         celhfdQYfYd9J91av7iBSIO/AtkVdFuptwfzF4ymTDtTmO+RXH1a0arDIHWndGfZwaQk
+         WAzuICF22fgIX0gkSzwaDJzA1qdnp0u1yTOZ7Z7xhazPz43HAUns0V1gw//Z85h0Vkjv
+         YX0CPlohL0olln2LS4Av86QFwjLhIHv8xDektYwgVrqRr+cNVkWQN9jjmSUMvU7hWapy
+         4k+iKqooqdewrGRYiceRz71OJKOPS6rwHwY5PyC5zsK/9cwoWP0iKgYNDAZaZpJo8/Ou
+         g86A==
+X-Gm-Message-State: AAQBX9feNJKam03SOB8AjuLw8ksSPO+z2bMabsNB9w/XW4reWZQAjpC3
+        i0l+h71Tv7joayLwHW9X2DY=
+X-Google-Smtp-Source: AKy350bdI8Q2NH/F7m6vHYXtic18Ow44dO9xjGWXAxzu6ncylxQ3s4eH+bA57APmJrDgPAl+G6TpxQ==
+X-Received: by 2002:a5d:464d:0:b0:2e5:5439:6b4c with SMTP id j13-20020a5d464d000000b002e554396b4cmr1985571wrs.27.1680246242351;
+        Fri, 31 Mar 2023 00:04:02 -0700 (PDT)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id r16-20020a05600c35d000b003ee9f396dcesm8746643wmq.30.2023.03.31.00.03.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Mar 2023 00:04:01 -0700 (PDT)
+Date:   Fri, 31 Mar 2023 10:03:47 +0300
+From:   Dan Carpenter <error27@gmail.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Shay Drory <shayd@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net/mlx5: Fix check for allocation failure in
+ comp_irqs_request_pci()
+Message-ID: <6652003b-e89c-4011-9e7d-a730a50bcfce@kili.mountain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-2023-03-30
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168024601848.14217.10402936934072301063.git-patchwork-notify@kernel.org>
-Date:   Fri, 31 Mar 2023 07:00:18 +0000
-References: <20230330203313.919164-1-johannes@sipsolutions.net>
-In-Reply-To: <20230330203313.919164-1-johannes@sipsolutions.net>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This function accidentally dereferences "cpus" instead of returning
+directly.
 
-This pull request was applied to netdev/net.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Fixes: b48a0f72bc3e ("net/mlx5: Refactor completion irq request/release code")
+Signed-off-by: Dan Carpenter <error27@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Thu, 30 Mar 2023 22:33:12 +0200 you wrote:
-> Hi,
-> 
-> Here's a small set of fixes for the net. Most of the
-> issues are relatively new.
-> 
-> Please pull and let me know if there's any problem.
-> 
-> [...]
-
-Here is the summary with links:
-  - pull-request: wireless-2023-03-30
-    https://git.kernel.org/netdev/net/c/6b36d68cc9bb
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index eb41f0abf798..13491246c9e9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -824,7 +824,7 @@ static int comp_irqs_request_pci(struct mlx5_core_dev *dev)
+ 	ncomp_eqs = table->num_comp_eqs;
+ 	cpus = kcalloc(ncomp_eqs, sizeof(*cpus), GFP_KERNEL);
+ 	if (!cpus)
+-		ret = -ENOMEM;
++		return -ENOMEM;
+ 
+ 	i = 0;
+ 	rcu_read_lock();
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.39.1
 
