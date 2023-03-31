@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAE9F6D1429
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C05EA6D142A
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbjCaAgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 20:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53848 "EHLO
+        id S229724AbjCaAgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 20:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbjCaAga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:36:30 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2087.outbound.protection.outlook.com [40.107.102.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC92CCA0F;
-        Thu, 30 Mar 2023 17:36:28 -0700 (PDT)
+        with ESMTP id S229697AbjCaAgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:36:37 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20611.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::611])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C940C11149;
+        Thu, 30 Mar 2023 17:36:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mM7mI3cgusmXuVQrpnXt1ajTsikfNy+w0HyR0AfzQPDE82uQ5NF1AsaTn81V3AuM4iDF7h+2VHsuvjCc+IFecrqPDJPaRauHFiDuwdgLtC5+B2CtnwpOYEkEw1dt5iakFcQhlYwjxKQSrXcXbgaqVLLxRGb91JgS2wOEf1krR/Rauq8MU5W/wrX/vvvCVzJB/hMXpl0m4vPENimjTKh/j7F7QW+o2wr7wyAXX1RAsPyQx8jr+LSbTfBBroI3mOuPz2dXlB5ukxqls8e9QtkbxylKlJWFBdmu5XLjetnvEZG/b5t8pa9/B1ZzotldHZ/hsFcj0YctAZnAIbkfVFR8BA==
+ b=ccaMqxoJSnbak6k/SOVVR7675FyhcuuyzzNWcF7Rr1IhHOomjfesoKKV8MAgJsFWmjRMmth5foxkTtRwd94zANHlkTITQRVR0F5ucb5E7v/Ja9zGTB3eDVzecRm9WFPNvc5jXag6t6eE/vDex1J2pHc0cdeWHvJqiYX3XRBQua7kXLpcWfX2QIxPOB15/o8xkEHaU1SeOmFRnVKV65YLA7ORHjtK7qUTpbygF+UJCLphwtB2YlAQtBc7nEUsJtoRdBQ14kMWEegPSY+Y5/uf3Ovc5XGgw8lrNMjejXzQ9wwbltcno2ktpxqbwrK2zhegFiT9eaP6L8f5rQWuQsbOrQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jZon3SMC4qd9pxwDHXGlQy9uskV+FHX7NyDllwEorak=;
- b=mAR9jNDXM/J2dVl8Qd54+4d8a6PZgsoe2gKubckirM8mejbGW2YHm7HkLSzgt1xB0FEPRV4QWcCthZLy5qpoCo6jTxtqNkg+O0h2Ro5SD7aqncgZWdUw3BQZeJ/e7NdoTGGCuzEAplur/66vDZnnLUSs0fUwbBgLaah10BPJ0S6gWX4XyorwIodrgnRYXhHMn259uGNxWPHiBt0bpnICFxgiRImsBjrpQzHrxH4fMcRdh2gNYmK5JbVP/QK5gtoongcJWYsPS6PcHyg7piatAa4Gzz/exhnMkbC3oN5x3pxVYNhpk33rbpJqcraXhoqjcMFzE8zcWqhRqFnSeLPY4w==
+ bh=rzK/w1vd6Li0LQY7LTuCkLfGsx3aHDUf3UGs6gH2I8U=;
+ b=bZzFsmk39zLp7qpCQYdmwEhIx1PzjduiUExrwHmdWOf+pz65K/BJDHUyNgqtVmKu/5ZHgXJQvSVQnqJy2icJaRHX4UhfZEZJnRdl7GnuiaCMAQ2+IT58HFhx7sXTevEYeF/SfW3BLj060Y6P52q+lBMcQz2fUKLO/oM2pL6lZ2IXJEt2xYGKOX0uAbk+bsg0WWyAreRqIF9UFJalLdWINfi0TQNQrcW9fWsg0+Kpguh7lUgzIFUc3UeFTPKILFXrTw3hu/gQqPAtlvFW9l9jsThWtJXbygzi1mPXYfZcbirG4bnyBJS73HgPZ9fcxSqMcKA5NFM8Gni4nwDufCEFow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jZon3SMC4qd9pxwDHXGlQy9uskV+FHX7NyDllwEorak=;
- b=SSRcFTGWVQS2MTtbM6pet7AybZ8QhSTZTU/pxu+dl/juJY83zg6zg8kuodE2wgwAGY7aETvjI/A6bJ5ntVdSYvbToPM+NMjLN6J21aSqGakSlsktrGndr3lR1Vsurt6Gmr7+Eih0u1MNcFJLFdp0wGSUBl5GKhQ9GTHQu8EtYDQ=
-Received: from DM6PR06CA0063.namprd06.prod.outlook.com (2603:10b6:5:54::40) by
- CY8PR12MB7337.namprd12.prod.outlook.com (2603:10b6:930:53::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6254.22; Fri, 31 Mar 2023 00:36:26 +0000
-Received: from DS1PEPF0000E64E.namprd02.prod.outlook.com
- (2603:10b6:5:54:cafe::1a) by DM6PR06CA0063.outlook.office365.com
- (2603:10b6:5:54::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22 via Frontend
- Transport; Fri, 31 Mar 2023 00:36:26 +0000
+ bh=rzK/w1vd6Li0LQY7LTuCkLfGsx3aHDUf3UGs6gH2I8U=;
+ b=POcRySQ4cZBKu28NInjYeeEwQlOdym4Uo/bu79xw/h+cnlJ6p6aCGdX/ThnlfUDHAOIiY5DHeZqEk+CTqezL6zZyF8eesIR/cgeTt7RPg7SAYKzFC+W5CD+NtsAulpCIdZilREb41iebXKgjbwNbC/81aqWbCHbzu5JEw7tuD38=
+Received: from DM6PR11CA0017.namprd11.prod.outlook.com (2603:10b6:5:190::30)
+ by LV2PR12MB5726.namprd12.prod.outlook.com (2603:10b6:408:17e::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22; Fri, 31 Mar
+ 2023 00:36:28 +0000
+Received: from DS1PEPF0000E654.namprd02.prod.outlook.com
+ (2603:10b6:5:190:cafe::52) by DM6PR11CA0017.outlook.office365.com
+ (2603:10b6:5:190::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.20 via Frontend
+ Transport; Fri, 31 Mar 2023 00:36:28 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -45,13 +46,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DS1PEPF0000E64E.mail.protection.outlook.com (10.167.18.4) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6178.30 via Frontend Transport; Fri, 31 Mar 2023 00:36:26 +0000
+ DS1PEPF0000E654.mail.protection.outlook.com (10.167.18.10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6178.30 via Frontend Transport; Fri, 31 Mar 2023 00:36:28 +0000
 Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 30 Mar
- 2023 19:36:25 -0500
+ 2023 19:36:26 -0500
 From:   Brett Creeley <brett.creeley@amd.com>
 To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
         <alex.williamson@redhat.com>, <jgg@nvidia.com>,
@@ -59,9 +60,9 @@ To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
         <kevin.tian@intel.com>
 CC:     <brett.creeley@amd.com>, <shannon.nelson@amd.com>,
         <drivers@pensando.io>, <simon.horman@corigine.com>
-Subject: [PATCH v7 vfio 1/7] vfio: Commonize combine_ranges for use in other VFIO drivers
-Date:   Thu, 30 Mar 2023 17:36:06 -0700
-Message-ID: <20230331003612.17569-2-brett.creeley@amd.com>
+Subject: [PATCH v7 vfio 2/7] vfio/pds: Initial support for pds_vfio VFIO driver
+Date:   Thu, 30 Mar 2023 17:36:07 -0700
+Message-ID: <20230331003612.17569-3-brett.creeley@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20230331003612.17569-1-brett.creeley@amd.com>
 References: <20230331003612.17569-1-brett.creeley@amd.com>
@@ -72,188 +73,264 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS1PEPF0000E64E:EE_|CY8PR12MB7337:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5607de59-a159-4d78-b738-08db317ff63b
+X-MS-TrafficTypeDiagnostic: DS1PEPF0000E654:EE_|LV2PR12MB5726:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8c2f59ec-bbb6-47e4-89da-08db317ff764
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wSY1r/EU41ZbCs8znJ9SCAlp2y5uAmFc0kkAxdwSHyqKgp1fZBsqzCVxdqdzkvwK1DMTx01kRXrMZZS0HzqKBCEj7yPiEPUdi5b1z842BT2LJkB29tNXe04+neGYrHYTyy8VAwsYqd1ejcKQgMDojKuVSSLvh9GcyGn2cpbKAi+0FupysRAP1DVwX0BiORLxSFJ1dotyjo+PvVzXJ12L/tjFF/EF4hr4iQRi+u5/r6Rhu1/F5A1tuZwW4wTCbvRyR9gj3wpf80qosw0QqwuHE5HAJ8ZWsiVfunUaFQCXVaa76EWf/wBe+YCtE5ucAWwBzXKARFW7Z4ltUhqGp/v547NttdLL7/zqMdlQ4dagJp2HiZ44lEurcveRZ8uBn+3/dqxePicmogKjhTvzrnq7/DkuGKq79CXH7201DFno3fYlypM4A0wgpO1JRkEx0E138cOgnWOj7AUDpkOG2zJ+O5XXm9Od69EfsGecCMaq7l2QjSgRqkMkoXx/sNl2FrQz86aEfGliyiLvODPsGKyvZ3pfbbjgymZCLxcRY9/SPSQjfMsoWXQuFU8X8UQMOJnWA5WGqM6Hr+lplCOsvwFIFiOBpwTjvOt05GyxqKjAzlpaJDW50Hyf45jGtpCJwk2YkS9YlkKp6rCQ8Xce+2uIyQ/vT4eT4MSn3OqZ93PtsB5eBYsebxuhWxS9OWVvVg5UuohHrdwYsfPA68u9SFS5bG6Fz2hngbCdoNKCeCtKw1o=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(346002)(136003)(396003)(451199021)(40470700004)(46966006)(36840700001)(426003)(47076005)(81166007)(2616005)(36860700001)(6666004)(336012)(83380400001)(16526019)(316002)(26005)(2906002)(54906003)(186003)(478600001)(110136005)(1076003)(4326008)(36756003)(82310400005)(356005)(70206006)(8936002)(86362001)(44832011)(8676002)(82740400003)(41300700001)(40480700001)(5660300002)(70586007)(40460700003)(66899021)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: IrXRrDJNoKjYDEAF/vE79hCBDe4wM+O7jJv1hPb2kr0SHrPVHrj6HDPmK1R4/zOQy8Y/sQbwvtkJYg6oXeVq2rsvHUoSkQc19sriXK/V5eHgwOI0MJ5f3pZYvurgIYSVS6Y+oD2Rv+xA079g5GNhF1Ii6VQM0Pa4C3CB6CHAeULXNTE2UjL87kqshWeXrgu8PABuJUeAueyQz2HktqmezZWCphM/pZKiF1AkZO85OsnP6+0cDYLbmyiFLSDr4zK5m8NML41cwKeFAY0MWgGjAXb8fL3fQ7APBTJynt7t5UyIvnnhwOn6G6KmGlgfrqxIUzTkRxd6Dx2yCW5AG1N9ImDX+7Ij0JR6ART/dClxwIl8/9A0o9Ho8eN34QNZ2BMnJFd3UOc8KGKGj6EYXraZ0RU03nviYutZ6kK2r/CtVitCSyd+MdhtoqTkflYscQDeNfpwGvVo0Z/JMHdH1Li4VpWTsujToOWaFEAjZN3UaOk4zPSCTzLIcw1pC4YBrpPVPqR2OtPMsu+WHN7nxMgGSZvS9Z02EezXAOC/OPJ1RYURakR+Z8IxR25r8k5ksjNqUe+aW7B0DY6F9W7N3PhFGnPSGpPvBTClWO34Yc/EtQr1c+Tz2zE5CmrBlaWDbn/jqaOK3XB14EGymUddbLdtdAaqQkMdzCXeZqyJ2Nu1P7hCdLPdAEnNrFuDzEfSMIiewga7Ql5s8Pb1YSFpFqtYI7iKLDuR7CWdXXy/j9Io4as=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(346002)(39860400002)(396003)(136003)(376002)(451199021)(46966006)(36840700001)(40470700004)(36756003)(82310400005)(86362001)(2906002)(83380400001)(40480700001)(6666004)(2616005)(478600001)(47076005)(426003)(336012)(1076003)(26005)(16526019)(186003)(36860700001)(70586007)(70206006)(316002)(40460700003)(110136005)(4326008)(54906003)(81166007)(82740400003)(8936002)(356005)(41300700001)(8676002)(44832011)(5660300002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 00:36:26.3992
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 00:36:28.3444
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5607de59-a159-4d78-b738-08db317ff63b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c2f59ec-bbb6-47e4-89da-08db317ff764
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E64E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF0000E654.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7337
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5726
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently only Mellanox uses the combine_ranges function. The
-new pds_vfio driver also needs this function. So, move it to
-a common location for other vendor drivers to use.
+This is the initial framework for the new pds_vfio device driver. This
+does the very basics of registering the PDS PCI device and configuring
+it as a VFIO PCI device.
 
-Also, Simon Harmon noticed that RCT ordering was not followed
-for vfio_combin_iova_ranges(), so fix that.
+With this change, the VF device can be bound to the pds_vfio driver on
+the host and presented to the VM as the VF's device type.
 
-Cc: Yishai Hadas <yishaih@nvidia.com>
 Signed-off-by: Brett Creeley <brett.creeley@amd.com>
 Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/vfio/pci/mlx5/cmd.c | 48 +------------------------------------
- drivers/vfio/vfio_main.c    | 47 ++++++++++++++++++++++++++++++++++++
- include/linux/vfio.h        |  3 +++
- 3 files changed, 51 insertions(+), 47 deletions(-)
+ drivers/vfio/pci/Makefile       |  2 +
+ drivers/vfio/pci/pds/Makefile   |  8 ++++
+ drivers/vfio/pci/pds/pci_drv.c  | 74 +++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/pds/vfio_dev.c | 74 +++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/pds/vfio_dev.h | 21 ++++++++++
+ 5 files changed, 179 insertions(+)
+ create mode 100644 drivers/vfio/pci/pds/Makefile
+ create mode 100644 drivers/vfio/pci/pds/pci_drv.c
+ create mode 100644 drivers/vfio/pci/pds/vfio_dev.c
+ create mode 100644 drivers/vfio/pci/pds/vfio_dev.h
 
-diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
-index deed156e6165..7f6c51992a15 100644
---- a/drivers/vfio/pci/mlx5/cmd.c
-+++ b/drivers/vfio/pci/mlx5/cmd.c
-@@ -732,52 +732,6 @@ void mlx5fv_cmd_clean_migf_resources(struct mlx5_vf_migration_file *migf)
- 	mlx5vf_cmd_dealloc_pd(migf);
- }
+diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
+index 24c524224da5..45167be462d8 100644
+--- a/drivers/vfio/pci/Makefile
++++ b/drivers/vfio/pci/Makefile
+@@ -11,3 +11,5 @@ obj-$(CONFIG_VFIO_PCI) += vfio-pci.o
+ obj-$(CONFIG_MLX5_VFIO_PCI)           += mlx5/
  
--static void combine_ranges(struct rb_root_cached *root, u32 cur_nodes,
--			   u32 req_nodes)
--{
--	struct interval_tree_node *prev, *curr, *comb_start, *comb_end;
--	unsigned long min_gap;
--	unsigned long curr_gap;
--
--	/* Special shortcut when a single range is required */
--	if (req_nodes == 1) {
--		unsigned long last;
--
--		curr = comb_start = interval_tree_iter_first(root, 0, ULONG_MAX);
--		while (curr) {
--			last = curr->last;
--			prev = curr;
--			curr = interval_tree_iter_next(curr, 0, ULONG_MAX);
--			if (prev != comb_start)
--				interval_tree_remove(prev, root);
--		}
--		comb_start->last = last;
--		return;
--	}
--
--	/* Combine ranges which have the smallest gap */
--	while (cur_nodes > req_nodes) {
--		prev = NULL;
--		min_gap = ULONG_MAX;
--		curr = interval_tree_iter_first(root, 0, ULONG_MAX);
--		while (curr) {
--			if (prev) {
--				curr_gap = curr->start - prev->last;
--				if (curr_gap < min_gap) {
--					min_gap = curr_gap;
--					comb_start = prev;
--					comb_end = curr;
--				}
--			}
--			prev = curr;
--			curr = interval_tree_iter_next(curr, 0, ULONG_MAX);
--		}
--		comb_start->last = comb_end->last;
--		interval_tree_remove(comb_end, root);
--		cur_nodes--;
--	}
--}
--
- static int mlx5vf_create_tracker(struct mlx5_core_dev *mdev,
- 				 struct mlx5vf_pci_core_device *mvdev,
- 				 struct rb_root_cached *ranges, u32 nnodes)
-@@ -800,7 +754,7 @@ static int mlx5vf_create_tracker(struct mlx5_core_dev *mdev,
- 	int i;
- 
- 	if (num_ranges > max_num_range) {
--		combine_ranges(ranges, nnodes, max_num_range);
-+		vfio_combine_iova_ranges(ranges, nnodes, max_num_range);
- 		num_ranges = max_num_range;
- 	}
- 
-diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-index 43bd6b76e2b6..ad8a3f948f05 100644
---- a/drivers/vfio/vfio_main.c
-+++ b/drivers/vfio/vfio_main.c
-@@ -864,6 +864,53 @@ static int vfio_ioctl_device_feature_migration(struct vfio_device *device,
- 	return 0;
- }
- 
-+void vfio_combine_iova_ranges(struct rb_root_cached *root, u32 cur_nodes,
-+			      u32 req_nodes)
+ obj-$(CONFIG_HISI_ACC_VFIO_PCI) += hisilicon/
++
++obj-$(CONFIG_PDS_VFIO_PCI) += pds/
+diff --git a/drivers/vfio/pci/pds/Makefile b/drivers/vfio/pci/pds/Makefile
+new file mode 100644
+index 000000000000..e1a55ae0f079
+--- /dev/null
++++ b/drivers/vfio/pci/pds/Makefile
+@@ -0,0 +1,8 @@
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (c) 2023 Advanced Micro Devices, Inc.
++
++obj-$(CONFIG_PDS_VFIO_PCI) += pds_vfio.o
++
++pds_vfio-y := \
++	pci_drv.o	\
++	vfio_dev.o
+diff --git a/drivers/vfio/pci/pds/pci_drv.c b/drivers/vfio/pci/pds/pci_drv.c
+new file mode 100644
+index 000000000000..5e554420792e
+--- /dev/null
++++ b/drivers/vfio/pci/pds/pci_drv.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/types.h>
++#include <linux/vfio.h>
++
++#include <linux/pds/pds_core_if.h>
++
++#include "vfio_dev.h"
++
++#define PDS_VFIO_DRV_NAME		"pds_vfio"
++#define PDS_VFIO_DRV_DESCRIPTION	"AMD/Pensando VFIO Device Driver"
++#define PCI_VENDOR_ID_PENSANDO		0x1dd8
++
++static int
++pds_vfio_pci_probe(struct pci_dev *pdev,
++		   const struct pci_device_id *id)
 +{
-+	struct interval_tree_node *prev, *curr, *comb_start, *comb_end;
-+	unsigned long min_gap, curr_gap;
++	struct pds_vfio_pci_device *pds_vfio;
++	int err;
 +
-+	/* Special shortcut when a single range is required */
-+	if (req_nodes == 1) {
-+		unsigned long last;
++	pds_vfio = vfio_alloc_device(pds_vfio_pci_device, vfio_coredev.vdev,
++				     &pdev->dev,  pds_vfio_ops_info());
++	if (IS_ERR(pds_vfio))
++		return PTR_ERR(pds_vfio);
 +
-+		comb_start = interval_tree_iter_first(root, 0, ULONG_MAX);
-+		curr = comb_start;
-+		while (curr) {
-+			last = curr->last;
-+			prev = curr;
-+			curr = interval_tree_iter_next(curr, 0, ULONG_MAX);
-+			if (prev != comb_start)
-+				interval_tree_remove(prev, root);
-+		}
-+		comb_start->last = last;
-+		return;
-+	}
++	dev_set_drvdata(&pdev->dev, &pds_vfio->vfio_coredev);
++	pds_vfio->pdev = pdev;
 +
-+	/* Combine ranges which have the smallest gap */
-+	while (cur_nodes > req_nodes) {
-+		prev = NULL;
-+		min_gap = ULONG_MAX;
-+		curr = interval_tree_iter_first(root, 0, ULONG_MAX);
-+		while (curr) {
-+			if (prev) {
-+				curr_gap = curr->start - prev->last;
-+				if (curr_gap < min_gap) {
-+					min_gap = curr_gap;
-+					comb_start = prev;
-+					comb_end = curr;
-+				}
-+			}
-+			prev = curr;
-+			curr = interval_tree_iter_next(curr, 0, ULONG_MAX);
-+		}
-+		comb_start->last = comb_end->last;
-+		interval_tree_remove(comb_end, root);
-+		cur_nodes--;
-+	}
++	err = vfio_pci_core_register_device(&pds_vfio->vfio_coredev);
++	if (err)
++		goto out_put_vdev;
++
++	return 0;
++
++out_put_vdev:
++	vfio_put_device(&pds_vfio->vfio_coredev.vdev);
++	return err;
 +}
-+EXPORT_SYMBOL_GPL(vfio_combine_iova_ranges);
 +
- /* Ranges should fit into a single kernel page */
- #define LOG_MAX_RANGES \
- 	(PAGE_SIZE / sizeof(struct vfio_device_feature_dma_logging_range))
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index 93134b023968..10db5aa3e985 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -241,6 +241,9 @@ int vfio_mig_get_next_state(struct vfio_device *device,
- 			    enum vfio_device_mig_state new_fsm,
- 			    enum vfio_device_mig_state *next_fsm);
- 
-+void vfio_combine_iova_ranges(struct rb_root_cached *root, u32 cur_nodes,
-+			      u32 req_nodes);
++static void
++pds_vfio_pci_remove(struct pci_dev *pdev)
++{
++	struct pds_vfio_pci_device *pds_vfio = pds_vfio_pci_drvdata(pdev);
 +
- /*
-  * External user API
-  */
++	vfio_pci_core_unregister_device(&pds_vfio->vfio_coredev);
++	vfio_put_device(&pds_vfio->vfio_coredev.vdev);
++}
++
++static const struct pci_device_id
++pds_vfio_pci_table[] = {
++	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_PENSANDO, 0x1003) }, /* Ethernet VF */
++	{ 0, }
++};
++MODULE_DEVICE_TABLE(pci, pds_vfio_pci_table);
++
++static struct pci_driver
++pds_vfio_pci_driver = {
++	.name = PDS_VFIO_DRV_NAME,
++	.id_table = pds_vfio_pci_table,
++	.probe = pds_vfio_pci_probe,
++	.remove = pds_vfio_pci_remove,
++	.driver_managed_dma = true,
++};
++
++module_pci_driver(pds_vfio_pci_driver);
++
++MODULE_DESCRIPTION(PDS_VFIO_DRV_DESCRIPTION);
++MODULE_AUTHOR("Advanced Micro Devices, Inc.");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/vfio/pci/pds/vfio_dev.c b/drivers/vfio/pci/pds/vfio_dev.c
+new file mode 100644
+index 000000000000..f1221f14e4f6
+--- /dev/null
++++ b/drivers/vfio/pci/pds/vfio_dev.c
+@@ -0,0 +1,74 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
++
++#include <linux/vfio.h>
++#include <linux/vfio_pci_core.h>
++
++#include "vfio_dev.h"
++
++struct pds_vfio_pci_device *
++pds_vfio_pci_drvdata(struct pci_dev *pdev)
++{
++	struct vfio_pci_core_device *core_device = dev_get_drvdata(&pdev->dev);
++
++	return container_of(core_device, struct pds_vfio_pci_device,
++			    vfio_coredev);
++}
++
++static int
++pds_vfio_init_device(struct vfio_device *vdev)
++{
++	struct pds_vfio_pci_device *pds_vfio =
++		container_of(vdev, struct pds_vfio_pci_device,
++			     vfio_coredev.vdev);
++	struct pci_dev *pdev = to_pci_dev(vdev->dev);
++	int err;
++
++	err = vfio_pci_core_init_dev(vdev);
++	if (err)
++		return err;
++
++	pds_vfio->vf_id = pci_iov_vf_id(pdev);
++	pds_vfio->pci_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
++
++	return 0;
++}
++
++static int
++pds_vfio_open_device(struct vfio_device *vdev)
++{
++	struct pds_vfio_pci_device *pds_vfio =
++		container_of(vdev, struct pds_vfio_pci_device,
++			     vfio_coredev.vdev);
++	int err;
++
++	err = vfio_pci_core_enable(&pds_vfio->vfio_coredev);
++	if (err)
++		return err;
++
++	vfio_pci_core_finish_enable(&pds_vfio->vfio_coredev);
++
++	return 0;
++}
++
++static const struct vfio_device_ops
++pds_vfio_ops = {
++	.name = "pds-vfio",
++	.init = pds_vfio_init_device,
++	.release = vfio_pci_core_release_dev,
++	.open_device = pds_vfio_open_device,
++	.close_device = vfio_pci_core_close_device,
++	.ioctl = vfio_pci_core_ioctl,
++	.device_feature = vfio_pci_core_ioctl_feature,
++	.read = vfio_pci_core_read,
++	.write = vfio_pci_core_write,
++	.mmap = vfio_pci_core_mmap,
++	.request = vfio_pci_core_request,
++	.match = vfio_pci_core_match,
++};
++
++const struct vfio_device_ops *
++pds_vfio_ops_info(void)
++{
++	return &pds_vfio_ops;
++}
+diff --git a/drivers/vfio/pci/pds/vfio_dev.h b/drivers/vfio/pci/pds/vfio_dev.h
+new file mode 100644
+index 000000000000..a66f8069b88c
+--- /dev/null
++++ b/drivers/vfio/pci/pds/vfio_dev.h
+@@ -0,0 +1,21 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
++
++#ifndef _VFIO_DEV_H_
++#define _VFIO_DEV_H_
++
++#include <linux/pci.h>
++#include <linux/vfio_pci_core.h>
++
++struct pds_vfio_pci_device {
++	struct vfio_pci_core_device vfio_coredev;
++	struct pci_dev *pdev;
++
++	int vf_id;
++	int pci_id;
++};
++
++const struct vfio_device_ops *pds_vfio_ops_info(void);
++struct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev);
++
++#endif /* _VFIO_DEV_H_ */
 -- 
 2.17.1
 
