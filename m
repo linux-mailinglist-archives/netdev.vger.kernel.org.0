@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD4D6D213B
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:13:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 453196D213D
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232377AbjCaNNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 09:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        id S232769AbjCaNNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 09:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232760AbjCaNNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:13:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848611B7D0;
-        Fri, 31 Mar 2023 06:13:38 -0700 (PDT)
+        with ESMTP id S232756AbjCaNNm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:13:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC391A941;
+        Fri, 31 Mar 2023 06:13:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CC0CB82F6A;
-        Fri, 31 Mar 2023 13:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846DEC433EF;
-        Fri, 31 Mar 2023 13:13:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CCBC62904;
+        Fri, 31 Mar 2023 13:13:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C94AC433D2;
+        Fri, 31 Mar 2023 13:13:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680268415;
-        bh=hLAVugf0wJMRhEaxQsvqqH7c9szSLlu5vrY4HfSo9tU=;
+        s=k20201202; t=1680268419;
+        bh=/usCdjjdk5pmrYcvc63cZkA8n8A5vCGCRoBFREfreXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EIbzxKeiYwg4H5W5KbXKGlMazIyivy0rCuyVuSKwL6EuM9HG2PbqrCHGOgpdq6AUj
-         Zx/DsteS5DrWzVcrx0dKvjlwx3Z4f2HLUvT5IXxvgZ3H9jEpax0Qoc89VqONaU77+Q
-         7zUzavyXeHuqR2kYJ2tHBIHXYXtQmgH4FnoQ/V1p8RurjADnS0MIoC36MrHkJGfzlP
-         aWZAroYpC23dNVzCrW09maHjIylqy5BpOkETQkw68ED994GniBBc9qPEJDLSXY/vXg
-         fI70Mp+tWHu9kx1lwikE0O6haXvo1Zks7pYEhuaLjUNuu+SEWD1CuZU7BsZKwvpNsb
-         glkwmp/b1s0PA==
+        b=ktSReE20BLiQkThthcOvaMG8Ftq8Tm2tVd77CqL7hM0MJeeqpOQm8tHPOeJUcUt/T
+         FQkfjyaZ4qfcY4d8fZK/Wn9lFaQI7jwcflu23RroSreQuilgq8pjKyMVt2EyDOQx4k
+         cVRa0n9VMgMQ2AbpHO9+UDncIpV9dRHea8FHXc5pcWwCFO0Ub5sdJdakB3UfbgHgEe
+         EiLdsdBF3byCBRNEptkccpmo6pNYM4PjFz7KAxIXhrC0sx1DFBHbdgUEIMASZQ5h7B
+         sOHV6WLWm1bm4qaT18JkijydAfAY+LeIj8sYcL2mozHUeY8R21eQiiJCZxlqQ4Tgsq
+         79ihvOLSw+oWQ==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
@@ -40,16 +40,16 @@ Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         lorenzo.bianconi@redhat.com, daniel@makrotopia.org,
         krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org
-Subject: [PATCH v2 net-next 02/10] net: ethernet: mtk_wed: move cpuboot in a dedicated dts node
-Date:   Fri, 31 Mar 2023 15:12:38 +0200
-Message-Id: <56ed497762b1c031c553210a0e5c7717c6069642.1680268101.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 03/10] dt-bindings: soc: mediatek: move cpuboot in a dedicated dts node
+Date:   Fri, 31 Mar 2023 15:12:39 +0200
+Message-Id: <62ef3b737de26c3b7f553e1a35a12c36e290773e.1680268101.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1680268101.git.lorenzo@kernel.org>
 References: <cover.1680268101.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,87 +57,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the cpuboot memory region is not part of the RAM MT7986 SoC,
+Since the cpuboot memory region is not part of the MT7986 RAM SoC,
 move cpuboot in a deidicated syscon node.
-Keep backward-compatibility with older dts version where cpuboot was
-defined as reserved-memory child node.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 34 +++++++++++++++++----
- drivers/net/ethernet/mediatek/mtk_wed_wo.h  |  3 +-
- 2 files changed, 30 insertions(+), 7 deletions(-)
+ .../arm/mediatek/mediatek,mt7622-wed.yaml     | 12 +++--
+ .../mediatek/mediatek,mt7986-wo-cpuboot.yaml  | 45 +++++++++++++++++++
+ 2 files changed, 53 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-cpuboot.yaml
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-index 6624f6d6abdd..797c3b412ab6 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-@@ -18,12 +18,23 @@
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+index 5c223cb063d4..7f6638d43854 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+@@ -35,7 +35,6 @@ properties:
+       - description: firmware ILM region
+       - description: firmware DLM region
+       - description: firmware CPU DATA region
+-      - description: firmware BOOT region
  
- static u32 wo_r32(struct mtk_wed_wo *wo, u32 reg)
- {
--	return readl(wo->boot.addr + reg);
-+	u32 val;
+   memory-region-names:
+     items:
+@@ -43,12 +42,15 @@ properties:
+       - const: wo-ilm
+       - const: wo-dlm
+       - const: wo-data
+-      - const: wo-boot
+ 
+   mediatek,wo-ccif:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description: mediatek wed-wo controller interface.
+ 
++  mediatek,wo-cpuboot:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: mediatek wed-wo cpuboot controller interface.
 +
-+	if (!wo->boot_regmap)
-+		return readl(wo->boot.addr + reg);
+ allOf:
+   - if:
+       properties:
+@@ -60,6 +62,7 @@ allOf:
+         memory-region-names: false
+         memory-region: false
+         mediatek,wo-ccif: false
++        mediatek,wo-cpuboot: false
+ 
+ required:
+   - compatible
+@@ -95,9 +98,10 @@ examples:
+         interrupts = <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
+ 
+         memory-region = <&wo_emi>, <&wo_ilm>, <&wo_dlm>,
+-                        <&wo_data>, <&wo_boot>;
++                        <&wo_data>;
+         memory-region-names = "wo-emi", "wo-ilm", "wo-dlm",
+-                              "wo-data", "wo-boot";
++                              "wo-data";
+         mediatek,wo-ccif = <&wo_ccif0>;
++        mediatek,wo-cpuboot = <&wo_cpuboot>;
+       };
+     };
+diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-cpuboot.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-cpuboot.yaml
+new file mode 100644
+index 000000000000..1b45c8a86989
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-cpuboot.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mt7986-wo-cpuboot.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	if (regmap_read(wo->boot_regmap, reg, &val))
-+		val = ~0;
++title: MediaTek Wireless Ethernet Dispatch (WED) WO Boot firmware interface for MT7986
 +
-+	return val;
- }
- 
- static void wo_w32(struct mtk_wed_wo *wo, u32 reg, u32 val)
- {
--	writel(val, wo->boot.addr + reg);
-+	if (wo->boot_regmap)
-+		regmap_write(wo->boot_regmap, reg, val);
-+	else
-+		writel(val, wo->boot.addr + reg);
- }
- 
- static struct sk_buff *
-@@ -316,10 +327,21 @@ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
- 			return ret;
- 	}
- 
--	wo->boot.name = "wo-boot";
--	ret = mtk_wed_get_reserved_memory_region(wo, &wo->boot);
--	if (ret)
--		return ret;
-+	wo->boot_regmap = syscon_regmap_lookup_by_phandle(wo->hw->node,
-+							  "mediatek,wo-cpuboot");
-+	if (IS_ERR(wo->boot_regmap)) {
-+		if (wo->boot_regmap != ERR_PTR(-ENODEV))
-+			return PTR_ERR(wo->boot_regmap);
++maintainers:
++  - Lorenzo Bianconi <lorenzo@kernel.org>
++  - Felix Fietkau <nbd@nbd.name>
 +
-+		/* For backward compatibility, we need to check if cpu_boot
-+		 * is defined through reserved memory property.
-+		 */
-+		wo->boot_regmap = NULL;
-+		wo->boot.name = "wo-boot";
-+		ret = mtk_wed_get_reserved_memory_region(wo, &wo->boot);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	/* set dummy cr */
- 	wed_w32(wo->hw->wed_dev, MTK_WED_SCR0 + 4 * MTK_WED_DUMMY_CR_FWDL,
-diff --git a/drivers/net/ethernet/mediatek/mtk_wed_wo.h b/drivers/net/ethernet/mediatek/mtk_wed_wo.h
-index dbcf42ce9173..c03071203cc0 100644
---- a/drivers/net/ethernet/mediatek/mtk_wed_wo.h
-+++ b/drivers/net/ethernet/mediatek/mtk_wed_wo.h
-@@ -227,7 +227,8 @@ struct mtk_wed_wo_queue {
- 
- struct mtk_wed_wo {
- 	struct mtk_wed_hw *hw;
--	struct mtk_wed_wo_memory_region boot;
-+	struct mtk_wed_wo_memory_region boot; /* backward compatibility */
-+	struct regmap *boot_regmap;
- 
- 	struct mtk_wed_wo_queue q_tx;
- 	struct mtk_wed_wo_queue q_rx;
++description:
++  The MediaTek wo-cpuboot provides a configuration interface for WED WO
++  controller boot firmware. WED is used to perform offload rx packet
++  processing (e.g. 802.11 aggregation packet reordering or rx header
++  translation) on MT7986 soc.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - mediatek,mt7986-wo-cpuboot
++      - const: syscon
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++      #address-cells = <2>;
++      #size-cells = <2>;
++
++      syscon@15194000 {
++        compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
++        reg = <0 0x15194000 0 0x1000>;
++      };
++    };
 -- 
 2.39.2
 
