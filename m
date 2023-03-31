@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA876D147A
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC3A46D1481
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbjCaA4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 20:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
+        id S229919AbjCaA5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 20:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229887AbjCaAzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:55:48 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A35D322
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:55:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
-        Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cfp1FqY7Y8E92284N8DFBdTLetOjaw0pAoiT5v+E6D8=; b=Z+Z8vF87nB19u46tqStAFy4Ome
-        ETzpMW6tX4MPVtpBG+TjQnGW/O8bg2B5O3EA3t00WEfcHulfgj0KpVpN7ZCOrkNkd7wOYgeNz2ZCR
-        Q30jKeZgrgOusKhFXvtv4QJIrEYUvQYbcUS7dVT5c+yEYgX1C1ws5i0dPk2mlk3XK0L8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pi33M-008xLd-8G; Fri, 31 Mar 2023 02:55:40 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [RFC/RFTv3 24/24] net: phy: Disable EEE advertisement by default
-Date:   Fri, 31 Mar 2023 02:55:18 +0200
-Message-Id: <20230331005518.2134652-25-andrew@lunn.ch>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20230331005518.2134652-1-andrew@lunn.ch>
-References: <20230331005518.2134652-1-andrew@lunn.ch>
+        with ESMTP id S229500AbjCaA5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:57:40 -0400
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE2F12CCD;
+        Thu, 30 Mar 2023 17:57:24 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0Vf02poT_1680224239;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0Vf02poT_1680224239)
+          by smtp.aliyun-inc.com;
+          Fri, 31 Mar 2023 08:57:20 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        saeedm@nvidia.com, leon@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH net-next] net/mlx5e: Remove NULL check before dev_{put, hold}
+Date:   Fri, 31 Mar 2023 08:57:18 +0800
+Message-Id: <20230331005718.50060-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-EEE should only be advertised if the MAC supports it. Clear
-advertising_eee by default. If the MAC indicates it supports EEE by
-calling phy_support_eee() advertising_eee will be set to
-supported_eee. When the PHY is started, EEE registers will then be
-configured.
+The call netdev_{put, hold} of dev_{put, hold} will check NULL,
+so there is no need to check before using dev_{put, hold},
+remove it to silence the warnings:
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:734:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:769:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4667
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- drivers/net/phy/phy_device.c | 21 ++++-----------------
- 1 file changed, 4 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 30f07623637b..0a5936a81ee6 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -3153,24 +3153,11 @@ static int phy_probe(struct device *dev)
- 	of_set_phy_supported(phydev);
- 	phy_advertise_supported(phydev);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 20c2d2ecaf93..69ac30a728f4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -730,8 +730,7 @@ static int mlx5e_set_vf_tunnel(struct mlx5_eswitch *esw,
+ 	}
  
--	/* Get PHY default EEE advertising modes and handle them as potentially
--	 * safe initial configuration.
-+	/* Clear EEE advertising until the MAC indicates it also
-+	 * supports EEE.
- 	 */
--	err = genphy_c45_read_eee_adv(phydev, phydev->advertising_eee);
--	if (err)
--		goto out;
--
--	/* There is no "enabled" flag. If PHY is advertising, assume it is
--	 * kind of enabled.
--	 */
--	phydev->eee_enabled = !linkmode_empty(phydev->advertising_eee);
--
--	/* Some PHYs may advertise, by default, not support EEE modes. So,
--	 * we need to clean them.
--	 */
--	if (phydev->eee_enabled)
--		linkmode_and(phydev->advertising_eee, phydev->supported_eee,
--			     phydev->advertising_eee);
-+	linkmode_zero(phydev->advertising_eee);
-+	phydev->eee_enabled = false;
+ out:
+-	if (route_dev)
+-		dev_put(route_dev);
++	dev_put(route_dev);
+ 	return err;
+ }
  
- 	/* Get the EEE modes we want to prohibit. We will ask
- 	 * the PHY stop advertising these mode later on
+@@ -765,8 +764,7 @@ static int mlx5e_update_vf_tunnel(struct mlx5_eswitch *esw,
+ 	mlx5e_tc_match_to_reg_mod_hdr_change(esw->dev, mod_hdr_acts, VPORT_TO_REG, act_id, data);
+ 
+ out:
+-	if (route_dev)
+-		dev_put(route_dev);
++	dev_put(route_dev);
+ 	return err;
+ }
+ 
 -- 
-2.40.0
+2.20.1.7.g153144c
 
