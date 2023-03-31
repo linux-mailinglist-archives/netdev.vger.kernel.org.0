@@ -2,141 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CD5F6D193A
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5886F6D1956
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbjCaICn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42092 "EHLO
+        id S229629AbjCaIGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230040AbjCaICm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:02:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA00EB63;
-        Fri, 31 Mar 2023 01:02:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B15AB82C92;
-        Fri, 31 Mar 2023 08:02:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3FAC4339B;
-        Fri, 31 Mar 2023 08:02:36 +0000 (UTC)
-Date:   Fri, 31 Mar 2023 13:32:16 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Sricharan Ramabadhran <quic_srichara@quicinc.com>
-Cc:     mani@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2] net: qrtr: Do not do DEL_SERVER broadcast after
- DEL_CLIENT
-Message-ID: <20230331080216.GA6352@thinkpad>
-References: <1680248937-16617-1-git-send-email-quic_srichara@quicinc.com>
+        with ESMTP id S230044AbjCaIF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:05:59 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48EE1A956;
+        Fri, 31 Mar 2023 01:05:36 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32V85EdP042994;
+        Fri, 31 Mar 2023 03:05:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1680249914;
+        bh=izWZ7+jy/m/3WOeD2gRVdDzMX7JkPg6p1HHfgyCiHHk=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=N8BlmowpJ5RtOPbv/sfnQID6vGOAbYBDc8Tz0D2y4tsL/9Ig/OS7q6l+M2ANJctfx
+         XhJM7rLQdabf1Tz+0ImVKYNZCSa4sAOHru39QK0WZDjgGwAcZf52CATfnR+EZzxemd
+         iUKBrz9OoZKwT6dsxtQJN7jErbfyXJ3hPNktJMmE=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32V85ENM126044
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Mar 2023 03:05:14 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 31
+ Mar 2023 03:05:13 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 31 Mar 2023 03:05:13 -0500
+Received: from [172.24.145.61] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32V85Acf089564;
+        Fri, 31 Mar 2023 03:05:11 -0500
+Message-ID: <54c3964b-5dd8-c55e-08db-61df4a07797c@ti.com>
+Date:   Fri, 31 Mar 2023 13:35:10 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1680248937-16617-1-git-send-email-quic_srichara@quicinc.com>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable USXGMII
+ mode for J784S4 CPSW9G
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+References: <20230331065110.604516-1-s-vadapalli@ti.com>
+ <20230331065110.604516-3-s-vadapalli@ti.com>
+ <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 01:18:57PM +0530, Sricharan Ramabadhran wrote:
-> On the remote side, when QRTR socket is removed, af_qrtr will call
-> qrtr_port_remove() which broadcasts the DEL_CLIENT packet to all neighbours
-> including local NS. NS upon receiving the DEL_CLIENT packet, will remove
-> the lookups associated with the node:port and broadcasts the DEL_SERVER
-> packet.
-> 
-> But on the host side, due to the arrival of the DEL_CLIENT packet, the NS
-> would've already deleted the server belonging to that port. So when the
-> remote's NS again broadcasts the DEL_SERVER for that port, it throws below
-> error message on the host:
-> 
-> "failed while handling packet from 2:-2"
-> 
-> So fix this error by not broadcasting the DEL_SERVER packet when the
-> DEL_CLIENT packet gets processed."
-> 
-> Fixes: 0c2204a4ad71 ("net: qrtr: Migrate nameservice to kernel from userspace")
-> Signed-off-by: Sricharan Ramabadhran <quic_srichara@quicinc.com>
-> Signed-off-by: Ram Kumar Dharuman <quic_ramd@quicinc.com>
-> ---
-> [v2] Fixed comments from Manivannan and Jakub Kicinski
-> Note: Functionally tested on 5.4 and compile tested on 6.3 TOT
-> 
->  net/qrtr/ns.c | 15 +++++++++------
->  1 file changed, 9 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
-> index 722936f..0f25a38 100644
-> --- a/net/qrtr/ns.c
-> +++ b/net/qrtr/ns.c
-> @@ -274,7 +274,7 @@ static struct qrtr_server *server_add(unsigned int service,
->  	return NULL;
->  }
->  
-> -static int server_del(struct qrtr_node *node, unsigned int port)
-> +static int server_del(struct qrtr_node *node, unsigned int port, bool bcast)
->  {
->  	struct qrtr_lookup *lookup;
->  	struct qrtr_server *srv;
-> @@ -287,7 +287,7 @@ static int server_del(struct qrtr_node *node, unsigned int port)
->  	radix_tree_delete(&node->servers, port);
->  
->  	/* Broadcast the removal of local servers */
-> -	if (srv->node == qrtr_ns.local_node)
-> +	if (srv->node == qrtr_ns.local_node && bcast)
->  		service_announce_del(&qrtr_ns.bcast_sq, srv);
->  
->  	/* Announce the service's disappearance to observers */
-> @@ -373,7 +373,7 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
->  		}
->  		slot = radix_tree_iter_resume(slot, &iter);
->  		rcu_read_unlock();
-> -		server_del(node, srv->port);
-> +		server_del(node, srv->port, true);
->  		rcu_read_lock();
->  	}
->  	rcu_read_unlock();
-> @@ -459,10 +459,13 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
->  		kfree(lookup);
->  	}
->  
-> -	/* Remove the server belonging to this port */
-> +	/* Remove the server belonging to this port but don't broadcast
+Hello Russell,
 
-This is still not as per the multi line comment style perferred in kernel.
-Please read: https://www.kernel.org/doc/html/latest/process/coding-style.html#commenting
+Thank you for reviewing the patch.
 
-- Mani
-
-> +	 * DEL_SERVER. Neighbours would've already removed the server belonging
-> +	 * to this port due to the DEL_CLIENT broadcast from qrtr_port_remove().
-> +	 */
->  	node = node_get(node_id);
->  	if (node)
-> -		server_del(node, port);
-> +		server_del(node, port, false);
->  
->  	/* Advertise the removal of this client to all local servers */
->  	local_node = node_get(qrtr_ns.local_node);
-> @@ -567,7 +570,7 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
->  	if (!node)
->  		return -ENOENT;
->  
-> -	return server_del(node, port);
-> +	return server_del(node, port, true);
->  }
->  
->  static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
-> -- 
-> 2.7.4
+On 31/03/23 13:27, Russell King (Oracle) wrote:
+> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
+>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
+>> extra_modes member of the J784S4 SoC data. Additionally, configure the
+>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
+>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
+>> "phylink_config".
 > 
+> I don't think TI "get" phylink at all...
+> 
+>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> index 4b4d06199b45..ab33e6fe5b1a 100644
+>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+>>  		mac_control |= CPSW_SL_CTL_GIG;
+>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
+>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
+>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
+> 
+> The configuration of the interface mode should *not* happen in
+> mac_link_up(), but should happen in e.g. mac_config().
 
--- 
-மணிவண்ணன் சதாசிவம்
+I will move all the interface mode associated configurations to mac_config() in
+the v2 series.
+
+> 
+>>  	if (speed == SPEED_10 && phy_interface_mode_is_rgmii(interface))
+>>  		/* Can be used with in band mode only */
+>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+>> @@ -2175,6 +2177,7 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
+>>  
+>>  	case PHY_INTERFACE_MODE_QSGMII:
+>>  	case PHY_INTERFACE_MODE_SGMII:
+>> +	case PHY_INTERFACE_MODE_USXGMII:
+>>  		if (common->pdata.extra_modes & BIT(port->slave.phy_if)) {
+>>  			__set_bit(port->slave.phy_if,
+>>  				  port->slave.phylink_config.supported_interfaces);
+>> @@ -2182,6 +2185,9 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
+>>  			dev_err(dev, "selected phy-mode is not supported\n");
+>>  			return -EOPNOTSUPP;
+>>  		}
+>> +		/* For USXGMII mode, enable MAC_5000FD */
+>> +		if (port->slave.phy_if == PHY_INTERFACE_MODE_USXGMII)
+>> +			port->slave.phylink_config.mac_capabilities |= MAC_5000FD;
+> 
+> MAC capabilities should not be conditional in the interface mode.
+> Phylink already knows the capabilities of each interface mode, and
+> will mask the mac_capabilities accordingly. Phylink wants to know
+> what speeds the MAC itself is capable of unbound by the interface
+> mode.
+> 
+> The interface modes that you already support (RGMII, RMII, QSGMII
+> and SGMII) do not support anything faster than 1G, so only
+> mac_capabilities up to and including 1G speeds will be permitted
+> for those interface modes internally by phylink.
+> 
+> So, making this conditional on USXGMII is just repeating logic that
+> is already present internally in phylink.
+
+Thank you for clarifying. I will fix this in the v2 series.
+
+Regards,
+Siddharth.
