@@ -2,120 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 230536D2A18
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ACB96D2A2D
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 23:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbjCaVox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 17:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
+        id S232671AbjCaVrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 17:47:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231195AbjCaVow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:44:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5F21EFE3;
-        Fri, 31 Mar 2023 14:44:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0A50B8326D;
-        Fri, 31 Mar 2023 21:44:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD57C433EF;
-        Fri, 31 Mar 2023 21:44:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680299086;
-        bh=+5nkMzk4XF1mEch/NXrBSoh9zf1M4pjm5mjpqjHViZ4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PQFHqIwLOSXa4x7uxH2cN7a5xhvNL9z88Fnke4mLW6FFd/Ez+3bk9EWGsygKdWTC0
-         vP4v1hMiiiE/L+NSvahqx6xK5C4TAaM5Bxc0oVpKxRscXdaxMO0sBJAJP5CNjGT6hv
-         1W0SLzV63/7Lm8IVg5WRcM2VOF4w4FeXzZpGHehMlAhwLDglAV6Onn1iMNHuGbKrig
-         dSxielhu8ei13QUH9NySnpnAq9w460Pju1sbgN8lrcxKgiafQTlqDEiMSWeCo5UCye
-         i2VD+4HrW2ufrLGWa0IFWNUmIEVp7HtkWtbStAr20L0lDy15PhV8lajVKfFkXXQcL2
-         H9/kb5HndRXEg==
-Date:   Fri, 31 Mar 2023 14:44:44 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     Arnd Bergmann <arnd@kernel.org>, kuba@kernel.org, arnd@arndb.de,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        razor@blackwall.org, kerneljasonxing@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: netcp: MAX_SKB_FRAGS is now 'int'
-Message-ID: <20230331214444.GA1426512@dev-arch.thelio-3990X>
-References: <20230331074919.1299425-1-arnd@kernel.org>
- <168025201885.3875.15510680598248652530.git-patchwork-notify@kernel.org>
+        with ESMTP id S232327AbjCaVrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 17:47:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B3420310
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:46:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680299171;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qRXp4dQiGms/64nGsSVBVjLN6Pe4B52p8MOn8ojXq0c=;
+        b=SCgdhLkq81Vl2bH6YKcNoP2DgwX2hYLl37ljqp8bBGdVFyD47aqPfY5ZbeoWSw9LdOm+/e
+        frOGVt7XSx0xslKKuNkVVzvFzTXm6PQjhozRBdmcM757bDDwjjGr0zKmidiupRoqX2t62u
+        KKRqW7Wud6R6Paf5A20i0FriCxIUNJU=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-117-adCTKJX1N9WCu1xOh5_KiA-1; Fri, 31 Mar 2023 17:46:09 -0400
+X-MC-Unique: adCTKJX1N9WCu1xOh5_KiA-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-17714741d9dso11877665fac.4
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 14:46:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680299169;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qRXp4dQiGms/64nGsSVBVjLN6Pe4B52p8MOn8ojXq0c=;
+        b=CkT8wma6oCnVEtusMqDQ7kMH0CjU4ll37t/k2+R85EWL1OToH+EkW7vIYoFR5LUIxG
+         HmltoBFa9IW47MG8pDZiq/y3SnxWiaEFMKQPxOlpe65I+x2wnxJMHU23TYWo9vtHQtWv
+         BVoKWlIlRF3g+ta+C7+gVaIjteUTBJV5a1A2kVEetVm/BOAQJmbzRqJpHJA2S8j90Llt
+         gq7YZegBZPtQFwNEXxhevr5np7bzCVdtfT+pGlDUYb0ioH4MRLvd9ziiNMw5frMxoRNF
+         8Us5Q9oi5RgYGz/ASos7G58KrTgZ/LiUC21WuoVp89BpI713gQKKIZ53hQ92tYmp8NT/
+         AvJg==
+X-Gm-Message-State: AAQBX9ftWIfH52vPl0Ubs9NLrIsWcJBRokhjxtaVUp1wuzAGOilVDf+H
+        24jIVkBTCBq/nWJmyaziEgeJ9VgpvMH0GdoUhX9ovkiwoVLMMl2LMPVkkLiJriI9bPaDU5z1F5x
+        Fu3J33Seh8B/4SclP
+X-Received: by 2002:a9d:7310:0:b0:698:d198:fe9b with SMTP id e16-20020a9d7310000000b00698d198fe9bmr13806493otk.10.1680299169052;
+        Fri, 31 Mar 2023 14:46:09 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bgDIpshy7eRbTWkRwLsC3s4240Hq2Oc16KqDrLzmDT3k9i5ye972UijmCNDTVHDvOHjC4iow==
+X-Received: by 2002:a9d:7310:0:b0:698:d198:fe9b with SMTP id e16-20020a9d7310000000b00698d198fe9bmr13806471otk.10.1680299168800;
+        Fri, 31 Mar 2023 14:46:08 -0700 (PDT)
+Received: from halaney-x13s.attlocal.net (104-53-165-62.lightspeed.stlsmo.sbcglobal.net. [104.53.165.62])
+        by smtp.gmail.com with ESMTPSA id x80-20020a4a4153000000b0053d9be4be68sm1328531ooa.19.2023.03.31.14.46.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Mar 2023 14:46:08 -0700 (PDT)
+From:   Andrew Halaney <ahalaney@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, mturquette@baylibre.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com,
+        Andrew Halaney <ahalaney@redhat.com>
+Subject: [PATCH net-next v3 00/12] Add EMAC3 support for sa8540p-ride
+Date:   Fri, 31 Mar 2023 16:45:37 -0500
+Message-Id: <20230331214549.756660-1-ahalaney@redhat.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <168025201885.3875.15510680598248652530.git-patchwork-notify@kernel.org>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 08:40:18AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
-> 
-> This patch was applied to netdev/net.git (main)
-> by David S. Miller <davem@davemloft.net>:
-> 
-> On Fri, 31 Mar 2023 09:48:56 +0200 you wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> > 
-> > The type of MAX_SKB_FRAGS has changed recently, so the debug printk
-> > needs to be updated:
-> > 
-> > drivers/net/ethernet/ti/netcp_core.c: In function 'netcp_create_interface':
-> > drivers/net/ethernet/ti/netcp_core.c:2084:30: error: format '%ld' expects argument of type 'long int', but argument 3 has type 'int' [-Werror=format=]
-> >  2084 |                 dev_err(dev, "tx-pool size too small, must be at least %ld\n",
-> >       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > 
-> > [...]
-> 
-> Here is the summary with links:
->   - net: netcp: MAX_SKB_FRAGS is now 'int'
->     https://git.kernel.org/netdev/net/c/c5b959eeb7f9
+This is a forward port / upstream refactor of code delivered
+downstream by Qualcomm over at [0] to enable the DWMAC5 based
+implementation called EMAC3 on the sa8540p-ride dev board.
 
-net now warns:
+From what I can tell with the board schematic in hand,
+as well as the code delivered, the main changes needed are:
 
-  In file included from include/linux/device.h:15,
-                   from include/linux/dma-mapping.h:7,
-                   from include/linux/skbuff.h:28,
-                   from include/linux/if_ether.h:19,
-                   from include/linux/ethtool.h:18,
-                   from include/linux/phy.h:16,
-                   from include/linux/of_net.h:9,
-                   from drivers/net/ethernet/ti/netcp_core.c:16:
-  drivers/net/ethernet/ti/netcp_core.c: In function 'netcp_create_interface':
-  drivers/net/ethernet/ti/netcp_core.c:2084:30: error: format '%d' expects argument of type 'int', but argument 3 has type 'long unsigned int' [-Werror=format=]
-   2084 |                 dev_err(dev, "tx-pool size too small, must be at least %d\n",
-        |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-    110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-        |                              ^~~
-  include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-    144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-        |                                                        ^~~~~~~
-  drivers/net/ethernet/ti/netcp_core.c:2084:17: note: in expansion of macro 'dev_err'
-   2084 |                 dev_err(dev, "tx-pool size too small, must be at least %d\n",
-        |                 ^~~~~~~
-  drivers/net/ethernet/ti/netcp_core.c:2084:73: note: format string is defined here
-   2084 |                 dev_err(dev, "tx-pool size too small, must be at least %d\n",
-        |                                                                        ~^
-        |                                                                         |
-        |                                                                         int
-        |                                                                        %ld
-  cc1: all warnings being treated as errors
+    1. A new address space layout for /dwmac5/EMAC3 MTL/DMA regs
+    2. A new programming sequence required for the EMAC3 base platforms
 
-The commit this patch is fixing is only in net-next and my patch to fix
-this warning is already applied:
+This series makes the change for 1 above as well as other housekeeping items
+such as converting dt-bindings to yaml, etc.
 
-https://git.kernel.org/netdev/net-next/c/3292004c90c8
+As requested[1], it has been split up by compile time / maintainer tree.
+I will post a link to the associated devicetree changes that together
+with this series get the hardware functioning.
 
-c5b959eeb7f9 should be reverted in net (I am running out of time today
-otherwise I would just send a patch).
+[0] https://git.codelinaro.org/clo/la/kernel/ark-5.14/-/commit/510235ad02d7f0df478146fb00d7a4ba74821b17
+[1] https://lore.kernel.org/netdev/20230320202802.4e7dc54c@kernel.org/
 
-Cheers,
-Nathan
+v2: https://lore.kernel.org/netdev/20230320221617.236323-1-ahalaney@redhat.com/
+v1: https://lore.kernel.org/netdev/20230313165620.128463-1-ahalaney@redhat.com/
+
+Thanks,
+Andrew
+
+Andrew Halaney (9):
+  dt-bindings: net: qcom,ethqos: Add Qualcomm sc8280xp compatibles
+  net: stmmac: Remove unnecessary if statement brackets
+  net: stmmac: Fix DMA typo
+  net: stmmac: Remove some unnecessary void pointers
+  net: stmmac: Pass stmmac_priv in some callbacks
+  net: stmmac: dwmac4: Allow platforms to specify some DMA/MTL offsets
+  net: stmmac: dwmac-qcom-ethqos: Respect phy-mode and TX delay
+  net: stmmac: dwmac-qcom-ethqos: Use loopback_en for all speeds
+  net: stmmac: dwmac-qcom-ethqos: Add EMAC3 support
+
+Bhupesh Sharma (3):
+  dt-bindings: net: snps,dwmac: Update interrupt-names
+  dt-bindings: net: snps,dwmac: Add Qualcomm Ethernet ETHQOS compatibles
+  dt-bindings: net: qcom,ethqos: Convert bindings to yaml
+
+ .../devicetree/bindings/net/qcom,ethqos.txt   |  66 ------
+ .../devicetree/bindings/net/qcom,ethqos.yaml  | 111 ++++++++++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |   9 +-
+ MAINTAINERS                                   |   2 +-
+ .../net/ethernet/stmicro/stmmac/chain_mode.c  |  10 +-
+ drivers/net/ethernet/stmicro/stmmac/common.h  |   2 +-
+ .../stmicro/stmmac/dwmac-qcom-ethqos.c        | 177 +++++++++++----
+ .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c |  36 ++--
+ .../ethernet/stmicro/stmmac/dwmac1000_core.c  |   3 +-
+ .../ethernet/stmicro/stmmac/dwmac1000_dma.c   |  19 +-
+ .../ethernet/stmicro/stmmac/dwmac100_dma.c    |  14 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  91 ++++++--
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c |  50 +++--
+ .../ethernet/stmicro/stmmac/dwmac4_descs.c    |   8 +-
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.c  | 201 +++++++++++-------
+ .../net/ethernet/stmicro/stmmac/dwmac4_dma.h  |  89 +++++---
+ .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  | 105 +++++----
+ .../net/ethernet/stmicro/stmmac/dwmac_dma.h   |  22 +-
+ .../net/ethernet/stmicro/stmmac/dwmac_lib.c   |  18 +-
+ .../ethernet/stmicro/stmmac/dwxgmac2_core.c   |   9 +-
+ .../ethernet/stmicro/stmmac/dwxgmac2_descs.c  |   6 +-
+ .../ethernet/stmicro/stmmac/dwxgmac2_dma.c    |  71 ++++---
+ .../net/ethernet/stmicro/stmmac/enh_desc.c    |  11 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h    | 176 ++++++++-------
+ .../net/ethernet/stmicro/stmmac/norm_desc.c   |   8 +-
+ .../net/ethernet/stmicro/stmmac/ring_mode.c   |  10 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c |   3 +-
+ include/linux/stmmac.h                        |  19 ++
+ 28 files changed, 871 insertions(+), 475 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.txt
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+
+-- 
+2.39.2
+
