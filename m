@@ -2,324 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 692A96D139A
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 01:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FE46D13F9
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbjC3Xry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 19:47:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S229519AbjCaAXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 20:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231726AbjC3XrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 19:47:23 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2088.outbound.protection.outlook.com [40.107.92.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAE2CDC0
-        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 16:47:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PIcDgd+6bBRu9fXtbYNvA788XMUtIeKzHbxjuRcDypdzdwOzuUDDvnG07LhV+84vYRypuNeclC/g0Cl5/iQ3YStMLsuSKagSc4/4bE03JVk50av5GkFkFgGQ76FccnyCKn5rmDm2t0Mm1WSPY6Ot2bhfP9SPEQ8pg2h/xP1LvDxQllM/5tVxmLC30L4kh7nsQxnWb4n2I8yNlDBu+Kd8oWqCeaSTaqrH9aPj9ODwaiBrl9y2rHYtYLgv6QXvMoinPNKUPDdBVUmp4ItnhJXwhTOqCynaVZMA4SH2kFBo8qNhlkhm1HCrnNZYrCxA+nzwtsAEG+wLO0T2Is2u/wyJ3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GdauOXbNxYEr+krtuT0i7yJtOeJ6mi7166LfZ6jUSks=;
- b=S9Dtt85qYemXNd39L3FxKdnkLV/20j43RBwKc9f615lXSyMqCa9Gd8xQI/qmdI/7wqI91pwBBI1NyREgUKJ5Td09JdjvikzY78btTjAeTzRizYq/pJ7lurW7XeYnBxr/pIEd8B70bqXyw2xdWbw2TnC9ut5CwbaHbRP6OIRVe6YWzHgA+hN2T8HN+xvuFeZ8YX7EyGyAMjICFvjX1GmMssPkpxFrG3NtmehKuJ27EpMr7wmbxw4JK2GWPk14Y+rduQN2LNPzb+O6kKLl6Zo/Od0chJvLTdERzJR4D9RZ4UadiqKTnoSp1OmW8HVQcxHqDBAe6E9al84r3Ad8RXOSDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=davemloft.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GdauOXbNxYEr+krtuT0i7yJtOeJ6mi7166LfZ6jUSks=;
- b=bPRt+jtay7RA2r+cL+uSPOxBEEwSvE+w06LV28p22jiJsmd3sQCv6YvZZ0XeU7OKhe6b9GXQrjDXcLH1Up0i479GbN7wJhe/UjuRYC6ZLKNl/X7ZNT2Y4H8Fkt13OPzfgWtGPG4WfrG80Kao8EbesGcLOYX1F6hr6XZbvB7kWic=
-Received: from MN2PR15CA0017.namprd15.prod.outlook.com (2603:10b6:208:1b4::30)
- by MW3PR12MB4570.namprd12.prod.outlook.com (2603:10b6:303:5f::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22; Thu, 30 Mar
- 2023 23:46:58 +0000
-Received: from BL02EPF000100D2.namprd05.prod.outlook.com
- (2603:10b6:208:1b4:cafe::c0) by MN2PR15CA0017.outlook.office365.com
- (2603:10b6:208:1b4::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22 via Frontend
- Transport; Thu, 30 Mar 2023 23:46:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF000100D2.mail.protection.outlook.com (10.167.241.206) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6178.30 via Frontend Transport; Thu, 30 Mar 2023 23:46:57 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 30 Mar
- 2023 18:46:56 -0500
-From:   Shannon Nelson <shannon.nelson@amd.com>
-To:     <shannon.nelson@amd.com>, <brett.creeley@amd.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>, <kuba@kernel.org>
-CC:     <drivers@pensando.io>, <leon@kernel.org>, <jiri@resnulli.us>
-Subject: [PATCH v8 net-next 14/14] pds_core: Kconfig and pds_core.rst
-Date:   Thu, 30 Mar 2023 16:46:28 -0700
-Message-ID: <20230330234628.14627-15-shannon.nelson@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230330234628.14627-1-shannon.nelson@amd.com>
-References: <20230330234628.14627-1-shannon.nelson@amd.com>
+        with ESMTP id S229441AbjCaAXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:23:35 -0400
+Received: from mail-io1-f78.google.com (mail-io1-f78.google.com [209.85.166.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E395E12CD9
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:22:57 -0700 (PDT)
+Received: by mail-io1-f78.google.com with SMTP id w4-20020a5d9604000000b0074d326b26bcso12560605iol.9
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:22:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680222106; x=1682814106;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wU3dsEsxwHYF6HXDRCFRaWfh3xqSaIzoCCqFezx/r6I=;
+        b=DYF7ftQk8ERtYbdsg5kCLeiPD6+P+BkRpegjKd1QP/d8qjsMy88QE0JPZj47gyl3M7
+         D9klwnl3mSanzajWQiAayaezI3COXWTRKlXVc1l0E7/8eaPdK67dE2g+e1n4qjfalrXE
+         1sN+2yBC5sQSpn6vXL06QdDbAEJf3AjlHjceEKBxhjrfSugl+F9Mjbr4wjNwzCLioR5v
+         8U+ItDUmcOPQgJRMcnmGtc6mfSmF+LQpf1EwrFA+8O5GhlpqRrqvWOSD2cWVaKHDrBSI
+         R7FGpN7h7ykB0couudWYZaquDcgZl0zC1slclnSB3l4a3GVgDMw6pbxBbNXtaZPvzcb0
+         Hh6A==
+X-Gm-Message-State: AAQBX9dSFd+Lu9VEASKsRNs77nAZiGB5qxRd+6vYK0paZfgCRw2Deb+C
+        niC10ytlb+e2L1T1kX/Ayb7ofaEjEB9iMdmUvDaWTEm1MMRr
+X-Google-Smtp-Source: AKy350brf8se8epDL+qiI1wWlLUR0gu8CIhNfsbUiX07/oxqiaUUVHncBye5KHlQTInZg4TXxXsEp11AGYEbME7A45PwGenmnIFr
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000100D2:EE_|MW3PR12MB4570:EE_
-X-MS-Office365-Filtering-Correlation-Id: ce51b413-57b1-416c-c31c-08db31790cc9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E3tJg2OfHCe38xxAgaHMu+p4udGZ/Ui09yCrJeytA+4V3hkNWUqfafNigLdXohkxCXILYM86t8oHgYlKxFxQtZ8eRLlgYmR9vYa2g/S0F/BINzUzz5qUb5ZEw2SWEKW/goPuLii9o6DuK3F2vzWRqr4CKCG0kPYkP+XN/4k5IjeoNo43aLZ5eibCp28KatFKZjueLbOS0vR8E1dxzMelOTXTmHLRj4ggOfboQailRKpg1izlCSWMxS/wmckTv/SKXsvtgTT8LmyiYIbxE7GB2M8ea/3MQC9uusGVCcPrRVYtxTAPKXDVlr7yptx9074LTm01xsngBikt+E1z5vMc36BZdDE0Mkp1AnuRy5rtTMbbMsvePovcSdWW4JzdWeqI5lqr+52J5IB8O1xcR2tMUOEqUtNBm+g16tWNo/L7HI05bwFzrNjIgnEgtVWuf6UwGqi8OO34iyw6LcZ/7wqwSfqwie7N1OMkC9t6VMW8O8rJpiizrA44kbdaCXGhzqqqqe1ys7IKkIIdwvjLGgvZYQqmR7sdZ6QvZ1/fboOoSE+9uteHl+kchlvC8S08+5mKIgjvXsTKuEJz/Oxcb9bIssnxHRTBwS1bKeR6lLgRBTGISjwtrNrVAzHvpMwcysaoFhEdgbzmm2jKaGfeI2nke1cePRi6QyxemY1ck3Fo1v9+AAWY7cFhrYnySKZIPdDlSOYDi1klw5i3cIVB45dGWAB5SAPQyss+dJXb/9a9QPeM02KSlTvBDj+TwdK5eJLwWRFXk0aiNvjRHPZEAUxTjQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(39860400002)(451199021)(40470700004)(46966006)(36840700001)(336012)(47076005)(44832011)(8936002)(40460700003)(36756003)(356005)(86362001)(4326008)(82740400003)(5660300002)(70586007)(8676002)(41300700001)(40480700001)(70206006)(81166007)(82310400005)(36860700001)(2616005)(426003)(83380400001)(43170500006)(26005)(6666004)(2906002)(1076003)(316002)(478600001)(54906003)(186003)(16526019)(110136005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2023 23:46:57.7941
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce51b413-57b1-416c-c31c-08db31790cc9
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BL02EPF000100D2.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4570
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:b46:b0:316:fa49:3705 with SMTP id
+ f6-20020a056e020b4600b00316fa493705mr13243005ilu.1.1680222106282; Thu, 30 Mar
+ 2023 17:21:46 -0700 (PDT)
+Date:   Thu, 30 Mar 2023 17:21:46 -0700
+In-Reply-To: <0000000000006477b305f2b48b58@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c9f2ae05f82731c0@google.com>
+Subject: Re: [syzbot] [bluetooth?] possible deadlock in rfcomm_dlc_exists
+From:   syzbot <syzbot+b69a625d06e8ece26415@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, yangyingliang@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Documentation and Kconfig hook for building the driver.
+syzbot has found a reproducer for the following issue on:
 
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
----
- .../device_drivers/ethernet/amd/pds_core.rst  | 143 ++++++++++++++++++
- .../device_drivers/ethernet/index.rst         |   1 +
- MAINTAINERS                                   |   9 ++
- drivers/net/ethernet/amd/Kconfig              |  12 ++
- drivers/net/ethernet/amd/Makefile             |   1 +
- 5 files changed, 166 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
+HEAD commit:    a6d9e3034536 Add linux-next specific files for 20230330
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=152adc3ec80000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=aceb117f7924508e
+dashboard link: https://syzkaller.appspot.com/bug?extid=b69a625d06e8ece26415
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153acb85c80000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=179d1ed1c80000
 
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-new file mode 100644
-index 000000000000..16ed45baa81b
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-@@ -0,0 +1,143 @@
-+.. SPDX-License-Identifier: GPL-2.0+
-+
-+========================================================
-+Linux Driver for the AMD/Pensando(R) DSC adapter family
-+========================================================
-+
-+Copyright(c) 2023 Advanced Micro Devices, Inc
-+
-+Identifying the Adapter
-+=======================
-+
-+To find if one or more AMD/Pensando PCI Core devices are installed on the
-+host, check for the PCI devices::
-+
-+  # lspci -d 1dd8:100c
-+  b5:00.0 Processing accelerators: Pensando Systems Device 100c
-+  b6:00.0 Processing accelerators: Pensando Systems Device 100c
-+
-+If such devices are listed as above, then the pds_core.ko driver should find
-+and configure them for use.  There should be log entries in the kernel
-+messages such as these::
-+
-+  $ dmesg | grep pds_core
-+  pds_core 0000:b5:00.0: 252.048 Gb/s available PCIe bandwidth (16.0 GT/s PCIe x16 link)
-+  pds_core 0000:b5:00.0: FW: 1.60.0-73
-+  pds_core 0000:b6:00.0: 252.048 Gb/s available PCIe bandwidth (16.0 GT/s PCIe x16 link)
-+  pds_core 0000:b6:00.0: FW: 1.60.0-73
-+
-+Driver and firmware version information can be gathered with devlink::
-+
-+  $ devlink dev info pci/0000:b5:00.0
-+  pci/0000:b5:00.0:
-+    driver pds_core
-+    serial_number FLM18420073
-+    versions:
-+        fixed:
-+          asic.id 0x0
-+          asic.rev 0x0
-+        running:
-+          fw 1.51.0-73
-+        stored:
-+          fw.goldfw 1.15.9-C-22
-+          fw.mainfwa 1.60.0-73
-+          fw.mainfwb 1.60.0-57
-+
-+
-+Info versions
-+=============
-+
-+The ``pds_core`` driver reports the following versions
-+
-+.. list-table:: devlink info versions implemented
-+   :widths: 5 5 90
-+
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``fw``
-+     - running
-+     - Version of firmware running on the device
-+   * - ``fw.goldfw``
-+     - stored
-+     - Version of firmware stored in the goldfw slot
-+   * - ``fw.mainfwa``
-+     - stored
-+     - Version of firmware stored in the mainfwa slot
-+   * - ``fw.mainfwb``
-+     - stored
-+     - Version of firmware stored in the mainfwb slot
-+   * - ``asic.id``
-+     - fixed
-+     - The ASIC type for this device
-+   * - ``asic.rev``
-+     - fixed
-+     - The revision of the ASIC for this device
-+
-+
-+Parameters
-+==========
-+
-+The ``pds_core`` driver implements the following generic
-+parameters for controlling the functionality to be made available
-+as auxiliary_bus devices.
-+
-+.. list-table:: Generic parameters implemented
-+   :widths: 5 5 8 82
-+
-+   * - Name
-+     - Mode
-+     - Type
-+     - Description
-+   * - ``enable_vnet``
-+     - runtime
-+     - Boolean
-+     - Enables vDPA functionality through an auxiliary_bus device
-+
-+
-+Firmware Management
-+===================
-+
-+The ``flash`` command can update a the DSC firmware.  The downloaded firmware
-+will be saved into either of firmware bank 1 or bank 2, whichever is not
-+currrently in use, and that bank will be then selected for the next boot.
-+
-+Health Reporters
-+================
-+
-+The driver supports a devlink health reporter for FW status::
-+
-+  # devlink health show pci/0000:2b:00.0 reporter fw
-+  pci/0000:2b:00.0:
-+    reporter fw
-+      state healthy error 0 recover 0
-+
-+
-+Enabling the driver
-+===================
-+
-+The driver is enabled via the standard kernel configuration system,
-+using the make command::
-+
-+  make oldconfig/menuconfig/etc.
-+
-+The driver is located in the menu structure at:
-+
-+  -> Device Drivers
-+    -> Network device support (NETDEVICES [=y])
-+      -> Ethernet driver support
-+        -> AMD devices
-+          -> AMD/Pensando Ethernet PDS_CORE Support
-+
-+Support
-+=======
-+
-+For general Linux networking support, please use the netdev mailing
-+list, which is monitored by AMD/Pensando personnel::
-+
-+  netdev@vger.kernel.org
-+
-+For more specific support needs, please use the AMD/Pensando driver support
-+email::
-+
-+  drivers@pensando.io
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index 6e9e7012d000..eaaf284e69e6 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -13,6 +13,7 @@ Contents:
-    3com/3c509
-    3com/vortex
-    amazon/ena
-+   amd/pds_core
-    altera/altera_tse
-    aquantia/atlantic
-    chelsio/cxgb
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 30ca644d704f..95b5f25a2c06 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1041,6 +1041,15 @@ F:	drivers/gpu/drm/amd/include/vi_structs.h
- F:	include/uapi/linux/kfd_ioctl.h
- F:	include/uapi/linux/kfd_sysfs.h
- 
-+AMD PDS CORE DRIVER
-+M:	Shannon Nelson <shannon.nelson@amd.com>
-+M:	Brett Creeley <brett.creeley@amd.com>
-+M:	drivers@pensando.io
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	Documentation/networking/device_drivers/ethernet/amd/pds_core.rst
-+F:	drivers/net/ethernet/amd/pds_core/
-+
- AMD SPI DRIVER
- M:	Sanjay R Mehta <sanju.mehta@amd.com>
- S:	Maintained
-diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
-index ab42f75b9413..235fcacef5c5 100644
---- a/drivers/net/ethernet/amd/Kconfig
-+++ b/drivers/net/ethernet/amd/Kconfig
-@@ -186,4 +186,16 @@ config AMD_XGBE_HAVE_ECC
- 	bool
- 	default n
- 
-+config PDS_CORE
-+	tristate "AMD/Pensando Data Systems Core Device Support"
-+	depends on 64BIT && PCI
-+	help
-+	  This enables the support for the AMD/Pensando Core device family of
-+	  adapters.  More specific information on this driver can be
-+	  found in
-+	  <file:Documentation/networking/device_drivers/ethernet/amd/pds_core.rst>.
-+
-+	  To compile this driver as a module, choose M here. The module
-+	  will be called pds_core.
-+
- endif # NET_VENDOR_AMD
-diff --git a/drivers/net/ethernet/amd/Makefile b/drivers/net/ethernet/amd/Makefile
-index 42742afe9115..2dcfb84731e1 100644
---- a/drivers/net/ethernet/amd/Makefile
-+++ b/drivers/net/ethernet/amd/Makefile
-@@ -17,3 +17,4 @@ obj-$(CONFIG_PCNET32) += pcnet32.o
- obj-$(CONFIG_SUN3LANCE) += sun3lance.o
- obj-$(CONFIG_SUNLANCE) += sunlance.o
- obj-$(CONFIG_AMD_XGBE) += xgbe/
-+obj-$(CONFIG_PDS_CORE) += pds_core/
--- 
-2.17.1
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/ec1f900ea929/disk-a6d9e303.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/fabbf89c0d22/vmlinux-a6d9e303.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/1ed05d6192fa/bzImage-a6d9e303.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b69a625d06e8ece26415@syzkaller.appspotmail.com
+
+======================================================
+WARNING: possible circular locking dependency detected
+6.3.0-rc4-next-20230330-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor363/5115 is trying to acquire lock:
+ffffffff8e357cc8 (rfcomm_mutex){+.+.}-{3:3}, at: rfcomm_dlc_exists+0x58/0x190 net/bluetooth/rfcomm/core.c:546
+
+but task is already holding lock:
+ffffffff8e35cc88 (rfcomm_ioctl_mutex){+.+.}-{3:3}, at: rfcomm_create_dev net/bluetooth/rfcomm/tty.c:484 [inline]
+ffffffff8e35cc88 (rfcomm_ioctl_mutex){+.+.}-{3:3}, at: rfcomm_dev_ioctl+0x8a2/0x1c00 net/bluetooth/rfcomm/tty.c:587
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #3 (rfcomm_ioctl_mutex){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+       rfcomm_create_dev net/bluetooth/rfcomm/tty.c:484 [inline]
+       rfcomm_dev_ioctl+0x8a2/0x1c00 net/bluetooth/rfcomm/tty.c:587
+       rfcomm_sock_ioctl+0xb7/0xe0 net/bluetooth/rfcomm/sock.c:880
+       sock_do_ioctl+0xcc/0x230 net/socket.c:1199
+       sock_ioctl+0x1f8/0x680 net/socket.c:1316
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+-> #2 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}:
+       lock_sock_nested+0x3a/0xf0 net/core/sock.c:3474
+       lock_sock include/net/sock.h:1697 [inline]
+       rfcomm_sk_state_change+0x6d/0x3a0 net/bluetooth/rfcomm/sock.c:73
+       __rfcomm_dlc_close+0x1b1/0x890 net/bluetooth/rfcomm/core.c:493
+       rfcomm_dlc_close+0x1e9/0x240 net/bluetooth/rfcomm/core.c:524
+       __rfcomm_sock_close+0x17a/0x2f0 net/bluetooth/rfcomm/sock.c:220
+       rfcomm_sock_shutdown+0xd8/0x230 net/bluetooth/rfcomm/sock.c:912
+       rfcomm_sock_release+0x68/0x140 net/bluetooth/rfcomm/sock.c:933
+       __sock_release+0xcd/0x290 net/socket.c:653
+       sock_close+0x1c/0x20 net/socket.c:1395
+       __fput+0x27c/0xa90 fs/file_table.c:321
+       task_work_run+0x16f/0x270 kernel/task_work.c:179
+       exit_task_work include/linux/task_work.h:38 [inline]
+       do_exit+0xb0d/0x29f0 kernel/exit.c:869
+       do_group_exit+0xd4/0x2a0 kernel/exit.c:1019
+       get_signal+0x2315/0x25b0 kernel/signal.c:2859
+       arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:307
+       exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+       exit_to_user_mode_prepare+0x11f/0x240 kernel/entry/common.c:204
+       __syscall_exit_to_user_mode_work kernel/entry/common.c:286 [inline]
+       syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:297
+       do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+-> #1 (&d->lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+       __rfcomm_dlc_close+0x15d/0x890 net/bluetooth/rfcomm/core.c:491
+       rfcomm_dlc_close+0x1e9/0x240 net/bluetooth/rfcomm/core.c:524
+       __rfcomm_sock_close+0x17a/0x2f0 net/bluetooth/rfcomm/sock.c:220
+       rfcomm_sock_shutdown+0xd8/0x230 net/bluetooth/rfcomm/sock.c:912
+       rfcomm_sock_release+0x68/0x140 net/bluetooth/rfcomm/sock.c:933
+       __sock_release+0xcd/0x290 net/socket.c:653
+       sock_close+0x1c/0x20 net/socket.c:1395
+       __fput+0x27c/0xa90 fs/file_table.c:321
+       task_work_run+0x16f/0x270 kernel/task_work.c:179
+       exit_task_work include/linux/task_work.h:38 [inline]
+       do_exit+0xb0d/0x29f0 kernel/exit.c:869
+       do_group_exit+0xd4/0x2a0 kernel/exit.c:1019
+       get_signal+0x2315/0x25b0 kernel/signal.c:2859
+       arch_do_signal_or_restart+0x79/0x5c0 arch/x86/kernel/signal.c:307
+       exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
+       exit_to_user_mode_prepare+0x11f/0x240 kernel/entry/common.c:204
+       __syscall_exit_to_user_mode_work kernel/entry/common.c:286 [inline]
+       syscall_exit_to_user_mode+0x1d/0x50 kernel/entry/common.c:297
+       do_syscall_64+0x46/0xb0 arch/x86/entry/common.c:86
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+-> #0 (rfcomm_mutex){+.+.}-{3:3}:
+       check_prev_add kernel/locking/lockdep.c:3108 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3227 [inline]
+       validate_chain kernel/locking/lockdep.c:3842 [inline]
+       __lock_acquire+0x2f21/0x5df0 kernel/locking/lockdep.c:5074
+       lock_acquire.part.0+0x11c/0x370 kernel/locking/lockdep.c:5691
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+       rfcomm_dlc_exists+0x58/0x190 net/bluetooth/rfcomm/core.c:546
+       __rfcomm_create_dev net/bluetooth/rfcomm/tty.c:414 [inline]
+       rfcomm_create_dev net/bluetooth/rfcomm/tty.c:485 [inline]
+       rfcomm_dev_ioctl+0x966/0x1c00 net/bluetooth/rfcomm/tty.c:587
+       rfcomm_sock_ioctl+0xb7/0xe0 net/bluetooth/rfcomm/sock.c:880
+       sock_do_ioctl+0xcc/0x230 net/socket.c:1199
+       sock_ioctl+0x1f8/0x680 net/socket.c:1316
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+other info that might help us debug this:
+
+Chain exists of:
+  rfcomm_mutex --> sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM --> rfcomm_ioctl_mutex
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(rfcomm_ioctl_mutex);
+                               lock(sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM);
+                               lock(rfcomm_ioctl_mutex);
+  lock(rfcomm_mutex);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor363/5115:
+ #0: ffff888146eb7130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1697 [inline]
+ #0: ffff888146eb7130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: rfcomm_sock_ioctl+0xaa/0xe0 net/bluetooth/rfcomm/sock.c:879
+ #1: ffffffff8e35cc88 (rfcomm_ioctl_mutex){+.+.}-{3:3}, at: rfcomm_create_dev net/bluetooth/rfcomm/tty.c:484 [inline]
+ #1: ffffffff8e35cc88 (rfcomm_ioctl_mutex){+.+.}-{3:3}, at: rfcomm_dev_ioctl+0x8a2/0x1c00 net/bluetooth/rfcomm/tty.c:587
+
+stack backtrace:
+CPU: 0 PID: 5115 Comm: syz-executor363 Not tainted 6.3.0-rc4-next-20230330-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xd9/0x150 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2188
+ check_prev_add kernel/locking/lockdep.c:3108 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3227 [inline]
+ validate_chain kernel/locking/lockdep.c:3842 [inline]
+ __lock_acquire+0x2f21/0x5df0 kernel/locking/lockdep.c:5074
+ lock_acquire.part.0+0x11c/0x370 kernel/locking/lockdep.c:5691
+ __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+ __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+ rfcomm_dlc_exists+0x58/0x190 net/bluetooth/rfcomm/core.c:546
+ __rfcomm_create_dev net/bluetooth/rfcomm/tty.c:414 [inline]
+ rfcomm_create_dev net/bluetooth/rfcomm/tty.c:485 [inline]
+ rfcomm_dev_ioctl+0x966/0x1c00 net/bluetooth/rfcomm/tty.c:587
+ rfcomm_sock_ioctl+0xb7/0xe0 net/bluetooth/rfcomm/sock.c:880
+ sock_do_ioctl+0xcc/0x230 net/socket.c:1199
+ sock_ioctl+0x1f8/0x680 net/socket.c:1316
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x197/0x210 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fdd90dc3379
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc287c58b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fdd90dc3379
+RDX: 0000000020000100 RSI: 00000000400452c8 RDI: 0000000000000006
+RBP: 0000000000000000 R08: 0000000000000000 R09: 00007ffc287c58e8
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc287c5900
+R13: 00007ffc287c5910 R14: 000000000001c039 R15: 00007ffc287c58d0
+ </TASK>
 
