@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E010B6D1A00
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:34:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 554F36D1A1C
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 10:35:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231324AbjCaIex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 04:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56128 "EHLO
+        id S231624AbjCaIfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 04:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230206AbjCaIev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:34:51 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7272686
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:34:48 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id l27so21596868wrb.2
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:34:48 -0700 (PDT)
+        with ESMTP id S231329AbjCaIey (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 04:34:54 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CD11A958
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:34:49 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id e18so21583268wra.9
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 01:34:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680251687;
+        d=linaro.org; s=google; t=1680251688;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=aHrUnZC9rbzLW/5UuslNdsLyDWCrAVuJNyAo7I4AMWQ=;
-        b=VSeZX4dc6a1VHevFk6wYWuUx52Fu1aDq9jL8sgwwVCVS6BBHwfpIjUAHhDS6/7LhrO
-         qvPhrOnqjIRoN4IHis7BjDY2Gz5jG7IM2GPdWI3rFajdqF7lzgAzv423Du3Wy8UctYbP
-         RX5ePrSTKYkxKduq+ZOk3zHJjVM4OGrWJjXnW+nw2mO1udYxTN/dH9hwLlB/JY/WSnKQ
-         GBmPPmXKlPgQnSP2t0s76UrTT0OUXFoxmgtq6rFkjckZjvcS6zS0j0T98sHnYNTqIeWz
-         bFvRuWLo1dCLgQbsHfW0sAeXXwRWuDZjWfRtk8nyIgSD3JAb+5jv0Qg5Qj5gCgiUly/P
-         +UsQ==
+        bh=pBKae7BMPgaOyblPkQRvXj+9HjHU1CqOuh/rr5LEg2Q=;
+        b=AquKoo9qW/lfM7z5iGn0k1Tc7+InMtW/5I6poWfwMsS88rqwzcB/MQ5kQQkBmo0c+b
+         wkPla8Y4iET1Fj1kYLGVvqL3TbQE5Apoq4NMq78ewldGH0tjQxzMsVvH0CaCS4Y6uqnv
+         pY+ExvjAhRa2o6Pkj49iMnNTlwh7XB3eJBYOQxW0b+8uYOvQR07pIP8luJahBAMFvTsF
+         MUHny+htmLQwlY75XWau9Nl26sOWJCwBOgey3Je21g/ZuzVtSxxf4tyZwaiCFE8HSXjv
+         L0+H3MXP452/QuAU/yPxyU7guxH/89cFsr+rWPf2/IbC+Os88HkTCg6GaHsRIXEbuXRJ
+         LEzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680251687;
+        d=1e100.net; s=20210112; t=1680251688;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=aHrUnZC9rbzLW/5UuslNdsLyDWCrAVuJNyAo7I4AMWQ=;
-        b=5OUx4IDjqOy+9BUpltw9AeUqOHhfLII+pX1pOnQGjMS0qUko9azt7ZLIpqL7iDW/c7
-         3GwbkS0nx2ry3y1Y5pUu5iXxIN/y3V3PO6GTiQMR/BDh8TBTf9up/QHUMfseMsZT+GZl
-         5GD8Yb03wmxnKPhBt8yFTcg6csZ6JHwVJIRJmLQ6AlonJZUVsNRk6u7QBlhKICRQtcDu
-         5mpvBbAke6zgdDSzPfNd4dQZe/Ooss/iHowSodMdAlRycL33ggYS22q69a/ihP5dJlmc
-         KmTRsO4V1h8nb+qLFiHunX7wEXF/DCLLO5JCn3uzoVYUSD3loZ4lUJ/KwawPxe4kPpB+
-         +NqA==
-X-Gm-Message-State: AAQBX9c1+L4Cz/xQ87eaLoGS36qEgdZigwpuf7PBsjZI92TU7r3FiumD
-        rYMkOgKPd/cU7loh19AbOdbyXw==
-X-Google-Smtp-Source: AKy350bTtpPmDWoxvdz6mCtcYISz/1Ys9qi/+iO21shv0+wBfNCQorzQUaMEiY+swVm6wHSWmwrb0w==
-X-Received: by 2002:adf:ff89:0:b0:2cf:e957:644b with SMTP id j9-20020adfff89000000b002cfe957644bmr6630729wrr.27.1680251686957;
-        Fri, 31 Mar 2023 01:34:46 -0700 (PDT)
+        bh=pBKae7BMPgaOyblPkQRvXj+9HjHU1CqOuh/rr5LEg2Q=;
+        b=Gahz9W9cIGlUUGTIKmu1WTJukDSOOwoNLET0rEAR0QzS0VbnSWbftvGhTMhkJYSqtj
+         /PwnMeGHSi9h635i4ByXy/xq7334sDxkgsPIn2RBF1zjFec/NBBHF3K8X2pJUFA8LQcm
+         czIkoGiuJDAnNupWaOzjLsrpNpT9Iw72SBhz6bL7vutL5QOjieaS5lfGw8miV5TVvEKc
+         Ha+8vudJzOBrl3FxBZMvlluqN1ieoGOnj6r8ndHTFtAWtvZJQjQrfjsNrRUWMIYt1QFM
+         s0QkTJPUn/hqPw0WBbU2tj2rmLRaBVV1uX8Q1orHPQ/Q4gcWlkh4b98+eJROAGw+Fmrk
+         moyw==
+X-Gm-Message-State: AAQBX9eVLRXvG6Bk4JcRruz36RyBeHuztwTYBbLPaMtuHrDQGKpclBks
+        bbcB6s/KgcwRe4T+EiUv+MA8fg==
+X-Google-Smtp-Source: AKy350aDqfbCwPtTrIaC1JmenS2NwBF1wy4mk9PU9AEFWXM6fMqoAjRCp4Qk1EV//Q894bPDiUkCGg==
+X-Received: by 2002:adf:f089:0:b0:2cf:e849:e13c with SMTP id n9-20020adff089000000b002cfe849e13cmr20185096wro.61.1680251688308;
+        Fri, 31 Mar 2023 01:34:48 -0700 (PDT)
 Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:8261:5fff:fe11:bdda])
-        by smtp.gmail.com with ESMTPSA id e11-20020a5d4e8b000000b002cde626cd96sm1563153wru.65.2023.03.31.01.34.45
+        by smtp.gmail.com with ESMTPSA id e11-20020a5d4e8b000000b002cde626cd96sm1563153wru.65.2023.03.31.01.34.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Mar 2023 01:34:46 -0700 (PDT)
+        Fri, 31 Mar 2023 01:34:48 -0700 (PDT)
 From:   Neil Armstrong <neil.armstrong@linaro.org>
-Date:   Fri, 31 Mar 2023 10:34:40 +0200
-Subject: [PATCH RFC 02/20] ARM: oxnas: remove OXNAS support
+Date:   Fri, 31 Mar 2023 10:34:41 +0200
+Subject: [PATCH RFC 03/20] ARM: configs: remove oxnas_v6_defconfig
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230331-topic-oxnas-upstream-remove-v1-2-5bd58fd1dd1f@linaro.org>
+Message-Id: <20230331-topic-oxnas-upstream-remove-v1-3-5bd58fd1dd1f@linaro.org>
 References: <20230331-topic-oxnas-upstream-remove-v1-0-5bd58fd1dd1f@linaro.org>
 In-Reply-To: <20230331-topic-oxnas-upstream-remove-v1-0-5bd58fd1dd1f@linaro.org>
 To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
@@ -89,9 +89,9 @@ Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
         Neil Armstrong <neil.armstrong@linaro.org>
 X-Mailer: b4 0.12.1
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -100,74 +100,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Due to lack of maintainance and stall of development for a few years now,
 and since no new features will ever be added upstream, remove support
-for OX810 and OX820 ARM support.
+for OX820 specific defconfig.
 
 Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- arch/arm/Makefile            |  1 -
- arch/arm/mach-oxnas/Kconfig  | 34 ----------------------------------
- arch/arm/mach-oxnas/Makefile |  1 -
- 3 files changed, 36 deletions(-)
+ arch/arm/configs/oxnas_v6_defconfig | 92 -------------------------------------
+ 1 file changed, 92 deletions(-)
 
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 485a439e22ca..547e5856eaa0 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
-@@ -203,7 +203,6 @@ machine-$(CONFIG_ARCH_MSTARV7)		+= mstar
- machine-$(CONFIG_ARCH_NOMADIK)		+= nomadik
- machine-$(CONFIG_ARCH_NPCM)		+= npcm
- machine-$(CONFIG_ARCH_NSPIRE)		+= nspire
--machine-$(CONFIG_ARCH_OXNAS)		+= oxnas
- machine-$(CONFIG_ARCH_OMAP1)		+= omap1
- machine-$(CONFIG_ARCH_OMAP2PLUS)	+= omap2
- machine-$(CONFIG_ARCH_ORION5X)		+= orion5x
-diff --git a/arch/arm/mach-oxnas/Kconfig b/arch/arm/mach-oxnas/Kconfig
+diff --git a/arch/arm/configs/oxnas_v6_defconfig b/arch/arm/configs/oxnas_v6_defconfig
 deleted file mode 100644
-index a054235c3d6c..000000000000
---- a/arch/arm/mach-oxnas/Kconfig
+index 70a67b3fc91b..000000000000
+--- a/arch/arm/configs/oxnas_v6_defconfig
 +++ /dev/null
-@@ -1,34 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--menuconfig ARCH_OXNAS
--	bool "Oxford Semiconductor OXNAS Family SoCs"
--	depends on (ARCH_MULTI_V5 && CPU_LITTLE_ENDIAN) || ARCH_MULTI_V6
--	select ARCH_HAS_RESET_CONTROLLER
--	select COMMON_CLK_OXNAS
--	select GPIOLIB
--	select MFD_SYSCON
--	select OXNAS_RPS_TIMER
--	select PINCTRL_OXNAS
--	select RESET_CONTROLLER
--	select RESET_OXNAS
--	select VERSATILE_FPGA_IRQ
--	select PINCTRL
--	help
--	  Support for OxNas SoC family developed by Oxford Semiconductor.
--
--if ARCH_OXNAS
--
--config MACH_OX810SE
--	bool "Support OX810SE Based Products"
--	depends on ARCH_MULTI_V5
--	select CPU_ARM926T
--	help
--	  Include Support for the Oxford Semiconductor OX810SE SoC Based Products.
--
--config MACH_OX820
--	bool "Support OX820 Based Products"
--	depends on ARCH_MULTI_V6
--	select ARM_GIC
--	help
--	  Include Support for the Oxford Semiconductor OX820 SoC Based Products.
--
--endif
-diff --git a/arch/arm/mach-oxnas/Makefile b/arch/arm/mach-oxnas/Makefile
-deleted file mode 100644
-index a4e40e534e6a..000000000000
---- a/arch/arm/mach-oxnas/Makefile
-+++ /dev/null
-@@ -1 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
+@@ -1,92 +0,0 @@
+-CONFIG_SYSVIPC=y
+-CONFIG_NO_HZ_IDLE=y
+-CONFIG_HIGH_RES_TIMERS=y
+-CONFIG_CGROUPS=y
+-CONFIG_BLK_DEV_INITRD=y
+-CONFIG_EMBEDDED=y
+-CONFIG_PERF_EVENTS=y
+-CONFIG_STRICT_KERNEL_RWX=y
+-CONFIG_STRICT_MODULE_RWX=y
+-CONFIG_ARCH_MULTI_V6=y
+-CONFIG_ARCH_OXNAS=y
+-CONFIG_MACH_OX820=y
+-CONFIG_SMP=y
+-CONFIG_NR_CPUS=16
+-CONFIG_ARCH_FORCE_MAX_ORDER=12
+-CONFIG_SECCOMP=y
+-CONFIG_ARM_APPENDED_DTB=y
+-CONFIG_ARM_ATAG_DTB_COMPAT=y
+-CONFIG_KEXEC=y
+-CONFIG_EFI=y
+-CONFIG_CPU_IDLE=y
+-CONFIG_ARM_CPUIDLE=y
+-CONFIG_VFP=y
+-CONFIG_MODULES=y
+-CONFIG_MODULE_UNLOAD=y
+-CONFIG_PARTITION_ADVANCED=y
+-CONFIG_CMDLINE_PARTITION=y
+-CONFIG_CMA=y
+-CONFIG_NET=y
+-CONFIG_PACKET=y
+-CONFIG_UNIX=y
+-CONFIG_INET=y
+-CONFIG_IP_PNP=y
+-CONFIG_IP_PNP_DHCP=y
+-CONFIG_IP_PNP_BOOTP=y
+-CONFIG_IP_PNP_RARP=y
+-CONFIG_IPV6_ROUTER_PREF=y
+-CONFIG_IPV6_OPTIMISTIC_DAD=y
+-CONFIG_INET6_AH=m
+-CONFIG_INET6_ESP=m
+-CONFIG_INET6_IPCOMP=m
+-CONFIG_IPV6_MIP6=m
+-CONFIG_IPV6_TUNNEL=m
+-CONFIG_IPV6_MULTIPLE_TABLES=y
+-CONFIG_DEVTMPFS=y
+-CONFIG_DEVTMPFS_MOUNT=y
+-CONFIG_MTD=y
+-CONFIG_MTD_CMDLINE_PARTS=y
+-CONFIG_MTD_BLOCK=y
+-CONFIG_MTD_RAW_NAND=y
+-CONFIG_MTD_NAND_OXNAS=y
+-CONFIG_MTD_UBI=y
+-CONFIG_BLK_DEV_LOOP=y
+-CONFIG_BLK_DEV_RAM=y
+-CONFIG_BLK_DEV_RAM_SIZE=65536
+-CONFIG_NETDEVICES=y
+-CONFIG_STMMAC_ETH=y
+-CONFIG_REALTEK_PHY=y
+-CONFIG_INPUT_EVDEV=y
+-CONFIG_SERIAL_8250=y
+-CONFIG_SERIAL_8250_CONSOLE=y
+-CONFIG_SERIAL_OF_PLATFORM=y
+-CONFIG_GPIO_GENERIC_PLATFORM=y
+-CONFIG_NEW_LEDS=y
+-CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_CLASS_FLASH=m
+-CONFIG_LEDS_GPIO=y
+-CONFIG_LEDS_TRIGGERS=y
+-CONFIG_LEDS_TRIGGER_TIMER=y
+-CONFIG_LEDS_TRIGGER_ONESHOT=y
+-CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+-CONFIG_LEDS_TRIGGER_CPU=y
+-CONFIG_LEDS_TRIGGER_GPIO=y
+-CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
+-CONFIG_ARM_TIMER_SP804=y
+-CONFIG_EXT4_FS=y
+-CONFIG_MSDOS_FS=y
+-CONFIG_VFAT_FS=y
+-CONFIG_TMPFS=y
+-CONFIG_TMPFS_POSIX_ACL=y
+-CONFIG_UBIFS_FS=y
+-CONFIG_PSTORE=y
+-CONFIG_PSTORE_CONSOLE=y
+-CONFIG_PSTORE_PMSG=y
+-CONFIG_PSTORE_RAM=y
+-CONFIG_NLS_CODEPAGE_437=y
+-CONFIG_NLS_ISO8859_1=y
+-CONFIG_NLS_UTF8=y
+-CONFIG_DMA_CMA=y
+-CONFIG_CMA_SIZE_MBYTES=64
+-CONFIG_PRINTK_TIME=y
+-CONFIG_MAGIC_SYSRQ=y
 
 -- 
 2.34.1
