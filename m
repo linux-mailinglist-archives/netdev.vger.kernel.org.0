@@ -2,63 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 182666D2984
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 22:34:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 858CF6D298A
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 22:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbjCaUeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 16:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
+        id S232718AbjCaUib (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 16:38:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbjCaUeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 16:34:05 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04491B7C3;
-        Fri, 31 Mar 2023 13:34:03 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1piLRa-0007Dg-1j;
-        Fri, 31 Mar 2023 22:33:54 +0200
-Date:   Fri, 31 Mar 2023 21:33:50 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: Re: [PATCH net-next 14/15] net: dsa: mt7530: introduce driver for
- MT7988 built-in switch
-Message-ID: <ZCdDrrynf5fg16VM@makrotopia.org>
-References: <cover.1680180959.git.daniel@makrotopia.org>
- <fef2cb2fe3d2b70fa46e93107a0c862f53bb3bfa.1680180959.git.daniel@makrotopia.org>
- <6a7c5f81-a8a3-27b5-4af3-7175a3313f9a@arinc9.com>
- <ZCazDBJvFvjcQfKo@makrotopia.org>
- <7d0acaef-0cec-91b9-a5c6-d094b71e3dbd@arinc9.com>
- <28d048c9-6389-749b-d0eb-18a9c2d83c4e@arinc9.com>
- <56adf82a-3db0-5909-e948-e21717e3fe03@arinc9.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        with ESMTP id S229967AbjCaUia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 16:38:30 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2111.outbound.protection.outlook.com [40.107.93.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234BB1D863
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 13:38:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UeXtJTz1kOLRbiojUR4EiDmojyfhSUaMr7VV7vHK/r/g2vYYUdV6d2AA8wveGYDRCFhoCDgSNcgwofeca2w2eiLwZ0+4MzbmYNKtEcrpe9yagSpUx4Do9BzWrO9wF8CK58PoPFGYirr2wpe3X2RrbFAT6STnMW99duXiDCEByWTnKav7wyOop23FhSSDcgnQZ8ub6s794dCtg4oT5stD3pLi4RUIrqSHePoGYP2y/RtgJipBhl7nhiy++jmC1yN3rXlqYihT127Rnv+W1r/8f5Moh+Jd8iLdEVItCo0bPysbWPvcThb1kvpp56xD3sAAHQthVKXWrXrdyVYM8sJCSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RmOggmyv9TtkRk3DYCtwpIDf9aEYepM6gN4WappJHkM=;
+ b=H9R4tJXMMfYeHAmdeSTZMkcH4NX/jNed0GeUovxxJHBbScuLozENhFwEI9ybbBbvOOnizLYSPdOLCcrjjRgSrpFQMCw2YdaXkvoJTYhEcb+F7vEI7hN2cP0jXz3OA3kmCHbBGLLqaCv00Vwy2a3frwWW4QBv4llzDX0SHBoWUxapUWH/cDaZ0Tzj+G7hvYMSI4uAdKYi1RmmhEBqOexLi/SW5V3Hv/ZZUqJDCzUM6yewa9S8zUsNgQzZJvIVQUAGzVo0tE8vG8H+I/fObG5ymFT1X+FM7wrp/QwlzdjBGZYT/UHIbOfgYXYR9Y57q2YjoUfY/e0QOlHEJBwTbOUqvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RmOggmyv9TtkRk3DYCtwpIDf9aEYepM6gN4WappJHkM=;
+ b=pECCs3OTYCj5SkUsoAb8kuxu80tlb1rxqWR3uLvs/R5eQbtPM68sEzX+ZZXhYgWySwG6XzT3FYLycb5unPW1nnhHtFiHzh3sKV2WRP4rVK8up7GVem9QcuE/VVnGrxHCxfkG7q6GfpHqg10kDZMAXaSpWwOmTTxw7MlURMy+r68=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SJ0PR13MB5288.namprd13.prod.outlook.com (2603:10b6:a03:3db::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.23; Fri, 31 Mar
+ 2023 20:38:25 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.021; Fri, 31 Mar 2023
+ 20:38:25 +0000
+Date:   Fri, 31 Mar 2023 22:38:20 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 1/2] net: ethernet: mtk_eth_soc: add code for
+ offloading flows from wlan devices
+Message-ID: <ZCdEvEJTJewWnuU9@corigine.com>
+References: <20230331124707.40296-1-nbd@nbd.name>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <56adf82a-3db0-5909-e948-e21717e3fe03@arinc9.com>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+In-Reply-To: <20230331124707.40296-1-nbd@nbd.name>
+X-ClientProxiedBy: AS4PR09CA0004.eurprd09.prod.outlook.com
+ (2603:10a6:20b:5e0::10) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SJ0PR13MB5288:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37e2e014-b7bf-47fa-dd5a-08db3227dff5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WC7niwMjxaDpqThN5Q7SrYJC4R0oIjrgWQCm9Ftr9ekrMopi/dtt62PADwldkkNHxojTixFYoPW6Qcxt0yCm6HWErxryUHobQT4jbnhEF86JO+fknxjud4ui6DCaFZ4fvHe43HfWQOND8nqd8Pc9bcFibwwDwL9feHkk6GUemlz9CHvSsm4Xhu0tri7aRBc7pnAI9NAsyHKIk/9dOvWoe8I614QPveE6XtxVgCcOHfA2ocHdpqErcDN9sIA01HuBx4GYZwzth2ihY+3zXMaWGCyPHy66oA2kPPUaVv2SBWVQ6qfJSWHCaLErz5afzmqrpVcXwjBsGBUkMwls42K/JvJ5euN1+W2Le+H8xzBCCpTXht4tEkEf9AgAwrePzvzSgGB2v/KFYaD27k7Cl32l47ChdD7I5hGfBQ4+fhlojxYy0Pje1938U03lc2Qie/Nhn+heCwxcwDX9VyupU2N5/zg2RLhqg90Q4jcnchxaqIpP3LjkC3lPI8Tfg2Pwz1+s2J/GyaXBDQmxliF4mSyaBue+jEASAAv1VNo37jUewiAEhY+eJkIexbNTWwkxQihR
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(346002)(366004)(136003)(39840400004)(396003)(451199021)(6506007)(6666004)(186003)(8936002)(5660300002)(6512007)(86362001)(44832011)(66476007)(66946007)(316002)(2616005)(478600001)(83380400001)(41300700001)(66556008)(2906002)(36756003)(4326008)(6486002)(38100700002)(6916009)(8676002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1K0fPKKEVGUbzWodjbH1vbat+5oJcXUKizhI3MDMNvgOh/XO5Y41Pt4TV+Vy?=
+ =?us-ascii?Q?n0ZVJcBd0vQ5Ziv5F6D6FfbebrzpBc6x2zyqRdSAtK/+IyotvtJu7fRiIWAe?=
+ =?us-ascii?Q?5g1TQz6Avyj/D1P6OZHz0ho1rX/mzpeIcOzkF2C2bsX6GEV6ALjSm96MiUS4?=
+ =?us-ascii?Q?7EpGiOylv+sUrkf/E4moj/wNQ5qj6TIPcTi1vMZS+TWawCxjQJI3EkBn4bgW?=
+ =?us-ascii?Q?RBHb7HFdntQPuUUzA/umTECbRA1nwQJAjX3A5EPtYjKy2LVyzGryTN2tH80s?=
+ =?us-ascii?Q?30/BBMxYC7ArFvAl/MC9wBV4rsWE2s+7x8mg/YjH0/dhO0A0PkwdsKGOLrus?=
+ =?us-ascii?Q?/eikucEJkgqdtGV0mx1Y2j5mmIr23aXWIh75kwhKARdK0Qx1mg/fsx/UYxsY?=
+ =?us-ascii?Q?qP0+FOuJ34OFAo3LFpL4SKQSvgPoDjJi3Oc4udN9JGxw5IKChSMQdo4QiClB?=
+ =?us-ascii?Q?HTG0Li/2lhwFRLHOzpEKcvw+sOJKH/IQxRpVU4rj4VLMBoMNvVO/R4Nxi5W3?=
+ =?us-ascii?Q?mrc38kUXzzlBKFkZgbgylu76kOhIkir2qiEEo2Rf8m+ldCb2qGCRE3Y8AuWt?=
+ =?us-ascii?Q?9kOiT4nHE3wBCqeziaFoF/93QkfgGhb7q4A+zFmmafDgST4mwhs1AN6xwksd?=
+ =?us-ascii?Q?GZ4Lz5B2lhl1xu4ft4YGy1xjE5h2W+guly/jpRO56VTSa1rwFYaGxqX5vq5I?=
+ =?us-ascii?Q?XLTDZqsyJji1frXvUU7o3/h+WI7KV3mze2FxaX11CggfKOC0iM7k78DAY9Wj?=
+ =?us-ascii?Q?OnUwUV5+URALpvpkHQbCodZdnWhJ2/jPYBp74kQypzRt/qIn0tb/ZDPlgyeF?=
+ =?us-ascii?Q?vnBOvSQgLCIj11B3Lhmbs4hWM5+QO71FwFVgcM/mtnmxLCbdsdcSrQp01/bC?=
+ =?us-ascii?Q?VKvFnRxhCZFkwkAnAFPi8hUNifXtOue4jqhovHpeKxZwJRyf1WuhWiAyaVIw?=
+ =?us-ascii?Q?dLF3PNByyEFPBK9PfHQguNH2xhqSoBVKc1QsqIAcMYU427gSV12YvIdVuJGp?=
+ =?us-ascii?Q?HaWN1ATo9w1ZuoWq1XfgQ7CzUXu7HKqu3pxNq4m4QeDxQ5HtnXXVYWUbMAEV?=
+ =?us-ascii?Q?/fwzuaaDdDKp89AwPFC5mWj/nIj2VkPGN3m4hB88vXbpDQFTR+12T5jeq8tP?=
+ =?us-ascii?Q?gQhlxQ+wUZqBgynj/C83C7Tsr6VPyoGLKyRuInhOa2Nu7c4AUKDTwoKtOEBX?=
+ =?us-ascii?Q?EZ8bmM3YYoBOG1nG7fDmBV9kG8kH3GxPF0nXsKjYUs6VaK6LlcPSZuBLOdTh?=
+ =?us-ascii?Q?PIKoO0iSdo0QVXK0AD4hXAYcoOjF+Qml5moJjVynMfWk6xiiATUd2xv19v4N?=
+ =?us-ascii?Q?hKa/vdJ2jTQE4+0Xtd9ZpDsgRMVGq7U8w3ZxBRDHSjZaZxO5Ifk7mrciln15?=
+ =?us-ascii?Q?1qDNzveXjOVV/66trw3NK0fmtszf/7jn/ZWg/RhBfyIhHxMwGf8GJ4UfDgLr?=
+ =?us-ascii?Q?fglwYbowXhCRMtrniytbI3JsTqRDJDAqSFP7b3amJIF9NcvzcAjWqyl2cbHf?=
+ =?us-ascii?Q?Ce0L/MzT0JYsMtcHVdZbByRoIgfomcOGZ81bX52ZFZN5horfNwXsfpWjcE/K?=
+ =?us-ascii?Q?XflLairJztxI0R8nnHxBM75CKKEDgO1lBUiOXM8X/Nwdl5ucq/oem7nUgK8+?=
+ =?us-ascii?Q?/DhwSDGn/DePJraJlnzg4d9d99c3jWQyGrUjyQxOydMoOlz3A2JqbvBwPqxA?=
+ =?us-ascii?Q?2bClHA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37e2e014-b7bf-47fa-dd5a-08db3227dff5
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 20:38:24.9776
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ej+WxVsVBrso8jkllS2XE7/yJ/YV+4UDGmiPGeiuGiWMo4bivDJ3VUEjucUcBZ8zjKsc69GEs8+cS87PWoXV8NRkDvM/8LNNDZziqi7QxxM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5288
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,159 +113,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 11:07:51PM +0300, Arınç ÜNAL wrote:
-> On 31.03.2023 16:18, Arınç ÜNAL wrote:
-> > On 31.03.2023 15:06, Arınç ÜNAL wrote:
-> > > On 31.03.2023 13:16, Daniel Golle wrote:
-> > > > On Fri, Mar 31, 2023 at 08:50:28AM +0300, Arınç ÜNAL wrote:
-> > > > > On 30.03.2023 18:23, Daniel Golle wrote:
-> > > > > > Add driver for the built-in Gigabit Ethernet switch which can be found
-> > > > > > in the MediaTek MT7988 SoC.
-> > > > > > 
-> > > > > > The switch shares most of its design with MT7530 and MT7531, but has
-> > > > > > it's registers mapped into the SoCs register space rather than being
-> > > > > > connected externally or internally via MDIO.
-> > > > > > 
-> > > > > > Introduce a new platform driver to support that.
-> > > > > > 
-> > > > > > Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-> > > > > > ---
-> > > > > >    MAINTAINERS                   |   2 +
-> > > > > >    drivers/net/dsa/Kconfig       |  12 ++++
-> > > > > >    drivers/net/dsa/Makefile      |   1 +
-> > > > > >    drivers/net/dsa/mt7530-mmio.c | 101
-> > > > > > ++++++++++++++++++++++++++++++++++
-> > > > > >    drivers/net/dsa/mt7530.c      |  86 ++++++++++++++++++++++++++++-
-> > > > > >    drivers/net/dsa/mt7530.h      |  12 ++--
-> > > > > >    6 files changed, 206 insertions(+), 8 deletions(-)
-> > > > > >    create mode 100644 drivers/net/dsa/mt7530-mmio.c
-> > > > > > 
-> > > > > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > > > > index 14924aed15ca7..674673dbdfd8b 100644
-> > > > > > --- a/MAINTAINERS
-> > > > > > +++ b/MAINTAINERS
-> > > > > > @@ -13174,9 +13174,11 @@ MEDIATEK SWITCH DRIVER
-> > > > > >    M:    Sean Wang <sean.wang@mediatek.com>
-> > > > > >    M:    Landen Chao <Landen.Chao@mediatek.com>
-> > > > > >    M:    DENG Qingfang <dqfext@gmail.com>
-> > > > > > +M:    Daniel Golle <daniel@makrotopia.org>
-> > > > > >    L:    netdev@vger.kernel.org
-> > > > > >    S:    Maintained
-> > > > > >    F:    drivers/net/dsa/mt7530-mdio.c
-> > > > > > +F:    drivers/net/dsa/mt7530-mmio.c
-> > > > > >    F:    drivers/net/dsa/mt7530.*
-> > > > > >    F:    net/dsa/tag_mtk.c
-> > > > > > diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-> > > > > > index c2551b13324c2..de4d86e37973f 100644
-> > > > > > --- a/drivers/net/dsa/Kconfig
-> > > > > > +++ b/drivers/net/dsa/Kconfig
-> > > > > > @@ -52,6 +52,18 @@ config NET_DSA_MT7530
-> > > > > >          Multi-chip module MT7530 in MT7621AT, MT7621DAT, MT7621ST and
-> > > > > >          MT7623AI SoCs is supported as well.
-> > > > > > +config NET_DSA_MT7988
-> > > > > > +    tristate "MediaTek MT7988 built-in Ethernet switch support"
-> > > > > > +    select NET_DSA_MT7530_COMMON
-> > > > > > +    depends on HAS_IOMEM
-> > > > > > +    help
-> > > > > > +      This enables support for the built-in Ethernet switch found
-> > > > > > +      in the MediaTek MT7988 SoC.
-> > > > > > +      The switch is a similar design as MT7531, however, unlike
-> > > > > > +      other MT7530 and MT7531 the switch registers are directly
-> > > > > > +      mapped into the SoCs register space rather than
-> > > > > > being accessible
-> > > > > > +      via MDIO.
-> > > > > > +
-> > > > > >    config NET_DSA_MV88E6060
-> > > > > >        tristate "Marvell 88E6060 ethernet switch chip support"
-> > > > > >        select NET_DSA_TAG_TRAILER
-> > > > > > diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
-> > > > > > index 71250d7dd41af..103a33e20de4b 100644
-> > > > > > --- a/drivers/net/dsa/Makefile
-> > > > > > +++ b/drivers/net/dsa/Makefile
-> > > > > > @@ -8,6 +8,7 @@ endif
-> > > > > >    obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
-> > > > > >    obj-$(CONFIG_NET_DSA_MT7530_COMMON) += mt7530.o
-> > > > > >    obj-$(CONFIG_NET_DSA_MT7530)    += mt7530-mdio.o
-> > > > > > +obj-$(CONFIG_NET_DSA_MT7988)    += mt7530-mmio.o
-> > > > > 
-> > > > > I'm not fond of this way. Wouldn't it be better if we split
-> > > > > the mdio and
-> > > > > mmio drivers to separate modules and kept switch hardware support on
-> > > > > mt7530.c?
-> > > > 
-> > > > You mean this in terms of Kconfig symbols?
-> > > > Because the way you describe is basically what I'm doing here:
-> > > >   * mt7530.c is the shared/common switch hardware driver
-> > > >   * mt7530-mdio.c contains the MDIO accessors and MDIO device
-> > > > drivers for
-> > > >     MT7530, MT7531, MT7621, MT7623, ...
-> > > >   * mt7530-mmio.c contains the platform device driver for in-SoC
-> > > > switches
-> > > >     which are accessed via MMIO, ie. MT7988 (and yes, this could be
-> > > >     extended to also support MT7620A/N).
-> > > 
-> > > Ok great.
-> > > 
-> > > > 
-> > > > In early drafts I also named the Kconfig symbols
-> > > > CONFIG_NET_DSA_MT7530 for mt7530.c (ie. the common part)
-> > > > CONFIG_NET_DSA_MT7530_MDIO for the MDIO driver
-> > > > CONFIG_NET_DSA_MT7530_MMIO for the MMIO driver
-> > > > 
-> > > > However, as existing kernel configurations expect
-> > > > CONFIG_NET_DSA_MT7530 to
-> > > > select the MDIO driver, I decided it would be better to hide the
-> > > > symbol of
-> > > > the common part and have CONFIG_NET_DSA_MT7530 select the MDIO
-> > > > driver like
-> > > > it was before.
-> > > 
-> > > You can "imply NET_DSA_MT7530_MDIO" from NET_DSA_MT7530 so the MDIO
-> > > driver is also enabled when NET_DSA_MT7530 is selected. For example,
-> > > on Realtek, both MDIO and SMI drivers are enabled by default when
-> > > either of the main drivers are selected.
-> > > 
-> > > config NET_DSA_MT7530
-> > >      tristate "MediaTek MT7530 and MT7531 Ethernet switch support"
-> > >      select NET_DSA_TAG_MTK
-> > >      select MEDIATEK_GE_PHY
-> > >      select PCS_MTK_LYNXI
-> > >      imply NET_DSA_MT7530_MDIO
-> > >      imply NET_DSA_MT7530_MMIO
-> > 
-> > The final kconfig should look like this:
-> > 
-> > config NET_DSA_MT7530
-> >      tristate "MediaTek MT7530 and MT7531 Ethernet switch support"
-> >      select NET_DSA_TAG_MTK
-> >      select MEDIATEK_GE_PHY
-> >      select PCS_MTK_LYNXI
+On Fri, Mar 31, 2023 at 02:47:06PM +0200, Felix Fietkau wrote:
+> WED version 2 (on MT7986 and later) can offload flows originating from
+> wireless devices.
+> In order to make that work, ndo_setup_tc needs to be implemented on the
+> netdevs. This adds the required code to offload flows coming in from WED,
+> while keeping track of the incoming wed index used for selecting the
+> correct PPE device.
 > 
-> Looks like PCS_MTK_LYNXI is used on NET_DSA_MT7530_MDIO instead now. I also
-> see '#include <linux/pcs/pcs-mtk-lynxi.h>' on mt7530.c but don't see any
-> functions called on it. Leftover?
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
 
-Yes, you are right, it's only used in mt7530-mdio.c and the #include in
-mt7530.c is a left-over which I shall remove.
+...
 
-> 
-> >      imply NET_DSA_MT7530_MDIO
-> >      imply NET_DSA_MT7530_MMIO
-> >      help
-> >        This enables support for the MediaTek MT7530 and MT7531 Ethernet
-> >        switch chips. Multi-chip module MT7530 in MT7621AT, MT7621DAT,
-> >        MT7621ST and MT7623AI SoCs, and built-in switch in MT7688 SoC is
-> >        supported.
-> > 
-> > config NET_DSA_MT7530_MDIO
-> >      tristate "MediaTek MT7530 MDIO interface driver"
-> 
-> Should go here:
-> 
-> select PCS_MTK_LYNXI
+> diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
 
-Yeah, in Kconfig I had taken care of this already, but forgot to remove
-the include in mt7530.c...
+...
 
+> +static int
+> +mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
+> +{
+> +	struct flow_cls_offload *cls = type_data;
+> +	struct mtk_mac *mac = netdev_priv(dev);
 
-Thank you for spotting this. I'll soon post v2 which includes these fixes.
+This does not compile because dev is undefined at this point.
+
+> +	struct net_device *dev = cb_priv;
+> +	struct mtk_eth *eth = mac->hw;
+
+I would suggest something like this:
+
+        struct flow_cls_offload *cls = type_data;
+        struct net_device *dev = cb_priv;
+        struct mtk_mac *mac;
+        struct mtk_eth *eth;
+
+        mac = netdev_priv(cb_priv);
+        eth = mac->hw;
+
+> +
+> +	if (!tc_can_offload(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (type != TC_SETUP_CLSFLOWER)
+> +		return -EOPNOTSUPP;
+> +
+> +	return mtk_flow_offload_cmd(eth, cls, 0);
+> +}
+> +
+>  static int
+>  mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
+>  {
+> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+
+...
+
+> +static int
+> +mtk_wed_setup_tc_block(struct mtk_wed_hw *hw, struct net_device *dev,
+> +		       struct flow_block_offload *f)
+> +{
+> +	struct mtk_wed_flow_block_priv *priv;
+> +	static LIST_HEAD(block_cb_list);
+> +	struct flow_block_cb *block_cb;
+> +	struct mtk_eth *eth = hw->eth;
+> +	bool register_block = false;
+
+gcc-12 with W=1 tellsme that register_block is unused.
+It should be removed.
+
+> +	flow_setup_cb_t *cb;
+> +
+> +	if (!eth->soc->offload_version)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
+> +		return -EOPNOTSUPP;
+> +
+> +	cb = mtk_wed_setup_tc_block_cb;
+> +	f->driver_block_list = &block_cb_list;
+> +
+> +	switch (f->command) {
+> +	case FLOW_BLOCK_BIND:
+> +		block_cb = flow_block_cb_lookup(f->block, cb, dev);
+> +		if (block_cb) {
+> +			flow_block_cb_incref(block_cb);
+> +			return 0;
+> +		}
+> +
+> +		priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> +		if (!priv)
+> +			return -ENOMEM;
+> +
+> +		priv->hw = hw;
+> +		priv->dev = dev;
+> +		block_cb = flow_block_cb_alloc(cb, dev, priv, NULL);
+> +		if (IS_ERR(block_cb)) {
+> +			kfree(priv);
+> +			return PTR_ERR(block_cb);
+> +		}
+> +
+> +		flow_block_cb_incref(block_cb);
+> +		flow_block_cb_add(block_cb, f);
+> +		list_add_tail(&block_cb->driver_list, &block_cb_list);
+> +		return 0;
+> +	case FLOW_BLOCK_UNBIND:
+> +		block_cb = flow_block_cb_lookup(f->block, cb, dev);
+> +		if (!block_cb)
+> +			return -ENOENT;
+> +
+> +		if (!flow_block_cb_decref(block_cb)) {
+> +			flow_block_cb_remove(block_cb, f);
+> +			list_del(&block_cb->driver_list);
+> +			kfree(block_cb->cb_priv);
+> +		}
+> +		return 0;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+
+...
