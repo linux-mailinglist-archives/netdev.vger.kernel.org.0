@@ -2,194 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9FD46D21A1
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3B36D21AC
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 15:47:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231892AbjCaNpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 09:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
+        id S232454AbjCaNre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 09:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbjCaNpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:45:41 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2136.outbound.protection.outlook.com [40.107.93.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50F9C5;
-        Fri, 31 Mar 2023 06:45:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bbDmeNn1zqtPAvwLfRcW63Yo2Ni80CRQZvjfMewWZBEBDdzpekMNnrlNAfHaeYf1+WVyz57G/1KwofMA6v3wdU6rMxe7MHyry2alLUwi6kHwEQPBKK5p7E+Wfp2tjnTwOjOLqp87b8IhgBGfWiGlQpE3NN/UcxTTh9IfmbJFJaGyPiG0XMOkiM94mxFMs6VZyL95KAQc/H0Jvws2PyuwOMEoo52/j1moU0+V++OwjqekyYx/HQFRXZvN0QD1VquGdiYECMjDPy7h4cACyNJBvZrtgLzc7+cU87X2s3T2gOMfcj9JP5I9rOi/AAtqpD/CpngZCGOuQ9Be/prwplgEAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m726nRH7n0LL0TQJlkR95IMd5DPMWv53tnFELE5nLNY=;
- b=MxPj4CrgEfBpOfB6m3dj79D72kIMOuA+sWWD4HXSiRZJGTP7q2fFmO8qXQxzy2Oca6aPkASsbMCtfbLnPZ1fStj1nIppaR15tqPsQQmuiyTgKpllsBCINgQtFbS3yUvBdxeWXdS2+CSeZHSjth5J2XBNJhuYiHEA6Cj8mLUsj+1n5xFFwwFzUbBkhgxf9cHOzHbYQHnIlEomcW6F/rw5gxyq1Ieo9cMyyfO6wwPAN3J4UN3gaXCealmVh5084A8dfTTYJqE/w9xQr3ZVZwAWWgfAsMwmFpNN+oJ2rWFcHhRSiussceCcnIHhJrFr5ajQMRHZINcvmvGH9TquatqQBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m726nRH7n0LL0TQJlkR95IMd5DPMWv53tnFELE5nLNY=;
- b=aQHC5Nc+5GBLiEgKMYrnmtQUf4E4pTEdS3Tb8ZBAlncLTRiidg4Mo0+UfJQN72AA0EQYuFOQOPZjqf3pUfmxvqle0PN63ddYCocLAz61Q0GcEYOOooFfUWNq4BGz7Wtm50vK4HWYNzGW5AB35ZvKzX9IMDfBpkCevRzp0Y9NMno=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW3PR13MB4012.namprd13.prod.outlook.com (2603:10b6:303:5a::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.24; Fri, 31 Mar
- 2023 13:45:33 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.021; Fri, 31 Mar 2023
- 13:45:33 +0000
-Date:   Fri, 31 Mar 2023 15:45:27 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Kalle Valo <kvalo@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] ath11k: pci: Add more MODULE_FIRMWARE() entries
-Message-ID: <ZCbj94oDuVYLJtBn@corigine.com>
-References: <20230330143718.19511-1-tiwai@suse.de>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230330143718.19511-1-tiwai@suse.de>
-X-ClientProxiedBy: AM0PR01CA0151.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::20) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S230390AbjCaNr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 09:47:26 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B57C5;
+        Fri, 31 Mar 2023 06:47:23 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 32VDkxSe108404;
+        Fri, 31 Mar 2023 08:46:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1680270419;
+        bh=SWPIzGPRGAu6t63g7pLGQ9b7TThlwDUoaymWmbCwIoM=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=vUodkCK9JoPurw4zcxVw+iJDjLJgjbzpteH17amMWyrdfIvmy3Enn2Rdox4kXTrzL
+         oxm+86wbin6SHyQUpumoQ8hdYH3LbV4bK/tO7sEBusjeJD04NWxcX0b84gPfwTjZo2
+         iRn+q5WSI9NVLCrrfdcyGILKLQXuZeWiE97Ab18o=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 32VDkx5r015850
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 31 Mar 2023 08:46:59 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Fri, 31
+ Mar 2023 08:46:59 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Fri, 31 Mar 2023 08:46:59 -0500
+Received: from [10.249.131.130] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 32VDktuq001841;
+        Fri, 31 Mar 2023 08:46:56 -0500
+Message-ID: <1477e0c3-bb92-72b0-9804-0393c34571d3@ti.com>
+Date:   Fri, 31 Mar 2023 19:16:55 +0530
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW3PR13MB4012:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2b121922-b93f-4c1c-5066-08db31ee3318
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OZVWOOrzRbCpX1kOT3VZlExV3HqX68gbN01JVEDxQR1TmOcogOI+6PBtahKcaQI6HaBUIX0vdfvCaoaJotlyvUHtlPgLlWAD5EmxJh1SRgRsGv8zyetBBwq1sK92CbDgi2XX93RIWajLdgRbycIb1GOXdLoheIhq0Rg7KE8YiWKq9I9ZZ1mnk3+qo0KeqwnxEqmNApVEhDnFfo/j5QkD7QKx3W27HmVKwjYSvfJw564U35SIW2BHzz7KCN4rrpB6Ev+WQDDcrkyCVs3cIJKoFrf0S2MtN9t7KCGxo4ecK9p9qyv16MzcDhxy1sy0BEMpo4SQ0UCiqIpr48dOjsOVJ2HLjVUuQPzIuTViuoM8i2Tf1lf8foAdvFv3hpGnufGmU1p3GxaOraHG+ptuCY5zkpWCgSV/NoqN+4d93VA0uASPvE/+VeHsmKWJduZXTMak8ZmihgNWHQTM1L2e7IMHr279NoZKqYDjitgNRT5otQn3aYz7H9sRlW+sGZ/uNzfbffhdz70JX7uSh1oF303qQdGc3w7IJKPE0aebhf+dY2f8Ov+r9Hpq6aMgoZyICA8My4s2KxTAYmq/09i2d37Kj43KKikn+XQzlimFpL9C4sM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(39840400004)(396003)(366004)(376002)(451199021)(478600001)(44832011)(66899021)(41300700001)(66476007)(66556008)(66946007)(2906002)(4326008)(316002)(6916009)(19627235002)(36756003)(8676002)(8936002)(5660300002)(86362001)(38100700002)(186003)(83380400001)(2616005)(6486002)(6506007)(6512007)(6666004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z5zbHmNJNctgN+CCAP9cHDvqM5LSu4Wa5mioJZ9oFWXLjdzy93sw6C8YCiVA?=
- =?us-ascii?Q?VnQ4cwpp8coP3AEwCBc0Pc3fE26wOj97GV9KbQb856hoOQeYIypfbFjvqQ9s?=
- =?us-ascii?Q?CswEnUrbes1C1l7DGfZ00FJsrUnJ76jLomdtsksRVK+u1puHrVlLpWaSTU3n?=
- =?us-ascii?Q?t5K5mSMXv3nXDJKz5NKDAMfUhAVj3En0BDaSeUvHeSVbiDCswE8+TqGXoQKL?=
- =?us-ascii?Q?01EZgPMa8L0kSw/nCv7m3mC2uXyGb0Q6JJT1GprdKCb++evRnyHgZ+jy26Ru?=
- =?us-ascii?Q?tU6nrlrqFZQaQieFCUGaP1Uq3PXSECcfrmobgYDEMZnNeYCchRvxfA//lbRx?=
- =?us-ascii?Q?Lseil06untqK+NQ/EQH/EU3uQk0bdLe7/FPMI4qZ0IKnpVXdAH5EKZ1gZFzm?=
- =?us-ascii?Q?QtXzEb3oPad6nOXDnS/6VXKDlFUo+Yi/B2maocn8Wbt4mgx5tuEEVQnJ447y?=
- =?us-ascii?Q?T375PkX/g0BWZ0NK5/r8cMXmX4rS8TuJv7UYhy14EhkULs2y+kGHvaWjHVh8?=
- =?us-ascii?Q?l5KYX506OxCU5JkpdE9FGF2Gw/fzgy19GWZMFiTPVS1D9doLsULemp8Z8Js9?=
- =?us-ascii?Q?KR31aEvCnYtz4/7o9h9j7zhWWzom/DQdalSWaZHUS72mVw6MRCwi1+Y+6yJn?=
- =?us-ascii?Q?J92bloi4uYSibVpA/HEqVivE0v+nvBe4Y+mB5EtkBgt9rz6tAKXKh4lWO2tS?=
- =?us-ascii?Q?cunaqZ2GDku1oQV4ouEWzSBaVWuinNs3sWbfQlg6RMgcoYPvLibtBTR5veVC?=
- =?us-ascii?Q?SHwIeS3FaNmoourIizGTNFP8E9C05Kd6VhPpDWIOMqBC6c79DVtEVuWN0XEt?=
- =?us-ascii?Q?Vzm1P3k5OG7v9ZBug3kn3eAz2dvqGjdIKCBM+G3neFClp64kz22SISR6WAWZ?=
- =?us-ascii?Q?p1wyfGpoS+AVZwtSGAoy6yn+QGk3Wtoe+MezTzREfFBZeUHAeoa/XYZwLMkd?=
- =?us-ascii?Q?+YEdUZEO/rwBU3i949p01A9wI+5O6rajqcHFnSZr1Kdoq4wryWUhuMQe+D6h?=
- =?us-ascii?Q?Q8FaGMIcZA9SDpDD1LCnVJKqZLqbWPRXrFDDXOD7Og/WVWTksfoC+TD2WGsB?=
- =?us-ascii?Q?zoimIWly2qm6Z0UB92X9vCzWvjyL5EqlPU/JS5lUtJV2K4poOmXLojx26Wub?=
- =?us-ascii?Q?FBxaZ+7V78wubVKSjQcYJYId3aeYU3gvv0LyLjVVjXn5Spr/z079T8CDTz/u?=
- =?us-ascii?Q?5xOWv1kAsROblg7/SiJYWgmu5Smlu5aVeJaET7cUiwAf1QAVL+C+wyn0pgfk?=
- =?us-ascii?Q?ZsEqoQZGhT2uEdBxGxYBHjIiPNKoH77Y4NhK0LziBsJx5bq/I0JvHa6Ep/QE?=
- =?us-ascii?Q?JEJrTRlrbfpvAHIEE0xphaWgCl6no4pF+vd2XiTNZY+NDrsAhQSw5LWt5br7?=
- =?us-ascii?Q?IDzYqIByc1nH4cAR1qxysdPB4Ssw/AQ/tgI7ki8o5CYD87tOeGcUJc12RPRb?=
- =?us-ascii?Q?A/wB7/vSYcbpYwfH+Bwfmbh+1q15u1/On+chr+LAHWLogp9qAC9p64gegInC?=
- =?us-ascii?Q?zb6GpHmxZwrXcoIk9ruBIdigXdUcvw4Q5RzzN+IqwBItlFJHL1yxpHWHtEiM?=
- =?us-ascii?Q?+OrP/pTIuga0hdQM8Kj4aE+/WUps8WrSJvMDViqVmNLFP6+9HSSKXEp4J0S7?=
- =?us-ascii?Q?hxqT6+vVtXHqfGdW20YkTwK7K59CBz/gkx0jJ3J0uGBm+km6Bvyv6+2ZXUxT?=
- =?us-ascii?Q?AuE+Tg=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b121922-b93f-4c1c-5066-08db31ee3318
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2023 13:45:33.5037
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ew9LkvHo+5RJaO6elm8azKWbcvKsnLzgjhSqvHD2rxLvI9s/Ucq07J2uU5FYP9aq/NSaZFxIPVII8d4q42i49Vm+I+pobdWskyGa58+b69A=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR13MB4012
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable USXGMII
+ mode for J784S4 CPSW9G
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+References: <20230331065110.604516-1-s-vadapalli@ti.com>
+ <20230331065110.604516-3-s-vadapalli@ti.com>
+ <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
+ <54c3964b-5dd8-c55e-08db-61df4a07797c@ti.com>
+ <ZCaYve8wYl15YRxh@shell.armlinux.org.uk>
+ <7a9c96f4-6a94-4a2c-18f5-95f7246e10d5@ti.com>
+ <ZCasBMNxaWk2+XVO@shell.armlinux.org.uk>
+ <dea9ae26-e7f2-1052-58cd-f7975165aa96@ti.com>
+ <ZCbAE7IIc8HcOdxl@shell.armlinux.org.uk>
+Content-Language: en-US
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <ZCbAE7IIc8HcOdxl@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 30, 2023 at 04:37:18PM +0200, Takashi Iwai wrote:
-> As there are a few more models supported by the driver, let's add the
-> missing MODULE_FIRMWARE() entries for them.  The lack of them resulted
-> in the missing device enablement on some systems, such as the
-> installation image of openSUSE.
-> 
-> While we are at it, use the wildcard instead of listing each firmware
-> files individually for each.
-> 
-> Signed-off-by: Takashi Iwai <tiwai@suse.de>
-> ---
-> 
-> I can rewrite without wildcards if it's preferred, too.
-> But IMO this makes easier to maintain.
-> 
->  drivers/net/wireless/ath/ath11k/pci.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-> index 0aeef2948ff5..379f7946a29e 100644
-> --- a/drivers/net/wireless/ath/ath11k/pci.c
-> +++ b/drivers/net/wireless/ath/ath11k/pci.c
-> @@ -1039,7 +1039,8 @@ module_exit(ath11k_pci_exit);
->  MODULE_DESCRIPTION("Driver support for Qualcomm Technologies 802.11ax WLAN PCIe devices");
->  MODULE_LICENSE("Dual BSD/GPL");
->  
-> -/* QCA639x 2.0 firmware files */
-> -MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/" ATH11K_BOARD_API2_FILE);
-> -MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/" ATH11K_AMSS_FILE);
-> -MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/" ATH11K_M3_FILE);
-> +/* firmware files */
-> +MODULE_FIRMWARE(ATH11K_FW_DIR "/QCA6390/hw2.0/*");
-> +MODULE_FIRMWARE(ATH11K_FW_DIR "/QCN9074/hw1.0/*");
-> +MODULE_FIRMWARE(ATH11K_FW_DIR "/WCN6855/hw2.0/*");
-> +MODULE_FIRMWARE(ATH11K_FW_DIR "/WCN6855/hw2.1/*");
 
-I don't feel strongly about this.
 
-But unless I'm mistaken the above does seem to pick up a number of files
-totalling around 25Mbytes. Perhaps that isn't ideal.
+On 31-03-2023 16:42, Russell King (Oracle) wrote:
+> On Fri, Mar 31, 2023 at 04:23:16PM +0530, Siddharth Vadapalli wrote:
+>>
+>>
+>> On 31/03/23 15:16, Russell King (Oracle) wrote:
+>>> On Fri, Mar 31, 2023 at 02:55:56PM +0530, Siddharth Vadapalli wrote:
+>>>> Russell,
+>>>>
+>>>> On 31/03/23 13:54, Russell King (Oracle) wrote:
+>>>>> On Fri, Mar 31, 2023 at 01:35:10PM +0530, Siddharth Vadapalli wrote:
+>>>>>> Hello Russell,
+>>>>>>
+>>>>>> Thank you for reviewing the patch.
+>>>>>>
+>>>>>> On 31/03/23 13:27, Russell King (Oracle) wrote:
+>>>>>>> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
+>>>>>>>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
+>>>>>>>> extra_modes member of the J784S4 SoC data. Additionally, configure the
+>>>>>>>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
+>>>>>>>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
+>>>>>>>> "phylink_config".
+>>>>>>>
+>>>>>>> I don't think TI "get" phylink at all...
+>>>>>>>
+>>>>>>>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>>>>>>> index 4b4d06199b45..ab33e6fe5b1a 100644
+>>>>>>>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>>>>>>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>>>>>>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+>>>>>>>>  		mac_control |= CPSW_SL_CTL_GIG;
+>>>>>>>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
+>>>>>>>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+>>>>>>>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
+>>>>>>>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
+>>>>>>>
+>>>>>>> The configuration of the interface mode should *not* happen in
+>>>>>>> mac_link_up(), but should happen in e.g. mac_config().
+>>>>>>
+>>>>>> I will move all the interface mode associated configurations to mac_config() in
+>>>>>> the v2 series.
+>>>>>
+>>>>> Looking at the whole of mac_link_up(), could you please describe what
+>>>>> effect these bits are having:
+>>>>>
+>>>>> 	CPSW_SL_CTL_GIG
+>>>>> 	CPSW_SL_CTL_EXT_EN
+>>>>> 	CPSW_SL_CTL_IFCTL_A
+>>>>
+>>>> CPSW_SL_CTL_GIG corresponds to enabling Gigabit mode (full duplex only).
+>>>> CPSW_SL_CTL_EXT_EN when set enables in-band mode of operation and when cleared
+>>>> enables forced mode of operation.
+>>>> CPSW_SL_CTL_IFCTL_A is used to set the RMII link speed (0=10 mbps, 1=100 mbps).
+>>>
+>>> Okay, so I would do in mac_link_up():
+>>>
+>>> 	/* RMII needs to be manually configured for 10/100Mbps */
+>>> 	if (interface == PHY_INTERFACE_MODE_RMII && speed == SPEED_100)
+>>> 		mac_control |= CPSW_SL_CTL_IFCTL_A;
+>>>
+>>> 	if (speed == SPEED_1000)
+>>> 		mac_control |= CPSW_SL_CTL_GIG;
+>>> 	if (duplex)
+>>> 		mac_control |= CPSW_SL_CTL_FULLDUPLEX;
+>>>
+>>> I would also make mac_link_up() do a read-modify-write operation to
+>>> only affect the bits that it is changing.
+>>
+>> This is the current implementation except for the SGMII mode associated
+>> operation that I had recently added. I will fix that. Also, the
+>> cpsw_sl_ctl_set() function which writes the mac_control value performs a read
+>> modify write operation.
+>>
+>>>
+>>> Now, for SGMII, I would move setting CPSW_SL_CTL_EXT_EN to mac_config()
+>>> to enable in-band mode - don't we want in-band mode enabled all the
+>>> time while in SGMII mode so the PHY gets the response from the MAC?
+>>
+>> Thank you for pointing it out. I will move that to mac_config().
+>>
+>>>
+>>> Lastly, for RGMII at 10Mbps, you seem to suggest that you need RGMII
+>>> in-band mode enabled for that - but if you need RGMII in-band for
+>>> 10Mbps, wouldn't it make sense for the other speeds as well? If so,
+>>> wouldn't that mean that CPSW_SL_CTL_EXT_EN can always be set for
+>>> RGMII no matter what speed is being used?
+>>
+>> The CPSW MAC does not support forced mode at 10 Mbps RGMII. For this reason, if
+>> RGMII 10 Mbps is requested, it is set to in-band mode.
+> 
+> What I'm saying is that if we have in-band signalling that is reliable
+> for a particular interface mode, why not always use it, rather than
+> singling out one specific speed as an exception? Does it not work in
+> 100Mbps and 1Gbps?
 
-$ find ath11k/QC* ath11k/WCN6*
-ath11k/QCA6390
-ath11k/QCA6390/hw2.0
-ath11k/QCA6390/hw2.0/board-2.bin
-ath11k/QCA6390/hw2.0/Notice.txt
-ath11k/QCA6390/hw2.0/amss.bin
-ath11k/QCA6390/hw2.0/m3.bin
-ath11k/QCN9074
-ath11k/QCN9074/hw1.0
-ath11k/QCN9074/hw1.0/board-2.bin
-ath11k/QCN9074/hw1.0/Notice.txt
-ath11k/QCN9074/hw1.0/amss.bin
-ath11k/QCN9074/hw1.0/m3.bin
-ath11k/WCN6750
-ath11k/WCN6750/hw1.0
-ath11k/WCN6750/hw1.0/wpss.b02
-ath11k/WCN6750/hw1.0/wpss.b04
-ath11k/WCN6750/hw1.0/wpss.b03
-ath11k/WCN6750/hw1.0/board-2.bin
-ath11k/WCN6750/hw1.0/wpss.b08
-ath11k/WCN6750/hw1.0/wpss.b05
-ath11k/WCN6750/hw1.0/Notice.txt
-ath11k/WCN6750/hw1.0/wpss.b01
-ath11k/WCN6750/hw1.0/wpss.b06
-ath11k/WCN6750/hw1.0/wpss.b07
-ath11k/WCN6750/hw1.0/wpss.b00
-ath11k/WCN6750/hw1.0/wpss.mdt
-ath11k/WCN6855
-ath11k/WCN6855/hw2.0
-ath11k/WCN6855/hw2.0/board-2.bin
-ath11k/WCN6855/hw2.0/regdb.bin
-ath11k/WCN6855/hw2.0/Notice.txt
-ath11k/WCN6855/hw2.0/amss.bin
-ath11k/WCN6855/hw2.0/m3.bin
-$ du -sh ath11k/QC* ath11k/WCN6*
-3,2M	ath11k/QCA6390
-4,0M	ath11k/QCN9074
-8,1M	ath11k/WCN6750
-9,7M	ath11k/WCN6855
+In-band RGMII is supported for speeds of 10, 100 and 1000 Mbps.
+Unfortunately, I am not aware of the reason why RGMII at speeds 100 and
+1000 Mbps was implemented in the driver in forced mode. As suggested by
+you, I will work on implementing it in in-band mode for all speeds and
+verify that it works, following which I will post the v2 of this series,
+with the following changes based on your feedback:
+1. All interface mode specific configuration will be moved to mac_config().
+2. Since CPSW MAC supports USXGMII mode, MAC_5000FD will be added to the
+list of mac_capabilites unconditionally, unlike the current implementation.
+3. In-band mode of operation will be enabled for all interface modes by
+default.
+
+Regards,
+Siddharth.
