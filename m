@@ -2,178 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3972D6D2661
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 19:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC7806D2697
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 19:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231837AbjCaRBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 13:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37504 "EHLO
+        id S231232AbjCaRYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 13:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbjCaRBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 13:01:16 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8077CA39;
-        Fri, 31 Mar 2023 10:01:12 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 32VFOAku009672;
-        Fri, 31 Mar 2023 17:00:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=Lgx5C5eBCpp19H4dr3kzO+HxlZm76GrUO4g0HlZ6hjM=;
- b=DZsfZHUiTCDQwrXoyo4cX81140Mi0CyY/hhl9whBH9gYJxBPtU0kcuYXgKgko9LoKD2v
- Rxg1C1QXVogsnTFcSkp3uBOlPsfSxsbEun60bODNF9/tIZHJItaY0ElTxnpL70cufQX2
- D24u6KIs6ZPzU3bwRJKkvN1zVOdyaSQMfVZYjp1vgBoRD40T/R8m7Pmt+aiqiqkKn/f1
- 9LtpVHQnMZ2z1xMAVpZwvnwUAxZ7cbiJ6eXiwTH5tzWqiygAlafZc5XKG6n/umMzt52S
- 5klFUdeiwv8gvy/U8kGvgQhgBzgz/e9FulY6PFEYbs9HKSJQUDGRxn81z06qAgcx2hs0 Mw== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3pmqeapd70-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 31 Mar 2023 17:00:31 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 32VG1RqN023398;
-        Fri, 31 Mar 2023 17:00:30 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2169.outbound.protection.outlook.com [104.47.59.169])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3phqdk6574-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 31 Mar 2023 17:00:29 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ch03py0m9CeqHM7pwoH6eU5QXx+v2TYiaP6wcy0M2e61gqKB8EA3V1TIhYx8Z8iOi4mClCbFE1k6e87zeuqKvYBKM6oIdiptWiL7F/NYovR/CKW8dVfz2L83SQohRylpbD5jJwtIauU02BWO5rzntrKu4l5F+Ao6c356O6x/3ZmbulX7v3JOPfz6qtp56y2+f2edq+h3cLSoZZXBwufGBmWpdm7/T67g/DblKdeNb3wjBDD79FlY9cieMRhhkQgSHvv7bzeGXQLIwdUmgfRPouqZAs9iOFteqo+xiSP78PtFMn3EWvtSDuSI0bVhy3icEme8hKgRqLa93ckcqCY2LA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Lgx5C5eBCpp19H4dr3kzO+HxlZm76GrUO4g0HlZ6hjM=;
- b=Lcftjo700+KaiC/nHeNy0qx7xBnm1zMNwGYSZH+4mz8lxO8WnvnTdPLq5HAiMUR0lQ8lL5OSg9zx9S7E7FAQzi4OBvGhcCvXLqXg4Fh8iMwcNI40nwwfhDYG7LhWvr1POLpLm8lO3E9KM6vvqf+v905xHTN9AAWeVXBrR7xvz0ntay2I/gqQFY1Wdp3stbaoW7gvNQdkbO0HZXlg/M/7uI+ArtaGNaU7lAeqYLmNXAlY014bWNjXZTSaqwtCLmpYn4gxGJp3H8tLnskQar1bS1qO/akpvo9ynV0Ro0PwvWcO0dBD+P9W8lcTB7J0BUvNH9C23Ax85GOqRMaj6L7AAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Lgx5C5eBCpp19H4dr3kzO+HxlZm76GrUO4g0HlZ6hjM=;
- b=0EnT3BjdrP8XzhJKOlDWVUzgjdcrwlqrbkG6FAmnj+J8Tipiw+QbQ29HbVvhv/iMQ45gViApBEA4DRUCgRs9cdTe06Vw1OKky0TT04sDJmt9a9TFB+oxZ+D6uuV3PCRhdQOLK0G/IGV79XwHrBkBluoREZ6S34r48JVkmJFlEiQ=
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com (2603:10b6:a03:210::21)
- by PH0PR10MB5643.namprd10.prod.outlook.com (2603:10b6:510:fa::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.23; Fri, 31 Mar
- 2023 17:00:27 +0000
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::311:f22:99b6:7db7]) by BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::311:f22:99b6:7db7%3]) with mapi id 15.20.6254.023; Fri, 31 Mar 2023
- 17:00:27 +0000
-From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "zbr@ioremap.net" <zbr@ioremap.net>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 6/7] netlink: Add multicast group level permissions
-Thread-Topic: [PATCH v3 6/7] netlink: Add multicast group level permissions
-Thread-Index: AQHZYmvoV1sxO7snm0CxH2QmxW6asK8UckyAgACtcAA=
-Date:   Fri, 31 Mar 2023 17:00:27 +0000
-Message-ID: <830EC978-8B94-42D6-B70F-782724CEC82D@oracle.com>
-References: <20230329182543.1161480-1-anjali.k.kulkarni@oracle.com>
- <20230329182543.1161480-7-anjali.k.kulkarni@oracle.com>
- <20230330233941.70c98715@kernel.org>
-In-Reply-To: <20230330233941.70c98715@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY5PR10MB4129:EE_|PH0PR10MB5643:EE_
-x-ms-office365-filtering-correlation-id: cffcdefa-b989-4b6b-cfa5-08db32096d85
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: U4uV+JyQwC67dl1FT8zuzQzR4ayyNMchn1B4rlVL0q39KHzly5e9q6Y2B132wQJUCTr7/9tz633Qvw+wGAOE9Zed2Bk+7AU081yEXhRCdTRgqNVuP88TfmKeBwnfxwjPaIbRVWTSPr+43xPIsvHkG4+Hs7yjfqsSL/r7swrscAzhEQ9NFMYfu3f5iqQoPLn3c1tYNEvTohz/JQWmL+wN0zm809qrxmYWd82TSVfP5yhA8vvF2nLvVHWvHFD6pWSyf+TtiGqpnSRwDnFhy8W1SRPr/bzA5lxdkwSgUUZPwjFnnP986OAnV8cd+P0s7AcsEZHEM5UPLluAYTzr/+XkzGVqwlvBJpBFhLnkVsr6GQ5eOrn1zPcSrULQZyLkPdWTy2E0NsSSdJbnPn6CnGubxBt2dfaJFunU67TDbjwAkMchLgSJS9w81xJXH30R2vYRXo32hsfbIQRowCYVS51SQFLbFkLU57aUy3ZkG+/LXi6QNcpBnHN6qcOn7VGByenhiPZ1lVA8vspkbVywSXMC1Jqt3S0U26kJzf0aZj4tyDtxdAAVmfuQZwi5jH6/cGvFZrSSp4Tnxqb1ZZLH95hD6x/Xz4RHmtDm4J6Av7YG89lRRHkamLnbtMzoajhUieXcc5JYfW6azoKtI8M8L2u9Pg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4129.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(366004)(346002)(376002)(396003)(39860400002)(451199021)(38070700005)(2906002)(8936002)(38100700002)(41300700001)(122000001)(5660300002)(7416002)(4744005)(33656002)(36756003)(86362001)(71200400001)(6486002)(6506007)(6512007)(54906003)(478600001)(2616005)(83380400001)(53546011)(186003)(66446008)(6916009)(4326008)(64756008)(66476007)(8676002)(66556008)(91956017)(76116006)(66946007)(316002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nHCspz4O836pc0QtXFEXGmbiR/0R3/NMJ1MNNo51wF4zJyaXX+H2BGw6J0u1?=
- =?us-ascii?Q?g//6CeFbcFk2F2r4KMYy9p5yr2QQNgTmrzHGj3DqgxkYWyrTxNZuBBbIEvqy?=
- =?us-ascii?Q?v1Ry56VHVGdGQ0/ihdGChtjkAbBwQ17TgUkfw8XgroAL5YR+3eCFKATkjDIg?=
- =?us-ascii?Q?W/6cK3HKbIVClZ5sWUkAzO3B61j+CYUPUq/uY6JCYgp5lYv6uzQPbcx2yMNF?=
- =?us-ascii?Q?TsGeEw88YIxfI0o1uYZoRCjcSIhmBeoBcsEuDNH31uyhvqqzCs7PzCfkcoEo?=
- =?us-ascii?Q?2NWo3qciBBCUflEHUnBCwSBzHeyb51rsqmJJnnI2HhWqoA2574cNYLYtLTJt?=
- =?us-ascii?Q?9q4weMXa6fJOTDbtAep1E2HtvQcewJQHZWMhXkxSs1leS+vC3Oa4hH8gGGVh?=
- =?us-ascii?Q?5fgNTE3nuFIgLbRCdldcZglmoeQ5k5SBxLldVkOT5NEoHFSBIMWTFfF92txC?=
- =?us-ascii?Q?qkxf9nTxWYillLpf6bMxdMCGWZgrqLZIlolZK/d9+buw0j5z+bwSOI7Pcbjm?=
- =?us-ascii?Q?Flj7T9dzf960j0VFiybInkIGOodorTWmqkF09fdZKxX2ryzBL9K+Ed2syclH?=
- =?us-ascii?Q?MxQ9T5Ot0mUeHDyC3me4HPqIqWhIijJ34DpRI5APfiE5Vun8oEMF28Y5+ELq?=
- =?us-ascii?Q?XWUAmjivru5y3DXg0lz8Oz8eftsi9XA1zLhwsLsNvVwYcFAM5yUtWDlPTUG8?=
- =?us-ascii?Q?gEfzSUYq4zC8GPKzVzw8S37l+qLLiAO5yTo22n6oxhPeRlx66zLDA0OmQbzb?=
- =?us-ascii?Q?HkqLjAnF7pMfCRnQygO6f7mGalK4Q8OKtfhsIOh9a0N87y7Wd5J5efVTKPU3?=
- =?us-ascii?Q?rwl4vFGDhstBVdVUGBkxwXacYc4iOI/mEScNKTvBfHGIOmJUeATfdee3lWBv?=
- =?us-ascii?Q?dr9m8OZsZyQCkMuZkbjVRr3Y1XYluEKq58ymMB/I69j+lmdTOsDpDruy7GIf?=
- =?us-ascii?Q?aeZ27uhk/rqgAQXfSsjx7pKul++oxo9FhvROJtCRI54YOWTF11VvnCGl0xH+?=
- =?us-ascii?Q?GR+1Th+DdgGSKZv4vLkYIH1opOIxI1O25/AOHi9qzaKZgZ3ND+tCQmuJpG87?=
- =?us-ascii?Q?FDMHfAS+TVZdvNstvc2OIpyHZOAQgLcFW4gsRZKEmWYE3A+7j1+xHuJMHUEf?=
- =?us-ascii?Q?IWWQ5as6C+/cd7DowvXqPQLp9w0PZgMtE18YvuRsqqM7YgqQsnnLqilpAv5B?=
- =?us-ascii?Q?SK1oGFrhB84ajL3bfuP3yaxsdzzS8tM3wq8p6+TaKyTGl1oz8bz8RPvi1Ikp?=
- =?us-ascii?Q?akcZpr6KsWy0UOk1madOzi6jTGuqLbgrrU8nRZh8A0i2x33PFrrYPRXI7Hsn?=
- =?us-ascii?Q?Neey4Em5TAyVC+WaTdMwySs0sDVhhpIxqILSXe0CkswJZ8mgQASIs243Bfxh?=
- =?us-ascii?Q?76H9MfmuSKX/Zvy/3BJ804DZ9cozLdmcVcltn4MS9602nnVKwDCSvhylRM5P?=
- =?us-ascii?Q?mnstBtAGfVSvbw/wlGPGcRKNaEcDpkBq+9eq7B+7s4JKIFPrmxduMwJkqWPV?=
- =?us-ascii?Q?N+OKpLyuM4iImX+99cwQjgdFNnwDO3wST/k3HRt7/OlLfofJkksoxXA14CDf?=
- =?us-ascii?Q?xeRhJQUCY9y9adoPXjROYnaep7K9bScGA6/30dg7osMQfdrA/GbTTPFX5ke0?=
- =?us-ascii?Q?jntOeOqwoB62vYSibW3peWu331WM82Q5mH/ZXODpyd3q?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E8E0DCBC308B8C4FB39AB7F2BA45759F@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229441AbjCaRYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 13:24:40 -0400
+Received: from smtp-bc09.mail.infomaniak.ch (smtp-bc09.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc09])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9006C1D2CA;
+        Fri, 31 Mar 2023 10:24:37 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Pp6bh2sKWzMpnh2;
+        Fri, 31 Mar 2023 19:24:32 +0200 (CEST)
+Received: from unknown by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Pp6bg52gqzMppDP;
+        Fri, 31 Mar 2023 19:24:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1680283472;
+        bh=mVf6xSJJ9eczuzS/BTkquJ4t+LqVmfTN4xb1rQnSe1A=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=abA3FWHc9DFkD+0aTkKBXK/qBk2kIuNu/UkgtUAd1cAh6uNSel1TwXHvijIpUVcAC
+         2DUhC/OttcvsggMhfQlnhN0Pap/e5rvaMFz7J6IQiJAE4Y6kyHWzaA6eMaqYGjvs60
+         m1Aoq52KF878mLsiYtAeY/iQcrzw3530DETKhHkk=
+Message-ID: <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
+Date:   Fri, 31 Mar 2023 19:24:31 +0200
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?us-ascii?Q?Z3TNmWvQVV0Pq8+eU7owZQAssa8pLK5NRhSfl2JxEMzVGHlDmgqQNeOhrjQH?=
- =?us-ascii?Q?EaMyVjYiKVeBYEIMeJGKZBeGZzUSoZxSTSh9dIwlKhVMab5Ml8hanSJ/Z0v0?=
- =?us-ascii?Q?h29/qT0uzJ33QJCi7y/LHG7d6nlWDKKXqSiAWFb7JmhiEppKyEE/7NH71NCQ?=
- =?us-ascii?Q?RiUfhG5ykshqQmCZ9cITCSMx7kW3D0Oo4GO5MVHSM/iIZIOnt9DNZtt7CF5U?=
- =?us-ascii?Q?pldgID5YTQSJYjSr09pfVOB5HknWjQrMYAgxiLthhjGWzIHqj8UetOSunmbD?=
- =?us-ascii?Q?kZ7hajtT9jAy/UIiv6JZYGksCokXiqdwzzcGPxcptsEWZoP9qcapH8j8exN/?=
- =?us-ascii?Q?lKJX7L1piY7O+HFyjct+SlcE20Pn1p81iU5mUOIVAQfQ+yVBednuAZMIbCJZ?=
- =?us-ascii?Q?6CmjrwPMi7He25MAIYdB8zHA/nsQQC66cxBgVR5s3rn0wzo4YKz+0Rqto/VQ?=
- =?us-ascii?Q?6hU2gSgIpwHxoQxLSzkbPg/fXn9jZ+ARqjiclfyXTUOdh6P+kt4EHOaqKc84?=
- =?us-ascii?Q?TctOesatWmXmoMTGGtzR9Cpbvyhi8YtfdWYqfKO826l9ZpkLj8fyUbholYFm?=
- =?us-ascii?Q?d9OD1qs20iWJOfK4rRPGSKLPuTY34wlqk0u32v3pMymzVi902owejrJt9y1A?=
- =?us-ascii?Q?vVeQNkBR5Iu7RYv4iPz4Tan7V3AsNzJyKnadMOj53jjuw+L8HuuVIo/B1e45?=
- =?us-ascii?Q?bvemEytJvlE55BQjZNs/0EMPGtN7QqIpuckY1uZ34o7FHaZ9e0kiIF68FE5l?=
- =?us-ascii?Q?brXxrav075zLuVlTmBzFl5qx/x5AKgGo+/lgVR7bUjvOuFhaVLCl5pGR74Vb?=
- =?us-ascii?Q?X9bLgUp/APA034fB2/iXgiHpvhs+NTwu0hEUgcNchMefM4KnsV7Yu7yQ0XlM?=
- =?us-ascii?Q?aSa4/V+X/5kZ86Xck1b/s7/LmlWjX6/gjoitK/1b7kyM6eMH/gpDgqxg3n73?=
- =?us-ascii?Q?pxFjs6f9lHEvQvj4jCf+PEAAkgUHSfDtoh/SWc0LkkAJMx0k2lQNXsQI6woQ?=
- =?us-ascii?Q?vYuB7wge1tCoG8G3DucShZ3qAgT2zMXaSkSy2wCbcSnvwmoqVE+A9rtofbj7?=
- =?us-ascii?Q?+1EumZRn9/zpTpF8XrmKAbGDrcCEWA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4129.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cffcdefa-b989-4b6b-cfa5-08db32096d85
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2023 17:00:27.6407
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Nyi1lxdyut/sa1Il/WbHPhRQTOcCtVwJ44RV7y48kKPEHPqPkrZMU5JG79Qgva9ViCi5+oXudlFwiNTYo/Yb4ri+c5/iRs6aeN8RzigyhKc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5643
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-31_07,2023-03-31_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 spamscore=0
- phishscore=0 mlxscore=0 mlxlogscore=924 suspectscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2303200000
- definitions=main-2303310136
-X-Proofpoint-GUID: cPi_Zkv0W0Iz5Cmn7FUvZK5L-orpqWhO
-X-Proofpoint-ORIG-GUID: cPi_Zkv0W0Iz5Cmn7FUvZK5L-orpqWhO
+User-Agent: 
+Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
+ support
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
+ <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Infomaniak-Routing: alpha
 X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -181,22 +55,226 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 23/03/2023 09:52, Konstantin Meskhidze wrote:
+> This commit adds network rules support in the ruleset management
+> helpers and the landlock_create_ruleset syscall.
+> Refactor user space API to support network actions. Add new network
+> access flags, network rule and network attributes. Increment Landlock
+> ABI version. Expand access_masks_t to u32 to be sure network access
+> rights can be stored. Implement socket_bind() and socket_connect()
+> LSM hooks, which enable to restrict TCP socket binding and connection
+> to specific ports.
+> 
+> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> ---
+> 
+> Changes since v9:
+> * Changes UAPI port field to __u64.
+> * Moves shared code into check_socket_access().
+> * Adds get_raw_handled_net_accesses() and
+> get_current_net_domain() helpers.
+> * Minor fixes.
+> 
+> Changes since v8:
+> * Squashes commits.
+> * Refactors commit message.
+> * Changes UAPI port field to __be16.
+> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+> * Adds address length checking.
+> * Minor fixes.
+> 
+> Changes since v7:
+> * Squashes commits.
+> * Increments ABI version to 4.
+> * Refactors commit message.
+> * Minor fixes.
+> 
+> Changes since v6:
+> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>    because it OR values.
+> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+> * Refactors landlock_get_net_access_mask().
+> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>    LANDLOCK_NUM_ACCESS_FS as value.
+> * Updates access_masks_t to u32 to support network access actions.
+> * Refactors landlock internal functions to support network actions with
+>    landlock_key/key_type/id types.
+> 
+> Changes since v5:
+> * Gets rid of partial revert from landlock_add_rule
+> syscall.
+> * Formats code with clang-format-14.
+> 
+> Changes since v4:
+> * Refactors landlock_create_ruleset() - splits ruleset and
+> masks checks.
+> * Refactors landlock_create_ruleset() and landlock mask
+> setters/getters to support two rule types.
+> * Refactors landlock_add_rule syscall add_rule_path_beneath
+> function by factoring out get_ruleset_from_fd() and
+> landlock_put_ruleset().
+> 
+> Changes since v3:
+> * Splits commit.
+> * Adds network rule support for internal landlock functions.
+> * Adds set_mask and get_mask for network.
+> * Adds rb_root root_net_port.
+> 
+> ---
+>   include/uapi/linux/landlock.h                |  49 +++++
+>   security/landlock/Kconfig                    |   1 +
+>   security/landlock/Makefile                   |   2 +
+>   security/landlock/limits.h                   |   6 +-
+>   security/landlock/net.c                      | 198 +++++++++++++++++++
+>   security/landlock/net.h                      |  26 +++
+>   security/landlock/ruleset.c                  |  52 ++++-
+>   security/landlock/ruleset.h                  |  63 +++++-
+>   security/landlock/setup.c                    |   2 +
+>   security/landlock/syscalls.c                 |  72 ++++++-
+>   tools/testing/selftests/landlock/base_test.c |   2 +-
+>   11 files changed, 450 insertions(+), 23 deletions(-)
+>   create mode 100644 security/landlock/net.c
+>   create mode 100644 security/landlock/net.h
 
-> On Mar 30, 2023, at 11:39 PM, Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> On Wed, 29 Mar 2023 11:25:42 -0700 Anjali Kulkarni wrote:
->> A new field perm_groups is added in netlink_sock to store the protocol's
->> multicast group access permissions. This is to allow for a more fine
->> grained access control than just at the protocol level. These
->> permissions can be supplied by the protocol via the netlink_kernel_cfg.
->> A new function netlink_multicast_allowed() is added, which checks if
->> the protocol's multicast group has non-root access before allowing bind.
->=20
-> Is there a reason this is better than implementing .bind
-> in the connector family and filtering there?
+[...]
 
-Are you suggesting adding something like a new struct proto_ops for the con=
-nector family? I have not looked into that, though that would seem like a l=
-ot of work, and also I have not seen any infra structure to call into proto=
-col specific bind from netlink bind?
+> diff --git a/security/landlock/net.c b/security/landlock/net.c
 
+[...]
+
+> +static int check_addrlen(const struct sockaddr *const address, int addrlen)
+
+const int addrlen
+
+> +{
+> +	if (addrlen < offsetofend(struct sockaddr, sa_family))
+> +		return -EINVAL;
+> +	switch (address->sa_family) {
+> +	case AF_UNSPEC:
+> +	case AF_INET:
+> +		if (addrlen < sizeof(struct sockaddr_in))
+> +			return -EINVAL;
+> +		return 0;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case AF_INET6:
+> +		if (addrlen < SIN6_LEN_RFC2133)
+> +			return -EINVAL;
+> +		return 0;
+> +#endif
+> +	}
+> +	WARN_ON_ONCE(1);
+> +	return 0;
+> +}
+> +
+> +static u16 get_port(const struct sockaddr *const address)
+> +{
+> +	/* Gets port value in host byte order. */
+> +	switch (address->sa_family) {
+> +	case AF_UNSPEC:
+> +	case AF_INET: {
+> +		const struct sockaddr_in *const sockaddr =
+> +			(struct sockaddr_in *)address;
+> +		return ntohs(sockaddr->sin_port);
+
+Storing ports in big endian (in rulesets) would avoid converting them 
+every time the kernel checks a socket port. The above comment should 
+then be updated too.
+
+
+> +	}
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case AF_INET6: {
+> +		const struct sockaddr_in6 *const sockaddr_ip6 =
+> +			(struct sockaddr_in6 *)address;
+> +		return ntohs(sockaddr_ip6->sin6_port);
+> +	}
+> +#endif
+> +	}
+> +	WARN_ON_ONCE(1);
+> +	return 0;
+> +}
+> +
+> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
+> +			       access_mask_t access_request)
+> +{
+> +	int ret;
+> +	bool allowed = false;
+> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+> +	const struct landlock_rule *rule;
+> +	access_mask_t handled_access;
+> +	const struct landlock_id id = {
+> +		.key.data = port,
+> +		.type = LANDLOCK_KEY_NET_PORT,
+> +	};
+> +	const struct landlock_ruleset *const domain = get_current_net_domain();
+> +
+> +	if (WARN_ON_ONCE(!domain))
+> +		return 0;
+> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+> +		return -EACCES;
+> +	/* Check if it's a TCP socket. */
+> +	if (sock->type != SOCK_STREAM)
+> +		return 0;
+> +
+> +	ret = check_addrlen(address, addrlen);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (address->sa_family) {
+> +	case AF_UNSPEC:
+> +		/*
+> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+> +		 * association, which have the same effect as closing the
+> +		 * connection while retaining the socket object (i.e., the file
+> +		 * descriptor).  As for dropping privileges, closing
+> +		 * connections is always allowed.
+> +		 */
+> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+> +			return 0;
+> +
+> +		/*
+> +		 * For compatibility reason, accept AF_UNSPEC for bind
+> +		 * accesses (mapped to AF_INET) only if the address is
+> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+> +		 * required to not wrongfully return -EACCES instead of
+> +		 * -EAFNOSUPPORT.
+> +		 */
+> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+> +			const struct sockaddr_in *const sockaddr =
+> +				(struct sockaddr_in *)address;
+> +
+> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+> +				return -EAFNOSUPPORT;
+> +		}
+> +
+> +		fallthrough;
+> +	case AF_INET:
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +	case AF_INET6:
+> +#endif
+> +		rule = landlock_find_rule(domain, id);
+> +		handled_access = landlock_init_layer_masks(
+> +			domain, access_request, &layer_masks,
+> +			LANDLOCK_KEY_NET_PORT);
+> +		allowed = landlock_unmask_layers(rule, handled_access,
+> +						 &layer_masks,
+> +						 ARRAY_SIZE(layer_masks));
+> +	}
+> +	return allowed ? 0 : -EACCES;
+> +}
+> +
+> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
+> +			    int addrlen)
+> +{
+> +	return check_socket_access(sock, address, addrlen, get_port(address),
+> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
+> +}
+> +
+> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
+> +			       int addrlen)
+> +{
+> +	return check_socket_access(sock, address, addrlen, get_port(address),
+> +				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
+> +}
+
+[...]
