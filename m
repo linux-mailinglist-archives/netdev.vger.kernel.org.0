@@ -2,68 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1202C6D20EE
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 14:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E696D2105
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 14:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232398AbjCaMxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 08:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
+        id S232658AbjCaM7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 08:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232599AbjCaMxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 08:53:01 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E79220DBF;
-        Fri, 31 Mar 2023 05:52:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+Oc7fnMhQHzNj0HXIXXoSdujcdt4segVEP7/1Tk5JuY=; b=wgKJnhLgc6yB0txSCPwANSQaW8
-        A2uYtnOrIDgGg8ZDFO9aURsO8ypjTIKS3yJKWK/zQlD4awrh5quqpom4IrLUarU3XRkrTSuk7BWGX
-        XlJl7Dqic9hh7VQFrA9fbmEd9A3B5yRvjyuLOT0aqaPUvRd91XCL5+N1Tuze7TwpSBmE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1piEF0-0091oo-KR; Fri, 31 Mar 2023 14:52:26 +0200
-Date:   Fri, 31 Mar 2023 14:52:26 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Radu Pirea (OSS)" <radu-nicolae.pirea@oss.nxp.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC net-next] net: phy: introduce phy_reg_field interface
-Message-ID: <da3937bc-8ea7-4f44-85d7-ed452d93ba9b@lunn.ch>
-References: <20230331123259.567627-1-radu-nicolae.pirea@oss.nxp.com>
+        with ESMTP id S232649AbjCaM7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 08:59:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0C31BCE
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 05:59:15 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1piELT-0007HC-29; Fri, 31 Mar 2023 14:59:07 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1piELS-0002LD-Oy; Fri, 31 Mar 2023 14:59:06 +0200
+Date:   Fri, 31 Mar 2023 14:59:06 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@kernel.org, pkshih@realtek.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] wifi: rtw88: Move register access from
+ rtw_bf_assoc() outside the RCU
+Message-ID: <20230331125906.GF15436@pengutronix.de>
+References: <20230108211324.442823-1-martin.blumenstingl@googlemail.com>
+ <20230108211324.442823-2-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230331123259.567627-1-radu-nicolae.pirea@oss.nxp.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230108211324.442823-2-martin.blumenstingl@googlemail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 03:32:59PM +0300, Radu Pirea (OSS) wrote:
-> Some PHYs can be heavily modified between revisions, and the addresses of
-> the registers are changed and the register fields are moved from one
-> register to another.
+On Sun, Jan 08, 2023 at 10:13:22PM +0100, Martin Blumenstingl wrote:
+> USB and (upcoming) SDIO support may sleep in the read/write handlers.
+> Shrink the RCU critical section so it only cover the call to
+> ieee80211_find_sta() and finding the ic_vht_cap/vht_cap based on the
+> found station. This moves the chip's BFEE configuration outside the
+> rcu_read_lock section and thus prevent "scheduling while atomic" or
+> "Voluntary context switch within RCU read-side critical section!"
+> warnings when accessing the registers using an SDIO card (which is
+> where this issue has been spotted in the real world - but it also
+> affects USB cards).
+
+Unfortunately this introduces a regression on my RTW8821CU chip. With
+this it constantly looses connection to the AP and reconnects shortly
+after:
+
+[  199.771143] wlan0: authenticate with b0:be:76:5e:7b:34
+[  201.447301] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
+[  201.456789] wlan0: authenticated
+[  201.462356] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
+[  201.477263] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
+[  201.512995] wlan0: associated
+[  213.790399] wlan0: authenticate with b0:be:76:5e:7b:34
+[  215.467302] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
+[  215.470532] wlan0: authenticated
+[  215.490355] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
+[  215.503777] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
+[  215.539608] wlan0: associated
+[  227.770596] wlan0: authenticate with b0:be:76:5e:7b:34
+[  229.443302] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
+[  229.451209] wlan0: authenticated
+[  229.462487] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
+[  229.476077] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
+[  229.513499] wlan0: associated
+[  241.738494] wlan0: authenticate with b0:be:76:5e:7b:34
+[  243.407301] wlan0: send auth to b0:be:76:5e:7b:34 (try 1/3)
+[  243.411207] wlan0: authenticated
+[  243.423213] wlan0: associate with b0:be:76:5e:7b:34 (try 1/3)
+[  243.439822] wlan0: RX AssocResp from b0:be:76:5e:7b:34 (capab=0x431 status=0 aid=2)
+[  243.476731] wlan0: associated
+
+I haven't got any further information yet, I just realized this when I
+rebased my own RTW88 bugfix series from v6.2.2 to v6.3-rc4 before
+sending it.
+
+RTW8723D and RTW8822CU seem unaffected though.
+
+Sascha
+
 > 
-> To integrate more PHYs in the same driver with the same register fields,
-> but these register fields were located in different registers at
-> different offsets, I introduced the phy_reg_fied structure.
+> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+> v1 -> v2:
+> - Added Ping-Ke's Reviewed-by (thank you!)
 > 
-> phy_reg_fied structure abstracts the register fields differences.
+> v2 -> v3:
+> - Added Sascha's Tested-by (thank you!)
+> - added "wifi" prefix to the subject and reworded the title accordingly
+> 
+> 
+>  drivers/net/wireless/realtek/rtw88/bf.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/bf.c b/drivers/net/wireless/realtek/rtw88/bf.c
+> index 038a30b170ef..c827c4a2814b 100644
+> --- a/drivers/net/wireless/realtek/rtw88/bf.c
+> +++ b/drivers/net/wireless/realtek/rtw88/bf.c
+> @@ -49,19 +49,23 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+>  
+>  	sta = ieee80211_find_sta(vif, bssid);
+>  	if (!sta) {
+> +		rcu_read_unlock();
+> +
+>  		rtw_warn(rtwdev, "failed to find station entry for bss %pM\n",
+>  			 bssid);
+> -		goto out_unlock;
+> +		return;
+>  	}
+>  
+>  	ic_vht_cap = &hw->wiphy->bands[NL80211_BAND_5GHZ]->vht_cap;
+>  	vht_cap = &sta->deflink.vht_cap;
+>  
+> +	rcu_read_unlock();
+> +
+>  	if ((ic_vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE) &&
+>  	    (vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE)) {
+>  		if (bfinfo->bfer_mu_cnt >= chip->bfer_mu_max_num) {
+>  			rtw_dbg(rtwdev, RTW_DBG_BF, "mu bfer number over limit\n");
+> -			goto out_unlock;
+> +			return;
+>  		}
+>  
+>  		ether_addr_copy(bfee->mac_addr, bssid);
+> @@ -75,7 +79,7 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+>  		   (vht_cap->cap & IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE)) {
+>  		if (bfinfo->bfer_su_cnt >= chip->bfer_su_max_num) {
+>  			rtw_dbg(rtwdev, RTW_DBG_BF, "su bfer number over limit\n");
+> -			goto out_unlock;
+> +			return;
+>  		}
+>  
+>  		sound_dim = vht_cap->cap &
+> @@ -98,9 +102,6 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+>  
+>  		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
+>  	}
+> -
+> -out_unlock:
+> -	rcu_read_unlock();
+>  }
+>  
+>  void rtw_bf_init_bfer_entry_mu(struct rtw_dev *rtwdev,
+> -- 
+> 2.39.0
+> 
+> 
 
-Hi Radu
-
-You should always include a user of a new API. It makes it easier to
-understand and review if you see both sides of an API.
-
-Please turn this into a patchset, and make use of this new functions
-in a driver.
-
-	Andrew
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
