@@ -2,105 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0311C6D1453
-	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A4A6D1475
+	for <lists+netdev@lfdr.de>; Fri, 31 Mar 2023 02:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbjCaAsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Mar 2023 20:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38584 "EHLO
+        id S229880AbjCaA4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Mar 2023 20:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbjCaAsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:48:46 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F625C15B;
-        Thu, 30 Mar 2023 17:48:45 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id x3so83491886edb.10;
-        Thu, 30 Mar 2023 17:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680223723; x=1682815723;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nxHd84F2YH6oOwsy7pHR9az94Ed8YsAsJQFPynfdEj0=;
-        b=oq4fk0yCNhZEmVxXW478SNrK3s6VHVNaDGFVaSi2MrBL3kcngpprw7+EaNhYcsM8ZG
-         SlYV6Y8n5JlCsEmv1RZu4QFpMo/0n2iKDIuGKWxbLbmpWwWb1vVzSFafsjUXJtxJ+b/F
-         lzo4PFCygxjf83IdkfN485CKTmiiK2uxblne1zWs3oziefsHFdDL5dL/QGJukElBxpdm
-         5cFTKITVbUaxQrweJCrbc3UxGFA1y5eWp4PTVOQR73jUOwmEUpB0lMXYrM72X1IH9i7J
-         MLf4oJVqK2FklC5857nhFehFQpsR6e+lkVV7grix+yzFSp3vBKB2gruuQmirZVP/GOHJ
-         SB9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680223723; x=1682815723;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nxHd84F2YH6oOwsy7pHR9az94Ed8YsAsJQFPynfdEj0=;
-        b=X1qyQd0QTJud3t/VPwH/CFLInksTIyrlUcSuQs+orP4cXKE6y0AzBBX69c/r8zE1Di
-         yc5A+5B0VjWmiqafooe3JY5vT+USGUzG3AGldw/qt+kWE0qxBFYT09laQvPQPHJr9mUK
-         otT80uRSORsO5P8eRXAKWvcWs+Rk5uPh6e3jGFRMFO946+kwRfKcn3YSPFyxi2UBA34M
-         IoRPHcGlS+kgw9paQzOF9wKl0nZoJZ2kbclQos2Zu2nCJyyzBVwUIzxKzXOu0y/JSvoe
-         /9csssm0Ils1kCvBZkJDLV4Il6A5WbSAcyjW6X+QBBRJXDnxOc/ZNQdEZfxhQQ/ouTuR
-         +6MQ==
-X-Gm-Message-State: AAQBX9fPK/emuCwpVkJz4LhnR/prHTVjuHAW7GiQKR7n8/pcOiY7F85L
-        u1tt659xqekW/mhkvxbU9Rq2Vmqm5S+gnFpf6/9EoSl/iqU=
-X-Google-Smtp-Source: AKy350a58GhEasY6NBm5jpQpEPK92a6/P1D+P/Rc6xbWllvA2TDH/OTjFwDpvFKW+Et+k04vlDvO4BEfKy0DwYA/ego=
-X-Received: by 2002:a17:907:cb86:b0:930:42bd:ef1d with SMTP id
- un6-20020a170907cb8600b0093042bdef1dmr12997961ejc.11.1680223723470; Thu, 30
- Mar 2023 17:48:43 -0700 (PDT)
+        with ESMTP id S229733AbjCaAzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Mar 2023 20:55:48 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C21611149
+        for <netdev@vger.kernel.org>; Thu, 30 Mar 2023 17:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
+        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
+        Content-Disposition:In-Reply-To:References;
+        bh=k5L0mtXnsDrZ8MWox1sA7sNIh+rjclaH7GmGaGzlBIc=; b=aXNi5rhyThkDqABLT96UyWCofF
+        gPgqDbgIDB+AyHVVUkM2oY3VkEg4kvAT8N8f5w+K/0KF/ZxgTF6dzvGs8T3ckkHkKDyRCFUEVP8Sy
+        zH1kVB7iG6lJKkME3slMhwyWKh8lnefIOYpJoM6B1+UOoqRXMlgGLoIpfLnvE4H2bqjY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pi33L-008xK6-9r; Fri, 31 Mar 2023 02:55:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [RFC/RFTv3 00/24] net: ethernet: Rework EEE
+Date:   Fri, 31 Mar 2023 02:54:54 +0200
+Message-Id: <20230331005518.2134652-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20230315092041.35482-1-kerneljasonxing@gmail.com>
- <20230315092041.35482-3-kerneljasonxing@gmail.com> <20230316172020.5af40fe8@kernel.org>
- <CAL+tcoDNvMUenwNEH2QByEY7cS1qycTSw1TLFSnNKt4Q0dCJUw@mail.gmail.com>
- <20230316202648.1f8c2f80@kernel.org> <CAL+tcoCRn7RfzgrODp+qGv_sYEfv+=1G0Jm=yEoCoi5K8NfSSA@mail.gmail.com>
- <20230330092316.52bb7d6b@kernel.org>
-In-Reply-To: <20230330092316.52bb7d6b@kernel.org>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Fri, 31 Mar 2023 08:48:07 +0800
-Message-ID: <CAL+tcoBKiVqETEAPPawLbS_OF0Eb6HgZRHe-=W81bVKCkpr4Rg@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 2/2] net: introduce budget_squeeze to help us
- tune rx behavior
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jbrouer@redhat.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com,
-        stephen@networkplumber.org, simon.horman@corigine.com,
-        sinquersw@gmail.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jason Xing <kernelxing@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 12:23=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> w=
-rote:
->
-> On Thu, 30 Mar 2023 17:59:46 +0800 Jason Xing wrote:
-> > I'm wondering for now if I can update and resend this patch to have a
-> > better monitor (actually we do need one) on this part since we have
-> > touched the net_rx_action() in the rps optimization patch series?
-> > Also, just like Jesper mentioned before, it can be considered as one
-> > 'fix' to a old problem but targetting to net-next is just fine. What
-> > do you think about it ?
->
-> Sorry, I don't understand what you're trying to say :(
+Most MAC drivers get EEE wrong. The API to the PHY is not very
+obvious, which is probably why. Rework the API, pushing most of the
+EEE handling into phylib core, leaving the MAC drivers to just
+enable/disable support for EEE in there change_link call back, or
+phylink mac_link_up callback.
 
-Previously this patch was not accepted because we do not want to touch
-softirqs (actually which is net_rx_action()). Since it is touched in
-the commit [1] in recent days, I would like to ask your permission:
-could I resend this patch to the mailing list? I hope we can get it
-merged.
+MAC drivers are now expect to indicate to phylib/phylink if they
+support EEE. If not, no EEE link modes are advertised. If the MAC does
+support EEE, on phy_start()/phylink_start() EEE advertisement is
+configured.
 
-This patch can be considered as a 'fix' to the old problem. It's
-beneficial and harmless, I think :)
+v3
+--
+Rework phylink code to add a new callback.
+Rework function to indicate clock should be stopped during LPI
 
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/co=
-mmit/?id=3D8b43fd3d1d7d
+Andrew Lunn (24):
+  net: phy: Add phydev->eee_active to simplify adjust link callbacks
+  net: phylink: Add mac_set_eee() callback
+  net: phy: Add helper to set EEE Clock stop enable bit
+  net: phy: Keep track of EEE tx_lpi_enabled
+  net: phy: Immediately call adjust_link if only tx_lpi_enabled changes
+  net: phylink: Handle change in EEE from phylib
+  net: marvell: mvneta: Simplify EEE configuration
+  net: stmmac: Drop usage of phy_init_eee()
+  net: stmmac: Simplify ethtool get eee
+  net: lan743x: Fixup EEE
+  net: fec: Move fec_enet_eee_mode_set() and helper earlier
+  net: FEC: Fixup EEE
+  net: genet: Fixup EEE
+  net: sxgdb: Fixup EEE
+  net: dsa: mt7530: Swap to using phydev->eee_active
+  net: dsa: b53: Swap to using phydev->eee_active
+  net: phylink: Remove unused phylink_init_eee()
+  net: phy: remove unused phy_init_eee()
+  net: usb: lan78xx: Fixup EEE
+  net: phy: Add phy_support_eee() indicating MAC support EEE
+  net: phylink: Add MAC_EEE to mac_capabilites
+  net: phylink: Extend mac_capabilities in MAC drivers which support EEE
+  net: phylib: call phy_support_eee() in MAC drivers which support EEE
+  net: phy: Disable EEE advertisement by default
 
-Thanks,
-Jason
+ drivers/net/dsa/b53/b53_common.c              |  5 +-
+ drivers/net/dsa/mt7530.c                      |  2 +-
+ .../net/ethernet/broadcom/genet/bcmgenet.c    | 42 +++------
+ .../net/ethernet/broadcom/genet/bcmgenet.h    |  3 +-
+ drivers/net/ethernet/broadcom/genet/bcmmii.c  |  3 +
+ drivers/net/ethernet/freescale/fec_main.c     | 88 ++++++++-----------
+ drivers/net/ethernet/marvell/mvneta.c         | 28 +++---
+ .../net/ethernet/microchip/lan743x_ethtool.c  | 22 -----
+ drivers/net/ethernet/microchip/lan743x_main.c |  9 ++
+ .../net/ethernet/samsung/sxgbe/sxgbe_common.h |  3 -
+ .../ethernet/samsung/sxgbe/sxgbe_ethtool.c    | 21 +----
+ .../net/ethernet/samsung/sxgbe/sxgbe_main.c   | 39 +++-----
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 -
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |  7 --
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 10 ++-
+ drivers/net/phy/phy-c45.c                     | 35 +++++++-
+ drivers/net/phy/phy-core.c                    | 11 +++
+ drivers/net/phy/phy.c                         | 83 ++++++++++-------
+ drivers/net/phy/phy_device.c                  | 37 ++++----
+ drivers/net/phy/phylink.c                     | 47 +++++-----
+ drivers/net/usb/lan78xx.c                     | 44 +++++-----
+ include/linux/phy.h                           | 11 ++-
+ include/linux/phylink.h                       | 62 ++++++++-----
+ include/uapi/linux/mdio.h                     |  1 +
+ net/dsa/port.c                                |  3 +
+ 25 files changed, 308 insertions(+), 309 deletions(-)
+
+-- 
+2.40.0
+
