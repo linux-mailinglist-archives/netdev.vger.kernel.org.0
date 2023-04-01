@@ -2,49 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F0056D2E51
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 07:12:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B72A6D2EC6
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 08:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233569AbjDAFM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Apr 2023 01:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
+        id S233428AbjDAGnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Apr 2023 02:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbjDAFM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 01:12:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B36EFF0D
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 22:12:25 -0700 (PDT)
+        with ESMTP id S230193AbjDAGny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 02:43:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22201D861;
+        Fri, 31 Mar 2023 23:43:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 048EB60A64
-        for <netdev@vger.kernel.org>; Sat,  1 Apr 2023 05:12:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26051C433EF;
-        Sat,  1 Apr 2023 05:12:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 589BC60B27;
+        Sat,  1 Apr 2023 06:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E23CC433EF;
+        Sat,  1 Apr 2023 06:43:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680325944;
-        bh=SGWppe+ukUOKHryFOIXFP2GG0zEuHelPwtDhwnXAPBU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pc0DVSslgGK+rzn4LHD2+lZQ3iRjq1+9TJpnSPzkfAT0Jws/jkaNJs8ajQMz6tVXb
-         loY8NKp+v72FpjilmOOPZoudNiBkdyZfp1Mc/SKKZAFtcH3JxUmbmRjhFaAZg+O6Se
-         IkopQrczM4HmUoKh9x43keJcyMMDkuyKj4L5+ZVPeR3+OWouTgmKUzBV75X/kv1e77
-         a1oGx6ULHQAu+bND1jk7A+j1E8smb9lC3Fi+C6GI4LDhOlkWqONPf9uw1uDYlbP8In
-         M916qdFW6ltJi93pNJT3ql1AXTuzOcuIQeXomeiKy7rJY/ed+QPou6WIMKOMtRQwpO
-         pX8h0Z2fmLrgA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, michael.chan@broadcom.com
-Subject: [PATCH net-next 3/3] bnxt: use new queue try_stop/try_wake macros
-Date:   Fri, 31 Mar 2023 22:12:21 -0700
-Message-Id: <20230401051221.3160913-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230401051221.3160913-1-kuba@kernel.org>
-References: <20230401051221.3160913-1-kuba@kernel.org>
+        s=k20201202; t=1680331431;
+        bh=c36lwFwHZ8G1e703Idi7Ck6uKneXMSQqAbeazYyyj3w=;
+        h=From:Date:Subject:To:Cc:From;
+        b=N2hLYYxim4fCGv6fI0Tr8vSVihXiwc8OXIBTgI1F78It1BDze18bhbwKmE91unR6B
+         zhxVXCovtoBsOFIIPOApE766CTypgR+oua2Zr1EZbFr7Mv3DgET1VUic2T5EfqYC1c
+         UQQU8cGmRzMJY9hcUMWlSF5bRC0EiJxT8t26hRATR7zPHkG4Rw4ZNI39OUhh4EQYZM
+         6tgXRtvAnysW6ZUDTWxv3DtwRujICEeXcfk3UgVOEGaKVtG68Gn7hstg0QTszFuqqW
+         S+AEjw8+43WR/TCzGCmZTVD90jg3YWfB0+JLo+Y8mXXI6loHvmp3EG1t/jIGPauJay
+         zccTD4auJs8rw==
+From:   Simon Horman <horms@kernel.org>
+Date:   Sat, 01 Apr 2023 08:43:44 +0200
+Subject: [PATCH] net: ethernet: mtk_eth_soc: use be32 type to store be32
+ values
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20230401-mtk_eth_soc-sparse-v1-1-84e9fc7b8eab@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAJ/SJ2QC/x2N0QrCMAwAf2Xk2UK2DhR/RWSkXWaDsxvJFGHs3
+ w0+3sFxOxirsMG12UH5IyZLdWhPDeRC9cFBRmfosIvYYxte23PgrQy25GArqXHAnmLCMZ/jZQI
+ PE7lMSjUXT+t7nl2uypN8/6fb/Th+IRJA0nkAAAA=
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,102 +65,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert bnxt to use new macros rather than open code the logic.
-Two differences:
-(1) bnxt_tx_int() will now only issue a memory barrier if it sees
-    enough space on the ring to wake the queue. This should be fine,
-    the mb() is between the writes to the ring pointers and checking
-    queue state.
-(2) we'll start the queue instead of waking on race, this should
-    be safe inside the xmit handler.
+Perhaps there is a nicer way to handle this but the code
+calls for converting an array of host byte order 32bit values
+to big endian 32bit values: an ipv6 address to be pretty printed.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: michael.chan@broadcom.com
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 41 +++++------------------
- 1 file changed, 8 insertions(+), 33 deletions(-)
+Use a sparse-friendly array of be32 to store these values.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 8ff5a4f98d6f..2a5fed0da1a9 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -56,6 +56,7 @@
- #include <linux/hwmon-sysfs.h>
- #include <net/page_pool.h>
- #include <linux/align.h>
-+#include <net/netdev_queues.h>
- 
- #include "bnxt_hsi.h"
- #include "bnxt.h"
-@@ -331,26 +332,6 @@ static void bnxt_txr_db_kick(struct bnxt *bp, struct bnxt_tx_ring_info *txr,
- 	txr->kick_pending = 0;
- }
- 
--static bool bnxt_txr_netif_try_stop_queue(struct bnxt *bp,
--					  struct bnxt_tx_ring_info *txr,
--					  struct netdev_queue *txq)
--{
--	netif_tx_stop_queue(txq);
--
--	/* netif_tx_stop_queue() must be done before checking
--	 * tx index in bnxt_tx_avail() below, because in
--	 * bnxt_tx_int(), we update tx index before checking for
--	 * netif_tx_queue_stopped().
--	 */
--	smp_mb();
--	if (bnxt_tx_avail(bp, txr) >= bp->tx_wake_thresh) {
--		netif_tx_wake_queue(txq);
--		return false;
--	}
--
--	return true;
--}
--
- static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
+Also make use of the cpu_to_be32_array helper rather
+than open coding the conversion.
+
+Flagged by sparse:
+  drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c:59:27: warning: incorrect type in assignment (different base types)
+  drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c:59:27:    expected unsigned int
+  drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c:59:27:    got restricted __be32 [usertype]
+  drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c:161:46: warning: cast to restricted __be16
+
+No functional changes intended.
+Compile tested only.
+
+Signed-off-by: Simon Horman <horms@kernel.org>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+index 53cf87e9acbb..1e0bb8cee7c4 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+@@ -47,16 +47,14 @@ static const char *mtk_foe_pkt_type_str(int type)
+ static void
+ mtk_print_addr(struct seq_file *m, u32 *addr, bool ipv6)
  {
- 	struct bnxt *bp = netdev_priv(dev);
-@@ -384,7 +365,8 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		if (net_ratelimit() && txr->kick_pending)
- 			netif_warn(bp, tx_err, dev,
- 				   "bnxt: ring busy w/ flush pending!\n");
--		if (bnxt_txr_netif_try_stop_queue(bp, txr, txq))
-+		if (!netif_tx_queue_try_stop(txq, bnxt_tx_avail(bp, txr),
-+					     bp->tx_wake_thresh))
- 			return NETDEV_TX_BUSY;
+-	u32 n_addr[4];
+-	int i;
++	__be32 n_addr[4];
+ 
+ 	if (!ipv6) {
+ 		seq_printf(m, "%pI4h", addr);
+ 		return;
  	}
  
-@@ -614,7 +596,8 @@ static netdev_tx_t bnxt_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		if (netdev_xmit_more() && !tx_buf->is_push)
- 			bnxt_txr_db_kick(bp, txr, prod);
- 
--		bnxt_txr_netif_try_stop_queue(bp, txr, txq);
-+		netif_tx_queue_try_stop(txq, bnxt_tx_avail(bp, txr),
-+					bp->tx_wake_thresh);
- 	}
- 	return NETDEV_TX_OK;
- 
-@@ -708,17 +691,9 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
- 	netdev_tx_completed_queue(txq, nr_pkts, tx_bytes);
- 	txr->tx_cons = cons;
- 
--	/* Need to make the tx_cons update visible to bnxt_start_xmit()
--	 * before checking for netif_tx_queue_stopped().  Without the
--	 * memory barrier, there is a small possibility that bnxt_start_xmit()
--	 * will miss it and cause the queue to be stopped forever.
--	 */
--	smp_mb();
--
--	if (unlikely(netif_tx_queue_stopped(txq)) &&
--	    bnxt_tx_avail(bp, txr) >= bp->tx_wake_thresh &&
--	    READ_ONCE(txr->dev_state) != BNXT_DEV_STATE_CLOSING)
--		netif_tx_wake_queue(txq);
-+	__netif_tx_queue_maybe_wake(txq, bnxt_tx_avail(bp, txr),
-+				    bp->tx_wake_thresh,
-+				    READ_ONCE(txr->dev_state) != BNXT_DEV_STATE_CLOSING);
+-	for (i = 0; i < ARRAY_SIZE(n_addr); i++)
+-		n_addr[i] = htonl(addr[i]);
++	cpu_to_be32_array(n_addr, addr, 4);
+ 	seq_printf(m, "%pI6", n_addr);
  }
  
- static struct page *__bnxt_alloc_rx_page(struct bnxt *bp, dma_addr_t *mapping,
--- 
-2.39.2
 
