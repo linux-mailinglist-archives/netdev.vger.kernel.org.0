@@ -2,47 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E5666D334B
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 20:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 849766D335C
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 21:12:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbjDAS7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Apr 2023 14:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        id S229804AbjDATMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Apr 2023 15:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbjDAS7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 14:59:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB089D51A
-        for <netdev@vger.kernel.org>; Sat,  1 Apr 2023 11:58:58 -0700 (PDT)
+        with ESMTP id S229583AbjDATMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 15:12:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA3CB767;
+        Sat,  1 Apr 2023 12:12:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1C3DB80D68
-        for <netdev@vger.kernel.org>; Sat,  1 Apr 2023 18:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F97C433D2;
-        Sat,  1 Apr 2023 18:58:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65E3960F92;
+        Sat,  1 Apr 2023 19:12:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C12EC433EF;
+        Sat,  1 Apr 2023 19:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680375535;
-        bh=k6UTLDuS8IwvZNpIFBpXVElA5rc4eJQMzHGRP9sdWRw=;
+        s=k20201202; t=1680376333;
+        bh=QtwyPrGEdHyQPr04TPdFEBNu5kDohW2eNusKx77tLHM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q8e0urbJxPeu+a7fShdqlEHiVSQNPe/I2RTkHXY9YAvin3o+6v3ZC0DCkoIEA/4RU
-         Z0eC7RFUZAyI6TFqoBKF1nnhwbipl2KaikbP/gfN78sMBSL/Ri54jcbsXOcRzPV/sl
-         37cTg9s0+jBcti9XaMihSyJiG4GiYep7PgG/QrVrRJKwf6uCyS51BNhR1YU/ENkXB3
-         RhQfPB5VloEgi5n641DYoSkaB1GYHT2ZRo2wXUIR6Uc4Hf3Pfdbheo207opaXkW+B1
-         ZR4d5mhO1yRiM+Nvvg2b1BXSBMoxw4z4aIdx7CufHl2TKcOypxQDjZ0WOtxk/kbMnW
-         L81F21z2h7Q/A==
-Date:   Sat, 1 Apr 2023 11:58:54 -0700
+        b=smderBX8iFt85qDNjnQBDPzcBY7d8v47qr9nmrovmfpcAD6H40UujiTjN5OhRpmYN
+         A6yEMfOjqO7UYgAxc4iO3cPNOTaJAlYUZL6lTOjvPLYeue3u8RFe2Zvk38VBEhSaVV
+         sBaBJNIXvKSb568j3U5A/20L7/cxonIJTcm1JhL42XCM+biMJEM0PbIIyFFPw0RNIl
+         kP+e2CAUQz7xbz0WLzAGYLSi5NxLEg1ZSKLtu7UqXT32C6aoDAQX3Sc9pyzLioTCAI
+         PnNKjvJFv606wMKLDLaRZ/eab4l7QDgp61xYiRCR4UkRTknBJDr5zEve+/c1313IVE
+         OPbUhF9A0zEqg==
+Date:   Sat, 1 Apr 2023 12:12:12 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
- lockless queue stop/wake code
-Message-ID: <20230401115854.371a5b4c@kernel.org>
-In-Reply-To: <c39312a2-4537-14b4-270c-9fe1fbb91e89@gmail.com>
-References: <20230401051221.3160913-1-kuba@kernel.org>
-        <20230401051221.3160913-2-kuba@kernel.org>
-        <c39312a2-4537-14b4-270c-9fe1fbb91e89@gmail.com>
+To:     Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "zbr@ioremap.net" <zbr@ioremap.net>,
+        "brauner@kernel.org" <brauner@kernel.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
+        "petrm@nvidia.com" <petrm@nvidia.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 1/6] netlink: Reverse the patch which removed
+ filtering
+Message-ID: <20230401121212.454abf11@kernel.org>
+In-Reply-To: <88FD5EFE-6946-42C4-881B-329C3FE01D26@oracle.com>
+References: <20230331235528.1106675-1-anjali.k.kulkarni@oracle.com>
+        <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
+        <20230331210920.399e3483@kernel.org>
+        <88FD5EFE-6946-42C4-881B-329C3FE01D26@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,53 +67,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 1 Apr 2023 17:18:12 +0200 Heiner Kallweit wrote:
-> > +#define __netif_tx_queue_maybe_wake(txq, get_desc, start_thrs, down_cond) \
-> > +	({								\
-> > +		int _res;						\
-> > +									\
-> > +		_res = -1;						\  
-> 
-> One more question: Don't we need a read memory barrier here to ensure
-> get_desc is up-to-date?
+On Sat, 1 Apr 2023 18:24:11 +0000 Anjali Kulkarni wrote:
+> > nit: slight divergence between __u32 and u32 types, something to clean
+> > up if you post v5  
+>
+> Thanks so much! Will do. Any comments on the connector patches?
 
-CC: Alex, maybe I should not be posting after 10pm, with the missing v2
-and sparse CC list.. :|
+patch 3 looks fine as far as I can read thru the ugly in place casts
+patch 5 looks a bit connector specific, no idea :S
+patch 6 does seem to lift the NET_ADMIN for group 0
+        and from &init_user_ns, CAP_NET_ADMIN to net->user_ns, CAP_NET_ADMIN
+        whether that's right or not I have no idea :(
 
-I was thinking about this too yesterday. AFAICT this implementation
-could indeed result in waking even tho the queue is full on non-x86.
-That's why the drivers have an extra check at the start of .xmit? :(
+Also, BTW, on the coding level:
 
-I *think* that the right ordering would be:
++static int cn_bind(struct net *net, int group)
++{
++	unsigned long groups = 0;
++	groups = (unsigned long) group;
++
++	if (test_bit(CN_IDX_PROC - 1, &groups))
 
-WRITE cons
-mb()  # A
-READ stopped
-rmb() # C
-READ prod, cons
+Why not just
 
-And on the producer side (existing):
++static int cn_bind(struct net *net, int group)
++{
++	if (group == CN_IDX_PROC)
 
-WRITE prod
-READ prod, cons
-mb()  # B
-WRITE stopped
-READ prod, cons
+?
 
-But I'm slightly afraid to change it, it's been working for over 
-a decade :D
-
-One neat thing that I noticed, which we could potentially exploit 
-if we were to touch this code is that BQL already has a smp_mb() 
-on the consumer side. So on any kernel config and driver which support
-BQL we can use that instead of adding another barrier at #A.
-
-It would actually be a neat optimization because right now, AFAICT,
-completion will fire the # A -like barrier almost every time.
-
-> > +		if (likely(get_desc > start_thrs))			\
-> > +			_res = __netif_tx_queue_try_wake(txq, get_desc,	\
-> > +							 start_thrs,	\
-> > +							 down_cond);	\
-> > +		_res;							\
-> > +	})
+Who are you hoping will merge this?
