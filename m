@@ -2,174 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC0B6D2C59
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 03:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 963C36D2CA1
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 03:42:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbjDABJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 21:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        id S232712AbjDABmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 21:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233372AbjDABJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 21:09:25 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DFF1D869;
-        Fri, 31 Mar 2023 18:09:23 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id h14so14460265pgj.7;
-        Fri, 31 Mar 2023 18:09:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680311363;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cUN8WvczuQXpCgMPQnBz+ElNsxpaR9j0Hx9WkE+k5t4=;
-        b=GlRUUXup8p2ycO4vuBSCG3aDKHl6BzkEOWMlmVvx3Nkn1AQoXzmDEtsB+acBUSITXr
-         oBDvk/MlwQn1PrU/AkO4Ng0m0hrNC59FlNYT9LFyQGibGJd7l6xwUlA6NUl5HCopcKCz
-         REHHsf8r0G2UzI/C0Yz0aGIBgd4XwfSCDg6PkngkDFHkIdtRxdAAqud2CeuptACtFIhZ
-         h3I7c20r6bvq1gVKsaTAPmfGsBWi4xHtkfY0JG6x2WopAdRyQBjfjotolUyOvlO5+tt8
-         QRIRBWN/+ti6FdjxSgXCy/1FD85Q/RoaPkhp/aPxzypYDlLfZjt2/dOwZiFS0ZQZnkgi
-         vEog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680311363;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=cUN8WvczuQXpCgMPQnBz+ElNsxpaR9j0Hx9WkE+k5t4=;
-        b=ZQTm5+wIefaHUe4lc/HZGgRX6HYeEdWOvCQeNkzB1fCdd95AQPHYy/pvSX/0+djhQG
-         QcCRzsh3YPVsuAgV2SMvcnzqrLO0zRXq3zkrwqmRdAVUVqweiExUHOa/KmPEC6hnyuJT
-         86Y4PqkIR2DztEWpjC1duP83si2d9L218IJT1zh7rgor+xtPHSj7d4k4W49EWjjeYFOe
-         qlF8oRjHMXqj2S1etOrQ01X3qBpFgAw9BWGj8g0RHf/1ZNMokYuulHB/glAz5mKwqu94
-         yq0w7cmC1Lnp7AwVKe3sBX+umoWfacmxwp3ZwrPZu6liTuNCNxl1IUaPsDVGw5+pYW7I
-         LGvg==
-X-Gm-Message-State: AAQBX9dBo4WzfkNbkaybeHU++nKTVEd9qqGIlr9LpOSH7fi6aBFpT7i8
-        rjMECl9s1rqUjhM22CI0Ax4=
-X-Google-Smtp-Source: AKy350YGJQEHDwSrG5wusbTZWUYMAKY+9JwSacuZukV0ZOT9ZlXSFjwfMFCld/vEe0862VEPE6+vrQ==
-X-Received: by 2002:a62:1811:0:b0:62a:4503:53ba with SMTP id 17-20020a621811000000b0062a450353bamr26539907pfy.26.1680311363072;
-        Fri, 31 Mar 2023 18:09:23 -0700 (PDT)
-Received: from localhost ([98.97.116.12])
-        by smtp.gmail.com with ESMTPSA id 13-20020aa7924d000000b006262520ac59sm2382826pfp.127.2023.03.31.18.09.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Mar 2023 18:09:22 -0700 (PDT)
-Date:   Fri, 31 Mar 2023 18:09:21 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Yafang Shao <laoar.shao@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Message-ID: <6427844176538_c503a208e4@john.notmuch>
-In-Reply-To: <CALOAHbCyGJzp1yH2NTsikre0RuQ+4WoZCsAc110_+tW=L8FgQg@mail.gmail.com>
-References: <20230326221612.169289-1-xiyou.wangcong@gmail.com>
- <CALOAHbCyGJzp1yH2NTsikre0RuQ+4WoZCsAc110_+tW=L8FgQg@mail.gmail.com>
-Subject: Re: [Patch bpf-next] sock_map: include sk_psock memory overhead too
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S233495AbjDABmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 21:42:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6A81D2CE;
+        Fri, 31 Mar 2023 18:41:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F19F4CE2F30;
+        Sat,  1 Apr 2023 01:41:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3AA4C4339B;
+        Sat,  1 Apr 2023 01:41:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680313303;
+        bh=DNHA9w31gGi6slqGhnDugKrUxRmBTEkUVrJjeSv3J8w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h4ZPIU2NtX8Rig7JLj+1B1tfMWyBweQu2b8mG0qeIzzrgp9nCKyxSNs4bIi47F7hu
+         hjb2AlRb2L+ltPha6e33Mu4boqdDtwF8atLiWYIxz5Tf7oThy44xwQgZFUbZhiY4Qy
+         Hk1el2D8yFi/WH5X0VdzAKZ0RpMm1AUrFTZFUAPP8027a+uJ0gO3xK4ocp1S8Z+7CK
+         +JxmP+yrnNqyqgjV6oQ62W0u53td/KjZCwV6YueWWFIrxYrXF3e9wellZ8XmBGhp8T
+         66F3TpKWDWMP0vjRvnqAifzWikAFQs6lxy+tekbSw1ROi7Uw3pUByL/utR4jQl6MBW
+         Kp4Be/aZhdcEQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.2 08/25] wifi: mwifiex: mark OF related data as maybe unused
+Date:   Fri, 31 Mar 2023 21:41:06 -0400
+Message-Id: <20230401014126.3356410-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230401014126.3356410-1-sashal@kernel.org>
+References: <20230401014126.3356410-1-sashal@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yafang Shao wrote:
-> On Mon, Mar 27, 2023 at 6:16=E2=80=AFAM Cong Wang <xiyou.wangcong@gmail=
-.com> wrote:
-> >
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > When a socket is added to a sockmap, sk_psock is allocated too as its=
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> > sk_user_data, therefore it should be consider as an overhead of sockm=
-ap
-> > memory usage.
-> >
-> > Before this patch:
-> >
-> > 1: sockmap  flags 0x0
-> >         key 4B  value 4B  max_entries 2  memlock 656B
-> >         pids echo-sockmap(549)
-> >
-> > After this patch:
-> >
-> > 9: sockmap  flags 0x0
-> >         key 4B  value 4B  max_entries 2  memlock 1824B
-> >         pids echo-sockmap(568)
-> >
-> > Fixes: 73d2c61919e9 ("bpf, net: sock_map memory usage")
-> > Cc: Yafang Shao <laoar.shao@gmail.com>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >  net/core/sock_map.c | 10 +++++++++-
-> >  1 file changed, 9 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> > index 7c189c2e2fbf..22197e565ece 100644
-> > --- a/net/core/sock_map.c
-> > +++ b/net/core/sock_map.c
-> > @@ -799,9 +799,17 @@ static void sock_map_fini_seq_private(void *priv=
-_data)
-> >
-> >  static u64 sock_map_mem_usage(const struct bpf_map *map)
-> >  {
-> > +       struct bpf_stab *stab =3D container_of(map, struct bpf_stab, =
-map);
-> >         u64 usage =3D sizeof(struct bpf_stab);
-> > +       int i;
-> >
-> >         usage +=3D (u64)map->max_entries * sizeof(struct sock *);
-> > +
-> > +       for (i =3D 0; i < stab->map.max_entries; i++) {
-> =
+[ Upstream commit 139f6973bf140c65d4d1d4bde5485badb4454d7a ]
 
-> Although it adds a for-loop, the operation below is quite light. So it
-> looks good to me.
+The driver can be compile tested with !CONFIG_OF making certain data
+unused:
 
-We could track a count from update to avoid the loop?
+  drivers/net/wireless/marvell/mwifiex/sdio.c:498:34: error: ‘mwifiex_sdio_of_match_table’ defined but not used [-Werror=unused-const-variable=]
+  drivers/net/wireless/marvell/mwifiex/pcie.c:175:34: error: ‘mwifiex_pcie_of_match_table’ defined but not used [-Werror=unused-const-variable=]
 
-> =
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20230312132523.352182-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 2 +-
+ drivers/net/wireless/marvell/mwifiex/sdio.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> > +               if (stab->sks[i])
-> =
-
-> Nit, stab->sks[i] can be modified in the delete path in parallel, so
-> there should be a READ_ONCE() here.
-> =
-
-> > +                       usage +=3D sizeof(struct sk_psock);
-> > +       }
-> > +
-> >         return usage;
-> >  }
-> >
-> > @@ -1412,7 +1420,7 @@ static u64 sock_hash_mem_usage(const struct bpf=
-_map *map)
-> >         u64 usage =3D sizeof(*htab);
-> >
-> >         usage +=3D htab->buckets_num * sizeof(struct bpf_shtab_bucket=
-);
-> > -       usage +=3D atomic_read(&htab->count) * (u64)htab->elem_size;
-> > +       usage +=3D atomic_read(&htab->count) * ((u64)htab->elem_size =
-+ sizeof(struct sk_psock));
-> >         return usage;
-> >  }
-> >
-> > --
-> > 2.34.1
-> >
-> =
-
-> =
-
-> -- =
-
-> Regards
-> Yafang
-
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 5dcf61761a165..9a698a16a8f38 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -172,7 +172,7 @@ static const struct mwifiex_pcie_device mwifiex_pcie8997 = {
+ 	.can_ext_scan = true,
+ };
+ 
+-static const struct of_device_id mwifiex_pcie_of_match_table[] = {
++static const struct of_device_id mwifiex_pcie_of_match_table[] __maybe_unused = {
+ 	{ .compatible = "pci11ab,2b42" },
+ 	{ .compatible = "pci1b4b,2b42" },
+ 	{ }
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
+index 9f506efa53705..ea1c1c2412e72 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.c
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
+@@ -479,7 +479,7 @@ static struct memory_type_mapping mem_type_mapping_tbl[] = {
+ 	{"EXTLAST", NULL, 0, 0xFE},
+ };
+ 
+-static const struct of_device_id mwifiex_sdio_of_match_table[] = {
++static const struct of_device_id mwifiex_sdio_of_match_table[] __maybe_unused = {
+ 	{ .compatible = "marvell,sd8787" },
+ 	{ .compatible = "marvell,sd8897" },
+ 	{ .compatible = "marvell,sd8997" },
+-- 
+2.39.2
 
