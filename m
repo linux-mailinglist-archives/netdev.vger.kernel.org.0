@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2041A6D2E0A
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 06:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F9B66D2E0C
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 06:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbjDAEIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Apr 2023 00:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
+        id S233319AbjDAEJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Apr 2023 00:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233283AbjDAEIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 00:08:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86D51A96F;
-        Fri, 31 Mar 2023 21:08:37 -0700 (PDT)
+        with ESMTP id S232117AbjDAEJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 00:09:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA521A964;
+        Fri, 31 Mar 2023 21:09:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 639ED60EC7;
-        Sat,  1 Apr 2023 04:08:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FA65C433EF;
-        Sat,  1 Apr 2023 04:08:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB051B83351;
+        Sat,  1 Apr 2023 04:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F04C433D2;
+        Sat,  1 Apr 2023 04:09:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680322116;
-        bh=JhUfMI/d5rnRBHZ2MOdkLbza9ibqlixBVrLlp2RDPbU=;
+        s=k20201202; t=1680322162;
+        bh=g7PnwELFRTJZzkTdRGdAbwHBGVF//Z0ISuVZjwv+YV0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TDIKUVd+DEfI+CojH/5roqbAXB+K/E29Nw0JDXefmfZyvLxnUYaiFGn90/cjVomcG
-         IYC8jXMb6WaYpN16ppV/mbaQRwS8Q/k5Z+ruiiLhkeaArdbApgjaKLXdA+5Tamugxv
-         axcNIHeGbAqgvbS+HQCblMRl+btCLWAv4fuOCza+u6VghkIyHsE8RAq0NvKLAaA8Bz
-         CYCpjlviiZJPVSvpOw6J4H9CJdtJcmMLJ23XmZAIIBDZh0UATPQKXc4xLdBLZjjjr6
-         EeiStLPiS+bZb3BiqfxJJr+TAIunjmPFS+RwsDfIjB+iOuctDYVI4tAWrmX95Ueajl
-         ZJGD0Lt+AgxYA==
-Date:   Fri, 31 Mar 2023 21:08:35 -0700
+        b=jN/+o7G+MH3Jrs0IkXysetWwcszpZ3+L4i+/hPw4mB61zG/82YMKlYW/GnbKp5oxJ
+         RG4SB10NiUZAY0a62Vgooom3AZZVXsD6iOGT58QadQdBcOAMersMAZY6ExLm341/Kk
+         GZ0thtOwF/KZ/Hle+gWQt9aLr82aLL4zS+F/YiO87hCsWkL1hLGTWqL+6Z7ezsNOA0
+         TTeY5exsfQj1d5siMqhxXr9QRNXvfEmZ6gGLXXt9UAAkWVJuEYwONAspO/e1b9dYLE
+         kBfH6ad/zrkIOZyvloToCZrYVGntYJXfEAqmwfkvAl9AG6XMbindoNQTsPFtOw13n5
+         gKv4v2o7seSIw==
+Date:   Fri, 31 Mar 2023 21:09:20 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
@@ -39,16 +39,17 @@ Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         ecree.xilinx@gmail.com, leon@kernel.org, keescook@chromium.org,
         socketcan@hartkopp.net, petrm@nvidia.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v4 2/6] netlink: Add new netlink_release function
-Message-ID: <20230331210835.2312b644@kernel.org>
-In-Reply-To: <20230331235528.1106675-3-anjali.k.kulkarni@oracle.com>
+Subject: Re: [PATCH v4 1/6] netlink: Reverse the patch which removed
+ filtering
+Message-ID: <20230331210920.399e3483@kernel.org>
+In-Reply-To: <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
 References: <20230331235528.1106675-1-anjali.k.kulkarni@oracle.com>
-        <20230331235528.1106675-3-anjali.k.kulkarni@oracle.com>
+        <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,13 +57,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 31 Mar 2023 16:55:24 -0700 Anjali Kulkarni wrote:
-> A new function netlink_release is added in netlink_sock to store the
-> protocol's release function. This is called when the socket is deleted.
-> This can be supplied by the protocol via the release function in
-> netlink_kernel_cfg. This is being added for the NETLINK_CONNECTOR
-> protocol, so it can free it's data when socket is deleted.
-> 
-> Signed-off-by: Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
+On Fri, 31 Mar 2023 16:55:23 -0700 Anjali Kulkarni wrote:
+> +int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
+> +			       __u32 portid, __u32 group, gfp_t allocation,
+> +			       int (*filter)(struct sock *dsk,
+> +					     struct sk_buff *skb, void *data),
+> +			       void *filter_data);
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+> -int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
+> -		      u32 group, gfp_t allocation)
+> +int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb,
+> +			       u32 portid,
+> +			       u32 group, gfp_t allocation,
+> +			       int (*filter)(struct sock *dsk,
+> +					     struct sk_buff *skb, void *data),
+> +			       void *filter_data)
+
+nit: slight divergence between __u32 and u32 types, something to clean
+up if you post v5
