@@ -2,151 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 728C56D2C30
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 02:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95A256D2C35
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 03:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233297AbjDAA7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 20:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        id S233317AbjDABBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 21:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbjDAA7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 20:59:51 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5781B7D5;
-        Fri, 31 Mar 2023 17:59:50 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id e15-20020a17090ac20f00b0023d1b009f52so27237307pjt.2;
-        Fri, 31 Mar 2023 17:59:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680310790;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AS/BPE64oP8UzI/jVCx4ABuYeNDgELL8aYJAuds5G/U=;
-        b=FijOoNPtMDFRoF77ieBKgmcs7bHxbmk72RJ/agf6zZIAxmKhAYQKBcdWUdN05N1kZI
-         2PiZmPsYDfV6tvOuoIvq/2A33lQifH5+FXO08sOaxNbSj2Aw7NUycJPHxef6vMFrwiCx
-         I7aCdzEifhfR2m8EwbaNtNseYMF9VUNlT/obh2K28ufqEsdvx8ANJ7EnhvL1OK9pK09Z
-         gsOOyZ/bOWrAd11S84YOdUCMetK2ZqpxnLxyHFJhPTVu4UBTk6p9OXUuUgHk+amLgljS
-         XImjbp5LYIupzZdJYabVSov8PPES7z2pnPNJB4bwq+pr3m0g/Jlz34era6btcQ2ZIj0Q
-         NsLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680310790;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=AS/BPE64oP8UzI/jVCx4ABuYeNDgELL8aYJAuds5G/U=;
-        b=glNhACOcIBzgoaxai5aNxCKsPWpDutwtvm/DYM2SjhGQb8LZxTW9L8giI2xKLZuqWt
-         +n5bml/evCM1pj+kfiHlm09MPdmpIqtkzyfxejc8jeCKPWjkxLtgyx61AafEOLXqd8+x
-         9YDqSamDiEJnEnCinLuT0UVsBFPkVCiWnEHKZVJT28l/ipeAh+uwfRfTCC4Ot4StwdIE
-         DRNSs3aXpDoosn9MNzu9wa5ZapifyQeAPGRGyona2i+4ce4+q0WmiYG6OHJkfAl/q3Vp
-         igdDHo0MsWmLFfo5zftOhIfnjqKkpyLQFFKNZ40TfzVvfekTGIsj15B7uWtN9ho0TwtV
-         LiXg==
-X-Gm-Message-State: AAQBX9cDXx3s9aUWieKPNIsaD8o8f9K53ldoSDCveI8K3OgYnx7EjFqB
-        5H+3TzRRsQ2tnqhg7wXHIQ4=
-X-Google-Smtp-Source: AKy350aQVRvJtGKnT/aYeQcEVO/NCQ3gQTzxO6AZrtSud0ggIuO6b/ntFYFkkV48SvIQIvNhVxOikA==
-X-Received: by 2002:a17:903:188:b0:19c:f096:bbef with SMTP id z8-20020a170903018800b0019cf096bbefmr36994360plg.49.1680310790332;
-        Fri, 31 Mar 2023 17:59:50 -0700 (PDT)
-Received: from localhost ([98.97.116.12])
-        by smtp.gmail.com with ESMTPSA id a12-20020a1709027d8c00b001a19b6ccdd4sm2174366plm.84.2023.03.31.17.59.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Mar 2023 17:59:49 -0700 (PDT)
-Date:   Fri, 31 Mar 2023 17:59:48 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     cong.wang@bytedance.com, daniel@iogearbox.net, lmb@isovalent.com,
-        edumazet@google.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        ast@kernel.org, andrii@kernel.org, will@isovalent.com
-Message-ID: <642782044cf76_c503a208d5@john.notmuch>
-In-Reply-To: <87zg7vbu60.fsf@cloudflare.com>
-References: <20230327175446.98151-1-john.fastabend@gmail.com>
- <20230327175446.98151-4-john.fastabend@gmail.com>
- <87zg7vbu60.fsf@cloudflare.com>
-Subject: Re: [PATCH bpf v2 03/12] bpf: sockmap, improved check for empty queue
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229909AbjDABBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 21:01:06 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26DB1B7D5
+        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 18:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680310865; x=1711846865;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BfmhBbfucC9V/NAjrzo2pm/fv/xnEmcrBY8Dn7vEJgY=;
+  b=kNYQLiA5LcqaiOzC4SlDcoOmoKYvpE1c2NKyI1qh8B2bxJuXAlCQfwoj
+   EEAEUm+YzbF52R1t0+Z4boE0iq17S25gJfD/dAOhNBQ8SqYfTXd+bLosU
+   RNdYQt4+5mspphbXSH+RI5ZELRggZUowbkygfyoMfRN9T5RgIa7smj3OS
+   Mix1mZ7s24M7gk78MZUpdwDKbgD1YLN3gzOK6dfS31DBFSoNDRf9XXZOQ
+   MbqE7SCGDb+bvE52d9gSWzsGeemOD/a6OCBdkp1jU/1Hy6kZvN+s8yVgD
+   Hbzg6B+WRS9bXx1mAF9v4YUnPvjPtZcBpuCWgRVElLNwstBA74ZG9jhiK
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="321985682"
+X-IronPort-AV: E=Sophos;i="5.98,308,1673942400"; 
+   d="scan'208";a="321985682"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 18:01:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="1015030592"
+X-IronPort-AV: E=Sophos;i="5.98,308,1673942400"; 
+   d="scan'208";a="1015030592"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2023 18:01:04 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1piPc7-000MJx-2S;
+        Sat, 01 Apr 2023 01:01:03 +0000
+Date:   Sat, 1 Apr 2023 09:00:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH v3 net-next 1/2] net: ethernet: mtk_eth_soc: add code for
+ offloading flows from wlan devices
+Message-ID: <202304010827.5VVfe7rX-lkp@intel.com>
+References: <20230331124707.40296-1-nbd@nbd.name>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230331124707.40296-1-nbd@nbd.name>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Mon, Mar 27, 2023 at 10:54 AM -07, John Fastabend wrote:
-> > We noticed some rare sk_buffs were stepping past the queue when system was
-> > under memory pressure. The general theory is to skip enqueueing
-> > sk_buffs when its not necessary which is the normal case with a system
-> > that is properly provisioned for the task, no memory pressure and enough
-> > cpu assigned.
-> >
-> > But, if we can't allocate memory due to an ENOMEM error when enqueueing
-> > the sk_buff into the sockmap receive queue we push it onto a delayed
-> > workqueue to retry later. When a new sk_buff is received we then check
-> > if that queue is empty. However, there is a problem with simply checking
-> > the queue length. When a sk_buff is being processed from the ingress queue
-> > but not yet on the sockmap msg receive queue its possible to also recv
-> > a sk_buff through normal path. It will check the ingress queue which is
-> > zero and then skip ahead of the pkt being processed.
-> >
-> > Previously we used sock lock from both contexts which made the problem
-> > harder to hit, but not impossible.
-> >
-> > To fix also check the 'state' variable where we would cache partially
-> > processed sk_buff. This catches the majority of cases. But, we also
-> > need to use the mutex lock around this check because we can't have both
-> > codes running and check sensibly. We could perhaps do this with atomic
-> > bit checks, but we are already here due to memory pressure so slowing
-> > things down a bit seems OK and simpler to just grab a lock.
-> >
-> > To reproduce issue we run NGINX compliance test with sockmap running and
-> > observe some flakes in our testing that we attributed to this issue.
-> >
-> > Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-> > Tested-by: William Findlay <will@isovalent.com>
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
-> 
-> I've got an idea to try, but it'd a bigger change.
-> 
-> skb_dequeue is lock, skb_peek, skb_unlink, unlock, right?
-> 
-> What if we split up the skb_dequeue in sk_psock_backlog to publish the
-> change to the ingress_skb queue only once an skb has been processed?
+Hi Felix,
 
-I think this works now. Early on we tried to run backlog without locking
-but given this is now locked by mutex I think it works out.
+I love your patch! Yet something to improve:
 
-We have a few places that work on ingress_skb but those are all enqueue
-on tail so should be fine to peek here.
+[auto build test ERROR on net-next/main]
 
-> 
-> static void sk_psock_backlog(struct work_struct *work)
-> {
->         ...
->         while ((skb = skb_peek_locked(&psock->ingress_skb))) {
->                 ...
->                 skb_unlink(skb, &psock->ingress_skb);
->         }
->         ...
-> }
-> 
-> Even more - if we hold off the unlinking until an skb has been fully
-> processed, that perhaps opens up the way to get rid of keeping state in
-> sk_psock_work_state. We could just skb_pull the processed data instead.
+url:    https://github.com/intel-lab-lkp/linux/commits/Felix-Fietkau/net-ethernet-mtk_eth_soc-mtk_ppe-prefer-newly-added-l2-flows/20230331-204831
+patch link:    https://lore.kernel.org/r/20230331124707.40296-1-nbd%40nbd.name
+patch subject: [PATCH v3 net-next 1/2] net: ethernet: mtk_eth_soc: add code for offloading flows from wlan devices
+config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20230401/202304010827.5VVfe7rX-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/6b34c03bc2f53e9370621f04e2925d2ccb41ce7b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Felix-Fietkau/net-ethernet-mtk_eth_soc-mtk_ppe-prefer-newly-added-l2-flows/20230331-204831
+        git checkout 6b34c03bc2f53e9370621f04e2925d2ccb41ce7b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mediatek/
 
-Yep.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304010827.5VVfe7rX-lkp@intel.com/
 
-> 
-> It's just an idea and I don't want to block a tested fix that LGTM so
-> consider this:
+All errors (new ones prefixed by >>):
 
-Did you get a chance to try this? Otherwise I can also give the idea
-a try next week.
+>> drivers/net/ethernet/mediatek/mtk_ppe_offload.c:554:36: error: use of undeclared identifier 'dev'
+           struct mtk_mac *mac = netdev_priv(dev);
+                                             ^
+   1 error generated.
 
-> 
-> Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+
+vim +/dev +554 drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+
+   549	
+   550	static int
+   551	mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
+   552	{
+   553		struct flow_cls_offload *cls = type_data;
+ > 554		struct mtk_mac *mac = netdev_priv(dev);
+   555		struct net_device *dev = cb_priv;
+   556		struct mtk_eth *eth = mac->hw;
+   557	
+   558		if (!tc_can_offload(dev))
+   559			return -EOPNOTSUPP;
+   560	
+   561		if (type != TC_SETUP_CLSFLOWER)
+   562			return -EOPNOTSUPP;
+   563	
+   564		return mtk_flow_offload_cmd(eth, cls, 0);
+   565	}
+   566	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
