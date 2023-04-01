@@ -2,125 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A256D2C35
-	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 03:01:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3DD6D2C4A
+	for <lists+netdev@lfdr.de>; Sat,  1 Apr 2023 03:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233317AbjDABBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Mar 2023 21:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33294 "EHLO
+        id S230193AbjDABGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Mar 2023 21:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbjDABBG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 21:01:06 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26DB1B7D5
-        for <netdev@vger.kernel.org>; Fri, 31 Mar 2023 18:01:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680310865; x=1711846865;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BfmhBbfucC9V/NAjrzo2pm/fv/xnEmcrBY8Dn7vEJgY=;
-  b=kNYQLiA5LcqaiOzC4SlDcoOmoKYvpE1c2NKyI1qh8B2bxJuXAlCQfwoj
-   EEAEUm+YzbF52R1t0+Z4boE0iq17S25gJfD/dAOhNBQ8SqYfTXd+bLosU
-   RNdYQt4+5mspphbXSH+RI5ZELRggZUowbkygfyoMfRN9T5RgIa7smj3OS
-   Mix1mZ7s24M7gk78MZUpdwDKbgD1YLN3gzOK6dfS31DBFSoNDRf9XXZOQ
-   MbqE7SCGDb+bvE52d9gSWzsGeemOD/a6OCBdkp1jU/1Hy6kZvN+s8yVgD
-   Hbzg6B+WRS9bXx1mAF9v4YUnPvjPtZcBpuCWgRVElLNwstBA74ZG9jhiK
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="321985682"
-X-IronPort-AV: E=Sophos;i="5.98,308,1673942400"; 
-   d="scan'208";a="321985682"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2023 18:01:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10666"; a="1015030592"
-X-IronPort-AV: E=Sophos;i="5.98,308,1673942400"; 
-   d="scan'208";a="1015030592"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 31 Mar 2023 18:01:04 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1piPc7-000MJx-2S;
-        Sat, 01 Apr 2023 01:01:03 +0000
-Date:   Sat, 1 Apr 2023 09:00:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH v3 net-next 1/2] net: ethernet: mtk_eth_soc: add code for
- offloading flows from wlan devices
-Message-ID: <202304010827.5VVfe7rX-lkp@intel.com>
-References: <20230331124707.40296-1-nbd@nbd.name>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230331124707.40296-1-nbd@nbd.name>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S233286AbjDABGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Mar 2023 21:06:17 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612711D861;
+        Fri, 31 Mar 2023 18:06:12 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id o11so22981375ple.1;
+        Fri, 31 Mar 2023 18:06:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680311172;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lptAq23Bhxck5w4z/rG8RS6tmRRir3me5yWghBfZL5w=;
+        b=RciMOpzWuO92XZZ491w3Y2DRYMTk1B/OuOYYEgSqs4w2yJ0FKDEx4PyPOdLPXVASLH
+         HeNugxvV6lVKFtQbAgjusSVnN9Qa3BspUavTeWaWlaIeltduRQTJSlUHWifbYgZmKH3c
+         1ajobv052ByD1ZxgrIGtq1u2IKSDh1m7NdRJVyBf1RS+Ruf1FQ9wFDfES6V9whcJkHrz
+         kZXHZypSh4qPhO6ZOH9F3jdQjxnrIc5h1CQas2SI7zzvi6FwmjJ87DDlt09VxHlmKZXT
+         TQ5TZsq3YlPOqJ01h6OlRLwQ5bduGep0FyhfMuRNKh9+q3jDIOFIZUfrx3mzt2PnP7VJ
+         5Ifg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680311172;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=lptAq23Bhxck5w4z/rG8RS6tmRRir3me5yWghBfZL5w=;
+        b=66Kfz8TJk1gS6wOEGBMVeetRDpKMuzMUabbEpy6qUDe9J6OCemfoGi5UKdcXoYhCQ0
+         2mVqd6kLREwAK18QSREAuD9Av+xnbD9O9596PcmEgnnwgigNu5t8jLDmwpEZPbGkkAGL
+         8G4Ch2GGfIoSwTwo+TEO3raLEs0eLXrbttE2oCrUr0+w3LUTFzqsbBoFjQVRxA9kN4gw
+         EEf1LbOjyOPviGTeVj5tseVyTRjAPyNBHE4kLw2Z9+ucLNPVjHigcE3f9d+2X62VrMlC
+         2Jx0pJiNfPlUPtLwDXjcGyhkfyDR4wOuq+y2G8ThXDL1Sp3phmcisWSH2liBM7gUJyUj
+         QKbg==
+X-Gm-Message-State: AAQBX9cZZTPALNrjmdCbeBHjAMrGoIGwzwypOQSjS+Pt/QmRU85k+eXV
+        xQvzK2VfCEy/ieXqwj8OYps=
+X-Google-Smtp-Source: AKy350Z8u3DIY9zOK2GGbRh+IzTtZrAQZu687R480OVrDZT6cATs8RfxE2bQUMA6S8EqfzHYuLBzNA==
+X-Received: by 2002:a17:902:fa04:b0:1a2:85f0:e747 with SMTP id la4-20020a170902fa0400b001a285f0e747mr8814999plb.41.1680311171897;
+        Fri, 31 Mar 2023 18:06:11 -0700 (PDT)
+Received: from localhost ([98.97.116.12])
+        by smtp.gmail.com with ESMTPSA id w16-20020a63c110000000b0050f6add54fcsm2204421pgf.44.2023.03.31.18.06.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Mar 2023 18:06:11 -0700 (PDT)
+Date:   Fri, 31 Mar 2023 18:06:10 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>
+Message-ID: <6427838247d16_c503a2087e@john.notmuch>
+In-Reply-To: <20230327-vsock-sockmap-v4-0-c62b7cd92a85@bytedance.com>
+References: <20230327-vsock-sockmap-v4-0-c62b7cd92a85@bytedance.com>
+Subject: RE: [PATCH net-next v4 0/3] Add support for sockmap to vsock.
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Felix,
+Bobby Eshleman wrote:
+> We're testing usage of vsock as a way to redirect guest-local UDS
+> requests to the host and this patch series greatly improves the
+> performance of such a setup.
+> 
+> Compared to copying packets via userspace, this improves throughput by
+> 121% in basic testing.
+> 
+> Tested as follows.
+> 
+> Setup: guest unix dgram sender -> guest vsock redirector -> host vsock
+>        server
+> Threads: 1
+> Payload: 64k
+> No sockmap:
+> - 76.3 MB/s
+> - The guest vsock redirector was
+>   "socat VSOCK-CONNECT:2:1234 UNIX-RECV:/path/to/sock"
+> Using sockmap (this patch):
+> - 168.8 MB/s (+121%)
+> - The guest redirector was a simple sockmap echo server,
+>   redirecting unix ingress to vsock 2:1234 egress.
+> - Same sender and server programs
+> 
+> *Note: these numbers are from RFC v1
+> 
+> Only the virtio transport has been tested. The loopback transport was
+> used in writing bpf/selftests, but not thoroughly tested otherwise.
+> 
+> This series requires the skb patch.
 
-I love your patch! Yet something to improve:
+Appears reasonable to me although I didn't review internals of all
+the af_vsock stuff. I see it got merged great.
 
-[auto build test ERROR on net-next/main]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Felix-Fietkau/net-ethernet-mtk_eth_soc-mtk_ppe-prefer-newly-added-l2-flows/20230331-204831
-patch link:    https://lore.kernel.org/r/20230331124707.40296-1-nbd%40nbd.name
-patch subject: [PATCH v3 net-next 1/2] net: ethernet: mtk_eth_soc: add code for offloading flows from wlan devices
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20230401/202304010827.5VVfe7rX-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/6b34c03bc2f53e9370621f04e2925d2ccb41ce7b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Felix-Fietkau/net-ethernet-mtk_eth_soc-mtk_ppe-prefer-newly-added-l2-flows/20230331-204831
-        git checkout 6b34c03bc2f53e9370621f04e2925d2ccb41ce7b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mediatek/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304010827.5VVfe7rX-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/ethernet/mediatek/mtk_ppe_offload.c:554:36: error: use of undeclared identifier 'dev'
-           struct mtk_mac *mac = netdev_priv(dev);
-                                             ^
-   1 error generated.
-
-
-vim +/dev +554 drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-
-   549	
-   550	static int
-   551	mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
-   552	{
-   553		struct flow_cls_offload *cls = type_data;
- > 554		struct mtk_mac *mac = netdev_priv(dev);
-   555		struct net_device *dev = cb_priv;
-   556		struct mtk_eth *eth = mac->hw;
-   557	
-   558		if (!tc_can_offload(dev))
-   559			return -EOPNOTSUPP;
-   560	
-   561		if (type != TC_SETUP_CLSFLOWER)
-   562			return -EOPNOTSUPP;
-   563	
-   564		return mtk_flow_offload_cmd(eth, cls, 0);
-   565	}
-   566	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+One nit, I have a series coming shortly to pull the tests out of
+the sockmap_listen and into a sockmap_vsock because I don't think they
+belong in _listen but that is just a refactor.
