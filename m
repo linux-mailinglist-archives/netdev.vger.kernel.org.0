@@ -2,103 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7039B6D376A
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 12:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7282A6D3786
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 13:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbjDBKtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 06:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
+        id S230443AbjDBLPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 07:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbjDBKtq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 06:49:46 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC801206A
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 03:49:43 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id b20so106580828edd.1
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 03:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680432582;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hjR00TgAnnMwLDCvz0xT0MzHATrmHlJrCAFtw5aFKdk=;
-        b=pkSrbHT2FYuk1Z6tCCsWbzsSFqJrBPI6wjADRsIIxnUglOL3L9Qu6voguaiIUrnnU2
-         JPjcWYsxgRQbir6z1Wx/eDztWZiSw5OBWG4HtkXAkEsR3exMnhz0XP47cDxIk6Dl7vDa
-         f3vCSRhXip5T1S8AQVDzFKP6Cd31AO9Ihs6Sy4B1AeWwcE0FX2PpeYJxULMlok4JVIPp
-         ydNNsv8E8ral5yWhU2/zxN5VSC6lRhnlGefjW3J8G1lAF3F1c4YYF0/9Xlyl0isNvVjf
-         m8ucRuuoWEMiGSBM5/+sHQuME5Lqt7GIZKs0VmolQsb3CzO+35GIp315QJlpRNegKbnL
-         Lzig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680432582;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hjR00TgAnnMwLDCvz0xT0MzHATrmHlJrCAFtw5aFKdk=;
-        b=oSymtXQGVgsBKo5D9ri+jEHBgbyDh/R6bOLdLMSAKs2keORf7BouShoZ/cwFQ7ixcO
-         YpoUyHkNUeiUyz9ZXkHuXFTJiRFQ+EOlKb2UiptUubC75ylNj9lBXxP62K0uIutlnInE
-         K60V+bi7569BpVfbWrPi+KJyS7HeQUlEbgZxMupg5/O8xwylEHxG/W1yTquB1GcT+1VR
-         DyrOewrlGkWh1dtJfNVIOew2hSokQwld70L33a82AmIigjCW8La5pOpGOeIjhgUO9wBZ
-         NxJRm07i48LgSQR7f0lyi+gAh0gNtiAG6vNlfoUjOGX8Rjk0rKWWtaE+VDK55adgbpMF
-         HRZA==
-X-Gm-Message-State: AAQBX9eCMnTYxwwDwEiws8MOOm4hDwhlw6HvnKZ/2PpnMDGBnk3upLvt
-        i4C6z4N6qxZzws9tzKJymqvH9g==
-X-Google-Smtp-Source: AKy350bwisRgcgGnMtchBJUcbuj4Pcg+osZs9dbE8qToLV5KDtYpFRlg5/KXsZxdQi+Q/OWZDnLNPA==
-X-Received: by 2002:a17:907:a42a:b0:947:d757:d822 with SMTP id sg42-20020a170907a42a00b00947d757d822mr6531312ejc.68.1680432582447;
-        Sun, 02 Apr 2023 03:49:42 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:7f7f:6a30:7a20:94d5? ([2a02:810d:15c0:828:7f7f:6a30:7a20:94d5])
-        by smtp.gmail.com with ESMTPSA id ee55-20020a056402293700b004aef147add6sm3082265edb.47.2023.04.02.03.49.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Apr 2023 03:49:42 -0700 (PDT)
-Message-ID: <a13ae120-b50c-b5ef-a686-bc811e6b9d37@linaro.org>
-Date:   Sun, 2 Apr 2023 12:49:40 +0200
+        with ESMTP id S230354AbjDBLPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 07:15:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9AFAF0C;
+        Sun,  2 Apr 2023 04:15:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D65FFB8068D;
+        Sun,  2 Apr 2023 11:15:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA7C9C4339B;
+        Sun,  2 Apr 2023 11:15:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680434141;
+        bh=qDuCb9jB6m4dPBHgb/ksN36Hij3KDguXmS0bhWU2DiA=;
+        h=From:Date:Subject:To:Cc:From;
+        b=e4gDTBliFoU/oaCbgZJa+s1wt9Jia1+DIGqn5B/Wb51kBv+CKPgFkcPoQ/am+Y6YI
+         Nvf1+Qgg0f+ds+ohoTYLjQerbMSovH5MXpEWJvzz9tX9ztqgGWPLhTq14FrRp1ZrsS
+         CQguvUyybzd9vyTkBDIplQz2VYvYC9CRA6ONz+l9yIsQKAa/ZyJco6Qif7n/TpFecl
+         DnLAei72nZQPnfZWu1/qZALbMM0qZ61lSkWp3wi7v6L8/QTI0NgU7RMg9VOYxshkJR
+         UxZSaydpcShXcGOPzZ/vWXSp5sM8J/JKTPwaSi2wuvAyjCiAL4IwipM66nqQCP1dfH
+         eBoJqNQm2cnTw==
+From:   Simon Horman <horms@kernel.org>
+Date:   Sun, 02 Apr 2023 13:15:33 +0200
+Subject: [PATCH RFC] net: qrtr: correct types of trace event parameters
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH net-next v3 04/12] dt-bindings: net: qcom,ethqos: Add
- Qualcomm sc8280xp compatibles
-Content-Language: en-US
-To:     Andrew Halaney <ahalaney@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
-        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
-        samuel@sholland.org, mturquette@baylibre.com,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
-        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
-        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
-        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
-        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
-References: <20230331214549.756660-1-ahalaney@redhat.com>
- <20230331214549.756660-5-ahalaney@redhat.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230331214549.756660-5-ahalaney@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Message-Id: <20230402-qrtr-trace-types-v1-1-da062d368e74@kernel.org>
+X-B4-Tracking: v=1; b=H4sIANRjKWQC/x2NQQrCQAwAv1JyNrDGpYpXwQd4FQ/pNrULZa3JK
+ krp3w0eZ2CYBUw0i8GxWUDlnS0/isN200AaudwFc+8MFGgXYiB8alWsykmwfmcxpMhE+7aPh6E
+ Fzzo2wU65pNHD8poml7PKkD//zxUu5xPc1vUHZpq9onwAAAA=
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-kernel@vger.kernel.org, netdev@vger.kernel.org
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/03/2023 23:45, Andrew Halaney wrote:
-> The sc8280xp has a new version of the ETHQOS hardware in it, EMAC v3.
-> Add a compatible for this.
-> 
-> Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+The arguments passed to the trace events are of type unsigned int,
+however the signature of the events used __le32 parameters.
 
+I may be missing the point here, but sparse flagged this and it
+does seem incorrect to me.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+  net/qrtr/ns.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/qrtr.h):
+  ./include/trace/events/qrtr.h:11:1: warning: cast to restricted __le32
+  ./include/trace/events/qrtr.h:11:1: warning: restricted __le32 degrades to integer
+  ./include/trace/events/qrtr.h:11:1: warning: restricted __le32 degrades to integer
+  ... (a lot more similar warnings)
+  net/qrtr/ns.c:115:47:    expected restricted __le32 [usertype] service
+  net/qrtr/ns.c:115:47:    got unsigned int service
+  net/qrtr/ns.c:115:61: warning: incorrect type in argument 2 (different base types)
+  ... (a lot more similar warnings)
 
-Best regards,
-Krzysztof
+Signed-off-by: Simon Horman <horms@kernel.org>
+---
+ include/trace/events/qrtr.h | 33 ++++++++++++++++++---------------
+ 1 file changed, 18 insertions(+), 15 deletions(-)
+
+diff --git a/include/trace/events/qrtr.h b/include/trace/events/qrtr.h
+index b1de14c3bb93..441132c67133 100644
+--- a/include/trace/events/qrtr.h
++++ b/include/trace/events/qrtr.h
+@@ -10,15 +10,16 @@
+ 
+ TRACE_EVENT(qrtr_ns_service_announce_new,
+ 
+-	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
++	TP_PROTO(unsigned int service, unsigned int instance,
++		 unsigned int node, unsigned int port),
+ 
+ 	TP_ARGS(service, instance, node, port),
+ 
+ 	TP_STRUCT__entry(
+-		__field(__le32, service)
+-		__field(__le32, instance)
+-		__field(__le32, node)
+-		__field(__le32, port)
++		__field(unsigned int, service)
++		__field(unsigned int, instance)
++		__field(unsigned int, node)
++		__field(unsigned int, port)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -36,15 +37,16 @@ TRACE_EVENT(qrtr_ns_service_announce_new,
+ 
+ TRACE_EVENT(qrtr_ns_service_announce_del,
+ 
+-	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
++	TP_PROTO(unsigned int service, unsigned int instance,
++		 unsigned int node, unsigned int port),
+ 
+ 	TP_ARGS(service, instance, node, port),
+ 
+ 	TP_STRUCT__entry(
+-		__field(__le32, service)
+-		__field(__le32, instance)
+-		__field(__le32, node)
+-		__field(__le32, port)
++		__field(unsigned int, service)
++		__field(unsigned int, instance)
++		__field(unsigned int, node)
++		__field(unsigned int, port)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -62,15 +64,16 @@ TRACE_EVENT(qrtr_ns_service_announce_del,
+ 
+ TRACE_EVENT(qrtr_ns_server_add,
+ 
+-	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
++	TP_PROTO(unsigned int service, unsigned int instance,
++		 unsigned int node, unsigned int port),
+ 
+ 	TP_ARGS(service, instance, node, port),
+ 
+ 	TP_STRUCT__entry(
+-		__field(__le32, service)
+-		__field(__le32, instance)
+-		__field(__le32, node)
+-		__field(__le32, port)
++		__field(unsigned int, service)
++		__field(unsigned int, instance)
++		__field(unsigned int, node)
++		__field(unsigned int, port)
+ 	),
+ 
+ 	TP_fast_assign(
 
