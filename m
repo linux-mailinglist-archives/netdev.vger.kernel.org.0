@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A6856D36A7
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 11:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 276CB6D36AB
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 11:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbjDBJsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 05:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
+        id S230307AbjDBJsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 05:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbjDBJsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 05:48:36 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91D01BF7A
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 02:48:34 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id p34so15371629wms.3
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 02:48:34 -0700 (PDT)
+        with ESMTP id S230293AbjDBJsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 05:48:45 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D14A1D2C6
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 02:48:36 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id r19-20020a05600c459300b003eb3e2a5e7bso16375577wmo.0
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 02:48:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680428913;
+        d=gmail.com; s=20210112; t=1680428914;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=SAblUE03ymYuwzjrgwBcc3OSVWPRf9YpmAHrq+Quvv4=;
-        b=NE9K05P0a/C7QVRXP6JzGXQk4tA7LUXr2rzefRgCJT8s0XRxCrhw9NtCuCtElJjtl5
-         UXqX/YsYNyOm0TC8VOwQ2YZxBg8Uk31/2GFk1MRJH2mwz1Rfmqq2+2QlATOt4O8K0Mtz
-         fTUav9U6C54I3a1rb7tk0cJ1rW5WELuAYtNErZNVbGzHJ0PT5WQCUx34ojPzYPtGV/NS
-         Sahq0ZT9hVpzLPXmzV3VjNyK3f7DaV+sq/pc/GvsYf/rgU1QdRTd6x7WUcCHQ3Cr9hk8
-         HoRBCElZlhxWlMJmS9PkB3XzZoSp1k/Z6vZ/+V6uNX4i2tsigjN1P54/cqkdqTbDjEys
-         HRMQ==
+        bh=h74B+sspgxWF+7aFXKfhg3s39gu1HTzZBhHhas95eg0=;
+        b=RJbxMQr1kpLtO+MyUBP7WhR6bj67reJZZg+Ym4Q6b91V6CNXZjPWPVB+OuaHKiqoQM
+         RSqO6808kyOJ+lQQ+AH7AV4wqE9s+U6WYNg13YjX67jDTAl8B8HXSUZcdAS7/YpKUgmf
+         M1abDow9NjG1gIOVQDNQKNbeT+IUO/74NCB6lahka5RIyUB6S1tFFACE9A5/caW2zcPg
+         0FWtPtKXPUo5AeBgHuazkYhmyJsGnXSzjc/a+QngZqotCi8MfITpxNI1wl8+M9fB5ZVE
+         vtL9B8mYZBx9KG7CUjfQgIJpRj8iLdr8XnBc+UNSFCMIGeOTNUtiEkheZ11L1Gpq4+BW
+         5rGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680428913;
+        d=1e100.net; s=20210112; t=1680428914;
         h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SAblUE03ymYuwzjrgwBcc3OSVWPRf9YpmAHrq+Quvv4=;
-        b=3X9DhW0gWCjwsY3ltknbwND1D2sDLtAvJHHvHmPMB9/H1RjTohcDUkenQ1pt5fLpXk
-         s2Ay9mUH+ZuZMWeABf7ay9x26MipVfWmM76g2eqjuaYInLswDOdAyh/TGgL2Wt4x1Mnk
-         519+dx/lST311Mx40kbboKywSSjbULYzWYcTb2ZMPyq8YgzM+ZrpNR5tF87HP5UhxL7c
-         TF87wl/LGq4qwiWdreelDc67fERLqqqre6gs+wNhg7pysos0rA62wcYGEKMrfc7I+Y+h
-         VResJli3u/L2u550SqgYTwz0V1Fo2HkX8QyJhAZXy1Kug6kpbQQpx9/1IDoQ1k1FZlqJ
-         Lqkg==
-X-Gm-Message-State: AAQBX9eD6ZKBrfABaA7WaiQNHnHKOdC21nNi1UVDPtkf3zOu1oZbTZl6
-        cR4lDDdnH41ELPV9pRvEGPo=
-X-Google-Smtp-Source: AKy350ZhtmSaSxWUzMy58Et9f+xTTsKpUSRU7191r6Jg/6o1EPeVn/SlTvHPXO1IdVvx0Rx1kcM+lA==
-X-Received: by 2002:a1c:ed17:0:b0:3f0:396b:8b9c with SMTP id l23-20020a1ced17000000b003f0396b8b9cmr7881598wmh.9.1680428913290;
-        Sun, 02 Apr 2023 02:48:33 -0700 (PDT)
+        bh=h74B+sspgxWF+7aFXKfhg3s39gu1HTzZBhHhas95eg0=;
+        b=zJOVK0QbZx9U/ffqYe6yB+NvUA5R+dJ6pBvZsUHL3B/I2dYiaau26XJwjy0aTLmbnz
+         gHqknDP8xSB1YKinu29WiOc1DCFMjXT4EgSLphsWC+tWiHGHi4ICSXk7GK9XOUFHiHT1
+         cJP9pU/tKn+zUJH3AT9uSRIfrdB43JtArwPRxdQB+6RTN9KraqFC75fzlfjiS1wkn2Ig
+         DiMiJmHvrJEOtvlI+43Zg6IDSXw07bYmiY7kgso8imrxotgEItc+ulbd9mFYGoDGTlAI
+         /8HNuWnE+bSnuc/4pXqSoSzEXeZSEDvLhAcFgVQckhlKgb5czawx24Fw8DOxYzpshNJb
+         oc4A==
+X-Gm-Message-State: AO0yUKU32JnbGqg8mvHiOdkj7BdGMMkVVAwrJfgUauB/MAYkF4H89jjf
+        EHM7qEE3orDfiBzc0S0KQTA=
+X-Google-Smtp-Source: AK7set9JKeHqrfKGDPSlyxWTJeNb2C8RLV62283dni2kCcbBO7m2DSmxeAXtdLPAPAP9EnTYhi+tFw==
+X-Received: by 2002:a05:600c:25a:b0:3ed:358e:c1c2 with SMTP id 26-20020a05600c025a00b003ed358ec1c2mr24288815wmj.18.1680428914544;
+        Sun, 02 Apr 2023 02:48:34 -0700 (PDT)
 Received: from ?IPV6:2a01:c22:7b85:6800:129:5577:2076:7bf8? (dynamic-2a01-0c22-7b85-6800-0129-5577-2076-7bf8.c22.pool.telefonica.de. [2a01:c22:7b85:6800:129:5577:2076:7bf8])
-        by smtp.googlemail.com with ESMTPSA id y22-20020a7bcd96000000b003ee42696acesm8559115wmj.16.2023.04.02.02.48.32
+        by smtp.googlemail.com with ESMTPSA id z7-20020a05600c220700b003f04646838esm7382057wml.39.2023.04.02.02.48.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Apr 2023 02:48:32 -0700 (PDT)
-Message-ID: <602fd4ec-3448-d45b-034a-6110a4a454d6@gmail.com>
-Date:   Sun, 2 Apr 2023 11:47:03 +0200
+        Sun, 02 Apr 2023 02:48:34 -0700 (PDT)
+Message-ID: <66446a75-8087-10f4-fc37-b97e13b88c27@gmail.com>
+Date:   Sun, 2 Apr 2023 11:47:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: [PATCH net-next 5/7] net: phy: smss: prepare for making edpd wait
- period configurable
+Subject: [PATCH net-next 6/7] net: phy: smsc: add edpd tunable support
 Content-Language: en-US
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
@@ -79,68 +78,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a member edpd_max_wait_ms to the private data structure in preparation
-of making the wait period configurable by supporting the edpd phy tunable.
+This adds support for the EDPD PHY tunable.
+Per default EDPD is disabled in interrupt mode, the tunable can be used
+to override this, e.g. if the link partner doesn't use EDPD.
+The interval to check for energy can be chosen between 1000ms and
+2000ms. Note that this value consists of the 1000ms phylib interval
+for state machine runs plus the time to wait for energy being detected.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/phy/smsc.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/net/phy/smsc.c  | 82 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/smscphy.h |  4 ++
+ 2 files changed, 86 insertions(+)
 
 diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 25b9cd474..0cd433f01 100644
+index 0cd433f01..cca5bf46f 100644
 --- a/drivers/net/phy/smsc.c
 +++ b/drivers/net/phy/smsc.c
-@@ -33,6 +33,8 @@
- #define SPECIAL_CTRL_STS_AMDIX_ENABLE_	0x4000
+@@ -34,6 +34,8 @@
  #define SPECIAL_CTRL_STS_AMDIX_STATE_	0x2000
  
-+#define EDPD_MAX_WAIT_DFLT		640
-+
+ #define EDPD_MAX_WAIT_DFLT		640
++/* interval between phylib state machine runs in ms */
++#define PHY_STATE_MACH_MS		1000
+ 
  struct smsc_hw_stat {
  	const char *string;
- 	u8 reg;
-@@ -46,6 +48,7 @@ static struct smsc_hw_stat smsc_hw_stats[] = {
- struct smsc_phy_priv {
- 	unsigned int edpd_enable:1;
- 	unsigned int edpd_mode_set_by_user:1;
-+	unsigned int edpd_max_wait_ms;
- };
+@@ -295,6 +297,86 @@ static void smsc_get_stats(struct phy_device *phydev,
+ 		data[i] = smsc_get_stat(phydev, i);
+ }
  
- static int smsc_phy_ack_interrupt(struct phy_device *phydev)
-@@ -213,9 +216,13 @@ int lan87xx_read_status(struct phy_device *phydev)
- 	if (err)
- 		return err;
- 
--	if (!phydev->link && priv && priv->edpd_enable) {
-+	if (!phydev->link && priv && priv->edpd_enable &&
-+	    priv->edpd_max_wait_ms) {
-+		unsigned int max_wait = priv->edpd_max_wait_ms * 1000;
-+		int rc;
++static int smsc_phy_get_edpd(struct phy_device *phydev, u16 *edpd)
++{
++	struct smsc_phy_priv *priv = phydev->priv;
 +
- 		/* Disable EDPD to wake up PHY */
--		int rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
-+		rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
- 		if (rc < 0)
- 			return rc;
++	if (!priv)
++		return -EOPNOTSUPP;
++
++	if (!priv->edpd_enable)
++		*edpd = ETHTOOL_PHY_EDPD_DISABLE;
++	else if (!priv->edpd_max_wait_ms)
++		*edpd = ETHTOOL_PHY_EDPD_NO_TX;
++	else
++		*edpd = PHY_STATE_MACH_MS + priv->edpd_max_wait_ms;
++
++	return 0;
++}
++
++static int smsc_phy_set_edpd(struct phy_device *phydev, u16 edpd)
++{
++	struct smsc_phy_priv *priv = phydev->priv;
++	int ret;
++
++	if (!priv)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&phydev->lock);
++
++	switch (edpd) {
++	case ETHTOOL_PHY_EDPD_DISABLE:
++		priv->edpd_enable = false;
++		break;
++	case ETHTOOL_PHY_EDPD_NO_TX:
++		priv->edpd_enable = true;
++		priv->edpd_max_wait_ms = 0;
++		break;
++	case ETHTOOL_PHY_EDPD_DFLT_TX_MSECS:
++		edpd = PHY_STATE_MACH_MS + EDPD_MAX_WAIT_DFLT;
++		fallthrough;
++	default:
++		if (phydev->irq != PHY_POLL)
++			return -EOPNOTSUPP;
++		if (edpd < PHY_STATE_MACH_MS || edpd > PHY_STATE_MACH_MS + 1000)
++			return -EINVAL;
++		priv->edpd_enable = true;
++		priv->edpd_max_wait_ms = edpd - PHY_STATE_MACH_MS;
++	}
++
++	priv->edpd_mode_set_by_user = true;
++
++	ret = smsc_phy_config_edpd(phydev);
++
++	mutex_unlock(&phydev->lock);
++
++	return ret;
++}
++
++int smsc_phy_get_tunable(struct phy_device *phydev,
++			 struct ethtool_tunable *tuna, void *data)
++{
++	switch (tuna->id) {
++	case ETHTOOL_PHY_EDPD:
++		return smsc_phy_get_edpd(phydev, data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++EXPORT_SYMBOL_GPL(smsc_phy_get_tunable);
++
++int smsc_phy_set_tunable(struct phy_device *phydev,
++			 struct ethtool_tunable *tuna, const void *data)
++{
++	switch (tuna->id) {
++	case ETHTOOL_PHY_EDPD:
++		return smsc_phy_set_edpd(phydev, *(u16 *)data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++EXPORT_SYMBOL_GPL(smsc_phy_set_tunable);
++
+ int smsc_phy_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+diff --git a/include/linux/smscphy.h b/include/linux/smscphy.h
+index 80f37c1db..e1c886277 100644
+--- a/include/linux/smscphy.h
++++ b/include/linux/smscphy.h
+@@ -32,6 +32,10 @@ int smsc_phy_config_intr(struct phy_device *phydev);
+ irqreturn_t smsc_phy_handle_interrupt(struct phy_device *phydev);
+ int smsc_phy_config_init(struct phy_device *phydev);
+ int lan87xx_read_status(struct phy_device *phydev);
++int smsc_phy_get_tunable(struct phy_device *phydev,
++			 struct ethtool_tunable *tuna, void *data);
++int smsc_phy_set_tunable(struct phy_device *phydev,
++			 struct ethtool_tunable *tuna, const void *data);
+ int smsc_phy_probe(struct phy_device *phydev);
  
-@@ -229,7 +236,7 @@ int lan87xx_read_status(struct phy_device *phydev)
- 		 */
- 		read_poll_timeout(phy_read, rc,
- 				  rc & MII_LAN83C185_ENERGYON || rc < 0,
--				  10000, 640000, true, phydev,
-+				  10000, max_wait, true, phydev,
- 				  MII_LAN83C185_CTRL_STATUS);
- 		if (rc < 0)
- 			return rc;
-@@ -299,6 +306,7 @@ int smsc_phy_probe(struct phy_device *phydev)
- 		return -ENOMEM;
- 
- 	priv->edpd_enable = true;
-+	priv->edpd_max_wait_ms = EDPD_MAX_WAIT_DFLT;
- 
- 	if (device_property_present(dev, "smsc,disable-energy-detect"))
- 		priv->edpd_enable = false;
+ #endif /* __LINUX_SMSCPHY_H__ */
 -- 
 2.40.0
 
