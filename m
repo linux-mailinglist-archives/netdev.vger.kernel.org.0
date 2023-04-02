@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E4EE6D369C
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 11:43:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C20D06D36A4
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 11:48:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbjDBJnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 05:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
+        id S230191AbjDBJsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 05:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjDBJnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 05:43:52 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 033BECC
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 02:43:52 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id m8so4462151wmq.5
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 02:43:51 -0700 (PDT)
+        with ESMTP id S229459AbjDBJsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 05:48:30 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F06E59E8
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 02:48:29 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id r29so26395879wra.13
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 02:48:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680428630;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gP8Yw8If7PJz//2HBSqJndLiFu53MEZ3h/2dJA3kQFQ=;
-        b=K9vw2FbFHrSmA9MNXR87uMgLOA1Rd47GFg9dtktZp1DGDC3Y/2YoOVBYOK8cwRYCo7
-         9fQ1jPNJaVBkZThp12+2n5y/3al4uScvV+jVbeO4UqaO/ff/rCW8qcKMby48bHm1Xs7t
-         wTZBdNHLtnRuCBsbl/yVeZKq10WaKI3JBnwPYWrRwTPUyLQL1zi8ZMbqKYPHkb2EZ0/s
-         Ww+WiIkovFXUDVmJ7qjsujFQkw7dv/fHMnZOz8bg5JN6FDK5VLw2Oe5wFDPeBIrmS8WX
-         NjK5JYa089YfDxsZ8jO4xJyXvCtTA5qhgE7JAk1qL+BKCaw0bx3k47nvpMTh2QbSFSn5
-         wonQ==
+        d=gmail.com; s=20210112; t=1680428908;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AxNLqwe7oCB4JXyBb+HCY+YQ9gAGvcZfdTIxvMULNNY=;
+        b=TUj/LbQXS5AilzPoAPviWunmxFJ38xjPPr5k7HLhoD/S4ljgP887uo0GX6mLaYZKuC
+         P287QNkqKn5PsTQRwYDWL1Yy3RpGqZHxqIT0dsIu3J3TY9VCCe1DCoy5KLtq9cWrViiv
+         L3b2Cuz/fg1CVjd8DKp6Tg3NEl9KDuLsqVNaz5Aya02Ieoyfjmuu8i8jBWUezUGvaMct
+         H2z6ZQ+ka9puLP3iNXgnl6Iat9jc0JnNlh2EvJ5vSvZkOMvB1S504+/YzOaIWa2SuGHv
+         XCoXeyfOfRoFgIWigszmGIZcuPxjAjXmZY5A277zCcKol1lEI7HwvL2ZWUppSoSePOT9
+         KsIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680428630;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=gP8Yw8If7PJz//2HBSqJndLiFu53MEZ3h/2dJA3kQFQ=;
-        b=rOjGLfCxdBt0H5Od1VNcGAJ4j/RpOi1wA2X8h5qMsXj35paYOe7CmSobEB+Xs9ReQD
-         HU49qwGgF3JBbSqayu9hTxaCxrbJ//YNWpxEY+9R4sjWKivMNhRmW7ShMCdB3dM5vogP
-         AnZrpsn1zOwwMn3z028lVWttcC8d1EtHDt4SztybwXzt9P3P2NG0jlgptsqO+jvAUfI0
-         ys5m56vOCGL+CJFl+RdYPpKR5az/Q6H9bitEvwb3mKXSrfeJnboSvXGHtm89ktl87ba2
-         DNK2/Qhi4f9KrPvpktGqvt+d5cwFKZBEc5picnt86QAgjcLvpS3ZbkGNmWM8fBM160ut
-         VaRQ==
-X-Gm-Message-State: AAQBX9efjl3/a5LqW2yekJxnLnIQSztPL43d7ORj45NEYDNfm81UnZqQ
-        4NzTGzxrdqDSTNIYfC6LXK8=
-X-Google-Smtp-Source: AKy350aDouPTtT1Xl0YbDN+mMTIpMCxWsje5ROmYyPSR7bbsfJed3LfxBtTz4D6gqkQ6omfMVhFv1w==
-X-Received: by 2002:a7b:c8d7:0:b0:3ef:67fc:fef1 with SMTP id f23-20020a7bc8d7000000b003ef67fcfef1mr19867702wml.26.1680428630310;
-        Sun, 02 Apr 2023 02:43:50 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680428908;
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AxNLqwe7oCB4JXyBb+HCY+YQ9gAGvcZfdTIxvMULNNY=;
+        b=U6dfJO4p1nFYl3UYJBzGSedDq83ucj+X/jiY+D9T3LFX71PmXLBxNl19jZynWVaunA
+         opFeXUtBveU7TbemJdRyrNcaMdtOQ65aLPVe+xymr3casdgnDwWR5YCTcR+f2xirxWGa
+         m1mtV84ERsEcKHOG1krsG7AISDgLSB6oItZVCDoMAhy8EavvAMVWCuiRhDG0pHQNzWK1
+         tGGsuObtFh8nHpY9Xzx5eYAcwx5PedgrJmTs1uTut1UTMZqZnapKuMlqWfU4/yBPvbPR
+         NmBvEt2Qc3FMvxWqEZQ5hOxFcqczoE2UKR4rYQrZ2GrKjvS41VUhOndQUNwli/S+jan5
+         u+JQ==
+X-Gm-Message-State: AAQBX9cEE0gRStPlyFDtP/KXpTN8I0iypedXemcydw7RuHffTZec737U
+        bHu2Qef3Sx5RX+NIl1xYVJk=
+X-Google-Smtp-Source: AKy350YvLuFzEXwAlZMrAw2O2kiJHtSaniO94Ij2S8y+njmGkkuUtVqJcVJlWuhedGDTrSPuQCnpWA==
+X-Received: by 2002:adf:f38e:0:b0:2dc:c9c0:85cc with SMTP id m14-20020adff38e000000b002dcc9c085ccmr26163248wro.59.1680428907837;
+        Sun, 02 Apr 2023 02:48:27 -0700 (PDT)
 Received: from ?IPV6:2a01:c22:7b85:6800:129:5577:2076:7bf8? (dynamic-2a01-0c22-7b85-6800-0129-5577-2076-7bf8.c22.pool.telefonica.de. [2a01:c22:7b85:6800:129:5577:2076:7bf8])
-        by smtp.googlemail.com with ESMTPSA id y22-20020a7bcd96000000b003ee42696acesm8548944wmj.16.2023.04.02.02.43.49
+        by smtp.googlemail.com with ESMTPSA id x9-20020a5d4449000000b002e40d124460sm6890448wrr.97.2023.04.02.02.48.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Apr 2023 02:43:49 -0700 (PDT)
-Message-ID: <17fcccf5-8d81-298e-0671-d543340da105@gmail.com>
-Date:   Sun, 2 Apr 2023 11:43:36 +0200
+        Sun, 02 Apr 2023 02:48:27 -0700 (PDT)
+Message-ID: <44049041-67ee-43f6-a598-c7397ac63a56@gmail.com>
+Date:   Sun, 2 Apr 2023 11:44:40 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
+Subject: [PATCH net-next 1/7] net: phy: smsc: rename flag energy_enable
 Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Russell King - ARM Linux <linux@armlinux.org.uk>,
         Eric Dumazet <edumazet@google.com>,
@@ -62,8 +64,8 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/7] net: phy: smsc: add support for edpd tunable
+References: <17fcccf5-8d81-298e-0671-d543340da105@gmail.com>
+In-Reply-To: <17fcccf5-8d81-298e-0671-d543340da105@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -76,26 +78,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for the EDPD PHY tunable.
-Per default EDPD is disabled in interrupt mode, the tunable can be used
-to override this, e.g. if the link partner doesn't use EDPD.
-The interval to check for energy can be chosen between 1000ms and
-2000ms. Note that this value consists of the 1000ms phylib interval
-for state machine runs plus the time to wait for energy being detected.
+Rename the flag to edpd_enable, as we're not enabling energy but
+edpd (energy detect power down) mode. In addition change the
+type to a bit field member in preparation of adding further flags.
 
-Heiner Kallweit (7):
-  net: phy: smsc: rename flag energy_enable
-  net: phy: smsc: add helper smsc_phy_config_edpd
-  net: phy: smsc: clear edpd_enable if interrupt mode is used
-  net: phy: smsc: add flag edpd_mode_set_by_user
-  net: phy: smss: prepare for making edpd wait period configurable
-  net: phy: smsc: add edpd tunable support
-  net: phy: smsc: enable edpd tunable support
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/smsc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
- drivers/net/phy/smsc.c  | 138 ++++++++++++++++++++++++++++++++++++----
- include/linux/smscphy.h |   4 ++
- 2 files changed, 131 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 730964b85..928cf6d8b 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -44,7 +44,7 @@ static struct smsc_hw_stat smsc_hw_stats[] = {
+ };
+ 
+ struct smsc_phy_priv {
+-	bool energy_enable;
++	unsigned int edpd_enable:1;
+ };
+ 
+ static int smsc_phy_ack_interrupt(struct phy_device *phydev)
+@@ -102,7 +102,7 @@ int smsc_phy_config_init(struct phy_device *phydev)
+ {
+ 	struct smsc_phy_priv *priv = phydev->priv;
+ 
+-	if (!priv || !priv->energy_enable || phydev->irq != PHY_POLL)
++	if (!priv || !priv->edpd_enable || phydev->irq != PHY_POLL)
+ 		return 0;
+ 
+ 	/* Enable energy detect power down mode */
+@@ -198,7 +198,7 @@ int lan87xx_read_status(struct phy_device *phydev)
+ 	if (err)
+ 		return err;
+ 
+-	if (!phydev->link && priv && priv->energy_enable &&
++	if (!phydev->link && priv && priv->edpd_enable &&
+ 	    phydev->irq == PHY_POLL) {
+ 		/* Disable EDPD to wake up PHY */
+ 		int rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
+@@ -284,10 +284,10 @@ int smsc_phy_probe(struct phy_device *phydev)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	priv->energy_enable = true;
++	priv->edpd_enable = true;
+ 
+ 	if (device_property_present(dev, "smsc,disable-energy-detect"))
+-		priv->energy_enable = false;
++		priv->edpd_enable = false;
+ 
+ 	phydev->priv = priv;
+ 
 -- 
 2.40.0
+
 
