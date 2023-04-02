@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 532D66D39BB
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 20:19:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A7E6D39C3
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 20:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231339AbjDBSST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 14:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
+        id S231381AbjDBSTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 14:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbjDBSSS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 14:18:18 -0400
+        with ESMTP id S230229AbjDBSTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 14:19:22 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B138A71;
-        Sun,  2 Apr 2023 11:18:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76802902A;
+        Sun,  2 Apr 2023 11:19:21 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id 8D50D5FD04;
-        Sun,  2 Apr 2023 21:18:12 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id CB3435FD04;
+        Sun,  2 Apr 2023 21:19:19 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1680459492;
-        bh=s4eKgbhgNv4f1gYW15n6VyDdSflCXwAy8F8mScWFz1Y=;
+        s=mail; t=1680459559;
+        bh=ylxN7UqQ/M1z7OMhkHvFEk22Nzg7mYVbxzsd6Ok5gYk=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=kebCLhG8m8b44nPUXgIiLoHlm2div159+gCaxPZlok7PfL1MsDsFZz7JTObR9vHeh
-         RaHgn0m3DSUt2AraE9JbfNEuaT/J5X9lJtnWOCH9INtbfLQHiVIgzbhbcLD6nl1KIE
-         oNnsJ8jlNspkJhTkllNgItCG3s3gG/WuKp9IAGvHNbQYauohrFBuV0Q7+SOLEoqC/e
-         vU2K9Q7GN5MQJA1Ah6WfIlvfUfgeWMoVNJ0R7GEHs9U6joeqT/ht5ATK0qewNvIiCO
-         p8ZcDzfqXIqSJyx+c4MTTTfu7It2vzriaFKU+5p+A0XYcXKnhxVzMlSCef79mQQXpm
-         gjxWCEVSsLQYQ==
+        b=qkgRmy0fCvdg4Rmxz7Bya+i2lWqY2nRMIZOJPRV3xQuTOh0NYYWde9pZi2eIlBk7w
+         IxIOsboZr96vpG1/ydZFk8mpQ4+uBj//drk/l8sUlgo1jrFvyRG54OOK5XbF1MMsEQ
+         ndE2yMEwJ93hcNGEGcjLRKUE4v0Tepr6TPMXD0u09Gm5z1MO3uF+x12Q87oF7n+fG5
+         XCJXBfGj1VQK96jDY0t/8TPTWJtcWJfBZ2YN+oe+jad9mMUN61XreMA5RkDPH3bt/x
+         47A4mR5cUDLwA/VfGfdybad48AZTfRSJNopp1P3zjnSZkaljt3WBKTiPbKYWRC6rzi
+         itKp/WArm5hug==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun,  2 Apr 2023 21:18:07 +0300 (MSK)
-Message-ID: <5440aa51-8a6c-ac9f-9578-5bf9d66217a5@sberdevices.ru>
-Date:   Sun, 2 Apr 2023 21:14:37 +0300
+        Sun,  2 Apr 2023 21:19:19 +0300 (MSK)
+Message-ID: <fb3308c0-4a7a-a0b0-dbfd-92e50985600e@sberdevices.ru>
+Date:   Sun, 2 Apr 2023 21:15:49 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
 Content-Language: en-US
+In-Reply-To: <5440aa51-8a6c-ac9f-9578-5bf9d66217a5@sberdevices.ru>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -49,7 +50,8 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>, <pv-drivers@vmware.com>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v4 0/3] vsock: return errors other than -ENOMEM to socket
+Subject: [RFC PATCH v4 1/3] vsock/vmci: convert VMCI error code to -ENOMEM on
+ receive
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
@@ -71,49 +73,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This adds conversion of VMCI specific error code to general -ENOMEM. It
+is preparation for the next patch, which changes af_vsock.c behaviour
+on receive to pass value returned from transport to the user.
 
-this patchset removes behaviour, where error code returned from any
-transport was always switched to ENOMEM. This works in the same way as
-patch from Bobby Eshleman:
-commit c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
-but for receive calls. VMCI transport is also updated (both tx and rx
-SOCK_STREAM callbacks), because it returns VMCI specific error code to
-af_vsock.c (like VMCI_ERROR_*). Tx path is already merged to net, so it
-was excluded from patchset in v4. At the same time, virtio and Hyper-V
-transports are using general error codes, so there is no need to update
-them.
+Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
+---
+ net/vmw_vsock/vmci_transport.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-vsock_test suite is also updated.
-
-Link to v1:
-https://lore.kernel.org/netdev/97f19214-ba04-c47e-7486-72e8aa16c690@sberdevices.ru/
-Link to v2:
-https://lore.kernel.org/netdev/60abc0da-0412-6e25-eeb0-8e32e3ec21e7@sberdevices.ru/
-Link to v3:
-https://lore.kernel.org/netdev/dead4842-333a-015e-028b-302151336ff9@sberdevices.ru/
-
-Changelog:
-
-v1 -> v2:
- - Add patch for VMCI as Vishnu Dasa suggested.
-v2 -> v3:
- - Change type of 'err' var in VMCI patches from 'int' to 'ssize_t'.
- - Split VMCI patch to two patches: for send and for receive cases.
- - Reorder patches: move VMCI before af_vsock.c.
-v3 -> v4:
- - Exclude VMCI patch for send from patchset (merged to 'net').
- - Update commit message of VMCI patch for receive.
-
-Arseniy Krasnov (3):
-  vsock/vmci: convert VMCI error code to -ENOMEM on receive
-  vsock: return errors other than -ENOMEM to socket
-  vsock/test: update expected return values
-
- net/vmw_vsock/af_vsock.c         |  4 ++--
- net/vmw_vsock/vmci_transport.c   | 11 +++++++++--
- tools/testing/vsock/vsock_test.c |  4 ++--
- 3 files changed, 13 insertions(+), 6 deletions(-)
-
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index 36eb16a40745..a5375c97f5b0 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -1831,10 +1831,17 @@ static ssize_t vmci_transport_stream_dequeue(
+ 	size_t len,
+ 	int flags)
+ {
++	ssize_t err;
++
+ 	if (flags & MSG_PEEK)
+-		return vmci_qpair_peekv(vmci_trans(vsk)->qpair, msg, len, 0);
++		err = vmci_qpair_peekv(vmci_trans(vsk)->qpair, msg, len, 0);
+ 	else
+-		return vmci_qpair_dequev(vmci_trans(vsk)->qpair, msg, len, 0);
++		err = vmci_qpair_dequev(vmci_trans(vsk)->qpair, msg, len, 0);
++
++	if (err < 0)
++		err = -ENOMEM;
++
++	return err;
+ }
+ 
+ static ssize_t vmci_transport_stream_enqueue(
 -- 
 2.25.1
