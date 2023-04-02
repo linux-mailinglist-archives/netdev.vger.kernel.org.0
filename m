@@ -2,106 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C52C6D39C5
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 20:21:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F19306D39BD
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 20:19:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbjDBSVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 14:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43010 "EHLO
+        id S231408AbjDBSS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 14:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbjDBSVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 14:21:05 -0400
-Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F6A902A;
-        Sun,  2 Apr 2023 11:21:04 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id C6D3C5FD04;
-        Sun,  2 Apr 2023 21:21:02 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1680459662;
-        bh=Q1dSLV0WkKrQTTWvKTXPk9LEK5CXRc1NRkFMGJRvt8g=;
-        h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=L9rZiVGfJ95fTbxzIIkvOl8IJi2ZE6dOPiQlg4pX/Edmzu2YdQO0CuXO0gKOI9cLf
-         +FXYDaXBpT52O9K76uJ1dAtghF0/mn9GDSXYwc+KDi2ax22wUg2EACvvYnQbAOTZjg
-         gvcinolzqAeNzeiNg+qiRF+i5mrQ84csiE8Q6g0Us1P4Wzni9wtGFf+Nn2rvvEwNgm
-         EX0USqHQqtODl34fLdz60VM7MhXf4Qc/9wMjWl+bXx06qaivBCxkacn5Oa3js/gk0+
-         w7Y40IByyQRDvnzYf3aWQd3U3kh6xdsWZ7ZVK4BlicHU8WE9K4Mxbo6id/RS7raFeX
-         JVom+Ztaf27GQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mx.sberdevices.ru (Postfix) with ESMTP;
-        Sun,  2 Apr 2023 21:21:02 +0300 (MSK)
-Message-ID: <5a180d34-ac70-0750-a2e8-d01750fad68e@sberdevices.ru>
-Date:   Sun, 2 Apr 2023 21:17:32 +0300
+        with ESMTP id S231381AbjDBSS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 14:18:56 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7D78A71;
+        Sun,  2 Apr 2023 11:18:53 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id t20so1870862uaw.5;
+        Sun, 02 Apr 2023 11:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680459533; x=1683051533;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hHSRAhIwBYA9x/eeP7HTExW01z5DAG+ze+JXsU/sf3o=;
+        b=Fd8WMdVX3qUrlVSt0Bm0gpeDNx124XJ/QwsdFOdRzK24LjPSsodpI3AYqmCH7HhsFl
+         SGvknosiCpfpqY6dQRVTe5MYDMiCMvwIZ9wkRMN4pr8Y0lZEiTJZYm4q3ejtMQchLKdf
+         JMxvcCIBWfJIPCXulFkXqAKxAgTsnww9WTCQ02cw5Qb2fNng5T2GGQHLa5KsNpe1Jwvl
+         xYNgAWi2Zpx7c2wWV+P9AQ4e7F4hd3bFk+fA34f5FzBzSOGfr2+32soGy4PgbeSj0QLB
+         KANeQIEYE9NVeEn8DPqqcymEl4AMrS3uh3i1xgtl+apQuLah776UO/CqspFG72kj3tea
+         OcKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680459533; x=1683051533;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hHSRAhIwBYA9x/eeP7HTExW01z5DAG+ze+JXsU/sf3o=;
+        b=O+FIQ3yoq4SDjOadkpUOjJj0CTo19AGPJY/Sb9XwfQedXTlmoA46Hbi7UEmYIlZg/j
+         9OSzTQTwCmqH/fnXAisk6p8017nb7h3dUe8KSO++e9awrTFvSV5RyJAckfuwJbNkBn4x
+         SESvK+w38D/nA2beEWu/eUa38c6QxXzoeo4MDEtNFeQAFjMgb0amxqLnE9x/zgoH06F2
+         WhiaIc3y8Tr7dFad/dJ2y2+v3ofxCm7sMHtYbzuLSgNp7Yw2MbuFq6xTKOZ4vbXOYB8Z
+         22fSUJ8bjRGZLtzPc+kS1BrKotWa6+wxOcHjmgD2oLmpVV3HsxzRZ3Vyj3ClhryRpyCX
+         lANQ==
+X-Gm-Message-State: AAQBX9eEfOYv3YPntJhjswHYn1RQ6GbyQwm1wm2iWTD+pAiEdm+c7WgO
+        vJ7hNhXJNUY6eL44ZCPnD1ZWZYq5voyCjEa/SyI=
+X-Google-Smtp-Source: AKy350bsLS1Rz0GxrZdcTynmXyvYn78tcJlTBkyLQ0XQuC470sH5lh4N3lIlNO+yd2MZBgXQachaUEc9jYcRllveAWA=
+X-Received: by 2002:a1f:abd2:0:b0:43c:3dd6:5535 with SMTP id
+ u201-20020a1fabd2000000b0043c3dd65535mr3959076vke.0.1680459532872; Sun, 02
+ Apr 2023 11:18:52 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.1
-Content-Language: en-US
-In-Reply-To: <5440aa51-8a6c-ac9f-9578-5bf9d66217a5@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bryan Tan <bryantan@vmware.com>, Vishnu Dasa <vdasa@vmware.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
-        <avkrasnov@sberdevices.ru>, <pv-drivers@vmware.com>
-From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [RFC PATCH v4 3/3] vsock/test: update expected return values
+References: <20230401023029.967357-1-chenwei.0515@bytedance.com>
+In-Reply-To: <20230401023029.967357-1-chenwei.0515@bytedance.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 2 Apr 2023 14:18:11 -0400
+Message-ID: <CAF=yD-Lg_XSnE9frH9UFpJCZLx-gg2KHzVu7KmnigidujCvepQ@mail.gmail.com>
+Subject: Re: [PATCH] udp:nat:vxlan tx after nat should recsum if vxlan tx
+ offload on
+To:     Fei Cheng <chenwei.0515@bytedance.com>
+Cc:     dsahern@kernel.org, davem@davemloft.net,
+        netfilter-devel@vger.kernel.org,
+        Edward Cree <ecree@solarflare.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.16.1.6]
-X-ClientProxiedBy: S-MS-EXCH02.sberdevices.ru (172.16.1.5) To
- S-MS-EXCH01.sberdevices.ru (172.16.1.4)
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2023/04/02 13:52:00 #21029650
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This updates expected return values for invalid buffer test. Now such
-values are returned from transport, not from af_vsock.c.
+On Fri, Mar 31, 2023 at 10:31=E2=80=AFPM Fei Cheng <chenwei.0515@bytedance.=
+com> wrote:
+>
+> From: "chenwei.0515" <chenwei.0515@bytedance.com>
+>
+>     If vxlan-dev enable tx csum offload, there are two case of CHECKSUM_P=
+ARTIAL,
+>     but udp->check donot have the both meanings.
+>
+>     1. vxlan-dev disable tx csum offload, udp->check is just pseudo hdr.
+>     2. vxlan-dev enable tx csum offload, udp->check is pseudo hdr and
+>        csum from outter l4 to innner l4.
+>
+>     Unfortunately if there is a nat process after vxlan tx=EF=BC=8Cudp_ma=
+nip_pkt just use
+>     CSUM_PARTIAL to re csum PKT, which is just right on vxlan tx csum dis=
+able offload.
 
-Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
----
- tools/testing/vsock/vsock_test.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+The issue is that for encapsulated traffic with local checksum offload,
+netfilter incorrectly recomputes the outer UDP checksum as if it is an
+unencapsulated CHECKSUM_PARTIAL packet, correct?
 
-diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
-index 3de10dbb50f5..a91d0ef963be 100644
---- a/tools/testing/vsock/vsock_test.c
-+++ b/tools/testing/vsock/vsock_test.c
-@@ -723,7 +723,7 @@ static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opt
- 		exit(EXIT_FAILURE);
- 	}
- 
--	if (errno != ENOMEM) {
-+	if (errno != EFAULT) {
- 		perror("unexpected errno of 'broken_buf'");
- 		exit(EXIT_FAILURE);
- 	}
-@@ -887,7 +887,7 @@ static void test_inv_buf_client(const struct test_opts *opts, bool stream)
- 		exit(EXIT_FAILURE);
- 	}
- 
--	if (errno != ENOMEM) {
-+	if (errno != EFAULT) {
- 		fprintf(stderr, "unexpected recv(2) errno %d\n", errno);
- 		exit(EXIT_FAILURE);
- 	}
--- 
-2.25.1
+So the underlying issue is that the two types of packets are
+indistinguishable after udp_set_csum:
+
+        } else if (skb->ip_summed =3D=3D CHECKSUM_PARTIAL) {
+                uh->check =3D 0;
+                uh->check =3D udp_v4_check(len, saddr, daddr, lco_csum(skb)=
+);
+                if (uh->check =3D=3D 0)
+                        uh->check =3D CSUM_MANGLED_0;
+        } else {
+                skb->ip_summed =3D CHECKSUM_PARTIAL;
+                skb->csum_start =3D skb_transport_header(skb) - skb->head;
+                skb->csum_offset =3D offsetof(struct udphdr, check);
+                uh->check =3D ~udp_v4_check(len, saddr, daddr, 0);
+        }
+
+Clearly their ip_summed will be the same.
+
+>
+>     This patch use skb->csum_local flag to identify two case, which will =
+csum lco_csum if valid.
+>
+> Signed-off-by: chenwei.0515 <chenwei.0515@bytedance.com>
+> ---
+>  include/linux/skbuff.h       | 1 +
+>  net/ipv4/udp.c               | 1 +
+>  net/netfilter/nf_nat_proto.c | 9 +++++++++
+>  3 files changed, 11 insertions(+)
+>
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index ff7ad331fb82..62996d8d0b4d 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -990,6 +990,7 @@ struct sk_buff {
+>         __u8                    slow_gro:1;
+>         __u8                    csum_not_inet:1;
+>         __u8                    scm_io_uring:1;
+> +       __u8                    csum_local:1;
+
+sk_buff are in space constrained.
+
+I hope we can disambiguate the packets somehow without having
+to resort to a new flag.
+
+>
+>  #ifdef CONFIG_NET_SCHED
+>         __u16                   tc_index;       /* traffic control index =
+*/
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index c605d171eb2d..86bad0bbb76e 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -889,6 +889,7 @@ void udp_set_csum(bool nocheck, struct sk_buff *skb,
+>                 uh->check =3D udp_v4_check(len, saddr, daddr, lco_csum(sk=
+b));
+>                 if (uh->check =3D=3D 0)
+>                         uh->check =3D CSUM_MANGLED_0;
+> +               skb->csum_local =3D 1;
+>         } else {
+>                 skb->ip_summed =3D CHECKSUM_PARTIAL;
+>                 skb->csum_start =3D skb_transport_header(skb) - skb->head=
+;
+> diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
+> index 48cc60084d28..a0261fe2d932 100644
+> --- a/net/netfilter/nf_nat_proto.c
+> +++ b/net/netfilter/nf_nat_proto.c
+> @@ -25,6 +25,7 @@
+>  #include <net/ip6_route.h>
+>  #include <net/xfrm.h>
+>  #include <net/ipv6.h>
+> +#include <net/udp.h>
+>
+>  #include <net/netfilter/nf_conntrack_core.h>
+>  #include <net/netfilter/nf_conntrack.h>
+> @@ -75,6 +76,14 @@ static bool udp_manip_pkt(struct sk_buff *skb,
+>         hdr =3D (struct udphdr *)(skb->data + hdroff);
+>         __udp_manip_pkt(skb, iphdroff, hdr, tuple, maniptype, !!hdr->chec=
+k);
+>
+> +       if (skb->csum_local) {
+> +               hdr->check =3D 0;
+> +               hdr->check =3D udp_v4_check(htons(hdr->len), tuple->src.u=
+3.ip, tuple->dst.u3.ip,
+> +                                         lco_csum(skb));
+> +               if (hdr->check =3D=3D 0)
+> +                       hdr->check =3D CSUM_MANGLED_0;
+> +       }
+> +
+>         return true;
+>  }
+>
+> --
+> 2.11.0
+>
