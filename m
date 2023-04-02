@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5D856D37FF
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 14:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E5A6D3800
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 15:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230053AbjDBM6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 08:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34396 "EHLO
+        id S230201AbjDBNBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 09:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjDBM57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 08:57:59 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1E16A60
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 05:57:58 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id t13so19481191qvn.2
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 05:57:58 -0700 (PDT)
+        with ESMTP id S229646AbjDBNBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 09:01:30 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D33510A89
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 06:01:29 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id on15so6201773qvb.7
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 06:01:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680440277; x=1683032277;
+        d=gmail.com; s=20210112; t=1680440488; x=1683032488;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=qOalBZy5ltk6TN40To3s4pSUUZifGEYzxoD5wlM/R50=;
-        b=Hd04PKzpHPcQz2rKsWcWBUlDw71aETM2rH2s8XUN0QnogM8LkY1IhhXIIquL8IKRKO
-         t2Jdfebo+IyP9SPRDbt/eFmxN5VX5y8T5uZczHVT+OUlf6y0kiyAiGQ846BckjOFvQ3Z
-         3jQgbVApgp1kfmKxO1kjkyn/hRmMaVS1NB6/cGRSwoYVk2vEFQvRsCpk6Xcy5QT2ooFH
-         SRJT6TX6MhT8R4XpRnjVHhB+HvYWA69WixVmp6pfg/vJ8BtO++GhbkXMbrbNQkIiCwEY
-         Nccdrny6DP/Z5RWoe17qX1ANydQ//pajlLuBeDq8odayNQHFPOY+DhbHB/2tvxgS3eZF
-         w1dQ==
+        bh=oxXPyTPKP2oE3eyGtRNpy4db/f6/PfEID91UVydyuX4=;
+        b=EK/3xO/pFaiU59O8AiNfLwaT9t6D3bSF9G4hWFR4v/mcPCtarLLNCw6k2Vr8AR1J/V
+         KCrSeXla1WbYOz11stYSmuNEXFXCtUZBYr3FprrNbewNm4KKq0EMO9nfbWyiMLVd+DI/
+         0Da+MecndFTv+EYJStaRtoS6dJhS+WhctWqgIAUPvj3Q1SB11NV031X9U57sq0HQeIYU
+         8lCzA5WUC/seC9cOqpUrH7nvHm9x+9js0GRtk4i37DmtUyj4WxVmWJSK866Xe3P6hQXx
+         V/ey7UWzf9sP2OxH87mP0pXlghLzAFY981txHUIGO93lj76PAdV+oEoVGcmqQHebJ0D+
+         tfOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680440277; x=1683032277;
+        d=1e100.net; s=20210112; t=1680440488; x=1683032488;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qOalBZy5ltk6TN40To3s4pSUUZifGEYzxoD5wlM/R50=;
-        b=XTl+qzF9M8D8tz+oPPOsM5bBceMJZ2MBJukuhaTj9b1YjpvPZQvpWR/kA2R/+tHnCv
-         Iqfn3jcNnV7Jfshngp5+u0F3JNWWzd1pz8KQvVs2iqmcyxWhMHMeoqHQ56lRYYCl376C
-         2/fXrd4AgfSXGpno+T9teXJ/k2AKhJBiPazVR06PLHv1HArY3wkDp+IYhZzZ3Q1wLZxD
-         x9+FhPtXLs25T0c4FVDvzoDYxkFI/h1YavqH2RpjTkAMrDIMkreB7nxJQjmPXzUb+vrR
-         918oiOGF6KAiPcSy+KNpP0M31zsVd947xVdL0mDYz7jKWZGsShhEFh4heY8JdBeYFjBt
-         TMOQ==
-X-Gm-Message-State: AAQBX9dSF8xGphRtk70o1vhS6/SeKpjfYnw6mokXe0JIG6FKQPdborlk
-        rVZPpwWZKeAP1YolT5EiDv8=
-X-Google-Smtp-Source: AKy350boua/01wcXHNci5wr2DVtdH9DAZimwmH/KwTktlEvGVQClmHGOitPh2p6jh6CTvn5qpVX51A==
-X-Received: by 2002:a05:6214:2406:b0:5ac:d562:4ea8 with SMTP id fv6-20020a056214240600b005acd5624ea8mr30148737qvb.9.1680440277422;
-        Sun, 02 Apr 2023 05:57:57 -0700 (PDT)
+        bh=oxXPyTPKP2oE3eyGtRNpy4db/f6/PfEID91UVydyuX4=;
+        b=omJLJw/IBD02jBI/KdhFBjED/fyUchKi36lnHoJ5zcnbCUf/hDI2w5hD2ZQdk6SWIb
+         GbL1MTdvo2cYHfb20akLfvZgMmipYLpJhToWMzzvnPBY4TjPyRS2DDhl5xJS2/BXXL0i
+         jyb2kuGLPWwe5ScVzB09uR25Pl2b1iXnU8xjbTz81K+bp7nGaHHgXKMogrzrkGRUrEBS
+         GVclpu7UXJyc+SeWmWR41HSP4kMDLQhTx+EVpWviTCdSGJ2p7OSPPymRmugZt99MeXEF
+         ZdKu8CfPPpuzuDxg2XtoEVkk2QFYtDJWSBtM+BgnYFDEVZUA4YsqVNQ2xfj9J0Rt62Yk
+         qNkA==
+X-Gm-Message-State: AAQBX9ecrKVC5ZrQKB95QDo0TM0W28u9qLSRKJjyHiEDtEx9ipbIqlzk
+        YwBxFQ1lU3krVPCeR0F+md8=
+X-Google-Smtp-Source: AKy350aGH0D5Qw4INkWCB9Pb7g48QIreDcTtXNQdOylJGbug5OsdeXP49SpqJlpvUKK+WPxMDdp5pg==
+X-Received: by 2002:a05:6214:27e8:b0:5a9:2bc0:ea8b with SMTP id jt8-20020a05621427e800b005a92bc0ea8bmr53618877qvb.47.1680440488668;
+        Sun, 02 Apr 2023 06:01:28 -0700 (PDT)
 Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id y20-20020ac87094000000b003e4e9aba4b3sm1884659qto.73.2023.04.02.05.57.55
+        by smtp.gmail.com with ESMTPSA id lg9-20020a056214548900b005dd8b9345ecsm1915348qvb.132.2023.04.02.06.01.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Apr 2023 05:57:56 -0700 (PDT)
-Message-ID: <4e1eb1da-c409-7541-9839-6621fda0ccfc@gmail.com>
-Date:   Sun, 2 Apr 2023 05:57:54 -0700
+        Sun, 02 Apr 2023 06:01:28 -0700 (PDT)
+Message-ID: <355d4dad-c0a5-330f-5cee-37e87bacd449@gmail.com>
+Date:   Sun, 2 Apr 2023 06:01:25 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH net-next 6/7] net: dsa: make dsa_port_supports_hwtstamp()
- construct a fake ifreq
+Subject: Re: [PATCH net-next 7/7] net: create a netdev notifier for DSA to
+ reject PTP on DSA master
 Content-Language: en-US
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -67,9 +67,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         =?UTF-8?Q?K=c3=b6ry_Maincent?= <kory.maincent@bootlin.com>,
         Maxime Chevallier <maxime.chevallier@bootlin.com>
 References: <20230402123755.2592507-1-vladimir.oltean@nxp.com>
- <20230402123755.2592507-7-vladimir.oltean@nxp.com>
+ <20230402123755.2592507-8-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230402123755.2592507-7-vladimir.oltean@nxp.com>
+In-Reply-To: <20230402123755.2592507-8-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -85,21 +85,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/2/2023 5:37 AM, Vladimir Oltean wrote:
-> dsa_master_ioctl() is in the process of getting converted to a different
-> API, where we won't have access to a struct ifreq * anymore, but rather,
-> to a struct kernel_hwtstamp_config.
+> The fact that PTP 2-step TX timestamping is broken on DSA switches if
+> the master also timestamps the same packets is documented by commit
+> f685e609a301 ("net: dsa: Deny PTP on master if switch supports it").
+> We attempt to help the users avoid shooting themselves in the foot by
+> making DSA reject the timestamping ioctls on an interface that is a DSA
+> master, and the switch tree beneath it contains switches which are aware
+> of PTP.
 > 
-> Since ds->ops->port_hwtstamp_get() still uses struct ifreq *, this
-> creates a difficult situation where we have to make up such a dummy
-> pointer.
+> The only problem is that there isn't an established way of intercepting
+> ndo_eth_ioctl calls, so DSA creates avoidable burden upon the network
+> stack by creating a struct dsa_netdevice_ops with overlaid function
+> pointers that are manually checked from the relevant call sites. There
+> used to be 2 such dsa_netdevice_ops, but now, ndo_eth_ioctl is the only
+> one left.
 > 
-> The conversion is a bit messy, because it forces a "good" implementation
-> of ds->ops->port_hwtstamp_get() to return -EFAULT in copy_to_user()
-> because of the NULL ifr->ifr_data pointer. However, it works, and it is
-> only a transient step until ds->ops->port_hwtstamp_get() gets converted
-> to the new API which passes struct kernel_hwtstamp_config and does not
-> call copy_to_user().
+> There is an ongoing effort to migrate driver-visible hardware timestamping
+> control from the ndo_eth_ioctl() based API to a new ndo_hwtstamp_set()
+> model, but DSA actively prevents that migration, since dsa_master_ioctl()
+> is currently coded to manually call the master's legacy ndo_eth_ioctl(),
+> and so, whenever a network device driver would be converted to the new
+> API, DSA's restrictions would be circumvented, because any device could
+> be used as a DSA master.
 > 
+> The established way for unrelated modules to react on a net device event
+> is via netdevice notifiers. So we create a new notifier which gets
+> called whenever there is an attempt to change hardware timestamping
+> settings on a device.
+> 
+> Finally, there is another reason why a netdev notifier will be a good
+> idea, besides strictly DSA, and this has to do with PHY timestamping.
+> 
+> With ndo_eth_ioctl(), all MAC drivers must manually call
+> phy_has_hwtstamp() before deciding whether to act upon SIOCSHWTSTAMP,
+> otherwise they must pass this ioctl to the PHY driver via
+> phy_mii_ioctl().
+> 
+> With the new ndo_hwtstamp_set() API, it will be desirable to simply not
+> make any calls into the MAC device driver when timestamping should be
+> performed at the PHY level.
+> 
+> But there exist drivers, such as the lan966x switch, which need to
+> install packet traps for PTP regardless of whether they are the layer
+> that provides the hardware timestamps, or the PHY is. That would be
+> impossible to support with the new API.
+> 
+> The proposal there, too, is to introduce a netdev notifier which acts as
+> a better cue for switching drivers to add or remove PTP packet traps,
+> than ndo_hwtstamp_set(). The one introduced here "almost" works there as
+> well, except for the fact that packet traps should only be installed if
+> the PHY driver succeeded to enable hardware timestamping, whereas here,
+> we need to deny hardware timestamping on the DSA master before it
+> actually gets enabled. This is why this notifier is called "PRE_", and
+> the notifier that would get used for PHY timestamping and packet traps
+> would be called NETDEV_CHANGE_HWTSTAMP. This isn't a new concept, for
+> example NETDEV_CHANGEUPPER and NETDEV_PRECHANGEUPPER do the same thing.
+> 
+> In expectation of future netlink UAPI, we also pass a non-NULL extack
+> pointer to the netdev notifier, and we make DSA populate it with an
+> informative reason for the rejection. To avoid making it go to waste, we
+> make the ioctl-based dev_set_hwtstamp() create a fake extack and print
+> the message to the kernel log.
+> 
+> Link: https://lore.kernel.org/netdev/20230401191215.tvveoi3lkawgg6g4@skbuf/
+> Link: https://lore.kernel.org/netdev/20230310164451.ls7bbs6pdzs4m6pw@skbuf/
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
