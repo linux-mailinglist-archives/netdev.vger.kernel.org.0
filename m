@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 985606D378C
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 13:18:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 204386D37A1
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 13:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbjDBLS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 07:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
+        id S230261AbjDBL2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 07:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbjDBLS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 07:18:27 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2117.outbound.protection.outlook.com [40.107.94.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA27C66F
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 04:18:26 -0700 (PDT)
+        with ESMTP id S229591AbjDBL2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 07:28:39 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2137.outbound.protection.outlook.com [40.107.220.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E779751
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 04:28:38 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H000Q1AwUhlb8tjSdJUWtrKpiv6yQ9On+W3zIbxzW3MwIYJ7xXhLzNgzI89BmCehxUtvHdclBCknycV91h+APQ9yXG+tKt59kbx5fsOuQiCI+9ja1B9eNlHt8zXBLJxDYJsD6MUMUEmiXuxO/k9sH2bZRvtMocvyMIe2zMdnCTjGZ2XOb4Cqyp+FGjKBqNr4t0k9NAIR9o9imAb7EEyk23Mi43Munw84EBABp696NX04YvZ4MbgcgVqh6MRfJsKY7WvJKcBYHbMFi5W4DLdN01M+T+Z9PLC8M23VUNC3fKtl+Ydnz1ATS7JqzivpvrmqRlJglwazWaZLbyKPn2c1Ww==
+ b=Ln7IQkf4qHgU1kXEvRRrzorEKY8YPOwV1NZQtUeSOR+dG+5qyxag6t8HMOB7YqOoLYOGICvt2hiK1HFNj0aAdjhWjqQAAZQUMbvkeenu2xuhafolp5614SpLBaNFwm5iU/Qi9wX5D3qUbU3+hetPyxjsbsz1rWaFKbVXkkESqfT7ZnhaubU7p+vaDfMYTr3pL6ehN7n5+U3YXelZYI17koEOasw+/NCZXW26MysUqWVGq/nS3iEFLVhFW0ZPxdMDTrifg1c49wpakk927PFQGPSH5B2Ucj0q82KkPsysUfXTXf5D4Va0k8SAytqkHnr8kv7adu6KgfG8gE7w2awNLQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vkFxkYHzmVsI5sqYJRH/Iubhaj8gaZEL5o5b6xYnXLU=;
- b=dmrqXVs28ceKK4UlxiyElthjDoXDe+LllYDZ9tnT3Za/Yofuui5mRzFxPVGKx0jrdvNKoRwmi9kkjY6AKEe+RbeyY19X5R0NkOgyEyWm81XEDz1rNuvHRRnyZP3ml0rk1SjWH7yot0a/oo1Lx4v1vwlvcfYvcNxM+5cVZSCvMncRkC4Yl6JeGeR+ZxRGJx5iISTXuzgVBHY1+S7Ypc2CHvX5sFgh/a/Khg5u3NhdLcbMpgafV9mmpxMN0NdTKEfO4yfN/q7Wu2alrhG5B/pzfeVcrgnavBa2Rxyqc6nJuaFBhnkCc8uSaIJgVVTm/Xx4S7LW5V+V2Gt8fu4M2aPntw==
+ bh=Vkh9DWHZ6CY+WJDjWtrC8XE0/vyXYkY+quWyrq3N/J0=;
+ b=PRdnc6YnL94i+VNhuYUMVJ4LQQiN6eXXMjrwB/oiTowSRsW9bNTQwHF18x94xdLJFQ34i5REcW9/hlxM73qBgVZI0+Ytbk6pLLZhmHyNdgH23fS1UFtUSp5YY+Jet9BnUlHV1qQj5ga+mFAkQmHLFpacLsilkJjqCor9hS3tY9YaoEsve1oKCa0qTDGJyGD5RPydbuowoyho6tAvtjoVb6oeZoQyU3ZQRGEb/vxDuVNw3Tn0/m003E8u3r4SSzaDKGK+PlNcLDBhOI7SLpg7Ud4FZbZavyiYLmfzmYk+/UVbNahlOHp2+AAmkhc/JFSMUwA1UTeXh3xrimB6fJE0LA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vkFxkYHzmVsI5sqYJRH/Iubhaj8gaZEL5o5b6xYnXLU=;
- b=GylOuu+bShXTD3EqfeilakScVT+CxearMF0svglRVIlVHV/mU/86F8HtHzanrpRta3LFAQ1K+hgf8jUNKWPuW9R2d3zdI9KDkMRISvdRhuOLzfcTk2Rh/IUbaEQ/TNt0LeKufw8Dm+DUcilFBW+NcKF/oztIHzbnS7dYyy6x53Y=
+ bh=Vkh9DWHZ6CY+WJDjWtrC8XE0/vyXYkY+quWyrq3N/J0=;
+ b=QdT81TycAGK+aKXx1j8VobkRWZdUicZJLZdgv1f6hGKXAtjsgtjN5oVofSG9VX64QYdk+DpBFHECtuu0jTrCrLnKztgk0QJLdSi6Hg7AYEOpv/4M6ug7RK0KbrmQwzp9e9tnv1kqtRAABa1xvpLy/egc8Vtnj9MsKXBcjRAA5pk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY5PR13MB3635.namprd13.prod.outlook.com (2603:10b6:a03:218::18) with
+ by PH0PR13MB4858.namprd13.prod.outlook.com (2603:10b6:510:98::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.29; Sun, 2 Apr
- 2023 11:18:21 +0000
+ 2023 11:28:36 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.021; Sun, 2 Apr 2023
- 11:18:21 +0000
-Date:   Sun, 2 Apr 2023 13:18:11 +0200
+ 11:28:36 +0000
+Date:   Sun, 2 Apr 2023 13:28:27 +0200
 From:   Simon Horman <simon.horman@corigine.com>
-To:     Michal Schmidt <mschmidt@redhat.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Michal Michalik <michal.michalik@intel.com>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Karol Kolacinski <karol.kolacinski@intel.com>,
-        Petr Oros <poros@redhat.com>
-Subject: Re: [PATCH net-next 2/4] ice: sleep, don't busy-wait, for
- sq_cmd_timeout
-Message-ID: <ZClkczf8EvDsPidF@corigine.com>
-References: <20230401172659.38508-1-mschmidt@redhat.com>
- <20230401172659.38508-3-mschmidt@redhat.com>
-Content-Type: text/plain; charset=utf-8
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Vadim Pasternak <vadimp@nvidia.com>, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 1/3] mlxsw: core_thermal: Use static trip points
+ for transceiver modules
+Message-ID: <ZClm2zFHD6ZGVVVD@corigine.com>
+References: <cover.1680272119.git.petrm@nvidia.com>
+ <051bffde8a638410eea98ac51cb3a429e0130889.1680272119.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230401172659.38508-3-mschmidt@redhat.com>
-X-ClientProxiedBy: AM0PR01CA0170.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::39) To PH0PR13MB4842.namprd13.prod.outlook.com
+In-Reply-To: <051bffde8a638410eea98ac51cb3a429e0130889.1680272119.git.petrm@nvidia.com>
+X-ClientProxiedBy: AM0PR05CA0091.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::31) To PH0PR13MB4842.namprd13.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY5PR13MB3635:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1385c298-75a2-4e45-9deb-08db336bf727
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB4858:EE_
+X-MS-Office365-Filtering-Correlation-Id: b8574655-9eb4-4a85-b7f5-08db336d65f1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: z4+6w9E1pqhY+1KYCcqHcDWcWHTWr32j8mwc48jEcFCvgsl9MQY37fHoNriL475SQ2Rz3gZoJGBR2HcbjiDHT10uHFt54FBNhtPjsQLmjOGGh4MgmThDSI2AhZCcFZ4yBUCDhDMtDDHwD98cKbaCMNgVRA3ShIB6xHA8lb8WtHm+J8XTqTmOqkm57lHZGvxY6bjEFaAZcm2Zqoq/Po9sItuEtdNTKtoffKUPQc3CItF+mHHhloJgWgzt/VLAXkYGw1yc4HZ50KNprH8zdWJBHsfQYPazcXm3Jle3dFnehwZak5AENPYM9xzm0c1ST8/ThTHvggZKNaOhSrveSSL81Zyv4iMhWRGsttSuPa2nnKoa9qgYA9FGxcFS5P21J+Aac4QbZPKB5xjI14xGNZua/QhoEg7OVQOG24uvHPxXWNQkdxalywTc9cGYYhRuJEZcngnIfNMWYR/VBzEoUynbGDsHS8AZyiOTicX6UOc4dax8r2GZW5TYT5KDPHVFmeKE3YF5/1adJbmjqDegfbHDjvsGPtM7MAuX28gQ9f+XMwVWt14TQtfG3IBw4t61ymLuAW5eK52CZFDHoDnQ7ZffS7Wtjyyj4Qc3ww/O0ZffxS8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(346002)(376002)(366004)(39830400003)(451199021)(41300700001)(8676002)(6916009)(4326008)(66476007)(66946007)(66556008)(478600001)(316002)(54906003)(8936002)(5660300002)(38100700002)(186003)(83380400001)(2616005)(44832011)(6666004)(6486002)(6512007)(6506007)(86362001)(36756003)(2906002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: LwiJAtlWgCLZWpOcO6UAKHV8AWoqhn4GFmK4ShnkfKUdh0VFPxXXcKJjOgTH7lhvoEaDBqIg5Pe+QVnhDj+GG3L6s/7fhzML2ml5QGR6MyLX4HHRN8hMgEzWPyLPFio13LWmD4VjkJMZJuSa8/7tE3wIMbnc3ikFyYf36tsRqrHy2KcMiCHp55v7bMVOGdJYhCDSFXhka91LTgnJJiBPDs4Pl3vZu/bibaneZO9PNQ2CqXWlqO67DDx3LG8Ssfr/ZpdB8y2pMmuTum9e5a1AyFklBFhIUX/VZJjTd8LuKL/5dbaMR+gQUo31PUlW0of6YYoDNuJfoes+u1jAKnxBvvVvdeu0ZDe9AMRREcUE7QBy/5jnmC20vikyVfqqQI/ARTvWn9wRoWBCulNXKClu5geUf478zriUf0CkZzQh7fByW9CTIvHubu+5azDqZBuX0kaEkNUN0lrU4wfwGl6eelYbLVXECKKTnrksmpBzI+VLmzo06+n4DyGSC9QIpvz56/S+J+LLjqL58NxaCusBLjd3OpyLwnHbwQlSfva7a46007wCyMmpBkjp5ruO6G0KvC5i3CK277Dr1khRx8nxiw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39830400003)(136003)(396003)(346002)(366004)(376002)(451199021)(2906002)(6486002)(316002)(38100700002)(36756003)(6512007)(6506007)(6666004)(86362001)(83380400001)(2616005)(478600001)(186003)(54906003)(4326008)(7416002)(8936002)(8676002)(44832011)(966005)(66476007)(5660300002)(66556008)(66946007)(6916009)(41300700001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ekE5V0FGTExOcDFUR2szcC9TYTNuOFBad1VoZW1rc0hrdGNuYmhsMFVGMjA4?=
- =?utf-8?B?SWc0QVpKTjZ1VWNIRmQzYjVFQlpGcmZCN2FHbldWNzdCSit1eCt4R25DY01r?=
- =?utf-8?B?T29LQUZRelFMbmJXY0NPVjRnWHA5Tys3aFVINVVVaG9iL3A2WFAzRUl0RjJr?=
- =?utf-8?B?WDN3bDRySW9iK1M2RDhKZGF0WkI4RW8vZVFEU2tWN09Za2pyakNhWWhyZUEv?=
- =?utf-8?B?T0lUMERZSC9Gc3BtamZVUng1YVR6U1BWVmpSZE11eWQxVVpkcFJUQ2pickd0?=
- =?utf-8?B?SGRRTTgzTDdkVjVLRXU3Q01OTm5LWUlwVXE1MHd2c0dyTzZJOWpjbUEza1hp?=
- =?utf-8?B?MW45NXpveWg2OUMyTTQ2UDlzWkNBUC83Smg2NUJ2NVNxaTZwMEVzUTNPVnox?=
- =?utf-8?B?c3dxVERJUk12M2Y2aml1RlBReXdiajNQVXBwMGpyS1ExUkJiY0FmNmg2WkRo?=
- =?utf-8?B?V20zemM4ZTlKeGIwaUdEUGJoOFJvMXdRUFB5QWUxUEVMbGVnT0ZGRGk5ZFZC?=
- =?utf-8?B?dWU5MUVLVlZtVGlZWFRMR2RUb2l2eDBaL2RlZFNYV2xkSlNJWVNzTWxIMHhT?=
- =?utf-8?B?N2U2TGFMam0vTWEybDRDTG5MLzdndHBqZm5rUWV0RFhac2ZRa3BhR1JTRkVp?=
- =?utf-8?B?dWU0eFhNa3FtbmwvK0l1amtKK244Y21NTlhNV0ZoelA1aFdJTTI2Q0wwS1VK?=
- =?utf-8?B?SjRNQ3p3NW41OU10S2RseU9qV1NkeWVqQTR1NGN6SFNMdDE1Y3VoY1NNeUla?=
- =?utf-8?B?YTBsUmo4UEF6cHpSWGFnQlp1TkV2VzZCeVlkSWp0ZXljR25XaHg0Uko3MTNK?=
- =?utf-8?B?ZnVxUTlyak9tVThCQU1rWXlwMm84dE5RVlBYWDRkVjBiYlhVaThLSVA3dHdP?=
- =?utf-8?B?NUN2WVBFWXp5U0hLWGFCMkowWmMxSlNhcmFSaGMvVkM0V2NLNElwdFlKZFZm?=
- =?utf-8?B?UERuVjYwV1ZJeE8rU1pZUTA0WjMrc3JKSjd0QTRIMCt2ZkJNZ3hVcWxTaldQ?=
- =?utf-8?B?cHh0WDRoUmc5L2xESnFCUmMvMkZJay95MDcrdEV5WDZINkZ6bHpMMmhRekts?=
- =?utf-8?B?LzlpZkZBVDN2VXBkNnZESVJyVGp3OHVnTXZ2T2plTUlnTEhxR21acEZFQXVl?=
- =?utf-8?B?Q200QTRJK2FwMVZudzRpR1VIM1lpUEM3YXNrQWlBL2Uwc1ZyanYvL3R3dGx4?=
- =?utf-8?B?SERDb3RiQ2JiUnMxSjBUaW5pWW00NHZrVEQrcUxsQVFIOGt6QzhZSXhKTjBu?=
- =?utf-8?B?WFBjOUpoUExBcndPa0VNSUlKTUpvYUtJV2dpMjhVMWFiakJLLzNLM0ZGQmhX?=
- =?utf-8?B?dnQ1Y1VwWEZXN2JSOHFrQ09mRVd3U1ZyZXg2MFhVcnFGaHFMdG5xeVM3dGxv?=
- =?utf-8?B?aXRoNTVEdEpTVWpqOHJTbzV5ODlqQUVYS0VWMklEcEh3ZUlRdWMwdmNEaHds?=
- =?utf-8?B?dm5CNUNvN1U2RVFmMTJMZUFNL1pZN2JrcU9obngwWFNEbWVOWU5IellxY1l2?=
- =?utf-8?B?REZnNFptYkcwM2g2RzYxemM4aVd6MENrbzV4K1ZrYzh1QmdSZ2RsNzVOeFNI?=
- =?utf-8?B?VUZxczkzYUozNEplUnhkL2xwR1NCMkNsclR1U2FhRkRaaVRBck5laTRnNjc1?=
- =?utf-8?B?M0RJU2pwcy9YbEU4aENHbDN4T0RGMXVNZmp4dnd4Tk9WVXE5bG9HZm9zd2NK?=
- =?utf-8?B?K0NDalpIU2lyZjlLbVFOazFSbi95b0EvZ1I3citMWDg2TkMwWmw2aHJjd3h2?=
- =?utf-8?B?MkxKd01CaGo1TXltNDRKU0taR0tnSXhEd2pGL29LQ2FDLzJ2Q1J2YU96OXpu?=
- =?utf-8?B?UUNVTW5TcUpld3dkTjA1VDM1SWNxbVE5ZG5pSDVhOHRwREIrNFhvMTFnZDlz?=
- =?utf-8?B?ZlVHR3VyOUlRK0FXLzhlVEJTc2c1eHh5eit2V294UFNidkhqeG5Qeng0ZFcw?=
- =?utf-8?B?VG9rTjFnUlZzY28vdXJuQWdVL3ZVcEE1Z0pwdXFxOXkyOFE1cXZsTGNXR2c2?=
- =?utf-8?B?TVhVU2hQbVZDRVE3a1ZjelNCellYMUNwRWJTek5ueExQVmRib0JVa2JLbUhW?=
- =?utf-8?B?MTIrdmt0eWx2VnFDaTlNNmZhWXFVdUI5MGR4QklWck0ydTNrNFVncG1IM3Zs?=
- =?utf-8?B?ZWI0NS8wbHdBcGZtRkcxaDVaNTJsMjZYYUpKWVVXamtLT0tUaHd5MENIZGhW?=
- =?utf-8?B?UlhpZUxRYVhLTElXeEljUE9hV0RaK0tpUFhFb2Fma1BYMGZvMUo4MC9ublpr?=
- =?utf-8?B?QXgyN05WT1NVNnJDVW8yVU43OVNnPT0=?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VnexcU44ZjgAhm+MnbdM8QwKOFZDuwiPtWnft0JdaJTKNJEeKWrjUEsy7XTh?=
+ =?us-ascii?Q?t4Ff3BbeAa0Ep6gKkUNj9svDRieGqRsgGNCCikR1St1IspwlI09pWkGfBY0k?=
+ =?us-ascii?Q?LLBSWO1Kz5EqnABbmIOeE4pg0xM6LX45YWhWv9iiZ6BkaJE5U4901xO4EbjN?=
+ =?us-ascii?Q?j/UxnP2/u5FCRbwomfmwZtM+Wnqd2HLG9/owfHKlpwZgn6sVkY0XVBi8YY/+?=
+ =?us-ascii?Q?JA6echAz2oaLGSXp31s31damgYcdUXIrnWZW6XZZHpWvqt1w69Qp346GJDom?=
+ =?us-ascii?Q?NGuYnQ/ljt+bQ7VDznaBfEITSo5mnVIegPvtaxX8ZVyv26Rc4+nG+Vy1NMJo?=
+ =?us-ascii?Q?+M41QldOhpv7ucSQ1HfUyvVRgHvT30aNm5qFuWZYjL4R3Q9lhWegSV2kiuhc?=
+ =?us-ascii?Q?i+DNO+aoAGcU3fZbwxbWEVSt2u+Kch0PX2OXWBxmbIGqn19BES2+IOlUBfHe?=
+ =?us-ascii?Q?E+tWVVW+Y3HVAuUMO8fhksYN+23hhEt3rPlPZIEKbUYtLdxGBSXrQn+BrsEm?=
+ =?us-ascii?Q?VQBzVKvrr/GOqNHV03ZEMs7MrFlSHZCPi0gaCXQfVWK+Os4wlEKF/GN9LV3W?=
+ =?us-ascii?Q?kYMIcelhFMpcVENLUYRrjLeQ0h9RTY6D7ldMhGrmETrxaKQYiPkMaE7Ixct0?=
+ =?us-ascii?Q?TIealhzSxYOjXOGqfu/ckT5RAYqNgtJ1Yk93PzUyqwmihsnsCi19giPw6SLC?=
+ =?us-ascii?Q?rycl/ro4oHB2+PMrRuIesfxnzfvrs1PZ4XKTj87DTtGYHswo0tJvMCdy5F/h?=
+ =?us-ascii?Q?Kup7uUPDjZXTRxxVigggf9gZG4CdQYIC6pyjgsx9U63YmHDxtwQfXFzsD9gy?=
+ =?us-ascii?Q?gxzKa89zJ3ioTTazSltJ814uyMLSIxk1SJCOrhV4+jFEuQoQRyeQXOWbxPjQ?=
+ =?us-ascii?Q?FuVZYiihtpyrION8nR1ADpbz+KI1wscIaflRCwf3YoEMSMSRYKoolUhGh9jV?=
+ =?us-ascii?Q?nM8pJk3dtF6c7PrZ54uRpPd8kKs743Ckm47J+1jBMcJwgx4X38KXgdQhRUol?=
+ =?us-ascii?Q?2WBTjEaQXhHVmuR8G5//o4ec5nfwm/9Qw8Yd+1/NOnmBsNucFeZlFAcnC0HR?=
+ =?us-ascii?Q?i/oRuj2d1KZJ7AP2cyv4MLbFvlXP2thwqcfuPRu57acU141fGf6aSyWv4plf?=
+ =?us-ascii?Q?uniININo0LtV0TUbADQdakAm1HFs60U/eGftRwOPcIYvelSir/I42Q5VG1Wx?=
+ =?us-ascii?Q?ziBJxVz2IebuppxC/v/hm9WBXK6OGXqijdmfJ2H7UB18PokDXaI0ll0Uy6Yy?=
+ =?us-ascii?Q?Wm6o7KZR+nQii0VtqFkAiox8gGGeIL+z2bRyN00umPgoiYMjuG5oAhCKDlI2?=
+ =?us-ascii?Q?vxuPzvt/v4Oh3p8PtwNdR9/j8w4dA9K+BpOYWkGVYe5ZjAE5tNTXd3K6r2Yj?=
+ =?us-ascii?Q?HLKWPg8hWnEwOjQ4wXjNQlxQ8wL6+dOzea3d/dYMhajGUoEmNNRPOtOj5v6r?=
+ =?us-ascii?Q?sBCi8BfI4oTcjkGrr+k2WpO7UXLR5GRR26xoakyWitlepjQleWCn2jwpxmCy?=
+ =?us-ascii?Q?1+AkL//yHqFepHorSC/NtRtIblhC9Uu7kiKhgmIIUAeozc/QMOSgZAa56PsN?=
+ =?us-ascii?Q?uCeeTEWe/PygzMqQ2B1EcZGTXBCTkmai78jdf5QVnAcP4zu/5vgjDxtKwpb3?=
+ =?us-ascii?Q?KHhSpLjX+lWhAapZlmX1/3h/Yk4eWYMWc94N1hjkh8qdMfJSgtPgA9pQdqtN?=
+ =?us-ascii?Q?l8wrBQ=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1385c298-75a2-4e45-9deb-08db336bf727
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8574655-9eb4-4a85-b7f5-08db336d65f1
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2023 11:18:21.1085
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2023 11:28:36.0005
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EUYuNcmILncwYkvGIZAeOl2krTnM5+2lnVsI/WLm0wxXVrkXsj9So82jZC0xL/evIRqUItQWR/VSbPcRJXcOU6pARekUp/fvt9gnN1zaVOs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3635
+X-MS-Exchange-CrossTenant-UserPrincipalName: IVzp1YyD1QaUI8v7X2qtemm8jwzkgeaTix2JBlHl5bNTiTtDL33KYVGfpZAhW6xRjosSXniWC+AA6AfrgfkNYj9GNC/PQJ91iG6Z1ZReejw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4858
 X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
@@ -130,112 +121,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 01, 2023 at 07:26:57PM +0200, Michal Schmidt wrote:
-> The driver polls for ice_sq_done() with a 100 µs period for up to 1 s
-> and it uses udelay to do that.
+On Fri, Mar 31, 2023 at 04:17:30PM +0200, Petr Machata wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> Let's use usleep_range instead. We know sleeping is allowed here,
-> because we're holding a mutex (cq->sq_lock). To preserve the total
-> max waiting time, measure cq->sq_cmd_timeout in jiffies.
+> The driver registers a thermal zone for each transceiver module and
+> tries to set the trip point temperatures according to the thresholds
+> read from the transceiver. If a threshold cannot be read or if a
+> transceiver is unplugged, the trip point temperature is set to zero,
+> which means that it is disabled as far as the thermal subsystem is
+> concerned.
 > 
-> The sq_cmd_timeout is referenced also in ice_release_res(), but there
-> the polling period is 1 ms (i.e. 10 times longer). Since the timeout
-> was expressed in terms of the number of loops, the total timeout in this
-> function is 10 s. I do not know if this is intentional. This patch keeps
-> it.
+> A recent change in the thermal core made it so that such trip points are
+> no longer marked as disabled, which lead the thermal subsystem to
+> incorrectly set the associated cooling devices to the their maximum
+> state [1]. A fix to restore this behavior was merged in commit
+> f1b80a3878b2 ("thermal: core: Restore behavior regarding invalid trip
+> points"). However, the thermal maintainer suggested to not rely on this
+> behavior and instead always register a valid array of trip points [2].
 > 
-> The patch lowers the CPU usage of the ice-gnss-<dev_name> kernel thread
-> on my system from ~8 % to less than 1 %.
-> I saw a report of high CPU usage with ptp4l where the busy-waiting in
-> ice_sq_send_cmd dominated the profile. The patch should help with that.
+> Therefore, create a static array of trip points with sane defaults
+> (suggested by Vadim) and register it with the thermal zone of each
+> transceiver module. User space can choose to override these defaults
+> using the thermal zone sysfs interface since these files are writeable.
 > 
-> Signed-off-by: Michal Schmidt <mschmidt@redhat.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_common.c   | 14 +++++++-------
->  drivers/net/ethernet/intel/ice/ice_controlq.c |  9 +++++----
->  drivers/net/ethernet/intel/ice/ice_controlq.h |  2 +-
->  3 files changed, 13 insertions(+), 12 deletions(-)
+> Before:
 > 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-> index c2fda4fa4188..14cffe49fa8c 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_common.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-> @@ -1992,19 +1992,19 @@ ice_acquire_res(struct ice_hw *hw, enum ice_aq_res_ids res,
->   */
->  void ice_release_res(struct ice_hw *hw, enum ice_aq_res_ids res)
->  {
-> -	u32 total_delay = 0;
-> +	unsigned long timeout;
->  	int status;
->  
-> -	status = ice_aq_release_res(hw, res, 0, NULL);
-> -
->  	/* there are some rare cases when trying to release the resource
->  	 * results in an admin queue timeout, so handle them correctly
->  	 */
-> -	while ((status == -EIO) && (total_delay < hw->adminq.sq_cmd_timeout)) {
-> -		mdelay(1);
-> +	timeout = jiffies + 10 * hw->adminq.sq_cmd_timeout;
+>  $ cat /sys/class/thermal/thermal_zone11/type
+>  mlxsw-module11
+>  $ cat /sys/class/thermal/thermal_zone11/trip_point_*_temp
+>  65000
+>  75000
+>  80000
+> 
+> After:
+> 
+>  $ cat /sys/class/thermal/thermal_zone11/type
+>  mlxsw-module11
+>  $ cat /sys/class/thermal/thermal_zone11/trip_point_*_temp
+>  55000
+>  65000
+>  80000
+> 
+> Also tested by reverting commit f1b80a3878b2 ("thermal: core: Restore
+> behavior regarding invalid trip points") and making sure that the
+> associated cooling devices are not set to their maximum state.
+> 
+> [1] https://lore.kernel.org/linux-pm/ZA3CFNhU4AbtsP4G@shredder/
+> [2] https://lore.kernel.org/linux-pm/f78e6b70-a963-c0ca-a4b2-0d4c6aeef1fb@linaro.org/
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Vadim Pasternak <vadimp@nvidia.com>
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 
-Not needed for this series. But it occurs to me that a clean-up would be to
-use ICE_CTL_Q_SQ_CMD_TIMEOUT directly and remove the sq_cmd_timeout field,
-as it seems to be only set to that constant.
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-> +	do {
->  		status = ice_aq_release_res(hw, res, 0, NULL);
-> -		total_delay++;
-> -	}
-> +		if (status != -EIO)
-> +			break;
-> +		usleep_range(1000, 2000);
-> +	} while (time_before(jiffies, timeout));
->  }
->  
->  /**
-> diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
-> index 6bcfee295991..10125e8aa555 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_controlq.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
-> @@ -967,7 +967,7 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
->  	struct ice_aq_desc *desc_on_ring;
->  	bool cmd_completed = false;
->  	struct ice_sq_cd *details;
-> -	u32 total_delay = 0;
-> +	unsigned long timeout;
->  	int status = 0;
->  	u16 retval = 0;
->  	u32 val = 0;
-> @@ -1060,13 +1060,14 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
->  		cq->sq.next_to_use = 0;
->  	wr32(hw, cq->sq.tail, cq->sq.next_to_use);
->  
-> +	timeout = jiffies + cq->sq_cmd_timeout;
->  	do {
->  		if (ice_sq_done(hw, cq))
->  			break;
->  
-> -		udelay(ICE_CTL_Q_SQ_CMD_USEC);
-> -		total_delay++;
-> -	} while (total_delay < cq->sq_cmd_timeout);
-> +		usleep_range(ICE_CTL_Q_SQ_CMD_USEC,
-> +			     ICE_CTL_Q_SQ_CMD_USEC * 3 / 2);
-> +	} while (time_before(jiffies, timeout));
->  
->  	/* if ready, copy the desc back to temp */
->  	if (ice_sq_done(hw, cq)) {
-> diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.h b/drivers/net/ethernet/intel/ice/ice_controlq.h
-> index c07e9cc9fc6e..f2d3b115ae0b 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_controlq.h
-> +++ b/drivers/net/ethernet/intel/ice/ice_controlq.h
-> @@ -34,7 +34,7 @@ enum ice_ctl_q {
->  };
->  
->  /* Control Queue timeout settings - max delay 1s */
-> -#define ICE_CTL_Q_SQ_CMD_TIMEOUT	10000 /* Count 10000 times */
-> +#define ICE_CTL_Q_SQ_CMD_TIMEOUT	HZ    /* Wait max 1s */
->  #define ICE_CTL_Q_SQ_CMD_USEC		100   /* Check every 100usec */
->  #define ICE_CTL_Q_ADMIN_INIT_TIMEOUT	10    /* Count 10 times */
->  #define ICE_CTL_Q_ADMIN_INIT_MSEC	100   /* Check every 100msec */
-> -- 
-> 2.39.2
-> 
