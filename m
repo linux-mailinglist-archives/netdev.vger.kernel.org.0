@@ -2,127 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9746D38F4
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 18:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C346D38FF
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 18:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbjDBQVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 12:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        id S230293AbjDBQlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 12:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbjDBQVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 12:21:43 -0400
-Received: from mail-il1-f208.google.com (mail-il1-f208.google.com [209.85.166.208])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729A8A5D7
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 09:21:42 -0700 (PDT)
-Received: by mail-il1-f208.google.com with SMTP id z19-20020a056e02089300b00326098d01d9so13241795ils.2
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 09:21:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680452501; x=1683044501;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=x07zT0iCo8wKSCVHAjMWe9fzPd0xcWscECCQqfth9ec=;
-        b=P5bcs5MNIG0h0KozN/z4TLr5/61IPiqWU5xGXaiwtdwcbggH8pvxjEpU8q4i44jg83
-         hPZBF5frAwpy42UUmUfwL7w4BEwhnvC+OZSzmiSI9JLT+1RXjEpaz6HMyMVrMxtYuIiN
-         ojI/cFOFceCPKLMgPhNBgzF7MC4ZfuTAsjPS6voX7P0C/Gu2PFgm+WXpau8QesXZpPb6
-         Xj4D6s6+30GGFl9dyKmxHVfv05W8lFcKBRaM8nWYPLTPKu4MSMYSvo7dU1YmfI+WsyaH
-         zowtvlDEPXgOhtUsHOxi6wbn9ERfZ19TDss2+5wEAkpEMpqWqf9RFDInH1oR4H4zWjpC
-         t59g==
-X-Gm-Message-State: AO0yUKW3GmQhTKeyuOnagkzLzLSy1XZ15cOgXtcB9GEWXze5Mgjg5n+5
-        RMqEHA3JvnFuYf4qC8Mt4E3GueqwiCiNLXQX0JnalZU+Rwsa
-X-Google-Smtp-Source: AK7set/bi4Wd8lT1rCMiTGzNOyybxOUDZmKUSa9kdAtlHK8uWQPRWN6MUSWo+nKl5CElpWkF1FRUS2BSDjTGx3V8qNzYyMWb71Em
+        with ESMTP id S230200AbjDBQlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 12:41:06 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2112.outbound.protection.outlook.com [40.107.101.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F72CDDF
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 09:41:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PKnC9deagh7vbQZ4QnKdwTliWr2PX1eqwPUEkqjp8o87XLj81j/U7qGQqaLXlFFnnD7hQ+QBVQFE2ZYddnflFcxPN8jq7iOpZ+xZTDT4YN4oU29Ki2MefVVyAwOc0Iio9AXmD3Yn4l/Mz9qcix/mDo5QfYWS5StzbYdyt+cjwl6yLibHXsmOGaFuKXqgiz0NUPIYmxpwlEYMG9oN5DLV2ZS/azkKH0I8GjRjsKlTg4Q+/zFQbb9Yc+R0iDZcyrvf4ETiv4KN6WXYXUCrqz2Ca+kMrvWNPmL/+UCua5s7gw5sPRDDSjH2MLXPw8tdxr9hF0JhqzNPcRaDl3/XQuwtmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NwlwgU3J9DN/1OmhZEiwd1+zYPEfsSDawlVP0SLp1kE=;
+ b=Tc3tVB5i+rnfxOqSohO/gOV4r/L9Rp8dryonKsgsdlHPpQVlxtvBNBB4pj3Us2xt3WGKgBhC65EMsBdE7mtK/joh26BfHl6APTRHuKtaErRrFpar2qsvV2CNqDIYCj8nRHdEPQB+/z3UB5WA4Cc/BbrWGi7yAYW5nA3Qpnrt+JX9l4r7aHeFNNNxJpO9ukapcD70G+nnodylwFl0KuN1QGD19bzMrgCPETqH8MXFmT/HwjnnwdP88cQbjDEhDFULMtlcMu66cZPzqurs0xciHSdP8oga9ou/ikkxDPoDNtyMSiaf42kC/eDtYcNWecLbdB3WDXPVuccM/0Oc6rPCog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NwlwgU3J9DN/1OmhZEiwd1+zYPEfsSDawlVP0SLp1kE=;
+ b=FhKbNK8vr49IFEikyRu78x5k/PslwJaJlHAQb9UGHWeEcKWrIy7ntdn+KJ7f2jVlSQertGCpQK+bJnrhqvTMC/YDkCp/k6wBx51fYPRJLRHYVFV3zUYF2ievh727Xi0Buk0LXLV4mIu+PA7AXleiwHZHu1JfC6xHWYAvZ0MTC4g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SA0PR13MB4160.namprd13.prod.outlook.com (2603:10b6:806:93::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.30; Sun, 2 Apr
+ 2023 16:41:02 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.030; Sun, 2 Apr 2023
+ 16:41:02 +0000
+Date:   Sun, 2 Apr 2023 18:40:54 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Chris Healy <cphealy@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/7] net: phy: smsc: rename flag energy_enable
+Message-ID: <ZCmwFmN/Gzb4hCd5@corigine.com>
+References: <d0e999eb-d148-a5c1-df03-9b4522b9f2fd@gmail.com>
+ <3fcf639a-12b7-f5b2-29c8-a5c3e2e16ca3@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3fcf639a-12b7-f5b2-29c8-a5c3e2e16ca3@gmail.com>
+X-ClientProxiedBy: AM0PR02CA0210.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28f::17) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:db05:0:b0:745:6788:149f with SMTP id
- q5-20020a5edb05000000b007456788149fmr12143135iop.0.1680452501731; Sun, 02 Apr
- 2023 09:21:41 -0700 (PDT)
-Date:   Sun, 02 Apr 2023 09:21:41 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006d817e05f85cd6a8@google.com>
-Subject: [syzbot] [nfc?] UBSAN: shift-out-of-bounds in nci_activate_target
-From:   syzbot <syzbot+0839b78e119aae1fec78@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski@linaro.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SA0PR13MB4160:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1c9d9db8-cacd-4bae-c665-08db33990b44
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QwbAbrMaocpGWvBUDKEQF3Az6VE93j+5PrTr7sqe6W952UWb3fIhLnj5sjX0dYr1EBnXG41Yc9hTFvDA1sRYNNfpnj+zHmTDP0IP+ygvyzDXCd+qjwxrPB82CnqpJ3DgNf+swJ8t9IS5T4Co9ZhyE9pFVrprVuzZCsyLjzo5VsmVLXe06ed3RxMtvYpzlEuiK1owKk/nHgu3Sz3Czaljth/1f5iSKpQG2EqnHDmrgT2Ctj89wnmjajZ65Kk+WJFQXNZq2wlneKMN/jBfoSK9TFyHSEr8it/eoJbqvf31f0/wae4Gd3SwtuOtJ4rBEgpFZX/h5e21UkK5MzlNJYYO1l/bWLrZNZzHulYz9v4qr4LE0gFScOGzSdH4OfWAqJP7JKTnKpOyHRtDoIel3dimUY4FOv0kz2t2oIXKdghnA9b7ZiSJiEhfw3BUCm04MHV0mavBb9Pf9juENCEP0PHpNynNrVOWRKCoMljxpmgmdmTd9uK+ehTIy8JNzcMhG4ZauZDMH7c48BT1YpO3mSgPRZ/InwpPnXAiOwU/Cubr/ZJ02WEtRI7G5fswf/3P26jAOubKeMcNIKSTpwxNyEBNbm8BhoVj2YSbzj5eecvTxzw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(136003)(366004)(346002)(396003)(376002)(39830400003)(451199021)(4326008)(6916009)(8676002)(66556008)(66476007)(66946007)(478600001)(316002)(54906003)(8936002)(4744005)(44832011)(5660300002)(41300700001)(38100700002)(186003)(83380400001)(2616005)(6486002)(6666004)(6512007)(6506007)(86362001)(36756003)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2wsykXum8PStzkE7+9VaBbggRdEomUyIJ9VZ7Cantwtl7aNkgr8+eQqA35pH?=
+ =?us-ascii?Q?3d2l0xL9i5to/mIHfZbuUJwa8CnRlrxHK3KiPwclfiqEi0JuRr72Pv0K9kDO?=
+ =?us-ascii?Q?9gqqe1BwAZifZG3hfwpg6/VOJHjenT7CjhrAaLpfMUuApEVeR8btPQ8GxFcb?=
+ =?us-ascii?Q?Pc+uXS2LeUlxVx819uhGt6yVcV5YN84l9suXo3hgMqUzmr1h2/FX8o8+9hFY?=
+ =?us-ascii?Q?xq6E2RwF+WZEEDuDKqhwASrSsZufLeK3X9WKNu65L1nzGiXLsvhjuoP6Wt/E?=
+ =?us-ascii?Q?owxbrssfDFWG1WX7uxUqseETp6nnOja2SKa95Z4zBB5r0TjUwFYkqS99pk58?=
+ =?us-ascii?Q?O09f3Ux3qVaOYwKi+ZZ/wT7ZW+dRN8RaT/KohP60R9Kwizr8Rj+CteG2A7Ei?=
+ =?us-ascii?Q?PPK/eHk/RWuvoTMkj2h0lghQ3Z+ihAQ3lG8ydyvlyNKDjvamePqYMNlu/pKN?=
+ =?us-ascii?Q?ypcMAxBllzq1svK/YBKRqw+82Cev51zCIM5wfTjl9O8cWGzWfYq5qGbYFpl9?=
+ =?us-ascii?Q?IzOe6Azwxi0k7O76GcEzvaCROWvMgHd7TmRHzKt6k2SS2EUrnWaRpGczOUo5?=
+ =?us-ascii?Q?6TdoZyhA3EYYQc+dumdA8JtRjycqH+OsrPEgjXwh3DBuO26d/q0jkcDTkg4j?=
+ =?us-ascii?Q?jqKjpBVOuAdKlzPquUqP/YprxiOwtkIJ/q3tWZ8yRJ9Gf7ePACgLBY5tiGCk?=
+ =?us-ascii?Q?yAxvrNiL1+IVVmCowjq4YVPQ5OveWuYaTQTYAvxdmqXoRPBQJkauKRCq3/5q?=
+ =?us-ascii?Q?8zcDjulxfNy0piHIDHdPpHRSlwOU0I+/jODLT/BjdLDok4Vysv04V7Wlpy+P?=
+ =?us-ascii?Q?9PFsEIXCXA8XrnLACn2Ahyvo+G62JhxyCdpO+Xz16+b1r22wEgIQm2WnWFk1?=
+ =?us-ascii?Q?kBhm2WdBc0C/o2rlbHnB3Cs/Vse7QK008/8p0rS+CzWo28Nm1wVCnEKgNmYy?=
+ =?us-ascii?Q?ma8anTTa4eAYd/oXSPJHZFNZiE+67S0790SvnmTB/SUXNK1UZJSAPCTu0lZ4?=
+ =?us-ascii?Q?wRF8N5A+6NHU9U/CHZb+imacd/C1c3SkdpPgA8OioccOAzn55v+f2Irzxspi?=
+ =?us-ascii?Q?77JQtnvYDCyDj/c7l+vJV/muqtJRXYnTHacE+jaj7Knhz5AwTVO+uMOgDx7X?=
+ =?us-ascii?Q?aMDm9CoUb3YYjbw6eKZDV96LXaRkf3hlge5YC0Pr8nuLGvHAyO4QGGJaBxeG?=
+ =?us-ascii?Q?UJy8o1fcJ5+wL2BCvuqIWA0K7H8YtXMIMZycSdsq/mpGSdz6/JiN5Fsg9ySQ?=
+ =?us-ascii?Q?PjlvCAainQy/ioLnCGZPKhYSJsoZPSWSuvxbJ2lVPcMslUflsl51ICv2Oqun?=
+ =?us-ascii?Q?dkmwQqRtvQ0DclgkkwKexGUbMVtd+OEjMIKjGqYqScQhZACZjf0jXnoeFYLC?=
+ =?us-ascii?Q?d0IgR3g8WDV+GsSQNVXv/hQptX5zbig0zaTw2o9I2KrpgjUcMsFdJOinNEIL?=
+ =?us-ascii?Q?lkaHnzp5kJ2jZi7kDeHxmbcgUhwaNELNa1yIpLpMaI0NSmMCJnb0FTpmrYH1?=
+ =?us-ascii?Q?d1UH2NNrruO/vGSTy4pAPDGooIc8e+vk24R07n6a00WOS1gnXO4LRGxdEfjq?=
+ =?us-ascii?Q?qY55Rvwe+yLmzzWF/9p5qKoncPD+BJ24hDDwRa7vzM6w91+wGk+xeWLOu4bn?=
+ =?us-ascii?Q?lQ4vNy8vUwrWXQTK2KLuXKScJQCIRIR66yqg9XWfBmIpXxedC6f1s4EsHMo8?=
+ =?us-ascii?Q?LQ9y/w=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c9d9db8-cacd-4bae-c665-08db33990b44
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2023 16:41:01.8378
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 16d6fdmnUZ0uLJmSFq+L3JoTaZ2R+HX+EBp/ye8y1D1+lp6XIcQGRlfGbob7nG8mfbyZkRHsR87v0qR9SfnhWSIJBVlFKg7eK323T5g/7DM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR13MB4160
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Apr 02, 2023 at 05:11:40PM +0200, Heiner Kallweit wrote:
+> Rename the flag to edpd_enable, as we're not enabling energy but
+> edpd (energy detect power down) mode. In addition change the
+> type to a bit field member in preparation of adding further flags.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-syzbot found the following issue on:
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
 
-HEAD commit:    198925fae644 Add linux-next specific files for 20230329
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1174a6d1c80000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=91e70627549fd509
-dashboard link: https://syzkaller.appspot.com/bug?extid=0839b78e119aae1fec78
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/53c685bee82f/disk-198925fa.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/45e82baa3bc5/vmlinux-198925fa.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/7c31fbc6acb9/bzImage-198925fa.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+0839b78e119aae1fec78@syzkaller.appspotmail.com
-
-================================================================================
-UBSAN: shift-out-of-bounds in net/nfc/nci/core.c:912:45
-shift exponent 4294967071 is too large for 32-bit type 'int'
-CPU: 1 PID: 30237 Comm: syz-executor.2 Not tainted 6.3.0-rc4-next-20230329-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x136/0x150 lib/dump_stack.c:106
- ubsan_epilogue lib/ubsan.c:217 [inline]
- __ubsan_handle_shift_out_of_bounds+0x221/0x5a0 lib/ubsan.c:387
- nci_activate_target.cold+0x1a/0x1f net/nfc/nci/core.c:912
- nfc_activate_target+0x1f8/0x4c0 net/nfc/core.c:420
- nfc_genl_activate_target+0x1f3/0x290 net/nfc/netlink.c:900
- genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
- genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
- genl_rcv_msg+0x4ff/0x7e0 net/netlink/genetlink.c:1065
- netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2572
- genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
- netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
- netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
- netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
- sock_sendmsg_nosec net/socket.c:724 [inline]
- sock_sendmsg+0xde/0x190 net/socket.c:747
- ____sys_sendmsg+0x71c/0x900 net/socket.c:2501
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
- __sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fc4abc8c0f9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fc4aca02168 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fc4abdabf80 RCX: 00007fc4abc8c0f9
-RDX: 0000000000000000 RSI: 0000000020000780 RDI: 0000000000000005
-RBP: 00007fc4abce7b39 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffcb707727f R14: 00007fc4aca02300 R15: 0000000000022000
- </TASK>
-================================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
