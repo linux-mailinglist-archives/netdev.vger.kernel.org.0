@@ -2,43 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9BB76D383D
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 16:10:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C3416D3849
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 16:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230174AbjDBOKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 10:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        id S230321AbjDBOXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 10:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbjDBOKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 10:10:13 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF61D10B
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 07:10:11 -0700 (PDT)
-Received: (Authenticated sender: robin@jarry.cc)
-        by mail.gandi.net (Postfix) with ESMTPSA id 292BE60002
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 14:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jarry.cc; s=gm1;
-        t=1680444610;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=g4hJeRgub+yt5WwcGKmRqxTny3ZYntG1Uj1ilTHu3gM=;
-        b=GCWFzn7MBL2k13iU60jDTBc0OLjm17UzREb2oa81ODPcNrw0Lf67vfEhcvwokVpXoL6VPR
-        zuOG4TGWFzh9ZCXph7nYt3dJTDaqkJ6ifNYVS9q7+JIoPuLyNzaReqpyU+gUA8uTg/65ex
-        n6Thg5I4vPynW90TL3ScVq2F/5Gp9i+u82O1nu2LjHd3VijkYY1Fkwom+U4+rq+/JYo67j
-        tNAg7gWWRqM+zOpV5E5owMYFeTb6mmrPz+JxbAei+oljM5nubU/xj755u9P7ckQ4whnb6I
-        4clII5KhhNJIREqxBlua750YKxoB2MN/V9eITt4p+PYCAYWWQc8PBk6L7fHdkA==
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 02 Apr 2023 16:10:09 +0200
-Subject: netgraph: a tool to visualize linux network config
-From:   "Robin Jarry" <robin@jarry.cc>
-To:     <netdev@vger.kernel.org>
-Message-Id: <CRMBCW54HIFH.1HPI5MO7CRBK4@ringo>
-X-Mailer: aerc/0.14.0-142-g5dde23f8aa67-dirty
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        with ESMTP id S229459AbjDBOXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 10:23:04 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9007CC20;
+        Sun,  2 Apr 2023 07:23:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=g6mDMfCi6BVBNCKIu3VUX+xX7L6pfIJRxYzALu4wBmc=; b=eXOmnpKNxbfwdy5ySUVHWsesP3
+        oNiwVlPOg7Eh3Z6TFAPhuDU6b2Dq09Nuw5vjwUi2tOGd0JXdCtF+wNMcw6uX3+fH5CgpMM03fta5h
+        3MIGWTkoriszi1epo6FJnQi5JZ3h3LhzyuH1hsUKIlCKRqS+f9acn2cHa58+6t+FIC+L2j6+GlEF9
+        7l82Xqr7WQk39CSxkYYVnRLYEJN0o42IrF0Yz/mMbXgtgIAUGE05EkMD6Vuh8a9wNBRSVMJXftBVb
+        aAx7PFT3kMy17X9vEnh8c5OTMnu28QIsqsCe+/ptJQsh74eGf3LZih4heRRgohlRiGMPRycr+9Bw1
+        cVwiFmdg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46584)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1piybf-0001ft-4w; Sun, 02 Apr 2023 15:22:55 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1piyba-0003H9-Ul; Sun, 02 Apr 2023 15:22:50 +0100
+Date:   Sun, 2 Apr 2023 15:22:50 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, chowtom <chowtom@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [PATCH] net: sfp: add qurik enabling 2500Base-x for HG MXPD-483II
+Message-ID: <ZCmPutMh8UEhzI5D@shell.armlinux.org.uk>
+References: <5e9a87a3f4c1ccc30625c8092b057f0fbd8a9947.1680435823.git.daniel@makrotopia.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5e9a87a3f4c1ccc30625c8092b057f0fbd8a9947.1680435823.git.daniel@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -46,24 +62,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks,
+On Sun, Apr 02, 2023 at 12:44:37PM +0100, Daniel Golle wrote:
+> The HG MXPD-483II 1310nm SFP module is meant to operate with 2500Base-X,
+> however, in their EEPROM they incorrectly specify:
+>     Transceiver type                          : Ethernet: 1000BASE-LX
+>     ...
+>     BR, Nominal                               : 2600MBd
+> 
+> Use sfp_quirk_2500basex for this module to allow 2500Base-X mode anyway.
+> 
+> https://forum.banana-pi.org/t/bpi-r3-sfp-module-compatibility/14573/60
 
-I was looking for a way to visualize the networking config but didn't
-find anything. I wrote a simple python script that parses the JSON
-output of iproute2 commands and generates a graphviz dot graph:
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-https://git.sr.ht/~rjarry/linux-tools#netgraph
+Please could you also arrange for the reporter to capture the ethtool
+information via:
 
-The SVG output contains extra info in the tooltips:
+	ethtool -m ethX raw on > sfp-name.bin
 
-http://files.diabeteman.com/netgraph-example.svg
+and send me the binary file?
 
-It only supports a small number of interfaces for now but adding special
-cases for ipip, gre, sit, etc. should be fairly simple.
+Thanks!
 
-Let me know what you think.
-
-Cheers,
-
---=20
-Robin
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
