@@ -2,309 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 276196D3A0D
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 21:39:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A046D3AC0
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 00:03:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230377AbjDBTjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 15:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35404 "EHLO
+        id S230307AbjDBWDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 18:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230206AbjDBTi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 15:38:57 -0400
-Received: from mx12lb.world4you.com (mx12lb.world4you.com [81.19.149.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E97AF0C;
-        Sun,  2 Apr 2023 12:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=zdvqYpLfQxrwKtOR6xI4pNK52CbNRGE1qm52e1PBILA=; b=KII+LMzLoTVUVKAUORX5MdNRNS
-        sg0cnchaJMnpQ9kjqipAPH2F0A+L6QmbY8QVbWBTjR5sL87P9DJQ/hATDmepFMlrL0IT72MAmsDP4
-        dKBfq/aMJZpd1Z0/UQv7wB69zm2baMwbTjfwrxV+W9y67uUKJH4IXxRR3Q0/cCkKqW2s=;
-Received: from 88-117-56-218.adsl.highway.telekom.at ([88.117.56.218] helo=hornet.engleder.at)
-        by mx12lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1pj3XR-0007Gn-Lv; Sun, 02 Apr 2023 21:38:53 +0200
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, bjorn@kernel.org, magnus.karlsson@intel.com,
-        maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 5/5] tsnep: Add XDP socket zero-copy TX support
-Date:   Sun,  2 Apr 2023 21:38:38 +0200
-Message-Id: <20230402193838.54474-6-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230402193838.54474-1-gerhard@engleder-embedded.com>
-References: <20230402193838.54474-1-gerhard@engleder-embedded.com>
+        with ESMTP id S230095AbjDBWDx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 18:03:53 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3704176AD;
+        Sun,  2 Apr 2023 15:03:51 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4PqShx66GRz4x1d;
+        Mon,  3 Apr 2023 08:03:44 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1680473026;
+        bh=lyTdpBxvcWbC3gXPMV4tnV29Qu+rdkooY4KmZorXOqU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JeckShSUcsXZgux4jhTCJN9VywRrPFHEmFG9kbtRaekJdgwn9iCMQPg18uHeU2pV4
+         l8FojiXZ79GMqu+kFkBQVeyU6mhQpqdXUIsZ3Acr5Z6HYqmE5D7IbC30ktt5Q2yfV2
+         TBecZGLbsqnZEza7L0cF7N3NdslGQsXu5H90lG7QVkjeNe9nAgRCT/t3q3GHcctx0V
+         U3NEKO6EhwEBLzpy5K7p34AGPIBP1qcg5jh3opUwg5sOYOyQ6Uo7J3bamrKZwNlWww
+         +wLpoYI5fZ8EXuOedPsFA4KJec1li03/I0b/mBsCpM6V+W/dydcadAVucwhZXkK0He
+         i5ej2kT9l+vbw==
+Date:   Mon, 3 Apr 2023 08:03:42 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Gustav Ekelund <gustaek@axis.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20230403080342.2fbbebe8@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-ACL-Warn: X-W4Y-Internal
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/V3TH2rJPnCZFvZXD0w2BYSV";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Send and complete XSK pool frames within TX NAPI context. NAPI context
-is triggered by ndo_xsk_wakeup.
+--Sig_/V3TH2rJPnCZFvZXD0w2BYSV
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- drivers/net/ethernet/engleder/tsnep.h      |   2 +
- drivers/net/ethernet/engleder/tsnep_main.c | 131 +++++++++++++++++++--
- 2 files changed, 123 insertions(+), 10 deletions(-)
+Hi all,
 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 836fd6b1d62e..a336ed08cb3e 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -69,6 +69,7 @@ struct tsnep_tx_entry {
- 	union {
- 		struct sk_buff *skb;
- 		struct xdp_frame *xdpf;
-+		bool zc;
- 	};
- 	size_t len;
- 	DEFINE_DMA_UNMAP_ADDR(dma);
-@@ -87,6 +88,7 @@ struct tsnep_tx {
- 	int read;
- 	u32 owner_counter;
- 	int increment_owner_counter;
-+	struct xsk_buff_pool *xsk_pool;
- 
- 	u32 packets;
- 	u32 bytes;
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index e05835d675aa..c70c5ee3693e 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -54,6 +54,8 @@
- #define TSNEP_TX_TYPE_SKB_FRAG	BIT(1)
- #define TSNEP_TX_TYPE_XDP_TX	BIT(2)
- #define TSNEP_TX_TYPE_XDP_NDO	BIT(3)
-+#define TSNEP_TX_TYPE_XDP	(TSNEP_TX_TYPE_XDP_TX | TSNEP_TX_TYPE_XDP_NDO)
-+#define TSNEP_TX_TYPE_XSK	BIT(4)
- 
- #define TSNEP_XDP_TX		BIT(0)
- #define TSNEP_XDP_REDIRECT	BIT(1)
-@@ -322,13 +324,51 @@ static void tsnep_tx_init(struct tsnep_tx *tx)
- 	tx->increment_owner_counter = TSNEP_RING_SIZE - 1;
- }
- 
-+static void tsnep_tx_enable(struct tsnep_tx *tx)
-+{
-+	struct netdev_queue *nq;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
-+
-+	local_bh_disable();
-+	__netif_tx_lock(nq, smp_processor_id());
-+	netif_tx_wake_queue(nq);
-+	__netif_tx_unlock(nq);
-+	local_bh_enable();
-+}
-+
-+static void tsnep_tx_disable(struct tsnep_tx *tx, struct napi_struct *napi)
-+{
-+	struct netdev_queue *nq;
-+	u32 val;
-+
-+	nq = netdev_get_tx_queue(tx->adapter->netdev, tx->queue_index);
-+
-+	local_bh_disable();
-+	__netif_tx_lock(nq, smp_processor_id());
-+	netif_tx_stop_queue(nq);
-+	__netif_tx_unlock(nq);
-+	local_bh_enable();
-+
-+	/* wait until TX is done in hardware */
-+	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
-+			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
-+			   1000000);
-+
-+	/* wait until TX is also done in software */
-+	while (READ_ONCE(tx->read) != tx->write) {
-+		napi_schedule(napi);
-+		napi_synchronize(napi);
-+	}
-+}
-+
- static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
- 			      bool last)
- {
- 	struct tsnep_tx_entry *entry = &tx->entry[index];
- 
- 	entry->properties = 0;
--	/* xdpf is union with skb */
-+	/* xdpf and zc are union with skb */
- 	if (entry->skb) {
- 		entry->properties = length & TSNEP_DESC_LENGTH_MASK;
- 		entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
-@@ -646,10 +686,69 @@ static bool tsnep_xdp_xmit_back(struct tsnep_adapter *adapter,
- 	return xmit;
- }
- 
-+static int tsnep_xdp_tx_map_zc(struct xdp_desc *xdpd, struct tsnep_tx *tx)
-+{
-+	struct tsnep_tx_entry *entry;
-+	dma_addr_t dma;
-+
-+	entry = &tx->entry[tx->write];
-+	entry->zc = true;
-+
-+	dma = xsk_buff_raw_get_dma(tx->xsk_pool, xdpd->addr);
-+	xsk_buff_raw_dma_sync_for_device(tx->xsk_pool, dma, xdpd->len);
-+
-+	entry->type = TSNEP_TX_TYPE_XSK;
-+	entry->len = xdpd->len;
-+
-+	entry->desc->tx = __cpu_to_le64(dma);
-+
-+	return xdpd->len;
-+}
-+
-+static void tsnep_xdp_xmit_frame_ring_zc(struct xdp_desc *xdpd,
-+					 struct tsnep_tx *tx)
-+{
-+	int length;
-+
-+	length = tsnep_xdp_tx_map_zc(xdpd, tx);
-+
-+	tsnep_tx_activate(tx, tx->write, length, true);
-+	tx->write = (tx->write + 1) % TSNEP_RING_SIZE;
-+
-+	/* descriptor properties shall be valid before hardware is notified */
-+	dma_wmb();
-+}
-+
-+static void tsnep_xdp_xmit_zc(struct tsnep_tx *tx)
-+{
-+	int desc_available = tsnep_tx_desc_available(tx);
-+	struct xdp_desc xdp_desc;
-+	bool xmit = false;
-+
-+	/* ensure that TX ring is not filled up by XDP, always MAX_SKB_FRAGS
-+	 * will be available for normal TX path and queue is stopped there if
-+	 * necessary
-+	 */
-+	if (desc_available <= (MAX_SKB_FRAGS + 1))
-+		return;
-+	desc_available -= MAX_SKB_FRAGS + 1;
-+
-+	while (xsk_tx_peek_desc(tx->xsk_pool, &xdp_desc) && desc_available--) {
-+		tsnep_xdp_xmit_frame_ring_zc(&xdp_desc, tx);
-+		xmit = true;
-+	}
-+
-+	if (xmit) {
-+		tsnep_xdp_xmit_flush(tx);
-+		xsk_tx_release(tx->xsk_pool);
-+	}
-+}
-+
- static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- {
- 	struct tsnep_tx_entry *entry;
- 	struct netdev_queue *nq;
-+	int xsk_frames = 0;
- 	int budget = 128;
- 	int length;
- 	int count;
-@@ -676,7 +775,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		if ((entry->type & TSNEP_TX_TYPE_SKB) &&
- 		    skb_shinfo(entry->skb)->nr_frags > 0)
- 			count += skb_shinfo(entry->skb)->nr_frags;
--		else if (!(entry->type & TSNEP_TX_TYPE_SKB) &&
-+		else if ((entry->type & TSNEP_TX_TYPE_XDP) &&
- 			 xdp_frame_has_frags(entry->xdpf))
- 			count += xdp_get_shared_info_from_frame(entry->xdpf)->nr_frags;
- 
-@@ -705,9 +804,11 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 
- 		if (entry->type & TSNEP_TX_TYPE_SKB)
- 			napi_consume_skb(entry->skb, napi_budget);
--		else
-+		else if (entry->type & TSNEP_TX_TYPE_XDP)
- 			xdp_return_frame_rx_napi(entry->xdpf);
--		/* xdpf is union with skb */
-+		else
-+			xsk_frames++;
-+		/* xdpf and zc are union with skb */
- 		entry->skb = NULL;
- 
- 		tx->read = (tx->read + count) % TSNEP_RING_SIZE;
-@@ -718,6 +819,14 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		budget--;
- 	} while (likely(budget));
- 
-+	if (tx->xsk_pool) {
-+		if (xsk_frames)
-+			xsk_tx_completed(tx->xsk_pool, xsk_frames);
-+		if (xsk_uses_need_wakeup(tx->xsk_pool))
-+			xsk_set_tx_need_wakeup(tx->xsk_pool);
-+		tsnep_xdp_xmit_zc(tx);
-+	}
-+
- 	if ((tsnep_tx_desc_available(tx) >= ((MAX_SKB_FRAGS + 1) * 2)) &&
- 	    netif_tx_queue_stopped(nq)) {
- 		netif_tx_wake_queue(nq);
-@@ -765,12 +874,6 @@ static int tsnep_tx_open(struct tsnep_tx *tx)
- 
- static void tsnep_tx_close(struct tsnep_tx *tx)
- {
--	u32 val;
--
--	readx_poll_timeout(ioread32, tx->addr + TSNEP_CONTROL, val,
--			   ((val & TSNEP_CONTROL_TX_ENABLE) == 0), 10000,
--			   1000000);
--
- 	tsnep_tx_ring_cleanup(tx);
- }
- 
-@@ -1736,12 +1839,18 @@ static void tsnep_queue_enable(struct tsnep_queue *queue)
- 	napi_enable(&queue->napi);
- 	tsnep_enable_irq(queue->adapter, queue->irq_mask);
- 
-+	if (queue->tx)
-+		tsnep_tx_enable(queue->tx);
-+
- 	if (queue->rx)
- 		tsnep_rx_enable(queue->rx);
- }
- 
- static void tsnep_queue_disable(struct tsnep_queue *queue)
- {
-+	if (queue->tx)
-+		tsnep_tx_disable(queue->tx, &queue->napi);
-+
- 	napi_disable(&queue->napi);
- 	tsnep_disable_irq(queue->adapter, queue->irq_mask);
- 
-@@ -1845,6 +1954,7 @@ int tsnep_enable_xsk(struct tsnep_queue *queue, struct xsk_buff_pool *pool)
- 	if (running)
- 		tsnep_queue_disable(queue);
- 
-+	queue->tx->xsk_pool = pool;
- 	queue->rx->xsk_pool = pool;
- 
- 	tsnep_rx_reopen(queue->rx);
-@@ -1865,6 +1975,7 @@ void tsnep_disable_xsk(struct tsnep_queue *queue)
- 
- 	old_pool = queue->rx->xsk_pool;
- 	queue->rx->xsk_pool = NULL;
-+	queue->tx->xsk_pool = NULL;
- 
- 	tsnep_rx_reopen(queue->rx);
- 
--- 
-2.30.2
+In commit
 
+  089b91a0155c ("net: dsa: mv88e6xxx: Reset mv88e6393x force WD event bit")
+
+Fixes tag
+
+  Fixes: de776d0d316f ("net: dsa: mv88e6xxx: add support for mv88e6393x fam=
+ily"
+
+has these problem(s):
+
+  - Subject has leading but no trailing parentheses
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/V3TH2rJPnCZFvZXD0w2BYSV
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmQp+78ACgkQAVBC80lX
+0GyrWAgAg/6ihOQUEegWXQ96+pC4Y7LXK17qEfUinOrg7uer+MSTlDW4fYEViuDJ
+orsqemvEaWzYY4CVj+n5hg3R22LjOG3vI1HCUSSAsSfBz4xpSoqy39mkjibehtob
+dGrINs9OMfyTREBn6UtWUsS5t8E1/eADPw9SaccfrqsT1IequtQaolMmLXn2m4Lm
+h5qjLmuHAoYkhjXhZQ+4/wt731sLCg3jk/lGGzTJorsst6ODaKIOVHpmRgHXz7KK
+aiER5o8+yq3CUfrxd0N/m/ueB7/eNYg6ZBpbhZD0y39tOBdPqegf5iVvFFHQjVA/
+WBLJMzYkFp1NTtr+EUkcxmOahKcHTA==
+=xUrt
+-----END PGP SIGNATURE-----
+
+--Sig_/V3TH2rJPnCZFvZXD0w2BYSV--
