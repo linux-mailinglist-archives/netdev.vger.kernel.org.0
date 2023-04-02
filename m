@@ -2,181 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CBBF6D3544
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 04:32:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 759586D35B1
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 08:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbjDBCco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Apr 2023 22:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
+        id S230236AbjDBGDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 02:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjDBCcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Apr 2023 22:32:43 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B512EFF03;
-        Sat,  1 Apr 2023 19:32:42 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3322TTfC022478;
-        Sun, 2 Apr 2023 02:32:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=pnjSCyvZgP/srAG8csJoe3EgO3dgSE2hqwLWkppwOsI=;
- b=RU+rFn1p26ywRC1SdHzzotkxtfZP1iIO9kaDnqBpCbCj4syuUvNjj39TO8c1BDvdKszv
- 4Rg7/k87Il0lxDtww6ni1kIEJmg1EedH4DDv32gRKJ2vZE5vmINzkkXbFiys3/s1cuPR
- wHnfyGBNnSAJnyhPe4gxErXY9GRC7uunfwlII3wlzY3wptcLG0ITyDhXiE/FzRdxZKO6
- 7GRfjs3sHyWSZV5blggxVKUcCUrmunneeW3odRQxfIp6x4yOA8WZceAvymw3a3E/2INg
- sQJ4UEWvSGldzwDXWvxXmhHpnj0++HLoyp5A315u7iaBz5Itlv6vRGH4f3yIDF8pxIt3 NQ== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ppbd3s1y7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 02 Apr 2023 02:32:23 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 33216ASh017881;
-        Sun, 2 Apr 2023 02:32:22 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3pptp3hgch-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 02 Apr 2023 02:32:22 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h0vwOj5+Y7BwD4SFYDPGhdmVa/1sIxAG+VNWXHAXcQZV8bPi7ZApofqayGb1w3Nk1iNq4+LR0Nwmt6Ri2vTGSlgt6Zd7KO5BkLII+0yfGoHiNchyz2VmDONI+q+OWIfcumV9L/ggiSIHXtrZGHKHaT3K8SV5R+3yTc0tZd1HGhV5OJfIhIgOprgXO0nwMGQYlNsXlagmgKbidQnL8MHYqEzBxcR1/lcW03D+YLahS6DJU2QjTnOkwvUMzHMomAfTyHeZ8InMuVrfxsUEN8bnZd7x65wWFuGLT3HF5d+VYw8qgfXDxXuqYGZHcd5uG9HDZSS0RtJBdmRqVzQFVZz6Cg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pnjSCyvZgP/srAG8csJoe3EgO3dgSE2hqwLWkppwOsI=;
- b=VCeUlrIKDTZelFelpnO+04GIZn07sbKaZ+njHnJJagBms/qX0/hmR45UCsBtjvtTrRMSXqvwsMWMfvIl3PbJJ9/yS1cQb+D65E+RqHXLBesCSGOGbWXpk5kos8AKDnxS/kPHwXSABRbPj6GHYyQghNakew+UDUVpgtevz678ABjwScQ1DeiYmB+j+2Pagsi4pVTp2K1ZD8YprFYGKgrqTTwGRM2dW6/KsY0pasYs6EP1XIPl9gdz5EZ1ygFKeDuS+9DW/KTlhJ1Wv244ES2mYIcm+sqg4csMJb1ahX6CjkFOkHmMJe6kUy1J+czJ8Iv0tzStIRZnmYfV1A6VF8H5Vw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        with ESMTP id S229445AbjDBGDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 02:03:34 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C7220C3A
+        for <netdev@vger.kernel.org>; Sat,  1 Apr 2023 23:03:33 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id by14so7958732ljb.12
+        for <netdev@vger.kernel.org>; Sat, 01 Apr 2023 23:03:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pnjSCyvZgP/srAG8csJoe3EgO3dgSE2hqwLWkppwOsI=;
- b=C7EKnGR09wOI4GDSOW/Pj2PFhw4GqtHpIjxuOGkjKP8wOPOzd/xcc2qBG/CVGPYqCbjcFRKzHQ44wqpxcW+TUQcM5kiRKPkueVyMr85wQwQmpTsfvI5bjfAhTi8WigYAH+pAdv/qdLuxG6hI8+w8BqvovrWJzBi6T6H1bXyyG3I=
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com (2603:10b6:a03:210::21)
- by SJ2PR10MB7016.namprd10.prod.outlook.com (2603:10b6:a03:4cf::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.26; Sun, 2 Apr
- 2023 02:32:20 +0000
-Received: from BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::311:f22:99b6:7db7]) by BY5PR10MB4129.namprd10.prod.outlook.com
- ([fe80::311:f22:99b6:7db7%3]) with mapi id 15.20.6254.028; Sun, 2 Apr 2023
- 02:32:20 +0000
-From:   Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "zbr@ioremap.net" <zbr@ioremap.net>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 1/6] netlink: Reverse the patch which removed filtering
-Thread-Topic: [PATCH v4 1/6] netlink: Reverse the patch which removed
- filtering
-Thread-Index: AQHZZCxJt7hHR9OT2UmzMPODBe2VMK8V1x8AgADu1gCAAA1sAIAAevWA
-Date:   Sun, 2 Apr 2023 02:32:19 +0000
-Message-ID: <4E631493-D61F-4778-A392-3399DF400A9D@oracle.com>
-References: <20230331235528.1106675-1-anjali.k.kulkarni@oracle.com>
- <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
- <20230331210920.399e3483@kernel.org>
- <88FD5EFE-6946-42C4-881B-329C3FE01D26@oracle.com>
- <20230401121212.454abf11@kernel.org>
-In-Reply-To: <20230401121212.454abf11@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY5PR10MB4129:EE_|SJ2PR10MB7016:EE_
-x-ms-office365-filtering-correlation-id: 5474c945-31e2-43f3-bbf0-08db33227b9c
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iCCS1XP5fnXeE9vB0z24BfKQt50MKeWmp4rgGfW7LTfn00u1y/DrUKdeVSk5QSDQkh2OQkagWLlVgLxzhwgodwElIMF9NBH1yy7wAYT/hw+rstf62O3qNBdzlxayjly8eZtjjbwGND4RKty2pvwBTVo5HgXa4NBnnXhvjbvQzf5G9y3dePt9fLgDniClmhTN5NArRfDFvETS0N++aVcwbsSrLoPk8XdzAPxtoSLC5r7OPjFsceK2H7Qopd1bvFxm4C6D8DXfWYbipDHDtFod0PTp3BlnxSbdNh6v0OYuc54HjGXw+qtauuo6BesCOWPsAjCcdbcGI7FzJ/5dXocfAz2WW471ENzhXivoXFo4nx7/K07IGFmI1UvPSqq7pw2qxguCTM3MGOhCUvOeits98UbW15LMQd8r6D7AMB4CxJVbFvp2gVvH4jmAktNlKHhFPVHNyDZ/bvxcwfxHbNO/Lhhw89CWcvt+BFF0VGJyfRO2Y/t3Z41Xym57BLUOSYarX9dZQtDwXEQHNSbmUZ8I+7BCbdhO6UT6jWGE+h2pAlpuQm40+y49JVmxpUWTceISD+o/isC3pPv5VQdTSlj1VzeyTuO/cgwyb6aEGr7IwaTtxhRE8216l2dwzVgUKsELOcg9ph15FN5AF2fTS3ffSw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4129.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(39860400002)(346002)(396003)(376002)(136003)(366004)(451199021)(558084003)(33656002)(86362001)(36756003)(54906003)(478600001)(6486002)(71200400001)(41300700001)(122000001)(8936002)(66946007)(64756008)(66556008)(66446008)(66476007)(76116006)(8676002)(4326008)(6916009)(186003)(83380400001)(2616005)(316002)(6512007)(6506007)(38100700002)(5660300002)(7416002)(2906002)(38070700005)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?9REC8VqGKCMUYSFbofnSmZRDG+QON4Ho70ddGVL8yvda9fCONSAk9T+G78BQ?=
- =?us-ascii?Q?d3ebitJv9WMOxb5xOYUlFeS9ax1p7sAqb9AwzCCm4e4ul39wxCD2dRcihzDZ?=
- =?us-ascii?Q?nGCVtG+qhB/aIP+qOvkXnm0SwVeA65cMLqNVHWV3LQS8L/hgEwPtyooJWUbw?=
- =?us-ascii?Q?6CpY8TSdxxCSL4N+5ROQpZPgKnkh/gAEkb8zi5itRTB5HYSj12lm8P3h5pBJ?=
- =?us-ascii?Q?GDrZHm9s5BNmSeISz1uaASXxTVEFBCP4qhkNCXEr0WNleNvdu3JI1X6Yl16P?=
- =?us-ascii?Q?9NYz6eyYQtKeS0kjKRtdWtBPbqBhABQ8sX4KKd3BXWZ4r8S01dalVAU6+bem?=
- =?us-ascii?Q?DYd5DOJGhVcU42Otu0DpfXv17JwU8pj/q/O7efGExpWF0g9ZGeghuhfKamL9?=
- =?us-ascii?Q?xq7o3gv6pmPfyC7OIG+ITa0TfNzCPFYVWL8Noxw1bprnrhInN2LvkKvFPEy5?=
- =?us-ascii?Q?5GxMQ5rDPCUMRHryT9mXb+UrewKe2CUuGQS43h5Jyx1cRONAU8TGCt9UefuX?=
- =?us-ascii?Q?CVj5hGdagAqMZB5NSZILtGVQxFWdYxOPE2Bijsr+hvDOXfyZDoM2WZHiLrHi?=
- =?us-ascii?Q?bDnM2x2z4wnotSRkmVF2dOgPDRQs2pnhwdmcIdfj14mhXhi8H9hbyclwkn40?=
- =?us-ascii?Q?nKirrMSmpIi8ztyz42ZlTHyw2Y2OMR0+/fERJ9GfbwXvZ9aomXPmpOhjA0GO?=
- =?us-ascii?Q?hgC8bcTuxoCh7HVE4z8/hRibdhUvXdo4+ux0Xu1cSdfvUqhn4qJsQrHne9gd?=
- =?us-ascii?Q?CbkILo5q9SqST5ZfFG3H35P5wkmbJGDSbmvReHrHC+qC++AMBoVe2vPfJda3?=
- =?us-ascii?Q?lvNdgbOMrkSBOp7aziTfy2hS1VaDjBqTM2Sg3mbSirEHa757VWOlC0pPz7YF?=
- =?us-ascii?Q?7YSlEdOVmTDwZd7ynnv+EFLHqsT1x3hHtiF2JPXkSOPSRMu4eeYFgOfGMEm9?=
- =?us-ascii?Q?/kRloCaNA3Yefjj7etgqYgx9tyRC6gCk0/+QqXALvZ4l+dmUuOWJ5kv9KkaZ?=
- =?us-ascii?Q?F4Xtr6sCWI7tPZPX/1YUxuFPrRdL2PV+OBrXDymUSL0csPOTeaR6xFolb4ED?=
- =?us-ascii?Q?Jeq/nqwfXXzIKLER/ncEgaHqqEGD+Y1KC8f0jOf5TagkLA4uWND+GRpaWRvI?=
- =?us-ascii?Q?9RJNqRK7rxscAkbGjTmcTckFSbr60wJnuWGvywxbgYe2xDSQFMTby1rELMR3?=
- =?us-ascii?Q?COIsvsM3i7sCeHpT7RpyFZK+w14h8Ej3lHmdqCwwDxpT3K1BJ1SASfY4pNSW?=
- =?us-ascii?Q?Keg2FmiIMoaHVlg7beqCaaAG/4JLNiHaI7r5i+Of0OXK+17/Hq/g+imHZd9K?=
- =?us-ascii?Q?DOJbKOTUcBvfsGWGca4URS66iTNpAifqUPuuwqbtSfQxHG7Pru/S3bVbp5D/?=
- =?us-ascii?Q?iiMicg/MoKTZJCPrzIRHu+u2Vu3thpaO7vObWoeorUeE10/bdbChW43U4MWI?=
- =?us-ascii?Q?x0eEFJ3trRF5np5UMvOLQWZmPqqMluWJ1ZH3ER9ye66mvv92k2CfdVodSpVl?=
- =?us-ascii?Q?GJc63WJqQsjeKJHmpS11UmYX9MuJGdLQ6ujEzAO71K8an80FptzcT4vqIY9F?=
- =?us-ascii?Q?PpfBHTb/hX+nJYjvfP/9NRIPd7jcQkp+CorY61ykRlDrxLy6dp+LCSUf4wVZ?=
- =?us-ascii?Q?puCarMaxnFDZp+1rG2ht+pzVmoOmQvplVsNUc5cLRBk++IhSUtboNVe9xFf5?=
- =?us-ascii?Q?i2HXjCZZ/3vvX338cLZNqv9hTSc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6921ECDC4EBE984E8457BCCD5C63E50B@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        d=google.com; s=20210112; t=1680415411;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BqYyW7EZa3aXT88mEfZolIz7f7/7ZPGYTCIRNY9RI9M=;
+        b=fOJ7wDTwlrYOS/GNDSUHHsjAeYSg/GayPBpWqc7kP1CMcsDu5hkiXs97zj42/mMANK
+         r6vI3PKt5XTxkdg4nCtE86MvsbKwSZ8rb8ZMWwOR8kFDdRnV5YbPcrryQD3MjxLilQzE
+         9M0pzZTi5blpa27VqhOTwydOjx5KOOLB7b0YY3jRUpXe4An7TSeV44GqzgIwA6gN3KLC
+         0tQK7NpnDuKVvTXeNreN3AaizueRCDzCk8mJ7jknYebfdzytPwT+pkVX1logRPv2p8KH
+         kt/CAGqmMuvGoN5dxGBCfrvmFsunkcLLjZA+iJTAt/h8c73S0on8zjhToVO7Od38NC7P
+         BUPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680415411;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BqYyW7EZa3aXT88mEfZolIz7f7/7ZPGYTCIRNY9RI9M=;
+        b=2yF3MD9dKvdGNlEai8g2IMjAy8gw1e7yLJ+FrGJhyE3xL4R8YTgEjzj5Qf3xYDn5Tt
+         ILCej+H9+S1XmRJAPvmzXPxiWUHzWasRytYtFoXPyMGBFX1vlA5iCmfHj5LCVsS2UoQR
+         4/BM5LiAVkfSC5yiPMCi+epGhJ6LsTmg6w8+tSVmWm48R8fpP7I4/M3XdipGKZi6xU99
+         bKh5FR3iqSh2HojLP45zERIaIgXT8Bf9xRA3MSUjrnpZ/+7RIVCtBNsWs3perWciNMvd
+         fuhn4YcWk1lEiAjZ9i78Vydom+9UmoZMUSuPESDrksNqKyPOcY3pWtM9XajfbSn/uetP
+         iZag==
+X-Gm-Message-State: AAQBX9ctg7hQSTjEbkmJQDCGGUsPZ05UJvvJnWoLSzVyh/GM3c0esrtB
+        zlbjpOdoJB534TaSIobkhdPVnqZiqbZbtizN596EIQ==
+X-Google-Smtp-Source: AKy350YerB16ilv8TX3k75szf4T1Q9DIFKnnm0bV4ZFURKhZGAo86Bao2uKywHc9CvQMcAwZEUnhYzIq725L1Z/r/lc=
+X-Received: by 2002:a2e:9949:0:b0:2a0:f395:cc44 with SMTP id
+ r9-20020a2e9949000000b002a0f395cc44mr9591129ljj.8.1680415411058; Sat, 01 Apr
+ 2023 23:03:31 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: =?us-ascii?Q?uzI6lomkGNP95GCL/VPHxDSSD2k3I1M8zgEhEpK0Gci7tSHUrXt12mMyNS8z?=
- =?us-ascii?Q?VEq7uZCSmXbD4I1ISZFITYGcozAR7d3JhfqaxI6IppFK0LtWdGjTenx+raXO?=
- =?us-ascii?Q?2rH+t8M0wc2HA0iKfOCawj/42N2hOky01QyHwSHWbBSMdJ6izTX8G3yQPhoG?=
- =?us-ascii?Q?bo4ZDkPCsCeonps408J0uSCEZZYAlQGOxqghHHcHeJV78bBc12A7tnfYPF+d?=
- =?us-ascii?Q?wSVbs7R1JmQhw5WXUpUcgIcOfkGGnIq3eBX8nj/x1S47d5jIHWofQ53lbg0A?=
- =?us-ascii?Q?gcy/dfXHmgecqT8XYe23Mh6hLQRFo8p2UEHt4jFNlGt4uWmgPZwhps7Llhyd?=
- =?us-ascii?Q?JugMVJWBun6OOZKRS0POAsj8wp+utFE9m1Xw3OID+t4wYCsUlfurt0Pl6u98?=
- =?us-ascii?Q?/ei78zocjwhcFYCcj7Qi7CKvxJ3xih6aBlRn34aDilKBUlEclORN+Kv3SF17?=
- =?us-ascii?Q?Lx4s8k/wujP6Nfnnw0qkPTELnSMk2sDE4+rORkDRCfcT2Cz9YNK8YTVO5hfR?=
- =?us-ascii?Q?rV1SEIQ28S1FwHrHuPN6jQRHmulNHtmSmwcoZDqCGwmXgyR+7mxPzZ1PN+4X?=
- =?us-ascii?Q?wg9BMf2MTWjPVcx3+d6xcS7at9goaY3FWgTa1SHlEA/6Vf/JOZXxNa2p43X3?=
- =?us-ascii?Q?UIf/8TZkRhpS4KTvFiX4wqR5qMSoiwqv/GNivU9+T0NddAvVJFs9jwT0PTj0?=
- =?us-ascii?Q?bWQGQDCoXbLQ80DDzTBuDuYT+qmrMLHZGKkQwfLuxiPBIlIWkzt0W5Wgm0Dx?=
- =?us-ascii?Q?ITYoI3N+aJKZEaU9Of+NukPRiCvmDPH94zsyvpD9sCTo8iti/hafDMipeRCH?=
- =?us-ascii?Q?G77+zBTe/HPeEUiKQRYDLRVGL7QxJ4XYjK3E/pXYGy0uO+oapE9iQUVV3d5x?=
- =?us-ascii?Q?2cogWr69+0n4aQO9RxoLrixPzsxGie5GJMT79b6Op0EFap83qeTYabW/i/ap?=
- =?us-ascii?Q?lA3/NGjVzx2UtEZrXP9qw6fLEuVeC+lin6wVBzwHl75+vmm43kXt8Ibrm9V/?=
- =?us-ascii?Q?14WL2gvWKATHZioVhYxeXEpNMovlaZpthoN5KZV4JV0LGFv1tYrqXaqMTr2T?=
- =?us-ascii?Q?kOF6N9x0d6ILjnbWQTekGM6LjpFkFA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4129.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5474c945-31e2-43f3-bbf0-08db33227b9c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Apr 2023 02:32:19.8752
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4wHEaDk1NtX6FX5y3lKBcjoAaeKFMc4A1EtrmTlvpXdbJNTlFl3tU0nQGMh/O7yEy65pBmRNLE1mEuEZKOLxkvMoLUnQdunkxM4bbNaT6Pw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR10MB7016
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-03-31_07,2023-03-31_01,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0
- mlxlogscore=836 bulkscore=0 malwarescore=0 mlxscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304020021
-X-Proofpoint-ORIG-GUID: EOYnUgj53eBhHZAhY-UIUEo4xQbxt1nq
-X-Proofpoint-GUID: EOYnUgj53eBhHZAhY-UIUEo4xQbxt1nq
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+References: <0000000000000cda0605c8bf219e@google.com> <00000000000073d78505cee3f389@google.com>
+In-Reply-To: <00000000000073d78505cee3f389@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Sun, 2 Apr 2023 08:03:18 +0200
+Message-ID: <CACT4Y+Z_9WOw7x+xLzDqdjFUJ7Xy+PN9m9eBpFkYW22_=FjPHg@mail.gmail.com>
+Subject: Re: [syzbot] WARNING: proc registration bug in clusterip_tg_check (3)
+To:     syzbot <syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com>
+Cc:     ap420073@gmail.com, coreteam@netfilter.org, davem@davemloft.net,
+        dsahern@kernel.org, fw@strlen.de, kadlec@blackhole.kfki.hu,
+        kadlec@netfilter.org, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-13.2 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -184,12 +71,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 21 Oct 2021 at 23:55, syzbot
+<syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com> wrote:
+>
+> syzbot has found a reproducer for the following issue on:
+>
+> HEAD commit:    2f111a6fd5b5 Merge tag 'ceph-for-5.15-rc7' of git://github..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13e33db4b00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=1f7f46d98a0da80e
+> dashboard link: https://syzkaller.appspot.com/bug?extid=08e6343a8cbd89b0c9d8
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f70630b00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1033ffecb00000
+>
+> The issue was bisected to:
+>
+> commit 2a61d8b883bbad26b06d2e6cc3777a697e78830d
+> Author: Taehee Yoo <ap420073@gmail.com>
+> Date:   Mon Nov 5 09:23:13 2018 +0000
+>
+>     netfilter: ipt_CLUSTERIP: fix sleep-in-atomic bug in clusterip_config_entry_put()
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16ce2121300000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=15ce2121300000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11ce2121300000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+08e6343a8cbd89b0c9d8@syzkaller.appspotmail.com
+> Fixes: 2a61d8b883bb ("netfilter: ipt_CLUSTERIP: fix sleep-in-atomic bug in clusterip_config_entry_put()")
 
->=20
-> Who are you hoping will merge this?
-Could I request you to look into merging the patches which seem ok to you, =
-since you are listed as the maintainer for these? I can make any more chang=
-es for the connector patches if you see the need..
+#syz fix: netfilter: ip_tables: remove clusterip target
 
-Anjali
-
+> ------------[ cut here ]------------
+> proc_dir_entry 'ipt_CLUSTERIP/224.0.0.1' already registered
+> WARNING: CPU: 1 PID: 24819 at fs/proc/generic.c:376 proc_register+0x34c/0x700 fs/proc/generic.c:376
+> Modules linked in:
+> CPU: 1 PID: 24819 Comm: syz-executor269 Not tainted 5.15.0-rc6-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:proc_register+0x34c/0x700 fs/proc/generic.c:376
+> Code: df 48 89 f9 48 c1 e9 03 80 3c 01 00 0f 85 5d 03 00 00 48 8b 44 24 28 48 c7 c7 e0 b1 9c 89 48 8b b0 d8 00 00 00 e8 a0 2c 01 07 <0f> 0b 48 c7 c7 40 ac b4 8b e8 26 c0 46 07 48 8b 4c 24 38 48 b8 00
+> RSP: 0018:ffffc900041df268 EFLAGS: 00010286
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: ffff88806ca35580 RSI: ffffffff815e88a8 RDI: fffff5200083be3f
+> RBP: ffff88801af3c838 R08: 0000000000000000 R09: 0000000000000000
+> R10: ffffffff815e264e R11: 0000000000000000 R12: ffff88801ee5b498
+> R13: ffff88801ee5bd40 R14: dffffc0000000000 R15: 0000000000000009
+> FS:  00007f976a6aa700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f976a6aa718 CR3: 00000000697b9000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  proc_create_data+0x130/0x190 fs/proc/generic.c:575
+>  clusterip_config_init net/ipv4/netfilter/ipt_CLUSTERIP.c:292 [inline]
+>  clusterip_tg_check+0x1b83/0x2300 net/ipv4/netfilter/ipt_CLUSTERIP.c:517
+>  xt_check_target+0x26c/0x9e0 net/netfilter/x_tables.c:1038
+>  check_target net/ipv4/netfilter/ip_tables.c:511 [inline]
+>  find_check_entry.constprop.0+0x7a9/0x9a0 net/ipv4/netfilter/ip_tables.c:553
+>  translate_table+0xc26/0x16a0 net/ipv4/netfilter/ip_tables.c:717
+>  do_replace net/ipv4/netfilter/ip_tables.c:1135 [inline]
+>  do_ipt_set_ctl+0x56e/0xb80 net/ipv4/netfilter/ip_tables.c:1629
+>  nf_setsockopt+0x83/0xe0 net/netfilter/nf_sockopt.c:101
+>  ip_setsockopt+0x3c3/0x3a60 net/ipv4/ip_sockglue.c:1435
+>  tcp_setsockopt+0x136/0x2530 net/ipv4/tcp.c:3658
+>  __sys_setsockopt+0x2db/0x610 net/socket.c:2176
+>  __do_sys_setsockopt net/socket.c:2187 [inline]
+>  __se_sys_setsockopt net/socket.c:2184 [inline]
+>  __x64_sys_setsockopt+0xba/0x150 net/socket.c:2184
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f976af2bd19
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 31 19 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f976a6aa208 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+> RAX: ffffffffffffffda RBX: 00007f976afb4278 RCX: 00007f976af2bd19
+> RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000004
+> RBP: 00007f976afb4270 R08: 0000000000000298 R09: 0000000000000000
+> R10: 00000000200002c0 R11: 0000000000000246 R12: 00007f976afb427c
+> R13: 00007fff7aa240bf R14: 00007f976a6aa300 R15: 0000000000022000
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/00000000000073d78505cee3f389%40google.com.
