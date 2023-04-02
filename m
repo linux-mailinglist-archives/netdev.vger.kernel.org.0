@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF03B6D389F
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 16:56:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE3E6D38A1
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 16:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbjDBO4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 10:56:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
+        id S230488AbjDBO6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 10:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbjDBO4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 10:56:53 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65007295;
-        Sun,  2 Apr 2023 07:56:52 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id k12so690049qvo.13;
-        Sun, 02 Apr 2023 07:56:52 -0700 (PDT)
+        with ESMTP id S230462AbjDBO6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 10:58:05 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31DD57692
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 07:58:04 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id m6-20020a05600c3b0600b003ee6e324b19so16633271wms.1
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 07:58:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680447412; x=1683039412;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=atds8gSClqlNHaxVTY/u8jWQRo/FCkzxGm1dMixJaaM=;
-        b=B/By7XhjU69AY0lqHx25qllp0doybNw50wUiGKlqOp010V9jcCzstlJZiVKM8a5lyU
-         5gv75rX9n0NSqTu3b2k/FoQLZi1j8BjfiD69pzhdPSOwAau+JYwlPWAuKiePY+EoO/dV
-         hheJK+8ZD9CcKKPa/0LnI3fVDfy9nq8tkX/ZzYZrrSdR+ui1PkzTWvtEabpt2wg/ba9X
-         poR9Hsf2rYQM0yMWnpaYXTgLCjLb/6tkPrmBkNU5YJPgvdgx50whJR1udUbGkE4RFOvc
-         gMSC61tu6eezoJY0zWVh4pn/3OIU/vL2cArywyxMk/P1wml+3m8YF2fjKdQrXzuSxmTr
-         5+BA==
+        d=gmail.com; s=20210112; t=1680447482;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=nT6vXeP8IhxfrLCi1mP05zjfmLQkE9byHtEBHEJTF20=;
+        b=qzBobAXQlh8t2P+vxdZ9iDzmdYT88tD5dLdD77VnI24FJu4JZtiZxiFsXbOd74m7bn
+         XNZgxk5RsUoFszpEpfSREGhEbLhQiFV1wJGFesfYt9mU5qUoiV0wPmt1afhqI1TIhKa7
+         5vA/3hMxJbDWB01luoq05maU56D8n8zGcnIGRZXipgxB/2NgqurPyKattnvYPRKTGWN1
+         xAuEuLry4UYa2XHLJbCk+eGgvYzCqxiM6l5WC2ZliWlEq9u6RbUJh6MpkmnFBZyYN0Xv
+         wmNP/ZAtKCwR1G3raAMgdDg8qFjvTx9uTQklkyEy58yjoSXQDavNP/sqt94GCQ0Abbwb
+         pz4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680447412; x=1683039412;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=atds8gSClqlNHaxVTY/u8jWQRo/FCkzxGm1dMixJaaM=;
-        b=lUHVOkSzjoBobtpu1Hcbh/23uFUtgAuvi9+QTCT+um9c3oBHrRKPBENmtuQmk2IZ3l
-         y8OZr+AOFIw7Y/jTrjIS4kJgAzKrfYgaRv488YOHbKr4IYX/ZtYZaWxvZNph0T1Im2uc
-         oP7EWz4Pgz75aO/Rkm1LWmODqgVQ5dzqSQpiSni+30Ae4yCtsGVdOAnXwrwkve+893FJ
-         ha/MdWJ31joDtjYKNCMrT1iwGuHoeFP6mxEY9VaNaZ4Rz3fpoigfG7TTgHnvfmKCrrJs
-         1rT7pymxuSjkDE13NitPoNZ23DQkpUgxO5C80M23sgc9YPgiFsVm9+3B6TG+M04/NJFi
-         yVzw==
-X-Gm-Message-State: AAQBX9cjo63LB8FhCtXRTM5pS+EG47XdtkTop4Pv3nWX0Ubt2cnuHWzt
-        jIXAVfClwvmu3wURHYMobkY=
-X-Google-Smtp-Source: AKy350a4rkwDBTQMVluJtKUgqOxCwrYsf5coqfb0RWcqcMAYP5IbUbp///HoN0WpAm/c1TL6UVdubA==
-X-Received: by 2002:ad4:5b87:0:b0:5a5:f1eb:fc67 with SMTP id 7-20020ad45b87000000b005a5f1ebfc67mr49357634qvp.52.1680447411816;
-        Sun, 02 Apr 2023 07:56:51 -0700 (PDT)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id x23-20020a05620a0b5700b00746b79101b6sm2080331qkg.67.2023.04.02.07.56.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Apr 2023 07:56:51 -0700 (PDT)
-Date:   Sun, 02 Apr 2023 10:56:51 -0400
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     David Howells <dhowells@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        d=1e100.net; s=20210112; t=1680447482;
+        h=content-transfer-encoding:in-reply-to:subject:from:content-language
+         :references:cc:to:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=nT6vXeP8IhxfrLCi1mP05zjfmLQkE9byHtEBHEJTF20=;
+        b=7TZ9T72MjMycngSEeo9TKtvyEN2FTZvwDDOoWHziP1fAU7K4cdvhuimQAjZihQTpQi
+         cH101B8fyAbxeP1hz/Qa4Rh6ECl6HIEtmu3l+pahT9SG99DQnh6rkDlXNvjdyx1jgRdD
+         OBRHL3xsERz3q5noUanVCaebRFUWgNSXn3eLHuLsJLWLl14iK4EKgpEB/RMTUuTPWqGK
+         45hBVBvvxTMoOQCj4ah0Jjxv7Mbc+zd+7mX28mR+6UEf6ccV69KlI610Q2CY5dM9k3Py
+         Pe9FjmnaTHh3Qze/q1lvEyYsPruQdpYJouKAhqfLO1ArLB/I/dFubfxpgbdnv+8UMwVm
+         DF0Q==
+X-Gm-Message-State: AO0yUKXhUWvrtjIam+RBJWzMib/QOheTtqQ+QyyU3F3XUtGi63Okbp/i
+        p/DOiU/VSMzRzMlLC/X+AR8=
+X-Google-Smtp-Source: AK7set+7kZTzx/rCU1ZNd+7RvytOXOZ0G1IYl/tiZdUw2envFi4D5jvvCjg4a2q6aw4bXPdt6OtNkg==
+X-Received: by 2002:a7b:c8c4:0:b0:3ed:b590:96e6 with SMTP id f4-20020a7bc8c4000000b003edb59096e6mr24417254wml.4.1680447482549;
+        Sun, 02 Apr 2023 07:58:02 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:7b85:6800:129:5577:2076:7bf8? (dynamic-2a01-0c22-7b85-6800-0129-5577-2076-7bf8.c22.pool.telefonica.de. [2a01:c22:7b85:6800:129:5577:2076:7bf8])
+        by smtp.googlemail.com with ESMTPSA id g20-20020a05600c4ed400b003ee8a1bc220sm16914284wmq.1.2023.04.02.07.58.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 02 Apr 2023 07:58:01 -0700 (PDT)
+Message-ID: <baa2f821-ddbc-3ce3-02d2-8d4d9e438fd1@gmail.com>
+Date:   Sun, 2 Apr 2023 16:58:00 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
         Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Message-ID: <642997b31bf8f_2d2a202088e@willemb.c.googlers.com.notmuch>
-In-Reply-To: <20230331160914.1608208-4-dhowells@redhat.com>
-References: <20230331160914.1608208-1-dhowells@redhat.com>
- <20230331160914.1608208-4-dhowells@redhat.com>
-Subject: RE: [PATCH v3 03/55] net: Declare MSG_SPLICE_PAGES internal sendmsg()
- flag
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        Chris Healy <cphealy@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <17fcccf5-8d81-298e-0671-d543340da105@gmail.com>
+ <ddab653a-c3f6-9b9f-2cac-ed98594849b5@gmail.com>
+Content-Language: en-US
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 0/7] net: phy: smsc: add support for edpd tunable
+In-Reply-To: <ddab653a-c3f6-9b9f-2cac-ed98594849b5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Howells wrote:
-> Declare MSG_SPLICE_PAGES, an internal sendmsg() flag, that hints to a
-> network protocol that it should splice pages from the source iterator
-> rather than copying the data if it can.  This flag is added to a list that
-> is cleared by sendmsg and recvmsg syscalls on entry.
-
-nit: comment not longer matches implementation: recvmsg
- 
-> This is intended as a replacement for the ->sendpage() op, allowing a way
-> to splice in several multipage folios in one go.
+On 02.04.2023 16:00, Florian Fainelli wrote:
 > 
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> cc: "David S. Miller" <davem@davemloft.net>
-> cc: Eric Dumazet <edumazet@google.com>
-> cc: Jakub Kicinski <kuba@kernel.org>
-> cc: Paolo Abeni <pabeni@redhat.com>
-> cc: Jens Axboe <axboe@kernel.dk>
-> cc: Matthew Wilcox <willy@infradead.org>
-> cc: netdev@vger.kernel.org
+> 
+> On 4/2/2023 2:43 AM, Heiner Kallweit wrote:
+>> This adds support for the EDPD PHY tunable.
+>> Per default EDPD is disabled in interrupt mode, the tunable can be used
+>> to override this, e.g. if the link partner doesn't use EDPD.
+>> The interval to check for energy can be chosen between 1000ms and
+>> 2000ms. Note that this value consists of the 1000ms phylib interval
+>> for state machine runs plus the time to wait for energy being detected.
+> 
+> AFAIR Chris Healy was trying to get something similar done, maybe you can CC him on the next version?
 
-Aside from that
+Actually this is based on a conversation between him and me. Chris came up
+with a first version and I reworked it from scratch to meet mainline standards
+and make it usable on SMSC and Amlogic PHY's.
 
-Reviewed-by: Willem de Bruijn <willemb@google.com>
