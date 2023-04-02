@@ -2,136 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AE96D38C0
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 17:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF70D6D38CA
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 17:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbjDBPSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 11:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
+        id S230444AbjDBPjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 11:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbjDBPS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 11:18:28 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C08DDBC8
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 08:18:23 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id er13so66935599edb.9
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 08:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680448703;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FHt3FWLjHDC9hshm9BOf8mHp4Hkxi+Xn48pQS9ShfZE=;
-        b=lSqTgViQ0PHr1p5uHtQu18Jgoi4ztIxy4WlUFPn8doIpwmjdbw4U1ZmmnR1u3h9kLK
-         BwQMlQ5C+nuVB+O9jWPFd9Ruxq+BVUUH3OV5zLXF0hdIRqDINWMG1EChjneJyJgv4dUT
-         EqsJ0GQfNvte7yWdt+zBp1l1l5d8AZqhZixMakeOERAjsmBu1ss5Y8NcIreBJiQafIvw
-         L3pX5Zy3S3iJVABSbseWr1GiSvkm44N/UQdsw6hCOdZLFVH9H4XFei3DowRULQ0LaSHX
-         460W3TAQyScTKBTkm4kst+JHHUopCwD3SmMQKYSwOO0ZjY+TWxgutZ+KoJbK8fMbeFlj
-         +5dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680448703;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FHt3FWLjHDC9hshm9BOf8mHp4Hkxi+Xn48pQS9ShfZE=;
-        b=VkY6ZJkx2TqcSMjeC3i6m/V+Vap9vMyS3hWbZGnyQ7zpMOCNOyj6MV288V6A9KglxR
-         EUsWt0GkZCRPXiyrZBM5Tew9ghYDM0HGSksT5Ogy/VuFq5wu+rDjg/4pBXwsBWJQXOct
-         N97PMFed9MZpXXFqCxBz9sOUImN1LzvRQehjbXcCISzcDiKrBL/yc0JxA53pS+IG6qLA
-         KbAmoXL0bjARc0s01z0uYiifnElqQy3pDlU3RtjfpcVmXXsK7qIqXI4ySbjJG1ynC5Yn
-         RTvg9/kYvgSXRueLJTX0VHVYw7DMFNw6AotrSbWPs0PV8hLS7H7Jb2hDOB0+MPfIO/VU
-         aGwQ==
-X-Gm-Message-State: AAQBX9dCCgE9oMA66N2O10bY4WSAZ+mb+EMyBIvWVXENI6t6JLMN4hp5
-        UjQna3Rz3CZOPIcnVYohyRs=
-X-Google-Smtp-Source: AKy350aWQVLljdUCbiEp1xniGevQ9h3WauJDs6aGlgyhiXr/M7tswNf44sY5A+/uxJ0gcpI0QDNa1Q==
-X-Received: by 2002:aa7:c1d7:0:b0:4fa:ba31:6c66 with SMTP id d23-20020aa7c1d7000000b004faba316c66mr31403047edp.42.1680448703533;
-        Sun, 02 Apr 2023 08:18:23 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:7b85:6800:129:5577:2076:7bf8? (dynamic-2a01-0c22-7b85-6800-0129-5577-2076-7bf8.c22.pool.telefonica.de. [2a01:c22:7b85:6800:129:5577:2076:7bf8])
-        by smtp.googlemail.com with ESMTPSA id n19-20020a509353000000b004c09527d62dsm3410553eda.30.2023.04.02.08.18.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Apr 2023 08:18:23 -0700 (PDT)
-Message-ID: <d78e0ee3-55b2-e2bd-c9f4-b8a88f31366b@gmail.com>
-Date:   Sun, 2 Apr 2023 17:17:35 +0200
+        with ESMTP id S230298AbjDBPjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 11:39:37 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1E45263;
+        Sun,  2 Apr 2023 08:39:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=public-files.de;
+        s=s31663417; t=1680449955; i=frank-w@public-files.de;
+        bh=nQ/RpSBX5xYz/pvjTCzkDUPAT2jbDpPKgB5SdpTNr7o=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=fkRTelFmWBwVP+grHr9Ij5cGIKpvsi9vN+tSJ/XTTQzhS6epGhtmEymuICIswSqm2
+         jQVPllagua9X5W+FCJPpm85IXTxkCleSpW1EHYWCbnDG1giWjDU5agGTQwHYRQD7Yr
+         Y4TNyX5//v2VfSuE2i77yyxAKs1YrdfLeaSjb0wiotmlHUb4xaBlI7Cg8kEvBsRfz9
+         c7W6pFIWM5x+w9fIJN4Q9tvPyPhtuAKqItFDfP0kmOnZpcu4xvSpD8lI80noeHiTYd
+         MnYxjlALUnk1JEGTavurjy0FTwdmeW6y0fkR19iUNar9HCCJqOPgtaMImEcyKwia2d
+         h1DU+yoUE3hHg==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [217.61.149.201] ([217.61.149.201]) by web-mail.gmx.net
+ (3c-app-gmx-bap07.server.lan [172.19.172.77]) (via HTTP); Sun, 2 Apr 2023
+ 17:39:14 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: [PATCH net-next v2 7/7] net: phy: smsc: enable edpd tunable support
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
+Message-ID: <trinity-6b061b48-4cf9-4868-a2ad-21f01b1e36a4-1680449954840@3c-app-gmx-bap07>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Chris Healy <cphealy@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <d0e999eb-d148-a5c1-df03-9b4522b9f2fd@gmail.com>
-In-Reply-To: <d0e999eb-d148-a5c1-df03-9b4522b9f2fd@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>, chowtom <chowtom@gmail.com>
+Subject: Aw: [PATCH] net: sfp: add qurik enabling 2500Base-x for HG
+ MXPD-483II
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Date:   Sun, 2 Apr 2023 17:39:14 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <5e9a87a3f4c1ccc30625c8092b057f0fbd8a9947.1680435823.git.daniel@makrotopia.org>
+References: <5e9a87a3f4c1ccc30625c8092b057f0fbd8a9947.1680435823.git.daniel@makrotopia.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:hYYqje1aQDZX7Kb1vo6sKUz4Ni0JOp2a33b9G2oNCgpR4MLu1FqbdW0HJqBxqEVkkDz+Z
+ 8ZT4siNus5vOjIHFUhycNA022MXUsqou0DZPftMsnNxA5/4iDk89Ubxi12KC9Xc9Dhoal9ZxL6Os
+ IjtR6ayhhpFtLAf6RK9FYHXVd/HMIPawO/iGMql9cIicIbbwuod/BZSfQKRhg7jqHKF1y2CSMTyh
+ SHWtuZqTGGyB3Ao1Nepzdc9GZC4GCuCOPqZA8PIwtgCq+yaUhhzkkHAR5P846+192q1fqBGAMJud
+ as=
+UI-OutboundReport: notjunk:1;M01:P0:CEyg9GUmQSM=;VXHG0XBHjqUl5Pg34DeVVhmxKVo
+ K97fDl2nJd21R7uOQMjld9cYcKxGBs5U9ooj/ou7AicTJeVqIh2YbHAEnv98w0zTbhNP93vPQ
+ Fd2PU445XDbqOZuRjmaRgmWyd37pSS6Us7ArQR6k0DDJqf9Sgzmu2UFHX8x+2i51x9HrUuC9P
+ sEphhMHNyDCFXnHR2rQWU6Yy8ChcnXsywM/XrQSzeXNfGZJ3LQ1O+HbakJ6jqzP7Wd3SuR5tS
+ qJNAmVxxAwo8/AbDuBMtR4L9ry1ADumIdnuzA40LUH4gj4CXkJ9p64ucrAA19yJwIQndxSDnp
+ N/kNAhDUPnyYj4S/y0pne5Wqs9BT8SjQFwRgELuE+xR8s4fjwVpVE4BjoiJlV9q3E0sCS0AVo
+ z9V/mirMhz1K4rTPTg7a135b1VjMwxd3Kj4jXNv7KNUFhT70M5NTJbH0UvokKejqe8IkdtFvO
+ G8XnsJKpDZ0jefv3hO3jz63eqE8AV7qOkytz1jvNAdMV/b/GGVmY7xel/jmseUVPTTpzu3Xzr
+ UYsQ65516XtvpjgXHe6UtPtrDlZFHaYKMJcVmTqJ/KTk1vOFFw5vmT/euWbrG6jsn3jEOGZCc
+ OROT4Dw2zMVsHs/3bljDAn8kKKEeLieMvAq/H69vc3iM8IhLklq5dWN2vzsVxThMGIwft4yRV
+ Ougwmlg9e9IHdCZ/UwWxcVn7gG1Y9MjRd2v+BlOiZ0kiqrz4Pf1ppMTtUoSr4nA/7ZXaiYMnE
+ eAxjpghyARCJrVAXUju1aAAtXy9kCz1E1NgQrv5oGfBEjFNwMJ3Xzmz+2np5rNFTq/jeEQrXT
+ 7OwQOg+KRQBDCKM3gXot7uYw==
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable EDPD PHY tunable support for all drivers using
-lan87xx_read_status.
+> Gesendet: Sonntag, 02. April 2023 um 13:44 Uhr
+> Von: "Daniel Golle" <daniel@makrotopia.org>
+> Betreff: [PATCH] net: sfp: add qurik enabling 2500Base-x for HG MXPD-483II
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/smsc.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+just noted a small typo...s/qurik/quirk/
 
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 0eba69ad5..692930750 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -469,6 +469,9 @@ static struct phy_driver smsc_phy_driver[] = {
- 	.get_strings	= smsc_get_strings,
- 	.get_stats	= smsc_get_stats,
- 
-+	.get_tunable	= smsc_phy_get_tunable,
-+	.set_tunable	= smsc_phy_set_tunable,
-+
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
-@@ -513,6 +516,9 @@ static struct phy_driver smsc_phy_driver[] = {
- 	.get_strings	= smsc_get_strings,
- 	.get_stats	= smsc_get_stats,
- 
-+	.get_tunable	= smsc_phy_get_tunable,
-+	.set_tunable	= smsc_phy_set_tunable,
-+
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
-@@ -539,6 +545,9 @@ static struct phy_driver smsc_phy_driver[] = {
- 	.get_strings	= smsc_get_strings,
- 	.get_stats	= smsc_get_stats,
- 
-+	.get_tunable	= smsc_phy_get_tunable,
-+	.set_tunable	= smsc_phy_set_tunable,
-+
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
-@@ -569,6 +578,9 @@ static struct phy_driver smsc_phy_driver[] = {
- 	.get_strings	= smsc_get_strings,
- 	.get_stats	= smsc_get_stats,
- 
-+	.get_tunable	= smsc_phy_get_tunable,
-+	.set_tunable	= smsc_phy_set_tunable,
-+
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- } };
--- 
-2.40.0
-
-
+regards Frank
