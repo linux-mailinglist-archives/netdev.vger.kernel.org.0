@@ -2,98 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06EA16D37EA
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 14:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DF16D37F0
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 14:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbjDBMrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 08:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
+        id S230367AbjDBMuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 08:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbjDBMrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 08:47:41 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4BAA24B
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 05:47:36 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id nc3so2163430qvb.1
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 05:47:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680439656; x=1683031656;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=u+QRUcj+4+GZIe2O+QCNN/Dt+RxjFp/plKyJS/nrRaU=;
-        b=W6o6Z6XLGGEAn/o4+j0bhr+rAeSVkZNyjEb3vBI4J9tCh/9xG0niM9zXX0wzgcjl9J
-         +OfF3koHvT2Mg9YXJan41rWY1XIvzTdAT/iYMdJ+rce4pwoON/MWOoUFBPX4uzoiCgCL
-         IbE/EHYRjf9t+//TqbP4XYP8nAyJFLGd/5utkIJSuRqSgPbB5d0GUbZoiBAikq9xypNM
-         RtpuIqLA+BfUsacHpXvSbZWYgAG1kuED6FgGINpjmaNvPmob1jAMIoKUo+dGIC/NYgHr
-         fsSoTXF11Ue8wmsvovlj2T6OUCn6IQ5GTVXrWlCJCwPJvTsUz1tPdJb7rhUr7hcLbDed
-         yRGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680439656; x=1683031656;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=u+QRUcj+4+GZIe2O+QCNN/Dt+RxjFp/plKyJS/nrRaU=;
-        b=KyIQnCuoOZFKPdmKYaP6h018czJF0PzWA6Djh8ie0ZQhG3kZObHk4B9FSgstN0DwsP
-         n8BuFBZuJyJExhz1Uu7LInsz/S7GokunX1MJb4XflH0oAObWISoZuZZNCxu7tx7n1VWw
-         jrWy/fBILoGFmL2tKz+6ix1L65jPev9ksJE80+GSYcgbpflGqDTvB3El3OfCM5kN/o7w
-         tYVnNfBPRomd97DbgfPWH1an9KRPdQgV15UhDBSS52waF2o9fSRI9hcDaGmWE8NfVc+c
-         3iOJm70V5bW+9pKa89R/WD5Aexoap/Bbb3mhMvbVuOlASdyz5k+ecUP99BDn3Pg5sKAY
-         sASQ==
-X-Gm-Message-State: AAQBX9dndabTWRCkYgSg1YgbJXl5TOYkaTAfEuZ8piGjFz5bnyBT3XQV
-        wvgSXLK0a5fY6rnEfS9J/vQ=
-X-Google-Smtp-Source: AKy350bzRLKQQTjOl0xzJWp5aLdYjv1WmJaTsBNHyKlwnyJunhEbeZWDl2jCvqXXISFX4T5eUrwhdw==
-X-Received: by 2002:a05:6214:400f:b0:5a2:f1e3:15d0 with SMTP id kd15-20020a056214400f00b005a2f1e315d0mr50427133qvb.3.1680439655774;
-        Sun, 02 Apr 2023 05:47:35 -0700 (PDT)
-Received: from [192.168.1.105] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id jh14-20020a0562141fce00b005dd8b9345b6sm1928541qvb.78.2023.04.02.05.47.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Apr 2023 05:47:34 -0700 (PDT)
-Message-ID: <8f6cbe87-4fc1-9eb2-4c0b-ab790c2c7297@gmail.com>
-Date:   Sun, 2 Apr 2023 05:47:32 -0700
+        with ESMTP id S229459AbjDBMuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 08:50:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8D6A273;
+        Sun,  2 Apr 2023 05:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 221DE611F2;
+        Sun,  2 Apr 2023 12:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6D7D3C4339B;
+        Sun,  2 Apr 2023 12:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680439816;
+        bh=rQqv9ogO54C4FfVeug38ZuObq436G/aGSDl7mWECQro=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=e8uUwbeC93ok3ei6LusXCLx1oF0gWFjCd7QcqkRdGdVHohkelzDdj0PKLQX1cbAa2
+         NFv4WqLvu1dpgWWB23uMUswsrqPkAr9gCzMoA2uGx7ghF+U72bp0ZMTdiIHPpKwuR+
+         CC9FiL0R5/+BoznrAvbTs8r9RcociabTz7GMVDgvFvrCpSOcQWrHJDN5WMlw3Kqi45
+         pdUbhx4OyJvA13pYTemuwdmTUVg8SnIpMAhl5SvyNJ3ZrBDaFeAp+8k/B+5J55G/5Q
+         xc4D/wXP2xH3cu2QYKkqd5yQBXl45BCK052TeaotwJootCF6UVQbf8V7BqNcJ7QuUI
+         E/wOlAo4L8aew==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55EEDC73FE2;
+        Sun,  2 Apr 2023 12:50:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: [PATCH net-next 2/7] net: simplify handling of
- dsa_ndo_eth_ioctl() return code
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Maxim Georgiev <glipus@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        =?UTF-8?Q?K=c3=b6ry_Maincent?= <kory.maincent@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-References: <20230402123755.2592507-1-vladimir.oltean@nxp.com>
- <20230402123755.2592507-3-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20230402123755.2592507-3-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] sctp: check send stream number after wait_for_sndbuf
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168043981634.15620.14113899026364813015.git-patchwork-notify@kernel.org>
+Date:   Sun, 02 Apr 2023 12:50:16 +0000
+References: <313e35feff94a17a88c2b6f6c4fa0b743754ec01.1680390597.git.lucien.xin@gmail.com>
+In-Reply-To: <313e35feff94a17a88c2b6f6c4fa0b743754ec01.1680390597.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, marcelo.leitner@gmail.com
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net.git (main)
+by David S. Miller <davem@davemloft.net>:
 
-On 4/2/2023 5:37 AM, Vladimir Oltean wrote:
-> In the expression "x == 0 || x != -95", the term "x == 0" does not
-> change the expression's logical value, because 0 != -95, and so,
-> if x is 0, the expression would still be true by virtue of the second
-> term. If x is non-zero, the expression depends on the truth value of
-> the second term anyway. As such, the first term is redundant and can
-> be deleted.
+On Sat,  1 Apr 2023 19:09:57 -0400 you wrote:
+> This patch fixes a corner case where the asoc out stream count may change
+> after wait_for_sndbuf.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> When the main thread in the client starts a connection, if its out stream
+> count is set to N while the in stream count in the server is set to N - 2,
+> another thread in the client keeps sending the msgs with stream number
+> N - 1, and waits for sndbuf before processing INIT_ACK.
+> 
+> [...]
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Here is the summary with links:
+  - [net] sctp: check send stream number after wait_for_sndbuf
+    https://git.kernel.org/netdev/net/c/2584024b2355
+
+You are awesome, thank you!
 -- 
-Florian
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
