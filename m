@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9D46D384B
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 16:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3686D384E
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 16:28:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbjDBOYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 10:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
+        id S230451AbjDBO2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 10:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbjDBOYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 10:24:39 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B581116F
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 07:24:38 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id n11so982509ilj.9
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 07:24:38 -0700 (PDT)
+        with ESMTP id S229459AbjDBO2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 10:28:20 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245A359D2
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 07:28:20 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id h31so16017444pgl.6
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 07:28:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680445477;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZNTioKnRKmC7Qc0xYScz55Ei9/v2n0smfYgZF2RGEls=;
-        b=JQ2zFJSSm19wrRuPIIOqC2uDaD+4EwmLuR6zAi+zKCP9zPPy/Wu1h56NEcb0yYoZBc
-         j1/Dg2IfjLJw3lDvFW1C2b0v/4EiRIxxQ5h01IxU4O7q/vxMGvULx0jxQWZ8DTtaSx4I
-         GaHbmpMKMBRWCbkyMztNGsdQ7XKdZDAl0XPdtyMTh39CUeOpDPpo6Ed4wQkMG5B75siP
-         E2dodaFj3QVS1IBvNA1vV8MOph/ZbkbliqVnLELFv9zzA05qooHLaiJptilyf02y4A6y
-         JDA/xtMkoPkIZD7GncHkn35rpKXUKr8liwn5qXk/u5YBmzwys24J9PJQ1wjbDf4aO6bN
-         eKxg==
+        d=gmail.com; s=20210112; t=1680445699;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zGvVGTgaGPh/9dfGRYfED+0NbJ2ZNhTpJbxJJphQp28=;
+        b=FKU6g9yo4OgS5DbVz7kaVaku+Fs4Oww4J9sju0HkcHD8s+i3z8h4mfXPdSgpN1SkY2
+         dw6bj4onp6y6yJpeWxZ2QcaaRtAU3rs0TRIilP1r3eIYV+ybbhwz/AYL4pHa2fh0DPSv
+         hPcWLjUNqFwV4RiG84lMadjJWdHXRHhrZLrKerIHes7xnapye8lRKOZXYQOAf896ZbOj
+         VNjDeZFCn+qtQ1xpV8Wil0Jvg5yjNvu+eZaeHzNnUzr1vh3N3wxqsy5GS7CqWmoj1tSS
+         bLk1u9Ug+ODqo6wD+sAeYQpJUMWOqPYEqTFZVHZOgf0oWONk61xq39d8+11U55OVD29a
+         HduQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680445477;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZNTioKnRKmC7Qc0xYScz55Ei9/v2n0smfYgZF2RGEls=;
-        b=Vkgl2VpIh3qZcjTvWg/D4LupZN25RVbTC71TBQwKGYIXwdhxgQVUqrLA19QWzkknqL
-         F+iTEgbFydxjzgkBycQD47LF+s4RtLDsxBLQsSPS+F1z3bxcmcF7cuBMIfnIYnrWDkwV
-         lROdJ200OnHAGmzmv2dEWlTrdWHWV5m+V8ibdLAd8+clHfqUG6rz2wf5omKhMPDIKFA9
-         RJFzTmkTXYAQaPGB7EXWWtDBpEnqA7BK0yEsfCXbG8vPh0QMt/2cwfRVDSvbR66IKE3G
-         CIkcEdPNcbyg5Knho/QQzE2oDC238DcjXUW81LoRA3/hSicjOwp899QIX14ZD1nkCq7f
-         2fCQ==
-X-Gm-Message-State: AAQBX9f0dRUlHo095S1AdMroBqWp9wvWZ+pM8nWVZPmVO6d4b/Ds18uX
-        OpZ9bCqUpjtVA/wDAz1wJW4=
-X-Google-Smtp-Source: AKy350ati2QhfYMFNj18Aggcdkvbw1KTara3vmmNDDHG3icr2x8DeCJSccq60Zx588LBrFqKisrNzA==
-X-Received: by 2002:a05:6e02:4d2:b0:326:1cf1:a9ce with SMTP id f18-20020a056e0204d200b003261cf1a9cemr14311491ils.29.1680445477475;
-        Sun, 02 Apr 2023 07:24:37 -0700 (PDT)
-Received: from fedora.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
-        by smtp.gmail.com with ESMTPSA id ch24-20020a0566383e9800b003a958f51423sm1995041jab.167.2023.04.02.07.24.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Apr 2023 07:24:37 -0700 (PDT)
-From:   Maxim Georgiev <glipus@gmail.com>
-To:     kory.maincent@bootlin.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, glipus@gmail.com,
-        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com
-Subject: [PATCH net-next RFC v2] Add NDOs for hardware timestamp get/set
-Date:   Sun,  2 Apr 2023 08:24:35 -0600
-Message-Id: <20230402142435.47105-1-glipus@gmail.com>
-X-Mailer: git-send-email 2.39.2
+        d=1e100.net; s=20210112; t=1680445699;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zGvVGTgaGPh/9dfGRYfED+0NbJ2ZNhTpJbxJJphQp28=;
+        b=WMVRky0uXs2ndhUartzGjSTQd8mZySE33l3mw/pIEb1gyTzt2p75OUKj1RPbApsSl0
+         gcueFB9AAXzT0vncpYePA7IXU4IsmJ6FaB1q5WBa7mUY+H4jmx5oeEwHI3I5oxJYPvCy
+         qQwv6p53smVyvLQcVoIMqFA2Am1AB9e6enPA0R8syTbp5J/r3AnSE7vwcO+7eF/Y3WDQ
+         EoyJoWY3UOPGGYkpkoqHm7is5VO4rss4Uhyzp1mOtx5qsP7mVqBqUz5s1xPgtnyhfqFc
+         SrW6LAffQlBcrFzHexL5RhO7+G8Mi8flDlIzdSnDNcPVTyIWwB13CimLkmbS8nRe8bkv
+         Y74w==
+X-Gm-Message-State: AAQBX9e6nfssOOl1QdI7/UJ/k253XW6wSgvFl7rG8vdmk8VOgKqF2fm9
+        RqLmAODD6lv6I9+6YXxrTTO3Z6eqjUXavVwVP3s=
+X-Google-Smtp-Source: AKy350YRWm1Y3/JY/6EsvXEq8HKLaCvgOp6uczL+stKurN7rVQqDaz02QmOWfbQGpnhjkyk7reh6NbzTf4ccmEOe3xM=
+X-Received: by 2002:a63:4d62:0:b0:513:53d7:aedf with SMTP id
+ n34-20020a634d62000000b0051353d7aedfmr4294753pgl.3.1680445699511; Sun, 02 Apr
+ 2023 07:28:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20230331045619.40256-1-glipus@gmail.com> <20230330223519.36ce7d23@kernel.org>
+ <CAP5jrPHzQN25gWmNCXYdCO0U7Fxx_wB0WdbKRNd8Owqp1Gftsg@mail.gmail.com>
+ <20230331111041.0dc5327c@kernel.org> <20230401191215.tvveoi3lkawgg6g4@skbuf>
+ <20230401122450.0fd88313@kernel.org> <20230401201818.bxitvurfirsl6rpg@skbuf>
+In-Reply-To: <20230401201818.bxitvurfirsl6rpg@skbuf>
+From:   Max Georgiev <glipus@gmail.com>
+Date:   Sun, 2 Apr 2023 08:28:08 -0600
+Message-ID: <CAP5jrPGtdTxt4UOg+pst2q0bxqwZgknO9V2sP4umh9G4PcPebg@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC] Add NDOs for hardware timestamp get/set
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, kory.maincent@bootlin.com,
+        netdev@vger.kernel.org, maxime.chevallier@bootlin.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -68,388 +71,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Current NIC driver API demands drivers supporting hardware timestamping
-to support SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTLs. Handling these IOCTLs
-requires dirivers to implement request parameter structure translation
-between user and kernel address spaces, handling possible
-translation failures, etc. This translation code is pretty much
-identical across most of the NIC drivers that support SIOCGHWTSTAMP/
-SIOCSHWTSTAMP.
-This patch extends NDO functiuon set with ndo_hwtstamp_get/set
-functions, implements SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTL translation
-to ndo_hwtstamp_get/set function calls including parameter structure
-translation and translation error handling.
+On Sat, Apr 1, 2023 at 2:18=E2=80=AFPM Vladimir Oltean <vladimir.oltean@nxp=
+.com> wrote:
+>
+> On Sat, Apr 01, 2023 at 12:24:50PM -0700, Jakub Kicinski wrote:
+> > It should be relatively easy to plumb both the ifr and the in-kernel
+> > config thru all the DSA APIs and have it call the right helper, too,
+> > tho? SMOC?
+>
+> Sorry, this does not compute.
+>
+> "Plumbing the in-kernel config thru all the DSA APIs" would be the
+> netdev notifier that I proposed one year ago. I just need you to say
+> "yes, sounds ok, let's see how that looks with last year's feedback
+> addressed".
 
-This patch is sent out as RFC.
-It still pending on basic testing. Implementing ndo_hwtstamp_get/set
-in netdevsim driver should allow manual testing of the request
-translation logic. Also is there a way to automate this testing?
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Maxim Georgiev <glipus@gmail.com>
----
-Changes in v2:
-- Introduced kernel_hwtstamp_config structure
-- Added netlink_ext_ack* and kernel_hwtstamp_config* as NDO hw timestamp
-  function parameters
-- Reodered function variable declarations in dev_hwtstamp()
-- Refactored error handling logic in dev_hwtstamp()
-- Split dev_hwtstamp() into GET and SET versions
-- Changed net_hwtstamp_validate() to accept struct hwtstamp_config *
-  as a parameter
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 39 ++++++-----
- drivers/net/netdevsim/netdev.c             | 26 +++++++
- drivers/net/netdevsim/netdevsim.h          |  1 +
- include/linux/netdevice.h                  | 21 ++++++
- include/uapi/linux/net_tstamp.h            | 15 ++++
- net/core/dev_ioctl.c                       | 81 ++++++++++++++++++----
- 6 files changed, 149 insertions(+), 34 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 6f5c16aebcbf..5b98f7257c77 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6161,7 +6161,9 @@ static int e1000_mii_ioctl(struct net_device *netdev, struct ifreq *ifr,
- /**
-  * e1000e_hwtstamp_set - control hardware time stamping
-  * @netdev: network interface device structure
-- * @ifr: interface request
-+ * @config: hwtstamp_config structure containing request parameters
-+ * @kernel_config: kernel version of config parameter structure.
-+ * @extack: netlink request parameters.
-  *
-  * Outgoing time stamping can be enabled and disabled. Play nice and
-  * disable it when requested, although it shouldn't cause any overhead
-@@ -6174,20 +6176,19 @@ static int e1000_mii_ioctl(struct net_device *netdev, struct ifreq *ifr,
-  * specified. Matching the kind of event packet is not supported, with the
-  * exception of "all V2 events regardless of level 2 or 4".
-  **/
--static int e1000e_hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
-+static int e1000e_hwtstamp_set(struct net_device *netdev,
-+			       struct hwtstamp_config *config,
-+			       struct kernel_hwtstamp_config *kernel_config,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
--	struct hwtstamp_config config;
- 	int ret_val;
- 
--	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
--		return -EFAULT;
--
--	ret_val = e1000e_config_hwtstamp(adapter, &config);
-+	ret_val = e1000e_config_hwtstamp(adapter, config);
- 	if (ret_val)
- 		return ret_val;
- 
--	switch (config.rx_filter) {
-+	switch (config->rx_filter) {
- 	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
- 	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
- 	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-@@ -6199,22 +6200,24 @@ static int e1000e_hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
- 		 * by hardware so notify the caller the requested packets plus
- 		 * some others are time stamped.
- 		 */
--		config.rx_filter = HWTSTAMP_FILTER_SOME;
-+		config->rx_filter = HWTSTAMP_FILTER_SOME;
- 		break;
- 	default:
- 		break;
- 	}
--
--	return copy_to_user(ifr->ifr_data, &config,
--			    sizeof(config)) ? -EFAULT : 0;
-+	return ret_val;
- }
- 
--static int e1000e_hwtstamp_get(struct net_device *netdev, struct ifreq *ifr)
-+static int e1000e_hwtstamp_get(struct net_device *netdev,
-+			       struct hwtstamp_config *config,
-+			       struct kernel_hwtstamp_config *kernel_config,
-+			       struct netlink_ext_ack *extack)
- {
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 
--	return copy_to_user(ifr->ifr_data, &adapter->hwtstamp_config,
--			    sizeof(adapter->hwtstamp_config)) ? -EFAULT : 0;
-+	memcpy(config, &adapter->hwtstamp_config,
-+	       sizeof(adapter->hwtstamp_config));
-+	return 0;
- }
- 
- static int e1000_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
-@@ -6224,10 +6227,6 @@ static int e1000_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
- 	case SIOCGMIIREG:
- 	case SIOCSMIIREG:
- 		return e1000_mii_ioctl(netdev, ifr, cmd);
--	case SIOCSHWTSTAMP:
--		return e1000e_hwtstamp_set(netdev, ifr);
--	case SIOCGHWTSTAMP:
--		return e1000e_hwtstamp_get(netdev, ifr);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -7365,6 +7364,8 @@ static const struct net_device_ops e1000e_netdev_ops = {
- 	.ndo_set_features = e1000_set_features,
- 	.ndo_fix_features = e1000_fix_features,
- 	.ndo_features_check	= passthru_features_check,
-+	.ndo_hwtstamp_get	= e1000e_hwtstamp_get,
-+	.ndo_hwtstamp_set	= e1000e_hwtstamp_set,
- };
- 
- /**
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index 35fa1ca98671..502715c6e9e1 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -238,6 +238,30 @@ nsim_set_features(struct net_device *dev, netdev_features_t features)
- 	return 0;
- }
- 
-+static int
-+nsim_hwtstamp_get(struct net_device *dev,
-+		  struct hwtstamp_config *config,
-+		  struct kernel_hwtstamp_config *kernel_config,
-+		  struct netlink_ext_ack *extack)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
-+
-+	memcpy(config, &ns->hw_tstamp_config, sizeof(ns->hw_tstamp_config));
-+	return 0;
-+}
-+
-+static int
-+nsim_hwtstamp_ges(struct net_device *dev,
-+		  struct hwtstamp_config *config,
-+		  struct kernel_hwtstamp_config *kernel_config,
-+		  struct netlink_ext_ack *extack)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
-+
-+	memcpy(&ns->hw_tstamp_config, config, sizeof(ns->hw_tstamp_config));
-+	return 0;
-+}
-+
- static const struct net_device_ops nsim_netdev_ops = {
- 	.ndo_start_xmit		= nsim_start_xmit,
- 	.ndo_set_rx_mode	= nsim_set_rx_mode,
-@@ -256,6 +280,8 @@ static const struct net_device_ops nsim_netdev_ops = {
- 	.ndo_setup_tc		= nsim_setup_tc,
- 	.ndo_set_features	= nsim_set_features,
- 	.ndo_bpf		= nsim_bpf,
-+	.ndo_hwtstamp_get	= nsim_hwtstamp_get,
-+	.ndo_hwtstamp_set	= nsim_hwtstamp_get,
- };
- 
- static const struct net_device_ops nsim_vf_netdev_ops = {
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 7d8ed8d8df5c..c6efd2383552 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -102,6 +102,7 @@ struct netdevsim {
- 	} udp_ports;
- 
- 	struct nsim_ethtool ethtool;
-+	struct hwtstamp_config hw_tstamp_config;
- };
- 
- struct netdevsim *
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index c8c634091a65..078c9284930a 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -57,6 +57,8 @@
- struct netpoll_info;
- struct device;
- struct ethtool_ops;
-+struct hwtstamp_config;
-+struct kernel_hwtstamp_config;
- struct phy_device;
- struct dsa_port;
- struct ip_tunnel_parm;
-@@ -1411,6 +1413,17 @@ struct netdev_net_notifier {
-  *	Get hardware timestamp based on normal/adjustable time or free running
-  *	cycle counter. This function is required if physical clock supports a
-  *	free running cycle counter.
-+ *	int (*ndo_hwtstamp_get)(struct net_device *dev,
-+ *				struct hwtstamp_config *config,
-+ *				struct kernel_hwtstamp_config *kernel_config,
-+ *				struct netlink_ext_ack *extack);
-+ *	Get hardware timestamping parameters currently configured  for NIC
-+ *	device.
-+ *	int (*ndo_hwtstamp_set)(struct net_device *dev,
-+ *				struct hwtstamp_config *config,
-+ *				struct kernel_hwtstamp_config *kernel_config,
-+ *				struct netlink_ext_ack *extack);
-+ *	Set hardware timestamping parameters for NIC device.
-  */
- struct net_device_ops {
- 	int			(*ndo_init)(struct net_device *dev);
-@@ -1645,6 +1658,14 @@ struct net_device_ops {
- 	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
- 						  const struct skb_shared_hwtstamps *hwtstamps,
- 						  bool cycles);
-+	int			(*ndo_hwtstamp_get)(struct net_device *dev,
-+						    struct hwtstamp_config *config,
-+						    struct kernel_hwtstamp_config *kernel_config,
-+						    struct netlink_ext_ack *extack);
-+	int			(*ndo_hwtstamp_set)(struct net_device *dev,
-+						    struct hwtstamp_config *config,
-+						    struct kernel_hwtstamp_config *kernel_config,
-+						    struct netlink_ext_ack *extack);
- };
- 
- struct xdp_metadata_ops {
-diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
-index a2c66b3d7f0f..547f73beb479 100644
---- a/include/uapi/linux/net_tstamp.h
-+++ b/include/uapi/linux/net_tstamp.h
-@@ -79,6 +79,21 @@ struct hwtstamp_config {
- 	int rx_filter;
- };
- 
-+/**
-+ * struct kernel_hwtstamp_config - %SIOCGHWTSTAMP and %SIOCSHWTSTAMP parameter
-+ *
-+ * @dummy:	a placeholder field added to work around empty struct language
-+ *		restriction
-+ *
-+ * This structure passed as a parameter to NDO methods called in
-+ * response to SIOCGHWTSTAMP and SIOCSHWTSTAMP IOCTLs.
-+ * The structure is effectively empty for now. Before adding new fields
-+ * to the structure "dummy" placeholder field should be removed.
-+ */
-+struct kernel_hwtstamp_config {
-+	u8 dummy;
-+};
-+
- /* possible values for hwtstamp_config->flags */
- enum hwtstamp_flags {
- 	/*
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index 846669426236..c145afb3f77e 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -183,22 +183,18 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
- 	return err;
- }
- 
--static int net_hwtstamp_validate(struct ifreq *ifr)
-+static int net_hwtstamp_validate(struct hwtstamp_config *cfg)
- {
--	struct hwtstamp_config cfg;
- 	enum hwtstamp_tx_types tx_type;
- 	enum hwtstamp_rx_filters rx_filter;
- 	int tx_type_valid = 0;
- 	int rx_filter_valid = 0;
- 
--	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
--		return -EFAULT;
--
--	if (cfg.flags & ~HWTSTAMP_FLAG_MASK)
-+	if (cfg->flags & ~HWTSTAMP_FLAG_MASK)
- 		return -EINVAL;
- 
--	tx_type = cfg.tx_type;
--	rx_filter = cfg.rx_filter;
-+	tx_type = cfg->tx_type;
-+	rx_filter = cfg->rx_filter;
- 
- 	switch (tx_type) {
- 	case HWTSTAMP_TX_OFF:
-@@ -277,6 +273,63 @@ static int dev_siocbond(struct net_device *dev,
- 	return -EOPNOTSUPP;
- }
- 
-+static int dev_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct hwtstamp_config config;
-+	int err;
-+
-+	err = dsa_ndo_eth_ioctl(dev, ifr, SIOCGHWTSTAMP);
-+	if (err == 0 || err != -EOPNOTSUPP)
-+		return err;
-+
-+	if (!ops->ndo_hwtstamp_get)
-+		return dev_eth_ioctl(dev, ifr, SIOCGHWTSTAMP);
-+
-+	if (!netif_device_present(dev))
-+		return -ENODEV;
-+
-+	err = ops->ndo_hwtstamp_get(dev, &config, NULL, NULL);
-+	if (err)
-+		return err;
-+
-+	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
-+static int dev_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct hwtstamp_config config;
-+	int err;
-+
-+	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
-+		return -EFAULT;
-+
-+	err = net_hwtstamp_validate(&config);
-+	if (err)
-+		return err;
-+
-+	err = dsa_ndo_eth_ioctl(dev, ifr, SIOCSHWTSTAMP);
-+	if (err == 0 || err != -EOPNOTSUPP)
-+		return err;
-+
-+	if (!ops->ndo_hwtstamp_set)
-+		return dev_eth_ioctl(dev, ifr, SIOCSHWTSTAMP);
-+
-+	if (!netif_device_present(dev))
-+		return -ENODEV;
-+
-+	err = ops->ndo_hwtstamp_set(dev, &config, NULL, NULL);
-+	if (err)
-+		return err;
-+
-+	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
- static int dev_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
- 			      void __user *data, unsigned int cmd)
- {
-@@ -391,11 +444,11 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
- 		rtnl_lock();
- 		return err;
- 
-+	case SIOCGHWTSTAMP:
-+		return dev_hwtstamp_get(dev, ifr);
-+
- 	case SIOCSHWTSTAMP:
--		err = net_hwtstamp_validate(ifr);
--		if (err)
--			return err;
--		fallthrough;
-+		return dev_hwtstamp_set(dev, ifr);
- 
- 	/*
- 	 *	Unknown or private ioctl
-@@ -407,9 +460,7 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
- 
- 		if (cmd == SIOCGMIIPHY ||
- 		    cmd == SIOCGMIIREG ||
--		    cmd == SIOCSMIIREG ||
--		    cmd == SIOCSHWTSTAMP ||
--		    cmd == SIOCGHWTSTAMP) {
-+		    cmd == SIOCSMIIREG) {
- 			err = dev_eth_ioctl(dev, ifr, cmd);
- 		} else if (cmd == SIOCBONDENSLAVE ||
- 		    cmd == SIOCBONDRELEASE ||
--- 
-2.39.2
-
+I sent out a second iteration of the ndo_hwtstamp_get/set patch.
+I tried to address all the comments except fixing DSA API - I still
+don't have a full understanding of what is the plan there.
