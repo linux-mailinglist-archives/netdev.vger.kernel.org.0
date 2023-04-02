@@ -2,66 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 861636D375C
-	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 12:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7039B6D376A
+	for <lists+netdev@lfdr.de>; Sun,  2 Apr 2023 12:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbjDBKlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 06:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
+        id S230376AbjDBKtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 06:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbjDBKlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 06:41:49 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E091311EBA;
-        Sun,  2 Apr 2023 03:41:47 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id p2so20698070qtw.13;
-        Sun, 02 Apr 2023 03:41:47 -0700 (PDT)
+        with ESMTP id S230264AbjDBKtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 06:49:46 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC801206A
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 03:49:43 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b20so106580828edd.1
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 03:49:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680432107;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PYiHPvxkJqdldllj/O9cu/4mZjCb2J8H635dPazE8S8=;
-        b=HTtxKL7atbG37OEGnzXegASPeJg/gzzvy6NOehVplC9SZeLGzGRnW+laT5PgQ7Q8HB
-         kdKEPWZ5k7OnWXVxfoTb0Tfb96n6jWo0lfHujVX45qchw09Lc00pig9btnTSmAIPBflI
-         ejkNJhYT+zcactwoIKXp2VtImu5QY/66DKZlRBDzW4r7/seOm0h0yos6mF9CmUIwGbWK
-         Z62I3+5asVTcLcokGzy+aXafP2bWPY6FELQYtq6p8ClRDt9loUcCeFUkqJ+RMMm59puR
-         vRjW+/6I2J+iGmFzMhiwPRUYTtnVj4D05IYcHWAYWV8cN/kbWpqOLXlv4Temjg04Few2
-         jhxQ==
+        d=linaro.org; s=google; t=1680432582;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hjR00TgAnnMwLDCvz0xT0MzHATrmHlJrCAFtw5aFKdk=;
+        b=pkSrbHT2FYuk1Z6tCCsWbzsSFqJrBPI6wjADRsIIxnUglOL3L9Qu6voguaiIUrnnU2
+         JPjcWYsxgRQbir6z1Wx/eDztWZiSw5OBWG4HtkXAkEsR3exMnhz0XP47cDxIk6Dl7vDa
+         f3vCSRhXip5T1S8AQVDzFKP6Cd31AO9Ihs6Sy4B1AeWwcE0FX2PpeYJxULMlok4JVIPp
+         ydNNsv8E8ral5yWhU2/zxN5VSC6lRhnlGefjW3J8G1lAF3F1c4YYF0/9Xlyl0isNvVjf
+         m8ucRuuoWEMiGSBM5/+sHQuME5Lqt7GIZKs0VmolQsb3CzO+35GIp315QJlpRNegKbnL
+         Lzig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680432107;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PYiHPvxkJqdldllj/O9cu/4mZjCb2J8H635dPazE8S8=;
-        b=HSMALwM2aA108pYFd0EddG7TjjPOhM2Ds9dNuVoqXp5ZMRGPy0LxmBX8F5zTIpie7l
-         yGHg4HQUR7uChSH0jvES6lGphAgOQ/7UtLqvutSHPl12fvqchRBk232jsiTNGnhTJuoj
-         qEG74qsSnZQjjeQpd/bYDbGbJ/pBnrGDgEtXgX5DDQm9+cOEygGqYvmtDVhQ2uEaCOTi
-         tN2Fxr5Yyv69I94GPnKdPmlqXTOc6YikOAvEpsHjVl0c0i9mOANRoOH9V+6PHw7IdgsX
-         ABKni7XDVB0Cw7EiMUn0+AsFjreAFllp25XhcE/lSe2HDEeRSZJ5eedzvrCd5kGQjIfm
-         F02g==
-X-Gm-Message-State: AO0yUKVB4BPv+RB1R7xGUDCQ0Xwj66r/vA9CSsax+jsA+64QCqjH0ji6
-        wAu94T9DpkW019Oqr0qCQw9CIOKkxeumqc8/etU=
-X-Google-Smtp-Source: AKy350beh9Rw0Gwj3MwIuXWgy1KwchjXrfwJ6XH3/Yjht3aIlPzyGRyzfd86F4EwA+a+ZcY58W6kqM9ql44zDm9D/oA=
-X-Received: by 2002:a05:622a:199a:b0:3db:c138:ae87 with SMTP id
- u26-20020a05622a199a00b003dbc138ae87mr12616783qtc.6.1680432107082; Sun, 02
- Apr 2023 03:41:47 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680432582;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hjR00TgAnnMwLDCvz0xT0MzHATrmHlJrCAFtw5aFKdk=;
+        b=oSymtXQGVgsBKo5D9ri+jEHBgbyDh/R6bOLdLMSAKs2keORf7BouShoZ/cwFQ7ixcO
+         YpoUyHkNUeiUyz9ZXkHuXFTJiRFQ+EOlKb2UiptUubC75ylNj9lBXxP62K0uIutlnInE
+         K60V+bi7569BpVfbWrPi+KJyS7HeQUlEbgZxMupg5/O8xwylEHxG/W1yTquB1GcT+1VR
+         DyrOewrlGkWh1dtJfNVIOew2hSokQwld70L33a82AmIigjCW8La5pOpGOeIjhgUO9wBZ
+         NxJRm07i48LgSQR7f0lyi+gAh0gNtiAG6vNlfoUjOGX8Rjk0rKWWtaE+VDK55adgbpMF
+         HRZA==
+X-Gm-Message-State: AAQBX9eCMnTYxwwDwEiws8MOOm4hDwhlw6HvnKZ/2PpnMDGBnk3upLvt
+        i4C6z4N6qxZzws9tzKJymqvH9g==
+X-Google-Smtp-Source: AKy350bwisRgcgGnMtchBJUcbuj4Pcg+osZs9dbE8qToLV5KDtYpFRlg5/KXsZxdQi+Q/OWZDnLNPA==
+X-Received: by 2002:a17:907:a42a:b0:947:d757:d822 with SMTP id sg42-20020a170907a42a00b00947d757d822mr6531312ejc.68.1680432582447;
+        Sun, 02 Apr 2023 03:49:42 -0700 (PDT)
+Received: from ?IPV6:2a02:810d:15c0:828:7f7f:6a30:7a20:94d5? ([2a02:810d:15c0:828:7f7f:6a30:7a20:94d5])
+        by smtp.gmail.com with ESMTPSA id ee55-20020a056402293700b004aef147add6sm3082265edb.47.2023.04.02.03.49.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 02 Apr 2023 03:49:42 -0700 (PDT)
+Message-ID: <a13ae120-b50c-b5ef-a686-bc811e6b9d37@linaro.org>
+Date:   Sun, 2 Apr 2023 12:49:40 +0200
 MIME-Version: 1.0
-References: <20230326221612.169289-1-xiyou.wangcong@gmail.com>
- <CALOAHbCyGJzp1yH2NTsikre0RuQ+4WoZCsAc110_+tW=L8FgQg@mail.gmail.com> <6427844176538_c503a208e4@john.notmuch>
-In-Reply-To: <6427844176538_c503a208e4@john.notmuch>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Sun, 2 Apr 2023 18:41:08 +0800
-Message-ID: <CALOAHbAtUUs7OOEyj+-o_wfLo1P9Yf1tab9k61wCrP0tv15gUQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next] sock_map: include sk_psock memory overhead too
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH net-next v3 04/12] dt-bindings: net: qcom,ethqos: Add
+ Qualcomm sc8280xp compatibles
+Content-Language: en-US
+To:     Andrew Halaney <ahalaney@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     agross@kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        bhupesh.sharma@linaro.org, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, mturquette@baylibre.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        richardcochran@gmail.com, linux@armlinux.org.uk, veekhee@apple.com,
+        tee.min.tan@linux.intel.com, mohammad.athari.ismail@intel.com,
+        jonathanh@nvidia.com, ruppala@nvidia.com, bmasney@redhat.com,
+        andrey.konovalov@linaro.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, ncai@quicinc.com,
+        jsuraj@qti.qualcomm.com, hisunil@quicinc.com, echanude@redhat.com
+References: <20230331214549.756660-1-ahalaney@redhat.com>
+ <20230331214549.756660-5-ahalaney@redhat.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230331214549.756660-5-ahalaney@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,69 +90,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 1, 2023 at 9:09=E2=80=AFAM John Fastabend <john.fastabend@gmail=
-.com> wrote:
->
-> Yafang Shao wrote:
-> > On Mon, Mar 27, 2023 at 6:16=E2=80=AFAM Cong Wang <xiyou.wangcong@gmail=
-.com> wrote:
-> > >
-> > > From: Cong Wang <cong.wang@bytedance.com>
-> > >
-> > > When a socket is added to a sockmap, sk_psock is allocated too as its
-> > > sk_user_data, therefore it should be consider as an overhead of sockm=
-ap
-> > > memory usage.
-> > >
-> > > Before this patch:
-> > >
-> > > 1: sockmap  flags 0x0
-> > >         key 4B  value 4B  max_entries 2  memlock 656B
-> > >         pids echo-sockmap(549)
-> > >
-> > > After this patch:
-> > >
-> > > 9: sockmap  flags 0x0
-> > >         key 4B  value 4B  max_entries 2  memlock 1824B
-> > >         pids echo-sockmap(568)
-> > >
-> > > Fixes: 73d2c61919e9 ("bpf, net: sock_map memory usage")
-> > > Cc: Yafang Shao <laoar.shao@gmail.com>
-> > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > ---
-> > >  net/core/sock_map.c | 10 +++++++++-
-> > >  1 file changed, 9 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> > > index 7c189c2e2fbf..22197e565ece 100644
-> > > --- a/net/core/sock_map.c
-> > > +++ b/net/core/sock_map.c
-> > > @@ -799,9 +799,17 @@ static void sock_map_fini_seq_private(void *priv=
-_data)
-> > >
-> > >  static u64 sock_map_mem_usage(const struct bpf_map *map)
-> > >  {
-> > > +       struct bpf_stab *stab =3D container_of(map, struct bpf_stab, =
-map);
-> > >         u64 usage =3D sizeof(struct bpf_stab);
-> > > +       int i;
-> > >
-> > >         usage +=3D (u64)map->max_entries * sizeof(struct sock *);
-> > > +
-> > > +       for (i =3D 0; i < stab->map.max_entries; i++) {
-> >
-> > Although it adds a for-loop, the operation below is quite light. So it
-> > looks good to me.
->
-> We could track a count from update to avoid the loop?
->
+On 31/03/2023 23:45, Andrew Halaney wrote:
+> The sc8280xp has a new version of the ETHQOS hardware in it, EMAC v3.
+> Add a compatible for this.
+> 
+> Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
 
-I prefer adding a count into struct bpf_stab. We can also get the
-number of socks easily with this new count, and it should be
-acceptable to modify this count in the update/delete paths.
 
---=20
-Regards
-Yafang
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
+
