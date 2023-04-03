@@ -2,248 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D24866D4144
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 11:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD526D415D
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 11:55:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231915AbjDCJvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 05:51:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
+        id S231794AbjDCJzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 05:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230105AbjDCJvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 05:51:35 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4748212842;
-        Mon,  3 Apr 2023 02:50:38 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3339nS6j015267;
-        Mon, 3 Apr 2023 04:49:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680515368;
-        bh=JWqD7HtU05H8b0gt0ata2JIxTLhej1uD/J26q5tfgTc=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=XCEwS0ey4LLZ2Ax5do86qNxGR/kjqiLYeoPDMMBLOKGVbsk4DUwaoZSJUdb+PnGml
-         7gzN7OzibtSOosGo2zv8RYd/s+nXJw9+/bbGUp4ts0bHbOvPZnV29N/XGmFvAHhhIz
-         jL2nNDse7IbvXuudV7uAUf2X3c1CjsyrD4N04sBs=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3339nSq3129876
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Apr 2023 04:49:28 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 3
- Apr 2023 04:49:28 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 3 Apr 2023 04:49:28 -0500
-Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3339nOm6002655;
-        Mon, 3 Apr 2023 04:49:25 -0500
-Message-ID: <37ec04db-3ed2-49a4-9c0d-b9a00f49a0a4@ti.com>
-Date:   Mon, 3 Apr 2023 15:19:24 +0530
+        with ESMTP id S231824AbjDCJze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 05:55:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82946EAB
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 02:54:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680515643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fhMzb4M7buCw/z89I96CjAU7IGJVjjKJKkPGs/PZ09w=;
+        b=XbqM5stPkcUXBx4mFmRPKJfiBvNWdBSvmYt8t0ehuVEZrXhgV9zWACyP2Cc22vReLz1jiL
+        ClTzt0/G2q7BW2rvKChcYnBJUjenuHwmC+yENCP1NE32mejK6LknLheRTRXzUuNv2d57QD
+        398HT0j+T3WrVsv2HIwhTL8tzDC5PnU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-39-4-IXX9ZSPZipH8aFkS7Z8Q-1; Mon, 03 Apr 2023 05:50:50 -0400
+X-MC-Unique: 4-IXX9ZSPZipH8aFkS7Z8Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 416BE1C05147;
+        Mon,  3 Apr 2023 09:50:49 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 52E2BC15BA0;
+        Mon,  3 Apr 2023 09:50:47 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <64299af9e8861_2d2a20208e6@willemb.c.googlers.com.notmuch>
+References: <64299af9e8861_2d2a20208e6@willemb.c.googlers.com.notmuch> <20230331160914.1608208-1-dhowells@redhat.com> <20230331160914.1608208-16-dhowells@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v3 15/55] ip, udp: Support MSG_SPLICE_PAGES
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable USXGMII
- mode for J784S4 CPSW9G
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-References: <54c3964b-5dd8-c55e-08db-61df4a07797c@ti.com>
- <ZCaYve8wYl15YRxh@shell.armlinux.org.uk>
- <7a9c96f4-6a94-4a2c-18f5-95f7246e10d5@ti.com>
- <ZCasBMNxaWk2+XVO@shell.armlinux.org.uk>
- <dea9ae26-e7f2-1052-58cd-f7975165aa96@ti.com>
- <ZCbAE7IIc8HcOdxl@shell.armlinux.org.uk>
- <1477e0c3-bb92-72b0-9804-0393c34571d3@ti.com>
- <be166ab3-29f9-a18d-bbbd-34e7828453e4@ti.com>
- <ZCqPHM2/qismCaaN@shell.armlinux.org.uk>
- <5114b342-6727-b27c-bc8c-c770ed4baa31@ti.com>
- <ZCqVjS7M2F49yS/6@shell.armlinux.org.uk>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <ZCqVjS7M2F49yS/6@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-3.9 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1818503.1680515446.1@warthog.procyon.org.uk>
+Date:   Mon, 03 Apr 2023 10:50:46 +0100
+Message-ID: <1818504.1680515446@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.8
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 
+> > +	} else if ((flags & MSG_SPLICE_PAGES) && length) {
+> > +		if (inet->hdrincl)
+> > +			return -EPERM;
+> > +		if (rt->dst.dev->features & NETIF_F_SG)
+> > +			/* We need an empty buffer to attach stuff to */
+> > +			initial_length = transhdrlen;
+> 
+> I still don't entirely understand what initial_length means.
+> 
+> More importantly, transhdrlen can be zero. If not called for UDP
+> but for RAW. Or if this is a subsequent call to a packet that is
+> being held with MSG_MORE.
+> 
+> This works fine for existing use-cases, which go to alloc_new_skb.
+> Not sure how this case would be different. But the comment alludes
+> that it does.
 
-On 03/04/23 14:29, Russell King (Oracle) wrote:
-> On Mon, Apr 03, 2023 at 02:11:08PM +0530, Siddharth Vadapalli wrote:
->>
->>
->> On 03/04/23 14:02, Russell King (Oracle) wrote:
->>> On Mon, Apr 03, 2023 at 11:57:21AM +0530, Siddharth Vadapalli wrote:
->>>> Hello Russell,
->>>>
->>>> On 31/03/23 19:16, Siddharth Vadapalli wrote:
->>>>>
->>>>>
->>>>> On 31-03-2023 16:42, Russell King (Oracle) wrote:
->>>>>> On Fri, Mar 31, 2023 at 04:23:16PM +0530, Siddharth Vadapalli wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 31/03/23 15:16, Russell King (Oracle) wrote:
->>>>>>>> On Fri, Mar 31, 2023 at 02:55:56PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>> Russell,
->>>>>>>>>
->>>>>>>>> On 31/03/23 13:54, Russell King (Oracle) wrote:
->>>>>>>>>> On Fri, Mar 31, 2023 at 01:35:10PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>>>> Hello Russell,
->>>>>>>>>>>
->>>>>>>>>>> Thank you for reviewing the patch.
->>>>>>>>>>>
->>>>>>>>>>> On 31/03/23 13:27, Russell King (Oracle) wrote:
->>>>>>>>>>>> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>>>>>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
->>>>>>>>>>>>> extra_modes member of the J784S4 SoC data. Additionally, configure the
->>>>>>>>>>>>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
->>>>>>>>>>>>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
->>>>>>>>>>>>> "phylink_config".
->>>>>>>>>>>>
->>>>>>>>>>>> I don't think TI "get" phylink at all...
->>>>>>>>>>>>
->>>>>>>>>>>>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->>>>>>>>>>>>> index 4b4d06199b45..ab33e6fe5b1a 100644
->>>>>>>>>>>>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->>>>>>>>>>>>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->>>>>>>>>>>>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
->>>>>>>>>>>>>  		mac_control |= CPSW_SL_CTL_GIG;
->>>>>>>>>>>>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
->>>>>>>>>>>>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
->>>>>>>>>>>>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
->>>>>>>>>>>>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
->>>>>>>>>>>>
->>>>>>>>>>>> The configuration of the interface mode should *not* happen in
->>>>>>>>>>>> mac_link_up(), but should happen in e.g. mac_config().
->>>>>>>>>>>
->>>>>>>>>>> I will move all the interface mode associated configurations to mac_config() in
->>>>>>>>>>> the v2 series.
->>>>>>>>>>
->>>>>>>>>> Looking at the whole of mac_link_up(), could you please describe what
->>>>>>>>>> effect these bits are having:
->>>>>>>>>>
->>>>>>>>>> 	CPSW_SL_CTL_GIG
->>>>>>>>>> 	CPSW_SL_CTL_EXT_EN
->>>>>>>>>> 	CPSW_SL_CTL_IFCTL_A
->>>>>>>>>
->>>>>>>>> CPSW_SL_CTL_GIG corresponds to enabling Gigabit mode (full duplex only).
->>>>>>>>> CPSW_SL_CTL_EXT_EN when set enables in-band mode of operation and when cleared
->>>>>>>>> enables forced mode of operation.
->>>>>>>>> CPSW_SL_CTL_IFCTL_A is used to set the RMII link speed (0=10 mbps, 1=100 mbps).
->>>>>>>>
->>>>>>>> Okay, so I would do in mac_link_up():
->>>>>>>>
->>>>>>>> 	/* RMII needs to be manually configured for 10/100Mbps */
->>>>>>>> 	if (interface == PHY_INTERFACE_MODE_RMII && speed == SPEED_100)
->>>>>>>> 		mac_control |= CPSW_SL_CTL_IFCTL_A;
->>>>>>>>
->>>>>>>> 	if (speed == SPEED_1000)
->>>>>>>> 		mac_control |= CPSW_SL_CTL_GIG;
->>>>>>>> 	if (duplex)
->>>>>>>> 		mac_control |= CPSW_SL_CTL_FULLDUPLEX;
->>>>>>>>
->>>>>>>> I would also make mac_link_up() do a read-modify-write operation to
->>>>>>>> only affect the bits that it is changing.
->>>>>>>
->>>>>>> This is the current implementation except for the SGMII mode associated
->>>>>>> operation that I had recently added. I will fix that. Also, the
->>>>>>> cpsw_sl_ctl_set() function which writes the mac_control value performs a read
->>>>>>> modify write operation.
->>>>>>>
->>>>>>>>
->>>>>>>> Now, for SGMII, I would move setting CPSW_SL_CTL_EXT_EN to mac_config()
->>>>>>>> to enable in-band mode - don't we want in-band mode enabled all the
->>>>>>>> time while in SGMII mode so the PHY gets the response from the MAC?
->>>>>>>
->>>>>>> Thank you for pointing it out. I will move that to mac_config().
->>>>>>>
->>>>>>>>
->>>>>>>> Lastly, for RGMII at 10Mbps, you seem to suggest that you need RGMII
->>>>>>>> in-band mode enabled for that - but if you need RGMII in-band for
->>>>>>>> 10Mbps, wouldn't it make sense for the other speeds as well? If so,
->>>>>>>> wouldn't that mean that CPSW_SL_CTL_EXT_EN can always be set for
->>>>>>>> RGMII no matter what speed is being used?
->>>>>>>
->>>>>>> The CPSW MAC does not support forced mode at 10 Mbps RGMII. For this reason, if
->>>>>>> RGMII 10 Mbps is requested, it is set to in-band mode.
->>>>>>
->>>>>> What I'm saying is that if we have in-band signalling that is reliable
->>>>>> for a particular interface mode, why not always use it, rather than
->>>>>> singling out one specific speed as an exception? Does it not work in
->>>>>> 100Mbps and 1Gbps?
->>>>
->>>> While the CPSW MAC supports RGMII in-band status operation, the link partner
->>>> might not support it. I have also observed that forced mode is preferred to
->>>> in-band mode as implemented for another driver:
->>>> commit ade64eb5be9768e40c90ecb01295416abb2ddbac
->>>> net: dsa: microchip: Disable RGMII in-band status on KSZ9893
->>>>
->>>> and in the mail thread at:
->>>> https://lore.kernel.org/netdev/20200905160647.GJ3164319@lunn.ch/
->>>> based on Andrew's suggestion, using forced mode appears to be better.
->>>>
->>>> Additionally, I have verified that switching to in-band status causes a
->>>> regression. Thus, I will prefer keeping it in forced mode for 100 and 1000 Mbps
->>>> RGMII mode which is the existing implementation in the driver. Please let me know.
->>>
->>> Okay, so what this seems to mean is if you have a PHY that does not
->>> support in-band status in RGMII mode, then 10Mbps isn't possible -
->>> because the MAC requires in-band status mode to select 10Mbps.
->>> To put it another way, in such a combination, 10Mbps link modes
->>> should not be advertised, nor should they be reported to userspace
->>> as being supported.
->>>
->>> Is that correct?
->>
->> Yes, if the PHY does not support in-band status, 10 Mbps RGMII will not work,
->> despite the MAC supporting 10 Mbps in-band RGMII. However, I notice the following:
->> If the RGMII interface speed is set to 10 Mbps via ethtool, but the:
->> managed = "in-band-status";
->> property is not mentioned in the device-tree, the interface is able to work with
->> 10 Mbps mode with the PHY. This is with the CPSW MAC configured for in-band mode
->> of operation at 10 Mbps RGMII mode. Please let me know what this indicates,
->> since it appears to me that 10 Mbps is functional in this special case (It might
->> be an erroneous configuration).
-> 
-> I think you need to check carefully what is going on.
-> 
-> Firstly, if you as the MAC is choosing to enable in-band status mode,
-> but phylink isn't using in-band status mode, that is entirely a matter
-> for your MAC driver.
-> 
-> Secondly, you need to research what the PHY does during the inter-frame
-> time (when in-band status would be transferred). This is when RX_CTL
-> is 0,0, RX_DV is 0, RX_ER is 0.
-> 
-> For in-band 10Mbps mode to work, RXD nibbles would need to be x001
-> (middle two bits indicate RX clock = 2.5MHz clock for 10Mbps, lsb
-> indicates link up). MSB determines duplex. Remember that 10Mbps can
-> appear to work with mismatched duplex settings but can cause chaos on
-> networks when it disagrees with what the rest of the network is doing.
-> 
-> So, I think before one says "setting in-band mode for 10Mbps with a
-> PHY that doesn't support in-band" really needs caution and research
-> to check what _actually_ ends up happening, and whether it is really
-> correct to do this.
+The problem is that in the non-MSG_ZEROCOPY case, __ip_append_data() assumes
+that it's going to copy the data it is given and will allocate sufficient
+space in the skb in advance to hold it - but I don't want to do that because I
+want to splice in the pages holding the data instead.  However, I do need to
+allocate space to hold the transport header.
 
-Thank you for the detailed explanation. I will analyze it and fix this. In the
-meanwhile, is it acceptable for me to post the v2 of this series, with the other
-suggestions implemented, while maintaining the status quo for the 10 Mbps RGMII
-configuration in the driver? Please let me know.
+Maybe I should change 'initial_length' to 'initial_alloc'?  It represents the
+amount I think we should allocate.  Or maybe I should have a separate
+allocation clause for MSG_SPLICE_PAGES?
 
-Regards,
-Siddharth.
+I also wonder if __ip_append_data() really needs two places that call
+getfrag().
+
+David
+
