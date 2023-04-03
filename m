@@ -2,104 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6E26D4575
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:16:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC986D4584
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbjDCNQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 09:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
+        id S229603AbjDCNWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 09:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232146AbjDCNQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:16:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3351994;
-        Mon,  3 Apr 2023 06:16:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6093F61B0F;
-        Mon,  3 Apr 2023 13:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774B9C433EF;
-        Mon,  3 Apr 2023 13:16:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1680527787;
-        bh=v5GEobEXWw9pWNaP5n7NjahjJYUHsbOXcTCsBnBC3Zs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tyLOupN8MHFwypuU5Jl7dKRwqg173TH0HJ2WHeo1zqSJtHhOjadclqraq9StnSdKY
-         RkN+GrFcgkRiDWTtrpJgl2HZ0GiWseGC+vrSEcDkMieu1Y2oJW4fBO8e7+p5JF39N1
-         OHckf/CmfRw1XrcUCCnL7YuxrnPZhhpFkrUJDNK4=
-Date:   Mon, 3 Apr 2023 15:16:25 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>, stable <stable@vger.kernel.org>
-Subject: Re: net: dsa: mv88e6xxx: Request for stable inclusion
-Message-ID: <2023040308-entwine-paralyses-c870@gregkh>
-References: <CAOMZO5BTAaEV+vzq8v_gtyBSC24BY7hWVBehKa_X9BFZY4aYaA@mail.gmail.com>
- <20230328152158.qximoksxqed3ctqv@skbuf>
- <2023040343-grip-magical-89d2@gregkh>
+        with ESMTP id S229473AbjDCNWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:22:06 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C326AB44E
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 06:22:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Qp99Y5L6gi8Fe+lh52JUdZX5o1lcsIuZMntIrefzP1Y=; b=e4eAQFRt94DwPcxZ426OEG/blM
+        fGF6kGnFYGXsgt6epcXQWAQW82nZO6VQDU053UgVYTNW4Cusm86ZmRidAEiyxQbPtkA+Y09MDlh0V
+        NYa1zVLAqqFYKSbGGtY7iY8YydliVVosvebVHWcG+pdYF+u1QfXD6jL5GY3rWNSYsxkg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pjK8J-009HjN-Hj; Mon, 03 Apr 2023 15:22:03 +0200
+Date:   Mon, 3 Apr 2023 15:22:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
+        mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next 6/6] net: txgbe: Support phylink MAC layer
+Message-ID: <ca3c82a9-4160-422a-a618-04ab04a19015@lunn.ch>
+References: <20230403064528.343866-1-jiawenwu@trustnetic.com>
+ <20230403064528.343866-7-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2023040343-grip-magical-89d2@gregkh>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230403064528.343866-7-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 03, 2023 at 03:15:19PM +0200, Greg KH wrote:
-> On Tue, Mar 28, 2023 at 06:21:58PM +0300, Vladimir Oltean wrote:
-> > Hi Fabio,
-> > 
-> > On Tue, Mar 28, 2023 at 11:51:35AM -0300, Fabio Estevam wrote:
-> > > Hi,
-> > > 
-> > > I am running kernel 6.1 on a system with a mv88e6320 and can easily
-> > > trigger a flood of "mv88e6085 30be0000.ethernet-1:00: VTU member
-> > > violation for vid 10, source port 5" messages.
-> > > 
-> > > When this happens, the Ethernet audio that passes through the switch
-> > > causes a loud noise in the speaker.
-> > > 
-> > > Backporting the following commits to 6.1 solves the problem:
-> > > 
-> > > 4bf24ad09bc0 ("net: dsa: mv88e6xxx: read FID when handling ATU violations")
-> > > 8646384d80f3 ("net: dsa: mv88e6xxx: replace ATU violation prints with
-> > > trace points")
-> > > 9e3d9ae52b56 ("net: dsa: mv88e6xxx: replace VTU violation prints with
-> > > trace points")
-> > > 
-> > > Please apply them to 6.1-stable tree.
-> > > 
-> > > Thanks,
-> > > 
-> > > Fabio Estevam
-> > 
-> > For my information, is there any relationship between the audio samples
-> > that (presumably) get packet drops resulting in noise, and the traffic
-> > getting VTU member violations? In other words, is the audio traffic sent
-> > using VID 10 on switch port 5?
-> > 
-> > I don't quite understand, since VLAN-filtered traffic should be dropped,
-> > what is the reason why the trace point patches would help. My only
-> > explanation is that the audio traffic passing through the switch *also*
-> > passes through the CPU, and the trace points reduce CPU load caused by
-> > an unrelated (and rogue) traffic stream.
-> > 
-> > If this isn't the case, and you see VTU violations as part of normal
-> > operation, I would say that's a different problem for which we would
-> > need more details.
-> 
-> Agreed, this sounds like the removal of printk messages is removing the
-> noise, not the actual fix for the reason the printk messages in the
-> first place, right?
+> @@ -215,23 +216,15 @@ static void txgbe_up_complete(struct wx *wx)
+>  	smp_mb__before_atomic();
+>  	wx_napi_enable_all(wx);
+>  
+> +	phylink_start(txgbe->phylink);
+> +
 
-But, in looking at the above commits, that makes more sense.  I'll go
-queue these up for now, thanks.
+>  static void txgbe_down(struct wx *wx)
+>  {
+> +	struct txgbe *txgbe = (struct txgbe *)wx->priv;
+> +
+>  	txgbe_disable_device(wx);
+>  	txgbe_reset(wx);
+> +	if (txgbe->phylink)
+> +		phylink_stop(txgbe->phylink);
 
-greg k-h
+You uncoditionally phylink_start(). Does this need to be conditional?
+
+> +static void txgbe_mac_config(struct phylink_config *config, unsigned int mode,
+> +			     const struct phylink_link_state *state)
+> +{
+> +}
+
+That is very likely to be wrong. Lets see what Russell says.
+
+     Andrew
