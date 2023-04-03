@@ -2,81 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A748B6D5290
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A156D529B
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbjDCUgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 16:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
+        id S233362AbjDCUhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 16:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbjDCUgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:36:16 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6396B40EF;
-        Mon,  3 Apr 2023 13:36:12 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-17aa62d0a4aso32217890fac.4;
-        Mon, 03 Apr 2023 13:36:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680554171;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+FV7kaEhYq8hPkWP8x51YjtButdsWCOy21wJQSXxrNc=;
-        b=BGlRdg6rZMgWmsjAbw9fA2sQDKVXF3k7CUqcw5iez7mzemzqtS5lINkDeR0ykg/Z2A
-         +ZdSKyvyWFjPKO6JngnORcZR7+Gykyyy/xjPSz0w62MJSwvirmY4dd9hXM5VBS0tnTyi
-         n7cR9LRww/HIJ/kkt/XBpihMeHgZoBFIXYaTqOie5NqWJFwbVATmcOGUh4aAkg5HjRJf
-         Kj60pqtndcC8nrtTV+3YpSjwhK8bUANcQFJ5fholi3dbkdaUdxPzP+3DCNJN58DJc4pW
-         VmZcraNdTBzxajsgqREtwZgrGyKyW1xAQGPZgbOcFSDLlbKXPAq7z2E5ceoVUoiNHtHq
-         7djw==
-X-Gm-Message-State: AAQBX9fprjCsmm337uekqradsGlePRdajgM79sl0XM4bgm1guICTGHFH
-        JuDbuNKgEtnpKucINJzgag==
-X-Google-Smtp-Source: AKy350aB1944ukBSjhjdSkpx32AuFktYk5TasyKwQZRi4khTxO6rgxHBV5Rzx3+wZXB2zK2Ppb6XhQ==
-X-Received: by 2002:a05:6870:d210:b0:172:80fd:8482 with SMTP id g16-20020a056870d21000b0017280fd8482mr451861oac.5.1680554171357;
-        Mon, 03 Apr 2023 13:36:11 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id aw20-20020a0568707f9400b0016e49af5815sm3878520oac.51.2023.04.03.13.36.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 13:36:11 -0700 (PDT)
-Received: (nullmailer pid 1703260 invoked by uid 1000);
-        Mon, 03 Apr 2023 20:36:10 -0000
-Date:   Mon, 3 Apr 2023 15:36:10 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     pabeni@redhat.com, linux-kernel@vger.kernel.org, wg@grandegger.com,
-        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, mkl@pengutronix.de, kuba@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-can@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        davem@davemloft.net
-Subject: Re: [PATCH] dt-bindings: can: fsl,flexcan: add optional
- power-domains property
-Message-ID: <168055416976.1703203.4200432741574181226.robh@kernel.org>
-References: <20230328054602.1974255-1-peng.fan@oss.nxp.com>
+        with ESMTP id S233397AbjDCUhc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:37:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7903A97
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 13:37:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D46D62AC8
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 20:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA0E7C433EF;
+        Mon,  3 Apr 2023 20:37:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680554239;
+        bh=mf6N6scv0oJEDWntRaFE/QuUd2lXBBHpRKoAP9D5JDs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sxOaWKXoAd8ZIUHEsO/jrqUTghW9kWWtm4KVBOa85SmeHzWOcmsMMwJf3BICsbFYS
+         NH/2rcgnYij3cqmuVBIawUli8nizYdfPwCx1FbNvY/X7qm7DnufRWYgev4qMM6r2h1
+         SpnnFzFSyEYb4239h5Jv0Kvr1Ia6mU3NHbpsnpLFXy/d5+YIPzbKpu3cPDktBUmn3C
+         sJyGEpDbVuxrqW34OIYMC8ux1UrGGJdfGjEaUyuk5WnB0YqpbA2Oycc9FaMjl6J/OU
+         nvKah4G9L26kojFYG0Y6TA4qSuU3t/aBJxoHcCm0QxNPQmSDbDPBpBuuWu4hnbNp5X
+         O9pfpSLpx0W5w==
+Date:   Mon, 3 Apr 2023 13:37:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <shannon.nelson@amd.com>
+Cc:     brett.creeley@amd.com, davem@davemloft.net, netdev@vger.kernel.org,
+        drivers@pensando.io, leon@kernel.org, jiri@resnulli.us
+Subject: Re: [PATCH v8 net-next 05/14] pds_core: set up device and adminq
+Message-ID: <20230403133717.2abbda69@kernel.org>
+In-Reply-To: <cf47c976-2714-62b7-3e5e-436fcfc788d4@amd.com>
+References: <20230330234628.14627-1-shannon.nelson@amd.com>
+        <20230330234628.14627-6-shannon.nelson@amd.com>
+        <20230331220719.60bb08f3@kernel.org>
+        <cf47c976-2714-62b7-3e5e-436fcfc788d4@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230328054602.1974255-1-peng.fan@oss.nxp.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Tue, 28 Mar 2023 13:46:02 +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Sat, 1 Apr 2023 12:48:33 -0700 Shannon Nelson wrote:
+> > Also it'd be a little easier to review if the documentation was part
+> > of the same patch as code :(  
 > 
-> Add optional power-domains property for i.MX8 usage.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+> Well, at least there is a doc file at the end of the patchset :-). 
+> Shall I build up the pds_core.rst file little by little throughout the 
+> patchset?
 
-Acked-by: Rob Herring <robh@kernel.org>
-
+That'd be easier for review. Otherwise I have to keep jumping
+between patches :(
