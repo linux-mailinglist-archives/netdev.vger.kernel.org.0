@@ -2,102 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B51066D460C
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B94A46D4615
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232564AbjDCNon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 09:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
+        id S232631AbjDCNqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 09:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbjDCNon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:44:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0F91BE7;
-        Mon,  3 Apr 2023 06:44:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 33F62CE126C;
-        Mon,  3 Apr 2023 13:44:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64182C4339B;
-        Mon,  3 Apr 2023 13:44:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680529478;
-        bh=TYSbpfoV3DmyAwlCsqDkGwFJ1tcoegJxpVI39cE6UOA=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=KiTqZQJjUdXfxAbYmdkmMHFsfhrpFcTRTnJun3EbozjZ4jv1N7fSqZfNKH35KGtP8
-         Q+q2dsaSgBh3VhzLxqdYoG8QLwf0ZlGBN6w1FqImfMPw4K1O0hw3k0rM5ciksqWyzN
-         bvidVEN77hK08lNcnocLDhrtj8a68DK0WNetsaU34NYuct59LaTCIJyP8J7GLfgWCn
-         lmIN//P/SM8XIk0MZLVKESSag0+7MoQS5Ez3yNMRRpGDbUjhWDNOVgTCdzN+pzBj/P
-         A/Efrcz8o6dHK4UqOkkLDHCdCabGC+h8U5NvGLby7zghgb6VjycaMmjIAgJBVOvzTB
-         /q0tDhJ4zAc8w==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+        with ESMTP id S232323AbjDCNqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:46:33 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD4330CF;
+        Mon,  3 Apr 2023 06:46:32 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id ga7so28335643qtb.2;
+        Mon, 03 Apr 2023 06:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680529591; x=1683121591;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lmBfHIegQyI1FRFG7cpgsbaaSUI++p7T5PaE/RkUk90=;
+        b=aZAY6OIApLntdoao50EqoWIIO78Bd6VomixfHjKViIWPqX9L5HsySoUqj9WkCqTOo6
+         +YAEn+5eyrJX85NpSFKwhQTkgFkgZ6HUb0PoGHuhOSYoyfnnMjHH/8dJ5sKtzRC3z7Ll
+         EwVVngSnBy1NB4hrEWHD54MDD6sSG0OYyRORtk+GZqbWqP3Mke7SLfSt6Tf6QYste1th
+         GuSr5YLq24iuIUL5lOQShiylIg4whh+j0V4slhAPA423iFofpjctOb+VSvoTv49PmNYl
+         6IktRcEXJU1oxwL6IcbgJi2RW0Bycc0zvP7r0WX2Lxp/0qhEzH0gLD2ex455Zu6kMl2b
+         rEpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680529591; x=1683121591;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=lmBfHIegQyI1FRFG7cpgsbaaSUI++p7T5PaE/RkUk90=;
+        b=SVD8l4azqxKOXxeUAsjbFEuQvC76Fz+6cvhcLurzRu9g6KdLOZWyayGc6140TaRvBL
+         3EmRC7EpgqVQh/rv50HGRw3eLshi774BpYFABeb+wQnYMPC6qWJuGe5ixbAOD6a38fKI
+         XmAR40AuGdQIbAFSOSta5HrizbF8emBgz3d97ttCg3QmckqBPJOk2Owj20yz8w3ISJz5
+         D2CWiqQfYEZd2WUmWNcuWxTO0xf2CulD0hGJ0c0BH17P9QtvnJ8e2s505YzZkJUUemp/
+         atswsBW/AjpdmjTYPdt1saVOwgR0kvNoyWCI0wVNip+1qImmqNzugIKXyubEBzFyZ6Kv
+         C7LA==
+X-Gm-Message-State: AAQBX9eby+kKzIeJwr4yK1BfA8RABVebDlKLfWszZLyOgrfEAZqutc3/
+        fBxpS1z1MU+5c9ROkIINuQ+0eHZaP4A=
+X-Google-Smtp-Source: AKy350bRUIG8K9LjvA1b9EuTwsk3AQLD39qLhO6S6LUfgGDpNedlRhLzUDv7B2/uoLhMI5WTUiFchA==
+X-Received: by 2002:a05:622a:1104:b0:3e4:e9e4:5d0e with SMTP id e4-20020a05622a110400b003e4e9e45d0emr45040970qty.50.1680529591144;
+        Mon, 03 Apr 2023 06:46:31 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id c70-20020a379a49000000b00746ae84ea6csm2814958qke.3.2023.04.03.06.46.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Apr 2023 06:46:30 -0700 (PDT)
+Date:   Mon, 03 Apr 2023 09:46:30 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     David Howells <dhowells@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Message-ID: <642ad8b66acfe_302ae1208e7@willemb.c.googlers.com.notmuch>
+In-Reply-To: <1818504.1680515446@warthog.procyon.org.uk>
+References: <64299af9e8861_2d2a20208e6@willemb.c.googlers.com.notmuch>
+ <20230331160914.1608208-1-dhowells@redhat.com>
+ <20230331160914.1608208-16-dhowells@redhat.com>
+ <1818504.1680515446@warthog.procyon.org.uk>
+Subject: Re: [PATCH v3 15/55] ip, udp: Support MSG_SPLICE_PAGES
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: rt2x00: Fix memory leak when handling surveys
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20230330215637.4332-1-W_Armin@gmx.de>
-References: <20230330215637.4332-1-W_Armin@gmx.de>
-To:     Armin Wolf <W_Armin@gmx.de>
-Cc:     stf_xl@wp.pl, helmut.schaa@googlemail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <168052947454.11825.87565460565328943.kvalo@kernel.org>
-Date:   Mon,  3 Apr 2023 13:44:36 +0000 (UTC)
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Armin Wolf <W_Armin@gmx.de> wrote:
-
-> When removing a rt2x00 device, its associated channel surveys
-> are not freed, causing a memory leak observable with kmemleak:
+David Howells wrote:
+> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
 > 
-> unreferenced object 0xffff9620f0881a00 (size 512):
->   comm "systemd-udevd", pid 2290, jiffies 4294906974 (age 33.768s)
->   hex dump (first 32 bytes):
->     70 44 12 00 00 00 00 00 92 8a 00 00 00 00 00 00  pD..............
->     00 00 00 00 00 00 00 00 ab 87 01 00 00 00 00 00  ................
->   backtrace:
->     [<ffffffffb0ed858b>] __kmalloc+0x4b/0x130
->     [<ffffffffc1b0f29b>] rt2800_probe_hw+0xc2b/0x1380 [rt2800lib]
->     [<ffffffffc1a9496e>] rt2800usb_probe_hw+0xe/0x60 [rt2800usb]
->     [<ffffffffc1ae491a>] rt2x00lib_probe_dev+0x21a/0x7d0 [rt2x00lib]
->     [<ffffffffc1b3b83e>] rt2x00usb_probe+0x1be/0x980 [rt2x00usb]
->     [<ffffffffc05981e2>] usb_probe_interface+0xe2/0x310 [usbcore]
->     [<ffffffffb13be2d5>] really_probe+0x1a5/0x410
->     [<ffffffffb13be5c8>] __driver_probe_device+0x78/0x180
->     [<ffffffffb13be6fe>] driver_probe_device+0x1e/0x90
->     [<ffffffffb13be972>] __driver_attach+0xd2/0x1c0
->     [<ffffffffb13bbc57>] bus_for_each_dev+0x77/0xd0
->     [<ffffffffb13bd2a2>] bus_add_driver+0x112/0x210
->     [<ffffffffb13bfc6c>] driver_register+0x5c/0x120
->     [<ffffffffc0596ae8>] usb_register_driver+0x88/0x150 [usbcore]
->     [<ffffffffb0c011c4>] do_one_initcall+0x44/0x220
->     [<ffffffffb0d6134c>] do_init_module+0x4c/0x220
+> > > +	} else if ((flags & MSG_SPLICE_PAGES) && length) {
+> > > +		if (inet->hdrincl)
+> > > +			return -EPERM;
+> > > +		if (rt->dst.dev->features & NETIF_F_SG)
+> > > +			/* We need an empty buffer to attach stuff to */
+> > > +			initial_length = transhdrlen;
+> > 
+> > I still don't entirely understand what initial_length means.
+> > 
+> > More importantly, transhdrlen can be zero. If not called for UDP
+> > but for RAW. Or if this is a subsequent call to a packet that is
+> > being held with MSG_MORE.
+> > 
+> > This works fine for existing use-cases, which go to alloc_new_skb.
+> > Not sure how this case would be different. But the comment alludes
+> > that it does.
 > 
-> Fix this by freeing the channel surveys on device removal.
+> The problem is that in the non-MSG_ZEROCOPY case, __ip_append_data() assumes
+> that it's going to copy the data it is given and will allocate sufficient
+> space in the skb in advance to hold it - but I don't want to do that because I
+> want to splice in the pages holding the data instead.  However, I do need to
+> allocate space to hold the transport header.
 > 
-> Tested with a RT3070 based USB wireless adapter.
+> Maybe I should change 'initial_length' to 'initial_alloc'?  It represents the
+> amount I think we should allocate.  Or maybe I should have a separate
+> allocation clause for MSG_SPLICE_PAGES?
+
+The code already has to avoid allocation in the MSG_ZEROCOPY case. I
+added alloc_len and paged_len for that purpose.
+
+Only the transhdrlen will be copied with getfrag due to
+
+    copy = datalen - transhdrlen - fraggap - pagedlen
+
+On next iteration in the loop, when remaining data fits in the skb,
+there are three cases. The first is skipped due to !NETIF_F_SG. The
+other two are either copy to page frags or zerocopy page frags.
+
+I think your code should be able to fit in. Maybe easier if it could
+reuse the existing alloc_new_skb code to copy the transport header, as
+MSG_ZEROCOPY does, rather than adding a new __ip_splice_alloc branch
+that short-circuits that. Then __ip_splice_pages also does not need
+code to copy the initial header. But this is trickier. It's fine to
+leave as is.
+
+Since your code currently does call continue before executing the rest
+of that branch, no need to modify any code there? Notably replacing
+length with initial_length, which itself is initialized to length in
+all cases expect for MSG_SPLICE_PAGES.
+
+Just hardcode transhdrlen as the copy argument to __ip_splice_pages.
+> I also wonder if __ip_append_data() really needs two places that call
+> getfrag().
 > 
-> Fixes: 5447626910f5 ("rt2x00: save survey for every channel visited")
-> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-> Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
+> David
+> 
 
-Patch applied to wireless-next.git, thanks.
-
-cbef9a83c51d wifi: rt2x00: Fix memory leak when handling surveys
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20230330215637.4332-1-W_Armin@gmx.de/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
