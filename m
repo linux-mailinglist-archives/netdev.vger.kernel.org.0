@@ -2,68 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4F36D433F
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F186D4341
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232350AbjDCLSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 07:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
+        id S232399AbjDCLSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 07:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232265AbjDCLSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:18:11 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105867DA8;
-        Mon,  3 Apr 2023 04:18:06 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 333BHqM2092732;
-        Mon, 3 Apr 2023 06:17:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680520672;
-        bh=bYhcyFvgcpJ9BPr8J6LZgLhC/TZiRbK1lHHFBaXBodU=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=C7lsuUtAupiXitiX2Xd293T7EijikjPHFLL90yAT5+NBpgPF53NiMB/BXgo9rX5eq
-         bJVMZ2bMa8U6PKYaRM3JNHQ1vwirWjRnQlFCGG+ToayKMKlgQdTdsWdeyolgxZh3tO
-         D5oJkhG0g1C16Qq1cNw7moo/FVr/hKSeGu0Ss8D8=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 333BHqRN023741
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Apr 2023 06:17:52 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 3
- Apr 2023 06:17:52 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 3 Apr 2023 06:17:52 -0500
-Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 333BHnXu092633;
-        Mon, 3 Apr 2023 06:17:49 -0500
-Message-ID: <4d322eb3-987e-4a20-0c24-7074064f5a97@ti.com>
-Date:   Mon, 3 Apr 2023 16:47:48 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [PATCH net-next v2 1/3] net: ethernet: ti: am65-cpsw: Move mode
- specific config to mac_config()
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-References: <20230403110106.983994-1-s-vadapalli@ti.com>
- <20230403110106.983994-2-s-vadapalli@ti.com>
- <ZCqzuwDLGuBDMHQG@shell.armlinux.org.uk>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <ZCqzuwDLGuBDMHQG@shell.armlinux.org.uk>
+        with ESMTP id S232390AbjDCLSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:18:20 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051FF1710
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 04:18:10 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id l10-20020a05600c1d0a00b003f04bd3691eso2981541wms.5
+        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 04:18:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680520688;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=6FHr1fLLaZ+lzCWl3wb43+wRrbD2mdbBZwOfBsvu1jE=;
+        b=gCRNxh/HZ/PZjmfkVC6vSnVQQYGA+dCZOIGjrFx9BULIT+bVe756wCB3Ty6mzsoKq7
+         lL2I0QudxKUX6rMZPHqzvRgiyigjK/F8MmWHSP1hh+EWichh8mM2r/dpM86PUThWuTe2
+         otNPqz0qyxLcuvJS7apvKInW4fgwDCuPY+3VVaIiCa6MjJj+hQoW1+MSQsHWXMYhySxs
+         jCDuu3GhpE2XBeY2xuNmS0agKHiE+MBoig8Nhh0BgJmQLv+kFr0a98HvOf0U/Ffb7Btu
+         t1m8cA8UxyFvUkMSMhwlnpmKOz2IAxAwuaV1EIdjVm8y/jqtYuUXAUjCUdSZkzfAYNQ5
+         4GFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680520688;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6FHr1fLLaZ+lzCWl3wb43+wRrbD2mdbBZwOfBsvu1jE=;
+        b=GupgTaXeehAeThkYdBa5eJuNBeTdSz5MNWBRKWUF6/C72bCjXh8kp2HphGVFHHW5hI
+         lWP/F8p/ECmj+HDAL9D41cQv/9GuLw8JebKmFcdfCWluuIOctsNwic1nBK9veI5vTmbf
+         fEZR6jAWxW6vueEB/kMn5ZBAYRNWBH9U2d1a5ufy0DE1SyNWwKa+ykpEj/7USSnRdFRD
+         ytRwhzwo7INz1A3tDvsb69mX6htIePFdnrBmKvc+8B40oZjU406WZl2Qo0tGYoaxHCgL
+         r20lCUzGflJ7RiLy4o6ocEcVwMRnNZlmS81TdnWpmIGNhxcRlO0Mwoh6oqS2JcQAXhc8
+         DGsQ==
+X-Gm-Message-State: AO0yUKW/C+m6VUzYkH2VEFbM4HAgG66hoyK6XyK8cUeKtqA1qMRG53nO
+        GfAqcfcoLpMjrm1KpOuFxPc=
+X-Google-Smtp-Source: AK7set9XwQcEDGf1zkbHPbRheoRoWQnpSCsG12uPCJhnTPVK0dsAzbsBS7VNWQRLz9QWE2V0Ziqo/w==
+X-Received: by 2002:a05:600c:acb:b0:3ed:29e1:ed21 with SMTP id c11-20020a05600c0acb00b003ed29e1ed21mr26800172wmr.37.1680520688202;
+        Mon, 03 Apr 2023 04:18:08 -0700 (PDT)
+Received: from [10.148.83.3] (business-89-135-192-225.business.broadband.hu. [89.135.192.225])
+        by smtp.gmail.com with ESMTPSA id h16-20020a05600c315000b003eda46d6792sm19096930wmo.32.2023.04.03.04.18.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Apr 2023 04:18:07 -0700 (PDT)
+Message-ID: <6546e93dca588c3c01e56466e6f5ae10e37870bf.camel@gmail.com>
+Subject: Re: [PATCH iproute2-next 0/9] Add tc-mqprio and tc-taprio support
+ for preemptible traffic classes
+From:   Ferenc Fejes <primalgamer@gmail.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        =?ISO-8859-1?Q?P=E9ter?= Antal <antal.peti99@gmail.com>
+Date:   Mon, 03 Apr 2023 13:18:07 +0200
+In-Reply-To: <20230403105245.2902376-1-vladimir.oltean@nxp.com>
+References: <20230403105245.2902376-1-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-3.9 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-1 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,83 +74,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Russell,
+Hi Vladimir!
 
-Thank you for reviewing the patch.
+On Mon, 2023-04-03 at 13:52 +0300, Vladimir Oltean wrote:
+> This is the iproute2 support for the tc program to make use of the
+> kernel feature for preemptible traffic classes described here:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20230403103440.28956=
+83-1-vladimir.oltean@nxp.com/
+>=20
+> The state of the man pages prior to this work was a bit
+> unsatisfactory,
+> so patches 03-07 contain some man page cleanup in tc-taprio(8) and
+> tc-mqprio(8).
+>=20
+> Vladimir Oltean (9):
+> =C2=A0 uapi: add definitions for preemptible traffic classes in mqprio an=
+d
+> =C2=A0=C2=A0=C2=A0 taprio
+> =C2=A0 utils: add max() definition
+> =C2=A0 tc/taprio: add max-sdu to the man page SYNOPSIS section
+> =C2=A0 tc/taprio: add a size table to the examples from the man page
 
-On 03/04/23 16:38, Russell King (Oracle) wrote:
-> On Mon, Apr 03, 2023 at 04:31:04PM +0530, Siddharth Vadapalli wrote:
->> Move the interface mode specific configuration to the mac_config()
->> callback am65_cpsw_nuss_mac_config().
->>
->> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
->> ---
->>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 10 +++++++---
->>  1 file changed, 7 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> index d17757ecbf42..74e099828978 100644
->> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->> @@ -1504,12 +1504,17 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
->>  							  phylink_config);
->>  	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
->>  	struct am65_cpsw_common *common = port->common;
->> +	u32 mac_control = 0;
->>  
->>  	if (common->pdata.extra_modes & BIT(state->interface)) {
->> -		if (state->interface == PHY_INTERFACE_MODE_SGMII)
->> +		if (state->interface == PHY_INTERFACE_MODE_SGMII) {
->> +			mac_control |= CPSW_SL_CTL_EXT_EN;
->>  			writel(ADVERTISE_SGMII,
->>  			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
->> +		}
->>  
->> +		if (mac_control)
->> +			cpsw_sl_ctl_set(port->slave.mac_sl, mac_control);
->>  		writel(AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
->>  		       port->sgmii_base + AM65_CPSW_SGMII_CONTROL_REG);
->>  	}
->> @@ -1553,8 +1558,7 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
->>  
->>  	if (speed == SPEED_1000)
->>  		mac_control |= CPSW_SL_CTL_GIG;
->> -	if (interface == PHY_INTERFACE_MODE_SGMII)
->> -		mac_control |= CPSW_SL_CTL_EXT_EN;
->> +	/* TODO: Verify whether in-band is necessary for 10 Mbps RGMII */
->>  	if (speed == SPEED_10 && phy_interface_mode_is_rgmii(interface))
->>  		/* Can be used with in band mode only */
->>  		mac_control |= CPSW_SL_CTL_EXT_EN;
-> 
-> I'm afraid I can see you haven't thought this patch through properly.
-> 
-> am65_cpsw_nuss_mac_link_down() will call
-> cpsw_sl_ctl_reset(port->slave.mac_sl); which has the effect of clearing
-> to zero the entire MAC control register. This will clear
-> CPSW_SL_CTL_EXT_EN that was set in am65_cpsw_nuss_mac_config() which is
-> not what you want to be doing.
+Seems like Stephen merged P=C3=A9ter's manpages patch [1] but IMO your
+version [2] is a better overhaul of that, also P=C3=A9ter ACK-ed to go
+forward with that version. Looks like you rebased this work on the new
+manpages, you have any plan to submit the changes from [2] separately?
+Probably Stephen missed the whole discussion and about [2] and I'm
+admit that putting acked/reviewed into a mail inside the discussion
+might be misleading (probably thats show up for the original patch in
+patchwork). Sorry for making it complicated.
 
-Right! I missed noticing this. It appeared to me that simply moving the code
-from mac_link_up() to mac_config() would suffice. However, as rightly pointed
-out by you, it doesn't account for the case where the interface state is toggled.
+> =C2=A0 tc/mqprio: fix stray ] in man page synopsis
+> =C2=A0 tc/mqprio: use words in man page to express min_rate/max_rate
+> =C2=A0=C2=A0=C2=A0 dependency on bw_rlimit
+> =C2=A0 tc/mqprio: break up synopsis into multiple lines
+> =C2=A0 tc/mqprio: add support for preemptible traffic classes
+> =C2=A0 tc/taprio: add support for preemptible traffic classes
+>=20
+> =C2=A0include/uapi/linux/pkt_sched.h | 17 ++++++
+> =C2=A0include/utils.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 8 +++
+> =C2=A0man/man8/tc-mqprio.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 | 92 ++++++++++++++++++++++---------
+> =C2=A0man/man8/tc-taprio.8=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 | 27 ++++++++--
+> =C2=A0tc/q_mqprio.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 98
+> +++++++++++++++++++++++++++++++++
+> =C2=A0tc/q_taprio.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 99 +++++++++++++++++++++=
+++++-------
+> --
+> =C2=A06 files changed, 289 insertions(+), 52 deletions(-)
+>=20
 
-> 
-> Given that we have the 10Mbps issue with RGMII, I think what you want
-> to be doing is:
-> 
-> 1. Set CPSW_SL_CTL_EXT_EN in am65_cpsw_nuss_mac_config() if in SGMII
->    mode, otherwise clear this bit.
-> 
-> 2. Clear the mac_control register in am65_cpsw_nuss_mac_link_down()
->    if in RMGII mode, otherwise preserve the state of
->    CPSW_SL_CTL_EXT_EN but clear all other bits.
-> 
-> 3. Set CPSW_SL_CTL_EXT_EN in am65_cpsw_nuss_mac_link_up() if in
->    RGMII mode and 10Mbps.
-> 
+[1]
+https://lore.kernel.org/netdev/167789641838.26474.2747633103367439718.git-p=
+atchwork-notify@kernel.org/
 
-I will implement these changes and post the v3 series. Thank you for the
-feedback. Please let me know if I may add a "Suggested-by" tag.
+[2]
+https://lore.kernel.org/netdev/20230220161809.t2vj6daixio7uzbw@skbuf/
 
-Regards,
-Siddharth.
+Best,
+Ferenc
