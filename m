@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3929D6D3BE4
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 04:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C2A6D3BE7
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 04:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231159AbjDCCpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 22:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58100 "EHLO
+        id S230095AbjDCCrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 22:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbjDCCpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 22:45:05 -0400
+        with ESMTP id S229751AbjDCCrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 22:47:35 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188ABB74F
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 19:44:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04F283D7
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 19:46:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680489860;
+        s=mimecast20190719; t=1680490013;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4d82zEx4OoGYJZ5IgbT3LPSSEyoH17uMTnlYcS8X6gQ=;
-        b=AM/A8RB3C1ckcqE859RlLU+/SMmEUjD4CU5nMW2CWVmD0CEesDR+/EsWxRhPfWuWIYzncy
-        rxir4v5HuhOr5xY0VSwPbiQ3Xgb7NcajqqD5cpH2DGo2CD97uPboWYAgmiOkbpWZd9UKLy
-        VntjMLqJEaATWJxA8FwcJmt4oInW1wQ=
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
- [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=cXT/6aJaAFqn+Kdcq/fX5XU9hNNDC+uvyYrVFSSigv8=;
+        b=JUf8nfQ8gTXDiGtYiK8bZLQkN1DtZfiVAwJ9FGNH+3XFk/BZHvX9TER0OzX2gHaE8yH7d3
+        hbk1tc02TDpOkXC2g1VUF3dzqYxaWIbJ3Qg1RQXoW/aA7Bb+9EjCgSxOVy+0JjiEu66Oym
+        R+HOMNnHag0YxdyAOkgyPYnrUDSx4Qk=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-166-qvAicn4INiChM2B6fr5cZA-1; Sun, 02 Apr 2023 22:44:19 -0400
-X-MC-Unique: qvAicn4INiChM2B6fr5cZA-1
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-18032227bc5so4905344fac.9
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 19:44:19 -0700 (PDT)
+ us-mta-620-q3TDgWkhNXCX2iPtKvghug-1; Sun, 02 Apr 2023 22:46:51 -0400
+X-MC-Unique: q3TDgWkhNXCX2iPtKvghug-1
+Received: by mail-oi1-f198.google.com with SMTP id bd37-20020a056808222500b003894ce81c46so4978035oib.1
+        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 19:46:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680489857; x=1683081857;
+        d=1e100.net; s=20210112; t=1680490011; x=1683082011;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4d82zEx4OoGYJZ5IgbT3LPSSEyoH17uMTnlYcS8X6gQ=;
-        b=xq0uv/mkZnAuMVdM4JiQZw8sSLVWrnnQg/hfHPISFWDPsdNGeC8Mqwv7IZXKAq+1ob
-         XdggjmLbbrXGxgBpIxB842EFUnNAmUto2xobfx6nSirmcrBk35UtzsiYrh0s83brFGQ2
-         gjPaG5+ZVPf2itEC7pT/loDr89y3G5C3C/A3TDtRQDzNyu+ok2RLLENemDVWc+nIUJQH
-         JuoaduwnBTiWCCIYYVFjLHVlTEdBQOajL/5S/b7BbmTo2ECQ7/zXsdifX23R8bUCMD0a
-         ZyVibZeX8DkezlQLQ0CDgXYsu7fqvz4yujeE0lxr700KYWnXx9QkkEADTyHBvYeegOhn
-         1wfw==
-X-Gm-Message-State: AAQBX9c6TLoDFuE34dvgo/m7hAO8emJHvR3ArKpSWI64Y9wljbD7XJrH
-        X/WILV8UIyBUhb6xqoLIyd070DqXv6JEEvB0oVBRqumj+5DXERZOVLcb6UGDTH6JSDOnxgszmAk
-        w9tF8kDqwM9uT+7k4rsRAspRBK/S7vM7RJ58xuizg7Wl8Xg==
-X-Received: by 2002:a9d:60d1:0:b0:694:3b4e:d8d7 with SMTP id b17-20020a9d60d1000000b006943b4ed8d7mr6690130otk.0.1680489857288;
-        Sun, 02 Apr 2023 19:44:17 -0700 (PDT)
-X-Google-Smtp-Source: AKy350aG3SqJ3tAJaPAN6kmGpZJmi0WlfB9MsHdiIUSihP4G1Zc6hDQsqReofmN/xPuHOQbkb3ufvr+FcLUmpCOXAks=
-X-Received: by 2002:a9d:60d1:0:b0:694:3b4e:d8d7 with SMTP id
- b17-20020a9d60d1000000b006943b4ed8d7mr6690122otk.0.1680489857074; Sun, 02 Apr
- 2023 19:44:17 -0700 (PDT)
+        bh=cXT/6aJaAFqn+Kdcq/fX5XU9hNNDC+uvyYrVFSSigv8=;
+        b=G670TXhsxmubhRuDCx29uY3h+PfE4sGEqQd/FPyEA9tODlVC0mkz6o+6wfz/Cw1d/a
+         b4r5Xoo2Kf2ba/1sTKRSIws+BKkwK0xcut84tc53HZApJcPZ/ERRDZopRMasUexT4sNZ
+         Se3CyG5IIgZPXNylB+lLzEnOwtyvqU+QMqU/Ilv20C4l7MHi3fpbqjyB1VvNluLMjbjX
+         EEEDLRkzV41R2sDabiKkedJjQ7LKHTlyUVLCfhk4h1crHO2tr3hPWD9WQu6Er2tmDEIw
+         9er2wOT6b7mjDF1TXrXfhR/9ovqqEVtZ34lClzl31Kqx6EKi1E1YCUPHnnYl173mE3GM
+         3ziw==
+X-Gm-Message-State: AO0yUKUIczPYsTzQ1UhLW5ed9WAj7IqGaPKb7mOkUJTmarNhCgVD/uKR
+        lRw9kg10a8y60tGJCt68iqaLUA7aIIU20gxDyXy5KZue7073DMN895fxKg1GwNeJIrad6jF7KUf
+        8ee38o+NBT02XbnfJz/FBidlt7IZegKO7
+X-Received: by 2002:a4a:a28a:0:b0:525:2b3b:7453 with SMTP id h10-20020a4aa28a000000b005252b3b7453mr10890508ool.0.1680490010932;
+        Sun, 02 Apr 2023 19:46:50 -0700 (PDT)
+X-Google-Smtp-Source: AK7set9dweL2R/ZOkTjHu4vsan6RXJ8ez4+ot09bhRJuDhHtHDmXSGAsQ+yY1sL/XLcZP8/opt6udhmUV8gRh09VAYo=
+X-Received: by 2002:a4a:a28a:0:b0:525:2b3b:7453 with SMTP id
+ h10-20020a4aa28a000000b005252b3b7453mr10890503ool.0.1680490010690; Sun, 02
+ Apr 2023 19:46:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com> <20230328120412.110114-5-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20230328120412.110114-5-xuanzhuo@linux.alibaba.com>
+References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com> <20230328120412.110114-6-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <20230328120412.110114-6-xuanzhuo@linux.alibaba.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 3 Apr 2023 10:44:05 +0800
-Message-ID: <CACGkMEv+dG0B82Mc+V+A_K1A97M0LLfbF5pwrW6v_M3hp1vDiQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/8] virtio_net: separate the logic of freeing
- xdp shinfo
+Date:   Mon, 3 Apr 2023 10:46:39 +0800
+Message-ID: <CACGkMEurBLHds7Am=pBm9vTWvWczVfQoOJ_wCJWVBxuyHXzsfA@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/8] virtio_net: separate the logic of freeing
+ the rest mergeable buf
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -86,8 +86,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On Tue, Mar 28, 2023 at 8:04=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
 om> wrote:
 >
-> This patch introduce a new function that releases the
-> xdp shinfo. The subsequent patch will reuse this function.
+> This patch introduce a new function that frees the rest mergeable buf.
+> The subsequent patch will reuse this function.
 >
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
@@ -96,69 +96,65 @@ Acked-by: Jason Wang <jasowang@redhat.com>
 Thanks
 
 > ---
->  drivers/net/virtio_net.c | 27 ++++++++++++++++-----------
->  1 file changed, 16 insertions(+), 11 deletions(-)
+>  drivers/net/virtio_net.c | 36 ++++++++++++++++++++++++------------
+>  1 file changed, 24 insertions(+), 12 deletions(-)
 >
 > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 72b9d6ee4024..09aed60e2f51 100644
+> index 09aed60e2f51..a3f2bcb3db27 100644
 > --- a/drivers/net/virtio_net.c
 > +++ b/drivers/net/virtio_net.c
-> @@ -798,6 +798,21 @@ static int virtnet_xdp_xmit(struct net_device *dev,
->         return ret;
+> @@ -1076,6 +1076,28 @@ static struct sk_buff *receive_big(struct net_devi=
+ce *dev,
+>         return NULL;
 >  }
 >
-> +static void put_xdp_frags(struct xdp_buff *xdp)
+> +static void mergeable_buf_free(struct receive_queue *rq, int num_buf,
+> +                              struct net_device *dev,
+> +                              struct virtnet_rq_stats *stats)
 > +{
-> +       struct skb_shared_info *shinfo;
-> +       struct page *xdp_page;
-> +       int i;
+> +       struct page *page;
+> +       void *buf;
+> +       int len;
 > +
-> +       if (xdp_buff_has_frags(xdp)) {
-> +               shinfo =3D xdp_get_shared_info_from_buff(xdp);
-> +               for (i =3D 0; i < shinfo->nr_frags; i++) {
-> +                       xdp_page =3D skb_frag_page(&shinfo->frags[i]);
-> +                       put_page(xdp_page);
+> +       while (num_buf-- > 1) {
+> +               buf =3D virtqueue_get_buf(rq->vq, &len);
+> +               if (unlikely(!buf)) {
+> +                       pr_debug("%s: rx error: %d buffers missing\n",
+> +                                dev->name, num_buf);
+> +                       dev->stats.rx_length_errors++;
+> +                       break;
 > +               }
+> +               stats->bytes +=3D len;
+> +               page =3D virt_to_head_page(buf);
+> +               put_page(page);
 > +       }
 > +}
 > +
->  static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp_buf=
-f *xdp,
->                                struct net_device *dev,
->                                unsigned int *xdp_xmit,
-> @@ -1312,12 +1327,9 @@ static struct sk_buff *receive_mergeable(struct ne=
+>  /* Why not use xdp_build_skb_from_frame() ?
+>   * XDP core assumes that xdp frags are PAGE_SIZE in length, while in
+>   * virtio-net there are 2 points that do not match its requirements:
+> @@ -1436,18 +1458,8 @@ static struct sk_buff *receive_mergeable(struct ne=
 t_device *dev,
->         xdp_prog =3D rcu_dereference(rq->xdp_prog);
->         if (xdp_prog) {
->                 unsigned int xdp_frags_truesz =3D 0;
-> -               struct skb_shared_info *shinfo;
-> -               struct page *xdp_page;
->                 struct xdp_buff xdp;
->                 void *data;
->                 u32 act;
-> -               int i;
->
->                 data =3D mergeable_xdp_prepare(vi, rq, xdp_prog, ctx, &fr=
-ame_sz, &num_buf, &page,
->                                              offset, &len, hdr);
-> @@ -1348,14 +1360,7 @@ static struct sk_buff *receive_mergeable(struct ne=
-t_device *dev,
->                         goto err_xdp_frags;
->                 }
->  err_xdp_frags:
-> -               if (xdp_buff_has_frags(&xdp)) {
-> -                       shinfo =3D xdp_get_shared_info_from_buff(&xdp);
-> -                       for (i =3D 0; i < shinfo->nr_frags; i++) {
-> -                               xdp_page =3D skb_frag_page(&shinfo->frags=
-[i]);
-> -                               put_page(xdp_page);
-> -                       }
+>         stats->xdp_drops++;
+>  err_skb:
+>         put_page(page);
+> -       while (num_buf-- > 1) {
+> -               buf =3D virtqueue_get_buf(rq->vq, &len);
+> -               if (unlikely(!buf)) {
+> -                       pr_debug("%s: rx error: %d buffers missing\n",
+> -                                dev->name, num_buf);
+> -                       dev->stats.rx_length_errors++;
+> -                       break;
 > -               }
-> -
-> +               put_xdp_frags(&xdp);
->                 goto err_xdp;
->         }
->         rcu_read_unlock();
+> -               stats->bytes +=3D len;
+> -               page =3D virt_to_head_page(buf);
+> -               put_page(page);
+> -       }
+> +       mergeable_buf_free(rq, num_buf, dev, stats);
+> +
+>  err_buf:
+>         stats->drops++;
+>         dev_kfree_skb(head_skb);
 > --
 > 2.32.0.3.g01195cf9f
 >
