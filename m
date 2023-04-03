@@ -2,143 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBACB6D3E62
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 09:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE3F6D3E75
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 09:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbjDCHs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 03:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42036 "EHLO
+        id S231618AbjDCHy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 03:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbjDCHsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 03:48:55 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0411644AE;
-        Mon,  3 Apr 2023 00:48:53 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3336VYA2031952;
-        Mon, 3 Apr 2023 09:48:29 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=lbrDY8Ppljv7KIzDAhEp83EYJqZkiErv5p1W4oG7g5k=;
- b=PM/TjdUTTRv7HcYJYnvyYOweQIo3jLh3k9NJFkAB/TU53eldc3KtqlJn2GA/vcU9x4Hr
- lFX2bQ64LeKl8TT0frZPCFoMUgYmp3uaEDwqkL6JDbP9IGaMONiQbZe5kmvZ9/KdXzNG
- oZfzCJ69+8DyX5+wrFBNb+/ehOkzUqrf2DidTOTGFW4qsk4ZBp8WcMTYBUFwE2eHam3/
- DAen+x9N5TUv2ncdxTG+aCjfzpFRwtvV5fkiabI9EpKDCRizZv9rwfDkIsgfLDpERtgz
- d7oplG72nWe8hzUy12lFw7Ctz1PKmj8ZrNqVnz7nWgHi30CVRLAryy63/4E9aQjkPMhG jw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ppbgm11ev-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Apr 2023 09:48:29 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3109010002A;
-        Mon,  3 Apr 2023 09:48:28 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2AD5B2122F3;
-        Mon,  3 Apr 2023 09:48:28 +0200 (CEST)
-Received: from [10.201.21.93] (10.201.21.93) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Mon, 3 Apr
- 2023 09:48:27 +0200
-Message-ID: <509b45f9-b6f1-d6a1-c76f-1047efc2334c@foss.st.com>
-Date:   Mon, 3 Apr 2023 09:48:26 +0200
+        with ESMTP id S231779AbjDCHy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 03:54:26 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A22D49F4;
+        Mon,  3 Apr 2023 00:54:24 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4PqjkW1KHtznZrh;
+        Mon,  3 Apr 2023 15:50:59 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Mon, 3 Apr 2023 15:54:21 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <mani@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <andersson@kernel.org>,
+        <luca@z3ntu.xyz>, <linux-arm-msm@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH net] net: qrtr: Fix an uninit variable access bug in qrtr_tx_resume()
+Date:   Mon, 3 Apr 2023 15:54:17 +0800
+Message-ID: <20230403075417.2244203-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v1] ARM: dts: stm32: prtt1c: Add PoDL PSE regulator nodes
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-CC:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel@pengutronix.de>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20230323123242.3763673-1-o.rempel@pengutronix.de>
- <1a2d16c8-8c16-5fcc-7906-7b454a81922f@foss.st.com>
- <20230328110247.GE15196@pengutronix.de>
-From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20230328110247.GE15196@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.201.21.93]
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-03_04,2023-03-31_01,2023-02-09_01
-X-Spam-Status: No, score=-3.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij
+Syzbot reported a bug as following:
 
-On 3/28/23 13:02, Oleksij Rempel wrote:
-> On Tue, Mar 28, 2023 at 11:58:34AM +0200, Alexandre TORGUE wrote:
->> Hi Oleksij
->>
->> On 3/23/23 13:32, Oleksij Rempel wrote:
->>> This commit introduces Power over Data Line (PoDL) Power Source
->>> Equipment (PSE) regulator nodes to the PRTT1C devicetree. The addition
->>> of these nodes enables support for PoDL in PRTT1C devices, allowing
->>> power delivery and data transmission over a single twisted pair.
->>>
->>> The new PoDL PSE regulator nodes provide voltage capability information
->>> of the current board design, which can be used as a hint for system
->>> administrators when configuring and managing power settings. This
->>> update enhances the versatility and simplifies the power management of
->>> PRTT1C devices while ensuring compatibility with connected Powered
->>> Devices (PDs).
->>>
->>> After applying this patch, the power delivery can be controlled from
->>> user space with a patched [1] ethtool version using the following commands:
->>>     ethtool --set-pse t1l2 podl-pse-admin-control enable
->>> to enable power delivery, and
->>>     ethtool --show-pse t1l2
->>> to display the PoDL PSE settings.
->>>
->>> By integrating PoDL PSE support into the PRTT1C devicetree, users can
->>> benefit from streamlined power and data connections in their
->>> deployments, improving overall system efficiency and reducing cabling
->>> complexity.
->>>
->>> [1] https://lore.kernel.org/all/20230317093024.1051999-1-o.rempel@pengutronix.de/
->>>
->>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->>> ---
->>
->> Please, fix the introduction of those new yaml validation errors:
->>
->> arch/arm/boot/dts/stm32mp151a-prtt1c.dtb: ethernet-pse-1: $nodename:0:
->> 'ethernet-pse-1' does not match '^ethernet-pse(@.*)?$'
->>          From schema:
->> /Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
->> arch/arm/boot/dts/stm32mp151a-prtt1c.dtb: ethernet-pse-2: $nodename:0:
->> 'ethernet-pse-2' does not match '^ethernet-pse(@.*)?$'
->>          From schema: /local/home/frq08678/STLINUX/kernel/my-kernel/stm32/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
-> 
-> Using ethernet-pse@1 will require to use "reg" or "ranges" properties.
-> Which makes no sense in this use case. I need to fix the schema instead by
-> allowing this patter with following regex: "^ethernet-pse(@.*|-[0-9a-f])*$"
-> 
-> Should I send schema fix together with this patch?
+=====================================================
+BUG: KMSAN: uninit-value in qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
+ qrtr_tx_resume+0x185/0x1f0 net/qrtr/af_qrtr.c:230
+ qrtr_endpoint_post+0xf85/0x11b0 net/qrtr/af_qrtr.c:519
+ qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
+ call_write_iter include/linux/fs.h:2189 [inline]
+ aio_write+0x63a/0x950 fs/aio.c:1600
+ io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
+ __do_sys_io_submit fs/aio.c:2078 [inline]
+ __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
+ __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Yes you can. As soon as Rob or Krzysztof review it I'll apply both on 
-stm32-next.
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:766 [inline]
+ slab_alloc_node mm/slub.c:3452 [inline]
+ __kmem_cache_alloc_node+0x71f/0xce0 mm/slub.c:3491
+ __do_kmalloc_node mm/slab_common.c:967 [inline]
+ __kmalloc_node_track_caller+0x114/0x3b0 mm/slab_common.c:988
+ kmalloc_reserve net/core/skbuff.c:492 [inline]
+ __alloc_skb+0x3af/0x8f0 net/core/skbuff.c:565
+ __netdev_alloc_skb+0x120/0x7d0 net/core/skbuff.c:630
+ qrtr_endpoint_post+0xbd/0x11b0 net/qrtr/af_qrtr.c:446
+ qrtr_tun_write_iter+0x270/0x400 net/qrtr/tun.c:108
+ call_write_iter include/linux/fs.h:2189 [inline]
+ aio_write+0x63a/0x950 fs/aio.c:1600
+ io_submit_one+0x1d1c/0x3bf0 fs/aio.c:2019
+ __do_sys_io_submit fs/aio.c:2078 [inline]
+ __se_sys_io_submit+0x293/0x770 fs/aio.c:2048
+ __x64_sys_io_submit+0x92/0xd0 fs/aio.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Thanks
-Alex
+It is because that skb->len requires at least sizeof(struct qrtr_ctrl_pkt)
+in qrtr_tx_resume(). And skb->len equals to size in qrtr_endpoint_post().
+But size is less than sizeof(struct qrtr_ctrl_pkt) when qrtr_cb->type
+equals to QRTR_TYPE_RESUME_TX in qrtr_endpoint_post() under the syzbot
+scenario. This triggers the uninit variable access bug.
 
+Add size check when qrtr_cb->type equals to QRTR_TYPE_RESUME_TX in
+qrtr_endpoint_post() to fix the bug.
 
+Fixes: 5fdeb0d372ab ("net: qrtr: Implement outgoing flow control")
+Reported-by: syzbot+4436c9630a45820fda76@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=c14607f0963d27d5a3d5f4c8639b500909e43540
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/qrtr/af_qrtr.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-
-> Regards,
-> Oleksij
+diff --git a/net/qrtr/af_qrtr.c b/net/qrtr/af_qrtr.c
+index 3a70255c8d02..631e81a8a368 100644
+--- a/net/qrtr/af_qrtr.c
++++ b/net/qrtr/af_qrtr.c
+@@ -498,6 +498,10 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+ 	if (!size || len != ALIGN(size, 4) + hdrlen)
+ 		goto err;
+ 
++	if (cb->type == QRTR_TYPE_RESUME_TX &&
++	    size < sizeof(struct qrtr_ctrl_pkt))
++		goto err;
++
+ 	if (cb->dst_port != QRTR_PORT_CTRL && cb->type != QRTR_TYPE_DATA &&
+ 	    cb->type != QRTR_TYPE_RESUME_TX)
+ 		goto err;
+-- 
+2.25.1
 
