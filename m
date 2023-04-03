@@ -2,59 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3787D6D3B6E
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 03:20:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4560F6D3B91
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 03:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbjDCBUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 21:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
+        id S231422AbjDCBo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 21:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231378AbjDCBU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 21:20:28 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77190BDDB;
-        Sun,  2 Apr 2023 18:19:59 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pj8rT-0004p3-1d;
-        Mon, 03 Apr 2023 03:19:55 +0200
-Date:   Mon, 3 Apr 2023 02:19:51 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        =?utf-8?B?QXLEsW7DpyDDnG5hbA==?= <arinc.unal@arinc9.com>
-Cc:     Sam Shih <Sam.Shih@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH net-next v2 14/14] dt-bindings: net: dsa: mediatek,mt7530:
- add mediatek,mt7988-switch
-Message-ID: <dffacdb59aea462c9f7d4242cf9563a04cf79807.1680483896.git.daniel@makrotopia.org>
-References: <cover.1680483895.git.daniel@makrotopia.org>
+        with ESMTP id S230200AbjDCBoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 21:44:24 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27773903C;
+        Sun,  2 Apr 2023 18:44:23 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4PqYbS2PNwz4x4r;
+        Mon,  3 Apr 2023 11:44:19 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1680486261;
+        bh=DGxt2Nal4zLRCMspxliJpFL1v3UBGJJ5bihGfh5VLt4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=QEBDaNfjhRrf7LfxYtFM+DkS3bnmHZJP5Fo1PN38Yfj2az1p59Svk4h7TGHfTr9ya
+         tBaN4D6rGPOtFWmTHwktICM7AEJyaZAgRW4Xncer+0xYYd1MrjF0egFervAtZFTL9h
+         7DaOtVzQ9RBqC2D2A8AEf0Pjam+e2YUz64gJzJdxUR5kbTWkAIqbSp+m7+bXD+RW+u
+         uAEBP6+V6cLftS+PI5CS10WL7eUNydpawXS6f0qWlSY9fQtVssJfWm12hx1uyRlKHm
+         DEU7lQyoOTl/7ENQdyroPiSeGbAVENMedp/QBf4LhhDYeKWs6g2m/fNk4Ki05VaVbt
+         1tWA1NKm74nsQ==
+Date:   Mon, 3 Apr 2023 11:44:18 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Petr Machata <petrm@nvidia.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: linux-next: manual merge of the net-next tree with the pm tree
+Message-ID: <20230403114336.51854309@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1680483895.git.daniel@makrotopia.org>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
+Content-Type: multipart/signed; boundary="Sig_/aI/YJBY0ri78BcOuECiZQbU";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,73 +55,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for the built-in switch which can be found in the
-MediaTek MT7988 SoC.
+--Sig_/aI/YJBY0ri78BcOuECiZQbU
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 26 +++++++++++++++++--
- 1 file changed, 24 insertions(+), 2 deletions(-)
+Hi all,
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index 5ae9cd8f99a24..8d6dfed11d8d6 100644
---- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -11,16 +11,23 @@ maintainers:
-   - Landen Chao <Landen.Chao@mediatek.com>
-   - DENG Qingfang <dqfext@gmail.com>
-   - Sean Wang <sean.wang@mediatek.com>
-+  - Daniel Golle <daniel@makrotopia.org>
- 
- description: |
--  There are two versions of MT7530, standalone and in a multi-chip module.
-+  There are three versions of MT7530, standalone, in a multi-chip module and
-+  built-into a SoC.
- 
-   MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
-   MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
- 
-+  The MT7988 SoC comes with a built-in switch similar to MT7531 as well as four
-+  Gigabit Ethernet PHYs. The switch registers are directly mapped into the SoC's
-+  memory map rather than using MDIO. The switch got an internally connected 10G
-+  CPU port and 4 user ports connected to the built-in Gigabit Ethernet PHYs.
-+
-   MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
-   and the switch registers are directly mapped into SoC's memory map rather than
--  using MDIO. The DSA driver currently doesn't support this.
-+  using MDIO. The DSA driver currently doesn't support MT7620 variants.
- 
-   There is only the standalone version of MT7531.
- 
-@@ -81,6 +88,10 @@ properties:
-           Multi-chip module MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
-         const: mediatek,mt7621
- 
-+      - description:
-+          Built-in switch of the MT7988 SoC
-+        const: mediatek,mt7988-switch
-+
-   reg:
-     maxItems: 1
- 
-@@ -268,6 +279,17 @@ allOf:
-       required:
-         - mediatek,mcm
- 
-+  - if:
-+      properties:
-+        compatible:
-+          const: mediatek,mt7988-switch
-+    then:
-+      $ref: "#/$defs/mt7530-dsa-port"
-+      properties:
-+        gpio-controller: false
-+        mediatek,mcm: false
-+        reset-names: false
-+
- unevaluatedProperties: false
- 
- examples:
--- 
-2.40.0
+Today's linux-next merge of the net-next tree got a conflict in:
 
+  drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+
+between commit:
+
+  dbb0ea153401 ("thermal: Use thermal_zone_device_type() accessor")
+
+from the pm tree and commit:
+
+  5601ef91fba8 ("mlxsw: core_thermal: Use static trip points for transceive=
+r modules")
+
+from the net-next tree.
+
+I fixed it up (the latter removed the code updated by the former) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/aI/YJBY0ri78BcOuECiZQbU
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmQqL3IACgkQAVBC80lX
+0Gyf+wgAk9MhmBgCMnmvTc8gAJgMHRlj6CxullLY32cedpJNNIeBKS+Xui56w03L
+wAH+vp1baV2iZs5pIYsN1liqyYFhVPLaZdintoVA9eg5P480s09qYeLYr2YjYw6X
+5QF/117QK7OSeLCkFN/XC4shqgWhriFFLkwLuKmm6tq6BuxRht0iEU9KRhh/cblO
+JGumBckof/IfAfMp4VuWahrZrjpdW1Lv231iQcqBvGF3NGThRM6D5yhu/3Rdx0QQ
+0oychvIDTfAi9YqwQJYQfiuBuPAPNsGG1bbq1OoQw4rck3uTLgGLWZYf7cB1QnxI
+sBTnb/rFcxcVKSCsfPYfhj/H42ZX6Q==
+=0zyY
+-----END PGP SIGNATURE-----
+
+--Sig_/aI/YJBY0ri78BcOuECiZQbU--
