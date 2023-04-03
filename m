@@ -2,214 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 305F76D45C9
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:28:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3AB6D45DE
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232571AbjDCN2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 09:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
+        id S232632AbjDCNcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 09:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232172AbjDCN2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:28:37 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1D910C8;
-        Mon,  3 Apr 2023 06:28:34 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3A1D55C0158;
-        Mon,  3 Apr 2023 09:28:34 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 03 Apr 2023 09:28:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1680528514; x=1680614914; bh=GV
-        ZLNMk9yfkflFDKKHQEkZLXaQmA6emVevRE2hyjhHo=; b=m7kXxVz2tw03wMCqqB
-        0W/W2D8fxQrjtDCJ2Et7iWQVB6PvMBP1FtWbqsSYieax+ECJG4nIKXgBTYk45sSs
-        hpRexyMd8DNvgYMlFImzvrVGc9/dVMy2J/wI6XFhuADm/s8fCJUlArUakqhpIGtw
-        y3BN55RPplm+GbMsbL1KGSaRl7kSMYjTKojUCTlLhS9YzJ38i8Dr3jlZK2LkO3le
-        43APf8jnVKtPoH50V8zwVq8HSjXdF6nunqxNr+Ow/4Bl7OoExLtkHUbV3IXLez8y
-        /V2QlRpj4gkXtI1MTwd522Z5sH0KSJAg9HhsfZUpCMjj9Sc8Lo8LZKY3OFDKmiiT
-        873g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1680528514; x=1680614914; bh=GVZLNMk9yfkfl
-        FDKKHQEkZLXaQmA6emVevRE2hyjhHo=; b=pho3isSX2NTGyyAtePzJPjuwAHlxf
-        0X6vPb3k5Vj3T128mgywmzeSme0kMQehxhZcbNfUuJVHDFxRc6D2GhqwGZYfbxt1
-        n01x8lbSMp1CqT32ngxyICPFN8DvnmITUyoP/O16wQV/sBowgLZt21reI0PSDk2f
-        ehOBcAtcv9n8qZJFkVzxvKuOA1Re7fRBErSpQ2Rt1x+O6FDHZ/K1OympDrMmdHqz
-        qcTZ7+0ZuqqBe4THeLvGO/w7SGCq+wubOGu8R2l4EVQ6PpBjeDMWMm1EGE4sPk5M
-        +1zlxclugO3PQyXb0CjjWvjeW1uDHY6j0yXXMQjoC8H5x+TrcwJprVt1w==
-X-ME-Sender: <xms:gdQqZOXATr_KMOQPy9XGXt5LpNR8KbFiHUMl_vX2okqNAPGpdc5QYQ>
-    <xme:gdQqZKn75-bjTSYlFUlK7xO56VMMfQ2geBWlqp2aDoxDXYX_2YbcPCJyhoVcoUKHB
-    gUOTUHGuGcENQ>
-X-ME-Received: <xmr:gdQqZCZVDEKZEYgwN9LHx3_VeaiJWUuwUhe-dadIu4HK6Jl0W3hUuBt26xnNiFxBIekeZn5WeBmM6Gkbt6F9Gjfa8gaIDe0a0SOo1A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeijedgieegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
-    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
-    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
-    hhrdgtohhm
-X-ME-Proxy: <xmx:gdQqZFXRq-ukVqUg2HUSPzYBq525NjlncbwIjt9Zzv1A4fcTMwyYeA>
-    <xmx:gdQqZIlD2qIikPlULzw2-bA3f-7gnUApzQF5HqjDFoVBkgo0BH5o-A>
-    <xmx:gdQqZKdzzgDS_uy2JReme4hw3TyiSA97TmWJNnsMn9nUV_G8iCp3IA>
-    <xmx:gtQqZHdHohY9Iif5ILdmrtY7xUQMivnpL37WK6GVjHAoV6Yu4HnmKA>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 3 Apr 2023 09:28:33 -0400 (EDT)
-Date:   Mon, 3 Apr 2023 15:28:30 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     stable@vger.kernel.org, vegard.nossum@oracle.com,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Kyle Zeng <zengyhkyle@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4.14.y] net: sched: cbq: dont intepret cls results when
- asked to drop
-Message-ID: <2023040322-feel-woof-e49b@gregkh>
-References: <20230324102816.3888235-1-harshit.m.mogalapalli@oracle.com>
-MIME-Version: 1.0
+        with ESMTP id S232636AbjDCNcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:32:07 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2070c.outbound.protection.outlook.com [IPv6:2a01:111:f400:7ea9::70c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474E7EC66
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 06:32:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LD81AStjQt+AbMkc7xghD6YDxQQqMyOGeCmoZCcmwgCr9EP95beG96VfkWKtDeoV2nlJB5SAdNN3cI2fTuaiqDafLBrjWCR9tWNumlukG+YBkXdOktjeHtnYQXb6gQtGKCWLDXyp3oG5P7YLjQkVqC5towGZVAm/hRUYWT9WK0P2gLSJEmPf6nSZiMXNTOIKYurZT9BKDC2uDubJ29HzTgaQG5YBXSPE6Grmag1ElmerMDlszVma+wg9nzcM4L/d4yY2lXiPczRb7kZ43Lh1IF8rxpUVGnliBj0cm4Jnfv9vB2hAu7yWNbi/sWibNcg5I8Tika7qH3acUmqkJXqnzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DjRr9gamG9JL0nmi9wSSQllI4eaxsTCMkS+gTmqGhRM=;
+ b=Irr1XkI5/JbqShdi/dc51PSvgZ1yAY1th0Q0bSlfheMYutON2i4wwsAopF9mq2Xb2CUm4byIpbNtWjyH77dT8laxqPRk46+Xu4lqLjev6LA0NOg7KH9RuBf6aDpNsry1/1+0Qgdhg7D7Gub7v7pVN7kPGUW9ne4LMHZkuXUPCnga/ou51lxWJKtRvG8/vhgpqbIRCfXUB7cr9xVIaVRigDZodMOtBFaXxBypSfqPQSAYkLBriE46sIJckoyJywfjDsyjzLMiq9GkMEWv/95O5H2Hw07QS1FmVqK+HNrwsNBb79gsfq7/OJ0ld52eKuH2dIUQpIRxRaRvY3A3wKOCvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DjRr9gamG9JL0nmi9wSSQllI4eaxsTCMkS+gTmqGhRM=;
+ b=wO8Mpi9out4xt9bQEIQpV0mXc38mI+NMfOy1r7AFdI+2k3wqVGiS+X8h3ZTc/5YzyLr41ihkcAL76HUqQgnmgMKhOJT4u5V6CeEm+aSzC7yH5XV+6D1D+rX05Rz5eM/jCy42lP/+E9rW/KJ/qyDUdri10hSEQlb9axI6vySCwHY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BL3PR13MB5075.namprd13.prod.outlook.com (2603:10b6:208:33e::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Mon, 3 Apr
+ 2023 13:32:03 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.030; Mon, 3 Apr 2023
+ 13:32:03 +0000
+Date:   Mon, 3 Apr 2023 15:31:55 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Zahari Doychev <zahari.doychev@linux.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, hmehrtens@maxlinear.com,
+        aleksander.lobakin@intel.com,
+        Zahari Doychev <zdoychev@maxlinear.com>
+Subject: Re: [PATCH net-next v2 2/2] selftests: net: add tc flower cfm test
+Message-ID: <ZCrVS0aDDx831JCY@corigine.com>
+References: <20230402151031.531534-1-zahari.doychev@linux.com>
+ <20230402151031.531534-3-zahari.doychev@linux.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230324102816.3888235-1-harshit.m.mogalapalli@oracle.com>
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230402151031.531534-3-zahari.doychev@linux.com>
+X-ClientProxiedBy: AM0PR04CA0097.eurprd04.prod.outlook.com
+ (2603:10a6:208:be::38) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5075:EE_
+X-MS-Office365-Filtering-Correlation-Id: fab15796-a5cb-4a6f-eff5-08db3447cefe
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2BLMEWlMNQIh5JTimqHewBesgdcSkfSJ2Qa7FibWErhq5nf+1eZ3NKS406OIrQJYPhtUOeH/+Rc0Tp0Qg9WQvIWwp2ZtDDOtEWdHTxq3J6HxwJhqiN7xUa2HaXxHBwE63TedAt4NLy8RFtp+dytY0NjAbQVen6BepKqhtCrPWOotX3tePRPaDnpyjoiIOkK2tfRWbZmG8Ch6rlPdBQSfKCuaKuxpibzISWwwS69iiBUE6fltZyzVIffgFxIAC9FCRlaOTcC8IAhPLJmAQuucYz634YDKWLOpe2y5a3A5IoiYHDoF6Ra4FkVeXX+fbdsIq9xUSYkEmqGIzy7hzfEXrGOgP1+Bhw5vVS0MYbEdShi5ZbYXTLX6DajiRmOe9j+e7e5l03cNJEz/GEItkqmGpMaxs9LpwICnN9exo/A7iC4AuC9u2thkc/fzJFHF+u1+ZPyn0zTt7N8LFTgljoYIA7zbQlf7D4EtrZ2dmUIDtMGO3iN/k/LGYDsBMOUsszTPOl7iP0ZQosbUsFr030Z/fzOopTN5jQBYYRVhXADBs0otUi1VFxv9eHcLwZdMKnZ7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(136003)(376002)(39840400004)(396003)(366004)(451199021)(36756003)(6666004)(6486002)(2906002)(4744005)(41300700001)(6916009)(4326008)(6506007)(6512007)(2616005)(186003)(66476007)(66556008)(66946007)(8936002)(8676002)(7416002)(5660300002)(478600001)(316002)(44832011)(38100700002)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mlwr+Aw78mwL4pShbLMDIDMfw1uJOvMKZnPA1SAqub8Kp3w6U3XaFq8VgjYh?=
+ =?us-ascii?Q?QQ+WDsHttXsJ3u3zP0jqljkG6smoixnCatRYPnFP5sJwuu7HQ59DZ6OP011P?=
+ =?us-ascii?Q?vJ1H0EHdij8QJtYcVt+e/IZu9a3hkWHrSOGoWpwJYepxm7TGUkEMGIgY6UGW?=
+ =?us-ascii?Q?81z+ci8nHK6InBxooC7pmGpyvjnXNHvnxx5ZZrCfUAu8h9K4nhLeURkyj1gV?=
+ =?us-ascii?Q?Apf06SCp9GRLFeHi+hn4plZplHKcRvjONs+kv6zB5vcm0ubJQZoz7Nu282kt?=
+ =?us-ascii?Q?qjP3B9JgLfVe19PuO3MZCPRflJcPld8mKA7ZK831ph2bSOHH8e2ADs1m+g7T?=
+ =?us-ascii?Q?uUxL7v2Y2SGuRPuN9GzMZZuKisZaFGZkkQiYVOIZeao1bhxk0n6GYDWTrWuM?=
+ =?us-ascii?Q?L4ApGm3pMnAxyes8FcifD0E4KE17e4N2Lvm3VbkeYJ/Y3OWk4s8L2mi92zsg?=
+ =?us-ascii?Q?MWMmjyFVRn/awCQutHCaRp7dXtKkNAcA0JYGtonl2+pIosTtSQzT5Bqcpanp?=
+ =?us-ascii?Q?jdsZVaSi3LNWwfRRZJUk211iKM3mt77BZUCaEfNfM88t2yUB8p6dgmmn/6LO?=
+ =?us-ascii?Q?SRKLJZ3k3DIXYWMSN490qR/Lk91lsketN2bwYigmQhn6eJlDiwz5kVWyyfjs?=
+ =?us-ascii?Q?elMo5xsLoQgYxh9bUNOU60IBqQzYHF/ELQyQeDqDi0q6KStcHsOVaLl3X2Um?=
+ =?us-ascii?Q?pWwpwKaAizdAP7Yv3yAL0dK/D0QF5zJUt//6cvvKCdXlmrhswl3lziH6FZrF?=
+ =?us-ascii?Q?FhMPtuNcwlV9Lnu19ZgpJPe/EED3boOtHOpyvIc/dBwbadM39vyShNd0toHj?=
+ =?us-ascii?Q?JhCSSID4gxB+0ws7nZKoURsmq0TB3rgurpN9QHMPikOGF5b47UrLbTMiZwwW?=
+ =?us-ascii?Q?JwdtuTU9HAyTchDFWiNs00UKSKHTVLuSBrKgVYVGORMoftSsh5pG2iarz1Fi?=
+ =?us-ascii?Q?jCsVL6fy4reQpsybnTsPJFdVzeVSwhS/odhmpgcRd53MXJ766n7TyA2+2oV/?=
+ =?us-ascii?Q?+SiKjBtDDGV01/NfMaFy1qEVUcA77HAwm2vo6n5g3KKjXB9zhqxWtzPGJ22O?=
+ =?us-ascii?Q?MhaWgCt03IsDYbxkz3CARkUP33DnvDOVIffx60UDZxVqXAB079JaHJbF7TeT?=
+ =?us-ascii?Q?6Y/Afd74Jy1vUl6+LYg8LYE1qzuhv1SqkcSZlJqtyMru5ADS29PcizZhec8w?=
+ =?us-ascii?Q?dCDJDOH2kQ3TNryaDhrbhl1DoS/zWbIXy10TkIiu9xH8k4KL27BAgyr0e3jP?=
+ =?us-ascii?Q?NADlVhRC3ha8ZC4KVlqYXM71uQRBgO2v5XHdYCeFe4wyXayuZl1KqYU47pHP?=
+ =?us-ascii?Q?tDGa7XkhXbxfV/J4oWleQZTD7FW24F4oEPTFCd0VIKVcXPE+bbBAXM8I3zzn?=
+ =?us-ascii?Q?43ah66O9cCoNXo+CPRqebCLrb1euwjwlGYx5rjoI9ewqVMtear74eDwFCDKo?=
+ =?us-ascii?Q?La8k1r92l5co6e7ipEmZjc6oo2bYp5QXTdkkcv87F10so9rFizKGhfJD1KuL?=
+ =?us-ascii?Q?U4nNSZlkF1GYX+StlWWzWaLrjYhUmkSdWExXzSoNCeTQqBnvjlbpnp2L6Sb4?=
+ =?us-ascii?Q?1u1GZRlLuAkjBZs7WqPxZNiv2cB+Zkp+dkmo9DH2D3FDQjg0i1h1Rq7t47AN?=
+ =?us-ascii?Q?oqjpqY+PLZw3/M7w071jfioUNA8zWavUnetIrxtyhJtsssfbF3xlloiBquAg?=
+ =?us-ascii?Q?8LF7dA=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fab15796-a5cb-4a6f-eff5-08db3447cefe
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 13:32:02.8600
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2CHTI4p4QDKi6OAnXqqowFPEjisdyPZF2zBi0qJno+LD4z5L/GXmmK6dpTEN4ocwkfRXZFkS89YtdK1QhCOq3QGWz2TzxZJXKjgYahHQWF0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5075
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 24, 2023 at 03:28:16AM -0700, Harshit Mogalapalli wrote:
-> From: Jamal Hadi Salim <jhs@mojatatu.com>
+On Sun, Apr 02, 2023 at 05:10:31PM +0200, Zahari Doychev wrote:
+> From: Zahari Doychev <zdoychev@maxlinear.com>
 > 
-> [ Upstream commit caa4b35b4317d5147b3ab0fbdc9c075c7d2e9c12 ]
+> New cfm flower test case is added to the net forwarding selfttests.
 > 
-> If asked to drop a packet via TC_ACT_SHOT it is unsafe to assume that
-> res.class contains a valid pointer
-> 
-> Sample splat reported by Kyle Zeng
-> 
-> [    5.405624] 0: reclassify loop, rule prio 0, protocol 800
-> [    5.406326] ==================================================================
-> [    5.407240] BUG: KASAN: slab-out-of-bounds in cbq_enqueue+0x54b/0xea0
-> [    5.407987] Read of size 1 at addr ffff88800e3122aa by task poc/299
-> [    5.408731]
-> [    5.408897] CPU: 0 PID: 299 Comm: poc Not tainted 5.10.155+ #15
-> [    5.409516] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS 1.15.0-1 04/01/2014
-> [    5.410439] Call Trace:
-> [    5.410764]  dump_stack+0x87/0xcd
-> [    5.411153]  print_address_description+0x7a/0x6b0
-> [    5.411687]  ? vprintk_func+0xb9/0xc0
-> [    5.411905]  ? printk+0x76/0x96
-> [    5.412110]  ? cbq_enqueue+0x54b/0xea0
-> [    5.412323]  kasan_report+0x17d/0x220
-> [    5.412591]  ? cbq_enqueue+0x54b/0xea0
-> [    5.412803]  __asan_report_load1_noabort+0x10/0x20
-> [    5.413119]  cbq_enqueue+0x54b/0xea0
-> [    5.413400]  ? __kasan_check_write+0x10/0x20
-> [    5.413679]  __dev_queue_xmit+0x9c0/0x1db0
-> [    5.413922]  dev_queue_xmit+0xc/0x10
-> [    5.414136]  ip_finish_output2+0x8bc/0xcd0
-> [    5.414436]  __ip_finish_output+0x472/0x7a0
-> [    5.414692]  ip_finish_output+0x5c/0x190
-> [    5.414940]  ip_output+0x2d8/0x3c0
-> [    5.415150]  ? ip_mc_finish_output+0x320/0x320
-> [    5.415429]  __ip_queue_xmit+0x753/0x1760
-> [    5.415664]  ip_queue_xmit+0x47/0x60
-> [    5.415874]  __tcp_transmit_skb+0x1ef9/0x34c0
-> [    5.416129]  tcp_connect+0x1f5e/0x4cb0
-> [    5.416347]  tcp_v4_connect+0xc8d/0x18c0
-> [    5.416577]  __inet_stream_connect+0x1ae/0xb40
-> [    5.416836]  ? local_bh_enable+0x11/0x20
-> [    5.417066]  ? lock_sock_nested+0x175/0x1d0
-> [    5.417309]  inet_stream_connect+0x5d/0x90
-> [    5.417548]  ? __inet_stream_connect+0xb40/0xb40
-> [    5.417817]  __sys_connect+0x260/0x2b0
-> [    5.418037]  __x64_sys_connect+0x76/0x80
-> [    5.418267]  do_syscall_64+0x31/0x50
-> [    5.418477]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-> [    5.418770] RIP: 0033:0x473bb7
-> [    5.418952] Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00
-> 00 00 90 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2a 00 00
-> 00 0f 05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 18 89 54 24 0c 48 89 34
-> 24 89
-> [    5.420046] RSP: 002b:00007fffd20eb0f8 EFLAGS: 00000246 ORIG_RAX:
-> 000000000000002a
-> [    5.420472] RAX: ffffffffffffffda RBX: 00007fffd20eb578 RCX: 0000000000473bb7
-> [    5.420872] RDX: 0000000000000010 RSI: 00007fffd20eb110 RDI: 0000000000000007
-> [    5.421271] RBP: 00007fffd20eb150 R08: 0000000000000001 R09: 0000000000000004
-> [    5.421671] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-> [    5.422071] R13: 00007fffd20eb568 R14: 00000000004fc740 R15: 0000000000000002
-> [    5.422471]
-> [    5.422562] Allocated by task 299:
-> [    5.422782]  __kasan_kmalloc+0x12d/0x160
-> [    5.423007]  kasan_kmalloc+0x5/0x10
-> [    5.423208]  kmem_cache_alloc_trace+0x201/0x2e0
-> [    5.423492]  tcf_proto_create+0x65/0x290
-> [    5.423721]  tc_new_tfilter+0x137e/0x1830
-> [    5.423957]  rtnetlink_rcv_msg+0x730/0x9f0
-> [    5.424197]  netlink_rcv_skb+0x166/0x300
-> [    5.424428]  rtnetlink_rcv+0x11/0x20
-> [    5.424639]  netlink_unicast+0x673/0x860
-> [    5.424870]  netlink_sendmsg+0x6af/0x9f0
-> [    5.425100]  __sys_sendto+0x58d/0x5a0
-> [    5.425315]  __x64_sys_sendto+0xda/0xf0
-> [    5.425539]  do_syscall_64+0x31/0x50
-> [    5.425764]  entry_SYSCALL_64_after_hwframe+0x61/0xc6
-> [    5.426065]
-> [    5.426157] The buggy address belongs to the object at ffff88800e312200
-> [    5.426157]  which belongs to the cache kmalloc-128 of size 128
-> [    5.426955] The buggy address is located 42 bytes to the right of
-> [    5.426955]  128-byte region [ffff88800e312200, ffff88800e312280)
-> [    5.427688] The buggy address belongs to the page:
-> [    5.427992] page:000000009875fabc refcount:1 mapcount:0
-> mapping:0000000000000000 index:0x0 pfn:0xe312
-> [    5.428562] flags: 0x100000000000200(slab)
-> [    5.428812] raw: 0100000000000200 dead000000000100 dead000000000122
-> ffff888007843680
-> [    5.429325] raw: 0000000000000000 0000000000100010 00000001ffffffff
-> ffff88800e312401
-> [    5.429875] page dumped because: kasan: bad access detected
-> [    5.430214] page->mem_cgroup:ffff88800e312401
-> [    5.430471]
-> [    5.430564] Memory state around the buggy address:
-> [    5.430846]  ffff88800e312180: fc fc fc fc fc fc fc fc fc fc fc fc
-> fc fc fc fc
-> [    5.431267]  ffff88800e312200: 00 00 00 00 00 00 00 00 00 00 00 00
-> 00 00 00 fc
-> [    5.431705] >ffff88800e312280: fc fc fc fc fc fc fc fc fc fc fc fc
-> fc fc fc fc
-> [    5.432123]                                   ^
-> [    5.432391]  ffff88800e312300: 00 00 00 00 00 00 00 00 00 00 00 00
-> 00 00 00 fc
-> [    5.432810]  ffff88800e312380: fc fc fc fc fc fc fc fc fc fc fc fc
-> fc fc fc fc
-> [    5.433229] ==================================================================
-> [    5.433648] Disabling lock debugging due to kernel taint
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Reported-by: Kyle Zeng <zengyhkyle@gmail.com>
-> Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> [Harshit: backport for 4.14.y]
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
-> Only compile and boot tested.
-> This is marked as Fix for CVE-2023-23454.
-> 
-> Would be nice if any net developer review this before merging this to stable.
+> Signed-off-by: Zahari Doychev <zdoychev@maxlinear.com>
 
-Both now queued up, thanks.
+...
 
-greg k-h
+> +	tc_check_packets "dev $h2 ingress" 103 1
+> +	check_err $? "Did not match on corret level"
+
+Hi Zahari,
+
+if you need to repost for some reason you may consider
+correcting the spelling of 'corret'.
+
+...
