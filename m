@@ -2,144 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA356D42AB
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844786D42AE
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbjDCKzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 06:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
+        id S231484AbjDCK41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 06:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231571AbjDCKzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:55:19 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AC811E91;
-        Mon,  3 Apr 2023 03:55:04 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id e65so34159131ybh.10;
-        Mon, 03 Apr 2023 03:55:03 -0700 (PDT)
+        with ESMTP id S231245AbjDCK40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:56:26 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1CF5FE1;
+        Mon,  3 Apr 2023 03:56:25 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id j1-20020a05600c1c0100b003f04da00d07so1369656wms.1;
+        Mon, 03 Apr 2023 03:56:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680519303;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=pdJ+2OkpH3kcFUdvPltIiLBUjSuE10EzF0P+o63JPsg=;
-        b=g5AJO/632OK5MiPYEr7+oeU8KzMREkM6lQk2VI5/BCqLnTgcX0AJ0lNPXtAUkRr5jf
-         cl0oojbpBdczWw+tRRhbRntjxYMVStMRNz+mXSjYeVe45seSCnROUCDUG8J5dDgVYKjh
-         vXNIsvUSfcUGYZDScc5e1g+T+XkZn30tW7VtrKnFI3Lg+RRwhdHsLfP+w0RfywYlt8dv
-         84mIUaMW+ONL/y0m09uQhTUxMN7YFisE7h9G2Htv9xo/vD4bQUSJ7aVQFOVDhZUYFSAw
-         /vcwDJoZWB6kDIjqK0UVl3cZDAoM8cbyfRP6fFGBqU7jnBqNT3c/XQScNSFGT5suCp+a
-         mSDQ==
+        d=gmail.com; s=20210112; t=1680519384;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=l1i/QXNc6lXMKJ7pXgmtLMgzIk+6jhfEKBjAn/Et1rw=;
+        b=SY9DrhXh9MbQhpfR51VHj3wfR3mG1imKJmXJ88H0VIVh1pqtBNYJsO6s/J4ob+FDW9
+         +5rqli8TusTk4LlO0sXY1pnnigkzxRsaqVyCP9nyS/1MgPCl/I008mQ3aW5M77Pa2v0R
+         FajYlaQoqOR4Mna5k8c/585e67FVp7is2pXcDcecX/bZmN5GExoeor4zx6uh4nAtfG0G
+         vZsDsGR8VSCY7MSlM+h/4mDtl6lC35IkRBB+MWaeauR6/sFCWBpq98gptNKKdkcxcVJs
+         dKrQBX5zDDrbWMa+s/Majo/f+uoopvU7MuPVGsKPwWeIerw7XuwTQP/dS4LjmCIMTB8y
+         XRqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680519303;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pdJ+2OkpH3kcFUdvPltIiLBUjSuE10EzF0P+o63JPsg=;
-        b=NL94XFmxm504Z9PnEvOY+VIOWEywOMWy1cUSda4dahyR5psD41J2hibFlnzK81EzAN
-         OoJ2VMvQfIVOqW5j4o+c7fGvnBAyWYvdDHmE7sI1yxlH3un0VPGe3XWZL1vaUuEdANSQ
-         g/c9wURX6+U03Fr4w+rDI2L9vVFHfc7hc/iGKS9nlScp8RdrD1leJlwbGf3lZzvRNLz7
-         gX8pnSWXaDKtvwxMrmsJtjK5Ubh4Jvlxks6tr8vF2ADEZ7BMpuV7qg/p3PnEevxy6bkF
-         b5r82QCZaYSp/eQLn5+OkoH3G8CuEPRXkqYFoB11iLsR6jmRTcYZE3RLFqwh2W9aiEI9
-         GMVw==
-X-Gm-Message-State: AAQBX9cw0LARBUvZVataqIMtc9mqqPPoDwylQr8H7yN9glzhhxHQcDLD
-        CMrAy0BiqsTmKrgKQKN5KtkmypLTyWEdKfENiHg=
-X-Google-Smtp-Source: AKy350aUpJujtPD04sy3aWWIOxoosJlvc8WdC10yThSqw0quEU1Wq/iRvmhcr1e9vht5ZYb63UsNwsMFqF7/cHuBNyM=
-X-Received: by 2002:a25:ef0e:0:b0:b6a:5594:5936 with SMTP id
- g14-20020a25ef0e000000b00b6a55945936mr22530962ybd.5.1680519303108; Mon, 03
- Apr 2023 03:55:03 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680519384;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=l1i/QXNc6lXMKJ7pXgmtLMgzIk+6jhfEKBjAn/Et1rw=;
+        b=SMlspt9Br/d5euh+bWTLLVDMGxzdtZuF5w2ptAAPW6iECI70HHymJqZ66N+LGti8Tk
+         khBl8sLZq4+lJ3YL2yfKkQgcRpDaIvT5OL9C8xyTzCkmPNP4aORPAwPjbL4ppZJiFfeH
+         p+vOKN4ohjf0Esgy7fedjmLE1GMIF6kPhhW4P+Z54FUSR+KEYLzUV1TdSSIgiOCVXee8
+         dSokHQdEmzc9Ka6+AAucN8YJShBWAzTp0WPVFupM+LX+fbQsbG2Mx0HOwWbQCLgUJf9F
+         JHEtPWy1Z4lSZJ8Hkad+cZjp/WoRLSw69sGzKf1XUOycwTuk6OhDz+5kPdMRYqnWEiOg
+         wSDw==
+X-Gm-Message-State: AO0yUKU3dY/52HNZqFWOmmbg+dRIlkD6rn1GflPteC3eFUIckCG2hbl1
+        /lZjJ9qo6eBz+8q9PzqD3C0=
+X-Google-Smtp-Source: AK7set/4v/PIYKJUgECZ5BNmXFGzamGX8uKaz9ksiy+uqC3NIjHxHdJw4WF1RjeH/wKnDKNl1cf3xQ==
+X-Received: by 2002:a1c:7207:0:b0:3ed:2606:d236 with SMTP id n7-20020a1c7207000000b003ed2606d236mr25782065wmc.38.1680519383527;
+        Mon, 03 Apr 2023 03:56:23 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id k22-20020a7bc316000000b003ee20b4b2dasm11675100wmj.46.2023.04.03.03.56.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Apr 2023 03:56:23 -0700 (PDT)
+Subject: Re: [PATCH] udp:nat:vxlan tx after nat should recsum if vxlan tx
+ offload on
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Fei Cheng <chenwei.0515@bytedance.com>
+Cc:     dsahern@kernel.org, davem@davemloft.net,
+        netfilter-devel@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>, ecree@amd.com
+References: <20230401023029.967357-1-chenwei.0515@bytedance.com>
+ <CAF=yD-Lg_XSnE9frH9UFpJCZLx-gg2KHzVu7KmnigidujCvepQ@mail.gmail.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <fae01ad9-4270-2153-9ba4-cf116c8ed975@gmail.com>
+Date:   Mon, 3 Apr 2023 11:56:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20230329180502.1884307-1-kal.conley@dectris.com> <20230329180502.1884307-5-kal.conley@dectris.com>
-In-Reply-To: <20230329180502.1884307-5-kal.conley@dectris.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 3 Apr 2023 12:54:52 +0200
-Message-ID: <CAJ8uoz1cGV1_3HQQddbkExVnm=wngP3ECJZNS5gOtQtfi=mPnA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 04/10] selftests: xsk: Deflakify
- STATS_RX_DROPPED test
-To:     Kal Conley <kal.conley@dectris.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <CAF=yD-Lg_XSnE9frH9UFpJCZLx-gg2KHzVu7KmnigidujCvepQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Mar 2023 at 20:11, Kal Conley <kal.conley@dectris.com> wrote:
->
-> Fix flaky STATS_RX_DROPPED test. The receiver calls getsockopt after
-> receiving the last (valid) packet which is not the final packet sent in
-> the test (valid and invalid packets are sent in alternating fashion with
-> the final packet being invalid). Since the last packet may or may not
-> have been dropped already, both outcomes must be allowed.
->
-> This issue could also be fixed by making sure the last packet sent is
-> valid. This alternative is left as an exercise to the reader (or the
-> benevolent maintainers of this file).
->
-> This problem was quite visible on certain setups. On one machine this
-> failure was observed 50% of the time.
->
-> Also, remove a redundant assignment of pkt_stream->nb_pkts. This field
-> is already initialized by __pkt_stream_alloc.
+On 02/04/2023 19:18, Willem de Bruijn wrote:
+> On Fri, Mar 31, 2023 at 10:31 PM Fei Cheng <chenwei.0515@bytedance.com> wrote:
+>>
+>> From: "chenwei.0515" <chenwei.0515@bytedance.com>
+>>
+>>     If vxlan-dev enable tx csum offload, there are two case of CHECKSUM_PARTIAL,
+>>     but udp->check donot have the both meanings.
+>>
+>>     1. vxlan-dev disable tx csum offload, udp->check is just pseudo hdr.
+>>     2. vxlan-dev enable tx csum offload, udp->check is pseudo hdr and
+>>        csum from outter l4 to innner l4.
+>>
+>>     Unfortunately if there is a nat process after vxlan tx，udp_manip_pkt just use
+>>     CSUM_PARTIAL to re csum PKT, which is just right on vxlan tx csum disable offload.
 
-This has been bugging me for a while so thanks for fixing this. Please
-break this commit out of this patch set and send it as a separate bug
-fix.
+In case 1 csum_start should point to the (outer) UDP header, whereas in
+ case 2 csum_start should point to the inner L4 header (because in the
+ normal TX path w/o NAT, nothing else will ever need to touch the outer
+ csum after this point).
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> The issue is that for encapsulated traffic with local checksum offload,
+> netfilter incorrectly recomputes the outer UDP checksum as if it is an
+> unencapsulated CHECKSUM_PARTIAL packet, correct?
 
-> Fixes: 27e934bec35b ("selftests: xsk: make stat tests not spin on getsockopt")
-> Signed-off-by: Kal Conley <kal.conley@dectris.com>
-> ---
->  tools/testing/selftests/bpf/xskxceiver.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-> index 34a1f32fe752..1a4bdd5aa78c 100644
-> --- a/tools/testing/selftests/bpf/xskxceiver.c
-> +++ b/tools/testing/selftests/bpf/xskxceiver.c
-> @@ -633,7 +633,6 @@ static struct pkt_stream *pkt_stream_generate(struct xsk_umem_info *umem, u32 nb
->         if (!pkt_stream)
->                 exit_with_error(ENOMEM);
->
-> -       pkt_stream->nb_pkts = nb_pkts;
->         for (i = 0; i < nb_pkts; i++) {
->                 pkt_set(umem, &pkt_stream->pkts[i], (i % umem->num_frames) * umem->frame_size,
->                         pkt_len);
-> @@ -1141,7 +1140,14 @@ static int validate_rx_dropped(struct ifobject *ifobject)
->         if (err)
->                 return TEST_FAILURE;
->
-> -       if (stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2)
-> +       /* The receiver calls getsockopt after receiving the last (valid)
-> +        * packet which is not the final packet sent in this test (valid and
-> +        * invalid packets are sent in alternating fashion with the final
-> +        * packet being invalid). Since the last packet may or may not have
-> +        * been dropped already, both outcomes must be allowed.
-> +        */
-> +       if (stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2 ||
-> +           stats.rx_dropped == ifobject->pkt_stream->nb_pkts / 2 - 1)
->                 return TEST_PASS;
->
->         return TEST_FAILURE;
-> --
-> 2.39.2
->
+So if netfilter sees a packet with CHECKSUM_PARTIAL whose csum_start
+ doesn't point to the header nf NAT is editing, that's exactly the case
+ where it needs to use lco_csum to calculate the new outer sum.  No?
+
+-ed
+
+PS. Fei, your emails aren't reaching the netdev mailing list, probably
+ because you're sending as HTML.  Please switch to plain text.
