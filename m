@@ -2,118 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F14316D4315
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D36B16D4329
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:15:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbjDCLMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 07:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35308 "EHLO
+        id S232221AbjDCLPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 07:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232117AbjDCLMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:12:15 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4391F12073
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 04:11:49 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id x3so115677688edb.10
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 04:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google; t=1680520306;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date:message-id:reply-to;
-        bh=4ZRh2XQyIvIwD7cqmGWwOTXCG6mNEaPqsaGSyOgg7i4=;
-        b=n0hy6/6JIlQMRkVpsji5O/0qByX6i5cmJmOgStebSf/Eb7LsNl2kfeDqoFsJ/D9VCB
-         cnM9t9ddqk5UI6NcpvgNVeEmpbszVlYJfgyK1bXOKsc2w6BF4nHV9Uzv9wYHvP5h+WFw
-         wu7CJIi6A0BSWBAjUQAjdwilWZfeCFu0/jXY0=
+        with ESMTP id S232212AbjDCLPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:15:01 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237A512041
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 04:14:26 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id s1-20020a92ae01000000b0032637be81d1so8305422ilh.4
+        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 04:14:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680520306;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4ZRh2XQyIvIwD7cqmGWwOTXCG6mNEaPqsaGSyOgg7i4=;
-        b=QuoorzcMufACsFUqdddYZgsCBAoYbEN0rdbgEBNVi6X8uTyPiV1WfXDA2lmvTpiHJq
-         z5vIYBzW1lIenIVH7sMalZw2KdHgMCRBoYjDCJpe3ezRO7WUTpAJ5nybZ2NihFiV+894
-         kdvbhieTgDR+MulCnsA8HRO0KJWdvSkZuH0MoTZ8xflR2ZF6WLc3De7qyFiPmlaREngg
-         sY4ZEr0S5hakyavBBrlJBHQxZxtGkeZVraGiYTPT21kAuappC8kIZeP9C6KeDMmnxQZ0
-         CO2oZ0A+ePxS9ZOxl42+G1T53jDI2mJK6X6cgRFGQCkJ6qaglHwtj6XwQbPAsxMZTVKH
-         FNvQ==
-X-Gm-Message-State: AAQBX9ftVA1UgNo0E4am96UvAXeLRtqsXiBnO0lqWHm2BVPX7/CdqVBj
-        KlQ1zoV8s6SOL7j4l02TqlnnwsCTDhS6FjQ9xWs=
-X-Google-Smtp-Source: AKy350anEoDP359aHJUBzytOzEWbBgIfBALZFpTy999DQOdoE68VVg6Q0J8X1Xa+C+jfH1VtJQo6VA==
-X-Received: by 2002:aa7:d052:0:b0:4fb:54b7:50ea with SMTP id n18-20020aa7d052000000b004fb54b750eamr34365689edo.21.1680520306197;
-        Mon, 03 Apr 2023 04:11:46 -0700 (PDT)
-Received: from cloudflare.com (79.184.147.137.ipv4.supernova.orange.pl. [79.184.147.137])
-        by smtp.gmail.com with ESMTPSA id m30-20020a50999e000000b005027d31615dsm4090409edb.62.2023.04.03.04.11.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 04:11:45 -0700 (PDT)
-References: <20230327175446.98151-1-john.fastabend@gmail.com>
- <20230327175446.98151-5-john.fastabend@gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     cong.wang@bytedance.com, daniel@iogearbox.net, lmb@isovalent.com,
-        edumazet@google.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        ast@kernel.org, andrii@kernel.org, will@isovalent.com
-Subject: Re: [PATCH bpf v2 04/12] bpf: sockmap, handle fin correctly
-Date:   Mon, 03 Apr 2023 13:11:07 +0200
-In-reply-to: <20230327175446.98151-5-john.fastabend@gmail.com>
-Message-ID: <87a5zpdxu7.fsf@cloudflare.com>
+        d=1e100.net; s=20210112; t=1680520426; x=1683112426;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=6qRalQX92RaMzxMrrjGMKbPnvBBp0MOKkNKZUYWOjCE=;
+        b=KAi5ZnuteQdx5Owwu62gyS41rBrSX7+YIXo0aPBghB8caMSlTbEqkF6TgfgnK0cDeV
+         RNKVRsL3yfukRa2J1fONaAHeeHW3XGvW3vNtSm0A9Mlo/gaAE1aBrp5Fsn7vmoh9rskP
+         oMsAgLrWbuZJ6/iolKxdMkBwnxGBjp6N9Py5BvlPtgCJ05diFxbIZyr+UW8/eA2biSpq
+         zXMW9tmgTjjskD0N2fTaOqxkTvdZpEN+I9MhjuOOO9PylMeB0wBpAMbhEyP29CDCfcT7
+         bpCwIoTbV7YTWiyk+DvpSTrWLxkyLIhZGXN8Y0g8bgk4QjsXFMbJ88IU8TCnJrVEHo/J
+         XTag==
+X-Gm-Message-State: AO0yUKUZknfPNSbcWxk5vM1P6+lRo+nmxKCb9u/JTdBYSafBUogO3F1R
+        LQz/tBCEYFPbbr3WSZt4u+JHJ75LfCUkeCWzw1PQCOsBWuKc
+X-Google-Smtp-Source: AK7set9uAROm7QPXq3GWjhjRoOCg9EkWXuY37I+RppjWGTOKrDXWyUvVe8GwYH3sVm7jzxkdRGYwSYL1FV2bb3NVXUQi+ljyZ/xm
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Received: by 2002:a02:8581:0:b0:3f6:e3c2:d4bd with SMTP id
+ d1-20020a028581000000b003f6e3c2d4bdmr15101947jai.0.1680520426727; Mon, 03 Apr
+ 2023 04:13:46 -0700 (PDT)
+Date:   Mon, 03 Apr 2023 04:13:46 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000012b01e05f86ca7dc@google.com>
+Subject: [syzbot] Monthly nfc report
+From:   syzbot <syzbot+liste310c7f57d844ae45c27@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.6 required=5.0 tests=FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 27, 2023 at 10:54 AM -07, John Fastabend wrote:
-> The sockmap code is returning EAGAIN after a FIN packet is received and no
-> more data is on the receive queue. Correct behavior is to return 0 to the
-> user and the user can then close the socket. The EAGAIN causes many apps
-> to retry which masks the problem. Eventually the socket is evicted from
-> the sockmap because its released from sockmap sock free handling. The
-> issue creates a delay and can cause some errors on application side.
->
-> To fix this check on sk_msg_recvmsg side if length is zero and FIN flag
-> is set then set return to zero. A selftest will be added to check this
-> condition.
->
-> Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
-> Tested-by: William Findlay <will@isovalent.com>
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
->  net/ipv4/tcp_bpf.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
->
-> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-> index cf26d65ca389..3a0f43f3afd8 100644
-> --- a/net/ipv4/tcp_bpf.c
-> +++ b/net/ipv4/tcp_bpf.c
+Hello nfc maintainers/developers,
 
-[...]
+This is a 30-day syzbot report for the nfc subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/nfc
 
-> @@ -193,6 +211,19 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
->  	lock_sock(sk);
->  msg_bytes_ready:
->  	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
-> +	/* The typical case for EFAULT is the socket was gracefully
-> +	 * shutdown with a FIN pkt. So check here the other case is
-> +	 * some error on copy_page_to_iter which would be unexpected.
-> +	 * On fin return correct return code to zero.
-> +	 */
-> +	if (copied == -EFAULT) {
-> +		bool is_fin = is_next_msg_fin(psock);
-> +
-> +		if (is_fin) {
-> +			copied = 0;
-> +			goto out;
-> +		}
-> +	}
->  	if (!copied) {
->  		long timeo;
->  		int data;
+During the period, 1 new issues were detected and 1 were fixed.
+In total, 11 issues are still open and 15 have been fixed so far.
 
-tcp_bpf_recvmsg needs a similar fix, no?
+Some of the still happening issues:
+
+Crashes Repro Title
+63      Yes   BUG: corrupted list in nfc_llcp_unregister_device
+              https://syzkaller.appspot.com/bug?extid=81232c4a81a886e2b580
+39      Yes   KASAN: use-after-free Read in nfc_llcp_find_local
+              https://syzkaller.appspot.com/bug?extid=e7ac69e6a5d806180b40
+38      Yes   BUG: corrupted list in nfc_llcp_register_device
+              https://syzkaller.appspot.com/bug?extid=c1d0a03d305972dbbe14
+38      Yes   INFO: task hung in nfc_rfkill_set_block
+              https://syzkaller.appspot.com/bug?extid=3e3c2f8ca188e30b1427
+14      Yes   BUG: corrupted list in nfc_llcp_local_put
+              https://syzkaller.appspot.com/bug?extid=ecb2ae7b1add2a4120de
+8       Yes   INFO: task hung in pn533_finalize_setup
+              https://syzkaller.appspot.com/bug?extid=1dc8b460d6d48d7ef9ca
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
