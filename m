@@ -2,125 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B89536D527E
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:32:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A748B6D5290
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbjDCUce (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 16:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        id S233376AbjDCUgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 16:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232111AbjDCUcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:32:32 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1047109
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 13:32:30 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id r11so30633704wrr.12
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 13:32:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680553949;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0ey2H8pEuNuKHyUoN1U05NLZzezgDa8OosuFB18eS3w=;
-        b=Xn9NBm6y/Gk8de23mO2NnmpY7bZcX+OYSyKDlf8d2ZfM48aZER1PSKuBPdMkmmZ8Sr
-         C3UpfxpYBNL9T/rYLAs0w6HZkq7x1yBlt7QTAzwzk8ZxXc+MCKncNODWTETICyC9RGu5
-         R7kmwYSOmA34ZOQr2/hTjerqlIWVUTWJLM8r8Z3M3OTUOvmihl1XtwuQ4dcVQAcpYKjN
-         im6jnrvB0hCNpGT3Selb0cpy6sjZ6TUqQL3YISnxbmOp52QdQSeojZxwCTJLBWfH+gkA
-         JCI70EdzUfUFyYgi9JLHMeCg0aiiSV0dnI2Hbrq2xxrUyMNq9qXGRG1j5BGUBdTz/uhp
-         st3Q==
+        with ESMTP id S233322AbjDCUgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:36:16 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6396B40EF;
+        Mon,  3 Apr 2023 13:36:12 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-17aa62d0a4aso32217890fac.4;
+        Mon, 03 Apr 2023 13:36:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680553949;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0ey2H8pEuNuKHyUoN1U05NLZzezgDa8OosuFB18eS3w=;
-        b=Tuly50G1R/H93ettzL96lcD55bFluP4mQMfQwfIA09JRdLIj9Dpn3jKwPRq+UXm6it
-         1WyFoUNMjkfsv6jeMgN1bVuogxR0pdStMc47uVAknKI17AA9yCWUEUk2cf4NBkSjfaQW
-         ZpzzYMhq5xLR/dDkT5IBpvQ1CvgPsEgfmCfcnFAfjvpqrZpCkP9eAdK0DY4NsiseleQQ
-         Ua5/QCdYuUmZETGBr3+uLmTgQ6As9INjQ0cbTQLEd/NTsq3hjPv+Z9dX09lNy0rGyYI4
-         fA3Mfs5xOAnv5+Pws1YCrZ3Ih2vx5+lgkwe2auOvIfd9fwgtIk8FeLlA4aueQ7ssULJ7
-         W0yA==
-X-Gm-Message-State: AAQBX9f5lEt5e4Tot4tX1Nzh6AmkWsFc/W3SpiodeuAHGfOveGyroONa
-        w9wt8Bh/4jKPBNBqPK7I4z0=
-X-Google-Smtp-Source: AKy350Y09nlt7QoZGjLJyFWkQV13w+lVrMWv7/7Who3S4/dEjy3tvnn7xWuhBrJDNLqEN6arcEq8tg==
-X-Received: by 2002:a5d:4847:0:b0:2cf:e956:9740 with SMTP id n7-20020a5d4847000000b002cfe9569740mr14083669wrs.6.1680553948870;
-        Mon, 03 Apr 2023 13:32:28 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b9a3:9100:5849:b3bc:e358:e393? (dynamic-2a01-0c23-b9a3-9100-5849-b3bc-e358-e393.c23.pool.telefonica.de. [2a01:c23:b9a3:9100:5849:b3bc:e358:e393])
-        by smtp.googlemail.com with ESMTPSA id b2-20020a5d4b82000000b002d828a9f9ddsm10432160wrt.115.2023.04.03.13.32.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Apr 2023 13:32:28 -0700 (PDT)
-Message-ID: <16b9c260-d744-eba3-5c88-e511465bb94e@gmail.com>
-Date:   Mon, 3 Apr 2023 22:32:26 +0200
+        d=1e100.net; s=20210112; t=1680554171;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+FV7kaEhYq8hPkWP8x51YjtButdsWCOy21wJQSXxrNc=;
+        b=BGlRdg6rZMgWmsjAbw9fA2sQDKVXF3k7CUqcw5iez7mzemzqtS5lINkDeR0ykg/Z2A
+         +ZdSKyvyWFjPKO6JngnORcZR7+Gykyyy/xjPSz0w62MJSwvirmY4dd9hXM5VBS0tnTyi
+         n7cR9LRww/HIJ/kkt/XBpihMeHgZoBFIXYaTqOie5NqWJFwbVATmcOGUh4aAkg5HjRJf
+         Kj60pqtndcC8nrtTV+3YpSjwhK8bUANcQFJ5fholi3dbkdaUdxPzP+3DCNJN58DJc4pW
+         VmZcraNdTBzxajsgqREtwZgrGyKyW1xAQGPZgbOcFSDLlbKXPAq7z2E5ceoVUoiNHtHq
+         7djw==
+X-Gm-Message-State: AAQBX9fprjCsmm337uekqradsGlePRdajgM79sl0XM4bgm1guICTGHFH
+        JuDbuNKgEtnpKucINJzgag==
+X-Google-Smtp-Source: AKy350aB1944ukBSjhjdSkpx32AuFktYk5TasyKwQZRi4khTxO6rgxHBV5Rzx3+wZXB2zK2Ppb6XhQ==
+X-Received: by 2002:a05:6870:d210:b0:172:80fd:8482 with SMTP id g16-20020a056870d21000b0017280fd8482mr451861oac.5.1680554171357;
+        Mon, 03 Apr 2023 13:36:11 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id aw20-20020a0568707f9400b0016e49af5815sm3878520oac.51.2023.04.03.13.36.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Apr 2023 13:36:11 -0700 (PDT)
+Received: (nullmailer pid 1703260 invoked by uid 1000);
+        Mon, 03 Apr 2023 20:36:10 -0000
+Date:   Mon, 3 Apr 2023 15:36:10 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     pabeni@redhat.com, linux-kernel@vger.kernel.org, wg@grandegger.com,
+        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
+        robh+dt@kernel.org, mkl@pengutronix.de, kuba@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-can@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        davem@davemloft.net
+Subject: Re: [PATCH] dt-bindings: can: fsl,flexcan: add optional
+ power-domains property
+Message-ID: <168055416976.1703203.4200432741574181226.robh@kernel.org>
+References: <20230328054602.1974255-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-To:     Chris Healy <cphealy@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <8d309575-067c-7321-33cf-6ffac11f7c8d@gmail.com>
- <CAFXsbZq=uzfFjkYw3eWuTjvcGpn6TSoc_OJYCwgthr5jU9qBpQ@mail.gmail.com>
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next] net: phy: meson-gxl: enable edpd tunable support
- for G12A internal PHY
-In-Reply-To: <CAFXsbZq=uzfFjkYw3eWuTjvcGpn6TSoc_OJYCwgthr5jU9qBpQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230328054602.1974255-1-peng.fan@oss.nxp.com>
+X-Spam-Status: No, score=0.7 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.04.2023 22:24, Chris Healy wrote:
-> On Mon, Apr 3, 2023 at 12:35 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> Enable EDPD PHY tunable support for the G12A internal PHY, reusing the
->> recently added tunable support in the smsc driver.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/phy/meson-gxl.c | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
->> index 3dea7c752..bb9b33b6b 100644
->> --- a/drivers/net/phy/meson-gxl.c
->> +++ b/drivers/net/phy/meson-gxl.c
->> @@ -210,6 +210,10 @@ static struct phy_driver meson_gxl_phy[] = {
->>                 .read_status    = lan87xx_read_status,
->>                 .config_intr    = smsc_phy_config_intr,
->>                 .handle_interrupt = smsc_phy_handle_interrupt,
->> +
->> +               .get_tunable    = smsc_phy_get_tunable,
->> +               .set_tunable    = smsc_phy_set_tunable,
->> +
->>                 .suspend        = genphy_suspend,
-> Why add the empty lines before and after the two new lines?
-> 
-Just for readability, because these two entries belong together.
-Sometimes it's a little hard to read if drivers have 10+ callbacks
-in a flat list in different, arbitrary order.
 
->>                 .resume         = genphy_resume,
->>                 .read_mmd       = genphy_read_mmd_unsupported,
->> --
->> 2.40.0
->>
+On Tue, 28 Mar 2023 13:46:02 +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Add optional power-domains property for i.MX8 usage.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+
+Acked-by: Rob Herring <robh@kernel.org>
 
