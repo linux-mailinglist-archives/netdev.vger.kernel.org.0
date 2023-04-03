@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 235336D524E
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36B136D525E
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233191AbjDCUZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 16:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
+        id S233325AbjDCUZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 16:25:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232367AbjDCUZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:25:29 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7BA421B;
+        with ESMTP id S230102AbjDCUZa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:25:30 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0133B40F0;
         Mon,  3 Apr 2023 13:24:59 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id l10-20020a05600c1d0a00b003f04bd3691eso3923040wms.5;
+Received: by mail-wm1-x333.google.com with SMTP id m6-20020a05600c3b0600b003ee6e324b19so18830301wms.1;
         Mon, 03 Apr 2023 13:24:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112; t=1680553497;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+XhLVAQ4sbi4OzfC3n0v++1sIl1iSsPRMVljiqDmtbI=;
-        b=aVt2dqLEgoCQf4vUm6eRdlmJj4AN8habnLsF/GEW9g4gA16x0/E7mUUm0nbw/Xccet
-         SFDaWauO8aXaD1V+oKAWQkxLEJ23p7o0fYuBzvzJsdW5Eir+PAwOaPzsGJXL9QueTsOX
-         jRHMWaBDqHJy03cqSxfswKGwuynXU5UM11ZluNgB4LrliNwnJCPpDGybFxBf3ZP6eAZc
-         aN1J7M4wXdB+HP7QP8d8UNWkA0DFQBjhc/+w3a2+7zuD1L8F7z3y4PQ0r85lO2MEsR0z
-         xBMZEYApR2h6XEBC8IO8cnroAzj0vEXneRMLyLuxrPuvkjewASJV+AWQNAJnaCMknghR
-         cCdg==
+        bh=BvOl5JhylfoaBnxuZm+cl3/vdE7xXTn5p5ikGyOF0OA=;
+        b=DVYQIl2xyCqggv68+Llg7ZNfsyHdigv07Xt+ZVU5MiARHPTc4QaEQc91aCprVMA7vS
+         IsqoWK8FmcGf295PXB0GBEZ2U12brNVl0szKJZgPD5Yhr407fFgigParY1S5ouQ6HyCV
+         0PS/W5lXrBqURKFSI8fAVlkzNoOSoiz+UbgKvJMdCDFC616vGEJUhd5U3IKXOrU+RekN
+         raIUjfN5xqThHoHwqOJesr3CUsqVoejsCAZruXqNrUbU0MXbHz9H1+r/OnjYpYPUrJzy
+         o3GkjUzs38q0DebnfeEuHV/0GUQT0QZBpP7QiVYqFK6VHL5SCWMYJShjCTpCod2j6mfH
+         lKuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112; t=1680553497;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+XhLVAQ4sbi4OzfC3n0v++1sIl1iSsPRMVljiqDmtbI=;
-        b=qzRJR+v8EEkUUprBCIaj13i2iBFpvLMKQWTZHke8KDGLeQUtXlwKGOT0XHUjI5Ls4M
-         3QpLOMyi59DvdNISU1z3YvDuCfhxogrvcrg1E/+1DyaeCc/K00NvjakB4Cas/xHBDmRw
-         8hyw5iNOtJh/0eiVJbpUiSlAEtIn/5z+WAZM5dtOLGkkZkUi47nnRcVFRjz44zWAfNB+
-         R8xB+bI8HIivauo1SrQEXGT/Zt4mIprVzXpG7/ZiD1oH9eSp21tqle1v4Nl5kL08nfdL
-         cZBJY4EFFeEKidUK9O6SFbLEsIOsy63tqfEElM008wfsri9P6O52SlhplSd4c+tRn0dc
-         FVzg==
-X-Gm-Message-State: AAQBX9fXrg+xW7VLgIVO348Gu7EdtqvTaJrMPJMULTaEwUgNc/GaQ/kc
-        kjN5a0dvgtE960bleyF+rU0gyH4stmU=
-X-Google-Smtp-Source: AKy350ZA24qWLI/4FGXO3OLlo/TMiUrBmVsdOd8K1sfz++HVMKtHpe0jZloYaNLgxoaOPknYbJCn7w==
-X-Received: by 2002:a1c:f617:0:b0:3e2:1368:e395 with SMTP id w23-20020a1cf617000000b003e21368e395mr415172wmc.33.1680553496671;
-        Mon, 03 Apr 2023 13:24:56 -0700 (PDT)
+        bh=BvOl5JhylfoaBnxuZm+cl3/vdE7xXTn5p5ikGyOF0OA=;
+        b=WXXbSHx88NKo74t7lJ/0lN8fxE8aFIoPixdxTRXWs5RA7scXNlH45ghM8D/lWAmmoR
+         Et+Ti8QOTFEwhe3apIJoIQI+I14JoCLvCCoMYgO6x4fbIHczeSTkKQgbRxfo2TdrEXc4
+         mio2y59BEnNV9QjseMIKilb9xT556n4tnKqJ5/k/xdSXDBTJJlRk5ohgiIiDwD8ALROa
+         2dGXYmppK8CHrGtVJpzvOtEUfLgt+/vk1XqA+0Pdb8cMW52Ub9LGbkj+wgzkzxfKVevM
+         KQUNwSjRXMrs6aUJ9zQRznBeA36kIGUmZ5MW036vx0HhNqSvFJTMvB8NIju9gHItu2iA
+         y/rw==
+X-Gm-Message-State: AAQBX9fGCjpYm4JA8F9yb3LGGuk0IfxVLF+60Myar4iXCbVipjBMWryM
+        hxpV0ADZBeVlNkClA24/VpX34LjMppI=
+X-Google-Smtp-Source: AKy350ZKXN3d3l3H6E+XvY4mpnVqyxzJSDZFoaKfAk2uIPJPzrvWwkZHgWdO9MJZI0MZIHoe0ZNxHA==
+X-Received: by 2002:a7b:c8c3:0:b0:3f0:5074:efa7 with SMTP id f3-20020a7bc8c3000000b003f05074efa7mr473798wml.14.1680553497697;
+        Mon, 03 Apr 2023 13:24:57 -0700 (PDT)
 Received: from localhost.localdomain (dynamic-2a01-0c22-7651-4500-0000-0000-0000-0e63.c22.pool.telefonica.de. [2a01:c22:7651:4500::e63])
-        by smtp.googlemail.com with ESMTPSA id 24-20020a05600c021800b003ee1acdb036sm12845895wmi.17.2023.04.03.13.24.55
+        by smtp.googlemail.com with ESMTPSA id 24-20020a05600c021800b003ee1acdb036sm12845895wmi.17.2023.04.03.13.24.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 13:24:56 -0700 (PDT)
+        Mon, 03 Apr 2023 13:24:57 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     linux-wireless@vger.kernel.org
 Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
@@ -62,9 +62,9 @@ Cc:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
         Larry Finger <Larry.Finger@lwfinger.net>,
         =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v4 4/9] wifi: rtw88: main: Add the {cpwm,rpwm}_addr for SDIO based chipsets
-Date:   Mon,  3 Apr 2023 22:24:35 +0200
-Message-Id: <20230403202440.276757-5-martin.blumenstingl@googlemail.com>
+Subject: [PATCH v4 5/9] wifi: rtw88: main: Reserve 8 bytes of extra TX headroom for SDIO cards
+Date:   Mon,  3 Apr 2023 22:24:36 +0200
+Message-Id: <20230403202440.276757-6-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.40.0
 In-Reply-To: <20230403202440.276757-1-martin.blumenstingl@googlemail.com>
 References: <20230403202440.276757-1-martin.blumenstingl@googlemail.com>
@@ -80,8 +80,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Initialize the rpwm_addr and cpwm_addr for power-saving support on SDIO
-based chipsets.
+For SDIO host controllers with DMA support the TX buffer physical memory
+address need to be aligned at an 8-byte boundary. Reserve 8 bytes of
+extra TX headroom so we can align the data without re-allocating the
+transmit buffer.
+
+While here, also remove the TODO comment regarding extra headroom for
+USB and SDIO. For SDIO the extra headroom is now handled and for USB it
+was not needed so far.
 
 Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
@@ -96,32 +102,26 @@ Changes since v1:
 - none
 
 
- drivers/net/wireless/realtek/rtw88/main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/realtek/rtw88/main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index b2e78737bd5d..cdc4703ead5f 100644
+index cdc4703ead5f..1cb553485cff 100644
 --- a/drivers/net/wireless/realtek/rtw88/main.c
 +++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -18,6 +18,7 @@
- #include "debug.h"
- #include "bf.h"
- #include "sar.h"
-+#include "sdio.h"
+@@ -2163,9 +2163,11 @@ int rtw_register_hw(struct rtw_dev *rtwdev, struct ieee80211_hw *hw)
+ 	int max_tx_headroom = 0;
+ 	int ret;
  
- bool rtw_disable_lps_deep_mode;
- EXPORT_SYMBOL(rtw_disable_lps_deep_mode);
-@@ -1785,6 +1786,10 @@ static int rtw_chip_parameter_setup(struct rtw_dev *rtwdev)
- 		rtwdev->hci.rpwm_addr = 0x03d9;
- 		rtwdev->hci.cpwm_addr = 0x03da;
- 		break;
-+	case RTW_HCI_TYPE_SDIO:
-+		rtwdev->hci.rpwm_addr = REG_SDIO_HRPWM1;
-+		rtwdev->hci.cpwm_addr = REG_SDIO_HCPWM1_V2;
-+		break;
- 	case RTW_HCI_TYPE_USB:
- 		rtwdev->hci.rpwm_addr = 0xfe58;
- 		rtwdev->hci.cpwm_addr = 0xfe57;
+-	/* TODO: USB & SDIO may need extra room? */
+ 	max_tx_headroom = rtwdev->chip->tx_pkt_desc_sz;
+ 
++	if (rtw_hci_type(rtwdev) == RTW_HCI_TYPE_SDIO)
++		max_tx_headroom += RTW_SDIO_DATA_PTR_ALIGN;
++
+ 	hw->extra_tx_headroom = max_tx_headroom;
+ 	hw->queues = IEEE80211_NUM_ACS;
+ 	hw->txq_data_size = sizeof(struct rtw_txq);
 -- 
 2.40.0
 
