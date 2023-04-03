@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC5E6D4379
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D04FE6D437E
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:28:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232446AbjDCL2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 07:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
+        id S232463AbjDCL2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 07:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbjDCL2H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:28:07 -0400
+        with ESMTP id S232238AbjDCL2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:28:47 -0400
 Received: from mx.sberdevices.ru (mx.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A27812053;
-        Mon,  3 Apr 2023 04:27:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B127C4224;
+        Mon,  3 Apr 2023 04:28:45 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mx.sberdevices.ru (Postfix) with ESMTP id C5A775FD22;
-        Mon,  3 Apr 2023 14:27:49 +0300 (MSK)
+        by mx.sberdevices.ru (Postfix) with ESMTP id 079385FD22;
+        Mon,  3 Apr 2023 14:28:44 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1680521269;
-        bh=IT8v0HROiXE98eFOBlkbvJKsX4eGIdzHHzOWFB5UhsM=;
+        s=mail; t=1680521324;
+        bh=PMQoUlr6fMnlWZgvIkETHRIUvgj+Tiz5vrh8HAFCAUw=;
         h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type;
-        b=XpyVQ5f0Mu7e/D8l9CfMGthvfxgoiPgxcMVZRjwL1QDaQU60hZm0Mllrk61kkNGJa
-         o6Fm2ysFL1+9GpzLKYw5Jy3/Usl/tlzMYXM8dRWwN1lmSCkzuTswQmMjfaHb/cXCQr
-         j95fXPFV+YuF6g9ASaR88yvjVvG0+Hw8UB2JgUk+U/K+3TF6kAxqqrRGJlq0zwmeo6
-         sSvQZoWD+WsRP+cROH7TYCR4uD1HgAvjH1u/hXHiEG/tbunEami+wC2lvh1B0jM0aP
-         lZqr/mwuyZ1T+JJ5+e/3/KGmk/FDxcBimuOe88oBgOk1GbP3Hza4tHO2Y+E2XuQOlS
-         4TL5GOAvEuwMw==
+        b=smc6Tp11ta3Y/nEm69dGlKm9EAdjP20xwlU97Fdk7gE5GLNoyWDSl27ygH0prTMBL
+         SgKzriCBXY0GLdzgHJnQJeS5H9xzrgm6hbczABAiFlSFmv6ccz727eDVyQlfk7Y+wv
+         kKIDtHBRZUYyjG8r+kORqYKzC/Py8TyYwEs/yM4plsik4tyLuucW6aD6/BBxYaYgLu
+         XLTK8RBgSOXDF1pwbE5hPdVuwiZMAY+Ng8HsRAQG2hGnBqLPNL39eNw7gHRx35Fpki
+         SxO7lIWNn8t4GSPeXdxtO12Byav1R3VgA6cZdAUqBkc8v8J0RITmvdMawRUXG9C2xG
+         3GMmdICjYsuVA==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mx.sberdevices.ru (Postfix) with ESMTP;
-        Mon,  3 Apr 2023 14:27:49 +0300 (MSK)
-Message-ID: <2cfe98c9-0b47-d50a-0570-70e6d4af281e@sberdevices.ru>
-Date:   Mon, 3 Apr 2023 14:24:17 +0300
+        Mon,  3 Apr 2023 14:28:43 +0300 (MSK)
+Message-ID: <067371c8-f5a8-59a5-9485-cee85e3d27ef@sberdevices.ru>
+Date:   Mon, 3 Apr 2023 14:25:12 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.7.1
@@ -50,8 +50,8 @@ CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <kernel@sberdevices.ru>, <oxffffaa@gmail.com>,
         <avkrasnov@sberdevices.ru>, <pv-drivers@vmware.com>
 From:   Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Subject: [PATCH net-next v4 1/3] vsock/vmci: convert VMCI error code to
- -ENOMEM on receive
+Subject: [PATCH net-next v4 2/3] vsock: return errors other than -ENOMEM to
+ socket
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [172.16.1.6]
@@ -73,40 +73,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds conversion of VMCI specific error code to general -ENOMEM. It
-is preparation for the next patch, which changes af_vsock.c behaviour
-on receive to pass value returned from transport to the user.
+This removes behaviour, where error code returned from any transport
+was always switched to ENOMEM. This works in the same way as:
+commit
+c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
+but for receive calls.
 
 Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Reviewed-by: Vishnu Dasa <vdasa@vmware.com>
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/vmci_transport.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/vmw_vsock/af_vsock.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 36eb16a40745..a5375c97f5b0 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -1831,10 +1831,17 @@ static ssize_t vmci_transport_stream_dequeue(
- 	size_t len,
- 	int flags)
- {
-+	ssize_t err;
-+
- 	if (flags & MSG_PEEK)
--		return vmci_qpair_peekv(vmci_trans(vsk)->qpair, msg, len, 0);
-+		err = vmci_qpair_peekv(vmci_trans(vsk)->qpair, msg, len, 0);
- 	else
--		return vmci_qpair_dequev(vmci_trans(vsk)->qpair, msg, len, 0);
-+		err = vmci_qpair_dequev(vmci_trans(vsk)->qpair, msg, len, 0);
-+
-+	if (err < 0)
-+		err = -ENOMEM;
-+
-+	return err;
- }
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 5f2dda35c980..413407bb646c 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -2043,7 +2043,7 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
  
- static ssize_t vmci_transport_stream_enqueue(
+ 		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
+ 		if (read < 0) {
+-			err = -ENOMEM;
++			err = read;
+ 			break;
+ 		}
+ 
+@@ -2094,7 +2094,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+ 	msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
+ 
+ 	if (msg_len < 0) {
+-		err = -ENOMEM;
++		err = msg_len;
+ 		goto out;
+ 	}
+ 
 -- 
 2.25.1
