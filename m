@@ -2,145 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 868A36D5110
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 21:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 644836D515A
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 21:29:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbjDCTDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 15:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33810 "EHLO
+        id S232761AbjDCT3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 15:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbjDCTDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 15:03:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349B01FFB
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 12:03:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98F1762830
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 19:03:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA24C433EF;
-        Mon,  3 Apr 2023 19:03:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680548627;
-        bh=UubKU2zzUXHQZthP7jGnI+njJFtnPLZpAvVHXC4BHAg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Tawr6w32mqXRCxojKV6CmlQb67EDQt1P5TTSCAfnTQnikAif56AQldVYmRCSA7PG0
-         D2QsCJBfcG7AuzTl5NS46Df/D1Gctzn5K/5lAyc5Kc5UaQtRQrC7ByNAtfJwYvQ7TJ
-         U+nfTa/z7VciWn2pEgp3l2CLwTFx/Lxn3INbQCVsUgcT9jPuy8emQ9zAoagZLo6+KY
-         pmEjkavuo9vAsJD48BRE5DoGZ003M239chy0Lt0YYfC0Bje3U0oNkrP3diSt+dzDgs
-         8VrMh7XNuqfbYhRDG4qabyurBpba0hhRWDuVezb28/Sgvo1/cgJiTBXx1THuBWq9oY
-         Tj77LQ3se1E+w==
-Date:   Mon, 3 Apr 2023 12:03:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
- lockless queue stop/wake code
-Message-ID: <20230403120345.0c02232c@kernel.org>
-In-Reply-To: <CAKgT0UcsOwspt0TEashpWZ2_gFDR878NskBhquhEyCaN=uYnDQ@mail.gmail.com>
-References: <20230401051221.3160913-1-kuba@kernel.org>
-        <20230401051221.3160913-2-kuba@kernel.org>
-        <c39312a2-4537-14b4-270c-9fe1fbb91e89@gmail.com>
-        <20230401115854.371a5b4c@kernel.org>
-        <CAKgT0UeDy6B0QJt126tykUfu+cB2VK0YOoMOYcL1JQFmxtgG0A@mail.gmail.com>
-        <20230403085601.44f04cd2@kernel.org>
-        <CAKgT0UcsOwspt0TEashpWZ2_gFDR878NskBhquhEyCaN=uYnDQ@mail.gmail.com>
+        with ESMTP id S230044AbjDCT3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 15:29:15 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9828910D8;
+        Mon,  3 Apr 2023 12:29:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AAqqz91IkxtBpU9F67YVn5gGJYIyol387UJgSDAtT5U=; b=Y9As7AFU5T2norvvnESMx00ZZb
+        CYNv8XYgnCcZLniLA2prGlo6gYvkmZEMVYbhxV0oBeZRy+Kt0s2/OqmDL1kbWcxwsJf4bVXlBAr+G
+        x8YKc56647hjKvbBLGqpCBuwe+gFcxoF+6koa6a/3xnsZZYt1BYhIlf6zsAXyefmWs8g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pjPrH-009Jxd-N3; Mon, 03 Apr 2023 21:28:51 +0200
+Date:   Mon, 3 Apr 2023 21:28:51 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        John Crispin <john@phrozen.org>, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [net-next PATCH v6 16/16] arm: mvebu: dt: Add PHY LED support
+ for 370-rd WAN port
+Message-ID: <dc344367-4b17-4582-bb03-52f941cb802c@lunn.ch>
+References: <20230327141031.11904-1-ansuelsmth@gmail.com>
+ <20230327141031.11904-17-ansuelsmth@gmail.com>
+ <20230403184611.GA1352384-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230403184611.GA1352384-robh@kernel.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Apr 2023 11:11:35 -0700 Alexander Duyck wrote:
-> On Mon, Apr 3, 2023 at 8:56=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> w=
-rote:
-> > I don't think in terms of flushes. Let me add line numbers to the
-> > producer and the consumer.
-> >
-> >  c1. WRITE cons
-> >  c2. mb()  # A
-> >  c3. READ stopped
-> >  c4. rmb() # C
-> >  c5. READ prod, cons
-> >
-> >  p1. WRITE prod
-> >  p2. READ prod, cons
-> >  p3. mb()  # B
-> >  p4. WRITE stopped
-> >  p5. READ prod, cons
-> >
-> > The way I think the mb() orders c1 and c3 vs p2 and p4. The rmb()
-> > orders c3 and c5 vs p1 and p4. Let me impenitently add Paul.. =20
->=20
-> So which function is supposed to be consumer vs producer here?=20
+> > +		leds {
+> > +			#address-cells = <1>;
+> > +			#size-cells = <0>;
+> > +
+> > +			led@0 {
+> > +				reg = <0>;
+> > +				label = "WAN";
+> 
+> WAN or
+> 
+> > +				color = <LED_COLOR_ID_WHITE>;
+> > +				function = LED_FUNCTION_LAN;
+> 
+> LAN?
 
-producer is xmit consumer is NAPI
+Hi Rob
 
-> I think your write stopped is on the wrong side of the memory barrier.=20
-> It should be writing prod and stopped both before the barrier.
+I did not know there was LED_FUNCTION_WAN. I just blindly copied it
+from some other DT fragment.
 
-Indeed, Paul pointed out over chat that we need two barriers there=20
-to be correct :( Should be fine in practice, first one is BQL,
-second one is on the slow path.
+I will change this, thanks.
 
-> The maybe/try stop should essentially be:
-> 1. write tail
-> 2. read prod/cons
-> 3. if unused >=3D 1x packet
-> 3.a return
->=20
-> 4. set stop
-> 5. mb()
-> 6. Re-read prod/cons
-> 7. if unused >=3D 1x packet
-> 7.a. test_and_clear stop
->=20
-> The maybe/try wake would be:
-> 1. write head
-> 2. read prod/cons
-> 3. if consumed =3D=3D 0 || unused < 2x packet
-> 3.a. return
->=20
-> 4. mb()
-> 5. test_and_clear stop
->=20
-> > > One other thing to keep in mind is that the wake gives itself a pretty
-> > > good runway. We are talking about enough to transmit at least 2
-> > > frames. So if another consumer is stopping it we aren't waking it
-> > > unless there is enough space for yet another frame after the current
-> > > consumer. =20
-> >
-> > Ack, the race is very unlikely, basically the completing CPU would have
-> > to take an expensive IRQ between checking the descriptor count and
-> > checking if stopped -- to let the sending CPU queue multiple frames.
-> >
-> > But in theory the race is there, right? =20
->=20
-> I don't think this is so much a race as a skid. Specifically when we
-> wake the queue it will only run for one more packet in such a
-> scenario. I think it is being run more like a flow control threshold
-> rather than some sort of lock.
->=20
-> I think I see what you are getting at though. Basically if the xmit
-> function were to cycle several times between steps 3.a and 4 in the
-> maybe/try wake it could fill the queue and then trigger the wake even
-> though the queue is full and the unused space was already consumed.
-
-Yup, exactly. So we either need to sprinkle a couple more barriers=20
-and tests in, or document that the code is only 99.999999% safe=20
-against false positive restarts and drivers need to check for ring
-full at the beginning of xmit.
-
-I'm quite tempted to add the barriers, because on the NAPI/consumer
-side we could use this as an opportunity to start piggy backing on
-the BQL barrier.
+	Andrew
