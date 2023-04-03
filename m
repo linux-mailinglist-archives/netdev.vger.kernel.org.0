@@ -2,218 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A69616D3F00
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 10:32:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AB026D3F06
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 10:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231800AbjDCIcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 04:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50500 "EHLO
+        id S231687AbjDCIcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 04:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbjDCIcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 04:32:10 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D5449C2;
-        Mon,  3 Apr 2023 01:32:07 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3338Vpul058187;
-        Mon, 3 Apr 2023 03:31:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680510711;
-        bh=lgfPx1evUUMdkoqBOH4tAB2qzNFrhhX1gZ9kjndYKyw=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=KIsprksEU00AQnVW2+onEFLhJqRMgMEBaU4Cc+rwUyo1j90cshWeDgsLRSUbfHumq
-         b2s9Ay9f3KPZwZai6J3ZSK+c7hwtLqh/DGSBcJvKE4QbevxdexL3lV2ApELu9DGoCs
-         txBb9kN1x1VebEutVREs5wKq2J2yI8kjHIQKVN8U=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3338Vp3S013019
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Apr 2023 03:31:51 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 3
- Apr 2023 03:31:50 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 3 Apr 2023 03:31:50 -0500
-Received: from [10.24.69.114] (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3338Vikd099122;
-        Mon, 3 Apr 2023 03:31:45 -0500
-Message-ID: <19c82e73-2e37-582b-06aa-6f83776a562d@ti.com>
-Date:   Mon, 3 Apr 2023 14:01:44 +0530
+        with ESMTP id S231855AbjDCIco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 04:32:44 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2FD5BB9;
+        Mon,  3 Apr 2023 01:32:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=01gayVV3++Wf58D2nrigu1LyEW250ZpuC9pqh/U9RlA=; b=mtoKptTHdC8YSa2GcFbmSs0PhN
+        uf2NXfVTDV+4bzJ2P7+iarjijbx/r5Tx//zCtL030LbKB2SxHY/2yvGeje/QW1s5SvhH7mdTCyNZU
+        7EyoODvszE6IMXoECN+HvNvgtwcnpWES5Up7VsDFAyEYmafZrXz9s7BIZEPcezKr+z8guK0+oI6Sb
+        wpr0Af4+ZSbfW+nPRbqUGni7zsqlM0WS6LRgi3Dcn6ZMpKOxF+dw2+iwJ5x8vnclu2XKVJ8a0evhd
+        OGVLjdHYgL9DmAKI8L99FeD0YRkev8r9Sr6h3AQbITut4KZn6IjR9gyqgkSEOosFe7C6weBKiRlBC
+        Ot9TSWag==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55416)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pjFc5-0002OO-P7; Mon, 03 Apr 2023 09:32:29 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pjFc4-00044E-2P; Mon, 03 Apr 2023 09:32:28 +0100
+Date:   Mon, 3 Apr 2023 09:32:28 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srk@ti.com
+Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable
+ USXGMII mode for J784S4 CPSW9G
+Message-ID: <ZCqPHM2/qismCaaN@shell.armlinux.org.uk>
+References: <20230331065110.604516-3-s-vadapalli@ti.com>
+ <ZCaSXQFZ/e/JIDEj@shell.armlinux.org.uk>
+ <54c3964b-5dd8-c55e-08db-61df4a07797c@ti.com>
+ <ZCaYve8wYl15YRxh@shell.armlinux.org.uk>
+ <7a9c96f4-6a94-4a2c-18f5-95f7246e10d5@ti.com>
+ <ZCasBMNxaWk2+XVO@shell.armlinux.org.uk>
+ <dea9ae26-e7f2-1052-58cd-f7975165aa96@ti.com>
+ <ZCbAE7IIc8HcOdxl@shell.armlinux.org.uk>
+ <1477e0c3-bb92-72b0-9804-0393c34571d3@ti.com>
+ <be166ab3-29f9-a18d-bbbd-34e7828453e4@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [EXTERNAL] Re: [PATCH v6 3/4] soc: ti: pruss: Add
- pruss_cfg_read()/update(), pruss_cfg_get_gpmux()/set_gpmux() APIs
-Content-Language: en-US
-To:     Simon Horman <simon.horman@corigine.com>,
-        MD Danish Anwar <danishanwar@ti.com>
-CC:     "Andrew F. Davis" <afd@ti.com>, Suman Anna <s-anna@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Nishanth Menon <nm@ti.com>, <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <srk@ti.com>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-References: <20230331112941.823410-1-danishanwar@ti.com>
- <20230331112941.823410-4-danishanwar@ti.com> <ZCg6lzWMTuLa4gAC@corigine.com>
-From:   Md Danish Anwar <a0501179@ti.com>
-Organization: Texas Instruments
-In-Reply-To: <ZCg6lzWMTuLa4gAC@corigine.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.9 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be166ab3-29f9-a18d-bbbd-34e7828453e4@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Simon,
+On Mon, Apr 03, 2023 at 11:57:21AM +0530, Siddharth Vadapalli wrote:
+> Hello Russell,
+> 
+> On 31/03/23 19:16, Siddharth Vadapalli wrote:
+> > 
+> > 
+> > On 31-03-2023 16:42, Russell King (Oracle) wrote:
+> >> On Fri, Mar 31, 2023 at 04:23:16PM +0530, Siddharth Vadapalli wrote:
+> >>>
+> >>>
+> >>> On 31/03/23 15:16, Russell King (Oracle) wrote:
+> >>>> On Fri, Mar 31, 2023 at 02:55:56PM +0530, Siddharth Vadapalli wrote:
+> >>>>> Russell,
+> >>>>>
+> >>>>> On 31/03/23 13:54, Russell King (Oracle) wrote:
+> >>>>>> On Fri, Mar 31, 2023 at 01:35:10PM +0530, Siddharth Vadapalli wrote:
+> >>>>>>> Hello Russell,
+> >>>>>>>
+> >>>>>>> Thank you for reviewing the patch.
+> >>>>>>>
+> >>>>>>> On 31/03/23 13:27, Russell King (Oracle) wrote:
+> >>>>>>>> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
+> >>>>>>>>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
+> >>>>>>>>> extra_modes member of the J784S4 SoC data. Additionally, configure the
+> >>>>>>>>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
+> >>>>>>>>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
+> >>>>>>>>> "phylink_config".
+> >>>>>>>>
+> >>>>>>>> I don't think TI "get" phylink at all...
+> >>>>>>>>
+> >>>>>>>>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >>>>>>>>> index 4b4d06199b45..ab33e6fe5b1a 100644
+> >>>>>>>>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >>>>>>>>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> >>>>>>>>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+> >>>>>>>>>  		mac_control |= CPSW_SL_CTL_GIG;
+> >>>>>>>>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
+> >>>>>>>>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+> >>>>>>>>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
+> >>>>>>>>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
+> >>>>>>>>
+> >>>>>>>> The configuration of the interface mode should *not* happen in
+> >>>>>>>> mac_link_up(), but should happen in e.g. mac_config().
+> >>>>>>>
+> >>>>>>> I will move all the interface mode associated configurations to mac_config() in
+> >>>>>>> the v2 series.
+> >>>>>>
+> >>>>>> Looking at the whole of mac_link_up(), could you please describe what
+> >>>>>> effect these bits are having:
+> >>>>>>
+> >>>>>> 	CPSW_SL_CTL_GIG
+> >>>>>> 	CPSW_SL_CTL_EXT_EN
+> >>>>>> 	CPSW_SL_CTL_IFCTL_A
+> >>>>>
+> >>>>> CPSW_SL_CTL_GIG corresponds to enabling Gigabit mode (full duplex only).
+> >>>>> CPSW_SL_CTL_EXT_EN when set enables in-band mode of operation and when cleared
+> >>>>> enables forced mode of operation.
+> >>>>> CPSW_SL_CTL_IFCTL_A is used to set the RMII link speed (0=10 mbps, 1=100 mbps).
+> >>>>
+> >>>> Okay, so I would do in mac_link_up():
+> >>>>
+> >>>> 	/* RMII needs to be manually configured for 10/100Mbps */
+> >>>> 	if (interface == PHY_INTERFACE_MODE_RMII && speed == SPEED_100)
+> >>>> 		mac_control |= CPSW_SL_CTL_IFCTL_A;
+> >>>>
+> >>>> 	if (speed == SPEED_1000)
+> >>>> 		mac_control |= CPSW_SL_CTL_GIG;
+> >>>> 	if (duplex)
+> >>>> 		mac_control |= CPSW_SL_CTL_FULLDUPLEX;
+> >>>>
+> >>>> I would also make mac_link_up() do a read-modify-write operation to
+> >>>> only affect the bits that it is changing.
+> >>>
+> >>> This is the current implementation except for the SGMII mode associated
+> >>> operation that I had recently added. I will fix that. Also, the
+> >>> cpsw_sl_ctl_set() function which writes the mac_control value performs a read
+> >>> modify write operation.
+> >>>
+> >>>>
+> >>>> Now, for SGMII, I would move setting CPSW_SL_CTL_EXT_EN to mac_config()
+> >>>> to enable in-band mode - don't we want in-band mode enabled all the
+> >>>> time while in SGMII mode so the PHY gets the response from the MAC?
+> >>>
+> >>> Thank you for pointing it out. I will move that to mac_config().
+> >>>
+> >>>>
+> >>>> Lastly, for RGMII at 10Mbps, you seem to suggest that you need RGMII
+> >>>> in-band mode enabled for that - but if you need RGMII in-band for
+> >>>> 10Mbps, wouldn't it make sense for the other speeds as well? If so,
+> >>>> wouldn't that mean that CPSW_SL_CTL_EXT_EN can always be set for
+> >>>> RGMII no matter what speed is being used?
+> >>>
+> >>> The CPSW MAC does not support forced mode at 10 Mbps RGMII. For this reason, if
+> >>> RGMII 10 Mbps is requested, it is set to in-band mode.
+> >>
+> >> What I'm saying is that if we have in-band signalling that is reliable
+> >> for a particular interface mode, why not always use it, rather than
+> >> singling out one specific speed as an exception? Does it not work in
+> >> 100Mbps and 1Gbps?
+> 
+> While the CPSW MAC supports RGMII in-band status operation, the link partner
+> might not support it. I have also observed that forced mode is preferred to
+> in-band mode as implemented for another driver:
+> commit ade64eb5be9768e40c90ecb01295416abb2ddbac
+> net: dsa: microchip: Disable RGMII in-band status on KSZ9893
+> 
+> and in the mail thread at:
+> https://lore.kernel.org/netdev/20200905160647.GJ3164319@lunn.ch/
+> based on Andrew's suggestion, using forced mode appears to be better.
+> 
+> Additionally, I have verified that switching to in-band status causes a
+> regression. Thus, I will prefer keeping it in forced mode for 100 and 1000 Mbps
+> RGMII mode which is the existing implementation in the driver. Please let me know.
 
-On 01/04/23 19:37, Simon Horman wrote:
-> On Fri, Mar 31, 2023 at 04:59:40PM +0530, MD Danish Anwar wrote:
->> From: Suman Anna <s-anna@ti.com>
->>
->> Add two new generic API pruss_cfg_read() and pruss_cfg_update() to
->> the PRUSS platform driver to read and program respectively a register
->> within the PRUSS CFG sub-module represented by a syscon driver. These
->> APIs are internal to PRUSS driver.
->>
->> Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
->> to get and set the GP MUX mode for programming the PRUSS internal wrapper
->> mux functionality as needed by usecases.
->>
->> Various useful registers and macros for certain register bit-fields and
->> their values have also been added.
->>
->> Signed-off-by: Suman Anna <s-anna@ti.com>
->> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
->> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
->> Reviewed-by: Roger Quadros <rogerq@kernel.org>
->> Reviewed-by: Tony Lindgren <tony@atomide.com>
->> Signed-off-by: MD Danish Anwar <danishanwar@ti.com>
-> 
-> ...
-> 
->> diff --git a/drivers/soc/ti/pruss.h b/drivers/soc/ti/pruss.h
->> new file mode 100644
->> index 000000000000..4626d5f6b874
->> --- /dev/null
->> +++ b/drivers/soc/ti/pruss.h
->> @@ -0,0 +1,112 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only */
->> +/*
->> + * PRU-ICSS Subsystem user interfaces
->> + *
->> + * Copyright (C) 2015-2023 Texas Instruments Incorporated - http://www.ti.com
->> + *	MD Danish Anwar <danishanwar@ti.com>
->> + */
->> +
->> +#ifndef _SOC_TI_PRUSS_H_
->> +#define _SOC_TI_PRUSS_H_
->> +
->> +#include <linux/bits.h>
->> +#include <linux/regmap.h>
->> +
->> +/*
->> + * PRU_ICSS_CFG registers
->> + * SYSCFG, ISRP, ISP, IESP, IECP, SCRP applicable on AMxxxx devices only
->> + */
->> +#define PRUSS_CFG_REVID         0x00
->> +#define PRUSS_CFG_SYSCFG        0x04
->> +#define PRUSS_CFG_GPCFG(x)      (0x08 + (x) * 4)
->> +#define PRUSS_CFG_CGR           0x10
->> +#define PRUSS_CFG_ISRP          0x14
->> +#define PRUSS_CFG_ISP           0x18
->> +#define PRUSS_CFG_IESP          0x1C
->> +#define PRUSS_CFG_IECP          0x20
->> +#define PRUSS_CFG_SCRP          0x24
->> +#define PRUSS_CFG_PMAO          0x28
->> +#define PRUSS_CFG_MII_RT        0x2C
->> +#define PRUSS_CFG_IEPCLK        0x30
->> +#define PRUSS_CFG_SPP           0x34
->> +#define PRUSS_CFG_PIN_MX        0x40
->> +
->> +/* PRUSS_GPCFG register bits */
->> +#define PRUSS_GPCFG_PRU_GPO_SH_SEL              BIT(25)
->> +
->> +#define PRUSS_GPCFG_PRU_DIV1_SHIFT              20
->> +#define PRUSS_GPCFG_PRU_DIV1_MASK               GENMASK(24, 20)
-> 
-> There seems to be some redundancy in the encoding of '20' above.
-> I suspect this could be avoided by only defining ..._MASK
-> and using it with FIELD_SET() and FIELD_PREP().
-> 
->> +
->> +#define PRUSS_GPCFG_PRU_DIV0_SHIFT              15
->> +#define PRUSS_GPCFG_PRU_DIV0_MASK               GENMASK(15, 19)
-> 
-> Perhaps this should be GENMASK(19, 15) ?
-> 
+Okay, so what this seems to mean is if you have a PHY that does not
+support in-band status in RGMII mode, then 10Mbps isn't possible -
+because the MAC requires in-band status mode to select 10Mbps.
+To put it another way, in such a combination, 10Mbps link modes
+should not be advertised, nor should they be reported to userspace
+as being supported.
 
-yes this should have been GENMASK(15, 19). But this macro is not used anywhere
-so I'll just drop it.
-
->> +
->> +#define PRUSS_GPCFG_PRU_GPO_MODE                BIT(14)
->> +#define PRUSS_GPCFG_PRU_GPO_MODE_DIRECT         0
->> +#define PRUSS_GPCFG_PRU_GPO_MODE_SERIAL         BIT(14)
-> 
-> Likewise, I suspect the awkwardness of using 0 to mean not BIT 14
-> could be avoided through use of FIELD_SET() and FIELD_PREP().
-> But maybe it doesn't help.
-> 
-
-This Macro is not used anywhere in code. I'll just drop them.
-
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_SB                  BIT(13)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_DIV1_SHIFT          8
->> +#define PRUSS_GPCFG_PRU_GPI_DIV1_MASK           GENMASK(12, 8)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_DIV0_SHIFT          3
->> +#define PRUSS_GPCFG_PRU_GPI_DIV0_MASK           GENMASK(7, 3)
->> +
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_POSITIVE   0
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE_NEGATIVE   BIT(2)
->> +#define PRUSS_GPCFG_PRU_GPI_CLK_MODE            BIT(2)
->> +
-
-All these above macros are not used anywhere in the driver code. Also in the
-planned upcoming driver series, there are no APIs that will use these macros.
-
-I'll be dropping all these redundant macros. The below macros are used in
-driver so I'll keep them as it is.
-
->> +#define PRUSS_GPCFG_PRU_GPI_MODE_MASK           GENMASK(1, 0)
->> +#define PRUSS_GPCFG_PRU_GPI_MODE_SHIFT          0
->> +
->> +#define PRUSS_GPCFG_PRU_MUX_SEL_SHIFT           26
->> +#define PRUSS_GPCFG_PRU_MUX_SEL_MASK            GENMASK(29, 26)
->> +
->> +/* PRUSS_MII_RT register bits */
->> +#define PRUSS_MII_RT_EVENT_EN                   BIT(0)
->> +
->> +/* PRUSS_SPP register bits */
->> +#define PRUSS_SPP_XFER_SHIFT_EN                 BIT(1)
->> +#define PRUSS_SPP_PRU1_PAD_HP_EN                BIT(0)
->> +#define PRUSS_SPP_RTU_XFR_SHIFT_EN              BIT(3)
-> 
-> ...
+Is that correct?
 
 -- 
-Thanks and Regards,
-Danish.
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
