@@ -2,111 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 844786D42AE
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F466D42C0
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231484AbjDCK41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 06:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        id S231862AbjDCK66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 06:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231245AbjDCK40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:56:26 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1CF5FE1;
-        Mon,  3 Apr 2023 03:56:25 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id j1-20020a05600c1c0100b003f04da00d07so1369656wms.1;
-        Mon, 03 Apr 2023 03:56:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680519384;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=l1i/QXNc6lXMKJ7pXgmtLMgzIk+6jhfEKBjAn/Et1rw=;
-        b=SY9DrhXh9MbQhpfR51VHj3wfR3mG1imKJmXJ88H0VIVh1pqtBNYJsO6s/J4ob+FDW9
-         +5rqli8TusTk4LlO0sXY1pnnigkzxRsaqVyCP9nyS/1MgPCl/I008mQ3aW5M77Pa2v0R
-         FajYlaQoqOR4Mna5k8c/585e67FVp7is2pXcDcecX/bZmN5GExoeor4zx6uh4nAtfG0G
-         vZsDsGR8VSCY7MSlM+h/4mDtl6lC35IkRBB+MWaeauR6/sFCWBpq98gptNKKdkcxcVJs
-         dKrQBX5zDDrbWMa+s/Majo/f+uoopvU7MuPVGsKPwWeIerw7XuwTQP/dS4LjmCIMTB8y
-         XRqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680519384;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=l1i/QXNc6lXMKJ7pXgmtLMgzIk+6jhfEKBjAn/Et1rw=;
-        b=SMlspt9Br/d5euh+bWTLLVDMGxzdtZuF5w2ptAAPW6iECI70HHymJqZ66N+LGti8Tk
-         khBl8sLZq4+lJ3YL2yfKkQgcRpDaIvT5OL9C8xyTzCkmPNP4aORPAwPjbL4ppZJiFfeH
-         p+vOKN4ohjf0Esgy7fedjmLE1GMIF6kPhhW4P+Z54FUSR+KEYLzUV1TdSSIgiOCVXee8
-         dSokHQdEmzc9Ka6+AAucN8YJShBWAzTp0WPVFupM+LX+fbQsbG2Mx0HOwWbQCLgUJf9F
-         JHEtPWy1Z4lSZJ8Hkad+cZjp/WoRLSw69sGzKf1XUOycwTuk6OhDz+5kPdMRYqnWEiOg
-         wSDw==
-X-Gm-Message-State: AO0yUKU3dY/52HNZqFWOmmbg+dRIlkD6rn1GflPteC3eFUIckCG2hbl1
-        /lZjJ9qo6eBz+8q9PzqD3C0=
-X-Google-Smtp-Source: AK7set/4v/PIYKJUgECZ5BNmXFGzamGX8uKaz9ksiy+uqC3NIjHxHdJw4WF1RjeH/wKnDKNl1cf3xQ==
-X-Received: by 2002:a1c:7207:0:b0:3ed:2606:d236 with SMTP id n7-20020a1c7207000000b003ed2606d236mr25782065wmc.38.1680519383527;
-        Mon, 03 Apr 2023 03:56:23 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id k22-20020a7bc316000000b003ee20b4b2dasm11675100wmj.46.2023.04.03.03.56.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Apr 2023 03:56:23 -0700 (PDT)
-Subject: Re: [PATCH] udp:nat:vxlan tx after nat should recsum if vxlan tx
- offload on
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Fei Cheng <chenwei.0515@bytedance.com>
-Cc:     dsahern@kernel.org, davem@davemloft.net,
-        netfilter-devel@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>, ecree@amd.com
-References: <20230401023029.967357-1-chenwei.0515@bytedance.com>
- <CAF=yD-Lg_XSnE9frH9UFpJCZLx-gg2KHzVu7KmnigidujCvepQ@mail.gmail.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <fae01ad9-4270-2153-9ba4-cf116c8ed975@gmail.com>
-Date:   Mon, 3 Apr 2023 11:56:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S231783AbjDCK65 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:58:57 -0400
+Received: from forwardcorp1c.mail.yandex.net (forwardcorp1c.mail.yandex.net [178.154.239.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84582EB7C;
+        Mon,  3 Apr 2023 03:58:55 -0700 (PDT)
+Received: from mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net (mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net [IPv6:2a02:6b8:c08:19a8:0:640:4e87:0])
+        by forwardcorp1c.mail.yandex.net (Yandex) with ESMTP id 768F25F228;
+        Mon,  3 Apr 2023 13:58:53 +0300 (MSK)
+Received: from [IPV6:2a02:6b8:b081:8014::1:2c] (unknown [2a02:6b8:b081:8014::1:2c])
+        by mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id owKZdU0OeKo0-8INAhgp8;
+        Mon, 03 Apr 2023 13:58:52 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1680519532; bh=ORNE5FRmOKWFTYbSD7tRSFvdZisp89jLtfgvi4gNMlA=;
+        h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
+        b=ikkLSowgdNYie4Ye9MMbdUrX+Qk2htQyDuBLP3nyEy52MlYPmkVaatS/kz5YWTemX
+         V91/E5cLfFiOJFPJIVnEc3EaGx5uwJbyqCAw535kA9eVYd3i9AtwOzkO0oBh+1pLCt
+         3HcCqlyNYkyzlgvhbKEj2QzohXbmXMJjDg8Vaysw=
+Authentication-Results: mail-nwsmtp-smtp-corp-main-34.sas.yp-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Message-ID: <b4852db1-61bd-410e-e89d-05d89cf14063@yandex-team.ru>
+Date:   Mon, 3 Apr 2023 13:58:49 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAF=yD-Lg_XSnE9frH9UFpJCZLx-gg2KHzVu7KmnigidujCvepQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+Subject: Re: [PATCH] qlcnic: check pci_reset_function result
+Content-Language: en-US
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shshaikh@marvell.com, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+References: <20230331080605.42961-1-den-plotnikov@yandex-team.ru>
+ <ZCcd1c0jhKxk+FD+@corigine.com>
+From:   Denis Plotnikov <den-plotnikov@yandex-team.ru>
+In-Reply-To: <ZCcd1c0jhKxk+FD+@corigine.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/04/2023 19:18, Willem de Bruijn wrote:
-> On Fri, Mar 31, 2023 at 10:31 PM Fei Cheng <chenwei.0515@bytedance.com> wrote:
+
+On 31.03.2023 20:52, Simon Horman wrote:
+> On Fri, Mar 31, 2023 at 11:06:05AM +0300, Denis Plotnikov wrote:
+>> Static code analyzer complains to unchecked return value.
+>> It seems that pci_reset_function return something meaningful
+>> only if "reset_methods" is set.
+>> Even if reset_methods isn't used check the return value to avoid
+>> possible bugs leading to undefined behavior in the future.
 >>
->> From: "chenwei.0515" <chenwei.0515@bytedance.com>
+>> Signed-off-by: Denis Plotnikov <den-plotnikov@yandex-team.ru>
+> nit: The tree this patch is targeted at should be designated, probably
+>       net-next, so the '[PATCH net-next]' in the subject.
+>
+>> ---
+>>   drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
 >>
->>     If vxlan-dev enable tx csum offload, there are two case of CHECKSUM_PARTIAL,
->>     but udp->check donot have the both meanings.
+>> diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
+>> index 87f76bac2e463..39ecfc1a1dbd0 100644
+>> --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
+>> +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
+>> @@ -628,7 +628,9 @@ int qlcnic_fw_create_ctx(struct qlcnic_adapter *dev)
+>>   	int i, err, ring;
+>>   
+>>   	if (dev->flags & QLCNIC_NEED_FLR) {
+>> -		pci_reset_function(dev->pdev);
+>> +		err = pci_reset_function(dev->pdev);
+>> +		if (err && err != -ENOTTY)
+> Are you sure about the -ENOTTY part?
+>
+> It seems odd to me that an FLR would be required but reset is not supported.
+No, I'm not sure. My logic is: if the reset method isn't set than 
+pci_reset_function() returns -ENOTTY so treat that result as ok. 
+pci_reset_function may return something different than -ENOTTY only if 
+pci_reset_fn_methods[m].reset_fn is set.
+>> +			return err;
+>>   		dev->flags &= ~QLCNIC_NEED_FLR;
+>>   	}
+>>   
+>> -- 
+>> 2.25.1
 >>
->>     1. vxlan-dev disable tx csum offload, udp->check is just pseudo hdr.
->>     2. vxlan-dev enable tx csum offload, udp->check is pseudo hdr and
->>        csum from outter l4 to innner l4.
->>
->>     Unfortunately if there is a nat process after vxlan tx，udp_manip_pkt just use
->>     CSUM_PARTIAL to re csum PKT, which is just right on vxlan tx csum disable offload.
-
-In case 1 csum_start should point to the (outer) UDP header, whereas in
- case 2 csum_start should point to the inner L4 header (because in the
- normal TX path w/o NAT, nothing else will ever need to touch the outer
- csum after this point).
-
-> The issue is that for encapsulated traffic with local checksum offload,
-> netfilter incorrectly recomputes the outer UDP checksum as if it is an
-> unencapsulated CHECKSUM_PARTIAL packet, correct?
-
-So if netfilter sees a packet with CHECKSUM_PARTIAL whose csum_start
- doesn't point to the header nf NAT is editing, that's exactly the case
- where it needs to use lco_csum to calculate the new outer sum.  No?
-
--ed
-
-PS. Fei, your emails aren't reaching the netdev mailing list, probably
- because you're sending as HTML.  Please switch to plain text.
