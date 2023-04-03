@@ -2,119 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E28906D50D5
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 20:38:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1644C6D50E6
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 20:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbjDCSic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 14:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45102 "EHLO
+        id S233097AbjDCSqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 14:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232206AbjDCSib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 14:38:31 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B963C18
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 11:38:13 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id eg48so121014389edb.13
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 11:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680547092;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=CySdEehWspubmXAcFc/gUkZ6ALWiIO8Dims2v4pC7cI=;
-        b=XxNS02hVI+u4D2pE7UGlx7ntA7oWIlCwkuRm3Gyu0E+L6ULQyC+6ShlqR4ekLzDFlT
-         pRslLrKcSR/9KsmwaW7cNkZ4sBLMBrrx13XQF615coXajYG/D2tRgvu66pGLfEkrm/C8
-         2A12Wh9pO54frQbFLcjovLAct7UkfQ9S1TjuUtOPvPyfN9wP6JUhxmt2lMVWqNnXPliV
-         rx/sm1EdhuYRfJXOSQ0ApUnyqwfYJXx+sqa2wWwvgay1iMPZZRXTCENV4sZ6NYwUwRpY
-         /YoYeDYiuIdE9FWPQg9xmmoXwmNDiV7gsagK762uIJSgjXuFP8gohz0DLGqClEWw0WV8
-         4NmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680547092;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CySdEehWspubmXAcFc/gUkZ6ALWiIO8Dims2v4pC7cI=;
-        b=cwChzjJm62gvi6/X1KobJ1NIs8z50xYDE57AfOtHag48gRuRL5p17sjbJFNeCN5z2T
-         nvbmKkF7Kej75/5SpNHfEn/n7vIb0gj4K3WJMTUDd0PNro35SLU+NME1unBSliWwRdzv
-         OBPI48Hg3LMuq1MV7svHvyIsIXkaxj1GIHnigPfOLx+m+poKQPCA/37hoo1jMEQ6IOhJ
-         WOwLoKciAUvSk4B689YZ3Xrpt/+4S8oK3YeLdJWp0dMl97UHc8nWvgOm1ZVHxkATqTKj
-         jKyDAakopQlO9F2hOBr6E5VxUWCUNTdsZqPM65a3IqKEZp9q2ReSzfUgQPHFswp/JtdC
-         dzng==
-X-Gm-Message-State: AAQBX9fdB8U5HimYtZ/Ko7V0Boc7N0HdHQu+gGBchzcMTTQAaAw+jcEL
-        JjUIcgSdPAg+sJUP59w4DIzyEQ==
-X-Google-Smtp-Source: AKy350a21SUvVW8zkI0jUgi5Fki72Pdn7B89a65yFrUkCNuucXQuzP/aqKcsR7vvEISiRfXbpBAEfA==
-X-Received: by 2002:a17:907:8c83:b0:939:a610:fc32 with SMTP id td3-20020a1709078c8300b00939a610fc32mr38202123ejc.53.1680547092335;
-        Mon, 03 Apr 2023 11:38:12 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:ae90:d80:1069:4805? ([2a02:810d:15c0:828:ae90:d80:1069:4805])
-        by smtp.gmail.com with ESMTPSA id t17-20020a1709060c5100b00927341bf69dsm4868907ejf.88.2023.04.03.11.38.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Apr 2023 11:38:11 -0700 (PDT)
-Message-ID: <ac0a61cc-942e-191a-76f2-855b482247ff@linaro.org>
-Date:   Mon, 3 Apr 2023 20:38:10 +0200
+        with ESMTP id S231627AbjDCSp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 14:45:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4F810A
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 11:45:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C0B626C4
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 18:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64545C433D2;
+        Mon,  3 Apr 2023 18:45:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680547556;
+        bh=mSBd0D7Efh2Xul3bW3lXknsW5Wle0LSn9/zEsNyyLe8=;
+        h=Subject:From:To:Cc:Date:From;
+        b=NmOlHwyaRL7WYn+ErGPvK5kGeiNlwbDD1N+I4Wpn7oXy6nUc0qy9UpDeY7qi48oX3
+         Puan/T/lNuCTuUT6B5bUs+TY7jyKh0XpMo3Ijtiwz60GSibsve+1oKdDaa/tix8EWz
+         NW5r8wowQJfKgXw4iJqnRbCJMAcR5RSrCiH+6TNSzqVDt3k2LbbEgdvqOxjs1X1Hx0
+         2mdPM38fmz667mIf7rOI4pdXjp5vFF5Of2UaZtZ//UhOfi/9Mko00CU4yH5ju6vP/6
+         trHm2K/f2gwFT8BIRARI+TTX+kCR9CLv9O8grtROAmklpNF7EMY24EfVV61HwtpMjd
+         OFrnsdXo6jD2w==
+Subject: [PATCH v8 0/4] Another crack at a handshake upcall mechanism
+From:   Chuck Lever <cel@kernel.org>
+To:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        borisp@nvidia.com
+Cc:     netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev,
+        john.haxby@oracle.com
+Date:   Mon, 03 Apr 2023 14:45:54 -0400
+Message-ID: <168054723583.2138.14337249041719295106.stgit@klimt.1015granger.net>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH RFC 14/20] dt-bindings: pinctrl: oxnas,pinctrl: remove
- obsolete bindings
-Content-Language: en-US
-To:     Neil Armstrong <neil.armstrong@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sebastian Reichel <sre@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Marc Zyngier <maz@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org
-References: <20230331-topic-oxnas-upstream-remove-v1-0-5bd58fd1dd1f@linaro.org>
- <20230331-topic-oxnas-upstream-remove-v1-14-5bd58fd1dd1f@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230331-topic-oxnas-upstream-remove-v1-14-5bd58fd1dd1f@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/03/2023 10:34, Neil Armstrong wrote:
-> Due to lack of maintainance and stall of development for a few years now,
-> and since no new features will ever be added upstream, remove the
-> OX810 and OX820 pinctrl bindings.
-> 
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
->  .../devicetree/bindings/pinctrl/oxnas,pinctrl.txt  | 56 -------------
+Hi-
+
+Here is v8 of a series to add generic support for transport layer
+security handshake on behalf of kernel socket consumers (user space
+consumers use a security library directly, of course). A summary of
+the purpose of these patches is archived here:
+
+https://lore.kernel.org/netdev/1DE06BB1-6BA9-4DB4-B2AA-07DE532963D6@oracle.com/
+
+The full patch set to support SunRPC with TLSv1.3 is available in
+the topic-rpc-with-tls-upcall branch here, based on net-next/main:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git
+
+This patch set includes support for in-transit confidentiality and
+peer authentication for both the Linux NFS client and server.
+
+A user space handshake agent for TLSv1.3 to go along with the kernel
+patches is available in the "main" branch here:
+
+https://github.com/oracle/ktls-utils
+
+---
+
+Major changes since v7:
+- Addressed Paolo's v7 review comments
+- Added initial set of Kunit tests for the handshake API
+- Included an NFS server patch to add new TLS_RECORD_TYPE values
+
+Major changes since v6:
+- YAML spec and generated artifacts are now under dual license
+- Addressed Jakub's v6 review comments
+- Implemented a memory-sensitive limit on the number of pending
+  handshake requests
+- Implemented upcall support for multiple peer identities
+
+Major changes since v5:
+- Added a "timeout" attribute to the handshake netlink protocol
+- Removed the GnuTLS-specific "priorities" attribute
+- Added support for keyrings to restrict access to keys
+- Simplified the kernel consumer TLS handshake API
+- The handshake netlink protocol can handle multiple peer IDs or
+  certificates in the ACCEPT and DONE operations, though the
+  implementation does not yet support it.
+
+Major changes since v4:
+- Rebased onto net-next/main
+- Replaced req reference counting with ->sk_destruct
+- CMD_ACCEPT now does the equivalent of a dup(2) rather than an
+  accept(2)
+- CMD_DONE no longer closes the user space socket endpoint
+- handshake_req_cancel is now tested and working
+- Added a YAML specification for the netlink upcall protocol, and
+  simplified the protocol to fit the YAML schema
+- Added an initial set of tracepoints
+
+Changes since v3:
+- Converted all netlink code to use Generic Netlink
+- Reworked handshake request lifetime logic throughout
+- Global pending list is now per-net
+- On completion, return the remote's identity to the consumer
+
+Changes since v2:
+- PF_HANDSHAKE replaced with NETLINK_HANDSHAKE
+- Replaced listen(2) / poll(2) with a multicast notification service
+- Replaced accept(2) with a netlink operation that can return an
+  open fd and handshake parameters
+- Replaced close(2) with a netlink operation that can take arguments
+
+Changes since RFC:
+- Generic upcall support split away from kTLS
+- Added support for TLS ServerHello
+- Documentation has been temporarily removed while API churns
+
+---
+
+Chuck Lever (4):
+      net/handshake: Create a NETLINK service for handling handshake requests
+      net/handshake: Add a kernel API for requesting a TLSv1.3 handshake
+      net/handshake: Add Kunit tests for the handshake consumer API
+      SUNRPC: Recognize control messages in server-side TCP socket code
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ Documentation/netlink/specs/handshake.yaml | 124 +++++
+ Documentation/networking/index.rst         |   1 +
+ Documentation/networking/tls-handshake.rst | 217 +++++++++
+ MAINTAINERS                                |  11 +
+ include/net/handshake.h                    |  43 ++
+ include/net/tls.h                          |   2 +
+ include/trace/events/handshake.h           | 159 +++++++
+ include/trace/events/sunrpc.h              |  39 ++
+ include/uapi/linux/handshake.h             |  73 +++
+ net/Kconfig                                |  20 +
+ net/Makefile                               |   1 +
+ net/handshake/Makefile                     |  13 +
+ net/handshake/genl.c                       |  58 +++
+ net/handshake/genl.h                       |  24 +
+ net/handshake/handshake.h                  |  81 ++++
+ net/handshake/kunit-test.c                 | 523 +++++++++++++++++++++
+ net/handshake/netlink.c                    | 327 +++++++++++++
+ net/handshake/request.c                    | 344 ++++++++++++++
+ net/handshake/tlshd.c                      | 417 ++++++++++++++++
+ net/handshake/trace.c                      |  20 +
+ net/sunrpc/svcsock.c                       |  49 +-
+ 21 files changed, 2544 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/netlink/specs/handshake.yaml
+ create mode 100644 Documentation/networking/tls-handshake.rst
+ create mode 100644 include/net/handshake.h
+ create mode 100644 include/trace/events/handshake.h
+ create mode 100644 include/uapi/linux/handshake.h
+ create mode 100644 net/handshake/Makefile
+ create mode 100644 net/handshake/genl.c
+ create mode 100644 net/handshake/genl.h
+ create mode 100644 net/handshake/handshake.h
+ create mode 100644 net/handshake/kunit-test.c
+ create mode 100644 net/handshake/netlink.c
+ create mode 100644 net/handshake/request.c
+ create mode 100644 net/handshake/tlshd.c
+ create mode 100644 net/handshake/trace.c
 
-Best regards,
-Krzysztof
+--
+Chuck Lever
 
