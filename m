@@ -2,136 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9BED6D3E24
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 09:34:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBACB6D3E62
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 09:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbjDCHeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 03:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        id S231579AbjDCHs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 03:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbjDCHeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 03:34:24 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18180902A;
-        Mon,  3 Apr 2023 00:34:23 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PqjH20M4JzSq41;
-        Mon,  3 Apr 2023 15:30:38 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Mon, 3 Apr 2023 15:34:20 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <dlstevens@us.ibm.com>
-Subject: [PATCH net] ipv6: Fix an uninit variable access bug in __ip6_make_skb()
-Date:   Mon, 3 Apr 2023 15:34:17 +0800
-Message-ID: <20230403073417.2240575-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229785AbjDCHsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 03:48:55 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0411644AE;
+        Mon,  3 Apr 2023 00:48:53 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3336VYA2031952;
+        Mon, 3 Apr 2023 09:48:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=lbrDY8Ppljv7KIzDAhEp83EYJqZkiErv5p1W4oG7g5k=;
+ b=PM/TjdUTTRv7HcYJYnvyYOweQIo3jLh3k9NJFkAB/TU53eldc3KtqlJn2GA/vcU9x4Hr
+ lFX2bQ64LeKl8TT0frZPCFoMUgYmp3uaEDwqkL6JDbP9IGaMONiQbZe5kmvZ9/KdXzNG
+ oZfzCJ69+8DyX5+wrFBNb+/ehOkzUqrf2DidTOTGFW4qsk4ZBp8WcMTYBUFwE2eHam3/
+ DAen+x9N5TUv2ncdxTG+aCjfzpFRwtvV5fkiabI9EpKDCRizZv9rwfDkIsgfLDpERtgz
+ d7oplG72nWe8hzUy12lFw7Ctz1PKmj8ZrNqVnz7nWgHi30CVRLAryy63/4E9aQjkPMhG jw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ppbgm11ev-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 03 Apr 2023 09:48:29 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3109010002A;
+        Mon,  3 Apr 2023 09:48:28 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2AD5B2122F3;
+        Mon,  3 Apr 2023 09:48:28 +0200 (CEST)
+Received: from [10.201.21.93] (10.201.21.93) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.17; Mon, 3 Apr
+ 2023 09:48:27 +0200
+Message-ID: <509b45f9-b6f1-d6a1-c76f-1047efc2334c@foss.st.com>
+Date:   Mon, 3 Apr 2023 09:48:26 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v1] ARM: dts: stm32: prtt1c: Add PoDL PSE regulator nodes
+Content-Language: en-US
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+CC:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel@pengutronix.de>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20230323123242.3763673-1-o.rempel@pengutronix.de>
+ <1a2d16c8-8c16-5fcc-7906-7b454a81922f@foss.st.com>
+ <20230328110247.GE15196@pengutronix.de>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20230328110247.GE15196@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.201.21.93]
+X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-03_04,2023-03-31_01,2023-02-09_01
+X-Spam-Status: No, score=-3.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported a bug as following:
+Hi Oleksij
 
-=====================================================
-BUG: KMSAN: uninit-value in arch_atomic64_inc arch/x86/include/asm/atomic64_64.h:88 [inline]
-BUG: KMSAN: uninit-value in arch_atomic_long_inc include/linux/atomic/atomic-long.h:161 [inline]
-BUG: KMSAN: uninit-value in atomic_long_inc include/linux/atomic/atomic-instrumented.h:1429 [inline]
-BUG: KMSAN: uninit-value in __ip6_make_skb+0x2f37/0x30f0 net/ipv6/ip6_output.c:1956
- arch_atomic64_inc arch/x86/include/asm/atomic64_64.h:88 [inline]
- arch_atomic_long_inc include/linux/atomic/atomic-long.h:161 [inline]
- atomic_long_inc include/linux/atomic/atomic-instrumented.h:1429 [inline]
- __ip6_make_skb+0x2f37/0x30f0 net/ipv6/ip6_output.c:1956
- ip6_finish_skb include/net/ipv6.h:1122 [inline]
- ip6_push_pending_frames+0x10e/0x550 net/ipv6/ip6_output.c:1987
- rawv6_push_pending_frames+0xb12/0xb90 net/ipv6/raw.c:579
- rawv6_sendmsg+0x297e/0x2e60 net/ipv6/raw.c:922
- inet_sendmsg+0x101/0x180 net/ipv4/af_inet.c:827
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- ____sys_sendmsg+0xa8e/0xe70 net/socket.c:2476
- ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2530
- __sys_sendmsg net/socket.c:2559 [inline]
- __do_sys_sendmsg net/socket.c:2568 [inline]
- __se_sys_sendmsg net/socket.c:2566 [inline]
- __x64_sys_sendmsg+0x367/0x540 net/socket.c:2566
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+On 3/28/23 13:02, Oleksij Rempel wrote:
+> On Tue, Mar 28, 2023 at 11:58:34AM +0200, Alexandre TORGUE wrote:
+>> Hi Oleksij
+>>
+>> On 3/23/23 13:32, Oleksij Rempel wrote:
+>>> This commit introduces Power over Data Line (PoDL) Power Source
+>>> Equipment (PSE) regulator nodes to the PRTT1C devicetree. The addition
+>>> of these nodes enables support for PoDL in PRTT1C devices, allowing
+>>> power delivery and data transmission over a single twisted pair.
+>>>
+>>> The new PoDL PSE regulator nodes provide voltage capability information
+>>> of the current board design, which can be used as a hint for system
+>>> administrators when configuring and managing power settings. This
+>>> update enhances the versatility and simplifies the power management of
+>>> PRTT1C devices while ensuring compatibility with connected Powered
+>>> Devices (PDs).
+>>>
+>>> After applying this patch, the power delivery can be controlled from
+>>> user space with a patched [1] ethtool version using the following commands:
+>>>     ethtool --set-pse t1l2 podl-pse-admin-control enable
+>>> to enable power delivery, and
+>>>     ethtool --show-pse t1l2
+>>> to display the PoDL PSE settings.
+>>>
+>>> By integrating PoDL PSE support into the PRTT1C devicetree, users can
+>>> benefit from streamlined power and data connections in their
+>>> deployments, improving overall system efficiency and reducing cabling
+>>> complexity.
+>>>
+>>> [1] https://lore.kernel.org/all/20230317093024.1051999-1-o.rempel@pengutronix.de/
+>>>
+>>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+>>> ---
+>>
+>> Please, fix the introduction of those new yaml validation errors:
+>>
+>> arch/arm/boot/dts/stm32mp151a-prtt1c.dtb: ethernet-pse-1: $nodename:0:
+>> 'ethernet-pse-1' does not match '^ethernet-pse(@.*)?$'
+>>          From schema:
+>> /Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
+>> arch/arm/boot/dts/stm32mp151a-prtt1c.dtb: ethernet-pse-2: $nodename:0:
+>> 'ethernet-pse-2' does not match '^ethernet-pse(@.*)?$'
+>>          From schema: /local/home/frq08678/STLINUX/kernel/my-kernel/stm32/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
+> 
+> Using ethernet-pse@1 will require to use "reg" or "ranges" properties.
+> Which makes no sense in this use case. I need to fix the schema instead by
+> allowing this patter with following regex: "^ethernet-pse(@.*|-[0-9a-f])*$"
+> 
+> Should I send schema fix together with this patch?
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:766 [inline]
- slab_alloc_node mm/slub.c:3452 [inline]
- __kmem_cache_alloc_node+0x71f/0xce0 mm/slub.c:3491
- __do_kmalloc_node mm/slab_common.c:967 [inline]
- __kmalloc_node_track_caller+0x114/0x3b0 mm/slab_common.c:988
- kmalloc_reserve net/core/skbuff.c:492 [inline]
- __alloc_skb+0x3af/0x8f0 net/core/skbuff.c:565
- alloc_skb include/linux/skbuff.h:1270 [inline]
- __ip6_append_data+0x51c1/0x6bb0 net/ipv6/ip6_output.c:1684
- ip6_append_data+0x411/0x580 net/ipv6/ip6_output.c:1854
- rawv6_sendmsg+0x2882/0x2e60 net/ipv6/raw.c:915
- inet_sendmsg+0x101/0x180 net/ipv4/af_inet.c:827
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg net/socket.c:734 [inline]
- ____sys_sendmsg+0xa8e/0xe70 net/socket.c:2476
- ___sys_sendmsg+0x2a1/0x3f0 net/socket.c:2530
- __sys_sendmsg net/socket.c:2559 [inline]
- __do_sys_sendmsg net/socket.c:2568 [inline]
- __se_sys_sendmsg net/socket.c:2566 [inline]
- __x64_sys_sendmsg+0x367/0x540 net/socket.c:2566
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Yes you can. As soon as Rob or Krzysztof review it I'll apply both on 
+stm32-next.
 
-It is because icmp6hdr does not in skb linear region under the scenario
-of SOCK_RAW socket. Access icmp6_hdr(skb)->icmp6_type directly will
-trigger the uninit variable access bug.
+Thanks
+Alex
 
-Use a local variable icmp6_type to carry the correct value in different
-scenarios.
 
-Fixes: 14878f75abd5 ("[IPV6]: Add ICMPMsgStats MIB (RFC 4293) [rev 2]")
-Reported-by: syzbot+8257f4dcef79de670baf@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?id=3d605ec1d0a7f2a269a1a6936ac7f2b85975ee9c
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/ipv6/ip6_output.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index c314fdde0097..95a55c6630ad 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1965,8 +1965,13 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
- 	IP6_UPD_PO_STATS(net, rt->rt6i_idev, IPSTATS_MIB_OUT, skb->len);
- 	if (proto == IPPROTO_ICMPV6) {
- 		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
-+		u8 icmp6_type;
- 
--		ICMP6MSGOUT_INC_STATS(net, idev, icmp6_hdr(skb)->icmp6_type);
-+		if (sk->sk_socket->type == SOCK_RAW && !inet_sk(sk)->hdrincl)
-+			icmp6_type = fl6->fl6_icmp_type;
-+		else
-+			icmp6_type = icmp6_hdr(skb)->icmp6_type;
-+		ICMP6MSGOUT_INC_STATS(net, idev, icmp6_type);
- 		ICMP6_INC_STATS(net, idev, ICMP6_MIB_OUTMSGS);
- 	}
- 
--- 
-2.25.1
+
+> Regards,
+> Oleksij
 
