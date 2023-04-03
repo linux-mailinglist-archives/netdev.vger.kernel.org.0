@@ -2,116 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2CA6D52F4
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:59:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABEB46D5303
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 23:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233539AbjDCU7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 16:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
+        id S232587AbjDCVF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 17:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbjDCU7L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:59:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC506272C;
-        Mon,  3 Apr 2023 13:59:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 572BB62B2C;
-        Mon,  3 Apr 2023 20:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FCD5C433D2;
-        Mon,  3 Apr 2023 20:59:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680555549;
-        bh=Jko3afct/TAK0go9CJRFcu7GPZ8tu9HyhdEM/5yobtk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VmoPMGZz3nSoe/PAomr+63FMBfmlo8Z/0v0lm7Z1JmGqlFBoyFgIHjXH3azgsRsLm
-         JRppQxER3A+seTUBt3Jd33GnfElM4RdTpI142nBmxIN1yOEAhwIN3JZQo7XfCmWgzQ
-         1REpZYBMsWttJk1ktVYY29hcW2O7LIO3AiW2FDRKjVpJO8TFR4O1iCIHyAQ088EQDe
-         V3hCzg8s7YJvEJroVeKGrffML/EBS5Eyaz2sUqpo62EsQOYrl5RNgBfraxvDVK5GCD
-         6fdetDB/BARvngNt7N87pZtYoQRVtcMmuYiTSz61mzIdtqsuZLE2xdF7O/q0+wEJcS
-         Rr0jxnVw5V0yA==
-Received: by pali.im (Postfix)
-        id 3BBC3772; Mon,  3 Apr 2023 22:59:06 +0200 (CEST)
-Date:   Mon, 3 Apr 2023 22:59:06 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-wireless@vger.kernel.org,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mmc@vger.kernel.org, Chris Morgan <macroalpha82@gmail.com>,
-        Nitin Gupta <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>, Pkshih <pkshih@realtek.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-Subject: Re: [PATCH v4 6/9] mmc: sdio: add Realtek SDIO vendor ID and various
- wifi device IDs
-Message-ID: <20230403205906.qtxefyx5k3nntozk@pali>
-References: <20230403202440.276757-1-martin.blumenstingl@googlemail.com>
- <20230403202440.276757-7-martin.blumenstingl@googlemail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230403202440.276757-7-martin.blumenstingl@googlemail.com>
-User-Agent: NeoMutt/20180716
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S231636AbjDCVF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 17:05:28 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AB51990;
+        Mon,  3 Apr 2023 14:05:27 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id z18so18341537pgj.13;
+        Mon, 03 Apr 2023 14:05:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680555926;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Tbm/1Z7pscrBG0ZZhn1hbEou8eY1g5LF47B9DlKafFI=;
+        b=LUb4aRBx/1cQAXYbj6jJH8rVYd62Hn/D67ltQAVDOHDepio3qyEhuwpgSlF2Cp+2/y
+         /AetyTGyl/dgvyjzwnqFb1FbfXLAYoGUHquuJSYgByhG3Ue+fd1JUHOidYdvcLWJcm95
+         8GeNerJ7dQxkMNw4KAZ+XGGc9YuVlZnZGiWK6+Sjr0LU06lQJOSOkDvrVgEzOxHfKSEA
+         tpV6M5VHcweZI8mOZ7EQuVSrlLqGCqvAzIE99CC4uVWpLT/Rc1sN6YKaTydEk2WhaFyE
+         4geToD+fe2gZ5Lrs+rNHiXET5/HXQFdUvF8/+UagUrZEwSJ4fMpHOz0DbYgGe66rWZ4z
+         wDSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680555927;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Tbm/1Z7pscrBG0ZZhn1hbEou8eY1g5LF47B9DlKafFI=;
+        b=7gNFL9Kmoglru/irI4DVOLa4A/3vG0eSr+kSj+5nWLdIiOWC/CoakcVatSEZhloT7m
+         i3YNgnKfEoXQz+fZK8B3xgm4XXM9Xm9+USME+adUf8K4o3l7jWiklYZgqTu9TF4Gbp0o
+         13dZZ1WvM9vpJLY2KhCHMjF3Y6IORmMUYte87tx1MhfmUtZd0qFiAfYmo0vowAxAxJT+
+         NFCWhaTcOvwgOtaJrQy8Tx//q07LnrQy9ZA/Ku/1nYcWEM3DiS8cCRrJYlxrL89TX0DI
+         SHdW0z0t63r1G6XUe497HaWX856ULJBYergc2+0okMnKmpi34xl4xZaRUT6RfipeHWgr
+         aIcw==
+X-Gm-Message-State: AAQBX9eFlcr1kyvDU8lZ/205VyFbMyjqGpVfBBBEuYPPh2yzb8V/4+il
+        t+KJKS3738Lr+WbLzVjS/hE=
+X-Google-Smtp-Source: AKy350atusfAtVwRYzds1wLB2Qf94oSUsoqAp9rWmwhdmQprXnxWNmrvkXCiXS9bTyy7NiBAPVszyQ==
+X-Received: by 2002:a62:19c8:0:b0:625:9055:3bc9 with SMTP id 191-20020a6219c8000000b0062590553bc9mr31773061pfz.27.1680555926586;
+        Mon, 03 Apr 2023 14:05:26 -0700 (PDT)
+Received: from localhost ([2605:59c8:4c5:7110:3da7:5d97:f465:5e01])
+        by smtp.gmail.com with ESMTPSA id z8-20020aa791c8000000b005a8dcd32851sm7586895pfa.11.2023.04.03.14.05.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Apr 2023 14:05:26 -0700 (PDT)
+Date:   Mon, 03 Apr 2023 14:05:24 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     cong.wang@bytedance.com, daniel@iogearbox.net, lmb@isovalent.com,
+        edumazet@google.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        ast@kernel.org, andrii@kernel.org, will@isovalent.com
+Message-ID: <642b3f94f13df_e67b72086@john.notmuch>
+In-Reply-To: <87a5zpdxu7.fsf@cloudflare.com>
+References: <20230327175446.98151-1-john.fastabend@gmail.com>
+ <20230327175446.98151-5-john.fastabend@gmail.com>
+ <87a5zpdxu7.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf v2 04/12] bpf: sockmap, handle fin correctly
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday 03 April 2023 22:24:37 Martin Blumenstingl wrote:
-> Add the SDIO vendor ID for Realtek and some device IDs extracted from
-> their GPL vendor driver. This will be useful in the future when the
-> rtw88 driver gains support for these chips.
+Jakub Sitnicki wrote:
+> On Mon, Mar 27, 2023 at 10:54 AM -07, John Fastabend wrote:
+> > The sockmap code is returning EAGAIN after a FIN packet is received and no
+> > more data is on the receive queue. Correct behavior is to return 0 to the
+> > user and the user can then close the socket. The EAGAIN causes many apps
+> > to retry which masks the problem. Eventually the socket is evicted from
+> > the sockmap because its released from sockmap sock free handling. The
+> > issue creates a delay and can cause some errors on application side.
+> >
+> > To fix this check on sk_msg_recvmsg side if length is zero and FIN flag
+> > is set then set return to zero. A selftest will be added to check this
+> > condition.
+> >
+> > Fixes: 04919bed948dc ("tcp: Introduce tcp_read_skb()")
+> > Tested-by: William Findlay <will@isovalent.com>
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
+> >  net/ipv4/tcp_bpf.c | 31 +++++++++++++++++++++++++++++++
+> >  1 file changed, 31 insertions(+)
+> >
+> > diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> > index cf26d65ca389..3a0f43f3afd8 100644
+> > --- a/net/ipv4/tcp_bpf.c
+> > +++ b/net/ipv4/tcp_bpf.c
 > 
-> Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
-> Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> [...]
+> 
+> > @@ -193,6 +211,19 @@ static int tcp_bpf_recvmsg_parser(struct sock *sk,
+> >  	lock_sock(sk);
+> >  msg_bytes_ready:
+> >  	copied = sk_msg_recvmsg(sk, psock, msg, len, flags);
+> > +	/* The typical case for EFAULT is the socket was gracefully
+> > +	 * shutdown with a FIN pkt. So check here the other case is
+> > +	 * some error on copy_page_to_iter which would be unexpected.
+> > +	 * On fin return correct return code to zero.
+> > +	 */
+> > +	if (copied == -EFAULT) {
+> > +		bool is_fin = is_next_msg_fin(psock);
+> > +
+> > +		if (is_fin) {
+> > +			copied = 0;
+> > +			goto out;
+> > +		}
+> > +	}
+> >  	if (!copied) {
+> >  		long timeo;
+> >  		int data;
+> 
+> tcp_bpf_recvmsg needs a similar fix, no?
 
-Reviewed-by: Pali Rohár <pali@kernel.org>
+Yes, I had lumped it in with follow up fixes needed for the
+stream parser case but your right its not related.
 
-> ---
-> Changes since v3:
-> - sort entries by their value for consistency as suggested by Pali
-> - add Ping-Ke's reviewed-by
-> 
-> Changes since v2:
-> - none
-> 
-> Changes since v1:
-> - none
-> 
-> 
->  include/linux/mmc/sdio_ids.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/include/linux/mmc/sdio_ids.h b/include/linux/mmc/sdio_ids.h
-> index 0e4ef9c5127a..66f503ed2448 100644
-> --- a/include/linux/mmc/sdio_ids.h
-> +++ b/include/linux/mmc/sdio_ids.h
-> @@ -112,6 +112,15 @@
->  #define SDIO_VENDOR_ID_MICROCHIP_WILC		0x0296
->  #define SDIO_DEVICE_ID_MICROCHIP_WILC1000	0x5347
->  
-> +#define SDIO_VENDOR_ID_REALTEK			0x024c
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8723BS	0xb723
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8821BS	0xb821
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8822BS	0xb822
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8821CS	0xc821
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8822CS	0xc822
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8723DS	0xd723
-> +#define SDIO_DEVICE_ID_REALTEK_RTW8821DS	0xd821
-> +
->  #define SDIO_VENDOR_ID_SIANO			0x039a
->  #define SDIO_DEVICE_ID_SIANO_NOVA_B0		0x0201
->  #define SDIO_DEVICE_ID_SIANO_NICE		0x0202
-> -- 
-> 2.40.0
-> 
+Mind if I do it in a follow up? Or if I need to do a v4 I'll
+roll it in there.
+
+Thanks!
+John
