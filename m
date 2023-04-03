@@ -2,97 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92EC46D3C8A
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 06:42:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4CAB6D3CB1
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 07:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbjDCEmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 00:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43996 "EHLO
+        id S231390AbjDCFPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 01:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbjDCEmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 00:42:36 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B77C8A4A
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 21:42:36 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id q6so12337924iot.2
-        for <netdev@vger.kernel.org>; Sun, 02 Apr 2023 21:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680496955;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=a+ZUuxUTAoz+nMDIAxIHUE5qjUM6hZWQNbOQhvaBX2U=;
-        b=YcS9AXzIsZqy2H5nPgG4m+qSAoj4vulDRClsjQma9857tuZT5BBy8uz3OURPguoT4+
-         1AKal0s1FvCVVr52raUmQREpwG5TdTIR6YP7acWZz6z/PqkmjkzD1qiMdEFim3qo4jRj
-         ZhGC8aGvWiIFfhnsXNmXde8DtjFTdo31fpUMvul3+SgZ/TnwBtxlGCnyZo8914bhhQq1
-         uA7f01+2QNkBjnTBGssSJ08gUbw3Bid34RWTa+rBfc21vskiP0gvGER/tIgxXYMWzjIR
-         6yjQ0sRwJHKIyp6b+aLxBKhoKNB0eBHh+EeVWNLz06wGsgAxLBUKdc3mUaJUbozYuTuN
-         SB9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680496955;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=a+ZUuxUTAoz+nMDIAxIHUE5qjUM6hZWQNbOQhvaBX2U=;
-        b=BOfSOrVlnLNrVVUk8vxHn0OQPWLnyAMswOV+pjUcHEFy5TZ0RT5jogz1Y3OKPMT05a
-         UwxckgqyJuozFP5C/H0XhxmfV46gSIr5Hdp+ZjA8DVA0umX1SqdcV03AhSOQ+d4V2nS/
-         CU0ms5Ymhw83fU/JaA+qfe4YSK48I+VGmIXlWBngB8lqW1CjL4IqnzV3X63gutmQcX7m
-         19XIS33R99LEraqJvzSD1WQtC9pSMAh20drY+BIofWDkWSkkSMKPZYKydl5xdnBM1or1
-         bP80oX0sYw3/zeOwQG46oUe85bZgLk0bDss0/XJ8LjJ+gz2jUrTeaVjBhEM42NQyg3M8
-         41Og==
-X-Gm-Message-State: AO0yUKUpk7112vlauO8HN8BMEOyZ59UvPrT30fMZ/thm6mNSkabfeMye
-        N4PP5DgRiNhma49rtFD9jHtRlKnXYMLlWI+U9uY=
-X-Google-Smtp-Source: AK7set+0/PZg0kJzt2raUsYkCxcpds/syDlZuPB5EOh9zcBNx9DAgFRfm0DaQF1hjuYFODx/kZufPFZunQRUddnkDQQ=
-X-Received: by 2002:a02:228c:0:b0:3c5:15d2:9a1c with SMTP id
- o134-20020a02228c000000b003c515d29a1cmr13062666jao.2.1680496955237; Sun, 02
- Apr 2023 21:42:35 -0700 (PDT)
+        with ESMTP id S230192AbjDCFPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 01:15:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE69C5FDB;
+        Sun,  2 Apr 2023 22:15:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7377D61490;
+        Mon,  3 Apr 2023 05:15:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DDEAC433D2;
+        Mon,  3 Apr 2023 05:15:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680498902;
+        bh=Ixr/FFBnESFYocqUR2S5brutidXiL5FXC0yTKcWtPxk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GazujrsRaycMDAoP33HEUQ0JfQ7EMg0bNtPSIQJZat3LWer2Eu2uIckZ9nNpBnNYp
+         OXXbsQuyymB7jgZrClRzUWhjM6HPjHsbJUswwCj6jxaM+Z1psmxYl4PwehOaikiilM
+         xvDmEbw+J/6MWCb/eyyQ1GnTSl7JKfs75iuFk9TPV1K43UPjBAtNGIFiUhQw1KUncq
+         0HU0wq035hQx2DLpOkdINRQCmU6FWpQYMZdMonql8+0ksJnX+JqUc7qP7XzHF4FdNF
+         l/EKnY05EvqGepme2Og3KXyaVFY0JbTdCMceCHRxtXisTmGuBpQuhjBNRazZJh+zuE
+         D/OaXOKyIbxdw==
+Date:   Mon, 3 Apr 2023 10:44:56 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Simon Horman <horms@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH RFC] net: qrtr: correct types of trace event parameters
+Message-ID: <20230403051436.GA4627@thinkpad>
+References: <20230402-qrtr-trace-types-v1-1-da062d368e74@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a02:b605:0:b0:406:a977:88be with HTTP; Sun, 2 Apr 2023
- 21:42:34 -0700 (PDT)
-Reply-To: ch4781.r@proton.me
-From:   Bill Chantal <blc1427856@gmail.com>
-Date:   Mon, 3 Apr 2023 04:42:34 +0000
-Message-ID: <CAP=Yh0vZPaTEXPJroL-r17yGH4yUVMSuwqJr0fC=zRp9WRyWOA@mail.gmail.com>
-Subject: SANTANDER BANK COMPENSATION UNIT, IN AFFILIATION WITH THE UNITED NATION.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=6.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        HK_SCAM,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,UNDISC_MONEY,UPPERCASE_50_75 autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:d31 listed in]
-        [list.dnswl.org]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [blc1427856[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [blc1427856[at]gmail.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.8 UPPERCASE_50_75 message body is 50-75% uppercase
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  2.0 HK_SCAM No description available.
-        *  3.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230402-qrtr-trace-types-v1-1-da062d368e74@kernel.org>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SANTANDER BANK COMPENSATION UNIT, IN AFFILIATION WITH THE UNITED NATION.
+On Sun, Apr 02, 2023 at 01:15:33PM +0200, Simon Horman wrote:
+> The arguments passed to the trace events are of type unsigned int,
+> however the signature of the events used __le32 parameters.
+> 
+> I may be missing the point here, but sparse flagged this and it
+> does seem incorrect to me.
+> 
+>   net/qrtr/ns.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/qrtr.h):
+>   ./include/trace/events/qrtr.h:11:1: warning: cast to restricted __le32
+>   ./include/trace/events/qrtr.h:11:1: warning: restricted __le32 degrades to integer
+>   ./include/trace/events/qrtr.h:11:1: warning: restricted __le32 degrades to integer
+>   ... (a lot more similar warnings)
+>   net/qrtr/ns.c:115:47:    expected restricted __le32 [usertype] service
+>   net/qrtr/ns.c:115:47:    got unsigned int service
+>   net/qrtr/ns.c:115:61: warning: incorrect type in argument 2 (different base types)
+>   ... (a lot more similar warnings)
+> 
 
-Your compensation fund of 6 million dollars is ready for payment
-contact me for more details.
+You are right. The actual arguments (service, instance, node, port) transferred/
+received over QRTR are in le32 as per the protocol. But in the NS driver, the
+arguments passed to the trace events are in the native endian (i.e) before
+getting typecased to le32 for transmission.
 
-Thanks
+And my intention was to trace the arguments in native endian format only. So
+this patch indeed fixes the issue.
+
+> Signed-off-by: Simon Horman <horms@kernel.org>
+
+Please add the fixes tag once you remove RFC,
+
+Fixes: dfddb54043f0 ("net: qrtr: Add tracepoint support")
+
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+
+- Mani
+
+> ---
+>  include/trace/events/qrtr.h | 33 ++++++++++++++++++---------------
+>  1 file changed, 18 insertions(+), 15 deletions(-)
+> 
+> diff --git a/include/trace/events/qrtr.h b/include/trace/events/qrtr.h
+> index b1de14c3bb93..441132c67133 100644
+> --- a/include/trace/events/qrtr.h
+> +++ b/include/trace/events/qrtr.h
+> @@ -10,15 +10,16 @@
+>  
+>  TRACE_EVENT(qrtr_ns_service_announce_new,
+>  
+> -	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
+> +	TP_PROTO(unsigned int service, unsigned int instance,
+> +		 unsigned int node, unsigned int port),
+>  
+>  	TP_ARGS(service, instance, node, port),
+>  
+>  	TP_STRUCT__entry(
+> -		__field(__le32, service)
+> -		__field(__le32, instance)
+> -		__field(__le32, node)
+> -		__field(__le32, port)
+> +		__field(unsigned int, service)
+> +		__field(unsigned int, instance)
+> +		__field(unsigned int, node)
+> +		__field(unsigned int, port)
+>  	),
+>  
+>  	TP_fast_assign(
+> @@ -36,15 +37,16 @@ TRACE_EVENT(qrtr_ns_service_announce_new,
+>  
+>  TRACE_EVENT(qrtr_ns_service_announce_del,
+>  
+> -	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
+> +	TP_PROTO(unsigned int service, unsigned int instance,
+> +		 unsigned int node, unsigned int port),
+>  
+>  	TP_ARGS(service, instance, node, port),
+>  
+>  	TP_STRUCT__entry(
+> -		__field(__le32, service)
+> -		__field(__le32, instance)
+> -		__field(__le32, node)
+> -		__field(__le32, port)
+> +		__field(unsigned int, service)
+> +		__field(unsigned int, instance)
+> +		__field(unsigned int, node)
+> +		__field(unsigned int, port)
+>  	),
+>  
+>  	TP_fast_assign(
+> @@ -62,15 +64,16 @@ TRACE_EVENT(qrtr_ns_service_announce_del,
+>  
+>  TRACE_EVENT(qrtr_ns_server_add,
+>  
+> -	TP_PROTO(__le32 service, __le32 instance, __le32 node, __le32 port),
+> +	TP_PROTO(unsigned int service, unsigned int instance,
+> +		 unsigned int node, unsigned int port),
+>  
+>  	TP_ARGS(service, instance, node, port),
+>  
+>  	TP_STRUCT__entry(
+> -		__field(__le32, service)
+> -		__field(__le32, instance)
+> -		__field(__le32, node)
+> -		__field(__le32, port)
+> +		__field(unsigned int, service)
+> +		__field(unsigned int, instance)
+> +		__field(unsigned int, node)
+> +		__field(unsigned int, port)
+>  	),
+>  
+>  	TP_fast_assign(
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
