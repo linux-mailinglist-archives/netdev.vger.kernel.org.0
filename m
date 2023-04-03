@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9A56D429E
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B966D429D
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbjDCKyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 06:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42986 "EHLO
+        id S231309AbjDCKyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 06:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbjDCKxe (ORCPT
+        with ESMTP id S232063AbjDCKxe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:53:34 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2060.outbound.protection.outlook.com [40.107.22.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DBDB76F
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 03:53:27 -0700 (PDT)
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2079.outbound.protection.outlook.com [40.107.22.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D0B1166C
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 03:53:28 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AwDqiBwNV/RyxXigO6mVBx3MGcTl7J5HagZBWEseONqp3Wj+JWQFUCodKQMUdkPx85G+ZJysBvNTORF8N9G6yTC53lojf2tdEMRzkfJM7OOcwkF5Q7NI5C+0p1lACG/nQHWXfkxSpZFPUjKhhrE017rUbNxpyQiftWXSedi6xHUfKkX24PUFjDPP+yHDI39tnTkpn1XEbWLKv/7xRAPwOPWzIAX0/BHDnIKxVNZ4RDiU/Ykh+ayRldirpn0r1nZ1vjRku16hn5i0WGs9rdfD5uFJCiAzxKY0nkto6sfa+5ZewrWkhiyFdCSY9NFIFH5M+QH+Be84kbarUdb04bMViw==
+ b=JKU2Z4tTncW9EWzoyMUHRfjmOHjmszBqiK1Ir/gpnRVPpOfrc/UC1H4lsSaS5hKTbgXlY7/Sff7sNb76X4+4X4YdhSohR4tsIyGr5Dxo2zJwryqfPjSr3sM3ZPRrkYgvxRw1EQOcLGHsaPIR107oop14dxSA+ndEPXG8uRa1DRwsrAAGFW0klOPpGyQSxbzzXJp9HJe2T40jSanoJpqRemRW1bHE5FsJkcPOOt1yYV3oVrkZBIr1eHRFtL+jP5NtsIdiVmEoTr/0H9E8nXyru4B4YxLmNUaXi0Dl0EBb8wX2bTMW6YzXcPPrbyn26TVwFfy1VFIjqinlrsIXdlbg5Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qZ09lQ2EjxALltfDWQ4bHiT52QAFHn4E5bhGpBmYThQ=;
- b=Dh89ZXLJZZZuONX3U1/5ssbt09lUWmWlc8VPoJhg1TGBubCh3ob0DQ92IjvVYeLjCcMViCIj+7VcU6fTZ2GdHvolLegKTAJxZlvHWCVJzpiszGPzoK5CVXX0M3zCgMF5zhtlH0wLVdfpbMJ2VULfaRsVBiqkxlF5cjrUOtO9NVFvAnGxxHY8/yjTGSz8co3u3M7jjqOXIYSOlPrI2KUOoC+/Hqu8ZBFTlKr0KQ6Q1GcHSFWX/F/ENmLiFbv+bQtsCjGtId6lpYdwZZgbP3yXLkIQdbtYutY3/EPVqcM5jgUk0013ZxPRI+MY36STpnrQKgcBl9PQB5aGMcHUomgtBQ==
+ bh=XLJPmYrpLvkcx8Ch5BDBoVjb6FKaRmtoCBBeGtrk2ss=;
+ b=SXdA3J+obeX+mIQEOY3kARu9mB9oKkdqWs+glSBMKOUKod7ZcvzrNcc6EEsuL2MTF9T8I9tyB8nFJu+UkyOwcjV4KDS130KVz9Xx7Br8qLt6IugmAf8S+E8FPIfGFbjGEQx+VYzlsr60AuXneOPduH2LgGH7LnCVrMheKiTM76DWyPQ6HCJYqTXWiiCop5HlOfsTagJIG6R8+i8RUnmXMBYoN7FybPza10AkcV7Ihzi+2HxD5c6xtIhVh7r9McJRaMtSiIfKSRM/QtcoZRlZQL2pcTJiwnsGl/BxIjfvC4LYMc6S+g4kSpNslZz2pNmhOAGkvtygt2dJhHgZ0YQrMA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qZ09lQ2EjxALltfDWQ4bHiT52QAFHn4E5bhGpBmYThQ=;
- b=FrOEK+rFMBe9bwiJeEEZMznK/520Vb49OpdtVZ47Rf7pKUEMZ17lthZPCJrU3LoFsKQw/NZtcewLdbPkl1vK/Tw1cCbv1qNkonrZ1Z/eZ4qoUNprcYMGFdbssKYFgC1cFpnizodmxBO7X4fDbgGowdMtpJbrxI1y0AI3iTuTcs8=
+ bh=XLJPmYrpLvkcx8Ch5BDBoVjb6FKaRmtoCBBeGtrk2ss=;
+ b=E4iYDC+RfKZ2GBgPh6YhrIyfeb1bSCtlgDlfQrvIfNDJsbWIIN1qnl8m+W9COTtELVEAKpFFJRYRITUibJnHDknVPo4iGVnQ/jxMvDpgef2U96sEppyVND2YT1NNptLqn0aUOP6mqkDbOPVpsawW2tglcX8rbNLx3TgP7816flk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
@@ -38,14 +38,14 @@ Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
 Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::dfa2:5d65:fad:a2a5]) by AM0PR04MB6452.eurprd04.prod.outlook.com
  ([fe80::dfa2:5d65:fad:a2a5%3]) with mapi id 15.20.6254.026; Mon, 3 Apr 2023
- 10:53:06 +0000
+ 10:53:07 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     David Ahern <dsahern@kernel.org>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 7/9] tc/mqprio: break up synopsis into multiple lines
-Date:   Mon,  3 Apr 2023 13:52:43 +0300
-Message-Id: <20230403105245.2902376-8-vladimir.oltean@nxp.com>
+Subject: [PATCH iproute2-next 8/9] tc/mqprio: add support for preemptible traffic classes
+Date:   Mon,  3 Apr 2023 13:52:44 +0300
+Message-Id: <20230403105245.2902376-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230403105245.2902376-1-vladimir.oltean@nxp.com>
 References: <20230403105245.2902376-1-vladimir.oltean@nxp.com>
@@ -56,51 +56,51 @@ X-ClientProxiedBy: FRYP281CA0006.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|DB9PR04MB8479:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6f78b5a4-fdbe-4523-ae2a-08db34319b57
+X-MS-Office365-Filtering-Correlation-Id: e02a76b8-d803-4150-81b2-08db34319bad
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xxQmwCBA2ZJEwxe07D+dHltIg3vK4R2dd08eMQzwF57eGmfJxXB0C6aDn41tiXpMeid59S3D7CNHTuks5UITjYkw97vprKaHN47lF2lUYMQAazOL8tJfBqWETYF6adM6/Majcy8XiU+z0HddjZNYW2baW1bBYqzmbtQLyHXZdLfqNrx/JKPQsMwrZQozPCv8zGrtGNsbeQIWQAq8YJ1uPUEPMREmpKpJbnbk0O8dB47ugc/HX2nbBECpvsQc1mP1Un/XWKh204VOorj5aL970aP9f0jATFkOj0DciPyoalBvymhhGNgE8kkD2wAZj8I6CPAJ4jSR6N+9fT9onOP5d1PA2j/DWnVFjOdT8V8CACPdizFBtLtnTOi70/8pfIrhOm6V1deGgsqrQ52yVFxVlh/oJMJxdDOwV77ERNTm/V3QI8J7XSmYfzBRL5HXDMx51p4XUW7T9mubUKxHqzECtL7MfCFdDs6t4qlkPYISsQG9sBH0rFOH0SGM6JJEDy/16ChTUaqj7EPJVoQiPH4tLI7JaPA9IMQRLwOhxs/hZEOUPcE0ikF5RJ34+3hnRZjYI3LlIkhcZ5oQAuW8YXHIvD3YhnqNw+GM6n55dW5S9dnPqGO3HRbJI/2lNCgmr2J5
+X-Microsoft-Antispam-Message-Info: ISYdJp1VjcPI55IWGq+t3zneq0rmacOgjZ//92IDhDTzZJXrPX10GVciwkqIyZmHXfpXY17Z4o+WmZfk6jF5PlzhuXJ9zEGXbpT5JapXqSQIWRx8l7yx3WKJXYUNUXxdx4uwK7cHCZcaww4xtZtXAXCbDN8BwfzOojWlkvstP1Mc4KZBi/ieYUEggGnG2zXh6prjcv/wDW6Pte9d0ama1/Vg3OulP2c7UTQ0dskpFqCbuvdaP24GtmAz8yaf0zuEQchLV8R7qTMG8SUWcJdSOEYCuoOvNCStItqEIRsiiKTilkbE+0lc9a0Fi3HyhEy4zCrBfy6sMOW2r8ueDo0P9lRcnzxluPckYc2BdE2f+imWM2o38g1y1pjmjat6s7I1Lw33fqQ32wywLS8huwPwlD2u6lTlRV6VeCQiMCBIH+ArWPTQGxPSQSjOpry0+QS1KJ+fFeWzOnkkXFiYeWjVTAVipSEuqdyUG43rlg3pHmRHRYN/3sShkX1r4KYOYn6FfIbqGa1VNbieaui4lmJ6bpgfuCxDybIoqYzJqAZJwE6OzOcL5RnHYVMREIdqJdh2KPCV383GKH+X2addG/UwUlladUIM3cy6xm2R8qs+3MTXdaawkn+TlrdEotR2yDXG
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(451199021)(8676002)(6916009)(66556008)(66476007)(66946007)(54906003)(316002)(478600001)(8936002)(44832011)(41300700001)(5660300002)(38100700002)(38350700002)(4326008)(186003)(83380400001)(2616005)(52116002)(6486002)(6666004)(1076003)(26005)(6506007)(6512007)(86362001)(36756003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wNLgxVzUZPiKAoP1mMC+6qLlQiVv3xw230RVyI5eVSYpZpt8xEWk9AT8J0sQ?=
- =?us-ascii?Q?6aDU1OvD7aJ0WelCwJkhAsDCrZezMiVW4I3sT1QPrN84NMb5Z9ZLbehFHIlZ?=
- =?us-ascii?Q?akgW5QD4f/PedfmkW76PT9acjofGn0RSoLVCiEotFpwDBxT9vzn3+/tr6lkU?=
- =?us-ascii?Q?XSkOwzyMkfzHH2GKf4v5j1GORt8ctk1RDgnELRpwolstU78Clb8KravRB/WZ?=
- =?us-ascii?Q?I5sgNl424pOYzggfF9gSpsKJiC0qMfdz5tFX5eUsZIDX+plvqdVArFKCWF1T?=
- =?us-ascii?Q?G6oW44Iy2xTxeCy8H79u/ylsFfFIM0+BuCWbgkHjeSMRb8SExxfhA1lo5+Fe?=
- =?us-ascii?Q?uJsB5exzSKsGW3llwQSY8D7IAPKBYKudRmELiKBoefKzwexWJps6e18wLM8N?=
- =?us-ascii?Q?FO/dz+CerTJZ9qS2bVzs4gxPbl3nOJEOvMFpVwPC+DQ12eY3pu8pWx2HcfHR?=
- =?us-ascii?Q?23LcIZydkPKJ2KRCz7QFOJ//Q3T++siQ2nGil5fPXVhCN36n8Yj1KFB032kL?=
- =?us-ascii?Q?lzWteEB3Il7twx4FGVjJgwEknj4ntZJrV3GgQV67v0u8vh1CNpIreyHH0xTx?=
- =?us-ascii?Q?hX6zNQCTwqko7M1mCXCdfuCGryf71R1/OY4HoULEYJoVjQsC9jTdpj8L8GPq?=
- =?us-ascii?Q?Yj+Rl3ZeKNXwGFxSSH1w3qZsgrCxtly9fu6gJkw0cAPc2zHdhcQ0ISZCTU8z?=
- =?us-ascii?Q?ImyLcwaeYXNvKWI9t8oJoFTYbwefYDM/59k79fy0AMead8FP6EZ5lyWPVdw+?=
- =?us-ascii?Q?0oIZEjAzdOnMH2Vs78syagvQa8S7rovQk5i37hAPmnU+nVlBEbOMYGsosKZw?=
- =?us-ascii?Q?sn53cSdZCPJKZH+ccLf9eEvI7E7YsWrzSZtOmQEIwABb709ZCRv0/NgVZLBu?=
- =?us-ascii?Q?hyns36pZKMGMlzQjTdWt7U6LU214v0tpGe977jc0zjkLKhzCiiASKgxnSeJH?=
- =?us-ascii?Q?3He9j4iZbIv38/ckZgIS/noX/wN8spT7hq7Q/B9zUlRP7pJZ3Py+hQsX9Qeq?=
- =?us-ascii?Q?BZzbXQMGO7sKnbf/wXMlJ6cVibMXKrageIRpM6tv3TJ61uPdNtSOK1n5qmY7?=
- =?us-ascii?Q?DK4sQ44U4LNpXES9WJ2NkBC0ZFRqOLVCUhukqwWC5RhhpX61wDExEcvKN2Ik?=
- =?us-ascii?Q?YfbHH0z6leBxUu8eLBHy7QHTs09YCkOdwAJYyCSTnQsDdCK2Ic6nKJZpGgQ6?=
- =?us-ascii?Q?vvn459HRsY3jBbkz8zxOjeNiN8RLBNOuh41ko6r38nsiE2iSuIIl0LomKdg/?=
- =?us-ascii?Q?CIJLCYEo0ZuRRHm3mUZaVgPnDa9tSLdYkqGv/vSn4E6Xt5jFY3LgOgvcL5Fh?=
- =?us-ascii?Q?ob8VpQdVBUBkkLuFqnkR7yAfR0tPHqACZ9ncRUjBgzzzeUmulDuRglsqwoUg?=
- =?us-ascii?Q?hyedAZFfKyj1M8Lw7NnKYM4TvHcUBcVHgUal5H6h/W7NWzN72GSJpN9ISbNf?=
- =?us-ascii?Q?AWb8XZgbM/04TkRln/1q2ND/G8P8xlfWSVw8Ag3ReWwePDDM2pEViu8MLI1x?=
- =?us-ascii?Q?+GFTHWGGo1m5HA85YUg/+R1bmTDc2KTSzmkW2d92oS0hdsXSZ37c5k+iHgxR?=
- =?us-ascii?Q?3qqS3a+Qa7qaZWgQ3g4KoUB0YoW68NbRp7g9MlECzXBrRT9TvzMMz60IrSj2?=
- =?us-ascii?Q?Kg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W7SGzuBSjhucqKLws55ZkpMZdB90aAZCzie1o/rbrAjWhCj8uLB8WhFmPBLd?=
+ =?us-ascii?Q?jV9Xz4jSOp7C6F3D6ih5Bib0neQF8WJ8gaLXHlKjKLvl+MhbSGtfQ9fkbrK9?=
+ =?us-ascii?Q?yn5FuZRTI5sVVSkH0jsdb55DweTuO0j1GiX3C/xaV1uHxuQ/WKY226d8nL1w?=
+ =?us-ascii?Q?cdwcjPEbQZ/9xdpToFl++LnR9InLJkHRdXeGkUsc4WQHQKQ+VA1I2l61uZo8?=
+ =?us-ascii?Q?GWUbUAE4oqxzXOK+ns9TMsQmO5zMJnmGRP8jYDVUKk6RQxdvF8Pu/Jo/EGrO?=
+ =?us-ascii?Q?Q/4WVuXcIWAi6QVUSfbnMSgx5KileMm1F4Jkf6UgpT1SALZ6OHuBFzuRgiyR?=
+ =?us-ascii?Q?ih2Q5tkj/Y176u2HIB8ySfT5GBfjeLeK1VbUlMgc4XXshdI3KtSh399eOAtO?=
+ =?us-ascii?Q?sIx9ucnnYN1doz2fVokSFAvL5ZqN/qbkrWBRn8QfdcaTfuKXofcJarFLZKwP?=
+ =?us-ascii?Q?BX/wN012hz6lvG+D5mc3bamJtoXJIYABIT/jsxplQK00cUEFz3XEC7KZkzBI?=
+ =?us-ascii?Q?0WDlWKkmbCy5LdC5c5WaJvr4Wo4CMAyDj4L68WsxQJ3GPCBWEnC7fYF+IGna?=
+ =?us-ascii?Q?ALtUBM+xOP+GY1QJKDWnubA9tuyP07mkS8b4jNeRe0mv+6nwiH6gNT7CWmGq?=
+ =?us-ascii?Q?vncWIcJvV+t23a1NKBubR6j63G67hkqHW0kiSUl22td2JSkWStGM6Y5g87uM?=
+ =?us-ascii?Q?YPrk4lIoZc68D8nxaLFbHAlfpwh6cgJnRt1AH7VgzxTH034lWHIOkic+qkma?=
+ =?us-ascii?Q?6509V/S9SqAN/bvumYP5Dy8EezKOoM2oE1Bylqd+TxPDSh3DrdMv5inX4rVM?=
+ =?us-ascii?Q?7a59eGE1bwbal/OyRQb+s9ZJe/670Qr3ijPcPIxpdujX68en+iD0fZaBEqLZ?=
+ =?us-ascii?Q?GGRx462M7yE7kQE4F55G8+gIXQlCmoOkwsIRYIEiM7yDocrAUmIWj7R/omBg?=
+ =?us-ascii?Q?XxTFZzzmoaXSVQqd9MMGOW+ZVDm2JF0KEdG+WTAON9XBzkXUJ/YkFstpHDP4?=
+ =?us-ascii?Q?mI8fzLw2dQHDF84rnswTylPJo/k4Vj247TMs4bckXR/hunYDFa7Q7vzDDtgE?=
+ =?us-ascii?Q?HVhDqjZX0Fl5cSDrvVXBfzsCbd1y8ez/widErx8lOplZEZ9riRpzfKQr9/v3?=
+ =?us-ascii?Q?/48fIyf7PkxRTGpmDsyJFvHWd151Zf2H2lM3pEIprUOX8h8XN8Vs0sOoxrjX?=
+ =?us-ascii?Q?BZ5XsAodz6zZKa/6vuzg2ZLw28zDcNHptpDkAu7IuJ2OIhQgXExYHFntxITj?=
+ =?us-ascii?Q?bRrW0JBxkQz3Mg4isID1M2EGoDUX9sZi0+bNdeGmCerPFVnuy0HIyUVkz3GN?=
+ =?us-ascii?Q?wn9FuEjJFp48kmtmcinVnRGGGHvGTkAb1JFqOIBFiHxczVPfQpqewYqC/r3x?=
+ =?us-ascii?Q?06jHuaLR8sny8nU8BSVkNL9I9PGse5tX3WnnmyLGR0EzlSj55IE/fjZE/eLq?=
+ =?us-ascii?Q?ngtFvdTtfMVW4HFXaFFagofcBlU1OEDhp0srzauyjvQE55Ksdd5P/E7rHjFW?=
+ =?us-ascii?Q?ChXaxN5YknKH6SPzF0koXimozX78Xdd1I2gfVF4xjQRElUs8IDoqjSOOfcLT?=
+ =?us-ascii?Q?lFFNn2GxKQgnZ0kImU8GlW8djpo1G3Hu3irJiE9fVnhyFAlqiARPWEG57Ae0?=
+ =?us-ascii?Q?BA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f78b5a4-fdbe-4523-ae2a-08db34319b57
+X-MS-Exchange-CrossTenant-Network-Message-Id: e02a76b8-d803-4150-81b2-08db34319bad
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 10:53:06.9074
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 10:53:07.4830
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Aq5aII7GW2JxksRCddaGt2JCSs9tZDooeHdkIo7J8Bf9x0P+3tItap7oTH8emn4dw+/500o9AOzvyzufMib6jQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: goQSad1S/hAkbYTlLFxM8VngiipTpG/6WGOeDZdjSSeYa6UvuiLsglvUaZPhYbTDbc3VOW3rAQgmt2gPadzHfg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8479
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
@@ -112,70 +112,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tc-taprio(8) has a synopsis which is much easier to follow, because it
-breaks up the command line arguments on multiple lines. Do this in
-tc-mqprio(8) too.
-
-Also, the highlighting (bold) of the keywords is all wrong. Take the
-opportunity to fix that.
+Add support for the "fp" argument in tc-mqprio, which takes an array
+of letters "E" (for express) or "P" (for preemptible), one per traffic
+class, and transforms them into TCA_MQPRIO_TC_ENTRY_FP u32 attributes of
+the TCA_MQPRIO_TC_ENTRY nest. We also dump these new netlink attributes
+when they come from the kernel.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- man/man8/tc-mqprio.8 | 41 ++++++++++++++++++++++++-----------------
- 1 file changed, 24 insertions(+), 17 deletions(-)
+ man/man8/tc-mqprio.8 | 36 ++++++++++++++--
+ tc/q_mqprio.c        | 98 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 131 insertions(+), 3 deletions(-)
 
 diff --git a/man/man8/tc-mqprio.8 b/man/man8/tc-mqprio.8
-index e17c50621af0..3441cb68a27f 100644
+index 3441cb68a27f..724ef906090c 100644
 --- a/man/man8/tc-mqprio.8
 +++ b/man/man8/tc-mqprio.8
-@@ -3,23 +3,30 @@
- MQPRIO \- Multiqueue Priority Qdisc (Offloaded Hardware QOS)
- .SH SYNOPSIS
- .B tc qdisc ... dev
--dev
--.B  ( parent
--classid
--.B | root) [ handle
--major:
--.B ] mqprio [ num_tc
--tcs
--.B ] [ map
--P0 P1 P2...
--.B ] [ queues
--count1@offset1 count2@offset2 ...
--.B ] [ hw
--1|0
--.B ] [ mode
--dcb|channel
--.B ] [ shaper
--dcb|bw_rlimit ] [
-+dev (
-+.B parent
-+classid | root) [
-+.B handle
-+major: ]
-+.B mqprio
-+.ti +8
-+[
-+.B num_tc
-+tcs ] [
-+.B map
-+P0 P1 P2... ] [
-+.B queues
-+count1@offset1 count2@offset2 ... ]
-+.ti +8
-+[
-+.B hw
-+1|0 ] [
-+.B mode
-+dcb|channel ] [
-+.B shaper
-+dcb|bw_rlimit ]
-+.ti +8
-+[
+@@ -30,9 +30,11 @@ dcb|bw_rlimit ]
  .B min_rate
  min_rate1 min_rate2 ... ] [
  .B max_rate
+-max_rate1 max_rate2 ...
+-.B ]
+-
++max_rate1 max_rate2 ... ]
++.ti +8
++[
++.B fp
++FP0 FP1 FP2 ... ]
+ 
+ .SH DESCRIPTION
+ The MQPRIO qdisc is a simple queuing discipline that allows mapping
+@@ -162,6 +164,34 @@ the
+ argument is set to
+ .B 'bw_rlimit'.
+ 
++.TP
++fp
++Selects whether traffic classes are express (deliver packets via the eMAC) or
++preemptible (deliver packets via the pMAC), according to IEEE 802.1Q-2018
++clause 6.7.2 Frame preemption. Takes the form of an array (one element per
++traffic class) with values being
++.B 'E'
++(for express) or
++.B 'P'
++(for preemptible).
++
++Multiple priorities which map to the same traffic class, as well as multiple
++TXQs which map to the same traffic class, must have the same FP attributes.
++To interpret the FP as an attribute per priority, the
++.B 'map'
++argument can be used for translation. To interpret FP as an attribute per TXQ,
++the
++.B 'queues'
++argument can be used for translation.
++
++Traffic classes are express by default. The argument is supported only with
++.B 'hw'
++set to 1. Preemptible traffic classes are accepted only if the device has a MAC
++Merge layer configurable through
++.BR ethtool(8).
++
++.SH SEE ALSO
++.BR ethtool(8)
+ 
+ .SH EXAMPLE
+ 
+diff --git a/tc/q_mqprio.c b/tc/q_mqprio.c
+index 99c43491e0be..0ecb05a5613a 100644
+--- a/tc/q_mqprio.c
++++ b/tc/q_mqprio.c
+@@ -29,6 +29,22 @@ static void explain(void)
+ 		"			  max_rate MAX_RATE1 MAX_RATE2 ... }\n");
+ }
+ 
++static void add_tc_entries(struct nlmsghdr *n, __u32 fp[TC_QOPT_MAX_QUEUE],
++			   int num_fp_entries)
++{
++	struct rtattr *l;
++	__u32 tc;
++
++	for (tc = 0; tc < num_fp_entries; tc++) {
++		l = addattr_nest(n, 1024, TCA_MQPRIO_TC_ENTRY | NLA_F_NESTED);
++
++		addattr32(n, 1024, TCA_MQPRIO_TC_ENTRY_INDEX, tc);
++		addattr32(n, 1024, TCA_MQPRIO_TC_ENTRY_FP, fp[tc]);
++
++		addattr_nest_end(n, l);
++	}
++}
++
+ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
+ 			    char **argv, struct nlmsghdr *n, const char *dev)
+ {
+@@ -43,7 +59,10 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
+ 	__u64 min_rate64[TC_QOPT_MAX_QUEUE] = {0};
+ 	__u64 max_rate64[TC_QOPT_MAX_QUEUE] = {0};
+ 	__u16 shaper = TC_MQPRIO_SHAPER_DCB;
++	__u32 fp[TC_QOPT_MAX_QUEUE] = { };
+ 	__u16 mode = TC_MQPRIO_MODE_DCB;
++	bool have_tc_entries = false;
++	int num_fp_entries = 0;
+ 	int cnt_off_pairs = 0;
+ 	struct rtattr *tail;
+ 	__u32 flags = 0;
+@@ -93,6 +112,21 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
+ 				idx++;
+ 				cnt_off_pairs++;
+ 			}
++		} else if (strcmp(*argv, "fp") == 0) {
++			while (idx < TC_QOPT_MAX_QUEUE && NEXT_ARG_OK()) {
++				NEXT_ARG();
++				if (strcmp(*argv, "E") == 0) {
++					fp[idx] = TC_FP_EXPRESS;
++				} else if (strcmp(*argv, "P") == 0) {
++					fp[idx] = TC_FP_PREEMPTIBLE;
++				} else {
++					PREV_ARG();
++					break;
++				}
++				num_fp_entries++;
++				idx++;
++			}
++			have_tc_entries = true;
+ 		} else if (strcmp(*argv, "hw") == 0) {
+ 			NEXT_ARG();
+ 			if (get_u8(&opt.hw, *argv, 10)) {
+@@ -187,6 +221,9 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
+ 		addattr_l(n, 1024, TCA_MQPRIO_SHAPER,
+ 			  &shaper, sizeof(shaper));
+ 
++	if (have_tc_entries)
++		add_tc_entries(n, fp, num_fp_entries);
++
+ 	if (flags & TC_MQPRIO_F_MIN_RATE) {
+ 		struct rtattr *start;
+ 
+@@ -218,6 +255,64 @@ static int mqprio_parse_opt(struct qdisc_util *qu, int argc,
+ 	return 0;
+ }
+ 
++static void dump_tc_entry(struct rtattr *rta, __u32 fp[TC_QOPT_MAX_QUEUE],
++			  int *max_tc_fp)
++{
++	struct rtattr *tb[TCA_MQPRIO_TC_ENTRY_MAX + 1];
++	__u32 tc, val = 0;
++
++	parse_rtattr_nested(tb, TCA_MQPRIO_TC_ENTRY_MAX, rta);
++
++	if (!tb[TCA_MQPRIO_TC_ENTRY_INDEX]) {
++		fprintf(stderr, "Missing tc entry index\n");
++		return;
++	}
++
++	tc = rta_getattr_u32(tb[TCA_MQPRIO_TC_ENTRY_INDEX]);
++	/* Prevent array out of bounds access */
++	if (tc >= TC_QOPT_MAX_QUEUE) {
++		fprintf(stderr, "Unexpected tc entry index %d\n", tc);
++		return;
++	}
++
++	if (tb[TCA_MQPRIO_TC_ENTRY_FP]) {
++		val = rta_getattr_u32(tb[TCA_MQPRIO_TC_ENTRY_FP]);
++		fp[tc] = val;
++
++		if (*max_tc_fp < (int)tc)
++			*max_tc_fp = tc;
++	}
++}
++
++static void dump_tc_entries(FILE *f, struct rtattr *opt, int len)
++{
++	__u32 fp[TC_QOPT_MAX_QUEUE] = {};
++	int max_tc_fp = -1;
++	struct rtattr *rta;
++	int tc;
++
++	for (rta = opt; RTA_OK(rta, len); rta = RTA_NEXT(rta, len)) {
++		if (rta->rta_type != (TCA_MQPRIO_TC_ENTRY | NLA_F_NESTED))
++			continue;
++
++		dump_tc_entry(rta, fp, &max_tc_fp);
++	}
++
++	if (max_tc_fp >= 0) {
++		open_json_array(PRINT_ANY,
++				is_json_context() ? "fp" : "\n             fp:");
++		for (tc = 0; tc <= max_tc_fp; tc++) {
++			print_string(PRINT_ANY, NULL, " %s",
++				     fp[tc] == TC_FP_PREEMPTIBLE ? "P" :
++				     fp[tc] == TC_FP_EXPRESS ? "E" :
++				     "?");
++		}
++		close_json_array(PRINT_ANY, "");
++
++		print_nl();
++	}
++}
++
+ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ {
+ 	int i;
+@@ -309,7 +404,10 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 				tc_print_rate(PRINT_ANY, NULL, "%s ", max_rate64[i]);
+ 			close_json_array(PRINT_ANY, "");
+ 		}
++
++		dump_tc_entries(f, RTA_DATA(opt) + RTA_ALIGN(sizeof(*qopt)), len);
+ 	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
