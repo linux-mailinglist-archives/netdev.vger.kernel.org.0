@@ -2,76 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04DF46D42D8
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5DF6D42FC
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231804AbjDCLDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 07:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
+        id S231937AbjDCLIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 07:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231829AbjDCLC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:02:57 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B70B113FD
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 04:02:25 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id ek18so115692495edb.6
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 04:02:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1680519737;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0A9cBUe1CIhDzuQx2yGzHPxbDSN2uhcwM/gtEXwXGpQ=;
-        b=MJ1S6YAr0p1+c2LTdnZvvwoMbkTpnzogcae4lkhzx2gf8L3f56zzQQwG1QWrzpcoRq
-         FW1JQJF+XtT0V6/RzptZHqmbcMJa0PUc+eJg+SxYDoLb4cG8KIMhhFrX3msHleRkdH0/
-         O23Cgt2jZJD5kZRvLh0hQYfM60GpTxxxqaS/I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680519737;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0A9cBUe1CIhDzuQx2yGzHPxbDSN2uhcwM/gtEXwXGpQ=;
-        b=MgWa85fOFNHph6kqFjV3yx7PqeNmvRT9yMeJT0IoEEuSzHjzxFhQjERY/u/RD2ULFN
-         Vcm6G+GPAeS4w5AbvTK9kEYkVD1scdDIBfaLPxmr7zSz/SgNzPwtuNDVnull62bkVfns
-         DLL1i58vPJHpmzsHqY/ayMpky6AtDdAzzwDQSztefkbFxFqnFgRq7UoS7vR6E7f4EyP4
-         uiWQB63pdpp8y5ksEUS0s0t8q3MDIC6P/Vr/jRJGihrs08r7xielltVhz8QdARt3s/h3
-         qNjz7hIDSfgy1VuT6sOc1EEbs8fozFL4ujjcWYAmkkxDzzmUEjIU4vbLK4RL/cucVhor
-         /qkA==
-X-Gm-Message-State: AAQBX9dfdZCNzYcSFgIxOEFYZIzgQfF01C8f5KRogpZX3PWUHmaNPiAA
-        DpPsqc+AYBjwN+pBDdjWdhWhljBXXK7eVZSw6HzMgw==
-X-Google-Smtp-Source: AKy350a3CTDjvcE2j8ryyIGM7DAKEbV0Sa+8uvmTWhEPaKIjaoFbiqMUyLp4ecWNx1G7nx8HHCZ3848IOEne7HHt71o=
-X-Received: by 2002:a50:f692:0:b0:4fc:fc86:5f76 with SMTP id
- d18-20020a50f692000000b004fcfc865f76mr17913135edn.6.1680519737334; Mon, 03
- Apr 2023 04:02:17 -0700 (PDT)
+        with ESMTP id S230090AbjDCLIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:08:54 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F24F3;
+        Mon,  3 Apr 2023 04:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=2I5G0aWxNwP2AuZEd7HJV9PNt405h29TCjS3lS11GQE=; b=tGCSsnfXfckTnukgZgod3OCwsa
+        YnU3b/KQbrvK9i7Qq+Rkjbx4nZ9yBsb3Wbd61buN2wxXFaB9p6jOswox6Dy8BDEv5BIj/DtXeCY+U
+        ljUoSTnuv16a9XP3Qk320OF4TgzfAANoGfajSHx7TpgLrj8qoPypAPU/nwism8gL+8mYDVKjGfQj6
+        fqxf/5Rso9kWci8OIB2ctsYzaCNI7yMjRtHY2MgaxuP1/Py2mzJ9pLRXs/hWzd1J6WsFqYuT3O1M6
+        oBfiaHkJJ3M6GfSsEdoZom3z/zWXdu2yqRw1Qu1VDr2ioCLwRTraXPivM+9uP3H8UfYPneTdr9Yz+
+        hKGCWXvg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39376)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pjI3I-0002eu-Ld; Mon, 03 Apr 2023 12:08:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pjI3H-0004AB-3C; Mon, 03 Apr 2023 12:08:43 +0100
+Date:   Mon, 3 Apr 2023 12:08:43 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, rogerq@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        srk@ti.com
+Subject: Re: [PATCH net-next v2 1/3] net: ethernet: ti: am65-cpsw: Move mode
+ specific config to mac_config()
+Message-ID: <ZCqzuwDLGuBDMHQG@shell.armlinux.org.uk>
+References: <20230403110106.983994-1-s-vadapalli@ti.com>
+ <20230403110106.983994-2-s-vadapalli@ti.com>
 MIME-Version: 1.0
-References: <20230329180502.1884307-1-kal.conley@dectris.com>
- <20230329180502.1884307-5-kal.conley@dectris.com> <CAJ8uoz1cGV1_3HQQddbkExVnm=wngP3ECJZNS5gOtQtfi=mPnA@mail.gmail.com>
-In-Reply-To: <CAJ8uoz1cGV1_3HQQddbkExVnm=wngP3ECJZNS5gOtQtfi=mPnA@mail.gmail.com>
-From:   Kal Cutter Conley <kal.conley@dectris.com>
-Date:   Mon, 3 Apr 2023 13:06:57 +0200
-Message-ID: <CAHApi-kV_c-z1zf9M_XyR_Wa=4xi-Cpk1FZT7BFTYQHgU1Bdqg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 04/10] selftests: xsk: Deflakify
- STATS_RX_DROPPED test
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230403110106.983994-2-s-vadapalli@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,13 +60,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This has been bugging me for a while so thanks for fixing this. Please
-> break this commit out of this patch set and send it as a separate bug
-> fix.
->
-> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
->
+On Mon, Apr 03, 2023 at 04:31:04PM +0530, Siddharth Vadapalli wrote:
+> Move the interface mode specific configuration to the mac_config()
+> callback am65_cpsw_nuss_mac_config().
+> 
+> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+> ---
+>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> index d17757ecbf42..74e099828978 100644
+> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+> @@ -1504,12 +1504,17 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
+>  							  phylink_config);
+>  	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
+>  	struct am65_cpsw_common *common = port->common;
+> +	u32 mac_control = 0;
+>  
+>  	if (common->pdata.extra_modes & BIT(state->interface)) {
+> -		if (state->interface == PHY_INTERFACE_MODE_SGMII)
+> +		if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+> +			mac_control |= CPSW_SL_CTL_EXT_EN;
+>  			writel(ADVERTISE_SGMII,
+>  			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
+> +		}
+>  
+> +		if (mac_control)
+> +			cpsw_sl_ctl_set(port->slave.mac_sl, mac_control);
+>  		writel(AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
+>  		       port->sgmii_base + AM65_CPSW_SGMII_CONTROL_REG);
+>  	}
+> @@ -1553,8 +1558,7 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+>  
+>  	if (speed == SPEED_1000)
+>  		mac_control |= CPSW_SL_CTL_GIG;
+> -	if (interface == PHY_INTERFACE_MODE_SGMII)
+> -		mac_control |= CPSW_SL_CTL_EXT_EN;
+> +	/* TODO: Verify whether in-band is necessary for 10 Mbps RGMII */
+>  	if (speed == SPEED_10 && phy_interface_mode_is_rgmii(interface))
+>  		/* Can be used with in band mode only */
+>  		mac_control |= CPSW_SL_CTL_EXT_EN;
 
-Can I send patches 01-05 all together as one patchset?
+I'm afraid I can see you haven't thought this patch through properly.
 
-Kal
+am65_cpsw_nuss_mac_link_down() will call
+cpsw_sl_ctl_reset(port->slave.mac_sl); which has the effect of clearing
+to zero the entire MAC control register. This will clear
+CPSW_SL_CTL_EXT_EN that was set in am65_cpsw_nuss_mac_config() which is
+not what you want to be doing.
+
+Given that we have the 10Mbps issue with RGMII, I think what you want
+to be doing is:
+
+1. Set CPSW_SL_CTL_EXT_EN in am65_cpsw_nuss_mac_config() if in SGMII
+   mode, otherwise clear this bit.
+
+2. Clear the mac_control register in am65_cpsw_nuss_mac_link_down()
+   if in RMGII mode, otherwise preserve the state of
+   CPSW_SL_CTL_EXT_EN but clear all other bits.
+
+3. Set CPSW_SL_CTL_EXT_EN in am65_cpsw_nuss_mac_link_up() if in
+   RGMII mode and 10Mbps.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
