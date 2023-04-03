@@ -2,149 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B94A46D4615
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EB496D461B
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 15:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbjDCNqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 09:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
+        id S231826AbjDCNro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 09:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232323AbjDCNqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:46:33 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD4330CF;
-        Mon,  3 Apr 2023 06:46:32 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id ga7so28335643qtb.2;
-        Mon, 03 Apr 2023 06:46:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680529591; x=1683121591;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lmBfHIegQyI1FRFG7cpgsbaaSUI++p7T5PaE/RkUk90=;
-        b=aZAY6OIApLntdoao50EqoWIIO78Bd6VomixfHjKViIWPqX9L5HsySoUqj9WkCqTOo6
-         +YAEn+5eyrJX85NpSFKwhQTkgFkgZ6HUb0PoGHuhOSYoyfnnMjHH/8dJ5sKtzRC3z7Ll
-         EwVVngSnBy1NB4hrEWHD54MDD6sSG0OYyRORtk+GZqbWqP3Mke7SLfSt6Tf6QYste1th
-         GuSr5YLq24iuIUL5lOQShiylIg4whh+j0V4slhAPA423iFofpjctOb+VSvoTv49PmNYl
-         6IktRcEXJU1oxwL6IcbgJi2RW0Bycc0zvP7r0WX2Lxp/0qhEzH0gLD2ex455Zu6kMl2b
-         rEpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680529591; x=1683121591;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=lmBfHIegQyI1FRFG7cpgsbaaSUI++p7T5PaE/RkUk90=;
-        b=SVD8l4azqxKOXxeUAsjbFEuQvC76Fz+6cvhcLurzRu9g6KdLOZWyayGc6140TaRvBL
-         3EmRC7EpgqVQh/rv50HGRw3eLshi774BpYFABeb+wQnYMPC6qWJuGe5ixbAOD6a38fKI
-         XmAR40AuGdQIbAFSOSta5HrizbF8emBgz3d97ttCg3QmckqBPJOk2Owj20yz8w3ISJz5
-         D2CWiqQfYEZd2WUmWNcuWxTO0xf2CulD0hGJ0c0BH17P9QtvnJ8e2s505YzZkJUUemp/
-         atswsBW/AjpdmjTYPdt1saVOwgR0kvNoyWCI0wVNip+1qImmqNzugIKXyubEBzFyZ6Kv
-         C7LA==
-X-Gm-Message-State: AAQBX9eby+kKzIeJwr4yK1BfA8RABVebDlKLfWszZLyOgrfEAZqutc3/
-        fBxpS1z1MU+5c9ROkIINuQ+0eHZaP4A=
-X-Google-Smtp-Source: AKy350bRUIG8K9LjvA1b9EuTwsk3AQLD39qLhO6S6LUfgGDpNedlRhLzUDv7B2/uoLhMI5WTUiFchA==
-X-Received: by 2002:a05:622a:1104:b0:3e4:e9e4:5d0e with SMTP id e4-20020a05622a110400b003e4e9e45d0emr45040970qty.50.1680529591144;
-        Mon, 03 Apr 2023 06:46:31 -0700 (PDT)
-Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
-        by smtp.gmail.com with ESMTPSA id c70-20020a379a49000000b00746ae84ea6csm2814958qke.3.2023.04.03.06.46.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 06:46:30 -0700 (PDT)
-Date:   Mon, 03 Apr 2023 09:46:30 -0400
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     David Howells <dhowells@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Message-ID: <642ad8b66acfe_302ae1208e7@willemb.c.googlers.com.notmuch>
-In-Reply-To: <1818504.1680515446@warthog.procyon.org.uk>
-References: <64299af9e8861_2d2a20208e6@willemb.c.googlers.com.notmuch>
- <20230331160914.1608208-1-dhowells@redhat.com>
- <20230331160914.1608208-16-dhowells@redhat.com>
- <1818504.1680515446@warthog.procyon.org.uk>
-Subject: Re: [PATCH v3 15/55] ip, udp: Support MSG_SPLICE_PAGES
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S232592AbjDCNrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 09:47:43 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622A01285D
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 06:47:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=KnpwjnyjcguJmkihkTORgbtJbwhDWM7JLedJJ0H75PA=; b=PGmkIP3W4MglXC5U/Xv4Vo/bf9
+        k0a4n9riD7Kvzj5veLZ5n0Vinh2Ej/EEk3vmP58ya8CXFfCvEBT3bSjq9tU05a2AXuAHdZNAu0cdP
+        6vGL1veTFzFzNj0t+8rDy4Th28bvkvJIAv2bzCh2UYqhW0AjWOLcUxh7QM+67Df7Lu2WMl8dvcGZA
+        0T6CdvW6I8Eel+IwZXSSNXEEpZAI/iAf28JdNbxc0evqdkxmuvJoDp+a271jDKBsOd/engg/1MWj8
+        7t2ZpWNPNuTKLUzskuOsrq7aJF1b+jGZog4upiLAN9rPzoBCWoeWwmBBgImhfMV0U/8FSDb3r+Z0Q
+        CAwxoqDg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55320)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pjKX2-0002rD-Fx; Mon, 03 Apr 2023 14:47:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pjKWy-0004Hz-G8; Mon, 03 Apr 2023 14:47:32 +0100
+Date:   Mon, 3 Apr 2023 14:47:32 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next 5/6] net: txgbe: Implement phylink pcs
+Message-ID: <ZCrY9Pqn+fID63s3@shell.armlinux.org.uk>
+References: <20230403064528.343866-1-jiawenwu@trustnetic.com>
+ <20230403064528.343866-6-jiawenwu@trustnetic.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230403064528.343866-6-jiawenwu@trustnetic.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Howells wrote:
-> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
-> 
-> > > +	} else if ((flags & MSG_SPLICE_PAGES) && length) {
-> > > +		if (inet->hdrincl)
-> > > +			return -EPERM;
-> > > +		if (rt->dst.dev->features & NETIF_F_SG)
-> > > +			/* We need an empty buffer to attach stuff to */
-> > > +			initial_length = transhdrlen;
-> > 
-> > I still don't entirely understand what initial_length means.
-> > 
-> > More importantly, transhdrlen can be zero. If not called for UDP
-> > but for RAW. Or if this is a subsequent call to a packet that is
-> > being held with MSG_MORE.
-> > 
-> > This works fine for existing use-cases, which go to alloc_new_skb.
-> > Not sure how this case would be different. But the comment alludes
-> > that it does.
-> 
-> The problem is that in the non-MSG_ZEROCOPY case, __ip_append_data() assumes
-> that it's going to copy the data it is given and will allocate sufficient
-> space in the skb in advance to hold it - but I don't want to do that because I
-> want to splice in the pages holding the data instead.  However, I do need to
-> allocate space to hold the transport header.
-> 
-> Maybe I should change 'initial_length' to 'initial_alloc'?  It represents the
-> amount I think we should allocate.  Or maybe I should have a separate
-> allocation clause for MSG_SPLICE_PAGES?
+On Mon, Apr 03, 2023 at 02:45:27PM +0800, Jiawen Wu wrote:
+> +static void txgbe_set_sgmii_an37_ability(struct txgbe *txgbe)
+> +{
+> +	u16 val;
+> +
+> +	pcs_write(txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_CTRL1,
+> +		  TXGBE_PCS_DIG_CTRL1_EN_VSMMD1 |
+> +		  TXGBE_PCS_DIG_CTRL1_CLS7_BP |
+> +		  TXGBE_PCS_DIG_CTRL1_BYP_PWRUP);
+> +	pcs_write(txgbe, MDIO_MMD_VEND2, TXGBE_MII_AN_CTRL,
+> +		  TXGBE_MII_AN_CTRL_MII |
+> +		  TXGBE_MII_AN_CTRL_TXCFG |
+> +		  TXGBE_MII_AN_CTRL_PCS_MODE(2));
+> +	pcs_write(txgbe, MDIO_MMD_VEND2, TXGBE_MII_DIG_CTRL1,
+> +		  TXGBE_MII_DIG_CTRL1_MAC_AUTOSW);
+> +	val = pcs_read(txgbe, MDIO_MMD_VEND2, MDIO_CTRL1);
+> +	val |= BMCR_ANRESTART | BMCR_ANENABLE;
+> +	pcs_write(txgbe, MDIO_MMD_VEND2, MDIO_CTRL1, val);
 
-The code already has to avoid allocation in the MSG_ZEROCOPY case. I
-added alloc_len and paged_len for that purpose.
+Does this really set the hardware up for *CISCO SGMII* or does it
+set it up for *1000BASE-X*?
 
-Only the transhdrlen will be copied with getfrag due to
+Hint: SGMII is *not* just another name for *1000BASE-X*. SGMII is a
+modification of IEEE 802.3 1000BASE-X by Cisco to support 10M and
+100M speeds. Please do NOT use SGMII as an inter-changeable term for
+1000BASE-X, even if everyone else in industry commits that crime. It
+is *incorrect* and an abuse of the term.
 
-    copy = datalen - transhdrlen - fraggap - pagedlen
+> +}
+> +
+> +static int txgbe_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+> +			    phy_interface_t interface,
+> +			    const unsigned long *advertising,
+> +			    bool permit_pause_to_mac)
+> +{
+> +	struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
+> +	struct wx *wx = txgbe->wx;
+> +	int ret, val;
+> +
+> +	/* Wait xpcs power-up good */
+> +	ret = read_poll_timeout(pcs_read, val,
+> +				(val & TXGBE_PCS_DIG_STS_PSEQ_ST) ==
+> +				TXGBE_PCS_DIG_STS_PSEQ_ST_GOOD,
+> +				10000, 1000000, false,
+> +				txgbe, MDIO_MMD_PCS, TXGBE_PCS_DIG_STS);
+> +	if (ret < 0) {
+> +		wx_err(wx, "xpcs power-up timeout.\n");
+> +		return ret;
+> +	}
+> +
+> +	/* Disable xpcs AN-73 */
+> +	pcs_write(txgbe, MDIO_MMD_AN, MDIO_CTRL1, 0);
+> +
+> +	/* Disable PHY MPLLA for eth mode change(after ECO) */
+> +	txgbe_ephy_write(txgbe, TXGBE_SUP_DIG_MPLLA_OVRD_IN_0, 0x243A);
+> +	WX_WRITE_FLUSH(wx);
+> +	usleep_range(1000, 2000);
 
-On next iteration in the loop, when remaining data fits in the skb,
-there are three cases. The first is skipped due to !NETIF_F_SG. The
-other two are either copy to page frags or zerocopy page frags.
+Is all this really appropriate for when pcs_config() gets called to
+modify the advertisement? I think, maybe, you probably want to make
+this conditional on the interface mode changing?
 
-I think your code should be able to fit in. Maybe easier if it could
-reuse the existing alloc_new_skb code to copy the transport header, as
-MSG_ZEROCOPY does, rather than adding a new __ip_splice_alloc branch
-that short-circuits that. Then __ip_splice_pages also does not need
-code to copy the initial header. But this is trickier. It's fine to
-leave as is.
+On that note, I don't see anywhere where you set the advertisement.
 
-Since your code currently does call continue before executing the rest
-of that branch, no need to modify any code there? Notably replacing
-length with initial_length, which itself is initialized to length in
-all cases expect for MSG_SPLICE_PAGES.
+> +static void txgbe_pcs_get_state_10gbr(struct txgbe *txgbe,
+> +				      struct phylink_link_state *state)
+> +{
+> +	int ret;
+> +
+> +	state->link = false;
+> +
+> +	ret = pcs_read(txgbe, MDIO_MMD_PCS, MDIO_STAT1);
+> +	if (ret < 0)
+> +		return;
+> +
+> +	if (ret & MDIO_STAT1_LSTATUS)
+> +		state->link = true;
+> +
+> +	if (state->link) {
+> +		state->pause = MLO_PAUSE_TX | MLO_PAUSE_RX;
+> +		state->duplex = DUPLEX_FULL;
+> +		state->speed = SPEED_10000;
+> +	}
+> +}
+> +
+> +static void txgbe_pcs_get_state_1000bx(struct txgbe *txgbe,
 
-Just hardcode transhdrlen as the copy argument to __ip_splice_pages.
-> I also wonder if __ip_append_data() really needs two places that call
-> getfrag().
-> 
-> David
-> 
+I think you're using "bx" here as a shortened 1000base-x, but there
+is an official 1000BASE-BX which makes this a little confusing.
+Please either use 1000b_x or spell it out as 1000basex.
 
+> +				       struct phylink_link_state *state)
+> +{
+> +	int lpa, bmsr;
+> +
+> +	/* For C37 1000BASEX mode */
+> +	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+> +			      state->advertising)) {
+> +		/* Reset link state */
+> +		state->link = false;
+> +
+> +		/* Poll for link jitter */
+> +		read_poll_timeout(pcs_read, lpa, lpa,
+> +				  100, 50000, false, txgbe,
+> +				  MDIO_MMD_VEND2, MII_LPA);
 
+What jitter are you referring to? If the link is down (and thus this
+register reads zero), why do we have to spin here for 50ms each time?
+
+> +
+> +		if (lpa < 0 || lpa & LPA_RFAULT) {
+> +			wx_err(txgbe->wx, "read pcs lpa error: %d\n", lpa);
+> +			return;
+> +		}
+> +
+> +		bmsr = pcs_read(txgbe, MDIO_MMD_VEND2, MII_BMSR);
+> +		if (bmsr < 0) {
+> +			wx_err(txgbe->wx, "read pcs lpa error: %d\n", bmsr);
+> +			return;
+> +		}
+> +
+> +		phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
+> +	}
+
+Don't we also want to read the status of the link when autoneg is
+disabled? phylink_mii_c22_pcs_decode_state() will deal with this
+for you if you just read the LPA and BMSR registers.
+
+> +}
+> +
+> +static void txgbe_pcs_get_state(struct phylink_pcs *pcs,
+> +				struct phylink_link_state *state)
+> +{
+> +	struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
+> +
+> +	switch (state->interface) {
+> +	case PHY_INTERFACE_MODE_10GBASER:
+> +		txgbe_pcs_get_state_10gbr(txgbe, state);
+> +		return;
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +		txgbe_pcs_get_state_1000bx(txgbe, state);
+> +		return;
+> +	default:
+> +		return;
+> +	}
+> +}
+> +
+> +static void txgbe_pcs_an_restart(struct phylink_pcs *pcs)
+> +{
+> +	struct txgbe *txgbe = container_of(pcs, struct txgbe, pcs);
+> +	int ret;
+> +
+> +	ret = pcs_read(txgbe, MDIO_MMD_VEND2, MDIO_CTRL1);
+> +	if (ret >= 0) {
+> +		ret |= BMCR_ANRESTART;
+> +		pcs_write(txgbe, MDIO_MMD_VEND2, MDIO_CTRL1, ret);
+> +	}
+
+We also have mdiodev_modify() which can be used to set BMCR_ANRESTART,
+but you'd need pcs_modify() to wrap it... but I don't understand why
+not just use the mdiodev_* accessors directly along with:
+
+	struct mdio_device *mdiodev = txgbe->mdiodev;
+
+at the start of the function? It's probably slightly more efficient
+in terms of produced code.
+
+> @@ -197,10 +537,15 @@ static int txgbe_gpio_get(struct gpio_chip *chip, unsigned int offset)
+>  	int val, dir;
+>  
+>  	dir = chip->get_direction(chip, offset);
+> -	if (dir == GPIO_LINE_DIRECTION_IN)
+> +	if (dir == GPIO_LINE_DIRECTION_IN) {
+> +		struct txgbe *txgbe = (struct txgbe *)wx->priv;
+> +
+>  		val = rd32m(wx, WX_GPIO_EXT, BIT(offset));
+> -	else
+> +		txgbe->gpio_orig &= ~BIT(offset);
+> +		txgbe->gpio_orig |= val;
+> +	} else {
+>  		val = rd32m(wx, WX_GPIO_DR, BIT(offset));
+> +	}
+>  
+>  	return !!(val & BIT(offset));
+>  }
+> @@ -334,12 +679,19 @@ static void txgbe_irq_handler(struct irq_desc *desc)
+>  	struct txgbe *txgbe = (struct txgbe *)wx->priv;
+>  	struct gpio_chip *gc = txgbe->gpio;
+>  	irq_hw_number_t hwirq;
+> -	unsigned long val;
+> +	unsigned long gpioirq;
+> +	u32 gpio;
+>  
+>  	chained_irq_enter(chip, desc);
+>  
+> -	val = rd32(wx, WX_GPIO_INTSTATUS);
+> -	for_each_set_bit(hwirq, &val, gc->ngpio)
+> +	gpioirq = rd32(wx, WX_GPIO_INTSTATUS);
+> +
+> +	/* workaround for hysteretic gpio interrupts */
+> +	gpio = rd32(wx, WX_GPIO_EXT);
+> +	if (!gpioirq)
+> +		gpioirq = txgbe->gpio_orig ^ gpio;
+> +
+> +	for_each_set_bit(hwirq, &gpioirq, gc->ngpio)
+>  		generic_handle_domain_irq(gc->irq.domain, hwirq);
+>  
+>  	chained_irq_exit(chip, desc);
+> @@ -358,6 +710,7 @@ static int txgbe_gpio_init(struct txgbe *txgbe)
+>  	int ret;
+>  
+>  	pdev = wx->pdev;
+> +	txgbe->gpio_orig = 0;
+
+What has all this GPIO fiddling got to do with the addition of PCS
+support? Shoudln't this be in a different patch?
+
+>  
+>  	gc = devm_kzalloc(&pdev->dev, sizeof(*gc), GFP_KERNEL);
+>  	if (!gc)
+> @@ -428,6 +781,12 @@ int txgbe_init_phy(struct txgbe *txgbe)
+>  		return ret;
+>  	}
+>  
+> +	ret = txgbe_mdio_pcs_init(txgbe);
+> +	if (ret) {
+> +		wx_err(txgbe->wx, "failed to init mdio pcs: %d\n", ret);
+> +		goto err;
+> +	}
+> +
+>  	ret = txgbe_i2c_adapter_add(txgbe);
+>  	if (ret) {
+>  		wx_err(txgbe->wx, "failed to init i2c interface: %d\n", ret);
+> @@ -456,6 +815,8 @@ int txgbe_init_phy(struct txgbe *txgbe)
+>  
+>  void txgbe_remove_phy(struct txgbe *txgbe)
+>  {
+> +	if (txgbe->mdiodev)
+> +		mdio_device_free(txgbe->mdiodev);
+
+Wasn't the mdiodev allocated using a devm_* function? Won't this lead to
+a double-free?
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
