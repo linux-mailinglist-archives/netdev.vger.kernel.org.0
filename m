@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FEF86D516F
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 21:35:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB5B6D5182
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 21:42:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbjDCTf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 15:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        id S231991AbjDCTmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 15:42:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231538AbjDCTfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 15:35:54 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DA810DE
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 12:35:53 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id bg16-20020a05600c3c9000b003eb34e21bdfso20542813wmb.0
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 12:35:53 -0700 (PDT)
+        with ESMTP id S229642AbjDCTl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 15:41:59 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B66C26A9;
+        Mon,  3 Apr 2023 12:41:58 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id t10so121608738edd.12;
+        Mon, 03 Apr 2023 12:41:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680550552;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+        d=googlemail.com; s=20210112; t=1680550917;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NZa4opcsQoodNo90FIgyVx9zfFS6hTIMu8uKrI/HoBE=;
-        b=k0MUwoon6K0lNUnxM5Krlg5gXyH3AhpXn+KQuT/7o9NEjfFF83EqYwFWGNq5rbC4Ry
-         k4az95ATeNfp/F8JEKiyDE0JXvqkddGNevtGi5TfKsNmrv96WoQSZUiki57LWHVD0K49
-         DxQnCBTFTeOaSef1LNcNTp2gUDeYaHOEj+VZ5Lc7aAAYJiQtSDC9RdADB++8wM4MUp43
-         zNd7S/1SOgqCHVjRqZpFhFookWCiqZjC+rO3+lceEGKSo2zyfeI9/Jca4NUmONavz96+
-         4J50BMLQO+EqAcKHOV5SPAs+6jbxp36eOxp+slhGow3kyPhnyIIhg9VMgdILd1i9H/lS
-         Zikg==
+        bh=YxDGLkY3AgV1LJ1NKgh+QPL9Z2Q+niKhWjXSsHgdVqk=;
+        b=ESSVcu8h+tXGIpKQGUW5MZciMkziOYr/EQJ6In47HzHv768HyLwII12DayfyEws3u8
+         y1V7e2HKIGDHxdZLWrbnIpDo+bkQTUx2xBzdU7H+MruNpJxwKresu1RiMWzwtj4ajUD3
+         RyVTHMdoPTHYzyej4je5IUJwZOz85U7aYCcBaJbPXgejU3PhXKr0ZhaB5p7l2ASn3ody
+         ORpAiJ6pDjc/GVTi8wiBmx96XV4k8u1QC8zO8a2MyN51mfXrzARWDzal+zKOFKSL6hXe
+         sFiPZdZo7hGnoKXUOz05c+ihV4j23+mcliFp5wee2CvFXB6bgqzxK658FGNWD7MaPKj9
+         068g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680550552;
-        h=content-transfer-encoding:subject:from:cc:to:content-language
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=NZa4opcsQoodNo90FIgyVx9zfFS6hTIMu8uKrI/HoBE=;
-        b=Q3YXoC1RdccEA1Sni0wYetnxB1jDw3bFbwLN3mnHyVKZ9BZQd2t5GsiF1PbwQAkW+6
-         lImQhNWVw2Xhi55NDBKBWl//HDbBZlgfaa5oP9KV55/VXlohO064UVOxrTJw7XTOECUW
-         bsZKqTqmlzURydGhuG/Pb0A18gWaHm5lbAHVDa4+ykINEFIK4SFLm/OzuohMUxyHyMQp
-         H9YGPUhe+lIG5fvQSqw+7N02jbsKxS7xtQHSSK/cmmlLV8CSkErRRcIIWDImu6QDXJXh
-         1CHj2XBO1W5OegrIPOYmhJmZKtTaNpf8NYrqSy4NtVZlLdWnt8pRJyA7Y8WcXVZWZOTS
-         IMvg==
-X-Gm-Message-State: AAQBX9ctI9Mtm8WN9Jx0EJ4D+t5sZh78wguJ/U4rXZ7bXJEYWjuYY0+d
-        s4xNGANUQZ4+mk/YfamQUJFAf+PrGUY=
-X-Google-Smtp-Source: AKy350aoK99yeB0PWJO20XA2MQsMGkOoctlQcatFgis+Mzn6VXzxU7reL+CTXy9enPnSyw8EpYZsrQ==
-X-Received: by 2002:a1c:7c12:0:b0:3ed:29e1:ed21 with SMTP id x18-20020a1c7c12000000b003ed29e1ed21mr381957wmc.37.1680550551618;
-        Mon, 03 Apr 2023 12:35:51 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b9a3:9100:5849:b3bc:e358:e393? (dynamic-2a01-0c23-b9a3-9100-5849-b3bc-e358-e393.c23.pool.telefonica.de. [2a01:c23:b9a3:9100:5849:b3bc:e358:e393])
-        by smtp.googlemail.com with ESMTPSA id u17-20020a05600c19d100b003dd1bd0b915sm20412682wmq.22.2023.04.03.12.35.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Apr 2023 12:35:51 -0700 (PDT)
-Message-ID: <8d309575-067c-7321-33cf-6ffac11f7c8d@gmail.com>
-Date:   Mon, 3 Apr 2023 21:35:46 +0200
+        d=1e100.net; s=20210112; t=1680550917;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YxDGLkY3AgV1LJ1NKgh+QPL9Z2Q+niKhWjXSsHgdVqk=;
+        b=I61hMjaSJq/CFQE2vMM0K7FWQUjxt1XevRm1rEWLFko014syvcnHqqz/UBW7CHCV6D
+         yGb1uLVX+CkvwTk9cLByTdIMcwFKBjeRcaEDzR7NLDlV/7uMbRxypfasyygZWaT0/oWR
+         62uxwIlXQTqrQRAPizC0EkjyAFCCuFNafnBx7nPN9jqjYUFVPXN7QuevIMyuYL0bua1B
+         jIxH1dcy8p2ya+4cq4wneHk0CesRNup+NMgz1gwbSj8ttOQjNJlPT0la3AjKXK2ifK/5
+         K17GKWq4lXvLiqgJ1HdIcaehsO2CAuo1R+cqLrURPjOsM67WWDqju+EVn/V4UWLl6kru
+         5B/g==
+X-Gm-Message-State: AAQBX9eqtm2SoNuf8ljhH9rgzRbGccOYAFmu3/PHYgjdy3Wfjnqfg3Bi
+        V4TA1w95a+YAa2nzAKBU6XAS7MabR2Xh1Z5LCKE=
+X-Google-Smtp-Source: AKy350bKv+uglF73a6FGKgUTe6qjlcm/cjVAJSO0AhQJ0YqziM7up/wHJcBRhvmy7kKwvyxPTTLXj11A8Vj8ebQ1CjQ=
+X-Received: by 2002:a50:9fad:0:b0:4c1:6acc:ea5 with SMTP id
+ c42-20020a509fad000000b004c16acc0ea5mr203405edf.4.1680550916602; Mon, 03 Apr
+ 2023 12:41:56 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Neil Armstrong <neil.armstrong@linaro.org>
-Cc:     Chris Healy <cphealy@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: phy: meson-gxl: enable edpd tunable support for
- G12A internal PHY
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20230108211324.442823-1-martin.blumenstingl@googlemail.com>
+ <20230108211324.442823-2-martin.blumenstingl@googlemail.com>
+ <20230331125906.GF15436@pengutronix.de> <CAFBinCB8B4-oYaFY4p-20_PCWh_6peq75O9JjV6ZusVXPKSaDw@mail.gmail.com>
+ <20230403100043.GT19113@pengutronix.de>
+In-Reply-To: <20230403100043.GT19113@pengutronix.de>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 3 Apr 2023 21:41:45 +0200
+Message-ID: <CAFBinCBeZ4EKdx_3erL9vC25Am+uUX+5z2_RkSK9igBAcb5Y1g@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] wifi: rtw88: Move register access from
+ rtw_bf_assoc() outside the RCU
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@kernel.org, pkshih@realtek.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable EDPD PHY tunable support for the G12A internal PHY, reusing the
-recently added tunable support in the smsc driver.
+Hi Sascha,
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/meson-gxl.c | 4 ++++
- 1 file changed, 4 insertions(+)
+On Mon, Apr 3, 2023 at 12:00=E2=80=AFPM Sascha Hauer <s.hauer@pengutronix.d=
+e> wrote:
+[...]
+> > There's a module parameter which lets you enable/disable BF support:
+> > $ git grep rtw_bf_support drivers/net/wireless/realtek/rtw88/ | grep pa=
+ram
+> > drivers/net/wireless/realtek/rtw88/main.c:module_param_named(support_bf=
+,
+> > rtw_bf_support, bool, 0644);
+>
+> I was a bit too fast reporting this. Yes, there seems to be a problem
+> with the RTW8821CU, but it doesn't seem to be related to this patch.
+>
+> Sorry for the noise.
+Thanks for investigating further and confirming that this is not the cause!
+And don't worry: we're all human and with complex drivers that can be
+impacted by so many things (other APs, phones, antennas, ...) it's
+easy to miss a tiny detail (I've been there before).
 
-diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
-index 3dea7c752..bb9b33b6b 100644
---- a/drivers/net/phy/meson-gxl.c
-+++ b/drivers/net/phy/meson-gxl.c
-@@ -210,6 +210,10 @@ static struct phy_driver meson_gxl_phy[] = {
- 		.read_status	= lan87xx_read_status,
- 		.config_intr	= smsc_phy_config_intr,
- 		.handle_interrupt = smsc_phy_handle_interrupt,
-+
-+		.get_tunable	= smsc_phy_get_tunable,
-+		.set_tunable	= smsc_phy_set_tunable,
-+
- 		.suspend        = genphy_suspend,
- 		.resume         = genphy_resume,
- 		.read_mmd	= genphy_read_mmd_unsupported,
--- 
-2.40.0
 
+Best regards,
+Martin
