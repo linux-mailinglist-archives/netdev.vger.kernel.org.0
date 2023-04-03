@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 033F36D3B60
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 03:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2085F6D3B63
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 03:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbjDCBTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Apr 2023 21:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
+        id S231332AbjDCBTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Apr 2023 21:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbjDCBTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 21:19:16 -0400
+        with ESMTP id S231320AbjDCBTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Apr 2023 21:19:31 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4EDB44E;
-        Sun,  2 Apr 2023 18:18:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B342E5FF4;
+        Sun,  2 Apr 2023 18:18:59 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pj8qJ-0004ki-02;
-        Mon, 03 Apr 2023 03:18:43 +0200
-Date:   Mon, 3 Apr 2023 02:18:39 +0100
+        id 1pj8qV-0004lV-0K;
+        Mon, 03 Apr 2023 03:18:55 +0200
+Date:   Mon, 3 Apr 2023 02:18:50 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -43,9 +43,9 @@ To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
 Cc:     Sam Shih <Sam.Shih@mediatek.com>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         John Crispin <john@phrozen.org>, Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH net-next v2 08/14] net: dsa: mt7530: introduce
- mt7530_probe_common helper function
-Message-ID: <3b22c333979ca2d3e933b957766112fabbd369c6.1680483896.git.daniel@makrotopia.org>
+Subject: [PATCH net-next v2 09/14] net: dsa: mt7530: introduce
+ mt7530_remove_common helper function
+Message-ID: <7a2829bb037d27a57e588fe0157174ee47d37c3b.1680483896.git.daniel@makrotopia.org>
 References: <cover.1680483895.git.daniel@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -59,156 +59,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move commonly used parts from mt7530_probe into new mt7530_probe_common
-helper function which will be used by both, mt7530_probe and the
-to-be-introduced mt7988_probe.
+Move commonly used parts from mt7530_remove into new
+mt7530_remove_common helper function which will be used by both,
+mt7530_remove and the to-be-introduced mt7988_remove.
 
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/mt7530.c | 98 ++++++++++++++++++++++------------------
- 1 file changed, 54 insertions(+), 44 deletions(-)
+ drivers/net/dsa/mt7530.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 1215d5e4dd38a..a60ed8706ce35 100644
+index a60ed8706ce35..9404675c47222 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -3142,44 +3142,21 @@ static const struct of_device_id mt7530_of_match[] = {
- MODULE_DEVICE_TABLE(of, mt7530_of_match);
+@@ -3259,6 +3259,17 @@ mt7530_probe(struct mdio_device *mdiodev)
+ 	return dsa_register_switch(priv->ds);
+ }
  
- static int
--mt7530_probe(struct mdio_device *mdiodev)
-+mt7530_probe_common(struct mt7530_priv *priv)
- {
--	static struct regmap_config *regmap_config;
--	struct mt7530_priv *priv;
--	struct device_node *dn;
--	int ret;
--
--	dn = mdiodev->dev.of_node;
--
--	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
-+	struct device *dev = priv->dev;
- 
--	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
-+	priv->ds = devm_kzalloc(dev, sizeof(*priv->ds), GFP_KERNEL);
- 	if (!priv->ds)
- 		return -ENOMEM;
- 
--	priv->ds->dev = &mdiodev->dev;
-+	priv->ds->dev = dev;
- 	priv->ds->num_ports = MT7530_NUM_PORTS;
- 
--	/* Use medatek,mcm property to distinguish hardware type that would
--	 * casues a little bit differences on power-on sequence.
--	 */
--	priv->mcm = of_property_read_bool(dn, "mediatek,mcm");
--	if (priv->mcm) {
--		dev_info(&mdiodev->dev, "MT7530 adapts as multi-chip module\n");
--
--		priv->rstc = devm_reset_control_get(&mdiodev->dev, "mcm");
--		if (IS_ERR(priv->rstc)) {
--			dev_err(&mdiodev->dev, "Couldn't get our reset line\n");
--			return PTR_ERR(priv->rstc);
--		}
--	}
--
- 	/* Get the hardware identifier from the devicetree node.
- 	 * We will need it for some of the clock and regulator setup.
- 	 */
--	priv->info = of_device_get_match_data(&mdiodev->dev);
-+	priv->info = of_device_get_match_data(dev);
- 	if (!priv->info)
- 		return -EINVAL;
- 
-@@ -3193,23 +3170,53 @@ mt7530_probe(struct mdio_device *mdiodev)
- 		return -EINVAL;
- 
- 	priv->id = priv->info->id;
-+	priv->dev = dev;
-+	priv->ds->priv = priv;
-+	priv->ds->ops = &mt7530_switch_ops;
-+	mutex_init(&priv->reg_mutex);
-+	dev_set_drvdata(dev, priv);
- 
--	if (priv->id == ID_MT7530) {
--		priv->core_pwr = devm_regulator_get(&mdiodev->dev, "core");
--		if (IS_ERR(priv->core_pwr))
--			return PTR_ERR(priv->core_pwr);
-+	return 0;
-+}
- 
--		priv->io_pwr = devm_regulator_get(&mdiodev->dev, "io");
--		if (IS_ERR(priv->io_pwr))
--			return PTR_ERR(priv->io_pwr);
--	}
-+static int
-+mt7530_probe(struct mdio_device *mdiodev)
++static void
++mt7530_remove_common(struct mt7530_priv *priv)
 +{
-+	static struct regmap_config *regmap_config;
-+	struct mt7530_priv *priv;
-+	struct device_node *dn;
-+	int ret;
++	if (priv->irq)
++		mt7530_free_irq(priv);
 +
-+	dn = mdiodev->dev.of_node;
++	dsa_unregister_switch(priv->ds);
++
++	mutex_destroy(&priv->reg_mutex);
++}
++
+ static void
+ mt7530_remove(struct mdio_device *mdiodev)
+ {
+@@ -3278,15 +3289,10 @@ mt7530_remove(struct mdio_device *mdiodev)
+ 		dev_err(priv->dev, "Failed to disable io pwr: %d\n",
+ 			ret);
  
--	/* Not MCM that indicates switch works as the remote standalone
-+	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->bus = mdiodev->bus;
-+	priv->dev = &mdiodev->dev;
-+
-+	ret = mt7530_probe_common(priv);
-+	if (ret)
-+		return ret;
-+
-+	/* Use medatek,mcm property to distinguish hardware type that would
-+	 * cause a little bit differences on power-on sequence.
-+	 * Not MCM that indicates switch works as the remote standalone
- 	 * integrated circuit so the GPIO pin would be used to complete
- 	 * the reset, otherwise memory-mapped register accessing used
- 	 * through syscon provides in the case of MCM.
- 	 */
--	if (!priv->mcm) {
-+	priv->mcm = of_property_read_bool(dn, "mediatek,mcm");
-+	if (priv->mcm) {
-+		dev_info(&mdiodev->dev, "MT7530 adapts as multi-chip module\n");
-+
-+		priv->rstc = devm_reset_control_get(&mdiodev->dev, "mcm");
-+		if (IS_ERR(priv->rstc)) {
-+			dev_err(&mdiodev->dev, "Couldn't get our reset line\n");
-+			return PTR_ERR(priv->rstc);
-+		}
-+	} else {
- 		priv->reset = devm_gpiod_get_optional(&mdiodev->dev, "reset",
- 						      GPIOD_OUT_LOW);
- 		if (IS_ERR(priv->reset)) {
-@@ -3218,12 +3225,15 @@ mt7530_probe(struct mdio_device *mdiodev)
- 		}
- 	}
+-	if (priv->irq)
+-		mt7530_free_irq(priv);
+-
+-	dsa_unregister_switch(priv->ds);
++	mt7530_remove_common(priv);
  
--	priv->bus = mdiodev->bus;
--	priv->dev = &mdiodev->dev;
--	priv->ds->priv = priv;
--	priv->ds->ops = &mt7530_switch_ops;
--	mutex_init(&priv->reg_mutex);
--	dev_set_drvdata(&mdiodev->dev, priv);
-+	if (priv->id == ID_MT7530) {
-+		priv->core_pwr = devm_regulator_get(&mdiodev->dev, "core");
-+		if (IS_ERR(priv->core_pwr))
-+			return PTR_ERR(priv->core_pwr);
-+
-+		priv->io_pwr = devm_regulator_get(&mdiodev->dev, "io");
-+		if (IS_ERR(priv->io_pwr))
-+			return PTR_ERR(priv->io_pwr);
-+	}
+ 	for (i = 0; i < 2; ++i)
+ 		mtk_pcs_lynxi_destroy(priv->ports[5 + i].sgmii_pcs);
+-
+-	mutex_destroy(&priv->reg_mutex);
+ }
  
- 	regmap_config = devm_kzalloc(&mdiodev->dev, sizeof(*regmap_config),
- 				     GFP_KERNEL);
+ static void mt7530_shutdown(struct mdio_device *mdiodev)
 -- 
 2.40.0
 
