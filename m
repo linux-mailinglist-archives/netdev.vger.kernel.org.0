@@ -2,65 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD716D41C2
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5081D6D41C8
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbjDCKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 06:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
+        id S232267AbjDCKTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 06:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232214AbjDCKTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:19:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2A3C179
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 03:18:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680517090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ErhkLjTZo3sDNs+eNNONjk4AV6jR+dJPxKvHicqZOok=;
-        b=H8PVoIhIsTKQ/Z16i2ecn4j4skUN0TdlBGC7Dwm3Cb4fpHfAXCC4PFH/63i6Mi+AHZIOeB
-        1fO43z98P5ZoO26sR18l0Lw4MTOPe4VTMcSRZCazckGoQi/UYZpZ8MDju9s3FvQltM/4Sb
-        0c9gj6MJ+HIyDouq1Pq/aZmd6riYIUo=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-7fDF1a6ePI6gZGJaFAcJbg-1; Mon, 03 Apr 2023 06:18:06 -0400
-X-MC-Unique: 7fDF1a6ePI6gZGJaFAcJbg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 67B071C05147;
-        Mon,  3 Apr 2023 10:18:06 +0000 (UTC)
-Received: from localhost (unknown [10.43.135.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0E766140EBF4;
-        Mon,  3 Apr 2023 10:18:04 +0000 (UTC)
-Date:   Mon, 3 Apr 2023 12:18:03 +0200
-From:   Miroslav Lichvar <mlichvar@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next] bonding: add software timestamping support
-Message-ID: <ZCqn27fK9oIzfWCA@localhost>
-References: <20230329031337.3444547-1-liuhangbin@gmail.com>
- <ZCQSf6Sc8A8E9ERN@localhost>
- <ZCUDFyNQoulZRsRQ@Laptop-X1>
- <7144.1680149564@famine>
- <ZCZUMzk5SM9swbDT@Laptop-X1>
+        with ESMTP id S232351AbjDCKTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:19:11 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7AD12BD2;
+        Mon,  3 Apr 2023 03:18:58 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=kaishen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VfHQgtD_1680517135;
+Received: from 30.221.116.42(mailfrom:KaiShen@linux.alibaba.com fp:SMTPD_---0VfHQgtD_1680517135)
+          by smtp.aliyun-inc.com;
+          Mon, 03 Apr 2023 18:18:56 +0800
+Message-ID: <a32eff21-fe49-5284-2485-25b4f14a7239@linux.alibaba.com>
+Date:   Mon, 3 Apr 2023 18:18:54 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZCZUMzk5SM9swbDT@Laptop-X1>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.1
+From:   Kai <KaiShen@linux.alibaba.com>
+Subject: Re: [PATCH net-next] net/smc: introduce shadow sockets for fallback
+ connections
+To:     Wenjia Zhang <wenjia@linux.ibm.com>, kgraul@linux.ibm.com,
+        jaka@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+References: <20230321071959.87786-1-KaiShen@linux.alibaba.com>
+ <170b35d9-2071-caf3-094e-6abfb7cefa75@linux.ibm.com>
+ <7fa69883-9af5-4b2a-7853-9697ff30beba@linux.alibaba.com>
+ <df825d71-eb6d-ac73-7f7f-33277fde6b12@linux.ibm.com>
+Content-Language: en-US
+In-Reply-To: <df825d71-eb6d-ac73-7f7f-33277fde6b12@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.3 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,27 +49,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 31, 2023 at 11:32:03AM +0800, Hangbin Liu wrote:
-> On Wed, Mar 29, 2023 at 09:12:44PM -0700, Jay Vosburgh wrote:
-> > 	If I'm reading things correctly, the answer is no, as one
-> > exception appears to be IPOIB, which doesn't define .get_ts_info that I
-> > CAN Find, and does not call skb_tx_timestamp() in ipoib_start_xmit().
+
+
+On 3/29/23 5:41 PM, Wenjia Zhang wrote:
 > 
-> Oh.. I thought it's a software timestamp and all driver's should support it.
-> I didn't expect that Infiniband doesn't support it. Based on this, it seems
-> we can't even assume that all Ethernet drivers will support it, since a
-> private driver may also not call skb_tx_timestamp() during transmit. Even if
-> we check the slaves during ioctl call, we can't expect a later-joined slave
-> to have SW TX timestamp support. It seems that we'll have to drop this feature."
+> 
+> 
+> On 24.03.23 08:26, Kai wrote:
+>>
+>>
+>> On 3/23/23 1:09 AM, Wenjia Zhang wrote:
+>>>
+>>>
+>>> On 21.03.23 08:19, Kai Shen wrote:
+>>>> SMC-R performs not so well on fallback situations right now,
+>>>> especially on short link server fallback occasions. We are planning
+>>>> to make SMC-R widely used and handling this fallback performance
+>>>> issue is really crucial to us. Here we introduce a shadow socket
+>>>> method to try to relief this problem.
+>>>>
+>>> Could you please elaborate the problem?
+>>
+>> Here is the background. We are using SMC-R to accelerate server-client 
+>> applications by using SMC-R on server side, but not all clients use 
+>> SMC-R. So in these occasions we hope that the clients using SMC-R get 
+>> acceleration while the clients that fallback to TCP will get the 
+>> performance no worse than TCP.
+> 
+> I'm wondering how the usecase works? How are the server-client 
+> applications get accelerated by using SMC-R? If your case rely on the 
+> fallback, why don't use TCP/IP directly?
+> 
 
-I'd not see that as a problem. At the time of the ioctl call the
-information is valid. I think knowing that some timestamps will be
-missing due to an interface not supporting the feature is a different
-case than the admin later adding a new interface to the bond and
-breaking the condition. The application likely already have some
-expectations after it starts and configures timestamping, e.g. that
-the RX filter is not changed or TX timestamping disabled.
+Our goal is to replace TCP with SMC-R on Cloud as much as possible.
+Many applications will use SMC-R by default but not all(like they are
+not using then latest OS). So a SMC-R using server must be ready to
+serve SMC-R clients and TCP clients in the mean time. As a result
+fallback will happend.
 
--- 
-Miroslav Lichvar
+In these cases we hope clients using SMC-R get accelerated and clients
+using TCP get no performance loss. The server using SMC-R can't tell if
+the next client use SMC-R or TCP util their TCP SYN comes and this lead
+to fallback when a client use TCP. But the current SMC-R server fallback
+path which handles incoming TCP connection requests will compromise the
+performance of TCP clients. So we want to optimize SMC-R server fallback
+path.
 
+Thanks.
