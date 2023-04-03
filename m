@@ -2,131 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D136D433A
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D4F36D433F
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:18:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232354AbjDCLQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 07:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S232350AbjDCLSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 07:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbjDCLQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:16:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98DC6182
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 04:15:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680520543;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ur1wtGFej11roMtg3KU2Y0Q1CPjhKzuCIJeUQ2U0Vpk=;
-        b=jJtoOU/7QKY1/S76Z41qlhZGBkfvuscdHMGtDv1hlk/uLwdJqGARhkbj+1oD0QNhtdOEe+
-        oXhzuisrlrDAoWPgCsptB+fexuh4y5oXn/DG/9PoI/7BCvYMTBPx+thWujhDYHxzXduaK1
-        tQhTsnzRIDIm0RgGhO7ixmF04Kx701c=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-329-5uee_XpJOTOrhp0YZzan6Q-1; Mon, 03 Apr 2023 07:15:42 -0400
-X-MC-Unique: 5uee_XpJOTOrhp0YZzan6Q-1
-Received: by mail-qt1-f198.google.com with SMTP id h6-20020a05622a170600b003e22c6de617so19684312qtk.13
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 04:15:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680520541;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ur1wtGFej11roMtg3KU2Y0Q1CPjhKzuCIJeUQ2U0Vpk=;
-        b=Ji6AHAoWaQmOh3mMnhcYuYLZhOvq3VJu87DqTcvvmozeg/wkPaImrR/Dd5Z+2fv9ZM
-         DJV+Tba5VqxcAeX11/ZbpBhsXa7zxnXWz5n5iep+xSY3DhE6vM5C5LiaNJMvuzmj1qF6
-         sRjytKB4AaLU02G5sdFMCL+tGLkxQZ1soOcWhiSPNFG9e2V2C2XSbq5k/MjU/YYRElMl
-         CI0dRpUHEwWSCQYVpRLsdguzmD+etwTC8Hvj1SoppwkKtaabs2RCihCBkQ8FfxqGG5uN
-         Sncsocg7ghLxUc8sRSoc9WdxFZbm4rjpDX918NoMJrjJb8L8xCLmObKnLNPxIYZwzKyh
-         Wkrw==
-X-Gm-Message-State: AO0yUKV+tf+1FtrcnkkFF1C3MvF7TjwA/MECPTGYdlwbGb+5YnA6Sj9W
-        5sdO0TxUNh3XjObd8U6bR6j8Q2XlNUKucNKBoOj0HzvGv2H/ai7Hs94D5sg4tM4sThQigmPPFnT
-        wKS78OAfP3EmQuMIX
-X-Received: by 2002:ac8:5cd2:0:b0:3bf:a061:6cb1 with SMTP id s18-20020ac85cd2000000b003bfa0616cb1mr62090919qta.46.1680520541581;
-        Mon, 03 Apr 2023 04:15:41 -0700 (PDT)
-X-Google-Smtp-Source: AK7set8HQpeyOJ/KXUSADH0MyprE5zMqtU8EoodOwfi6AnLSMUEFrXmYuk4bhITi/GbG6fLerg5XmQ==
-X-Received: by 2002:ac8:5cd2:0:b0:3bf:a061:6cb1 with SMTP id s18-20020ac85cd2000000b003bfa0616cb1mr62090843qta.46.1680520540973;
-        Mon, 03 Apr 2023 04:15:40 -0700 (PDT)
-Received: from sgarzare-redhat (host-82-57-51-130.retail.telecomitalia.it. [82.57.51.130])
-        by smtp.gmail.com with ESMTPSA id m124-20020a375882000000b0073b8745fd39sm2682759qkb.110.2023.04.03.04.15.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 04:15:40 -0700 (PDT)
-Date:   Mon, 3 Apr 2023 13:15:35 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <avkrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
-        oxffffaa@gmail.com, pv-drivers@vmware.com
-Subject: Re: [RFC PATCH v4 2/3] vsock: return errors other than -ENOMEM to
- socket
-Message-ID: <veo5rzjqzzdamfml5hx2ycwgsbflv7l62trdicmdqcivklarq2@p5wiwzn35tea>
-References: <5440aa51-8a6c-ac9f-9578-5bf9d66217a5@sberdevices.ru>
- <7715fd7f-1c50-7202-03c7-9d17c7f63cab@sberdevices.ru>
+        with ESMTP id S232265AbjDCLSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:18:11 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105867DA8;
+        Mon,  3 Apr 2023 04:18:06 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 333BHqM2092732;
+        Mon, 3 Apr 2023 06:17:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1680520672;
+        bh=bYhcyFvgcpJ9BPr8J6LZgLhC/TZiRbK1lHHFBaXBodU=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=C7lsuUtAupiXitiX2Xd293T7EijikjPHFLL90yAT5+NBpgPF53NiMB/BXgo9rX5eq
+         bJVMZ2bMa8U6PKYaRM3JNHQ1vwirWjRnQlFCGG+ToayKMKlgQdTdsWdeyolgxZh3tO
+         D5oJkhG0g1C16Qq1cNw7moo/FVr/hKSeGu0Ss8D8=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 333BHqRN023741
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 3 Apr 2023 06:17:52 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 3
+ Apr 2023 06:17:52 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
+ Frontend Transport; Mon, 3 Apr 2023 06:17:52 -0500
+Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 333BHnXu092633;
+        Mon, 3 Apr 2023 06:17:49 -0500
+Message-ID: <4d322eb3-987e-4a20-0c24-7074064f5a97@ti.com>
+Date:   Mon, 3 Apr 2023 16:47:48 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <7715fd7f-1c50-7202-03c7-9d17c7f63cab@sberdevices.ru>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH net-next v2 1/3] net: ethernet: ti: am65-cpsw: Move mode
+ specific config to mac_config()
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+References: <20230403110106.983994-1-s-vadapalli@ti.com>
+ <20230403110106.983994-2-s-vadapalli@ti.com>
+ <ZCqzuwDLGuBDMHQG@shell.armlinux.org.uk>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <ZCqzuwDLGuBDMHQG@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-3.9 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 02, 2023 at 09:16:46PM +0300, Arseniy Krasnov wrote:
->This removes behaviour, where error code returned from any transport
->was always switched to ENOMEM. This works in the same way as:
->commit
->c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
->but for receive calls.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> net/vmw_vsock/af_vsock.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
+Hello Russell,
 
-LGTM!
+Thank you for reviewing the patch.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+On 03/04/23 16:38, Russell King (Oracle) wrote:
+> On Mon, Apr 03, 2023 at 04:31:04PM +0530, Siddharth Vadapalli wrote:
+>> Move the interface mode specific configuration to the mac_config()
+>> callback am65_cpsw_nuss_mac_config().
+>>
+>> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+>> ---
+>>  drivers/net/ethernet/ti/am65-cpsw-nuss.c | 10 +++++++---
+>>  1 file changed, 7 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> index d17757ecbf42..74e099828978 100644
+>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>> @@ -1504,12 +1504,17 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
+>>  							  phylink_config);
+>>  	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
+>>  	struct am65_cpsw_common *common = port->common;
+>> +	u32 mac_control = 0;
+>>  
+>>  	if (common->pdata.extra_modes & BIT(state->interface)) {
+>> -		if (state->interface == PHY_INTERFACE_MODE_SGMII)
+>> +		if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+>> +			mac_control |= CPSW_SL_CTL_EXT_EN;
+>>  			writel(ADVERTISE_SGMII,
+>>  			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
+>> +		}
+>>  
+>> +		if (mac_control)
+>> +			cpsw_sl_ctl_set(port->slave.mac_sl, mac_control);
+>>  		writel(AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
+>>  		       port->sgmii_base + AM65_CPSW_SGMII_CONTROL_REG);
+>>  	}
+>> @@ -1553,8 +1558,7 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+>>  
+>>  	if (speed == SPEED_1000)
+>>  		mac_control |= CPSW_SL_CTL_GIG;
+>> -	if (interface == PHY_INTERFACE_MODE_SGMII)
+>> -		mac_control |= CPSW_SL_CTL_EXT_EN;
+>> +	/* TODO: Verify whether in-band is necessary for 10 Mbps RGMII */
+>>  	if (speed == SPEED_10 && phy_interface_mode_is_rgmii(interface))
+>>  		/* Can be used with in band mode only */
+>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
+> 
+> I'm afraid I can see you haven't thought this patch through properly.
+> 
+> am65_cpsw_nuss_mac_link_down() will call
+> cpsw_sl_ctl_reset(port->slave.mac_sl); which has the effect of clearing
+> to zero the entire MAC control register. This will clear
+> CPSW_SL_CTL_EXT_EN that was set in am65_cpsw_nuss_mac_config() which is
+> not what you want to be doing.
 
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 5f2dda35c980..413407bb646c 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -2043,7 +2043,7 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
->
-> 		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
-> 		if (read < 0) {
->-			err = -ENOMEM;
->+			err = read;
-> 			break;
-> 		}
->
->@@ -2094,7 +2094,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
-> 	msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
->
-> 	if (msg_len < 0) {
->-		err = -ENOMEM;
->+		err = msg_len;
-> 		goto out;
-> 	}
->
->-- 
->2.25.1
->
+Right! I missed noticing this. It appeared to me that simply moving the code
+from mac_link_up() to mac_config() would suffice. However, as rightly pointed
+out by you, it doesn't account for the case where the interface state is toggled.
 
+> 
+> Given that we have the 10Mbps issue with RGMII, I think what you want
+> to be doing is:
+> 
+> 1. Set CPSW_SL_CTL_EXT_EN in am65_cpsw_nuss_mac_config() if in SGMII
+>    mode, otherwise clear this bit.
+> 
+> 2. Clear the mac_control register in am65_cpsw_nuss_mac_link_down()
+>    if in RMGII mode, otherwise preserve the state of
+>    CPSW_SL_CTL_EXT_EN but clear all other bits.
+> 
+> 3. Set CPSW_SL_CTL_EXT_EN in am65_cpsw_nuss_mac_link_up() if in
+>    RGMII mode and 10Mbps.
+> 
+
+I will implement these changes and post the v3 series. Thank you for the
+feedback. Please let me know if I may add a "Suggested-by" tag.
+
+Regards,
+Siddharth.
