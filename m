@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9886D43DA
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 13:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 326A76D43F3
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 14:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbjDCLze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 07:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
+        id S232013AbjDCMAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 08:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbjDCLzd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 07:55:33 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE427A9F;
-        Mon,  3 Apr 2023 04:55:31 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id r11so116253872edd.5;
-        Mon, 03 Apr 2023 04:55:31 -0700 (PDT)
+        with ESMTP id S229446AbjDCMAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 08:00:49 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC8B93F9;
+        Mon,  3 Apr 2023 05:00:48 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id cn12so24661274qtb.8;
+        Mon, 03 Apr 2023 05:00:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680522929;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6a3C4HyVcJ1+hBTRf358qtUIjTetDrrTnCO3IEBZCWU=;
-        b=MarBywG8RwFuY8dvBjXGfCv7rmlthZ83/0XvpN5rXJY0kbQcDBLpazlzrwWxXB4ZRy
-         bHqm+TaDdHAnm9OUkKO3KPhDz/IUWwrt7Np0oZDgUNouJlMBenFwLJmK03saCn65rrvt
-         bYfMDfUzchDyEpSGLR+PbFuW25KHUa6BZwdpaMEjYtTydWSmfhdRFLFaE91v7J9AXFfb
-         HbakQ98LI1f7qa/DCjEtBl4J6tBrY1B0n3pUa6UsVjN7+6CLxmJ0OE7LSwjJZKqpHRO6
-         CjhkSzB3weaMuQI+ITYZB2u0wF8+Ro9+AXHEfj0VrBJDkWp3Gciq5E69Uv9SmVbCXeEc
-         P8vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680522929;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20210112; t=1680523247;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6a3C4HyVcJ1+hBTRf358qtUIjTetDrrTnCO3IEBZCWU=;
-        b=cPVRwxFxTBFK7W1zVE4sYK6JYZTYwEH4ChM2QN8Nfx6C4mw+lVuOtNTQoB5rnyws8t
-         88j8gqAsAKROQSTGjiTcwdSSaEzlsdoCw5BND2jxsCSJ1PfQBW3oSU8AZim9os+cuYRF
-         wC+y6jlHEQk2rV2RDec0N5pPuuh9FbaAKcaLwsyjnYyjEsT8HU1QUKQrdK+cWEfMgBbj
-         IETGjQVvoeri7VkQfZh6B9DBSXROld/Z1iTbpheOsnwoEzA5dRvbmeDEz8CyBnyZvvpi
-         NS+GF1CtmurS5WBVCt2fScQIweB2OQ6d51R3npqYFNbG2q70JFc7gcdeu+mnEDBFvRBi
-         q+LQ==
-X-Gm-Message-State: AAQBX9e2PSC1ijDI3L6tC62bOsnBjRZE6OQUD3CXTSV+eRAe7wulYSWh
-        IKkUSSDpfSnFkQIzmatV8+M=
-X-Google-Smtp-Source: AKy350a9DUZelfyu+kfJC0Zh9d5n3LzN73d8R9FYm5yoVPT0c0C1CXkwH+ICvQYPbIq2EZElLZFdfA==
-X-Received: by 2002:a17:906:5010:b0:92a:77dd:f6f with SMTP id s16-20020a170906501000b0092a77dd0f6fmr37352471ejj.73.1680522929433;
-        Mon, 03 Apr 2023 04:55:29 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id z9-20020a17090665c900b0093fa8c2e877sm4410215ejn.80.2023.04.03.04.55.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Apr 2023 04:55:29 -0700 (PDT)
-Date:   Mon, 3 Apr 2023 14:55:26 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/7] dsa: marvell: Add support for mv88e6071 and 6020
- switches
-Message-ID: <20230403115526.gpp7aymvnk4gyx6e@skbuf>
-References: <20230309125421.3900962-1-lukma@denx.de>
+        bh=e3E29/lGJ5oGdt1PKR3P2u809XT+MuEe6o1e+uZYO14=;
+        b=jrc4eAXWad67bBL1FYsNO1KtpfjnvokZuzz5IYkHqYYa4JBVmfuYVums138qdWXflI
+         tFpGqRVrHTc6T4Y7u4TxXzPFiqeg9MXy8us3/R/H8DZ17qZxq25JT5uuUJi0wfZh8VtQ
+         uGVmZ5pqE/uwji5DBQcWW9S0c7yLMGAE9sA+M244ANv8A7AwUUR5YY/n46+Myw+GKvLv
+         J23d9a5j5zM96d7mu395fnGOwwNmGSihThVWCCDUGCJBtrrmsro0h08Mogec/ItvOeG3
+         iW0W85ISJx2CvyXfyqKZjlRbde6l2Rj4freU2pln0yrHbopbOMK2rcKbAYhPx1cS6tsA
+         gJ/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680523247;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=e3E29/lGJ5oGdt1PKR3P2u809XT+MuEe6o1e+uZYO14=;
+        b=2ubpqTEzyj+XPQ9+1FKz+FPtws2Y0qNHPrx8C5RaXfV+TDuT+q+a8H74Uf52Zx8pB0
+         N/LD36BAMCB+4OkuPjmHPBonha49kQ3Sr3hxb45MmMHPS03foDNy01XnnpqF+IutWnhg
+         YZkVfbIdzIS8PQpZfflnjD9osJ+5tWRBqDWMexIbUcZ6NXeFWkKttpHbxB97LAMU83Ov
+         Sf0pjqCSkvHWUplrnEH8qrK0wJQgBxYx3P61LJBGrBeotlD+wjGvgZj2QgNdctyMMQrP
+         mHa2xo87fi2Y1qbGUH1+lrGW++eqwGXh3Ghmz/h3AtGMWF44UL+RPQqPnMdM8lM7lKEr
+         0SRA==
+X-Gm-Message-State: AAQBX9eSxgmJT2wT1h+9ytulmu+s4S5KzOAZRe/h06bFvtqKFz5tJe3V
+        KcNGgGnGcPwxms2W8OG0h0CrOtl4cV8rsvcCZo4=
+X-Google-Smtp-Source: AKy350YouQaHSJvnBvRoDpTbPZBjT9UuJaQ5eKiwFLOCZY2UqQrgl4uC5Uo6NVQ2eVOk1uPw+GPH4BIxloD0KGEJZ3s=
+X-Received: by 2002:a05:622a:18a1:b0:3e6:5ca6:e9ea with SMTP id
+ v33-20020a05622a18a100b003e65ca6e9eamr31412qtc.5.1680523247556; Mon, 03 Apr
+ 2023 05:00:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230309125421.3900962-1-lukma@denx.de>
+References: <20230328115105.13553-1-laoar.shao@gmail.com>
+In-Reply-To: <20230328115105.13553-1-laoar.shao@gmail.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Mon, 3 Apr 2023 20:00:11 +0800
+Message-ID: <CALOAHbBb8hm=KfDP9nC-Z6sP+V-Exse9a1outAtHb5idqkYDyw@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] bpf, net: support redirecting to ifb with bpf
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -77,31 +71,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Lukasz,
+On Tue, Mar 28, 2023 at 7:51=E2=80=AFPM Yafang Shao <laoar.shao@gmail.com> =
+wrote:
+>
+> In our container environment, we are using EDT-bpf to limit the egress
+> bandwidth. EDT-bpf can be used to limit egress only, but can't be used
+> to limit ingress. Some of our users also want to limit the ingress
+> bandwidth. But after applying EDT-bpf, which is based on clsact qdisc,
+> it is impossible to limit the ingress bandwidth currently, due to some
+> reasons,
+> 1). We can't add ingress qdisc
+> The ingress qdisc can't coexist with clsact qdisc as clsact has both
+> ingress and egress handler. So our traditional method to limit ingress
+> bandwidth can't work any more.
+> 2). We can't redirect ingress packet to ifb with bpf
+> By trying to analyze if it is possible to redirect the ingress packet to
+> ifb with a bpf program, we find that the ifb device is not supported by
+> bpf redirect yet.
+>
+> This patch tries to resolve it by supporting redirecting to ifb with bpf
+> program.
+>
+> There're some other users who want to resolve this issue as well. By
+> searching it in the lore, it shows that Jesper[1] and Tonghao[2] used to
+> propose similar solution. This proposal is almost the same with Jesper's
+> proposal, so I add Jesper's Co-developed-by here.
+>
+> [1]. https://lore.kernel.org/bpf/160650040800.2890576.9811290366501747109=
+.stgit@firesoul/
+> [2]. https://lore.kernel.org/netdev/20220324135653.2189-1-xiangxia.m.yue@=
+gmail.com/
+>
+> Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+> Cc: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
+>  net/core/dev.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 18dc8d7..3e63f6b 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3956,6 +3956,7 @@ int dev_loopback_xmit(struct net *net, struct sock =
+*sk, struct sk_buff *skb)
+>                 return NULL;
+>         case TC_ACT_REDIRECT:
+>                 /* No need to push/pop skb's mac_header here on egress! *=
+/
+> +               skb_set_redirected(skb, skb->tc_at_ingress);
+>                 skb_do_redirect(skb);
+>                 *ret =3D NET_XMIT_SUCCESS;
+>                 return NULL;
+> @@ -5138,6 +5139,7 @@ static __latent_entropy void net_tx_action(struct s=
+oftirq_action *h)
+>                  * redirecting to another netdev
+>                  */
+>                 __skb_push(skb, skb->mac_len);
+> +               skb_set_redirected(skb, skb->tc_at_ingress);
+>                 if (skb_do_redirect(skb) =3D=3D -EAGAIN) {
+>                         __skb_pull(skb, skb->mac_len);
+>                         *another =3D true;
+> --
+> 1.8.3.1
+>
 
-On Thu, Mar 09, 2023 at 01:54:14PM +0100, Lukasz Majewski wrote:
-> This patch set provides following changes:
-> 
-> - Provide support for mv88e6020 and mv88e6071 switch circuits (the
->   "Link Street" family of products including added earlier to this
->   driver mv88e6250 and mv88e6220).
-> 
-> - Add the max_frame size variable to specify the buffer size for the
->   maximal frame size
-> 
-> - The above change required adjusting all supported devices in the
->   mv88e6xxx driver, as the current value assignment is depending
->   on the set of provided callbacks for each switch circuit - i.e.
->   until now the value was not explicitly specified.
-> 
-> - As the driver for Marvell's mv88e6xxx switches was rather complicated
->   the intermediate function (removed by the end of this patch set)
->   has been introduced. It was supposed to both validate the provided
->   values deduced from the code and leave a trace of the exact
->   methodology used.
+Daniel, Alexei,
 
-The problem with MTU 1492 has been resolved as commit 7e9517375a14
-("net: dsa: mv88e6xxx: fix max_mtu of 1492 on 6165, 6191, 6220, 6250,
-6290"), is present in net-next, and as such, you are free to resubmit
-this patchset on top of the current net-next.gi/main whenever you feel
-like it, no need to wait for a merge window.
+Any comments on this solution?
+I noticed that you have rejected the other two proposals which are
+listed in the commit log, one reason is that ifb is not recommended.
+But it seems we have to use ifb if we want to limit ingress bandwidth.
+Or do you have any better suggestions on the ingress bandwidth limit?
+Ingress bandwidth is useful in some scenarios, for example, for the
+TCP-based service, there may be lots of clients connecting it, so it
+is not wise to limit the peers' egress. After limiting the ingress of
+the server side, it will lower the send rate of the client by lowering
+the TCP cwnd if the ingress bandwidth limit is reached. If we don't
+limit it, the clients will continue sending requests at a high rate.
+
+--=20
+Regards
+Yafang
