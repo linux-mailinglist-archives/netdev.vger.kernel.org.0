@@ -2,76 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8E86D4171
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 069766D4174
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 12:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbjDCKAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 06:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
+        id S231933AbjDCKA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 06:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231837AbjDCKAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:00:48 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D039F1B6;
-        Mon,  3 Apr 2023 03:00:43 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 333A0RJQ004570;
-        Mon, 3 Apr 2023 05:00:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680516027;
-        bh=hOOnSCDMsEtKS/hy/QafgFLTNITROy9fX/zerQe1dZM=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=wfOLp10mexZZPICRqlra3Th32jY3kQ95UhRonEhv5DwK6KSRd5wEsq8AtBgw7yEXQ
-         W6svJE5nLq56UOdZXl7JwgHzczVNZY1ROSpUBsQBoo5o4/I+5+rCYjVF6yxzd3Ia9j
-         6hPCcGz8N8BfxSvJReETYhN3l2GQvIBhO99xjHig=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 333A0Rce126569
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Apr 2023 05:00:27 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Mon, 3
- Apr 2023 05:00:27 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Mon, 3 Apr 2023 05:00:27 -0500
-Received: from [172.24.145.61] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 333A0NQY049202;
-        Mon, 3 Apr 2023 05:00:24 -0500
-Message-ID: <76f3ac82-461d-4571-3189-501d96781bb0@ti.com>
-Date:   Mon, 3 Apr 2023 15:30:22 +0530
+        with ESMTP id S231859AbjDCKAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 06:00:54 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C968AC5
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 03:00:53 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1pjGzU-0006Ex-Sr; Mon, 03 Apr 2023 12:00:44 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1pjGzT-0001wu-Dc; Mon, 03 Apr 2023 12:00:43 +0200
+Date:   Mon, 3 Apr 2023 12:00:43 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
+        kvalo@kernel.org, pkshih@realtek.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: Re: [PATCH v3 1/3] wifi: rtw88: Move register access from
+ rtw_bf_assoc() outside the RCU
+Message-ID: <20230403100043.GT19113@pengutronix.de>
+References: <20230108211324.442823-1-martin.blumenstingl@googlemail.com>
+ <20230108211324.442823-2-martin.blumenstingl@googlemail.com>
+ <20230331125906.GF15436@pengutronix.de>
+ <CAFBinCB8B4-oYaFY4p-20_PCWh_6peq75O9JjV6ZusVXPKSaDw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <rogerq@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: Re: [PATCH net-next 2/2] net: ethernet: ti: am65-cpsw: Enable USXGMII
- mode for J784S4 CPSW9G
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-References: <7a9c96f4-6a94-4a2c-18f5-95f7246e10d5@ti.com>
- <ZCasBMNxaWk2+XVO@shell.armlinux.org.uk>
- <dea9ae26-e7f2-1052-58cd-f7975165aa96@ti.com>
- <ZCbAE7IIc8HcOdxl@shell.armlinux.org.uk>
- <1477e0c3-bb92-72b0-9804-0393c34571d3@ti.com>
- <be166ab3-29f9-a18d-bbbd-34e7828453e4@ti.com>
- <ZCqPHM2/qismCaaN@shell.armlinux.org.uk>
- <5114b342-6727-b27c-bc8c-c770ed4baa31@ti.com>
- <ZCqVjS7M2F49yS/6@shell.armlinux.org.uk>
- <37ec04db-3ed2-49a4-9c0d-b9a00f49a0a4@ti.com>
- <ZCqi8BasmmwrQ2VD@shell.armlinux.org.uk>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <ZCqi8BasmmwrQ2VD@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-3.9 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAFBinCB8B4-oYaFY4p-20_PCWh_6peq75O9JjV6ZusVXPKSaDw@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,181 +59,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Martin,
 
-
-On 03/04/23 15:27, Russell King (Oracle) wrote:
-> On Mon, Apr 03, 2023 at 03:19:24PM +0530, Siddharth Vadapalli wrote:
->>
->>
->> On 03/04/23 14:29, Russell King (Oracle) wrote:
->>> On Mon, Apr 03, 2023 at 02:11:08PM +0530, Siddharth Vadapalli wrote:
->>>>
->>>>
->>>> On 03/04/23 14:02, Russell King (Oracle) wrote:
->>>>> On Mon, Apr 03, 2023 at 11:57:21AM +0530, Siddharth Vadapalli wrote:
->>>>>> Hello Russell,
->>>>>>
->>>>>> On 31/03/23 19:16, Siddharth Vadapalli wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 31-03-2023 16:42, Russell King (Oracle) wrote:
->>>>>>>> On Fri, Mar 31, 2023 at 04:23:16PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> On 31/03/23 15:16, Russell King (Oracle) wrote:
->>>>>>>>>> On Fri, Mar 31, 2023 at 02:55:56PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>>>> Russell,
->>>>>>>>>>>
->>>>>>>>>>> On 31/03/23 13:54, Russell King (Oracle) wrote:
->>>>>>>>>>>> On Fri, Mar 31, 2023 at 01:35:10PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>>>>>> Hello Russell,
->>>>>>>>>>>>>
->>>>>>>>>>>>> Thank you for reviewing the patch.
->>>>>>>>>>>>>
->>>>>>>>>>>>> On 31/03/23 13:27, Russell King (Oracle) wrote:
->>>>>>>>>>>>>> On Fri, Mar 31, 2023 at 12:21:10PM +0530, Siddharth Vadapalli wrote:
->>>>>>>>>>>>>>> TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
->>>>>>>>>>>>>>> extra_modes member of the J784S4 SoC data. Additionally, configure the
->>>>>>>>>>>>>>> MAC Control register for supporting USXGMII mode. Also, for USXGMII
->>>>>>>>>>>>>>> mode, include MAC_5000FD in the "mac_capabilities" member of struct
->>>>>>>>>>>>>>> "phylink_config".
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> I don't think TI "get" phylink at all...
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>> diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->>>>>>>>>>>>>>> index 4b4d06199b45..ab33e6fe5b1a 100644
->>>>>>>>>>>>>>> --- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->>>>>>>>>>>>>>> +++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
->>>>>>>>>>>>>>> @@ -1555,6 +1555,8 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
->>>>>>>>>>>>>>>  		mac_control |= CPSW_SL_CTL_GIG;
->>>>>>>>>>>>>>>  	if (interface == PHY_INTERFACE_MODE_SGMII)
->>>>>>>>>>>>>>>  		mac_control |= CPSW_SL_CTL_EXT_EN;
->>>>>>>>>>>>>>> +	if (interface == PHY_INTERFACE_MODE_USXGMII)
->>>>>>>>>>>>>>> +		mac_control |= CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN;
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> The configuration of the interface mode should *not* happen in
->>>>>>>>>>>>>> mac_link_up(), but should happen in e.g. mac_config().
->>>>>>>>>>>>>
->>>>>>>>>>>>> I will move all the interface mode associated configurations to mac_config() in
->>>>>>>>>>>>> the v2 series.
->>>>>>>>>>>>
->>>>>>>>>>>> Looking at the whole of mac_link_up(), could you please describe what
->>>>>>>>>>>> effect these bits are having:
->>>>>>>>>>>>
->>>>>>>>>>>> 	CPSW_SL_CTL_GIG
->>>>>>>>>>>> 	CPSW_SL_CTL_EXT_EN
->>>>>>>>>>>> 	CPSW_SL_CTL_IFCTL_A
->>>>>>>>>>>
->>>>>>>>>>> CPSW_SL_CTL_GIG corresponds to enabling Gigabit mode (full duplex only).
->>>>>>>>>>> CPSW_SL_CTL_EXT_EN when set enables in-band mode of operation and when cleared
->>>>>>>>>>> enables forced mode of operation.
->>>>>>>>>>> CPSW_SL_CTL_IFCTL_A is used to set the RMII link speed (0=10 mbps, 1=100 mbps).
->>>>>>>>>>
->>>>>>>>>> Okay, so I would do in mac_link_up():
->>>>>>>>>>
->>>>>>>>>> 	/* RMII needs to be manually configured for 10/100Mbps */
->>>>>>>>>> 	if (interface == PHY_INTERFACE_MODE_RMII && speed == SPEED_100)
->>>>>>>>>> 		mac_control |= CPSW_SL_CTL_IFCTL_A;
->>>>>>>>>>
->>>>>>>>>> 	if (speed == SPEED_1000)
->>>>>>>>>> 		mac_control |= CPSW_SL_CTL_GIG;
->>>>>>>>>> 	if (duplex)
->>>>>>>>>> 		mac_control |= CPSW_SL_CTL_FULLDUPLEX;
->>>>>>>>>>
->>>>>>>>>> I would also make mac_link_up() do a read-modify-write operation to
->>>>>>>>>> only affect the bits that it is changing.
->>>>>>>>>
->>>>>>>>> This is the current implementation except for the SGMII mode associated
->>>>>>>>> operation that I had recently added. I will fix that. Also, the
->>>>>>>>> cpsw_sl_ctl_set() function which writes the mac_control value performs a read
->>>>>>>>> modify write operation.
->>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Now, for SGMII, I would move setting CPSW_SL_CTL_EXT_EN to mac_config()
->>>>>>>>>> to enable in-band mode - don't we want in-band mode enabled all the
->>>>>>>>>> time while in SGMII mode so the PHY gets the response from the MAC?
->>>>>>>>>
->>>>>>>>> Thank you for pointing it out. I will move that to mac_config().
->>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Lastly, for RGMII at 10Mbps, you seem to suggest that you need RGMII
->>>>>>>>>> in-band mode enabled for that - but if you need RGMII in-band for
->>>>>>>>>> 10Mbps, wouldn't it make sense for the other speeds as well? If so,
->>>>>>>>>> wouldn't that mean that CPSW_SL_CTL_EXT_EN can always be set for
->>>>>>>>>> RGMII no matter what speed is being used?
->>>>>>>>>
->>>>>>>>> The CPSW MAC does not support forced mode at 10 Mbps RGMII. For this reason, if
->>>>>>>>> RGMII 10 Mbps is requested, it is set to in-band mode.
->>>>>>>>
->>>>>>>> What I'm saying is that if we have in-band signalling that is reliable
->>>>>>>> for a particular interface mode, why not always use it, rather than
->>>>>>>> singling out one specific speed as an exception? Does it not work in
->>>>>>>> 100Mbps and 1Gbps?
->>>>>>
->>>>>> While the CPSW MAC supports RGMII in-band status operation, the link partner
->>>>>> might not support it. I have also observed that forced mode is preferred to
->>>>>> in-band mode as implemented for another driver:
->>>>>> commit ade64eb5be9768e40c90ecb01295416abb2ddbac
->>>>>> net: dsa: microchip: Disable RGMII in-band status on KSZ9893
->>>>>>
->>>>>> and in the mail thread at:
->>>>>> https://lore.kernel.org/netdev/20200905160647.GJ3164319@lunn.ch/
->>>>>> based on Andrew's suggestion, using forced mode appears to be better.
->>>>>>
->>>>>> Additionally, I have verified that switching to in-band status causes a
->>>>>> regression. Thus, I will prefer keeping it in forced mode for 100 and 1000 Mbps
->>>>>> RGMII mode which is the existing implementation in the driver. Please let me know.
->>>>>
->>>>> Okay, so what this seems to mean is if you have a PHY that does not
->>>>> support in-band status in RGMII mode, then 10Mbps isn't possible -
->>>>> because the MAC requires in-band status mode to select 10Mbps.
->>>>> To put it another way, in such a combination, 10Mbps link modes
->>>>> should not be advertised, nor should they be reported to userspace
->>>>> as being supported.
->>>>>
->>>>> Is that correct?
->>>>
->>>> Yes, if the PHY does not support in-band status, 10 Mbps RGMII will not work,
->>>> despite the MAC supporting 10 Mbps in-band RGMII. However, I notice the following:
->>>> If the RGMII interface speed is set to 10 Mbps via ethtool, but the:
->>>> managed = "in-band-status";
->>>> property is not mentioned in the device-tree, the interface is able to work with
->>>> 10 Mbps mode with the PHY. This is with the CPSW MAC configured for in-band mode
->>>> of operation at 10 Mbps RGMII mode. Please let me know what this indicates,
->>>> since it appears to me that 10 Mbps is functional in this special case (It might
->>>> be an erroneous configuration).
->>>
->>> I think you need to check carefully what is going on.
->>>
->>> Firstly, if you as the MAC is choosing to enable in-band status mode,
->>> but phylink isn't using in-band status mode, that is entirely a matter
->>> for your MAC driver.
->>>
->>> Secondly, you need to research what the PHY does during the inter-frame
->>> time (when in-band status would be transferred). This is when RX_CTL
->>> is 0,0, RX_DV is 0, RX_ER is 0.
->>>
->>> For in-band 10Mbps mode to work, RXD nibbles would need to be x001
->>> (middle two bits indicate RX clock = 2.5MHz clock for 10Mbps, lsb
->>> indicates link up). MSB determines duplex. Remember that 10Mbps can
->>> appear to work with mismatched duplex settings but can cause chaos on
->>> networks when it disagrees with what the rest of the network is doing.
->>>
->>> So, I think before one says "setting in-band mode for 10Mbps with a
->>> PHY that doesn't support in-band" really needs caution and research
->>> to check what _actually_ ends up happening, and whether it is really
->>> correct to do this.
->>
->> Thank you for the detailed explanation. I will analyze it and fix this. In the
->> meanwhile, is it acceptable for me to post the v2 of this series, with the other
->> suggestions implemented, while maintaining the status quo for the 10 Mbps RGMII
->> configuration in the driver? Please let me know.
+On Sat, Apr 01, 2023 at 11:30:40PM +0200, Martin Blumenstingl wrote:
+> Hi Sascha,
 > 
-> Yes, but I would like a comment against the bit of code that enables
-> in-band mode indicating that it's questionable whether it is correct.
+> On Fri, Mar 31, 2023 at 2:59 PM Sascha Hauer <s.hauer@pengutronix.de> wrote:
+> >
+> > On Sun, Jan 08, 2023 at 10:13:22PM +0100, Martin Blumenstingl wrote:
+> > > USB and (upcoming) SDIO support may sleep in the read/write handlers.
+> > > Shrink the RCU critical section so it only cover the call to
+> > > ieee80211_find_sta() and finding the ic_vht_cap/vht_cap based on the
+> > > found station. This moves the chip's BFEE configuration outside the
+> > > rcu_read_lock section and thus prevent "scheduling while atomic" or
+> > > "Voluntary context switch within RCU read-side critical section!"
+> > > warnings when accessing the registers using an SDIO card (which is
+> > > where this issue has been spotted in the real world - but it also
+> > > affects USB cards).
+> >
+> > Unfortunately this introduces a regression on my RTW8821CU chip. With
+> > this it constantly looses connection to the AP and reconnects shortly
+> > after:
+> Sorry to hear this! This is odd and unfortunately I don't understand
+> the reason for this.
+> rtw_bf_assoc() is only called from
+> drivers/net/wireless/realtek/rtw88/mac80211.c with rtwdev->mutex held.
+> So I don't think that it's a race condition.
+> 
+> There's a module parameter which lets you enable/disable BF support:
+> $ git grep rtw_bf_support drivers/net/wireless/realtek/rtw88/ | grep param
+> drivers/net/wireless/realtek/rtw88/main.c:module_param_named(support_bf,
+> rtw_bf_support, bool, 0644);
 
-Sure, thank you. I will add a TODO in that section, indicating that it needs to
-be verified and fixed.
+I was a bit too fast reporting this. Yes, there seems to be a problem
+with the RTW8821CU, but it doesn't seem to be related to this patch.
 
-Regards,
-Siddharth.
+Sorry for the noise.
+
+The chipset seems to have problems with one access point that I have and
+I can see these problems with or without the patch. Maybe NetworkManager
+decided to connect to another accesspoint without me noticing it, making
+it look to me as if this patch was guilty.
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
