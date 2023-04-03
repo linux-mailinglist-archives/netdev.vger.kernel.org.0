@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1DFD6D52CD
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F1A6D52D8
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 22:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233511AbjDCUr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 16:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
+        id S233049AbjDCUuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 16:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbjDCUr0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:47:26 -0400
+        with ESMTP id S232926AbjDCUuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 16:50:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593C3139;
-        Mon,  3 Apr 2023 13:47:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335C026B9;
+        Mon,  3 Apr 2023 13:50:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D947062AEC;
-        Mon,  3 Apr 2023 20:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0B8C433EF;
-        Mon,  3 Apr 2023 20:47:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C35D662B2C;
+        Mon,  3 Apr 2023 20:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1F5C433D2;
+        Mon,  3 Apr 2023 20:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680554844;
-        bh=QJCUCdp5PtM5gxyh82sgIsegU5ra4CtVc899W6CxcMs=;
+        s=k20201202; t=1680555010;
+        bh=0VZdHhGj0ajK/VONogM3wgSJQbG5wqIBJRbuGXnADCE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CFnRupl4uvyl59il2ygB85xmBFNGZZ6dLBneuQ35YAeP/yq7NQbHEqLf/B+Cr1XOW
-         Y7w03CTOnwdUrezsARAYyBIFI0WLTsi/m/gYMzgxfipdZmHziyFQPjPZ7zvemuRRdG
-         whp8PGDM0lywebulIPA8d0oNxIVNrWPClBiFbZBNJMhnD2wJfrz9k6rH/66ytN3rzn
-         AFi4zPyBeFMadsQWuWzszYc3kMvSgXjSPxRZRucWZKL1dDYpp+SGqJe2MOGqse5kWn
-         89npsqZw7caxdRQLHfRK2smzbWiG+/hQxjGbAUEp+ccCBbN6MZrB9Ta2nXRqDNHANw
-         EPGrX6RzdheNw==
-Date:   Mon, 3 Apr 2023 13:47:22 -0700
+        b=HFKbO2JmnCxTISDzAehT5gnqVdQcK5RXT/sFA55xgP8+nYg3mZPzQTCWwvbkaBzFW
+         AmpImJivV1Ys2eZygcmEzHKAH8E7QDTz49JP4TeToW/Pti93tEVRxKCElY0yR1PDVz
+         QmvWqqQOBFuV4rNro4YcGx+o07TuoNaeJz5uXHpyHFfDg8novuPhYbrqxP6FUZagT+
+         bhR04mSjjgpj5nV1Qvn0QyVbdnGsQbeM/7Rdjupnyqegnh3IvX+AVOH4YAOjALcGtu
+         O+4psUsFUYTrz7leLmNCjdcVBpt+4DrUO8ahy3Nz0nzJSdJmHekdM1el3pOfZQFGUd
+         l2l2YvECRFZ9w==
+Date:   Mon, 3 Apr 2023 13:50:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Anjali Kulkarni <anjali.k.kulkarni@oracle.com>
 Cc:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -49,14 +49,14 @@ Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Subject: Re: [PATCH v4 1/6] netlink: Reverse the patch which removed
  filtering
-Message-ID: <20230403134722.4860160c@kernel.org>
-In-Reply-To: <82F9EDF5-9D7E-4FFC-9150-A978A36F26B9@oracle.com>
+Message-ID: <20230403135008.7f492aeb@kernel.org>
+In-Reply-To: <4E631493-D61F-4778-A392-3399DF400A9D@oracle.com>
 References: <20230331235528.1106675-1-anjali.k.kulkarni@oracle.com>
         <20230331235528.1106675-2-anjali.k.kulkarni@oracle.com>
         <20230331210920.399e3483@kernel.org>
         <88FD5EFE-6946-42C4-881B-329C3FE01D26@oracle.com>
         <20230401121212.454abf11@kernel.org>
-        <82F9EDF5-9D7E-4FFC-9150-A978A36F26B9@oracle.com>
+        <4E631493-D61F-4778-A392-3399DF400A9D@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -69,12 +69,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 1 Apr 2023 19:58:31 +0000 Anjali Kulkarni wrote:
-> > patch 5 looks a bit connector specific, no idea :S
-> > patch 6 does seem to lift the NET_ADMIN for group 0
-> >        and from &init_user_ns, CAP_NET_ADMIN to net->user_ns, CAP_NET_ADMIN
-> >        whether that's right or not I have no idea :(  
-> I can move this back to &init_user_ns, and will look at group 0 too. 
+On Sun, 2 Apr 2023 02:32:19 +0000 Anjali Kulkarni wrote:
+> > Who are you hoping will merge this?  
+> Could I request you to look into merging the patches which seem ok to
+> you, since you are listed as the maintainer for these? I can make any
+> more changes for the connector patches if you see the need..
 
-Just to be clear - I wasn't saying that it's incorrect, I simply don't
-know :)
+The first two, you mean? We can merge them, but we need to know that
+the rest is also going somewhere. Kernel has a rule against merging
+APIs without any in-tree users, so we need a commitment that the
+user will also reach linux-next before the merge window :(
+
+Christian was commenting on previous releases maybe he can take or just
+review the last 4 patches?
