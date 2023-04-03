@@ -2,128 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0992D6D3FC7
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 11:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78A546D3FFC
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 11:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231683AbjDCJNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 05:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
+        id S231791AbjDCJQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 05:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbjDCJNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 05:13:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C00B7687
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 02:12:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680513140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TKYwrzpn2DjSpsf9pdJe2f5o+6lx3z/x5moUB122YRc=;
-        b=bYT3/EUxiz7Ibx3Vo6S3RMFJsgbHE5FD8u478lS2AVoJLEtXbVd9kEOFZ8sE/VV7p/uP07
-        mCJy8Kxj6TyyaP/mbJ72l/ce7CQMWEQs8DAWOxH6Wxud49CwpWFj7oSbe+RGjVOScDT5cp
-        O7zRmY8UnBEfWtDZsrb0TVYx0HMQ4Qw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-660-fdA_0It1NxugImgZFqHU8g-1; Mon, 03 Apr 2023 05:12:14 -0400
-X-MC-Unique: fdA_0It1NxugImgZFqHU8g-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C2565811E7C;
-        Mon,  3 Apr 2023 09:12:13 +0000 (UTC)
-Received: from calimero.vinschen.de (unknown [10.39.192.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 81814492C13;
-        Mon,  3 Apr 2023 09:12:13 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 0F7BCA80CED; Mon,  3 Apr 2023 11:12:12 +0200 (CEST)
-Date:   Mon, 3 Apr 2023 11:12:12 +0200
-From:   Corinna Vinschen <vinschen@redhat.com>
+        with ESMTP id S231886AbjDCJQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 05:16:37 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9FA10419
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 02:16:09 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id eg48so114422288edb.13
+        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 02:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1680513366;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6C6hynrcWv5X6FVoRcBHyHdDzOPwIH+nu4mWNHIuzRU=;
+        b=PtI7rWmYVO07eoYjubHIVR8Ly7S9bDh3NoRsLTbh/xig8AYq87eQqAdVBkIx8FFHXJ
+         MDvmgX25lTXuc3rWb+28P8zz4/lPx3K/2pr7sYP9kA2W0qXwfjr+mZxgzdH/bTI8BCed
+         azqIkJAoFFgcft+ynjMNSfzsGWlvUbQL6nw+6yEgoKmDSxhCVPmBo+miUFaY88oShLJ6
+         JGzh/DfpF9PrLCbWJUfoeeKDxMPCZIuBL2YcVQRpQuXN5a75CG13OMmPim0YZjpl/DSq
+         OEssRCfftpO3rIcBk1QC65JAyeXYTqphBZCW0cemSDUCgvMKk8XjMdG1/SRIiuRt8oKw
+         i+3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680513366;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6C6hynrcWv5X6FVoRcBHyHdDzOPwIH+nu4mWNHIuzRU=;
+        b=BQZXYaizNqchKLXE9geLZcFDFojMGA0jrmFtffW/hWeAqyyivvJxeldkGlS9UnYKcu
+         MFz9J4Wt/4WfB7EDL37bQTBY2Utvrcydv36axpm17SkVR004ufn6FtxvI78BJkTah+IL
+         OJUhayZod4z+JdeQMVxgEkLaFgNScdNyogxgdEIbaaONKKyhla8d4632vVL/zfrzKc47
+         UtvtlN5c+Xy52gcuEWV+MNGdiOmpr4SphQJ2xqOSNT2QC4a0Y0G7C3qQWUV9lLL7uxWf
+         LwtEIWTBNl6pTc62BvjBtL9ewHN4imgnugyEsZoZaz+hQq2fs/KIqiW2PEJH+cue167h
+         NMoQ==
+X-Gm-Message-State: AAQBX9fFSEcYfzPOL1rscz2XY5KacvnW5hCUaHixPlyJcQFz7taIx8Jy
+        0ArurZxbd2bKKhn5o6sGHnuThreYZT7bsfNoMfI=
+X-Google-Smtp-Source: AKy350brdyxuRZjjDAqrJlngx88QvNNlh8GjOZfeLcUHm6G4990vBn0UXwMVT/IYMsyDyzt2NcD2kg==
+X-Received: by 2002:aa7:d885:0:b0:4fd:2155:74ef with SMTP id u5-20020aa7d885000000b004fd215574efmr34985348edq.19.1680513366583;
+        Mon, 03 Apr 2023 02:16:06 -0700 (PDT)
+Received: from hera (ppp176092130041.access.hol.gr. [176.92.130.41])
+        by smtp.gmail.com with ESMTPSA id h5-20020a50c385000000b004ad601533a3sm4340095edf.55.2023.04.03.02.16.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Apr 2023 02:16:06 -0700 (PDT)
+Date:   Mon, 3 Apr 2023 12:16:04 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: stmmac: publish actual MTU restriction
-Message-ID: <ZCqYbMOEg9LvgcWZ@calimero.vinschen.de>
-Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
-References: <20230331092344.268981-1-vinschen@redhat.com>
- <20230331215208.66d867ff@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, hawk@kernel.org
+Subject: Re: [RFC net-next 1/2] page_pool: allow caching from safely
+ localized NAPI
+Message-ID: <ZCqZVNvhjLqBh2cv@hera>
+References: <20230331043906.3015706-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230331215208.66d867ff@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230331043906.3015706-1-kuba@kernel.org>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mar 31 21:52, Jakub Kicinski wrote:
-> On Fri, 31 Mar 2023 11:23:44 +0200 Corinna Vinschen wrote:
-> > Fixes: 2618abb73c895 ("stmmac: Fix kernel crashes for jumbo frames")
-> > Fixes: a2cd64f30140c ("net: stmmac: fix maxmtu assignment to be within valid range")
-> > Fixes: ebecb860ed228 ("net: stmmac: pci: Add HAPS support using GMAC5")
-> > Fixes: 58da0cfa6cf12 ("net: stmmac: create dwmac-intel.c to contain all Intel platform")
-> > Fixes: 30bba69d7db40 ("stmmac: pci: Add dwmac support for Loongson")
-> 
-> I'm not sure if we need fixes tags for this.
+Hi Jakub
 
-I can remove those in v2.
+On Thu, Mar 30, 2023 at 09:39:05PM -0700, Jakub Kicinski wrote:
+> Recent patches to mlx5 mentioned a regression when moving from
+> driver local page pool to only using the generic page pool code.
+> Page pool has two recycling paths (1) direct one, which runs in
+> safe NAPI context (basically consumer context, so producing
+> can be lockless); and (2) via a ptr_ring, which takes a spin
+> lock because the freeing can happen from any CPU; producer
+> and consumer may run concurrently.
+>
+> Since the page pool code was added, Eric introduced a revised version
+> of deferred skb freeing. TCP skbs are now usually returned to the CPU
+> which allocated them, and freed in softirq context. This places the
+> freeing (producing of pages back to the pool) enticingly close to
+> the allocation (consumer).
+>
+> If we can prove that we're freeing in the same softirq context in which
+> the consumer NAPI will run - lockless use of the cache is perfectly fine,
+> no need for the lock.
+>
+> Let drivers link the page pool to a NAPI instance. If the NAPI instance
+> is scheduled on the same CPU on which we're freeing - place the pages
+> in the direct cache.
+>
+> With that and patched bnxt (XDP enabled to engage the page pool, sigh,
+> bnxt really needs page pool work :() I see a 2.6% perf boost with
+> a TCP stream test (app on a different physical core than softirq).
+>
+> The CPU use of relevant functions decreases as expected:
+>
+>   page_pool_refill_alloc_cache   1.17% -> 0%
+>   _raw_spin_lock                 2.41% -> 0.98%
+>
+> Only consider lockless path to be safe when NAPI is scheduled
+> - in practice this should cover majority if not all of steady state
+> workloads. It's usually the NAPI kicking in that causes the skb flush.
+>
+> The main case we'll miss out on is when application runs on the same
+> CPU as NAPI. In that case we don't use the deferred skb free path.
+> We could disable softirq one that path, too... maybe?
 
-> Are any users depending on the advertised values being exactly right?
+This whole thing makes a lot of sense to me.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: hawk@kernel.org
+> CC: ilias.apalodimas@linaro.org
 
-The max MTU is advertised per interface:
+[...]
 
-p -d link show dev enp0s29f1
-2: enp0s29f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-    link/ether [...] promiscuity 0 minmtu 46 maxmtu 9000 [...]
+>  	return true;
+>  }
+>
+> +/* If caller didn't allow direct recycling check if we have other reasons
+> + * to believe that the producer and consumer can't race.
+> + *
+> + * Result is only meaningful in softirq context.
+> + */
+> +static bool page_pool_safe_producer(struct page_pool *pool)
+> +{
+> +	struct napi_struct *napi = pool->p.napi;
+> +
+> +	return napi && READ_ONCE(napi->list_owner) == smp_processor_id();
+> +}
+> +
+>  /* If the page refcnt == 1, this will try to recycle the page.
+>   * if PP_FLAG_DMA_SYNC_DEV is set, we'll try to sync the DMA area for
+>   * the configured size min(dma_sync_size, pool->max_len).
+> @@ -570,6 +583,9 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+>  			page_pool_dma_sync_for_device(pool, page,
+>  						      dma_sync_size);
+>
+> +		if (!allow_direct)
+> +			allow_direct = page_pool_safe_producer(pool);
+> +
 
-So the idea is surely that the user can check it and then set the MTU
-accordingly.  If the interface claims a max MTU of 9000, the expectation
-is that setting the MTU to this value just works, right?
+Do we want to hide the decision in __page_pool_put_page().  IOW wouldn't it
+be better for this function to honor whatever allow_direct dictates and
+have the allow_direct = page_pool_safe_producer(pool); in callers?
 
-So isn't it better if the interface only claims what it actually supports,
-i. .e, 
-
-  # ip -d link show dev enp0s29f1
-  2: enp0s29f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-      link/ether [...] promiscuity 0 minmtu 46 maxmtu 4096 [...]
-
-?
-
-> > +	/* stmmac_change_mtu restricts MTU to queue size.
-> > +	 * Set maxmtu accordingly, if it hasn't been set from DT.
-> > +	 */
-> > +	if (priv->plat->maxmtu == 0) {
-> > +		priv->plat->maxmtu = priv->plat->tx_fifo_size ?:
-> > +				     priv->dma_cap.tx_fifo_size;
-> > +		priv->plat->maxmtu /= priv->plat->tx_queues_to_use;
-> 
-> tx_queues_to_use may change due to reconfiguration, no?
-> What will happen then?
-
-Nothing.  tx_fifo_size is tx_queues_to_use multiplied by the size of the
-queue.  All the above code does is to compute the size of the queues,
-which is a fixed value limiting the size of the MTU.  It's the same
-check the stmmac_change_mtu() function performs to allow or deny the MTU
-change, basically:
-
-  txfifosz = priv->plat->tx_fifo_size;
-  if (txfifosz == 0)
-    txfifosz = priv->dma_cap.tx_fifo_size;
-  txfifosz /= priv->plat->tx_queues_to_use;
-  if (txfifosz < new_mtu)
-    return -EINVAL;
-
-
-Corinna
-
+Thanks
+/Ilias
+>  		if (allow_direct && in_softirq() &&
+>  		    page_pool_recycle_in_cache(page, pool))
+>  			return NULL;
+> --
+> 2.39.2
+>
