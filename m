@@ -2,101 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C89D16D3D7A
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 08:42:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC3C6D3D8A
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 08:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231540AbjDCGmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 02:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49518 "EHLO
+        id S231513AbjDCGsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 02:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231501AbjDCGmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 02:42:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F1840D4
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 23:42:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B6CA614EE
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 06:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F21BC433EF;
-        Mon,  3 Apr 2023 06:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680504124;
-        bh=XPNFl3S/VqAdGbJrenwbAcSG/CgW289y4oZ6VhBIvvA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QWm5glveCu7VUO9cZwH2Xg7zrPS8KKAl9e6TwuaULdi71/j+BjkDyvzRWIhf6wQaE
-         wfhx8m7a7arYe6DoeQmnztH7m7zzH0GlCt1PBfBNHDQI/n7tAnr72Z0kULIydEElYM
-         aq+lPBRLgS94grEkHkKUNT57MQgHj4KYB6gs4X+MwXCXReShPM7aiaNsa+eULSm38C
-         PmL14w06660kMVNUifxQof03UPhRyrtDVmZU/6xDnNtzKRXPe+pXZKIFGk3TdYgXgw
-         X3S6Y/w4TpsB2qKkmKJTjf837I5924JdWJIUcmE5lhsJ+nWBcpAnOI+sr8DWxuQ39m
-         1ok5XpTgocRjw==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>
-Subject: [GIT PULL] Improve IPsec limits, ESN and replay window
-Date:   Mon,  3 Apr 2023 09:41:54 +0300
-Message-Id: <20230403064154.12443-1-leon@kernel.org>
-X-Mailer: git-send-email 2.39.2
+        with ESMTP id S229446AbjDCGr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 02:47:58 -0400
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47816A275
+        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 23:47:54 -0700 (PDT)
+X-QQ-mid: bizesmtp63t1680504420t6edhsxm
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 03 Apr 2023 14:46:51 +0800 (CST)
+X-QQ-SSF: 01400000000000H0Z000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4nSc63oCUuY4CPWQDS69Vr0CpTX1PkhB/NgYKy8YYHcqXxBMZp74
+        jBVUu+vpXnPfh/eVUsugxv9mdEXxPpzXyZoInD4xfKJoSFA+KrzPlMzHN0zhOwDNiJnjVcU
+        aCtRD86SjMhMnjFPH05KyewqGkr9QFyEfJ+KIpcHC3z49NL2qOiWnzO0NQxvahdAOYITwub
+        Wo+ChUICnov4ppjfo6xd9ZG3opEbWwQMGnsnJofG49+CUGA255AnBTwLIge3DXGmQfqtJS7
+        QzLAfF9v9u5Gxu4oKlCoEaq6hpLpI4DBlfWKQjMdlrcqby5oGe70YDmqoY5eXPDK77oo5+d
+        ZEeoxOue+PmwtuqrtlZVB9RNlErJHw2Ez8M6F5HY08+tTpjyzk=
+X-QQ-GoodBg: 2
+X-BIZMAIL-ID: 6167654242960929765
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org, linux@armlinux.org.uk
+Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net-next 0/6] TXGBE PHYLINK support
+Date:   Mon,  3 Apr 2023 14:45:22 +0800
+Message-Id: <20230403064528.343866-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-0.0 required=5.0 tests=RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series overcomes existing hardware limitations in Mellanox ConnectX
-devices around handling IPsec soft and hard limits.
+Implement I2C, SFP, GPIO and PHYLINK to setup TXGBE link and switch link
+rate based on optical module information.
 
-In addition, the ESN logic is tied and added an interface to configure
-replay window sequence numbers through existing iproute2 interface.
+Jiawen Wu (6):
+  net: txgbe: Add software nodes to support phylink
+  net: txgbe: Implement I2C bus master driver
+  net: txgbe: Add SFP module identify
+  net: txgbe: Support GPIO to SFP socket
+  net: txgbe: Implement phylink pcs
+  net: txgbe: Support phylink MAC layer
 
-  ip xfrm state ... [ replay-seq SEQ ] [ replay-oseq SEQ ]
-                    [ replay-seq-hi SEQ ] [ replay-oseq-hi SEQ ]
+ .../device_drivers/ethernet/wangxun/txgbe.rst |  47 +
+ drivers/net/ethernet/wangxun/Kconfig          |   5 +
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c   |   3 +-
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  |   3 +
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |   1 +
+ .../ethernet/wangxun/txgbe/txgbe_ethtool.c    |  34 +
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |   1 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  61 +-
+ .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 934 ++++++++++++++++++
+ .../net/ethernet/wangxun/txgbe/txgbe_phy.h    |  10 +
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   | 156 +++
+ 11 files changed, 1223 insertions(+), 32 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_phy.h
 
-Link: https://lore.kernel.org/all/cover.1680162300.git.leonro@nvidia.com
-Signed-off-by: Leon Romanovsky <leon@kernel.org>
+-- 
+2.27.0
 
-----------------------------------------------------------------
-
-The following changes since commit 5a6cddb89b51d99a7702e63829644a5860dd9c41:
-
-  net/mlx5e: Update IPsec per SA packets/bytes count (2023-03-20 11:29:52 +0200)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git/ tags/ipsec-esn-replay
-
-for you to fetch changes up to 9f758558e309d11ef31dbdabdb1e3aa1003aebf9:
-
-  net/mlx5e: Simulate missing IPsec TX limits hardware functionality (2023-04-03 09:29:47 +0300)
-
-----------------------------------------------------------------
-Leon Romanovsky (10):
-      net/mlx5e: Factor out IPsec ASO update function
-      net/mlx5e: Prevent zero IPsec soft/hard limits
-      net/mlx5e: Add SW implementation to support IPsec 64 bit soft and hard limits
-      net/mlx5e: Overcome slow response for first IPsec ASO WQE
-      xfrm: don't require advance ESN callback for packet offload
-      net/mlx5e: Remove ESN callbacks if it is not supported
-      net/mlx5e: Set IPsec replay sequence numbers
-      net/mlx5e: Reduce contention in IPsec workqueue
-      net/mlx5e: Generalize IPsec work structs
-      net/mlx5e: Simulate missing IPsec TX limits hardware functionality
-
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   | 329 ++++++++++++++++++---
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |  47 ++-
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |  31 +-
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c    | 198 ++++++++++---
- net/xfrm/xfrm_device.c                             |   2 +-
- 5 files changed, 496 insertions(+), 111 deletions(-)
