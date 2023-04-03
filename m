@@ -2,48 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCAD6D4EC7
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 19:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B776D4ED0
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 19:19:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232566AbjDCRSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 13:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
+        id S232991AbjDCRTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 13:19:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbjDCRS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 13:18:28 -0400
-Received: from out-14.mta0.migadu.com (out-14.mta0.migadu.com [IPv6:2001:41d0:1004:224b::e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E621BF
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 10:18:25 -0700 (PDT)
-Message-ID: <d6f905fd-9bd3-b673-710a-cbd080342d0e@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1680542303;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gJbOnAdja8j9x5hMLs78iCmjaIUybz5Fpfmt8vg9kZw=;
-        b=dKDV5yvwLhly8QChEpRDcDEkRUTDgXTMFiLu1aESA142eih2ge6U5OAnThZnMgGIw5NmkE
-        UZ3TC1dPF3O9CQ6F2+cXMF1PkY4PGj5W4prErZ9wHhMWSV02Y/kCgU6JEcDBxm9EdbGgLv
-        nIUVzrDfCl2lRw/1+pQbPRiPv8vwwxw=
-Date:   Mon, 3 Apr 2023 18:18:18 +0100
+        with ESMTP id S232897AbjDCRTm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 13:19:42 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F74510EA;
+        Mon,  3 Apr 2023 10:19:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680542380; x=1712078380;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=HJDHGsrbfFfixGJbgB40Zen/pTkl5lzCZdDYYQEM3QY=;
+  b=Ffvaov+zDIpgFpl7lqHtB21i4kUhtQF0/kjVMq18KtneFy3Eqqtj8Ily
+   UA65QLyHn4BDbTp9sRrF46Y5PPRHZwsmp79y9VBVbrVC9zIrkrEHg9/vi
+   Y66L3HuJ0QcgWKcml6qYBXWeXez5UhHpSLOzbuuU4nZP6rGjXRIgEu9qx
+   g2jd1SBLh3FXHDaxoxDwari45wsXHpeXM+Wy50mJqOgV7GDg+fCUQJA80
+   dICxeca3e6vzTkP74mJbYIWLIS4lSLPREkpWDtlWLPcR3gMxNNkaemn8j
+   KJLb1FJjGfMgFCwMoZy35W1AML+5YYR1ekSvXPoFFxE4YbPQ0hd+vkUhT
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="330535981"
+X-IronPort-AV: E=Sophos;i="5.98,315,1673942400"; 
+   d="scan'208";a="330535981"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 10:19:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="797139861"
+X-IronPort-AV: E=Sophos;i="5.98,315,1673942400"; 
+   d="scan'208";a="797139861"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga002.fm.intel.com with ESMTP; 03 Apr 2023 10:19:38 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 3 Apr 2023 10:19:38 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21; Mon, 3 Apr 2023 10:19:37 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.21 via Frontend Transport; Mon, 3 Apr 2023 10:19:37 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.177)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.21; Mon, 3 Apr 2023 10:19:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VWr6G7yqyV5U4+Zz6cIqHiQSt758/qQTolDrKFxpTRiT0Ikni4sblD//nqcoqp9M4eLcLgisgphWjM/FgOKJTvMI9DaWI5RKHg0SWsIXI7NPsHIkapUrOYNkmR6J9JfeKUlayhMw8kxeGzI22V0cuoAkd1NsULhZkLfrTX82ustNNsucgIrtNcrIxQ5yd9x6H8uTWpHMOcsM5n/rKUWKOIFBsFGHQtkp1CW/4HfnmWkWPRQydczkuKYtohPG2STk8T9+MozHsr5XF8fuT7z69+39ORMTf7NH2c1zcyDmDTHhsC3EhoR1k4cMfA2VXNOQJnLtasagCpdN+3y9tsxBAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ephHBTO0G3Gmo9JWHluzQybZmko0tbBYOwkf0v7TiPc=;
+ b=NNwbJx2f/l7rXMoHqr3kYrCNZ519/NbXrnnBagrbg1/pW3mjgvm1vPfiuxx5yiPaZ2S2jw0zEm7cPmoBjGrRB7llwb5TOsFFlvKkkWIGGad5eys1qpNzMaXWj52Gk6ewD4hKaCEpjGlJdq8rTj5hHApP6rrRYFtDiFnRd8kl0E9DbeY7Ya2vH3I3pfEzDExf3McgbubnVISJrqPuVt5sV/uFQbwzDNpdrF2SXa2CPpTm1LROkGa1UygWero/p5jKXOuuLek6TZSxu4QiIjxFASOP2Xmvh7wNDdZHPNqHx8zSDII4DgSynuPloQrEyAHCUAXLTDPCw1fg5BWQwd3rPw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ PH7PR11MB5861.namprd11.prod.outlook.com (2603:10b6:510:133::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6254.26; Mon, 3 Apr 2023 17:19:35 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::9e4f:80cc:e0aa:6809%3]) with mapi id 15.20.6254.033; Mon, 3 Apr 2023
+ 17:19:35 +0000
+Date:   Mon, 3 Apr 2023 19:19:15 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
+        <pabeni@redhat.com>, <bjorn@kernel.org>,
+        <magnus.karlsson@intel.com>, <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH net-next 4/5] tsnep: Add XDP socket zero-copy RX support
+Message-ID: <ZCsKkygVjB3J+XrO@boxer>
+References: <20230402193838.54474-1-gerhard@engleder-embedded.com>
+ <20230402193838.54474-5-gerhard@engleder-embedded.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20230402193838.54474-5-gerhard@engleder-embedded.com>
+X-ClientProxiedBy: DUZPR01CA0198.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4b6::29) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 MIME-Version: 1.0
-Subject: Re: [PATCH net-next RFC v2] Add NDOs for hardware timestamp get/set
-Content-Language: en-US
-To:     Max Georgiev <glipus@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     kory.maincent@bootlin.com, kuba@kernel.org, netdev@vger.kernel.org,
-        maxime.chevallier@bootlin.com
-References: <20230402142435.47105-1-glipus@gmail.com>
- <20230403122622.ixpiy2o7irxb3xpp@skbuf>
- <CAP5jrPExLX5nF7BWSSc1LeE_HOSWsDNLiGB52U0dzxfXFKb+Lw@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <CAP5jrPExLX5nF7BWSSc1LeE_HOSWsDNLiGB52U0dzxfXFKb+Lw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB6117:EE_|PH7PR11MB5861:EE_
+X-MS-Office365-Filtering-Correlation-Id: b4e6c1bd-df50-4eb0-2678-08db34679886
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FBLywb6yIoGSDB1ZVKiddRIa4K0MgpbcFhI0qgIYipY5Fmefrf1NfZY6rxucjdckvgjLMdT4DrxPb3gKVBPiid6Gw1zGhH4VPXxh0riF79D0hok1P6P9dTX58Ojf+zsxMJfiygNg15aVmSv4zsKinh164U0WIKM1DDJUwPcs681uw5X9h0jpCYC4YWL5+BeMBmpKX6uYG/qUKnc0DXuQEWBpXoyY1HJvt8gRo7GcLTVV9CwIZ1z7LjR3bZEzvunv4617RVcishMFT4TQ0SrOp6LuFEOnxfD+KK+xCTRW2fOuyOMeVOb3aVpo7zphzNZ2KSXRSTOwHsVg95T/4x+7mAoFPJKya5N7pXDAtZXW0mgRVanNpDTY+wpo8SOTBuN5EAsGVVTc/L64XVF9bAOREAeQyOO0vd6ur/HPWaY9FVnsAziorpaR3+H5b6V088AiTMJJy2nTRYjVan3ZUAXsinZ3UXyOOZxTmRYFGgG9UTXG4KX85HZPyyqp6/iutPXw4Z2mckQG+8+dpcANRtg/1Uwz4IhWqaZmWaQe3OMcNdYDx1R496wecP8R8+jr3CF90JpAn0op6uabW+jUy8e7MktsVjrThMCOO9ifo5Jz660=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(346002)(39860400002)(376002)(366004)(136003)(396003)(451199021)(6666004)(26005)(6512007)(8676002)(6916009)(6486002)(66946007)(4326008)(66476007)(66556008)(316002)(83380400001)(38100700002)(186003)(6506007)(9686003)(41300700001)(33716001)(5660300002)(478600001)(8936002)(86362001)(82960400001)(2906002)(30864003)(44832011)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Jw78XlKvC+4RfknrIgUWZoH8up2It7icmnrTFfjjP0n0k70PxOVDDMNJ8g4j?=
+ =?us-ascii?Q?IYCCIyBvjsLZS+T+Cs+zxuUt1gbKSKSmJ7aaO8ZYUJB5ogLXpcSwYIKPpF/L?=
+ =?us-ascii?Q?f+CAtW+C+Ou12RFnFSWKbs7MVCaWoNwXLGPp4oWdlMnANEAOuy3FkXTJDaGp?=
+ =?us-ascii?Q?DtnGYvXE5HvmbKpsVskJCWXthWuWB3WNhxxljz7jinxgEyDmFLAuS7duUwt+?=
+ =?us-ascii?Q?xUTF9c3j7zH0S8AjBkiGwg8kyiiwrATHn9khBOfNW2YulBk7MVJEUR2cayja?=
+ =?us-ascii?Q?JlHy1eYOc9p6O0byYBTIClrD3p1Z/2Sw0S1Kq6GisyRM37UmBOXOrNAX/xP7?=
+ =?us-ascii?Q?KpDZ06ATKrIee8On7ihGcCSebUO9vn6joSczf4Ktn2x5Yodrjr8rKm33fFcZ?=
+ =?us-ascii?Q?aXClh43Yhj8RlMKgtHPpk+sDURCXuBOzyjzqJCWbqRoj66VqqoTGpujSGE8+?=
+ =?us-ascii?Q?o6MIcAoIdSNBTqND245Ok1WHKmcb3oRx5jmLkpadx0SfHH/y0pjQqsBhkaXu?=
+ =?us-ascii?Q?ZP1ighpUWaYKhKdCX7drGEW+c8LLnt7lY5UFGxrxny9Dl9EeCtt2diYm9lmw?=
+ =?us-ascii?Q?yITd6AacS0zaeTgdNkibDxGe5F9rJpnWn4tK/17GhAj/jQo4IMQwZJhImZIY?=
+ =?us-ascii?Q?gi58i8VMB+8XH9U6YZjBIUSgL8BSECME+dXn9yXYVY4WqOKyP7qf4E1snvV4?=
+ =?us-ascii?Q?OE5aZX5W2xZixZiCXpChoEJIlRhYrDlZTapM9BlE0e9REdaxt5n8mgj07Qsp?=
+ =?us-ascii?Q?X0NCs/1keVX0jNc4X1GHON7H8ju0z+M/e9IXrY9AU1ShmagRmb3IwjKkYP6a?=
+ =?us-ascii?Q?gZF4yFu6JxhBz4/0r7XtzHwEa/d0KMd9+FZxVU+jtw1L4irxxdndJO0GM4em?=
+ =?us-ascii?Q?zGA/LYxQn4aMYupt/jrGzIs/SKqGvrhHIoJtklrBMa0hFZbxKWfQEJPMWfvW?=
+ =?us-ascii?Q?PjCKNEiQVpY5/LuTaExZGm5tRyEDI5vhCbE3sNeGbRPFmjTa0Q/Aj0MUT27n?=
+ =?us-ascii?Q?kD26hPi7DmoKAuU4Hqq9VapMM3G97LX+xlUKZeX8GbsEWx1iVwR5HLi2LzPn?=
+ =?us-ascii?Q?RJLLBLgbtZdiGoFtIaNcgFtnskBneFja+OZgm6U+i1oY12oufLWwoyHHtn1i?=
+ =?us-ascii?Q?O7n/2QbCrz7bKJ3dcC03BUH76+Sd56kTTeIX9Zv9KPY6jO5PZYFFmbq5UYqg?=
+ =?us-ascii?Q?lLvfPQfcO8sc/64xIR3sgorDDomMBZ8WoHZ0qjgV5I4WUskDuW/rB+flegBA?=
+ =?us-ascii?Q?HaQj5pAhx+KfoevUDuf5IFiIJTR+AfwzhjHIxOIwYafC0dSadk+XXV1GLDzV?=
+ =?us-ascii?Q?e5flyRhe6qhpjiGidGLYPkw+6Hx/x2Sxa5qO0Z5jlzvqYSSMeUQtflM0ed2E?=
+ =?us-ascii?Q?MeYgSlPsBQeCg6jIrC+rUMwiUC/joSMMGa0ZuqyCR1hb1cpvCwgkChDodBmU?=
+ =?us-ascii?Q?POqPnVU2677A7WyCMy/fLjDHUShb2Czr8B486qpCLc23FpGrJEgF1B54bq9n?=
+ =?us-ascii?Q?966RO5eNVyes1yuXvQDtHCnfHDYZkEkmCqnURz97/+L14ROYNii8yg7eKzPG?=
+ =?us-ascii?Q?dh7uhrAH5a/BOlSipN4b0LjJGrMqi9v7l8Kphxz7waeJQe/YYlRIGasnbeni?=
+ =?us-ascii?Q?cQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4e6c1bd-df50-4eb0-2678-08db34679886
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 17:19:35.0846
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +lqIO5ptch68uOTfh+/YEY+7KRxU+zlifBTURkzkZfU6rSL7gP92a6ewiqx/W7oqWzeCxdfbj+WqjOC1ZgLAZ2fDmMjhOHjPKHcOM+bJIW4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5861
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,494 +150,494 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/04/2023 16:42, Max Georgiev wrote:
-> On Mon, Apr 3, 2023 at 6:26 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->>
->> On Sun, Apr 02, 2023 at 08:24:35AM -0600, Maxim Georgiev wrote:
->>> Current NIC driver API demands drivers supporting hardware timestamping
->>> to support SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTLs. Handling these IOCTLs
->>> requires dirivers to implement request parameter structure translation
->>> between user and kernel address spaces, handling possible
->>> translation failures, etc. This translation code is pretty much
->>> identical across most of the NIC drivers that support SIOCGHWTSTAMP/
->>> SIOCSHWTSTAMP.
->>> This patch extends NDO functiuon set with ndo_hwtstamp_get/set
->>> functions, implements SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTL translation
->>> to ndo_hwtstamp_get/set function calls including parameter structure
->>> translation and translation error handling.
->>>
->>> This patch is sent out as RFC.
->>> It still pending on basic testing.
->>
->> Who should do that testing? Do you have any NIC with the hardware
->> timestamping capability?
-> 
-> I'm planning to do the testing with netdevsim. I don't have access to
-> any NICs with
-> hardware timestamping support.
-> 
+On Sun, Apr 02, 2023 at 09:38:37PM +0200, Gerhard Engleder wrote:
 
-Hi Max!
-I might do some manual tests with the hardware that support timestamping 
-once you respin the series with the changes discussed in the code 
-comments. I'll convert hardware drivers myself to support new NDO on top 
-of your patches.
+Hey Gerhard,
 
->>
->>> Implementing ndo_hwtstamp_get/set in netdevsim driver should allow
->>> manual testing of the request translation logic. Also is there a way
->>> to automate this testing?
->>
->> Automatic testing would require manual testing as a first step, to iron
->> out the procedure, right?
+> Add support for XSK zero-copy to RX path. The setup of the XSK pool can
+> be done at runtime. If the netdev is running, then the queue must be
+> disabled and enabled during reconfiguration. This can be done easily
+> with functions introduced in previous commits.
 > 
-> Yes, absolutely.
+> A more important property is that, if the netdev is running, then the
+> setup of the XSK pool shall not stop the netdev in case of errors. A
+> broken netdev after a failed XSK pool setup is bad behavior. Therefore,
+> the allocation and setup of resources during XSK pool setup is done only
+> before any queue is disabled. Additionally, freeing and later allocation
+> of resources is eliminated in some cases. Page pool entries are kept for
+> later use. Two memory models are registered in parallel. As a result,
+> the XSK pool setup cannot fail during queue reconfiguration.
 > 
->>
->> The netdevsim driver should be testable by anyone using 'echo "0 1" >
->> /sys/bus/netdevsim/new_device', and then 'hwstamp_ctl -i eni0np1 -t 1'
->> (or 'testptp', or 'ptp4l', or whatever). Have you tried doing at least
->> that, did it work?
-> 
-> Let me rebase my patch on top of your changes. I'll test it on
-> netdevsim then.
-> 
->>
->>>
->>> Suggested-by: Jakub Kicinski <kuba@kernel.org>
->>> Signed-off-by: Maxim Georgiev <glipus@gmail.com>
->>> ---
->>> Changes in v2:
->>> - Introduced kernel_hwtstamp_config structure
->>> - Added netlink_ext_ack* and kernel_hwtstamp_config* as NDO hw timestamp
->>>    function parameters
->>> - Reodered function variable declarations in dev_hwtstamp()
->>> - Refactored error handling logic in dev_hwtstamp()
->>> - Split dev_hwtstamp() into GET and SET versions
->>> - Changed net_hwtstamp_validate() to accept struct hwtstamp_config *
->>>    as a parameter
->>> ---
->>>   drivers/net/ethernet/intel/e1000e/netdev.c | 39 ++++++-----
->>>   drivers/net/netdevsim/netdev.c             | 26 +++++++
->>>   drivers/net/netdevsim/netdevsim.h          |  1 +
->>>   include/linux/netdevice.h                  | 21 ++++++
->>>   include/uapi/linux/net_tstamp.h            | 15 ++++
->>>   net/core/dev_ioctl.c                       | 81 ++++++++++++++++++----
->>>   6 files changed, 149 insertions(+), 34 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
->>> index 6f5c16aebcbf..5b98f7257c77 100644
->>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
->>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
->>> @@ -6161,7 +6161,9 @@ static int e1000_mii_ioctl(struct net_device *netdev, struct ifreq *ifr,
->>>   /**
->>>    * e1000e_hwtstamp_set - control hardware time stamping
->>>    * @netdev: network interface device structure
->>> - * @ifr: interface request
->>> + * @config: hwtstamp_config structure containing request parameters
->>> + * @kernel_config: kernel version of config parameter structure.
->>> + * @extack: netlink request parameters.
->>>    *
->>>    * Outgoing time stamping can be enabled and disabled. Play nice and
->>>    * disable it when requested, although it shouldn't cause any overhead
->>> @@ -6174,20 +6176,19 @@ static int e1000_mii_ioctl(struct net_device *netdev, struct ifreq *ifr,
->>>    * specified. Matching the kind of event packet is not supported, with the
->>>    * exception of "all V2 events regardless of level 2 or 4".
->>>    **/
->>> -static int e1000e_hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
->>> +static int e1000e_hwtstamp_set(struct net_device *netdev,
->>> +                            struct hwtstamp_config *config,
->>> +                            struct kernel_hwtstamp_config *kernel_config,
->>> +                            struct netlink_ext_ack *extack)
->>>   {
->>>        struct e1000_adapter *adapter = netdev_priv(netdev);
->>> -     struct hwtstamp_config config;
->>>        int ret_val;
->>>
->>> -     if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
->>> -             return -EFAULT;
->>> -
->>> -     ret_val = e1000e_config_hwtstamp(adapter, &config);
->>> +     ret_val = e1000e_config_hwtstamp(adapter, config);
->>>        if (ret_val)
->>>                return ret_val;
->>>
->>> -     switch (config.rx_filter) {
->>> +     switch (config->rx_filter) {
->>>        case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
->>>        case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
->>>        case HWTSTAMP_FILTER_PTP_V2_SYNC:
->>> @@ -6199,22 +6200,24 @@ static int e1000e_hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
->>>                 * by hardware so notify the caller the requested packets plus
->>>                 * some others are time stamped.
->>>                 */
->>> -             config.rx_filter = HWTSTAMP_FILTER_SOME;
->>> +             config->rx_filter = HWTSTAMP_FILTER_SOME;
->>>                break;
->>>        default:
->>>                break;
->>>        }
->>> -
->>> -     return copy_to_user(ifr->ifr_data, &config,
->>> -                         sizeof(config)) ? -EFAULT : 0;
->>> +     return ret_val;
->>>   }
->>>
->>> -static int e1000e_hwtstamp_get(struct net_device *netdev, struct ifreq *ifr)
->>> +static int e1000e_hwtstamp_get(struct net_device *netdev,
->>> +                            struct hwtstamp_config *config,
->>> +                            struct kernel_hwtstamp_config *kernel_config,
->>> +                            struct netlink_ext_ack *extack)
->>>   {
->>>        struct e1000_adapter *adapter = netdev_priv(netdev);
->>>
->>> -     return copy_to_user(ifr->ifr_data, &adapter->hwtstamp_config,
->>> -                         sizeof(adapter->hwtstamp_config)) ? -EFAULT : 0;
->>> +     memcpy(config, &adapter->hwtstamp_config,
->>> +            sizeof(adapter->hwtstamp_config));
->>> +     return 0;
->>>   }
->>>
->>>   static int e1000_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
->>> @@ -6224,10 +6227,6 @@ static int e1000_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
->>>        case SIOCGMIIREG:
->>>        case SIOCSMIIREG:
->>>                return e1000_mii_ioctl(netdev, ifr, cmd);
->>> -     case SIOCSHWTSTAMP:
->>> -             return e1000e_hwtstamp_set(netdev, ifr);
->>> -     case SIOCGHWTSTAMP:
->>> -             return e1000e_hwtstamp_get(netdev, ifr);
->>>        default:
->>>                return -EOPNOTSUPP;
->>>        }
->>> @@ -7365,6 +7364,8 @@ static const struct net_device_ops e1000e_netdev_ops = {
->>>        .ndo_set_features = e1000_set_features,
->>>        .ndo_fix_features = e1000_fix_features,
->>>        .ndo_features_check     = passthru_features_check,
->>> +     .ndo_hwtstamp_get       = e1000e_hwtstamp_get,
->>> +     .ndo_hwtstamp_set       = e1000e_hwtstamp_set,
->>>   };
->>
->> The conversion per se looks almost in line with what I was expecting to
->> see, except for the comments. I guess you can convert a single driver
->> first (e1000 seems fine), to get the API merged, then more people could
->> work in parallel?
-> 
-> The conversions are going to be easy (that was the point of adding these NDO
-> functions). But there is still a problem of validating these
-> conversions with testing.
-> Unfortunately I don't have an e1000 card available to validate this conversion.
-> I'll let you and Jakub decide what will be the best strategy here.
-> 
->>
->> Or do you want netdevsim to cover hardware timestamping from the
->> beginning too, Jakub?
->>
->>>
->>>   /**
->>> diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
->>> index 35fa1ca98671..502715c6e9e1 100644
->>> --- a/drivers/net/netdevsim/netdev.c
->>> +++ b/drivers/net/netdevsim/netdev.c
->>> @@ -238,6 +238,30 @@ nsim_set_features(struct net_device *dev, netdev_features_t features)
->>>        return 0;
->>>   }
->>>
->>> +static int
->>> +nsim_hwtstamp_get(struct net_device *dev,
->>> +               struct hwtstamp_config *config,
->>> +               struct kernel_hwtstamp_config *kernel_config,
->>> +               struct netlink_ext_ack *extack)
->>> +{
->>> +     struct netdevsim *ns = netdev_priv(dev);
->>> +
->>> +     memcpy(config, &ns->hw_tstamp_config, sizeof(ns->hw_tstamp_config));
->>> +     return 0;
->>> +}
->>> +
->>> +static int
->>> +nsim_hwtstamp_ges(struct net_device *dev,
->>> +               struct hwtstamp_config *config,
->>> +               struct kernel_hwtstamp_config *kernel_config,
->>> +               struct netlink_ext_ack *extack)
->>> +{
->>> +     struct netdevsim *ns = netdev_priv(dev);
->>> +
->>> +     memcpy(&ns->hw_tstamp_config, config, sizeof(ns->hw_tstamp_config));
->>> +     return 0;
->>> +}
->>
->> Please keep conversion patches separate from patches which add new
->> functionality.
-> 
-> Let me split my monolithic patch into a stack of patches in the next version.
-> e1000e and netdevsim should be definitely arranged as separate patches
-> which could be reviewed and accepted/rejected independently.
-> 
->>
->> Also, does the netdevsim portion even do something useful? Wouldn't
->> you need to implement ethtool_ops :: get_ts_info() in order for user
->> space to know that there is a PHC, and that the device supports hardware
->> timestamping?
-> 
-> I was thinking of exposing hw timestamping settings to testfs, but the ethtool
-> approach can be easier to implement. Let me fix it!
-> 
->>
->>> +
->>>   static const struct net_device_ops nsim_netdev_ops = {
->>>        .ndo_start_xmit         = nsim_start_xmit,
->>>        .ndo_set_rx_mode        = nsim_set_rx_mode,
->>> @@ -256,6 +280,8 @@ static const struct net_device_ops nsim_netdev_ops = {
->>>        .ndo_setup_tc           = nsim_setup_tc,
->>>        .ndo_set_features       = nsim_set_features,
->>>        .ndo_bpf                = nsim_bpf,
->>> +     .ndo_hwtstamp_get       = nsim_hwtstamp_get,
->>> +     .ndo_hwtstamp_set       = nsim_hwtstamp_get,
->>>   };
->>>
->>>   static const struct net_device_ops nsim_vf_netdev_ops = {
->>> diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
->>> index 7d8ed8d8df5c..c6efd2383552 100644
->>> --- a/drivers/net/netdevsim/netdevsim.h
->>> +++ b/drivers/net/netdevsim/netdevsim.h
->>> @@ -102,6 +102,7 @@ struct netdevsim {
->>>        } udp_ports;
->>>
->>>        struct nsim_ethtool ethtool;
->>> +     struct hwtstamp_config hw_tstamp_config;
->>>   };
->>>
->>>   struct netdevsim *
->>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->>> index c8c634091a65..078c9284930a 100644
->>> --- a/include/linux/netdevice.h
->>> +++ b/include/linux/netdevice.h
->>> @@ -57,6 +57,8 @@
->>>   struct netpoll_info;
->>>   struct device;
->>>   struct ethtool_ops;
->>> +struct hwtstamp_config;
->>> +struct kernel_hwtstamp_config;
->>>   struct phy_device;
->>>   struct dsa_port;
->>>   struct ip_tunnel_parm;
->>> @@ -1411,6 +1413,17 @@ struct netdev_net_notifier {
->>>    *   Get hardware timestamp based on normal/adjustable time or free running
->>>    *   cycle counter. This function is required if physical clock supports a
->>>    *   free running cycle counter.
->>> + *   int (*ndo_hwtstamp_get)(struct net_device *dev,
->>> + *                           struct hwtstamp_config *config,
->>> + *                           struct kernel_hwtstamp_config *kernel_config,
->>> + *                           struct netlink_ext_ack *extack);
->>> + *   Get hardware timestamping parameters currently configured  for NIC
->>> + *   device.
->>> + *   int (*ndo_hwtstamp_set)(struct net_device *dev,
->>> + *                           struct hwtstamp_config *config,
->>> + *                           struct kernel_hwtstamp_config *kernel_config,
->>> + *                           struct netlink_ext_ack *extack);
->>> + *   Set hardware timestamping parameters for NIC device.
->>
->> I would expect that in the next version, you only pass struct
->> kernel_hwtstamp_config * to these and not struct hwtstamp_config *,
->> since the former was merged in a form that contains all that struct
->> hwtstamp_config does, right?
-> 
-> Yes, I guess I'll just follow your lead and use the kernel_hwtstamp_config
-> you defined to pass parameters to ndo_hwtstamp_get/set. Jakub, do you
-> have any objections here?
-> 
->>
->>>    */
->>>   struct net_device_ops {
->>>        int                     (*ndo_init)(struct net_device *dev);
->>> @@ -1645,6 +1658,14 @@ struct net_device_ops {
->>>        ktime_t                 (*ndo_get_tstamp)(struct net_device *dev,
->>>                                                  const struct skb_shared_hwtstamps *hwtstamps,
->>>                                                  bool cycles);
->>> +     int                     (*ndo_hwtstamp_get)(struct net_device *dev,
->>> +                                                 struct hwtstamp_config *config,
->>> +                                                 struct kernel_hwtstamp_config *kernel_config,
->>> +                                                 struct netlink_ext_ack *extack);
->>> +     int                     (*ndo_hwtstamp_set)(struct net_device *dev,
->>> +                                                 struct hwtstamp_config *config,
->>> +                                                 struct kernel_hwtstamp_config *kernel_config,
->>> +                                                 struct netlink_ext_ack *extack);
->>>   };
->>>
->>>   struct xdp_metadata_ops {
->>> diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
->>> index a2c66b3d7f0f..547f73beb479 100644
->>> --- a/include/uapi/linux/net_tstamp.h
->>> +++ b/include/uapi/linux/net_tstamp.h
->>> @@ -79,6 +79,21 @@ struct hwtstamp_config {
->>>        int rx_filter;
->>>   };
->>>
->>> +/**
->>> + * struct kernel_hwtstamp_config - %SIOCGHWTSTAMP and %SIOCSHWTSTAMP parameter
->>> + *
->>> + * @dummy:   a placeholder field added to work around empty struct language
->>> + *           restriction
->>> + *
->>> + * This structure passed as a parameter to NDO methods called in
->>> + * response to SIOCGHWTSTAMP and SIOCSHWTSTAMP IOCTLs.
->>> + * The structure is effectively empty for now. Before adding new fields
->>> + * to the structure "dummy" placeholder field should be removed.
->>> + */
->>> +struct kernel_hwtstamp_config {
->>> +     u8 dummy;
->>> +};
->>
->> In include/uapi? No-no. That's exported to user space, which contradicts
->> the whole point of having a structure visible just to the kernel.
->>
->> See net-next commit c4bffeaa8d50 ("net: add struct kernel_hwtstamp_config
->> and make net_hwtstamp_validate() use it") by the way.
-> 
-> Yes, I realized that I touched the wrong file when I was reading through your
-> patch stack. You already defined kernel_hwtstamp_config, so my changes to
-> include/uapi/linux/net_tstamp.h should be reverted anyway.
-> 
->>
->>> +
->>>   /* possible values for hwtstamp_config->flags */
->>>   enum hwtstamp_flags {
->>>        /*
->>> diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
->>> index 846669426236..c145afb3f77e 100644
->>> --- a/net/core/dev_ioctl.c
->>> +++ b/net/core/dev_ioctl.c
->>> @@ -183,22 +183,18 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
->>>        return err;
->>>   }
->>>
->>> -static int net_hwtstamp_validate(struct ifreq *ifr)
->>> +static int net_hwtstamp_validate(struct hwtstamp_config *cfg)
->>>   {
->>> -     struct hwtstamp_config cfg;
->>>        enum hwtstamp_tx_types tx_type;
->>>        enum hwtstamp_rx_filters rx_filter;
->>>        int tx_type_valid = 0;
->>>        int rx_filter_valid = 0;
->>>
->>> -     if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
->>> -             return -EFAULT;
->>> -
->>> -     if (cfg.flags & ~HWTSTAMP_FLAG_MASK)
->>> +     if (cfg->flags & ~HWTSTAMP_FLAG_MASK)
->>>                return -EINVAL;
->>>
->>> -     tx_type = cfg.tx_type;
->>> -     rx_filter = cfg.rx_filter;
->>> +     tx_type = cfg->tx_type;
->>> +     rx_filter = cfg->rx_filter;
->>>
->>>        switch (tx_type) {
->>>        case HWTSTAMP_TX_OFF:
->>> @@ -277,6 +273,63 @@ static int dev_siocbond(struct net_device *dev,
->>>        return -EOPNOTSUPP;
->>>   }
->>>
->>> +static int dev_hwtstamp_get(struct net_device *dev, struct ifreq *ifr)
->>> +{
->>> +     const struct net_device_ops *ops = dev->netdev_ops;
->>> +     struct hwtstamp_config config;
->>> +     int err;
->>> +
->>> +     err = dsa_ndo_eth_ioctl(dev, ifr, SIOCGHWTSTAMP);
->>> +     if (err == 0 || err != -EOPNOTSUPP)
->>> +             return err;
->>> +
->>> +     if (!ops->ndo_hwtstamp_get)
->>> +             return dev_eth_ioctl(dev, ifr, SIOCGHWTSTAMP);
->>> +
->>> +     if (!netif_device_present(dev))
->>> +             return -ENODEV;
->>> +
->>> +     err = ops->ndo_hwtstamp_get(dev, &config, NULL, NULL);
->>> +     if (err)
->>> +             return err;
->>> +
->>> +     if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
->>> +             return -EFAULT;
->>> +     return 0;
->>> +}
->>> +
->>> +static int dev_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
->>> +{
->>> +     const struct net_device_ops *ops = dev->netdev_ops;
->>> +     struct hwtstamp_config config;
->>> +     int err;
->>> +
->>> +     if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
->>> +             return -EFAULT;
->>> +
->>> +     err = net_hwtstamp_validate(&config);
->>> +     if (err)
->>> +             return err;
->>> +
->>> +     err = dsa_ndo_eth_ioctl(dev, ifr, SIOCSHWTSTAMP);
->>> +     if (err == 0 || err != -EOPNOTSUPP)
->>> +             return err;
->>> +
->>> +     if (!ops->ndo_hwtstamp_set)
->>> +             return dev_eth_ioctl(dev, ifr, SIOCSHWTSTAMP);
->>> +
->>> +     if (!netif_device_present(dev))
->>> +             return -ENODEV;
->>> +
->>> +     err = ops->ndo_hwtstamp_set(dev, &config, NULL, NULL);
->>> +     if (err)
->>> +             return err;
->>
->> Here, when you rebase over commit 4ee58e1e5680 ("net: promote
->> SIOCSHWTSTAMP and SIOCGHWTSTAMP ioctls to dedicated handlers"),
->> I expect that you will add another helper function to include/linux/net_tstamp.h
->> called hwtstamp_config_from_kernel(), which translates back from the
->> struct kernel_hwtstamp_config into something on which copy_from_user()
->> can be called, correct?
-> 
-> Yes, that's what I'm planning to do as part of rebasing this patch.
-> 
->>
->>> +
->>> +     if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
->>> +             return -EFAULT;
->>> +     return 0;
->>> +}
->>> +
->>>   static int dev_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
->>>                              void __user *data, unsigned int cmd)
->>>   {
->>> @@ -391,11 +444,11 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
->>>                rtnl_lock();
->>>                return err;
->>>
->>> +     case SIOCGHWTSTAMP:
->>> +             return dev_hwtstamp_get(dev, ifr);
->>> +
->>>        case SIOCSHWTSTAMP:
->>> -             err = net_hwtstamp_validate(ifr);
->>> -             if (err)
->>> -                     return err;
->>> -             fallthrough;
->>> +             return dev_hwtstamp_set(dev, ifr);
->>>
->>>        /*
->>>         *      Unknown or private ioctl
->>> @@ -407,9 +460,7 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
->>>
->>>                if (cmd == SIOCGMIIPHY ||
->>>                    cmd == SIOCGMIIREG ||
->>> -                 cmd == SIOCSMIIREG ||
->>> -                 cmd == SIOCSHWTSTAMP ||
->>> -                 cmd == SIOCGHWTSTAMP) {
->>> +                 cmd == SIOCSMIIREG) {
->>>                        err = dev_eth_ioctl(dev, ifr, cmd);
->>>                } else if (cmd == SIOCBONDENSLAVE ||
->>>                    cmd == SIOCBONDRELEASE ||
->>> --
->>> 2.39.2
->>>
+> In contrast to other drivers, XSK pool setup and XDP BPF program setup
+> are separate actions. XSK pool setup can be done without any XDP BPF
+> program. The XDP BPF program can be added, removed or changed without
+> any reconfiguration of the XSK pool.
 
+I won't argue about your design, but I'd be glad if you would present any
+perf numbers (ZC vs copy mode) just to give us some overview how your
+implementation works out. Also, please consider using batching APIs and
+see if this gives you any boost (my assumption is that it would).
+
+> 
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> ---
+>  drivers/net/ethernet/engleder/tsnep.h      |   7 +
+>  drivers/net/ethernet/engleder/tsnep_main.c | 432 ++++++++++++++++++++-
+>  drivers/net/ethernet/engleder/tsnep_xdp.c  |  67 ++++
+>  3 files changed, 488 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
+> index 058c2bcf31a7..836fd6b1d62e 100644
+> --- a/drivers/net/ethernet/engleder/tsnep.h
+> +++ b/drivers/net/ethernet/engleder/tsnep.h
+> @@ -101,6 +101,7 @@ struct tsnep_rx_entry {
+>  	u32 properties;
+>  
+>  	struct page *page;
+> +	struct xdp_buff *xdp;
+
+couldn't page and xdp be a union now?
+
+>  	size_t len;
+>  	dma_addr_t dma;
+>  };
+> @@ -120,6 +121,7 @@ struct tsnep_rx {
+>  	u32 owner_counter;
+>  	int increment_owner_counter;
+>  	struct page_pool *page_pool;
+> +	struct xsk_buff_pool *xsk_pool;
+>  
+>  	u32 packets;
+>  	u32 bytes;
+> @@ -128,6 +130,7 @@ struct tsnep_rx {
+>  	u32 alloc_failed;
+>  
+>  	struct xdp_rxq_info xdp_rxq;
+> +	struct xdp_rxq_info xdp_rxq_zc;
+>  };
+>  
+>  struct tsnep_queue {
+> @@ -213,6 +216,8 @@ int tsnep_rxnfc_del_rule(struct tsnep_adapter *adapter,
+>  
+>  int tsnep_xdp_setup_prog(struct tsnep_adapter *adapter, struct bpf_prog *prog,
+>  			 struct netlink_ext_ack *extack);
+> +int tsnep_xdp_setup_pool(struct tsnep_adapter *adapter,
+> +			 struct xsk_buff_pool *pool, u16 queue_id);
+>  
+>  #if IS_ENABLED(CONFIG_TSNEP_SELFTESTS)
+>  int tsnep_ethtool_get_test_count(void);
+> @@ -241,5 +246,7 @@ static inline void tsnep_ethtool_self_test(struct net_device *dev,
+>  void tsnep_get_system_time(struct tsnep_adapter *adapter, u64 *time);
+>  int tsnep_set_irq_coalesce(struct tsnep_queue *queue, u32 usecs);
+>  u32 tsnep_get_irq_coalesce(struct tsnep_queue *queue);
+> +int tsnep_enable_xsk(struct tsnep_queue *queue, struct xsk_buff_pool *pool);
+> +void tsnep_disable_xsk(struct tsnep_queue *queue);
+>  
+>  #endif /* _TSNEP_H */
+> diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+> index 6d63b379f05a..e05835d675aa 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_main.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_main.c
+> @@ -28,11 +28,16 @@
+>  #include <linux/iopoll.h>
+>  #include <linux/bpf.h>
+>  #include <linux/bpf_trace.h>
+> +#include <net/xdp_sock_drv.h>
+>  
+>  #define TSNEP_RX_OFFSET (max(NET_SKB_PAD, XDP_PACKET_HEADROOM) + NET_IP_ALIGN)
+>  #define TSNEP_HEADROOM ALIGN(TSNEP_RX_OFFSET, 4)
+>  #define TSNEP_MAX_RX_BUF_SIZE (PAGE_SIZE - TSNEP_HEADROOM - \
+>  			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+> +/* XSK buffer shall store at least Q-in-Q frame */
+> +#define TSNEP_XSK_RX_BUF_SIZE (ALIGN(TSNEP_RX_INLINE_METADATA_SIZE + \
+> +				     ETH_FRAME_LEN + ETH_FCS_LEN + \
+> +				     VLAN_HLEN * 2, 4))
+>  
+>  #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+>  #define DMA_ADDR_HIGH(dma_addr) ((u32)(((dma_addr) >> 32) & 0xFFFFFFFF))
+> @@ -781,6 +786,9 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+>  			page_pool_put_full_page(rx->page_pool, entry->page,
+>  						false);
+>  		entry->page = NULL;
+> +		if (entry->xdp)
+> +			xsk_buff_free(entry->xdp);
+> +		entry->xdp = NULL;
+>  	}
+>  
+>  	if (rx->page_pool)
+> @@ -927,7 +935,7 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
+>  {
+>  	struct tsnep_rx_entry *entry = &rx->entry[index];
+>  
+> -	/* TSNEP_MAX_RX_BUF_SIZE is a multiple of 4 */
+> +	/* TSNEP_MAX_RX_BUF_SIZE and TSNEP_XSK_RX_BUF_SIZE are multiple of 4 */
+>  	entry->properties = entry->len & TSNEP_DESC_LENGTH_MASK;
+>  	entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
+>  	if (index == rx->increment_owner_counter) {
+> @@ -979,6 +987,24 @@ static int tsnep_rx_alloc(struct tsnep_rx *rx, int count, bool reuse)
+>  	return i;
+>  }
+>  
+> +static int tsnep_rx_prealloc(struct tsnep_rx *rx)
+> +{
+> +	struct tsnep_rx_entry *entry;
+> +	int i;
+> +
+> +	/* prealloc all ring entries except the last one, because ring cannot be
+> +	 * filled completely
+> +	 */
+> +	for (i = 0; i < TSNEP_RING_SIZE - 1; i++) {
+> +		entry = &rx->entry[i];
+> +		entry->page = page_pool_dev_alloc_pages(rx->page_pool);
+> +		if (!entry->page)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
+>  {
+>  	int desc_refilled;
+> @@ -990,22 +1016,118 @@ static int tsnep_rx_refill(struct tsnep_rx *rx, int count, bool reuse)
+>  	return desc_refilled;
+>  }
+>  
+> +static void tsnep_rx_set_xdp(struct tsnep_rx *rx, struct tsnep_rx_entry *entry,
+> +			     struct xdp_buff *xdp)
+> +{
+> +	entry->xdp = xdp;
+> +	entry->len = TSNEP_XSK_RX_BUF_SIZE;
+> +	entry->dma = xsk_buff_xdp_get_dma(entry->xdp);
+> +	entry->desc->rx = __cpu_to_le64(entry->dma);
+> +}
+> +
+> +static int tsnep_rx_alloc_buffer_zc(struct tsnep_rx *rx, int index)
+> +{
+> +	struct tsnep_rx_entry *entry = &rx->entry[index];
+> +	struct xdp_buff *xdp;
+> +
+> +	xdp = xsk_buff_alloc(rx->xsk_pool);
+> +	if (unlikely(!xdp))
+> +		return -ENOMEM;
+> +	tsnep_rx_set_xdp(rx, entry, xdp);
+> +
+> +	return 0;
+> +}
+> +
+> +static void tsnep_rx_reuse_buffer_zc(struct tsnep_rx *rx, int index)
+> +{
+> +	struct tsnep_rx_entry *entry = &rx->entry[index];
+> +	struct tsnep_rx_entry *read = &rx->entry[rx->read];
+> +
+> +	tsnep_rx_set_xdp(rx, entry, read->xdp);
+> +	read->xdp = NULL;
+> +}
+> +
+> +static int tsnep_rx_alloc_zc(struct tsnep_rx *rx, int count, bool reuse)
+> +{
+> +	bool alloc_failed = false;
+> +	int i, index, retval;
+> +
+> +	for (i = 0; i < count && !alloc_failed; i++) {
+> +		index = (rx->write + i) % TSNEP_RING_SIZE;
+
+If your ring size is static (256) then you could use the trick of:
+
+		index = (rx->write + i) & (TSNEP_RING_SIZE - 1);
+
+since TSNEP_RING_SIZE is of power of 2. This way you avoid modulo op in
+hotpath.
+
+> +
+> +		retval = tsnep_rx_alloc_buffer_zc(rx, index);
+> +		if (unlikely(retval)) {
+
+retval is not needed. just do:
+		if (unlikely(tsnep_rx_alloc_buffer_zc(rx, index))) {
+
+> +			rx->alloc_failed++;
+> +			alloc_failed = true;
+> +
+> +			/* reuse only if no other allocation was successful */
+> +			if (i == 0 && reuse)
+> +				tsnep_rx_reuse_buffer_zc(rx, index);
+> +			else
+> +				break;
+
+isn't the else branch not needed as you've set the alloc_failed to true
+which will break out the loop?
+
+> +		}
+> +		tsnep_rx_activate(rx, index);
+> +	}
+> +
+> +	if (i)
+> +		rx->write = (rx->write + i) % TSNEP_RING_SIZE;
+> +
+> +	return i;
+> +}
+> +
+> +static void tsnep_rx_free_zc(struct tsnep_rx *rx, struct xsk_buff_pool *pool)
+> +{
+> +	struct tsnep_rx_entry *entry;
+
+can be scoped within loop
+
+> +	int i;
+> +
+> +	for (i = 0; i < TSNEP_RING_SIZE; i++) {
+> +		entry = &rx->entry[i];
+> +		if (entry->xdp)
+> +			xsk_buff_free(entry->xdp);
+> +		entry->xdp = NULL;
+> +	}
+> +}
+> +
+> +static void tsnep_rx_prealloc_zc(struct tsnep_rx *rx,
+> +				 struct xsk_buff_pool *pool)
+> +{
+> +	struct tsnep_rx_entry *entry;
+
+ditto
+
+> +	int i;
+> +
+> +	/* prealloc all ring entries except the last one, because ring cannot be
+> +	 * filled completely, as many buffers as possible is enough as wakeup is
+> +	 * done if new buffers are available
+> +	 */
+> +	for (i = 0; i < TSNEP_RING_SIZE - 1; i++) {
+> +		entry = &rx->entry[i];
+> +		entry->xdp = xsk_buff_alloc(pool);
+
+anything stops you from using xsk_buff_alloc_batch() ?
+
+> +		if (!entry->xdp)
+> +			break;
+> +	}
+> +}
+> +
+> +static int tsnep_rx_refill_zc(struct tsnep_rx *rx, int count, bool reuse)
+> +{
+> +	int desc_refilled;
+> +
+> +	desc_refilled = tsnep_rx_alloc_zc(rx, count, reuse);
+> +	if (desc_refilled)
+> +		tsnep_rx_enable(rx);
+> +
+> +	return desc_refilled;
+> +}
+> +
+>  static bool tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *prog,
+>  			       struct xdp_buff *xdp, int *status,
+> -			       struct netdev_queue *tx_nq, struct tsnep_tx *tx)
+> +			       struct netdev_queue *tx_nq, struct tsnep_tx *tx,
+> +			       bool zc)
+>  {
+>  	unsigned int length;
+> -	unsigned int sync;
+>  	u32 act;
+>  
+>  	length = xdp->data_end - xdp->data_hard_start - XDP_PACKET_HEADROOM;
+>  
+>  	act = bpf_prog_run_xdp(prog, xdp);
+> -
+> -	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
+> -	sync = xdp->data_end - xdp->data_hard_start - XDP_PACKET_HEADROOM;
+> -	sync = max(sync, length);
+> -
+>  	switch (act) {
+>  	case XDP_PASS:
+>  		return false;
+> @@ -1027,8 +1149,21 @@ static bool tsnep_xdp_run_prog(struct tsnep_rx *rx, struct bpf_prog *prog,
+>  		trace_xdp_exception(rx->adapter->netdev, prog, act);
+>  		fallthrough;
+>  	case XDP_DROP:
+> -		page_pool_put_page(rx->page_pool, virt_to_head_page(xdp->data),
+> -				   sync, true);
+> +		if (zc) {
+> +			xsk_buff_free(xdp);
+> +		} else {
+> +			unsigned int sync;
+> +
+> +			/* Due xdp_adjust_tail: DMA sync for_device cover max
+> +			 * len CPU touch
+> +			 */
+> +			sync = xdp->data_end - xdp->data_hard_start -
+> +			       XDP_PACKET_HEADROOM;
+> +			sync = max(sync, length);
+> +			page_pool_put_page(rx->page_pool,
+> +					   virt_to_head_page(xdp->data), sync,
+> +					   true);
+> +		}
+>  		return true;
+>  	}
+>  }
+> @@ -1181,7 +1316,8 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+>  					 length, false);
+>  
+>  			consume = tsnep_xdp_run_prog(rx, prog, &xdp,
+> -						     &xdp_status, tx_nq, tx);
+> +						     &xdp_status, tx_nq, tx,
+> +						     false);
+>  			if (consume) {
+>  				rx->packets++;
+>  				rx->bytes += length;
+> @@ -1205,6 +1341,125 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+>  	return done;
+>  }
+>  
+> +static int tsnep_rx_poll_zc(struct tsnep_rx *rx, struct napi_struct *napi,
+> +			    int budget)
+> +{
+> +	struct tsnep_rx_entry *entry;
+> +	struct netdev_queue *tx_nq;
+> +	struct bpf_prog *prog;
+> +	struct tsnep_tx *tx;
+> +	int desc_available;
+> +	int xdp_status = 0;
+> +	struct page *page;
+> +	int done = 0;
+> +	int length;
+> +
+> +	desc_available = tsnep_rx_desc_available(rx);
+> +	prog = READ_ONCE(rx->adapter->xdp_prog);
+> +	if (prog) {
+> +		tx_nq = netdev_get_tx_queue(rx->adapter->netdev,
+> +					    rx->tx_queue_index);
+> +		tx = &rx->adapter->tx[rx->tx_queue_index];
+> +	}
+> +
+> +	while (likely(done < budget) && (rx->read != rx->write)) {
+> +		entry = &rx->entry[rx->read];
+> +		if ((__le32_to_cpu(entry->desc_wb->properties) &
+> +		     TSNEP_DESC_OWNER_COUNTER_MASK) !=
+> +		    (entry->properties & TSNEP_DESC_OWNER_COUNTER_MASK))
+> +			break;
+> +		done++;
+> +
+> +		if (desc_available >= TSNEP_RING_RX_REFILL) {
+> +			bool reuse = desc_available >= TSNEP_RING_RX_REUSE;
+> +
+> +			desc_available -= tsnep_rx_refill_zc(rx, desc_available,
+> +							     reuse);
+> +			if (!entry->xdp) {
+> +				/* buffer has been reused for refill to prevent
+> +				 * empty RX ring, thus buffer cannot be used for
+> +				 * RX processing
+> +				 */
+> +				rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
+> +				desc_available++;
+> +
+> +				rx->dropped++;
+> +
+> +				continue;
+> +			}
+> +		}
+> +
+> +		/* descriptor properties shall be read first, because valid data
+> +		 * is signaled there
+> +		 */
+> +		dma_rmb();
+> +
+> +		prefetch(entry->xdp->data);
+> +		length = __le32_to_cpu(entry->desc_wb->properties) &
+> +			 TSNEP_DESC_LENGTH_MASK;
+> +		entry->xdp->data_end = entry->xdp->data + length;
+> +		xsk_buff_dma_sync_for_cpu(entry->xdp, rx->xsk_pool);
+> +
+> +		/* RX metadata with timestamps is in front of actual data,
+> +		 * subtract metadata size to get length of actual data and
+> +		 * consider metadata size as offset of actual data during RX
+> +		 * processing
+> +		 */
+> +		length -= TSNEP_RX_INLINE_METADATA_SIZE;
+> +
+> +		rx->read = (rx->read + 1) % TSNEP_RING_SIZE;
+> +		desc_available++;
+> +
+> +		if (prog) {
+> +			bool consume;
+> +
+> +			entry->xdp->data += TSNEP_RX_INLINE_METADATA_SIZE;
+> +			entry->xdp->data_meta += TSNEP_RX_INLINE_METADATA_SIZE;
+> +
+> +			consume = tsnep_xdp_run_prog(rx, prog, entry->xdp,
+> +						     &xdp_status, tx_nq, tx,
+> +						     true);
+
+reason for separate xdp run prog routine for ZC was usually "likely-fying"
+XDP_REDIRECT action as this is the main action for AF_XDP which was giving
+us perf improvement. Please try this out on your side to see if this
+yields any positive value.
+
+> +			if (consume) {
+> +				rx->packets++;
+> +				rx->bytes += length;
+> +
+> +				entry->xdp = NULL;
+> +
+> +				continue;
+> +			}
+> +		}
+> +
+> +		page = page_pool_dev_alloc_pages(rx->page_pool);
+> +		if (page) {
+> +			memcpy(page_address(page) + TSNEP_RX_OFFSET,
+> +			       entry->xdp->data - TSNEP_RX_INLINE_METADATA_SIZE,
+> +			       length + TSNEP_RX_INLINE_METADATA_SIZE);
+> +			tsnep_rx_page(rx, napi, page, length);
+> +		} else {
+> +			rx->dropped++;
+> +		}
+> +		xsk_buff_free(entry->xdp);
+> +		entry->xdp = NULL;
+> +	}
+> +
+> +	if (xdp_status)
+> +		tsnep_finalize_xdp(rx->adapter, xdp_status, tx_nq, tx);
+> +
+> +	if (desc_available)
+> +		desc_available -= tsnep_rx_refill_zc(rx, desc_available, false);
+> +
+> +	if (xsk_uses_need_wakeup(rx->xsk_pool)) {
+> +		if (desc_available)
+> +			xsk_set_rx_need_wakeup(rx->xsk_pool);
+> +		else
+> +			xsk_clear_rx_need_wakeup(rx->xsk_pool);
+> +
+> +		return done;
+> +	}
+> +
+> +	return desc_available ? budget : done;
+> +}
+>  
+
+(...)
+
+>  static int tsnep_mac_init(struct tsnep_adapter *adapter)
+> @@ -1974,7 +2369,8 @@ static int tsnep_probe(struct platform_device *pdev)
+>  
+>  	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
+>  			       NETDEV_XDP_ACT_NDO_XMIT |
+> -			       NETDEV_XDP_ACT_NDO_XMIT_SG;
+> +			       NETDEV_XDP_ACT_NDO_XMIT_SG |
+> +			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
+>  
+>  	/* carrier off reporting is important to ethtool even BEFORE open */
+>  	netif_carrier_off(netdev);
+> diff --git a/drivers/net/ethernet/engleder/tsnep_xdp.c b/drivers/net/ethernet/engleder/tsnep_xdp.c
+> index 4d14cb1fd772..6ec137870b59 100644
+> --- a/drivers/net/ethernet/engleder/tsnep_xdp.c
+> +++ b/drivers/net/ethernet/engleder/tsnep_xdp.c
+> @@ -6,6 +6,8 @@
+>  
+>  #include "tsnep.h"
+>  
+> +#define TSNEP_XSK_DMA_ATTR (DMA_ATTR_SKIP_CPU_SYNC)
+
+This is not introducing any value, you can operate directly on
+DMA_ATTR_SKIP_CPU_SYNC
+
+(...)
