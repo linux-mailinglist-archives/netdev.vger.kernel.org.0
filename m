@@ -2,209 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C24F6D5364
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 23:21:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B326D5376
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 23:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231788AbjDCVVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 17:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        id S233322AbjDCVZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 17:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232711AbjDCVVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 17:21:11 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2079.outbound.protection.outlook.com [40.107.94.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3769049CA
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 14:20:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JG5FSgSPeTzTpVlG6GV1Vz+9Ou9rj/fBNAyXOsgxyutG17u8FKS8bSAQJnjAhWAg/iD4XcY5g/jCO3LQUBDvjsqKm3QiDDhs2FjS40fpsHMhjgW//0q7hWYKTL6LRi2HfQaIBNUBit+QYp9+iIjFW0sGls8oIUZ5FKK+H5YMk1ddKhnd1ct1KvfHmDGFjT1yLBdzlHaMHmO9YaKxl9NS8hZbb7R3/TFHZe/xAUdNH8MAzX7PKJY2Db1eE4YoEYuCNiT/3yLp5YtUf+nJSn2LBeVOMoipQUrETWRHcxyJSIlDpqBErtBrhtEtkpNv05R350UoT75VjPhEw+iESDPemQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bZxu2RY0E/EJ931hUzLmGMVydr9zoWLk2VgTaGhtAT8=;
- b=gtdgbKNufgkberfKsxuatGz9BFY2nKD8EC396krzR1gzs0fIK1hKfe0bNPmu/brinsprdwg0PO35ehGOitdZDeag3DJGx3Y8efOB9KLkF950T32atuqVy+28UzoxeyOdsq00ganGJOQ4d5OrJ/+QqLKDLY50oFs/QrFY6EN+D3e5snVvwhBqVs1NLgrxgeEmC6OFqc9g4LStQnQiStNi3lT2QvtQOZGu7yUJpQaRjuCAbxvJnNMUZIbIQWywiSjx5h3KvtUPQJxu2MDT/W8ifV/B5DO5g9ktqPCwsDwShuQjso3fetzwUtXJ9dBzO+FXTe/L4k1RbEp4H9UL/xHRwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bZxu2RY0E/EJ931hUzLmGMVydr9zoWLk2VgTaGhtAT8=;
- b=XtdlMxtgIPcfuvWVPLx8jby3PYmAXxNRQqGXsUow983y0dWnVY1r1+xVtXkZnYmWnt+C2Ah5bCfP3yaMfEzc/Hck6V3gooS7aKOTt2rWfu4PdZiumE3q7cdmm1TdcyVebUTEAksdSLEDK8M9BnGujbLpi2eCS/O8bLUeXSDofF7Gn8+pGxzqfdf543c92KbO1zYFpSBIMe5/5Q4wFVlSTiD5dM7FIWPSZd9awAJGcXtQns/6pwIaR+tKUBzJgxn6TsD3K+ALiLHHvhqPUxBn1pr6tdvVUmPi90daM4sVUL4fRXwGXoFBU73GyuNPzjolWOYO7Dw66gdecl+iOzuRww==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3127.namprd12.prod.outlook.com (2603:10b6:a03:d8::33)
- by BL3PR12MB6473.namprd12.prod.outlook.com (2603:10b6:208:3b9::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6178.36; Mon, 3 Apr
- 2023 21:20:55 +0000
-Received: from BYAPR12MB3127.namprd12.prod.outlook.com
- ([fe80::ebc5:c372:d99a:fdb5]) by BYAPR12MB3127.namprd12.prod.outlook.com
- ([fe80::ebc5:c372:d99a:fdb5%5]) with mapi id 15.20.6254.033; Mon, 3 Apr 2023
- 21:20:55 +0000
-Message-ID: <ac238d6b-8726-8156-3810-6471291dbc7f@nvidia.com>
-Date:   Mon, 3 Apr 2023 14:20:53 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.9.1
-Content-Language: en-US
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, mkubecek@suse.cz,
-        mlxsw@nvidia.com, idosch@nvidia.com,
-        Danielle Ratson <danieller@nvidia.com>
-From:   Andy Roulin <aroulin@nvidia.com>
-Subject: [PATCH net v2] ethtool: reset #lanes when lanes is omitted
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0077.namprd03.prod.outlook.com
- (2603:10b6:a03:331::22) To BYAPR12MB3127.namprd12.prod.outlook.com
- (2603:10b6:a03:d8::33)
+        with ESMTP id S233713AbjDCVZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 17:25:33 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5764C21;
+        Mon,  3 Apr 2023 14:25:24 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id i5-20020a05600c354500b003edd24054e0so20657468wmq.4;
+        Mon, 03 Apr 2023 14:25:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112; t=1680557123;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VIR23tVTvNCqVdOLn9EZ+Au8EAUJ7AiO6u6/9Nuexhc=;
+        b=NfT05tNQvxCUfD2aerk9b1zGCfDZSUJHGA9DhvC76SDQcKo2ztcfkMJODvLFwdcGIe
+         k37WdPTfn6c1QciK7LFx/Dy9hAEB1Hcu0phVqroV6ZMfpSgDwsCzG9J+vDq3azM6AuGy
+         0F2QOD13dz7f4fJwZ9f7CWYiVca8IIYoxec8s2/BoeLNR2sTeI69/Cs+NHv0MGOMTDFd
+         wrwEbAIi50OyV1xv1vugxyvWi/Y4RCJxf5p/sm8o5swl+7jvkE41H9i+yzXijUbBZDXF
+         9y4Gq45/uIadFK2X/J4Jvjs77il7Z2jrJLkbnkM8kmcWYE1QMifxN81cK4o79m1MtVbH
+         H2sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680557123;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VIR23tVTvNCqVdOLn9EZ+Au8EAUJ7AiO6u6/9Nuexhc=;
+        b=lUPGef08lNnjPRFzm2sngXu/k0HRqit62/QZj8Wb0XQ7DJCGwmMTGoXCmQqM6A6ref
+         9f+3QuUG9Rmf2JvqBptASJtwrAX/jyaGRDg57NaeLzSlO/l9k75wHV+aempb2j54VW1D
+         h9S/6H7NQYGQn5SrQfqFrkhyE/oC3+s1hFc3Y06N+r/hYpxRcmQbm9l93yxbBGbV3Lg1
+         +P18/crZPNeyHJUu8MqZ/VrxBrYncM2cMHK8ouEBSsN1g165G8lCIey/jmV4+aXWl/SG
+         Alqa7AzXGGz+AUtudFSK8MJl0Soz4LxAnE2YR/TXp7iFOujEdKOXRhluAcPhwTnkQqGW
+         jALA==
+X-Gm-Message-State: AAQBX9eVuMZ4pBE44XQHGRUUed+INMhejoB7nCepl0FJbyGrLQv91+7d
+        TDIc1svZYo0XPMsbbE5S/fE=
+X-Google-Smtp-Source: AKy350bZY6EtR7wvHBKIrt7OS1qjTi8Wveiqtqxq+rdf48JdfURnCCSj2CHGoO8P92DrFcHB1L9uPw==
+X-Received: by 2002:a7b:c5cd:0:b0:3ea:d611:f8 with SMTP id n13-20020a7bc5cd000000b003ead61100f8mr531737wmk.38.1680557122734;
+        Mon, 03 Apr 2023 14:25:22 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-2a01-0c22-7651-4500-0000-0000-0000-0e63.c22.pool.telefonica.de. [2a01:c22:7651:4500::e63])
+        by smtp.googlemail.com with ESMTPSA id g19-20020a05600c311300b003ee74c25f12sm20405564wmo.35.2023.04.03.14.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Apr 2023 14:25:22 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     michael.wei.hong.sit@intel.com
+Cc:     alexandre.torgue@foss.st.com, andrew@lunn.ch,
+        boon.leong.ong@intel.com, davem@davemloft.net, edumazet@google.com,
+        hkallweit1@gmail.com, hong.aun.looi@intel.com,
+        joabreu@synopsys.com, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, linux@armlinux.org.uk,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, peppe.cavallaro@st.com,
+        peter.jun.ann.lai@intel.com, weifeng.voon@intel.com
+Subject: RE [PATCH net v5 2/3] net: stmmac: check if MAC needs to attach to a PHY
+Date:   Mon,  3 Apr 2023 23:24:34 +0200
+Message-Id: <20230403212434.296975-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.40.0
+In-Reply-To: <20230330091404.3293431-3-michael.wei.hong.sit@intel.com>
+References: <20230330091404.3293431-3-michael.wei.hong.sit@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3127:EE_|BL3PR12MB6473:EE_
-X-MS-Office365-Filtering-Correlation-Id: b22e48da-a58f-43e8-c1fc-08db34894f99
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ezU4zBpoKId43Y4PBdtqYsUyGo+4/WiJJqoH+bmgh+QzAiAZ1pMS++ADZLcbBxv4OyPikaiz8hLbpLUfAWPWtEoOCpwalh/EVrpel9Quh5/5o0L6eZUyMAHwwNYl0DGty6N6U2ofW5hCtuKkrJmkjXE9X2cpbPgOTzY/e0E1ZHKwgaQs0FUhvRyB3FanI2Gl1RF9wCPJoy5vxTFnDJlwJNeS04m5XUPucqJyNu2iYGbPL30XrIVC+BTmphTxYJKlt3E2VfZVBKDtBRkroPm8xAVvk1XgyrrXyoQ3WSovmt1wzQW+EwDinbnFSvZAFaTxAz2bixvGhfVqwKwBcLa+PgsrNSX9TyfiFTnQ6URY/PObAEmDSGbKuWdLLfE+NuGyCSCQYi6IKRjpIL7nSzNzZ0DitniuV0AGzktCow/tcamd8i1aVd5DD9CE9h1t0+byH8edFlFuNvwencHPr3QS9TSswxm15uodods0y0hEdJeEpackbcR6Ln3VKehvHW87ZMlvU+hyb/QHmJnAaXu0m7iRf5YkX0+ni1E9I8Qr5pBBlpnft1jTk03Jcy7htJGVRZHEXe4bLb4jXu9/Vkdk7rIysuD4qTa3YWFYellJv8q2RoWlxy+QXFEVpkYHXD20wRS1Qta3YhRPB7VBnvgjvg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3127.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(376002)(39860400002)(136003)(346002)(396003)(451199021)(31686004)(6486002)(8676002)(6916009)(4326008)(66556008)(66946007)(66476007)(41300700001)(316002)(31696002)(36756003)(86362001)(2616005)(6512007)(6506007)(107886003)(83380400001)(8936002)(2906002)(5660300002)(478600001)(38100700002)(186003)(26005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eUtJcG9lQWJsR0VjdDhZcUg5RVMyZnlaM3BwL3gyd1Z4Z25jQ1J3cytnYlVr?=
- =?utf-8?B?ZEZUOEI5NzlLWjBtZXliOXJCbWxpVEQvOXVXb3ppVDlMMFhWMDA5ZE53SDlI?=
- =?utf-8?B?N3VOVTZlQUtHdDEwTmhtUGdXdVpkeXhSczZ1amw2dytJdEk5ZENRK0YyYkRD?=
- =?utf-8?B?UlpKZjNDdk85UjIza1VQU0N6VUJ5Q2daRVpGTWlTcjF6T25VU1R1VkYxOHVi?=
- =?utf-8?B?d0x2cWhheHc0QmRSZ1JOeHF4aHR5dHVDeFZuMlNuVmVQWC8rK0REcGhVSXZ2?=
- =?utf-8?B?WkFzVkY3OTByL3B2MkltbWkyUGM2V3ptSWFEemtTU1MzWEJxVTdtcy9tWU1O?=
- =?utf-8?B?RFZxUUs2Smg0NUJsbFBIcWNMaWdBS2VpaFJKVCs5dE40RjNKcjgxckc2MkVX?=
- =?utf-8?B?QWVHNXd6aWtjTEdnWDZUWmxPZWVJRDU4SjJ0TWprdzZKM1NlL3grYVZuc0Ju?=
- =?utf-8?B?NnBwa1JpaWhnSkRpT3YrMlpGckZKMklUV2dRU29kdG1OVTVuUFBFS05PK1Jz?=
- =?utf-8?B?NEN6VWFGK3N6cGFqaXZPc0lLbHplZkVDS1lDOVZmODN2cEprOG5hWmFPWW1o?=
- =?utf-8?B?TEtzMzdWckxIZnp1MDNMN3NKL0xJVnQ4T3kzQTB2OXBCWVZ6T0NXd2xNUWtD?=
- =?utf-8?B?SGF3WldZOUJOaHVzN0s1ek1UVU55OTB1RUwwUlE5WDZxOXJHMGYyRWtObVMz?=
- =?utf-8?B?TXJIY1pFblp3bkg1M3k5TDRRV0NVS0dKSnhSTWRCRi9Oemd2NHBQR21tcjZs?=
- =?utf-8?B?bzJ5bnVMUkpCcjFPNDAwVUwvb1dMK2w0ZnZUZUlNSjNXMVhvOTdGNlZWY1Ja?=
- =?utf-8?B?OVk1ZWdMVFNGVDJnaVo1bHFPSndzUUNzd29KUGZ6WFVxM3lkS3pDaUtsVTNV?=
- =?utf-8?B?T0NBcnJMaG1FenN2UDdGU2JETFg3cG5mMEo2ZEdnMW1RZk5YV3RyN0xGNHps?=
- =?utf-8?B?Q3V3azNjY1pSOHVKVUJkUGc5aFljMHV4Q0M2eTQxSkZ4dmpDN3dVU1hCR0pK?=
- =?utf-8?B?STZOR0hoQW5QYzBOZC8xUHFRRGRmWm5iTEhReDZxZmo5QTlDYjQwSnY1RkU3?=
- =?utf-8?B?RmNJV1gwSTVwdWtTSTlRZ3NBWFRrRXdXQVRZSUlMMUhXNkJhRE91QjdJZ25Z?=
- =?utf-8?B?N3NxQi9MSTN6UzhvVjlGVlNtNXZLdjhEcHo2OUF1N3hSUkVYU2p1d2xZNWNZ?=
- =?utf-8?B?eittM29HNE9kOWxIbXNhOUtmc3JnbjI5cWoxaXZjaHVEMnhUUEV4czVFUzNu?=
- =?utf-8?B?TE8vK1BvUm8vUkxzYUtOM2xHM0grQjVCSG5FRGRhYnpZRFBpYkRNN0s4VjFa?=
- =?utf-8?B?UVhIcHpNdEVBc0Z6UWxVM0x3RGI4L21nQmN5cGxZZTdvalF4NW4wc2dPM0Fm?=
- =?utf-8?B?R0VENUE4SFdlWFRsNjQrUmNVM083Q3NtcXZRT3hEMWJ4TmFCZDNlamVFQW1R?=
- =?utf-8?B?Y215R2FvT21mdjdjNDBxQ1VjQ1JiK2RDMmVKd0JyOUJVc0V3dXV0V1o4Y0pY?=
- =?utf-8?B?Ly9ZSnNiTGJvL2w2d2ZtcFluaTdUTm10OTY5YkNxNGtjNWM3cjNVSStCMFAy?=
- =?utf-8?B?STlXYWRWOW53QXR0VVhLUE5ZYVEvUm1FT1d6ME1odWc0T0JIVnhzSjNpL0Fy?=
- =?utf-8?B?R2dJREpGaXM3RVlrNm9MNEZVZUg4enhYMmZ4LzNGZ3A5WVp5VFFCczlRRHNj?=
- =?utf-8?B?cWxpTFdmRWh0THkzYnFkV3JCRGtvZjJyNEtWaGdsZEtMcFQ3cmRnRE1tZTFN?=
- =?utf-8?B?VjVmejZyY3ZrMTE5Z3BMcDdRR3h4QVlrM3J3MTNaSHBOK2h3Qld4VkgxNHZu?=
- =?utf-8?B?SlkwNTUvdXlEeTdoUUZtQWJSb3M5bnBMWkh1aEtZWnZiK3lmdXVXR1B3Yklo?=
- =?utf-8?B?MnJNeFhSbVdnQ01FaER0RzlTRmlkcS9yNGVjeFNWdjQ5S2I1RzRaZE9nR1o1?=
- =?utf-8?B?RVVkTjBtL2hadS94eUhVR1gyUlNZRjY0K2lBS01JbFhtZHEzcXJxdUQwcHo4?=
- =?utf-8?B?allvTVkyK2YxYVVmUlM4NHY0Z3FrWi9qdkwvSEs2TU5CdVdEd1h1a2psdkxB?=
- =?utf-8?B?SEtsU25YLzVkMk1WRlFIOFg2dzZmN01aK3NzaWszNEljWXc3UlpBQy83VWNx?=
- =?utf-8?Q?biz5zUfnb74+yg9bxIm7d+ZSG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b22e48da-a58f-43e8-c1fc-08db34894f99
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3127.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2023 21:20:55.5336
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mTOpvDT5VhYR8yXmY64ewmbfKkHJyILOWn+guXKXIv++OwmLCIg78LhnB2/JxQ6at+er5VeGOPLwk0pvSLtIXw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6473
-X-Spam-Status: No, score=0.8 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the number of lanes was forced and then subsequently the user
-omits this parameter, the ksettings->lanes is reset. The driver
-should then reset the number of lanes to the device's default
-for the specified speed.
+Hello,
 
-However, although the ksettings->lanes is set to 0, the mod variable
-is not set to true to indicate the driver and userspace should be
-notified of the changes.
+[...]
+> @@ -1144,10 +1145,11 @@ static int stmmac_init_phy(struct net_device *dev)
+>  	if (fwnode)
+>  		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
+>  
+> +	phy_needed = phylink_expects_phy(priv->phylink);
+>  	/* Some DT bindings do not set-up the PHY handle. Let's try to
+>  	 * manually parse it
+>  	 */
+> -	if (!fwnode || ret) {
+> +	if (!fwnode || phy_needed || ret) {
+Unfortunately this breaks Ethernet on my X96 Air board (the .dts file
+can be found upstream in:
+arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts)
 
-The consequence is that the same ethtool operation will produce
-different results based on the initial state.
+Working boot-log:
+# dmesg | grep dwmac
+[    3.699961] meson8b-dwmac ff3f0000.ethernet: IRQ eth_wake_irq not found
+[    3.700944] meson8b-dwmac ff3f0000.ethernet: IRQ eth_lpi not found
+[    3.707196] meson8b-dwmac ff3f0000.ethernet: PTP uses main clock
+[    3.713688] meson8b-dwmac ff3f0000.ethernet: User ID: 0x11, Synopsys ID: 0x37
+[    3.720201] meson8b-dwmac ff3f0000.ethernet:         DWMAC1000
+[    3.725387] meson8b-dwmac ff3f0000.ethernet: DMA HW capability register supported
+[    3.732832] meson8b-dwmac ff3f0000.ethernet: RX Checksum Offload Engine supported
+[    3.740301] meson8b-dwmac ff3f0000.ethernet: COE Type 2
+[    3.745491] meson8b-dwmac ff3f0000.ethernet: TX Checksum insertion supported
+[    3.752504] meson8b-dwmac ff3f0000.ethernet: Wake-Up On Lan supported
+[    3.758993] meson8b-dwmac ff3f0000.ethernet: Normal descriptors
+[    3.764813] meson8b-dwmac ff3f0000.ethernet: Ring mode enabled
+[    3.770629] meson8b-dwmac ff3f0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[   13.565781] meson8b-dwmac ff3f0000.ethernet end0: renamed from eth0
+[   14.036061] meson8b-dwmac ff3f0000.ethernet end0: Register MEM_TYPE_PAGE_POOL RxQ-0
+[   14.255617] meson8b-dwmac ff3f0000.ethernet end0: PHY [mdio_mux-0.0:00] driver [RTL8211F Gigabit Ethernet] (irq=33)
+[   14.265404] meson8b-dwmac ff3f0000.ethernet end0: No Safety Features support found
+[   14.267977] meson8b-dwmac ff3f0000.ethernet end0: PTP not supported by HW
+[   14.275723] meson8b-dwmac ff3f0000.ethernet end0: configuring for phy/rgmii-txid link mode
+[   17.394262] meson8b-dwmac ff3f0000.ethernet end0: Link is Up - 1Gbps/Full - flow control rx/tx
 
-If the initial state is:
-$ ethtool swp1 | grep -A 3 'Speed: '
-        Speed: 500000Mb/s
-        Lanes: 2
-        Duplex: Full
-        Auto-negotiation: on
+Non-working boot-log:
+# dmesg | grep dwmac
+[    3.730072] meson8b-dwmac ff3f0000.ethernet: IRQ eth_wake_irq not found
+[    3.731053] meson8b-dwmac ff3f0000.ethernet: IRQ eth_lpi not found
+[    3.737303] meson8b-dwmac ff3f0000.ethernet: PTP uses main clock
+[    3.743795] meson8b-dwmac ff3f0000.ethernet: User ID: 0x11, Synopsys ID: 0x37
+[    3.750311] meson8b-dwmac ff3f0000.ethernet:         DWMAC1000
+[    3.755498] meson8b-dwmac ff3f0000.ethernet: DMA HW capability register supported
+[    3.762944] meson8b-dwmac ff3f0000.ethernet: RX Checksum Offload Engine supported
+[    3.770412] meson8b-dwmac ff3f0000.ethernet: COE Type 2
+[    3.775603] meson8b-dwmac ff3f0000.ethernet: TX Checksum insertion supported
+[    3.782615] meson8b-dwmac ff3f0000.ethernet: Wake-Up On Lan supported
+[    3.789106] meson8b-dwmac ff3f0000.ethernet: Normal descriptors
+[    3.794924] meson8b-dwmac ff3f0000.ethernet: Ring mode enabled
+[    3.800738] meson8b-dwmac ff3f0000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+[   13.052942] meson8b-dwmac ff3f0000.ethernet end0: renamed from eth0
+[   13.594285] meson8b-dwmac ff3f0000.ethernet end0: Register MEM_TYPE_PAGE_POOL RxQ-0
+[   13.825578] meson8b-dwmac ff3f0000.ethernet end0: PHY [mdio_mux-0.0:00] driver [RTL8211F Gigabit Ethernet] (irq=33)
+[   13.831358] meson8b-dwmac ff3f0000.ethernet end0: no phy found
+[   13.836229] meson8b-dwmac ff3f0000.ethernet end0: __stmmac_open: Cannot attach to PHY (error: -19)
 
-then executing 'ethtool -s swp1 speed 50000 autoneg off' will yield:
-$ ethtool swp1 | grep -A 3 'Speed: '
-        Speed: 500000Mb/s
-        Lanes: 2
-        Duplex: Full
-        Auto-negotiation: off
+Reverting this patch fixes that problem.
 
-While if the initial state is:
-$ ethtool swp1 | grep -A 3 'Speed: '
-        Speed: 500000Mb/s
-        Lanes: 1
-        Duplex: Full
-        Auto-negotiation: off
+I think the reason is a logic error in the patch:
+As you can see the PHY is found and attached (my understanding is
+that this happens through phylink_fwnode_phy_connect()). But we now
+also go to that if block below even fwnode != NULL && ret == 0 (which
+indicates that phylink_fwnode_phy_connect() was successful). Inside
+that if block priv->plat->phy_addr then has the default value (-1)
+that was set in stmmac_probe_config_dt().
 
-executing the same 'ethtool -s swp1 speed 50000 autoneg off' results in:
-$ ethtool swp1 | grep -A 3 'Speed: '
-        Speed: 500000Mb/s
-        Lanes: 1
-        Duplex: Full
-        Auto-negotiation: off
+I am running out of time for today. Could you please look into this
+and follow up with a patch (on top of this one, as this one has
+already been applied) that considers your original issues as well as
+the case of my board (I suspect that all Amlogic boards that are
+supported upstream are affected)? Please keep me Cc'ed so I can test
+your additional patch and then add my Tested-by.
 
-This patch fixes this behavior. Omitting lanes will always results in
-the driver choosing the default lane width for the chosen speed. In this
-scenario, regardless of the initial state, the end state will be, e.g.,
 
-$ ethtool swp1 | grep -A 3 'Speed: '
-        Speed: 500000Mb/s
-        Lanes: 2
-        Duplex: Full
-        Auto-negotiation: off
-
-Fixes: 012ce4dd3102 ("ethtool: Extend link modes settings uAPI with lanes")
-Signed-off-by: Andy Roulin <aroulin@nvidia.com>
-Reviewed-by: Danielle Ratson <danieller@nvidia.com>
----
-
-Notes:
-    v2: add before/after examples in the commit message
-
- net/ethtool/linkmodes.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-index fab66c169b9f..20165e07ef90 100644
---- a/net/ethtool/linkmodes.c
-+++ b/net/ethtool/linkmodes.c
-@@ -270,11 +270,12 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
- 					    "lanes configuration not supported by device");
- 			return -EOPNOTSUPP;
- 		}
--	} else if (!lsettings->autoneg) {
--		/* If autoneg is off and lanes parameter is not passed from user,
--		 * set the lanes parameter to 0.
-+	} else if (!lsettings->autoneg && ksettings->lanes) {
-+		/* If autoneg is off and lanes parameter is not passed from user but
-+		 * it was defined previously then set the lanes parameter to 0.
- 		 */
- 		ksettings->lanes = 0;
-+		*mod = true;
- 	}
- 
- 	ret = ethnl_update_bitset(ksettings->link_modes.advertising,
--- 
-2.20.1
-
+Thank you!
+Martin
