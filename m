@@ -2,362 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A3666D3D90
-	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 08:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 792AE6D3DAA
+	for <lists+netdev@lfdr.de>; Mon,  3 Apr 2023 09:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbjDCGsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 02:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
+        id S231327AbjDCG7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 02:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231534AbjDCGsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 02:48:06 -0400
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7873A275
-        for <netdev@vger.kernel.org>; Sun,  2 Apr 2023 23:48:03 -0700 (PDT)
-X-QQ-mid: bizesmtp63t1680504439tbea86j4
-Received: from wxdbg.localdomain.com ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 03 Apr 2023 14:47:18 +0800 (CST)
-X-QQ-SSF: 01400000000000H0Z000B00A0000000
-X-QQ-FEAT: KSpVqVeA+UV/Fv1vBgwtcoGeU1Uamj9oJZ/ksldXmlniiCyOExJoUThw88mzA
-        ZeARFYqKKuUvdiaKHmDNfurYQkfinRArsrZFUpF7B08wiuglV1heCgsOb6KExH2Kv+y4m5p
-        Yh0OnChiMmAf099VCUTeXwlP0fqyvbYUm7mx98Y2fMI7L9a7j94TeuejF8I7Amygz7uD2Gm
-        IvDPlSKjg5jC3KSlAQ7DDJLMK9rcAu2jjdpy5nFtlEfTTn0wRk7kLqipFtFNox4aAn6vI/X
-        NoYShJhNw/QZ56UK6h0c/exk5fNnbZ5JT+0Kaw9PZrcbjU0y1u9Sie/v76b0wew3Z1wvuVO
-        /NYBxK07ob/ifXvwBzivLLmVvJF9mdG8AiKfhrJRS0/L+h5asYVbZ0S750KstJEzkkYQOqD
-        d2wtib05dX8+iYBsu+EgJQ==
-X-QQ-GoodBg: 2
-X-BIZMAIL-ID: 16404478094747480654
-From:   Jiawen Wu <jiawenwu@trustnetic.com>
-To:     netdev@vger.kernel.org, linux@armlinux.org.uk
-Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next 6/6] net: txgbe: Support phylink MAC layer
-Date:   Mon,  3 Apr 2023 14:45:28 +0800
-Message-Id: <20230403064528.343866-7-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20230403064528.343866-1-jiawenwu@trustnetic.com>
-References: <20230403064528.343866-1-jiawenwu@trustnetic.com>
+        with ESMTP id S231336AbjDCG7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 02:59:39 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1CF2D4E;
+        Sun,  2 Apr 2023 23:59:38 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3336inTD023885;
+        Mon, 3 Apr 2023 06:59:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : subject
+ : date : message-id : mime-version : content-type; s=qcppdkim1;
+ bh=3GDQJ/ZROzBuIwYu+EN78kMi1ZXmlZTyRpJ+QDJIxSo=;
+ b=nkIIBWZSesFGzPkw0j1ehDdYs8a2Y9bNpgt990Pd8q/StUSgqSTdzV2D+0SGhRgFBHKO
+ dOXW/KMRm/gnefarqqdtoPf8dJykSbsbcNbeqU/xX9ZcbxNEWT0hZdfjgQFI7nDEFENj
+ RYDsra0CjE0ZqgMxyEU3T0fA6BTolHaeteF9lc3PFwEk/GIk4JH5II0AgZygEh56/16p
+ kR3Or8H/6L6vYAJLQwrMaOrkP2yfbzbBkwMQfGWUZYdb/axLsx7/GOtedjLruFLfDxVO
+ UOuR8hPbZ9z1Yo75dXXVSmS0eFTr8b/TS/ur9EUYmB9um4NPitO9zwBLazh2SKPn4GlF 9A== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3ppcubkmmv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 03 Apr 2023 06:59:31 +0000
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3336xUmM006226
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 3 Apr 2023 06:59:30 GMT
+Received: from srichara-linux.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.42; Sun, 2 Apr 2023 23:59:10 -0700
+From:   Sricharan Ramabadhran <quic_srichara@quicinc.com>
+To:     <mani@kernel.org>, <manivannan.sadhasivam@linaro.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-arm-msm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH V3] net: qrtr: Do not do DEL_SERVER broadcast after DEL_CLIENT
+Date:   Mon, 3 Apr 2023 12:28:51 +0530
+Message-ID: <1680505131-11645-1-git-send-email-quic_srichara@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
-X-Spam-Status: No, score=-0.0 required=5.0 tests=RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: JkQt9VfVVSq8hxsG_EnCUUoSAJfpw-ZJ
+X-Proofpoint-GUID: JkQt9VfVVSq8hxsG_EnCUUoSAJfpw-ZJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-03_04,2023-03-31_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ clxscore=1015 mlxlogscore=882 phishscore=0 mlxscore=0 spamscore=0
+ suspectscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304030053
+X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add phylink support to Wangxun 10Gb Ethernet controller, for the 10GBASE-R
-and 1000BASE-X interfaces.
+On the remote side, when QRTR socket is removed, af_qrtr will call
+qrtr_port_remove() which broadcasts the DEL_CLIENT packet to all neighbours
+including local NS. NS upon receiving the DEL_CLIENT packet, will remove
+the lookups associated with the node:port and broadcasts the DEL_SERVER
+packet.
 
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+But on the host side, due to the arrival of the DEL_CLIENT packet, the NS
+would've already deleted the server belonging to that port. So when the
+remote's NS again broadcasts the DEL_SERVER for that port, it throws below
+error message on the host:
+
+"failed while handling packet from 2:-2"
+
+So fix this error by not broadcasting the DEL_SERVER packet when the
+DEL_CLIENT packet gets processed."
+
+Fixes: 0c2204a4ad71 ("net: qrtr: Migrate nameservice to kernel from userspace")
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Ram Kumar Dharuman <quic_ramd@quicinc.com>
+Signed-off-by: Sricharan Ramabadhran <quic_srichara@quicinc.com>
 ---
- .../ethernet/wangxun/txgbe/txgbe_ethtool.c    |  34 ++++++
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  20 ++--
- .../net/ethernet/wangxun/txgbe/txgbe_phy.c    | 110 +++++++++++++++++-
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |   5 +
- 4 files changed, 156 insertions(+), 13 deletions(-)
+[v3] Ordered signed off tags and added Mani's reviewed-by
+Note: Functionally tested on 5.4 and compile tested on 6.3 TOT
 
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-index d914e9a05404..43ca84c90637 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c
-@@ -6,11 +6,45 @@
- #include <linux/netdevice.h>
- 
- #include "../libwx/wx_ethtool.h"
-+#include "../libwx/wx_type.h"
-+#include "txgbe_type.h"
- #include "txgbe_ethtool.h"
- 
-+static int txgbe_nway_reset(struct net_device *netdev)
-+{
-+	struct wx *wx = netdev_priv(netdev);
-+	struct txgbe *txgbe;
-+
-+	txgbe = (struct txgbe *)wx->priv;
-+	return phylink_ethtool_nway_reset(txgbe->phylink);
-+}
-+
-+static int txgbe_get_link_ksettings(struct net_device *netdev,
-+				    struct ethtool_link_ksettings *cmd)
-+{
-+	struct wx *wx = netdev_priv(netdev);
-+	struct txgbe *txgbe;
-+
-+	txgbe = (struct txgbe *)wx->priv;
-+	return phylink_ethtool_ksettings_get(txgbe->phylink, cmd);
-+}
-+
-+static int txgbe_set_link_ksettings(struct net_device *netdev,
-+				    const struct ethtool_link_ksettings *cmd)
-+{
-+	struct wx *wx = netdev_priv(netdev);
-+	struct txgbe *txgbe;
-+
-+	txgbe = (struct txgbe *)wx->priv;
-+	return phylink_ethtool_ksettings_set(txgbe->phylink, cmd);
-+}
-+
- static const struct ethtool_ops txgbe_ethtool_ops = {
- 	.get_drvinfo		= wx_get_drvinfo,
-+	.nway_reset		= txgbe_nway_reset,
- 	.get_link		= ethtool_op_get_link,
-+	.get_link_ksettings	= txgbe_get_link_ksettings,
-+	.set_link_ksettings	= txgbe_set_link_ksettings,
- };
- 
- void txgbe_set_ethtool_ops(struct net_device *netdev)
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index caaefc20afb9..e033ed8409ce 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -7,6 +7,7 @@
- #include <linux/netdevice.h>
- #include <linux/string.h>
- #include <linux/etherdevice.h>
-+#include <linux/phylink.h>
- #include <net/ip.h>
- #include <linux/if_vlan.h>
- 
-@@ -206,7 +207,7 @@ static int txgbe_request_irq(struct wx *wx)
- 
- static void txgbe_up_complete(struct wx *wx)
- {
--	u32 reg;
-+	struct txgbe *txgbe = (struct txgbe *)wx->priv;
- 
- 	wx_control_hw(wx, true);
- 	wx_configure_vectors(wx);
-@@ -215,23 +216,15 @@ static void txgbe_up_complete(struct wx *wx)
- 	smp_mb__before_atomic();
- 	wx_napi_enable_all(wx);
- 
-+	phylink_start(txgbe->phylink);
-+
- 	/* clear any pending interrupts, may auto mask */
- 	rd32(wx, WX_PX_IC);
- 	rd32(wx, WX_PX_MISC_IC);
- 	txgbe_irq_enable(wx, true);
- 
--	/* Configure MAC Rx and Tx when link is up */
--	reg = rd32(wx, WX_MAC_RX_CFG);
--	wr32(wx, WX_MAC_RX_CFG, reg);
--	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
--	reg = rd32(wx, WX_MAC_WDG_TIMEOUT);
--	wr32(wx, WX_MAC_WDG_TIMEOUT, reg);
--	reg = rd32(wx, WX_MAC_TX_CFG);
--	wr32(wx, WX_MAC_TX_CFG, (reg & ~WX_MAC_TX_CFG_SPEED_MASK) | WX_MAC_TX_CFG_SPEED_10G);
--
- 	/* enable transmits */
- 	netif_tx_start_all_queues(wx->netdev);
--	netif_carrier_on(wx->netdev);
+ net/qrtr/ns.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/net/qrtr/ns.c b/net/qrtr/ns.c
+index 722936f..0f25a38 100644
+--- a/net/qrtr/ns.c
++++ b/net/qrtr/ns.c
+@@ -274,7 +274,7 @@ static struct qrtr_server *server_add(unsigned int service,
+ 	return NULL;
  }
  
- static void txgbe_reset(struct wx *wx)
-@@ -265,7 +258,6 @@ static void txgbe_disable_device(struct wx *wx)
- 		wx_disable_rx_queue(wx, wx->rx_ring[i]);
- 
- 	netif_tx_stop_all_queues(netdev);
--	netif_carrier_off(netdev);
- 	netif_tx_disable(netdev);
- 
- 	wx_irq_disable(wx);
-@@ -296,8 +288,12 @@ static void txgbe_disable_device(struct wx *wx)
- 
- static void txgbe_down(struct wx *wx)
+-static int server_del(struct qrtr_node *node, unsigned int port)
++static int server_del(struct qrtr_node *node, unsigned int port, bool bcast)
  {
-+	struct txgbe *txgbe = (struct txgbe *)wx->priv;
-+
- 	txgbe_disable_device(wx);
- 	txgbe_reset(wx);
-+	if (txgbe->phylink)
-+		phylink_stop(txgbe->phylink);
+ 	struct qrtr_lookup *lookup;
+ 	struct qrtr_server *srv;
+@@ -287,7 +287,7 @@ static int server_del(struct qrtr_node *node, unsigned int port)
+ 	radix_tree_delete(&node->servers, port);
  
- 	wx_clean_all_tx_rings(wx);
- 	wx_clean_all_rx_rings(wx);
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-index a00651ba021f..fee7fe175734 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_phy.c
-@@ -13,6 +13,7 @@
- #include <linux/pci.h>
+ 	/* Broadcast the removal of local servers */
+-	if (srv->node == qrtr_ns.local_node)
++	if (srv->node == qrtr_ns.local_node && bcast)
+ 		service_announce_del(&qrtr_ns.bcast_sq, srv);
  
- #include "../libwx/wx_type.h"
-+#include "../libwx/wx_lib.h"
- #include "../libwx/wx_hw.h"
- #include "txgbe_type.h"
- #include "txgbe_phy.h"
-@@ -407,6 +408,98 @@ static int txgbe_mdio_pcs_init(struct txgbe *txgbe)
- 	return 0;
- }
- 
-+static struct phylink_pcs *txgbe_phylink_mac_select(struct phylink_config *config,
-+						    phy_interface_t interface)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+	struct txgbe *txgbe = (struct txgbe *)wx->priv;
-+
-+	return &txgbe->pcs;
-+}
-+
-+static void txgbe_mac_config(struct phylink_config *config, unsigned int mode,
-+			     const struct phylink_link_state *state)
-+{
-+}
-+
-+static void txgbe_mac_link_down(struct phylink_config *config,
-+				unsigned int mode, phy_interface_t interface)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+
-+	wr32m(wx, WX_MAC_TX_CFG, WX_MAC_TX_CFG_TE, 0);
-+}
-+
-+static void txgbe_mac_link_up(struct phylink_config *config,
-+			      struct phy_device *phy,
-+			      unsigned int mode, phy_interface_t interface,
-+			      int speed, int duplex,
-+			      bool tx_pause, bool rx_pause)
-+{
-+	struct wx *wx = netdev_priv(to_net_dev(config->dev));
-+	u32 txcfg, rxcfg, wdg;
-+
-+	txcfg = rd32(wx, WX_MAC_TX_CFG);
-+	txcfg &= ~WX_MAC_TX_CFG_SPEED_MASK;
-+
-+	switch (speed) {
-+	case SPEED_10000:
-+		txcfg |= WX_MAC_TX_CFG_SPEED_10G;
-+		break;
-+	case SPEED_1000:
-+	case SPEED_100:
-+	case SPEED_10:
-+		txcfg |= WX_MAC_TX_CFG_SPEED_1G;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	wr32(wx, WX_MAC_TX_CFG, txcfg | WX_MAC_TX_CFG_TE);
-+
-+	/* Re configure MAC Rx */
-+	rxcfg = rd32(wx, WX_MAC_RX_CFG);
-+	wr32(wx, WX_MAC_RX_CFG, rxcfg);
-+	wr32(wx, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
-+	wdg = rd32(wx, WX_MAC_WDG_TIMEOUT);
-+	wr32(wx, WX_MAC_WDG_TIMEOUT, wdg);
-+}
-+
-+static const struct phylink_mac_ops txgbe_mac_ops = {
-+	.mac_select_pcs = txgbe_phylink_mac_select,
-+	.mac_config = txgbe_mac_config,
-+	.mac_link_down = txgbe_mac_link_down,
-+	.mac_link_up = txgbe_mac_link_up,
-+};
-+
-+static int txgbe_phylink_init(struct txgbe *txgbe)
-+{
-+	struct phylink_config *config;
-+	struct fwnode_handle *fwnode;
-+	struct wx *wx = txgbe->wx;
-+	phy_interface_t phy_mode;
-+	struct phylink *phylink;
-+
-+	config = devm_kzalloc(&wx->pdev->dev, sizeof(*config), GFP_KERNEL);
-+	if (!config)
-+		return -ENOMEM;
-+
-+	config->dev = &wx->netdev->dev;
-+	config->type = PHYLINK_NETDEV;
-+	config->mac_capabilities = MAC_10000FD | MAC_1000FD | MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
-+	phy_mode = PHY_INTERFACE_MODE_10GBASER;
-+	__set_bit(PHY_INTERFACE_MODE_10GBASER, config->supported_interfaces);
-+	__set_bit(PHY_INTERFACE_MODE_1000BASEX, config->supported_interfaces);
-+	fwnode = software_node_fwnode(txgbe->nodes.group[SWNODE_PHYLINK]);
-+	phylink = phylink_create(config, fwnode, phy_mode, &txgbe_mac_ops);
-+	if (IS_ERR(phylink))
-+		return PTR_ERR(phylink);
-+
-+	txgbe->phylink = phylink;
-+
-+	return 0;
-+}
-+
- static void txgbe_i2c_start(struct wx *wx, u16 dev_addr)
- {
- 	wr32(wx, TXGBE_I2C_ENABLE, 0);
-@@ -680,7 +773,9 @@ static void txgbe_irq_handler(struct irq_desc *desc)
- 	struct gpio_chip *gc = txgbe->gpio;
- 	irq_hw_number_t hwirq;
- 	unsigned long gpioirq;
--	u32 gpio;
-+	u32 gpio, eicr, reg;
-+
-+	eicr = wx_misc_isb(wx, WX_ISB_MISC);
- 
- 	chained_irq_enter(chip, desc);
- 
-@@ -696,6 +791,11 @@ static void txgbe_irq_handler(struct irq_desc *desc)
- 
- 	chained_irq_exit(chip, desc);
- 
-+	if (eicr & (TXGBE_PX_MISC_ETH_LK | TXGBE_PX_MISC_ETH_LKDN)) {
-+		reg = rd32(wx, TXGBE_CFG_PORT_ST);
-+		phylink_mac_change(txgbe->phylink, !!(reg & TXGBE_CFG_PORT_ST_LINK_UP));
-+	}
-+
- 	/* unmask interrupt */
- 	if (netif_running(wx->netdev))
- 		wx_intr_enable(wx, TXGBE_INTR_MISC(wx));
-@@ -787,6 +887,12 @@ int txgbe_init_phy(struct txgbe *txgbe)
- 		goto err;
+ 	/* Announce the service's disappearance to observers */
+@@ -373,7 +373,7 @@ static int ctrl_cmd_bye(struct sockaddr_qrtr *from)
+ 		}
+ 		slot = radix_tree_iter_resume(slot, &iter);
+ 		rcu_read_unlock();
+-		server_del(node, srv->port);
++		server_del(node, srv->port, true);
+ 		rcu_read_lock();
+ 	}
+ 	rcu_read_unlock();
+@@ -459,10 +459,13 @@ static int ctrl_cmd_del_client(struct sockaddr_qrtr *from,
+ 		kfree(lookup);
  	}
  
-+	ret = txgbe_phylink_init(txgbe);
-+	if (ret) {
-+		wx_err(txgbe->wx, "failed to init phylink\n");
-+		goto err;
-+	}
-+
- 	ret = txgbe_i2c_adapter_add(txgbe);
- 	if (ret) {
- 		wx_err(txgbe->wx, "failed to init i2c interface: %d\n", ret);
-@@ -815,6 +921,8 @@ int txgbe_init_phy(struct txgbe *txgbe)
+-	/* Remove the server belonging to this port */
++	/* Remove the server belonging to this port but don't broadcast
++	 * DEL_SERVER. Neighbours would've already removed the server belonging
++	 * to this port due to the DEL_CLIENT broadcast from qrtr_port_remove().
++	 */
+ 	node = node_get(node_id);
+ 	if (node)
+-		server_del(node, port);
++		server_del(node, port, false);
  
- void txgbe_remove_phy(struct txgbe *txgbe)
- {
-+	if (txgbe->phylink)
-+		phylink_destroy(txgbe->phylink);
- 	if (txgbe->mdiodev)
- 		mdio_device_free(txgbe->mdiodev);
- 	if (txgbe->sfp_dev)
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index d121edadfd09..ad3e426e49a0 100644
---- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -83,6 +83,10 @@
- 				TXGBE_PX_MISC_INT_ERR | \
- 				TXGBE_PX_MISC_GPIO)
+ 	/* Advertise the removal of this client to all local servers */
+ 	local_node = node_get(qrtr_ns.local_node);
+@@ -567,7 +570,7 @@ static int ctrl_cmd_del_server(struct sockaddr_qrtr *from,
+ 	if (!node)
+ 		return -ENOENT;
  
-+/* Port cfg registers */
-+#define TXGBE_CFG_PORT_ST                       0x14404
-+#define TXGBE_CFG_PORT_ST_LINK_UP               BIT(0)
-+
- /* I2C registers */
- #define TXGBE_I2C_CON                           0x14900 /* I2C Control */
- #define TXGBE_I2C_CON_SLAVE_DISABLE             BIT(6)
-@@ -244,6 +248,7 @@ struct txgbe {
- 	struct txgbe_nodes nodes;
- 	struct mdio_device *mdiodev;
- 	struct phylink_pcs pcs;
-+	struct phylink *phylink;
- 	struct i2c_adapter *i2c_adap;
- 	struct gpio_chip *gpio;
- 	struct platform_device *sfp_dev;
+-	return server_del(node, port);
++	return server_del(node, port, true);
+ }
+ 
+ static int ctrl_cmd_new_lookup(struct sockaddr_qrtr *from,
 -- 
-2.27.0
+2.7.4
 
