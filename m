@@ -2,108 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C8B6D6192
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 14:50:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD536D61AC
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 14:54:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234962AbjDDMua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 08:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51462 "EHLO
+        id S234430AbjDDMyH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Apr 2023 08:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234795AbjDDMu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 08:50:28 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC7A3586;
-        Tue,  4 Apr 2023 05:50:06 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id eh3so130068908edb.11;
-        Tue, 04 Apr 2023 05:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680612604;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=q9UAqvcFvz/sWVmZYlVN5O/yWVAbkblIyFFBAsNOA0M=;
-        b=M+95vOMWjFBNFCT/QpUR67JJHOM4h1jOcDIy3Idnzp54hSJP8Lji0NWHuNAy3tTIwZ
-         +qoNN8VIrOqjQX70SouA8Vi7S5PUmtwTletEJ4Ur6Tlt+1V8BG6h9SS7jJ3uJNh+sjEu
-         Lidz82cVpvcDHJVQVToTc0+5dybzkRrpVFZLl5aCyIAQoKW/+VQltMmJSWJKu6LiBozF
-         GNjSnkc/8NToUCoDO8noL4TrIPgjxHZ7ufsp1/CkAv4Z4B/4CCZzwap3UYRkyYByNQWC
-         +/xYe/Vilp4d4/ZdDbyLY7Q1botdPStMxKTCnsiHU18Ja7TDgnP7GYpEA1Qbe6L0u43S
-         i0Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680612604;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=q9UAqvcFvz/sWVmZYlVN5O/yWVAbkblIyFFBAsNOA0M=;
-        b=kayXuFYiZ994IM1yPFVxNbYXHLmozT2kcxd/LTmvOb2HqgnZrKU7Lbx/qqs1ugnc8V
-         elWxZY3Pz3Q/Hw9p0bDQFFpYh5GYQn1TzrQkoU1Soe0PFXII4TJv9MNOamb6ZYkSdOvE
-         KzUnXW3jo4WFtWZgMb60hlhJTfV3z125JsM6M8iWQrKHBzUJV4Ro/79E8CvxlJkAGdXw
-         c3yjxA5AhBxlOtq9A1dghDMq4nQHYsByITfxMBizXfqyg72ZZdtJx+b7vF5aJfWILvjb
-         WPt9rqQlE6Cjtx5IplyqNsknHbhuxA3BEvWj3BWZjnv+dv9vEBk8Aqa2xBYnkistuxZR
-         YlMw==
-X-Gm-Message-State: AAQBX9ewc8q++FF3dH5jEnCF1AGcaQ8jCExhgrLWXhMATQa5PlcGaopE
-        Jm5+zdP029khexZRDwCyew0=
-X-Google-Smtp-Source: AKy350ZrsLtgeonpBB6lA1YXQgD825M8m8gdRc+yLFzFfDgvjO35gwA/EEDogcdnVWzALEVTvzaYHQ==
-X-Received: by 2002:a17:906:4e09:b0:947:6fae:5d27 with SMTP id z9-20020a1709064e0900b009476fae5d27mr2159325eju.56.1680612604523;
-        Tue, 04 Apr 2023 05:50:04 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id bv20-20020a170906b1d400b009447277c2aasm5933902ejb.39.2023.04.04.05.50.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 05:50:04 -0700 (PDT)
-Date:   Tue, 4 Apr 2023 15:50:02 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 2/7] net: dsa: microchip: ksz8: Implement
- add/del_fdb and use static MAC table operations
-Message-ID: <20230404125002.dv2f4foojhy43dkx@skbuf>
-References: <20230404101842.1382986-1-o.rempel@pengutronix.de>
- <20230404101842.1382986-1-o.rempel@pengutronix.de>
- <20230404101842.1382986-3-o.rempel@pengutronix.de>
- <20230404101842.1382986-3-o.rempel@pengutronix.de>
- <20230404113124.nokweynmxtj3yqgt@skbuf>
- <20230404121911.GA4044@pengutronix.de>
+        with ESMTP id S235087AbjDDMyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 08:54:05 -0400
+Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EC6E60
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 05:54:03 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-25-o99LjM4cOAWcrt0bL_JNdg-1; Tue, 04 Apr 2023 08:53:46 -0400
+X-MC-Unique: o99LjM4cOAWcrt0bL_JNdg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC39588CC40;
+        Tue,  4 Apr 2023 12:53:45 +0000 (UTC)
+Received: from hog (unknown [10.39.192.141])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8312C440BC;
+        Tue,  4 Apr 2023 12:53:44 +0000 (UTC)
+Date:   Tue, 4 Apr 2023 14:53:43 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Emeel Hakim <ehakim@nvidia.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for
+ VLAN interface
+Message-ID: <ZCwd11LpAUqda0eC@hog>
+References: <20230329122107.22658-1-ehakim@nvidia.com>
+ <20230329122107.22658-2-ehakim@nvidia.com>
+ <ZCROr7DhsoRyU1qP@hog>
+ <20230329184201.GB831478@unreal>
+ <ZCXEmUQgswOBoRqR@hog>
+ <20230330185656.GZ831478@unreal>
+ <ZCXx4oJfnzcAKX65@hog>
+ <IA1PR12MB63531CD8C6B1844376658439AB929@IA1PR12MB6353.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <IA1PR12MB63531CD8C6B1844376658439AB929@IA1PR12MB6353.namprd12.prod.outlook.com>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
-In-Reply-To: <20230404121911.GA4044@pengutronix.de>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.6 required=5.0 tests=RCVD_IN_DNSWL_LOW,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 02:19:11PM +0200, Oleksij Rempel wrote:
-> If I compare KSZ879CLX and KSZ8873MLL datasheets, i do not see direct
-> answer. The only reason I can imagine is the size of static MAC table.
-> All KSZ88xx and KSZ87xx variants have only 8 entries. One is already
-> used for STP (even if STP is not enabled, can be optimized). If
-> BRIDGE_VLAN compiled, each local address will be configured 2 times.
-> So, depending on system configuration the static MAC table will full
-> very soon.
+2023-04-03, 09:29:28 +0000, Emeel Hakim wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Sabrina Dubroca <sd@queasysnail.net>
+> > Sent: Thursday, 30 March 2023 23:33
+> > To: Leon Romanovsky <leon@kernel.org>
+> > Cc: Emeel Hakim <ehakim@nvidia.com>; davem@davemloft.net; kuba@kernel.org;
+> > pabeni@redhat.com; edumazet@google.com; netdev@vger.kernel.org
+> > Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for VLAN
+> > interface
+> > 
+> > External email: Use caution opening links or attachments
+> > 
+> > 
+> > 2023-03-30, 21:56:56 +0300, Leon Romanovsky wrote:
+> > > On Thu, Mar 30, 2023 at 07:19:21PM +0200, Sabrina Dubroca wrote:
+> > > > 2023-03-29, 21:42:01 +0300, Leon Romanovsky wrote:
+> > > > > On Wed, Mar 29, 2023 at 04:43:59PM +0200, Sabrina Dubroca wrote:
+> > > > > > 2023-03-29, 15:21:04 +0300, Emeel Hakim wrote:
+> > > > > > > Add support for MACsec offload operations for VLAN driver to
+> > > > > > > allow offloading MACsec when VLAN's real device supports
+> > > > > > > Macsec offload by forwarding the offload request to it.
+> > > > > > >
+> > > > > > > Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+> > > > > > > ---
+> > > > > > > V1 -> V2: - Consult vlan_features when adding NETIF_F_HW_MACSEC.
+> > > > > >
+> > > > > > Uh? You're not actually doing that? You also dropped the changes
+> > > > > > to vlan_dev_fix_features without explaining why.
+> > > > >
+> > > > > vlan_dev_fix_features() relies on real_dev->vlan_features which
+> > > > > was set in mlx5 part of this patch.
+> > > > >
+> > > > >   643 static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
+> > > > >   644         netdev_features_t features)
+> > > > >   645 {
+> > > > >   ...
+> > > > >   649
+> > > > >   650         lower_features = netdev_intersect_features((real_dev-
+> > >vlan_features |
+> > > > >   651                                                     NETIF_F_RXCSUM),
+> > > > >   652                                                    real_dev->features);
+> > > > >
+> > > > > This part ensure that once real_dev->vlan_features and
+> > > > > real_dev->features have NETIF_F_HW_MACSEC, the returned features will
+> > include NETIF_F_HW_MACSEC too.
+> > > >
+> > > > Ok, thanks.
+> > > >
+> > > > But back to the issue of vlan_features, in vlan_dev_init: I'm not
+> > > > convinced NETIF_F_HW_MACSEC should be added to hw_features based on
+> > > > ->features. That would result in a new vlan device that can't
+> > > > ->offload
+> > > > macsec at all if it was created at the wrong time (while the lower
+> > > > device's macsec offload was temporarily disabled).
+> > >
+> > > Sorry, I'm new to this netdev features zoo, but if I read correctly
+> > > Documentation/networking/netdev-features.rst, the ->features is the
+> > > list of enabled ones:
+> > >
+> > >    29  2. netdev->features set contains features which are currently enabled
+> > >    30     for a device.  This should be changed only by network core or in
+> > >    31     error paths of ndo_set_features callback.
+> > >
+> > > And user will have a chance to disable it for VLAN because it was
+> > > added to ->hw_features:
+> > >
+> > >    24  1. netdev->hw_features set contains features whose state may possibly
+> > >    25     be changed (enabled or disabled) for a particular device by user's
+> > >    26     request.  This set should be initialized in ndo_init callback and not
+> > >    27     changed later.
+> > >
+> > > So how can VLAN be created with NETIF_F_HW_MACSEC while real_dev
+> > > mcasec offload is disabled?
+> > 
+> > I'm proposing that be VLAN device be created with the capability (->hw_features
+> > contains NETIF_F_HW_MACSEC) but disabled (->features doesn't contain
+> > NETIF_F_HW_MACSEC). That way, if NETIF_F_HW_MACSEC is re-enabled on the
+> > lower device, you don't need to destroy the VLAN device to enable macsec offload
+> > on it as well. You still won't be able to enable macsec offload on the VLAN device
+> > unless it's active on the real NIC.
+> > 
+> > I think whether the lower device currently has NETIF_F_HW_MACSEC should only
+> > affect whether you can enable the feature on the vlan device right now. What
+> > feature is enabled at creation time should be irrelevant.
+> 
+> Thanks for the proposal Sabrina, I'm also new to this netdev features zone so IIUC your'e 
+> proposing that we have NETIF_F_HW_MACSEC added to the dev->hw_features upon 
+> vlan_dev_init, but disabled (we don’t add it to dev->features) , and upon vlan_dev_fix_features
+> we check if the real_device have NETIF_F_HW_MACSEC enabled (after the intersect with the real_dev->vlan_features) 
+> and if so we add it to the features.
+> 
+> So something like:
+> 
+> static int vlan_dev_init(struct net_device *dev)
+> {
+> ...
+> 	dev->features |= dev->hw_features | NETIF_F_LLTX;
+> 	dev->hw_features |= NETIF_F_HW_MACSEC;
+> ...
+> }
 
-Yikes. KSZ8765 has num_statics = 8 and port_cnt = 5 (so 4 user ports I
-assume). So if all 4 user ports had their own MAC address, it would
-simply not be possible to put them under a VLAN-aware bridge, since that
-would consume 2 BR_FDB_LOCAL entries for each port, so the static MAC
-table would be full even without taking the bridge's MAC address into
-consideration.
+That would be adding the NETIF_F_HW_MACSEC to all VLAN devices,
+whether the lower device advertises this feature or not. That's wrong.
 
-Even with CONFIG_BRIDGE_VLAN_FILTERING turned off or with the bridge
-option vlan_default_pvid = 0, this would still consume 4 BR_FDB_LOCAL
-entries + one for the bridge's MAC address + 1 for STP, leaving only 2
-entries usable for *both* bridge fdb, *and* bridge mdb.
 
-I haven't opened the datasheets of these chips. Is it possible to use
-the dynamic MAC table to store static(-ish) entries?
+What I had in mind was:
+
+	if (real_dev->vlan_features & NETIF_F_HW_MACSEC)
+		dev->hw_features |= NETIF_F_HW_MACSEC;
+
+
+And we should enable it by default when the lower device has it
+enabled, which would be the case with this:
+
+@@ -572,6 +572,9 @@ static int vlan_dev_init(struct net_device *dev)
+ 			   NETIF_F_HIGHDMA | NETIF_F_SCTP_CRC |
+ 			   NETIF_F_ALL_FCOE;
+ 
++	if (real_dev->vlan_features & NETIF_F_HW_MACSEC)
++		dev->hw_features |= NETIF_F_HW_MACSEC;
++
+ 	dev->features |= dev->hw_features | NETIF_F_LLTX;
+ 	netif_inherit_tso_max(dev, real_dev);
+ 	if (dev->features & NETIF_F_VLAN_FEATURES)
+
+
+What I meant by "but disabled" in my previous email was that if the
+lower device currently has NETIF_F_HW_MACSEC, the new vlan device
+should also have it disabled, not that it should always be disabled on
+creation.
+
+
+> static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
+>          netdev_features_t features)
+> {
+> ...
+>  	if (lower_features &  NETIF_F_HW_MACSEC)
+>  		features |= NETIF_F_HW_MACSEC;
+> 
+> return features;
+> }
+
+I don't think NETIF_F_HW_MACSEC is "special" enough to require hacks
+in vlan_dev_fix_features. IMHO modifying vlan_dev_fix_features should
+only happen if we have no other way to implement a consistent and
+useful behavior. I don't think that's the case here.
+
+-- 
+Sabrina
+
