@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E8746D65C1
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 142BB6D65C7
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232340AbjDDOvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 10:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52438 "EHLO
+        id S232227AbjDDOwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 10:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231624AbjDDOvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:51:36 -0400
-Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E687830DC;
-        Tue,  4 Apr 2023 07:51:34 -0700 (PDT)
-Received: by mail-qv1-f47.google.com with SMTP id jl13so23564285qvb.10;
-        Tue, 04 Apr 2023 07:51:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680619894; x=1683211894;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PO4FxWz5e6BRzjqOPAYTsOa8G6RNoNuj13xneo3NBFU=;
-        b=aFj07uk//Zp86rAearcFvH4FiCk34+BcvHPEKkfaieaL1DTBsHjsPBLDuJqNdzXf+n
-         /1bXdtUqVvRG5bhgf96zVQEz6WJ294U/PrPJCFw1SRH3aPXEfN76LCNiYSQfYxCDoZDV
-         PyIfhRwQ5d4h5eJwKfhyMIfPw3N4Qb6q11PT2HpKVt+6wiZCBobSNw8fOkYIlvESRcbU
-         Ye+tsqaH1SB4KFuCG1jHgnT6yst9S1d8Jqe8fYwqtPsuodBEhv6tWB5w0OJK9ZlpUF4/
-         IBypCg+PNre+yMc1avdHI0bLK1in35qdZ99DnBMx8NSmZXH8yHFvUB+zJpUlvvdQfJKA
-         F3Ng==
-X-Gm-Message-State: AAQBX9efp4dDfJGBlsx5gjaUV6nIYcZvs/NoWFXMU2j3QZUNxAMvglbo
-        2a7JfW4uDhlEWUjvG+vm+CM=
-X-Google-Smtp-Source: AKy350bRA+qQ5wcXS/uYL+BmqkXPPLiVFVSyEly8g44nWGEgpJmbpM6yXvZ2eJHSk4jFc3wM1ACTCQ==
-X-Received: by 2002:a05:6214:caa:b0:5e1:d616:7b74 with SMTP id s10-20020a0562140caa00b005e1d6167b74mr28346784qvs.7.1680619893788;
-        Tue, 04 Apr 2023 07:51:33 -0700 (PDT)
-Received: from maniforge ([24.1.27.177])
-        by smtp.gmail.com with ESMTPSA id mm23-20020a0562145e9700b005dd8b9345bfsm3459266qvb.87.2023.04.04.07.51.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 07:51:33 -0700 (PDT)
-Date:   Tue, 4 Apr 2023 09:51:31 -0500
-From:   David Vernet <void@manifault.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@kernel.org, davemarchevsky@meta.com, tj@kernel.org,
-        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 0/8] bpf: Follow up to RCU enforcement in the
- verifier.
-Message-ID: <20230404145131.GB3896@maniforge>
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
+        with ESMTP id S230319AbjDDOwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:52:31 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DD83A9C
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:52:30 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pji1H-0000It-Kj; Tue, 04 Apr 2023 16:52:23 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id EEB7D1A67E5;
+        Tue,  4 Apr 2023 14:52:21 +0000 (UTC)
+Date:   Tue, 4 Apr 2023 16:52:20 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH net-next 0/10] pull-request: can-next 2023-04-04
+Message-ID: <20230404-recopy-bullfight-fa4ff40fdbac@pengutronix.de>
+References: <20230404113429.1590300-1-mkl@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jo2hsbldwlo5zlej"
 Content-Disposition: inline
-In-Reply-To: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
-User-Agent: Mutt/2.2.10 (2023-03-25)
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20230404113429.1590300-1-mkl@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 03, 2023 at 09:50:21PM -0700, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> The patch set is addressing a fallout from
-> commit 6fcd486b3a0a ("bpf: Refactor RCU enforcement in the verifier.")
-> It was too aggressive with PTR_UNTRUSTED marks.
-> Patches 1-6 are cleanup and adding verifier smartness to address real
-> use cases in bpf programs that broke with too aggressive PTR_UNTRUSTED.
-> The partial revert is done in patch 7 anyway.
-> 
-> Alexei Starovoitov (8):
->   bpf: Invoke btf_struct_access() callback only for writes.
->   bpf: Remove unused arguments from btf_struct_access().
->   bpf: Refactor btf_nested_type_is_trusted().
->   bpf: Teach verifier that certain helpers accept NULL pointer.
->   bpf: Refactor NULL-ness check in check_reg_type().
->   bpf: Allowlist few fields similar to __rcu tag.
->   bpf: Undo strict enforcement for walking untagged fields.
->   selftests/bpf: Add tracing tests for walking skb and req.
 
-For whole series:
+--jo2hsbldwlo5zlej
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: David Vernet <void@manifault.com>
+On 04.04.2023 13:34:19, Marc Kleine-Budde wrote:
+> Hello netdev-team,
 
-I left one comment on 4/8 in [0], but it's not a blocker and everything
-else LGTM.
+Please ignore this PR, as there is a typo in one of the subjects.
 
-[0]: https://lore.kernel.org/all/20230404144652.GA3896@maniforge/
+Sorry for the noise,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--jo2hsbldwlo5zlej
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQsOaIACgkQvlAcSiqK
+BOg+rQf9GCElINXEJNYkC/ckiAaBK/hX/QaMDOxhnjU0KM248+eFBCwv4syCGMaD
+9tgfWW6K1XSI1cukuOY4ffF1d9B4WuJ0LxUUjECH/90VZ3jnSNnActnxZ2qFg/Sz
+Z3z3zOJmmSkdcHPg82Yz8rbHyhPpcHENSqGDT0tLrSeL6izl+ybXZosqXz4yH4Fc
+9gQfDfy28mNXfrLTqWtRsCK+yicaYgC9PJHF6/pRA3Y8l4nxFhEalw4kRoNLN3Aq
+xP7kOLg+qmrR6GUBFgJXQ84xVFUVxJc+wcwLJW/DZH95+FDrWOKZtSgVYYFicsmC
+XboEj94uM+WKLxBYTUH+W0b1zC0XdA==
+=B9h4
+-----END PGP SIGNATURE-----
+
+--jo2hsbldwlo5zlej--
