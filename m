@@ -2,113 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70CCB6D68E6
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 18:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1789E6D68F7
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 18:35:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235398AbjDDQao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 12:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
+        id S235176AbjDDQfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 12:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235415AbjDDQag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 12:30:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C43E4685
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 09:30:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E2E63389
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 16:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE73EC433A7;
-        Tue,  4 Apr 2023 16:30:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680625823;
-        bh=x2mSMBQJLRcoqQfqxefNRBMRs5XAOfvjpYvpFERuwtE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f5dpZp9T4Yj7R5LCBU4KNotcymMbP8TjI79K7RQhJ0oKoayKGhmUVl/6ukNalewL4
-         5V9FB4CuD9h7SI1wH+HWJxWyQUNGYi0XQnDkUHtlT356XAKDo6Sw0lT7R1DwKz5hhc
-         XTjeCv7ZCP6FNhrvbYOMs98sVI+YD51c04TEFo0D/u18jhu6WB2EHTnCBuWYNH1ezG
-         YJz4u2OzKuwxRRHkgBwvHxYFk3/NiWGd98WQa2elx2N2kRQuYFnZcosODGkk690Aif
-         /e0I3ytLPCIcdhPWrSZxfM7B3Nl4UQpq/iXfzCb1T7At2ynnbs+u8leiamt8Fv54st
-         AwvlfsTmFUlrg==
-Date:   Tue, 4 Apr 2023 19:30:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S231516AbjDDQfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 12:35:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83ABD40C4
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 09:34:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680626055;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QiVD/y4I2WnavOYWIxcNFC9RQGVGbQH5NBpUE72HY2g=;
+        b=e3d0YsW7CY9Za58G98ex2rtb82ps/aL4a0xXH3nPsfsVo9WUMOCYcw0C2jeVy7O7axTh4J
+        Uu2OJT2XOHRY1+Y66pBCShhnWKDWzUN8gfVux6DysOgL3U0nA5zY/HnXVjyY7un7c3kGJs
+        OmXDXDPqW/7/jirVKz8s8Z+vMQiWwvA=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-481-uywvrkiFMDm2Le0q-ptSgg-1; Tue, 04 Apr 2023 12:34:06 -0400
+X-MC-Unique: uywvrkiFMDm2Le0q-ptSgg-1
+Received: by mail-qt1-f197.google.com with SMTP id m7-20020a05622a118700b003e4e203bc30so20155636qtk.7
+        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 09:34:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680626046;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QiVD/y4I2WnavOYWIxcNFC9RQGVGbQH5NBpUE72HY2g=;
+        b=H8FCF9Mu9u+pJLfUgQrfwBMw2ziVdYb+28xgNY7l17eY6CEIKWVpvzIbWrA44m2+xV
+         l+FZOpB85ixa1swAepotGBgckgE+8L+WTzxY8CbRQwoQ31mgBY3rd4UC2JS2ljqWUca+
+         AIdGF58dAjTi6DPMv8WxDbZH3AWzWSOrHWCZIp4b9NwX6aDj4qwcV3wj7w523hLRM3qg
+         Cq5EMI8yMSiXwqSHGgtjMDYM/eLZ8LRSkcVGw7EZiu44Dt31J3UNTmMc7SMNsW+RMUfO
+         465XJrK/n9YxID5oLhWjZo3s4zbRze24QIrsLlbMakoJ7k8IrL0JHed7+yS2V2DmD/4v
+         wjdg==
+X-Gm-Message-State: AAQBX9cCRFdnPB4VegzhD2nEAe/c3a+u9w7D2Kez2L92oV7edTkdfgP9
+        Sq0tZNuLOD2vtfjlVi08/zVeshU86xrShXNZPJcK3vDqgc2gCJ6HsGkHhFZF2LEIsUwC67f7DYy
+        BZxLSuLhUt6Cwxzoo
+X-Received: by 2002:a05:6214:1c0f:b0:56e:af49:7a1d with SMTP id u15-20020a0562141c0f00b0056eaf497a1dmr5174693qvc.24.1680626046237;
+        Tue, 04 Apr 2023 09:34:06 -0700 (PDT)
+X-Google-Smtp-Source: AKy350Z/BTgfeq/3SGJGMCIKsaJ0Yhm9GuOW5g6w5HHwcMxNvOVcJylnMzalgZYrk+OEazgxstX44A==
+X-Received: by 2002:a05:6214:1c0f:b0:56e:af49:7a1d with SMTP id u15-20020a0562141c0f00b0056eaf497a1dmr5174666qvc.24.1680626046006;
+        Tue, 04 Apr 2023 09:34:06 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id l14-20020ac84a8e000000b003e393c9feb7sm3374404qtq.58.2023.04.04.09.34.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Apr 2023 09:34:05 -0700 (PDT)
+Message-ID: <ec1b7951-2890-9603-dce3-5623de4b814d@redhat.com>
+Date:   Tue, 4 Apr 2023 12:34:03 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH net 2/3] selftests: bonding: re-format bond option tests
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>
-Subject: Re: [GIT PULL] Improve IPsec limits, ESN and replay window
-Message-ID: <20230404163018.GJ4514@unreal>
-References: <20230403064154.12443-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230403064154.12443-1-leon@kernel.org>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>, Liang Li <liali@redhat.com>
+References: <20230329101859.3458449-1-liuhangbin@gmail.com>
+ <20230329101859.3458449-3-liuhangbin@gmail.com>
+ <301d2861-1390-eaea-4521-90d4dcfe7336@redhat.com>
+ <ZCZGDQezuxXJuMd5@Laptop-X1> <ZCuLTjZjg7pZqO0X@Laptop-X1>
+Content-Language: en-US
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <ZCuLTjZjg7pZqO0X@Laptop-X1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 03, 2023 at 09:41:54AM +0300, Leon Romanovsky wrote:
-> This series overcomes existing hardware limitations in Mellanox ConnectX
-> devices around handling IPsec soft and hard limits.
+On 4/3/23 22:28, Hangbin Liu wrote:
+> On Fri, Mar 31, 2023 at 10:31:47AM +0800, Hangbin Liu wrote:
+>>>> +++ b/tools/testing/selftests/drivers/net/bonding/bond_lib.sh
+>>>
+>>> I like this idea, we might want to separate network topology from library
+>>> code however. That way a given test case can just include a predefined
+>>
+>> Would you like to help explain more clear? Separate network topology to where?
 > 
-> In addition, the ESN logic is tied and added an interface to configure
-> replay window sequence numbers through existing iproute2 interface.
 > 
->   ip xfrm state ... [ replay-seq SEQ ] [ replay-oseq SEQ ]
->                     [ replay-seq-hi SEQ ] [ replay-oseq-hi SEQ ]
-> 
-> Link: https://lore.kernel.org/all/cover.1680162300.git.leonro@nvidia.com
-> Signed-off-by: Leon Romanovsky <leon@kernel.org>
-> 
-> ----------------------------------------------------------------
-> 
-> The following changes since commit 5a6cddb89b51d99a7702e63829644a5860dd9c41:
-> 
->   net/mlx5e: Update IPsec per SA packets/bytes count (2023-03-20 11:29:52 +0200)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git/ tags/ipsec-esn-replay
-> 
-> for you to fetch changes up to 9f758558e309d11ef31dbdabdb1e3aa1003aebf9:
-> 
->   net/mlx5e: Simulate missing IPsec TX limits hardware functionality (2023-04-03 09:29:47 +0300)
-> 
-> ----------------------------------------------------------------
-> Leon Romanovsky (10):
->       net/mlx5e: Factor out IPsec ASO update function
->       net/mlx5e: Prevent zero IPsec soft/hard limits
->       net/mlx5e: Add SW implementation to support IPsec 64 bit soft and hard limits
->       net/mlx5e: Overcome slow response for first IPsec ASO WQE
->       xfrm: don't require advance ESN callback for packet offload
+> Hi Jon, would you please help explain this part?
 
-Hi Steffen,
+Thanks for the ping. It looks like several test cases build largely the 
+same virtual network topology and then execute the test case. I was 
+attempting to point out that it might be better to provide a standard 
+network topology and then each test case utilizes this standard topology 
+instead of each test case rolling its own. Also, with my comment about 
+separating out the topology from library code I was accounting for the 
+ability to support multiple topologies, fe:
 
-Can you please provide your Acked-by for this patch?
-https://lore.kernel.org/all/9f3dfc3fef2cfcd191f0c5eee7cf0aa74e7f7786.1680162300.git.leonro@nvidia.com
+  bond_lib.sh
+  bond_topo_gateway.sh
+  bond_topo_2.sh
 
-Thanks
+Then a given test case only includes/sources `bond_topo_gateway.sh` 
+which creates the virtual network.
 
+-Jon
 
->       net/mlx5e: Remove ESN callbacks if it is not supported
->       net/mlx5e: Set IPsec replay sequence numbers
->       net/mlx5e: Reduce contention in IPsec workqueue
->       net/mlx5e: Generalize IPsec work structs
->       net/mlx5e: Simulate missing IPsec TX limits hardware functionality
 > 
->  .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   | 329 ++++++++++++++++++---
->  .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |  47 ++-
->  .../mellanox/mlx5/core/en_accel/ipsec_fs.c         |  31 +-
->  .../mellanox/mlx5/core/en_accel/ipsec_offload.c    | 198 ++++++++++---
->  net/xfrm/xfrm_device.c                             |   2 +-
->  5 files changed, 496 insertions(+), 111 deletions(-)
+>>
+>>> topology. A quick review of the test cases show a 2 node setup is the most
+>>> common across all test cases.
+>>
+>> Liang suggested that with 2 clients we can test xmit_hash_policy. In
+>> client_create() I only create 1 client for current testing. We can add more
+>> clients in future.
+>>
+>> Thanks
+>> Hangbin
+> 
+
