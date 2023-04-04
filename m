@@ -2,428 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 585D16D59F0
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 09:47:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 791256D59A0
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 09:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233904AbjDDHre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 03:47:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S234055AbjDDHaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 03:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234026AbjDDHrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 03:47:32 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F15819AC
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 00:47:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680594445; x=1712130445;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QJGCCsI596xvwsy+ySKTKk/ZX+mwQwM8Iv+ShZFhEbA=;
-  b=ZCHk6HwETp79LSKSOw/qMGfKXYtcE8N3wz8hnUrWkIyPgWLetbLFqADO
-   QBs/jBsjn5cpuFmYDPXJXnq2t6nQyIlklWMyWsxSYzbCkKVAh4MI2Qo6x
-   qNskd4T5r+IfFf/Xu8N0hi5hrSuBP+f6N1ugRelhqWL89jUs3JnHdc/1z
-   frLv62iKkKDP7uXi7Pl0csn4cPet/riwDZosum45/RemaE6Z79aMiINHP
-   th0Jl0bhct90YThyyug+GgtuF7VsOxXGiHPxDjg77szXWxiAdNUyOIt/V
-   L26lyYN1d9zKJ9CS4TICQ8QQEKG3gQ3mEkAniseZOazSar2n/D2LoXhx3
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="404877633"
-X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="404877633"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 00:47:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="797421827"
-X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="797421827"
-Received: from wasp.igk.intel.com ([10.102.20.192])
-  by fmsmga002.fm.intel.com with ESMTP; 04 Apr 2023 00:47:23 -0700
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, wojciech.drewek@intel.com,
-        piotr.raczynski@intel.com,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next v2 4/4] ice: use src VSI instead of src MAC in slow-path
-Date:   Tue,  4 Apr 2023 09:28:33 +0200
-Message-Id: <20230404072833.3676891-5-michal.swiatkowski@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230404072833.3676891-1-michal.swiatkowski@linux.intel.com>
-References: <20230404072833.3676891-1-michal.swiatkowski@linux.intel.com>
+        with ESMTP id S233899AbjDDH36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 03:29:58 -0400
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A27B7;
+        Tue,  4 Apr 2023 00:29:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R531e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VfKsUhm_1680593374;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VfKsUhm_1680593374)
+          by smtp.aliyun-inc.com;
+          Tue, 04 Apr 2023 15:29:34 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        saeedm@nvidia.com, leon@kernel.org, netdev@vger.kernel.org,
+        simon.horman@corigine.com, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH net-next v3] net/mlx5e: Remove NULL check before dev_{put, hold}
+Date:   Tue,  4 Apr 2023 15:29:32 +0800
+Message-Id: <20230404072932.88383-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The use of a source  MAC to direct packets from the VF to the
-corresponding port representor is only ok if there is only one
-MAC on a VF. To support this functionality when the number
-of MACs on a VF is greater, it is necessary to match a source
-VSI instead of a source MAC.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:35:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:72:2-10: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c:80:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:35:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:734:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c:769:2-9: WARNING: NULL check before dev_{put, hold} functions is not needed.
+./drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:1450:2-10: WARNING: NULL check before dev_{put, hold} functions is not needed.
 
-Let's use the new switch API that allows matching on metadata.
-
-If MAC isn't used in match criteria there is no need to handle adding
-rule after virtchnl command. Instead add new rule while port representor
-is being configured.
-
-Remove rule_added field, checking for sp_rule can be used instead.
-Remove also checking for switchdev running in deleting rule as it can be
-call from unroll context when running flag isn't set. Checking for
-sp_rule cover both context (with and without running flag).
-
-Rules are added in eswitch configuration flow, so there is no need to
-have replay function.
-
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=4667
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- drivers/net/ethernet/intel/ice/ice_eswitch.c  | 75 +++++++------------
- drivers/net/ethernet/intel/ice/ice_eswitch.h  | 14 ----
- .../ethernet/intel/ice/ice_protocol_type.h    |  4 +-
- drivers/net/ethernet/intel/ice/ice_repr.c     | 17 -----
- drivers/net/ethernet/intel/ice/ice_repr.h     |  5 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   |  6 ++
- drivers/net/ethernet/intel/ice/ice_switch.h   |  1 +
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   |  3 -
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |  8 --
- 9 files changed, 37 insertions(+), 96 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-index 2c80d57331d0..69fc25a213ef 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-@@ -10,16 +10,15 @@
- #include "ice_tc_lib.h"
- 
- /**
-- * ice_eswitch_add_vf_mac_rule - add adv rule with VF's MAC
-+ * ice_eswitch_add_vf_sp_rule - add adv rule with VF's VSI index
-  * @pf: pointer to PF struct
-  * @vf: pointer to VF struct
-- * @mac: VF's MAC address
-  *
-  * This function adds advanced rule that forwards packets with
-- * VF's MAC address (src MAC) to the corresponding switchdev ctrl VSI queue.
-+ * VF's VSI index to the corresponding switchdev ctrl VSI queue.
-  */
--int
--ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
-+static int
-+ice_eswitch_add_vf_sp_rule(struct ice_pf *pf, struct ice_vf *vf)
+change in v3:
+--According to Leon's suggestion, do this cleanup for whole driver.
+
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c    |  9 +++------
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  | 10 +++-------
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c      |  3 +--
+ 3 files changed, 7 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
+index 00a04fdd756f..20f6e7ed7475 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
+@@ -31,8 +31,7 @@ static void mlx5e_tc_tun_route_attr_cleanup(struct mlx5e_tc_tun_route_attr *attr
  {
- 	struct ice_vsi *ctrl_vsi = pf->switchdev.control_vsi;
- 	struct ice_adv_rule_info rule_info = { 0 };
-@@ -32,11 +31,9 @@ ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
- 	if (!list)
- 		return -ENOMEM;
- 
--	list[0].type = ICE_MAC_OFOS;
--	ether_addr_copy(list[0].h_u.eth_hdr.src_addr, mac);
--	eth_broadcast_addr(list[0].m_u.eth_hdr.src_addr);
-+	ice_rule_add_src_vsi_metadata(&list[0]);
- 
--	rule_info.sw_act.flag |= ICE_FLTR_TX;
-+	rule_info.sw_act.flag = ICE_FLTR_TX;
- 	rule_info.sw_act.vsi_handle = ctrl_vsi->idx;
- 	rule_info.sw_act.fltr_act = ICE_FWD_TO_Q;
- 	rule_info.sw_act.fwd_id.q_id = hw->func_caps.common_cap.rxq_first_id +
-@@ -44,63 +41,31 @@ ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
- 	rule_info.flags_info.act |= ICE_SINGLE_ACT_LB_ENABLE;
- 	rule_info.flags_info.act_valid = true;
- 	rule_info.tun_type = ICE_SW_TUN_AND_NON_TUN;
-+	rule_info.src_vsi = vf->lan_vsi_idx;
- 
- 	err = ice_add_adv_rule(hw, list, lkups_cnt, &rule_info,
--			       vf->repr->mac_rule);
-+			       &vf->repr->sp_rule);
- 	if (err)
--		dev_err(ice_pf_to_dev(pf), "Unable to add VF mac rule in switchdev mode for VF %d",
-+		dev_err(ice_pf_to_dev(pf), "Unable to add VF slow-path rule in switchdev mode for VF %d",
- 			vf->vf_id);
--	else
--		vf->repr->rule_added = true;
- 
- 	kfree(list);
- 	return err;
+ 	if (attr->n)
+ 		neigh_release(attr->n);
+-	if (attr->route_dev)
+-		dev_put(attr->route_dev);
++	dev_put(attr->route_dev);
  }
  
- /**
-- * ice_eswitch_replay_vf_mac_rule - replay adv rule with VF's MAC
-- * @vf: pointer to vF struct
-- *
-- * This function replays VF's MAC rule after reset.
-- */
--void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf)
--{
--	int err;
--
--	if (!ice_is_switchdev_running(vf->pf))
--		return;
--
--	if (is_valid_ether_addr(vf->hw_lan_addr)) {
--		err = ice_eswitch_add_vf_mac_rule(vf->pf, vf,
--						  vf->hw_lan_addr);
--		if (err) {
--			dev_err(ice_pf_to_dev(vf->pf), "Failed to add MAC %pM for VF %d\n, error %d\n",
--				vf->hw_lan_addr, vf->vf_id, err);
--			return;
--		}
--		vf->num_mac++;
--
--		ether_addr_copy(vf->dev_lan_addr, vf->hw_lan_addr);
--	}
--}
--
--/**
-- * ice_eswitch_del_vf_mac_rule - delete adv rule with VF's MAC
-+ * ice_eswitch_del_vf_sp_rule - delete adv rule with VF's VSI index
-  * @vf: pointer to the VF struct
-  *
-- * Delete the advanced rule that was used to forward packets with the VF's MAC
-- * address (src MAC) to the corresponding switchdev ctrl VSI queue.
-+ * Delete the advanced rule that was used to forward packets with the VF's VSI
-+ * index to the corresponding switchdev ctrl VSI queue.
-  */
--void ice_eswitch_del_vf_mac_rule(struct ice_vf *vf)
-+static void ice_eswitch_del_vf_sp_rule(struct ice_vf *vf)
- {
--	if (!ice_is_switchdev_running(vf->pf))
-+	if (!vf->repr)
- 		return;
- 
--	if (!vf->repr->rule_added)
--		return;
--
--	ice_rem_adv_rule_by_id(&vf->pf->hw, vf->repr->mac_rule);
--	vf->repr->rule_added = false;
-+	ice_rem_adv_rule_by_id(&vf->pf->hw, &vf->repr->sp_rule);
- }
- 
- /**
-@@ -236,6 +201,7 @@ ice_eswitch_release_reprs(struct ice_pf *pf, struct ice_vsi *ctrl_vsi)
- 		ice_vsi_update_security(vsi, ice_vsi_ctx_set_antispoof);
- 		metadata_dst_free(vf->repr->dst);
- 		vf->repr->dst = NULL;
-+		ice_eswitch_del_vf_sp_rule(vf);
- 		ice_fltr_add_mac_and_broadcast(vsi, vf->hw_lan_addr,
- 					       ICE_FWD_TO_VSI);
- 
-@@ -269,10 +235,18 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
- 			goto err;
- 		}
- 
-+		if (ice_eswitch_add_vf_sp_rule(pf, vf)) {
-+			ice_fltr_add_mac_and_broadcast(vsi,
-+						       vf->hw_lan_addr,
-+						       ICE_FWD_TO_VSI);
-+			goto err;
-+		}
-+
- 		if (ice_vsi_update_security(vsi, ice_vsi_ctx_clear_antispoof)) {
- 			ice_fltr_add_mac_and_broadcast(vsi,
- 						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
-+			ice_eswitch_del_vf_sp_rule(vf);
- 			metadata_dst_free(vf->repr->dst);
- 			vf->repr->dst = NULL;
- 			goto err;
-@@ -282,6 +256,7 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
- 			ice_fltr_add_mac_and_broadcast(vsi,
- 						       vf->hw_lan_addr,
- 						       ICE_FWD_TO_VSI);
-+			ice_eswitch_del_vf_sp_rule(vf);
- 			metadata_dst_free(vf->repr->dst);
- 			vf->repr->dst = NULL;
- 			ice_vsi_update_security(vsi, ice_vsi_ctx_set_antispoof);
-diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-index 6a413331572b..b18bf83a2f5b 100644
---- a/drivers/net/ethernet/intel/ice/ice_eswitch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
-@@ -20,11 +20,6 @@ bool ice_is_eswitch_mode_switchdev(struct ice_pf *pf);
- void ice_eswitch_update_repr(struct ice_vsi *vsi);
- 
- void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf);
--int
--ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf,
--			    const u8 *mac);
--void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf);
--void ice_eswitch_del_vf_mac_rule(struct ice_vf *vf);
- 
- void ice_eswitch_set_target_vsi(struct sk_buff *skb,
- 				struct ice_tx_offload_params *off);
-@@ -34,15 +29,6 @@ ice_eswitch_port_start_xmit(struct sk_buff *skb, struct net_device *netdev);
- static inline void ice_eswitch_release(struct ice_pf *pf) { }
- 
- static inline void ice_eswitch_stop_all_tx_queues(struct ice_pf *pf) { }
--static inline void ice_eswitch_replay_vf_mac_rule(struct ice_vf *vf) { }
--static inline void ice_eswitch_del_vf_mac_rule(struct ice_vf *vf) { }
--
--static inline int
--ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf,
--			    const u8 *mac)
--{
--	return -EOPNOTSUPP;
--}
- 
- static inline void
- ice_eswitch_set_target_vsi(struct sk_buff *skb,
-diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-index ed0ab8177c61..664e2f45e249 100644
---- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-@@ -256,7 +256,9 @@ struct ice_nvgre_hdr {
-  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  *
-  * Source VSI = Source VSI of packet loopbacked in switch (for egress) (10b).
-- *
-+ */
-+#define ICE_MDID_SOURCE_VSI_MASK 0x3ff
-+/*
-  * MDID 20
-  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  * |A|B|C|D|E|F|R|R|G|H|I|J|K|L|M|N|
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
-index fd1f8b0ad0ab..e30e12321abd 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.c
-@@ -298,14 +298,6 @@ static int ice_repr_add(struct ice_vf *vf)
- 	if (!repr)
- 		return -ENOMEM;
- 
--#ifdef CONFIG_ICE_SWITCHDEV
--	repr->mac_rule = kzalloc(sizeof(*repr->mac_rule), GFP_KERNEL);
--	if (!repr->mac_rule) {
--		err = -ENOMEM;
--		goto err_alloc_rule;
--	}
--#endif
--
- 	repr->netdev = alloc_etherdev(sizeof(struct ice_netdev_priv));
- 	if (!repr->netdev) {
- 		err =  -ENOMEM;
-@@ -351,11 +343,6 @@ static int ice_repr_add(struct ice_vf *vf)
- 	free_netdev(repr->netdev);
- 	repr->netdev = NULL;
- err_alloc:
--#ifdef CONFIG_ICE_SWITCHDEV
--	kfree(repr->mac_rule);
--	repr->mac_rule = NULL;
--err_alloc_rule:
--#endif
- 	kfree(repr);
- 	vf->repr = NULL;
- 	return err;
-@@ -376,10 +363,6 @@ static void ice_repr_rem(struct ice_vf *vf)
- 	ice_devlink_destroy_vf_port(vf);
- 	free_netdev(vf->repr->netdev);
- 	vf->repr->netdev = NULL;
--#ifdef CONFIG_ICE_SWITCHDEV
--	kfree(vf->repr->mac_rule);
--	vf->repr->mac_rule = NULL;
--#endif
- 	kfree(vf->repr);
- 	vf->repr = NULL;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.h b/drivers/net/ethernet/intel/ice/ice_repr.h
-index 378a45bfa256..5a28bb42f72a 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.h
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.h
-@@ -13,9 +13,8 @@ struct ice_repr {
- 	struct net_device *netdev;
- 	struct metadata_dst *dst;
- #ifdef CONFIG_ICE_SWITCHDEV
--	/* info about slow path MAC rule  */
--	struct ice_rule_query_data *mac_rule;
--	u8 rule_added;
-+	/* info about slow path rule  */
-+	struct ice_rule_query_data sp_rule;
- #endif
- };
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 8c2bbfd2613f..76f5a817929a 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -6007,6 +6007,12 @@ void ice_rule_add_vlan_metadata(struct ice_adv_lkup_elem *lkup)
- 		cpu_to_be16(ICE_PKT_VLAN_MASK);
- }
- 
-+void ice_rule_add_src_vsi_metadata(struct ice_adv_lkup_elem *lkup)
-+{
-+	lkup->type = ICE_HW_METADATA;
-+	lkup->m_u.metadata.source_vsi = cpu_to_be16(ICE_MDID_SOURCE_VSI_MASK);
-+}
-+
- /**
-  * ice_add_adv_rule - helper function to create an advanced switch rule
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-index 245d4ad4e9bc..fbd0936750af 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.h
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-@@ -344,6 +344,7 @@ ice_free_res_cntr(struct ice_hw *hw, u8 type, u8 alloc_shared, u16 num_items,
- /* Switch/bridge related commands */
- void ice_rule_add_tunnel_metadata(struct ice_adv_lkup_elem *lkup);
- void ice_rule_add_vlan_metadata(struct ice_adv_lkup_elem *lkup);
-+void ice_rule_add_src_vsi_metadata(struct ice_adv_lkup_elem *lkup);
- int
- ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 		 u16 lkups_cnt, struct ice_adv_rule_info *rinfo,
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 68142facc85d..294e91c3453c 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -670,8 +670,6 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
+ struct mlx5e_tc_tunnel *mlx5e_get_tc_tun(struct net_device *tunnel_dev)
+@@ -68,16 +67,14 @@ static int get_route_and_out_devs(struct mlx5e_priv *priv,
+ 	 * while holding rcu read lock. Take the net_device for correctness
+ 	 * sake.
  	 */
- 	ice_vf_clear_all_promisc_modes(vf, vsi);
+-	if (uplink_upper)
+-		dev_hold(uplink_upper);
++	dev_hold(uplink_upper);
+ 	rcu_read_unlock();
  
--	ice_eswitch_del_vf_mac_rule(vf);
+ 	dst_is_lag_dev = (uplink_upper &&
+ 			  netif_is_lag_master(uplink_upper) &&
+ 			  real_dev == uplink_upper &&
+ 			  mlx5_lag_is_sriov(priv->mdev));
+-	if (uplink_upper)
+-		dev_put(uplink_upper);
++	dev_put(uplink_upper);
+ 
+ 	/* if the egress device isn't on the same HW e-switch or
+ 	 * it's a LAG device, use the uplink
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 20c2d2ecaf93..2cb2ba857155 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -32,9 +32,7 @@ static int mlx5e_set_int_port_tunnel(struct mlx5e_priv *priv,
+ 						&attr->action, out_index);
+ 
+ out:
+-	if (route_dev)
+-		dev_put(route_dev);
 -
- 	ice_vf_fdir_exit(vf);
- 	ice_vf_fdir_init(vf);
- 	/* clean VF control VSI when resetting VF since it should be setup
-@@ -697,7 +695,6 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
++	dev_put(route_dev);
+ 	return err;
+ }
+ 
+@@ -730,8 +728,7 @@ static int mlx5e_set_vf_tunnel(struct mlx5_eswitch *esw,
  	}
  
- 	ice_eswitch_update_repr(vsi);
--	ice_eswitch_replay_vf_mac_rule(vf);
+ out:
+-	if (route_dev)
+-		dev_put(route_dev);
++	dev_put(route_dev);
+ 	return err;
+ }
  
- 	/* if the VF has been reset allow it to come up again */
- 	ice_mbx_clear_malvf(&vf->mbx_info);
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 97243c616d5d..dcf628b1fccd 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -3730,7 +3730,6 @@ static int ice_vc_repr_add_mac(struct ice_vf *vf, u8 *msg)
+@@ -765,8 +762,7 @@ static int mlx5e_update_vf_tunnel(struct mlx5_eswitch *esw,
+ 	mlx5e_tc_match_to_reg_mod_hdr_change(esw->dev, mod_hdr_acts, VPORT_TO_REG, act_id, data);
  
- 	for (i = 0; i < al->num_elements; i++) {
- 		u8 *mac_addr = al->list[i].addr;
--		int result;
+ out:
+-	if (route_dev)
+-		dev_put(route_dev);
++	dev_put(route_dev);
+ 	return err;
+ }
  
- 		if (!is_unicast_ether_addr(mac_addr) ||
- 		    ether_addr_equal(mac_addr, vf->hw_lan_addr))
-@@ -3742,13 +3741,6 @@ static int ice_vc_repr_add_mac(struct ice_vf *vf, u8 *msg)
- 			goto handle_mac_exit;
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+index 5d331b940f4d..f0216bf6e215 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+@@ -1446,8 +1446,7 @@ struct net_device *mlx5_lag_get_roce_netdev(struct mlx5_core_dev *dev)
+ 	} else {
+ 		ndev = ldev->pf[MLX5_LAG_P1].netdev;
+ 	}
+-	if (ndev)
+-		dev_hold(ndev);
++	dev_hold(ndev);
  
--		result = ice_eswitch_add_vf_mac_rule(pf, vf, mac_addr);
--		if (result) {
--			dev_err(ice_pf_to_dev(pf), "Failed to add MAC %pM for VF %d\n, error %d\n",
--				mac_addr, vf->vf_id, result);
--			goto handle_mac_exit;
--		}
--
- 		ice_vfhw_mac_add(vf, &al->list[i]);
- 		vf->num_mac++;
- 		break;
+ unlock:
+ 	spin_unlock_irqrestore(&lag_lock, flags);
 -- 
-2.39.2
+2.20.1.7.g153144c
 
