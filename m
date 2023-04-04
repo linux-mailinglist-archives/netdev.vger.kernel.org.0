@@ -2,276 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72F2D6D6CE3
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 21:03:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C3076D6CEC
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 21:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236202AbjDDTDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 15:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
+        id S236372AbjDDTEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 15:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234820AbjDDTCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 15:02:39 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A2C59C8;
-        Tue,  4 Apr 2023 12:02:16 -0700 (PDT)
+        with ESMTP id S235000AbjDDTEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 15:04:11 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2086.outbound.protection.outlook.com [40.107.96.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C945254;
+        Tue,  4 Apr 2023 12:03:33 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hBrHuFiO50p2a+p6pb4Q7edbyJP8XrqORJxmLEy9n4lHJeWhnsehmWIELwUB38cyIwi+maTvhGA1aG0JEBzRoTquN3E0xcDjgoYuxyN4vKHf6K5R65bBHUtNiwyNCp0NgypcSZaQYYoqZka9UqSvG3+vpe3BES7zqsHQHtTxOaIiEypUD+D/cauZ0wtR7nehKv9HlZYg08PpnjHC+esdy0dSDw5MJFBuk8JvTnF5u2c9GpeGKG8dRuz5KNpuUPN+/qNRC4xuc5niICb66XbZb66kJNe/wCau9BzYRWhebNrkw7FFvmVRVOFSJdFuTc1YMbm/67N2LgPqSn0n8HYT/Q==
+ b=jIcJp9hJbk/qgBp4l/2RVLR/9b5S/A7xDMBafWYyQxVY8onEhk9g+Q5X1vOPGAPLtZOQtHL3eriZh26jLe4CEoyyV5Sz0tSQVAjM/YAvb8b7IhxyBU7BN214dKMC6MBuoXqBmowK+H5yV0vjbqcD71IChie4PVxRS36xXknSgqGbq2EpjXHRSm+qT39NB0CXp9krFbcbFJZCCnGkZvFWJXV8G3Ci/OsH7vJiAexAL8Pc9OeSlT1NI1MCLkvbatBH6+cHktwcK51Uo3K3pgWVMO+BlAiCC255bXrWtQ0xdfyc64WLXleaHtPDWfxD88hv44aXbeGfsiD3gvv8NePEDg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GByx9i4kwDwjKOkoOKIRg5nu2rTe4XCsnHnPADdL1VY=;
- b=PSS1bgOdgHXiTmYMn6AYtAL2HI8XVBLc1nLVH0gaHLPV8a35TNsDh288tMtnf6aQj6Qj9epvEbMttWrK/x2iYgaIQUkUGOk6+uXh7HGuDkv2Eo7k3KFv4Y42ASOeqLw/riT30qLOCJxxhvrc6ww+6OMpUddaNo57ZyWw5ECQek8/+fSwMI2oKOeALvW0EGPPZmJmhabso8iQGQfCuGRja8FxEttpBplINN63rotCFPBEgvebNMwkEOyvYoNj2ZDjEmop6eK+h5beTIPcohtvwedkErfAgcBXD6rJVBlD/xiDq0BCwuUq9PYNDk8aOppIESdh57ncFcg+Q2KdYWBVNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=gojRmdbKYJ4s9a9OULPvU4CpNcFoxOrUnrAy19nLREA=;
+ b=G1afjxdAaHR6tYK6kkHlBsq4HY4VBHTbyjzuDO2Ntls5ZP+nFgBCJCToUH84a7zfrCIQVGdBjlKtLfl+nfITWtGFrBNyQKMmoXArDdoRirpBNEC8kExI3L0Jywf4vxl/zG+Vl5DyfAlU9sT11ZhP79V7/5V4olTy+CytBYW1N95LVIPdRGwQ0Re0GzDcquY3m9fnvmRH8eEK2BXzrt0BvRCWpHTKpXx5ROhMD8pqE/9p8uQXwi02Vy5U0yIavn31+AQsa780BMexNTtFN9k4qvT8ajhvTE1nJXNWP1vf94hRYQwvHTdoFz5CKr+CrsqYk7aMAHtflsrpvhShXgWFEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GByx9i4kwDwjKOkoOKIRg5nu2rTe4XCsnHnPADdL1VY=;
- b=FcOp7Hv5lm+Dqnroki4ZmZW9WOL1cJVUznEu3Vr2Wf6jA0ebNd8xdqVLhPCrzeLj46uJdGhls59MyOfCp52hziVyYCWFFgowSDwa05/mQExCMrU32k3Y/+a9uwplgAlDpYMtWBHFLQTR/Aoj3B7l+0C03okTGfW+SuPtRWAwe5s=
-Received: from MW4PR03CA0077.namprd03.prod.outlook.com (2603:10b6:303:b6::22)
- by DM6PR12MB5520.namprd12.prod.outlook.com (2603:10b6:5:208::9) with
+ bh=gojRmdbKYJ4s9a9OULPvU4CpNcFoxOrUnrAy19nLREA=;
+ b=SseqiecoZUko0Y3uNjgsoi+912o+mbhLkCXNdetNxVsO+lEb0+yvsisxF5gtNodE1SxCqpdta0wfrMf8DFCLIjsJq1QSDnwZ2GXZEa1ItgM9R7z91iXAqoK5+O/lhh0qcoI2QkSjiudMMzI0MU1Ma3mjiTYxaFlSxLDH5EcM1p2L8OBx5p4SHi83ipKZucyBrlJM6INiwApv5Y39NKxzklr31u0BKkKdf8gNjZmre/tQUgq4l8dhigqc5lQNmclOUL30Ez0DnIqpnOGr9JQWkfdY5D02jZSB/qjx+VpqMvo5xv9t5DiNUwTRDdoE3f0cxwUBPdF127DbiH7c7j+vPw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH2PR12MB4328.namprd12.prod.outlook.com (2603:10b6:610:a6::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 4 Apr
- 2023 19:02:14 +0000
-Received: from CO1NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b6:cafe::25) by MW4PR03CA0077.outlook.office365.com
- (2603:10b6:303:b6::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.22 via Frontend
- Transport; Tue, 4 Apr 2023 19:02:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT048.mail.protection.outlook.com (10.13.175.148) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.6254.22 via Frontend Transport; Tue, 4 Apr 2023 19:02:13 +0000
-Received: from driver-dev1.pensando.io (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 4 Apr
- 2023 14:02:11 -0500
-From:   Brett Creeley <brett.creeley@amd.com>
-To:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-        <yishaih@nvidia.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <kevin.tian@intel.com>
-CC:     <brett.creeley@amd.com>, <shannon.nelson@amd.com>,
-        <drivers@pensando.io>, <simon.horman@corigine.com>
-Subject: [PATCH v8 vfio 7/7] vfio/pds: Add Kconfig and documentation
-Date:   Tue, 4 Apr 2023 12:01:41 -0700
-Message-ID: <20230404190141.57762-8-brett.creeley@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20230404190141.57762-1-brett.creeley@amd.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Tue, 4 Apr
+ 2023 19:03:31 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::6045:ad97:10b7:62a2%6]) with mapi id 15.20.6254.035; Tue, 4 Apr 2023
+ 19:03:31 +0000
+Date:   Tue, 4 Apr 2023 16:03:30 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Brett Creeley <brett.creeley@amd.com>
+Cc:     kvm@vger.kernel.org, netdev@vger.kernel.org,
+        alex.williamson@redhat.com, yishaih@nvidia.com,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        shannon.nelson@amd.com, drivers@pensando.io,
+        simon.horman@corigine.com
+Subject: Re: [PATCH v8 vfio 0/7] pds_vfio driver
+Message-ID: <ZCx0guFFi5Y2CW7y@nvidia.com>
 References: <20230404190141.57762-1-brett.creeley@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230404190141.57762-1-brett.creeley@amd.com>
+X-ClientProxiedBy: BL0PR02CA0032.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::45) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT048:EE_|DM6PR12MB5520:EE_
-X-MS-Office365-Filtering-Correlation-Id: 99bc578b-02df-4114-813b-08db353f1a17
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB4328:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4365e391-8c54-4e98-ef72-08db353f4837
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WHcztX5Yp/iDdpg7cWxB5UFtCeMuKqEMkhogDMvfewPxA8Ud/OunKIdnPLwGx//+yhvsHDud0RJhqywjO0NVxElvkp59Sv1ANKVy2Lk6TZO/izuqwLY3u7SVB/2CrZorNlDxe6RDAiZh+xVMuJ4IJ8NZJPO0YkxQqbHdWjhZRTpdFFSBxn/l28PNY94fSAP7YaXO3Wc6Hd0v90gdkIk50BynPIgUknZXrSSKxl2dOc5pq/HRY7fKoltW/81UES3zJx8NgmeW/BIuEnTgpjKJl3tANhC94T1iXiS4sIU0XQXDg3fzYugh8mihmu3QwMMj5HTHNRBEZJzFyviu/ZyVAsf7wVf4vtSMXM9R1htiNY1G47Hit+rDyWohfzMGc14XxA0WaLSR/x8SiK+xUr43MXv9pDfi+O1FLg18viPizuA/zNus6vIpCJ8P2PzOsOB8NxSB1u/OWVObjJ9wDZ1K/Vdfn5o05gqylqpvn8EBW9kglIIzS2Vtu5teFE6VjDVdhVVme05ip7/cC3vbbqE17S1J+UF9jhMzjr3OxCDMONUIyU0zCZdOeY43NLIZ6buBx4exkp6TfCKQIEem3b1RcPIr4jasszbdltNHk+NTqlZNWnwdZfpBHJ/zMtJFnIs6svYSqDSqZt6RgNKvNObLd0Iq3zj6jqN6pl1hyLKVBlBrI1nHH+KLdU4HzNUOQTaDtCIe+gnJfsD8ajaH8TwxpAgZrmOYwrB6U8tXXR1ld1o=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230028)(4636009)(136003)(39860400002)(396003)(376002)(346002)(451199021)(36840700001)(40470700004)(46966006)(40480700001)(186003)(82310400005)(26005)(6666004)(16526019)(2906002)(86362001)(36860700001)(8936002)(5660300002)(44832011)(70206006)(316002)(70586007)(54906003)(1076003)(110136005)(478600001)(2616005)(41300700001)(4326008)(83380400001)(426003)(336012)(40460700003)(47076005)(82740400003)(356005)(36756003)(81166007)(8676002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 19:02:13.8454
+X-Microsoft-Antispam-Message-Info: RW9PGRA5spM7MMYdoErzHs5WqKB3S8NypZtKFxEcd2WAjOaj6GpLlRAbsUdCKXZB2F29Nis1oN4hB2hT4XhYAOVIQ4jyKRQ70BsvDUAzHQO5tJ7eB7ibLCNchSkC4e3mI7RU0obeI0axVcGN8dOuQArHNOfzstIFPKZYnlj/pUPcUxhpYb5zRZPAkoa/R5BBj2c4eSXdNFa5QtF0QAIvTeiOLyLWiZWBSpd4o3vbEZs3M39D6r+5FDizNZXvFFF6BlOhgfFa+XysR0v3xn8048D9afQ869vBkjUeEfGadQ4naGBA41SggOndCfX+pSlzpGHBQQkL3vI3kaYtuPH3/M2SdDG772CXiUKH5C93/HMJEsmytoX4eREfZ6iahVfCLeahgHkTeczu/uNOTzrpr2iV38+wB6O67lLem8Y0wJzoruXdy6sjzvAgcHaprU77XEHDlxM5nIzU9NwDcHgbdl3XuKXY+s3Ratc1IsP0NtTuX+ovogFPOLpCE001XgJvAhj78WdklXns/D06o7Rg2eIchDD6ymSkDooDyOcBHmsh8zx73YxG3Ah5l4123eNXzUFCMP2TN3y8sQzfAJBnbUlaAYTR9MbGojQDOGQH3mY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(136003)(39860400002)(376002)(396003)(451199021)(478600001)(316002)(66556008)(66946007)(8676002)(6916009)(66476007)(6512007)(6506007)(26005)(186003)(36756003)(2616005)(2906002)(6486002)(4326008)(966005)(38100700002)(86362001)(8936002)(4744005)(41300700001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?t+dDSJ0dBpdO1c8dzYDcn5uyiaQbhFQ2bJn/gDf34aaxTLTKsCdUxqpGTSEK?=
+ =?us-ascii?Q?/GNAJN+he8HXjUk4DX5pb8DdfeiRAs99Q7iymrdfZzOMGJn+BTuzomohn8sr?=
+ =?us-ascii?Q?3wxWV5aoXiDmAKybY1o/MOMSOOncGB1PLykrJ/iei13qhSPnah51riW6CWmZ?=
+ =?us-ascii?Q?/fuQV4Ez//HKTaa7ovb5OYsSEMZieIlk94sW1d24HMw2Fg7JZVS1mjxUhuoQ?=
+ =?us-ascii?Q?2NI8sHCXM+gvaMKmPcbG4e+LHefAFbtI7YgXzgmI3FdippHbuEwdBexlYcXF?=
+ =?us-ascii?Q?egmJE2UytzpdP/jwJsPIEX45YQbXzieBwo+K424werL/8oOj1S53hSiptchw?=
+ =?us-ascii?Q?tFLlpTR4dXtdf6AGBjriCJNshG+oh6npSc/RNbCypS2ZkX30hhVt8NxRhg/e?=
+ =?us-ascii?Q?7bPLZo06mxzJUwzKIjVqy0VtcmQqw/BYqr2vpIsdoMyZj3059NgopRC5GPMy?=
+ =?us-ascii?Q?S2yYxJTrzelD34r0GqquIJszgD9TY9Ce7Een0/HbsSlVMzlEtpR3hElR9YSN?=
+ =?us-ascii?Q?5KtVK5EoCaK6vFmi3GBl1/NKSm1qD+79KKVTiht2uqzrLcjPojfTdzTPcgYR?=
+ =?us-ascii?Q?dLhlRaHLeWOk438bYcMJY7G0kR0Q7GbAcV3otXUYq5xFY5glfQbEOgBl863M?=
+ =?us-ascii?Q?AQm4f56f2rLhKVaIJQ7Sq1uIRF2MsfI4CFz2ZRZOEGHf6ssegTZ0sdbBwl3W?=
+ =?us-ascii?Q?eVHdl4mTeXgCogzB6v+YvNAoZQHsqHEvJh9kMqC1JkhbV1i6MUmUGVJHBkq0?=
+ =?us-ascii?Q?KGbuiBfnNRIhJ4qlFruF++BWW6k3T2ZXkUE2hTZlJT/6WFV6vZP6AhvzXr6L?=
+ =?us-ascii?Q?Ey1VCmYFYpx/jmA5BnPxRX3D+MD2y3NZ0Ql3y8ez56vU5cq7DY9gro5fcuUA?=
+ =?us-ascii?Q?RL/JXJRrCHFwQbP4UaY3NJU1fnCTL3TzIn7uRi6falw6B3iJ/EViH7Y13w5H?=
+ =?us-ascii?Q?lVOcBV8OdoaX15YF9nifyZjLQOMibdzjJB7pr5l6whCiqyuT+8IrDuGoHcBT?=
+ =?us-ascii?Q?KdgXc4IhfzozhKGrKXj9VAvaQioSYb7+A8ejYMtpSMKT4X52Gq5jAR6hCrAU?=
+ =?us-ascii?Q?7+AcQn8b3EWRA6ZKTu6aB36vvtV2RmrYwH88ZTEcbrJKt8LpNlBHJ6JS0G7H?=
+ =?us-ascii?Q?OGKpyCEKQGBfJ3o0iTJyAIaEwT9Hz0xk/mKooNg75k1OJrTmmkqgq8Rd+b/h?=
+ =?us-ascii?Q?xZ9i41j4s5AAbzEW1EWvhqcD0/6tK+6iuMo6P0DX0f56ONqLSBjYk1vgPzUX?=
+ =?us-ascii?Q?Sn0+NJsz0dHdlFNxW1V6w4MopC9x/1i4q75196Z7ut/MOwHceWrKL4QM3ZG+?=
+ =?us-ascii?Q?HcoILX3hLiRhEZezu+AUooFDp+o4qJqcP47MQMtPC9ZFyREYp23mI98qROIt?=
+ =?us-ascii?Q?zOD1e62l8HsHxIzW4nEG9JuqsupSuqYQ/HYdBIvno5DeOhDfBfU8V9um+tUQ?=
+ =?us-ascii?Q?BpLo18nI7QywsTVqK7qLv9/K0AeAsoPCWjSRKGIx6CX110WqLK24iju4OpHo?=
+ =?us-ascii?Q?zFpgkC2KCqyfSq+MvTpDZgUHavWbvuLyKFOWV0E/AvZITkodGq+5OIov0gzs?=
+ =?us-ascii?Q?fGU1giWuop52aT2SEQkL1GTrKEHf+0bPyxTKnrtM?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4365e391-8c54-4e98-ef72-08db353f4837
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 19:03:31.5097
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99bc578b-02df-4114-813b-08db353f1a17
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5520
-X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UFPlPesagCr7eGHId8MKJayFPKcwOIVKkg0AsDMYQjDZdanyqY/Y87IQ7xsVSr3K
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4328
+X-Spam-Status: No, score=0.8 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Kconfig entries and pds_vfio.rst. Also, add an entry in the
-MAINTAINERS file for this new driver.
+On Tue, Apr 04, 2023 at 12:01:34PM -0700, Brett Creeley wrote:
+> This is a patchset for a new vendor specific VFIO driver
+> (pds_vfio) for use with the AMD/Pensando Distributed Services Card
+> (DSC). This driver makes use of the newly introduced pds_core
+> driver, which the latest version can be referenced at:
+> 
+> https://lore.kernel.org/netdev/20230330234628.14627-1-shannon.nelson@amd.com/
 
-It's not clear where documentation for vendor specific VFIO
-drivers should live, so just re-use the current amd
-ethernet location.
+You don't need to post one of these every little change - the base
+netdev stuff and the use of aux dev still hasn't got a review from the
+relevant people, let alone this part..
 
-Signed-off-by: Brett Creeley <brett.creeley@amd.com>
-Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
----
- .../device_drivers/ethernet/amd/pds_vfio.rst  | 79 +++++++++++++++++++
- .../device_drivers/ethernet/index.rst         |  1 +
- MAINTAINERS                                   |  7 ++
- drivers/vfio/pci/Kconfig                      |  2 +
- drivers/vfio/pci/pds/Kconfig                  | 20 +++++
- 5 files changed, 109 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
- create mode 100644 drivers/vfio/pci/pds/Kconfig
-
-diff --git a/Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst b/Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
-new file mode 100644
-index 000000000000..7bddde0c7c9d
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
-@@ -0,0 +1,79 @@
-+.. SPDX-License-Identifier: GPL-2.0+
-+.. note: can be edited and viewed with /usr/bin/formiko-vim
-+
-+==========================================================
-+PCI VFIO driver for the AMD/Pensando(R) DSC adapter family
-+==========================================================
-+
-+AMD/Pensando Linux VFIO PCI Device Driver
-+Copyright(c) 2023 Advanced Micro Devices, Inc.
-+
-+Overview
-+========
-+
-+The ``pds_vfio`` module is a PCI driver that supports Live Migration
-+capable Virtual Function (VF) devices in the DSC hardware.
-+
-+Using the device
-+================
-+
-+The pds_vfio device is enabled via multiple configuration steps and
-+depends on the ``pds_core`` driver to create and enable SR-IOV Virtual
-+Function devices.
-+
-+Shown below are the steps to bind the driver to a VF and also to the
-+associated auxiliary device created by the ``pds_core`` driver. This
-+example assumes the pds_core and pds_vfio modules are already
-+loaded.
-+
-+.. code-block:: bash
-+  :name: example-setup-script
-+
-+  #!/bin/bash
-+
-+  PF_BUS="0000:60"
-+  PF_BDF="0000:60:00.0"
-+  VF_BDF="0000:60:00.1"
-+
-+  # Prevent non-vfio VF driver from probing the VF device
-+  echo 0 > /sys/class/pci_bus/$PF_BUS/device/$PF_BDF/sriov_drivers_autoprobe
-+
-+  # Create single VF for Live Migration via VFIO
-+  echo 1 > /sys/bus/pci/drivers/pds_core/$PF_BDF/sriov_numvfs
-+
-+  # Allow the VF to be bound to the pds_vfio driver
-+  echo "pds_vfio" > /sys/class/pci_bus/$PF_BUS/device/$VF_BDF/driver_override
-+
-+  # Bind the VF to the pds_vfio driver
-+  echo "$VF_BDF" > /sys/bus/pci/drivers/pds_vfio/bind
-+
-+After performing the steps above, a file in /dev/vfio/<iommu_group>
-+should have been created.
-+
-+
-+Enabling the driver
-+===================
-+
-+The driver is enabled via the standard kernel configuration system,
-+using the make command::
-+
-+  make oldconfig/menuconfig/etc.
-+
-+The driver is located in the menu structure at:
-+
-+  -> Device Drivers
-+    -> VFIO Non-Privileged userspace driver framework
-+      -> VFIO support for PDS PCI devices
-+
-+Support
-+=======
-+
-+For general Linux networking support, please use the netdev mailing
-+list, which is monitored by Pensando personnel::
-+
-+  netdev@vger.kernel.org
-+
-+For more specific support needs, please use the Pensando driver support
-+email::
-+
-+  drivers@pensando.io
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index eaaf284e69e6..3b456406ff85 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -14,6 +14,7 @@ Contents:
-    3com/vortex
-    amazon/ena
-    amd/pds_core
-+   amd/pds_vfio
-    altera/altera_tse
-    aquantia/atlantic
-    chelsio/cxgb
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 97e2919baf4b..73b2b8225acc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21959,6 +21959,13 @@ S:	Maintained
- P:	Documentation/driver-api/vfio-pci-device-specific-driver-acceptance.rst
- F:	drivers/vfio/pci/*/
- 
-+VFIO PDS PCI DRIVER
-+M:	Brett Creeley <brett.creeley@amd.com>
-+L:	kvm@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst
-+F:	drivers/vfio/pci/pds/
-+
- VFIO PLATFORM DRIVER
- M:	Eric Auger <eric.auger@redhat.com>
- L:	kvm@vger.kernel.org
-diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-index f9d0c908e738..2c3831dd60ef 100644
---- a/drivers/vfio/pci/Kconfig
-+++ b/drivers/vfio/pci/Kconfig
-@@ -59,4 +59,6 @@ source "drivers/vfio/pci/mlx5/Kconfig"
- 
- source "drivers/vfio/pci/hisilicon/Kconfig"
- 
-+source "drivers/vfio/pci/pds/Kconfig"
-+
- endif
-diff --git a/drivers/vfio/pci/pds/Kconfig b/drivers/vfio/pci/pds/Kconfig
-new file mode 100644
-index 000000000000..149d4986bf43
---- /dev/null
-+++ b/drivers/vfio/pci/pds/Kconfig
-@@ -0,0 +1,20 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2023 Advanced Micro Devices, Inc.
-+
-+config PDS_VFIO_PCI
-+	tristate "VFIO support for PDS PCI devices"
-+	depends on PDS_CORE
-+	depends on VFIO_PCI_CORE
-+	help
-+	  This provides generic PCI support for PDS devices using the VFIO
-+	  framework.
-+
-+	  More specific information on this driver can be
-+	  found in
-+	  <file:Documentation/networking/device_drivers/ethernet/amd/pds_vfio.rst>.
-+
-+	  To compile this driver as a module, choose M here. The module
-+	  will be called pds_vfio.
-+
-+	  If you don't know what to do here, say N.
-+
--- 
-2.17.1
-
+Jason
