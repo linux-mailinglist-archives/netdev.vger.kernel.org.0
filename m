@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E9476D5897
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:16:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEDB86D5890
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233482AbjDDGQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 02:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
+        id S233731AbjDDGQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 02:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233735AbjDDGQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:16:05 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA9D2D43;
-        Mon,  3 Apr 2023 23:15:43 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3346F4YT053366;
-        Tue, 4 Apr 2023 01:15:04 -0500
+        with ESMTP id S233317AbjDDGQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:16:02 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6AA30F6;
+        Mon,  3 Apr 2023 23:15:30 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3346F6cH011935;
+        Tue, 4 Apr 2023 01:15:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680588904;
-        bh=2D4Vq09VFa0ia0sRhbvIZipMNHoEXdzM1YvHgrunZao=;
-        h=From:To:CC:Subject:Date;
-        b=ik3bgffts0kcvCORSi6vOf1apNM9Dh4LWCTmVWCVlgDLurvysZ2r0WuMOiEmq9wYt
-         m7+v87URgym9k1ScyacpgSQA4D5hXpo+Da9GMmYKeNUkmcIaBUdaaZroEES26I2RHR
-         7nfq+SjWUj5uAiFUrnT5XAFH4o929MsMnQi6N2II=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3346F3fA099811
+        s=ti-com-17Q1; t=1680588907;
+        bh=oiYnpf0FJyd0FMoc+imR4JcVlxxtPshVC23LbW5qrpM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=M1PufJHXFpPHOJDJi20d8+oxzLkuNm9VIqFjDqbBcTfNI1UOrzIbQcIvPo2m1Rb0K
+         DG5b7Z8yMU71TZ2YPeu1JOI2LAugJeZkyI46tLDHZ1AG8Xjtk0+lE5Ul41z3GKtA43
+         zpel0EBEdoErJFo9kqoaP8k7QDCXWxp1qwlulT08=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3346F64n064194
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 4 Apr 2023 01:15:04 -0500
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 4
- Apr 2023 01:15:03 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
+        Tue, 4 Apr 2023 01:15:06 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE106.ent.ti.com
  (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 4
+ Apr 2023 01:15:06 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 4 Apr 2023 01:15:03 -0500
+ Frontend Transport; Tue, 4 Apr 2023 01:15:06 -0500
 Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3346ExN7087499;
-        Tue, 4 Apr 2023 01:15:00 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3346ExN8087499;
+        Tue, 4 Apr 2023 01:15:03 -0500
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
         <s-vadapalli@ti.com>
-Subject: [PATCH net-next v3 0/3] Add support for J784S4 CPSW9G
-Date:   Tue, 4 Apr 2023 11:44:56 +0530
-Message-ID: <20230404061459.1100519-1-s-vadapalli@ti.com>
+Subject: [PATCH net-next v3 1/3] net: ethernet: ti: am65-cpsw: Move mode specific config to mac_config()
+Date:   Tue, 4 Apr 2023 11:44:57 +0530
+Message-ID: <20230404061459.1100519-2-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20230404061459.1100519-1-s-vadapalli@ti.com>
+References: <20230404061459.1100519-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,76 +64,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Move the interface mode specific configuration to the mac_config()
+callback am65_cpsw_nuss_mac_config().
 
-This series adds a new compatible to am65-cpsw driver for the CPSW9G
-instance of the CPSW Ethernet Switch on TI's J784S4 SoC which has 8
-external ports and 1 internal host port.
+Also, do not reset the MAC Control register on mac_link_down(). Only
+clear those bits that can possibly be set in mac_link_up().
 
-The CPSW9G instance supports QSGMII and USXGMII modes for which driver
-support is added.
+Let the MAC remain in IDLE state after mac_link_down(). Bring it out of
+the IDLE state on mac_link_up().
 
-Additionally, the interface mode specific configurations are moved to the
-am65_cpsw_nuss_mac_config() callback. Also, a TODO comment is added for
-verifying whether in-band mode is necessary for 10 Mbps RGMII mode.
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-NOTE:
-I have verified that the mac_config() operations are preserved across
-link up and link down events for SGMII and USXGMII mode with the new
-implementation in this series, as suggested by:
-Russell King <linux@armlinux.org.uk>
-
-For patches 1 and 3 of this series, I believe that the following tag:
-Suggested-by: Russell King <linux@armlinux.org.uk>
-should be added. However, I did not add it since I did not yet get
-the permission to do so. I will be happy if the tags are added, since
-the new implementation is almost entirely based on Russell's suggestion,
-with minor changes made by me.
-
-Changes from v2:
-1. In am65_cpsw_nuss_mac_config(), set the CPSW_SL_CTL_EXT_EN bit in the
-   MAC control register if the mode is SGMII. Else, clear that bit.
-2. In am65_cpsw_nuss_mac_link_down(), instead of resetting the entire MAC
-   control register, only clear those bits that can possibly be set in the
-   am65_cpsw_nuss_mac_link_up() function. Resetting the entire MAC control
-   register will result in loss of the configuration performed by the
-   am65_cpsw_nuss_mac_config() function.
-3. In am65_cpsw_nuss_mac_link_down(), since the MAC control register
-   will not be reset, the CPSW_SL_CTL_CMD_IDLE bit which was previously
-   cleared as a part of the reset, needs to be cleared in the
-   am65_cpsw_nuss_mac_link_up() function. This is the correct approach,
-   since the MAC should remain IDLE until the link is detected.
-4. In am65_cpsw_nuss_mac_config(), set the CPSW_SL_CTL_XGIG and the
-   CPSW_SL_CTL_XGMII_EN bits in the MAC control register if the mode is
-   USXGMII. Else, clear those bits.
-
-Changes from v1:
-1. Add a patch to move interface mode specific configuration from the
-   mac_link_up() callback to the mac_config() callback of the am65-cpsw
-   driver. Also, add a TODO comment for 10 Mbps RGMII in-band mode.
-2. Add MAC_5000FD to the list of mac_capabilities member unconditionally,
-   since the CPSW MAC supports it.
-3. Add USXGMII mode specific configuration in the mac_config() callback
-   along with the SGMII mode specific configuration, instead of the
-   mac_link_up() callback which was incorrectly done in the v1 series.
-
-v2:
-https://lore.kernel.org/r/20230403110106.983994-1-s-vadapalli@ti.com/
-v1:
-https://lore.kernel.org/r/20230331065110.604516-1-s-vadapalli@ti.com/
-
-Regards,
-Siddharth.
-
-Siddharth Vadapalli (3):
-  net: ethernet: ti: am65-cpsw: Move mode specific config to
-    mac_config()
-  net: ethernet: ti: am65-cpsw: Enable QSGMII for J784S4 CPSW9G
-  net: ethernet: ti: am65-cpsw: Enable USXGMII mode for J784S4 CPSW9G
-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 42 +++++++++++++++++++++---
- 1 file changed, 37 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index d17757ecbf42..99d18eb6bbe9 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1506,9 +1506,13 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
+ 	struct am65_cpsw_common *common = port->common;
+ 
+ 	if (common->pdata.extra_modes & BIT(state->interface)) {
+-		if (state->interface == PHY_INTERFACE_MODE_SGMII)
++		if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+ 			writel(ADVERTISE_SGMII,
+ 			       port->sgmii_base + AM65_CPSW_SGMII_MR_ADV_ABILITY_REG);
++			cpsw_sl_ctl_set(port->slave.mac_sl, CPSW_SL_CTL_EXT_EN);
++		} else {
++			cpsw_sl_ctl_clr(port->slave.mac_sl, CPSW_SL_CTL_EXT_EN);
++		}
+ 
+ 		writel(AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
+ 		       port->sgmii_base + AM65_CPSW_SGMII_CONTROL_REG);
+@@ -1523,6 +1527,7 @@ static void am65_cpsw_nuss_mac_link_down(struct phylink_config *config, unsigned
+ 	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
+ 	struct am65_cpsw_common *common = port->common;
+ 	struct net_device *ndev = port->ndev;
++	u32 mac_control;
+ 	int tmo;
+ 
+ 	/* disable forwarding */
+@@ -1534,7 +1539,14 @@ static void am65_cpsw_nuss_mac_link_down(struct phylink_config *config, unsigned
+ 	dev_dbg(common->dev, "down msc_sl %08x tmo %d\n",
+ 		cpsw_sl_reg_read(port->slave.mac_sl, CPSW_SL_MACSTATUS), tmo);
+ 
+-	cpsw_sl_ctl_reset(port->slave.mac_sl);
++	/* All the bits that am65_cpsw_nuss_mac_link_up() can possibly set */
++	mac_control = CPSW_SL_CTL_GMII_EN | CPSW_SL_CTL_GIG | CPSW_SL_CTL_IFCTL_A |
++		      CPSW_SL_CTL_FULLDUPLEX | CPSW_SL_CTL_RX_FLOW_EN | CPSW_SL_CTL_TX_FLOW_EN;
++	/* If interface mode is RGMII, CPSW_SL_CTL_EXT_EN might have been set for 10 Mbps */
++	if (phy_interface_mode_is_rgmii(interface))
++		mac_control |= CPSW_SL_CTL_EXT_EN;
++	/* Only clear those bits that can be set by am65_cpsw_nuss_mac_link_up() */
++	cpsw_sl_ctl_clr(port->slave.mac_sl, mac_control);
+ 
+ 	am65_cpsw_qos_link_down(ndev);
+ 	netif_tx_stop_all_queues(ndev);
+@@ -1551,10 +1563,12 @@ static void am65_cpsw_nuss_mac_link_up(struct phylink_config *config, struct phy
+ 	u32 mac_control = CPSW_SL_CTL_GMII_EN;
+ 	struct net_device *ndev = port->ndev;
+ 
++	/* Bring the port out of idle state */
++	cpsw_sl_ctl_clr(port->slave.mac_sl, CPSW_SL_CTL_CMD_IDLE);
++
+ 	if (speed == SPEED_1000)
+ 		mac_control |= CPSW_SL_CTL_GIG;
+-	if (interface == PHY_INTERFACE_MODE_SGMII)
+-		mac_control |= CPSW_SL_CTL_EXT_EN;
++	/* TODO: Verify whether in-band is necessary for 10 Mbps RGMII */
+ 	if (speed == SPEED_10 && phy_interface_mode_is_rgmii(interface))
+ 		/* Can be used with in band mode only */
+ 		mac_control |= CPSW_SL_CTL_EXT_EN;
 -- 
 2.25.1
 
