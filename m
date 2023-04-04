@@ -2,220 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C6D6D5F44
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:40:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 471FC6D5F54
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:43:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234673AbjDDLkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45712 "EHLO
+        id S234673AbjDDLnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234583AbjDDLkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:40:41 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CEEFF
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:40:40 -0700 (PDT)
+        with ESMTP id S234648AbjDDLnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:43:16 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CF62D43
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:43:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680608440; x=1712144440;
+  t=1680608595; x=1712144595;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=4lrJHKOyE6IlwlhfOQOFC6CEvhHfuwvveKExg6nAwtw=;
-  b=l57hNSPt5H9973EkxntYU+aGyeDmfUiC5kf+Lnnx9BOFqFtMtkdGlU/5
-   pJv8+VdbwC4XejlaUbKp/sf4S2psFol5/ph/acGNUUZVRWXTg9eaZOckP
-   KWoCOOR6x+gJffn/2dskN6WJWvGH0BG3ahLGemsz7X9UJNI8616kkllZm
-   BRWGdGIeu8lAWVQdzoOI8tSaTiRR7a0bdYicQ/xRI76+zz31h0LwY7h5G
-   vfAmBENuI1hYuIaouEBEhhvLmxhuFc1KnkP8KnbjS+pwUimgXCJJh0YxP
-   BAInBsXL3d5za4oSUKLvHTZn5KdGsTk//EVwHt21V0G1mqp2z+DwQwIAz
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="340887357"
+  bh=moI6W0ZOpYtmuohjfDBsAypjArJVlOPzxStxyfVHOW8=;
+  b=hyo9YLpmgPNtjhxt+IOZB8kAVvHyR9Bci6pAy1KpyU/Pzsn9PTmq/eZ7
+   yKYm1Fd30+meBdPy1+YScj2lgIcG1ypt42HTJ3mT3u3bm2yXFt735rEef
+   u3VKsRiFCa9gnrpg5Q81j0U5SCNAI2QJafgpPvmtuPuTEZMvZIrwf6Yep
+   dmUFXKJo78UCPVxASCcbmswcbl+G7co2c7ihqidZiLTwExKR2sNpUXlJ0
+   aibwY05E7kP4FpLanBfpl9GMUfP1NvwWEK/+Akzm5Sd2l5Uqxxc3dYJPL
+   qGxbfw7GRif6XM/hQN9qWsEMN0YI/gwmKUcJw/JwoYy6KqWHromVhJS80
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="330743769"
 X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="340887357"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:40:39 -0700
+   d="scan'208";a="330743769"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:43:14 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="932430532"
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="810205662"
 X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="932430532"
+   d="scan'208";a="810205662"
 Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:40:38 -0700
-Date:   Tue, 4 Apr 2023 13:40:35 +0200
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:43:13 -0700
+Date:   Tue, 4 Apr 2023 13:43:10 +0200
 From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 To:     Alexander Lobakin <aleksander.lobakin@intel.com>
 Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         Simon Horman <simon.horman@corigine.com>
-Subject: Re: [Intel-wired-lan] [PATCH net-next v2 2/4] ice: remove redundant
- Rx field from rule info
-Message-ID: <ZCwMs/FqlD3/ygF1@localhost.localdomain>
+Subject: Re: [Intel-wired-lan] [PATCH net-next v2 3/4] ice: allow matching on
+ meta data
+Message-ID: <ZCwNThCzNMpqtNpN@localhost.localdomain>
 References: <20230404072833.3676891-1-michal.swiatkowski@linux.intel.com>
- <20230404072833.3676891-3-michal.swiatkowski@linux.intel.com>
- <4559a556-9b35-42ab-ae03-391495c0b9f4@intel.com>
+ <20230404072833.3676891-4-michal.swiatkowski@linux.intel.com>
+ <2360ed18-d896-4720-89fc-e12e9b155943@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4559a556-9b35-42ab-ae03-391495c0b9f4@intel.com>
+In-Reply-To: <2360ed18-d896-4720-89fc-e12e9b155943@intel.com>
 X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 12:07:47PM +0200, Alexander Lobakin wrote:
+On Tue, Apr 04, 2023 at 12:22:38PM +0200, Alexander Lobakin wrote:
 > From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> Date: Tue,  4 Apr 2023 09:28:31 +0200
+> Date: Tue,  4 Apr 2023 09:28:32 +0200
 > 
-> > Information about the direction is currently stored in sw_act.flag.
-> > There is no need to duplicate it in another field.
-> > 
-> > Setting direction flag doesn't mean that there is a match criteria for
-> > direction in rule. It is only a information for HW from where switch id
-> > should be collected (VSI or port). In current implementation of advance
-> > rule handling, without matching for direction meta data, we can always
-> > set one the same flag and everything will work the same.
-> > 
-> > Ability to match on direction matadata will be added in follow up
-> > patches.
-> > 
-> > Recipe 0, 3 and 9 loaded from package has direction match
-> > criteria, but they are handled in other function.
-> > 
-> > Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> > Reviewed-by: Piotr Raczynski <piotr.raczynski@intel.com>
-> > Reviewed-by: Simon Horman <simon.horman@corigine.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_eswitch.c |  1 -
-> >  drivers/net/ethernet/intel/ice/ice_switch.c  | 22 ++++++++++----------
-> >  drivers/net/ethernet/intel/ice/ice_switch.h  |  2 --
-> >  drivers/net/ethernet/intel/ice/ice_tc_lib.c  |  5 -----
-> >  4 files changed, 11 insertions(+), 19 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.c b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-> > index f6dd3f8fd936..2c80d57331d0 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_eswitch.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_eswitch.c
-> > @@ -39,7 +39,6 @@ ice_eswitch_add_vf_mac_rule(struct ice_pf *pf, struct ice_vf *vf, const u8 *mac)
-> >  	rule_info.sw_act.flag |= ICE_FLTR_TX;
-> >  	rule_info.sw_act.vsi_handle = ctrl_vsi->idx;
-> >  	rule_info.sw_act.fltr_act = ICE_FWD_TO_Q;
-> > -	rule_info.rx = false;
-> >  	rule_info.sw_act.fwd_id.q_id = hw->func_caps.common_cap.rxq_first_id +
-> >  				       ctrl_vsi->rxq_map[vf->vf_id];
-> >  	rule_info.flags_info.act |= ICE_SINGLE_ACT_LB_ENABLE;
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-> > index 5c3f266fa80f..4d3a92e0c61f 100644
+> > Add meta data matching criteria in the same place as protocol matching
+> > criteria. There is no need to add meta data as special words after
+> > parsing all lookups. Trade meta data in the same why as other lookups.
+> 
+> [...]
+> 
 > > --- a/drivers/net/ethernet/intel/ice/ice_switch.c
 > > +++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-> > @@ -6121,8 +6121,7 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
+> > @@ -4573,6 +4573,15 @@ static const struct ice_prot_ext_tbl_entry ice_prot_ext[ICE_PROTOCOL_LAST] = {
+> >  	{ ICE_L2TPV3,		{ 0, 2, 4, 6, 8, 10 } },
+> >  	{ ICE_VLAN_EX,          { 2, 0 } },
+> >  	{ ICE_VLAN_IN,          { 2, 0 } },
+> > +	{ ICE_HW_METADATA,	{ ICE_SOURCE_PORT_MDID_OFFSET,
+> > +				  ICE_PTYPE_MDID_OFFSET,
+> > +				  ICE_PACKET_LENGTH_MDID_OFFSET,
+> > +				  ICE_SOURCE_VSI_MDID_OFFSET,
+> > +				  ICE_PKT_VLAN_MDID_OFFSET,
+> > +				  ICE_PKT_TUNNEL_MDID_OFFSET,
+> > +				  ICE_PKT_TCP_MDID_OFFSET,
+> > +				  ICE_PKT_ERROR_MDID_OFFSET,
+> > +				}},
+> 
+> I don't think this is proper indenting. I believe it should like this:
+> 
+> 	/* This line is unchanged except the opening brace at the end */
+> 	{ ICE_VLAN_IN,          { 2, 0 } }, {
+> 		ICE_HW_METADATA, {
+> 			ICE_SOURCE_PORT_MDID_OFFSET,
+> 			ICE_PTYPE_MDID_OFFSET,
+> 			[...]
+> 		/* Don't forget commas after last elements */
+> 		},
+> 	},
+> 
+> or
+> 
+> 	{
+> 		ICE_HW_METADATA,
+> 		{
+> 			ICE_SOURCE_PORT_MDID_OFFSET,
+> 			ICE_PTYPE_MDID_OFFSET,
+> 			[...]
+> 		},
+> 	},
+> 
+> (but I'd prefer the first one)
+> 
+> Also, I think anonymous initializers are now discouraged in favour of
+> designated, at least randstruct sometimes complains about that. Could
+> we start always specifying field names? You could define a macro for
+> this particular struct to not bloat the code.
+> 
+> >  };
+
+Thanks, will fix it in new version.
+
+> >  
+> >  static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
+> > @@ -4597,6 +4606,7 @@ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
+> >  	{ ICE_L2TPV3,		ICE_L2TPV3_HW },
+> >  	{ ICE_VLAN_EX,          ICE_VLAN_OF_HW },
+> >  	{ ICE_VLAN_IN,          ICE_VLAN_OL_HW },
+> > +	{ ICE_HW_METADATA,      ICE_META_DATA_ID_HW},
+> 
+> Please replace spaces with tabs (as it's done for ICE_L2TPV3_HW).
+> Also missing space before the last brace.
+> 
+> >  };
+
+Sure
+
+> >  
+> >  /**
+> 
+> [...]
+> 
+> > @@ -5726,6 +5663,10 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
+> >  		 * was already checked when search for the dummy packet
+> >  		 */
+> >  		type = lkups[i].type;
+> > +		/* metadata isn't lockated in packet */
+> 
+> ("located", but I'd say "metadata isn't present in the packet")
+>
+
+Right :)
+
+> > +		if (type == ICE_HW_METADATA)
+> > +			continue;
+> > +
+> >  		for (j = 0; offsets[j].type != ICE_PROTOCOL_LAST; j++) {
+> >  			if (type == offsets[j].type) {
+> >  				offset = offsets[j].offset;
+> > @@ -5861,16 +5802,21 @@ ice_fill_adv_packet_tun(struct ice_hw *hw, enum ice_sw_tunnel_type tun_type,
+> >  
+> >  /**
+> >   * ice_fill_adv_packet_vlan - fill dummy packet with VLAN tag type
+> > + * @hw: pointer to hw structure
+> >   * @vlan_type: VLAN tag type
+> >   * @pkt: dummy packet to fill in
+> >   * @offsets: offset info for the dummy packet
+> >   */
+> >  static int
+> > -ice_fill_adv_packet_vlan(u16 vlan_type, u8 *pkt,
+> > +ice_fill_adv_packet_vlan(struct ice_hw *hw, u16 vlan_type, u8 *pkt,
+> >  			 const struct ice_dummy_pkt_offsets *offsets)
+> >  {
+> >  	u16 i;
+> >  
+> > +	/* Check if there is something to do */
+> > +	if (vlan_type == 0 || !ice_is_dvm_ena(hw))
+> 
+> `!vlan_type` is preferred over `== 0`.
+>
+
+Will do
+
+> > +		return 0;
+> > +
+> >  	/* Find VLAN header and insert VLAN TPID */
+> >  	for (i = 0; offsets[i].type != ICE_PROTOCOL_LAST; i++) {
+> >  		if (offsets[i].type == ICE_VLAN_OFOS ||
+> > @@ -5889,6 +5835,15 @@ ice_fill_adv_packet_vlan(u16 vlan_type, u8 *pkt,
+> >  	return -EIO;
+> >  }
+> >  
+> > +static bool ice_is_rule_info_the_same(struct ice_adv_rule_info *first,
+> 
+> Doesn't sound natural. "ice_rules_equal"?
+>
+
+Sound better, thanks
+
+> > +				      struct ice_adv_rule_info *second)
+> 
+> The function is read-only, `const` for both arguments.
+>
+
+Good point, will do
+
+> > +{
+> > +	return first->sw_act.flag == second->sw_act.flag &&
+> > +	       first->tun_type == second->tun_type &&
+> > +	       first->vlan_type == second->vlan_type &&
+> > +	       first->src_vsi == second->src_vsi;
+> > +}
+> 
+> [...]
+> 
+> > @@ -6121,7 +6088,12 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
 > >  	if (rinfo->sw_act.fltr_act == ICE_FWD_TO_VSI)
 > >  		rinfo->sw_act.fwd_id.hw_vsi_id =
 > >  			ice_get_hw_vsi_num(hw, vsi_handle);
-> > -	if (rinfo->sw_act.flag & ICE_FLTR_TX)
-> > -		rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
-> > +	rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
+> > -	rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
+> > +
+> > +	if (rinfo->src_vsi)
+> > +		rinfo->sw_act.src =
+> > +			ice_get_hw_vsi_num(hw, rinfo->src_vsi);
+> 
+> This fits into one line in my editor :D
+>
+
+In my too :D
+
+> > +	else
+> > +		rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
 > >  
 > >  	status = ice_add_adv_recipe(hw, lkups, lkups_cnt, rinfo, &rid);
 > >  	if (status)
-> > @@ -6190,19 +6189,20 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-> >  		goto err_ice_add_adv_rule;
-> >  	}
-> >  
-> > -	/* set the rule LOOKUP type based on caller specified 'Rx'
-> > -	 * instead of hardcoding it to be either LOOKUP_TX/RX
-> > +	/* If there is no matching criteria for direction there
-> > +	 * is only one difference between Rx and Tx:
-> > +	 * - get switch id base on VSI number from source field (Tx)
-> > +	 * - get switch id base on port number (Rx)
-> >  	 *
-> > -	 * for 'Rx' set the source to be the port number
-> > -	 * for 'Tx' set the source to be the source HW VSI number (determined
-> > -	 * by caller)
-> > +	 * If matching on direction metadata is chose rule direction is
-> > +	 * extracted from type value set here.
-> >  	 */
-> > -	if (rinfo->rx) {
-> > -		s_rule->hdr.type = cpu_to_le16(ICE_AQC_SW_RULES_T_LKUP_RX);
-> > -		s_rule->src = cpu_to_le16(hw->port_info->lport);
-> > -	} else {
-> > +	if (rinfo->sw_act.flag & ICE_FLTR_TX) {
-> >  		s_rule->hdr.type = cpu_to_le16(ICE_AQC_SW_RULES_T_LKUP_TX);
-> >  		s_rule->src = cpu_to_le16(rinfo->sw_act.src);
-> > +	} else {
-> > +		s_rule->hdr.type = cpu_to_le16(ICE_AQC_SW_RULES_T_LKUP_RX);
-> > +		s_rule->src = cpu_to_le16(hw->port_info->lport);
-> >  	}
-> >  
-> >  	s_rule->recipe_id = cpu_to_le16(rid);
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
-> > index 68d8e8a6a189..44aa37b80111 100644
+> 
+> [...]
+> 
 > > --- a/drivers/net/ethernet/intel/ice/ice_switch.h
 > > +++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-> > @@ -10,7 +10,6 @@
-> >  #define ICE_DFLT_VSI_INVAL 0xff
-> >  #define ICE_FLTR_RX BIT(0)
-> >  #define ICE_FLTR_TX BIT(1)
-> > -#define ICE_FLTR_TX_RX (ICE_FLTR_RX | ICE_FLTR_TX)
-> >  #define ICE_VSI_INVAL_ID 0xffff
-> >  #define ICE_INVAL_Q_HANDLE 0xFFFF
+> > @@ -186,11 +186,13 @@ struct ice_adv_rule_flags_info {
+> >  };
 > >  
-> > @@ -190,7 +189,6 @@ struct ice_adv_rule_info {
+> >  struct ice_adv_rule_info {
+> > +	/* Store metadata values in rule info */
 > >  	enum ice_sw_tunnel_type tun_type;
+> > +	u16 vlan_type;
+> > +	u16 src_vsi;
 > >  	struct ice_sw_act_ctrl sw_act;
 > >  	u32 priority;
-> > -	u8 rx; /* true means LOOKUP_RX otherwise LOOKUP_TX */
 > >  	u16 fltr_rule_id;
-> >  	u16 vlan_type;
+> > -	u16 vlan_type;
 > >  	struct ice_adv_rule_flags_info flags_info;
 > 
-> That u8 here was really off, was introducing at least 1 byte hole. Good
-> thing you dropped it.
-> Have you checked whether there are any holes left, maybe move fields
-> around a bit?
+> Please check holes within the structure. I see at least one in between
+> `fltr_rule_id` and `flags_info`. Some fields can definitely be moved around.
 > 
+> >  };
 
-As You pointed in patch 3 there are, I will move it to avoid holes.
+You are right, will fix in new version.
 
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-> > index 76f29a5bf8d7..b5af6cd5592b 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-> > @@ -697,11 +697,9 @@ ice_eswitch_add_tc_fltr(struct ice_vsi *vsi, struct ice_tc_flower_fltr *fltr)
-> >  	if (fltr->direction == ICE_ESWITCH_FLTR_INGRESS) {
-> >  		rule_info.sw_act.flag |= ICE_FLTR_RX;
-> >  		rule_info.sw_act.src = hw->pf_id;
-> > -		rule_info.rx = true;
-> >  	} else {
-> >  		rule_info.sw_act.flag |= ICE_FLTR_TX;
-> >  		rule_info.sw_act.src = vsi->idx;
-> > -		rule_info.rx = false;
-> >  		rule_info.flags_info.act = ICE_SINGLE_ACT_LAN_ENABLE;
-> >  		rule_info.flags_info.act_valid = true;
-> >  	}
-> > @@ -909,7 +907,6 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
-> >  		rule_info.sw_act.vsi_handle = dest_vsi->idx;
-> >  		rule_info.priority = ICE_SWITCH_FLTR_PRIO_VSI;
-> >  		rule_info.sw_act.src = hw->pf_id;
-> > -		rule_info.rx = true;
-> >  		dev_dbg(dev, "add switch rule for TC:%u vsi_idx:%u, lkups_cnt:%u\n",
-> >  			tc_fltr->action.fwd.tc.tc_class,
-> >  			rule_info.sw_act.vsi_handle, lkups_cnt);
-> > @@ -920,7 +917,6 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
-> >  		rule_info.sw_act.vsi_handle = dest_vsi->idx;
-> >  		rule_info.priority = ICE_SWITCH_FLTR_PRIO_QUEUE;
-> >  		rule_info.sw_act.src = hw->pf_id;
-> > -		rule_info.rx = true;
-> >  		dev_dbg(dev, "add switch rule action to forward to queue:%u (HW queue %u), lkups_cnt:%u\n",
-> >  			tc_fltr->action.fwd.q.queue,
-> >  			tc_fltr->action.fwd.q.hw_queue, lkups_cnt);
-> > @@ -928,7 +924,6 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
-> >  	case ICE_DROP_PACKET:
-> >  		rule_info.sw_act.flag |= ICE_FLTR_RX;
-> >  		rule_info.sw_act.src = hw->pf_id;
-> > -		rule_info.rx = true;
-> >  		rule_info.priority = ICE_SWITCH_FLTR_PRIO_VSI;
-> >  		break;
-> >  	default:
-> 
+> >  
 > Thanks,
 > Olek
