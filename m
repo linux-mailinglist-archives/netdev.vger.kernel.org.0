@@ -2,196 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF736D5C76
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BFF76D5C7E
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234211AbjDDJ4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 05:56:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
+        id S234192AbjDDJ6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 05:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233811AbjDDJ4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:56:50 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3493D2686
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 02:56:49 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id cn12so128273054edb.4
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 02:56:49 -0700 (PDT)
+        with ESMTP id S233811AbjDDJ6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:58:34 -0400
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A279819AE;
+        Tue,  4 Apr 2023 02:58:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680602207;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mQMc29IUk6E+ep05u7/y0jtFFk3zeRGAVA0UueY64OY=;
-        b=a/uIztRG/3RYYdzv4Hgsa/BJVKY76EL3IqD0upDVmMpYQdMJGn4Y6OxP6lN1M6EEy/
-         qZ1MiVoZ44gq7MNqUgMheDnQSwINBqBerhJsv9DyIfGLfWlmyWzl+JmFPF0utyb3gpI2
-         fHU42eSIm2QjyIEi7TBjCVdVpNeKahMyDYI3C2cKPZfQOijJkIUKVQ21x7asnkoWDMzn
-         z88jVzJ+a/ryiVMhn8UrKzKfWTYb3cOHu8vDBw1lmjdCLN2XZs5KwXf49Xc3uvbsdPdh
-         PnqyBqMbu8xkY+5DUBzRqybB893Dale2fDKY96Fz7dyo4hORq6IlRvcJLQyFKe13s2PR
-         SF3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680602207;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mQMc29IUk6E+ep05u7/y0jtFFk3zeRGAVA0UueY64OY=;
-        b=AVcFdHIAcpv9C+4ZOoGvGWUFv/Tk82DHTTPmyUVQFqY+biYJhK4jCq17HCth1osFgv
-         yd6iXX/Hlenug3Fbk7KnqXW49wCrk0LMOjlwsC9RHkmYRM8ZsBptQfhbYbQx1FRB7Ust
-         p8GSNr4A+p8gp71TioCPlpZ6xXebKIhVmeSU6+h5a4OIuTKKjcKeQ0243jLhj7P/rwU7
-         lC1WNCF1Ey0mQQhFpvlQg6Sa9mlFtPBvx4sSI5x9lCnfapI2H18SAGy7LwYAWRqDC+A+
-         RB+ObCBlHVSTIzqMYQGY59pSTXWLVTbhYLsMWPe3xsY2HNLSRKRkGeik+YZ3lVFE31FU
-         FY5w==
-X-Gm-Message-State: AAQBX9e5wtCMV/9atWRmGlCvVj2vj04ewW44GITi3H9eaoHZWDCpU+TO
-        AcG11NpIAh3e48f6ho5EJGA=
-X-Google-Smtp-Source: AKy350Y1z1dlFP9ex5M/Rzti8KiJK7PAPIpe0rCi5w3byhU8bb+YDHUXgIllIkapxGrYJVqSIsp9ow==
-X-Received: by 2002:a17:906:eca6:b0:8de:502e:2061 with SMTP id qh6-20020a170906eca600b008de502e2061mr2052155ejb.3.1680602207480;
-        Tue, 04 Apr 2023 02:56:47 -0700 (PDT)
-Received: from ?IPV6:2a02:3100:946d:f000:858:f63d:e126:2fab? (dynamic-2a02-3100-946d-f000-0858-f63d-e126-2fab.310.pool.telefonica.de. [2a02:3100:946d:f000:858:f63d:e126:2fab])
-        by smtp.googlemail.com with ESMTPSA id qb34-20020a1709077ea200b00948f41af90dsm966103ejc.166.2023.04.04.02.56.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Apr 2023 02:56:47 -0700 (PDT)
-Message-ID: <539986da-0bf7-8dd3-73d7-a2a584846f18@gmail.com>
-Date:   Tue, 4 Apr 2023 11:56:45 +0200
+        d=buaa.edu.cn; s=buaa; h=Received:Subject:To:Cc:References:From:
+        Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:Content-Type:
+        Content-Transfer-Encoding:Content-Language; bh=da+9B3dO4N64/X93i
+        viw9y205qmZYA8m+wN8DpKVXss=; b=2c2MgQ7oa3RZaCEawEf8T2HeaRt5cSvYl
+        bDEpXcEO0C8f4G+TQkpcK3AVDexc++0DVnjl+7Jx1KZlKpTMdi04hZV8QGYeOOz9
+        xg80qF/s5apOMTJPECX1lP4KTxrxyXrB8m8g7XzIcKm0Wu7K+PoUcjl7n+rVJzZy
+        jhmC900vXg=
+Received: from [192.168.1.106] (unknown [10.130.159.144])
+        by coremail-app1 (Coremail) with SMTP id OCz+CgCnh5Sz9CtkRG4aAw--.18976S3;
+        Tue, 04 Apr 2023 17:58:11 +0800 (CST)
+Subject: Re: [PATCH v2] net: mac80211: Add NULL checks for sta->sdata
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <ZCBfHlOhU8LjdRg3@corigine.com>
+From:   Jia-Ju Bai <baijiaju@buaa.edu.cn>
+Message-ID: <f70554b9-eedf-43e4-9a55-a809e9b9e89a@buaa.edu.cn>
+Date:   Tue, 4 Apr 2023 17:58:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Alexander 'lynxis' Couzens <lynxis@fe80.eu>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        John Crispin <john@phrozen.org>
-References: <ZCtvaxY2d74XLK6F@makrotopia.org>
- <a0570b00-669f-120d-2700-a97317466727@gmail.com>
- <ZCvqJAVjOdogEZKD@makrotopia.org>
+In-Reply-To: <ZCBfHlOhU8LjdRg3@corigine.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: Convention regarding SGMII in-band autonegotiation
-In-Reply-To: <ZCvqJAVjOdogEZKD@makrotopia.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-CM-TRANSID: OCz+CgCnh5Sz9CtkRG4aAw--.18976S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxtr4xAw4DXr1kAw1Uur17Jrb_yoW7Ar47pr
+        Z5G3WaqFWUJa4xXr1fJr1Y9FyFvw48Kr18Ar1fCF1xA3ZY9FnYkF4v9rW8ZF9YkrWUJ3WS
+        vFWj939xua1qkrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvmb7Iv0xC_tr1lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
+        cIk0rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2
+        AK021l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v2
+        6r4UJVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI
+        0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2Wl
+        Yx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbV
+        WUJVW8JwACjcxG0xvEwIxGrwCYjI0SjxkI62AI1cAE67vIY487MxkIecxEwVCm-wCF04k2
+        0xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26F1DJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
+        UI43ZEXa7IU8489tUUUUU==
+X-CM-SenderInfo: yrruji46exttoohg3hdfq/
+X-Spam-Status: No, score=-2.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.04.2023 11:13, Daniel Golle wrote:
-> On Tue, Apr 04, 2023 at 08:31:12AM +0200, Heiner Kallweit wrote:
->> On 04.04.2023 02:29, Daniel Golle wrote:
->>> Hi!
->>>
->>> I've been dealing with several SGMII TP PHYs, some of them with support
->>> for 2500Base-T, by switching to 2500Base-X interface mode (or by using
->>> rate-adaptation to 2500Base-X or proprietary HiSGMII).
->>>
->>> Dealing with such PHYs in MAC-follow-PHY-rate-mode (ie. not enabling
->>> rate-adaptation which is worth avoiding imho) I've noticed that the
->>> current behavior of PHY and MAC drivers in the kernel is not as
->>> consistent as I assumed it would be.
->>>
->>> Background:
->>> >From Russell's comments and the experiments carried out together with
->>> Frank Wunderlich for the MediaTek SGMII PCS found in mtk_eth_soc I
->>> understood that in general in-band autonegotiation should always be
->>> switched off unless phylink_autoneg_inband(mode) returns true, ie.
->>> mostly in case 'managed = "in-band-status";' is set in device tree,
->>> which is generally the case for SFP cages or PHYs which are not
->>> accessible via MDIO.
->>>
->>> As of today this is what pcs-mtk-lynxi is now doing as this behavior
->>> was inherited from the implementation previously found at
->>> drivers/net/ethernet/mediatek/mtk_sgmii.c.
->>>
->>> Hence, with MLO_AN_PHY we are expecting both MAC and PHY to *not* use
->>> in-band autonegotiation. It is not needed as we have out-of-band status
->>> using MDIO and maybe even an interrupt to communicate the link status
->>> between the two. Correct so far?
->>>
->>> I've also previously worked around this using Vladimir Oltean's patch
->>> series introducing sync'ing and validation of in-band-an modes between
->>> MAC and PHY -- however, this turns out to be overkill in case the
->>> above is true and given there is a way to always switch off in-band-an
->>> on both, the MAC and the PHY.
->>>
->>> Or should PHY drivers setup in-band AN according to
->>> pl->config->ovr_an_inband...?
->>>
->>> Also note that the current behavior of PHY drivers is that consistent:
->>>
->>>  * drivers/net/phy/mxl-gpy.c
->>>    This goes through great lengths to switch on inband-an when initially
->>>    coming up in SGMII mode, then switches is off when switching to
->>>    2500Base-X mode and after that **never switches it on again**. This
->>>    is obviously not correct and the driver can be greatly reduced if
->>>    dropping all that (non-)broken logic.
->>>    Would a patch like [1] this be acceptable?
->>>
->>>  * drivers/net/phy/realtek.c
->>>    The driver simply doesn't do anything about in-band-an and hence looks
->>>    innocent. However, all RTL8226* and RTL8221* PHYs enable in-band-an
->>>    by default in SGMII mode after reset. As many vendors use rate-adapter-
->>>    mode, this only surfaces if not using the rate-adapter and having the
->>>    MAC follow the PHY mode according to speed, as we do using [2] and [3].
->>>
->> These PHY's are supported as internal PHY's in RTL8125 MAC/PHY chips
->> where the MAC/PHY communication is handled chip-internally.
->> Other use cases are not officially supported (yet), also due to lack of
->> public datasheets.
-> 
-> The PHYs I've been encountering in the wild are those which were added by
-> 74d155be2677a ("net: phy: realtek: Add support for RTL8221B-CG series")
-> 
-> They are independently packaged ICs. The relevant datasheets are
-> not public, but do provide documentation of some but not all registers
-> of those PHYs.
-> 
->>
->>>    SGMII in-band AN can be switched off using a magic sequence carried
->>>    out on undocumented registers [5].
->>>
->>>    Would patches [2], [3], [4], [5] be acceptable?
->>>
->> Ideas from the patches can be re-used. Some patches itself are not ready
->> for mainline (replace magic numbers with proper constants (as far as
->> documented by Realtek), inappropriate use of phy_modify_mmd_changed,
->> read_status() being wrong place for updating interface mode).
-> 
-> Unfortunately the registers used to switch off rate-adapter-mode and
-> also to switch off (Hi)SGMII in-band autonegotation are entirely
-> undocumented even in the non-public datasheet.
-> They read/write/read-poll sequences supposedly appear in a document
-> called "SERDES Mode Setting Flow Application Note" which also doesn't
-> explain the meaning of the registers and their bits.
-> 
-> Where is updating the interface mode supposed to happen?
-> 
-> I was looking at drivers/net/phy/mxl-gpy.c which calls its
-> gpy_update_interface() function also from gpy_read_status(). If that is
-> wrong it should probably be fixed in mxl-gpy.c as well...
-> 
+Hi Simon,
 
-Right, several drivers use the read_status() callback for this, I think
-the link_change_notify() callback would be sufficient.
-In interrupt mode this doesn't really make a difference, however in
-polling mode we can avoid polling the register with the interface mode
-information (if it's a register that isn't used for other purposes
-in read_status() too).
+Thanks for your reply, and sorry for the delay.
 
+On 2023/3/26 23:05, Simon Horman wrote:
+> On Tue, Mar 21, 2023 at 05:31:22PM +0800, Jia-Ju Bai wrote:
+>> In a previous commit 69403bad97aa ("wifi: mac80211: sdata can be NULL
+>> during AMPDU start"), sta->sdata can be NULL, and thus it should be
+>> checked before being used.
 >>
->>>
->>> Thank you for your advise!
->>>
->>>
->>> Daniel
->>>
->>> [1]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/mediatek/patches-5.15/731-net-phy-hack-mxl-gpy-disable-sgmii-an.patch;hb=HEAD
->>> [2]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/721-net-phy-realtek-rtl8221-allow-to-configure-SERDES-mo.patch;hb=HEAD
->>> [3]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/722-net-phy-realtek-support-switching-between-SGMII-and-.patch;hb=HEAD
->>> [4]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/724-net-phy-realtek-use-genphy_soft_reset-for-2.5G-PHYs.patch;hb=HEAD
->>> [5]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/725-net-phy-realtek-disable-SGMII-in-band-AN-for-2-5G-PHYs.patch;hb=HEAD
+>> However, in the same call stack, sta->sdata is also used in the
+>> following functions:
 >>
+>> ieee80211_ba_session_work()
+>>    ___ieee80211_stop_rx_ba_session(sta)
+>>      ht_dbg(sta->sdata, ...); -> No check
+>>      sdata_info(sta->sdata, ...); -> No check
+>>      ieee80211_send_delba(sta->sdata, ...) -> No check
+>>    ___ieee80211_start_rx_ba_session(sta)
+>>      ht_dbg(sta->sdata, ...); -> No check
+>>      ht_dbg_ratelimited(sta->sdata, ...); -> No check
+>>    ieee80211_tx_ba_session_handle_start(sta)
+>>      sdata = sta->sdata; if (!sdata) -> Add check by previous commit
+>>    ___ieee80211_stop_tx_ba_session(sdata)
+>>      ht_dbg(sta->sdata, ...); -> No check
+>>    ieee80211_start_tx_ba_cb(sdata)
+>>      sdata = sta->sdata; local = sdata->local -> No check
+>>    ieee80211_stop_tx_ba_cb(sdata)
+>>      ht_dbg(sta->sdata, ...); -> No check
+>>
+>> Thus, to avoid possible null-pointer dereferences, the related checks
+>> should be added.
+>>
+>> These bugs are reported by a static analysis tool implemented by myself,
+>> and they are found by extending a known bug fixed in the previous commit.
+>> Thus, they could be theoretical bugs.
+>>
+>> Signed-off-by: Jia-Ju Bai <baijiaju@buaa.edu.cn>
+>> ---
+>> v2:
+>> * Fix an error reported by checkpatch.pl, and make the bug finding
+>>    process more clear in the description. Thanks for Simon's advice.
+>> ---
+>>   net/mac80211/agg-rx.c | 68 ++++++++++++++++++++++++++-----------------
+>>   net/mac80211/agg-tx.c | 16 ++++++++--
+>>   2 files changed, 55 insertions(+), 29 deletions(-)
+>>
+>> diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
+>> index c6fa53230450..6616970785a2 100644
+>> --- a/net/mac80211/agg-rx.c
+>> +++ b/net/mac80211/agg-rx.c
+>> @@ -80,19 +80,21 @@ void ___ieee80211_stop_rx_ba_session(struct sta_info *sta, u16 tid,
+>>   	RCU_INIT_POINTER(sta->ampdu_mlme.tid_rx[tid], NULL);
+>>   	__clear_bit(tid, sta->ampdu_mlme.agg_session_valid);
+>>   
+>> -	ht_dbg(sta->sdata,
+>> -	       "Rx BA session stop requested for %pM tid %u %s reason: %d\n", > -	       sta->sta.addr, tid,
+>> -	       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
+>> -	       (int)reason);
+>> +	if (sta->sdata) {
+>> +		ht_dbg(sta->sdata,
+>> +		       "Rx BA session stop requested for %pM tid %u %s reason: %d\n",
+>> +		       sta->sta.addr, tid,
+>> +		       initiator == WLAN_BACK_RECIPIENT ? "recipient" : "initiator",
+>> +		       (int)reason);
+>> +	}
+> The first line of the body of ___ieee80211_stop_rx_ba_session() is:
+>
+> 	struct ieee80211_local *local = sta->sdata->local;
+>
+> So a NULL pointer dereference will have occurred before
+> the checks this change adds to that function.
+
+I checked the source code again (including the latest version 6.3-rc5).
+The first line of the body of ___ieee80211_stop_rx_ba_session() is:
+
+     struct ieee80211_local *local = sta->local;
+
+Thus, there is no dereference of sta->sdata.
+
+In a different function, namely ___ieee80211_start_rx_ba_session(), the 
+first line is:
+
+     struct ieee80211_local *local = sta->sdata->local;
+
+Thus, there should be a NULL check for sta->sdata in this function.
+I will add this in my patch v3.
+
+>
+>
+>>   
+>> -	if (drv_ampdu_action(local, sta->sdata, &params))
+>> +	if (sta->sdata && drv_ampdu_action(local, sta->sdata, &params))
+>>   		sdata_info(sta->sdata,
+>>   			   "HW problem - can not stop rx aggregation for %pM tid %d\n",
+>>   			   sta->sta.addr, tid);
+>>   
+> ...
+>
+>> diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
+>> index f9514bacbd4a..03b31b6e7ac7 100644
+>> --- a/net/mac80211/agg-tx.c
+>> +++ b/net/mac80211/agg-tx.c
+>> @@ -368,8 +368,10 @@ int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
+>>   
+>>   	spin_unlock_bh(&sta->lock);
+>>   
+>> -	ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
+>> -	       sta->sta.addr, tid);
+>> +	if (sta->sdata) {
+>> +		ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
+>> +		       sta->sta.addr, tid);
+>> +	}
+> This seems clean :)
+>
+>>   	del_timer_sync(&tid_tx->addba_resp_timer);
+>>   	del_timer_sync(&tid_tx->session_timer);
+>> @@ -776,7 +778,12 @@ void ieee80211_start_tx_ba_cb(struct sta_info *sta, int tid,
+>>   			      struct tid_ampdu_tx *tid_tx)
+>>   {
+>>   	struct ieee80211_sub_if_data *sdata = sta->sdata;
+>> -	struct ieee80211_local *local = sdata->local;
+>> +	struct ieee80211_local *local;
+>> +
+>> +	if (!sdata)
+>> +		return;
+> I'm not sure that silently ignoring non-existent sdata is the right approach.
+> Perhaps a WARN_ON or WARN_ONCE is appropriate?
+
+Okay, I will use WARN_ON  in my patch v3.
+
+>
+>> +
+>> +	local = sdata->local;
+>>   
+>>   	if (WARN_ON(test_and_set_bit(HT_AGG_STATE_DRV_READY, &tid_tx->state)))
+>>   		return;
+>> @@ -902,6 +909,9 @@ void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
+>>   	bool send_delba = false;
+>>   	bool start_txq = false;
+>>   
+>> +	if (!sdata)
+>> +		return;
+>> +
+> Ditto.
+
+Okay, I will use WARN_ON  in my patch v3.
+
+>
+>>   	ht_dbg(sdata, "Stopping Tx BA session for %pM tid %d\n",
+>>   	       sta->sta.addr, tid);
+>>   
+
+
+Best wishes,
+Jia-Ju Bai
 
