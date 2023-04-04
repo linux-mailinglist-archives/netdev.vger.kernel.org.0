@@ -2,43 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 142BB6D65C7
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 166186D65DF
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbjDDOwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 10:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53644 "EHLO
+        id S232235AbjDDOyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 10:54:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbjDDOwb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:52:31 -0400
+        with ESMTP id S231705AbjDDOyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:54:43 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DD83A9C
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:52:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DEC4EFD
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:54:21 -0700 (PDT)
 Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1pji1H-0000It-Kj; Tue, 04 Apr 2023 16:52:23 +0200
+        id 1pji2y-0000dG-R9; Tue, 04 Apr 2023 16:54:08 +0200
 Received: from pengutronix.de (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id EEB7D1A67E5;
-        Tue,  4 Apr 2023 14:52:21 +0000 (UTC)
-Date:   Tue, 4 Apr 2023 16:52:20 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AB1C11A67EE;
+        Tue,  4 Apr 2023 14:54:06 +0000 (UTC)
+Date:   Tue, 4 Apr 2023 16:54:05 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH net-next 0/10] pull-request: can-next 2023-04-04
-Message-ID: <20230404-recopy-bullfight-fa4ff40fdbac@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>
+Subject: Re: [PATCH net-next 07/10] can: rcar_canfd: ircar_canfd_probe(): fix
+ plain integer in transceivers[] init
+Message-ID: <20230404-linoleum-economy-2a66d23363f3@pengutronix.de>
 References: <20230404113429.1590300-1-mkl@pengutronix.de>
+ <20230404113429.1590300-8-mkl@pengutronix.de>
+ <CAMuHMdWwLHYsbjvKuJ6M3an0nQWdcd9M8Y8io5wg0fAcgL9XDg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jo2hsbldwlo5zlej"
+        protocol="application/pgp-signature"; boundary="gsz5in6zibhvb2ja"
 Content-Disposition: inline
-In-Reply-To: <20230404113429.1590300-1-mkl@pengutronix.de>
+In-Reply-To: <CAMuHMdWwLHYsbjvKuJ6M3an0nQWdcd9M8Y8io5wg0fAcgL9XDg@mail.gmail.com>
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -53,17 +58,27 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---jo2hsbldwlo5zlej
+--gsz5in6zibhvb2ja
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 04.04.2023 13:34:19, Marc Kleine-Budde wrote:
-> Hello netdev-team,
+On 04.04.2023 15:54:25, Geert Uytterhoeven wrote:
+> Hi Marc,
+>=20
+> On Tue, Apr 4, 2023 at 1:34=E2=80=AFPM Marc Kleine-Budde <mkl@pengutronix=
+=2Ede> wrote:
+> > From: Geert Uytterhoeven <geert+renesas@glider.be>
+> >
+> > Fix the following compile warning with C=3D1:
+> >
+> > | drivers/net/can/rcar/rcar_canfd.c:1852:59: warning: Using plain integ=
+er as NULL pointer
+>=20
+> s/ircar_canfd_probe/rcar_canfd_probe/ in the patch summary.
 
-Please ignore this PR, as there is a typo in one of the subjects.
+Doh! Switching back and forth between editors, I think :)
 
-Sorry for the noise,
 Marc
 
 --=20
@@ -72,19 +87,19 @@ Embedded Linux                   | https://www.pengutronix.de |
 Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
 
---jo2hsbldwlo5zlej
+--gsz5in6zibhvb2ja
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQsOaIACgkQvlAcSiqK
-BOg+rQf9GCElINXEJNYkC/ckiAaBK/hX/QaMDOxhnjU0KM248+eFBCwv4syCGMaD
-9tgfWW6K1XSI1cukuOY4ffF1d9B4WuJ0LxUUjECH/90VZ3jnSNnActnxZ2qFg/Sz
-Z3z3zOJmmSkdcHPg82Yz8rbHyhPpcHENSqGDT0tLrSeL6izl+ybXZosqXz4yH4Fc
-9gQfDfy28mNXfrLTqWtRsCK+yicaYgC9PJHF6/pRA3Y8l4nxFhEalw4kRoNLN3Aq
-xP7kOLg+qmrR6GUBFgJXQ84xVFUVxJc+wcwLJW/DZH95+FDrWOKZtSgVYYFicsmC
-XboEj94uM+WKLxBYTUH+W0b1zC0XdA==
-=B9h4
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQsOgsACgkQvlAcSiqK
+BOi3zggAtjEbWT/nsqCrEcsR2djNggE53uCJifgtdUyDznSt2cw8p+7zK3M6uoV0
+bPVqlSFaI88l45kyBcFri01GQkqoJKH6u1xmC8ZmYOuZYHSNWGhhA3TQxaSqvPwX
+KyqZ+ZwjsnjgjUxSPqvdHmBKgL9NVsvPs+Q7OJ0kDWvWPpnzeRiOYTYKBSCuWuOR
+n8aCmJx8NeLv64bd8K5KrmcP7dSrtLpf1TCAiuDjl+MxbGP7PrUEUU638m0uxGQM
+hl2WXVxRkpgDnTZwprcf1bHGQ53kLXpkTTI4VuFD7vOXv/cFCBzy0jiiGkeOw0RA
+Xc9gMOnWuN9sfXeqRfcUtM0HqfRF/g==
+=mlBr
 -----END PGP SIGNATURE-----
 
---jo2hsbldwlo5zlej--
+--gsz5in6zibhvb2ja--
