@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D0E06D6E3B
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 22:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B22736D6E58
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 22:47:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbjDDUo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 16:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        id S236297AbjDDUry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 16:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232313AbjDDUoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 16:44:25 -0400
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1218E44A2;
-        Tue,  4 Apr 2023 13:44:24 -0700 (PDT)
-Received: by mail-qv1-f42.google.com with SMTP id ev7so5875682qvb.5;
-        Tue, 04 Apr 2023 13:44:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680641063; x=1683233063;
-        h=user-agent:in-reply-to:content-transfer-encoding
-         :content-disposition:mime-version:references:message-id:subject:cc
-         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0HVHefUKQ8B9vvbZJ5DRzJdQ7JnRZ8j2CPowYhNt000=;
-        b=6ZBBVN5dR4s8wPNEpHjVKcb2l7XPPdSp1yV7e6YR9pkhepAWnSLUQHt2jJhGJqoios
-         HW8uMyEBroOYD/1Rm5D/tO+k/UhOQnK+mOFH/H6tuYuQDFhBr0h0ttOdsk/cCUoaDTjm
-         AuxwN3lReSrFUR27MdWmQQTJXuwQ9TZXdOYPdPjQf5jZ1MWLsK70Y8mzlLwrKN9V8T3l
-         pKzU/ybqk2cIIVS/IVuwrQyEWuPmCGUvYdnk5eH0gqX2ii/YAuK9rXfkfYx1XJXkOrm1
-         yD9mb86guxU/KkiaASFk6/vpLEnqL4kuiybkhqqfh/O1DHUwJ7U1k6TQrjzhe8U12hrv
-         X5dA==
-X-Gm-Message-State: AAQBX9f13YnsBOG78nYxVSwIYsPa/7wn2nVxm5G/HHnj5x5r6QttbDW6
-        20PZmpF0lfvO7SKBzIRC8BWhzSkZCyxZyA==
-X-Google-Smtp-Source: AKy350a9CExc6NLhbfpr/LQAhC5iCh6ok58Zu64xGH+Op+G45gQmac+qeLjUHNGEzIy+30j0knKxeQ==
-X-Received: by 2002:a05:6214:3005:b0:56e:9da4:82ff with SMTP id ke5-20020a056214300500b0056e9da482ffmr5520489qvb.50.1680641062852;
-        Tue, 04 Apr 2023 13:44:22 -0700 (PDT)
-Received: from maniforge ([2620:10d:c091:400::5:6933])
-        by smtp.gmail.com with ESMTPSA id j22-20020a05620a289600b0074873dfe555sm3841390qkp.68.2023.04.04.13.44.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 13:44:22 -0700 (PDT)
-Date:   Tue, 4 Apr 2023 15:44:19 -0500
-From:   David Vernet <void@manifault.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Dave Marchevsky <davemarchevsky@meta.com>,
-        Tejun Heo <tj@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 4/8] bpf: Teach verifier that certain helpers
- accept NULL pointer.
-Message-ID: <20230404204419.GC3896@maniforge>
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
- <20230404045029.82870-5-alexei.starovoitov@gmail.com>
- <20230404144652.GA3896@maniforge>
- <CAADnVQJEBJdXp11NE_zti0jBHbMmodDKh7YuBFGkN3q_wOHJtA@mail.gmail.com>
+        with ESMTP id S232313AbjDDUrw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 16:47:52 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8223544A1;
+        Tue,  4 Apr 2023 13:47:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680641270; x=1712177270;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Z6j/cGpZOXVTreuxHNHRJUI608KQQ2b8yubZngfX3x4=;
+  b=Oz20NsPIGA7KO+bXHtV/nYmi77S2rCwpGHBC7+ES7sCpht+6wpx3FW05
+   oRMAz3We1k19S0TEqDup0S5PLca+d5LNf0tqEmaNt3b66sUqZmjMGo76/
+   D7sJIBZSC3FS0jOxve/enE1OaSD4pi0xfEJDbqN7L1D1AWn6Bjedz3NXS
+   1/Cr0tPa4rR4y8l6VhzcfvPaiZR8AkzN6u0MAURC1A9pty+U6FnA4gT7K
+   jqdme8+1mwdVM40OAUnXNoJYNKjJx3eGIWALfjaF6tVaiJquKHXQldcQj
+   K/d5ZmYG0rUFBRx+/LCbpZ8HozPHowUVDag4fDhj/bnIIoqmdMkZE8c7Y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="407378520"
+X-IronPort-AV: E=Sophos;i="5.98,318,1673942400"; 
+   d="scan'208";a="407378520"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 13:47:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="636658836"
+X-IronPort-AV: E=Sophos;i="5.98,318,1673942400"; 
+   d="scan'208";a="636658836"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 04 Apr 2023 13:47:46 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pjnZB-000Q1q-17;
+        Tue, 04 Apr 2023 20:47:45 +0000
+Date:   Wed, 05 Apr 2023 04:47:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-wireless@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-gpio@vger.kernel.org,
+        linux-acpi@vger.kernel.org, kvm@vger.kernel.org,
+        io-uring@vger.kernel.org, bpf@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 6a53bda3aaf3de5edeea27d0b1d8781d067640b6
+Message-ID: <642c8ceb.LBEdj8abbmwftu9h%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADnVQJEBJdXp11NE_zti0jBHbMmodDKh7YuBFGkN3q_wOHJtA@mail.gmail.com>
-User-Agent: Mutt/2.2.10 (2023-03-25)
-X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,143 +69,232 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 01:17:25PM -0700, Alexei Starovoitov wrote:
-> On Tue, Apr 4, 2023 at 7:46 AM David Vernet <void@manifault.com> wrote:
-> >
-> > On Mon, Apr 03, 2023 at 09:50:25PM -0700, Alexei Starovoitov wrote:
-> > > From: Alexei Starovoitov <ast@kernel.org>
-> > >
-> > > bpf_[sk|inode|task|cgrp]_storage_[get|delete]() and bpf_get_socket_cookie() helpers
-> > > perform run-time check that sk|inode|task|cgrp pointer != NULL.
-> > > Teach verifier about this fact and allow bpf programs to pass
-> > > PTR_TO_BTF_ID | PTR_MAYBE_NULL into such helpers.
-> > > It will be used in the subsequent patch that will do
-> > > bpf_sk_storage_get(.., skb->sk, ...);
-> > > Even when 'skb' pointer is trusted the 'sk' pointer may be NULL.
-> > >
-> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > > ---
-> > >  kernel/bpf/bpf_cgrp_storage.c  | 4 ++--
-> > >  kernel/bpf/bpf_inode_storage.c | 4 ++--
-> > >  kernel/bpf/bpf_task_storage.c  | 8 ++++----
-> > >  net/core/bpf_sk_storage.c      | 4 ++--
-> > >  net/core/filter.c              | 2 +-
-> > >  5 files changed, 11 insertions(+), 11 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/bpf_cgrp_storage.c b/kernel/bpf/bpf_cgrp_storage.c
-> > > index d17d5b694668..d44fe8dd9732 100644
-> > > --- a/kernel/bpf/bpf_cgrp_storage.c
-> > > +++ b/kernel/bpf/bpf_cgrp_storage.c
-> > > @@ -224,7 +224,7 @@ const struct bpf_func_proto bpf_cgrp_storage_get_proto = {
-> > >       .gpl_only       = false,
-> > >       .ret_type       = RET_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg1_type      = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type      = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type      = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id    = &bpf_cgroup_btf_id[0],
-> > >       .arg3_type      = ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg4_type      = ARG_ANYTHING,
-> > > @@ -235,6 +235,6 @@ const struct bpf_func_proto bpf_cgrp_storage_delete_proto = {
-> > >       .gpl_only       = false,
-> > >       .ret_type       = RET_INTEGER,
-> > >       .arg1_type      = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type      = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type      = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id    = &bpf_cgroup_btf_id[0],
-> > >  };
-> > > diff --git a/kernel/bpf/bpf_inode_storage.c b/kernel/bpf/bpf_inode_storage.c
-> > > index e17ad581b9be..a4d93df78c75 100644
-> > > --- a/kernel/bpf/bpf_inode_storage.c
-> > > +++ b/kernel/bpf/bpf_inode_storage.c
-> > > @@ -229,7 +229,7 @@ const struct bpf_func_proto bpf_inode_storage_get_proto = {
-> > >       .gpl_only       = false,
-> > >       .ret_type       = RET_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg1_type      = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type      = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type      = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id    = &bpf_inode_storage_btf_ids[0],
-> > >       .arg3_type      = ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg4_type      = ARG_ANYTHING,
-> > > @@ -240,6 +240,6 @@ const struct bpf_func_proto bpf_inode_storage_delete_proto = {
-> > >       .gpl_only       = false,
-> > >       .ret_type       = RET_INTEGER,
-> > >       .arg1_type      = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type      = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type      = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id    = &bpf_inode_storage_btf_ids[0],
-> > >  };
-> > > diff --git a/kernel/bpf/bpf_task_storage.c b/kernel/bpf/bpf_task_storage.c
-> > > index d1af0c8f9ce4..adf6dfe0ba68 100644
-> > > --- a/kernel/bpf/bpf_task_storage.c
-> > > +++ b/kernel/bpf/bpf_task_storage.c
-> > > @@ -338,7 +338,7 @@ const struct bpf_func_proto bpf_task_storage_get_recur_proto = {
-> > >       .gpl_only = false,
-> > >       .ret_type = RET_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg1_type = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> > >       .arg3_type = ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg4_type = ARG_ANYTHING,
-> > > @@ -349,7 +349,7 @@ const struct bpf_func_proto bpf_task_storage_get_proto = {
-> > >       .gpl_only = false,
-> > >       .ret_type = RET_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg1_type = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> > >       .arg3_type = ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg4_type = ARG_ANYTHING,
-> > > @@ -360,7 +360,7 @@ const struct bpf_func_proto bpf_task_storage_delete_recur_proto = {
-> > >       .gpl_only = false,
-> > >       .ret_type = RET_INTEGER,
-> > >       .arg1_type = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> > >  };
-> > >
-> > > @@ -369,6 +369,6 @@ const struct bpf_func_proto bpf_task_storage_delete_proto = {
-> > >       .gpl_only = false,
-> > >       .ret_type = RET_INTEGER,
-> > >       .arg1_type = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> > >  };
-> > > diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-> > > index 085025c7130a..d4172534dfa8 100644
-> > > --- a/net/core/bpf_sk_storage.c
-> > > +++ b/net/core/bpf_sk_storage.c
-> > > @@ -412,7 +412,7 @@ const struct bpf_func_proto bpf_sk_storage_get_tracing_proto = {
-> > >       .gpl_only       = false,
-> > >       .ret_type       = RET_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg1_type      = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type      = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type      = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id    = &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
-> > >       .arg3_type      = ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> > >       .arg4_type      = ARG_ANYTHING,
-> > > @@ -424,7 +424,7 @@ const struct bpf_func_proto bpf_sk_storage_delete_tracing_proto = {
-> > >       .gpl_only       = false,
-> > >       .ret_type       = RET_INTEGER,
-> > >       .arg1_type      = ARG_CONST_MAP_PTR,
-> > > -     .arg2_type      = ARG_PTR_TO_BTF_ID,
-> > > +     .arg2_type      = ARG_PTR_TO_BTF_ID_OR_NULL,
-> > >       .arg2_btf_id    = &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
-> > >       .allowed        = bpf_sk_storage_tracing_allowed,
-> > >  };
-> >
-> > Should we also add PTR_MAYBE_NULL to the ARG_PTR_TO_BTF_ID_SOCK_COMMON
-> > arg in bpf_sk_storage_get_proto and bpf_sk_storage_delete_proto?
-> 
-> It makes sense. I'd like to do it in the follow up though.
-> I haven't seen networking progs passing null-able pointer into these helpers.
-> Only tracing progs do.
-> I need to craft a test case, etc.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 6a53bda3aaf3de5edeea27d0b1d8781d067640b6  Add linux-next specific files for 20230404
 
-Sounds good
+Error/Warning reports:
 
-> While this set is good to go imo.
+https://lore.kernel.org/oe-kbuild-all/202303082135.NjdX1Bij-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202303161521.jbGbaFjJ-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202304041708.siWlxmyD-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202304041748.0sQc4K4l-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202304042104.UFIuevBp-lkp@intel.com
+https://lore.kernel.org/oe-kbuild-all/202304050029.38NdbQPf-lkp@intel.com
 
-Agreed, the series LGTM.
+Error/Warning: (recently discovered and may have been fixed)
+
+Documentation/virt/kvm/api.rst:8303: WARNING: Field list ends without a blank line; unexpected unindent.
+ERROR: modpost: "bpf_fentry_test1" [tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.ko] undefined!
+Error: failed to load BTF from vmlinux: No data available
+Makefile:77: *** Cannot find a vmlinux for VMLINUX_BTF at any of "vmlinux vmlinux ../../../../vmlinux /sys/kernel/btf/vmlinux /boot/vmlinux-5.9.0-0.bpo.2-amd64".  Stop.
+arch/m68k/include/asm/irq.h:78:11: error: expected ';' before 'void'
+arch/m68k/include/asm/irq.h:78:40: warning: 'struct pt_regs' declared inside parameter list will not be visible outside of this definition or declaration
+diff: tools/arch/s390/include/uapi/asm/ptrace.h: No such file or directory
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_validation.c:351:13: warning: variable 'bw_needed' set but not used [-Wunused-but-set-variable]
+drivers/gpu/drm/amd/amdgpu/../display/dc/link/link_validation.c:352:25: warning: variable 'link' set but not used [-Wunused-but-set-variable]
+drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu13/smu_v13_0_6_ppt.c:309:17: sparse:    int
+drivers/gpu/drm/amd/amdgpu/../pm/swsmu/smu13/smu_v13_0_6_ppt.c:309:17: sparse:    void
+drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c:148:31: error: implicit declaration of function 'pci_msix_can_alloc_dyn' [-Werror=implicit-function-declaration]
+drivers/net/wireless/legacy/ray_cs.c:628:17: warning: 'strncpy' specified bound 32 equals destination size [-Wstringop-truncation]
+kernel/bpf/verifier.c:18503: undefined reference to `find_kallsyms_symbol_value'
+ld.lld: error: .btf.vmlinux.bin.o: unknown file type
+ld.lld: error: undefined symbol: find_kallsyms_symbol_value
+tcp_mmap.c:211:61: warning: 'lu' may be used uninitialized in this function [-Wmaybe-uninitialized]
+thermal_nl.h:6:10: fatal error: netlink/netlink.h: No such file or directory
+thermometer.c:21:10: fatal error: libconfig.h: No such file or directory
+
+Unverified Error/Warning (likely false positive, please contact us if interested):
+
+drivers/acpi/property.c:985 acpi_data_prop_read_single() error: potentially dereferencing uninitialized 'obj'.
+drivers/pinctrl/pinctrl-mlxbf3.c:162:20: sparse: sparse: symbol 'mlxbf3_pmx_funcs' was not declared. Should it be static?
+drivers/soc/fsl/qe/tsa.c:140:26: sparse: sparse: incorrect type in argument 2 (different address spaces)
+drivers/soc/fsl/qe/tsa.c:150:27: sparse: sparse: incorrect type in argument 1 (different address spaces)
+drivers/soc/fsl/qe/tsa.c:189:26: sparse: sparse: dereference of noderef expression
+drivers/soc/fsl/qe/tsa.c:663:22: sparse: sparse: incorrect type in assignment (different address spaces)
+drivers/soc/fsl/qe/tsa.c:673:21: sparse: sparse: incorrect type in assignment (different address spaces)
+include/linux/gpio/consumer.h: linux/err.h is included more than once.
+include/linux/gpio/driver.h: asm/bug.h is included more than once.
+io_uring/io_uring.c:432 io_prep_async_work() error: we previously assumed 'req->file' could be null (see line 425)
+io_uring/kbuf.c:221 __io_remove_buffers() warn: variable dereferenced before check 'bl->buf_ring' (see line 219)
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- alpha-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|   `-- drivers-net-wireless-legacy-ray_cs.c:warning:strncpy-specified-bound-equals-destination-size
+|-- alpha-buildonly-randconfig-r005-20230403
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- alpha-randconfig-s051-20230403
+|   |-- drivers-gpu-drm-amd-amdgpu-..-pm-swsmu-smu13-smu_v13_0_6_ppt.c:sparse:int
+|   |-- drivers-gpu-drm-amd-amdgpu-..-pm-swsmu-smu13-smu_v13_0_6_ppt.c:sparse:sparse:incompatible-types-in-conditional-expression-(different-base-types):
+|   |-- drivers-gpu-drm-amd-amdgpu-..-pm-swsmu-smu13-smu_v13_0_6_ppt.c:sparse:void
+|   `-- drivers-pinctrl-pinctrl-mlxbf3.c:sparse:sparse:symbol-mlxbf3_pmx_funcs-was-not-declared.-Should-it-be-static
+|-- arc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- arm64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- i386-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- i386-randconfig-m021-20230403
+|   |-- drivers-acpi-property.c-acpi_data_prop_read_single()-error:potentially-dereferencing-uninitialized-obj-.
+|   |-- io_uring-io_uring.c-io_prep_async_work()-error:we-previously-assumed-req-file-could-be-null-(see-line-)
+|   `-- io_uring-kbuf.c-__io_remove_buffers()-warn:variable-dereferenced-before-check-bl-buf_ring-(see-line-)
+|-- ia64-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|   `-- drivers-net-wireless-legacy-ray_cs.c:warning:strncpy-specified-bound-equals-destination-size
+|-- loongarch-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- loongarch-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- loongarch-defconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-bw_needed-set-but-not-used
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-link-link_validation.c:warning:variable-link-set-but-not-used
+|-- m68k-randconfig-s041-20230403
+|   |-- arch-m68k-include-asm-irq.h:error:expected-before-void
+|   `-- arch-m68k-include-asm-irq.h:warning:struct-pt_regs-declared-inside-parameter-list-will-not-be-visible-outside-of-this-definition-or-declaration
+|-- microblaze-buildonly-randconfig-r006-20230403
+|   `-- drivers-net-ethernet-mellanox-mlx5-core-pci_irq.c:error:implicit-declaration-of-function-pci_msix_can_alloc_dyn
+|-- mips-allmodconfig
+clang_recent_errors
+`-- arm-randconfig-r046-20230403
+    |-- ld.lld:error:.btf.vmlinux.bin.o:unknown-file-type
+    `-- ld.lld:error:undefined-symbol:find_kallsyms_symbol_value
+
+elapsed time: 840m
+
+configs tested: 113
+configs skipped: 4
+
+tested configs:
+alpha                            allyesconfig   gcc  
+alpha        buildonly-randconfig-r005-20230403   gcc  
+alpha                               defconfig   gcc  
+alpha                randconfig-r023-20230403   gcc  
+alpha                randconfig-r036-20230404   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                  randconfig-r034-20230403   gcc  
+arc                  randconfig-r043-20230403   gcc  
+arm                              allmodconfig   gcc  
+arm                              allyesconfig   gcc  
+arm          buildonly-randconfig-r001-20230403   clang
+arm                                 defconfig   gcc  
+arm                          exynos_defconfig   gcc  
+arm                  randconfig-r046-20230403   clang
+arm64                            allyesconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                randconfig-r021-20230403   gcc  
+csky                                defconfig   gcc  
+csky                 randconfig-r033-20230403   gcc  
+hexagon              randconfig-r016-20230403   clang
+hexagon              randconfig-r035-20230403   clang
+hexagon              randconfig-r041-20230403   clang
+hexagon              randconfig-r045-20230403   clang
+i386                             allyesconfig   gcc  
+i386                              debian-10.3   gcc  
+i386                                defconfig   gcc  
+i386                 randconfig-a001-20230403   clang
+i386                 randconfig-a002-20230403   clang
+i386                 randconfig-a003-20230403   clang
+i386                 randconfig-a004-20230403   clang
+i386                 randconfig-a005-20230403   clang
+i386                 randconfig-a006-20230403   clang
+i386                 randconfig-a011-20230403   gcc  
+i386                 randconfig-a012-20230403   gcc  
+i386                 randconfig-a013-20230403   gcc  
+i386                 randconfig-a014-20230403   gcc  
+i386                 randconfig-a015-20230403   gcc  
+i386                 randconfig-a016-20230403   gcc  
+i386                 randconfig-r015-20230403   gcc  
+i386                 randconfig-r022-20230403   gcc  
+i386                 randconfig-r036-20230403   clang
+ia64                             alldefconfig   gcc  
+ia64                             allmodconfig   gcc  
+ia64                                defconfig   gcc  
+ia64                 randconfig-r002-20230403   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k         buildonly-randconfig-r002-20230403   gcc  
+m68k         buildonly-randconfig-r006-20230403   gcc  
+m68k                                defconfig   gcc  
+m68k                 randconfig-r024-20230403   gcc  
+m68k                 randconfig-r034-20230404   gcc  
+mips                             allmodconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                 randconfig-r005-20230403   gcc  
+nios2                               defconfig   gcc  
+nios2                randconfig-r033-20230404   gcc  
+openrisc             randconfig-r013-20230403   gcc  
+openrisc             randconfig-r026-20230403   gcc  
+parisc                              defconfig   gcc  
+parisc               randconfig-r001-20230403   gcc  
+parisc               randconfig-r014-20230403   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                     ep8248e_defconfig   gcc  
+powerpc                     kmeter1_defconfig   clang
+powerpc              randconfig-r025-20230403   gcc  
+riscv                            allmodconfig   gcc  
+riscv                             allnoconfig   gcc  
+riscv                               defconfig   gcc  
+riscv             nommu_k210_sdcard_defconfig   gcc  
+riscv                randconfig-r042-20230403   gcc  
+riscv                          rv32_defconfig   gcc  
+s390                             allmodconfig   gcc  
+s390                             allyesconfig   gcc  
+s390                                defconfig   gcc  
+s390                 randconfig-r004-20230403   clang
+s390                 randconfig-r012-20230403   gcc  
+s390                 randconfig-r031-20230404   gcc  
+s390                 randconfig-r044-20230403   gcc  
+sh                               allmodconfig   gcc  
+sh                   randconfig-r011-20230403   gcc  
+sh                   randconfig-r031-20230403   gcc  
+sparc        buildonly-randconfig-r004-20230403   gcc  
+sparc                               defconfig   gcc  
+sparc64              randconfig-r003-20230403   gcc  
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   gcc  
+x86_64                            allnoconfig   gcc  
+x86_64                           allyesconfig   gcc  
+x86_64                              defconfig   gcc  
+x86_64                                  kexec   gcc  
+x86_64               randconfig-a001-20230403   clang
+x86_64               randconfig-a002-20230403   clang
+x86_64               randconfig-a003-20230403   clang
+x86_64               randconfig-a004-20230403   clang
+x86_64               randconfig-a005-20230403   clang
+x86_64               randconfig-a006-20230403   clang
+x86_64               randconfig-a011-20230403   gcc  
+x86_64               randconfig-a012-20230403   gcc  
+x86_64               randconfig-a013-20230403   gcc  
+x86_64               randconfig-a014-20230403   gcc  
+x86_64               randconfig-a015-20230403   gcc  
+x86_64               randconfig-a016-20230403   gcc  
+x86_64               randconfig-r032-20230403   clang
+x86_64                               rhel-8.3   gcc  
+xtensa       buildonly-randconfig-r003-20230403   gcc  
+xtensa               randconfig-r006-20230403   gcc  
+xtensa               randconfig-r035-20230404   gcc  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
