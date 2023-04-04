@@ -2,228 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A13836D6DCA
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 22:17:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 919066D6E22
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 22:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235710AbjDDURm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 16:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        id S234428AbjDDUfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 16:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbjDDURl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 16:17:41 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6CC4202;
-        Tue,  4 Apr 2023 13:17:39 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id eg48so135370946edb.13;
-        Tue, 04 Apr 2023 13:17:39 -0700 (PDT)
+        with ESMTP id S231750AbjDDUfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 16:35:06 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582DF19BC
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 13:35:05 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-17ab3a48158so36094991fac.1
+        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 13:35:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680639457; x=1683231457;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SqZVoXjOAv2u4LoLOfTRprpwbdE9Fph8iUoKEg7tHpY=;
-        b=THK0k9nEiE1ZTlgF0be5uHcjN2AjsY1SWNT5pZzUKmiObxNVEWtYGJ69YGD/eTq1Ti
-         4oz0hBTY3EQJQA4FnxKpAJmNmizsa5VemYJvxG2qQs1ot3QT4d3qc8HJpQNejOp8wC5H
-         fPPg/Ka4+PcVg/F05aQVToq3ZyODH15zbs9Vkg8/DYT/6QQXmUXsVU8azq8BMfCzFLKe
-         uo/FC+ghxxPwGo7Lt1lTedwADk1xux2s4IBZpnza+PlxniBT3ItEbBdrucT0N7SMN4gJ
-         n0fXbC+zwouNFFxros1abI117nReh5O7RHnSshJVjAlZZIHnT2B/unmyg5kd/oZkSLHU
-         eFvw==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112; t=1680640504;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HgUWR1khvkeRcv33JD+opg9F3r7WLIgYBsR/Eyb29wQ=;
+        b=cq4SkRs2rbOV0Ova+vP+eCtQbHX1KUz2MSAYRpivU83TdfcyYZGEQ1sjvynaYH76TP
+         Bf97XlfCKMklSONoYnh+MJ6bIKovlUO83qUArLjOE6i6JWJzRzyhV+a6/OWpEx2FHBxJ
+         5soajNzL12gz1PIJaMMB1+Y26mdfuanKrfqKkOY8OPHIt9zVHKYR8xGirWeYk2VrEyUB
+         P8Ul+MCtqZx+b4PSd0F8IV2C+Smf839par04SmtjPNpH+QLTfJsJiBvUJaL2GhYDOMsE
+         uaTPl/AKM0KxxpXjmgNS5ME+UtJUszbR+6oM5Y4dLKQ23gNxQ9YSLq/SJQAqa0kXerCM
+         Fp3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680639457; x=1683231457;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SqZVoXjOAv2u4LoLOfTRprpwbdE9Fph8iUoKEg7tHpY=;
-        b=U7+O+3Be24pY/FUt3X/iWKWi+c6cE5WL0fhBjws/k7afXexlpTJLePPJG3CV6O/eOX
-         TG/TnfEOPO3xVU4yWqcHpF8QWl+n3a7SQqvRPa/K7x1/E4yPXLccTRFfjWwuRYUz1gJN
-         kkx/0abKWk/4ruc6vwClwUQxyCiI3m9joMOUEVyxt4MhhxE1vCpUy8z2IqK3D4ArISx7
-         ayX2kOSOsDFjsO/IF9Ofal8u7V4T/RhuIyDYrplCDBIM1Y6X/3V03+e+3iK8bNQbrsl1
-         enJ+VGZYXDDBo2QwzhWKgbaQ7AB/kvqWXJOn9H2EFFrXQ8r7lPpL22OTRknwu/ODXCEy
-         cBnQ==
-X-Gm-Message-State: AAQBX9eNAe2sqI5DPnzSlRj198qgslb260qkkJ00jp6aTSpP/ed6+pfv
-        7TxGpkOPoYzcdyxeNJVkpXKbuU9F56gDo/X40iE=
-X-Google-Smtp-Source: AKy350a8kqpEVJ/iR2f6sw6W1KfBnjufJxbZFPozDZjk/xmMlnKRWo1XUWnqciRBB0M/1UargpsA5iY+aVSXmsENBKs=
-X-Received: by 2002:a17:906:1c0e:b0:90a:33e4:5a69 with SMTP id
- k14-20020a1709061c0e00b0090a33e45a69mr382515ejg.3.1680639457295; Tue, 04 Apr
- 2023 13:17:37 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680640504;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HgUWR1khvkeRcv33JD+opg9F3r7WLIgYBsR/Eyb29wQ=;
+        b=gEZCAeFaSn3Bi9VPZ+6zksqBFrGa2cvXVm3Acb6bJNcb8CqkrN0rHfMetlvdhlMqFE
+         wNHgb43PY64+PJIvxTUp1iQ2o7xoQNk0mqCit7qLyvH8Ai+77bMwOjNjcLZnRr076uxQ
+         J6hfp9bfku4AhTUiGQWAEgDL+nAHg9c3/ucXrlt5ESRMl3sl2AeaeO8dpngPPgrmkcm6
+         Pc7D+9Tt6ej4liGnz7METf0aB2ISicPBrQ/KyItqBW1XWtsVsZ6YmPk5u79MsGi1kpG9
+         Pfu3YYdtX/3f1U6EToARE+cyYQXyN9U+FxqVFvKW45uMRUg4cIO4l0oNP9skj+5UoOrm
+         uzMQ==
+X-Gm-Message-State: AAQBX9cHczaGSi0u8FBhGlV4XN9/KPMwbWqfn+0rYRIfGZt1NoBkVu5R
+        RAaQWOs0KlsM5fvh/2mSyeP0n+YJ/hmTlJ08Dz0=
+X-Google-Smtp-Source: AKy350Y3n9yc6fmVtpmjS45SW0oIglJA7MpHnoRfcMYQB8i1+/egEcPln798CX/9zT2lk3KJpVaCMg==
+X-Received: by 2002:a05:6870:4287:b0:177:c2bd:3f70 with SMTP id y7-20020a056870428700b00177c2bd3f70mr2446893oah.54.1680640504460;
+        Tue, 04 Apr 2023 13:35:04 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14d:5c5e:44fb:f205:bd2:e10c:668c])
+        by smtp.gmail.com with ESMTPSA id ax40-20020a05687c022800b0017243edbe5bsm5066737oac.58.2023.04.04.13.35.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 13:35:04 -0700 (PDT)
+From:   Pedro Tammela <pctammela@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Pedro Tammela <pctammela@mojatatu.com>
+Subject: [PATCH net-next] net/sched: sch_mqprio: use netlink payload helpers
+Date:   Tue,  4 Apr 2023 17:34:49 -0300
+Message-Id: <20230404203449.1627033-1-pctammela@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
- <20230404045029.82870-5-alexei.starovoitov@gmail.com> <20230404144652.GA3896@maniforge>
-In-Reply-To: <20230404144652.GA3896@maniforge>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 4 Apr 2023 13:17:25 -0700
-Message-ID: <CAADnVQJEBJdXp11NE_zti0jBHbMmodDKh7YuBFGkN3q_wOHJtA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/8] bpf: Teach verifier that certain helpers
- accept NULL pointer.
-To:     David Vernet <void@manifault.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Dave Marchevsky <davemarchevsky@meta.com>,
-        Tejun Heo <tj@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 4, 2023 at 7:46=E2=80=AFAM David Vernet <void@manifault.com> wr=
-ote:
->
-> On Mon, Apr 03, 2023 at 09:50:25PM -0700, Alexei Starovoitov wrote:
-> > From: Alexei Starovoitov <ast@kernel.org>
-> >
-> > bpf_[sk|inode|task|cgrp]_storage_[get|delete]() and bpf_get_socket_cook=
-ie() helpers
-> > perform run-time check that sk|inode|task|cgrp pointer !=3D NULL.
-> > Teach verifier about this fact and allow bpf programs to pass
-> > PTR_TO_BTF_ID | PTR_MAYBE_NULL into such helpers.
-> > It will be used in the subsequent patch that will do
-> > bpf_sk_storage_get(.., skb->sk, ...);
-> > Even when 'skb' pointer is trusted the 'sk' pointer may be NULL.
-> >
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> >  kernel/bpf/bpf_cgrp_storage.c  | 4 ++--
-> >  kernel/bpf/bpf_inode_storage.c | 4 ++--
-> >  kernel/bpf/bpf_task_storage.c  | 8 ++++----
-> >  net/core/bpf_sk_storage.c      | 4 ++--
-> >  net/core/filter.c              | 2 +-
-> >  5 files changed, 11 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/kernel/bpf/bpf_cgrp_storage.c b/kernel/bpf/bpf_cgrp_storag=
-e.c
-> > index d17d5b694668..d44fe8dd9732 100644
-> > --- a/kernel/bpf/bpf_cgrp_storage.c
-> > +++ b/kernel/bpf/bpf_cgrp_storage.c
-> > @@ -224,7 +224,7 @@ const struct bpf_func_proto bpf_cgrp_storage_get_pr=
-oto =3D {
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg1_type      =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type      =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type      =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id    =3D &bpf_cgroup_btf_id[0],
-> >       .arg3_type      =3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg4_type      =3D ARG_ANYTHING,
-> > @@ -235,6 +235,6 @@ const struct bpf_func_proto bpf_cgrp_storage_delete=
-_proto =3D {
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_INTEGER,
-> >       .arg1_type      =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type      =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type      =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id    =3D &bpf_cgroup_btf_id[0],
-> >  };
-> > diff --git a/kernel/bpf/bpf_inode_storage.c b/kernel/bpf/bpf_inode_stor=
-age.c
-> > index e17ad581b9be..a4d93df78c75 100644
-> > --- a/kernel/bpf/bpf_inode_storage.c
-> > +++ b/kernel/bpf/bpf_inode_storage.c
-> > @@ -229,7 +229,7 @@ const struct bpf_func_proto bpf_inode_storage_get_p=
-roto =3D {
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg1_type      =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type      =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type      =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id    =3D &bpf_inode_storage_btf_ids[0],
-> >       .arg3_type      =3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg4_type      =3D ARG_ANYTHING,
-> > @@ -240,6 +240,6 @@ const struct bpf_func_proto bpf_inode_storage_delet=
-e_proto =3D {
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_INTEGER,
-> >       .arg1_type      =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type      =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type      =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id    =3D &bpf_inode_storage_btf_ids[0],
-> >  };
-> > diff --git a/kernel/bpf/bpf_task_storage.c b/kernel/bpf/bpf_task_storag=
-e.c
-> > index d1af0c8f9ce4..adf6dfe0ba68 100644
-> > --- a/kernel/bpf/bpf_task_storage.c
-> > +++ b/kernel/bpf/bpf_task_storage.c
-> > @@ -338,7 +338,7 @@ const struct bpf_func_proto bpf_task_storage_get_re=
-cur_proto =3D {
-> >       .gpl_only =3D false,
-> >       .ret_type =3D RET_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg1_type =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id =3D &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> >       .arg3_type =3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg4_type =3D ARG_ANYTHING,
-> > @@ -349,7 +349,7 @@ const struct bpf_func_proto bpf_task_storage_get_pr=
-oto =3D {
-> >       .gpl_only =3D false,
-> >       .ret_type =3D RET_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg1_type =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id =3D &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> >       .arg3_type =3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg4_type =3D ARG_ANYTHING,
-> > @@ -360,7 +360,7 @@ const struct bpf_func_proto bpf_task_storage_delete=
-_recur_proto =3D {
-> >       .gpl_only =3D false,
-> >       .ret_type =3D RET_INTEGER,
-> >       .arg1_type =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id =3D &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> >  };
-> >
-> > @@ -369,6 +369,6 @@ const struct bpf_func_proto bpf_task_storage_delete=
-_proto =3D {
-> >       .gpl_only =3D false,
-> >       .ret_type =3D RET_INTEGER,
-> >       .arg1_type =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id =3D &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
-> >  };
-> > diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-> > index 085025c7130a..d4172534dfa8 100644
-> > --- a/net/core/bpf_sk_storage.c
-> > +++ b/net/core/bpf_sk_storage.c
-> > @@ -412,7 +412,7 @@ const struct bpf_func_proto bpf_sk_storage_get_trac=
-ing_proto =3D {
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg1_type      =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type      =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type      =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id    =3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
-> >       .arg3_type      =3D ARG_PTR_TO_MAP_VALUE_OR_NULL,
-> >       .arg4_type      =3D ARG_ANYTHING,
-> > @@ -424,7 +424,7 @@ const struct bpf_func_proto bpf_sk_storage_delete_t=
-racing_proto =3D {
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_INTEGER,
-> >       .arg1_type      =3D ARG_CONST_MAP_PTR,
-> > -     .arg2_type      =3D ARG_PTR_TO_BTF_ID,
-> > +     .arg2_type      =3D ARG_PTR_TO_BTF_ID_OR_NULL,
-> >       .arg2_btf_id    =3D &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
-> >       .allowed        =3D bpf_sk_storage_tracing_allowed,
-> >  };
->
-> Should we also add PTR_MAYBE_NULL to the ARG_PTR_TO_BTF_ID_SOCK_COMMON
-> arg in bpf_sk_storage_get_proto and bpf_sk_storage_delete_proto?
+For the sake of readability, use the netlink payload helpers from
+the 'nla_get_*()' family to parse the attributes.
 
-It makes sense. I'd like to do it in the follow up though.
-I haven't seen networking progs passing null-able pointer into these helper=
-s.
-Only tracing progs do.
-I need to craft a test case, etc.
-While this set is good to go imo.
+tdc results:
+1..5
+ok 1 9903 - Add mqprio Qdisc to multi-queue device (8 queues)
+ok 2 453a - Delete nonexistent mqprio Qdisc
+ok 3 5292 - Delete mqprio Qdisc twice
+ok 4 45a9 - Add mqprio Qdisc to single-queue device
+ok 5 2ba9 - Show mqprio class
+
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Pedro Tammela <pctammela@mojatatu.com>
+---
+ net/sched/sch_mqprio.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
+index 48ed87b91086..fdd6a6575a54 100644
+--- a/net/sched/sch_mqprio.c
++++ b/net/sched/sch_mqprio.c
+@@ -178,12 +178,12 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
+ 
+ 	if (tb[TCA_MQPRIO_MODE]) {
+ 		priv->flags |= TC_MQPRIO_F_MODE;
+-		priv->mode = *(u16 *)nla_data(tb[TCA_MQPRIO_MODE]);
++		priv->mode = nla_get_u16(tb[TCA_MQPRIO_MODE]);
+ 	}
+ 
+ 	if (tb[TCA_MQPRIO_SHAPER]) {
+ 		priv->flags |= TC_MQPRIO_F_SHAPER;
+-		priv->shaper = *(u16 *)nla_data(tb[TCA_MQPRIO_SHAPER]);
++		priv->shaper = nla_get_u16(tb[TCA_MQPRIO_SHAPER]);
+ 	}
+ 
+ 	if (tb[TCA_MQPRIO_MIN_RATE64]) {
+@@ -196,7 +196,7 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
+ 				return -EINVAL;
+ 			if (i >= qopt->num_tc)
+ 				break;
+-			priv->min_rate[i] = *(u64 *)nla_data(attr);
++			priv->min_rate[i] = nla_get_u64(attr);
+ 			i++;
+ 		}
+ 		priv->flags |= TC_MQPRIO_F_MIN_RATE;
+@@ -212,7 +212,7 @@ static int mqprio_parse_nlattr(struct Qdisc *sch, struct tc_mqprio_qopt *qopt,
+ 				return -EINVAL;
+ 			if (i >= qopt->num_tc)
+ 				break;
+-			priv->max_rate[i] = *(u64 *)nla_data(attr);
++			priv->max_rate[i] = nla_get_u64(attr);
+ 			i++;
+ 		}
+ 		priv->flags |= TC_MQPRIO_F_MAX_RATE;
+-- 
+2.34.1
+
