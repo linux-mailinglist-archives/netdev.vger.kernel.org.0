@@ -2,78 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5B7C6D64F7
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E5406D6508
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235809AbjDDOOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 10:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
+        id S234758AbjDDOTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 10:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235814AbjDDOOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:14:05 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59A2E53
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:13:41 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id y14so33002691wrq.4
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 07:13:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680617620;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6gWPfU+3dCp4avtMydf5sy0jjZueGe216fxq9JB7dSs=;
-        b=cQqi9fBMk3QRSB35VfH1WZX7etVAKLj0hZMIQspPzOfcRnfvcu9mYkUBysPNcZQS50
-         +WEr+kBw9u3EGrqbbnCe/N89mcpqqvEL/riXwku/c6BiX6s2y3kYt+h5vcD5H0gKyX9l
-         ijFXdDB/+cTlCAgqpA533tveZastd+maS1DwKsKYKprqm2lCgBRWyijpwdClcnP+3oyu
-         GIKUXzzj0MtDF4HfdcXRJB3ANfl7AlB4F9OnwSArZ6mC/XDERf2zroOq+cI6iCM0U0zd
-         L2HcU55f5zyM5a+PTCkp4Ej1SVbyvzf/g0I3nyg2RxcUBMqbW98IpanlSBx4GnGh0bm3
-         tZhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680617620;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6gWPfU+3dCp4avtMydf5sy0jjZueGe216fxq9JB7dSs=;
-        b=uHzftk/AmJ+ZahUJPgdsbllo5f7MxXPGfCsYzLD58leBVZ7Iy39s4vv89nhpvu2aPf
-         WVG1CTsXWCHVe9OHsoRz5SFlWYvhjMJzqjxdSpV6yAOIGEv3jZgM6GeiBV9vRkzGozq0
-         99TD27H0OI1tbUjSTCYPAZnbKgtSRdGB0o8MjGdntudncRmlyG5rpW5MVMcsaZc4HuNf
-         fOx8pkJmuwaYEjIFIjEhS0fGrxrIfQrxaG5bn+1vBQbNqIjQK53hjumnttIPjkESUxpH
-         uHuRgxalSMVvDEITlxpNTgpzMi4rZKPAQeS2DV9VUHNqQsFF6OavtnQ3KK2PKkIeeSQo
-         3eaw==
-X-Gm-Message-State: AAQBX9cG8tsokcoBd2IG2RUAg2IciVwoVNh+m6wr4RETZLzWLSzyHbxF
-        tP5qGGV+Qyq4FMyuPtp59As=
-X-Google-Smtp-Source: AKy350ZhguHAl6Il5KzxdTDerhUNR8P6vwsUyIAV9O5wUqNq9z/mPgLwXsKgGfmEKXfgLagVHq3u0g==
-X-Received: by 2002:a5d:6ac7:0:b0:2e4:f53a:45a1 with SMTP id u7-20020a5d6ac7000000b002e4f53a45a1mr2001146wrw.57.1680617619894;
-        Tue, 04 Apr 2023 07:13:39 -0700 (PDT)
-Received: from ?IPV6:2a02:3100:946d:f000:c909:5149:917a:ff4e? (dynamic-2a02-3100-946d-f000-c909-5149-917a-ff4e.310.pool.telefonica.de. [2a02:3100:946d:f000:c909:5149:917a:ff4e])
-        by smtp.googlemail.com with ESMTPSA id e2-20020a5d5002000000b002cfe0ab1246sm12428422wrt.20.2023.04.04.07.13.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Apr 2023 07:13:39 -0700 (PDT)
-Message-ID: <cea96aa7-0073-4d81-6265-666c81809a0e@gmail.com>
-Date:   Tue, 4 Apr 2023 16:13:36 +0200
+        with ESMTP id S234379AbjDDOTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:19:06 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C2A118
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:19:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=D/iIIVE//9NitTjQ41fsnohHi5z4By+bUlqEP/O18uU=; b=nCCw0gp3vjlhSwKxw7PQIkgPa5
+        Z+PzhoPIh13dsCu3qs9FB4fD8K9QxcO+uBlSJEW2qz7ZENf6aLSFP7VUJP3nRwaw0JTXIajiWiqOr
+        eTFJPFhU6cT+pr2+tYjJx5Hx/xUKoSbON4xmosPUta9zUiJn3rj+cAJFEpgD8yM7imoU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pjhUx-009Pa3-RT; Tue, 04 Apr 2023 16:18:59 +0200
+Date:   Tue, 4 Apr 2023 16:18:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
+        mengyuanlou@net-swift.com
+Subject: Re: [PATCH net-next 2/6] net: txgbe: Implement I2C bus master driver
+Message-ID: <3086ecbc-2884-4743-9953-96f2a225ddbb@lunn.ch>
+References: <20230403064528.343866-1-jiawenwu@trustnetic.com>
+ <20230403064528.343866-3-jiawenwu@trustnetic.com>
+ <5071701f-bf69-4fa7-ad43-b780afd057a1@lunn.ch>
+ <03fc01d9669f$cb8cb610$62a62230$@trustnetic.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.1
-Subject: Re: Convention regarding SGMII in-band autonegotiation
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexander 'lynxis' Couzens <lynxis@fe80.eu>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        John Crispin <john@phrozen.org>
-References: <ZCtvaxY2d74XLK6F@makrotopia.org>
- <a0570b00-669f-120d-2700-a97317466727@gmail.com>
- <ZCvqJAVjOdogEZKD@makrotopia.org>
- <539986da-0bf7-8dd3-73d7-a2a584846f18@gmail.com>
- <ZCv5Awt1tQic2Ygj@shell.armlinux.org.uk>
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <ZCv5Awt1tQic2Ygj@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03fc01d9669f$cb8cb610$62a62230$@trustnetic.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,45 +49,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04.04.2023 12:16, Russell King (Oracle) wrote:
-> On Tue, Apr 04, 2023 at 11:56:45AM +0200, Heiner Kallweit wrote:
->> On 04.04.2023 11:13, Daniel Golle wrote:
->>> On Tue, Apr 04, 2023 at 08:31:12AM +0200, Heiner Kallweit wrote:
->>>> Ideas from the patches can be re-used. Some patches itself are not ready
->>>> for mainline (replace magic numbers with proper constants (as far as
->>>> documented by Realtek), inappropriate use of phy_modify_mmd_changed,
->>>> read_status() being wrong place for updating interface mode).
->>>
->>> Where is updating the interface mode supposed to happen?
->>>
->>> I was looking at drivers/net/phy/mxl-gpy.c which calls its
->>> gpy_update_interface() function also from gpy_read_status(). If that is
->>> wrong it should probably be fixed in mxl-gpy.c as well...
->>>
->>
->> Right, several drivers use the read_status() callback for this, I think
->> the link_change_notify() callback would be sufficient.
+On Tue, Apr 04, 2023 at 10:47:28AM +0800, Jiawen Wu wrote:
+> On Monday, April 3, 2023 8:53 PM, Andrew Lunn wrote:
+> > On Mon, Apr 03, 2023 at 02:45:24PM +0800, Jiawen Wu wrote:
+> > > I2C bus is integrated in Wangxun 10Gb ethernet chip. Implement I2C bus
+> > > driver to receive I2C messages.
+> > 
+> > Please Cc: the i2c mailing list for comments. They know more about I2C than
+> the
+> > netdev people.
+> > 
+> > Is the I2C bus master your own IP, or have you licensed a core? Or using the
+> open
+> > cores i2C bus master? I just want to make sure there is not already a linux
+> driver for
+> > this.
+> > 
 > 
-> Sorry, but that's too late.
-> 
-Indeed, my bad. It's been some time ago that I last looked deeper
-into this corner of phylib.
+> I use the I2C core driver, and implement my own i2c_algorithm. I think it needs
+> to configure my registers to realize the function.
 
-> The problem is that phy_check_link_status() reads the link status, and
-> then immediately acts on it calling phy_link_up() or phy_link_down()
-> as appropriate. While the phy state changes at the same time, we're
-> still in the state machine switch() here, and it's only after that
-> switch() that we then call link_change_notify() - and that will be
-> _after_ phylink or MAC driver's adjust_link callback has happened.
-> 
-> So, using link_change_notify() would mean that the phylib user will
-> be informed of the new media parameters except for the interface mode,
-> _then_ link_change_notify() will be called, and only then would
-> phydev->interface change - and there's no callback to the phylib
-> user to inform them that something changed.
-> 
-> In any case, we do _not_ want two callbacks into the phylib user for
-> the state change, especially not one where the first is "link is up"
-> and the second is "oh by the way the interface changed".
-> 
+I had a quick look, and it appears the hardware is not an open-cores
+derived I2C bus master.
 
+As i tried to say, sometimes you just license an I2C bus master,
+rather than develop one from scratch. And if it was a licensed IP
+core, there is likely to be an existing driver.
+
+> > > +	if (!read) {
+> > > +		wx_err(wx, "I2C write not supported\n");
+> > > +		return num_msgs;
+> > > +	}
+> > 
+> > Write is not supported at all? Is this a hardware limitation?  I think
+> -EOPNOTSUPP
+> > is required here, and you need to ensure the code using the I2C bus master has
+> > quirks to not try to write.
+> 
+> It is supported. False testing leads to false perceptions, I'll fix it.
+
+Great. It would be odd not having write support.
+
+	Andrew
