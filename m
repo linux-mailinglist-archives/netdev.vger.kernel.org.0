@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 140F16D6E34
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 22:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8ED66D6E38
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 22:42:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236067AbjDDUmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 16:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S236212AbjDDUmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 16:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbjDDUmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 16:42:10 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35DD44A3;
-        Tue,  4 Apr 2023 13:42:09 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-17ebba88c60so36072426fac.3;
-        Tue, 04 Apr 2023 13:42:09 -0700 (PDT)
+        with ESMTP id S236087AbjDDUm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 16:42:29 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50058468E;
+        Tue,  4 Apr 2023 13:42:24 -0700 (PDT)
+Received: by mail-oi1-f177.google.com with SMTP id bl22so11194284oib.11;
+        Tue, 04 Apr 2023 13:42:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680640929;
+        d=1e100.net; s=20210112; t=1680640943;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=HiD5Cz7lLNBfVW+arHQFNCec/cgbJ4PqJxRsUE2otgU=;
-        b=aCBoHaqlOJiKQG1Rrb0QiWFyQBKZGjSxd2n1x5QQdsimtWMCiVG4lihM//wYWwz8t4
-         o2aMBLxaDdTp3Kmhdu9dkU6odeweZHB66obsa2NP3sk7H0gEZUQYM78f9hylJu8hFoWa
-         iJoOzPSBXDaeGzLYYJGDpcB+ugY2b4Lt5XrtuzY6Vk1BGiPYtvWNd4cXx79ZxKxOj7o6
-         b3tGRMV/NxvybWds3SshWNnwultiUSj6Exy9k1dEkvk1fUyu8O4LpblnPV7cIdFIJMMa
-         Qg6wAkMEAHcXKaZCn22ce5BvgF6Sbtl9gtuzWN1PIKeU7i7RTDFTNsm0bZiq03F8u3W7
-         PCAg==
-X-Gm-Message-State: AAQBX9e7LuxWCMqLQQ1a/2gxc9juns25UPrCg2Gst4vr2vjmeRaOPzeQ
-        MAzGuRBMiJkO4NkyZxnWmQ==
-X-Google-Smtp-Source: AKy350YPM4VV7XInRDiZ8ff49y6l0Un3uu4Vhz7nWAjq9QUnzD5kyzMt5aIKd8u1myFRpipHvig7eA==
-X-Received: by 2002:a05:6870:b28a:b0:177:c8b4:5c45 with SMTP id c10-20020a056870b28a00b00177c8b45c45mr2328981oao.2.1680640929084;
-        Tue, 04 Apr 2023 13:42:09 -0700 (PDT)
+        bh=KBi9VXnHWBPCYkffNdPrifIxEbW15RY1Ay74oyEreAU=;
+        b=4n/Yrf0aS1kEaO+V9rQd5RoUE35QpjjNcNpuS25cadaE67ei2wUopJjpTbT7UYwhXv
+         CsCgx51sz/Lb9X2cGAXwduYx1Rr9dsM7e6Y+s5gx2YGOs8RFQs71GS0oGhqvP1bxtpkG
+         Yv9Vrt+Bl/dLerV47KAn/FH8mwyhUGQUKJKpAO0nWbmu48Yz0EwAgDRtqHyhyLURL62h
+         BsWwCNm2m33V8dqKk3tzftLCY16/EdDR7QrHq5f7Ghi12Ln1tKLTFT37A96RunFtuPkk
+         ZTR44DoFWOlAOkmy6dVuV08zg9ggqs1FOuppCPw8xM2xpzto0oI2Mloa4HW40bOnYk3o
+         2SWA==
+X-Gm-Message-State: AAQBX9cKjUFFGa5fSObNiCatC3EKyf4O/SCeqZNHHevF051OZcyxlj/t
+        uPi6ySMod6lffrZpdP0R+Q==
+X-Google-Smtp-Source: AKy350YVkwiiQklPnU32vOUMUIZnlFofSGv1HYMjqHQP+bygjvZC3mj8DJpsAFQ1lLyOzW7RYel+Eg==
+X-Received: by 2002:a54:4585:0:b0:387:926e:35d3 with SMTP id z5-20020a544585000000b00387926e35d3mr241273oib.20.1680640943548;
+        Tue, 04 Apr 2023 13:42:23 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y5-20020a9d6345000000b006a249e69aebsm4021405otk.81.2023.04.04.13.42.07
+        by smtp.gmail.com with ESMTPSA id d11-20020a9d5e0b000000b006a3170fe3efsm4207936oti.27.2023.04.04.13.42.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 13:42:08 -0700 (PDT)
-Received: (nullmailer pid 635685 invoked by uid 1000);
-        Tue, 04 Apr 2023 20:42:07 -0000
+        Tue, 04 Apr 2023 13:42:23 -0700 (PDT)
+Received: (nullmailer pid 635963 invoked by uid 1000);
+        Tue, 04 Apr 2023 20:42:22 -0000
 From:   Rob Herring <robh@kernel.org>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -47,70 +47,70 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Christian Marangi <ansuelsmth@gmail.com>
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net: dsa: brcm,sf2: Drop unneeded "#address-cells/#size-cells"
-Date:   Tue,  4 Apr 2023 15:41:52 -0500
-Message-Id: <20230404204152.635400-1-robh@kernel.org>
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: ethernet-switch: Make "#address-cells/#size-cells" required
+Date:   Tue,  4 Apr 2023 15:42:13 -0500
+Message-Id: <20230404204213.635773-1-robh@kernel.org>
 X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.8 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
+X-Spam-Status: No, score=0.7 required=5.0 tests=FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no need for "#address-cells/#size-cells" in the brcm,sf2 node as
-no immediate child nodes have an address. What was probably intended was
-to put them in the 'ports' node, but that's not necessary as that is
-covered by ethernet-switch.yaml via dsa.yaml.
+The schema doesn't allow for a single (unaddressed) ethernet port node
+nor does a single port switch make much sense. So if there's always
+multiple child nodes, "#address-cells" and "#size-cells" should be
+required.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/net/dsa/brcm,sf2.yaml          | 10 ----------
- 1 file changed, 10 deletions(-)
+ Documentation/devicetree/bindings/net/ethernet-switch.yaml   | 4 ++++
+ Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml | 4 +++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml
-index eed16e216fb6..72623cfc8c2d 100644
---- a/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/brcm,sf2.yaml
-@@ -76,12 +76,6 @@ properties:
-       supports reporting the number of packets in-flight in a switch queue
-     type: boolean
+diff --git a/Documentation/devicetree/bindings/net/ethernet-switch.yaml b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+index a04f8ef744aa..2ceccce6cbd7 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-switch.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-switch.yaml
+@@ -40,6 +40,10 @@ patternProperties:
+         type: object
+         description: Ethernet switch ports
  
--  "#address-cells":
--    const: 1
--
--  "#size-cells":
--    const: 0
--
-   ports:
-     type: object
++    required:
++      - "#address-cells"
++      - "#size-cells"
++
+ oneOf:
+   - required:
+       - ports
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+index d7748dd33199..ad1ff9533697 100644
+--- a/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
++++ b/Documentation/devicetree/bindings/net/qcom,ipq8064-mdio.yaml
+@@ -53,7 +53,9 @@ examples:
+             reg = <0x10>;
  
-@@ -99,8 +93,6 @@ properties:
- required:
-   - reg
-   - interrupts
--  - "#address-cells"
--  - "#size-cells"
- 
- allOf:
-   - $ref: "dsa.yaml#"
-@@ -145,8 +137,6 @@ examples:
-   - |
-     switch@f0b00000 {
-             compatible = "brcm,bcm7445-switch-v4.0";
--            #address-cells = <1>;
--            #size-cells = <0>;
-             reg = <0xf0b00000 0x40000>,
-                   <0xf0b40000 0x110>,
-                   <0xf0b40340 0x30>,
+             ports {
+-              /* ... */
++                #address-cells = <1>;
++                #size-cells = <0>;
++                /* ... */
+             };
+         };
+     };
 -- 
 2.39.2
 
