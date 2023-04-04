@@ -2,131 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 081366D6734
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 17:25:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08E26D6743
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 17:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234708AbjDDPZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 11:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
+        id S234259AbjDDP16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 11:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232947AbjDDPZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 11:25:36 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36291449C
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 08:25:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XbVIwGsHwF7jWd6Y97PuORpDFYhELS3GlQdYsA+cxFfIoO0E4fQCSCKl0lhEiYM3hbbrWlKvp7em7SLT8Qnx3t8gjvL3kSk97FPQnMfKOaJyAtd71X2pk3GswsfDvZwnSMHhzm3+q6BtFfILHWHuKESIjngO71gbbJbzvGZtu096y+W1XgYY4astN2OrW2pmKzK00wGx7vL5vZz8FxUYUr31U8+F2hAvGgtR/Kcsen3bRvs5G1pWgKmKgxcGpTOAMKGdR2sggiXhmO8msH7D0Jkjd2zbdXt1J6OTWWX8vzY4/x7cmRevngSTAlKdTek6UQWa9y09+HdDqb8zeM0XUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XbT1IMs7/MIpAC6JJNnyBThRoVIfZNpUazmS4iufOZA=;
- b=KYRw4xUsr6RdwQSRlJvqlgU5Mig3L0PKk5TQgaRUoZARpgqass3xoQFqIXrncsSNIeZRXT81igGL2OH2VuWxRbgpn1aih3SHBp+m9P015b1CarY+tA9rUH5fnvpPSuzKRUPoFpiC/EyUzH8tWB/0JBW1xkUym3J+jBbMiFR1jUX/zXOWGzsrirJ73EAFwY9dHXZsiplx0x9XVhAoMsw/s6n56hzfLQ1L5njvVGr//+aOptMLDC7flX2uosNBK7MtnMusgcTu0tHhj0cYHAMCK5EvelmMMbS3MafKZVNnb6mBiCFV4odUXWvK8ay8vAxSH5SaObqJH+NN4GyfhrFNmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XbT1IMs7/MIpAC6JJNnyBThRoVIfZNpUazmS4iufOZA=;
- b=ihuxl/Ij12rb0FlSIdcLpW6Sq6XPN+gY99FBFWW9u2WU9HyA1IXZ8V7xSfAFzH/He+6LX+8CxP2QqsKgavxlYViOpAfsskv8R9u5m32ZYXmyqu5AStmgbHO3Cf4YuCKnvdUjKprDe2lMdz8mc+tpqt++CL6KctoS3wh3h/hNweg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MW4PR13MB5886.namprd13.prod.outlook.com (2603:10b6:303:1b5::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.29; Tue, 4 Apr
- 2023 15:25:33 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.035; Tue, 4 Apr 2023
- 15:25:33 +0000
-Date:   Tue, 4 Apr 2023 17:25:25 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Shenwei Wang <shenwei.wang@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230004AbjDDP15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 11:27:57 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EEC4491;
+        Tue,  4 Apr 2023 08:27:56 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 334EgTuB004246;
+        Tue, 4 Apr 2023 15:27:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=O9XrjVx+x40QVB09UmyJ8DMy2DCEub230J9/Ih3XMtA=;
+ b=tl4hrMf8ebrGfBvICt3Wwk/AeYdLJ7zjc3HUMt0i4bbLfJRe+uRdGpW37llSj/0zhLSe
+ hvL1eiJsCQpMpNFjL6C+er+YLe5n8ITbwT60aJGXLp+FwAhHyyDyqD55Q3bERn+oBQFf
+ NIM8sks4X6wF164LyIdAeKHxTvCgOjprbPiiUNRtC3TCC2gmrFn304eSzE+xRwy++XkJ
+ 9sM+67qceVabiVNFbguOSkZzWuSCfhttDIAYRLUE3tBKBi6VYnaTNHVOZ7jiK2aOQH3E
+ K1gkrH285OQjmte2wG3P5TMCgcIVQULKpa63Cjj2Cqlmjh5IDTUJ0E7KSd8zuR/7UcYL SQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3prmh4mupe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 04 Apr 2023 15:27:42 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 334FGxbb012836;
+        Tue, 4 Apr 2023 15:27:42 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3prmh4munj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 04 Apr 2023 15:27:41 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3341lc4m023645;
+        Tue, 4 Apr 2023 15:27:39 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+        by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3ppbvg2m91-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 04 Apr 2023 15:27:39 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+        by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 334FRa1N47317518
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 4 Apr 2023 15:27:36 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 489F72004B;
+        Tue,  4 Apr 2023 15:27:36 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CC8A520040;
+        Tue,  4 Apr 2023 15:27:35 +0000 (GMT)
+Received: from [9.155.211.163] (unknown [9.155.211.163])
+        by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Tue,  4 Apr 2023 15:27:35 +0000 (GMT)
+Message-ID: <a25455eac6a02eeb9710d9204dfe0b91938f61a1.camel@linux.ibm.com>
+Subject: Re: [PATCH] net/mlx5: stop waiting for PCI link if reset is required
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Wong Vee Khee <veekhee@apple.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrey Konovalov <andrey.konovalov@linaro.org>,
-        Revanth Kumar Uppala <ruppala@nvidia.com>,
-        Jochen Henneberg <jh@henneberg-systemdesign.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        imx@lists.linux.dev
-Subject: Re: [PATCH v6 2/2] net: stmmac: dwmac-imx: use platform specific
- reset for imx93 SoCs
-Message-ID: <ZCxBZZ4DAgy5dTGi@corigine.com>
-References: <20230403222302.328262-1-shenwei.wang@nxp.com>
- <20230403222302.328262-2-shenwei.wang@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230403222302.328262-2-shenwei.wang@nxp.com>
-X-ClientProxiedBy: AS4P189CA0026.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:5db::13) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Alexander Schmidt <alexs@linux.ibm.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 04 Apr 2023 17:27:35 +0200
+In-Reply-To: <20230403182105.GC4514@unreal>
+References: <20230403075657.168294-1-schnelle@linux.ibm.com>
+         <20230403182105.GC4514@unreal>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW4PR13MB5886:EE_
-X-MS-Office365-Filtering-Correlation-Id: b74b4bd6-5e4c-4a95-bc57-08db3520d504
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TVCkR/3B44hv3EPc8lNsAscpk9jCkz+YuwqwYeYnyQssIlkXGxFWm17ih7bXq4D8GEYRIg+CVVyW7Hu983dG3ttljHG04smFKJrQwYUAEG4MOVLGIPUXEeTmNyHpVhoa1zsykSxlHTjbQGOW/VTBmTVrEjVy5JGD4v1ihRYxES7NSVKTnjTprxDI8QrmE8SEVAcqqfVyK+Gp5yd2y/LKUBUAeOb9ijZy7b5AgUH2w2hB8G/sN1TJ6C3alWSHVsi/uoSyOyymQtYXfKB3Z+2ooLbliy4lcm+Plrd+xmHVoBUxMYqzfNXu1NVEIeDBGxOFUBM0TGDlodW4DXgOhze4LEBTEfYtKCI/XpT97zHT+Qeo0ocjRz6AptPqn+80+NFm0OoWlGNOLdOrJxbIG5WVLNtYG4YfQzEN4xXngcdTpU95S4c1TY11A338YnZwxkRByiUH52PQw59k9x5s3+ubVjuhDVUhNF9Me+Q2RYxpmRpyIDx2QtjiYAGXVsIjol57v+5stfshdwDZtuxYqm7axOldWVoaDudIYip69vsrKoglOFEcf9R2OVdklLxpQ1kr
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(6029001)(4636009)(366004)(39840400004)(396003)(376002)(136003)(346002)(451199021)(7416002)(36756003)(38100700002)(66476007)(44832011)(8676002)(4326008)(66946007)(8936002)(66556008)(6916009)(5660300002)(41300700001)(2906002)(2616005)(86362001)(6486002)(6512007)(4744005)(316002)(6506007)(186003)(478600001)(6666004)(54906003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Fu8J9npsdZ3TEy/oPLVFHqlALDE1pIDREHCNTDdgife7NP6GaDstCxjEyp3e?=
- =?us-ascii?Q?htgQSdKVevN/mpipM53GUAxANfOeF4gQp7+xPh8l7vDa0m/gMUOOgW4n5MAz?=
- =?us-ascii?Q?TCnQLpZ0Dd/L09p90XNqd9iszYkA5wj65YDCLRgJCaYUYzmbDS3GSf3MFLAn?=
- =?us-ascii?Q?UYuto1a8kr0DnQjtIUyyqyEOHU0qYFYWFwEYUm8q6hEuv1lpBXnky2MjWSd6?=
- =?us-ascii?Q?691uv7JCSsaOMAEM6pWSXS/mWUA78XwLeJbHtxa5WIgH+qtc6AvOb4K77oaN?=
- =?us-ascii?Q?JAuY/MdarsYb3zQAXQo4dbzafLFCgH8u+WS7UJVZ5ezv12yO8xlNA+TouSX+?=
- =?us-ascii?Q?QtOlXQldz041YOu6CVRXChKLrUNVtePL7k9nkuHHVhVGiaZ18JI9tEeAtYcS?=
- =?us-ascii?Q?O5J3QJpGyUbcI8uQFnmFDnB/l9Jnk14pLrXYwsu76nORP+MdXE2w9xKjXhOn?=
- =?us-ascii?Q?iXrn7OHDyz1PoKjSflB2kpm0JiKN3bR6BxEbfyCt/afSLMuAjoV/XYfX7oUz?=
- =?us-ascii?Q?WSbXCA5JvCde9xsODd73rNHNlhkxloZQQrEYL6qbP+tZPb0c9ED1GVLxH7BW?=
- =?us-ascii?Q?WweoPbLi+VB2UwFa7aJPELwbFtxMmjA/FNYvRbqJxeHwdZta5nw6D1k5ZGwq?=
- =?us-ascii?Q?biQC8jG+DzfkLo+V/UoQVJe11BCdxd/dXN19ks2/ybozUnH2ov6k3cLzXUPv?=
- =?us-ascii?Q?T5DxNsTpBIK6e8HeSjp8hCvb0LN+NkYsA/tB3ZndovJbt/ljPlrPcZ9bET+f?=
- =?us-ascii?Q?s6Z8U/WvaBHjh9Wvp7GF8WAeqlJTnn0y6PjcdNNeUGEdXkcklmvPbsNQ9w8c?=
- =?us-ascii?Q?hDfy3myIwQx8eOtaNHdswmSWcvydtN/U7xoYVo3YtgFEiCOH26ISiMrBK4X7?=
- =?us-ascii?Q?ziDjb7M6E29IgL/7jPZ259c5OUB8AVPdLon4FhLvsHC6GWe8ABKTrPItp9ic?=
- =?us-ascii?Q?IRccQX9eGK4yz0QG7qQcnLiNa3gkWRu6LvPyPktqo/dQzqUb01ONrcSO8qUG?=
- =?us-ascii?Q?ZM3qxS0sY1MkjMyXxgN7Ge5zrtsXVuoTSKeP8zxxozBRa4+3riRYuN5wkYr8?=
- =?us-ascii?Q?aZuUc71OshJk4Lh8lHOrCyUai1CGtyOka1ckSwdTt8d/vtNqvANZDoLhdGca?=
- =?us-ascii?Q?PKZv3A5bV3Md6qwww0XdAwNL8QlD1IJZk0mc/Mp+9r2DcZJYHAQMQVHd1HCw?=
- =?us-ascii?Q?Qo4ST4aRx1Vozfii1dHfqFvJ0FL0D6G7NuUtEIBpO8+sW9aJRwPYYtt0F0i/?=
- =?us-ascii?Q?k8yAnTyADRTSMT0qVIqoQ+B8mC3vaWIbAt6ulpkpQ2S5EnHgXeZqWcjxfOKU?=
- =?us-ascii?Q?/f7Tyqqb1WWXw5G+lfdwD6J1pJdPrJyRAIkbcbjAo1FPyFuz2tk245RTPQmj?=
- =?us-ascii?Q?f7NNNVm6bk8m2LbW3YHCbkTTx858PjhW7Pbzm7Y94FbNDDQO23HJ2Mn9ruyG?=
- =?us-ascii?Q?ZWqa8fD76Fyp9jqSoTnjzh8Xq9cJIEXV3NZGKH+Y+IbTZ90UxE5hHhsbNjJ4?=
- =?us-ascii?Q?JTZ8xC3mjHkb5Zcen2YaoJqxauMzcGFLrWmweqW/N6CgBQrGAyUCihavW0UE?=
- =?us-ascii?Q?y1SIWexAMFwmAT3cdp6usT5wZL4OSTPy46P57e3cphLJTZ4TVc+TFmJTTn/p?=
- =?us-ascii?Q?CyrkIzP6zE1PU6BI5HvcujX1R5V3cfEAlpPxbeMdGlQ2JOxJfrmP6eRmbiR+?=
- =?us-ascii?Q?QUmjtw=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b74b4bd6-5e4c-4a95-bc57-08db3520d504
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 15:25:33.4635
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UbRn199O+dhgIa0hOCpQFcmWptd39BJ1veEw2KCC28lo+bPbMxvAdFM4GtGGBdoa8e1SsdnuAR7KCaZAPqtR4vwAa9lUE0WhaNZDbm7qQts=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5886
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: KSOKikWBu51tUSlcAoH1KzvH5iF1Nxvk
+X-Proofpoint-ORIG-GUID: 36_dKQ-S0GYJnTH2R6MItLTu3i7Wr5Yd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-04_06,2023-04-04_04,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ bulkscore=0 spamscore=0 malwarescore=0 clxscore=1015 impostorscore=0
+ phishscore=0 suspectscore=0 adultscore=0 lowpriorityscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304040139
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -134,14 +99,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 03, 2023 at 05:23:02PM -0500, Shenwei Wang wrote:
-> The patch addresses an issue with the reset logic on the i.MX93 SoC, which
-> requires configuration of the correct interface speed under RMII mode to
-> complete the reset. The patch implements a fix_soc_reset function and uses
-> it specifically for the i.MX93 SoCs.
-> 
-> Reviewed-by: Fabio Estevam <festevam@gmail.com>
-> Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+On Mon, 2023-04-03 at 21:21 +0300, Leon Romanovsky wrote:
+> On Mon, Apr 03, 2023 at 09:56:56AM +0200, Niklas Schnelle wrote:
+> > after an error on the PCI link, the driver does not need to wait
+> > for the link to become functional again as a reset is required. Stop
+> > the wait loop in this case to accelerate the recovery flow.
+> >=20
+> > Co-developed-by: Alexander Schmidt <alexs@linux.ibm.com>
+> > Signed-off-by: Alexander Schmidt <alexs@linux.ibm.com>
+> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/health.c | 12 ++++++++++--
+> >  1 file changed, 10 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers=
+/net/ethernet/mellanox/mlx5/core/health.c
+> > index f9438d4e43ca..81ca44e0705a 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+> > @@ -325,6 +325,8 @@ int mlx5_health_wait_pci_up(struct mlx5_core_dev *d=
+ev)
+> >  	while (sensor_pci_not_working(dev)) {
+>=20
+> According to the comment in sensor_pci_not_working(), this loop is
+> supposed to wait till PCI will be ready again. Otherwise, already in
+> first iteration, we will bail out with pci_channel_offline() error.
+>=20
+> Thanks
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Well yes. The problem is that this works for intermittent errors
+including when the card resets itself which seems to be the use case in
+mlx5_fw_reset_complete_reload() and mlx5_devlink_reload_fw_activate().
+If there is a PCI error that requires a link reset though we see some
+problems though it does work after running into the timeout.
+
+As I understand it and as implemented at least on s390,
+pci_channel_io_frozen is only set for fatal errors that require a reset
+while non fatal errors will have pci_channel_io_normal (see also
+Documentation/PCI/pcieaer-howto.rst) thus I think pci_channel_offline()
+should only be true if a reset is required or there is a permanent
+error. Furthermore in the pci_channel_io_frozen state the PCI function
+may be isolated and the reads will not reach the endpoint, this is the
+case at least on s390.  Thus for errors requiring a reset the loop
+without pci_channel_offline() will run until the reset is performed or
+the timeout is reached. In the mlx5_health_try_recover() case during
+error recovery we will then indeed always loop until timeout, because
+the loop blocks mlx5_pci_err_detected() from returning thus blocking
+the reset (see Documentation/PCI/pci-error-recovery.rst). Adding Bjorn,
+maybe he can confirm or correct my assumptions here.
+
+Thanks,
+Niklas
+
+>=20
+> >  		if (time_after(jiffies, end))
+> >  			return -ETIMEDOUT;
+> > +		if (pci_channel_offline(dev->pdev))
+> > +			return -EIO;
+> >  		msleep(100);
+> >  	}
+> >  	return 0;
+> > @@ -332,10 +334,16 @@ int mlx5_health_wait_pci_up(struct mlx5_core_dev =
+*dev)
+> > =20
+> >  static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
+> >  {
+> > +	int rc;
+> > +
+> >  	mlx5_core_warn(dev, "handling bad device here\n");
+> >  	mlx5_handle_bad_state(dev);
+> > -	if (mlx5_health_wait_pci_up(dev)) {
+> > -		mlx5_core_err(dev, "health recovery flow aborted, PCI reads still no=
+t working\n");
+> > +	rc =3D mlx5_health_wait_pci_up(dev);
+> > +	if (rc) {
+> > +		if (rc =3D=3D -ETIMEDOUT)
+> > +			mlx5_core_err(dev, "health recovery flow aborted, PCI reads still n=
+ot working\n");
+> > +		else
+> > +			mlx5_core_err(dev, "health recovery flow aborted, PCI channel offli=
+ne\n");
+> >  		return -EIO;
+> >  	}
+> >  	mlx5_core_err(dev, "starting health recovery flow\n");
+> >=20
+> > base-commit: 7e364e56293bb98cae1b55fd835f5991c4e96e7d
+> > --=20
+> > 2.37.2
+> >=20
 
