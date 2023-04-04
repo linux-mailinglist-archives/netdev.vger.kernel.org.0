@@ -2,117 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B086D5F74
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 327156D5F76
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234932AbjDDLtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S234949AbjDDLuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234930AbjDDLtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:49:22 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AE61984
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:49:21 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id p34so18828806wms.3
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 04:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680608960;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qB3H8ACIas1cJ9LhTGdiL+1X8KqULzEpd4jXzBkDffU=;
-        b=Yri/n1y4p6uZxkstJXPzXRp6D5NE6QcuhBOteR/iyCM44kqBXrQWpzlOQ4jDYBvqbD
-         965uF84aQHiFslZ+ciYI5pg2ZZi6/GeEm0lKzWfhDkERiTZ+MpA3zL509QtL0eAph2bP
-         VYJ74plZP7m2k7hPE8thR5p6p2NgR/XaMXc3xL3yLMnB3SHJ7OasNaGRHbfEANZHbhHA
-         A1CpKS+e+gZfYhKMvs23mpYkQ+3CmRrkMu0hUxh0WhC8PPa3FQam1ym3+QRXrmuH3oe1
-         G03bYiVjhndgryUHw+kWqGNYRei2HdBqxn0YDLxfUX7JPvnRllakOdELEsj3velNQ6Md
-         4H4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680608960;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qB3H8ACIas1cJ9LhTGdiL+1X8KqULzEpd4jXzBkDffU=;
-        b=1ommz36qxMDFOg6E+/GPMQdTCA0MfNb4fpOd+7cIjoeuetY4/HhGkoaFh4z3dZQSbp
-         3V0SgIg6Pvtm0VHycTtFK7No0WvzG3yelkHwp72Va2n1y4g/NENij3Qk8si0fGxe5teS
-         6jY3/xJCsMKJbHHIVhq8zKunlBu0jsXDrQ2wWfEG1O/yxVHl95yS1fJlKUXBspYxvXmc
-         QLp5xFwvdHDax8TnJ+i/i8TV6qD1UXKDEMH1U/qr5mSGjhDJNRtNvN5Fnumq5xE+JeS4
-         +zhTtDZ1F5LFnEHyrNwXg4EVjWcHVRRoLDkDgF4vjO7s/OQkxPO0/hioUXzrlQz7zEcA
-         NM7Q==
-X-Gm-Message-State: AAQBX9dR2HfP8SRVFJQumOwN+e+ARXFyjwtPVKlBEt5JexchNIERqFFN
-        PFk9JZgvOOTT9pzn6+sGJx8=
-X-Google-Smtp-Source: AKy350aKnCJFunqkhtjNLisk8w3vS2pXjtoLGzlB1gLgArmkIYaNs7lRxPm11MNC2fAzb+7hLfkU4A==
-X-Received: by 2002:a05:600c:ace:b0:3ed:ea48:cd92 with SMTP id c14-20020a05600c0ace00b003edea48cd92mr2049502wmr.15.1680608959901;
-        Tue, 04 Apr 2023 04:49:19 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id q3-20020a05600c46c300b003eddc6aa5fasm22526135wmo.39.2023.04.04.04.49.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Apr 2023 04:49:19 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 2/6] net: ethtool: record custom RSS contexts
- in the IDR
-To:     Jakub Kicinski <kuba@kernel.org>, edward.cree@amd.com
-Cc:     linux-net-drivers@amd.com, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        habetsm.xilinx@gmail.com, sudheer.mogilappagari@intel.com
-References: <cover.1680538846.git.ecree.xilinx@gmail.com>
- <57c0a5a7d41e1341e8a7b0256ca8ed6f3e3ea9c0.1680538846.git.ecree.xilinx@gmail.com>
- <20230403144839.1dc56d3c@kernel.org>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <cfaa6688-125f-9f2e-805a-ce68281d60d2@gmail.com>
-Date:   Tue, 4 Apr 2023 12:49:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S234863AbjDDLuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:50:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023251982;
+        Tue,  4 Apr 2023 04:50:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F62D632A3;
+        Tue,  4 Apr 2023 11:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E2B84C4339C;
+        Tue,  4 Apr 2023 11:50:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680609017;
+        bh=PUme9Pqjr+nOp7BWP8OmqF17obLXySvwFTlVeaoxJaE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZTaK2r+wl4Ag8QVQjUuxGrypd22g9th1Nn/TeN3oGHJZ1ITNecen8gBdA45U8zWoH
+         TSZNhR8Ljm6WLiDpFYCz+cVhDnt6hPz0XEkNNk3iTzrv5wKk/kiyxb0vl+7ennRL1m
+         Ahkiue8KerIjcH3weqJgp9Ths6X+8EqM8DgZF1vX7+uRRpmvjBsVusFKf5XVsy0bM8
+         tT9xc8i3mqfSq5/VrHdnDm6UOUetcGBicNBKsrajoCr8j4zK9Jm2Xkn23CWb7hGwlI
+         URA93xRtzlrai17cJQnXBMaJ4hIVZ2PLEKrL9b8VvLrdGJ3vuoFE8DrEsZVq+ol+0r
+         ZMK2Xt51fPMFA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BFF37E5EA89;
+        Tue,  4 Apr 2023 11:50:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20230403144839.1dc56d3c@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/3] vsock: return errors other than -ENOMEM to
+ socket
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <168060901777.14038.3884666734757699938.git-patchwork-notify@kernel.org>
+Date:   Tue, 04 Apr 2023 11:50:17 +0000
+References: <0d20e25a-640c-72c1-2dcb-7a53a05e3132@sberdevices.ru>
+In-Reply-To: <0d20e25a-640c-72c1-2dcb-7a53a05e3132@sberdevices.ru>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        bobby.eshleman@bytedance.com, bryantan@vmware.com,
+        vdasa@vmware.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@sberdevices.ru,
+        oxffffaa@gmail.com, avkrasnov@sberdevices.ru, pv-drivers@vmware.com
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/04/2023 22:48, Jakub Kicinski wrote:
-> On Mon, 3 Apr 2023 17:32:59 +0100 edward.cree@amd.com wrote:
->> @@ -880,6 +896,7 @@ struct ethtool_ops {
->>  			    u8 *hfunc);
->>  	int	(*set_rxfh)(struct net_device *, const u32 *indir,
->>  			    const u8 *key, const u8 hfunc);
->> +	u16	(*get_rxfh_priv_size)(struct net_device *);
->>  	int	(*get_rxfh_context)(struct net_device *, u32 *indir, u8 *key,
->>  				    u8 *hfunc, u32 rss_context);
->>  	int	(*set_rxfh_context)(struct net_device *, const u32 *indir,
+Hello:
+
+This series was applied to netdev/net-next.git (main)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 3 Apr 2023 14:23:00 +0300 you wrote:
+> Hello,
 > 
-> Would a static value not do for most drivers?
-
-Yes, it would.
-
-> We already have a handful of data fields in the "ops" structure.
-
-I didn't notice that / realise it was an option.  Will do.
-
->> @@ -1331,6 +1335,31 @@ static noinline_for_stack int ethtool_set_rxfh(struct net_device *dev,
->>  		}
->>  	}
->>  
->> +	if (create) {
->> +		if (delete) {
->> +			ret = -EINVAL;
->> +			goto out;
->> +		}
->> +		ctx = kzalloc(ethtool_rxfh_context_size(dev_indir_size,
->> +							dev_key_size,
->> +							dev_priv_size),
->> +			      GFP_USER);
+> this patchset removes behaviour, where error code returned from any
+> transport was always switched to ENOMEM. This works in the same way as
+> patch from Bobby Eshleman:
+> commit c43170b7e157 ("vsock: return errors other than -ENOMEM to socket"),
+> but for receive calls. VMCI transport is also updated (both tx and rx
+> SOCK_STREAM callbacks), because it returns VMCI specific error code to
+> af_vsock.c (like VMCI_ERROR_*). Tx path is already merged to net, so it
+> was excluded from patchset in v4. At the same time, virtio and Hyper-V
+> transports are using general error codes, so there is no need to update
+> them.
 > 
-> GFP_USER? Do you mean it for accounting? GFP_KERNEL_ACCOUNT?
+> [...]
 
-It's an allocation triggerable by userland; I was under the
- impression that those were supposed to use GFP_USER for some
- reason; the rss_config alloc further up this function does.
+Here is the summary with links:
+  - [net-next,v4,1/3] vsock/vmci: convert VMCI error code to -ENOMEM on receive
+    https://git.kernel.org/netdev/net-next/c/f59f3006ca7b
+  - [net-next,v4,2/3] vsock: return errors other than -ENOMEM to socket
+    https://git.kernel.org/netdev/net-next/c/02ab696febab
+  - [net-next,v4,3/3] vsock/test: update expected return values
+    https://git.kernel.org/netdev/net-next/c/b5d54eb5899a
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
