@@ -2,71 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BFCA6D5BA4
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:15:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5816D5BC8
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:24:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbjDDJP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 05:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
+        id S233934AbjDDJYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 05:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233955AbjDDJP4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:15:56 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1D41A7;
-        Tue,  4 Apr 2023 02:15:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680599755; x=1712135755;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=c3TWM/U7ae/+krBKWKZnTGu8xrMC3rbZUK6++vwlxtY=;
-  b=b7yuJDj6TtQ6TcoPe/S0KVJYushwCH4iX8SyI7bepbqf4yQMXCljYqVi
-   qn9Byf2j5hcTEPZG6jCKsJ8YTW3H1NWuPyHoOd0mPdIOMi65jnnbqCApg
-   CkNdt9LQZOhRr8nzqhFYyDf+o+NAH9AOjlPoopH8OkZfwon8tRJVCJfS2
-   +1631Pydg8DGa9btbzHCTu4A8e47YOYbgH/OCVns2TNtHx2EJxZ9Py8Kk
-   l82qLfoqKLTDRJz7s5GR0NeIS3sysBWoWmyxKF1XVZU5hbVbT5IBaHYWB
-   1RPnzqr8REwgfnKapyxTBsD4D4exejeYZ84A49tq+Se5FpHyt4sywEp6I
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="404893346"
-X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="404893346"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 02:15:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="663513778"
-X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="663513778"
-Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2023 02:15:46 -0700
-From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>,
-        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        hock.leong.kweh@intel.com
-Subject: [RFC net 1/1] net: stmmac: skip PHY scanning when PHY already attached in DT mode
-Date:   Tue,  4 Apr 2023 17:14:42 +0800
-Message-Id: <20230404091442.3540092-1-michael.wei.hong.sit@intel.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S233526AbjDDJYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:24:21 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FF71981;
+        Tue,  4 Apr 2023 02:24:17 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4PrMgl4Sbmz17PxZ;
+        Tue,  4 Apr 2023 17:20:51 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 4 Apr 2023 17:24:14 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
+        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>, <kuniyu@amazon.com>
+CC:     <netdev@vger.kernel.org>
+Subject: [PATCH 5.10 0/5] Backport complete patchset for call inet6_destroy_sock() in IPv6 sk->sk_destruct()
+Date:   Tue, 4 Apr 2023 17:24:10 +0800
+Message-ID: <cover.1680589114.git.william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=AC_FROM_MANY_DOTS,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,38 +46,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If PHY is successfully attached during phylink_fwnode_phy_connect()
-in DT mode. MAC should not need to scan for PHY again.
+5.10 LTS has backported commit ca43ccf41224 ("dccp/tcp: Avoid negative
+sk_forward_alloc by ipv6_pinfo.pktoptions.") and commit 62ec33b44e0f ("net:
+Remove WARN_ON_ONCE(sk->sk_forward_alloc) from sk_stream_kill_queues()."),
+but these are incomplete. There are some patches that have not been
+backported including key commit d38afeec26ed ("tcp/udp: Call
+inet6_destroy_sock() in IPv6 sk->sk_destruct().") and commit b5fc29233d28
+("inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy()."). Without
+them, there will be some memory leak bugs.
 
-Adding a logic to check if ovr_an_inband is set before scanning for
-a PHY, since phylink_fwnode_phy_connect() returns 0 when
+Backport complete patchset for call inet6_destroy_sock() in IPv6
+sk->sk_destruct().
 
-	phy_fwnode = fwnode_get_phy_node(fwnode);
-	if (IS_ERR(phy_fwnode)) {
-		if (pl->cfg_link_an_mode == MLO_AN_PHY)
-			return -ENODEV;
-		return 0;
-	}
+Kuniyuki Iwashima (5):
+  udp: Call inet6_destroy_sock() in setsockopt(IPV6_ADDRFORM).
+  tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
+  inet6: Remove inet6_destroy_sock() in sk->sk_prot->destroy().
+  dccp: Call inet6_destroy_sock() via sk->sk_destruct().
+  sctp: Call inet6_destroy_sock() via sk->sk_destruct().
 
-Fixes: fe2cfbc96803 ("net: stmmac: check if MAC needs to attach to a PHY")
-Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/ipv6.h       |  2 ++
+ include/net/udp.h        |  2 +-
+ include/net/udplite.h    |  8 --------
+ net/dccp/dccp.h          |  1 +
+ net/dccp/ipv6.c          | 15 ++++++++-------
+ net/dccp/proto.c         |  8 +++++++-
+ net/ipv4/udp.c           |  9 ++++++---
+ net/ipv4/udplite.c       |  8 ++++++++
+ net/ipv6/af_inet6.c      | 15 ++++++++++++++-
+ net/ipv6/ipv6_sockglue.c | 20 ++++++++------------
+ net/ipv6/ping.c          |  6 ------
+ net/ipv6/raw.c           |  2 --
+ net/ipv6/tcp_ipv6.c      |  8 +-------
+ net/ipv6/udp.c           | 17 ++++++++++++++---
+ net/ipv6/udp_impl.h      |  1 +
+ net/ipv6/udplite.c       |  9 ++++++++-
+ net/l2tp/l2tp_ip6.c      |  2 --
+ net/mptcp/protocol.c     |  7 -------
+ net/sctp/socket.c        | 29 +++++++++++++++++++++--------
+ 19 files changed, 100 insertions(+), 69 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d41a5f92aee7..4b8d3d975678 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1149,7 +1149,7 @@ static int stmmac_init_phy(struct net_device *dev)
- 	/* Some DT bindings do not set-up the PHY handle. Let's try to
- 	 * manually parse it
- 	 */
--	if (!fwnode || phy_needed || ret) {
-+	if (!fwnode || (phy_needed && priv->phylink_config.ovr_an_inband) || ret) {
- 		int addr = priv->plat->phy_addr;
- 		struct phy_device *phydev;
- 
 -- 
-2.34.1
+2.25.1
 
