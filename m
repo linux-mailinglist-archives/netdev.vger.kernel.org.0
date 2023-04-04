@@ -2,216 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD536D61AC
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 14:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F18BC6D61B0
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 14:54:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234430AbjDDMyH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Apr 2023 08:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
+        id S235087AbjDDMyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 08:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235087AbjDDMyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 08:54:05 -0400
-Received: from us-smtp-delivery-44.mimecast.com (unknown [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EC6E60
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 05:54:03 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-25-o99LjM4cOAWcrt0bL_JNdg-1; Tue, 04 Apr 2023 08:53:46 -0400
-X-MC-Unique: o99LjM4cOAWcrt0bL_JNdg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC39588CC40;
-        Tue,  4 Apr 2023 12:53:45 +0000 (UTC)
-Received: from hog (unknown [10.39.192.141])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8312C440BC;
-        Tue,  4 Apr 2023 12:53:44 +0000 (UTC)
-Date:   Tue, 4 Apr 2023 14:53:43 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Emeel Hakim <ehakim@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for
- VLAN interface
-Message-ID: <ZCwd11LpAUqda0eC@hog>
-References: <20230329122107.22658-1-ehakim@nvidia.com>
- <20230329122107.22658-2-ehakim@nvidia.com>
- <ZCROr7DhsoRyU1qP@hog>
- <20230329184201.GB831478@unreal>
- <ZCXEmUQgswOBoRqR@hog>
- <20230330185656.GZ831478@unreal>
- <ZCXx4oJfnzcAKX65@hog>
- <IA1PR12MB63531CD8C6B1844376658439AB929@IA1PR12MB6353.namprd12.prod.outlook.com>
+        with ESMTP id S235136AbjDDMyT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 08:54:19 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2903A3A9A;
+        Tue,  4 Apr 2023 05:54:12 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-5456249756bso611555617b3.5;
+        Tue, 04 Apr 2023 05:54:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680612851;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GBoR05ONySxxhgKIii08lMTHzVRyAQG8q9irevkw9T4=;
+        b=ZTPeimleyFzVxcEW1lCVGD0FQnOV54vk3xFhJQJIRe2K6svhNx6Wv6rsBX/wXrr8JI
+         a3el4IR8fn162mvqmjHyGdv69q4XkTUTlf4O/JnsKvdjCD6RcvQHR3NJJ0eOK5Iz9jY0
+         413sZIUxgj+TK7Z/g8Ax8qXs8bv7N8FkUFO6uK4f6L4RNarLZeWkJHYhiGIkoNYVvukI
+         n6ef+0Zz9fCcUbfS5hOEUQG3MFSvrRXlIli31ok9shVO1a7QNyvSc1Az3NrLCFNfTgJw
+         GDbmASYy3cfZT7fKXtang+F+xB2TkaxSaOyt1cq/8bcE5xdnZIWrZUhL7iBIxeh/U0OY
+         mhSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680612851;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GBoR05ONySxxhgKIii08lMTHzVRyAQG8q9irevkw9T4=;
+        b=vYX9coxpApWYuIUrVL7IcbWwhdzJatLntaN3mW1uYUUaa8Z8jkHQq4cBZ3Kd592sC+
+         /T4cNLp/QcWLL9l5XeuSGjWJeKeUSA2r3Pq9pm9CF9iq9NDi9HOooaznjLLaP8x8pD5Q
+         5//VwJjAMRFkoKBIMvYcduQqDiEMOkQiNuABc7SPq9IXvVa5F7yeisYlY5t9ZH7Erb+D
+         wk1b6rUeNtT97Cj4IN2kJsGC2DhZX/V5ZsPnjlffKimwdT2QVJp5Qi7T29l4NSsu6U9S
+         7V+CULdCaWBlQ5aI/i8lLHcI5VODIRTPHLjWhjuqfNk6ZhEYd4c5BjpQ6Lx84bRak3dR
+         xnvw==
+X-Gm-Message-State: AAQBX9cg+G3TkRlBWYsL89sr9ZOPZUlX4Tbpy6sohIzN5NO7qqLu3jsB
+        zs++4FNExAqPTttZDKgglKeK+XNdSU59L3WVfDU=
+X-Google-Smtp-Source: AKy350aIsS45OIJCKiiQOXVNjfwbV5m+AHCE0gtJEr/EQuFvqLoDudBbQksBbJ8EAYqscusudninaqqaBy9JV3ZfKow=
+X-Received: by 2002:a81:e60d:0:b0:544:94fe:4244 with SMTP id
+ u13-20020a81e60d000000b0054494fe4244mr1386664ywl.10.1680612851267; Tue, 04
+ Apr 2023 05:54:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <IA1PR12MB63531CD8C6B1844376658439AB929@IA1PR12MB6353.namprd12.prod.outlook.com>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=0.6 required=5.0 tests=RCVD_IN_DNSWL_LOW,RDNS_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=no autolearn_force=no version=3.4.6
+References: <20230329180502.1884307-1-kal.conley@dectris.com>
+ <20230329180502.1884307-9-kal.conley@dectris.com> <CAJ8uoz330DWzHabpqd+HaeAxBi2gr+GOTtnS9WJFWrt=6DaeWQ@mail.gmail.com>
+ <CAHApi-nfBM=i1WeZ-jtHN87AWPvURo0LygT9yYxF=cUeYthXBQ@mail.gmail.com>
+ <CAJ8uoz0SEkcXQuoqYd94GreJqpCxQuf1QVgm9=Um6Wqk=s8GBw@mail.gmail.com>
+ <CAHApi-=ui3JofMr7y+LvuYkXCU=h7vGiKXsfuV5gog-02u-u+Q@mail.gmail.com>
+ <CAJ8uoz0GgzzfrgS0189=zwY-zzogZq+=v-NCY7O+RuWrwe1n6w@mail.gmail.com>
+ <CAHApi-kVF5dS=ym7PXttCVAz7jEod2cOhh27YYwkidCUogu6-A@mail.gmail.com> <CAHApi-mXt27N0dWW1QN5qZ6OOV9uVGxc-kuEd+SBF8hDJ2NPXA@mail.gmail.com>
+In-Reply-To: <CAHApi-mXt27N0dWW1QN5qZ6OOV9uVGxc-kuEd+SBF8hDJ2NPXA@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 4 Apr 2023 14:54:00 +0200
+Message-ID: <CAJ8uoz3ORFU1b8Fd8vJ0GGrnCJLcVC+Av=YU4HzbfY9T5P2GDA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 08/10] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     Kal Cutter Conley <kal.conley@dectris.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2023-04-03, 09:29:28 +0000, Emeel Hakim wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Sabrina Dubroca <sd@queasysnail.net>
-> > Sent: Thursday, 30 March 2023 23:33
-> > To: Leon Romanovsky <leon@kernel.org>
-> > Cc: Emeel Hakim <ehakim@nvidia.com>; davem@davemloft.net; kuba@kernel.org;
-> > pabeni@redhat.com; edumazet@google.com; netdev@vger.kernel.org
-> > Subject: Re: [PATCH net-next v2 1/4] vlan: Add MACsec offload operations for VLAN
-> > interface
-> > 
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > 2023-03-30, 21:56:56 +0300, Leon Romanovsky wrote:
-> > > On Thu, Mar 30, 2023 at 07:19:21PM +0200, Sabrina Dubroca wrote:
-> > > > 2023-03-29, 21:42:01 +0300, Leon Romanovsky wrote:
-> > > > > On Wed, Mar 29, 2023 at 04:43:59PM +0200, Sabrina Dubroca wrote:
-> > > > > > 2023-03-29, 15:21:04 +0300, Emeel Hakim wrote:
-> > > > > > > Add support for MACsec offload operations for VLAN driver to
-> > > > > > > allow offloading MACsec when VLAN's real device supports
-> > > > > > > Macsec offload by forwarding the offload request to it.
-> > > > > > >
-> > > > > > > Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
-> > > > > > > ---
-> > > > > > > V1 -> V2: - Consult vlan_features when adding NETIF_F_HW_MACSEC.
+On Tue, 4 Apr 2023 at 14:32, Kal Cutter Conley <kal.conley@dectris.com> wrote:
+>
+> > > > > > > Is not the max 64K as you test against XDP_UMEM_MAX_CHUNK_SIZE in
+> > > > > > > xdp_umem_reg()?
 > > > > > >
-> > > > > > Uh? You're not actually doing that? You also dropped the changes
-> > > > > > to vlan_dev_fix_features without explaining why.
+> > > > > > The absolute max is 64K. In the case of HPAGE_SIZE < 64K, then it
+> > > > > > would be HPAGE_SIZE.
 > > > > >
-> > > > > vlan_dev_fix_features() relies on real_dev->vlan_features which
-> > > > > was set in mlx5 part of this patch.
-> > > > >
-> > > > >   643 static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
-> > > > >   644         netdev_features_t features)
-> > > > >   645 {
-> > > > >   ...
-> > > > >   649
-> > > > >   650         lower_features = netdev_intersect_features((real_dev-
-> > >vlan_features |
-> > > > >   651                                                     NETIF_F_RXCSUM),
-> > > > >   652                                                    real_dev->features);
-> > > > >
-> > > > > This part ensure that once real_dev->vlan_features and
-> > > > > real_dev->features have NETIF_F_HW_MACSEC, the returned features will
-> > include NETIF_F_HW_MACSEC too.
+> > > > > Is there such a case when HPAGE_SIZE would be less than 64K? If not,
+> > > > > then just write 64K.
 > > > >
-> > > > Ok, thanks.
-> > > >
-> > > > But back to the issue of vlan_features, in vlan_dev_init: I'm not
-> > > > convinced NETIF_F_HW_MACSEC should be added to hw_features based on
-> > > > ->features. That would result in a new vlan device that can't
-> > > > ->offload
-> > > > macsec at all if it was created at the wrong time (while the lower
-> > > > device's macsec offload was temporarily disabled).
+> > > > Yes. While most platforms have HPAGE_SIZE defined to a compile-time
+> > > > constant >= 64K (very often 2M) there are platforms (at least ia64 and
+> > > > powerpc) where the hugepage size is configured at boot. Specifically,
+> > > > in the case of Itanium (ia64), the hugepage size may be configured at
+> > > > boot to any valid page size > PAGE_SIZE (e.g. 8K). See:
+> > > > https://elixir.bootlin.com/linux/latest/source/arch/ia64/mm/hugetlbpage.c#L159
 > > >
-> > > Sorry, I'm new to this netdev features zoo, but if I read correctly
-> > > Documentation/networking/netdev-features.rst, the ->features is the
-> > > list of enabled ones:
-> > >
-> > >    29  2. netdev->features set contains features which are currently enabled
-> > >    30     for a device.  This should be changed only by network core or in
-> > >    31     error paths of ndo_set_features callback.
-> > >
-> > > And user will have a chance to disable it for VLAN because it was
-> > > added to ->hw_features:
-> > >
-> > >    24  1. netdev->hw_features set contains features whose state may possibly
-> > >    25     be changed (enabled or disabled) for a particular device by user's
-> > >    26     request.  This set should be initialized in ndo_init callback and not
-> > >    27     changed later.
-> > >
-> > > So how can VLAN be created with NETIF_F_HW_MACSEC while real_dev
-> > > mcasec offload is disabled?
-> > 
-> > I'm proposing that be VLAN device be created with the capability (->hw_features
-> > contains NETIF_F_HW_MACSEC) but disabled (->features doesn't contain
-> > NETIF_F_HW_MACSEC). That way, if NETIF_F_HW_MACSEC is re-enabled on the
-> > lower device, you don't need to destroy the VLAN device to enable macsec offload
-> > on it as well. You still won't be able to enable macsec offload on the VLAN device
-> > unless it's active on the real NIC.
-> > 
-> > I think whether the lower device currently has NETIF_F_HW_MACSEC should only
-> > affect whether you can enable the feature on the vlan device right now. What
-> > feature is enabled at creation time should be irrelevant.
-> 
-> Thanks for the proposal Sabrina, I'm also new to this netdev features zone so IIUC your'e 
-> proposing that we have NETIF_F_HW_MACSEC added to the dev->hw_features upon 
-> vlan_dev_init, but disabled (we don’t add it to dev->features) , and upon vlan_dev_fix_features
-> we check if the real_device have NETIF_F_HW_MACSEC enabled (after the intersect with the real_dev->vlan_features) 
-> and if so we add it to the features.
-> 
-> So something like:
-> 
-> static int vlan_dev_init(struct net_device *dev)
-> {
-> ...
-> 	dev->features |= dev->hw_features | NETIF_F_LLTX;
-> 	dev->hw_features |= NETIF_F_HW_MACSEC;
-> ...
-> }
+> > > So for all practical purposes it is max 64K. Let us just write that then.
+> >
+> > What about when CONFIG_HUGETLB_PAGE is not defined? Should we keep it
+> > set to PAGE_SIZE in that case, or would you like it to be a fixed
+> > constant == 64K always?
+>
+> Sorry. Now it's not clear to me if you are suggesting the
+> documentation be changed or the code or both?
 
-That would be adding the NETIF_F_HW_MACSEC to all VLAN devices,
-whether the lower device advertises this feature or not. That's wrong.
-
-
-What I had in mind was:
-
-	if (real_dev->vlan_features & NETIF_F_HW_MACSEC)
-		dev->hw_features |= NETIF_F_HW_MACSEC;
-
-
-And we should enable it by default when the lower device has it
-enabled, which would be the case with this:
-
-@@ -572,6 +572,9 @@ static int vlan_dev_init(struct net_device *dev)
- 			   NETIF_F_HIGHDMA | NETIF_F_SCTP_CRC |
- 			   NETIF_F_ALL_FCOE;
- 
-+	if (real_dev->vlan_features & NETIF_F_HW_MACSEC)
-+		dev->hw_features |= NETIF_F_HW_MACSEC;
-+
- 	dev->features |= dev->hw_features | NETIF_F_LLTX;
- 	netif_inherit_tso_max(dev, real_dev);
- 	if (dev->features & NETIF_F_VLAN_FEATURES)
-
-
-What I meant by "but disabled" in my previous email was that if the
-lower device currently has NETIF_F_HW_MACSEC, the new vlan device
-should also have it disabled, not that it should always be disabled on
-creation.
-
-
-> static netdev_features_t vlan_dev_fix_features(struct net_device *dev,
->          netdev_features_t features)
-> {
-> ...
->  	if (lower_features &  NETIF_F_HW_MACSEC)
->  		features |= NETIF_F_HW_MACSEC;
-> 
-> return features;
-> }
-
-I don't think NETIF_F_HW_MACSEC is "special" enough to require hacks
-in vlan_dev_fix_features. IMHO modifying vlan_dev_fix_features should
-only happen if we have no other way to implement a consistent and
-useful behavior. I don't think that's the case here.
-
--- 
-Sabrina
-
+The documentation.
