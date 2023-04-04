@@ -2,155 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBA26D6797
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 17:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DBDF6D680C
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 17:58:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235740AbjDDPix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 11:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59040 "EHLO
+        id S232244AbjDDP6D convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Apr 2023 11:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235811AbjDDPit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 11:38:49 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29CA49E6
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 08:38:24 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 334DwtTD022669;
-        Tue, 4 Apr 2023 15:36:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=1iTyPtjP8BT+pBQrj82x0ceuVOmed1nrW+Bs814SQss=;
- b=ZjRUDperOlqEbCuKim0HfjBDAqQ8noiiJPA2b41FnkTSrioJLpc/3YP0kmgMBvrBGrov
- ynvb6LojnLrku8lkcaEvTjca+zKAgDLl2Atq8vEpuJYA7FJHmweSuG0ZiaIFmRmbHo++
- DDTKSfG2QQ64f+4VPyuhYXwYeuzr+udykbNNt92ghudhC+atIom+SuJH5LgUnPeDFt3A
- m9kOh4jG+NCix6nUSEjYk6M7s8yKjQwhdILTtV8K1ubSUk+VGflWnfH9U01rWgGLYrv3
- 28FN6pRqVep61lUU4NV9NwDyfjICkP9epfOQswdni+LnwFGn3K923tYD4foDzQP8KGMJ 2w== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ppc7tx3ww-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 04 Apr 2023 15:36:48 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 334FMVBd001268;
-        Tue, 4 Apr 2023 15:36:47 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2176.outbound.protection.outlook.com [104.47.57.176])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3ppt3h9spq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 04 Apr 2023 15:36:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bo+AbSF2N6n0QBtWvGzh4I2PXL3gTfJPdflpL9xnb2rgoNpfHeP/umJ90NgqIpsSnWjRija602QrBWHmGncJJtiprMGbJL/iJUAKNRCtaletiztZ906e/iERml2J9z4tKhMCp5NfsYsGT60aqoKwMeKnq69kmMoLxk5oCtDi8xlNsEikzmWTYBOFCcLw7mhf9SGSsB9/3WZyBus+RMN/r0C4rkrQ9FmihtGet8aSpzfBlLp5/lxz3mlp48vFCDHwo8Y+8fk3V3unMZRiiTYSUXbOwVDBewOMxmH/pjX+2mGuzfpyl7FHKA7LGeTx6wu5MP1iC3PBI8m977B+mNmGFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1iTyPtjP8BT+pBQrj82x0ceuVOmed1nrW+Bs814SQss=;
- b=cki5CD0jQFr+aefC9ieHlAjp6gb7VDpIyISGXeKQpZgk0tnboT6o2T2gbkB176QkQyGppyJoqiDs92MTZm+fsz9iJ3Ok04BBtuEfRNYgX4PpNMXZ5Kg/TGQ2rZw2eT3VFv/xTGT+TmgNbjbpJuAKs7mIMl64Vbi+FXu4CpMpMn1r5CaYJYGqf+1QuWozbpwCUUL4/f84sK0UNMzNM7EHVFfbD00aOmkfyOXGpqV6h8JfWpUxXLpYBdtyRgiSzH9osectTdTHSRCLi7MZGdG1A4xjI9jJtcHJkLplMA9j8je75kYDColO0mpYW2EQ+P3sh4G4w82LHfcwUdWr5Iw0Cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1iTyPtjP8BT+pBQrj82x0ceuVOmed1nrW+Bs814SQss=;
- b=NyQYlyJTxxv5/TpL23q6OsvMhhz3UQ+Y58uTitnmNMBaJpN5nzt8OCuvCLtpRS9F1l+t0lfDC/sIZ4GFEnj307rQiVB00UzQ4qd01Gq7r0Z1I9dxwAlq/nXRUVKia0c4ZhI1wJLoTXAwj7crjomNyJKUxaKXj5FGf4UkI1VwdWs=
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
- by PH0PR10MB7025.namprd10.prod.outlook.com (2603:10b6:510:283::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 4 Apr
- 2023 15:36:44 +0000
-Received: from BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::ecbd:fc46:2528:36db]) by BN0PR10MB5128.namprd10.prod.outlook.com
- ([fe80::ecbd:fc46:2528:36db%7]) with mapi id 15.20.6254.035; Tue, 4 Apr 2023
- 15:36:44 +0000
-From:   Chuck Lever III <chuck.lever@oracle.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-CC:     Boris Pismenny <borisp@nvidia.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "kernel-tls-handshake@lists.linux.dev" 
-        <kernel-tls-handshake@lists.linux.dev>,
-        John Haxby <john.haxby@oracle.com>
-Subject: Re: [PATCH v8 1/4] net/handshake: Create a NETLINK service for
- handling handshake requests
-Thread-Topic: [PATCH v8 1/4] net/handshake: Create a NETLINK service for
- handling handshake requests
-Thread-Index: AQHZZlySHnrWBVVuSE6PrOQpkUIzqK8bSb6A
-Date:   Tue, 4 Apr 2023 15:36:44 +0000
-Message-ID: <63A1FBC9-8970-4A36-80B1-9C7713FF1132@oracle.com>
-References: <168054723583.2138.14337249041719295106.stgit@klimt.1015granger.net>
- <168054756211.2138.1880630504843421368.stgit@klimt.1015granger.net>
-In-Reply-To: <168054756211.2138.1880630504843421368.stgit@klimt.1015granger.net>
-Accept-Language: en-US
+        with ESMTP id S233015AbjDDP5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 11:57:53 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7DC40FD;
+        Tue,  4 Apr 2023 08:57:24 -0700 (PDT)
+Received: from lhrpeml100004.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PrX0k5wXDz67QSs;
+        Tue,  4 Apr 2023 23:36:06 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml100004.china.huawei.com (7.191.162.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Tue, 4 Apr 2023 16:36:52 +0100
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.023;
+ Tue, 4 Apr 2023 16:36:52 +0100
+From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To:     Brett Creeley <brett.creeley@amd.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "yishaih@nvidia.com" <yishaih@nvidia.com>,
+        "kevin.tian@intel.com" <kevin.tian@intel.com>
+CC:     "shannon.nelson@amd.com" <shannon.nelson@amd.com>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "simon.horman@corigine.com" <simon.horman@corigine.com>
+Subject: RE: [PATCH v7 vfio 2/7] vfio/pds: Initial support for pds_vfio VFIO
+ driver
+Thread-Topic: [PATCH v7 vfio 2/7] vfio/pds: Initial support for pds_vfio VFIO
+ driver
+Thread-Index: AQHZY2jany1ARLMPKUScPIkzk/Kj7q8bTOWA
+Date:   Tue, 4 Apr 2023 15:36:52 +0000
+Message-ID: <bfef568736b34c3988bbc463b1be91ce@huawei.com>
+References: <20230331003612.17569-1-brett.creeley@amd.com>
+ <20230331003612.17569-3-brett.creeley@amd.com>
+In-Reply-To: <20230331003612.17569-3-brett.creeley@amd.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3731.500.231)
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN0PR10MB5128:EE_|PH0PR10MB7025:EE_
-x-ms-office365-filtering-correlation-id: 97708603-3d98-41dc-edf2-08db352264e8
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: g6iJ3zz4z0zUlD5WWtXa39CJbXSJ9S1bmVTqFQEra/0H/EnVUaoWD94WOUjvUUTo6XtFr8WzLGvvYDY5RA3ZedFkoO9s6sYDBjqQ09AkHy35jzSazTj/z210y9H25f9Orc5mgunrNAzWveOd7EyFhBKhnElrP4CNUie617QSS5DZv1Np3E2XTzRk1aOBWaD/flaXvtmAkX99hrjwmlvM2R25wpGePLGWRLjaq9ADY0uPss+Ar/UKieXhlHKBI4o/trl4p6G5WldoiLNmuSgXRAIZCmzRU345nvnUApli/fp232uGJ5QAmC0Pgr+DYIZlyUzanD3flsHPZ43PjmF6jz5cmv4fmPkIhngDQSfijYTPqhdZ0WCrN02m+DzTL/cGUi5rHkGvC3g0MmV8JV4YsHbONV9Z8cZ35jeuKJG3FZCUzmT2sgN6gnoLHLU0Z0vFEEbCuZFrxWPaxg7xyVtO204ertUO3lGz4nEknOTncOnfAeej0g1ksIx2L2n5ya7V4Ag2jOkM7MT8XCHuB26/SQhkGZw4fW9ak8coSpeZr4ahsQ1CP/8HhnEkhluqQeNjveDChsWU5acaTBoZFwEomV0L0JqEmxpi+p4CsAwVWIOwy3MmyAyQWi8UfZE1zPxvbUNOeuJWRWwfiBT3JxxAug==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(396003)(366004)(376002)(346002)(39860400002)(136003)(451199021)(6486002)(5660300002)(38070700005)(38100700002)(122000001)(8936002)(107886003)(83380400001)(53546011)(26005)(2616005)(6512007)(6506007)(36756003)(186003)(2906002)(33656002)(54906003)(86362001)(41300700001)(66476007)(66946007)(76116006)(64756008)(66446008)(66556008)(91956017)(4326008)(478600001)(8676002)(110136005)(316002)(71200400001)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?l5oDAOmT84wH7SIQwBJv03GEvdg6NPxtLAT3816pkYQF0gPy/by4EdpryO2s?=
- =?us-ascii?Q?RMT0crv1wXMlI/yivUrcv1EO9qCIwlrEnP+lgPcbRryOIySff550iNnPzVRp?=
- =?us-ascii?Q?YxjZrTG1Vs9TmxljM2GyCfQJY/nf8CvmrO2u0tpb+jCGdN5jyqo1ot6odhF3?=
- =?us-ascii?Q?BEN5OQ27xTD0Ms0G0cL0ormw+rFRGk/8H9U+I1KZ6tCc5IgO1NTW4fTFNv8J?=
- =?us-ascii?Q?dqfqW34gQZEqh1CYCpZy9faPOCSmtumzN6SXHRATyCrrxinYEweTlLciMJ2K?=
- =?us-ascii?Q?VXwM9ZqXpLY5w3vQhW6HpHtjd3AOorh31GlSFBJSR38GXlH5h1FIOwH7SFsm?=
- =?us-ascii?Q?5klFBHYrqpJ0YyxClZDt/MXvzbxWtWp3W34pLLQEMXrxEZQk7zFtBr4Cyg1x?=
- =?us-ascii?Q?j67HMKeCcxvM9c/0NNm2oyodu+ikLcX4TmT5t/oNn3IpkRNScnTVfe132wYn?=
- =?us-ascii?Q?dUMlpfHLmmdxMXfu8nrVNtmPkPJE2Ax47lYRuD0ZtHHNqgL6lFv16wvKcszs?=
- =?us-ascii?Q?unpBFqiSZWvu0CWKkCRUxUV/b1uPBw6M/y31tDagsB7SoSKIrNc7Zy7kqBMv?=
- =?us-ascii?Q?ElXoZAMq1unPP7i2gIDEM4uoM9TPa0YklX2teFtsilMe+YPwd2vncUs/7Ytr?=
- =?us-ascii?Q?i+lxlG4z1yg225PdHaEYDI8GFV/ha4FdCx22e3a7aqTs/Vgb349IHldEzOSB?=
- =?us-ascii?Q?Bc1l0lcNhAETjQqyQ0wX0P8Byr8yYA4kqEj3JUxa1Bc6aJdjjtx5O8cJ2itR?=
- =?us-ascii?Q?j9AsGL6dEq6A66bjzkdsXHYdcvJQ0fC3/MQ5KFOh78RoyinBNk5rg2PPVufM?=
- =?us-ascii?Q?J95kMW4aQKjhuwdxsOr35vfHoDGStPX9uwsEyqZy8+qrosMAXH+pNFyYUJta?=
- =?us-ascii?Q?Vy0FxNwkUJdGpGWkVRYyDLgzEO4c92rm6tQz7FP0LCRmIHxD0pS7M6dZJzgZ?=
- =?us-ascii?Q?hb19eYN2RaxZsKOIJZ0lv+JV87vc05ANXZA3AkEl6haKWBWdPhFKd57oOpI/?=
- =?us-ascii?Q?/4uZOlgcCE0nRkWVJDcHf3mUgFBC1+F+3rJxte4VEqBSB8F/LeFk6HhiumuI?=
- =?us-ascii?Q?WjndPKnsAS0ONZyKydXFhXZZ8p2IcsLKlemL+/nLR55nU5AmbZQb+Z2fOgZw?=
- =?us-ascii?Q?UxZXTlBqB4dCUMYonPXdSyYlwH9DODSgxQoEZYU6TbGcsWJs0WGu6rAmb8jX?=
- =?us-ascii?Q?b6kyV1AKx+/COdbP+kL0TnBLn6n7dps7kj+bYVM8zVDyiCsGQeCCd5ahpM0r?=
- =?us-ascii?Q?zl9UZzRD/ZdoMjdH6j2fZxc5o4i1QkHWol3Dt5LjyRURbJDmsGeYgRZpYJeh?=
- =?us-ascii?Q?kKpHvyU75UReyM6b7GcK5LU0qNfnTvG1jyZc2wRg9yzyvYTIP+l3vQp/gAyI?=
- =?us-ascii?Q?jKsUe5iJ2p2Fo0UaXO+Ii1coWNIzSP6G3fy4WA3ibuwk5qcRDHTm1j1WA8J/?=
- =?us-ascii?Q?sPumQYe3EtebVClsnAIbfz5oqbDEI4yuLe2/bsXK+nNuvZeEBjdBvYhXhXq/?=
- =?us-ascii?Q?KZe0f+4l5/W2VkpaHHgtJZhPvi4/j4vePntdbcJNNbCt6F5fJSk9/WnnI8QZ?=
- =?us-ascii?Q?+fCC21QQmoJihZYMaazUf5ayA3vCqeH0fNlc+wb8HRI4nFrhqM/coQQ6257R?=
- =?us-ascii?Q?zA=3D=3D?=
+x-originating-ip: [10.48.155.16]
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0E96D6D7B94957429A059A95BC711BF2@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: dOhxWE31cBCM7PkWLAPSJjZROxQjZFaB5o8aL7PWaNvlaIY1SFsOHi9Xlw4Cq6fu5QlbMYoKGwXae4cGBE7cbVG+Zdz7YhoCvNbJFDl4uDb6u9+dLB4fb6nMk2tp/+8hBAq97bOiC1EYpY/D8K9ReXNAxVAvflatrHRJFgAAkABXziZxHjKIczLQ5UMi9CV4YlOskyzu+IA9ZungFyqtQAZsuegbTsEHeOueS2eMdiXghxqhzLkKvwRU+F8u0nnF2uU9wVifktB3VmRXEB+TkOB55v0nWRvWRXWwkusiOV3n8FReZz8uOXK84DaovERwXAAP2tTQBMLSW7c1oMkX/nO6V+JB4yK/8A35ydfM9KalKznLYSfH4UlMGUjvWFj+7TesZJVNOiJ0TH8pMWxezVZqpQdxhv86oBVAQR4AHrWQvWVDcrlk3tpJibU0eUow/NdkAa/mTXg441QESp17XaCwidO7e1IV8KnIMxMmearkjgneDEryG13BJCWrl3WEt6Zmp9kRXPco/J36LUmLJVi/8JJNa1PRTEfhN/RqIuNkwdE6xC6Dsjfi/9QvvkNmdy5cM5iiY5HkA098MvMNmNlc6EUgZzuLIh7vPZTuvjaWa7imJgPeuSP1hACcWnbPLKOFIHvdPabokJ8LrEgn846kXLMJhuZFepsuDZABxjYvwv03jZKKsDqJ4XzdFoMncpN0rTqNg5X5uNV69HP22K0thLXPoBVMeNL/8nHDX3poH9XybjtY1ZKauvpfgPz0eB2l0H6PPALmXnKnXk4MF4DEQxwb3C0aVAoArODjBxRwf5We4e//ImtA856nzQ7EUlTAGEAwvFPvwqDmhqwexRhdodIxfQ7lzLGj3Q5kGGmY2gATARqOLc6WqdYqM2/ZWWYk47KbxCWavskLqHrV1feZmQNYrCIevleyk/gwhx0=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97708603-3d98-41dc-edf2-08db352264e8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2023 15:36:44.0883
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UF1aF+63FJ15CcWe7dwAePBEo8ISJ9VJIeqprfxZhDojSXqrW8cCwRS6CohmHCGZySYU8JAmgsKzJzDqKTf49g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB7025
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
- definitions=2023-04-04_07,2023-04-04_04,2023-02-09_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0
- phishscore=0 bulkscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2303200000 definitions=main-2304040144
-X-Proofpoint-ORIG-GUID: mD4UEYLSoogcmNvtZEESdp3wfING8ICe
-X-Proofpoint-GUID: mD4UEYLSoogcmNvtZEESdp3wfING8ICe
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -159,377 +65,262 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> On Apr 3, 2023, at 2:46 PM, Chuck Lever <cel@kernel.org> wrote:
->=20
-> diff --git a/net/handshake/request.c b/net/handshake/request.c
+> -----Original Message-----
+> From: Brett Creeley [mailto:brett.creeley@amd.com]
+> Sent: 31 March 2023 01:36
+> To: kvm@vger.kernel.org; netdev@vger.kernel.org;
+> alex.williamson@redhat.com; jgg@nvidia.com; yishaih@nvidia.com;
+> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> kevin.tian@intel.com
+> Cc: brett.creeley@amd.com; shannon.nelson@amd.com;
+> drivers@pensando.io; simon.horman@corigine.com
+> Subject: [PATCH v7 vfio 2/7] vfio/pds: Initial support for pds_vfio VFIO driver
+> 
+> This is the initial framework for the new pds_vfio device driver. This
+> does the very basics of registering the PDS PCI device and configuring
+> it as a VFIO PCI device.
+> 
+> With this change, the VF device can be bound to the pds_vfio driver on
+> the host and presented to the VM as the VF's device type.
+> 
+> Signed-off-by: Brett Creeley <brett.creeley@amd.com>
+> Signed-off-by: Shannon Nelson <shannon.nelson@amd.com>
+> ---
+>  drivers/vfio/pci/Makefile       |  2 +
+>  drivers/vfio/pci/pds/Makefile   |  8 ++++
+>  drivers/vfio/pci/pds/pci_drv.c  | 74
+> +++++++++++++++++++++++++++++++++
+>  drivers/vfio/pci/pds/vfio_dev.c | 74 +++++++++++++++++++++++++++++++++
+>  drivers/vfio/pci/pds/vfio_dev.h | 21 ++++++++++
+>  5 files changed, 179 insertions(+)
+>  create mode 100644 drivers/vfio/pci/pds/Makefile
+>  create mode 100644 drivers/vfio/pci/pds/pci_drv.c
+>  create mode 100644 drivers/vfio/pci/pds/vfio_dev.c
+>  create mode 100644 drivers/vfio/pci/pds/vfio_dev.h
+> 
+> diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
+> index 24c524224da5..45167be462d8 100644
+> --- a/drivers/vfio/pci/Makefile
+> +++ b/drivers/vfio/pci/Makefile
+> @@ -11,3 +11,5 @@ obj-$(CONFIG_VFIO_PCI) += vfio-pci.o
+>  obj-$(CONFIG_MLX5_VFIO_PCI)           += mlx5/
+> 
+>  obj-$(CONFIG_HISI_ACC_VFIO_PCI) += hisilicon/
+> +
+> +obj-$(CONFIG_PDS_VFIO_PCI) += pds/
+> diff --git a/drivers/vfio/pci/pds/Makefile b/drivers/vfio/pci/pds/Makefile
 > new file mode 100644
-> index 000000000000..0ef18a38c047
+> index 000000000000..e1a55ae0f079
 > --- /dev/null
-> +++ b/net/handshake/request.c
-> @@ -0,0 +1,344 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Handshake request lifetime events
-> + *
-> + * Author: Chuck Lever <chuck.lever@oracle.com>
-> + *
-> + * Copyright (c) 2023, Oracle and/or its affiliates.
-> + */
+> +++ b/drivers/vfio/pci/pds/Makefile
+> @@ -0,0 +1,8 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +# Copyright (c) 2023 Advanced Micro Devices, Inc.
 > +
-> +#include <linux/types.h>
-> +#include <linux/socket.h>
-> +#include <linux/kernel.h>
+> +obj-$(CONFIG_PDS_VFIO_PCI) += pds_vfio.o
+> +
+> +pds_vfio-y := \
+> +	pci_drv.o	\
+> +	vfio_dev.o
+> diff --git a/drivers/vfio/pci/pds/pci_drv.c b/drivers/vfio/pci/pds/pci_drv.c
+> new file mode 100644
+> index 000000000000..5e554420792e
+> --- /dev/null
+> +++ b/drivers/vfio/pci/pds/pci_drv.c
+> @@ -0,0 +1,74 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
 > +#include <linux/module.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/inet.h>
-> +#include <linux/fdtable.h>
-> +#include <linux/rhashtable.h>
+> +#include <linux/pci.h>
+> +#include <linux/types.h>
+> +#include <linux/vfio.h>
 > +
-> +#include <net/sock.h>
-> +#include <net/genetlink.h>
-> +#include <net/netns/generic.h>
+> +#include <linux/pds/pds_core_if.h>
 > +
-> +#include <uapi/linux/handshake.h>
-> +#include "handshake.h"
+> +#include "vfio_dev.h"
 > +
-> +#include <trace/events/handshake.h>
+> +#define PDS_VFIO_DRV_NAME		"pds_vfio"
+> +#define PDS_VFIO_DRV_DESCRIPTION	"AMD/Pensando VFIO Device
+> Driver"
+> +#define PCI_VENDOR_ID_PENSANDO		0x1dd8
 > +
-> +/*
-> + * We need both a handshake_req -> sock mapping, and a sock ->
-> + * handshake_req mapping. Both are one-to-one.
-> + *
-> + * To avoid adding another pointer field to struct sock, net/handshake
-> + * maintains a hash table, indexed by the memory address of @sock, to
-> + * find the struct handshake_req outstanding for that socket. The
-> + * reverse direction uses a simple pointer field in the handshake_req
-> + * struct.
-> + */
+> +static int
+> +pds_vfio_pci_probe(struct pci_dev *pdev,
+> +		   const struct pci_device_id *id)
+> +{
+> +	struct pds_vfio_pci_device *pds_vfio;
+> +	int err;
 > +
-> +static struct rhashtable handshake_rhashtbl ____cacheline_aligned_in_smp=
-;
+> +	pds_vfio = vfio_alloc_device(pds_vfio_pci_device, vfio_coredev.vdev,
+> +				     &pdev->dev,  pds_vfio_ops_info());
+> +	if (IS_ERR(pds_vfio))
+> +		return PTR_ERR(pds_vfio);
 > +
-> +static const struct rhashtable_params handshake_rhash_params =3D {
-> + .key_len =3D sizeof_field(struct handshake_req, hr_sk),
-> + .key_offset =3D offsetof(struct handshake_req, hr_sk),
-> + .head_offset =3D offsetof(struct handshake_req, hr_rhash),
-> + .automatic_shrinking =3D true,
+> +	dev_set_drvdata(&pdev->dev, &pds_vfio->vfio_coredev);
+> +	pds_vfio->pdev = pdev;
+> +
+> +	err = vfio_pci_core_register_device(&pds_vfio->vfio_coredev);
+> +	if (err)
+> +		goto out_put_vdev;
+> +
+> +	return 0;
+> +
+> +out_put_vdev:
+> +	vfio_put_device(&pds_vfio->vfio_coredev.vdev);
+> +	return err;
+> +}
+> +
+> +static void
+> +pds_vfio_pci_remove(struct pci_dev *pdev)
+> +{
+> +	struct pds_vfio_pci_device *pds_vfio = pds_vfio_pci_drvdata(pdev);
+> +
+> +	vfio_pci_core_unregister_device(&pds_vfio->vfio_coredev);
+> +	vfio_put_device(&pds_vfio->vfio_coredev.vdev);
+> +}
+> +
+> +static const struct pci_device_id
+> +pds_vfio_pci_table[] = {
+> +	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_PENSANDO,
+> 0x1003) }, /* Ethernet VF */
+> +	{ 0, }
+> +};
+> +MODULE_DEVICE_TABLE(pci, pds_vfio_pci_table);
+> +
+> +static struct pci_driver
+> +pds_vfio_pci_driver = {
+> +	.name = PDS_VFIO_DRV_NAME,
+> +	.id_table = pds_vfio_pci_table,
+> +	.probe = pds_vfio_pci_probe,
+> +	.remove = pds_vfio_pci_remove,
+> +	.driver_managed_dma = true,
 > +};
 > +
-> +int handshake_req_hash_init(void)
+> +module_pci_driver(pds_vfio_pci_driver);
+> +
+> +MODULE_DESCRIPTION(PDS_VFIO_DRV_DESCRIPTION);
+> +MODULE_AUTHOR("Advanced Micro Devices, Inc.");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/vfio/pci/pds/vfio_dev.c b/drivers/vfio/pci/pds/vfio_dev.c
+> new file mode 100644
+> index 000000000000..f1221f14e4f6
+> --- /dev/null
+> +++ b/drivers/vfio/pci/pds/vfio_dev.c
+> @@ -0,0 +1,74 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+> +
+> +#include <linux/vfio.h>
+> +#include <linux/vfio_pci_core.h>
+> +
+> +#include "vfio_dev.h"
+> +
+> +struct pds_vfio_pci_device *
+> +pds_vfio_pci_drvdata(struct pci_dev *pdev)
 > +{
-> + return rhashtable_init(&handshake_rhashtbl, &handshake_rhash_params);
+> +	struct vfio_pci_core_device *core_device =
+> dev_get_drvdata(&pdev->dev);
+> +
+> +	return container_of(core_device, struct pds_vfio_pci_device,
+> +			    vfio_coredev);
 > +}
 > +
-> +void handshake_req_hash_destroy(void)
+> +static int
+> +pds_vfio_init_device(struct vfio_device *vdev)
 > +{
-> + rhashtable_destroy(&handshake_rhashtbl);
+> +	struct pds_vfio_pci_device *pds_vfio =
+> +		container_of(vdev, struct pds_vfio_pci_device,
+> +			     vfio_coredev.vdev);
+> +	struct pci_dev *pdev = to_pci_dev(vdev->dev);
+> +	int err;
+> +
+> +	err = vfio_pci_core_init_dev(vdev);
+> +	if (err)
+> +		return err;
+> +
+> +	pds_vfio->vf_id = pci_iov_vf_id(pdev);
+> +	pds_vfio->pci_id = PCI_DEVID(pdev->bus->number, pdev->devfn);
+> +
+> +	return 0;
 > +}
 > +
-> +struct handshake_req *handshake_req_hash_lookup(struct sock *sk)
+> +static int
+> +pds_vfio_open_device(struct vfio_device *vdev)
 > +{
-> + return rhashtable_lookup_fast(&handshake_rhashtbl, &sk,
-> +      handshake_rhash_params);
+> +	struct pds_vfio_pci_device *pds_vfio =
+> +		container_of(vdev, struct pds_vfio_pci_device,
+> +			     vfio_coredev.vdev);
+> +	int err;
+> +
+> +	err = vfio_pci_core_enable(&pds_vfio->vfio_coredev);
+> +	if (err)
+> +		return err;
+> +
+> +	vfio_pci_core_finish_enable(&pds_vfio->vfio_coredev);
+> +
+> +	return 0;
 > +}
 > +
-> +static bool handshake_req_hash_add(struct handshake_req *req)
-> +{
-> + int ret;
-> +
-> + ret =3D rhashtable_lookup_insert_fast(&handshake_rhashtbl,
-> +    &req->hr_rhash,
-> +    handshake_rhash_params);
-> + return ret =3D=3D 0;
-> +}
-> +
-> +static void handshake_req_destroy(struct handshake_req *req)
-> +{
-> + if (req->hr_proto->hp_destroy)
-> + req->hr_proto->hp_destroy(req);
-> + rhashtable_remove_fast(&handshake_rhashtbl, &req->hr_rhash,
-> +       handshake_rhash_params);
-> + kfree(req);
-> +}
-> +
-> +static void handshake_sk_destruct(struct sock *sk)
-> +{
-> + void (*sk_destruct)(struct sock *sk);
-> + struct handshake_req *req;
-> +
-> + req =3D handshake_req_hash_lookup(sk);
-> + if (!req)
-> + return;
-> +
-> + trace_handshake_destruct(sock_net(sk), req, sk);
-> + sk_destruct =3D req->hr_odestruct;
-> + handshake_req_destroy(req);
-> + if (sk_destruct)
-> + sk_destruct(sk);
-> +}
-> +
-> +/**
-> + * handshake_req_alloc - Allocate a handshake request
-> + * @proto: security protocol
-> + * @flags: memory allocation flags
-> + *
-> + * Returns an initialized handshake_req or NULL.
-> + */
-> +struct handshake_req *handshake_req_alloc(const struct handshake_proto *=
-proto,
-> +  gfp_t flags)
-> +{
-> + struct handshake_req *req;
-> +
-> + if (!proto)
-> + return NULL;
-> + if (proto->hp_handler_class <=3D HANDSHAKE_HANDLER_CLASS_NONE)
-> + return NULL;
-> + if (proto->hp_handler_class >=3D HANDSHAKE_HANDLER_CLASS_MAX)
-> + return NULL;
-> + if (!proto->hp_accept || !proto->hp_done)
-> + return NULL;
-> +
-> + req =3D kzalloc(struct_size(req, hr_priv, proto->hp_privsize), flags);
-> + if (!req)
-> + return NULL;
-> +
-> + INIT_LIST_HEAD(&req->hr_list);
-> + req->hr_proto =3D proto;
-> + return req;
-> +}
-> +EXPORT_SYMBOL(handshake_req_alloc);
-> +
-> +/**
-> + * handshake_req_private - Get per-handshake private data
-> + * @req: handshake arguments
-> + *
-> + */
-> +void *handshake_req_private(struct handshake_req *req)
-> +{
-> + return (void *)&req->hr_priv;
-> +}
-> +EXPORT_SYMBOL(handshake_req_private);
-> +
-> +static bool __add_pending_locked(struct handshake_net *hn,
-> + struct handshake_req *req)
-> +{
-> + if (WARN_ON_ONCE(!list_empty(&req->hr_list)))
-> + return false;
-> + hn->hn_pending++;
-> + list_add_tail(&req->hr_list, &hn->hn_requests);
-> + return true;
-> +}
-> +
-> +static void __remove_pending_locked(struct handshake_net *hn,
-> +    struct handshake_req *req)
-> +{
-> + hn->hn_pending--;
-> + list_del_init(&req->hr_list);
-> +}
-> +
-> +/*
-> + * Returns %true if the request was found on @net's pending list,
-> + * otherwise %false.
-> + *
-> + * If @req was on a pending list, it has not yet been accepted.
-> + */
-> +static bool remove_pending(struct handshake_net *hn, struct handshake_re=
-q *req)
-> +{
-> + bool ret =3D false;
-> +
-> + spin_lock(&hn->hn_lock);
-> + if (!list_empty(&req->hr_list)) {
-> + __remove_pending_locked(hn, req);
-> + ret =3D true;
-> + }
-> + spin_unlock(&hn->hn_lock);
-> +
-> + return ret;
-> +}
-> +
-> +struct handshake_req *handshake_req_next(struct handshake_net *hn, int c=
-lass)
-> +{
-> + struct handshake_req *req, *pos;
-> +
-> + req =3D NULL;
-> + spin_lock(&hn->hn_lock);
-> + list_for_each_entry(pos, &hn->hn_requests, hr_list) {
-> + if (pos->hr_proto->hp_handler_class !=3D class)
-> + continue;
-> + __remove_pending_locked(hn, pos);
-> + req =3D pos;
-> + break;
-> + }
-> + spin_unlock(&hn->hn_lock);
-> +
-> + return req;
-> +}
-> +
-> +/**
-> + * handshake_req_submit - Submit a handshake request
-> + * @sock: open socket on which to perform the handshake
-> + * @req: handshake arguments
-> + * @flags: memory allocation flags
-> + *
-> + * Return values:
-> + *   %0: Request queued
-> + *   %-EINVAL: Invalid argument
-> + *   %-EBUSY: A handshake is already under way for this socket
-> + *   %-ESRCH: No handshake agent is available
-> + *   %-EAGAIN: Too many pending handshake requests
-> + *   %-ENOMEM: Failed to allocate memory
-> + *   %-EMSGSIZE: Failed to construct notification message
-> + *   %-EOPNOTSUPP: Handshake module not initialized
-> + *
-> + * A zero return value from handshake_req_submit() means that
-> + * exactly one subsequent completion callback is guaranteed.
-> + *
-> + * A negative return value from handshake_req_submit() means that
-> + * no completion callback will be done and that @req has been
-> + * destroyed.
-> + */
-> +int handshake_req_submit(struct socket *sock, struct handshake_req *req,
-> + gfp_t flags)
-> +{
-> + struct handshake_net *hn;
-> + struct net *net;
-> + int ret;
-> +
-> + if (!sock || !req || !sock->file) {
-> + kfree(req);
-> + return -EINVAL;
-> + }
-> +
-> + req->hr_sk =3D sock->sk;
-> + if (!req->hr_sk) {
-> + kfree(req);
-> + return -EINVAL;
-> + }
-> + req->hr_odestruct =3D req->hr_sk->sk_destruct;
-> + req->hr_sk->sk_destruct =3D handshake_sk_destruct;
-> +
-> + ret =3D -EOPNOTSUPP;
-> + net =3D sock_net(req->hr_sk);
-> + hn =3D handshake_pernet(net);
-> + if (!hn)
-> + goto out_err;
-> +
-> + ret =3D -EAGAIN;
-> + if (READ_ONCE(hn->hn_pending) >=3D hn->hn_pending_max)
-> + goto out_err;
-> +
-> + spin_lock(&hn->hn_lock);
-> + ret =3D -EOPNOTSUPP;
-> + if (test_bit(HANDSHAKE_F_NET_DRAINING, &hn->hn_flags))
-> + goto out_unlock;
-> + ret =3D -EBUSY;
-> + if (!handshake_req_hash_add(req))
-> + goto out_unlock;
-> + if (!__add_pending_locked(hn, req))
-> + goto out_unlock;
-> + spin_unlock(&hn->hn_lock);
-> +
-> + ret =3D handshake_genl_notify(net, req->hr_proto->hp_handler_class,
-> +    flags);
-> + if (ret) {
-> + trace_handshake_notify_err(net, req, req->hr_sk, ret);
-> + if (remove_pending(hn, req))
-> + goto out_err;
-> + }
-> +
-> + /* Prevent socket release while a handshake request is pending */
-> + sock_hold(req->hr_sk);
-> +
-> + trace_handshake_submit(net, req, req->hr_sk);
-> + return 0;
-> +
-> +out_unlock:
-> + spin_unlock(&hn->hn_lock);
-> +out_err:
-> + trace_handshake_submit_err(net, req, req->hr_sk, ret);
-> + handshake_req_destroy(req);
-> + return ret;
-> +}
-> +EXPORT_SYMBOL(handshake_req_submit);
-> +
-> +void handshake_complete(struct handshake_req *req, unsigned int status,
-> + struct genl_info *info)
-> +{
-> + struct sock *sk =3D req->hr_sk;
-> + struct net *net =3D sock_net(sk);
-> +
-> + if (!test_and_set_bit(HANDSHAKE_F_REQ_COMPLETED, &req->hr_flags)) {
-> + trace_handshake_complete(net, req, sk, status);
-> + req->hr_proto->hp_done(req, status, info);
-> +
-> + /* Handshake request is no longer pending */
-> + sock_put(sk);
-> + }
-> +}
-> +
-> +/**
-> + * handshake_req_cancel - Cancel an in-progress handshake
-> + * @sock: socket on which there is an ongoing handshake
-> + *
-> + * Request cancellation races with request completion. To determine
-> + * who won, callers examine the return value from this function.
-> + *
-> + * Return values:
-> + *   %true - Uncompleted handshake request was canceled or not found
-> + *   %false - Handshake request already completed
-> + */
-> +bool handshake_req_cancel(struct socket *sock)
-> +{
-> + struct handshake_req *req;
-> + struct handshake_net *hn;
-> + struct sock *sk;
-> + struct net *net;
-> +
-> + sk =3D sock->sk;
-> + net =3D sock_net(sk);
+> +static const struct vfio_device_ops
+> +pds_vfio_ops = {
+> +	.name = "pds-vfio",
+> +	.init = pds_vfio_init_device,
+> +	.release = vfio_pci_core_release_dev,
+> +	.open_device = pds_vfio_open_device,
+> +	.close_device = vfio_pci_core_close_device,
+> +	.ioctl = vfio_pci_core_ioctl,
+> +	.device_feature = vfio_pci_core_ioctl_feature,
+> +	.read = vfio_pci_core_read,
+> +	.write = vfio_pci_core_write,
+> +	.mmap = vfio_pci_core_mmap,
+> +	.request = vfio_pci_core_request,
+> +	.match = vfio_pci_core_match,
+> +};
 
-We're still seeing NULL pointer dereferences here.
-Typically this happens after the remote closes the
-connection early.
+Hi,
 
-I guess I cannot rely on sock_hold(sk); from preventing
-someone from doing a "sock->sk =3D NULL;"
+Any reason why this driver is not providing the default iommufd
+callbacks(bind/unbind/attach) ?
 
-Would it make more sense for req_submit and req_cancel to
-operate on "struct sock *" rather than "struct socket *" ?
+Thanks,
+Shameer
 
-
-> + req =3D handshake_req_hash_lookup(sk);
-> + if (!req) {
-> + trace_handshake_cancel_none(net, req, sk);
-> + return true;
-> + }
 > +
-> + hn =3D handshake_pernet(net);
-> + if (hn && remove_pending(hn, req)) {
-> + /* Request hadn't been accepted */
-> + trace_handshake_cancel(net, req, sk);
-> + sock_put(sk);
-> + return true;
-> + }
-> + if (test_and_set_bit(HANDSHAKE_F_REQ_COMPLETED, &req->hr_flags)) {
-> + /* Request already completed */
-> + trace_handshake_cancel_busy(net, req, sk);
-> + return false;
-> + }
-> +
-> + trace_handshake_cancel(net, req, sk);
-> +
-> + /* Handshake request is no longer pending */
-> + sock_put(sk);
-> +
-> + return true;
+> +const struct vfio_device_ops *
+> +pds_vfio_ops_info(void)
+> +{
+> +	return &pds_vfio_ops;
 > +}
-> +EXPORT_SYMBOL(handshake_req_cancel);
-
-
---
-Chuck Lever
-
+> diff --git a/drivers/vfio/pci/pds/vfio_dev.h b/drivers/vfio/pci/pds/vfio_dev.h
+> new file mode 100644
+> index 000000000000..a66f8069b88c
+> --- /dev/null
+> +++ b/drivers/vfio/pci/pds/vfio_dev.h
+> @@ -0,0 +1,21 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+> +
+> +#ifndef _VFIO_DEV_H_
+> +#define _VFIO_DEV_H_
+> +
+> +#include <linux/pci.h>
+> +#include <linux/vfio_pci_core.h>
+> +
+> +struct pds_vfio_pci_device {
+> +	struct vfio_pci_core_device vfio_coredev;
+> +	struct pci_dev *pdev;
+> +
+> +	int vf_id;
+> +	int pci_id;
+> +};
+> +
+> +const struct vfio_device_ops *pds_vfio_ops_info(void);
+> +struct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev);
+> +
+> +#endif /* _VFIO_DEV_H_ */
+> --
+> 2.17.1
 
