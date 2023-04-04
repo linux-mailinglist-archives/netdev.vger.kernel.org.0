@@ -2,163 +2,424 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D386D6919
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 18:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4224F6D691C
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 18:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbjDDQmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 12:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
+        id S235241AbjDDQnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 12:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbjDDQmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 12:42:17 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2047.outbound.protection.outlook.com [40.107.93.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C11E113
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 09:42:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F8kw9uswfylt4cit49dBhWhD0c1gv0Xky+FPDy7mv3B34zBurnCC7lgAnTe6auM2FU6bOnd2/1W11vOoCCtKWvfIuIaWIn3b/Cljln54mrAVA2RMeEpdrhZiOxiYoHQHT8RtSZcsSa5rtp8jacAyIW/zi+Ax/ZJHCRRMHPoIZgI1oX1xNhx7dvgSboQvoE+z2r87i+Bmf2uwHftmIjG1+fFBVkGeP3T5uc6RM0+citcpaqNLwlK6fv8LN2v/hZGcsZciq/e00/SSQWX69khZDhNXjoegOV9es6JnlmYgwesjMcKrc6lT/AC+DC8lbus58mC42fF+hU47o/fGIbnzKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D4a/u1k8IKiFFUOfsqtfdiW6qP+959NySs9I7NPGnfo=;
- b=MGLJr++ZX+bXzQAJRYYAQhZDAM3R+A4yqhh8+jQUVJnGieP8E4+AgxMKd4h5MubMluaz9FtyhKJKg/rwdAxK/yiXf79mV9zY3BZ2q3dtzxj9dVynpjqIiV8TMgz82Ap0gsZPXe9WnvqpIRWEl65zkI8bW5oBv8ekVDtJNtMWyqkXC7QXfELRXBa5DSV+wpINw0WvMdnzGvcmizOAt2LN7IEh4ez4OLd3YuR6vauLhs0mFnq4Y6/WGEl2CHDT3aJyQMHiqC2ALuC1OSUYcquLyVrP4OfMPL0lrMgQLTfCcVoO0UTs7VmBBXT5J4Aewl4JFZO7s+zOF63Ym1x5KL5YyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D4a/u1k8IKiFFUOfsqtfdiW6qP+959NySs9I7NPGnfo=;
- b=d7DwBvqkPpugVCSPoqcciMnu3OlJ/psxotHhPJ/JrK/yK/9vosQ1dWs+B2cCEcYGkY5CxknCyaqdzfxIpGHUMMfsuZIktJox1GWE2BbOp8h1ffP2nry7yqci/4skpycthfYVOhFly/tZbnL38o/mo26FgCxjRyS+WwGrsXwgRCSEBQD0LW0IJaMu0Bzz0MHcuXLgzSofFDIZgTUZT6O9BvwZ/R56UYqCwHMon7RR0h/IkOS5BazCfDx20ZrcQUKd902PB88u57smeHTHPRy56MOIOgXFHAjoKxREpAzA38bJD8ZTnIhxRuDCaPErSszJnP4zW26/vhRjKKI1tydIXA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BL1PR12MB5732.namprd12.prod.outlook.com (2603:10b6:208:387::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Tue, 4 Apr
- 2023 16:42:14 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::6045:ad97:10b7:62a2%6]) with mapi id 15.20.6254.035; Tue, 4 Apr 2023
- 16:42:14 +0000
-Date:   Tue, 4 Apr 2023 13:42:13 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        shiraz.saleem@intel.com, emil.s.tantilov@intel.com,
-        willemb@google.com, decot@google.com, joshua.a.hay@intel.com,
-        Christoph Hellwig <hch@lst.de>, michael.orr@intel.com,
-        anjali.singhai@intel.com
-Subject: Re: [Intel-wired-lan] [PATCH net-next 00/15] Introduce IDPF driver
-Message-ID: <ZCxTZQJ59boMFJNZ@nvidia.com>
-References: <20230329140404.1647925-1-pavan.kumar.linga@intel.com>
- <ZCV6fZfuX5O8sRtA@nvidia.com>
- <20230330102505.6d3b88da@kernel.org>
- <ZCXVE9CuaMbY+Cdl@nvidia.com>
- <5d0439a6-8339-5bbd-c782-123a1aad71ed@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5d0439a6-8339-5bbd-c782-123a1aad71ed@intel.com>
-X-ClientProxiedBy: BLAPR03CA0013.namprd03.prod.outlook.com
- (2603:10b6:208:32b::18) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+        with ESMTP id S233577AbjDDQnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 12:43:07 -0400
+Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BF310C2
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 09:43:04 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PrYTv1njnzMqFqP;
+        Tue,  4 Apr 2023 18:42:59 +0200 (CEST)
+Received: from unknown by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4PrYTt3jKcz1kt;
+        Tue,  4 Apr 2023 18:42:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1680626579;
+        bh=yk8oeeUrlRSVwsk4M+bo4iIySn4IZarWHJF4oLJQ0Fk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=xCOBedGO1yQFCiP+XmP0aSMHFgxFRVJA7mchUeBkp6NVg/q7uMquWy63+2ncjHQZv
+         6oeBIQcAKp1GcsAOTPQ6okorJOMxJJS9Hq1xXF2J6kaVPh+qUAF+bjAQ30J11hx3u6
+         bEdfbGXMbmQ0OSk5224NhZV7bytxIsEk41+aG8w0=
+Content-Type: multipart/mixed; boundary="------------On0rNqP3BGAQZeC4daDmM00S"
+Message-ID: <ac4d6244-641b-e1d4-5c34-d9a9bcd10498@digikod.net>
+Date:   Tue, 4 Apr 2023 18:42:57 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL1PR12MB5732:EE_
-X-MS-Office365-Filtering-Correlation-Id: 79d31c65-024d-47f0-46f4-08db352b8b95
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZmG+1q3EgcBJ/jZmOeKNe6Yd/+wuSdYO0D/bpRYJECHK8eqIRI+cZzAIjgS0OCLqsXBy9tRFsci1LMpafTkzMsG8EdC5Gj9HPZb77nOUfkLiH1pF5r5NXnI8xbFSJaoW6fIa8hibpLMgYjfdK/p7DRRGweN/7IP5NhEXmerR/xjePlurkRJPJ/PVpBBqc4xF3Ug8RO9SV+BG8+Bo9jRrORsjE5eitJus/GgDhRbtZ0x5ub4b2QEzQIEcaPFFr2jud1ISu4l47m6Hsviq0/zLaNbiv22h8kt4wUDBdbDyteit3KbXjBVb7PXIAlz7i+2vy6Q21DOXtIPG1ko/hJQwkfmHvyCS2sILiLKNmIcZ+vWTqkFvI8by9gn7C552Zi2J1jpgUnjbwpKpOUaMqK8Gx7xKwqe7g63UTKUsHnfQSz4Pj0xZqQrXzsEMFfhZeof6i57u8eFLtLWD8QrQd0orK4km/h+Jg0UnbR2pE3rMoKGFYRrXYLQWGsIGcLVf0euDhEwcdVCvpr4Ur6gwkxtYrsx/+fnZfd7tl7gj3wiYw4u3gJyvQQ6/nMdi9ikylKYI
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(346002)(366004)(396003)(376002)(136003)(39860400002)(451199021)(6512007)(26005)(6506007)(186003)(86362001)(478600001)(54906003)(316002)(6486002)(5660300002)(36756003)(8936002)(7416002)(2906002)(66556008)(66946007)(4326008)(66476007)(8676002)(6916009)(38100700002)(41300700001)(2616005)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ajZQSENqTlVaN0JtMkZtKzVUWDZmQURyTnZVQy85ODhBQUxENEI1U2s4blRT?=
- =?utf-8?B?alRYaTAvYUhZOGo3KzNIQ0xIZllCTnBpSElQL2NDblBnMkVxNzBvK1l5YlAr?=
- =?utf-8?B?R2s0U2pMcGNTS2xhcFF0R1NXK2pSRXNaak1VMkg0aE9neTBjVGllYVJ1aE5Q?=
- =?utf-8?B?VXFIMjZBRXhGUkZzVStYWUJDVnFtZ24xR2VPM3poNVNrMmE3aGJJbzlTOURu?=
- =?utf-8?B?LzhBYm91NHkrdjFodmNyblJmOXRINmRZcGpZRkpiL3pkSmRxL2ZzRzhsMHRx?=
- =?utf-8?B?Ny9GaU1rTWQxWGx5aTQwdXNHaXEzcUZ0dlVEaW9EeHpZZXpBUDdxK0R1OXZt?=
- =?utf-8?B?SkQ5VUNnVXNLK096U0ZXdklsam1mYUcxeDVhVjhUMG5nai81SkRDbnVlZTFF?=
- =?utf-8?B?SmNISGp5S2FPTzNGci9Ud0JDL1R5RGw4Wk5SREZnRE5TZ3FuSnpVRGt3aisz?=
- =?utf-8?B?V2t0SWI5YzJJYVdWVGxlK3VLYkdZQTg0UnpvcWxsUzRCWHUyUDZVdnB0TmR6?=
- =?utf-8?B?SEdGNm9yRUNNaGl0V25PZjR2S2NKSFp3SkxpT0RwdXlkRm9Uc0hrTldSUUlo?=
- =?utf-8?B?UjdBa3BLRVZLbXJaa2lDSEVPNWNHV1Fpc1MzZVVzdXRKeEVCYTN3QWZlaHhH?=
- =?utf-8?B?cW5qZVcrODFhSGdKYmJxRFVVTUlDaW5QT0xxa3FMQUloUnoxZ0xNQ0VSd3d1?=
- =?utf-8?B?YmNPb2g2L0J2Vm5acHFwcTkrZ3ZpczFpaFRWUjBCZzNFcVRSTlZRdVErc0Za?=
- =?utf-8?B?d29KbzJQbmRPTktremZPMnpudStIQU5TNXNXakxKVXkwOE11aUsyRVZuUENr?=
- =?utf-8?B?M1M0YmEwVG9LcHRXdkhRVGl1OFgwcHo0clhpNFZIVldvcFhMUThKZjBPVHpX?=
- =?utf-8?B?bnFGd1lCbGt3TWtQbGVUeWZOaW5COFRVTGhaZVd5RVZlaHBBejBwV3ZNRTEx?=
- =?utf-8?B?Rys4RFhYdTBGd2t0UWxMMTdRMVA2SVN4cEh1bHVscE9kVUZDMTY2aXdBUGVu?=
- =?utf-8?B?dDZxWVNLNTdVUmhUdXJpNHp3eXc1a2t2cklFWE1ndDJWVnZwcERmZmpramU4?=
- =?utf-8?B?ZzlBMWZKUjhsM3NnUVBwak5ueHZseXA1TmFTdzEwK0wvYitBa0JHTWs3SG5u?=
- =?utf-8?B?QTVsdUVXbGlLQWtWU0x5TjA5WkpwYzVCZVdEcFQxOWxZTjBqOWZHNFlPdWg1?=
- =?utf-8?B?VGxOOXhoUkVkR0xYRUh5cm84QTFHbkQ3ZlFpVXI5V2dSekh0SUt6c3o4ZURj?=
- =?utf-8?B?UUFjbzhtRFg3eUxrMUQ3eWZybnYwOElnMzZ0eFJocDk3UzJGaEpZSVQzSEk3?=
- =?utf-8?B?TWFaQjBvbVhnc2JwR1RFNTh5d3NJNnlSWFhwSlZadEQ0SnV3dzM4b2RMK3F0?=
- =?utf-8?B?UmRscCtuS1NUcEsyU2s0NzNDMXI5bWlUZ1NIN2ZmNnE4bm1VY3ZnbkExRFdZ?=
- =?utf-8?B?ckhLSTREWkc4NDd4Nkc4amlwNklvOXIyT0g2ZXEycy83ejdnZkhCdzlYNzhM?=
- =?utf-8?B?STRHRHc1R3lBWmxGc1NnMmlHbWRFRm9Ec3NENWFnb3dJZXhRTnpGNG9OUENn?=
- =?utf-8?B?SnMvcVRaTUVCdlV2OVl6S3E5VDlGM0lBWEpUYnoxd1UyS3Bqd0lscStiejZs?=
- =?utf-8?B?REh1MXgwYTZiNENsbGErdnZuTkM1dEVXWWJKdWtpKzBJVklvMUk3Vmk0dnNl?=
- =?utf-8?B?QjZLL0VKYkNQbFJLSnRRRmVNMjBlM3lFZXNYK3c5akpnV3VmYXRZWkEvSy9Q?=
- =?utf-8?B?VnJ6TVBhdTM0TkdweWRpaWdNd25CcTFaWmVaVHkyU3Yzc2dlbnRFakFnY011?=
- =?utf-8?B?YTV6N29xUWE4VEJXZk1obFhuRmxiR3hCOTFVRzBaRjR1ZWF0RktHd2lWTlJx?=
- =?utf-8?B?L0ZubjZtSzIyVHU4S1V0UjFCYS9FbnhlYk93SHRLRHlodGNkdEN4cXZ4N0VE?=
- =?utf-8?B?a0U5Nm8rdTlBSk1sUlN2cU5kZlYrcEpIZmdRUFdlaVE4aTg1OVc3RU5nN1JV?=
- =?utf-8?B?Q2RsOTdGbWIxVTJiVXZaaVhZTG5VWTVTT1JEMXFheGhWQmF0ZmxwZlMzREJl?=
- =?utf-8?B?bHRFVVgvU3JLZmQ5Sjl1bTFEWmNmNC81S1B2NWIvbkQxb01sR2xzbEtoRzk1?=
- =?utf-8?Q?jMDdjg/gUBb96OP23JsZGP2/5?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79d31c65-024d-47f0-46f4-08db352b8b95
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 16:42:14.5969
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZFNiZoi6EtupUM2W0Ifaz5iKVnFTjDShVfOnjVA0o/M5+YYe2excRaxAI641Qo3c
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5732
-X-Spam-Status: No, score=0.8 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
+ support
+Content-Language: en-US
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
+ <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
+ <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
+ <1f84d88f-9977-13a9-245a-c75cd3444b29@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <1f84d88f-9977-13a9-245a-c75cd3444b29@huawei.com>
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 03, 2023 at 04:36:56PM -0500, Samudrala, Sridhar wrote:
+This is a multi-part message in MIME format.
+--------------On0rNqP3BGAQZeC4daDmM00S
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-> > Further OASIS has a legal IPR policy that basically means Intel needs
-> > to publicly justify that their Signed-off-by is consisent with the
-> > kernel rules of the DCO. ie that they have a legal right to submit
-> > this IP to the kernel.
+
+On 04/04/2023 11:31, Konstantin Meskhidze (A) wrote:
 > 
-> OASIS does NOT have such a legal IPR policy. The only IPR policy that
-> applies to the IDPF TC members is the “Non-assert” IPR policy as stated
-> in the Charter.
+> 
+> 3/31/2023 8:24 PM, Mickaël Salaün пишет:
+>>
+>> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
+>>> This commit adds network rules support in the ruleset management
+>>> helpers and the landlock_create_ruleset syscall.
+>>> Refactor user space API to support network actions. Add new network
+>>> access flags, network rule and network attributes. Increment Landlock
+>>> ABI version. Expand access_masks_t to u32 to be sure network access
+>>> rights can be stored. Implement socket_bind() and socket_connect()
+>>> LSM hooks, which enable to restrict TCP socket binding and connection
+>>> to specific ports.
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>> ---
+>>>
+>>> Changes since v9:
+>>> * Changes UAPI port field to __u64.
+>>> * Moves shared code into check_socket_access().
+>>> * Adds get_raw_handled_net_accesses() and
+>>> get_current_net_domain() helpers.
+>>> * Minor fixes.
+>>>
+>>> Changes since v8:
+>>> * Squashes commits.
+>>> * Refactors commit message.
+>>> * Changes UAPI port field to __be16.
+>>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+>>> * Adds address length checking.
+>>> * Minor fixes.
+>>>
+>>> Changes since v7:
+>>> * Squashes commits.
+>>> * Increments ABI version to 4.
+>>> * Refactors commit message.
+>>> * Minor fixes.
+>>>
+>>> Changes since v6:
+>>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>>>     because it OR values.
+>>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+>>> * Refactors landlock_get_net_access_mask().
+>>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>>>     LANDLOCK_NUM_ACCESS_FS as value.
+>>> * Updates access_masks_t to u32 to support network access actions.
+>>> * Refactors landlock internal functions to support network actions with
+>>>     landlock_key/key_type/id types.
+>>>
+>>> Changes since v5:
+>>> * Gets rid of partial revert from landlock_add_rule
+>>> syscall.
+>>> * Formats code with clang-format-14.
+>>>
+>>> Changes since v4:
+>>> * Refactors landlock_create_ruleset() - splits ruleset and
+>>> masks checks.
+>>> * Refactors landlock_create_ruleset() and landlock mask
+>>> setters/getters to support two rule types.
+>>> * Refactors landlock_add_rule syscall add_rule_path_beneath
+>>> function by factoring out get_ruleset_from_fd() and
+>>> landlock_put_ruleset().
+>>>
+>>> Changes since v3:
+>>> * Splits commit.
+>>> * Adds network rule support for internal landlock functions.
+>>> * Adds set_mask and get_mask for network.
+>>> * Adds rb_root root_net_port.
+>>>
+>>> ---
+>>>    include/uapi/linux/landlock.h                |  49 +++++
+>>>    security/landlock/Kconfig                    |   1 +
+>>>    security/landlock/Makefile                   |   2 +
+>>>    security/landlock/limits.h                   |   6 +-
+>>>    security/landlock/net.c                      | 198 +++++++++++++++++++
+>>>    security/landlock/net.h                      |  26 +++
+>>>    security/landlock/ruleset.c                  |  52 ++++-
+>>>    security/landlock/ruleset.h                  |  63 +++++-
+>>>    security/landlock/setup.c                    |   2 +
+>>>    security/landlock/syscalls.c                 |  72 ++++++-
+>>>    tools/testing/selftests/landlock/base_test.c |   2 +-
+>>>    11 files changed, 450 insertions(+), 23 deletions(-)
+>>>    create mode 100644 security/landlock/net.c
+>>>    create mode 100644 security/landlock/net.h
+>>
+>> [...]
+>>
+>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
+>>
+>> [...]
+>>
+>>> +static int check_addrlen(const struct sockaddr *const address, int addrlen)
+>>
+>> const int addrlen
+> 
+>     Got it.
+>>
+>>> +{
+>>> +	if (addrlen < offsetofend(struct sockaddr, sa_family))
+>>> +		return -EINVAL;
+>>> +	switch (address->sa_family) {
+>>> +	case AF_UNSPEC:
+>>> +	case AF_INET:
+>>> +		if (addrlen < sizeof(struct sockaddr_in))
+>>> +			return -EINVAL;
+>>> +		return 0;
+>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>> +	case AF_INET6:
+>>> +		if (addrlen < SIN6_LEN_RFC2133)
+>>> +			return -EINVAL;
+>>> +		return 0;
+>>> +#endif
+>>> +	}
+>>> +	WARN_ON_ONCE(1);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static u16 get_port(const struct sockaddr *const address)
+>>> +{
+>>> +	/* Gets port value in host byte order. */
+>>> +	switch (address->sa_family) {
+>>> +	case AF_UNSPEC:
+>>> +	case AF_INET: {
+>>> +		const struct sockaddr_in *const sockaddr =
+>>> +			(struct sockaddr_in *)address;
+>>> +		return ntohs(sockaddr->sin_port);
+>>
+>> Storing ports in big endian (in rulesets) would avoid converting them
+>> every time the kernel checks a socket port. The above comment should
+>> then be updated too.
+> 
+>     I thought we came to a conclusion to stick to host endianess and
+> let kernel do the checks under the hood:
+> https://lore.kernel.org/linux-security-module/278ab07f-7583-a4e0-3d37-1bacd091531d@digikod.net/
+> 
+> Did I misunderstand something?
 
-Non-assert is relevant to inclusion in Linux and is part of what the
-DCO considers. According to the OASIS IPR non-assert doesn't
-automatically trigger just because information has been shared within
-a TC.
+We indeed stick to the host endianess for the UAPI/syscalls, but 
+internally the kernel has to do the conversion with as it is currently 
+done by calling ntohs(). To avoid calling ntohs() every time get_port() 
+is called, we can instead only call htons() when creating rules (i.e. 
+one-time htons call instead of multiple ntohs calls).
 
-As the submitter you need to explain that all IP and license issues
-are accounted for because *in general* taking work-in-progress out of
-a industry workgroup with an IPR is a problematic thing to include in
-Linux.
 
-eg you can say that the 0.9 document this series linked to has
-properly reached "OASIS Standards Draft Deliverable" and is thus
-covered by the IPR, or you can explain that all Intel has confirmed
-outside OASIS that all parties that contribued to the document clear
-the IP release, or perhaps even that Intel is the only IP owner.
+>    Do you mean we need to do port converting __be16 -> u16 in 
+> check_socket_access()???
 
-This abnormal thing just needs to be explained, maintainer's can't be
-left to guess if IP issues are correct.
+Removing the ntohs() call from get_port() enables to return __be16 
+instead of u16, and check_socket_access() will then need to use the same 
+type.
 
-Jason
+
+>>
+>>
+>>> +	}
+>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>> +	case AF_INET6: {
+>>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
+>>> +			(struct sockaddr_in6 *)address;
+>>> +		return ntohs(sockaddr_ip6->sin6_port);
+>>> +	}
+>>> +#endif
+>>> +	}
+>>> +	WARN_ON_ONCE(1);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
+>>> +			       access_mask_t access_request)
+>>> +{
+>>> +	int ret;
+>>> +	bool allowed = false;
+>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>>> +	const struct landlock_rule *rule;
+>>> +	access_mask_t handled_access;
+>>> +	const struct landlock_id id = {
+>>> +		.key.data = port,
+>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>> +	};
+>>> +	const struct landlock_ruleset *const domain = get_current_net_domain();
+>>> +
+>>> +	if (WARN_ON_ONCE(!domain))
+>>> +		return 0;
+>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>>> +		return -EACCES;
+>>> +	/* Check if it's a TCP socket. */
+>>> +	if (sock->type != SOCK_STREAM)
+>>> +		return 0;
+>>> +
+>>> +	ret = check_addrlen(address, addrlen);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	switch (address->sa_family) {
+>>> +	case AF_UNSPEC:
+>>> +		/*
+>>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+>>> +		 * association, which have the same effect as closing the
+>>> +		 * connection while retaining the socket object (i.e., the file
+>>> +		 * descriptor).  As for dropping privileges, closing
+>>> +		 * connections is always allowed.
+>>> +		 */
+>>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>>> +			return 0;
+>>> +
+>>> +		/*
+>>> +		 * For compatibility reason, accept AF_UNSPEC for bind
+>>> +		 * accesses (mapped to AF_INET) only if the address is
+>>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+>>> +		 * required to not wrongfully return -EACCES instead of
+>>> +		 * -EAFNOSUPPORT.
+>>> +		 */
+>>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+>>> +			const struct sockaddr_in *const sockaddr =
+>>> +				(struct sockaddr_in *)address;
+>>> +
+>>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+>>> +				return -EAFNOSUPPORT;
+>>> +		}
+>>> +
+>>> +		fallthrough;
+>>> +	case AF_INET:
+>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>> +	case AF_INET6:
+>>> +#endif
+>>> +		rule = landlock_find_rule(domain, id);
+>>> +		handled_access = landlock_init_layer_masks(
+>>> +			domain, access_request, &layer_masks,
+>>> +			LANDLOCK_KEY_NET_PORT);
+>>> +		allowed = landlock_unmask_layers(rule, handled_access,
+>>> +						 &layer_masks,
+>>> +						 ARRAY_SIZE(layer_masks));
+>>> +	}
+>>> +	return allowed ? 0 : -EACCES;
+>>> +}
+>>> +
+>>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
+>>> +			    int addrlen)
+>>> +{ >>> +	return check_socket_access(sock, address, addrlen, get_port(address),
+>>> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
+
+get_port() is called before check_addrlen(), which is an issue.
+
+You'll find attached a patch for these fixes, please squash it in this 
+one for the next version.
+
+I'll send other reviews by the end of the week.
+
+
+>>> +}
+>>> +
+>>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
+>>> +			       int addrlen)
+>>> +{
+>>> +	return check_socket_access(sock, address, addrlen, get_port(address),
+>>> +				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
+>>> +}
+>>
+>> [...]
+>> .
+--------------On0rNqP3BGAQZeC4daDmM00S
+Content-Type: text/x-patch; charset=UTF-8;
+ name="0001-PATCH-Fix-multiple-issues-in-net.c.patch"
+Content-Disposition: attachment;
+ filename="0001-PATCH-Fix-multiple-issues-in-net.c.patch"
+Content-Transfer-Encoding: base64
+
+RnJvbSBkNmU1M2VhMzE4ZGRmYTMyZTU0NTMyZjQ0NzQxMjkxMTcwOWE4MGUxIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiA9P1VURi04P3E/TWlja2E9QzM9QUJsPTIwU2FsYT1D
+Mz1CQ24/PSA8bWljQGRpZ2lrb2QubmV0PgpEYXRlOiBUdWUsIDQgQXByIDIwMjMgMTc6Mjg6
+MzQgKzAyMDAKU3ViamVjdDogW1BBVENIXSBQQVRDSDogRml4IG11bHRpcGxlIGlzc3VlcyBp
+biBuZXQuYwoKLSBTdG9yZSBwb3J0cyBpbiBydWxlc2V0cyBhcyBfX2JlMTYgdG8gYXZvaWQg
+cnVudGltZSBjb252ZXJzaW9ucy4KLSBDb25zdGlmeSBhcmd1bWVudHMuCi0gQ2hlY2sgYWRk
+cmVzcydzIGxlbmd0aCBiZWZvcmUgZGVyZWZlcmVuY2luZyBhZGRyZXNzIHRvIHJlYWQgdGhl
+IHBvcnQuCi0gRml4IGFuZCBhZGQgY29tbWVudHMuCi0gRm9ybWF0IHdpdGggY2xhbmctZm9y
+bWF0LgotLS0KIHNlY3VyaXR5L2xhbmRsb2NrL25ldC5jIHwgNTUgKysrKysrKysrKysrKysr
+KysrKysrKysrKystLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAzNSBpbnNlcnRp
+b25zKCspLCAyMCBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9zZWN1cml0eS9sYW5kbG9j
+ay9uZXQuYyBiL3NlY3VyaXR5L2xhbmRsb2NrL25ldC5jCmluZGV4IGUxOWMzMzk5MDZlNy4u
+NjYzZWVlNTkyMGQ1IDEwMDY0NAotLS0gYS9zZWN1cml0eS9sYW5kbG9jay9uZXQuYworKysg
+Yi9zZWN1cml0eS9sYW5kbG9jay9uZXQuYwpAQCAtMjIsOSArMjIsMTAgQEAgaW50IGxhbmRs
+b2NrX2FwcGVuZF9uZXRfcnVsZShzdHJ1Y3QgbGFuZGxvY2tfcnVsZXNldCAqY29uc3QgcnVs
+ZXNldCwKIHsKIAlpbnQgZXJyOwogCWNvbnN0IHN0cnVjdCBsYW5kbG9ja19pZCBpZCA9IHsK
+LQkJLmtleS5kYXRhID0gcG9ydCwKKwkJLmtleS5kYXRhID0gKF9fZm9yY2UgdWludHB0cl90
+KWh0b25zKHBvcnQpLAogCQkudHlwZSA9IExBTkRMT0NLX0tFWV9ORVRfUE9SVCwKIAl9Owor
+CiAJQlVJTERfQlVHX09OKHNpemVvZihwb3J0KSA+IHNpemVvZihpZC5rZXkuZGF0YSkpOwog
+CiAJLyogVHJhbnNmb3JtcyByZWxhdGl2ZSBhY2Nlc3MgcmlnaHRzIHRvIGFic29sdXRlIG9u
+ZXMuICovCkBAIC02MCwyMCArNjEsMjQgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBsYW5kbG9j
+a19ydWxlc2V0ICpnZXRfY3VycmVudF9uZXRfZG9tYWluKHZvaWQpCiAJcmV0dXJuIGRvbTsK
+IH0KIAotc3RhdGljIGludCBjaGVja19hZGRybGVuKGNvbnN0IHN0cnVjdCBzb2NrYWRkciAq
+Y29uc3QgYWRkcmVzcywgaW50IGFkZHJsZW4pCitzdGF0aWMgaW50IGNoZWNrX2FkZHJsZW4o
+Y29uc3Qgc3RydWN0IHNvY2thZGRyICpjb25zdCBhZGRyZXNzLAorCQkJIGNvbnN0IGludCBh
+ZGRybGVuKQogewogCWlmIChhZGRybGVuIDwgb2Zmc2V0b2ZlbmQoc3RydWN0IHNvY2thZGRy
+LCBzYV9mYW1pbHkpKQogCQlyZXR1cm4gLUVJTlZBTDsKKwogCXN3aXRjaCAoYWRkcmVzcy0+
+c2FfZmFtaWx5KSB7CiAJY2FzZSBBRl9VTlNQRUM6CiAJY2FzZSBBRl9JTkVUOgogCQlpZiAo
+YWRkcmxlbiA8IHNpemVvZihzdHJ1Y3Qgc29ja2FkZHJfaW4pKQogCQkJcmV0dXJuIC1FSU5W
+QUw7CisKIAkJcmV0dXJuIDA7CiAjaWYgSVNfRU5BQkxFRChDT05GSUdfSVBWNikKIAljYXNl
+IEFGX0lORVQ2OgogCQlpZiAoYWRkcmxlbiA8IFNJTjZfTEVOX1JGQzIxMzMpCiAJCQlyZXR1
+cm4gLUVJTlZBTDsKKwogCQlyZXR1cm4gMDsKICNlbmRpZgogCX0KQEAgLTgxLDcgKzg2LDcg
+QEAgc3RhdGljIGludCBjaGVja19hZGRybGVuKGNvbnN0IHN0cnVjdCBzb2NrYWRkciAqY29u
+c3QgYWRkcmVzcywgaW50IGFkZHJsZW4pCiAJcmV0dXJuIDA7CiB9CiAKLXN0YXRpYyB1MTYg
+Z2V0X3BvcnQoY29uc3Qgc3RydWN0IHNvY2thZGRyICpjb25zdCBhZGRyZXNzKQorc3RhdGlj
+IF9fYmUxNiBnZXRfcG9ydChjb25zdCBzdHJ1Y3Qgc29ja2FkZHIgKmNvbnN0IGFkZHJlc3Mp
+CiB7CiAJLyogR2V0cyBwb3J0IHZhbHVlIGluIGhvc3QgYnl0ZSBvcmRlci4gKi8KIAlzd2l0
+Y2ggKGFkZHJlc3MtPnNhX2ZhbWlseSkgewpAQCAtODksMTMgKzk0LDEzIEBAIHN0YXRpYyB1
+MTYgZ2V0X3BvcnQoY29uc3Qgc3RydWN0IHNvY2thZGRyICpjb25zdCBhZGRyZXNzKQogCWNh
+c2UgQUZfSU5FVDogewogCQljb25zdCBzdHJ1Y3Qgc29ja2FkZHJfaW4gKmNvbnN0IHNvY2th
+ZGRyID0KIAkJCShzdHJ1Y3Qgc29ja2FkZHJfaW4gKilhZGRyZXNzOwotCQlyZXR1cm4gbnRv
+aHMoc29ja2FkZHItPnNpbl9wb3J0KTsKKwkJcmV0dXJuIHNvY2thZGRyLT5zaW5fcG9ydDsK
+IAl9CiAjaWYgSVNfRU5BQkxFRChDT05GSUdfSVBWNikKIAljYXNlIEFGX0lORVQ2OiB7CiAJ
+CWNvbnN0IHN0cnVjdCBzb2NrYWRkcl9pbjYgKmNvbnN0IHNvY2thZGRyX2lwNiA9CiAJCQko
+c3RydWN0IHNvY2thZGRyX2luNiAqKWFkZHJlc3M7Ci0JCXJldHVybiBudG9ocyhzb2NrYWRk
+cl9pcDYtPnNpbjZfcG9ydCk7CisJCXJldHVybiBzb2NrYWRkcl9pcDYtPnNpbjZfcG9ydDsK
+IAl9CiAjZW5kaWYKIAl9CkBAIC0xMDMsMTYgKzEwOCwxOCBAQCBzdGF0aWMgdTE2IGdldF9w
+b3J0KGNvbnN0IHN0cnVjdCBzb2NrYWRkciAqY29uc3QgYWRkcmVzcykKIAlyZXR1cm4gMDsK
+IH0KIAotc3RhdGljIGludCBjaGVja19zb2NrZXRfYWNjZXNzKHN0cnVjdCBzb2NrZXQgKnNv
+Y2ssIHN0cnVjdCBzb2NrYWRkciAqYWRkcmVzcywgaW50IGFkZHJsZW4sIHUxNiBwb3J0LAot
+CQkJICAgICAgIGFjY2Vzc19tYXNrX3QgYWNjZXNzX3JlcXVlc3QpCitzdGF0aWMgaW50IGNo
+ZWNrX3NvY2tldF9hY2Nlc3Moc3RydWN0IHNvY2tldCAqY29uc3Qgc29jaywKKwkJCSAgICAg
+ICBzdHJ1Y3Qgc29ja2FkZHIgKmNvbnN0IGFkZHJlc3MsCisJCQkgICAgICAgY29uc3QgaW50
+IGFkZHJsZW4sCisJCQkgICAgICAgY29uc3QgYWNjZXNzX21hc2tfdCBhY2Nlc3NfcmVxdWVz
+dCkKIHsKLQlpbnQgcmV0OworCWludCBlcnI7CisJX19iZTE2IHBvcnQ7CiAJYm9vbCBhbGxv
+d2VkID0gZmFsc2U7CiAJbGF5ZXJfbWFza190IGxheWVyX21hc2tzW0xBTkRMT0NLX05VTV9B
+Q0NFU1NfTkVUXSA9IHt9OwogCWNvbnN0IHN0cnVjdCBsYW5kbG9ja19ydWxlICpydWxlOwog
+CWFjY2Vzc19tYXNrX3QgaGFuZGxlZF9hY2Nlc3M7Ci0JY29uc3Qgc3RydWN0IGxhbmRsb2Nr
+X2lkIGlkID0gewotCQkua2V5LmRhdGEgPSBwb3J0LAorCXN0cnVjdCBsYW5kbG9ja19pZCBp
+ZCA9IHsKIAkJLnR5cGUgPSBMQU5ETE9DS19LRVlfTkVUX1BPUlQsCiAJfTsKIAljb25zdCBz
+dHJ1Y3QgbGFuZGxvY2tfcnVsZXNldCAqY29uc3QgZG9tYWluID0gZ2V0X2N1cnJlbnRfbmV0
+X2RvbWFpbigpOwpAQCAtMTIxLDEzICsxMjgsMjAgQEAgc3RhdGljIGludCBjaGVja19zb2Nr
+ZXRfYWNjZXNzKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBzb2NrYWRkciAqYWRkcmVz
+cywgaW4KIAkJcmV0dXJuIDA7CiAJaWYgKFdBUk5fT05fT05DRShkb21haW4tPm51bV9sYXll
+cnMgPCAxKSkKIAkJcmV0dXJuIC1FQUNDRVM7Ci0JLyogQ2hlY2sgaWYgaXQncyBhIFRDUCBz
+b2NrZXQuICovCisKKwkvKiBDaGVja3MgaWYgaXQncyBhIFRDUCBzb2NrZXQuICovCiAJaWYg
+KHNvY2stPnR5cGUgIT0gU09DS19TVFJFQU0pCiAJCXJldHVybiAwOwogCi0JcmV0ID0gY2hl
+Y2tfYWRkcmxlbihhZGRyZXNzLCBhZGRybGVuKTsKLQlpZiAocmV0KQotCQlyZXR1cm4gcmV0
+OworCS8qIENoZWNrcyBmb3IgbWluaW1hbCBoZWFkZXIgbGVuZ3RoLiAqLworCWVyciA9IGNo
+ZWNrX2FkZHJsZW4oYWRkcmVzcywgYWRkcmxlbik7CisJaWYgKGVycikKKwkJcmV0dXJuIGVy
+cjsKKworCS8qIEl0IGlzIG5vdyBzYWZlIHRvIHJlYWQgdGhlIHBvcnQuICovCisJcG9ydCA9
+IGdldF9wb3J0KGFkZHJlc3MpOworCWlkLmtleS5kYXRhID0gKF9fZm9yY2UgdWludHB0cl90
+KXBvcnQ7CisJQlVJTERfQlVHX09OKHNpemVvZihwb3J0KSA+IHNpemVvZihpZC5rZXkuZGF0
+YSkpOwogCiAJc3dpdGNoIChhZGRyZXNzLT5zYV9mYW1pbHkpIHsKIAljYXNlIEFGX1VOU1BF
+QzoKQEAgLTE3MiwxNyArMTg2LDE4IEBAIHN0YXRpYyBpbnQgY2hlY2tfc29ja2V0X2FjY2Vz
+cyhzdHJ1Y3Qgc29ja2V0ICpzb2NrLCBzdHJ1Y3Qgc29ja2FkZHIgKmFkZHJlc3MsIGluCiAJ
+cmV0dXJuIGFsbG93ZWQgPyAwIDogLUVBQ0NFUzsKIH0KIAotc3RhdGljIGludCBob29rX3Nv
+Y2tldF9iaW5kKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBzb2NrYWRkciAqYWRkcmVz
+cywKLQkJCSAgICBpbnQgYWRkcmxlbikKK3N0YXRpYyBpbnQgaG9va19zb2NrZXRfYmluZChz
+dHJ1Y3Qgc29ja2V0ICpjb25zdCBzb2NrLAorCQkJICAgIHN0cnVjdCBzb2NrYWRkciAqY29u
+c3QgYWRkcmVzcywgY29uc3QgaW50IGFkZHJsZW4pCiB7Ci0JcmV0dXJuIGNoZWNrX3NvY2tl
+dF9hY2Nlc3Moc29jaywgYWRkcmVzcywgYWRkcmxlbiwgZ2V0X3BvcnQoYWRkcmVzcyksCisJ
+cmV0dXJuIGNoZWNrX3NvY2tldF9hY2Nlc3Moc29jaywgYWRkcmVzcywgYWRkcmxlbiwKIAkJ
+CQkgICBMQU5ETE9DS19BQ0NFU1NfTkVUX0JJTkRfVENQKTsKIH0KIAotc3RhdGljIGludCBo
+b29rX3NvY2tldF9jb25uZWN0KHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBzb2NrYWRk
+ciAqYWRkcmVzcywKLQkJCSAgICAgICBpbnQgYWRkcmxlbikKK3N0YXRpYyBpbnQgaG9va19z
+b2NrZXRfY29ubmVjdChzdHJ1Y3Qgc29ja2V0ICpjb25zdCBzb2NrLAorCQkJICAgICAgIHN0
+cnVjdCBzb2NrYWRkciAqY29uc3QgYWRkcmVzcywKKwkJCSAgICAgICBjb25zdCBpbnQgYWRk
+cmxlbikKIHsKLQlyZXR1cm4gY2hlY2tfc29ja2V0X2FjY2Vzcyhzb2NrLCBhZGRyZXNzLCBh
+ZGRybGVuLCBnZXRfcG9ydChhZGRyZXNzKSwKKwlyZXR1cm4gY2hlY2tfc29ja2V0X2FjY2Vz
+cyhzb2NrLCBhZGRyZXNzLCBhZGRybGVuLAogCQkJCSAgIExBTkRMT0NLX0FDQ0VTU19ORVRf
+Q09OTkVDVF9UQ1ApOwogfQogCi0tIAoyLjM5LjAKCg==
+
+--------------On0rNqP3BGAQZeC4daDmM00S--
