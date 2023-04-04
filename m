@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA626D58B3
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B246D588E
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbjDDGWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 02:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44636 "EHLO
+        id S232997AbjDDGP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 02:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233236AbjDDGWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:22:11 -0400
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6381EE67;
-        Mon,  3 Apr 2023 23:22:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VfKRbss_1680589323;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VfKRbss_1680589323)
-          by smtp.aliyun-inc.com;
-          Tue, 04 Apr 2023 14:22:04 +0800
-Message-ID: <1680588670.6153247-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next 3/8] virtio_net: introduce virtnet_xdp_handler() to seprate the logic of run xdp
-Date:   Tue, 4 Apr 2023 14:11:10 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
- <20230328120412.110114-4-xuanzhuo@linux.alibaba.com>
- <CACGkMEvZ=-G4QVTDnoSa1N0UspW8u_oz-7xosrXV0f1YcytVXw@mail.gmail.com>
- <1680495148.1559556-3-xuanzhuo@linux.alibaba.com>
- <CACGkMEvfTE1F7Wa3P2do1o+149kSdGkjyVYt6e4r2r5UQZ6ocA@mail.gmail.com>
-In-Reply-To: <CACGkMEvfTE1F7Wa3P2do1o+149kSdGkjyVYt6e4r2r5UQZ6ocA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        with ESMTP id S233671AbjDDGPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:15:55 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842DD2686
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 23:15:24 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pjZwS-0007IN-6j; Tue, 04 Apr 2023 08:14:52 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 33E2A1A5DF0;
+        Tue,  4 Apr 2023 06:14:50 +0000 (UTC)
+Date:   Tue, 4 Apr 2023 08:14:49 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Frank Jungclaus <frank.jungclaus@esd.eu>
+Cc:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: esd_usb: Add support for CAN_CTRLMODE_BERR_REPORTING
+Message-ID: <20230404-worrisome-cable-9486f6795772@pengutronix.de>
+References: <20230330184446.2802135-1-frank.jungclaus@esd.eu>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="blqp6dvgfsr376jr"
+Content-Disposition: inline
+In-Reply-To: <20230330184446.2802135-1-frank.jungclaus@esd.eu>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,365 +54,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 4 Apr 2023 13:04:02 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Mon, Apr 3, 2023 at 12:17=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba=
-.com> wrote:
-> >
-> > On Mon, 3 Apr 2023 10:43:03 +0800, Jason Wang <jasowang@redhat.com> wro=
-te:
-> > > On Tue, Mar 28, 2023 at 8:04=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.ali=
-baba.com> wrote:
-> > > >
-> > > > At present, we have two similar logic to perform the XDP prog.
-> > > >
-> > > > Therefore, this PATCH separates the code of executing XDP, which is
-> > > > conducive to later maintenance.
-> > > >
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > ---
-> > > >  drivers/net/virtio_net.c | 142 +++++++++++++++++++++--------------=
-----
-> > > >  1 file changed, 75 insertions(+), 67 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index bb426958cdd4..72b9d6ee4024 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -301,6 +301,15 @@ struct padded_vnet_hdr {
-> > > >         char padding[12];
-> > > >  };
-> > > >
-> > > > +enum {
-> > > > +       /* xdp pass */
-> > > > +       VIRTNET_XDP_RES_PASS,
-> > > > +       /* drop packet. the caller needs to release the page. */
-> > > > +       VIRTNET_XDP_RES_DROP,
-> > > > +       /* packet is consumed by xdp. the caller needs to do nothin=
-g. */
-> > > > +       VIRTNET_XDP_RES_CONSUMED,
-> > > > +};
-> > >
-> > > I'd prefer this to be done on top unless it is a must. But I don't see
-> > > any advantage of introducing this, it's partial mapping of XDP action
-> > > and it needs to be extended when XDP action is extended. (And we've
-> > > already had: VIRTIO_XDP_REDIR and VIRTIO_XDP_TX ...)
-> >
-> > No, these are the three states of buffer after XDP processing.
-> >
-> > * PASS: goto make skb
->
-> XDP_PASS goes for this.
->
-> > * DROP: we should release buffer
->
-> XDP_DROP and error conditions go with this.
->
-> > * CUNSUMED: xdp prog used the buffer, we do nothing
->
-> XDP_TX/XDP_REDIRECTION goes for this.
->
-> So t virtnet_xdp_handler() just maps XDP ACTION plus the error
-> conditions to the above three states.
->
-> We can simply map error to XDP_DROP like:
->
->        case XDP_TX:
->               stats->xdp_tx++;
->                xdpf =3D xdp_convert_buff_to_frame(xdp);
->                if (unlikely(!xdpf))
->                        return XDP_DROP;
->
-> A good side effect is to avoid the xdp_xmit pointer to be passed to
-> the function.
 
+--blqp6dvgfsr376jr
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So, I guess you mean this:
+On 30.03.2023 20:44:46, Frank Jungclaus wrote:
+> Announce that the driver supports CAN_CTRLMODE_BERR_REPORTING by means
+> of priv->can.ctrlmode_supported. Until now berr reporting always has
+> been active without taking care of the berr-reporting parameter given
+> to an "ip link set ..." command.
+>=20
+> Additionally apply some changes to function esd_usb_rx_event():
+> - If berr reporting is off and it is also no state change, then
+> immediately return.
+> - Unconditionally (even in case of the above "immediate return") store
+> tx- and rx-error counters, so directly use priv->bec.txerr and
+> priv->bec.rxerr instead of intermediate variables.
+> - Not directly related, but to better point out the linkage between a
+> failed alloc_can_err_skb() and stats->rx_dropped++:
+> Move the increment of the rx_dropped statistic counter (back) to
+> directly behind the err_skb allocation.
+>=20
+> Signed-off-by: Frank Jungclaus <frank.jungclaus@esd.eu>
 
-	switch (act) {
-	case XDP_PASS:
-		/* handle pass */
-		return skb;
+Applied to linux-can-next
 
-	case XDP_TX:
-		*xdp_xmit |=3D VIRTIO_XDP_TX;
-		goto xmit;
+Thanks,
+Marc
 
-	case XDP_REDIRECT:
-		*xdp_xmit |=3D VIRTIO_XDP_REDIR;
-		goto xmit;
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
 
-	case XDP_DROP:
-	default:
-		goto err_xdp;
-	}
+--blqp6dvgfsr376jr
+Content-Type: application/pgp-signature; name="signature.asc"
 
-I have to say there is no problem from the perspective of code implementati=
-on.
+-----BEGIN PGP SIGNATURE-----
 
-But if the a new ACTION liking XDP_TX,XDP_REDIRECT is added in the future, =
-then
-we must modify all the callers. This is the benefit of using CUNSUMED.
+iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQrwFYACgkQvlAcSiqK
+BOh28Af+MlH6MoPRA+EDMuSmn+NSuTSQpn2RxD9/UQrTuyig29aUjIMIVuREksym
+Dn5bVb0C9V43K6TQ767Y9lBuoVRXgXB0fdurVKHxGP0cuABf4DwhAw1UaZFvUH21
+G+WUVIHGtamM3WgQ8PR69m3Yay4RRNlxO2W90Elwnf4zZNUJdTXYlQtWZzl2ues1
+IlFaEHUE/pEj8ALmTY0kegsYD30tq6hq8u7hpUKk/NmClU2DOyH57yr6g6ziLlng
+5scVvajveEkg8F9T01z2tqBjdDJHeJ2lkj81bkXqz+/zT5LQxXXy1w9xQdToaeBA
+PX4KakMomvaFQhGK5WgP99MKcQkVgQ==
+=W/Id
+-----END PGP SIGNATURE-----
 
-I think it is a good advantage to put xdp_xmit in virtnet_xdp_handler(),
-which makes the caller not care too much about these details. If you take i=
-nto
-account the problem of increasing the number of parameters, I advise to put=
- it
-in rq.
-
-Thanks.
-
-
-
->
-> >
-> > The latter two are not particularly related to XDP ACTION. And it does =
-not need
-> > to extend when XDP action is extended. At least I have not thought of t=
-his
-> > situation.
->
-> What's the advantages of such indirection compared to using XDP action di=
-rectly?
->
-> Thanks
->
-> >
-> >
-> > >
-> > > > +
-> > > >  static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void =
-*buf);
-> > > >  static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void =
-*buf);
-> > > >
-> > > > @@ -789,6 +798,59 @@ static int virtnet_xdp_xmit(struct net_device =
-*dev,
-> > > >         return ret;
-> > > >  }
-> > > >
-> > > > +static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct x=
-dp_buff *xdp,
-> > > > +                              struct net_device *dev,
-> > > > +                              unsigned int *xdp_xmit,
-> > > > +                              struct virtnet_rq_stats *stats)
-> > > > +{
-> > > > +       struct xdp_frame *xdpf;
-> > > > +       int err;
-> > > > +       u32 act;
-> > > > +
-> > > > +       act =3D bpf_prog_run_xdp(xdp_prog, xdp);
-> > > > +       stats->xdp_packets++;
-> > > > +
-> > > > +       switch (act) {
-> > > > +       case XDP_PASS:
-> > > > +               return VIRTNET_XDP_RES_PASS;
-> > > > +
-> > > > +       case XDP_TX:
-> > > > +               stats->xdp_tx++;
-> > > > +               xdpf =3D xdp_convert_buff_to_frame(xdp);
-> > > > +               if (unlikely(!xdpf))
-> > > > +                       return VIRTNET_XDP_RES_DROP;
-> > > > +
-> > > > +               err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> > > > +               if (unlikely(!err)) {
-> > > > +                       xdp_return_frame_rx_napi(xdpf);
-> > > > +               } else if (unlikely(err < 0)) {
-> > > > +                       trace_xdp_exception(dev, xdp_prog, act);
-> > > > +                       return VIRTNET_XDP_RES_DROP;
-> > > > +               }
-> > > > +
-> > > > +               *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > > +               return VIRTNET_XDP_RES_CONSUMED;
-> > > > +
-> > > > +       case XDP_REDIRECT:
-> > > > +               stats->xdp_redirects++;
-> > > > +               err =3D xdp_do_redirect(dev, xdp, xdp_prog);
-> > > > +               if (err)
-> > > > +                       return VIRTNET_XDP_RES_DROP;
-> > > > +
-> > > > +               *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > > +               return VIRTNET_XDP_RES_CONSUMED;
-> > > > +
-> > > > +       default:
-> > > > +               bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
-> > > > +               fallthrough;
-> > > > +       case XDP_ABORTED:
-> > > > +               trace_xdp_exception(dev, xdp_prog, act);
-> > > > +               fallthrough;
-> > > > +       case XDP_DROP:
-> > > > +               return VIRTNET_XDP_RES_DROP;
-> > > > +       }
-> > > > +}
-> > > > +
-> > > >  static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
-> > > >  {
-> > > >         return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
-> > > > @@ -876,7 +938,6 @@ static struct sk_buff *receive_small(struct net=
-_device *dev,
-> > > >         struct page *page =3D virt_to_head_page(buf);
-> > > >         unsigned int delta =3D 0;
-> > > >         struct page *xdp_page;
-> > > > -       int err;
-> > > >         unsigned int metasize =3D 0;
-> > > >
-> > > >         len -=3D vi->hdr_len;
-> > > > @@ -898,7 +959,6 @@ static struct sk_buff *receive_small(struct net=
-_device *dev,
-> > > >         xdp_prog =3D rcu_dereference(rq->xdp_prog);
-> > > >         if (xdp_prog) {
-> > > >                 struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf + head=
-er_offset;
-> > > > -               struct xdp_frame *xdpf;
-> > > >                 struct xdp_buff xdp;
-> > > >                 void *orig_data;
-> > > >                 u32 act;
-> > > > @@ -931,46 +991,22 @@ static struct sk_buff *receive_small(struct n=
-et_device *dev,
-> > > >                 xdp_prepare_buff(&xdp, buf + VIRTNET_RX_PAD + vi->h=
-dr_len,
-> > > >                                  xdp_headroom, len, true);
-> > > >                 orig_data =3D xdp.data;
-> > > > -               act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > > -               stats->xdp_packets++;
-> > > > +
-> > > > +               act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xd=
-p_xmit, stats);
-> > > >
-> > > >                 switch (act) {
-> > > > -               case XDP_PASS:
-> > > > +               case VIRTNET_XDP_RES_PASS:
-> > > >                         /* Recalculate length in case bpf program c=
-hanged it */
-> > > >                         delta =3D orig_data - xdp.data;
-> > > >                         len =3D xdp.data_end - xdp.data;
-> > > >                         metasize =3D xdp.data - xdp.data_meta;
-> > > >                         break;
-> > > > -               case XDP_TX:
-> > > > -                       stats->xdp_tx++;
-> > > > -                       xdpf =3D xdp_convert_buff_to_frame(&xdp);
-> > > > -                       if (unlikely(!xdpf))
-> > > > -                               goto err_xdp;
-> > > > -                       err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> > > > -                       if (unlikely(!err)) {
-> > > > -                               xdp_return_frame_rx_napi(xdpf);
-> > > > -                       } else if (unlikely(err < 0)) {
-> > > > -                               trace_xdp_exception(vi->dev, xdp_pr=
-og, act);
-> > > > -                               goto err_xdp;
-> > > > -                       }
-> > > > -                       *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > > -                       rcu_read_unlock();
-> > > > -                       goto xdp_xmit;
-> > > > -               case XDP_REDIRECT:
-> > > > -                       stats->xdp_redirects++;
-> > > > -                       err =3D xdp_do_redirect(dev, &xdp, xdp_prog=
-);
-> > > > -                       if (err)
-> > > > -                               goto err_xdp;
-> > > > -                       *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > > +
-> > > > +               case VIRTNET_XDP_RES_CONSUMED:
-> > > >                         rcu_read_unlock();
-> > > >                         goto xdp_xmit;
-> > > > -               default:
-> > > > -                       bpf_warn_invalid_xdp_action(vi->dev, xdp_pr=
-og, act);
-> > > > -                       fallthrough;
-> > > > -               case XDP_ABORTED:
-> > > > -                       trace_xdp_exception(vi->dev, xdp_prog, act);
-> > > > -                       goto err_xdp;
-> > > > -               case XDP_DROP:
-> > > > +
-> > > > +               case VIRTNET_XDP_RES_DROP:
-> > > >                         goto err_xdp;
-> > > >                 }
-> > > >         }
-> > > > @@ -1277,7 +1313,6 @@ static struct sk_buff *receive_mergeable(stru=
-ct net_device *dev,
-> > > >         if (xdp_prog) {
-> > > >                 unsigned int xdp_frags_truesz =3D 0;
-> > > >                 struct skb_shared_info *shinfo;
-> > > > -               struct xdp_frame *xdpf;
-> > > >                 struct page *xdp_page;
-> > > >                 struct xdp_buff xdp;
-> > > >                 void *data;
-> > > > @@ -1294,49 +1329,22 @@ static struct sk_buff *receive_mergeable(st=
-ruct net_device *dev,
-> > > >                 if (unlikely(err))
-> > > >                         goto err_xdp_frags;
-> > > >
-> > > > -               act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > > -               stats->xdp_packets++;
-> > > > +               act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xd=
-p_xmit, stats);
-> > > >
-> > > >                 switch (act) {
-> > > > -               case XDP_PASS:
-> > > > +               case VIRTNET_XDP_RES_PASS:
-> > > >                         head_skb =3D build_skb_from_xdp_buff(dev, v=
-i, &xdp, xdp_frags_truesz);
-> > > >                         if (unlikely(!head_skb))
-> > > >                                 goto err_xdp_frags;
-> > > >
-> > > >                         rcu_read_unlock();
-> > > >                         return head_skb;
-> > > > -               case XDP_TX:
-> > > > -                       stats->xdp_tx++;
-> > > > -                       xdpf =3D xdp_convert_buff_to_frame(&xdp);
-> > > > -                       if (unlikely(!xdpf)) {
-> > > > -                               netdev_dbg(dev, "convert buff to fr=
-ame failed for xdp\n");
-> > >
-> > > Nit: This debug is lost after the conversion.
-> >
-> > Will fix.
-> >
-> > Thanks.
-> >
-> > >
-> > > Thanks
-> > >
-> > > > -                               goto err_xdp_frags;
-> > > > -                       }
-> > > > -                       err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> > > > -                       if (unlikely(!err)) {
-> > > > -                               xdp_return_frame_rx_napi(xdpf);
-> > > > -                       } else if (unlikely(err < 0)) {
-> > > > -                               trace_xdp_exception(vi->dev, xdp_pr=
-og, act);
-> > > > -                               goto err_xdp_frags;
-> > > > -                       }
-> > > > -                       *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > > -                       rcu_read_unlock();
-> > > > -                       goto xdp_xmit;
-> > > > -               case XDP_REDIRECT:
-> > > > -                       stats->xdp_redirects++;
-> > > > -                       err =3D xdp_do_redirect(dev, &xdp, xdp_prog=
-);
-> > > > -                       if (err)
-> > > > -                               goto err_xdp_frags;
-> > > > -                       *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > > +
-> > > > +               case VIRTNET_XDP_RES_CONSUMED:
-> > > >                         rcu_read_unlock();
-> > > >                         goto xdp_xmit;
-> > > > -               default:
-> > > > -                       bpf_warn_invalid_xdp_action(vi->dev, xdp_pr=
-og, act);
-> > > > -                       fallthrough;
-> > > > -               case XDP_ABORTED:
-> > > > -                       trace_xdp_exception(vi->dev, xdp_prog, act);
-> > > > -                       fallthrough;
-> > > > -               case XDP_DROP:
-> > > > +
-> > > > +               case VIRTNET_XDP_RES_DROP:
-> > > >                         goto err_xdp_frags;
-> > > >                 }
-> > > >  err_xdp_frags:
-> > > > --
-> > > > 2.32.0.3.g01195cf9f
-> > > >
-> > >
-> >
->
+--blqp6dvgfsr376jr--
