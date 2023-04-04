@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 166186D65DF
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:54:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054506D669D
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 17:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232235AbjDDOyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 10:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
+        id S232492AbjDDPAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 11:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231705AbjDDOyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:54:43 -0400
+        with ESMTP id S235499AbjDDO7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:59:31 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DEC4EFD
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:54:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E6446A8
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:59:14 -0700 (PDT)
 Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1pji2y-0000dG-R9; Tue, 04 Apr 2023 16:54:08 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
+        id 1pji7s-0001ZU-Oa
+        for netdev@vger.kernel.org; Tue, 04 Apr 2023 16:59:12 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id E944B1A6841
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 14:59:11 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AB1C11A67EE;
-        Tue,  4 Apr 2023 14:54:06 +0000 (UTC)
-Date:   Tue, 4 Apr 2023 16:54:05 +0200
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 5A2D91A6838;
+        Tue,  4 Apr 2023 14:59:10 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 6a348886;
+        Tue, 4 Apr 2023 14:59:09 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>
-Subject: Re: [PATCH net-next 07/10] can: rcar_canfd: ircar_canfd_probe(): fix
- plain integer in transceivers[] init
-Message-ID: <20230404-linoleum-economy-2a66d23363f3@pengutronix.de>
-References: <20230404113429.1590300-1-mkl@pengutronix.de>
- <20230404113429.1590300-8-mkl@pengutronix.de>
- <CAMuHMdWwLHYsbjvKuJ6M3an0nQWdcd9M8Y8io5wg0fAcgL9XDg@mail.gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/10] pull-request: can-next 2023-04-04-2
+Date:   Tue,  4 Apr 2023 16:58:58 +0200
+Message-Id: <20230404145908.1714400-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gsz5in6zibhvb2ja"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWwLHYsbjvKuJ6M3an0nQWdcd9M8Y8io5wg0fAcgL9XDg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -57,49 +55,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello netdev-team,
 
---gsz5in6zibhvb2ja
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+this is the corrected pull request of 10 patches for net-next/master.
 
-On 04.04.2023 15:54:25, Geert Uytterhoeven wrote:
-> Hi Marc,
->=20
-> On Tue, Apr 4, 2023 at 1:34=E2=80=AFPM Marc Kleine-Budde <mkl@pengutronix=
-=2Ede> wrote:
-> > From: Geert Uytterhoeven <geert+renesas@glider.be>
-> >
-> > Fix the following compile warning with C=3D1:
-> >
-> > | drivers/net/can/rcar/rcar_canfd.c:1852:59: warning: Using plain integ=
-er as NULL pointer
->=20
-> s/ircar_canfd_probe/rcar_canfd_probe/ in the patch summary.
+The first patch is by Oliver Hartkopp and makes the maximum pdu size
+of the CAN ISOTP protocol configurable.
 
-Doh! Switching back and forth between editors, I think :)
+The following 5 patches are by Dario Binacchi and add support for the
+bxCAN controller by ST.
 
+Geert Uytterhoeven's patch for the rcar_canfd driver fixes a sparse
+warning.
+
+Peng Fan's patch adds an optional power-domains property to the
+flexcan device tree binding.
+
+Frank Jungclaus adds support for CAN_CTRLMODE_BERR_REPORTING to the
+esd_usb driver.
+
+The last patch is by Oliver Hartkopp and converts the USB IDs of the
+kvaser_usb driver to hexadecimal values.
+
+regards,
 Marc
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+---
 
---gsz5in6zibhvb2ja
-Content-Type: application/pgp-signature; name="signature.asc"
+The following changes since commit 4cee0fb9cc4b5477637fdeb2e965f5fc7d624622:
 
------BEGIN PGP SIGNATURE-----
+  Merge tag 'linux-can-next-for-6.4-20230327' of git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next (2023-03-27 19:55:10 -0700)
 
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQsOgsACgkQvlAcSiqK
-BOi3zggAtjEbWT/nsqCrEcsR2djNggE53uCJifgtdUyDznSt2cw8p+7zK3M6uoV0
-bPVqlSFaI88l45kyBcFri01GQkqoJKH6u1xmC8ZmYOuZYHSNWGhhA3TQxaSqvPwX
-KyqZ+ZwjsnjgjUxSPqvdHmBKgL9NVsvPs+Q7OJ0kDWvWPpnzeRiOYTYKBSCuWuOR
-n8aCmJx8NeLv64bd8K5KrmcP7dSrtLpf1TCAiuDjl+MxbGP7PrUEUU638m0uxGQM
-hl2WXVxRkpgDnTZwprcf1bHGQ53kLXpkTTI4VuFD7vOXv/cFCBzy0jiiGkeOw0RA
-Xc9gMOnWuN9sfXeqRfcUtM0HqfRF/g==
-=mlBr
------END PGP SIGNATURE-----
+are available in the Git repository at:
 
---gsz5in6zibhvb2ja--
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-6.4-20230404-2
+
+for you to fetch changes up to 1afae605e0b2da606d5fff4a8a5849da207128b3:
+
+  kvaser_usb: convert USB IDs to hexadecimal values (2023-04-04 16:48:45 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-6.4-20230404-2
+
+----------------------------------------------------------------
+Dario Binacchi (5):
+      dt-bindings: arm: stm32: add compatible for syscon gcan node
+      dt-bindings: net: can: add STM32 bxcan DT bindings
+      ARM: dts: stm32: add CAN support on stm32f429
+      ARM: dts: stm32: add pin map for CAN controller on stm32f4
+      can: bxcan: add support for ST bxCAN controller
+
+Frank Jungclaus (1):
+      can: esd_usb: Add support for CAN_CTRLMODE_BERR_REPORTING
+
+Geert Uytterhoeven (1):
+      can: rcar_canfd: rcar_canfd_probe(): fix plain integer in transceivers[] init
+
+Marc Kleine-Budde (1):
+      Merge patch series "can: bxcan: add support for ST bxCAN controller"
+
+Oliver Hartkopp (2):
+      can: isotp: add module parameter for maximum pdu size
+      kvaser_usb: convert USB IDs to hexadecimal values
+
+Peng Fan (1):
+      dt-bindings: can: fsl,flexcan: add optional power-domains property
+
+ .../bindings/arm/stm32/st,stm32-syscon.yaml        |    2 +
+ .../devicetree/bindings/net/can/fsl,flexcan.yaml   |    3 +
+ .../bindings/net/can/st,stm32-bxcan.yaml           |   85 ++
+ MAINTAINERS                                        |    7 +
+ arch/arm/boot/dts/stm32f4-pinctrl.dtsi             |   30 +
+ arch/arm/boot/dts/stm32f429.dtsi                   |   29 +
+ drivers/net/can/Kconfig                            |   12 +
+ drivers/net/can/Makefile                           |    1 +
+ drivers/net/can/bxcan.c                            | 1098 ++++++++++++++++++++
+ drivers/net/can/rcar/rcar_canfd.c                  |    2 +-
+ drivers/net/can/usb/esd_usb.c                      |   35 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c   |  102 +-
+ net/can/isotp.c                                    |   65 +-
+ 13 files changed, 1395 insertions(+), 76 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/can/st,stm32-bxcan.yaml
+ create mode 100644 drivers/net/can/bxcan.c
+
+
