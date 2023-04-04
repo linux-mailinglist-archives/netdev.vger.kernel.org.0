@@ -2,141 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D5196D59E7
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 09:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB686D59F3
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 09:48:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231767AbjDDHpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 03:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
+        id S233481AbjDDHsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 03:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233775AbjDDHo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 03:44:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34651E4B
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 00:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680594250;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KPVu/xVyTPL2lLJeVRvlW1mZ4UPcNdLxppLFptaHtWw=;
-        b=RPbKeJLbsaMsci3h0UaMvmrjeBZN0LABiZ+D8jT9XPn9jwvOueHZSaPnOawJkmekr16FYz
-        EpsKXNpW+DBoxlXqNGoGGBl9tAYo8KZQ2LR2WQVZE8ZBpmPhWfAxroli1soOPF7rVYZAY1
-        EGkjYkfQDKtiTiY5EYWdqH0Fi0NhPfA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-317-pWZOij9FOWy-x6vEjesmyg-1; Tue, 04 Apr 2023 03:44:09 -0400
-X-MC-Unique: pWZOij9FOWy-x6vEjesmyg-1
-Received: by mail-qk1-f199.google.com with SMTP id 203-20020a370ad4000000b00746981f8f4bso14401738qkk.13
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 00:44:09 -0700 (PDT)
+        with ESMTP id S231767AbjDDHsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 03:48:01 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC49E10FF
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 00:47:55 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id e15-20020a17090ac20f00b0023d1b009f52so35245341pjt.2
+        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 00:47:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680594475;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lZTFVCdSR9bXY+cqoePnVwnQOir0lilLDbKROgGGxm8=;
+        b=WkwJi8QbBxLUYLMYnlvfs9GWd5pIUFGeoSPfi1kVP9v1UsYeLgJKZpjmMc3eigZRXT
+         PhwKH3gS5yDZ9mh+PS9lu95mISuVnEmO1vwWfzPKRlwAlWwig6GRfF2GV2T/UeHuFg43
+         Y2fp4EmYEq2aAjoDCtIHBudSO57z1Pch0a1TU4Oq2qZmxiSd8nUVWnZnlHSasaDyCBJa
+         jpS4KZYNhQMdg59tYT+h20nE+eMS2PgTcJIt2o6l/i2OEo65CdBlUd1ofSO7Jv6ipcdV
+         ZLlWHyJn3J0CdQ++wQlGp5xtaYvSPSP5q36Y0WqMgivq8lgiROijCeNPDj7LJ3qbDRyH
+         j6Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680594248; x=1683186248;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=KPVu/xVyTPL2lLJeVRvlW1mZ4UPcNdLxppLFptaHtWw=;
-        b=uzY8ylBsyiLItt+gJsQ4O5S9bF9qvm4NW5tYBaUehl85+U6nhBjAk1srdQoeSQYUhW
-         fQFCWY6MBVkt+a7Cg6kucjcEtdvWtVP8lYTyR8Fbuh7KQaX28kvgUkFgjZtqOE6oe63h
-         wpFsCZcIyE0aCcjAw3c1+ZG439XP40mnjKjnfCvsTyoET6vaiNyJH+l5rSTFl6Wb0zR3
-         y50oLHSG2w2CieXYH6EeBpNC0aqtn5rg8BslDuqTWYiZMIAs5P0ncnSqWZ5hLIMtQ8tp
-         SYMplhvQaF2H5eNI4yGJFKMPRALkiGU1YbIiN04KDWOord9csCxVIeXmO3+aSkXUxSAZ
-         gQbg==
-X-Gm-Message-State: AAQBX9dUNb3agyUaEKKhhBVQ9plnIa3BaZIryTyggI4fBR1w9sa79uiL
-        D4ytf9ghLAPJZAct/JRK3CjgeP/EKFOeDGI7bMT5gK7h8BhfYzQj6uJtWTNsFLm8Km0/NB1zwTy
-        uL5fXENqROZk1UZ8Q
-X-Received: by 2002:a05:6214:509b:b0:5af:3a13:202d with SMTP id kk27-20020a056214509b00b005af3a13202dmr2072373qvb.4.1680594248405;
-        Tue, 04 Apr 2023 00:44:08 -0700 (PDT)
-X-Google-Smtp-Source: AKy350YNPzgAt4LCli7vsPt8ETdKcZYvIfxINM+yAfP6TYUZEhrps0QrwoT66NgD1VoJtY6LVaQvvw==
-X-Received: by 2002:a05:6214:509b:b0:5af:3a13:202d with SMTP id kk27-20020a056214509b00b005af3a13202dmr2072350qvb.4.1680594248046;
-        Tue, 04 Apr 2023 00:44:08 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-227-151.dyn.eolo.it. [146.241.227.151])
-        by smtp.gmail.com with ESMTPSA id t187-20020a3746c4000000b007468cc74c77sm3432729qka.4.2023.04.04.00.44.05
+        d=1e100.net; s=20210112; t=1680594475;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lZTFVCdSR9bXY+cqoePnVwnQOir0lilLDbKROgGGxm8=;
+        b=tuVrTweFGEp4uPkt1Jmvp8Flv8mw6xXLvt+foTsGWVXj9EbOEhdg8XFOOqWKZlQLnq
+         b6Cm9PmviE6rvJsztiXpz5mzDGMWjpMBwA3Kdxwbt/2mr1xOpnhIlbbaflwsMKmXQg5N
+         3eGOpT4u7G/hrQbnYBE8v67Qu2pPg/ReM4hg66e0njCduDmSvRtA29LE7wIwR+MLWOAO
+         U6hISfNsa/i+k2Q4sfAMXCZoI5pnt90h3SjeVjQZfaAfIaanvOWgt1q5YLTPbzZSduku
+         rkoB/N1OfUPGaN0EnVV2TLm6xr3wSL8cSgi8PrKY4jpzUMzWB+ueG98q0iQviawYpaiQ
+         tnmQ==
+X-Gm-Message-State: AAQBX9dOGTMrgun6ImWMUU2xyQdRbqkKAdA+xgzArVBs7u6LbvJ2W+p4
+        3A2SviT0lsKx6alK//cC22vDYchrUlW4+w==
+X-Google-Smtp-Source: AKy350bnInbRHU7YlY8jUa1kZlFALzr/gZ+ll+/9hrvgnUf927KSXARNsgSgnsQd7CM6CzqKguhSBA==
+X-Received: by 2002:a17:90b:4b07:b0:23e:cea5:d37e with SMTP id lx7-20020a17090b4b0700b0023ecea5d37emr1663605pjb.46.1680594475289;
+        Tue, 04 Apr 2023 00:47:55 -0700 (PDT)
+Received: from localhost.localdomain ([204.44.110.111])
+        by smtp.gmail.com with ESMTPSA id d6-20020a170902c18600b001a04d37a4acsm7828224pld.9.2023.04.04.00.47.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 00:44:07 -0700 (PDT)
-Message-ID: <10e9e8dd6eadf68eca55c5742adf18dad23661dc.camel@redhat.com>
-Subject: Re: [PATCH v2 net-next 02/10] net: ethernet: mtk_wed: move cpuboot
- in a dedicated dts node
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+        Tue, 04 Apr 2023 00:47:54 -0700 (PDT)
+From:   Liang Chen <liangchen.linux@gmail.com>
+To:     ilias.apalodimas@linaro.org, hawk@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, lorenzo.bianconi@redhat.com,
-        daniel@makrotopia.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org
-Date:   Tue, 04 Apr 2023 09:44:02 +0200
-In-Reply-To: <56ed497762b1c031c553210a0e5c7717c6069642.1680268101.git.lorenzo@kernel.org>
-References: <cover.1680268101.git.lorenzo@kernel.org>
-         <56ed497762b1c031c553210a0e5c7717c6069642.1680268101.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        liangchen.linux@gmail.com
+Subject: [PATCH] skbuff: Fix a race between coalescing and releasing SKBs
+Date:   Tue,  4 Apr 2023 15:47:33 +0800
+Message-Id: <20230404074733.22869-1-liangchen.linux@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2023-03-31 at 15:12 +0200, Lorenzo Bianconi wrote:
-> Since the cpuboot memory region is not part of the RAM MT7986 SoC,
-> move cpuboot in a deidicated syscon node.
-> Keep backward-compatibility with older dts version where cpuboot was
-> defined as reserved-memory child node.
->=20
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/mediatek/mtk_wed_mcu.c | 34 +++++++++++++++++----
->  drivers/net/ethernet/mediatek/mtk_wed_wo.h  |  3 +-
->  2 files changed, 30 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c b/drivers/net/et=
-hernet/mediatek/mtk_wed_mcu.c
-> index 6624f6d6abdd..797c3b412ab6 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_wed_mcu.c
-> @@ -18,12 +18,23 @@
-> =20
->  static u32 wo_r32(struct mtk_wed_wo *wo, u32 reg)
->  {
-> -	return readl(wo->boot.addr + reg);
-> +	u32 val;
-> +
-> +	if (!wo->boot_regmap)
-> +		return readl(wo->boot.addr + reg);
-> +
-> +	if (regmap_read(wo->boot_regmap, reg, &val))
-> +		val =3D ~0;
-> +
-> +	return val;
->  }
-> =20
->  static void wo_w32(struct mtk_wed_wo *wo, u32 reg, u32 val)
->  {
-> -	writel(val, wo->boot.addr + reg);
-> +	if (wo->boot_regmap)
-> +		regmap_write(wo->boot_regmap, reg, val);
-> +	else
-> +		writel(val, wo->boot.addr + reg);
+Commit 1effe8ca4e34 allowed coalescing to proceed with non page pool page
+and page pool page when @from is cloned, i.e.
 
-Very minor nit: it would be more consistent with the read function
-above if you invert the 2 branches, e.g.:
+to->pp_recycle    --> false
+from->pp_recycle  --> true
+skb_cloned(from)  --> true
 
-	if (!wo->boot_regmap)
-		writel(val, wo->boot.addr + reg);
-	else
-		regmap_write(wo->boot_regmap, reg, val);
+However, it actually requires skb_cloned(@from) to hold true until
+coalescing finishes in this situation. If the other cloned SKB is
+released while the merging is in process, from_shinfo->nr_frags will be
+set to 0 toward the end of the function, causing the increment of frag
+page _refcount to be unexpectedly skipped resulting in inconsistent
+reference counts. Later when SKB(@to) is released, it frees the page
+directly even though the page pool page is still in use, leading to
+use-after-free or double-free errors. So it should be prohibitted.
 
-No need to repost just for the above, just take into consideration if a
-new version will be needed for other reasons (DT)
+The double-free error message below prompted us to investigate:
+BUG: Bad page state in process swapper/1  pfn:0e0d1
+page:00000000c6548b28 refcount:-1 mapcount:0 mapping:0000000000000000
+index:0x2 pfn:0xe0d1
+flags: 0xfffffc0000000(node=0|zone=1|lastcpupid=0x1fffff)
+raw: 000fffffc0000000 0000000000000000 ffffffff00000101 0000000000000000
+raw: 0000000000000002 0000000000000000 ffffffffffffffff 0000000000000000
+page dumped because: nonzero _refcount
 
-Cheers,
+CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E      6.2.0+
+Call Trace:
+ <IRQ>
+dump_stack_lvl+0x32/0x50
+bad_page+0x69/0xf0
+free_pcp_prepare+0x260/0x2f0
+free_unref_page+0x20/0x1c0
+skb_release_data+0x10b/0x1a0
+napi_consume_skb+0x56/0x150
+net_rx_action+0xf0/0x350
+? __napi_schedule+0x79/0x90
+__do_softirq+0xc8/0x2b1
+__irq_exit_rcu+0xb9/0xf0
+common_interrupt+0x82/0xa0
+</IRQ>
+<TASK>
+asm_common_interrupt+0x22/0x40
+RIP: 0010:default_idle+0xb/0x20
 
-Paolo
+Signed-off-by: Liang Chen <liangchen.linux@gmail.com>
+---
+ net/core/skbuff.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 050a875d09c5..9be23ece5f03 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5598,17 +5598,14 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+ 		return false;
+ 
+ 	/* In general, avoid mixing slab allocated and page_pool allocated
+-	 * pages within the same SKB. However when @to is not pp_recycle and
+-	 * @from is cloned, we can transition frag pages from page_pool to
+-	 * reference counted.
+-	 *
+-	 * On the other hand, don't allow coalescing two pp_recycle SKBs if
+-	 * @from is cloned, in case the SKB is using page_pool fragment
+-	 * references (PP_FLAG_PAGE_FRAG). Since we only take full page
+-	 * references for cloned SKBs at the moment that would result in
+-	 * inconsistent reference counts.
++	 * pages within the same SKB. However don't allow coalescing two
++	 * pp_recycle SKBs if @from is cloned, in case the SKB is using
++	 * page_pool fragment references (PP_FLAG_PAGE_FRAG). Since we only
++	 * take full page references for cloned SKBs at the moment that would
++	 * result in inconsistent reference counts.
+ 	 */
+-	if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
++	if ((to->pp_recycle != from->pp_recycle)
++		|| (from->pp_recycle && skb_cloned(from)))
+ 		return false;
+ 
+ 	if (len <= skb_tailroom(to)) {
+-- 
+2.18.2
 
