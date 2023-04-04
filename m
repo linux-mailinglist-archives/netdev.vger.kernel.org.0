@@ -2,151 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B3796D5BA2
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:14:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BFCA6D5BA4
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbjDDJOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 05:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50054 "EHLO
+        id S234007AbjDDJP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 05:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234009AbjDDJOQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:14:16 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73411FF2
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 02:14:13 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1pjcjv-0000bf-1Q;
-        Tue, 04 Apr 2023 11:14:07 +0200
-Date:   Tue, 4 Apr 2023 10:13:59 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Alexander 'lynxis' Couzens <lynxis@fe80.eu>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        John Crispin <john@phrozen.org>
-Subject: Re: Convention regarding SGMII in-band autonegotiation
-Message-ID: <ZCvqJAVjOdogEZKD@makrotopia.org>
-References: <ZCtvaxY2d74XLK6F@makrotopia.org>
- <a0570b00-669f-120d-2700-a97317466727@gmail.com>
+        with ESMTP id S233955AbjDDJP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:15:56 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1D41A7;
+        Tue,  4 Apr 2023 02:15:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680599755; x=1712135755;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=c3TWM/U7ae/+krBKWKZnTGu8xrMC3rbZUK6++vwlxtY=;
+  b=b7yuJDj6TtQ6TcoPe/S0KVJYushwCH4iX8SyI7bepbqf4yQMXCljYqVi
+   qn9Byf2j5hcTEPZG6jCKsJ8YTW3H1NWuPyHoOd0mPdIOMi65jnnbqCApg
+   CkNdt9LQZOhRr8nzqhFYyDf+o+NAH9AOjlPoopH8OkZfwon8tRJVCJfS2
+   +1631Pydg8DGa9btbzHCTu4A8e47YOYbgH/OCVns2TNtHx2EJxZ9Py8Kk
+   l82qLfoqKLTDRJz7s5GR0NeIS3sysBWoWmyxKF1XVZU5hbVbT5IBaHYWB
+   1RPnzqr8REwgfnKapyxTBsD4D4exejeYZ84A49tq+Se5FpHyt4sywEp6I
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="404893346"
+X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
+   d="scan'208";a="404893346"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 02:15:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="663513778"
+X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
+   d="scan'208";a="663513778"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by orsmga006.jf.intel.com with ESMTP; 04 Apr 2023 02:15:46 -0700
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>,
+        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        hock.leong.kweh@intel.com
+Subject: [RFC net 1/1] net: stmmac: skip PHY scanning when PHY already attached in DT mode
+Date:   Tue,  4 Apr 2023 17:14:42 +0800
+Message-Id: <20230404091442.3540092-1-michael.wei.hong.sit@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a0570b00-669f-120d-2700-a97317466727@gmail.com>
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.5 required=5.0 tests=AC_FROM_MANY_DOTS,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 08:31:12AM +0200, Heiner Kallweit wrote:
-> On 04.04.2023 02:29, Daniel Golle wrote:
-> > Hi!
-> > 
-> > I've been dealing with several SGMII TP PHYs, some of them with support
-> > for 2500Base-T, by switching to 2500Base-X interface mode (or by using
-> > rate-adaptation to 2500Base-X or proprietary HiSGMII).
-> > 
-> > Dealing with such PHYs in MAC-follow-PHY-rate-mode (ie. not enabling
-> > rate-adaptation which is worth avoiding imho) I've noticed that the
-> > current behavior of PHY and MAC drivers in the kernel is not as
-> > consistent as I assumed it would be.
-> > 
-> > Background:
-> >>From Russell's comments and the experiments carried out together with
-> > Frank Wunderlich for the MediaTek SGMII PCS found in mtk_eth_soc I
-> > understood that in general in-band autonegotiation should always be
-> > switched off unless phylink_autoneg_inband(mode) returns true, ie.
-> > mostly in case 'managed = "in-band-status";' is set in device tree,
-> > which is generally the case for SFP cages or PHYs which are not
-> > accessible via MDIO.
-> > 
-> > As of today this is what pcs-mtk-lynxi is now doing as this behavior
-> > was inherited from the implementation previously found at
-> > drivers/net/ethernet/mediatek/mtk_sgmii.c.
-> > 
-> > Hence, with MLO_AN_PHY we are expecting both MAC and PHY to *not* use
-> > in-band autonegotiation. It is not needed as we have out-of-band status
-> > using MDIO and maybe even an interrupt to communicate the link status
-> > between the two. Correct so far?
-> > 
-> > I've also previously worked around this using Vladimir Oltean's patch
-> > series introducing sync'ing and validation of in-band-an modes between
-> > MAC and PHY -- however, this turns out to be overkill in case the
-> > above is true and given there is a way to always switch off in-band-an
-> > on both, the MAC and the PHY.
-> > 
-> > Or should PHY drivers setup in-band AN according to
-> > pl->config->ovr_an_inband...?
-> > 
-> > Also note that the current behavior of PHY drivers is that consistent:
-> > 
-> >  * drivers/net/phy/mxl-gpy.c
-> >    This goes through great lengths to switch on inband-an when initially
-> >    coming up in SGMII mode, then switches is off when switching to
-> >    2500Base-X mode and after that **never switches it on again**. This
-> >    is obviously not correct and the driver can be greatly reduced if
-> >    dropping all that (non-)broken logic.
-> >    Would a patch like [1] this be acceptable?
-> > 
-> >  * drivers/net/phy/realtek.c
-> >    The driver simply doesn't do anything about in-band-an and hence looks
-> >    innocent. However, all RTL8226* and RTL8221* PHYs enable in-band-an
-> >    by default in SGMII mode after reset. As many vendors use rate-adapter-
-> >    mode, this only surfaces if not using the rate-adapter and having the
-> >    MAC follow the PHY mode according to speed, as we do using [2] and [3].
-> > 
-> These PHY's are supported as internal PHY's in RTL8125 MAC/PHY chips
-> where the MAC/PHY communication is handled chip-internally.
-> Other use cases are not officially supported (yet), also due to lack of
-> public datasheets.
+If PHY is successfully attached during phylink_fwnode_phy_connect()
+in DT mode. MAC should not need to scan for PHY again.
 
-The PHYs I've been encountering in the wild are those which were added by
-74d155be2677a ("net: phy: realtek: Add support for RTL8221B-CG series")
+Adding a logic to check if ovr_an_inband is set before scanning for
+a PHY, since phylink_fwnode_phy_connect() returns 0 when
 
-They are independently packaged ICs. The relevant datasheets are
-not public, but do provide documentation of some but not all registers
-of those PHYs.
+	phy_fwnode = fwnode_get_phy_node(fwnode);
+	if (IS_ERR(phy_fwnode)) {
+		if (pl->cfg_link_an_mode == MLO_AN_PHY)
+			return -ENODEV;
+		return 0;
+	}
 
-> 
-> >    SGMII in-band AN can be switched off using a magic sequence carried
-> >    out on undocumented registers [5].
-> > 
-> >    Would patches [2], [3], [4], [5] be acceptable?
-> > 
-> Ideas from the patches can be re-used. Some patches itself are not ready
-> for mainline (replace magic numbers with proper constants (as far as
-> documented by Realtek), inappropriate use of phy_modify_mmd_changed,
-> read_status() being wrong place for updating interface mode).
+Fixes: fe2cfbc96803 ("net: stmmac: check if MAC needs to attach to a PHY")
+Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Unfortunately the registers used to switch off rate-adapter-mode and
-also to switch off (Hi)SGMII in-band autonegotation are entirely
-undocumented even in the non-public datasheet.
-They read/write/read-poll sequences supposedly appear in a document
-called "SERDES Mode Setting Flow Application Note" which also doesn't
-explain the meaning of the registers and their bits.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d41a5f92aee7..4b8d3d975678 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1149,7 +1149,7 @@ static int stmmac_init_phy(struct net_device *dev)
+ 	/* Some DT bindings do not set-up the PHY handle. Let's try to
+ 	 * manually parse it
+ 	 */
+-	if (!fwnode || phy_needed || ret) {
++	if (!fwnode || (phy_needed && priv->phylink_config.ovr_an_inband) || ret) {
+ 		int addr = priv->plat->phy_addr;
+ 		struct phy_device *phydev;
+ 
+-- 
+2.34.1
 
-Where is updating the interface mode supposed to happen?
-
-I was looking at drivers/net/phy/mxl-gpy.c which calls its
-gpy_update_interface() function also from gpy_read_status(). If that is
-wrong it should probably be fixed in mxl-gpy.c as well...
-
-> 
-> > 
-> > Thank you for your advise!
-> > 
-> > 
-> > Daniel
-> > 
-> > [1]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/mediatek/patches-5.15/731-net-phy-hack-mxl-gpy-disable-sgmii-an.patch;hb=HEAD
-> > [2]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/721-net-phy-realtek-rtl8221-allow-to-configure-SERDES-mo.patch;hb=HEAD
-> > [3]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/722-net-phy-realtek-support-switching-between-SGMII-and-.patch;hb=HEAD
-> > [4]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/724-net-phy-realtek-use-genphy_soft_reset-for-2.5G-PHYs.patch;hb=HEAD
-> > [5]: https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob_plain;f=target/linux/generic/pending-5.15/725-net-phy-realtek-disable-SGMII-in-band-AN-for-2-5G-PHYs.patch;hb=HEAD
-> 
