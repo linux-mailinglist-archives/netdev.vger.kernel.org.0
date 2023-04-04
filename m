@@ -2,405 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE526D57D6
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 07:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD22B6D57DD
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 07:09:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233226AbjDDFFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 01:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46756 "EHLO
+        id S230235AbjDDFJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 01:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232916AbjDDFFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 01:05:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F3A1BDB
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 22:04:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680584656;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lyFCn89d5zgsw5taK6VZCji7VAGvezel0nUxaUQ7iyU=;
-        b=BjB6lSFag+/U5TsttqMwex9mt9H1cdwlTSbnFwhq8f/rnamTMzQiNpZAB6TjyjaiOHjXeY
-        /SKDA7pT/r2RrSwZTIUnf5GPrMawxU0Qrf7xk9UJoYxo2T2rReWmLaNGe2Oh7X6LenR0UF
-        hZRk9arK74F5B3GGNycWKe6PLhSMEd4=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-115-5C_P6tFHMOKoxXyiCINsVg-1; Tue, 04 Apr 2023 01:04:14 -0400
-X-MC-Unique: 5C_P6tFHMOKoxXyiCINsVg-1
-Received: by mail-ot1-f72.google.com with SMTP id r17-20020a05683002f100b006a131178723so9463223ote.10
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 22:04:14 -0700 (PDT)
+        with ESMTP id S229481AbjDDFJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 01:09:54 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA04C1BEF
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 22:09:53 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id h17so31424506wrt.8
+        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 22:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680584992;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ktAWZBRM+VqFBJgJmK/4MAzbC6C59mNA7HJuTF9SdP4=;
+        b=nB6XFFvgBiA4rFZmYVuSLg/I/txub38UlSpOlvdfjNn4QEpDJiCGEgPePlY2LLpuLD
+         /sDlI558146nn/U7yThtJHGeG8ZTubCSwNppbT5tUxk1L0LcTgn2x8HtdE71T1O1J9Ir
+         EOUxjQp5/jGrMgmG8rfyInHK75f7ksw51mQulZTG0W1cQCaxkt1g2fH4ZwuegwOW6v1T
+         FRzKUWue/pRlA5My55DOJTn49cwgK3Sac0yKpmrVJbBJ0VFpMFkWB32uHwh/+ORsO+Zy
+         DjoceScdnqVnit0WAHqZ/Fd5FmEmrNGK7JOWoKcX9HBUiqlX8KbJj3xYaX/EIKt+FWXf
+         Un4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680584654; x=1683176654;
+        d=1e100.net; s=20210112; t=1680584992;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lyFCn89d5zgsw5taK6VZCji7VAGvezel0nUxaUQ7iyU=;
-        b=JFEp3dI6+RJmqh+7YR3PwbQAHjT6cN6hcZMINrDFBVuWKFs+dNzk7SofOMdKYyFIF6
-         J9JvjBQpEEpzXxTAce15uRz1Q0F7zDRwsSJGA/Cbv+txxu+RZ+RNkIztHiq9HGbs6YVx
-         dMyo2/fdIicjdOIkhvFKH5EvURVrtdUj9cPRmOec3mWEBQtNnz86Df8GSdEugTl0/5FM
-         ncIuDPQ47GJyM9r+F7/O0+xe4j8gblyjQyfFgAZrtsdT/Gn9bgndBPE/Cvh2E5kYaC8+
-         t97HIiqCPUTWRX0nCtQVgk+LwYaQWmEfABBE9rRWcW68Kl+Br/IxgQ2AI9M8cdBlif/S
-         pUxw==
-X-Gm-Message-State: AAQBX9eUTuFP9Gz/4dkEjIowUGwPy/Q3kzEd16KZv05G1pQ3gwVR3Kgz
-        iHirZdZlYgtwVzDy1dAQw4ThuvoLrCidaDAPmKfa4NTCXq91fZgVOZpeteJuHxkrYAUc1UKt7+3
-        ekDP77wyP8AoZ9EDTWtu+NbgcBRdLB2vZ
-X-Received: by 2002:a05:6830:22c5:b0:69f:a43d:f6c5 with SMTP id q5-20020a05683022c500b0069fa43df6c5mr468595otc.2.1680584653817;
-        Mon, 03 Apr 2023 22:04:13 -0700 (PDT)
-X-Google-Smtp-Source: AKy350b9YlFFrWSbYRqnAPNQhrTJTDsJv4lnEu1B70gGXfJaBm3s1dPOTZB0hV3CgU5jTtsGz8ElAvYU4SBkTe8sevI=
-X-Received: by 2002:a05:6830:22c5:b0:69f:a43d:f6c5 with SMTP id
- q5-20020a05683022c500b0069fa43df6c5mr468590otc.2.1680584653553; Mon, 03 Apr
- 2023 22:04:13 -0700 (PDT)
+        bh=ktAWZBRM+VqFBJgJmK/4MAzbC6C59mNA7HJuTF9SdP4=;
+        b=obPqrRSJ6QGY8kEgE0yyCi92CrWgUWsp0gDCrR/NrrZopWigqmFd+hGel/jSEnZMV3
+         LTehp0gN3YzDwRQVRvEk+kEfEfDM1tUyF6Ds+YRvTuxpzwmyEx+dIfRwmK+sEQ8LWDxb
+         Muda0+VHPQ7H1KvZHO4AAtkCfgpSeHM01O8kNKtveW8y+yTfMUsfAanFILkgppzEy/KL
+         k/HJEx0m+yBEMTX6uizOmtEB/P/28PEzQ/js8JigGYs68HQq7pGlAmL7NLtxApr1aY8A
+         4kLsy8Nx/otXqINjp+eWw6VFdcIMtQ1h1TPpwy95jykvumAVo0YmZpiVrOqk6Y9BDV32
+         TvRw==
+X-Gm-Message-State: AAQBX9dD2PjgTrkvw/8oTGG9W0rBxq6nx0exOp/jJCwQGVrPaDGmYsAv
+        YhcYzk1xSSNyJXICeEpM9Uvi19pi5kz93T/lmnfG+g==
+X-Google-Smtp-Source: AKy350b7M/dTuPNrXzqElkRVJKWlcr8HY0+rrlA1porqHPfS4cXA7R5YJ8BobnabuYpU+AHDfyZiFL43xzp80xSNV80=
+X-Received: by 2002:adf:fc41:0:b0:2ce:a5f8:b786 with SMTP id
+ e1-20020adffc41000000b002cea5f8b786mr160086wrs.12.1680584992009; Mon, 03 Apr
+ 2023 22:09:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230328120412.110114-1-xuanzhuo@linux.alibaba.com>
- <20230328120412.110114-4-xuanzhuo@linux.alibaba.com> <CACGkMEvZ=-G4QVTDnoSa1N0UspW8u_oz-7xosrXV0f1YcytVXw@mail.gmail.com>
- <1680495148.1559556-3-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1680495148.1559556-3-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 4 Apr 2023 13:04:02 +0800
-Message-ID: <CACGkMEvfTE1F7Wa3P2do1o+149kSdGkjyVYt6e4r2r5UQZ6ocA@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/8] virtio_net: introduce virtnet_xdp_handler()
- to seprate the logic of run xdp
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+References: <ZCsbJ4nG+So/n9qY@shell.armlinux.org.uk> <E1pjOwe-00Fmki-6p@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1pjOwe-00Fmki-6p@rmk-PC.armlinux.org.uk>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 4 Apr 2023 07:09:40 +0200
+Message-ID: <CANn89iJJWNemzxbyCD4hCZk75Uoxw1nnJ5vLAqM3JGhG_AfqbQ@mail.gmail.com>
+Subject: Re: [PATCH RFC net-next 1/5] net: mvneta: fix transmit path
+ dma-unmapping on error
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Marek Beh__n <kabel@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 3, 2023 at 12:17=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
-om> wrote:
+On Mon, Apr 3, 2023 at 8:30=E2=80=AFPM Russell King (Oracle)
+<rmk+kernel@armlinux.org.uk> wrote:
 >
-> On Mon, 3 Apr 2023 10:43:03 +0800, Jason Wang <jasowang@redhat.com> wrote=
-:
-> > On Tue, Mar 28, 2023 at 8:04=E2=80=AFPM Xuan Zhuo <xuanzhuo@linux.aliba=
-ba.com> wrote:
-> > >
-> > > At present, we have two similar logic to perform the XDP prog.
-> > >
-> > > Therefore, this PATCH separates the code of executing XDP, which is
-> > > conducive to later maintenance.
-> > >
-> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > ---
-> > >  drivers/net/virtio_net.c | 142 +++++++++++++++++++++----------------=
---
-> > >  1 file changed, 75 insertions(+), 67 deletions(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index bb426958cdd4..72b9d6ee4024 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -301,6 +301,15 @@ struct padded_vnet_hdr {
-> > >         char padding[12];
-> > >  };
-> > >
-> > > +enum {
-> > > +       /* xdp pass */
-> > > +       VIRTNET_XDP_RES_PASS,
-> > > +       /* drop packet. the caller needs to release the page. */
-> > > +       VIRTNET_XDP_RES_DROP,
-> > > +       /* packet is consumed by xdp. the caller needs to do nothing.=
- */
-> > > +       VIRTNET_XDP_RES_CONSUMED,
-> > > +};
-> >
-> > I'd prefer this to be done on top unless it is a must. But I don't see
-> > any advantage of introducing this, it's partial mapping of XDP action
-> > and it needs to be extended when XDP action is extended. (And we've
-> > already had: VIRTIO_XDP_REDIR and VIRTIO_XDP_TX ...)
+> The transmit code assumes that the transmit descriptors that are used
+> begin with the first descriptor in the ring, but this may not be the
+> case. Fix this by providing a new function that dma-unmaps a range of
+> numbered descriptor entries, and use that to do the unmapping.
 >
-> No, these are the three states of buffer after XDP processing.
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+
+Nice patch series !
+
+I guess this one will need to be backported to stable versions. It
+would be nice adding:
+
+Fixes: 2adb719d74f6 ("net: mvneta: Implement software TSO")
+
+Thanks.
+
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 53 +++++++++++++++++----------
+>  1 file changed, 33 insertions(+), 20 deletions(-)
 >
-> * PASS: goto make skb
-
-XDP_PASS goes for this.
-
-> * DROP: we should release buffer
-
-XDP_DROP and error conditions go with this.
-
-> * CUNSUMED: xdp prog used the buffer, we do nothing
-
-XDP_TX/XDP_REDIRECTION goes for this.
-
-So t virtnet_xdp_handler() just maps XDP ACTION plus the error
-conditions to the above three states.
-
-We can simply map error to XDP_DROP like:
-
-       case XDP_TX:
-              stats->xdp_tx++;
-               xdpf =3D xdp_convert_buff_to_frame(xdp);
-               if (unlikely(!xdpf))
-                       return XDP_DROP;
-
-A good side effect is to avoid the xdp_xmit pointer to be passed to
-the function.
-
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet=
+/marvell/mvneta.c
+> index 2cad76d0a50e..62400ff61e34 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -2714,14 +2714,40 @@ mvneta_tso_put_data(struct net_device *dev, struc=
+t mvneta_tx_queue *txq,
+>         return 0;
+>  }
 >
-> The latter two are not particularly related to XDP ACTION. And it does no=
-t need
-> to extend when XDP action is extended. At least I have not thought of thi=
-s
-> situation.
-
-What's the advantages of such indirection compared to using XDP action dire=
-ctly?
-
-Thanks
-
+> +static void mvneta_release_descs(struct mvneta_port *pp,
+> +                                struct mvneta_tx_queue *txq,
+> +                                int first, int num)
+> +{
+> +       int desc_idx, i;
+> +
+> +       desc_idx =3D first + num;
+> +       if (desc_idx >=3D txq->size)
+> +               desc_idx -=3D txq->size;
+> +
+> +       for (i =3D num; i >=3D 0; i--) {
+> +               struct mvneta_tx_desc *tx_desc =3D txq->descs + desc_idx;
+> +
+> +               if (!IS_TSO_HEADER(txq, tx_desc->buf_phys_addr))
+> +                       dma_unmap_single(pp->dev->dev.parent,
+> +                                        tx_desc->buf_phys_addr,
+> +                                        tx_desc->data_size,
+> +                                        DMA_TO_DEVICE);
+> +
+> +               mvneta_txq_desc_put(txq);
+> +
+> +               if (desc_idx =3D=3D 0)
+> +                       desc_idx =3D txq->size;
+> +               desc_idx -=3D 1;
+> +       }
+> +}
+> +
+>  static int mvneta_tx_tso(struct sk_buff *skb, struct net_device *dev,
+>                          struct mvneta_tx_queue *txq)
+>  {
+>         int hdr_len, total_len, data_left;
+> -       int desc_count =3D 0;
+> +       int first_desc, desc_count =3D 0;
+>         struct mvneta_port *pp =3D netdev_priv(dev);
+>         struct tso_t tso;
+> -       int i;
 >
+>         /* Count needed descriptors */
+>         if ((txq->count + tso_count_descs(skb)) >=3D txq->size)
+> @@ -2732,6 +2758,8 @@ static int mvneta_tx_tso(struct sk_buff *skb, struc=
+t net_device *dev,
+>                 return 0;
+>         }
 >
-> >
-> > > +
-> > >  static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *b=
-uf);
-> > >  static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *b=
-uf);
-> > >
-> > > @@ -789,6 +798,59 @@ static int virtnet_xdp_xmit(struct net_device *d=
-ev,
-> > >         return ret;
-> > >  }
-> > >
-> > > +static int virtnet_xdp_handler(struct bpf_prog *xdp_prog, struct xdp=
-_buff *xdp,
-> > > +                              struct net_device *dev,
-> > > +                              unsigned int *xdp_xmit,
-> > > +                              struct virtnet_rq_stats *stats)
-> > > +{
-> > > +       struct xdp_frame *xdpf;
-> > > +       int err;
-> > > +       u32 act;
-> > > +
-> > > +       act =3D bpf_prog_run_xdp(xdp_prog, xdp);
-> > > +       stats->xdp_packets++;
-> > > +
-> > > +       switch (act) {
-> > > +       case XDP_PASS:
-> > > +               return VIRTNET_XDP_RES_PASS;
-> > > +
-> > > +       case XDP_TX:
-> > > +               stats->xdp_tx++;
-> > > +               xdpf =3D xdp_convert_buff_to_frame(xdp);
-> > > +               if (unlikely(!xdpf))
-> > > +                       return VIRTNET_XDP_RES_DROP;
-> > > +
-> > > +               err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> > > +               if (unlikely(!err)) {
-> > > +                       xdp_return_frame_rx_napi(xdpf);
-> > > +               } else if (unlikely(err < 0)) {
-> > > +                       trace_xdp_exception(dev, xdp_prog, act);
-> > > +                       return VIRTNET_XDP_RES_DROP;
-> > > +               }
-> > > +
-> > > +               *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > +               return VIRTNET_XDP_RES_CONSUMED;
-> > > +
-> > > +       case XDP_REDIRECT:
-> > > +               stats->xdp_redirects++;
-> > > +               err =3D xdp_do_redirect(dev, xdp, xdp_prog);
-> > > +               if (err)
-> > > +                       return VIRTNET_XDP_RES_DROP;
-> > > +
-> > > +               *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > +               return VIRTNET_XDP_RES_CONSUMED;
-> > > +
-> > > +       default:
-> > > +               bpf_warn_invalid_xdp_action(dev, xdp_prog, act);
-> > > +               fallthrough;
-> > > +       case XDP_ABORTED:
-> > > +               trace_xdp_exception(dev, xdp_prog, act);
-> > > +               fallthrough;
-> > > +       case XDP_DROP:
-> > > +               return VIRTNET_XDP_RES_DROP;
-> > > +       }
-> > > +}
-> > > +
-> > >  static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
-> > >  {
-> > >         return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
-> > > @@ -876,7 +938,6 @@ static struct sk_buff *receive_small(struct net_d=
-evice *dev,
-> > >         struct page *page =3D virt_to_head_page(buf);
-> > >         unsigned int delta =3D 0;
-> > >         struct page *xdp_page;
-> > > -       int err;
-> > >         unsigned int metasize =3D 0;
-> > >
-> > >         len -=3D vi->hdr_len;
-> > > @@ -898,7 +959,6 @@ static struct sk_buff *receive_small(struct net_d=
-evice *dev,
-> > >         xdp_prog =3D rcu_dereference(rq->xdp_prog);
-> > >         if (xdp_prog) {
-> > >                 struct virtio_net_hdr_mrg_rxbuf *hdr =3D buf + header=
-_offset;
-> > > -               struct xdp_frame *xdpf;
-> > >                 struct xdp_buff xdp;
-> > >                 void *orig_data;
-> > >                 u32 act;
-> > > @@ -931,46 +991,22 @@ static struct sk_buff *receive_small(struct net=
-_device *dev,
-> > >                 xdp_prepare_buff(&xdp, buf + VIRTNET_RX_PAD + vi->hdr=
-_len,
-> > >                                  xdp_headroom, len, true);
-> > >                 orig_data =3D xdp.data;
-> > > -               act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > -               stats->xdp_packets++;
-> > > +
-> > > +               act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_=
-xmit, stats);
-> > >
-> > >                 switch (act) {
-> > > -               case XDP_PASS:
-> > > +               case VIRTNET_XDP_RES_PASS:
-> > >                         /* Recalculate length in case bpf program cha=
-nged it */
-> > >                         delta =3D orig_data - xdp.data;
-> > >                         len =3D xdp.data_end - xdp.data;
-> > >                         metasize =3D xdp.data - xdp.data_meta;
-> > >                         break;
-> > > -               case XDP_TX:
-> > > -                       stats->xdp_tx++;
-> > > -                       xdpf =3D xdp_convert_buff_to_frame(&xdp);
-> > > -                       if (unlikely(!xdpf))
-> > > -                               goto err_xdp;
-> > > -                       err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> > > -                       if (unlikely(!err)) {
-> > > -                               xdp_return_frame_rx_napi(xdpf);
-> > > -                       } else if (unlikely(err < 0)) {
-> > > -                               trace_xdp_exception(vi->dev, xdp_prog=
-, act);
-> > > -                               goto err_xdp;
-> > > -                       }
-> > > -                       *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > -                       rcu_read_unlock();
-> > > -                       goto xdp_xmit;
-> > > -               case XDP_REDIRECT:
-> > > -                       stats->xdp_redirects++;
-> > > -                       err =3D xdp_do_redirect(dev, &xdp, xdp_prog);
-> > > -                       if (err)
-> > > -                               goto err_xdp;
-> > > -                       *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > +
-> > > +               case VIRTNET_XDP_RES_CONSUMED:
-> > >                         rcu_read_unlock();
-> > >                         goto xdp_xmit;
-> > > -               default:
-> > > -                       bpf_warn_invalid_xdp_action(vi->dev, xdp_prog=
-, act);
-> > > -                       fallthrough;
-> > > -               case XDP_ABORTED:
-> > > -                       trace_xdp_exception(vi->dev, xdp_prog, act);
-> > > -                       goto err_xdp;
-> > > -               case XDP_DROP:
-> > > +
-> > > +               case VIRTNET_XDP_RES_DROP:
-> > >                         goto err_xdp;
-> > >                 }
-> > >         }
-> > > @@ -1277,7 +1313,6 @@ static struct sk_buff *receive_mergeable(struct=
- net_device *dev,
-> > >         if (xdp_prog) {
-> > >                 unsigned int xdp_frags_truesz =3D 0;
-> > >                 struct skb_shared_info *shinfo;
-> > > -               struct xdp_frame *xdpf;
-> > >                 struct page *xdp_page;
-> > >                 struct xdp_buff xdp;
-> > >                 void *data;
-> > > @@ -1294,49 +1329,22 @@ static struct sk_buff *receive_mergeable(stru=
+> +       first_desc =3D txq->txq_put_index;
+> +
+>         /* Initialize the TSO handler, and prepare the first payload */
+>         hdr_len =3D tso_start(skb, &tso);
+>
+> @@ -2772,15 +2800,7 @@ static int mvneta_tx_tso(struct sk_buff *skb, stru=
 ct net_device *dev,
-> > >                 if (unlikely(err))
-> > >                         goto err_xdp_frags;
-> > >
-> > > -               act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > -               stats->xdp_packets++;
-> > > +               act =3D virtnet_xdp_handler(xdp_prog, &xdp, dev, xdp_=
-xmit, stats);
-> > >
-> > >                 switch (act) {
-> > > -               case XDP_PASS:
-> > > +               case VIRTNET_XDP_RES_PASS:
-> > >                         head_skb =3D build_skb_from_xdp_buff(dev, vi,=
- &xdp, xdp_frags_truesz);
-> > >                         if (unlikely(!head_skb))
-> > >                                 goto err_xdp_frags;
-> > >
-> > >                         rcu_read_unlock();
-> > >                         return head_skb;
-> > > -               case XDP_TX:
-> > > -                       stats->xdp_tx++;
-> > > -                       xdpf =3D xdp_convert_buff_to_frame(&xdp);
-> > > -                       if (unlikely(!xdpf)) {
-> > > -                               netdev_dbg(dev, "convert buff to fram=
-e failed for xdp\n");
-> >
-> > Nit: This debug is lost after the conversion.
+>         /* Release all used data descriptors; header descriptors must not
+>          * be DMA-unmapped.
+>          */
+> -       for (i =3D desc_count - 1; i >=3D 0; i--) {
+> -               struct mvneta_tx_desc *tx_desc =3D txq->descs + i;
+> -               if (!IS_TSO_HEADER(txq, tx_desc->buf_phys_addr))
+> -                       dma_unmap_single(pp->dev->dev.parent,
+> -                                        tx_desc->buf_phys_addr,
+> -                                        tx_desc->data_size,
+> -                                        DMA_TO_DEVICE);
+> -               mvneta_txq_desc_put(txq);
+> -       }
+> +       mvneta_release_descs(pp, txq, first_desc, desc_count - 1);
+>         return 0;
+>  }
 >
-> Will fix.
+> @@ -2790,6 +2810,7 @@ static int mvneta_tx_frag_process(struct mvneta_por=
+t *pp, struct sk_buff *skb,
+>  {
+>         struct mvneta_tx_desc *tx_desc;
+>         int i, nr_frags =3D skb_shinfo(skb)->nr_frags;
+> +       int first_desc =3D txq->txq_put_index;
 >
-> Thanks.
+>         for (i =3D 0; i < nr_frags; i++) {
+>                 struct mvneta_tx_buf *buf =3D &txq->buf[txq->txq_put_inde=
+x];
+> @@ -2828,15 +2849,7 @@ static int mvneta_tx_frag_process(struct mvneta_po=
+rt *pp, struct sk_buff *skb,
+>         /* Release all descriptors that were used to map fragments of
+>          * this packet, as well as the corresponding DMA mappings
+>          */
+> -       for (i =3D i - 1; i >=3D 0; i--) {
+> -               tx_desc =3D txq->descs + i;
+> -               dma_unmap_single(pp->dev->dev.parent,
+> -                                tx_desc->buf_phys_addr,
+> -                                tx_desc->data_size,
+> -                                DMA_TO_DEVICE);
+> -               mvneta_txq_desc_put(txq);
+> -       }
+> -
+> +       mvneta_release_descs(pp, txq, first_desc, i - 1);
+>         return -ENOMEM;
+>  }
 >
-> >
-> > Thanks
-> >
-> > > -                               goto err_xdp_frags;
-> > > -                       }
-> > > -                       err =3D virtnet_xdp_xmit(dev, 1, &xdpf, 0);
-> > > -                       if (unlikely(!err)) {
-> > > -                               xdp_return_frame_rx_napi(xdpf);
-> > > -                       } else if (unlikely(err < 0)) {
-> > > -                               trace_xdp_exception(vi->dev, xdp_prog=
-, act);
-> > > -                               goto err_xdp_frags;
-> > > -                       }
-> > > -                       *xdp_xmit |=3D VIRTIO_XDP_TX;
-> > > -                       rcu_read_unlock();
-> > > -                       goto xdp_xmit;
-> > > -               case XDP_REDIRECT:
-> > > -                       stats->xdp_redirects++;
-> > > -                       err =3D xdp_do_redirect(dev, &xdp, xdp_prog);
-> > > -                       if (err)
-> > > -                               goto err_xdp_frags;
-> > > -                       *xdp_xmit |=3D VIRTIO_XDP_REDIR;
-> > > +
-> > > +               case VIRTNET_XDP_RES_CONSUMED:
-> > >                         rcu_read_unlock();
-> > >                         goto xdp_xmit;
-> > > -               default:
-> > > -                       bpf_warn_invalid_xdp_action(vi->dev, xdp_prog=
-, act);
-> > > -                       fallthrough;
-> > > -               case XDP_ABORTED:
-> > > -                       trace_xdp_exception(vi->dev, xdp_prog, act);
-> > > -                       fallthrough;
-> > > -               case XDP_DROP:
-> > > +
-> > > +               case VIRTNET_XDP_RES_DROP:
-> > >                         goto err_xdp_frags;
-> > >                 }
-> > >  err_xdp_frags:
-> > > --
-> > > 2.32.0.3.g01195cf9f
-> > >
-> >
+> --
+> 2.30.2
 >
-
