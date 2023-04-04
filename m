@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6456D6514
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11DF66D652D
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235581AbjDDOUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 10:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48984 "EHLO
+        id S235832AbjDDOXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 10:23:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235174AbjDDOUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:20:47 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6834A10C2
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:20:46 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id d11-20020a056e020c0b00b00326156e3a8bso15804509ile.3
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 07:20:46 -0700 (PDT)
+        with ESMTP id S234950AbjDDOXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:23:52 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DBE116
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:23:51 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id c6-20020a056e020bc600b00325da077351so21211359ilu.11
+        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 07:23:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680618045; x=1683210045;
+        d=1e100.net; s=20210112; t=1680618231; x=1683210231;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=/GrvKtmfPcwE6VR9r1v5SQA/UQ6PE7TugBTYzb94svE=;
-        b=GbsCneF6IZrNI7mSMxzs9cRDT4pSfM5RMir5TGoU91ExTwc09XmQ6T/0ndkPrBimBB
-         TvttyCucdo1cepqNyLM12QK7wiC2kvGRJf8/dmoXFrEkOsVrDDt+2HybmP+mEkh9zw7P
-         7D6Nyhq1IF9q1BAqH/RBhysTjljfZVqMKbXeqZunYyTfcMF0B6iSHRSwlFLh1k2HvQ1a
-         vSDhZp9jl5TNDnDXi6Ngf4baX0rcnW3rrsHyA8geIX5N5Fcxgy3LpBzF0/LWR8VtPwBl
-         LmxfweO5TcWF/gHBFw7kYMJLP5uJ2IfTTxAP+mfuBFtS1BMnGPPVKcykeRC0pkRcOKYd
-         hlZg==
-X-Gm-Message-State: AAQBX9fWbadf+cy5r91oGZoYCYH+a5a2+eJipQ3OryoDZ0RIKH9jZKeL
-        BE4lZWYRtrRXDytndcBr9otailVuv6hpTfwESWus9tuP5xPu
-X-Google-Smtp-Source: AKy350brGpANmJTlt4zwcqUBj3rE8WneyIwtxCiC0oh0HxV4t8CaaY43WIPiE+2OgZJhiPeihCabdLUoykmP595ewiXqkin09CmJ
+        bh=3SlLCphVS7COIvWP0KM6YgJ3hMpNmeYt4UE66TAXhBg=;
+        b=gEuQp2b5YWS0Mc3E3XmwqUSFcgF5ZeoWUapm5pXWFBxg2tm1A9WlvreGuB9xd8FgV9
+         Yhx/38O/NZ+s3akJjKD+isrFfoW/hkZMGODau5jg8KpDIRuzM3xQLjltFEIkT+PC7FP7
+         oj0kSlviLayu6V8Z+8Wkh/hZvCUiWG7dS4poawHwmAW9uYxcz18kdY2iwh+2Sq1Wm3i+
+         eZIeNpoScw1HT8BBT5ADC7AFG2ZZVA9mWzzTjdjZAS5scpQHzVYFSa2s4f2k23eccoiX
+         IGiDeDCeMZh+v2dP6IrqHIE/B0H1lxRYyU52rJckLi7LO0Oyd3XiZkvjFYeCsgwaYgMT
+         j5vQ==
+X-Gm-Message-State: AAQBX9eh6AhgwuHjKcLKQ8ci3FCxIYbeyQNx4PIC9PPqs5K0ypF3WUyV
+        KriawHf8b2uWHdgWYEpoGvpdOsM3TuUQP1W+/8Tg84YmLHuX
+X-Google-Smtp-Source: AKy350Z0mNNXT0EuW2xsOe+fbbOokf0xsR7PvAWET2NX2Ap9gCGDKbW7Ov0uRnJHREoKUMl/Ribj4Ux8NNaCk0LzFXekHJRl+9Rj
 MIME-Version: 1.0
-X-Received: by 2002:a02:94af:0:b0:3c5:1971:1b7f with SMTP id
- x44-20020a0294af000000b003c519711b7fmr1465381jah.6.1680618045609; Tue, 04 Apr
- 2023 07:20:45 -0700 (PDT)
-Date:   Tue, 04 Apr 2023 07:20:45 -0700
+X-Received: by 2002:a05:6e02:b21:b0:326:1bf1:234 with SMTP id
+ e1-20020a056e020b2100b003261bf10234mr1696371ilu.3.1680618231103; Tue, 04 Apr
+ 2023 07:23:51 -0700 (PDT)
+Date:   Tue, 04 Apr 2023 07:23:51 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009ca21e05f8836105@google.com>
-Subject: [syzbot] Monthly batman report
-From:   syzbot <syzbot+list145669fba4a69e21f102@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
+Message-ID: <000000000000ab085f05f8836ccd@google.com>
+Subject: [syzbot] Monthly can report
+From:   syzbot <syzbot+list4d04fa20a60bb21c56c5@syzkaller.appspotmail.com>
+To:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mkl@pengutronix.de, netdev@vger.kernel.org,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=3.1 required=5.0 tests=FROM_LOCAL_HEX,
+X-Spam-Status: No, score=0.6 required=5.0 tests=FROM_LOCAL_HEX,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ***
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello batman maintainers/developers,
+Hello can maintainers/developers,
 
-This is a 30-day syzbot report for the batman subsystem.
+This is a 30-day syzbot report for the can subsystem.
 All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/batman
+https://syzkaller.appspot.com/upstream/s/can
 
-During the period, 2 new issues were detected and 0 were fixed.
-In total, 8 issues are still open and 19 have been fixed so far.
+During the period, 0 new issues were detected and 1 were fixed.
+In total, 16 issues are still open and 39 have been fixed so far.
 
 Some of the still happening issues:
 
 Crashes Repro Title
-5034    Yes   WARNING: ODEBUG bug in netdev_run_todo
-              https://syzkaller.appspot.com/bug?extid=f9484b345f41843fc9a9
-1367    Yes   WARNING: ODEBUG bug in netdev_freemem (2)
-              https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
-115     Yes   INFO: rcu detected stall in batadv_nc_worker (3)
-              https://syzkaller.appspot.com/bug?extid=69904c3b4a09e8fa2e1b
+1783    Yes   WARNING in j1939_session_deactivate
+              https://syzkaller.appspot.com/bug?extid=535e5aae63c0d0433473
+502     Yes   WARNING in j1939_session_deactivate_activate_next
+              https://syzkaller.appspot.com/bug?extid=3d2eaacbc2b94537c6c5
+277     Yes   possible deadlock in j1939_sk_queue_drop_all
+              https://syzkaller.appspot.com/bug?extid=3bd970a1887812621b4c
+55      No    possible deadlock in j1939_session_activate
+              https://syzkaller.appspot.com/bug?extid=f32cbede7fd867ce0d56
 
 ---
 This report is generated by a bot. It may contain errors.
