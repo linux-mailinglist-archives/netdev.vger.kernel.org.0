@@ -2,130 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6CC86D69B7
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7D96D69BB
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235204AbjDDRBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 13:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
+        id S235505AbjDDRCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 13:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233075AbjDDRBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:01:30 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC17D1
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 10:01:29 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id y14so33577157wrq.4
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 10:01:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680627687;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EDGnXoGwEChAFRAWjhCsHFaWRtmtPVds+R+V0cWphoI=;
-        b=tGysa/ySr+aMNbz9i+r+Gzvuh4e9lfJXOuj+yFaOtNFtUxsD3HY0DJYSiv8BFkC6IT
-         XCjdnKCGorzQP1R2a7uORzhp7x8GZARFCEmeVKgPEaLy57UxMZQlBdQL3ymkIX+zsfQb
-         yVazofjpZXNFp+bLzXLbnEl/zVKfIh3+6tbFAcoJJyZscIHQU/kisj5J82z/u0W3esRs
-         riQ1ks6FOD7JmhRsJ9XUtDYGAZ9W831E7C2HHnlZlvPoc/Whno7Jt3VGMQuEOOxMY3pT
-         DqrLs0cKaUFoD1eNjR+fcy46Z3gY5YbWtujQ1DzpKNFGk5trjSTG9lMcbzIodyLmFYfl
-         JlGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680627687;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EDGnXoGwEChAFRAWjhCsHFaWRtmtPVds+R+V0cWphoI=;
-        b=q010sbXlBukc4wCOuMN1CL+I81aZywK72rX714XjHwnYgERjwnmCPqqNbxSyJy/Z8C
-         J4WE2ru3VRqbquTC4twB4qyQTP6KH38ZiL4I6y0RtuDJpiHeZcmav8RcG1FbEFcy9Yc8
-         cbgQUnRtuZcl6QX9K8vwIacgull0w7y+pvrLHDUXEODkjVenAF7OpBnCKCoWiqg2CRZ5
-         2cLX7f28LC6UzErXCX3YGdRc6EE5xalBrbzOHGcqNzglgKIE+m6oAQQL1n0Yjzm18WSq
-         F2Yg5UeB/D4UcFd0CqE9e6P8rI+t9GBA5UP6ZIY5r44EvVpBGW8cAQroQ1E5G81AVgtq
-         qziQ==
-X-Gm-Message-State: AAQBX9fWHl1kfPnL0u2/tjp4ekCJDb+2CG5FMg0N4Q6CbN2e3YxfKzWt
-        1IALDs9Vu8fP77KdJbOCHoy6Yy+FKGB5c1eW4eFf+w==
-X-Google-Smtp-Source: AKy350a81lpxOoVmAEyrppLxUzCnlLNA7TRbMsc14EnlAtwy6sUo9+gDFg4YXp/hscBfZpS80TFszjhVQft+UvEJvT0=
-X-Received: by 2002:a5d:4601:0:b0:2cf:e70f:970c with SMTP id
- t1-20020a5d4601000000b002cfe70f970cmr597147wrq.12.1680627687530; Tue, 04 Apr
- 2023 10:01:27 -0700 (PDT)
+        with ESMTP id S235349AbjDDRCH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:02:07 -0400
+Received: from smtp-42ad.mail.infomaniak.ch (smtp-42ad.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ad])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C67C1BC9;
+        Tue,  4 Apr 2023 10:02:05 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4PrYvv5qlHzMqP9R;
+        Tue,  4 Apr 2023 19:02:03 +0200 (CEST)
+Received: from unknown by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4PrYvv0lgTzMq1yt;
+        Tue,  4 Apr 2023 19:02:02 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1680627723;
+        bh=ss68aJSDmtN6B8mOZ8yx148FgqGOx/AWnWOoaaDq+lY=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=nBY2t0BG6z8JBBXtjQcXy9oADtWAhnjt7CVpwZ1l+XZ4cDwiV1a4uYGbNlI6ih8yz
+         fNupb5PznkYwxgHAYzZsnfMv5s8CdXU3Nwy0NV6xHl1huq04nClkkRQ5k+Odo8Jxwx
+         Nd0U81MjC3zKLZYfAkTN7EfEp0Nyfk8EPaSrCr6k=
+Message-ID: <f126c31b-f0cf-0746-e517-9f3f19c1915f@digikod.net>
+Date:   Tue, 4 Apr 2023 19:02:01 +0200
 MIME-Version: 1.0
-References: <20230404134803.889673-1-edumazet@google.com> <ZCxN1l3rXnmt+2wL@corigine.com>
-In-Reply-To: <ZCxN1l3rXnmt+2wL@corigine.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 4 Apr 2023 19:01:15 +0200
-Message-ID: <CANn89i+5R2B00zkjocOOSWRLB0ZNBgjdMLSBbUFpcTOH=9obAw@mail.gmail.com>
-Subject: Re: [PATCH net] mac80211_hwsim: fix potential NULL deref in hwsim_pmsr_report_nl()
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, syzbot <syzkaller@googlegroups.com>,
-        Jaewan Kim <jaewan@google.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: 
+Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
+ support
+Content-Language: en-US
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
+ <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
+ <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
+ <1f84d88f-9977-13a9-245a-c75cd3444b29@huawei.com>
+ <ac4d6244-641b-e1d4-5c34-d9a9bcd10498@digikod.net>
+In-Reply-To: <ac4d6244-641b-e1d4-5c34-d9a9bcd10498@digikod.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Infomaniak-Routing: alpha
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 4, 2023 at 6:18=E2=80=AFPM Simon Horman <simon.horman@corigine.=
-com> wrote:
->
-> On Tue, Apr 04, 2023 at 01:48:03PM +0000, Eric Dumazet wrote:
-> > syzbot reported a NULL deref caused by a missing check
-> > in hwsim_pmsr_report_nl(), and bisected the issue to cited commit.
-> >
->
-> Hi Eric,
->
-> I think this is for net-next / wireless-next as
-> the above mentioned patch does not seem to be in Linus's tree.
 
-Oh right, script error on my side. This was generated from -next tree.
+On 04/04/2023 18:42, Mickaël Salaün wrote:
+> 
+> On 04/04/2023 11:31, Konstantin Meskhidze (A) wrote:
+>>
+>>
+>> 3/31/2023 8:24 PM, Mickaël Salaün пишет:
+>>>
+>>> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
+>>>> This commit adds network rules support in the ruleset management
+>>>> helpers and the landlock_create_ruleset syscall.
+>>>> Refactor user space API to support network actions. Add new network
+>>>> access flags, network rule and network attributes. Increment Landlock
+>>>> ABI version. Expand access_masks_t to u32 to be sure network access
+>>>> rights can be stored. Implement socket_bind() and socket_connect()
+>>>> LSM hooks, which enable to restrict TCP socket binding and connection
+>>>> to specific ports.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
+>>>>
+>>>> Changes since v9:
+>>>> * Changes UAPI port field to __u64.
+>>>> * Moves shared code into check_socket_access().
+>>>> * Adds get_raw_handled_net_accesses() and
+>>>> get_current_net_domain() helpers.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v8:
+>>>> * Squashes commits.
+>>>> * Refactors commit message.
+>>>> * Changes UAPI port field to __be16.
+>>>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+>>>> * Adds address length checking.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v7:
+>>>> * Squashes commits.
+>>>> * Increments ABI version to 4.
+>>>> * Refactors commit message.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v6:
+>>>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>>>>      because it OR values.
+>>>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+>>>> * Refactors landlock_get_net_access_mask().
+>>>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>>>>      LANDLOCK_NUM_ACCESS_FS as value.
+>>>> * Updates access_masks_t to u32 to support network access actions.
+>>>> * Refactors landlock internal functions to support network actions with
+>>>>      landlock_key/key_type/id types.
+>>>>
+>>>> Changes since v5:
+>>>> * Gets rid of partial revert from landlock_add_rule
+>>>> syscall.
+>>>> * Formats code with clang-format-14.
+>>>>
+>>>> Changes since v4:
+>>>> * Refactors landlock_create_ruleset() - splits ruleset and
+>>>> masks checks.
+>>>> * Refactors landlock_create_ruleset() and landlock mask
+>>>> setters/getters to support two rule types.
+>>>> * Refactors landlock_add_rule syscall add_rule_path_beneath
+>>>> function by factoring out get_ruleset_from_fd() and
+>>>> landlock_put_ruleset().
+>>>>
+>>>> Changes since v3:
+>>>> * Splits commit.
+>>>> * Adds network rule support for internal landlock functions.
+>>>> * Adds set_mask and get_mask for network.
+>>>> * Adds rb_root root_net_port.
+>>>>
+>>>> ---
+>>>>     include/uapi/linux/landlock.h                |  49 +++++
+>>>>     security/landlock/Kconfig                    |   1 +
+>>>>     security/landlock/Makefile                   |   2 +
+>>>>     security/landlock/limits.h                   |   6 +-
+>>>>     security/landlock/net.c                      | 198 +++++++++++++++++++
+>>>>     security/landlock/net.h                      |  26 +++
+>>>>     security/landlock/ruleset.c                  |  52 ++++-
+>>>>     security/landlock/ruleset.h                  |  63 +++++-
+>>>>     security/landlock/setup.c                    |   2 +
+>>>>     security/landlock/syscalls.c                 |  72 ++++++-
+>>>>     tools/testing/selftests/landlock/base_test.c |   2 +-
+>>>>     11 files changed, 450 insertions(+), 23 deletions(-)
+>>>>     create mode 100644 security/landlock/net.c
+>>>>     create mode 100644 security/landlock/net.h
+>>>
+>>> [...]
+>>>
+>>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
+>>>
+>>> [...]
 
->
-> > ---
-> >  drivers/net/wireless/virtual/mac80211_hwsim.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/net/wireless/virtual/mac80211_hwsim.c b/drivers/ne=
-t/wireless/virtual/mac80211_hwsim.c
-> > index f446d8f6e1f6e1df108db00e898fa02970162585..701e14b8e6fe0cae7ee2478=
-c8dff0f2327b54a70 100644
-> > --- a/drivers/net/wireless/virtual/mac80211_hwsim.c
-> > +++ b/drivers/net/wireless/virtual/mac80211_hwsim.c
-> > @@ -3761,6 +3761,8 @@ static int hwsim_pmsr_report_nl(struct sk_buff *m=
-sg, struct genl_info *info)
-> >       int rem;
-> >
-> >       src =3D nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
-> > +     if (!src)
-> > +             return -EINVAL;
-> >       data =3D get_hwsim_data_ref_from_addr(src);
-> >       if (!data)
-> >               return -EINVAL;
->
-> I could well be wrong, but this looks a little odd given that nla_data is=
-:
->
-> static inline void *nla_data(const struct nlattr *nla)
-> {
->         return (char *) nla + NLA_HDRLEN;
-> }
->
-> Perhaps we want something like this (*compile tested only!*) ?
->
->         if (!info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER])
->                 return -EINVAL;
->         src =3D nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
 
-Oh right, thanks for reviewing this :)
+>>>> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
+>>>> +			       access_mask_t access_request)
+>>>> +{
+>>>> +	int ret;
+>>>> +	bool allowed = false;
+>>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>>>> +	const struct landlock_rule *rule;
+>>>> +	access_mask_t handled_access;
+>>>> +	const struct landlock_id id = {
+>>>> +		.key.data = port,
+>>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>>> +	};
+>>>> +	const struct landlock_ruleset *const domain = get_current_net_domain();
+>>>> +
+>>>> +	if (WARN_ON_ONCE(!domain))
+>>>> +		return 0;
+>>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>>>> +		return -EACCES;
+>>>> +	/* Check if it's a TCP socket. */
+>>>> +	if (sock->type != SOCK_STREAM)
+>>>> +		return 0;
+>>>> +
+>>>> +	ret = check_addrlen(address, addrlen);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	switch (address->sa_family) {
+>>>> +	case AF_UNSPEC:
+>>>> +		/*
+>>>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+>>>> +		 * association, which have the same effect as closing the
+>>>> +		 * connection while retaining the socket object (i.e., the file
+>>>> +		 * descriptor).  As for dropping privileges, closing
+>>>> +		 * connections is always allowed.
+>>>> +		 */
+>>>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>>>> +			return 0;
+>>>> +
+>>>> +		/*
+>>>> +		 * For compatibility reason, accept AF_UNSPEC for bind
+>>>> +		 * accesses (mapped to AF_INET) only if the address is
+>>>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+>>>> +		 * required to not wrongfully return -EACCES instead of
+>>>> +		 * -EAFNOSUPPORT.
+>>>> +		 */
+>>>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+>>>> +			const struct sockaddr_in *const sockaddr =
+>>>> +				(struct sockaddr_in *)address;
+>>>> +
+>>>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+>>>> +				return -EAFNOSUPPORT;
+>>>> +		}
+>>>> +
+>>>> +		fallthrough;
+>>>> +	case AF_INET:
+>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>> +	case AF_INET6:
+>>>> +#endif
 
-I will send a V2 soon.
+Some more fixes:
+
+You can move the port/id.key.data block from my patch here, where it is 
+actually used.
+
+
+>>>> +		rule = landlock_find_rule(domain, id);
+>>>> +		handled_access = landlock_init_layer_masks(
+>>>> +			domain, access_request, &layer_masks,
+>>>> +			LANDLOCK_KEY_NET_PORT);
+>>>> +		allowed = landlock_unmask_layers(rule, handled_access,
+>>>> +						 &layer_masks,
+>>>> +						 ARRAY_SIZE(layer_masks));
+
+The `return allowed ? 0 : -EACCES;` should be here.
+
+>>>> +	}
+>>>> +	return allowed ? 0 : -EACCES;
+
+We should have `return 0;` here.
+
+We need a test for an sa_family different than AF_UNSPEC, AF_INET, and 
+AF_INET6 to make sure everything else is allowed (e.g. AF_UNIX with 
+SOCK_STREAM and another test with SOCK_DGRAM). Please make sure this new 
+test will not pass with SOCK_STREAM and the current patch series, but of 
+course it should pass with the next one.
+
+
+>>>> +}
+>>>> +
