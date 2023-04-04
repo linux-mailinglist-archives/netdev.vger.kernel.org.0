@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 269EA6D57BD
+	by mail.lfdr.de (Postfix) with ESMTP id CDD406D57BF
 	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 06:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233174AbjDDEvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 00:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        id S231878AbjDDEvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 00:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbjDDEvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 00:51:06 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9806219BE;
-        Mon,  3 Apr 2023 21:50:58 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id ml21so7395766pjb.4;
-        Mon, 03 Apr 2023 21:50:58 -0700 (PDT)
+        with ESMTP id S233182AbjDDEvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 00:51:09 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05152697;
+        Mon,  3 Apr 2023 21:51:02 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id z11so20629375pfh.4;
+        Mon, 03 Apr 2023 21:51:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680583858; x=1683175858;
+        d=gmail.com; s=20210112; t=1680583862; x=1683175862;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=76CWmxuX1SyXCWRsf9iQqc6Xq2EOWu8B/zkczM90/Qo=;
-        b=EshsSV9y5lgItYXm5ZEDwdHkapKXW4Ljl1zr6kzMgNznhOfXEg9aVrcr6ssq4ZGMfy
-         +bOm5XhFY78edTfksSTvcOfspFUzk8i7MgIlh8u7JjsRVGHXx1ou6qM0Ezkl+Oo5fva2
-         NwYoZ0sw2HkA4xtZt5+ajWbzmvQq6NEhh9W6F2ifq9VYZe8wl8kUWEC59YwCbEHTD5fj
-         Sj76eTJS8Q47EMaeUiHVSJvtJCZxzhw3uLNh+5kohLdpfgF/PZihtO28KIxegqrqkvBl
-         bb30/QuoCAZvauABseASMVT+GPG/kHB6FhuF0S7Prf43HrP5pUZkcq0nr8nJM7oRQZVt
-         RYsA==
+        bh=gYCczLlj+qI2Rf3310jhdvz1Q1q9UTepuX5/jYcvRP0=;
+        b=OxQmHX3NxS4UedNoIietUQB5stCXClbPVKSPw3uCxvDmIr3uoe4/T3OvI0ybR8y36I
+         50gW5JWWCmxTIeyZvecvahqpdFVid+b/1D5f8vAHFHLMJU3sv4NQ9brjhQWsIOVPYd6J
+         9tdsRNsuzTMBBeSul/vgrxTLA50SKi2hx1sUgGp96Ehcdu9tYhZtr1Rk+h6miRCqaqRM
+         IeYunshZt9VHjWFBFoRwFIVyMRyXPociKDkvwy1Ab8C7FqKKr7Ek9ai3fVn89slLR1sd
+         jvfI8Oja2mNa/D8xClYqOMCVjkPc//muQqE4cf91z6EyDz9foxsJ5oQoqOhGC++kDHZ5
+         FZrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680583858; x=1683175858;
+        d=1e100.net; s=20210112; t=1680583862; x=1683175862;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=76CWmxuX1SyXCWRsf9iQqc6Xq2EOWu8B/zkczM90/Qo=;
-        b=sCncQ8LH304B4lKlVQr4U6luDNYXcrB7wCEyPgJMioE41kX25l5xMqINEeO9JBCFlO
-         Wqxr8mxOT8Kv67kOhFet6APf/v2tahyL6SHYjhiAsLavrLmLjvkeSWVNK6C5BkoEO34Z
-         qxkYPa4Y5I6w/1uxs8aKM6P4RHOnXr0UjZMyl1tKvrSpNbE56wyjFFIjV50tVF1Fni9C
-         jchzKH10xO/A9NzZjUZ3hdmQDR1/PgfpRkQ2g7ZpD8ZqGlfqmmHgwIE52qKldvzfssvW
-         W1vvDp+6Li2XGNQKiLMQmk7TokDQ+ySS9jARvsIPKPGrfF0pt2NLBi6L5UAuRE+2jUz0
-         N2fA==
-X-Gm-Message-State: AAQBX9e7hrs9YjkqoOhaV5B3oA/th4k/7dbS642FpC18REPXXYGb6iU2
-        vl8T5rrRfzwwZqDa9Deh2tM=
-X-Google-Smtp-Source: AKy350ZVeyrL0ATa66Fy7PIYpfKvdh3+4gXiDdnXNECj4s8Y/xtzu90fsBVksc2vp/wGHs5ZPwgb/Q==
-X-Received: by 2002:a17:90a:190f:b0:23f:990d:b5b1 with SMTP id 15-20020a17090a190f00b0023f990db5b1mr1371387pjg.46.1680583857934;
-        Mon, 03 Apr 2023 21:50:57 -0700 (PDT)
+        bh=gYCczLlj+qI2Rf3310jhdvz1Q1q9UTepuX5/jYcvRP0=;
+        b=ppObmOG76NucHVr2m1taL1W9v4pBy/ZWriadAiPHJU88rAIJckoUzsDlAk+rEw9GPr
+         gbJ0K6KLbyM/OvEFf0nV3d0EBPE0KCrHME01vqgMLxsAmtd60RDKRhDG8q3QaJuGpFn/
+         LMLAESOln0fQLl7opuinZkMMGvICeKP3XtX70KOjnjtU+2pWEglL/TwKxhTcPkZNAwdU
+         EtoruhzZLVQNkREbgbXrjc89EJz/gpU2QuAZcOCH1ib0k1IWFQ8JhiQRzv0iPN+7oNyq
+         P7mwSuRDul5dseWM3C4BVxPUoDSNiCvr8wX8uvZt9rFzsxNBsmuaRZrEDdgqx3AnVKgI
+         kdJw==
+X-Gm-Message-State: AAQBX9eHLcasOiB1foApGntb8nqbCgDUB/9l9/JdxQM2+msQ5+yrByVK
+        IkWL/ItzI5cbjCodxJaEkcY=
+X-Google-Smtp-Source: AKy350YW0ZSfjmnOUuyeFMixtydXRrsvXkUTRBxYNrcanrZkF4FJhTMCV3b1uhgRkvEqaxPRAjlsvA==
+X-Received: by 2002:a05:6a00:11:b0:625:fe60:9b5c with SMTP id h17-20020a056a00001100b00625fe609b5cmr1059525pfk.23.1680583862088;
+        Mon, 03 Apr 2023 21:51:02 -0700 (PDT)
 Received: from dhcp-172-26-102-232.DHCP.thefacebook.com ([2620:10d:c090:400::5:3c8])
-        by smtp.gmail.com with ESMTPSA id s3-20020a17090a13c300b0023d16f05dd8sm6956945pjf.36.2023.04.03.21.50.56
+        by smtp.gmail.com with ESMTPSA id u4-20020a62ed04000000b005a84ef49c63sm7652120pfh.214.2023.04.03.21.51.00
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 03 Apr 2023 21:50:57 -0700 (PDT)
+        Mon, 03 Apr 2023 21:51:01 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
         void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
         memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH bpf-next 6/8] bpf: Allowlist few fields similar to __rcu tag.
-Date:   Mon,  3 Apr 2023 21:50:27 -0700
-Message-Id: <20230404045029.82870-7-alexei.starovoitov@gmail.com>
+Subject: [PATCH bpf-next 7/8] bpf: Undo strict enforcement for walking untagged fields.
+Date:   Mon,  3 Apr 2023 21:50:28 -0700
+Message-Id: <20230404045029.82870-8-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
 In-Reply-To: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
 References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
@@ -75,94 +75,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Allow bpf program access cgrp->kn, mm->exe_file, skb->sk, req->sk.
+The commit 6fcd486b3a0a ("bpf: Refactor RCU enforcement in the verifier.")
+broke several tracing bpf programs. Even in clang compiled kernels there are
+many fields that are not marked with __rcu that are safe to read and pass into
+helpers, but the verifier doesn't know that they're safe. Aggressively marking
+them as PTR_UNTRUSTED was premature.
 
+Fixes: 6fcd486b3a0a ("bpf: Refactor RCU enforcement in the verifier.")
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- kernel/bpf/verifier.c | 39 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 2 deletions(-)
+ kernel/bpf/verifier.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 4e7d671497f4..fd90ba498ccc 100644
+index fd90ba498ccc..56f569811f70 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -5378,6 +5378,7 @@ static int bpf_map_direct_read(struct bpf_map *map, int off, int size, u64 *val)
+@@ -4974,6 +4974,11 @@ static bool is_rcu_reg(const struct bpf_reg_state *reg)
+ 	return reg->type & MEM_RCU;
  }
  
- #define BTF_TYPE_SAFE_RCU(__type)  __PASTE(__type, __safe_rcu)
-+#define BTF_TYPE_SAFE_RCU_OR_NULL(__type)  __PASTE(__type, __safe_rcu_or_null)
- #define BTF_TYPE_SAFE_TRUSTED(__type)  __PASTE(__type, __safe_trusted)
- 
- /*
-@@ -5394,10 +5395,31 @@ BTF_TYPE_SAFE_RCU(struct task_struct) {
- 	struct task_struct *group_leader;
- };
- 
-+BTF_TYPE_SAFE_RCU(struct cgroup) {
-+	/* cgrp->kn is always accessible as documented in kernel/cgroup/cgroup.c */
-+	struct kernfs_node *kn;
-+};
-+
- BTF_TYPE_SAFE_RCU(struct css_set) {
- 	struct cgroup *dfl_cgrp;
- };
- 
-+/* RCU trusted: these fields are trusted in RCU CS and can be NULL */
-+BTF_TYPE_SAFE_RCU_OR_NULL(struct mm_struct) {
-+	struct file __rcu *exe_file;
-+};
-+
-+/* skb->sk, req->sk are not RCU protected, but we mark them as such
-+ * because bpf prog accessible sockets are SOCK_RCU_FREE.
-+ */
-+BTF_TYPE_SAFE_RCU_OR_NULL(struct sk_buff) {
-+	struct sock *sk;
-+};
-+
-+BTF_TYPE_SAFE_RCU_OR_NULL(struct request_sock) {
-+	struct sock *sk;
-+};
-+
- /* full trusted: these fields are trusted even outside of RCU CS and never NULL */
- BTF_TYPE_SAFE_TRUSTED(struct bpf_iter_meta) {
- 	struct seq_file *seq;
-@@ -5430,11 +5452,23 @@ static bool type_is_rcu(struct bpf_verifier_env *env,
- 			const char *field_name, u32 btf_id)
- {
- 	BTF_TYPE_EMIT(BTF_TYPE_SAFE_RCU(struct task_struct));
-+	BTF_TYPE_EMIT(BTF_TYPE_SAFE_RCU(struct cgroup));
- 	BTF_TYPE_EMIT(BTF_TYPE_SAFE_RCU(struct css_set));
- 
- 	return btf_nested_type_is_trusted(&env->log, reg, field_name, btf_id, "__safe_rcu");
- }
- 
-+static bool type_is_rcu_or_null(struct bpf_verifier_env *env,
-+				struct bpf_reg_state *reg,
-+				const char *field_name, u32 btf_id)
++static void clear_trusted_flags(enum bpf_type_flag *flag)
 +{
-+	BTF_TYPE_EMIT(BTF_TYPE_SAFE_RCU_OR_NULL(struct mm_struct));
-+	BTF_TYPE_EMIT(BTF_TYPE_SAFE_RCU_OR_NULL(struct sk_buff));
-+	BTF_TYPE_EMIT(BTF_TYPE_SAFE_RCU_OR_NULL(struct request_sock));
-+
-+	return btf_nested_type_is_trusted(&env->log, reg, field_name, btf_id, "__safe_rcu_or_null");
++	*flag &= ~(BPF_REG_TRUSTED_MODIFIERS | MEM_RCU);
 +}
 +
- static bool type_is_trusted(struct bpf_verifier_env *env,
- 			    struct bpf_reg_state *reg,
- 			    const char *field_name, u32 btf_id)
-@@ -5561,9 +5595,10 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
- 			if (type_is_rcu(env, reg, field_name, btf_id)) {
- 				/* ignore __rcu tag and mark it MEM_RCU */
- 				flag |= MEM_RCU;
--			} else if (flag & MEM_RCU) {
-+			} else if (flag & MEM_RCU ||
-+				   type_is_rcu_or_null(env, reg, field_name, btf_id)) {
- 				/* __rcu tagged pointers can be NULL */
--				flag |= PTR_MAYBE_NULL;
-+				flag |= MEM_RCU | PTR_MAYBE_NULL;
+ static int check_pkt_ptr_alignment(struct bpf_verifier_env *env,
+ 				   const struct bpf_reg_state *reg,
+ 				   int off, int size, bool strict)
+@@ -5602,8 +5607,8 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
  			} else if (flag & (MEM_PERCPU | MEM_USER)) {
  				/* keep as-is */
  			} else {
+-				/* walking unknown pointers yields untrusted pointer */
+-				flag = PTR_UNTRUSTED;
++				/* walking unknown pointers yields old deprecated PTR_TO_BTF_ID */
++				clear_trusted_flags(&flag);
+ 			}
+ 		} else {
+ 			/*
+@@ -5617,7 +5622,7 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
+ 		}
+ 	} else {
+ 		/* Old compat. Deprecated */
+-		flag &= ~PTR_TRUSTED;
++		clear_trusted_flags(&flag);
+ 	}
+ 
+ 	if (atype == BPF_READ && value_regno >= 0)
 -- 
 2.34.1
 
