@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40FF86D56FD
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 05:03:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4152A6D570D
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 05:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232501AbjDDDDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Apr 2023 23:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55830 "EHLO
+        id S232442AbjDDDNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Apr 2023 23:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbjDDDDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 23:03:12 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC556133;
-        Mon,  3 Apr 2023 20:03:11 -0700 (PDT)
+        with ESMTP id S232997AbjDDDNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Apr 2023 23:13:08 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2250F2114;
+        Mon,  3 Apr 2023 20:13:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680577391; x=1712113391;
+  t=1680577982; x=1712113982;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=N/Phix0WCEAUrCVS0aZ8AFXIBjyECsvs0JD6OIZY+dY=;
-  b=QBMV0VSgdOA6EZc5yeBahtQKNrqcvh8Gk33gS+W+2kk5YRVN7F97pBDa
-   nbrBxi9uLwC5HfwMYlPms7sidL59X8WCM6bLhDrGfmZFzXVeGZ2Slt+EJ
-   hpq0B6e6KujYQ1K3uCEveB04UdsUiTzG/jrgd1BPZaLLNwNs4pT5LMKjp
-   I7udTttn5mKOO8LMPdgCWvC52dOp8M7x1+G2qbF4yWsJeRiL2684Wluj/
-   ubyml6Qvzc8TgE6rqTpN6eSVdHU8yzAqvJzXtsUop6kcIXMbzxbZe0UfO
-   1iDwYSTvbJaIv8VKeHbGAJSJOh1atVqygR4PM4badMTLk3SX5IujS9UzQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="330658843"
+  bh=Q3PIxfZjiQSnFPBrlx/lqbr6BF+fp9eU24opAoDCnow=;
+  b=E6HfTP8MLLua1PNfFbpdo5aQhz34BOHBEQPcdHiCR7OhpSBOYPSeXwGl
+   Wi/4/ImF3at5+b2iuu3uK1YEIp4Ocefv3tZ9I8mAyfbg5nibzRZs0JAKJ
+   B+qWa3jIQ2bpAThrLg8kfgwPDSfzaugySr3dMdBP+yNnBeqxFrS7CYHJJ
+   zMBYUFd96rps8hBxwQXwU2kwu+X40x7anvrR38ArkyYs++6UbNJSEQJDG
+   FzEeDyf65GdAhoC1+X9RGnp8qbIJ5z5JQUjMgWTVNw26NRAJh0BQx13cL
+   vlKrO/SEFoWOtLJX82KoQefwCrqKATuXHhpdCpAYhi8OeNFMJyoEgmWVT
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="326093990"
 X-IronPort-AV: E=Sophos;i="5.98,316,1673942400"; 
-   d="scan'208";a="330658843"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 20:03:08 -0700
+   d="scan'208";a="326093990"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2023 20:13:01 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="716495136"
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="718779016"
 X-IronPort-AV: E=Sophos;i="5.98,316,1673942400"; 
-   d="scan'208";a="716495136"
+   d="scan'208";a="718779016"
 Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 03 Apr 2023 20:02:56 -0700
+  by orsmga001.jf.intel.com with ESMTP; 03 Apr 2023 20:12:57 -0700
 Received: from kbuild by b613635ddfff with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1pjWwh-000P5W-31;
-        Tue, 04 Apr 2023 03:02:55 +0000
-Date:   Tue, 4 Apr 2023 11:02:13 +0800
+        id 1pjX6O-000P62-2I;
+        Tue, 04 Apr 2023 03:12:56 +0000
+Date:   Tue, 4 Apr 2023 11:12:46 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     John Fastabend <john.fastabend@gmail.com>, cong.wang@bytedance.com,
         jakub@cloudflare.com, daniel@iogearbox.net, lmb@isovalent.com,
         edumazet@google.com
-Cc:     oe-kbuild-all@lists.linux.dev, john.fastabend@gmail.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        andrii@kernel.org, will@isovalent.com
+Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+        john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
+        will@isovalent.com
 Subject: Re: [PATCH bpf v3 07/12] bpf: sockmap incorrectly handling copied_seq
-Message-ID: <202304041013.HATc3V5L-lkp@intel.com>
+Message-ID: <202304041028.XAQryEFM-lkp@intel.com>
 References: <20230403200138.937569-8-john.fastabend@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20230403200138.937569-8-john.fastabend@gmail.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,8 +77,8 @@ url:    https://github.com/intel-lab-lkp/linux/commits/John-Fastabend/bpf-sockma
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
 patch link:    https://lore.kernel.org/r/20230403200138.937569-8-john.fastabend%40gmail.com
 patch subject: [PATCH bpf v3 07/12] bpf: sockmap incorrectly handling copied_seq
-config: sparc64-randconfig-r025-20230403 (https://download.01.org/0day-ci/archive/20230404/202304041013.HATc3V5L-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
+config: hexagon-randconfig-r041-20230403 (https://download.01.org/0day-ci/archive/20230404/202304041028.XAQryEFM-lkp@intel.com/config)
+compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -88,28 +88,164 @@ reproduce (this is a W=1 build):
         git checkout fbafbc850ec4ef5aa7e5c39d8133f291ec4c0bb8
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc64 SHELL=/bin/bash net/core/ net/ipv4/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/core/ net/ipv4/
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304041013.HATc3V5L-lkp@intel.com/
+| Link: https://lore.kernel.org/oe-kbuild-all/202304041028.XAQryEFM-lkp@intel.com/
 
 All error/warnings (new ones prefixed by >>):
 
-   net/core/skmsg.c: In function 'sk_psock_verdict_apply':
->> net/core/skmsg.c:1056:17: error: implicit declaration of function 'tcp_eat_skb'; did you mean 'tcp_read_skb'? [-Werror=implicit-function-declaration]
-    1056 |                 tcp_eat_skb(psock->sk, skb);
-         |                 ^~~~~~~~~~~
-         |                 tcp_read_skb
-   cc1: some warnings being treated as errors
+   In file included from net/core/skmsg.c:4:
+   In file included from include/linux/skmsg.h:7:
+   In file included from include/linux/bpf.h:31:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:26:
+   In file included from include/linux/kernel_stat.h:9:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from net/core/skmsg.c:4:
+   In file included from include/linux/skmsg.h:7:
+   In file included from include/linux/bpf.h:31:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:26:
+   In file included from include/linux/kernel_stat.h:9:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from net/core/skmsg.c:4:
+   In file included from include/linux/skmsg.h:7:
+   In file included from include/linux/bpf.h:31:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:26:
+   In file included from include/linux/kernel_stat.h:9:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+>> net/core/skmsg.c:1056:3: error: call to undeclared function 'tcp_eat_skb'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                   tcp_eat_skb(psock->sk, skb);
+                   ^
+   net/core/skmsg.c:1056:3: note: did you mean 'tcp_read_skb'?
+   include/net/tcp.h:682:5: note: 'tcp_read_skb' declared here
+   int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor);
+       ^
+   net/core/skmsg.c:1216:3: error: call to undeclared function 'tcp_eat_skb'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                   tcp_eat_skb(sk, skb);
+                   ^
+   6 warnings and 2 errors generated.
 --
->> net/ipv4/tcp_bpf.c:14:6: warning: no previous prototype for 'tcp_eat_skb' [-Wmissing-prototypes]
-      14 | void tcp_eat_skb(struct sock *sk, struct sk_buff *skb)
-         |      ^~~~~~~~~~~
+   In file included from net/ipv4/tcp_bpf.c:4:
+   In file included from include/linux/skmsg.h:7:
+   In file included from include/linux/bpf.h:31:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:26:
+   In file included from include/linux/kernel_stat.h:9:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from net/ipv4/tcp_bpf.c:4:
+   In file included from include/linux/skmsg.h:7:
+   In file included from include/linux/bpf.h:31:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:26:
+   In file included from include/linux/kernel_stat.h:9:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from net/ipv4/tcp_bpf.c:4:
+   In file included from include/linux/skmsg.h:7:
+   In file included from include/linux/bpf.h:31:
+   In file included from include/linux/memcontrol.h:13:
+   In file included from include/linux/cgroup.h:26:
+   In file included from include/linux/kernel_stat.h:9:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/hexagon/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/hexagon/include/asm/io.h:334:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+>> net/ipv4/tcp_bpf.c:14:6: warning: no previous prototype for function 'tcp_eat_skb' [-Wmissing-prototypes]
+   void tcp_eat_skb(struct sock *sk, struct sk_buff *skb)
+        ^
+   net/ipv4/tcp_bpf.c:14:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void tcp_eat_skb(struct sock *sk, struct sk_buff *skb)
+   ^
+   static 
+   7 warnings generated.
 
 
-vim +1056 net/core/skmsg.c
+vim +/tcp_eat_skb +1056 net/core/skmsg.c
 
    986	
    987	static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
