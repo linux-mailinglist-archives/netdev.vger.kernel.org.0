@@ -2,66 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE9D6D576D
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 06:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E5246D5776
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 06:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbjDDEIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 00:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        id S233027AbjDDEVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 00:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbjDDEIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 00:08:00 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389EC1984
-        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 21:07:59 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id i9so31366660wrp.3
-        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 21:07:59 -0700 (PDT)
+        with ESMTP id S232776AbjDDEVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 00:21:52 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AE419A6
+        for <netdev@vger.kernel.org>; Mon,  3 Apr 2023 21:21:50 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e18so31363440wra.9
+        for <netdev@vger.kernel.org>; Mon, 03 Apr 2023 21:21:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680581277;
+        d=google.com; s=20210112; t=1680582109;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KktoCWiY67YN/IFslxE7hfcrAvse71hZhHEpfT/ThtA=;
-        b=BiKdzxSRbsPO/oGgDtUdo3Y2FY72n5Mfw4BO+0Ev7QvT+Iqm/SLl/VXU2sQjvfegkQ
-         mo4S7tB7oWSHTpgopS0cGJkO86rBdy1t8sGONn2F1ZV7QSE0Ob+Zd4c+W1xffau4kHe8
-         K1HEB3/UKS5u4PpGlm/GKDM+8OMwGoan+yynSkBtkozjX82BdFeQ6TdcAYnU3LWtPy/m
-         M/yRa93eirx6o9+AVqjLfBn/rdBikeJ3iS5wIgdGa7bQWY5WedN8c70mH1v+EM6HmikI
-         uKIdnak2A+B2q1wZLq99Flxhm8wH3MXYb3Y9ahrNOYyt/9NFHIba3QJHwj5UCUtT+4Sv
-         cQ3w==
+        bh=KEuAppsNKlRqAfJkKpxvOEGy6rGv5xo3Ia++uTJBjds=;
+        b=ERPo3XlybTgZ90DRfKOvHrTnM+lNGBtLvMB0dcTcTwPcFuiSSO60E8XtqXTPM53GPF
+         vlgl/cafIpjNPRdfZCzMgVweoJ8e4/dud8Tu4qQuTO+BZpUJIR+eVS7ku1PNY3Vg6ek3
+         NlB3XiWsLqP1hAO5WqPx3ndKUqolkZdqywjJTEqj0EFfm2UM8Yao8RP+U0v0r/D5X2c/
+         kCRZFAORRO/VAc5UbR4hhHnQvud0arCurPCamWnLrXBOE1daICtoLMUvFwK3hdFrdokf
+         yr4ffb4HfO38ihZUgeOl2bGbW3Ui9VlmfOfz/lnvLTavvlAqbqEuXBrcgRsWZJ7j1CNO
+         jz4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680581277;
+        d=1e100.net; s=20210112; t=1680582109;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KktoCWiY67YN/IFslxE7hfcrAvse71hZhHEpfT/ThtA=;
-        b=qjQ3reycbjdn3NRJhJKTjkYmXrkFpiK/B7c2o1pchDq7ymqX6Jy4bXHW4I0CAIdycl
-         iinsW4Aje5s8svSiM0vMVXrmjCvzSAXFB3q7V9AtQR2OGBvlBgXGYsoodnnwKnrWpqpJ
-         XAAkvu4xZru3ECArQoeSOzSXkqCv+blVupP7ReGNkN26w6FQH+vp/TUSicY3qqZoT1p1
-         hSdGB+Dp1H7C7O5GGrdNTug3YUhmSjgrpY1p7u8fonALve4SNCcmvxlat2YWrt7ZSMQW
-         UO6JtSnHAsmH0JWjsb5op5VMKYmBcMtDMhHNzZZhhy17c5FkSsLSFOIc89guhJh3V4nf
-         tGDA==
-X-Gm-Message-State: AAQBX9f9BBpNregDNEl+vkP9e2Pr6Gp/2NNpGTZvwe2jgS8gYWm0q74p
-        lBEecdpLq2JQo3kZJTyPeFXjxQzcJKlCeJ/ZJbsCvA==
-X-Google-Smtp-Source: AKy350bnvQ2geLTuIPaD7D/bFNV+uPCdYZFniKTWRL0ASo3F6eA0KrhhHJxUYUX6BwDBD25jfxyuTuO6nULTEjWSlCg=
-X-Received: by 2002:adf:fc41:0:b0:2ce:a5f8:b786 with SMTP id
- e1-20020adffc41000000b002cea5f8b786mr138484wrs.12.1680581277463; Mon, 03 Apr
- 2023 21:07:57 -0700 (PDT)
+        bh=KEuAppsNKlRqAfJkKpxvOEGy6rGv5xo3Ia++uTJBjds=;
+        b=lFsR1mHtxGex545hZcq+V2xlis6FGFM7NzUkaFTJdGTAh9F8mefXyN9zW5quKk6N7G
+         x8D2gqcmrFIuaPG4B53xOBEkDgepWa/duQzj9XbiWmZ669ygwrZrhBSa21rTTxsfksU0
+         ahrkwnEeYq7rTsSnoKyCk8fsOJJT6eiwetln7m79gu0mT8PRWyI+RY9mH4eXP/9rsuqc
+         ZYpKKhvQSVj0//eHxtL0n/lriRCXVNGrZZjnrUNBUVZa2rWrnl5INFqljUy+FBz391g+
+         S82AK3yt6C//8eRLpWoLFkesJlZc73VBZgN53ZCrxdsW3eP/u0DyeUhZIVQg+hAurgh2
+         v7mA==
+X-Gm-Message-State: AAQBX9ekT06jsAj2gbdAgKXHCsiTWYTZRAq1qvMxpvDmXfqcmXnsvsMn
+        kZXLEvt1Q9UFJ/L6wekki8PpxbLVko4zliIgL+7Yu4V2XgmtChasyt2FwfTU
+X-Google-Smtp-Source: AKy350b2m5NPYP7SNvXGEPvb9nEZxX77yRlpN39XpkGKnUAv2jdo8WzvVZcUo6LhsgcC6oh14paEQUy1u7QXQtVqx/w=
+X-Received: by 2002:adf:e84c:0:b0:2c5:7eb5:97a6 with SMTP id
+ d12-20020adfe84c000000b002c57eb597a6mr169963wrn.12.1680582109280; Mon, 03 Apr
+ 2023 21:21:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230403194959.48928-1-kuniyu@amazon.com> <20230403194959.48928-2-kuniyu@amazon.com>
- <CAL+tcoB911=NZYiiAHV8vRv+=GdWmXqNv0YWd9mc4vLaTgjN1g@mail.gmail.com>
-In-Reply-To: <CAL+tcoB911=NZYiiAHV8vRv+=GdWmXqNv0YWd9mc4vLaTgjN1g@mail.gmail.com>
+References: <20230331043906.3015706-1-kuba@kernel.org> <1f9cf03e-94cf-9787-44ce-23f6a8dd0a7a@huawei.com>
+In-Reply-To: <1f9cf03e-94cf-9787-44ce-23f6a8dd0a7a@huawei.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 4 Apr 2023 06:07:45 +0200
-Message-ID: <CANn89iKO9xtHoa39815OyAbTQ_mYr8DMBYu4QX6bs_uDBaT9Tg@mail.gmail.com>
-Subject: Re: [PATCH v1 net 1/2] raw: Fix NULL deref in raw_get_next().
-To:     Jason Xing <kerneljasonxing@gmail.com>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>,
-        "Dae R . Jeong" <threeearcat@gmail.com>
+Date:   Tue, 4 Apr 2023 06:21:37 +0200
+Message-ID: <CANn89iKsNYizAvoFisrFBSb-vXnn6BjkR7fuR1S5vQLggcLCdA@mail.gmail.com>
+Subject: Re: [RFC net-next 1/2] page_pool: allow caching from safely localized NAPI
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
@@ -75,27 +70,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 4, 2023 at 4:46=E2=80=AFAM Jason Xing <kerneljasonxing@gmail.co=
-m> wrote:
+On Tue, Apr 4, 2023 at 2:53=E2=80=AFAM Yunsheng Lin <linyunsheng@huawei.com=
+> wrote:
+
+> Interesting.
+> I wonder if we can make this more generic by adding the skb to per napi
+> list instead of sd->defer_list, so that we can always use NAPI kicking to
+> flush skb as net_tx_action() done for sd->completion_queue instead of
+> softirq kicking?
+
+We do not have direct skb  -> napi association yet, but using an
+expensive hash lookup.
+
+I had the intent of adding per-cpu caches in this infrastructure,
+to not acquire the remote-cpu defer_lock for one skb at a time.
+(This is I think causing some regressions for small packets, with no frags)
+
 >
-> I would like to ask two questions which make me confused:
-> 1) Why would we use spin_lock to protect the socket in a raw hashtable
-> for reader's safety under the rcu protection? Normally, if we use the
-> RCU protection, we only make sure that we need to destroy the socket
-> by calling call_rcu() which would prevent the READER of the socket
-> from getting a NULL pointer.
+> And it seems we know which napi binds to a specific socket through
+> busypoll mechanism, we can reuse that to release a skb to the napi
+> bound to that socket?
 
-Yes, but then we can not sleep or yield the cpu.
+busypoll is not often used, and we usually burn (spinning) cycles there,
+not sure we want to optimize it ?
 
-> 2) Using spin lock when we're cating /proc/net/raw file may
-> block/postpone the action of hashing socket somewhere else?
-
-/proc/net/raw file access is rare, and limited in duration (at most
-one page filled by system call)
-
-Use of RCU was only intended in my original patch to solve deadlock issues
-under packet floods, like DOS attacks.
-
-Really using RCU in the data/fast path makes sense (and we did that already=
-).
-For control paths (or /proc/.... files), not so much.
+>
+> >
+> > The main case we'll miss out on is when application runs on the same
+> > CPU as NAPI. In that case we don't use the deferred skb free path.
+> > We could disable softirq one that path, too... maybe?
+> >
