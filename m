@@ -2,177 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A0126D5BDA
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AA386D5BE8
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:29:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234270AbjDDJZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 05:25:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        id S234116AbjDDJ3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 05:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233706AbjDDJZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:25:26 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171521BD0
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 02:25:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680600325; x=1712136325;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=X+M05HIMTqZbDMEm1KF+aN7bDgbNckt/kf5OfKr+s9w=;
-  b=c9hNZnjmop07RTd3CcNULnmxjEJ2nzQbTR5yvkTX2fRFilug72GnYO72
-   22f0g8vrUuhvTZI5Qyw+DgmBfJS7MTUhBBhtQ8Ob0RGjF+ibUqWECfBMo
-   tQSHatFxZ7p0N8+Y42FPfA1Uu2ReQG+i56DXWlemvWErBLs0JR2wFnDOv
-   9baUzPq2skNAGCzLpE4/SLckcGCDQC7n0bjOManyPYuHG2RO4hGcpn9Hq
-   j7JeAnB4EGRCRIaHwWi5K5HOuB5XADSNg/DDiBqorU8ctMapYk+O1lYv3
-   7MqnJvjerQ7UPAf1GQYBQ0fM7BJC4MKQriziPyV5CCYwcadtmtlHPqbnS
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="428418487"
-X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="428418487"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 02:25:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="829908217"
-X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="829908217"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Apr 2023 02:25:24 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21; Tue, 4 Apr 2023 02:25:24 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.21 via Frontend Transport; Tue, 4 Apr 2023 02:25:24 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.21; Tue, 4 Apr 2023 02:25:23 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A9egBSXNVmUrD59caT2CtUnq4LJmyic1xWTFTx1ORW4nu272xaSeS9wM3OFpDCK94J2oocbwdDyK5ILCL0f6Jqj40afyzTIWr/eoB/wwYG4UQlKIu/33GRu2MzbREcEbt/xa3pTrEkm059Hno7tEYr3cOqeQGxrr0CRrsdEp3XAXe0FDyqkRF00S/NPUCyYAi93tquHvrKq8TB22HARJ8W0vd4ZnDkCz3uRHPVb1Tjv3EQfxV0/s90PmX0n66y//KgV/z4FJ6Vk0VnIwlEzPWj4bP9v08bvMKjWOOd4Njr43Qja+f9unsjarbFF3IdeTWuPThiWxnlNoG1jdvUDvcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X+M05HIMTqZbDMEm1KF+aN7bDgbNckt/kf5OfKr+s9w=;
- b=k65TRwbXIuQ4ed4z6EF40qv/73TjJssf8SfJ1YVneAgZ6b42BaxyPfoSgaTSraheTFTVhUEYY6adyF1knQgTVPBcunxTSTsBXEFCTvZ8Fki0sPuj322KmfBfcsNDtoWsdS/lc2OZDIsO+gLb1tYgYETg9L74JwmC4qmz4En6SY/a8c+vrvgYzNrOmz3dRandYrTMbsQh4qCUdRAr3dTMF2sXSWTdF3v58k9eZ6mhl7GWtTsOU4oitK9ZIBo9Vo+lR3walnLWb6fzAeVQR41JXt0FTewtW+5E0VaRWST8eYYuus76SQViivc9bVV0e/88aFLvqTgJv0gDRSHCin2O2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW4PR11MB5800.namprd11.prod.outlook.com (2603:10b6:303:186::21)
- by MW4PR11MB6838.namprd11.prod.outlook.com (2603:10b6:303:213::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 4 Apr
- 2023 09:25:22 +0000
-Received: from MW4PR11MB5800.namprd11.prod.outlook.com
- ([fe80::bf39:c299:c011:1177]) by MW4PR11MB5800.namprd11.prod.outlook.com
- ([fe80::bf39:c299:c011:1177%8]) with mapi id 15.20.6254.033; Tue, 4 Apr 2023
- 09:25:21 +0000
-From:   "Kolacinski, Karol" <karol.kolacinski@intel.com>
-To:     mschmidt <mschmidt@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Michalik, Michal" <michal.michalik@intel.com>,
-        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        poros <poros@redhat.com>
-Subject: RE: [PATCH net-next 1/4] ice: lower CPU usage of the GNSS read thread
-Thread-Topic: [PATCH net-next 1/4] ice: lower CPU usage of the GNSS read
- thread
-Thread-Index: AQHZZL89sSVSkMdLr0Sl4EZIHAEuz68a5RDw
-Date:   Tue, 4 Apr 2023 09:25:21 +0000
-Message-ID: <MW4PR11MB580066F8B4EC54948C0B43B186939@MW4PR11MB5800.namprd11.prod.outlook.com>
-References: <20230401172659.38508-1-mschmidt@redhat.com>
- <20230401172659.38508-2-mschmidt@redhat.com>
-In-Reply-To: <20230401172659.38508-2-mschmidt@redhat.com>
-Accept-Language: pl-PL, en-US
-Content-Language: pl-PL
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW4PR11MB5800:EE_|MW4PR11MB6838:EE_
-x-ms-office365-filtering-correlation-id: 0d576459-9f45-43ed-b666-08db34ee8381
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1RFBKvjwGKNaig29A+eOR73d6m9MNWUPJGnLcJUr+qOQVH6pc/mOy1Imy9ipuuaU5jnB0neYubkDia7f0B9HfaWZzOtd4YbBQ+WErgYpF9Idtp4fWKl2cO8lG7gsCEEsd4Ffy4JB0+H7mu70O4cQAdqLWoI0FKGzPzEvQTe/YPlTeKglF2/tJlFzwW0YkLCpLbO0pgGTK2ryCkT1d7pnw8/shiHI3MAN4pMWYlOZRwCQwZEH/rB20eKbI3SNSofEUesbINtdFQb80aQoLtLqj2pYBtNGV8TWz7opOz5r3kGXuDfBRWCTUucIGGjkPEhLywnaAUSfqdxsxeHlJGfGGnPRTDaI6xvoh1qoPfXDuGfwLSLQBeQcwYiFSumLxrAx2d2EENTmlsRq6Tx4PMTUY3vl8uW1udJWKnsp41TUXoj9GPIWx3URCU/K8nmtmQ7YbKe3Iq62xkicw+Q5vWCzKgOpyCGpfZd95xhMxpMV3hw4nwiYm/z4JOms+lwJvltfHaxkDShllhMJJykMnH+M/SrOSbQnBdjpLih1xRnhtPAi69u15uU8OMxpR8X6oMxzaWo8EP2UXWhB8dEB1h28RvrHq4iBzw9Wx1hzYX1TcPm9RUYerrZawwmIw6PaT/Xz
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5800.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(136003)(39860400002)(346002)(376002)(396003)(366004)(451199021)(55016003)(76116006)(4326008)(64756008)(66556008)(66476007)(66946007)(478600001)(8676002)(66446008)(4744005)(110136005)(41300700001)(54906003)(52536014)(8936002)(316002)(5660300002)(122000001)(38100700002)(82960400001)(186003)(7696005)(71200400001)(6506007)(26005)(9686003)(86362001)(2906002)(33656002)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ReqYv6esZTmuXPL/LNgtMQNgwc37D19ARG9XadktR+FVTJuk5JL/a/3ZbEJq?=
- =?us-ascii?Q?/iHa9Sl0G90WEaMIE/xFx1w8QNu6ZWn3Rab+eeKM289gF+pYQJjGL+LioUth?=
- =?us-ascii?Q?vfWYN0BzLOqJiEcN6U/1QrY4g8QUAe6mO7Zb+/y6cLmsVmHJK3A1ts+V6qK4?=
- =?us-ascii?Q?qU89H7W/DRU8fpo8NECk7DKRvBZXO16BoL1TPf4ZUlsx6HeSXE5uPhBCxAK5?=
- =?us-ascii?Q?GV15IR3PBYhny/z9sNi6OqWbNYVI5ExRX+RaQnIiydjHwHI1M2446hhZ5F2K?=
- =?us-ascii?Q?jkxKzXlqArsJAF6PCAOo7rk7Q7rrxbuh9WtErq3mZ5QBT7N+mkJXouhqfVKJ?=
- =?us-ascii?Q?TflyeoRV+8G79bYL9i8eYc8aATaijapN1bfvq+wW3l9vBVVSXVKi/Odd8Xd8?=
- =?us-ascii?Q?LwqMfdbQNaLY5MKDz7Kq+aK54lr6Iyucv6H7IZ19dv43fsyDNaqUcv/T+pTX?=
- =?us-ascii?Q?kk5R9Xx6Oo//b6u3RiFOMy5H0G6qjj9cDlEFacN7qfQEWRzAWSZGdYDl43SB?=
- =?us-ascii?Q?VlERBdRKUQ/ygKbi5nhVjQQ5U+ach3xXMs22+5UwKp3lfj6WnVR1ZhNaScqo?=
- =?us-ascii?Q?wTUyvDvPBY1Qm1b2v34IQdhHOKszQmuGh8UWY84uqhN0Wz7/FypjrHMrevEP?=
- =?us-ascii?Q?eOAS7JlY3FdPfUhYhMKqMTvwRQfcMM/0t6VOVGveTSZkFPxd2cKy6GM8cvMX?=
- =?us-ascii?Q?ooU3aLeCLGkUMpGVoLyvbRYotTCrqblaKMvbZMJjOCnBc+DXX1byzYMClOKl?=
- =?us-ascii?Q?6EKGWaXMwfDb8m1cDsNnEYpguvVDxCU1J2jkxGy50OZgT4IsB+UtF/P6qTbG?=
- =?us-ascii?Q?ks5lyHxIiktjmZIj7raM4XvBw9xemiJ6anKmfhDXdBFksERPnFK5ph8vWJQo?=
- =?us-ascii?Q?MW6leUw7KNPXLRtOC19M6rPvLzEECDkM3hKEbvm4R0B8p3tk8Wk80UWMoFh+?=
- =?us-ascii?Q?gt9ivCsiyuYlD8g3+3Z52VcRvMP0ChOuCdOk65l+CrGarkBugD8+WMdjMSv/?=
- =?us-ascii?Q?dNO68i2XRa/GEMVbfMge1aNUb2gh0tFjJzOdO7/2DCIr8ChLZF56Xvx59caX?=
- =?us-ascii?Q?7ClpMut74Ox+dec03EfTkcJSLGts6+KCY0uWM77mSGRfp7OpNWuGu96rlD5Z?=
- =?us-ascii?Q?nLzbtJgyHHuT2FZlDS4sPH5BRLdySVbTC7E5kw8HmQAqh1XsHnY1zr9NApIL?=
- =?us-ascii?Q?gc1Exl+cf/kE8z+if7y3hNll6yGvEzyyvpXvROfeMsq/xIQ5FnJZ07e/Mb8p?=
- =?us-ascii?Q?hDMpEZ25lXsLnZuBxMpaezAF4GBb62P5Us1PXVkg0XsVI0Pxk9qW3aWP2eJL?=
- =?us-ascii?Q?Wqlv1TxO3vFfO+h+wZc+SPicTso9sA860AuIquOtm5sZdy3bdNZMy87LanOH?=
- =?us-ascii?Q?Dyx537Wx+zMxRN69KsxMtsc/NWfgBJgjH3+ZYY6I2UKLNXtCh/n8JPRxLWMP?=
- =?us-ascii?Q?5zL+1f8a3CJEtZKozjq6vvHqbZUGvtuHVO1sxtVMCGVu9XIRPXC1rRkq81QT?=
- =?us-ascii?Q?gLF3r9SLx6lFM14dJOYNyudApBQJQDA01IlDSMfSl5P/iID1psMfTBHlr+cf?=
- =?us-ascii?Q?QO8Wu7waHz2nRbmto/zX6wR7pznxXjWkNxzn1azK?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S234186AbjDDJ3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:29:43 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D4E1BDC;
+        Tue,  4 Apr 2023 02:29:41 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id j7so37908085ybg.4;
+        Tue, 04 Apr 2023 02:29:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680600580;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=m+eL/z8RH/5rtw+dy/g/xT9VEmo4zwfmYNqhFX98Cqw=;
+        b=E21CLEBXl/AvExfe4X9ObKgn0tL4bMgbcWOtk9mmVcWVa3bwDSurtjprFskIdwsWmL
+         F7Fv6vv4tQiYeubOtRWhlpmSeESdJO9sDFFjoPpMEmrMNMPX3/DIFlmx/LVCnfg/x5yg
+         YIHrUlTJ7oksO67eUW12uxiaEOh0VM9fBTjiSl14jj8hXOatuLnBmjLdALFR0qaYAYfh
+         1YgaVcGcB/ixrMM08U7kgRhNGmZQTyvGmb+yEH/fds4Kma1wpri+WjMRog2FuEMUdpv7
+         iHu6YGokiH2qtYIE2HkK8yPShpCwDPKoUiBYBrX2y5JVA3AW+Zd09fjUEGGdiUW/th3Q
+         LQPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680600580;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m+eL/z8RH/5rtw+dy/g/xT9VEmo4zwfmYNqhFX98Cqw=;
+        b=yqRa/PdgcgYkYa8VdGfrw7WirYQAQVWZlAzIidxInJb1E+M1zZlvReWxzlz32sbdNK
+         h3MOUcwewS4Yyx2E8GeF2+eev8d5rqlaCaLylpDe44zAVcrvJBXUnK3x5RFrEmBcHAPy
+         ZRX1cARU6VoRxw8PLj5kVGVWUg4ZQSDwmLo4/1SYtCGyiJPE/Q4LaagUN+1qNRV5ijik
+         VRJYVz1EmPAKY+HutxWE06EY7ZpNLMIE7qcjrNRoybC+qR68Ln+BUa3qgmSaK3pqgOrN
+         M9mGyv0vJwEy8m0xq7+L99V3AD8U64JBGy8WxS65u/f5XgoEAzTVSRI/n1v8+84vZ0bC
+         IQ8A==
+X-Gm-Message-State: AAQBX9fAMr+fOOCQuLVbMpoKCi0Ff/rZRqf0Nbe7oKyMvx0Ll9sZpaeu
+        bbyoge6P14pGLxro71R9NhU0ciQLH3+g7pMrdMk=
+X-Google-Smtp-Source: AKy350YMnjVKc1oUniZ14UmKxTE2eBETlKxxRUa6bi1S7O7Gs/iVA8trnOr5nx5pqm+8zgB6e53f/vGt3ig4k+Zz4JE=
+X-Received: by 2002:a25:cb83:0:b0:b6a:5594:5936 with SMTP id
+ b125-20020a25cb83000000b00b6a55945936mr1430996ybg.5.1680600580420; Tue, 04
+ Apr 2023 02:29:40 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5800.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d576459-9f45-43ed-b666-08db34ee8381
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2023 09:25:21.6182
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qPh0d2hpPLQrMTH6zLwQbftwwHtK1iXcVR+exVU4Jzbi4vT7h3IvzI2hI/GePHOE/+BMmIFBije4NsDWcDKKQVfNlbRjnNy3rN2g4bexAlY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB6838
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230329180502.1884307-1-kal.conley@dectris.com>
+ <20230329180502.1884307-9-kal.conley@dectris.com> <CAJ8uoz330DWzHabpqd+HaeAxBi2gr+GOTtnS9WJFWrt=6DaeWQ@mail.gmail.com>
+ <CAHApi-nfBM=i1WeZ-jtHN87AWPvURo0LygT9yYxF=cUeYthXBQ@mail.gmail.com>
+In-Reply-To: <CAHApi-nfBM=i1WeZ-jtHN87AWPvURo0LygT9yYxF=cUeYthXBQ@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 4 Apr 2023 11:29:29 +0200
+Message-ID: <CAJ8uoz0SEkcXQuoqYd94GreJqpCxQuf1QVgm9=Um6Wqk=s8GBw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 08/10] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     Kal Cutter Conley <kal.conley@dectris.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 01, 2023 at 07:26:56PM +0200, Michal Schmidt wrote:
-> A simple improvement would be to replace the "mdelay(10);" in
-> ice_gnss_read() with sleeping. A better fix is to not do any waiting dire=
-ctly in the function and just requeue this delayed work as needed.
-> The advantage is that canceling the work from ice_gnss_exit() becomes imm=
-ediate, rather than taking up to ~2.5 seconds (ICE_MAX_UBX_READ_TRIES
-> * 10 ms).
->=20
-> This lowers the CPU usage of the ice-gnss-<dev_name> thread on my system =
-from ~90 % to ~8 %.
->=20
-> I am not sure if the larger 0.1 s pause after inserting data into the gns=
-s subsystem is really necessary, but I'm keeping that as it was.
+On Tue, 4 Apr 2023 at 10:15, Kal Cutter Conley <kal.conley@dectris.com> wrote:
+>
+> > Is not the max 64K as you test against XDP_UMEM_MAX_CHUNK_SIZE in
+> > xdp_umem_reg()?
+>
+> The absolute max is 64K. In the case of HPAGE_SIZE < 64K, then it
+> would be HPAGE_SIZE.
 
-Hi Michal,
+Is there such a case when HPAGE_SIZE would be less than 64K? If not,
+then just write 64K.
 
-We were planning to upstream 20 ms sleep instead of 10 ms delay but your
-solution looks better.
-To align with our code, ICE_GNSS_POLL_DATA_DELAY_TIME could be increased
-to 20 ms.
+> > > diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> > > index e96a1151ec75..ed88880d4b68 100644
+> > > --- a/include/net/xdp_sock.h
+> > > +++ b/include/net/xdp_sock.h
+> > > @@ -28,6 +28,9 @@ struct xdp_umem {
+> > >         struct user_struct *user;
+> > >         refcount_t users;
+> > >         u8 flags;
+> > > +#ifdef CONFIG_HUGETLB_PAGE
+> >
+> > Sanity check: have you tried compiling your code without this config set?
+>
+> Yes. The CI does this also on one of the platforms (hence some of the
+> bot errors in v1).
 
-Thanks,
-Karol
+Perfect!
+
+> > >  static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+> > >  {
+> > > +#ifdef CONFIG_HUGETLB_PAGE
+> >
+> > Let us try to get rid of most of these #ifdefs sprinkled around the
+> > code. How about hiding this inside xdp_umem_is_hugetlb() and get rid
+> > of these #ifdefs below? Since I believe it is quite uncommon not to
+> > have this config enabled, we could simplify things by always using the
+> > page_size in the pool, for example. And dito for the one in struct
+> > xdp_umem. What do you think?
+>
+> I used #ifdef for `page_size` in the pool for maximum performance when
+> huge pages are disabled. We could also not worry about optimizing this
+> uncommon case though since the performance impact is very small.
+> However, I don't find the #ifdefs excessive either.
+
+Keep them to a minimum please since there are few of them in the
+current code outside of some header files. And let us assume that
+CONFIG_HUGETLB_PAGE is the common case.
+
+> > > +static void xp_check_dma_contiguity(struct xsk_dma_map *dma_map, u32 page_size)
+> > >  {
+> > > -       u32 i;
+> > > +       u32 stride = page_size >> PAGE_SHIFT; /* in order-0 pages */
+> > > +       u32 i, j;
+> > >
+> > > -       for (i = 0; i < dma_map->dma_pages_cnt - 1; i++) {
+> > > -               if (dma_map->dma_pages[i] + PAGE_SIZE == dma_map->dma_pages[i + 1])
+> > > -                       dma_map->dma_pages[i] |= XSK_NEXT_PG_CONTIG_MASK;
+> > > -               else
+> > > -                       dma_map->dma_pages[i] &= ~XSK_NEXT_PG_CONTIG_MASK;
+> > > +       for (i = 0; i + stride < dma_map->dma_pages_cnt;) {
+> > > +               if (dma_map->dma_pages[i] + page_size == dma_map->dma_pages[i + stride]) {
+> > > +                       for (j = 0; j < stride; i++, j++)
+> > > +                               dma_map->dma_pages[i] |= XSK_NEXT_PG_CONTIG_MASK;
+> > > +               } else {
+> > > +                       for (j = 0; j < stride; i++, j++)
+> > > +                               dma_map->dma_pages[i] &= ~XSK_NEXT_PG_CONTIG_MASK;
+> > > +               }
+> >
+> > Still somewhat too conservative :-). If your page size is large you
+> > will waste a lot of the umem.  For the last page mark all the 4K
+> > "pages" that cannot cross the end of the umem due to the max size of a
+> > packet with the XSK_NEXT_PG_CONTIG_MASK bit. So you only need to add
+> > one more for-loop here to mark this, and then adjust the last for-loop
+> > below so it only marks the last bunch of 4K pages at the end of the
+> > umem as not contiguous.
+>
+> I don't understand the issue. The XSK_NEXT_PG_CONTIG_MASK bit is only
+> looked at if the descriptor actually crosses a page boundary. I don't
+> think the current implementation wastes any UMEM.
+
+I stand corrected. You do not waste any space, so please ignore.
