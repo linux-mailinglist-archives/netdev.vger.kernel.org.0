@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 361F76D58BC
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D8F6D58C0
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:26:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233317AbjDDG0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 02:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
+        id S233735AbjDDG0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 02:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbjDDG0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:26:01 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C172138;
-        Mon,  3 Apr 2023 23:26:00 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id i6so37472893ybu.8;
-        Mon, 03 Apr 2023 23:26:00 -0700 (PDT)
+        with ESMTP id S233221AbjDDG0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:26:47 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F1819BF;
+        Mon,  3 Apr 2023 23:26:46 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-5491fa028adso99257297b3.10;
+        Mon, 03 Apr 2023 23:26:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680589559;
+        d=gmail.com; s=20210112; t=1680589605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+H9GL64TGrcz+vOZNvr1jljQ38/CD9zQDOXsTVZAefM=;
-        b=HI3PNT/pXakw12UQF3wpfr1WWc3sTtXEAx7eWTPsOicgPgEbBbAsujm/eb0z5okUYj
-         GpAV5tvhWPNDdG/Rn3UabcLCmxPe9axmlKO++m7C4GIbErVpVZSjRY+Z8g9M7WQ6Ny0t
-         s3YS9vEyubZ4bQLFONEBtPWVN/xu20M+wRP5ITlhSn8JLdv9JdBYwuV/9YpvyJE0+gcX
-         JMh6JVMGDjq9OrrVOFT73ugvihaA1YRucSrELAUhVeR5td/pWjISxNlfzB4zv54l5s69
-         wBwgBdaXXZaY1SWdtqTKWF4A8x8elWHulKZdHW/dTnjQcdPtwyBkpvUbnMZ7ycM53xS2
-         kWZQ==
+        bh=W4uNHmMt7Ws5Uah4Jl5aAqQS63Y/YU5rFIc2W/o+vMk=;
+        b=Nq4e4ll0yw4HQTz5WuLZyxBmGMcbgx5W/upOV3cUgJP4PnUgPoVN+IaPvgk65Q4Rqu
+         pbHmHOfiHc9lUwuuvUqwMhYM1JNVKCHAPwHAPv54g6VYM0BX9CGOgrmPPiuuwGLpUYEq
+         Y39TjwFG2262t+pmjM4eA9UpbTvh8EB31L/3TDdgutTWUjoW7UaB0JzdmgX8zfUb9qBe
+         HkJQ86lSE6AGBOopenPoRm63bdyT3uayvwn041FRPg4mwlCEUR8A7TUwM6l4Am8ij6sx
+         +E85g+heyeh3SS7knaINXD5dH7zbnaMcaBCQvUxAE1HdRNFEuveFrKHkZrCKTotOj6rh
+         wRfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680589559;
+        d=1e100.net; s=20210112; t=1680589605;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+H9GL64TGrcz+vOZNvr1jljQ38/CD9zQDOXsTVZAefM=;
-        b=mzacJP6mTQt4oc/z/yvR4x6JQ9i9pB1n8w9w038OgjDEpuShoLpAZDZinowyxVVwYP
-         dlTMGIVCuBLqpj0w6f0tVeyLSwPaR1LTB+jQYa1rqzro+3t7YcrIDvkh/lNtEYmVv6ne
-         98tZRsBrNdgXwpqLPqtU4rjznx9O9F9xCzHloleJbgWGzJCseDY67FPc5l+jpW8n5aYC
-         Fc84lnOHXf/Ul3iHwLd3oc8BzT5Ze213C2OAOV42qmr57qm+FqdgkXntgMAb8fx9C1iL
-         ikDXKjqjK/MhXDu+DDwYJlIEtFoJ/NoAJ/TQgMivaYUw5/+C4iSzmN5UhLY5iIt8v/OG
-         dLkw==
-X-Gm-Message-State: AAQBX9fm+42Qv9upyTH5jNGJz6MHUMdWF83vtk7BlfxNA/P11ngGoxr4
-        YVCo/WoGzQ5YIk+DgRxM57yTXQIAMluoZllLmLs=
-X-Google-Smtp-Source: AKy350YwYLFMDMHigbbaZO3ehKUrYJxvv/9XkbY5TAvGCGwG1WvwUyacsmIQfOXhMgkzJJaNRoL2kJJLdYwD3Mnsa5Y=
-X-Received: by 2002:a25:d4d0:0:b0:b3b:fb47:8534 with SMTP id
- m199-20020a25d4d0000000b00b3bfb478534mr990192ybf.5.1680589559363; Mon, 03 Apr
- 2023 23:25:59 -0700 (PDT)
+        bh=W4uNHmMt7Ws5Uah4Jl5aAqQS63Y/YU5rFIc2W/o+vMk=;
+        b=omiIH+p3s2atbD5jKyDV4t+ZXyx8dL19kHTupty1dJoaox+pjNL4jZmZHcvoNFi09K
+         edtO9qJWkSCzTMImLCluUCsQk9+DzPB3pBNs7GtjA/X9vMi0ktbz9TPxWIITlMiZj4sU
+         y8Nk+A4yyZKukcIbs1F1YbYfq8KyOHss771NC0f0+V1wHZJ8/jg9HXbzsd/Te19AC5un
+         H1K1ZlTB7ARSMwcr7JDSdIwtSyMrz8AgQuyVyIeJCmTSsMzl9uqoNDpyZCCMCEAu40IC
+         B0DGJRxTWOTZ8/6mUco9ph0Tnd29h+7crjNFW6w4NJt3tLZeLKsOOO0uAuXDsysFCEjW
+         z2eQ==
+X-Gm-Message-State: AAQBX9fm0cvNBFnBStDu0I97sSmlj5SF1x1eje4SchsigANr3ZEqsE0i
+        vbzZzLfmVFjXTuJXFqOWMIuR36KXASxw58lRq+I=
+X-Google-Smtp-Source: AKy350bpEI38oRymOMCyBUHz7DjGSR94OFCytrUim5NwwX+uUHPrkWnLZ3e3FE5WzHtkDk4+0SwpgzrekwKOE34N38s=
+X-Received: by 2002:a81:a804:0:b0:549:1e80:41f9 with SMTP id
+ f4-20020a81a804000000b005491e8041f9mr844611ywh.10.1680589605352; Mon, 03 Apr
+ 2023 23:26:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230403143601.32168-1-kal.conley@dectris.com>
-In-Reply-To: <20230403143601.32168-1-kal.conley@dectris.com>
+References: <20230403145047.33065-1-kal.conley@dectris.com> <20230403145047.33065-2-kal.conley@dectris.com>
+In-Reply-To: <20230403145047.33065-2-kal.conley@dectris.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 4 Apr 2023 08:25:48 +0200
-Message-ID: <CAJ8uoz1BKJ1_jq6Sum-OkZQTR_ftmr5Enj+Cmn4Qsi15_jOpbQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: Fix unaligned descriptor validation
+Date:   Tue, 4 Apr 2023 08:26:34 +0200
+Message-ID: <CAJ8uoz3HkNJZBy8bE-6-C2Hv25c230nED1Nw_eK43x5bmQBfGQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] selftests: xsk: Use correct UMEM size in testapp_invalid_desc
 To:     Kal Conley <kal.conley@dectris.com>
 Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
@@ -79,60 +80,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Apr 2023 at 16:38, Kal Conley <kal.conley@dectris.com> wrote:
+On Mon, 3 Apr 2023 at 16:52, Kal Conley <kal.conley@dectris.com> wrote:
 >
-> Make sure unaligned descriptors that straddle the end of the UMEM are
-> considered invalid. Currently, descriptor validation is broken for
-> zero-copy mode which only checks descriptors at page granularity.
-> Descriptors that cross the end of the UMEM but not a page boundary may
-> be therefore incorrectly considered valid. The check needs to happen
-> before the page boundary and contiguity checks in
-> xp_desc_crosses_non_contig_pg. Do this check in
-> xp_unaligned_validate_desc instead like xp_check_unaligned already does.
-
-Thanks for catching this Kal.
+> Avoid UMEM_SIZE macro in testapp_invalid_desc which is incorrect when
+> the frame size is not XSK_UMEM__DEFAULT_FRAME_SIZE. Also remove the
+> macro since it's no longer being used.
 
 Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+> Fixes: 909f0e28207c ("selftests: xsk: Add tests for 2K frame size")
 > Signed-off-by: Kal Conley <kal.conley@dectris.com>
 > ---
->  include/net/xsk_buff_pool.h | 9 ++-------
->  net/xdp/xsk_queue.h         | 1 +
->  2 files changed, 3 insertions(+), 7 deletions(-)
+>  tools/testing/selftests/bpf/xskxceiver.c | 9 +++++----
+>  tools/testing/selftests/bpf/xskxceiver.h | 1 -
+>  2 files changed, 5 insertions(+), 5 deletions(-)
 >
-> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-> index 3e952e569418..d318c769b445 100644
-> --- a/include/net/xsk_buff_pool.h
-> +++ b/include/net/xsk_buff_pool.h
-> @@ -180,13 +180,8 @@ static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
->         if (likely(!cross_pg))
->                 return false;
+> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+> index b65e0645b0cd..3956f5db84f3 100644
+> --- a/tools/testing/selftests/bpf/xskxceiver.c
+> +++ b/tools/testing/selftests/bpf/xskxceiver.c
+> @@ -1652,6 +1652,7 @@ static void testapp_single_pkt(struct test_spec *test)
 >
-> -       if (pool->dma_pages_cnt) {
-> -               return !(pool->dma_pages[addr >> PAGE_SHIFT] &
-> -                        XSK_NEXT_PG_CONTIG_MASK);
-> -       }
-> -
-> -       /* skb path */
-> -       return addr + len > pool->addrs_cnt;
-> +       return pool->dma_pages_cnt &&
-> +              !(pool->dma_pages[addr >> PAGE_SHIFT] & XSK_NEXT_PG_CONTIG_MASK);
->  }
+>  static void testapp_invalid_desc(struct test_spec *test)
+>  {
+> +       u64 umem_size = test->ifobj_tx->umem->num_frames * test->ifobj_tx->umem->frame_size;
+>         struct pkt pkts[] = {
+>                 /* Zero packet address allowed */
+>                 {0, PKT_SIZE, 0, true},
+> @@ -1662,9 +1663,9 @@ static void testapp_invalid_desc(struct test_spec *test)
+>                 /* Packet too large */
+>                 {0x2000, XSK_UMEM__INVALID_FRAME_SIZE, 0, false},
+>                 /* After umem ends */
+> -               {UMEM_SIZE, PKT_SIZE, 0, false},
+> +               {umem_size, PKT_SIZE, 0, false},
+>                 /* Straddle the end of umem */
+> -               {UMEM_SIZE - PKT_SIZE / 2, PKT_SIZE, 0, false},
+> +               {umem_size - PKT_SIZE / 2, PKT_SIZE, 0, false},
+>                 /* Straddle a page boundrary */
+>                 {0x3000 - PKT_SIZE / 2, PKT_SIZE, 0, false},
+>                 /* Straddle a 2K boundrary */
+> @@ -1682,8 +1683,8 @@ static void testapp_invalid_desc(struct test_spec *test)
+>         }
 >
->  static inline u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u64 addr)
-> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> index bfb2a7e50c26..66c6f57c9c44 100644
-> --- a/net/xdp/xsk_queue.h
-> +++ b/net/xdp/xsk_queue.h
-> @@ -162,6 +162,7 @@ static inline bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
->                 return false;
+>         if (test->ifobj_tx->shared_umem) {
+> -               pkts[4].addr += UMEM_SIZE;
+> -               pkts[5].addr += UMEM_SIZE;
+> +               pkts[4].addr += umem_size;
+> +               pkts[5].addr += umem_size;
+>         }
 >
->         if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
-> +           addr + desc->len > pool->addrs_cnt ||
->             xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
->                 return false;
->
+>         pkt_stream_generate_custom(test, pkts, ARRAY_SIZE(pkts));
+> diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
+> index bdb4efedf3a9..cc24ab72f3ff 100644
+> --- a/tools/testing/selftests/bpf/xskxceiver.h
+> +++ b/tools/testing/selftests/bpf/xskxceiver.h
+> @@ -53,7 +53,6 @@
+>  #define THREAD_TMOUT 3
+>  #define DEFAULT_PKT_CNT (4 * 1024)
+>  #define DEFAULT_UMEM_BUFFERS (DEFAULT_PKT_CNT / 4)
+> -#define UMEM_SIZE (DEFAULT_UMEM_BUFFERS * XSK_UMEM__DEFAULT_FRAME_SIZE)
+>  #define RX_FULL_RXQSIZE 32
+>  #define UMEM_HEADROOM_TEST_SIZE 128
+>  #define XSK_UMEM__INVALID_FRAME_SIZE (XSK_UMEM__DEFAULT_FRAME_SIZE + 1)
 > --
 > 2.39.2
 >
