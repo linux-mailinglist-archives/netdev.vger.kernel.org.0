@@ -2,147 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4BB6D6A3D
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F13B96D6A59
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235898AbjDDRRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 13:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S235984AbjDDRWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 13:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235892AbjDDRRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:17:06 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3A730E3
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 10:17:04 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-54629ed836aso192856137b3.10
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 10:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680628623;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=kTP1H6pT1R6LxnC9sdVUFmPmb5TyA1Ai2Mhqa/v/wJ8=;
-        b=mHCXeuEwZwwypex1JYLLx5FlBEFAWgmsZSCojXTjwGaUQPozUcQpRwmhKVq+wMNJWm
-         UPRtpkLQFsvd9c25KMcOu7N2tz7j1k9RQpFyIEgX3q4+qXz8PXzZEUfiT6+/cmWgUt0m
-         AZ3m4IcNaD/OULIVts/50OBNObNOPeTd8Cn+L7/zuDraUMcYFvJteEQN56CdmL9J5aPX
-         zGerUA/QG8E+QrVw9e9WUgfl60JvyQsJuPtSGQTZMtap21qvayqU605GgGUFQlJhZW+3
-         M+/Q6C6SHBxDakB0mzNSCjyjWf+IlvE1BTLxQfSRKcx7hf+qRqNlRmvEDgg50aaap/ob
-         JOAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680628623;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kTP1H6pT1R6LxnC9sdVUFmPmb5TyA1Ai2Mhqa/v/wJ8=;
-        b=er8jnb/zRMeaFiWLn9qArndke5Kci0RgFMiC1SRo9f2nHWBAu6/wXDsMDn41NUD93p
-         f0eFzkZzlPk4deoKdGehzsyAewAtQl7UEKgKGK+LFen7v08aSWHs9tC+4V0lm8kiua7j
-         OQVlojJbeRmFz7MVBvO0wvW73u9Vc3UKvy/Oygp3jsNTf+RecrsfdWulWP1Bbi+iQ7m5
-         y3SR4HYW9Hc/iKyiuGx9W8DXLtF8tcWYVKodWFRgxGOjsGIFdlU48/EzrHNS4C9YTU0l
-         pplv9J6pivim75PZaA3RvbgYzwvAl4UylGyNGUSFQ4GXpUEvJp4t4HJi1zvOG1uuAiqV
-         JC3w==
-X-Gm-Message-State: AAQBX9dosCOx4YoaWosO4IWz7cJ4ZOCKt++6ArvmEtGCh4C87GziHJze
-        qL6ZnGpo5DuIwA2ucFM7mC+Qf6/DAibb3g==
-X-Google-Smtp-Source: AKy350bBCoRayxVb9jnnGZIIgdnI42aL3e8mBBEA+1IpcRuy2pZm2cV8yT0LUvRF4uU0l4QbaBUDAF+rFU3UqA==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:da02:0:b0:b75:968e:f282 with SMTP id
- n2-20020a25da02000000b00b75968ef282mr2269935ybf.11.1680628623682; Tue, 04 Apr
- 2023 10:17:03 -0700 (PDT)
-Date:   Tue,  4 Apr 2023 17:16:58 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
-Message-ID: <20230404171658.917361-1-edumazet@google.com>
-Subject: [PATCH v2 net-next] mac80211_hwsim: fix potential NULL deref in hwsim_pmsr_report_nl()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S235944AbjDDRWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:22:01 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABDA1BEA;
+        Tue,  4 Apr 2023 10:21:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5X775OsZchfjU9qrIg8JXv+X+xJPkkCLECP3XjqF/K4=; b=y+RYifJv18Z6dqfMnt2H3SLxne
+        Smlv0kvIMQ5yZdqKwL5HSuKLHaUwxu1mVhgJnB2dyOvs0AG9W1dFZUWrhSPwluZwRHbpJm42Q+SGe
+        ch3LS4iN7XRXZlH0DkQSlOjIcrFlNNgKTBoxYZtwrYKrls+pXMRrda5BzsFLCysMe4EQEBphVdCdB
+        II+oS+WjTxF+NhsUd0V5T9av7POIBE2P3cQ21qh3JgChhNZVNljPe+OvwXY2Th3kEt3pUxP7YtnbP
+        jO2N+oGGgbLJH7iKJydOsjn3IQWbFBzXyLzKqZ0ALSjazyCOPPO0ky5ae2UvM0lSM3zmBkdOd45tB
+        CkOpf3Yg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50358)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pjkLm-0004WQ-Qf; Tue, 04 Apr 2023 18:21:42 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pjkLh-0005SD-7b; Tue, 04 Apr 2023 18:21:37 +0100
+Date:   Tue, 4 Apr 2023 18:21:37 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org,
-        Simon Horman <simon.horman@corigine.com>,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jaewan Kim <jaewan@google.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, andrew@lunn.ch,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>,
+        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        hock.leong.kweh@intel.com
+Subject: Re: [RFC net 1/1] net: stmmac: skip PHY scanning when PHY already
+ attached in DT mode
+Message-ID: <ZCxcoSRSVInwC0k1@shell.armlinux.org.uk>
+References: <20230404091442.3540092-1-michael.wei.hong.sit@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230404091442.3540092-1-michael.wei.hong.sit@intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a NULL dereference caused by a missing check
-in hwsim_pmsr_report_nl(), and bisected the issue to cited commit.
+On Tue, Apr 04, 2023 at 05:14:42PM +0800, Michael Sit Wei Hong wrote:
+> If PHY is successfully attached during phylink_fwnode_phy_connect()
+> in DT mode. MAC should not need to scan for PHY again.
+> 
+> Adding a logic to check if ovr_an_inband is set before scanning for
+> a PHY, since phylink_fwnode_phy_connect() returns 0 when
+> 
+> 	phy_fwnode = fwnode_get_phy_node(fwnode);
+> 	if (IS_ERR(phy_fwnode)) {
+> 		if (pl->cfg_link_an_mode == MLO_AN_PHY)
+> 			return -ENODEV;
+> 		return 0;
+> 	}
+> 
+> Fixes: fe2cfbc96803 ("net: stmmac: check if MAC needs to attach to a PHY")
+> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index d41a5f92aee7..4b8d3d975678 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1149,7 +1149,7 @@ static int stmmac_init_phy(struct net_device *dev)
+>  	/* Some DT bindings do not set-up the PHY handle. Let's try to
+>  	 * manually parse it
+>  	 */
+> -	if (!fwnode || phy_needed || ret) {
+> +	if (!fwnode || (phy_needed && priv->phylink_config.ovr_an_inband) || ret) {
+>  		int addr = priv->plat->phy_addr;
+>  		struct phy_device *phydev;
+>  
 
-v2: test the nlattr before using nla_data() on it (Simon Horman)
+Sorry, but this just doesn't look right to me. And Gnrrrrr, I wish I'd
+spotted this stupidity during the review of phylink_expects_phy().
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 5084 Comm: syz-executor104 Not tainted 6.3.0-rc4-next-20230331-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-RIP: 0010:jhash+0x339/0x610 include/linux/jhash.h:95
-Code: 83 fd 01 0f 84 5f ff ff ff eb de 83 fd 05 74 3a e8 ac f5 71 fd 48 8d 7b 05 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 96 02 00 00
-RSP: 0018:ffffc90003abf298 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000004 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff84111ba4 RDI: 0000000000000009
-RBP: 0000000000000006 R08: 0000000000000005 R09: 000000000000000c
-R10: 0000000000000006 R11: 0000000000000000 R12: 000000004d2c27cd
-R13: 000000002bd9e6c2 R14: 000000002bd9e6c2 R15: 000000002bd9e6c2
-FS: 0000555556847300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000045ad50 CR3: 0000000078aa6000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-rht_key_hashfn include/linux/rhashtable.h:159 [inline]
-__rhashtable_lookup include/linux/rhashtable.h:604 [inline]
-rhashtable_lookup include/linux/rhashtable.h:646 [inline]
-rhashtable_lookup_fast include/linux/rhashtable.h:672 [inline]
-get_hwsim_data_ref_from_addr+0xb9/0x600 drivers/net/wireless/virtual/mac80211_hwsim.c:757
-hwsim_pmsr_report_nl+0xe7/0xd50 drivers/net/wireless/virtual/mac80211_hwsim.c:3764
-genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
-genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
-genl_rcv_msg+0x4ff/0x7e0 net/netlink/genetlink.c:1065
-netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2572
-genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
-netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
-netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
-netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
-sock_sendmsg_nosec net/socket.c:724 [inline]
-sock_sendmsg+0xde/0x190 net/socket.c:747
-____sys_sendmsg+0x71c/0x900 net/socket.c:2501
-___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
-__sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
+phy_needed will be true if phylink thinks there should be a PHY on the
+link, that being:
 
-Fixes: 2af3b2a631b1 ("mac80211_hwsim: add PMSR report support via virtio")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jaewan Kim <jaewan@google.com>
-Cc: Johannes Berg <johannes.berg@intel.com>
----
- drivers/net/wireless/virtual/mac80211_hwsim.c | 3 +++
- 1 file changed, 3 insertions(+)
+	MLO_AN_PHY mode
+	MLO_AN_INBAND mode and non-802.3z interface mode
 
-diff --git a/drivers/net/wireless/virtual/mac80211_hwsim.c b/drivers/net/wireless/virtual/mac80211_hwsim.c
-index f446d8f6e1f6e1df108db00e898fa02970162585..2211fa58fe4140177d53232f4ceafee57185d057 100644
---- a/drivers/net/wireless/virtual/mac80211_hwsim.c
-+++ b/drivers/net/wireless/virtual/mac80211_hwsim.c
-@@ -3760,6 +3760,9 @@ static int hwsim_pmsr_report_nl(struct sk_buff *msg, struct genl_info *info)
- 	int err;
- 	int rem;
- 
-+	if (!info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER])
-+		return -EINVAL;
-+
- 	src = nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
- 	data = get_hwsim_data_ref_from_addr(src);
- 	if (!data)
+If !phy_needed, then the code should not be attempting to attach a PHY,
+but calling phylink_fwnode_phy_connect() is fine as it will just return
+zero.
+
+If phy_needed is true, then phylink_fwnode_phy_connect() will check to
+see whether a PHY is in the fwnode. If we fail to find a PHY, then if
+we're in MLO_AN_PHY mode, that's an error, and we return -ENODEV. If
+there is no PHY device associated with the handle, we also return
+-ENODEV.
+
+If phy_needed is true, and phylink_fwnode_phy_connect() doesn't find
+a PHY in the fwnode, and we're in MLO_AN_INBAND mode (e.g. for SGMII)
+then we'll return zero, because we can cope without a PHY in this
+instance - it's a success. If we do find a PHY, then we will make use
+of it, and also return zero.
+
+The problem is this hacky code wants to know the difference between
+those two situations, but phylink doesn't allow you to, and I don't
+think now that phylink_expects_phy() solves that problem.
+
+I think you're better off doing this:
+
+	struct fwnode_handle *phy_fwnode;
+
+	if (!phylink_expects_phy(priv->phylink))
+		return 0;
+
+	fwnode = of_fwnode_handle(priv->plat->phylink_node);
+	if (!fwnode)
+		fwnode = dev_fwnode(priv->device);
+
+	if (fwnode)
+		phy_fwnode = fwnode_get_phy_node(fwnode);
+	else
+		phy_fwnode = NULL;
+
+	if (!phy_fwnode) {
+		... do non-DT PHY stuff ...
+		ret = phylink_connect_phy(priv->phylink, phydev);
+	} else {
+		fwnode_handle_put(phy_fwnode);
+
+		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
+	}
+
+	... ethtool wol stuff ...
+
+Doesn't that more closely reflect what you actually want this code
+to be doing, rather than messing about trying to guess it from
+phylink's return code etc?
+
 -- 
-2.40.0.348.gf938b09366-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
