@@ -2,121 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C251D6D5EAC
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77FDD6D5EC4
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:14:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbjDDLIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
+        id S234625AbjDDLOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234611AbjDDLI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:08:26 -0400
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094F23A8C;
-        Tue,  4 Apr 2023 04:06:53 -0700 (PDT)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 59BA2581F56;
-        Tue,  4 Apr 2023 07:06:52 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute6.internal (MEProxy); Tue, 04 Apr 2023 07:06:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1680606412; x=1680613612; bh=z7
-        EzKZ0L03Vqajs+ogmzIxsIatsg8LuRD8oJ+p9J0SQ=; b=GnAWMe7LYftE+EzS5W
-        WOMzwLNVzjI9xjmYSaYEiCwtAe6jPlylQa2Fd7r1D5jPNZOSUEQqhmxRnPFOgU8W
-        WC8mNfm26+rhBxaI1sYbNO8IbAG39tY2USQliLK5MBMvnth1cB/aVdCJSTL++Q0M
-        jp2GKbTRpfCbLaWyWul7GZrhK9+qLkfi87LntytmpP/XDUfOHmCetOcPa1bWz2qP
-        ryiE694F8xPZ+vshZJEMJE/xHnO7MC2tEyvDSbl6guIotbD5G19VSWoCae7UJKSR
-        lNHHMA+lGjR1WXud18FhlMTjCmNpBKQuEMPOWf1WMzqEA0YM7kb4w94yiB9H2/nl
-        IleA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:content-type:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1680606412; x=1680613612; bh=z7EzKZ0L03Vqa
-        js+ogmzIxsIatsg8LuRD8oJ+p9J0SQ=; b=J2cm9zBGE9SXJJkI9w4MbSdW+Z90K
-        ed6R7RdlRFhcHMea2g0jA+rjsbKmdhQUMALfnfjNFAf0o7OWMabxP4c/Vs0CSJpN
-        /9g0Qw1CvJm/OfZ1ld9BoV3Pt1fpbhftfmLfj+XCgm0KjJEbZfOAoTbtOzGQ/Zug
-        F/0LPJY0zxpyuN4ouYvGSLUz0HQBXfrPVq1vu4grqah9ADA0/oapLfWU0KC+eD0E
-        rlcl90w4cJuc+syN32E4Z9g9J5ICptvO/1XeivZPirxkJjR+Pf1iSsiziToIqU0V
-        BkuucE9ib7K163aCDV9ytieu4JyKOQFnXa6fUmwNHDYjdDbSr/HDw/SLQ==
-X-ME-Sender: <xms:ygQsZEnCgUPZ8JbS-8VP0OAvdijeGFmJD7fQ3AFWHL4BCnLt3_rogA>
-    <xme:ygQsZD1rDwS86pHr9alTivTRygqat2h53eXMMFp0xNNFeIjc1UQDvQctQszXcCob7
-    ls-8q4ZRVfNIRZZc6o>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeiledgfeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:ywQsZCrPhU64C5rSp1CXgBls8Hx_6__QDPdtx6NDedRHnxx7ChZFiw>
-    <xmx:ywQsZAldtFKVm1jZCPEu-uIQsatmNC7dbMd5g8ausQ8rijBjWUiJpg>
-    <xmx:ywQsZC138RABmk_OW4ckpB4mYsBiazH8XUmdAnuVd49yxjhj7tnbIg>
-    <xmx:zAQsZF_8VYUsO5M4ZN0lxPtlAquo8dT-hp6azBitrfy9Uhgr6uJ3pw>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id E507AB60092; Tue,  4 Apr 2023 07:06:50 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.9.0-alpha0-238-g746678b8b6-fm-20230329.001-g746678b8
-Mime-Version: 1.0
-Message-Id: <2a627c49-e0a3-4a7f-8c0a-37b1d3cb85dd@app.fastmail.com>
-In-Reply-To: <20230404082401.1087835-1-arnd@kernel.org>
-References: <20230404082401.1087835-1-arnd@kernel.org>
-Date:   Tue, 04 Apr 2023 13:06:30 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Arnd Bergmann" <arnd@kernel.org>,
-        "Tony Lindgren" <tony@atomide.com>
-Cc:     soc@kernel.org, "Aaro Koskinen" <aaro.koskinen@iki.fi>,
-        "Bartosz Golaszewski" <brgl@bgdev.pl>,
-        =?UTF-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
-        "Christian Lamparter" <chunkeey@googlemail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Felipe Balbi" <balbi@kernel.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Johannes Berg" <johannes@sipsolutions.net>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>, linux-wireless@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>
-Subject: Re: [PATCH v2 0/3] p54spi devicetree conversion
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S234639AbjDDLOd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:14:33 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB7C1FEA;
+        Tue,  4 Apr 2023 04:14:32 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id cf7so38212021ybb.5;
+        Tue, 04 Apr 2023 04:14:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680606872;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gVo5EF32hJ+j6zLMjucS/chjw/jsmoSQqHwPbkJqces=;
+        b=LwsfY1OtmyxDYjVpbBC59BNM9J4LMypl3khFXHuBY6BEJtuHWVF6eb2F/OPKgnEv7J
+         Fs7PmMuNKaVneD5uzcgczfMORk+rFTjGoJQYf5WGXdZI7yJ4ItoMZTwSplPFDvwkiqgx
+         A2InUYXJUwyh3pMRhwCIzGpMA9hTMDKGc26zJkwrcVsupUyt/7sfz2PT/FL6FH1Z+VHz
+         KGG2Z97W0knDhGwhVejX7yzguE0y1XYMjXcMH7cdhcbsr79czyq+9xQXV5grW21dHA+o
+         MBZRSP/41aOgP4ZMKpwvTLlofI3hdYR4x98u55XVjt33ZLqI73CsIeQ5WIQ05Yokm5IH
+         1TOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680606872;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gVo5EF32hJ+j6zLMjucS/chjw/jsmoSQqHwPbkJqces=;
+        b=ZGEUMW2hKo8XH6nATnOpH1yHiEmXWEwovl35dmP4jHOAKWtWGycxG20VtmFc9R8JCI
+         WHfOqzxqwSwL4PaCHgbomVWTxgxm9bgLvUiHEGXtQPvvGtcAuNZzRnbJo3Q2xR7Lp/KL
+         8chnKZBkZyQh/E1z0bhQYXxHamvqkdaEP4nlUIyF446Osm8cgOQLeRFHTecmkPjSQ/IT
+         L99FFduviVtsLr61FAfexPMKW9XJdnyYcEVtfOs6VQ4BFYrwM63ZVND1H5211qxgus2z
+         90kLo5nYlgF+iBYus0QfsDlMLP27cF6Jy19hPiWDzRpCqhS4HbQz/OwmZoz5Ec/+Zexe
+         Q29w==
+X-Gm-Message-State: AAQBX9cc/TTIXy5ypZS6G9XirxIuZi6xgPeqf4o93+lBiZTODO3F6ovi
+        ITUggykc2Yzb8fDN0MlLJe4lV98xjtgATyTKqJ0=
+X-Google-Smtp-Source: AKy350ajqq6A6l3G1blkn41jMC3CgA2eNIYkGbCOtvTg3xkmiJb332SKKTLe/F1mb8l+wuNsQquw2GNKsidWLkExD3A=
+X-Received: by 2002:a25:c401:0:b0:b76:ae61:b68b with SMTP id
+ u1-20020a25c401000000b00b76ae61b68bmr1379110ybf.5.1680606871742; Tue, 04 Apr
+ 2023 04:14:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20230329180502.1884307-1-kal.conley@dectris.com>
+ <20230329180502.1884307-9-kal.conley@dectris.com> <CAJ8uoz330DWzHabpqd+HaeAxBi2gr+GOTtnS9WJFWrt=6DaeWQ@mail.gmail.com>
+ <CAHApi-nfBM=i1WeZ-jtHN87AWPvURo0LygT9yYxF=cUeYthXBQ@mail.gmail.com>
+ <CAJ8uoz0SEkcXQuoqYd94GreJqpCxQuf1QVgm9=Um6Wqk=s8GBw@mail.gmail.com> <CAHApi-=ui3JofMr7y+LvuYkXCU=h7vGiKXsfuV5gog-02u-u+Q@mail.gmail.com>
+In-Reply-To: <CAHApi-=ui3JofMr7y+LvuYkXCU=h7vGiKXsfuV5gog-02u-u+Q@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 4 Apr 2023 13:14:20 +0200
+Message-ID: <CAJ8uoz0GgzzfrgS0189=zwY-zzogZq+=v-NCY7O+RuWrwe1n6w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 08/10] xsk: Support UMEM chunk_size > PAGE_SIZE
+To:     Kal Cutter Conley <kal.conley@dectris.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 4, 2023, at 10:23, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Tue, 4 Apr 2023 at 12:29, Kal Cutter Conley <kal.conley@dectris.com> wrote:
 >
-> I now revisited the earlier submission, hopefully addressing
-> all of the feedback correctly. This is still untested, but if
-> everyone is happy, it could still make it into v6.4.
+> > > > Is not the max 64K as you test against XDP_UMEM_MAX_CHUNK_SIZE in
+> > > > xdp_umem_reg()?
+> > >
+> > > The absolute max is 64K. In the case of HPAGE_SIZE < 64K, then it
+> > > would be HPAGE_SIZE.
+> >
+> > Is there such a case when HPAGE_SIZE would be less than 64K? If not,
+> > then just write 64K.
 >
-> Patch 3 touches both driver and platform parts, and can't
-> easily be split up without breaking bisectability, so I think
-> it's easiest to merge it through the soc tree, with Christian's
-> Ack.
->
-> Tony, I see you already sent a set of pull requests, let me know
-> if you want to pick up these patches for a future round (6.4
-> or 6.5), or if I should just apply them on top.
+> Yes. While most platforms have HPAGE_SIZE defined to a compile-time
+> constant >= 64K (very often 2M) there are platforms (at least ia64 and
+> powerpc) where the hugepage size is configured at boot. Specifically,
+> in the case of Itanium (ia64), the hugepage size may be configured at
+> boot to any valid page size > PAGE_SIZE (e.g. 8K). See:
+> https://elixir.bootlin.com/linux/latest/source/arch/ia64/mm/hugetlbpage.c#L159
 
-I just spotted two mistakes myself, so there will have to be a v3:
-Patch 1 is missing a changelog text, and patch 3 contains a typo
-that only now triggered in my randconfig builds.
+So for all practical purposes it is max 64K. Let us just write that then.
 
-      Arnd
+> >
+> > > > >  static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+> > > > >  {
+> > > > > +#ifdef CONFIG_HUGETLB_PAGE
+> > > >
+> > > > Let us try to get rid of most of these #ifdefs sprinkled around the
+> > > > code. How about hiding this inside xdp_umem_is_hugetlb() and get rid
+> > > > of these #ifdefs below? Since I believe it is quite uncommon not to
+> > > > have this config enabled, we could simplify things by always using the
+> > > > page_size in the pool, for example. And dito for the one in struct
+> > > > xdp_umem. What do you think?
+> > >
+> > > I used #ifdef for `page_size` in the pool for maximum performance when
+> > > huge pages are disabled. We could also not worry about optimizing this
+> > > uncommon case though since the performance impact is very small.
+> > > However, I don't find the #ifdefs excessive either.
+> >
+> > Keep them to a minimum please since there are few of them in the
+> > current code outside of some header files. And let us assume that
+> > CONFIG_HUGETLB_PAGE is the common case.
+> >
+>
+> Would you be OK if I just remove the ones from xsk_buff_pool? I think
+> the code in xdp_umem.c is quite readable and the #ifdefs are really
+> only used in xdp_umem_pin_pages.
+
+Please make an effort to remove the ones in xdp_umem.c too. The more
+ifdefs you add, the harder it will be to read.
