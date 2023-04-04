@@ -2,109 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CC806D5FB6
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BBDE6D5FBF
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:59:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234382AbjDDL6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
+        id S234512AbjDDL7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233431AbjDDL6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:58:16 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E52B4;
-        Tue,  4 Apr 2023 04:58:14 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id w9so129538213edc.3;
-        Tue, 04 Apr 2023 04:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680609493;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=2O5BT4d+Plee9uK16XwjOXySxN/SdqX/u56QBebNlEY=;
-        b=kCKuIal+F86YF4Q0qqMvmxV3OWyYbc2kq56MxP+75vnMxnXUHNCy8KXKlJ3969VpN4
-         7MitUr1ey78Zv13m56YsJOPEMQ7ehKHDB94P40+EBOowPXmNgtDrg9nZizxx0iPDFfdS
-         /123rm3pNsb1eel+Fl26bZ28xxqEFw7eh0+uplbANgcISA+ymFoHN46G9N74covDO+iv
-         bRkaCWrhMNHMAQQxS14HJkYPfrWLtchoa6FNGx3xLVyqqwa427zaqJUWApylSKybgT5L
-         ZpTpfeUpzxHfXgDEWraRsZdeyvl0yiUr6V4BNDcRYN0LmmlrAV8mrjB6odNzGZAEYd3S
-         ss6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680609493;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2O5BT4d+Plee9uK16XwjOXySxN/SdqX/u56QBebNlEY=;
-        b=ED3WKExuy41NaxlrNvglGYZ9r/Lh98NWBlCe3wcxQiumVB6asRhe/CNzLyMcp8UEmB
-         tK6eayOxrBEg4jokYPed8qYZOoRKs6DBZTsKq2PMwFJIlhPAWyCc+EGJYDfcaKMtOlo1
-         8PyHx8b/8CMPh6/gnO2soXlk+zfeB/FapW1jC+DY1dE8UhJtiX7VrgO9IdmwwbjsD4gZ
-         kbcHgg5UbEDcZHVwGQDbPw+xLYosB5jgJ+IdkO3asjdXenZ4Kq+B2hAph/bT11bF4B7s
-         mxw08/cNQ/Qrnv5jWiaw/2+aG7NJaR7HG7lU9oEnIez+v+X1zjqAY2NYEAZwmRBAWbFq
-         FlaA==
-X-Gm-Message-State: AAQBX9fC293fuJQkq36czlt3bTTWe/jGFiVziWxryTfiFkoqEDIjrUFu
-        DFiXs9U/hc2vC4G5K7USvz8=
-X-Google-Smtp-Source: AKy350bL/JyzCjxrIEYfRxqTD6B6ddRnhA0JirPlEFAGicLWj04kosnTaWdcG/YDxwZIvyVG5AwFCA==
-X-Received: by 2002:a17:906:79c3:b0:922:78e2:7680 with SMTP id m3-20020a17090679c300b0092278e27680mr2033954ejo.52.1680609493258;
-        Tue, 04 Apr 2023 04:58:13 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id xe8-20020a170907318800b00947ce2a1cb0sm5178645ejb.73.2023.04.04.04.58.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Apr 2023 04:58:13 -0700 (PDT)
-Date:   Tue, 4 Apr 2023 14:58:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v1 4/7] net: dsa: microchip:
- ksz8_r_sta_mac_table(): Avoid using error code for empty entries
-Message-ID: <20230404115810.eznhi7jck7g2loje@skbuf>
-References: <20230404101842.1382986-1-o.rempel@pengutronix.de>
- <20230404101842.1382986-1-o.rempel@pengutronix.de>
- <20230404101842.1382986-5-o.rempel@pengutronix.de>
- <20230404101842.1382986-5-o.rempel@pengutronix.de>
+        with ESMTP id S234503AbjDDL7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:59:12 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F74F35B3
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:59:10 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.187.55])
+        by xavier.telenet-ops.be with bizsmtp
+        id gbz42900P1C8whw01bz4yR; Tue, 04 Apr 2023 13:59:08 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtp (Exim 4.95)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1pjfIm-00FxwM-QC;
+        Tue, 04 Apr 2023 13:59:04 +0200
+Received: from geert by rox.of.borg with local (Exim 4.95)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1pjfJY-000xCe-KW;
+        Tue, 04 Apr 2023 13:59:04 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] can: CAN_BXCAN should depend on ARCH_STM32
+Date:   Tue,  4 Apr 2023 13:59:00 +0200
+Message-Id: <40095112efd1b2214e4223109fd9f0c6d0158a2d.1680609318.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230404101842.1382986-5-o.rempel@pengutronix.de>
- <20230404101842.1382986-5-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.4 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 12:18:39PM +0200, Oleksij Rempel wrote:
-> Prepare for the next patch by ensuring that ksz8_r_sta_mac_table() does
-> not use error codes for empty entries. This change will enable better
-> handling of read/write errors in the upcoming patch.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+The STMicroelectronics STM32 basic extended CAN Controller (bxCAN) is
+only present on STM32 SoCs.  Hence drop the "|| OF" part from its
+dependency rule, to prevent asking the user about this driver when
+configuring a kernel without STM32 SoC support.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Fixes: f00647d8127be4d3 ("can: bxcan: add support for ST bxCAN controller")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Until v3[1], BXCAN depended on "(ARCH_STM32 || COMPILE_TEST) && OF".
+v4[2] changed this from "&& OF" to "|| OF", for no apparent reason, and
+without mentioning this in the changelog.
 
-FWIW, it looks like for port_fdb_add(), you could skip the search in the
-static MAC table, as long as you just keep a reference to the last
-populated index, because the bridge won't allow, to my knowledge, adding
-the same MAC address twice (this has changed when we stopped allowing
-bridge bypass operations in commit b117e1e8a86d ("net: dsa: delete
-dsa_legacy_fdb_add and dsa_legacy_fdb_del")), and so, having space would
-mean that the last populated index is < dev->info->num_statics - 1.
+[1] https://lore.kernel.org/all/20220828133329.793324-5-dario.binacchi@amarulasolutions.com
+[2] https://lore.kernel.org/all/20220925175209.1528960-6-dario.binacchi@amarulasolutions.com
+---
+ drivers/net/can/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This guarantee and optimization possibility is different from
-port_mdb_add(), because there, you might be asked to modify an existing
-entry, and so, you still need the search to find it. But still, you
-could limit the search for the remaining 3 operations - port_fdb_del(),
-port_mdb_add(), port_mdb_del() - just from 0 to that last populated
-entry, not to dev->info->num_statics, which should still accelerate the
-operations a bit.
+diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
+index 3ceccafd701b2a31..b190007c01bec5f4 100644
+--- a/drivers/net/can/Kconfig
++++ b/drivers/net/can/Kconfig
+@@ -95,7 +95,7 @@ config CAN_AT91
+ 
+ config CAN_BXCAN
+ 	tristate "STM32 Basic Extended CAN (bxCAN) devices"
+-	depends on OF || ARCH_STM32 || COMPILE_TEST
++	depends on ARCH_STM32 || COMPILE_TEST
+ 	depends on HAS_IOMEM
+ 	select CAN_RX_OFFLOAD
+ 	help
+-- 
+2.34.1
+
