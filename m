@@ -2,70 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7146D5EF5
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB11D6D5EF9
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbjDDL2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58286 "EHLO
+        id S234896AbjDDL26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234719AbjDDL2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:28:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884581FF5
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:28:41 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pjepm-00043P-Ln; Tue, 04 Apr 2023 13:28:18 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 42D791A6300;
-        Tue,  4 Apr 2023 11:28:13 +0000 (UTC)
-Date:   Tue, 4 Apr 2023 13:28:12 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Rob Herring <robh@kernel.org>,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Christophe Roullier <christophe.roullier@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        with ESMTP id S234760AbjDDL24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:28:56 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DC32117;
+        Tue,  4 Apr 2023 04:28:54 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id t10so129028659edd.12;
+        Tue, 04 Apr 2023 04:28:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680607733;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mKcFP7PU6E3MHzGfY9S4ZrIp2Pkqm6lpQOjzruEh614=;
+        b=fRxpJsVeXRBegrrpPlb6iirOC7oKxvho5rlJh1REGpAr3/qOKkqlxiGTw9aPw97wlG
+         fW7p+15yucumMFUsB6+4ZUMntUk1XOFgzowGC2W1JlTlwe5OG2i05emMvbuIgqOEk/cc
+         96c80C74ag3uhlZBIkY/4es/JJ5F+O7MRIPhW/I3Cq7z49I0apXmuhKyv8EXRe0MaZNp
+         a/x6Hh126aaPiJQuG9wfhj59UHU3Ni+AZZjQhPZ0OTDvuAJx40DQYse/Omi51cCVEbdR
+         kzXQSAmob+fCOx3Ny3ORPRf0C8X9aj4/tWPclxNQsX/9rnahiUhbouQmtXV8cGaDii6D
+         JjDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680607733;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mKcFP7PU6E3MHzGfY9S4ZrIp2Pkqm6lpQOjzruEh614=;
+        b=ZWkASYvz41rmoySb7tox3f8m/SrxA2XJS2krObG6AWXfnRvEkB8EjeEvB3vrXJGnUB
+         VI1VCp29wx4m+pHmiqfdoGexYFXoBnXsWDGZkPP8mlH9NrPEYMUGZfIuMfAL6uTGjTZ/
+         YSceOhQTmJtM+Bytt/+j0sg4hyZZpEl2Xj4YWPDeEX53WTwT6C5cYts7joDGs8zq3K6+
+         Q4nnPG2fkg0yTjReLWenNTOVDxPAi+h8D6fhLjJ57NhtChXuQTzQ57o7554uc8EQ69z8
+         QIXmyX3rZRah5VnDwpxn79erF/gQCenkagGw7kxvwHX2ZvDayUsi2JBAtnK/pvKQgQFi
+         XTdg==
+X-Gm-Message-State: AAQBX9dY25HFyBctBiOAg3Sz8V1P+IrfWsT1uOx2DChZgJud3IYUjh7O
+        8maJ+EYkjtxfgBCHthxOmo+q1dLS2UohIg==
+X-Google-Smtp-Source: AKy350YVohIFn9mM28k1f0aEluCrJ1LyWG/0nB2Ng7An9gu4YbtFY3a4EJCON6ks9KZN7FgpWgPe6Q==
+X-Received: by 2002:a17:906:69d6:b0:947:ebd5:c798 with SMTP id g22-20020a17090669d600b00947ebd5c798mr1937589ejs.54.1680607732655;
+        Tue, 04 Apr 2023 04:28:52 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id i1-20020a170906444100b0091ec885e016sm5803140ejp.54.2023.04.04.04.28.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 04:28:52 -0700 (PDT)
+Date:   Tue, 4 Apr 2023 14:28:50 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-can@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v10 0/5] can: bxcan: add support for ST bxCAN controller
-Message-ID: <20230404-postage-handprint-efdb77646082@pengutronix.de>
-References: <20230328073328.3949796-1-dario.binacchi@amarulasolutions.com>
- <20230328084710.jnrwvydewx3atxti@pengutronix.de>
- <CABGWkvq0gOMw2J9GpLS=w+qg-3xhAst6KN9kvCuZnV9bSBJ3CA@mail.gmail.com>
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v1 1/7] net: dsa: microchip: ksz8: Separate
+ static MAC table operations for code reuse
+Message-ID: <20230404112850.xjsxiku5w23fcsof@skbuf>
+References: <20230404101842.1382986-1-o.rempel@pengutronix.de>
+ <20230404101842.1382986-1-o.rempel@pengutronix.de>
+ <20230404101842.1382986-2-o.rempel@pengutronix.de>
+ <20230404101842.1382986-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vrolgxtwhc7crda5"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CABGWkvq0gOMw2J9GpLS=w+qg-3xhAst6KN9kvCuZnV9bSBJ3CA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+In-Reply-To: <20230404101842.1382986-2-o.rempel@pengutronix.de>
+ <20230404101842.1382986-2-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,61 +83,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Apr 04, 2023 at 12:18:36PM +0200, Oleksij Rempel wrote:
+> Move static MAC table operations to separate functions in order to reuse
+> the code for add/del_fdb. This is needed to address kernel warnings
+> caused by the lack of fdb add function support in the current driver.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
 
---vrolgxtwhc7crda5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 28.03.2023 11:28:59, Dario Binacchi wrote:
-> > Applied to linux-can-next.
->=20
-> Just one last question: To test this series, as described in the cover
-> letter, I could not use the iproute2 package since the microcontroller
-> is without MMU. I then extended busybox for the ip link command. I
-> actually also added the rtnl-link-can.c application to the libmnl
-> library. So now I find myself with two applications that have been
-> useful to me for this type of use case.
->=20
-> Did I do useless work because I could use other tools?
-
-systemd-networkd also supports CAN configuration, but I this will
-probably not work on no-MMU systemd, too.
-
-Then there is:
-
-| https://git.pengutronix.de/cgit/tools/canutils
-| https://git.pengutronix.de/cgit/tools/libsocketcan
-
-that contains canconfig, but it lacks CAN-FD support.
-
-> If instead the tools for this use case are missing, what do you think
-> is better to do? Submit to their respective repos or add this
-> functionality to another project that I haven't considered ?
-
-Yes, go ahead and upstream your changes!
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---vrolgxtwhc7crda5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEDs2BvajyNKlf9TJQvlAcSiqKBOgFAmQsCckACgkQvlAcSiqK
-BOiwvQf/bknW5120duEvKB4vzq6g1FE4pHri1PUIfK32NY2ZntW/rs/zYYH5KMTC
-A3DRsT4CsHVSXNDvW7JNgHJIxIZ8kFQGiAIfOv/a7OOYXZocvfBMW9yxgRqDlese
-N9BqaRggCBDhP829laPpXYntgW6k8lTMpWI7C6ANyis9tbKJ68Ut0d7bZ4eiYGme
-+R4neMSudT1l+tzSobkBpDrXloivl9uXhme25xmFTtQeokwCaXSZ7CFDpNcTV2zw
-3wq4YYs3fnoxUbIauVk4mDGyoJTB0ZzDee5Kp8+ucH1+eukInkeHk37RerOpc4Wv
-Gl61KK/5ijUZNnIHiOJIS9C8Sv6kSQ==
-=L7qt
------END PGP SIGNATURE-----
-
---vrolgxtwhc7crda5--
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
