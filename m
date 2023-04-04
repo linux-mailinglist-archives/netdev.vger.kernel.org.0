@@ -2,203 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 341F76D5F1D
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:35:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A016D5F07
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234468AbjDDLfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S234331AbjDDLeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234989AbjDDLer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:34:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239F530D2
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:34:43 -0700 (PDT)
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1pjevx-000506-Fs
-        for netdev@vger.kernel.org; Tue, 04 Apr 2023 13:34:41 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 598131A6374
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 11:34:40 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 7DC2C1A634E;
-        Tue,  4 Apr 2023 11:34:37 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 0d9c60eb;
-        Tue, 4 Apr 2023 11:34:31 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Alexander Dahl <ada@thorsis.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 10/10] kvaser_usb: convert USB IDs to hexadecimal values
-Date:   Tue,  4 Apr 2023 13:34:29 +0200
-Message-Id: <20230404113429.1590300-11-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230404113429.1590300-1-mkl@pengutronix.de>
-References: <20230404113429.1590300-1-mkl@pengutronix.de>
+        with ESMTP id S230144AbjDDLef (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:34:35 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720912735;
+        Tue,  4 Apr 2023 04:34:34 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id cn12so129296584edb.4;
+        Tue, 04 Apr 2023 04:34:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680608073;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EiAbU3DoZ0xhdsd8tStndJGL2gzx7CIgMQ3cBHZLszc=;
+        b=VgwwYrTZN55rM09eP/8k6dMXVRKGAnYR7ZJwdDlNIHk+N59QdH4oJv5fHDc0ShWWe1
+         eylMUlrGeJoC5Mm5H/qxhpb7c7ibhfj2GLx6/cn8hDuhHTqqnBje61cMUJWs4VYiQhQx
+         qFQHxG0r+AIQler7IOZBnoQ/mugP+V8HSPYSHdQD+FE1k4z7nE0PHLN+9Hm3ljSiV/1m
+         CbfZZIbD9JcFOb5Beb8vUQxkquAErCmUzxUYQ2jAS9oJ3NsCVy2KG5xLYVk77bx3Ee/S
+         lmz4O7JV21zZHCXDrXw+BVuMMcQDKjo6+PPGe8l3j0BWf0OrLTmh6HJ8P1rkvjieHXWt
+         FGNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680608073;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EiAbU3DoZ0xhdsd8tStndJGL2gzx7CIgMQ3cBHZLszc=;
+        b=iV4A/n0O09V2WoH5WDigzrnicuZL412kFjxCGg2BWmyaEcnnRhzyikkMyGjIyq6mxG
+         IrT2POJGNpPTz7qh3dNCmrkxpb+1l87KDqRBLpJmZjBTWVZTZYAHQNPLm7rAzJLV2oHG
+         fWmi48wyuOd1LMGreYXZ98C0AH+uyHT3YYZ3pEjKTITvEgVkHqTGLXGxq0MMZ5Nxxv/l
+         upxPWwo79UO2zmMsuMIPBh/2BOjT0wziewhpprbmLx/UlGoxTbMu8K2grmcHw9XhjeHi
+         AivvhVXATdOB2DJU0/oG8raBHp2IJAi7TXntKI3MbxUpWTMdM8whQB98sb0f3hrj+qSf
+         /m8A==
+X-Gm-Message-State: AAQBX9fG4eN5ZBjRb4Q4PlIMWA+CksdykwDdKztHd2LVW5IMNn2hRcjS
+        1lUaWc8JS7CwtH79IVgMVg4=
+X-Google-Smtp-Source: AKy350ZvatmHKJXsNXLQwMjhyml3O/zSIDfC/chsOuJRvZPgavuQHw4G772r7Mu4WwTGpenE5pE1+A==
+X-Received: by 2002:a17:906:5390:b0:944:308f:b978 with SMTP id g16-20020a170906539000b00944308fb978mr2014279ejo.11.1680608072945;
+        Tue, 04 Apr 2023 04:34:32 -0700 (PDT)
+Received: from skbuf ([188.27.184.189])
+        by smtp.gmail.com with ESMTPSA id bt23-20020a170906b15700b009477a173744sm5831573ejb.38.2023.04.04.04.34.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 04:34:32 -0700 (PDT)
+Date:   Tue, 4 Apr 2023 14:34:30 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next v1 3/7] net: dsa: microchip: ksz8: Make
+ ksz8_r_sta_mac_table() static
+Message-ID: <20230404113430.jxepbl7nwrqlimdp@skbuf>
+References: <20230404101842.1382986-1-o.rempel@pengutronix.de>
+ <20230404101842.1382986-1-o.rempel@pengutronix.de>
+ <20230404101842.1382986-4-o.rempel@pengutronix.de>
+ <20230404101842.1382986-4-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-1.5 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75 autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230404101842.1382986-4-o.rempel@pengutronix.de>
+ <20230404101842.1382986-4-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+On Tue, Apr 04, 2023 at 12:18:38PM +0200, Oleksij Rempel wrote:
+> As ksz8_r_sta_mac_table() is only used within ksz8795.c, there is no need
+> to export it. Make the function static for better encapsulation.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
 
-USB IDs are usually represented in 16 bit hexadecimal values. To match
-the common representation in lsusb and for searching USB IDs in the
-internet convert the decimal values to lowercase hexadecimal.
-
-changes since v1: https://lore.kernel.org/all/20230327175344.4668-1-socketcan@hartkopp.net
-- drop the aligned block indentation (suggested by Jimmy)
-- use lowercase hex values (suggested by Alex)
-
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Acked-by: Jimmy Assarsson <extja@kvaser.com>
-Reviewed-by: Alexander Dahl <ada@thorsis.com>
-Link: https://lore.kernel.org/all/20230329090915.3127-1-socketcan@hartkopp.net
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- .../net/can/usb/kvaser_usb/kvaser_usb_core.c  | 102 +++++++++---------
- 1 file changed, 51 insertions(+), 51 deletions(-)
-
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-index d4c5356d5884..7135ec851341 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-@@ -31,63 +31,63 @@
- #include "kvaser_usb.h"
- 
- /* Kvaser USB vendor id. */
--#define KVASER_VENDOR_ID			0x0bfd
-+#define KVASER_VENDOR_ID 0x0bfd
- 
- /* Kvaser Leaf USB devices product ids */
--#define USB_LEAF_DEVEL_PRODUCT_ID		10
--#define USB_LEAF_LITE_PRODUCT_ID		11
--#define USB_LEAF_PRO_PRODUCT_ID			12
--#define USB_LEAF_SPRO_PRODUCT_ID		14
--#define USB_LEAF_PRO_LS_PRODUCT_ID		15
--#define USB_LEAF_PRO_SWC_PRODUCT_ID		16
--#define USB_LEAF_PRO_LIN_PRODUCT_ID		17
--#define USB_LEAF_SPRO_LS_PRODUCT_ID		18
--#define USB_LEAF_SPRO_SWC_PRODUCT_ID		19
--#define USB_MEMO2_DEVEL_PRODUCT_ID		22
--#define USB_MEMO2_HSHS_PRODUCT_ID		23
--#define USB_UPRO_HSHS_PRODUCT_ID		24
--#define USB_LEAF_LITE_GI_PRODUCT_ID		25
--#define USB_LEAF_PRO_OBDII_PRODUCT_ID		26
--#define USB_MEMO2_HSLS_PRODUCT_ID		27
--#define USB_LEAF_LITE_CH_PRODUCT_ID		28
--#define USB_BLACKBIRD_SPRO_PRODUCT_ID		29
--#define USB_OEM_MERCURY_PRODUCT_ID		34
--#define USB_OEM_LEAF_PRODUCT_ID			35
--#define USB_CAN_R_PRODUCT_ID			39
--#define USB_LEAF_LITE_V2_PRODUCT_ID		288
--#define USB_MINI_PCIE_HS_PRODUCT_ID		289
--#define USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID	290
--#define USB_USBCAN_LIGHT_2HS_PRODUCT_ID		291
--#define USB_MINI_PCIE_2HS_PRODUCT_ID		292
--#define USB_USBCAN_R_V2_PRODUCT_ID		294
--#define USB_LEAF_LIGHT_R_V2_PRODUCT_ID		295
--#define USB_LEAF_LIGHT_HS_V2_OEM2_PRODUCT_ID	296
-+#define USB_LEAF_DEVEL_PRODUCT_ID 0x000a
-+#define USB_LEAF_LITE_PRODUCT_ID 0x000b
-+#define USB_LEAF_PRO_PRODUCT_ID 0x000c
-+#define USB_LEAF_SPRO_PRODUCT_ID 0x000e
-+#define USB_LEAF_PRO_LS_PRODUCT_ID 0x000f
-+#define USB_LEAF_PRO_SWC_PRODUCT_ID 0x0010
-+#define USB_LEAF_PRO_LIN_PRODUCT_ID 0x0011
-+#define USB_LEAF_SPRO_LS_PRODUCT_ID 0x0012
-+#define USB_LEAF_SPRO_SWC_PRODUCT_ID 0x0013
-+#define USB_MEMO2_DEVEL_PRODUCT_ID 0x0016
-+#define USB_MEMO2_HSHS_PRODUCT_ID 0x0017
-+#define USB_UPRO_HSHS_PRODUCT_ID 0x0018
-+#define USB_LEAF_LITE_GI_PRODUCT_ID 0x0019
-+#define USB_LEAF_PRO_OBDII_PRODUCT_ID 0x001a
-+#define USB_MEMO2_HSLS_PRODUCT_ID 0x001b
-+#define USB_LEAF_LITE_CH_PRODUCT_ID 0x001c
-+#define USB_BLACKBIRD_SPRO_PRODUCT_ID 0x001d
-+#define USB_OEM_MERCURY_PRODUCT_ID 0x0022
-+#define USB_OEM_LEAF_PRODUCT_ID 0x0023
-+#define USB_CAN_R_PRODUCT_ID 0x0027
-+#define USB_LEAF_LITE_V2_PRODUCT_ID 0x0120
-+#define USB_MINI_PCIE_HS_PRODUCT_ID 0x0121
-+#define USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID 0x0122
-+#define USB_USBCAN_LIGHT_2HS_PRODUCT_ID 0x0123
-+#define USB_MINI_PCIE_2HS_PRODUCT_ID 0x0124
-+#define USB_USBCAN_R_V2_PRODUCT_ID 0x0126
-+#define USB_LEAF_LIGHT_R_V2_PRODUCT_ID 0x0127
-+#define USB_LEAF_LIGHT_HS_V2_OEM2_PRODUCT_ID 0x0128
- 
- /* Kvaser USBCan-II devices product ids */
--#define USB_USBCAN_REVB_PRODUCT_ID		2
--#define USB_VCI2_PRODUCT_ID			3
--#define USB_USBCAN2_PRODUCT_ID			4
--#define USB_MEMORATOR_PRODUCT_ID		5
-+#define USB_USBCAN_REVB_PRODUCT_ID 0x0002
-+#define USB_VCI2_PRODUCT_ID 0x0003
-+#define USB_USBCAN2_PRODUCT_ID 0x0004
-+#define USB_MEMORATOR_PRODUCT_ID 0x0005
- 
- /* Kvaser Minihydra USB devices product ids */
--#define USB_BLACKBIRD_V2_PRODUCT_ID		258
--#define USB_MEMO_PRO_5HS_PRODUCT_ID		260
--#define USB_USBCAN_PRO_5HS_PRODUCT_ID		261
--#define USB_USBCAN_LIGHT_4HS_PRODUCT_ID		262
--#define USB_LEAF_PRO_HS_V2_PRODUCT_ID		263
--#define USB_USBCAN_PRO_2HS_V2_PRODUCT_ID	264
--#define USB_MEMO_2HS_PRODUCT_ID			265
--#define USB_MEMO_PRO_2HS_V2_PRODUCT_ID		266
--#define USB_HYBRID_2CANLIN_PRODUCT_ID		267
--#define USB_ATI_USBCAN_PRO_2HS_V2_PRODUCT_ID	268
--#define USB_ATI_MEMO_PRO_2HS_V2_PRODUCT_ID	269
--#define USB_HYBRID_PRO_2CANLIN_PRODUCT_ID	270
--#define USB_U100_PRODUCT_ID			273
--#define USB_U100P_PRODUCT_ID			274
--#define USB_U100S_PRODUCT_ID			275
--#define USB_USBCAN_PRO_4HS_PRODUCT_ID		276
--#define USB_HYBRID_CANLIN_PRODUCT_ID		277
--#define USB_HYBRID_PRO_CANLIN_PRODUCT_ID	278
-+#define USB_BLACKBIRD_V2_PRODUCT_ID 0x0102
-+#define USB_MEMO_PRO_5HS_PRODUCT_ID 0x0104
-+#define USB_USBCAN_PRO_5HS_PRODUCT_ID 0x0105
-+#define USB_USBCAN_LIGHT_4HS_PRODUCT_ID 0x0106
-+#define USB_LEAF_PRO_HS_V2_PRODUCT_ID 0x0107
-+#define USB_USBCAN_PRO_2HS_V2_PRODUCT_ID 0x0108
-+#define USB_MEMO_2HS_PRODUCT_ID 0x0109
-+#define USB_MEMO_PRO_2HS_V2_PRODUCT_ID 0x010a
-+#define USB_HYBRID_2CANLIN_PRODUCT_ID 0x010b
-+#define USB_ATI_USBCAN_PRO_2HS_V2_PRODUCT_ID 0x010c
-+#define USB_ATI_MEMO_PRO_2HS_V2_PRODUCT_ID 0x010d
-+#define USB_HYBRID_PRO_2CANLIN_PRODUCT_ID 0x010e
-+#define USB_U100_PRODUCT_ID 0x0111
-+#define USB_U100P_PRODUCT_ID 0x0112
-+#define USB_U100S_PRODUCT_ID 0x0113
-+#define USB_USBCAN_PRO_4HS_PRODUCT_ID 0x0114
-+#define USB_HYBRID_CANLIN_PRODUCT_ID 0x0115
-+#define USB_HYBRID_PRO_CANLIN_PRODUCT_ID 0x0116
- 
- static const struct kvaser_usb_driver_info kvaser_usb_driver_info_hydra = {
- 	.quirks = KVASER_USB_QUIRK_HAS_HARDWARE_TIMESTAMP,
--- 
-2.39.2
-
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
