@@ -2,125 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2AFD6D5895
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 361F76D58BC
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 08:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233710AbjDDGQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 02:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
+        id S233317AbjDDG0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 02:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233742AbjDDGQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:16:06 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAFA30FB;
-        Mon,  3 Apr 2023 23:15:43 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 3346FD9g053403;
-        Tue, 4 Apr 2023 01:15:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1680588913;
-        bh=XBRjH3CxR+z0hKee/nrrgTzBzmYllKaKKk/QFqGG+9s=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=WfZVJVwY7fTOo5GS0V7QTXafJi/4ysLXHNOGFHhfDV/dDDcvRjLk7gOCBrp8YHJl7
-         0xMj4igJ7piYIgiQa/Cbwpzf1zrRtKd1q0Rs07jIRVT82dQFjbub/BwWjNsyQtTCTY
-         V/2MaoGPxOkDZzmxPEyq7si50s7zgXf7FS3MOI58=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 3346FD7I064350
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 4 Apr 2023 01:15:13 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16; Tue, 4
- Apr 2023 01:15:13 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.16 via
- Frontend Transport; Tue, 4 Apr 2023 01:15:13 -0500
-Received: from uda0492258.dhcp.ti.com (ileaxei01-snat.itg.ti.com [10.180.69.5])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 3346ExNA087499;
-        Tue, 4 Apr 2023 01:15:10 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <linux@armlinux.org.uk>, <pabeni@redhat.com>, <rogerq@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <srk@ti.com>,
-        <s-vadapalli@ti.com>
-Subject: [PATCH net-next v3 3/3] net: ethernet: ti: am65-cpsw: Enable USXGMII mode for J784S4 CPSW9G
-Date:   Tue, 4 Apr 2023 11:44:59 +0530
-Message-ID: <20230404061459.1100519-4-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20230404061459.1100519-1-s-vadapalli@ti.com>
-References: <20230404061459.1100519-1-s-vadapalli@ti.com>
+        with ESMTP id S233221AbjDDG0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 02:26:01 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C172138;
+        Mon,  3 Apr 2023 23:26:00 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id i6so37472893ybu.8;
+        Mon, 03 Apr 2023 23:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680589559;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=+H9GL64TGrcz+vOZNvr1jljQ38/CD9zQDOXsTVZAefM=;
+        b=HI3PNT/pXakw12UQF3wpfr1WWc3sTtXEAx7eWTPsOicgPgEbBbAsujm/eb0z5okUYj
+         GpAV5tvhWPNDdG/Rn3UabcLCmxPe9axmlKO++m7C4GIbErVpVZSjRY+Z8g9M7WQ6Ny0t
+         s3YS9vEyubZ4bQLFONEBtPWVN/xu20M+wRP5ITlhSn8JLdv9JdBYwuV/9YpvyJE0+gcX
+         JMh6JVMGDjq9OrrVOFT73ugvihaA1YRucSrELAUhVeR5td/pWjISxNlfzB4zv54l5s69
+         wBwgBdaXXZaY1SWdtqTKWF4A8x8elWHulKZdHW/dTnjQcdPtwyBkpvUbnMZ7ycM53xS2
+         kWZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680589559;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+H9GL64TGrcz+vOZNvr1jljQ38/CD9zQDOXsTVZAefM=;
+        b=mzacJP6mTQt4oc/z/yvR4x6JQ9i9pB1n8w9w038OgjDEpuShoLpAZDZinowyxVVwYP
+         dlTMGIVCuBLqpj0w6f0tVeyLSwPaR1LTB+jQYa1rqzro+3t7YcrIDvkh/lNtEYmVv6ne
+         98tZRsBrNdgXwpqLPqtU4rjznx9O9F9xCzHloleJbgWGzJCseDY67FPc5l+jpW8n5aYC
+         Fc84lnOHXf/Ul3iHwLd3oc8BzT5Ze213C2OAOV42qmr57qm+FqdgkXntgMAb8fx9C1iL
+         ikDXKjqjK/MhXDu+DDwYJlIEtFoJ/NoAJ/TQgMivaYUw5/+C4iSzmN5UhLY5iIt8v/OG
+         dLkw==
+X-Gm-Message-State: AAQBX9fm+42Qv9upyTH5jNGJz6MHUMdWF83vtk7BlfxNA/P11ngGoxr4
+        YVCo/WoGzQ5YIk+DgRxM57yTXQIAMluoZllLmLs=
+X-Google-Smtp-Source: AKy350YwYLFMDMHigbbaZO3ehKUrYJxvv/9XkbY5TAvGCGwG1WvwUyacsmIQfOXhMgkzJJaNRoL2kJJLdYwD3Mnsa5Y=
+X-Received: by 2002:a25:d4d0:0:b0:b3b:fb47:8534 with SMTP id
+ m199-20020a25d4d0000000b00b3bfb478534mr990192ybf.5.1680589559363; Mon, 03 Apr
+ 2023 23:25:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230403143601.32168-1-kal.conley@dectris.com>
+In-Reply-To: <20230403143601.32168-1-kal.conley@dectris.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 4 Apr 2023 08:25:48 +0200
+Message-ID: <CAJ8uoz1BKJ1_jq6Sum-OkZQTR_ftmr5Enj+Cmn4Qsi15_jOpbQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: Fix unaligned descriptor validation
+To:     Kal Conley <kal.conley@dectris.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TI's J784S4 SoC supports USXGMII mode. Add USXGMII mode to the
-extra_modes member of the J784S4 SoC data.
+On Mon, 3 Apr 2023 at 16:38, Kal Conley <kal.conley@dectris.com> wrote:
+>
+> Make sure unaligned descriptors that straddle the end of the UMEM are
+> considered invalid. Currently, descriptor validation is broken for
+> zero-copy mode which only checks descriptors at page granularity.
+> Descriptors that cross the end of the UMEM but not a page boundary may
+> be therefore incorrectly considered valid. The check needs to happen
+> before the page boundary and contiguity checks in
+> xp_desc_crosses_non_contig_pg. Do this check in
+> xp_unaligned_validate_desc instead like xp_check_unaligned already does.
 
-Configure MAC control register for supporting USXGMII mode and add
-MAC_5000FD in the "mac_capabilities" member of struct "phylink_config".
+Thanks for catching this Kal.
 
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
----
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index f1e83d49de75..cf7bef5e3e22 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1514,6 +1514,14 @@ static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned in
- 			cpsw_sl_ctl_clr(port->slave.mac_sl, CPSW_SL_CTL_EXT_EN);
- 		}
- 
-+		if (state->interface == PHY_INTERFACE_MODE_USXGMII) {
-+			cpsw_sl_ctl_set(port->slave.mac_sl,
-+					CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN);
-+		} else {
-+			cpsw_sl_ctl_clr(port->slave.mac_sl,
-+					CPSW_SL_CTL_XGIG | CPSW_SL_CTL_XGMII_EN);
-+		}
-+
- 		writel(AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
- 		       port->sgmii_base + AM65_CPSW_SGMII_CONTROL_REG);
- 	}
-@@ -2171,7 +2179,8 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
- 	/* Configuring Phylink */
- 	port->slave.phylink_config.dev = &port->ndev->dev;
- 	port->slave.phylink_config.type = PHYLINK_NETDEV;
--	port->slave.phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100 | MAC_1000FD;
-+	port->slave.phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100 |
-+						      MAC_1000FD | MAC_5000FD;
- 	port->slave.phylink_config.mac_managed_pm = true; /* MAC does PM */
- 
- 	switch (port->slave.phy_if) {
-@@ -2189,6 +2198,7 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
- 
- 	case PHY_INTERFACE_MODE_QSGMII:
- 	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_USXGMII:
- 		if (common->pdata.extra_modes & BIT(port->slave.phy_if)) {
- 			__set_bit(port->slave.phy_if,
- 				  port->slave.phylink_config.supported_interfaces);
-@@ -2814,7 +2824,7 @@ static const struct am65_cpsw_pdata j784s4_cpswxg_pdata = {
- 	.quirks = 0,
- 	.ale_dev_id = "am64-cpswxg",
- 	.fdqring_mode = K3_RINGACC_RING_MODE_MESSAGE,
--	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII),
-+	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII) | BIT(PHY_INTERFACE_MODE_USXGMII),
- };
- 
- static const struct of_device_id am65_cpsw_nuss_of_mtable[] = {
--- 
-2.25.1
-
+> Fixes: 2b43470add8c ("xsk: Introduce AF_XDP buffer allocation API")
+> Signed-off-by: Kal Conley <kal.conley@dectris.com>
+> ---
+>  include/net/xsk_buff_pool.h | 9 ++-------
+>  net/xdp/xsk_queue.h         | 1 +
+>  2 files changed, 3 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+> index 3e952e569418..d318c769b445 100644
+> --- a/include/net/xsk_buff_pool.h
+> +++ b/include/net/xsk_buff_pool.h
+> @@ -180,13 +180,8 @@ static inline bool xp_desc_crosses_non_contig_pg(struct xsk_buff_pool *pool,
+>         if (likely(!cross_pg))
+>                 return false;
+>
+> -       if (pool->dma_pages_cnt) {
+> -               return !(pool->dma_pages[addr >> PAGE_SHIFT] &
+> -                        XSK_NEXT_PG_CONTIG_MASK);
+> -       }
+> -
+> -       /* skb path */
+> -       return addr + len > pool->addrs_cnt;
+> +       return pool->dma_pages_cnt &&
+> +              !(pool->dma_pages[addr >> PAGE_SHIFT] & XSK_NEXT_PG_CONTIG_MASK);
+>  }
+>
+>  static inline u64 xp_aligned_extract_addr(struct xsk_buff_pool *pool, u64 addr)
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index bfb2a7e50c26..66c6f57c9c44 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -162,6 +162,7 @@ static inline bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
+>                 return false;
+>
+>         if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
+> +           addr + desc->len > pool->addrs_cnt ||
+>             xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
+>                 return false;
+>
+> --
+> 2.39.2
+>
