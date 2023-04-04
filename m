@@ -2,183 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29CC46D6993
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 18:55:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ECB36D69AA
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 18:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234912AbjDDQzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 12:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39322 "EHLO
+        id S235590AbjDDQ6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 12:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232180AbjDDQzR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 12:55:17 -0400
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5CF55A2
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 09:54:52 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20230404165448euoutp0249d1ba843cc8608bbc5b73c57cc7f120~SyZ1eciJ03244932449euoutp02X
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 16:54:48 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20230404165448euoutp0249d1ba843cc8608bbc5b73c57cc7f120~SyZ1eciJ03244932449euoutp02X
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1680627288;
-        bh=9iMtrK6fAZfZzrbdyofBDo6C2P9YnJ8/Q5xMXgSr0IE=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=bbNimj9zsebe7WLvAoeAcalNN/eCswdTY2cQZs2dKIZI8RHhE0roVuCyrtDvPyeyr
-         OxH7HNaIk0wOQEV40q2J7LOO/FJ48C3N0GNEaXhFvfdB7RcXL42fGJlUbzqLdgU9eu
-         +fxvakQ9HTG56+SfZ50COmR3/vi8Zd76Bvt1hKdk=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20230404165448eucas1p1080a3deead7dd60858a31b5de3e1ddcf~SyZ09kW9r0653906539eucas1p1X;
-        Tue,  4 Apr 2023 16:54:48 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 2F.02.09503.7565C246; Tue,  4
-        Apr 2023 17:54:48 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20230404165447eucas1p114076509978a487acfe8312e2e58ecca~SyZ0lHlJv0397903979eucas1p1j;
-        Tue,  4 Apr 2023 16:54:47 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20230404165447eusmtrp1c8b2a2e46e8627a0c524a720e35045ca~SyZ0kS5EI2480424804eusmtrp1h;
-        Tue,  4 Apr 2023 16:54:47 +0000 (GMT)
-X-AuditID: cbfec7f2-ea5ff7000000251f-ab-642c565720ee
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id BD.21.08862.7565C246; Tue,  4
-        Apr 2023 17:54:47 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20230404165446eusmtip1b38a853bf083a308106b4b63a94bb7d2~SyZzdMr450566905669eusmtip1L;
-        Tue,  4 Apr 2023 16:54:46 +0000 (GMT)
-Message-ID: <d4750775-5d74-a081-f7a4-11d67fdb80ea@samsung.com>
-Date:   Tue, 4 Apr 2023 18:54:45 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
-        Gecko/20100101 Thunderbird/102.9.1
-Subject: Re: [RFC net 1/1] net: stmmac: skip PHY scanning when PHY already
- attached in DT mode
-Content-Language: en-US
-To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S232313AbjDDQ6d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 12:58:33 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AD3B8;
+        Tue,  4 Apr 2023 09:58:32 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id k12so5082654qvo.13;
+        Tue, 04 Apr 2023 09:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680627511; x=1683219511;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NsG84S7OAbnWjOyHKzhM0ljkFZxh+zI+v+7k2r+dTjw=;
+        b=TxXEJvllS1G2uEJdcucUV/OdoTfbbuy6q+sunSzArW/cGw7ffjtYQhh/JEQXfBE9Iw
+         jzLJrHSSKfONnL2wYv+Z7hgJ6SpaV3D7wvQycWNxiYwJTk1j5N2jT4BO4Vyvr5SUHDsi
+         axTLPG5zQb6VET9TJsWPOcc0Adif+MF7PCFbnQwYXFSAKR5QpoaG55hDjkiBBa78MdhI
+         IzBY3xNonCUnkbSF9oMxekuSP1Si12vhSpY9esK5uGyaSdbnZa/v/qog2HE08RDPJPs/
+         ofqGgDOz3Rtng8dzyDkvldqST2IO6SPNaYRcu2gkvc+pYHzxpwn1Qz+T2AJ9hkiE6aK7
+         BfSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680627511; x=1683219511;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=NsG84S7OAbnWjOyHKzhM0ljkFZxh+zI+v+7k2r+dTjw=;
+        b=d6Y/7xmTtFwo7tn8tO+vr7oI0dzqOpdejJIyROVbwn5lhbA5u8I1n1qWYh223bfpEv
+         hGVjyZJ6AePvpyTSZpr/yawqqPKwhoI6yjJUuTM30fUVwQnomZryOTHxrBlmsa4Jhqv4
+         JpTpQPdt22IGrFVkMLtZxshKRcAeE+2ogYxxrR9TrWkhBTMrYJCtPkmC2mM2fA3VZTqT
+         sIhBSBc2P+YFEJJN3GnaVB7/w3jEV6Nr6li8RytTg81qMGoSUKNpmtlBvciQRMMD8waG
+         x0dSIS+BogQHpgXo6NosLWnpL95ejOQcGDc8vw6Q8k+9J91ud3f81BQU8sSAhKylSi/j
+         MehQ==
+X-Gm-Message-State: AAQBX9enIIqHdOAVj9VowfSW9LcHgoz4DGnhXxMKKqOnRPoJHy6J5YX7
+        MYLBsBhG75PR/zpBPtqFj4U=
+X-Google-Smtp-Source: AKy350Ys/ftAGsooASf/PYV9c6Rr7BEpf81yJlJmJfLltppTsxAFgDL6GHHPG2KWeVbU/J+Z+D+KSw==
+X-Received: by 2002:a05:6214:20c7:b0:5d8:ed66:309e with SMTP id 7-20020a05621420c700b005d8ed66309emr5366142qve.11.1680627511125;
+        Tue, 04 Apr 2023 09:58:31 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id mk23-20020a056214581700b005dd8b9345c6sm3526920qvb.94.2023.04.04.09.58.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 09:58:26 -0700 (PDT)
+Date:   Tue, 04 Apr 2023 12:58:25 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     David Howells <dhowells@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>,
-        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        hock.leong.kweh@intel.com
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20230404091442.3540092-1-michael.wei.hong.sit@intel.com>
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Message-ID: <642c5731a7cc5_337e2c208b0@willemb.c.googlers.com.notmuch>
+In-Reply-To: <2258798.1680559496@warthog.procyon.org.uk>
+References: <642ad8b66acfe_302ae1208e7@willemb.c.googlers.com.notmuch>
+ <64299af9e8861_2d2a20208e6@willemb.c.googlers.com.notmuch>
+ <20230331160914.1608208-1-dhowells@redhat.com>
+ <20230331160914.1608208-16-dhowells@redhat.com>
+ <1818504.1680515446@warthog.procyon.org.uk>
+ <2258798.1680559496@warthog.procyon.org.uk>
+Subject: Re: [PATCH v3 15/55] ip, udp: Support MSG_SPLICE_PAGES
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfVDTZRy/5/ey/VgOf0yK57AX22V3YKJcej0dizIFf/2hWb5xeAY79ouZ
-        A7xNCuHMnRCMNV4OW8F4WzgCFLGbOB0oiwWDSeJggG+AYhvgHHFEdSFZMYbFf5/v5/P9fD/f
-        53sPhQtOc0KpQ6lHWXmqWCbk8AiTba53fdy+1yQbz3oAmnv4NUA3Rqw4cp2v4aCKGzkEctse
-        cFHNdCmJrmnsGBrIqSPQaM0vJHKYCklk/HmIRM6WCg5SD7lIZNVeBchWYydQ1ZNzJKo+acZQ
-        X/d1HNn0z6E/erwA/fPoIkAny4wLKEdJoNqOUu47kHEO9eFMc8NtjHEXXeQyZt0Il9Eb0xl3
-        8Skuc/rKQ4wxnsnnMBcMJxjz5VmMmW4b5DDtbZGM+8+rC0bLLGBmjS/uWhnPE0lY2aFPWfmG
-        6ESeVFtVzTlSzs8oLLDgSuDiqUEABelNsDYvm1QDHiWg6wG0m34kfYKA/g1AT0GiX5gF0FDi
-        JZ86yhuqOH6hDsDJxpalYgbA0c5B4Ovi09FwzHwX82GCfgW253YTfj4I2stci/hZWgJb7W6u
-        D6+iE6Gqq2IR43QIvOOqxnxDg2kjCUfrGoGvwGk1Bn/qdS9O5dCRUD2l5vhwAB0L81tHltwv
-        wUtTFbjPAGktD/7w+3dLi2+DD0rvAz9eBT1dzVw/fh72nNIQfkMegPr5e5i/KAZQOXFnyREF
-        h3sfL8RRCxFh8HzLBj+9BXbYtbiPhnQgvDUV5F8iEJaYvlmi+VCVK/B3vwp1XU3/xbY7+vFi
-        INQtO4xu2QF0y56j+z9XD4gzIIRNV6Qks4rIVPazCIU4RZGemhyRlJZiBAv/uOfvrl8vg0rP
-        TIQVYBSwAkjhwmD+WnW4RMCXiI9lsvK0BHm6jFVYwWqKEIbw171lTxLQyeKj7GGWPcLKn6oY
-        FRCqxPbEZtRLVZ3X5uIT3j3uWdN8bCwm8ct7dERsrejN3ePlWyfMdwtl6rKbltBNUwZQeT1o
-        xWPXAVGMpjEDf+RUz9c5FP0nDA7jbYfscHCfI1G6N+zj+mGltkHy1aVAG+hcWSc7qLg/XF10
-        oTG6IGb/rOijPRbvThPaNT3TWvtJda4qa3+egbzyvndwzdY3NJtf/iCqxrI9Ljj783Prtmiy
-        c18//uQ9b9otoUggihXuKGq6OdCdtfnbku9XxL+9czIzKax/9fqwtuLacNLb8Zd+x8ED+R+a
-        9ZL5icrh8W0Du7OixkbWTpbzm/IMugbDxhecKum41zvyjPOLuL1nU6j+hH3OzA4hoZCKI8Nx
-        uUL8L1QAL8s2BAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMKsWRmVeSWpSXmKPExsVy+t/xu7rhYTopBr3fVCx+vpzGaHH+7iFm
-        iyfrF7FZzDnfwmLx9NgjdotF72ewWpzqOclkcaVlOYvFvUXvWC0ubOtjtdj0+BqrxeVdc9gs
-        uq49YbU4NHUvo8WxRSdZLOb9XctqMb9pJ5PFxRNnmS2OLRCz+Hb6DaPF/9dbGS2aZm4Csloa
-        WCyWHpnB7iDhcfnaRWaPLStvMnk87d/K7rFz1l12jwWbSj2eTpjM7rF4z0smj02rOtk8Ni+p
-        99i54zOTx/t9V9k8Du4z9Hj6Yy9Q4/7PjB6fN8kF8Efp2RTll5akKmTkF5fYKkUbWhjpGVpa
-        6BmZWOoZGpvHWhmZKunb2aSk5mSWpRbp2yXoZUydN5+tYDZvRV/vfuYGxidcXYycHBICJhKz
-        V85j62Lk4hASWMoo8aR1JiNEQkbi5LQGVghbWOLPtS6ooveMEmf+PmEHSfAK2Ek83HmbCcRm
-        EVCRONh2ggUiLihxcuYTMFtUIEVi14SlYDXCAgkSHcfngPUyC4hL3HoyHywuIrCFVWL/slCI
-        eA+TxNXdxSC2kICrRPudjWwgNpuAoUTX2y4wm1PATaJz912oOWYSXVu7GCFseYntb+cwT2AU
-        moXkjFlI1s1C0jILScsCRpZVjCKppcW56bnFhnrFibnFpXnpesn5uZsYgaln27Gfm3cwznv1
-        Ue8QIxMH4yFGCQ5mJRFe1S6tFCHelMTKqtSi/Pii0pzU4kOMpsCwmMgsJZqcD0x+eSXxhmYG
-        poYmZpYGppZmxkrivJ4FHYlCAumJJanZqakFqUUwfUwcnFINTAaObJMfmm6efeamUYyz+qvE
-        1OPFS/6er9fTc1/DN/XCIq3yloV6YinR9y/rBGWxprVx3Tyw/9dWO0nF4Cy+u39cBW6HiPL1
-        sW33c7nl2rNp6raCrEC+2w+i34cIemhtUE55NzEo9Rtjf/WTi/l++w+//HBLobD7sa154DyJ
-        6Z06p/PuMt/TXi9r1HXnZsT1k29Lvio8zCut+2EbuuPbgQBjsz6FD3dN5+tFs/7mjJXLuNfL
-        sd8n5di0BTr8WzYGzswtz5Q4uuXLcoXsxz07515ee+ayf9Q2eY45Hy6EOzi7+b+2cxSf1r/9
-        1RW/lJV3V8/VCr3Xfzpr4s4Ic2fWINH9KWoifarOV29dnvL5vxJLcUaioRZzUXEiABZe+xLG
-        AwAA
-X-CMS-MailID: 20230404165447eucas1p114076509978a487acfe8312e2e58ecca
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20230404165447eucas1p114076509978a487acfe8312e2e58ecca
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20230404165447eucas1p114076509978a487acfe8312e2e58ecca
-References: <20230404091442.3540092-1-michael.wei.hong.sit@intel.com>
-        <CGME20230404165447eucas1p114076509978a487acfe8312e2e58ecca@eucas1p1.samsung.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+David Howells wrote:
+> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> 
+> > The code already has to avoid allocation in the MSG_ZEROCOPY case. I
+> > added alloc_len and paged_len for that purpose.
+> > 
+> > Only the transhdrlen will be copied with getfrag due to
+> > 
+> >     copy = datalen - transhdrlen - fraggap - pagedlen
+> > 
+> > On next iteration in the loop, when remaining data fits in the skb,
+> > there are three cases. The first is skipped due to !NETIF_F_SG. The
+> > other two are either copy to page frags or zerocopy page frags.
+> > 
+> > I think your code should be able to fit in. Maybe easier if it could
+> > reuse the existing alloc_new_skb code to copy the transport header, as
+> > MSG_ZEROCOPY does, rather than adding a new __ip_splice_alloc branch
+> > that short-circuits that. Then __ip_splice_pages also does not need
+> > code to copy the initial header. But this is trickier. It's fine to
+> > leave as is.
+> > 
+> > Since your code currently does call continue before executing the rest
+> > of that branch, no need to modify any code there? Notably replacing
+> > length with initial_length, which itself is initialized to length in
+> > all cases expect for MSG_SPLICE_PAGES.
+> 
+> Okay.  How about the attached?  This seems to work.  Just setting "paged" to
+> true seems to do the right thing in __ip_append_data() when allocating /
+> setting up the skbuff, and then __ip_splice_pages() is called to add the
+> pages.
 
-On 04.04.2023 11:14, Michael Sit Wei Hong wrote:
-> If PHY is successfully attached during phylink_fwnode_phy_connect()
-> in DT mode. MAC should not need to scan for PHY again.
->
-> Adding a logic to check if ovr_an_inband is set before scanning for
-> a PHY, since phylink_fwnode_phy_connect() returns 0 when
->
-> 	phy_fwnode = fwnode_get_phy_node(fwnode);
-> 	if (IS_ERR(phy_fwnode)) {
-> 		if (pl->cfg_link_an_mode == MLO_AN_PHY)
-> 			return -ENODEV;
-> 		return 0;
-> 	}
->
-> Fixes: fe2cfbc96803 ("net: stmmac: check if MAC needs to attach to a PHY")
-> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+If this works, much preferred. Looks great to me.
 
-This fixes broken ethernet observed recently on various Amlogic Meson 
-based boards (like Khadas VIM3 or Odroid-C4). Thanks!
+As said, then __ip_splice_pages() probably no longer needs the
+preamble to copy initial header bytes.
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
+> David
 > ---
->   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index d41a5f92aee7..4b8d3d975678 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -1149,7 +1149,7 @@ static int stmmac_init_phy(struct net_device *dev)
->   	/* Some DT bindings do not set-up the PHY handle. Let's try to
->   	 * manually parse it
->   	 */
-> -	if (!fwnode || phy_needed || ret) {
-> +	if (!fwnode || (phy_needed && priv->phylink_config.ovr_an_inband) || ret) {
->   		int addr = priv->plat->phy_addr;
->   		struct phy_device *phydev;
->   
+> commit 9ac72c83407c8aef4be0c84513ec27bac9cfbcaa
+> Author: David Howells <dhowells@redhat.com>
+> Date:   Thu Mar 9 14:27:29 2023 +0000
+> 
+>     ip, udp: Support MSG_SPLICE_PAGES
+>     
+>     Make IP/UDP sendmsg() support MSG_SPLICE_PAGES.  This causes pages to be
+>     spliced from the source iterator.
+>     
+>     This allows ->sendpage() to be replaced by something that can handle
+>     multiple multipage folios in a single transaction.
+>     
+>     Signed-off-by: David Howells <dhowells@redhat.com>
+>     cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+>     cc: "David S. Miller" <davem@davemloft.net>
+>     cc: Eric Dumazet <edumazet@google.com>
+>     cc: Jakub Kicinski <kuba@kernel.org>
+>     cc: Paolo Abeni <pabeni@redhat.com>
+>     cc: Jens Axboe <axboe@kernel.dk>
+>     cc: Matthew Wilcox <willy@infradead.org>
+>     cc: netdev@vger.kernel.org
+> 
+> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+> index 6109a86a8a4b..fe2e48874191 100644
+> --- a/net/ipv4/ip_output.c
+> +++ b/net/ipv4/ip_output.c
+> @@ -956,6 +956,41 @@ csum_page(struct page *page, int offset, int copy)
+>  	return csum;
+>  }
+>  
+> +/*
+> + * Add (or copy) data pages for MSG_SPLICE_PAGES.
+> + */
+> +static int __ip_splice_pages(struct sock *sk, struct sk_buff *skb,
+> +			     void *from, int *pcopy)
+> +{
+> +	struct msghdr *msg = from;
+> +	struct page *page = NULL, **pages = &page;
+> +	ssize_t copy = *pcopy;
+> +	size_t off;
+> +	int err;
+> +
+> +	copy = iov_iter_extract_pages(&msg->msg_iter, &pages, copy, 1, 0, &off);
+> +	if (copy <= 0)
+> +		return copy ?: -EIO;
+> +
+> +	err = skb_append_pagefrags(skb, page, off, copy);
+> +	if (err < 0) {
+> +		iov_iter_revert(&msg->msg_iter, copy);
+> +		return err;
+> +	}
+> +
+> +	if (skb->ip_summed == CHECKSUM_NONE) {
+> +		__wsum csum;
+> +
+> +		csum = csum_page(page, off, copy);
+> +		skb->csum = csum_block_add(skb->csum, csum, skb->len);
+> +	}
+> +
+> +	skb_len_add(skb, copy);
+> +	refcount_add(copy, &sk->sk_wmem_alloc);
+> +	*pcopy = copy;
+> +	return 0;
+> +}
+> +
+>  static int __ip_append_data(struct sock *sk,
+>  			    struct flowi4 *fl4,
+>  			    struct sk_buff_head *queue,
+> @@ -1047,6 +1082,15 @@ static int __ip_append_data(struct sock *sk,
+>  				skb_zcopy_set(skb, uarg, &extra_uref);
+>  			}
+>  		}
+> +	} else if ((flags & MSG_SPLICE_PAGES) && length) {
+> +		if (inet->hdrincl)
+> +			return -EPERM;
+> +		if (rt->dst.dev->features & NETIF_F_SG) {
+> +			/* We need an empty buffer to attach stuff to */
+> +			paged = true;
+> +		} else {
+> +			flags &= ~MSG_SPLICE_PAGES;
+> +		}
+>  	}
+>  
+>  	cork->length += length;
+> @@ -1206,6 +1250,10 @@ static int __ip_append_data(struct sock *sk,
+>  				err = -EFAULT;
+>  				goto error;
+>  			}
+> +		} else if (flags & MSG_SPLICE_PAGES) {
+> +			err = __ip_splice_pages(sk, skb, from, &copy);
+> +			if (err < 0)
+> +				goto error;
+>  		} else if (!zc) {
+>  			int i = skb_shinfo(skb)->nr_frags;
+>  
+> 
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
 
