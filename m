@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77ADE6D70AF
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 01:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD2C6D70B4
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 01:31:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236093AbjDDX34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 19:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
+        id S236534AbjDDXba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 19:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbjDDX3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 19:29:55 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AD1171A;
-        Tue,  4 Apr 2023 16:29:54 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id eh3so136728303edb.11;
-        Tue, 04 Apr 2023 16:29:54 -0700 (PDT)
+        with ESMTP id S236497AbjDDXb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 19:31:29 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2AB171C;
+        Tue,  4 Apr 2023 16:31:28 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id y4so136841589edo.2;
+        Tue, 04 Apr 2023 16:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680650993;
+        d=gmail.com; s=20210112; t=1680651086;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lyNm5fRe9Qqf1NA929EHONgNw/nkK0iIgK/vHWE7UNk=;
-        b=hr7G0Y0TLoHW+82443tb1U4UmTX1f1J/QBUNLR4xLR0sQUkAek+0PMQTAfMLdfsCbP
-         8Rb/qS5R9VYknRXFqDeCZqqo/2U7MDQIaDnDdpY8Nuv7cUdCXM7GDwdTWyHMSqm62gah
-         6YHBMfyR5MSwR3a0bbZOti+SG7VNNZ5nW5229rEMek+r35cP9ufCdbq8kQ0D8pLOd9+g
-         yoyCYJ9Q2txkIPLAb6F6opoWfkcgCb6uSrMMzEAXoFQyc9EhvujUKtNK8kZY5rGPYSuA
-         HPiZ6SGC0BjnO4SNFcgx+gQFT4DxFXrXVYkUCXsuHF9Nf8gCMZb8H7yvrVvGYsGRsU4k
-         yYtQ==
+        bh=9yNhIi8mY0TFnAPxh5RCm+XcoQvTMOi9OM34elDPUxo=;
+        b=TitKMC54JSn+ZiL+Cnl8EompZaGDs6Xd49peTs8Me5tVO6jmi7hYc5Md6294YlKlAG
+         H80cF32L92QUVBGAK7ePfzcUeu/o8CPyBCYlqvX2v4SVLQ7B2ZB333v4OhHeyTaNtR1M
+         O+tFVVnUTZjiB9ecceIF1PG2J7cGSGuDPr2e4AGnvfn9HePk6ej8vkHm7OS3n5VxwZSE
+         ZkFoW16XogJjuIGU7j12Z9zlU9sfdEg4fAWnCkrPX8yv4ghKaYgJBWS/CuF5VvLadFQ5
+         y5SEmyx9ucbVeBL0ixmc0HaavKMwKcdAyEsxI2bLfw9MxdK2Kb2CtFmTAr/bXm34hPji
+         7rjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680650993;
+        d=1e100.net; s=20210112; t=1680651086;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lyNm5fRe9Qqf1NA929EHONgNw/nkK0iIgK/vHWE7UNk=;
-        b=OKp9/mmiyxDWBIPqaIWt0/IauWLZ1gTkS3aQLl+dgRypASmMetoUnlk+OcsFgI4p0b
-         iPlVuXCcHh/v4tGPqRzn6rS7b//sagfjR2BO2aI/e4Y+qKfdB0bO0hOe5WckvcRGUCEu
-         sCiwHq828METzTXSfrs0/kw8VdmxkFfTdwkIlRXI7CTeQju84u3SoaY89MVSW+EhRHm3
-         /lZeY71IzHsj+12wrGvDMm5kj4oGKuAu79mp5/ceM8WgqnOM+59ZSBvxiTa7Bv2s0uM9
-         dT9RfZ42gdeKkvIx5oMA8Y8+zlAE3/wPLlhGX34X+LEm1OXDq9ITRubsuuE92HhtK7CK
-         iYxQ==
-X-Gm-Message-State: AAQBX9dx+JxBTNUiHI2/mIpF3LMuCSNAYHsYa7XZBpq1Z/JyWnplvHid
-        GeQgDIVylkrXcP3p53InmuUWB8mZdvUu1L4XFm2IUiDg
-X-Google-Smtp-Source: AKy350Zysgg1QayCEws6Upa/1W3EAm4WWjRLW3O2LcNREc1vC903Bdk4aC8Z6UFK4BnCPGBSF+1XApOfAtuCsEeNXbc=
+        bh=9yNhIi8mY0TFnAPxh5RCm+XcoQvTMOi9OM34elDPUxo=;
+        b=uKcKJIL81HSWZBJEdF1Rl69ZcOrtmTcSP7H4YDHWzs5GSvcWkhQOD//wFRh5jl5EpO
+         7TP2HRN9LWiMGgp6B1YbcwCbDc1Ni9gqp76gxXXFLa7wlCGNA8r6Tdgogqn1paRK8ELB
+         J/KS/3q3hqc/Y3EJANqZUSrDCyh6DpvXYIFQ+Qn5olnA3y//2pvAgikgfggftxREQAoD
+         hHEeGyhLxNZDNaQrzU/hTKMlSKkxqIe00+tijYrISBRVe8nfdQkkaEp06W752zkdwgUW
+         8gX75gS1DHvVwfOEZ2C3qyn+KieMxpv2eJCzYmUEaCivcM9RY9pCpSSXk4Lbin06lcT4
+         gUiA==
+X-Gm-Message-State: AAQBX9dp/O0A+rmN/cl6PjZZWCEn+G0xrNJKr3rynWEwwOw8cj5iBhy3
+        lo55dprinIekAY58WgiohYtoWVmGFlt3d4UUYx4=
+X-Google-Smtp-Source: AKy350bdN/3bHb5oY0KHIZX8+Gxpp6Ts8Vl+rAwng+9sfJOrllko+jw/+/G2Eb3reaxLCuabaKn7ZuVdLfjYAJ1mylc=
 X-Received: by 2002:a17:906:25d9:b0:931:fb3c:f88d with SMTP id
- n25-20020a17090625d900b00931fb3cf88dmr627000ejb.5.1680650993177; Tue, 04 Apr
- 2023 16:29:53 -0700 (PDT)
+ n25-20020a17090625d900b00931fb3cf88dmr628644ejb.5.1680651086339; Tue, 04 Apr
+ 2023 16:31:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com> <20230404045029.82870-2-alexei.starovoitov@gmail.com>
-In-Reply-To: <20230404045029.82870-2-alexei.starovoitov@gmail.com>
+References: <20230404045029.82870-1-alexei.starovoitov@gmail.com> <20230404045029.82870-3-alexei.starovoitov@gmail.com>
+In-Reply-To: <20230404045029.82870-3-alexei.starovoitov@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 4 Apr 2023 16:29:41 -0700
-Message-ID: <CAEf4BzY8nbE70EqKXn4A9p8b_oCW1UaaifOu6xAyqbN-usLYYA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/8] bpf: Invoke btf_struct_access() callback
- only for writes.
+Date:   Tue, 4 Apr 2023 16:31:14 -0700
+Message-ID: <CAEf4Bzb30F_zJOd0s35YMLVs+LQ4k5o33YsQb_qY=KFmJiKZ0Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/8] bpf: Remove unused arguments from btf_struct_access().
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
         martin.lau@kernel.org, void@manifault.com, davemarchevsky@meta.com,
@@ -76,28 +75,25 @@ On Mon, Apr 3, 2023 at 9:50=E2=80=AFPM Alexei Starovoitov
 >
 > From: Alexei Starovoitov <ast@kernel.org>
 >
-> Remove duplicated if (atype =3D=3D BPF_READ) btf_struct_access() from
-> btf_struct_access() callback and invoke it only for writes.
-
-It would be nice to elaborate a bit why this is ok. As far as I can
-tell, it's because custom btf_struct_access() callbacks are only
-checking and overriding write accesses, delegating reads to generic
-btf_struct_access(). Is that right? If so, can you please note it down
-in the commit message?
-
-Further, given btf_struct_access *callbacks* are now write-only, while
-we still keep generic btf_struct_access for reads, should we
-distinguish callback's write-only nature by renaming it to something
-like "btf_struct_write_access"?
-
+> Remove unused arguments from btf_struct_access() callback.
 >
 > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 > ---
->  kernel/bpf/verifier.c          | 2 +-
->  net/bpf/bpf_dummy_struct_ops.c | 2 +-
->  net/core/filter.c              | 6 ------
->  net/ipv4/bpf_tcp_ca.c          | 3 ---
->  4 files changed, 2 insertions(+), 11 deletions(-)
+
+expected this change in patch #1, tbh, even wrote a comment about
+dropping enum bpf_access_type, but then guessed to check next patch.
+Anyways, I'm fine either way, but patch 1 and 2 together make for much
+less confusing change, IMO. See also my note about renaming *callback*
+to make its write access nature clear.
+
+>  include/linux/bpf.h              |  3 +--
+>  include/linux/filter.h           |  3 +--
+>  kernel/bpf/verifier.c            |  4 ++--
+>  net/bpf/bpf_dummy_struct_ops.c   | 12 +++++-------
+>  net/core/filter.c                | 13 +++++--------
+>  net/ipv4/bpf_tcp_ca.c            |  3 +--
+>  net/netfilter/nf_conntrack_bpf.c |  3 +--
+>  7 files changed, 16 insertions(+), 25 deletions(-)
 >
 
 [...]
