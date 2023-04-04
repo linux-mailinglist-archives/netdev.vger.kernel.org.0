@@ -2,325 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA78C6D65B2
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D31716D65B5
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 16:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbjDDOq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 10:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50182 "EHLO
+        id S231972AbjDDOrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 10:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbjDDOqz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:46:55 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35772F7
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 07:46:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=TZAaXRuS1LFMcxVBM+B66bRRYzWSVnFOpYPt9k8QVYQ=; b=08TZfXBHqxsehZdrjCfII9HM/t
-        n0tc+nbIt62nVgJdT1C67gZH1Bvo4w/J11H0Kys43CFeV+ulTJEASzdFI6QTN+mAQzqUHBEXfJKlk
-        mbnU570l73DcDJdtVfuoepnjWW/qGsGB/oze2uDb3YU2mF9nqBDBmfnJ56q/Rvc++5dndSFuZJRen
-        5iDkgybHwIIlz/4FUwR0GJdsViknxMjC2LSF1oERyRfHqOx9BM22gfQZ1KD7WNhuYswnbcMDxbafX
-        gjw+6M/5PLGgd/pFBPFUHrg0bGn3/3s7m9pW131K2Jt/vLVPTjOf2NQkWV3k3yXGe4DrpmUHBhAxT
-        e3W9irLQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44724)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pjhvq-0004Kn-U9; Tue, 04 Apr 2023 15:46:46 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pjhvl-0005MR-AL; Tue, 04 Apr 2023 15:46:41 +0100
-Date:   Tue, 4 Apr 2023 15:46:41 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Daniel Golle <daniel@makrotopia.org>
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexander 'lynxis' Couzens <lynxis@fe80.eu>,
-        Chukun Pan <amadeus@jmu.edu.cn>,
-        John Crispin <john@phrozen.org>
-Subject: Re: Convention regarding SGMII in-band autonegotiation
-Message-ID: <ZCw4UUAiTi1/yjUA@shell.armlinux.org.uk>
-References: <ZCtvaxY2d74XLK6F@makrotopia.org>
- <ZCvu4YpUAUSUBPRd@shell.armlinux.org.uk>
- <ZCwQePDCuvlX3wu5@makrotopia.org>
+        with ESMTP id S231964AbjDDOq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 10:46:58 -0400
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE83E42;
+        Tue,  4 Apr 2023 07:46:57 -0700 (PDT)
+Received: by mail-qv1-f53.google.com with SMTP id m16so23523978qvi.12;
+        Tue, 04 Apr 2023 07:46:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680619616; x=1683211616;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=50IlSuqIBvdmyNXD4PyZ5L4D0RtsaJ6wD6o1J+jAgKo=;
+        b=nagjYsilTLZcZ6a5N2IauoLESH3vii4U3LcW0/9ANubz3aKI8IvBufC5jGGpxOVtSv
+         TZxousBeDJl4/NAkqHeuGKNy5djkJgUhewihTaPz9K66trJfUQ1BDW+DaBAyY+kp1RSC
+         S12ED/zPCIVlvHtc9EP/2BGw6NmQNiwmq9TPTJD49SZd+qtEsbJeDme+GATK90WN9XQ/
+         gPLEQ3SZSYulfjyr0WsY1tmklhxK5XnuDCuLz359ZI8g2XpBXuTpYiS3sn9ZlJL5muI5
+         o2vSSNaLbbalklV9novFSF8qHrJ6vohHrpmryrU9oyOWuaj/0EhHSzzl5/RDUV9eMU0X
+         IFXQ==
+X-Gm-Message-State: AAQBX9d0aYKptMCArpr+eyHpg13BPY2H32TRwlYitlpygLV02XB6970E
+        WG3EcQ0wLz0EDxrKMRYhdt8=
+X-Google-Smtp-Source: AKy350Y57lkhGNKGusZTe1Ccjks7RAhfQWTFjJNaeggniN6HY1iRwt0FJlP6A1elPket790ozAS67g==
+X-Received: by 2002:ad4:5dcb:0:b0:56e:b91f:aec4 with SMTP id m11-20020ad45dcb000000b0056eb91faec4mr3578035qvh.11.1680619615815;
+        Tue, 04 Apr 2023 07:46:55 -0700 (PDT)
+Received: from maniforge ([24.1.27.177])
+        by smtp.gmail.com with ESMTPSA id mh10-20020a056214564a00b005dd8b9345d7sm3438042qvb.111.2023.04.04.07.46.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 07:46:55 -0700 (PDT)
+Date:   Tue, 4 Apr 2023 09:46:52 -0500
+From:   David Vernet <void@manifault.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@kernel.org, davemarchevsky@meta.com, tj@kernel.org,
+        memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 4/8] bpf: Teach verifier that certain helpers
+ accept NULL pointer.
+Message-ID: <20230404144652.GA3896@maniforge>
+References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
+ <20230404045029.82870-5-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZCwQePDCuvlX3wu5@makrotopia.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230404045029.82870-5-alexei.starovoitov@gmail.com>
+User-Agent: Mutt/2.2.10 (2023-03-25)
+X-Spam-Status: No, score=0.5 required=5.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 12:56:40PM +0100, Daniel Golle wrote:
-> > On Tue, Apr 04, 2023 at 01:29:31AM +0100, Daniel Golle wrote:
-> > > Hi!
-> > > 
-> > > I've been dealing with several SGMII TP PHYs, some of them with support
-> > > for 2500Base-T, by switching to 2500Base-X interface mode (or by using
-> > > rate-adaptation to 2500Base-X or proprietary HiSGMII).
-> > > 
-> > > Dealing with such PHYs in MAC-follow-PHY-rate-mode (ie. not enabling
-> > > rate-adaptation which is worth avoiding imho) I've noticed that the
-> > > current behavior of PHY and MAC drivers in the kernel is not as
-> > > consistent as I assumed it would be.
-> > 
-> > Yes, rate adaption comes with it a bunch of issues such as always
-> > having to have pause frames recognised by the MAC, or having the
-> > requirement to increase the inter-packet gap (which no MAC driver
-> > currently supports).
+On Mon, Apr 03, 2023 at 09:50:25PM -0700, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> Yeah, that matches my understanding of the story. Sadly, AQR PHYs are
-> all usually setup with rate adaption switched on, now I understand the
-> reason for that are Marvell's MAC drivers...
-
-Not just MAC drivers, but MAC hardware. It turns out that the mvpp2 in
-Armada 8040 commonly shipped with Macchiatobin just does *not* support
-flow control. You wouldn't know that from reading the documentation,
-but one of their engineers who submitted patches in the last few
-years explained that it needs firmware support (as in a blob running
-in the device) but that isn't present on earlier versions.
-
-Wonderful.
-
-So the only possibility for such mvpp2 is enlarging IPG, and there is
-a register for that. Whether that works or not is another matter.
-
-> > However, switching the interface mode *requires* us to know what the
-> > PHY is doing, so the PHY must be accessible in order for this to be
-> > even remotely possible.
+> bpf_[sk|inode|task|cgrp]_storage_[get|delete]() and bpf_get_socket_cookie() helpers
+> perform run-time check that sk|inode|task|cgrp pointer != NULL.
+> Teach verifier about this fact and allow bpf programs to pass
+> PTR_TO_BTF_ID | PTR_MAYBE_NULL into such helpers.
+> It will be used in the subsequent patch that will do
+> bpf_sk_storage_get(.., skb->sk, ...);
+> Even when 'skb' pointer is trusted the 'sk' pointer may be NULL.
 > 
-> Thank you for confirming this and spelling out the details.
-
-Well, if we don't have access to the PHY:
-
-1) we can't know what the media negotiated, so we don't know what the
-   media speed is, and thus we won't know what IPG to use. All that we
-   would know is the speed of the interface between MAC/PCS and PHY.
-
-2) we can't know what interface mode it is using if it switches its
-   interface mode according to the media.
-
-Basically, for any PHY that operates with multiple different media
-speeds, the only way it can sanely work is if we can access and
-properly drive the PHY.
-
-The one exception to that would be where the PHY does rate adaption
-using pause frames, the MAC supports pause frames, and we know that
-rate adaption is in use (so we know we need to enable RX pause
-frames at the MAC.) Even with that, not having access to the PHY, we
-have no idea what duplex it has negotiated (although pause frames
-will slow down the MAC) and we also have no idea whether pause modes
-were negotiated on the media side.
-
-Essentially, having a PHY that is unaccessible isn't particularly
-good news, and whether it works or not (which may depend on the
-media side resolution) will be entirely hit and miss. I don't
-think there is much we can do about that, other than maybe advising
-people that that's what one gets with hardware that can't be
-accessed.
-
-> > > Background:
-> > > From Russell's comments and the experiments carried out together with
-> > > Frank Wunderlich for the MediaTek SGMII PCS found in mtk_eth_soc I
-> > > understood that in general in-band autonegotiation should always be
-> > > switched off unless phylink_autoneg_inband(mode) returns true, ie.
-> > > mostly in case 'managed = "in-band-status";' is set in device tree,
-> > > which is generally the case for SFP cages or PHYs which are not
-> > > accessible via MDIO.
-> > 
-> > Not quite, the rule for consistent behaviour is:
-> > 
-> > - When operating in *SGMII modes, then:
-> >    - if in-band AN mode, SGMII in-band mode should be enabled.
-> >    - otherwise SGMII in-band mode disabled.
-> > 
-> >   Let's be clear what SGMII in-band mode is. It is *not* negotiation.
-> >   The PCS doesn't advertise anything. The PHY doesn't take action and
-> >   change what it's doing as a result of what it receives from the PCS.
-> >   It is status passing from the PHY to the PCS, and an acknowledgement
-> >   by the PCS back to the PHY. Nothing more.
-> > 
-> > - When operating in an 802.3z mode, then
-> >    - if in-band AN mode and the Autoneg bit is set, then 802.3z in-band
-> >        mode should be enabled.
-> >    - otherwise 802.3z in-band mode should be disabled.
-> > 
-> > The reason for the Autoneg bit with 802.3z, particularly 1000base-X, is
-> > that these protocols are designed as the _media_ protocol, like
-> > 1000baseT, and thus they are proper negotiation between two ends of the
-> > link. As such, the user needs to be able to turn on/off this
-> > negotiation, and the accepted way to do that is via the Autoneg bit in
-> > the advertising mask.
-> > 
-> > There are implementations where 1000base-X (and 2500base-X) is
-> > documented as requiring in-band negotiation to always be enabled,
-> > and as such they have a pcs_validate() function that rejects such a
-> > combination.
-> > 
-> > Conversely, there are implementations where 2500base-X is documented
-> > as not having in-band negotiation, and of course implementations where
-> > 1000base-X can have in-band enabled/disabled.
-> > 
-> > 2500base-X is a total mess because it was not a standard, but
-> > manufacturers decided to offer it and went off and did their own
-> > thing. Many took their implementation and just increased the clock
-> > rate to 3.125GHz from 1.25GHz, thus meaning that everything which
-> > was offered at 1.25GHz clock rate is there for the faster rate.
-> > Some document that AN isn't supported, but when you try it, it
-> > works (because it's literally just 1000base-X up-clocked.)
-> > 
-> > Just like the "AN must always be enabled when not in SGMII mode" on
-> > mvneta and mvpp2 hardware, the statement that AN isn't supported in
-> > 2500base-X in documentation is rather questionable.
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  kernel/bpf/bpf_cgrp_storage.c  | 4 ++--
+>  kernel/bpf/bpf_inode_storage.c | 4 ++--
+>  kernel/bpf/bpf_task_storage.c  | 8 ++++----
+>  net/core/bpf_sk_storage.c      | 4 ++--
+>  net/core/filter.c              | 2 +-
+>  5 files changed, 11 insertions(+), 11 deletions(-)
 > 
-> On 1000Base-X and 2500Base-X we mean auto-negotiation as in Clause 37
-> of the Ethernet standard,
+> diff --git a/kernel/bpf/bpf_cgrp_storage.c b/kernel/bpf/bpf_cgrp_storage.c
+> index d17d5b694668..d44fe8dd9732 100644
+> --- a/kernel/bpf/bpf_cgrp_storage.c
+> +++ b/kernel/bpf/bpf_cgrp_storage.c
+> @@ -224,7 +224,7 @@ const struct bpf_func_proto bpf_cgrp_storage_get_proto = {
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg1_type	= ARG_CONST_MAP_PTR,
+> -	.arg2_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg2_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id	= &bpf_cgroup_btf_id[0],
+>  	.arg3_type	= ARG_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg4_type	= ARG_ANYTHING,
+> @@ -235,6 +235,6 @@ const struct bpf_func_proto bpf_cgrp_storage_delete_proto = {
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_INTEGER,
+>  	.arg1_type	= ARG_CONST_MAP_PTR,
+> -	.arg2_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg2_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id	= &bpf_cgroup_btf_id[0],
+>  };
+> diff --git a/kernel/bpf/bpf_inode_storage.c b/kernel/bpf/bpf_inode_storage.c
+> index e17ad581b9be..a4d93df78c75 100644
+> --- a/kernel/bpf/bpf_inode_storage.c
+> +++ b/kernel/bpf/bpf_inode_storage.c
+> @@ -229,7 +229,7 @@ const struct bpf_func_proto bpf_inode_storage_get_proto = {
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg1_type	= ARG_CONST_MAP_PTR,
+> -	.arg2_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg2_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id	= &bpf_inode_storage_btf_ids[0],
+>  	.arg3_type	= ARG_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg4_type	= ARG_ANYTHING,
+> @@ -240,6 +240,6 @@ const struct bpf_func_proto bpf_inode_storage_delete_proto = {
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_INTEGER,
+>  	.arg1_type	= ARG_CONST_MAP_PTR,
+> -	.arg2_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg2_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id	= &bpf_inode_storage_btf_ids[0],
+>  };
+> diff --git a/kernel/bpf/bpf_task_storage.c b/kernel/bpf/bpf_task_storage.c
+> index d1af0c8f9ce4..adf6dfe0ba68 100644
+> --- a/kernel/bpf/bpf_task_storage.c
+> +++ b/kernel/bpf/bpf_task_storage.c
+> @@ -338,7 +338,7 @@ const struct bpf_func_proto bpf_task_storage_get_recur_proto = {
+>  	.gpl_only = false,
+>  	.ret_type = RET_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg1_type = ARG_CONST_MAP_PTR,
+> -	.arg2_type = ARG_PTR_TO_BTF_ID,
+> +	.arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
+>  	.arg3_type = ARG_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg4_type = ARG_ANYTHING,
+> @@ -349,7 +349,7 @@ const struct bpf_func_proto bpf_task_storage_get_proto = {
+>  	.gpl_only = false,
+>  	.ret_type = RET_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg1_type = ARG_CONST_MAP_PTR,
+> -	.arg2_type = ARG_PTR_TO_BTF_ID,
+> +	.arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
+>  	.arg3_type = ARG_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg4_type = ARG_ANYTHING,
+> @@ -360,7 +360,7 @@ const struct bpf_func_proto bpf_task_storage_delete_recur_proto = {
+>  	.gpl_only = false,
+>  	.ret_type = RET_INTEGER,
+>  	.arg1_type = ARG_CONST_MAP_PTR,
+> -	.arg2_type = ARG_PTR_TO_BTF_ID,
+> +	.arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
+>  };
+>  
+> @@ -369,6 +369,6 @@ const struct bpf_func_proto bpf_task_storage_delete_proto = {
+>  	.gpl_only = false,
+>  	.ret_type = RET_INTEGER,
+>  	.arg1_type = ARG_CONST_MAP_PTR,
+> -	.arg2_type = ARG_PTR_TO_BTF_ID,
+> +	.arg2_type = ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id = &btf_tracing_ids[BTF_TRACING_TYPE_TASK],
+>  };
+> diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+> index 085025c7130a..d4172534dfa8 100644
+> --- a/net/core/bpf_sk_storage.c
+> +++ b/net/core/bpf_sk_storage.c
+> @@ -412,7 +412,7 @@ const struct bpf_func_proto bpf_sk_storage_get_tracing_proto = {
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg1_type	= ARG_CONST_MAP_PTR,
+> -	.arg2_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg2_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id	= &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
+>  	.arg3_type	= ARG_PTR_TO_MAP_VALUE_OR_NULL,
+>  	.arg4_type	= ARG_ANYTHING,
+> @@ -424,7 +424,7 @@ const struct bpf_func_proto bpf_sk_storage_delete_tracing_proto = {
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_INTEGER,
+>  	.arg1_type	= ARG_CONST_MAP_PTR,
+> -	.arg2_type	= ARG_PTR_TO_BTF_ID,
+> +	.arg2_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
+>  	.arg2_btf_id	= &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
+>  	.allowed	= bpf_sk_storage_tracing_allowed,
+>  };
 
-Definitely. I do not mix up these terms. When I talk about 1000Base-X,
-I always mean the IEEE 802.3 defined protocol. When I talk about
-2500Base-X, that is slightly less clear because of its history and lack
-of standardisation, but I _personally_ think of it as 1000Base-X locked
-at 2.5x faster.
+Should we also add PTR_MAYBE_NULL to the ARG_PTR_TO_BTF_ID_SOCK_COMMON
+arg in bpf_sk_storage_get_proto and bpf_sk_storage_delete_proto?
 
-The fact that IEEE 802.3 eventually decided to give in and put
-something in the standard for 2500Base-X is welcome, but sadly was
-way too late as it had already been around for years by the time they
-did that... making their standardised version basically irrelevant in
-the real world.
-
-> as opposed to CISCO-style MAC-side or PHY-side
-> SGMII auto-negotiation in SGMII mode, right?
-
-You may notice in the emails I tend to send, I talk about Cisco SGMII,
-particularly when I think that the recipient won't understand the
-difference - there is a lot of crap in industry surrounding "SGMII"
-where "SGMII" gets used for "it's a serial gigabit MII link" and then
-they use it for 1000Base-X. It annoys me intensely that industry
-constantly dilutes these terms in a confusing way, so we end up with
-patches that talk about doing stuff with SGMII that are actually doing
-stuff with 1000Base-X.
-
-For example, recently I've seen patches that add support for a device
-that can to 10GBASE-R and 1000BASE-X... and their function for
-configuring 1000BASE-X was called something with "_sgmii_" in its name.
-
-As far as I'm concerned, there's 1000Base-X which is the 802.3 protocol
-and there is Cisco SGMII which is 1000Base-X taken by Cisco and
-modified - and one shall not use SGMII to other than to refer to the
-Cisco version, because otherwise there's way too much scope for
-confusion and misunderstanding.
-
-> > >  * drivers/net/phy/mxl-gpy.c
-> > >    This goes through great lengths to switch on inband-an when initially
-> > >    coming up in SGMII mode, then switches is off when switching to
-> > >    2500Base-X mode and after that **never switches it on again**. This
-> > >    is obviously not correct and the driver can be greatly reduced if
-> > >    dropping all that (non-)broken logic.
-> > >    Would a patch like [1] this be acceptable?
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 1f2abf0f60e6..727c5269867d 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -4998,7 +4998,7 @@ const struct bpf_func_proto bpf_get_socket_ptr_cookie_proto = {
+>  	.func		= bpf_get_socket_ptr_cookie,
+>  	.gpl_only	= false,
+>  	.ret_type	= RET_INTEGER,
+> -	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
+> +	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON | PTR_MAYBE_NULL,
+>  };
+>  
+>  BPF_CALL_1(bpf_get_socket_cookie_sock_ops, struct bpf_sock_ops_kern *, ctx)
+> -- 
+> 2.34.1
 > 
-> Did you take a look at the current implementation in mxl-gpy.c and
-> patch [1]?
-> 
-> To me the current code looks obviously wrong and cannot work when
-> switching from SGMII (with in-band-status, initialized by the
-> bootloader) to 2500Base-X and then back to SGMII (which will then
-> always be without in-band-status), so that to me look like a bug, and
-> if something like that should work, the driver will need to remember
-> the previous state of in-band-status for SGMII instead of relying on an
-> already overwritten PHY register.
-
-Why do you think it doesn't re-enable in-band AN?
-
-gpy_update_interface() does this when called at various speeds:
-
-if SPEED_2500, it clears VSPEC1_SGMII_CTRL_ANEN
-
-if SPEED_1000, SPEED_100, or SPEED_10, it sets VSPEC1_SGMII_ANEN_ANRS
-   and VSPEC1_SGMII_ANEN_ANRS is both the VSPEC1_SGMII_CTRL_ANEN and
-   VSPEC1_SGMII_CTRL_ANRS bits.
-
-So the situation you talk about, when switching to 2500base-X,
-VSPEC1_SGMII_CTRL_ANEN will be cleared, but when switching back to
-SGMII mode, VSPEC1_SGMII_CTRL_ANEN will be set again.
-
-To be honest, when I was reviewing the patch adding this support back
-in June 2021, that also got me, and I was wondering whether
-VSPEC1_SGMII_CTRL_ANEN was being set afterwards... it's just the
-macro naming makes it look like it doesn't. But VSPEC1_SGMII_ANEN_ANRS
-contains both ANEN and ANRS bits.
-
-> > The overall message in my reply is essentially one of caution - yes
-> > we can make changes to how PHYs work, but we need to audit the MAC
-> > drivers that the PHY is used with to try to cut down on unexpected
-> > regressions.
-> 
-> How do I even know which MAC driver is using which PHY driver as
-> the PHY is being probed using the PHY ID at run-time?
-
-Sadly, that is the big problem. It's not possible to go through the
-DTS files, because many don't list which PHY the board is using (as
-we rely on reading it from the hardware.) So really we don't have
-much to go on.
-
-It's rather a difficult problem to solve that has crept up on the
-effort to maintain code in this area.
-
-> In git history there are some hints regarding this, but there are
-> probably a lot of "hidden" users of a PHY driver which we don't
-> even know about simply because the fact a certain PHY driver is
-> going to be used isn't documented anywhere.
-
-Quite.
-
-> I'm afraid we will need some kind of feature flag to indicate that a
-> MAC driver is known to behave according to convention with regards to
-> SGMII in-band-status being switched off and only in that case have the
-> PHY driver do the same, and otherwhise stick with the existing
-> codepaths and potentially unknown hardware-default behavior
-> (ie. another mess like the pre_march2020 situation...)
-
-Yes. Thankfully, it's something that, provided the PCS implementations
-are all the same, at least phylink users should be consistent and we
-don't need another flag in pl->config to indicate anything. We just
-tell phylib that we're phylink and be done with it.
-
-For everything else, I think we just have to assume "let the PHY
-driver do what it does today" as the safest course of action.
-
-As for the pre_march2020 situation, we're down to just two drivers
-that require that now:
-
-1) mtk_eth_soc for its RGMII mode (which, honestly, I'm prepared to
-   break at this point, because I do not believe there are *any* users
-   out there - not only have my pleas for testers for that had no
-   response, I believe the code in mk_eth_soc to be broken.)
-
-   I am considering removing RGMII support there for implementations
-   which have MTK_GMAC1_TRGMII but _not_ MTK_TRGMII_MT7621_CLK -
-   basically the path that calls mtk_gmac0_rgmii_adjust(). I doubt
-   anyone will complain because no one seems to be using it (or
-   they are and they're ignoring my pleas for testers - in which
-   case, being three years on, they honestly get what's coming, that
-   being a regression or not.)
-
-2) mv88e6xxx DSA support, which needs to be converted to phylink_pcs
-   as previously stated.
-
-I never thought it would take 3+ years to get drivers converted, but
-sadly this shows how glacially slow progress can be in mainline, and
-the more users phylink gets, the more of a problem this is likely to
-become unless we have really good interfaces into code making use of
-it.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
