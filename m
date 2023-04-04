@@ -2,266 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 471FC6D5F54
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC736D5F64
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 13:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234673AbjDDLnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 07:43:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
+        id S234859AbjDDLpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 07:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234648AbjDDLnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:43:16 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CF62D43
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:43:15 -0700 (PDT)
+        with ESMTP id S234434AbjDDLpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 07:45:06 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B084FFF
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 04:45:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680608595; x=1712144595;
+  t=1680608701; x=1712144701;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=moI6W0ZOpYtmuohjfDBsAypjArJVlOPzxStxyfVHOW8=;
-  b=hyo9YLpmgPNtjhxt+IOZB8kAVvHyR9Bci6pAy1KpyU/Pzsn9PTmq/eZ7
-   yKYm1Fd30+meBdPy1+YScj2lgIcG1ypt42HTJ3mT3u3bm2yXFt735rEef
-   u3VKsRiFCa9gnrpg5Q81j0U5SCNAI2QJafgpPvmtuPuTEZMvZIrwf6Yep
-   dmUFXKJo78UCPVxASCcbmswcbl+G7co2c7ihqidZiLTwExKR2sNpUXlJ0
-   aibwY05E7kP4FpLanBfpl9GMUfP1NvwWEK/+Akzm5Sd2l5Uqxxc3dYJPL
-   qGxbfw7GRif6XM/hQN9qWsEMN0YI/gwmKUcJw/JwoYy6KqWHromVhJS80
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="330743769"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=vm1lwowvPFkAxTBEwsrasNh7c7SDr0vvVpU7N24XPVk=;
+  b=Re/O6sTWs6RAfwiEHitfwKMM/a0jvxMLP5Ad1MgDpjXNqGIOOk8EF1aG
+   U9onWFnMJcJTCE/vbTpWPEF2aXrJSvBSa2RDec0a2AE2HumPyCobAqwMm
+   SHatNH+Ie1nlTfGqgb0sSKJX8ojFFBfmG6uJUNj2iBSLeJPuM99ltv76B
+   xVVqR+tkeIHoc26qBzTaiL64AkSAlIAnNDkNg6CEN95o9JkhVqMDNO+IZ
+   pM9/XXLOnc3OFi9HWbmUJRtPQ9x5AL/uWEEpq972tyXuDRc0gNQIBJQgE
+   Ru3wPbUsth3L32E2XtOckHDmOD3rdxYNs+vJWkY1QXft39uWj/z8kskyN
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="339645422"
 X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="330743769"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:43:14 -0700
+   d="scan'208";a="339645422"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:45:01 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="810205662"
+X-IronPort-AV: E=McAfee;i="6600,9927,10669"; a="663567401"
 X-IronPort-AV: E=Sophos;i="5.98,317,1673942400"; 
-   d="scan'208";a="810205662"
+   d="scan'208";a="663567401"
 Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:43:13 -0700
-Date:   Tue, 4 Apr 2023 13:43:10 +0200
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 04:44:59 -0700
+Date:   Tue, 4 Apr 2023 13:44:56 +0200
 From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 To:     Alexander Lobakin <aleksander.lobakin@intel.com>
 Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         Simon Horman <simon.horman@corigine.com>
-Subject: Re: [Intel-wired-lan] [PATCH net-next v2 3/4] ice: allow matching on
- meta data
-Message-ID: <ZCwNThCzNMpqtNpN@localhost.localdomain>
+Subject: Re: [Intel-wired-lan] [PATCH net-next v2 4/4] ice: use src VSI
+ instead of src MAC in slow-path
+Message-ID: <ZCwNuAOy7Okk66C0@localhost.localdomain>
 References: <20230404072833.3676891-1-michal.swiatkowski@linux.intel.com>
- <20230404072833.3676891-4-michal.swiatkowski@linux.intel.com>
- <2360ed18-d896-4720-89fc-e12e9b155943@intel.com>
+ <20230404072833.3676891-5-michal.swiatkowski@linux.intel.com>
+ <43a33d1a-3b04-86a1-b538-d906b517b7d0@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <2360ed18-d896-4720-89fc-e12e9b155943@intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <43a33d1a-3b04-86a1-b538-d906b517b7d0@intel.com>
 X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 12:22:38PM +0200, Alexander Lobakin wrote:
+On Tue, Apr 04, 2023 at 12:30:42PM +0200, Alexander Lobakin wrote:
 > From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> Date: Tue,  4 Apr 2023 09:28:32 +0200
+> Date: Tue,  4 Apr 2023 09:28:33 +0200
 > 
-> > Add meta data matching criteria in the same place as protocol matching
-> > criteria. There is no need to add meta data as special words after
-> > parsing all lookups. Trade meta data in the same why as other lookups.
-> 
-> [...]
-> 
-> > --- a/drivers/net/ethernet/intel/ice/ice_switch.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-> > @@ -4573,6 +4573,15 @@ static const struct ice_prot_ext_tbl_entry ice_prot_ext[ICE_PROTOCOL_LAST] = {
-> >  	{ ICE_L2TPV3,		{ 0, 2, 4, 6, 8, 10 } },
-> >  	{ ICE_VLAN_EX,          { 2, 0 } },
-> >  	{ ICE_VLAN_IN,          { 2, 0 } },
-> > +	{ ICE_HW_METADATA,	{ ICE_SOURCE_PORT_MDID_OFFSET,
-> > +				  ICE_PTYPE_MDID_OFFSET,
-> > +				  ICE_PACKET_LENGTH_MDID_OFFSET,
-> > +				  ICE_SOURCE_VSI_MDID_OFFSET,
-> > +				  ICE_PKT_VLAN_MDID_OFFSET,
-> > +				  ICE_PKT_TUNNEL_MDID_OFFSET,
-> > +				  ICE_PKT_TCP_MDID_OFFSET,
-> > +				  ICE_PKT_ERROR_MDID_OFFSET,
-> > +				}},
-> 
-> I don't think this is proper indenting. I believe it should like this:
-> 
-> 	/* This line is unchanged except the opening brace at the end */
-> 	{ ICE_VLAN_IN,          { 2, 0 } }, {
-> 		ICE_HW_METADATA, {
-> 			ICE_SOURCE_PORT_MDID_OFFSET,
-> 			ICE_PTYPE_MDID_OFFSET,
-> 			[...]
-> 		/* Don't forget commas after last elements */
-> 		},
-> 	},
-> 
-> or
-> 
-> 	{
-> 		ICE_HW_METADATA,
-> 		{
-> 			ICE_SOURCE_PORT_MDID_OFFSET,
-> 			ICE_PTYPE_MDID_OFFSET,
-> 			[...]
-> 		},
-> 	},
-> 
-> (but I'd prefer the first one)
-> 
-> Also, I think anonymous initializers are now discouraged in favour of
-> designated, at least randstruct sometimes complains about that. Could
-> we start always specifying field names? You could define a macro for
-> this particular struct to not bloat the code.
-> 
-> >  };
-
-Thanks, will fix it in new version.
-
-> >  
-> >  static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
-> > @@ -4597,6 +4606,7 @@ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
-> >  	{ ICE_L2TPV3,		ICE_L2TPV3_HW },
-> >  	{ ICE_VLAN_EX,          ICE_VLAN_OF_HW },
-> >  	{ ICE_VLAN_IN,          ICE_VLAN_OL_HW },
-> > +	{ ICE_HW_METADATA,      ICE_META_DATA_ID_HW},
-> 
-> Please replace spaces with tabs (as it's done for ICE_L2TPV3_HW).
-> Also missing space before the last brace.
-> 
-> >  };
-
-Sure
-
-> >  
-> >  /**
+> > The use of a source  MAC to direct packets from the VF to the
+> > corresponding port representor is only ok if there is only one
+> > MAC on a VF. To support this functionality when the number
+> > of MACs on a VF is greater, it is necessary to match a source
+> > VSI instead of a source MAC.
 > 
 > [...]
 > 
-> > @@ -5726,6 +5663,10 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
-> >  		 * was already checked when search for the dummy packet
-> >  		 */
-> >  		type = lkups[i].type;
-> > +		/* metadata isn't lockated in packet */
+> > @@ -32,11 +31,9 @@
+> >  	if·(!list)
+> >  		return·-ENOMEM;
+> >
+> > -	list[0].type·=·ICE_MAC_OFOS;
+> > -	ether_addr_copy(list[0].h_u.eth_hdr.src_addr,·mac);
+> > -	eth_broadcast_addr(list[0].m_u.eth_hdr.src_addr);
+> > +	ice_rule_add_src_vsi_metadata(&list[0]);
 > 
-> ("located", but I'd say "metadata isn't present in the packet")
->
-
-Right :)
-
-> > +		if (type == ICE_HW_METADATA)
-> > +			continue;
-> > +
-> >  		for (j = 0; offsets[j].type != ICE_PROTOCOL_LAST; j++) {
-> >  			if (type == offsets[j].type) {
-> >  				offset = offsets[j].offset;
-> > @@ -5861,16 +5802,21 @@ ice_fill_adv_packet_tun(struct ice_hw *hw, enum ice_sw_tunnel_type tun_type,
-> >  
-> >  /**
-> >   * ice_fill_adv_packet_vlan - fill dummy packet with VLAN tag type
-> > + * @hw: pointer to hw structure
-> >   * @vlan_type: VLAN tag type
-> >   * @pkt: dummy packet to fill in
-> >   * @offsets: offset info for the dummy packet
-> >   */
-> >  static int
-> > -ice_fill_adv_packet_vlan(u16 vlan_type, u8 *pkt,
-> > +ice_fill_adv_packet_vlan(struct ice_hw *hw, u16 vlan_type, u8 *pkt,
-> >  			 const struct ice_dummy_pkt_offsets *offsets)
-> >  {
-> >  	u16 i;
-> >  
-> > +	/* Check if there is something to do */
-> > +	if (vlan_type == 0 || !ice_is_dvm_ena(hw))
+> &list[0] == list.
 > 
-> `!vlan_type` is preferred over `== 0`.
->
 
 Will do
 
-> > +		return 0;
-> > +
-> >  	/* Find VLAN header and insert VLAN TPID */
-> >  	for (i = 0; offsets[i].type != ICE_PROTOCOL_LAST; i++) {
-> >  		if (offsets[i].type == ICE_VLAN_OFOS ||
-> > @@ -5889,6 +5835,15 @@ ice_fill_adv_packet_vlan(u16 vlan_type, u8 *pkt,
-> >  	return -EIO;
-> >  }
-> >  
-> > +static bool ice_is_rule_info_the_same(struct ice_adv_rule_info *first,
-> 
-> Doesn't sound natural. "ice_rules_equal"?
->
-
-Sound better, thanks
-
-> > +				      struct ice_adv_rule_info *second)
-> 
-> The function is read-only, `const` for both arguments.
->
-
-Good point, will do
-
-> > +{
-> > +	return first->sw_act.flag == second->sw_act.flag &&
-> > +	       first->tun_type == second->tun_type &&
-> > +	       first->vlan_type == second->vlan_type &&
-> > +	       first->src_vsi == second->src_vsi;
-> > +}
+> > -	rule_info.sw_act.flag·|=·ICE_FLTR_TX;
+> > +	rule_info.sw_act.flag·=·ICE_FLTR_TX;
+> >  	rule_info.sw_act.vsi_handle·=·ctrl_vsi->idx;
 > 
 > [...]
 > 
-> > @@ -6121,7 +6088,12 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
-> >  	if (rinfo->sw_act.fltr_act == ICE_FWD_TO_VSI)
-> >  		rinfo->sw_act.fwd_id.hw_vsi_id =
-> >  			ice_get_hw_vsi_num(hw, vsi_handle);
-> > -	rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
-> > +
-> > +	if (rinfo->src_vsi)
-> > +		rinfo->sw_act.src =
-> > +			ice_get_hw_vsi_num(hw, rinfo->src_vsi);
+> > @@ -269,10 +235,18 @@ static int ice_eswitch_setup_reprs(struct ice_pf *pf)
+> >  			goto err;
+> >  		}
+> >  
+> > +		if (ice_eswitch_add_vf_sp_rule(pf, vf)) {
+> > +			ice_fltr_add_mac_and_broadcast(vsi,
+> > +						       vf->hw_lan_addr,
 > 
-> This fits into one line in my editor :D
+> Fits into the previous line :p
 >
 
-In my too :D
+Yeah, will move it.
 
-> > +	else
-> > +		rinfo->sw_act.src = ice_get_hw_vsi_num(hw, vsi_handle);
-> >  
-> >  	status = ice_add_adv_recipe(hw, lkups, lkups_cnt, rinfo, &rid);
-> >  	if (status)
+> > +						       ICE_FWD_TO_VSI);
+> > +			goto err;
+> > +		}
+> > +
 > 
 > [...]
 > 
-> > --- a/drivers/net/ethernet/intel/ice/ice_switch.h
-> > +++ b/drivers/net/ethernet/intel/ice/ice_switch.h
-> > @@ -186,11 +186,13 @@ struct ice_adv_rule_flags_info {
-> >  };
-> >  
-> >  struct ice_adv_rule_info {
-> > +	/* Store metadata values in rule info */
-> >  	enum ice_sw_tunnel_type tun_type;
-> > +	u16 vlan_type;
-> > +	u16 src_vsi;
-> >  	struct ice_sw_act_ctrl sw_act;
-> >  	u32 priority;
-> >  	u16 fltr_rule_id;
-> > -	u16 vlan_type;
-> >  	struct ice_adv_rule_flags_info flags_info;
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
+> > index ed0ab8177c61..664e2f45e249 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
+> > +++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
+> > @@ -256,7 +256,9 @@ struct ice_nvgre_hdr {
+> >   * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> >   *
+> >   * Source VSI = Source VSI of packet loopbacked in switch (for egress) (10b).
+> > - *
+> > + */
+> > +#define ICE_MDID_SOURCE_VSI_MASK 0x3ff
 > 
-> Please check holes within the structure. I see at least one in between
-> `fltr_rule_id` and `flags_info`. Some fields can definitely be moved around.
+> GENMASK()?
+>
+
+Sorry, it should be there (Simon pointed it), but I forgot about
+amending :( . Thanks for catching it.
+
+> > +/*
 > 
+> A newline before this line maybe to improve readability a bit?
+>
+
+Will add
+
+> >   * MDID 20
+> >   * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> >   * |A|B|C|D|E|F|R|R|G|H|I|J|K|L|M|N|
+> 
+> [...]
+> 
+> > --- a/drivers/net/ethernet/intel/ice/ice_repr.h
+> > +++ b/drivers/net/ethernet/intel/ice/ice_repr.h
+> > @@ -13,9 +13,8 @@ struct ice_repr {
+> >  	struct net_device *netdev;
+> >  	struct metadata_dst *dst;
+> >  #ifdef CONFIG_ICE_SWITCHDEV
+> > -	/* info about slow path MAC rule  */
+> > -	struct ice_rule_query_data *mac_rule;
+> > -	u8 rule_added;
+> > +	/* info about slow path rule  */
+> 
+> Two spaces after 'rule' here :s
+>
+
+Will fix
+
+> > +	struct ice_rule_query_data sp_rule;
+> >  #endif
 > >  };
-
-You are right, will fix in new version.
-
-> >  
+> [...]
+> 
 > Thanks,
 > Olek
+
+Thanks for the review
+Michal
