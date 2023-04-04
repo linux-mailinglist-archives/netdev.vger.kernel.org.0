@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCDD16D63C4
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 15:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7E36D6A97
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235419AbjDDNsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 09:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37880 "EHLO
+        id S235243AbjDDRag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 13:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235385AbjDDNsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 09:48:16 -0400
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706784C28
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 06:48:08 -0700 (PDT)
-Received: by mail-qv1-xf49.google.com with SMTP id g14-20020ad457ae000000b005aab630eb8eso14709910qvx.13
-        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 06:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680616087;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Cai39CQoW75/9psdxErWYiv2dgQOsoRMqIABinZedq8=;
-        b=AsdoMFRWrcsccMVVboAU49FbZ09i4GHJVs9fBhEA8UqAXUlP6n1x9s9oQr1drPvDBa
-         AoeBwxCpURL5/5qren0f/ZcK/JvoCdMRC1F6IewCxU36RrZofogvnR3bdfEDkqVCh+nu
-         7bXwDFv2o9TrYM4mCMAzKvXQBkLB93A45EJoGovjvJuI37D/BF2TLXJ9FCdrCzHwQWH0
-         ujUV9Jm4UeS+XVmfp7WBz1UyuJ8eBfMVaSLXM/T+SxUv1vaRmenn9Q3bHrjbnMfy4Lrt
-         GfW0YxGhfMAvvNQ7GN75KLAMVhOF2D7wAaK3+yt5mJqMXAxnb55KGNyMZ03GCh1njr3x
-         2Gjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680616087;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Cai39CQoW75/9psdxErWYiv2dgQOsoRMqIABinZedq8=;
-        b=oJPYNwwauWXLUpFoL/wEOht7ZZ791WxwaNwNoZnxnBQY5YHBYFS1eaFoh/FypbIIsy
-         cLImEAeNDIf/1xnGctVV/YKrJuiCSH1BT1v/823yloBUA2n9LHmXjEvdaiDqb1KIjhm9
-         fSLxVEoBY7motPevvHks/kZzAH/p/LOwZ/RfHidnqBBDn4AYgVe2Lhjf6GpM0NfHOtuD
-         NxPe4FhPTQQD4wA/ZgrZLmqBn8JkanefTWgz7eGGrQW9JTBOtrp71pYLU3iCTx4z03eV
-         SXAuAA88IT0jnCrcT0G8OEg5cN0aE4UBZ27yczOUUkZyIMTQZBHvyx+Kr3d2fch1ZMn6
-         UM9w==
-X-Gm-Message-State: AAQBX9fnPLmvhiNKkTW9Mh046YI79P+ZxphBBm5NSXtIH8JxDgwvTZFi
-        v0GzzRE/t1io/738OxdkEzcUPTzxObQv+A==
-X-Google-Smtp-Source: AKy350ZMZngXV8aDPdmoeQ9Tb/VI/fqz3mGD56GCZTpWYTxR1dZS+soIifu/48TDzHydv5CgjF9uH0FGsDZyJA==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a05:6214:17c8:b0:56c:224c:f64b with SMTP
- id cu8-20020a05621417c800b0056c224cf64bmr471883qvb.6.1680616087568; Tue, 04
- Apr 2023 06:48:07 -0700 (PDT)
-Date:   Tue,  4 Apr 2023 13:48:03 +0000
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.40.0.348.gf938b09366-goog
-Message-ID: <20230404134803.889673-1-edumazet@google.com>
-Subject: [PATCH net] mac80211_hwsim: fix potential NULL deref in hwsim_pmsr_report_nl()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S236638AbjDDRaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:30:19 -0400
+X-Greylist: delayed 8451 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 04 Apr 2023 10:28:52 PDT
+Received: from 1.mo550.mail-out.ovh.net (1.mo550.mail-out.ovh.net [178.32.127.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA46576A2
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 10:28:52 -0700 (PDT)
+Received: from director2.ghost.mail-out.ovh.net (unknown [10.108.16.216])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id C858025618
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 13:52:22 +0000 (UTC)
+Received: from ghost-submission-6684bf9d7b-w8j8r (unknown [10.108.20.236])
+        by director2.ghost.mail-out.ovh.net (Postfix) with ESMTPS id 8B5A01FE99;
+        Tue,  4 Apr 2023 13:52:20 +0000 (UTC)
+Received: from milecki.pl ([37.59.142.106])
+        by ghost-submission-6684bf9d7b-w8j8r with ESMTPSA
+        id i9rwFZQrLGQnBjoAD5RYWQ
+        (envelope-from <rafal@milecki.pl>); Tue, 04 Apr 2023 13:52:20 +0000
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006b254dd21-eb0e-4ea1-9abe-a29ccb002460,
+                    DB032E9DBE4651C075F5A290BD3CA612568BFB46) smtp.auth=rafal@milecki.pl
+X-OVh-ClientIp: 31.11.218.106
+Message-ID: <002c1f96-b82f-6be7-2530-68c5ae1d962d@milecki.pl>
+Date:   Tue, 4 Apr 2023 15:52:19 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH net] bgmac: fix *initial* chip reset to support BCM5358
+To:     =?UTF-8?Q?Ricardo_Ca=c3=b1uelo?= <ricardo.canuelo@collabora.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        eric.dumazet@gmail.com, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jaewan Kim <jaewan@google.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jon Mason <jon.mason@broadcom.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, Jon Mason <jdmason@kudzu.us>
+References: <20230227091156.19509-1-zajec5@gmail.com>
+ <20230404134613.wtikjp6v63isofoc@rcn-XPS-13-9305>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+In-Reply-To: <20230404134613.wtikjp6v63isofoc@rcn-XPS-13-9305>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 3140697793314597755
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvhedrvdeiledgieelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpeftrghfrghlucfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeeuleetudfgkeevfffggeffveevleeutdekkeejueekveevtefhhfegveeggefhudenucfkphepuddvjedrtddrtddruddpfedurdduuddrvddukedruddtiedpfeejrdehledrudegvddruddtieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomhepoehrrghfrghlsehmihhlvggtkhhirdhplheqpdhnsggprhgtphhtthhopedupdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedtpdhmohguvgepshhmthhpohhuth
+X-Spam-Status: No, score=-0.6 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,73 +63,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a NULL deref caused by a missing check
-in hwsim_pmsr_report_nl(), and bisected the issue to cited commit.
+Hi,
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 5084 Comm: syz-executor104 Not tainted 6.3.0-rc4-next-20230331-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/02/2023
-RIP: 0010:jhash+0x339/0x610 include/linux/jhash.h:95
-Code: 83 fd 01 0f 84 5f ff ff ff eb de 83 fd 05 74 3a e8 ac f5 71 fd 48 8d 7b 05 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 96 02 00 00
-RSP: 0018:ffffc90003abf298 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000004 RCX: 0000000000000000
-RDX: 0000000000000001 RSI: ffffffff84111ba4 RDI: 0000000000000009
-RBP: 0000000000000006 R08: 0000000000000005 R09: 000000000000000c
-R10: 0000000000000006 R11: 0000000000000000 R12: 000000004d2c27cd
-R13: 000000002bd9e6c2 R14: 000000002bd9e6c2 R15: 000000002bd9e6c2
-FS: 0000555556847300(0000) GS:ffff8880b9800000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000045ad50 CR3: 0000000078aa6000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-rht_key_hashfn include/linux/rhashtable.h:159 [inline]
-__rhashtable_lookup include/linux/rhashtable.h:604 [inline]
-rhashtable_lookup include/linux/rhashtable.h:646 [inline]
-rhashtable_lookup_fast include/linux/rhashtable.h:672 [inline]
-get_hwsim_data_ref_from_addr+0xb9/0x600 drivers/net/wireless/virtual/mac80211_hwsim.c:757
-hwsim_pmsr_report_nl+0xe7/0xd50 drivers/net/wireless/virtual/mac80211_hwsim.c:3764
-genl_family_rcv_msg_doit.isra.0+0x1e6/0x2d0 net/netlink/genetlink.c:968
-genl_family_rcv_msg net/netlink/genetlink.c:1048 [inline]
-genl_rcv_msg+0x4ff/0x7e0 net/netlink/genetlink.c:1065
-netlink_rcv_skb+0x165/0x440 net/netlink/af_netlink.c:2572
-genl_rcv+0x28/0x40 net/netlink/genetlink.c:1076
-netlink_unicast_kernel net/netlink/af_netlink.c:1339 [inline]
-netlink_unicast+0x547/0x7f0 net/netlink/af_netlink.c:1365
-netlink_sendmsg+0x925/0xe30 net/netlink/af_netlink.c:1942
-sock_sendmsg_nosec net/socket.c:724 [inline]
-sock_sendmsg+0xde/0x190 net/socket.c:747
-____sys_sendmsg+0x71c/0x900 net/socket.c:2501
-___sys_sendmsg+0x110/0x1b0 net/socket.c:2555
-__sys_sendmsg+0xf7/0x1c0 net/socket.c:2584
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x39/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
+On 4.04.2023 15:46, Ricardo Cañuelo wrote:
+> On mar 07-02-2023 23:53:27, Rafał Miłecki wrote:
+>> While bringing hardware up we should perform a full reset including the
+>> switch bit (BGMAC_BCMA_IOCTL_SW_RESET aka SICF_SWRST). It's what
+>> specification says and what reference driver does.
+>>
+>> This seems to be critical for the BCM5358. Without this hardware doesn't
+>> get initialized properly and doesn't seem to transmit or receive any
+>> packets.
+>>
+>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> 
+> KernelCI found this patch causes a regression in the
+> bootrr.deferred-probe-empty test [1] on sun8i-h3-libretech-all-h3-cc
+> [2], see the bisection report for more details [3]
+> 
+> Does it make sense to you?
 
-Fixes: 2af3b2a631b1 ("mac80211_hwsim: add PMSR report support via virtio")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Jaewan Kim <jaewan@google.com>
-Cc: Johannes Berg <johannes.berg@intel.com>
----
- drivers/net/wireless/virtual/mac80211_hwsim.c | 2 ++
- 1 file changed, 2 insertions(+)
+It doesn't seem to make any sense. I guess that on your platform
+/sys/kernel/debug/devices_deferred
+is not empty anymore?
 
-diff --git a/drivers/net/wireless/virtual/mac80211_hwsim.c b/drivers/net/wireless/virtual/mac80211_hwsim.c
-index f446d8f6e1f6e1df108db00e898fa02970162585..701e14b8e6fe0cae7ee2478c8dff0f2327b54a70 100644
---- a/drivers/net/wireless/virtual/mac80211_hwsim.c
-+++ b/drivers/net/wireless/virtual/mac80211_hwsim.c
-@@ -3761,6 +3761,8 @@ static int hwsim_pmsr_report_nl(struct sk_buff *msg, struct genl_info *info)
- 	int rem;
- 
- 	src = nla_data(info->attrs[HWSIM_ATTR_ADDR_TRANSMITTER]);
-+	if (!src)
-+		return -EINVAL;
- 	data = get_hwsim_data_ref_from_addr(src);
- 	if (!data)
- 		return -EINVAL;
--- 
-2.40.0.348.gf938b09366-goog
+Does your platform use Broadcom Ethernet controller at all?
 
+It seems like some false positive at first sight.
