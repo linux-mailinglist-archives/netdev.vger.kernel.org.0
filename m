@@ -2,52 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5A96D5BFA
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07D686D5C06
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 11:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbjDDJdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 05:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
+        id S234263AbjDDJeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 05:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234236AbjDDJdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:33:46 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1D42133;
-        Tue,  4 Apr 2023 02:33:42 -0700 (PDT)
-Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PrMwG5Nscz6J6qG;
-        Tue,  4 Apr 2023 17:31:42 +0800 (CST)
-Received: from [10.123.123.126] (10.123.123.126) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Tue, 4 Apr 2023 10:33:38 +0100
-Message-ID: <ae266792-3fd6-7c42-8ca0-a5cbd29c6789@huawei.com>
-Date:   Tue, 4 Apr 2023 12:33:37 +0300
+        with ESMTP id S234226AbjDDJeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 05:34:24 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2094.outbound.protection.outlook.com [40.107.96.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46263E6E
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 02:34:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kXDkeT7YDPO/S9YYRzVNy8Fs6dd8TSsKP8Y0oZws2R59HyFE+vH89/BC3+29TSvSJDgt3O9gqifcChNDy8zRxegX1czj16X0Y5Pgw8dmsbekdSvLDRiJsusZagAGMc0+PadCx/oBld6ryZ7GHEsG2k9iAjfJ/oDo9JlEyr5nSzWDsHsOV+zKdBhIi0kU7mM8s3UgzguSgkgKCEt5WdqFZWbGksQazrEcF9DSFST7DcbwMnr39qwGXs7zQXzynoY5V/JV2SIZZ86sxQS++4mVZxuyYkewdeSdkPgIK75NJ7AY8Wiac3OqpjJfMKNUnd6CdJa+JdHnPO1IYSbdy/WBsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YjunRI/nlkVoWtcy4I9FqJdeVjXXGuYzvRx9PD3YRjI=;
+ b=QE10KXWQtFekU+WjFefSAhmY4CoTqZ+FAfefvMP6xN8KFauuU2S1JHnk6VkVtyO+CIzgYzG2TDmcbjjEDWwFkKmxtWWI1KNwfUJj61pJqsJ9J7hWM2gIbXeC1hhAQKd6qNUnF0qfUqGXFuuPSgPi0Q7fgFOvkrtk2vFPTnmiFW20UeshiSk8Wkp78JmZEN5eZBoZ+dYKi/MRrL6kagpy3dekqmeOpAAoRgsmRJb0TUGRmxUUnEnR1T+UYzrar0CoY8YXw6j6zrDwzMGPp1+7hS7LEsoNWxn+OTBKJRoSN2kAXNy5wJ0h5JtRpqFe8QsH5vJy9lqUyVUfCw2YifUfMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YjunRI/nlkVoWtcy4I9FqJdeVjXXGuYzvRx9PD3YRjI=;
+ b=LPq72/8DdAR7176RZHd2MUVfyOSSIbAertw7Tr8cXog/4Kmzdy6hMkRiDVyw0jwU5Uia9Q2Miw4nzL97AuwW+G5PNCCCU1pu1WPhJEMpaZVj+BYgbKbmPzWN2xQNibjWTSA8bUQi1D/yo7kLSARNEO7mbj46GCUEhbExqmBnByg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by SN4PR13MB5360.namprd13.prod.outlook.com (2603:10b6:806:20d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Tue, 4 Apr
+ 2023 09:34:20 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.035; Tue, 4 Apr 2023
+ 09:34:20 +0000
+Date:   Tue, 4 Apr 2023 11:34:11 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Wong Vee Khee <veekhee@apple.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        Andrey Konovalov <andrey.konovalov@linaro.org>,
+        Jochen Henneberg <jh@henneberg-systemdesign.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "imx@lists.linux.dev" <imx@lists.linux.dev>
+Subject: Re: [EXT] Re: [PATCH v5 1/2] net: stmmac: add support for platform
+ specific reset
+Message-ID: <ZCvvE8l4dnMOEGQ2@corigine.com>
+References: <20230403152408.238530-1-shenwei.wang@nxp.com>
+ <ZCst4PvQ+dlZEbgl@corigine.com>
+ <AS8PR04MB91769E3A7396555DCAB43CC089929@AS8PR04MB9176.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AS8PR04MB91769E3A7396555DCAB43CC089929@AS8PR04MB9176.eurprd04.prod.outlook.com>
+X-ClientProxiedBy: AM0PR03CA0084.eurprd03.prod.outlook.com
+ (2603:10a6:208:69::25) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
- support
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
- <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
- <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
- <01bdfa52-3bac-4703-6caa-d83ea5990c87@digikod.net>
-From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-In-Reply-To: <01bdfa52-3bac-4703-6caa-d83ea5990c87@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.123.126]
-X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|SN4PR13MB5360:EE_
+X-MS-Office365-Filtering-Correlation-Id: 021781af-97b3-40c4-8d69-08db34efc491
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ntesk0xvKdGsDNPq92EEw5UPKKRQfvUje4nEaOCsmqgQkV/c3e1o0eIfmZS4TfvzC/z+mINVMLDP/XTBpkCGEKl/ksv5EAUff7TnG9jnJ/qsPNMZVzDuhho9Q5XLAnDD61obJpJ2cs0VQKRX0EMeW59A1OqfHn4aVdZQhB2b9BiwDUXdQo+W7Wlev7f8T3dQzqF6OHiTlVsslg0RBctEVQZbgRmd8Hyq18KltQz9Hxsp1Cjg9Lxh1uE99flhRmDbF273hhtV74kjKpR9NYsCTjP3xInJek9Vd+4bCPRPqoIQZ834KaauwZFSj947fbv8isKEFfovm0x23CP2o2NTuUFmPHZ3aOiztt22g8UwxSwnkN0/i36itpQIzI4IAgBNdK0xV8XzppzxftTtbPvzhQrqk3vyDXyVtel1EgbiydWy95y6tCYrClo1NWejK+ajSNauuMPOd5KVxfKjY3sn5WRZJqC8sfvcu1FGhsjOFOq/XOGxSwSfg2tQurP3JJVkiOMluakDnmiibNf1Z0R7Es54HfAfs6jAR1QDLrY1jQCtRKsNqsha5cvXn54kSwmxxQnGLb2J707PBGTzDyBlUbYaGGzZR1Lonms2uBVqGnw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(366004)(39840400004)(346002)(136003)(396003)(376002)(451199021)(86362001)(2906002)(36756003)(6486002)(2616005)(83380400001)(186003)(53546011)(6506007)(6512007)(6666004)(6916009)(66556008)(8676002)(66476007)(66946007)(4326008)(316002)(5660300002)(7416002)(44832011)(41300700001)(38100700002)(478600001)(54906003)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?B4NGYII+duEmV4J7i1njzRACqtaSgIVFWwRKQxQXJ152wj91av8Pabh+Cozw?=
+ =?us-ascii?Q?ELhtjSet3IO/vtFV0WxmzbezN08SYZrajd5r96oRKajviFuReEP2K09+OTd+?=
+ =?us-ascii?Q?6m4JKJ7I0WL/bSJfQ2OAXUGLDtfG55npkAImobfBsZo7xQMJ4NYiBuS2nVOF?=
+ =?us-ascii?Q?GfZknBqfByiKBXWhrR8e6SUBO3zgCxeBqpjYBLRz8Hg49/MbGD5Q8xL0/o4I?=
+ =?us-ascii?Q?Fe0XiiA7NTn2H9H4tJXP7GpYHfKlZx0mZMYbMryY+kbVVAHx89AbGCaeQRS2?=
+ =?us-ascii?Q?/nMdpmAVc9Phr03xpEiUfey2uTlz2kpyctJ/RVEvbpFeRVgxVS8F0Ch2hZjc?=
+ =?us-ascii?Q?/G6yQ5lWHocuQops2JG22Kdcf9ONnpGqhK+AvSam5nH2gcDA0rxmEuNdeH9n?=
+ =?us-ascii?Q?zlqACqdcJPV09e80bzz9yel1Ve4rYeZ+B3QuUihVS/mSUpjDsFPANKBdZPNG?=
+ =?us-ascii?Q?4Q8Z8zW6wBJNSptJoL1hGC+sEOopdN1K/SRGi/x2QolAcFuX6tE+lguXJjSk?=
+ =?us-ascii?Q?0/NLSsCajZ/7WbZ2Y0Dh0lOWv/fyikEkG3hJxMyLprcFJiDWBZscJMD0A5iX?=
+ =?us-ascii?Q?05P4r4HKVzKvBzMhtkjkX/Nsx+gfyo5HCD2M9n/0vp8Vbik+pUK70SX+Ngtq?=
+ =?us-ascii?Q?WdWobnClEnQXLgj+CUNIsHt/qluSdVT/7i4lrfh6dwkx2NZUGqoKq/MLRHL7?=
+ =?us-ascii?Q?MLpNzWR4kXgkK9sy4aDWXMxXSWD9RQ+wSfdzKNdbaC0Ms2gngZTDlclzjDq8?=
+ =?us-ascii?Q?ZyPDPbTTwMBE5O2cPmHdDJZnhhPQ47u7r8oUuX7rQU3yljYluTkeK87dQz0x?=
+ =?us-ascii?Q?UsAJNHTHTsaZrzm3F7UnxIkSjPgh59g41WsfUeyP95FO62mjMK5TILYFhdoS?=
+ =?us-ascii?Q?T/yRKRyYHj6NaqHxQ/WeAouFaXaCb8o0F8VTzwa18pQz05lBHDbTfhh06WQp?=
+ =?us-ascii?Q?g33x6ICsE+YLWnbtLdmHjVYh9JTY+YNErQkdQ1JBqIxTSp//NxZQx8kRo9dL?=
+ =?us-ascii?Q?2PHjXtWcAdCDaV+g36RfEjY87jCudizKmIMPu3YtytK9m+g7T3MGA88Zg6n2?=
+ =?us-ascii?Q?CXUzH/UZtgwvsgVRNwETXXkHtm8LqvzUzyR/nLTPUZTrXe/o8Sr9W94qb4aq?=
+ =?us-ascii?Q?OGghT4r+wViGa5L9JR2Zq59vc8sA8P7WcZSAvR4qIV97Vi04wLbUHlciZg1v?=
+ =?us-ascii?Q?zipyro3YYd3CB63VhsFtBkcdJPRzZPR4P0/0ObamupBqv66K0fZ46tWEOqQe?=
+ =?us-ascii?Q?EDflXvvR62rbA9kxSA0dQC4Cw1eyOlmEL9Q2yaxWcInBNt4y2aKZR5jd83mE?=
+ =?us-ascii?Q?xD/43qY54chy9QyYQvE365NAQN5qO2QfBg4lLVp8vwO029TjkYUVcNmMMWG0?=
+ =?us-ascii?Q?Tynst03OXFCJgNg+lUq16EwwqSRIf1etBED7UTv4uqjDnsTZzW3wrPckvEGV?=
+ =?us-ascii?Q?sSrCuYyJb/AJaWfH9ewQ0qAYFszKCnC69btR8Mr1kSNanNKxD6npxBMjtjFp?=
+ =?us-ascii?Q?gj6BkJBi188huJ5TP8X4B1qqsDnW7zWJfY6oMda7NhjfnNd6vN1r6eKNHFkj?=
+ =?us-ascii?Q?nC3Pv2b1eSgwsT00ifBgkksdIS7/6fW+7o64RP427z2+c2vKSEQ9nX1h+AXv?=
+ =?us-ascii?Q?0GaLfLhVXiwa1IdpslRG3ilh5a8VHzgLnNfWsl1f7gALqNv1bNbcgxJ5EqWr?=
+ =?us-ascii?Q?gyk0Lg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 021781af-97b3-40c4-8d69-08db34efc491
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2023 09:34:20.4755
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RKote1SAfWPdAKHO+wznxyaMazMvSZ+jGWKU2C3+70W/+y177bCFXIM5AodCpo8t0TckFu7iV89GXJpMkgwwGjAaR4Y3Q3idtFD9lVeUpS8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5360
+X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,240 +139,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-3/31/2023 8:30 PM, Mickaël Salaün пишет:
+On Mon, Apr 03, 2023 at 10:16:46PM +0000, Shenwei Wang wrote:
 > 
-> On 31/03/2023 19:24, Mickaël Salaün wrote:
->> 
->> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
->>> This commit adds network rules support in the ruleset management
->>> helpers and the landlock_create_ruleset syscall.
->>> Refactor user space API to support network actions. Add new network
->>> access flags, network rule and network attributes. Increment Landlock
->>> ABI version. Expand access_masks_t to u32 to be sure network access
->>> rights can be stored. Implement socket_bind() and socket_connect()
->>> LSM hooks, which enable to restrict TCP socket binding and connection
->>> to specific ports.
->>>
->>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>> ---
->>>
->>> Changes since v9:
->>> * Changes UAPI port field to __u64.
->>> * Moves shared code into check_socket_access().
->>> * Adds get_raw_handled_net_accesses() and
->>> get_current_net_domain() helpers.
->>> * Minor fixes.
->>>
->>> Changes since v8:
->>> * Squashes commits.
->>> * Refactors commit message.
->>> * Changes UAPI port field to __be16.
->>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
->>> * Adds address length checking.
->>> * Minor fixes.
->>>
->>> Changes since v7:
->>> * Squashes commits.
->>> * Increments ABI version to 4.
->>> * Refactors commit message.
->>> * Minor fixes.
->>>
->>> Changes since v6:
->>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
->>>     because it OR values.
->>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
->>> * Refactors landlock_get_net_access_mask().
->>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
->>>     LANDLOCK_NUM_ACCESS_FS as value.
->>> * Updates access_masks_t to u32 to support network access actions.
->>> * Refactors landlock internal functions to support network actions with
->>>     landlock_key/key_type/id types.
->>>
->>> Changes since v5:
->>> * Gets rid of partial revert from landlock_add_rule
->>> syscall.
->>> * Formats code with clang-format-14.
->>>
->>> Changes since v4:
->>> * Refactors landlock_create_ruleset() - splits ruleset and
->>> masks checks.
->>> * Refactors landlock_create_ruleset() and landlock mask
->>> setters/getters to support two rule types.
->>> * Refactors landlock_add_rule syscall add_rule_path_beneath
->>> function by factoring out get_ruleset_from_fd() and
->>> landlock_put_ruleset().
->>>
->>> Changes since v3:
->>> * Splits commit.
->>> * Adds network rule support for internal landlock functions.
->>> * Adds set_mask and get_mask for network.
->>> * Adds rb_root root_net_port.
->>>
->>> ---
->>>    include/uapi/linux/landlock.h                |  49 +++++
->>>    security/landlock/Kconfig                    |   1 +
->>>    security/landlock/Makefile                   |   2 +
->>>    security/landlock/limits.h                   |   6 +-
->>>    security/landlock/net.c                      | 198 +++++++++++++++++++
->>>    security/landlock/net.h                      |  26 +++
->>>    security/landlock/ruleset.c                  |  52 ++++-
->>>    security/landlock/ruleset.h                  |  63 +++++-
->>>    security/landlock/setup.c                    |   2 +
->>>    security/landlock/syscalls.c                 |  72 ++++++-
->>>    tools/testing/selftests/landlock/base_test.c |   2 +-
->>>    11 files changed, 450 insertions(+), 23 deletions(-)
->>>    create mode 100644 security/landlock/net.c
->>>    create mode 100644 security/landlock/net.h
->> 
->> [...]
->> 
->>> diff --git a/security/landlock/net.c b/security/landlock/net.c
->> 
->> [...]
->> 
->>> +static int check_addrlen(const struct sockaddr *const address, int addrlen)
->> 
->> const int addrlen
->> 
->>> +{
->>> +	if (addrlen < offsetofend(struct sockaddr, sa_family))
->>> +		return -EINVAL;
->>> +	switch (address->sa_family) {
->>> +	case AF_UNSPEC:
->>> +	case AF_INET:
->>> +		if (addrlen < sizeof(struct sockaddr_in))
->>> +			return -EINVAL;
->>> +		return 0;
->>> +#if IS_ENABLED(CONFIG_IPV6)
->>> +	case AF_INET6:
->>> +		if (addrlen < SIN6_LEN_RFC2133)
->>> +			return -EINVAL;
->>> +		return 0;
->>> +#endif
->>> +	}
->>> +	WARN_ON_ONCE(1);
->>> +	return 0;
->>> +}
->>> +
->>> +static u16 get_port(const struct sockaddr *const address)
->>> +{
->>> +	/* Gets port value in host byte order. */
->>> +	switch (address->sa_family) {
->>> +	case AF_UNSPEC:
->>> +	case AF_INET: {
->>> +		const struct sockaddr_in *const sockaddr =
->>> +			(struct sockaddr_in *)address;
->>> +		return ntohs(sockaddr->sin_port);
->> 
->> Storing ports in big endian (in rulesets) would avoid converting them
->> every time the kernel checks a socket port. The above comment should
->> then be updated too.
 > 
-> You can then return a __be16 type here and at least also use __be16 in
-> check_socket_access().
+> > -----Original Message-----
+> > From: Simon Horman <simon.horman@corigine.com>
+> > Sent: Monday, April 3, 2023 2:50 PM
+> > To: Shenwei Wang <shenwei.wang@nxp.com>
+> > Cc: David S. Miller <davem@davemloft.net>; Eric Dumazet
+> > <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
+> > <pabeni@redhat.com>; Shawn Guo <shawnguo@kernel.org>; Sascha Hauer
+> > <s.hauer@pengutronix.de>; Pengutronix Kernel Team <kernel@pengutronix.de>;
+> > Giuseppe Cavallaro <peppe.cavallaro@st.com>; Alexandre Torgue
+> > <alexandre.torgue@foss.st.com>; Jose Abreu <joabreu@synopsys.com>; Fabio
+> > Estevam <festevam@gmail.com>; dl-linux-imx <linux-imx@nxp.com>; Maxime
+> > Coquelin <mcoquelin.stm32@gmail.com>; Wong Vee Khee
+> > <veekhee@apple.com>; Kurt Kanzenbach <kurt@linutronix.de>; Mohammad
+> > Athari Bin Ismail <mohammad.athari.ismail@intel.com>; Andrey Konovalov
+> > <andrey.konovalov@linaro.org>; Jochen Henneberg <jh@henneberg-
+> > systemdesign.com>; Tan Tee Min <tee.min.tan@linux.intel.com>;
+> > netdev@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-stm32@st-
+> > md-mailman.stormreply.com; imx@lists.linux.dev
+> > Subject: [EXT] Re: [PATCH v5 1/2] net: stmmac: add support for platform specific
+> > reset
+> > 
+> > Caution: EXT Email
+> > 
+> > On Mon, Apr 03, 2023 at 10:24:07AM -0500, Shenwei Wang wrote:
+> > > This patch adds support for platform-specific reset logic in the
+> > > stmmac driver. Some SoCs require a different reset mechanism than the
+> > > standard dwmac IP reset. To support these platforms, a new function
+> > > pointer 'fix_soc_reset' is added to the plat_stmmacenet_data structure.
+> > > The stmmac_reset in hwif.h is modified to call the 'fix_soc_reset'
+> > > function if it exists. This enables the driver to use the
+> > > platform-specific reset logic when necessary.
+> > >
+> > > Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> > > ---
+> > >  v5:
+> > >   - add the missing __iomem tag in the stmmac_reset definition.
+> > >
+> > >  drivers/net/ethernet/stmicro/stmmac/hwif.c | 10 ++++++++++
+> > > drivers/net/ethernet/stmicro/stmmac/hwif.h |  3 +--
+> > >  include/linux/stmmac.h                     |  1 +
+> > >  3 files changed, 12 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.c
+> > > b/drivers/net/ethernet/stmicro/stmmac/hwif.c
+> > > index bb7114f970f8..0eefa697ffe8 100644
+> > > --- a/drivers/net/ethernet/stmicro/stmmac/hwif.c
+> > > +++ b/drivers/net/ethernet/stmicro/stmmac/hwif.c
+> > > @@ -87,6 +87,16 @@ static int stmmac_dwxlgmac_quirks(struct stmmac_priv
+> > *priv)
+> > >       return 0;
+> > >  }
+> > >
+> > > +int stmmac_reset(struct stmmac_priv *priv, void __iomem *ioaddr) {
+> > > +     struct plat_stmmacenet_data *plat = priv ? priv->plat : NULL;
+> > 
+> > Here the case where priv is NULL is handled.
+> > 
+> > > +
+> > > +     if (plat && plat->fix_soc_reset)
+> > > +             return plat->fix_soc_reset(plat, ioaddr);
+> > > +
+> > > +     return stmmac_do_callback(priv, dma, reset, ioaddr);
+> > 
+> > But this will dereference priv unconditionally.
+> > 
+> 
+> The original macro implementation assumes that the priv pointer will not be NULL. However, adding 
+> an extra condition check for priv in the stmmac_reset() function can ensure that the code is more 
+> robust and secure.
 
-   Do you mean we need to do port converting __be16 -> u16 in 
-check_socket_access()???
-> 
->> 
->> 
->>> +	}
->>> +#if IS_ENABLED(CONFIG_IPV6)
->>> +	case AF_INET6: {
->>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
->>> +			(struct sockaddr_in6 *)address;
->>> +		return ntohs(sockaddr_ip6->sin6_port);
->>> +	}
->>> +#endif
->>> +	}
->>> +	WARN_ON_ONCE(1);
->>> +	return 0;
->>> +}
->>> +
->>> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
->>> +			       access_mask_t access_request)
->>> +{
->>> +	int ret;
->>> +	bool allowed = false;
->>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
->>> +	const struct landlock_rule *rule;
->>> +	access_mask_t handled_access;
->>> +	const struct landlock_id id = {
->>> +		.key.data = port,
->>> +		.type = LANDLOCK_KEY_NET_PORT,
->>> +	};
->>> +	const struct landlock_ruleset *const domain = get_current_net_domain();
->>> +
->>> +	if (WARN_ON_ONCE(!domain))
->>> +		return 0;
->>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
->>> +		return -EACCES;
->>> +	/* Check if it's a TCP socket. */
->>> +	if (sock->type != SOCK_STREAM)
->>> +		return 0;
->>> +
->>> +	ret = check_addrlen(address, addrlen);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	switch (address->sa_family) {
->>> +	case AF_UNSPEC:
->>> +		/*
->>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
->>> +		 * association, which have the same effect as closing the
->>> +		 * connection while retaining the socket object (i.e., the file
->>> +		 * descriptor).  As for dropping privileges, closing
->>> +		 * connections is always allowed.
->>> +		 */
->>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
->>> +			return 0;
->>> +
->>> +		/*
->>> +		 * For compatibility reason, accept AF_UNSPEC for bind
->>> +		 * accesses (mapped to AF_INET) only if the address is
->>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
->>> +		 * required to not wrongfully return -EACCES instead of
->>> +		 * -EAFNOSUPPORT.
->>> +		 */
->>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
->>> +			const struct sockaddr_in *const sockaddr =
->>> +				(struct sockaddr_in *)address;
->>> +
->>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
->>> +				return -EAFNOSUPPORT;
->>> +		}
->>> +
->>> +		fallthrough;
->>> +	case AF_INET:
->>> +#if IS_ENABLED(CONFIG_IPV6)
->>> +	case AF_INET6:
->>> +#endif
->>> +		rule = landlock_find_rule(domain, id);
->>> +		handled_access = landlock_init_layer_masks(
->>> +			domain, access_request, &layer_masks,
->>> +			LANDLOCK_KEY_NET_PORT);
->>> +		allowed = landlock_unmask_layers(rule, handled_access,
->>> +						 &layer_masks,
->>> +						 ARRAY_SIZE(layer_masks));
->>> +	}
->>> +	return allowed ? 0 : -EACCES;
->>> +}
->>> +
->>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
->>> +			    int addrlen)
->>> +{
->>> +	return check_socket_access(sock, address, addrlen, get_port(address),
->>> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
->>> +}
->>> +
->>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
->>> +			       int addrlen)
->>> +{
->>> +	return check_socket_access(sock, address, addrlen, get_port(address),
->>> +				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
->>> +}
->> 
->> [...]
-> .
+But it seems to me that it is not safe because stmmac_do_callback
+will dereference priv even if it is NULL.
+
+So I think either the NULL case should be handled in a safe way.
+Or there is no point in checking for it at all.
