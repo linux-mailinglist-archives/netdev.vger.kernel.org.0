@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B95A26D57B1
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 06:50:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA2D6D57B3
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 06:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232655AbjDDEug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 00:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
+        id S233114AbjDDEul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 00:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229699AbjDDEuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 00:50:35 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5369B184;
-        Mon,  3 Apr 2023 21:50:34 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id ja10so30180587plb.5;
-        Mon, 03 Apr 2023 21:50:34 -0700 (PDT)
+        with ESMTP id S232736AbjDDEuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 00:50:39 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202981FFA;
+        Mon,  3 Apr 2023 21:50:38 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id x37so18880962pga.1;
+        Mon, 03 Apr 2023 21:50:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680583833; x=1683175833;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DS+zOSf7M9g/T+P60kmTdXV5CVv7dh4XI7ph0ByvMTQ=;
-        b=eT2yIqiQ6Dy2uZChd7fljc6hYDyrQT7pxEhflXR+Okfi/s3R9fypBe8FDmsuEHsOmF
-         Sda2JMzzCKyI4MTZ/coMlEq1jbl/eO0HDvvuM+YovaOiMiIfzNaP1dfCyztcAGK6b11H
-         mGaWp3HWw1SV2MbhBCXhqqSAEe9dMK2ZClPRiN+99CAfLAHRL3NhTdxPJ9vURuTTaC23
-         8TDN5I/f3DLs9bAu+gYTCxTbNQDNO6s+ys2Y4zgAjbv6Cbw6aq99LDZzWF2c3+5rOVaU
-         6vYCWGCxUrYgfxtaDkIZIhzf25/baJmkjuKA9recUiBi3rEEHvQCnRezxAj9eB3UQfZ3
-         EtlQ==
+        d=gmail.com; s=20210112; t=1680583837; x=1683175837;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6UeHRiVQiuVug2QCd8JwR0rmeb9wuxhyGp0d7KYKKh4=;
+        b=YjhtQMC5KdKYLRhNcL68YCcISrdhyw0BU09+Sa4milJHnV7L52FcXOJa19gFHP2J9D
+         SxV9BbjtDfpyVakP/dToVgfIUEduZTX5XWIQQ2sNYJmPSBvjXm3vAEpO6eBzTAA9dyYz
+         P6t79TkM8+x/rNcgEiytlu/dZ5CXsl0hArXvkHRDlvhDb5QBEc/6Xpr9tzyKYbwCt056
+         STYw07dKSTrN6B9QeLvWKyMLCRROA1GoCLs1B991F2axupGhmZ3WQxZoCK263lIHvKJY
+         A0ShE+qBX7ez8WJmvAlMvorfGNBRLROJMCIpdR06qbtAvP7OtfDyP3p3hzcCL3Bsozs3
+         LS5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680583833; x=1683175833;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=DS+zOSf7M9g/T+P60kmTdXV5CVv7dh4XI7ph0ByvMTQ=;
-        b=q3Q0wxTugirSGG/XZaY/E7JD6DpWgS+ohInAcupW0/bx2gsXdVqqf4MHHoDB5jwrTr
-         s4vBhIBsBi7CQyrGSnbCB9qfkrxvO6HrJN+D4VD8XW9b9XXgkFv37YgyYbz7QDpgvvgE
-         ZfckLGXNTXpfLSkqpbRsL6CXPsxRIUNMHJGX8UfrUQEUt+UG0ZNXmb/kbpj+Ufyuezbq
-         e2u1WKKc0TD00uQvh6rBXhceVnlPzjeCjqW/OUYT1UwqX2MzZzYvWV+ZRvd5h6X89Xiu
-         DsAFWvmsob1FePGA5BiagkKNUoP0EFT3ZKR8zXd66NSx/ZQwJpqytA5KveJJmLoT6exm
-         U4ow==
-X-Gm-Message-State: AAQBX9eku/cARHGIqgKz6m9M3I3O1Km7CUYcbSNgdo+lcUecjaRZw2ZG
-        mB0OFeXKjwn4Naf0huX7OMc=
-X-Google-Smtp-Source: AKy350YC2eehCVzdVkBd2ZiJXqmlWFrrtGBti4+lDYBmn7Mu/Px7NQTrEyPePvLDyXhOp+QNCnnHjg==
-X-Received: by 2002:a05:6a20:b930:b0:e3:8710:6846 with SMTP id fe48-20020a056a20b93000b000e387106846mr1235478pzb.10.1680583833377;
-        Mon, 03 Apr 2023 21:50:33 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680583837; x=1683175837;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6UeHRiVQiuVug2QCd8JwR0rmeb9wuxhyGp0d7KYKKh4=;
+        b=t3qMCSJEKjw1ipaEwIZw3D6Mhi7Bn61S/WbnDd9pRUhyE1m62ZP4kFV4oY9e1fOrqS
+         SSOf0r1/KNy7R1u+yS0PuntAVzl9iD4iEmxI9uIBq/vjX8nkjrN0tNgDTf4IQIM5dcU5
+         InJISpVbYoOt/vckS0bnBDwvzBkaRur1yw0iAwmShVRtg16NF6MgHp8TKVMleIUH0BDF
+         Y7fQfJt4exeExS1rAXsllEkG5Kfbh9PCsTfIZLEnmoqlMdcsXdZvbMwwrOdgqjY7ytuO
+         o2qLvwWQkW5dRW8Kl2eIj7Vi2ZJlzDb1BsCyTq34mVqtuV/xeCSI/cYQaoAZPd+5n0EV
+         y/iA==
+X-Gm-Message-State: AAQBX9dgduyvGOYqwBQr3+FWWwmY7GO2GJq8cJz3FIs3CaiXOTBDcLWh
+        6v/LQmb+VP366Ok3l2we12A=
+X-Google-Smtp-Source: AKy350YP5txTp/G8xZ+MFDk18m1wHMa+Df7WAXsXso5vRDs9x81U4Co1LP3OjCu2cM16QX1GGn/bbw==
+X-Received: by 2002:aa7:978a:0:b0:627:f9ac:8a31 with SMTP id o10-20020aa7978a000000b00627f9ac8a31mr987238pfp.2.1680583837343;
+        Mon, 03 Apr 2023 21:50:37 -0700 (PDT)
 Received: from dhcp-172-26-102-232.DHCP.thefacebook.com ([2620:10d:c090:400::5:3c8])
-        by smtp.gmail.com with ESMTPSA id h20-20020a62b414000000b00625e14d3a15sm7742195pfn.166.2023.04.03.21.50.31
+        by smtp.gmail.com with ESMTPSA id c7-20020aa78e07000000b005abc30d9445sm7749554pfr.180.2023.04.03.21.50.35
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 03 Apr 2023 21:50:32 -0700 (PDT)
+        Mon, 03 Apr 2023 21:50:36 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, martin.lau@kernel.org,
         void@manifault.com, davemarchevsky@meta.com, tj@kernel.org,
         memxor@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
         kernel-team@fb.com
-Subject: [PATCH bpf-next 0/8] bpf: Follow up to RCU enforcement in the verifier.
-Date:   Mon,  3 Apr 2023 21:50:21 -0700
-Message-Id: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
+Subject: [PATCH bpf-next 1/8] bpf: Invoke btf_struct_access() callback only for writes.
+Date:   Mon,  3 Apr 2023 21:50:22 -0700
+Message-Id: <20230404045029.82870-2-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.37.1 (Apple Git-137.1)
+In-Reply-To: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
+References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -72,38 +75,81 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-The patch set is addressing a fallout from
-commit 6fcd486b3a0a ("bpf: Refactor RCU enforcement in the verifier.")
-It was too aggressive with PTR_UNTRUSTED marks.
-Patches 1-6 are cleanup and adding verifier smartness to address real
-use cases in bpf programs that broke with too aggressive PTR_UNTRUSTED.
-The partial revert is done in patch 7 anyway.
+Remove duplicated if (atype == BPF_READ) btf_struct_access() from
+btf_struct_access() callback and invoke it only for writes.
 
-Alexei Starovoitov (8):
-  bpf: Invoke btf_struct_access() callback only for writes.
-  bpf: Remove unused arguments from btf_struct_access().
-  bpf: Refactor btf_nested_type_is_trusted().
-  bpf: Teach verifier that certain helpers accept NULL pointer.
-  bpf: Refactor NULL-ness check in check_reg_type().
-  bpf: Allowlist few fields similar to __rcu tag.
-  bpf: Undo strict enforcement for walking untagged fields.
-  selftests/bpf: Add tracing tests for walking skb and req.
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+ kernel/bpf/verifier.c          | 2 +-
+ net/bpf/bpf_dummy_struct_ops.c | 2 +-
+ net/core/filter.c              | 6 ------
+ net/ipv4/bpf_tcp_ca.c          | 3 ---
+ 4 files changed, 2 insertions(+), 11 deletions(-)
 
- include/linux/bpf.h                           | 10 +-
- include/linux/filter.h                        |  3 +-
- kernel/bpf/bpf_cgrp_storage.c                 |  4 +-
- kernel/bpf/bpf_inode_storage.c                |  4 +-
- kernel/bpf/bpf_task_storage.c                 |  8 +-
- kernel/bpf/btf.c                              | 44 ++++-----
- kernel/bpf/verifier.c                         | 91 ++++++++++++++-----
- net/bpf/bpf_dummy_struct_ops.c                | 14 ++-
- net/core/bpf_sk_storage.c                     |  4 +-
- net/core/filter.c                             | 21 ++---
- net/ipv4/bpf_tcp_ca.c                         |  6 +-
- net/netfilter/nf_conntrack_bpf.c              |  3 +-
- .../bpf/progs/test_sk_storage_tracing.c       | 16 ++++
- 13 files changed, 131 insertions(+), 97 deletions(-)
-
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index eaf9c5291cf0..83984568ccb4 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5504,7 +5504,7 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
+ 		return -EACCES;
+ 	}
+ 
+-	if (env->ops->btf_struct_access && !type_is_alloc(reg->type)) {
++	if (env->ops->btf_struct_access && !type_is_alloc(reg->type) && atype == BPF_WRITE) {
+ 		if (!btf_is_kernel(reg->btf)) {
+ 			verbose(env, "verifier internal error: reg->btf must be kernel btf\n");
+ 			return -EFAULT;
+diff --git a/net/bpf/bpf_dummy_struct_ops.c b/net/bpf/bpf_dummy_struct_ops.c
+index ff4f89a2b02a..9535c8506cda 100644
+--- a/net/bpf/bpf_dummy_struct_ops.c
++++ b/net/bpf/bpf_dummy_struct_ops.c
+@@ -198,7 +198,7 @@ static int bpf_dummy_ops_btf_struct_access(struct bpf_verifier_log *log,
+ 	if (err < 0)
+ 		return err;
+ 
+-	return atype == BPF_READ ? err : NOT_INIT;
++	return NOT_INIT;
+ }
+ 
+ static const struct bpf_verifier_ops bpf_dummy_verifier_ops = {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 3370efad1dda..8b9f409a2ec3 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8753,9 +8753,6 @@ static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
+ {
+ 	int ret = -EACCES;
+ 
+-	if (atype == BPF_READ)
+-		return btf_struct_access(log, reg, off, size, atype, next_btf_id, flag);
+-
+ 	mutex_lock(&nf_conn_btf_access_lock);
+ 	if (nfct_btf_struct_access)
+ 		ret = nfct_btf_struct_access(log, reg, off, size, atype, next_btf_id, flag);
+@@ -8830,9 +8827,6 @@ static int xdp_btf_struct_access(struct bpf_verifier_log *log,
+ {
+ 	int ret = -EACCES;
+ 
+-	if (atype == BPF_READ)
+-		return btf_struct_access(log, reg, off, size, atype, next_btf_id, flag);
+-
+ 	mutex_lock(&nf_conn_btf_access_lock);
+ 	if (nfct_btf_struct_access)
+ 		ret = nfct_btf_struct_access(log, reg, off, size, atype, next_btf_id, flag);
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index ea21c96c03aa..d6465876bbf6 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -78,9 +78,6 @@ static int bpf_tcp_ca_btf_struct_access(struct bpf_verifier_log *log,
+ 	const struct btf_type *t;
+ 	size_t end;
+ 
+-	if (atype == BPF_READ)
+-		return btf_struct_access(log, reg, off, size, atype, next_btf_id, flag);
+-
+ 	t = btf_type_by_id(reg->btf, reg->btf_id);
+ 	if (t != tcp_sock_type) {
+ 		bpf_log(log, "only read is supported\n");
 -- 
 2.34.1
 
