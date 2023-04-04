@@ -2,328 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B8E6D6A9E
-	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3FDB6D6ABB
+	for <lists+netdev@lfdr.de>; Tue,  4 Apr 2023 19:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236372AbjDDRbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 13:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
+        id S235333AbjDDRgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 13:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236185AbjDDRb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:31:27 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95808524F
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 10:30:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680629413; x=1712165413;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=SXE8fGQRdybaSc9i5FmwuvUuXsx/5nyevLDYYgOpfk4=;
-  b=C0mcUMORSVE0KU++yjlnkRTgEgWIFZpU/Z8xDXMGjJSioiZVq6z7JtK4
-   ZRkq+PwCyuADgVgQ9X/wG5wEwTbKWnM6Hj/CEp9ycZLwnAtUBOFnvEXll
-   lA97i9rLFMIo7iGAQy3vPTb7w6Vd1hcgEjI507EQU7wsyuq6UYz6AHhLa
-   assZLdiUt/AbbemXR/75cRyQD9vbmzBL8/UX3cxy6UhNTU8HEZ43XD9vU
-   vQ4mLQ4Rna889JxzT/1wrjdE9yvcVjUAAzGD8OErh6ynVcTexuxGf/SVT
-   PpaRWt9F/BkfRAwgez4dZ+DitcoUWBA98piM2VHeqQZUOSVGwZdyI+ujb
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="326283282"
-X-IronPort-AV: E=Sophos;i="5.98,318,1673942400"; 
-   d="scan'208";a="326283282"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2023 10:27:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10670"; a="750997265"
-X-IronPort-AV: E=Sophos;i="5.98,318,1673942400"; 
-   d="scan'208";a="750997265"
-Received: from anguy11-upstream.jf.intel.com ([10.166.9.133])
-  by fmsmga008.fm.intel.com with ESMTP; 04 Apr 2023 10:27:46 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-Cc:     Ahmed Zaki <ahmed.zaki@intel.com>, anthony.l.nguyen@intel.com,
-        Rafal Romanowski <rafal.romanowski@intel.com>
-Subject: [PATCH net 2/2] iavf: remove active_cvlans and active_svlans bitmaps
-Date:   Tue,  4 Apr 2023 10:25:22 -0700
-Message-Id: <20230404172523.451026-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20230404172523.451026-1-anthony.l.nguyen@intel.com>
-References: <20230404172523.451026-1-anthony.l.nguyen@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S234979AbjDDRgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 13:36:36 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC6C5FD9;
+        Tue,  4 Apr 2023 10:36:14 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id ny16so923460qvb.4;
+        Tue, 04 Apr 2023 10:36:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680629773; x=1683221773;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4Z1DSaq3VFchGKzMkuppKkMuZ02nBNd6ugtDdxGTU1k=;
+        b=f5gX2wkqrAoiMblcAQuuJb8lAFGg23a2sQHkp6HtVaJg8FDt2ejL5nTg1wHkUJvrui
+         jaaEEnLdaxr69bom2j9BD9wRgQgSArQP7KUL22iOL2NM0bGEsqBXBZoWgyeNW0KpnlVq
+         SMjoGHIMxlFjMmWnwdLP0cisFpmszR0uefaLEboVei3ol7U8Jp3PmQRh091YPdIvxgol
+         4Kled2XQqKbOunVH9s6yqb8iQbezNK7IJUKeSSWqqmzsoP8AF9wHC1hhM0IijQXpG3oy
+         ATKK/WTaFZGvkz26pkXdfYEjGwkkH2dWTsgLjOINF2TZHj3Z3qLrFIqs9JEP+DqBHFS3
+         aTMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680629773; x=1683221773;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=4Z1DSaq3VFchGKzMkuppKkMuZ02nBNd6ugtDdxGTU1k=;
+        b=q6HGaXmPQEYOnJB4/pQPqMimABzl76TrYq3+uAdFR6nTRK1phKJoQtDmV2LXxxnAXm
+         I5gyfJJ/rk4VRHpXrhlDADzgbJSQUequqiRGgO3iGbwkiKb0RYcmlWWcLqM8NnpBOUlT
+         2F/XClj9MYe8mYc6LsIMyaZYPIeN6tcnY3rNliEbvILTh0/VzULwrCd0aDyki+36y3Vn
+         Nj7rq5h/I9bcVWrNqChatfO9IlqG8asWQTSV4Lfzm0LJm/eXar6R6f2poOyQ5zdbgcr7
+         ly4wIdVc9dJEjVyuesfpsJIg7/1ARu3u/8CcD+xUXREqVULs+hPQF4C0D46s4MrifWDE
+         csoQ==
+X-Gm-Message-State: AAQBX9fyVrqRmCFI2226+X6El2l9En2HEx1mSYcqr9+vrrbbC0JXfs28
+        TbxFNT9K0BqJEXbLmX3/xDY=
+X-Google-Smtp-Source: AKy350Z23k8fMVTzMdrsIJFMN4WdkO04DiDvcgHJCEHpVKeNB/JKhOJwLjldeAZHPeYbENi695HiOA==
+X-Received: by 2002:a05:6214:e6b:b0:5ba:852:272c with SMTP id jz11-20020a0562140e6b00b005ba0852272cmr4398157qvb.8.1680629773236;
+        Tue, 04 Apr 2023 10:36:13 -0700 (PDT)
+Received: from localhost (240.157.150.34.bc.googleusercontent.com. [34.150.157.240])
+        by smtp.gmail.com with ESMTPSA id kr22-20020a0562142b9600b005e45f6cb74bsm836386qvb.79.2023.04.04.10.36.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 10:36:12 -0700 (PDT)
+Date:   Tue, 04 Apr 2023 13:36:12 -0400
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     David Howells <dhowells@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     dhowells@redhat.com, Matthew Wilcox <willy@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Message-ID: <642c600c428d2_339347208d8@willemb.c.googlers.com.notmuch>
+In-Reply-To: <2688906.1680628610@warthog.procyon.org.uk>
+References: <642c5731a7cc5_337e2c208b0@willemb.c.googlers.com.notmuch>
+ <642ad8b66acfe_302ae1208e7@willemb.c.googlers.com.notmuch>
+ <64299af9e8861_2d2a20208e6@willemb.c.googlers.com.notmuch>
+ <20230331160914.1608208-1-dhowells@redhat.com>
+ <20230331160914.1608208-16-dhowells@redhat.com>
+ <1818504.1680515446@warthog.procyon.org.uk>
+ <2258798.1680559496@warthog.procyon.org.uk>
+ <2688906.1680628610@warthog.procyon.org.uk>
+Subject: Re: [PATCH v3 15/55] ip, udp: Support MSG_SPLICE_PAGES
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ahmed Zaki <ahmed.zaki@intel.com>
+David Howells wrote:
+> Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> 
+> > > Okay.  How about the attached?  This seems to work.  Just setting "paged" to
+> > > true seems to do the right thing in __ip_append_data() when allocating /
+> > > setting up the skbuff, and then __ip_splice_pages() is called to add the
+> > > pages.
+> > 
+> > If this works, much preferred. Looks great to me.
+> 
+> :-)
+> 
+> > As said, then __ip_splice_pages() probably no longer needs the
+> > preamble to copy initial header bytes.
+> 
+> Sorry, what?  It only attaches pages extracted from the iterator.
 
-The VLAN filters info is currently being held in a list and 2 bitmaps
-(active_cvlans and active_svlans). We are experiencing some racing where
-data is not in sync in the list and bitmaps. For example, the VLAN is
-initially added to the list but only when the PF replies, it is added to
-the bitmap. If a user adds many V2 VLANS before the PF responds:
-
-    while [ $((i++)) ]
-        ip l add l eth0 name eth0.$i type vlan id $i
-
-we might end up with more VLAN list entries than the designated limit.
-Also, The "ip link show" will show more links added than the PF limit.
-
-On the other and, the bitmaps are only used to check the number of VLAN
-filters and to re-enable the filters when the interface goes from DOWN to
-UP.
-
-This patch gets rid of the bitmaps and uses the list only. To do that,
-the states of the VLAN filter are modified:
-1 - IAVF_VLAN_REMOVE: the entry needs to be totally removed after informing
-  the PF. This is the "ip link del eth0.$i" path.
-2 - IAVF_VLAN_DISABLE: (new) the netdev went down. The filter needs to be
-  removed from the PF and then marked INACTIVE.
-3 - IAVF_VLAN_INACTIVE: (new) no PF filter exists, but the user did not
-  delete the VLAN.
-
-Fixes: 48ccc43ecf10 ("iavf: Add support VIRTCHNL_VF_OFFLOAD_VLAN_V2 during netdev config")
-Signed-off-by: Ahmed Zaki <ahmed.zaki@intel.com>
-Tested-by: Rafal Romanowski <rafal.romanowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf.h        |  7 +--
- drivers/net/ethernet/intel/iavf/iavf_main.c   | 40 +++++++----------
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   | 45 ++++++++++---------
- 3 files changed, 45 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index dd3b1c0fec4e..1c24f5396ca9 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -59,8 +59,6 @@ enum iavf_vsi_state_t {
- struct iavf_vsi {
- 	struct iavf_adapter *back;
- 	struct net_device *netdev;
--	unsigned long active_cvlans[BITS_TO_LONGS(VLAN_N_VID)];
--	unsigned long active_svlans[BITS_TO_LONGS(VLAN_N_VID)];
- 	u16 seid;
- 	u16 id;
- 	DECLARE_BITMAP(state, __IAVF_VSI_STATE_SIZE__);
-@@ -163,7 +161,9 @@ enum iavf_vlan_state_t {
- 	__IAVF_VLAN_ADD,	/* filter needs to be added */
- 	__IAVF_VLAN_IS_NEW,	/* filter is new, wait for PF answer */
- 	__IAVF_VLAN_ACTIVE,	/* filter is accepted by PF */
--	__IAVF_VLAN_REMOVE,	/* filter needs to be removed */
-+	__IAVF_VLAN_DISABLE,	/* filter needs to be deleted by PF, then marked INACTIVE */
-+	__IAVF_VLAN_INACTIVE,	/* filter is inactive, we are in IFF_DOWN */
-+	__IAVF_VLAN_REMOVE,	/* filter needs to be removed from list */
- };
- 
- struct iavf_vlan_filter {
-@@ -261,6 +261,7 @@ struct iavf_adapter {
- 	wait_queue_head_t vc_waitqueue;
- 	struct iavf_q_vector *q_vectors;
- 	struct list_head vlan_filter_list;
-+	int num_vlan_filters;
- 	struct list_head mac_filter_list;
- 	struct mutex crit_lock;
- 	struct mutex client_lock;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 5e3429677daa..6627099c081b 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -792,6 +792,7 @@ iavf_vlan_filter *iavf_add_vlan(struct iavf_adapter *adapter,
- 
- 		list_add_tail(&f->list, &adapter->vlan_filter_list);
- 		f->state = __IAVF_VLAN_ADD;
-+		adapter->num_vlan_filters++;
- 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_VLAN_FILTER;
- 	}
- 
-@@ -828,14 +829,18 @@ static void iavf_del_vlan(struct iavf_adapter *adapter, struct iavf_vlan vlan)
-  **/
- static void iavf_restore_filters(struct iavf_adapter *adapter)
- {
--	u16 vid;
-+	struct iavf_vlan_filter *f;
- 
- 	/* re-add all VLAN filters */
--	for_each_set_bit(vid, adapter->vsi.active_cvlans, VLAN_N_VID)
--		iavf_add_vlan(adapter, IAVF_VLAN(vid, ETH_P_8021Q));
-+	spin_lock_bh(&adapter->mac_vlan_list_lock);
- 
--	for_each_set_bit(vid, adapter->vsi.active_svlans, VLAN_N_VID)
--		iavf_add_vlan(adapter, IAVF_VLAN(vid, ETH_P_8021AD));
-+	list_for_each_entry(f, &adapter->vlan_filter_list, list) {
-+		if (f->state == __IAVF_VLAN_INACTIVE)
-+			f->state = __IAVF_VLAN_ADD;
-+	}
-+
-+	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-+	adapter->aq_required |= IAVF_FLAG_AQ_ADD_VLAN_FILTER;
- }
- 
- /**
-@@ -844,8 +849,7 @@ static void iavf_restore_filters(struct iavf_adapter *adapter)
-  */
- u16 iavf_get_num_vlans_added(struct iavf_adapter *adapter)
- {
--	return bitmap_weight(adapter->vsi.active_cvlans, VLAN_N_VID) +
--		bitmap_weight(adapter->vsi.active_svlans, VLAN_N_VID);
-+	return adapter->num_vlan_filters;
- }
- 
- /**
-@@ -928,11 +932,6 @@ static int iavf_vlan_rx_kill_vid(struct net_device *netdev,
- 		return 0;
- 
- 	iavf_del_vlan(adapter, IAVF_VLAN(vid, be16_to_cpu(proto)));
--	if (proto == cpu_to_be16(ETH_P_8021Q))
--		clear_bit(vid, adapter->vsi.active_cvlans);
--	else
--		clear_bit(vid, adapter->vsi.active_svlans);
--
- 	return 0;
- }
- 
-@@ -1293,16 +1292,11 @@ static void iavf_clear_mac_vlan_filters(struct iavf_adapter *adapter)
- 		}
- 	}
- 
--	/* remove all VLAN filters */
-+	/* disable all VLAN filters */
- 	list_for_each_entry_safe(vlf, vlftmp, &adapter->vlan_filter_list,
--				 list) {
--		if (vlf->state == __IAVF_VLAN_ADD) {
--			list_del(&vlf->list);
--			kfree(vlf);
--		} else {
--			vlf->state = __IAVF_VLAN_REMOVE;
--		}
--	}
-+				 list)
-+		vlf->state = __IAVF_VLAN_DISABLE;
-+
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- }
- 
-@@ -2914,6 +2908,7 @@ static void iavf_disable_vf(struct iavf_adapter *adapter)
- 		list_del(&fv->list);
- 		kfree(fv);
- 	}
-+	adapter->num_vlan_filters = 0;
- 
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 
-@@ -3131,9 +3126,6 @@ static void iavf_reset_task(struct work_struct *work)
- 	adapter->aq_required |= IAVF_FLAG_AQ_ADD_CLOUD_FILTER;
- 	iavf_misc_irq_enable(adapter);
- 
--	bitmap_clear(adapter->vsi.active_cvlans, 0, VLAN_N_VID);
--	bitmap_clear(adapter->vsi.active_svlans, 0, VLAN_N_VID);
--
- 	mod_delayed_work(adapter->wq, &adapter->watchdog_task, 2);
- 
- 	/* We were running when the reset started, so we need to restore some
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index 9ba83f0d212e..59c1e39e2d23 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -643,15 +643,9 @@ static void iavf_vlan_add_reject(struct iavf_adapter *adapter)
- 	spin_lock_bh(&adapter->mac_vlan_list_lock);
- 	list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
- 		if (f->state == __IAVF_VLAN_IS_NEW) {
--			if (f->vlan.tpid == ETH_P_8021Q)
--				clear_bit(f->vlan.vid,
--					  adapter->vsi.active_cvlans);
--			else
--				clear_bit(f->vlan.vid,
--					  adapter->vsi.active_svlans);
--
- 			list_del(&f->list);
- 			kfree(f);
-+			adapter->num_vlan_filters--;
- 		}
- 	}
- 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
-@@ -824,7 +818,12 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 		    !VLAN_FILTERING_ALLOWED(adapter)) {
- 			list_del(&f->list);
- 			kfree(f);
--		} else if (f->state == __IAVF_VLAN_REMOVE) {
-+			adapter->num_vlan_filters--;
-+		} else if (f->state == __IAVF_VLAN_DISABLE &&
-+		    !VLAN_FILTERING_ALLOWED(adapter)) {
-+			f->state = __IAVF_VLAN_INACTIVE;
-+		} else if (f->state == __IAVF_VLAN_REMOVE ||
-+			   f->state == __IAVF_VLAN_DISABLE) {
- 			count++;
- 		}
- 	}
-@@ -856,11 +855,18 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 		vvfl->vsi_id = adapter->vsi_res->vsi_id;
- 		vvfl->num_elements = count;
- 		list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
--			if (f->state == __IAVF_VLAN_REMOVE) {
-+			if (f->state == __IAVF_VLAN_DISABLE) {
- 				vvfl->vlan_id[i] = f->vlan.vid;
-+				f->state = __IAVF_VLAN_INACTIVE;
- 				i++;
-+				if (i == count)
-+					break;
-+			} else if (f->state == __IAVF_VLAN_REMOVE) {
-+				vvfl->vlan_id[i] = f->vlan.vid;
- 				list_del(&f->list);
- 				kfree(f);
-+				adapter->num_vlan_filters--;
-+				i++;
- 				if (i == count)
- 					break;
- 			}
-@@ -900,7 +906,8 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 		vvfl_v2->vport_id = adapter->vsi_res->vsi_id;
- 		vvfl_v2->num_elements = count;
- 		list_for_each_entry_safe(f, ftmp, &adapter->vlan_filter_list, list) {
--			if (f->state == __IAVF_VLAN_REMOVE) {
-+			if (f->state == __IAVF_VLAN_DISABLE ||
-+			    f->state == __IAVF_VLAN_REMOVE) {
- 				struct virtchnl_vlan_supported_caps *filtering_support =
- 					&adapter->vlan_v2_caps.filtering.filtering_support;
- 				struct virtchnl_vlan *vlan;
-@@ -914,8 +921,13 @@ void iavf_del_vlans(struct iavf_adapter *adapter)
- 				vlan->tci = f->vlan.vid;
- 				vlan->tpid = f->vlan.tpid;
- 
--				list_del(&f->list);
--				kfree(f);
-+				if (f->state == __IAVF_VLAN_DISABLE) {
-+					f->state = __IAVF_VLAN_INACTIVE;
-+				} else {
-+					list_del(&f->list);
-+					kfree(f);
-+					adapter->num_vlan_filters--;
-+				}
- 				i++;
- 				if (i == count)
- 					break;
-@@ -2443,15 +2455,8 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 
- 		spin_lock_bh(&adapter->mac_vlan_list_lock);
- 		list_for_each_entry(f, &adapter->vlan_filter_list, list) {
--			if (f->state == __IAVF_VLAN_IS_NEW) {
-+			if (f->state == __IAVF_VLAN_IS_NEW)
- 				f->state = __IAVF_VLAN_ACTIVE;
--				if (f->vlan.tpid == ETH_P_8021Q)
--					set_bit(f->vlan.vid,
--						adapter->vsi.active_cvlans);
--				else
--					set_bit(f->vlan.vid,
--						adapter->vsi.active_svlans);
--			}
- 		}
- 		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		}
--- 
-2.38.1
-
+Ehm indeed. Never mind.
