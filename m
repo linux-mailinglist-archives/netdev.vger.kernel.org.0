@@ -2,112 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B8A6D88A9
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 944996D88B9
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbjDEUfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
+        id S230465AbjDEUjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233076AbjDEUeu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:34:50 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067455249;
-        Wed,  5 Apr 2023 13:34:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ir96PDQ5DPUpeJhDM1v4BrKeIYiu1Z8SXvc8ylqyxe8=; b=APgRQZvMhXqYui/jKYMbnzPcry
-        LwxJoMiLuXafar1R6r/+lEB3JLt42me4gaqh6MGXxrXsQ6JG3htDZ3ri3it2ZFxJD0F8SqAGkxhGt
-        bfKq52f5ibdbLODUbWeZf3ogeFu8emiFcDv2gGhCOEdfH2DoKuMoP6K0+I0YvK45vtrU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pk9po-009Yke-Nq; Wed, 05 Apr 2023 22:34:24 +0200
-Date:   Wed, 5 Apr 2023 22:34:24 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S229507AbjDEUjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:39:06 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56A81B3;
+        Wed,  5 Apr 2023 13:39:05 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id hg25-20020a05600c539900b003f05a99a841so4776223wmb.3;
+        Wed, 05 Apr 2023 13:39:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680727144;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ih5QT8Ee7yYAcHkFKgIrf6VHRThaccKYn0ouyxLK294=;
+        b=XWN2t1JqM/F5A/mul8DGE7DcZYG4DiP3Q3YyXwSb0Bc7lunuTE8WZKeNaoGpfrmPID
+         goseeJrXh9/ERf6v796J0RjASFbZvZ3nM2SBnJWHp0Czm37pWmluWK/xyeixO8XZwpLg
+         eXIUIG+5UNEnMsXiimVXRjPeeUk2OqWzt0hW6X7ODlnG0fHkzRwMaPXBBUctY4clZUp6
+         5ImCH1bciRg8/vvpu92DsnXVekn27CO0vttLARxfD76hwq8RjBuVyYkvpxKXxtP8e5B0
+         l/xbjm+QXlenZTmyev5Whv64JWjD+UeuVpArdvDI+e1tKapQxCIXGkByJb//OoazREwz
+         Tn1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680727144;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ih5QT8Ee7yYAcHkFKgIrf6VHRThaccKYn0ouyxLK294=;
+        b=ZofVQ672tiRflR3GT1BEOOSkMK83nCxgU6hA24K2u4a9k6gyTSWvsF0w66cswEDaS+
+         cgf4eEj9SBRu+iYh9nEjRlHpdfv6/gcV32wAhJscRwHb0oMI0c5ePFo/k01ndZNXJZVt
+         64OMEgTho9XoXRGyS/koyMzVNK4bzjV6RMHFsvRlTMZeWcFKe6ZCA+kNfXBZnN4QOeYV
+         tIf+7dBAxgCgX62B/1VHIqtGX57c04sjHLQyplcjjgrfZAJhj5bbPJ8fBxZD04d0YsLf
+         DwC6jaFofQ5FfKvV6161lla+d5p8BplR3p5KHop3BXcct0ew8iWUxVO8JGXi2uP7pd72
+         9iNQ==
+X-Gm-Message-State: AAQBX9cDLVHkDBXnQ4Tjq7b3aQRNV09EW564PfUSEJYSY6PVXQGkjAsP
+        A7pKuTLcgw2CzvbwCOuDTZ0=
+X-Google-Smtp-Source: AKy350aQpmAuEz4xnXn3BfBxrWaBDey1yEmmuFzVTtpMQ6JQIzXhv+z4Oz1KKsR5jK4vTi7hrPBp1Q==
+X-Received: by 2002:a7b:ce16:0:b0:3ed:4b0f:5378 with SMTP id m22-20020a7bce16000000b003ed4b0f5378mr5711811wmc.27.1680727143977;
+        Wed, 05 Apr 2023 13:39:03 -0700 (PDT)
+Received: from arinc9-PC.lan ([149.91.1.15])
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Apr 2023 13:39:03 -0700 (PDT)
+From:   arinc9.unal@gmail.com
+X-Google-Original-From: arinc.unal@arinc9.com
+To:     =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devicetree@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH 06/12] net: phy: add phy_device_atomic_register helper
-Message-ID: <34e22343-fb11-4a85-bade-492fcbcfb436@lunn.ch>
-References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
- <20230405-net-next-topic-net-phy-reset-v1-6-7e5329f08002@pengutronix.de>
- <ad0b0d90-04bf-457c-9bdf-a747d66871b5@lunn.ch>
- <20230405152225.tu3wmbcvchuugs5u@pengutronix.de>
- <a5a4e735-7b24-4933-b431-f36305689a79@lunn.ch>
- <20230405194353.pwuk7e6rxnha3uqi@pengutronix.de>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Richard van Schagen <richard@routerhints.com>,
+        Richard van Schagen <vschagen@cs.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [RFC PATCH net-next 0/12] net: dsa: mt7530: fix port 5 phylink, phy muxing, and port 6
+Date:   Wed,  5 Apr 2023 23:38:47 +0300
+Message-Id: <20230405203859.391267-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230405194353.pwuk7e6rxnha3uqi@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Currently we have one API which creates/allocates the 'struct
-> phy_device' and intialize the state which is:
->    - phy_device_create()
-> 
-> This function requests a driver based on the phy_id/c45_ids. The ID have
-> to come from somewhere if autodection is used. For autodetection case
->    - get_phy_device()
-> 
-> is called. This function try to access the phy without taken possible
-> hardware dependencies into account. These dependecies can be reset-lines
-> (in my case), clocks, supplies, ...
-> 
-> For taking fwnode (and possible dependencies) into account fwnode_mdio.c
-> was written which provides two helpers:
->    - fwnode_mdiobus_register_phy()
->    - fwnode_mdiobus_phy_device_register().
-> 
-> The of_mdio.c and of_mdiobus_register_phy() is just a wrapper around
-> fwnode_mdiobus_register_phy().
+Hello!
 
-It seems to me that the real problem is that mdio_device_reset() takes
-an mdio_device. mdiobus_register_gpiod() and mdiobus_register_reset()
-also take an mdio_device. These are the functions you want to call
-before calling of_mdiobus_register_phy() in __of_mdiobus_register() to
-ensure the PHY is out of reset. But you don't have an mdio_device yet.
+This patch series is mainly focused on improving the support for port 5,
+setting up port 6, and refactoring the MT7530 DSA subdriver.
 
-So i think a better solution is to refactor this code. Move the
-resources into a structure of their own, and make that a member of
-mdio_device. You can create a stack version of this resource structure
-in __of_mdiobus_register(), parse DT to fill it out by calling
-mdiobus_register_gpiod() and mdiobus_register_reset() taking this new
-structure, take it out of reset by calling mdio_device_reset(), and
-then call of_mdiobus_register_phy(). If a PHY is found, copy the
-values in the resulting mdio_device. If not, release the resources.
+The only missing piece to properly support port 5 as a CPU port is the
+fixes [0] [1] [2] from Richard.
 
-Doing it like this means there is no API change.
+I have very thoroughly tested the patch series with every possible mode to
+use. I'll let the name of the dtb files speak for themselves.
 
-      Andrew
+MT7621 Unielec:
+
+only-gmac0-mt7621-unielec-u7621-06-16m.dtb
+rgmii-only-gmac0-mt7621-unielec-u7621-06-16m.dtb
+only-gmac1-mt7621-unielec-u7621-06-16m.dtb
+gmac0-and-gmac1-mt7621-unielec-u7621-06-16m.dtb
+phy0-muxing-mt7621-unielec-u7621-06-16m.dtb
+phy4-muxing-mt7621-unielec-u7621-06-16m.dtb
+port5-as-user-mt7621-unielec-u7621-06-16m.dtb
+
+tftpboot 0x80008000 mips-uzImage.bin; tftpboot 0x83000000 mips-rootfs.cpio.uboot; tftpboot 0x83f00000 $dtb; bootm 0x80008000 0x83000000 0x83f00000
+
+MT7623 Bananapi:
+
+only-gmac0-mt7623n-bananapi-bpi-r2.dtb
+rgmii-only-gmac0-mt7623n-bananapi-bpi-r2.dtb
+only-gmac1-mt7623n-bananapi-bpi-r2.dtb
+gmac0-and-gmac1-mt7623n-bananapi-bpi-r2.dtb
+phy0-muxing-mt7623n-bananapi-bpi-r2.dtb
+phy4-muxing-mt7623n-bananapi-bpi-r2.dtb
+port5-as-user-mt7623n-bananapi-bpi-r2.dtb
+
+tftpboot 0x80008000 arm-uImage; tftpboot 0x83000000 arm-rootfs.cpio.uboot; tftpboot 0x83f00000 $dtb; bootm 0x80008000 0x83000000 0x83f00000
+
+Current CPU ports setup of MT7530:
+
+mt7530_setup()
+-> mt7530_setup_port5()
+
+mt753x_phylink_mac_config()
+-> mt753x_mac_config()
+   -> mt7530_mac_config()
+      -> mt7530_setup_port5()
+-> mt753x_pad_setup()
+   -> mt7530_pad_clk_setup() sets up port 6, rename to mt7530_setup_port6()
+
+How it will be with the patch series:
+
+mt7530_setup()
+-> mt7530_setup_port5() runs if the port is not used as a CPU, DSA, or user port
+
+mt753x_phylink_mac_config()
+-> mt753x_mac_config()
+   -> mt7530_mac_config()
+      -> mt7530_setup_port5()
+      -> mt7530_setup_port6()
+
+CPU ports setup of MT7531 for reference:
+
+mt7531_setup()
+-> mt753x_cpu_port_enable()
+   -> mt7531_cpu_port_config()
+      -> mt7531_mac_config()
+         -> mt7531_rgmii_setup()
+         -> mt7531_sgmii_setup_mode_an()
+         -> etc.
+
+mt753x_phylink_mac_config()
+-> mt753x_mac_config()
+   -> mt7531_mac_config()
+      -> mt7531_rgmii_setup()
+      -> mt7531_sgmii_setup_mode_an()
+      -> etc.
+
+[0] https://lore.kernel.org/netdev/20230212213949.672443-1-richard@routerhints.com/
+[1] https://lore.kernel.org/netdev/20230212215152.673221-1-richard@routerhints.com/
+[2] https://lore.kernel.org/netdev/20230212214027.672501-1-richard@routerhints.com/
+
+Arınç
+
+
