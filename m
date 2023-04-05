@@ -2,161 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 628766D85DE
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 20:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 049BE6D85E3
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 20:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232442AbjDESUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 14:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
+        id S232578AbjDESXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 14:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjDESUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 14:20:21 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1C37689;
-        Wed,  5 Apr 2023 11:20:12 -0700 (PDT)
-Received: from mercury (dyndsl-091-248-212-122.ewe-ip-backbone.de [91.248.212.122])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 75B3866031B4;
-        Wed,  5 Apr 2023 19:20:10 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1680718810;
-        bh=O1SmSIaEGwTASaQ4p6AtJMjiy2CQgrBY5WPfIwkrp5g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fzAzEpU6ldXCM+XK3H6e+HZis/nAJchFpWM59ew9VuFeiMTYws6t0NpVWmCD8LiNb
-         pZA4/SOCs/EIA5rfDlV8dMKiXJ72z2tH8HnZjLDn2DkSzx8zYtE13JoPGBjJTFM+eb
-         EOoqF02Zip1wlCdQnoeCzb/VP0bNrdeiUNLXguk2zNWLZg4ifKNLsVkUgo+P1Mv3Mo
-         ingtMZYWTLb17Wv7myGa1Vr2hxzg7rhCEG8rSiiDuoHXTuI8UXHWf5qgCiwbDxhqQV
-         V5gK7vdN1yo2rJkUAmDs5rbmGhXOhPMUMvRKnfZRxFvvGQvByTcwH5/ywsriiYSt6E
-         GBBKkrCLg/xJw==
-Received: by mercury (Postfix, from userid 1000)
-        id A88D5106125E; Wed,  5 Apr 2023 20:20:08 +0200 (CEST)
-Date:   Wed, 5 Apr 2023 20:20:08 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCHv2 2/2] net: ethernet: stmmac: dwmac-rk: fix optional phy
- regulator handling
-Message-ID: <20230405182008.tmegtq5xprkcwvss@mercury.elektranox.org>
-References: <20230405161043.46190-1-sebastian.reichel@collabora.com>
- <20230405161043.46190-3-sebastian.reichel@collabora.com>
- <ZC2zMzaUMY0/VCRR@corigine.com>
+        with ESMTP id S229623AbjDESXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 14:23:25 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFBA35A1;
+        Wed,  5 Apr 2023 11:23:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680719003; x=1712255003;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HSYygrAqQxExjf3K2A9u5AAu8i1ksBGRjV4gbq51MQg=;
+  b=CxeYBhxJZhsSZonudJDndeDxllq5xjfGhaVIknrAzLZPlpK/zu/6Gq0K
+   O0YYT/0CdN937C2bFqdLL5SdKzvRlxZqR/RzYRMiYuDe/Qv6gd8ii2rY+
+   c4Fs0yAHHC1ij+uMBW7lW8qbadJd2/70G6igq9UkGqsVwP0hIRaOnPRKf
+   iwRpMnWL0N3yTeBItCLElxEPC437GjbBQDsqmp+AOa7yLo5G+A7J2XUgp
+   p8QgwKIkWvNivYvDMLfoV3BthTDRlPniyr8T8RTT+RvvF9wedlYNQQoJR
+   ModsgtZyfayY7hH8q14lYGW6Rtf4cmp8SDZym9uyNCjEI8YASU9asPvgl
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="322184632"
+X-IronPort-AV: E=Sophos;i="5.98,321,1673942400"; 
+   d="scan'208";a="322184632"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 11:23:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="751356623"
+X-IronPort-AV: E=Sophos;i="5.98,321,1673942400"; 
+   d="scan'208";a="751356623"
+Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 05 Apr 2023 11:23:21 -0700
+Received: from kbuild by b613635ddfff with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1pk7my-000QhW-1M;
+        Wed, 05 Apr 2023 18:23:20 +0000
+Date:   Thu, 6 Apr 2023 02:22:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     oe-kbuild-all@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        bpf@vger.kernel.org, dxu@dxuuu.xyz, qde@naccy.de,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH bpf-next 6/6] bpf: add test_run support for netfilter
+ program type
+Message-ID: <202304060207.JawhnyR9-lkp@intel.com>
+References: <20230405161116.13565-7-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4mi6hilgokkjkgxj"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZC2zMzaUMY0/VCRR@corigine.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230405161116.13565-7-fw@strlen.de>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Florian,
 
---4mi6hilgokkjkgxj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+kernel test robot noticed the following build warnings:
 
-Hi Simon,
+[auto build test WARNING on bpf-next/master]
 
-On Wed, Apr 05, 2023 at 07:43:15PM +0200, Simon Horman wrote:
-> On Wed, Apr 05, 2023 at 06:10:43PM +0200, Sebastian Reichel wrote:
-> > The usual devm_regulator_get() call already handles "optional"
-> > regulators by returning a valid dummy and printing a warning
-> > that the dummy regulator should be described properly. This
-> > code open coded the same behaviour, but masked any errors that
-> > are not -EPROBE_DEFER and is quite noisy.
-> >=20
-> > This change effectively unmasks and propagates regulators errors
-> > not involving -ENODEV, downgrades the error print to warning level
-> > if no regulator is specified and captures the probe defer message
-> > for /sys/kernel/debug/devices_deferred.
-> >=20
-> > Fixes: 2e12f536635f8 ("net: stmmac: dwmac-rk: Use standard devicetree p=
-roperty for phy regulator")
-> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 11 ++++-------
-> >  1 file changed, 4 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/n=
-et/ethernet/stmicro/stmmac/dwmac-rk.c
-> > index 6fdad0f10d6f..d9deba110d4b 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-> > @@ -1656,14 +1656,11 @@ static struct rk_priv_data *rk_gmac_setup(struc=
-t platform_device *pdev,
-> >  		}
-> >  	}
-> > =20
-> > -	bsp_priv->regulator =3D devm_regulator_get_optional(dev, "phy");
-> > +	bsp_priv->regulator =3D devm_regulator_get(dev, "phy");
-> >  	if (IS_ERR(bsp_priv->regulator)) {
-> > -		if (PTR_ERR(bsp_priv->regulator) =3D=3D -EPROBE_DEFER) {
-> > -			dev_err(dev, "phy regulator is not available yet, deferred probing\=
-n");
-> > -			return ERR_PTR(-EPROBE_DEFER);
-> > -		}
-> > -		dev_err(dev, "no regulator found\n");
-> > -		bsp_priv->regulator =3D NULL;
->=20
-> Does phy_power_on() need to be updated for this change?
-> F.e. Does the bsp_priv->regulator =3D=3D NULL still make sense?
+url:    https://github.com/intel-lab-lkp/linux/commits/Florian-Westphal/bpf-add-bpf_link-support-for-BPF_NETFILTER-programs/20230406-001447
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+patch link:    https://lore.kernel.org/r/20230405161116.13565-7-fw%40strlen.de
+patch subject: [PATCH bpf-next 6/6] bpf: add test_run support for netfilter program type
+config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20230406/202304060207.JawhnyR9-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7fba218dfc4942aa6781f4d1b5c475a0569cfd2e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Florian-Westphal/bpf-add-bpf_link-support-for-BPF_NETFILTER-programs/20230406-001447
+        git checkout 7fba218dfc4942aa6781f4d1b5c475a0569cfd2e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash net/
 
-Yes, it can be removed (but does not hurt). The regulator API
-returns NULL for devm_regulator_get when CONFIG_REGULATOR is
-not enabled. But regulator_enable/regulator_disable are just
-'return 0;' stubs for that case anyways.
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
+| Link: https://lore.kernel.org/oe-kbuild-all/202304060207.JawhnyR9-lkp@intel.com/
 
--- Sebastian
+All warnings (new ones prefixed by >>):
 
-> > +		ret =3D PTR_ERR(bsp_priv->regulator);
-> > +		dev_err_probe(dev, ret, "failed to get phy regulator\n");
-> > +		return ERR_PTR(ret);
-> >  	}
-> > =20
-> >  	ret =3D of_property_read_string(dev->of_node, "clock_in_out", &string=
-s);
-> > --=20
-> > 2.39.2
-> >=20
->=20
-> --=20
-> To unsubscribe, send mail to kernel-unsubscribe@lists.collabora.co.uk.
+   net/bpf/test_run.c: In function 'bpf_prog_test_run_nf':
+>> net/bpf/test_run.c:1750:30: warning: variable 'eth' set but not used [-Wunused-but-set-variable]
+    1750 |         const struct ethhdr *eth;
+         |                              ^~~
 
---4mi6hilgokkjkgxj
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+vim +/eth +1750 net/bpf/test_run.c
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmQtu8sACgkQ2O7X88g7
-+ppRzA//QWUeFo5AdCjnToZr9ZTGZKoAOkYOoiXq5DvMYDdMSL6ibt8BGYJrSQ8/
-M792jDTc9YSAAF5vhzIjRlNaJsJVTZmFHXTuS6axvZTl/YwcyhnEpkTSEyf4YQCT
-Nh+BBl7Ie54dAAIgeowmcEwxnw736AIZczRCwjAz2/ZJm5WHXf2eXzTCifiav2V2
-ouTdJEfWiUn5/UJj+m1tbdbfRO+UWE+bASkEWNArhYi/5RcC1dMWElatorRxHz/0
-6aNaGmsRrC4XWETq/rpnvrDjDJO59NRpe43SkIiP5oB/HXb0MU6iAeuWtXbYr+G2
-i7qBELe4WT4Uiz48Nub0bguVZad86bkVg8T4+rTtli/JcTtX8g6ai0iMdvY59+ui
-y9B31VQD2KTupt5tU7wH10yvrS9KG9/c7qM2e4t1Iy7FuTtE2AaeFAdH85Wna+M/
-Sfm7qhcJBL7dSprzg84JUIw0akvLUnWi56YW5NcZFWLc5PU0si0rdh6lBKQf7GyB
-1VSseI4T37/ENwiyD359hkR3KHoK5fVzlkHacg3IBWd4KoUniJnnk39SPNPTeBEg
-57BSO1DykUFrVSIdVqEz1UE6NMs9L/qrm1XEl4W2rwLe20ROfBpN43T+r8yxg45u
-kw9DAyRKwsSzlMjaiUaDqisFn/rZIrlWD4AAz9Th/HK2vaJtUfU=
-=x7Bi
------END PGP SIGNATURE-----
+  1737	
+  1738	int bpf_prog_test_run_nf(struct bpf_prog *prog,
+  1739				 const union bpf_attr *kattr,
+  1740				 union bpf_attr __user *uattr)
+  1741	{
+  1742		struct net *net = current->nsproxy->net_ns;
+  1743		struct net_device *dev = net->loopback_dev;
+  1744		struct nf_hook_state *user_ctx, hook_state = {
+  1745			.pf = NFPROTO_IPV4,
+  1746			.hook = NF_INET_PRE_ROUTING,
+  1747		};
+  1748		u32 size = kattr->test.data_size_in;
+  1749		u32 repeat = kattr->test.repeat;
+> 1750		const struct ethhdr *eth;
+  1751		struct bpf_nf_ctx ctx = {
+  1752			.state = &hook_state,
+  1753		};
+  1754		struct sk_buff *skb = NULL;
+  1755		u32 retval, duration;
+  1756		void *data;
+  1757		int ret;
+  1758	
+  1759		if (kattr->test.flags || kattr->test.cpu || kattr->test.batch_size)
+  1760			return -EINVAL;
+  1761	
+  1762		if (size < ETH_HLEN + sizeof(struct iphdr))
+  1763			return -EINVAL;
+  1764	
+  1765		data = bpf_test_init(kattr, kattr->test.data_size_in, size,
+  1766				     NET_SKB_PAD + NET_IP_ALIGN,
+  1767				     SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+  1768		if (IS_ERR(data))
+  1769			return PTR_ERR(data);
+  1770	
+  1771		eth = (struct ethhdr *)data;
+  1772	
+  1773		if (!repeat)
+  1774			repeat = 1;
+  1775	
+  1776		user_ctx = bpf_ctx_init(kattr, sizeof(struct nf_hook_state));
+  1777		if (IS_ERR(user_ctx)) {
+  1778			kfree(data);
+  1779			return PTR_ERR(user_ctx);
+  1780		}
+  1781	
+  1782		if (user_ctx) {
+  1783			ret = verify_and_copy_hook_state(&hook_state, user_ctx, dev);
+  1784			if (ret)
+  1785				goto out;
+  1786		}
+  1787	
+  1788		skb = slab_build_skb(data);
+  1789		if (!skb) {
+  1790			ret = -ENOMEM;
+  1791			goto out;
+  1792		}
+  1793	
+  1794		data = NULL; /* data released via kfree_skb */
+  1795	
+  1796		skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
+  1797		__skb_put(skb, size);
+  1798	
+  1799		skb->protocol = eth_type_trans(skb, dev);
+  1800	
+  1801		skb_reset_network_header(skb);
+  1802	
+  1803		ret = -EINVAL;
+  1804	
+  1805		switch (skb->protocol) {
+  1806		case htons(ETH_P_IP):
+  1807			if (hook_state.pf == NFPROTO_IPV4)
+  1808				break;
+  1809			goto out;
+  1810		case htons(ETH_P_IPV6):
+  1811			if (size < ETH_HLEN + sizeof(struct ipv6hdr))
+  1812				goto out;
+  1813			if (hook_state.pf == NFPROTO_IPV6)
+  1814				break;
+  1815			goto out;
+  1816		default:
+  1817			ret = -EPROTO;
+  1818			goto out;
+  1819		}
+  1820	
+  1821		ctx.skb = skb;
+  1822	
+  1823		ret = bpf_test_run(prog, &ctx, repeat, &retval, &duration, false);
+  1824		if (ret)
+  1825			goto out;
+  1826	
+  1827		ret = bpf_test_finish(kattr, uattr, NULL, NULL, 0, retval, duration);
+  1828	
+  1829	out:
+  1830		kfree(user_ctx);
+  1831		kfree_skb(skb);
+  1832		kfree(data);
+  1833		return ret;
+  1834	}
+  1835	
 
---4mi6hilgokkjkgxj--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
