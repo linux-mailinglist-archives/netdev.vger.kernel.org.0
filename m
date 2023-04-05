@@ -2,72 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B25B6D77E5
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:15:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D75E46D77FC
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237316AbjDEJPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 05:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45070 "EHLO
+        id S237316AbjDEJZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 05:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237300AbjDEJPP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:15:15 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605E52D7D
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:15:14 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id z19so33857608plo.2
-        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 02:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680686114;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VCvSgsaItaK0xITMtCSXP70BN+vBwTSB02va4lolhuk=;
-        b=hug0FWMpAW+k6X1j1s5/2ShCdqyAzsXEnXIyjJdVBQPvSfZ//EzHl4SylSmVnhqW/Q
-         yQfqjqY1KZzkcB05THGp6pEJienuiFuvzv+RLYSISUaTVzF+qeoXYC7/pqVfsGRs7SgJ
-         QOQnuW8ETUFr6/+3fsoPLhKX3ejrb8z8G6Ct4jrBPPKQ5zQOuWfBfWsLlkbb0gdgwupW
-         UdOoM58PXMU8RFbSP7iZjJLhxpf7ub4ggTyJD+818O7i96NQsJzEEoKA595v2g4WPNPN
-         lrd6MPIl6BmgYKISsyMAj5zrzQh3dANUw5OnNVBXTOq09u93skqq6LxGZ7snogioVNB6
-         i6fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680686114;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VCvSgsaItaK0xITMtCSXP70BN+vBwTSB02va4lolhuk=;
-        b=IqA2Z9OAlzCC+uziVZd4Tq4AxSGz7LUbFFlpFhDu55dv9MK447V3ozwylSdcHXJuAD
-         gX5hEmr8bHHLse/23um76pec1RJboYNsmQqGHIlasHi7uAITrOwljZ2vkYx0sRVwvGZU
-         NmBNe8svD7h9vGMHyiqa/yutVSQ1ImFLV5y01nbAbZ+2jOmbl+dFyJ/2WOwI2eBE2360
-         WpYgZNvem8DJUmx+IuyLe6worM8pDtInRvvzTWGfiWGLKV6qeQwEt0P1yeOUOLE5ZDao
-         0UQ5qotysZb+WCrJY0HiSR4jZLlzRWg0yNY2cakvAhco1ySXzrkxt/N/wUtct6jcrvyC
-         FNJw==
-X-Gm-Message-State: AAQBX9e9HO+ldh7CJ6d8zC0X2K4XC3rU//rHzNM8HccfKkZ1b78BJuz9
-        GJdJQUeaakFJO10K88I0f4Y=
-X-Google-Smtp-Source: AKy350bpdpaaj2knhBf1O3/XN6uuSRzVJ/ZRnDjKAJeYYOLqF7d+MLQmnyik0YJzIF+60dSN6EkzfQ==
-X-Received: by 2002:a17:90b:3b87:b0:23b:2ce5:2ddb with SMTP id pc7-20020a17090b3b8700b0023b2ce52ddbmr1824674pjb.8.1680686113816;
-        Wed, 05 Apr 2023 02:15:13 -0700 (PDT)
-Received: from Laptop-X1 ([2409:8a02:782e:a1c0:2082:5d32:9dce:4c17])
-        by smtp.gmail.com with ESMTPSA id m10-20020a17090a7f8a00b0023b4d33bedbsm950531pjl.21.2023.04.05.02.15.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 02:15:12 -0700 (PDT)
-Date:   Wed, 5 Apr 2023 17:15:02 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Vladimir Nikishkin <vladimir@nikishkin.pw>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
-        razor@blackwall.org, idosch@nvidia.com, eyal.birger@gmail.com,
-        jtoppins@redhat.com
-Subject: Re: [PATCH iproute2-next v1 1/1 v1] ip-link: add support for
- nolocalbypass in vxlan
-Message-ID: <ZC08FhWsRHSGr6Dk@Laptop-X1>
-References: <20230323060451.24280-1-vladimir@nikishkin.pw>
- <ZBz/FREYO5iho+eO@Laptop-X1>
- <87ileavr4c.fsf@laptop.lockywolf.net>
+        with ESMTP id S237242AbjDEJZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:25:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8AB46BD
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:24:59 -0700 (PDT)
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1pjzNx-00046k-ON
+        for netdev@vger.kernel.org; Wed, 05 Apr 2023 11:24:57 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id BE3EA1A7129
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 09:24:56 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 347D71A7121;
+        Wed,  5 Apr 2023 09:24:55 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 3e90eda6;
+        Wed, 5 Apr 2023 09:24:54 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net 0/4] pull-request: can 2023-04-05
+Date:   Wed,  5 Apr 2023 11:24:40 +0200
+Message-Id: <20230405092444.1802340-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ileavr4c.fsf@laptop.lockywolf.net>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:b01:1d::7b
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -76,39 +55,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 01:21:17PM +0800, Vladimir Nikishkin wrote:
-> > There is no need to include the uapi header. Stephen will sync it with upstream.
-> >
-> > Hi Stephen, should we add this note to the README.devel?
-> >
-> 
-> Without this change, my code does not compile. I ended up modifying the
-> header, but not adding it to git. Is this the correct way of doing it?
+Hello netdev-team,
 
-Yes, that's what I did.
+this is a pull request of 4 patches for net/master.
 
-> 
-> >> diff --git a/ip/iplink_vxlan.c b/ip/iplink_vxlan.c
-> >> index c7e0e1c4..17fa5cf7 100644
-> >> --- a/ip/iplink_vxlan.c
-> >> +++ b/ip/iplink_vxlan.c
-> >> @@ -276,6 +276,12 @@ static int vxlan_parse_opt(struct link_util *lu, int argc, char **argv,
-> >>  		} else if (!matches(*argv, "noudpcsum")) {
-> >>  			check_duparg(&attrs, IFLA_VXLAN_UDP_CSUM, *argv, *argv);
-> >>  			addattr8(n, 1024, IFLA_VXLAN_UDP_CSUM, 0);
-> >> +		} else if (!matches(*argv, "localbypass")) {
-> >> +			check_duparg(&attrs, IFLA_VXLAN_LOCALBYPASS, *argv, *argv);
-> >> +			addattr8(n, 1024, IFLA_VXLAN_LOCALBYPASS, 1);
-> >> +		} else if (!matches(*argv, "nolocalbypass")) {
-> >> +			check_duparg(&attrs, IFLA_VXLAN_LOCALBYPASS, *argv, *argv);
-> >> +			addattr8(n, 1024, IFLA_VXLAN_LOCALBYPASS, 0);
-> >
-> > matches is deparated, please use strcmp instead.
-> 
-> Why is strcmp recommended, not strncmp? I remember strcmp being frowned
-> upon for some potential memory bounds violations.
+The first patch is by Oleksij Rempel and fixes a out-of-bounds memory
+access in the j1939 protocol.
 
-We can't limit the string length as the parameter may have same prefix. e.g.
-when you have 2 parameters "beef" and "beefsalad".
+The remaining 3 patches target the ISOTP protocol. Oliver Hartkopp
+fixes the ISOTP protocol to pass information about dropped PDUs to the
+user space via control messages. Michal Sojka's patch fixes poll() to
+not forward false EPOLLOUT events. And Oliver Hartkopp fixes a race
+condition between isotp_sendsmg() and isotp_release().
 
-Hangbin
+regards,
+Marc
+
+---
+
+The following changes since commit 3ce9345580974863c060fa32971537996a7b2d57:
+
+  gve: Secure enough bytes in the first TX desc for all TCP pkts (2023-04-04 18:58:12 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-6.3-20230405
+
+for you to fetch changes up to 051737439eaee5bdd03d3c2ef5510d54a478fd05:
+
+  can: isotp: fix race between isotp_sendsmg() and isotp_release() (2023-04-05 11:16:37 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-6.3-20230405
+
+----------------------------------------------------------------
+Michal Sojka (1):
+      can: isotp: isotp_ops: fix poll() to not report false EPOLLOUT events
+
+Oleksij Rempel (1):
+      can: j1939: j1939_tp_tx_dat_new(): fix out-of-bounds memory access
+
+Oliver Hartkopp (2):
+      can: isotp: isotp_recvmsg(): use sock_recv_cmsgs() to get SOCK_RXQ_OVFL infos
+      can: isotp: fix race between isotp_sendsmg() and isotp_release()
+
+ net/can/isotp.c           | 74 ++++++++++++++++++++++++++++++-----------------
+ net/can/j1939/transport.c |  5 +++-
+ 2 files changed, 52 insertions(+), 27 deletions(-)
+
+
