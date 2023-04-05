@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A965F6D8724
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E02D6D8746
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232822AbjDETof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 15:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
+        id S233050AbjDETst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 15:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbjDETod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:44:33 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426BFEE
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 12:44:30 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pk930-00087L-Th; Wed, 05 Apr 2023 21:43:58 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pk92v-0005ZW-QA; Wed, 05 Apr 2023 21:43:53 +0200
-Date:   Wed, 5 Apr 2023 21:43:53 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devicetree@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH 06/12] net: phy: add phy_device_atomic_register helper
-Message-ID: <20230405194353.pwuk7e6rxnha3uqi@pengutronix.de>
-References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
- <20230405-net-next-topic-net-phy-reset-v1-6-7e5329f08002@pengutronix.de>
- <ad0b0d90-04bf-457c-9bdf-a747d66871b5@lunn.ch>
- <20230405152225.tu3wmbcvchuugs5u@pengutronix.de>
- <a5a4e735-7b24-4933-b431-f36305689a79@lunn.ch>
+        with ESMTP id S234129AbjDETs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:48:27 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45CB7EDB
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 12:48:08 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id q19so34244504wrc.5
+        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 12:48:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680724086;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2CU/wqXDquoM5iWh5fb3D/RMmrzIlHoB0ba0E3004b4=;
+        b=eMRuS9EyVLJMDLwDK0g79KHNxCAnYRdZUPH4KiP38+XxFjvV4KeSHiVVA9CqQGpx00
+         GrrHP7yJKxB9hnSG9ZHPLfljeqKbir7udiIqqqKPaLGaPI3lCBCT571TEFHU2CaROFOA
+         Y0h239vruAnlPLQ50G/fyzHPvXjEalfpN625OqG6XPNnung2WMJk/wEMg2bXxr1rZ74m
+         1dalar/zW9URBb19pFaIJCFkpzTQtxe9nsTAfm/Y1EFDvyksvoGvDBx0p+j3bWyoh0KW
+         FJLlP6a31ZqaU/K3+g/4y82zvP6hty21Qnryel/86EFDPR9Lcq95e1Z+At2aU4WLPoLE
+         oT9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680724086;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2CU/wqXDquoM5iWh5fb3D/RMmrzIlHoB0ba0E3004b4=;
+        b=pISp4Dxz1LjzysC2QMmQrsj7Jq0o1+H5mtnccDQLlRxwPxmZl4jnnDRVIrodCS0ciG
+         tNdtI+zAhLJY7KWNH9Neq2N4PTFQyvF8Dz71hJA0GqOabMRPIn7NCQP8h3J1nXylCaJ8
+         H1feP7lZI4JpuIAKJ/DkSnkgby8Wr8XkITGpXka4kT04gL+H6aehBctp9bIak3QGWO90
+         aUdhNJyHGAQx4cNl+sPyd6/N7nOnsE89mjEk+68eb7iaelSFGc0lUrWyev/1ZganfzYI
+         CC4vxBuzZUUabhUYrR8l97doarLxnYA3Rj3pLeTJtVb0NHwgBxvImiDcy30TEN2aOTOn
+         /i/w==
+X-Gm-Message-State: AAQBX9fb0dw5t4Pivx9gdoZXado6jA7DtctkdS497HZYrwie11CJymT3
+        1v5d4muybmn7MH14iP5WBLRHqaw9UxEle7Hq5XG5mw==
+X-Google-Smtp-Source: AKy350aeaYHLJq/TU0Pt84k7DKQ9XA3V8glYD/ljox0u0btbqTyv19eQ+lB7J0ClP0EF6eaBfn7pd5ZJ6saf2+mYv3Y=
+X-Received: by 2002:adf:fc41:0:b0:2ce:a5f8:b786 with SMTP id
+ e1-20020adffc41000000b002cea5f8b786mr1381127wrs.12.1680724086448; Wed, 05 Apr
+ 2023 12:48:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a5a4e735-7b24-4933-b431-f36305689a79@lunn.ch>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+References: <CANn89iKn4rpqj_8fYt0UMMgAq5L_2PNoY0Ev70ck8u4t4FC_=g@mail.gmail.com>
+ <20230405194143.15708-1-kuniyu@amazon.com>
+In-Reply-To: <20230405194143.15708-1-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 5 Apr 2023 21:47:54 +0200
+Message-ID: <CANn89iJeHFb8VnFPUq4-d+jzAO6XKiSQhaPsPFY98wjH0Yx1Lw@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in tcp_write_timer_handler
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, threeearcat@gmail.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,115 +72,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23-04-05, Andrew Lunn wrote:
-> > The current fwnode_mdio.c don't provide the proper helper functions yet.
-> > Instead the parsing is spread between fwnode_mdiobus_register_phy() and
-> > fwnode_mdiobus_phy_device_register(). Of course these can be extracted
-> > and exported but I don't see the benefit. IMHO it just cause jumping
-> > around files and since fwnode is a proper firmware abstraction we could
-> > use is directly wihin core/lib files.
-> 
-> No, assuming fwnode is the proper firmware abstraction is wrong. You
-> need to be very careful any time you convert of_ to fwnode_ and look
-> at the history of every property. Look at the number of deprecated OF
-> properties in Documentation/devicetree/bindings. They should never be
-> moved to fwnode_ because then you are moving deprecated properties to
-> ACPI, which never had them in the first place! 
+On Wed, Apr 5, 2023 at 9:42=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon.com=
+> wrote:
+>
+> From:   Eric Dumazet <edumazet@google.com>
+> Date:   Wed, 5 Apr 2023 13:28:16 +0200
+> > On Wed, Apr 5, 2023 at 12:41=E2=80=AFPM Dae R. Jeong <threeearcat@gmail=
+.com> wrote:
+> > >
+> > > Hi,
+> > >
+> > > We observed an issue "KASAN: use-after-free Read in tcp_write_timer_h=
+andler" during fuzzing.
+> > >
+> > > Unfortunately, we have not found a reproducer for the crash yet. We
+> > > will inform you if we have any update on this crash.  Detailed crash
+> > > information is attached below.
+> > >
+> >
+> > Thanks for the report.
+> >
+> > I have dozens of similar syzbot reports, with no repro.
+> >
+> > I usually hold them, because otherwise it is just noise to mailing list=
+s.
+> >
+> > Normally, all user TCP sockets hold a reference on the netns
+> >
+> > In all these cases, we see a netns being dismantled while there is at
+> > least one socket with a live timer.
+> >
+> > This is therefore a kernel TCP socket, for which we do not have yet
+> > debugging infra ( REF_TRACKER )
+> >
+> > CONFIG_NET_DEV_REFCNT_TRACKER=3Dy is helping to detect too many dev_put=
+(),
+> > we need something tracking the "kernel sockets" as well.
+>
+> Maybe I missed something, but we track kernel sockets with netns
+> by notrefcnt_tracker ?
 
-The handling of deprecated properties is always a pain. Drivers handling
-deprecated properties correctly for of_ should handle it correctly for
-fwnode_ too. IMHO it would be driver bug if not existing deprecated
-properties cause an error.  Of course there will be properties which
-need special attention for ACPI case but I don't see a problem for
-deprecated properties since those must be handled correctly for of_ case
-too.
+Oh right, I forgot I did this already :)
 
-> You cannot assume DT and ACPI are the same thing, have the same
-> binding. And the same is true, in theory, in the opposite direction.
-> We don't want the DT properties polluted with ACPI only properties.
-> Not that anybody takes ACPI seriously in networking.
+commit 0cafd77dcd032d1687efaba5598cf07bce85997f
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Thu Oct 20 23:20:18 2022 +0000
 
-My assumption was that ACPI is becoming more closer to OF and the
-fwnode/device abstraction is the abstraction to have one driver
-interacting correctly with OF and ACPI. As I said above there will be
-some corner-cases which need special attention of course :/
+    net: add a refcount tracker for kernel sockets
 
-Also while answering this mail, I noticed that there are already some
-'small' fwnode/device_ helpers within phy_device.c. So why not bundling
-everything within phy_device.c?
+Dae, make sure to not send reports based on old kernels.
 
-> > I know and I thought about adding the firmware parsing helpers first but
-> > than I went this way. I can split this of course to make the patch
-> > smaller.
-> 
-> Please do. Also, i read your commit message thinking it was a straight
-> copy of the code, and hence i did not need to review the code. But in
-> fact it is new code. So i need to take a close look at it.
-> 
-> But what i think is most important for this patchset is the
-> justification for not fixing the current API. Why is it broken beyond
-> repair?
+Using 6.0-rc7 is a waste of your time, and everyone else reading this threa=
+d.
 
-Currently we have one API which creates/allocates the 'struct
-phy_device' and intialize the state which is:
-   - phy_device_create()
+I confess I did not check this, and I really should do that all the time.
 
-This function requests a driver based on the phy_id/c45_ids. The ID have
-to come from somewhere if autodection is used. For autodetection case
-   - get_phy_device()
 
-is called. This function try to access the phy without taken possible
-hardware dependencies into account. These dependecies can be reset-lines
-(in my case), clocks, supplies, ...
 
-For taking fwnode (and possible dependencies) into account fwnode_mdio.c
-was written which provides two helpers:
-   - fwnode_mdiobus_register_phy()
-   - fwnode_mdiobus_phy_device_register().
-
-The of_mdio.c and of_mdiobus_register_phy() is just a wrapper around
-fwnode_mdiobus_register_phy().
-
-fwnode_mdiobus_register_phy():
-   1st) calls get_phy_device() in case of autodection or c45. If phy_id
-        is provided and !c45 case phy_device_create() is called to get a
-	'struct phy_device'
-        - The autodection/c45 case try to access the PHYID registers
-	  which is not possible, please see above.
-   2nd) call fwnode_mdiobus_phy_device_register() or
-        phy_device_register() directly.
-	- phy_device_register() is the first time we taking the possible
-	  hardware reset line into account, which is far to late.
-
-fwnode_mdiobus_phy_device_register():
-   - takes a 'struct phy_device' as parameter, again this have to come
-     from somewhere.
-   - calls phy_device_register() which is taken the possibel hardware
-     reset into account, again to late.
-
-Why do I need the autodection? Because PHYs can be changed due to EOL,
-cheaper device, ... I don't wanna have a new devicetree/firmware for the
-updated product, just let the magic happen :)
-
-Why do I introduce a new API?
-  1st) There are working users of get_phy_device() and I don't wanna
-       break their systems, so I left this logic untouched. 
-  2nd) The fwnode API is replaced by this new one, since it is
-       broken (please see above). 
-  3rd) IMHO the 'phy request/phy create' handling is far to complex
-       therefore I introduced a single API which:
-       - intialize all structures and states
-       - prepare the device for interaction by using fwnode
-       - initialize/detect the device and requests the coorect phy
-	 module
-       - applies the fixups
-       - add the device to the kernel
-       - finally return the 'struct phy_device' to the user, so the
-	 driver can do $stuff.
-  4th) The new 'struct phy_device_config' makes it easier to
-       adapt/extend the API.
-
-Thanks a lot for your fast response and feedback :)
-
-Regards,
-  Marco
+>
+> I thought now CONFIG_NET_NS_REFCNT_TRACKER can catch the case.
+>
+>
+> >
+> > Otherwise bugs in subsystems not properly dismantling their kernel
+> > socket at netns dismantle are next to impossible to track and fix.
+> >
+> > If anyone has time to implement this, feel free to submit patches.
+> >
+> > Thanks.
