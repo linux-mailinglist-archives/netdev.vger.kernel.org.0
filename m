@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C0B6D8A5C
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:10:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A878F6D8A5E
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:10:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234438AbjDEWKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 18:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        id S234487AbjDEWKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 18:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbjDEWJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:09:47 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660F283D0;
-        Wed,  5 Apr 2023 15:09:22 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id f22so31620728plr.0;
-        Wed, 05 Apr 2023 15:09:22 -0700 (PDT)
+        with ESMTP id S234314AbjDEWJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:09:49 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482D47282;
+        Wed,  5 Apr 2023 15:09:23 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id x15so35440655pjk.2;
+        Wed, 05 Apr 2023 15:09:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680732561; x=1683324561;
+        d=gmail.com; s=20210112; t=1680732563; x=1683324563;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+TaDLCIXSz9eYXTku+ilKJmltzAIAJaTUBVD0OtqxmY=;
-        b=RaF0MHZzlPu4UZnvmnfSfj+4613ZjD+AcIFOqy5Z+8+0pftdTAXIexMYfLKS7csQek
-         /7/l99Z3w6T245u0qGen4ziJlalMAtq5kMxU8hGtNgBc5k04gAlsI2Z5q8DVitcVmPQt
-         sIKxnr6I1zgEypi96h77iOKjrB7wTj+QIKedgDWcwLRBpGa50uRgXOAR/j7km3RpHiNx
-         Jt8S2De49NVHsEo8/4K7MdZNFbHqyASXp6pFUPF4T5WepAtRQGngwH4hHJPHsNJ2k8EF
-         Rlip4FIE48p/6mKlNUV8+WNlc5iS9+tLW6Z1KIMgLJSlYU/+bum+5Eceujym9LYDiO90
-         MBTw==
+        bh=WnWen7kjqNC6BHyX2tSKhXwmBzaOl/pAI54Si9NYoD0=;
+        b=ogcOWXnlv8MV9+NWjX/TF/7ccialazYeDwWe1tvSHtUJoa4aK0zOpvxvEvTqxga6/W
+         4my+0GVvNRbsWjXlh2Mv6oOf07BCIv07d+sIT1mt0nCXfe6ihIXQaIMsZYtaV63TfF6F
+         0AG7UZmDZq2Xq/DcPvo3vxRCow9cx5UxulAk0k2MJ9B2jycwhSJOQZYD/IkbLsNjHn0x
+         0eelIDHCJ3TfTNI3o72DM5zah992j+upKfaOZqSn4sxUE2KVunWH+GSMHMAkCpC2jLK6
+         jPhw7NBzt2B84Rp1SJGw4VVzrFLCzLXJ7KFdiLykR+4FUvKjluFVq/PTkOZT88HS/9zE
+         cTew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680732561; x=1683324561;
+        d=1e100.net; s=20210112; t=1680732563; x=1683324563;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+TaDLCIXSz9eYXTku+ilKJmltzAIAJaTUBVD0OtqxmY=;
-        b=RJ/Im0AGldRqVBkuDZuMjCe0c17gSZ0HFvXnNKd5eKNFQVGtpSv+AOnvc6muMTjmYj
-         oFw8RvoDiS46Jmvrrv24X2sr1ursSUZIZKm/6OU0UM3IGFN+tc6PndybevlyBvpVlR44
-         QJZVUpd3Lj+OAOCFWMzhTRfxvDxLjisVjrPsimcqBoDDcr04fZeNiLLdX/DPN93gC+BG
-         NfLXTTs1fTNyHd8BJuvVYd4Gnxaf7h/XIsR4ZXMzcr50zlVbwnArn1LYZu4Oy63J/zZj
-         SYtcpXkdj2jy32OIXIyhbVWxC/E9L7KegePZrRyYx8nWVlMi7zN36mKEjZXrzxy7FwNI
-         IQgw==
-X-Gm-Message-State: AAQBX9cXl6Qf73FpUuxWW7G5K07Sw5AN+ZVqq77G5XyYdVsUsijaMx22
-        X+qe9cavknFzG3oKhcecPGY=
-X-Google-Smtp-Source: AKy350Z5M3GnU/iE6p374KHgZmMA6usvoDwlMFTaed4FUjJUAnWNaJakLRWYoOeTAxQtdJKZdvw/4A==
-X-Received: by 2002:a17:90b:38cc:b0:23d:35c9:bf1c with SMTP id nn12-20020a17090b38cc00b0023d35c9bf1cmr8589254pjb.16.1680732561306;
-        Wed, 05 Apr 2023 15:09:21 -0700 (PDT)
+        bh=WnWen7kjqNC6BHyX2tSKhXwmBzaOl/pAI54Si9NYoD0=;
+        b=s+unBsLMyhmG8VmKdNjL7drJyGBpq/4LD2rf7pVMItIeNhVhT08KREMoZ8OOSj8h+j
+         bukvFk68U+aHrohAAaFgDlcDH5+cap+QY4EYMlFLRlCyh9Md0836jtrbPYVwA2USmJrP
+         r9q8oTVkwY/iNPDc5WrY0TpOGqIKKoRrwb3+e1SuD15/+KFYtFQASEw9VoBuNobw9Mqk
+         g3yDww1S6nL0NgDYmSdNAJR2/QZ98C31SsbZ5jbq0gPcQrvhSiiO4lLQUNdxVwEmLo5r
+         6+jMW0ujG5JgzMNP3s0QiQvzI7u+Ys3gA0zAzizCa+tb56S/ZzYjAKj9MMY3UsZXABHS
+         zbTQ==
+X-Gm-Message-State: AAQBX9dK99QzoULmzp3rVtkZ1jC7I+gosYQdTMIQR5Eumgicl/MFMqAM
+        4C3MtIQAawmP0hIWf/qfNdc=
+X-Google-Smtp-Source: AKy350bzs7H95vvmgN73sHE2jDuGAQuVUMbOyQUyRhs4EMI+cTlZETv5qrUG9lZrBdvX/kwfpnZW6g==
+X-Received: by 2002:a17:90a:41:b0:23e:2b3c:d4a7 with SMTP id 1-20020a17090a004100b0023e2b3cd4a7mr7785237pjb.35.1680732562849;
+        Wed, 05 Apr 2023 15:09:22 -0700 (PDT)
 Received: from john.lan ([2605:59c8:4c5:7110:5120:4bff:95ea:9ce0])
-        by smtp.gmail.com with ESMTPSA id gz11-20020a17090b0ecb00b00230ffcb2e24sm1865697pjb.13.2023.04.05.15.09.20
+        by smtp.gmail.com with ESMTPSA id gz11-20020a17090b0ecb00b00230ffcb2e24sm1865697pjb.13.2023.04.05.15.09.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 15:09:20 -0700 (PDT)
+        Wed, 05 Apr 2023 15:09:22 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, daniel@iogearbox.net, edumazet@google.com
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
         will@isovalent.com
-Subject: [PATCH bpf v4 09/12] bpf: sockmap, build helper to create connected socket pair
-Date:   Wed,  5 Apr 2023 15:09:01 -0700
-Message-Id: <20230405220904.153149-10-john.fastabend@gmail.com>
+Subject: [PATCH bpf v4 10/12] bpf: sockmap, test shutdown() correctly exits epoll and recv()=0
+Date:   Wed,  5 Apr 2023 15:09:02 -0700
+Message-Id: <20230405220904.153149-11-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20230405220904.153149-1-john.fastabend@gmail.com>
 References: <20230405220904.153149-1-john.fastabend@gmail.com>
@@ -72,317 +72,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A common operation for testing is to spin up a pair of sockets that are
-connected. Then we can use these to run specific tests that need to
-send data, check BPF programs and so on.
+When session gracefully shutdowns epoll needs to wake up and any recv()
+readers should return 0 not the -EAGAIN they previously returned.
 
-The sockmap_listen programs already have this logic lets move it into
-the new sockmap_helpers header file for general use.
+Note we use epoll instead of select to test the epoll wake on shutdown
+event as well.
 
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- .../bpf/prog_tests/sockmap_helpers.h          | 125 ++++++++++++++++++
- .../selftests/bpf/prog_tests/sockmap_listen.c | 107 +--------------
- 2 files changed, 130 insertions(+), 102 deletions(-)
+ .../selftests/bpf/prog_tests/sockmap_basic.c  | 68 +++++++++++++++++++
+ .../bpf/progs/test_sockmap_pass_prog.c        | 32 +++++++++
+ 2 files changed, 100 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_helpers.h b/tools/testing/selftests/bpf/prog_tests/sockmap_helpers.h
-index bff56844e745..54e3a019ba72 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_helpers.h
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_helpers.h
-@@ -246,4 +246,129 @@ static inline struct sockaddr *sockaddr(struct sockaddr_storage *ss)
- 	return (struct sockaddr *)ss;
+diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+index 0ce25a967481..f9f611618e45 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
++++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
+@@ -2,6 +2,7 @@
+ // Copyright (c) 2020 Cloudflare
+ #include <error.h>
+ #include <netinet/tcp.h>
++#include <sys/epoll.h>
+ 
+ #include "test_progs.h"
+ #include "test_skmsg_load_helpers.skel.h"
+@@ -9,8 +10,11 @@
+ #include "test_sockmap_invalid_update.skel.h"
+ #include "test_sockmap_skb_verdict_attach.skel.h"
+ #include "test_sockmap_progs_query.skel.h"
++#include "test_sockmap_pass_prog.skel.h"
+ #include "bpf_iter_sockmap.skel.h"
+ 
++#include "sockmap_helpers.h"
++
+ #define TCP_REPAIR		19	/* TCP sock is under repair right now */
+ 
+ #define TCP_REPAIR_ON		1
+@@ -350,6 +354,68 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
+ 	test_sockmap_progs_query__destroy(skel);
  }
  
-+static inline int add_to_sockmap(int sock_mapfd, int fd1, int fd2)
++#define MAX_EVENTS 10
++static void test_sockmap_skb_verdict_shutdown(void)
 +{
-+	u64 value;
-+	u32 key;
-+	int err;
++	int n, err, map, verdict, s, c0, c1, p0, p1;
++	struct epoll_event ev, events[MAX_EVENTS];
++	struct test_sockmap_pass_prog *skel;
++	int epollfd;
++	int zero = 0;
++	char b;
 +
-+	key = 0;
-+	value = fd1;
-+	err = xbpf_map_update_elem(sock_mapfd, &key, &value, BPF_NOEXIST);
-+	if (err)
-+		return err;
++	skel = test_sockmap_pass_prog__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "open_and_load"))
++		return;
 +
-+	key = 1;
-+	value = fd2;
-+	return xbpf_map_update_elem(sock_mapfd, &key, &value, BPF_NOEXIST);
++	verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
++	map = bpf_map__fd(skel->maps.sock_map_rx);
++
++	err = bpf_prog_attach(verdict, map, BPF_SK_SKB_STREAM_VERDICT, 0);
++	if (!ASSERT_OK(err, "bpf_prog_attach"))
++		goto out;
++
++	s = socket_loopback(AF_INET, SOCK_STREAM);
++	if (s < 0)
++		goto out;
++	err = create_socket_pairs(s, AF_INET, SOCK_STREAM, &c0, &c1, &p0, &p1);
++	if (err < 0)
++		goto out;
++
++	err = bpf_map_update_elem(map, &zero, &c1, BPF_NOEXIST);
++	if (err < 0)
++		goto out_close;
++
++	shutdown(c0, SHUT_RDWR);
++	shutdown(p1, SHUT_WR);
++
++	ev.events = EPOLLIN;
++	ev.data.fd = c1;
++
++	epollfd = epoll_create1(0);
++	if (!ASSERT_GT(epollfd, -1, "epoll_create(0)"))
++		goto out_close;
++	err = epoll_ctl(epollfd, EPOLL_CTL_ADD, c1, &ev);
++	if (!ASSERT_OK(err, "epoll_ctl(EPOLL_CTL_ADD)"))
++		goto out_close;
++	err = epoll_wait(epollfd, events, MAX_EVENTS, -1);
++	if (!ASSERT_EQ(err, 1, "epoll_wait(fd)"))
++		goto out_close;
++
++	n = recv(c1, &b, 1, SOCK_NONBLOCK);
++	ASSERT_EQ(n, 0, "recv_timeout(fin)");
++	n = recv(p0, &b, 1, SOCK_NONBLOCK);
++	ASSERT_EQ(n, 0, "recv_timeout(fin)");
++
++out_close:
++	close(c0);
++	close(p0);
++	close(c1);
++	close(p1);
++out:
++	test_sockmap_pass_prog__destroy(skel);
 +}
 +
-+static inline int create_socket_pairs(int s, int family, int sotype,
-+				      int *c0, int *c1, int *p0, int *p1)
-+{
-+	struct sockaddr_storage addr;
-+	socklen_t len;
-+	int err = 0;
-+
-+	len = sizeof(addr);
-+	err = xgetsockname(s, sockaddr(&addr), &len);
-+	if (err)
-+		return err;
-+
-+	*c0 = xsocket(family, sotype, 0);
-+	if (*c0 < 0)
-+		return errno;
-+	err = xconnect(*c0, sockaddr(&addr), len);
-+	if (err) {
-+		err = errno;
-+		goto close_cli0;
-+	}
-+
-+	*p0 = xaccept_nonblock(s, NULL, NULL);
-+	if (*p0 < 0) {
-+		err = errno;
-+		goto close_cli0;
-+	}
-+
-+	*c1 = xsocket(family, sotype, 0);
-+	if (*c1 < 0) {
-+		err = errno;
-+		goto close_peer0;
-+	}
-+	err = xconnect(*c1, sockaddr(&addr), len);
-+	if (err) {
-+		err = errno;
-+		goto close_cli1;
-+	}
-+
-+	*p1 = xaccept_nonblock(s, NULL, NULL);
-+	if (*p1 < 0) {
-+		err = errno;
-+		goto close_peer1;
-+	}
-+	return err;
-+close_peer1:
-+	close(*p1);
-+close_cli1:
-+	close(*c1);
-+close_peer0:
-+	close(*p0);
-+close_cli0:
-+	close(*c0);
-+	return err;
-+}
-+
-+static inline int enable_reuseport(int s, int progfd)
-+{
-+	int err, one = 1;
-+
-+	err = xsetsockopt(s, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
-+	if (err)
-+		return -1;
-+	err = xsetsockopt(s, SOL_SOCKET, SO_ATTACH_REUSEPORT_EBPF, &progfd,
-+			  sizeof(progfd));
-+	if (err)
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static inline int socket_loopback_reuseport(int family, int sotype, int progfd)
-+{
-+	struct sockaddr_storage addr;
-+	socklen_t len;
-+	int err, s;
-+
-+	init_addr_loopback(family, &addr, &len);
-+
-+	s = xsocket(family, sotype, 0);
-+	if (s == -1)
-+		return -1;
-+
-+	if (progfd >= 0)
-+		enable_reuseport(s, progfd);
-+
-+	err = xbind(s, sockaddr(&addr), len);
-+	if (err)
-+		goto close;
-+
-+	if (sotype & SOCK_DGRAM)
-+		return s;
-+
-+	err = xlisten(s, SOMAXCONN);
-+	if (err)
-+		goto close;
-+
-+	return s;
-+close:
-+	xclose(s);
-+	return -1;
-+}
-+
-+static inline int socket_loopback(int family, int sotype)
-+{
-+	return socket_loopback_reuseport(family, sotype, -1);
-+}
-+
-+
- #endif // __SOCKMAP_HELPERS__
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 0f0cddd4e15e..f3913ba9e899 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -28,58 +28,6 @@
- 
- #include "sockmap_helpers.h"
- 
--static int enable_reuseport(int s, int progfd)
--{
--	int err, one = 1;
--
--	err = xsetsockopt(s, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
--	if (err)
--		return -1;
--	err = xsetsockopt(s, SOL_SOCKET, SO_ATTACH_REUSEPORT_EBPF, &progfd,
--			  sizeof(progfd));
--	if (err)
--		return -1;
--
--	return 0;
--}
--
--static int socket_loopback_reuseport(int family, int sotype, int progfd)
--{
--	struct sockaddr_storage addr;
--	socklen_t len;
--	int err, s;
--
--	init_addr_loopback(family, &addr, &len);
--
--	s = xsocket(family, sotype, 0);
--	if (s == -1)
--		return -1;
--
--	if (progfd >= 0)
--		enable_reuseport(s, progfd);
--
--	err = xbind(s, sockaddr(&addr), len);
--	if (err)
--		goto close;
--
--	if (sotype & SOCK_DGRAM)
--		return s;
--
--	err = xlisten(s, SOMAXCONN);
--	if (err)
--		goto close;
--
--	return s;
--close:
--	xclose(s);
--	return -1;
--}
--
--static int socket_loopback(int family, int sotype)
--{
--	return socket_loopback_reuseport(family, sotype, -1);
--}
--
- static void test_insert_invalid(struct test_sockmap_listen *skel __always_unused,
- 				int family, int sotype, int mapfd)
+ void test_sockmap_basic(void)
  {
-@@ -722,31 +670,12 @@ static const char *redir_mode_str(enum redir_mode mode)
- 	}
+ 	if (test__start_subtest("sockmap create_update_free"))
+@@ -384,4 +450,6 @@ void test_sockmap_basic(void)
+ 		test_sockmap_progs_query(BPF_SK_SKB_STREAM_VERDICT);
+ 	if (test__start_subtest("sockmap skb_verdict progs query"))
+ 		test_sockmap_progs_query(BPF_SK_SKB_VERDICT);
++	if (test__start_subtest("sockmap skb_verdict shutdown"))
++		test_sockmap_skb_verdict_shutdown();
  }
- 
--static int add_to_sockmap(int sock_mapfd, int fd1, int fd2)
--{
--	u64 value;
--	u32 key;
--	int err;
--
--	key = 0;
--	value = fd1;
--	err = xbpf_map_update_elem(sock_mapfd, &key, &value, BPF_NOEXIST);
--	if (err)
--		return err;
--
--	key = 1;
--	value = fd2;
--	return xbpf_map_update_elem(sock_mapfd, &key, &value, BPF_NOEXIST);
--}
--
- static void redir_to_connected(int family, int sotype, int sock_mapfd,
- 			       int verd_mapfd, enum redir_mode mode)
- {
- 	const char *log_prefix = redir_mode_str(mode);
--	struct sockaddr_storage addr;
- 	int s, c0, c1, p0, p1;
- 	unsigned int pass;
--	socklen_t len;
- 	int err, n;
- 	u32 key;
- 	char b;
-@@ -757,36 +686,13 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
- 	if (s < 0)
- 		return;
- 
--	len = sizeof(addr);
--	err = xgetsockname(s, sockaddr(&addr), &len);
-+	err = create_socket_pairs(s, family, sotype, &c0, &c1, &p0, &p1);
- 	if (err)
- 		goto close_srv;
- 
--	c0 = xsocket(family, sotype, 0);
--	if (c0 < 0)
--		goto close_srv;
--	err = xconnect(c0, sockaddr(&addr), len);
--	if (err)
--		goto close_cli0;
--
--	p0 = xaccept_nonblock(s, NULL, NULL);
--	if (p0 < 0)
--		goto close_cli0;
--
--	c1 = xsocket(family, sotype, 0);
--	if (c1 < 0)
--		goto close_peer0;
--	err = xconnect(c1, sockaddr(&addr), len);
--	if (err)
--		goto close_cli1;
--
--	p1 = xaccept_nonblock(s, NULL, NULL);
--	if (p1 < 0)
--		goto close_cli1;
--
- 	err = add_to_sockmap(sock_mapfd, p0, p1);
- 	if (err)
--		goto close_peer1;
-+		goto close;
- 
- 	n = write(mode == REDIR_INGRESS ? c1 : p1, "a", 1);
- 	if (n < 0)
-@@ -794,12 +700,12 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
- 	if (n == 0)
- 		FAIL("%s: incomplete write", log_prefix);
- 	if (n < 1)
--		goto close_peer1;
-+		goto close;
- 
- 	key = SK_PASS;
- 	err = xbpf_map_lookup_elem(verd_mapfd, &key, &pass);
- 	if (err)
--		goto close_peer1;
-+		goto close;
- 	if (pass != 1)
- 		FAIL("%s: want pass count 1, have %d", log_prefix, pass);
- 	n = recv_timeout(c0, &b, 1, 0, IO_TIMEOUT_SEC);
-@@ -808,13 +714,10 @@ static void redir_to_connected(int family, int sotype, int sock_mapfd,
- 	if (n == 0)
- 		FAIL("%s: incomplete recv", log_prefix);
- 
--close_peer1:
-+close:
- 	xclose(p1);
--close_cli1:
- 	xclose(c1);
--close_peer0:
- 	xclose(p0);
--close_cli0:
- 	xclose(c0);
- close_srv:
- 	xclose(s);
+diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c b/tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
+new file mode 100644
+index 000000000000..1d86a717a290
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
+@@ -0,0 +1,32 @@
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++
++struct {
++	__uint(type, BPF_MAP_TYPE_SOCKMAP);
++	__uint(max_entries, 20);
++	__type(key, int);
++	__type(value, int);
++} sock_map_rx SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_SOCKMAP);
++	__uint(max_entries, 20);
++	__type(key, int);
++	__type(value, int);
++} sock_map_tx SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_SOCKMAP);
++	__uint(max_entries, 20);
++	__type(key, int);
++	__type(value, int);
++} sock_map_msg SEC(".maps");
++
++SEC("sk_skb")
++int prog_skb_verdict(struct __sk_buff *skb)
++{
++	return SK_PASS;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.33.0
 
