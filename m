@@ -2,112 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2589C6D76AB
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 10:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5147F6D76E3
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 10:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237458AbjDEITH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 04:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
+        id S237498AbjDEI30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 04:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237469AbjDEITD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 04:19:03 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9ADD4C22
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 01:19:01 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id bi9so45543589lfb.12
-        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 01:19:01 -0700 (PDT)
+        with ESMTP id S237146AbjDEI3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 04:29:24 -0400
+Received: from mail-ed1-x561.google.com (mail-ed1-x561.google.com [IPv6:2a00:1450:4864:20::561])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695183596
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 01:29:22 -0700 (PDT)
+Received: by mail-ed1-x561.google.com with SMTP id eg48so139017246edb.13
+        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 01:29:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680682740;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kR2nFpKlk9WSXCvvRza5xwx32GkJOMTehJRh1OBGzy0=;
-        b=bHSAsYUuA9yAUpeqRHJ7dt6CgSyYwxLjhcwwx8L+Y1fLrAP1wX35hqTWqdBvEDxUNs
-         7R+pXSpDHrmUCaIwSnByPq9lXwQ6v2+jS9W8yz4OOlGHSTUYW4Dewld6ASlYSDospobC
-         HhT2qD6A5ljNOTs+SybnEsQM+CpIzYOxe+sEonfZ5Ag9Ea08PjG+PufRYATCRex28J+w
-         D3VBkpCIvnaCyLpGCrfpBA0lt4pCS9d1FUrEOPbSOPUmcaVDLbp90OdAWARDQ6vXckil
-         Om2NO8VSF7cdHP/jE5n536RVkWCeXlM5Grkfszo1jYpnHaZAJwWkLJMcyibC20pwy867
-         KjkA==
+        d=dectris.com; s=google; t=1680683361;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=dubmJZzj9ewK7VdPsSH0OrrerYhQltiRGNAZ5sYhsdE=;
+        b=fap3neKkM4RZlmbaswN8wfO5OfaFYwyq7u3U9SC/yss7GFyBfcLf3QWly2JYJYQYya
+         EwGZTWN5O/gi1o2EIiEB/gn9gXStcw1wG1aHC4S3bYSORuxU85r79O0lSkfUePklYSr0
+         N/VTtD8Mtu4te5BqaDTL9zHEsvM1O2mLPwnSo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680682740;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kR2nFpKlk9WSXCvvRza5xwx32GkJOMTehJRh1OBGzy0=;
-        b=Ptr7AK/gKHaqUG1vfeBp/fJHS1MsNtSFvwFf+cM2PGevUUGoBdlM8D61bh8Yq09iCi
-         3h+ghLFOalVdHtWtoPdijfAtZoKX7ASKK9IkAfZSI058+LCkAZizVrOMRBinigCbVVXc
-         rOq7gzVAqLIW6k3vRAXznMw/y5tGIeWCw7f3sq/Wq5dzZEAuiEgJK+12l0WHPdyeKRNy
-         FeyjsUdVtlPheRM2j1c4h80trrv5mgtHpi3yN+2iN5V8x6u4E1eOaudgcPL2kArdaa8q
-         UQewlVz+XqxJoGtD9QHvjBMhyhvEN496qKFX98wYQEwDw5ru7kvDdinqTgR8br/IjWM4
-         lcUQ==
-X-Gm-Message-State: AAQBX9fiTSL1p+1Uu4jQ2qsT5UoRGVSZUJsox0d9GtC962XSiTPanS4C
-        fmY9UmCmctbVAlMoJEWFsx1aWX4TVFCNY+n84sE=
-X-Google-Smtp-Source: AKy350YJ+J7i0yOufQEQyXc/AIZNnZvu47n+k1GzPJILm4f3Ir9Vw80jW7NN0/d2BPdxMF/eG7HuY0X+FUuw0rmSPmQ=
-X-Received: by 2002:ac2:5519:0:b0:4e8:5371:c884 with SMTP id
- j25-20020ac25519000000b004e85371c884mr1651544lfk.5.1680682739926; Wed, 05 Apr
- 2023 01:18:59 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680683361;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dubmJZzj9ewK7VdPsSH0OrrerYhQltiRGNAZ5sYhsdE=;
+        b=2pmh5BZ4H02sqQaZ0ZZCRU8Y9mLmnah5hVIC103MvPBvDffgKeb4cw/bVsjJh1ObcA
+         bE5aBowcjMEWEdFrk8N538GfzB1niutbuAVnYutwdKdl5M4abutBAdsxwcSKN34kR3O5
+         4F+yt2aRZIKQ7r/R66FAbFzxEl+pD6Ut18ZmYGSNp+KwWZuAnTiumIICLb7CxqblM7X8
+         vz99rpXU+lZ7bwsCxhI+eoTbxn2jlxqy7Lv6phuZUWJidwvqrD89pnKiPzW/gVH8zEf4
+         cjpTQ7+LglzUsX157F/+xaWRMVGRZY8/3DldfVqg8WZaPuvbHxD6jo/uqZcYotRorgrE
+         EHVQ==
+X-Gm-Message-State: AAQBX9fQFQH8xrDSGoAW8tkaSXbBegyYi/ngGJ4Nns+R1JDdX4MG9M8Q
+        6cvSMLp10PynZojAzNGKxMZHfEdSdSW6o5TbpRD/l6S2bTd0
+X-Google-Smtp-Source: AKy350Z4cm+MiMZg4tJ4XDYwi4+Uu9E47u1H18ZU8iKT15a3z615sLf7uPFlUQi/STJR3hpPLB6Dq/IGJ4+T
+X-Received: by 2002:a17:906:e204:b0:947:5acb:920c with SMTP id gf4-20020a170906e20400b009475acb920cmr1932253ejb.34.1680683360731;
+        Wed, 05 Apr 2023 01:29:20 -0700 (PDT)
+Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
+        by smtp-relay.gmail.com with ESMTPS id i25-20020a17090685d900b00944010e0472sm3723264ejy.236.2023.04.05.01.29.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Apr 2023 01:29:20 -0700 (PDT)
+X-Relaying-Domain: dectris.com
+From:   Kal Conley <kal.conley@dectris.com>
+To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Weqaar Janjua <weqaar.janjua@gmail.com>
+Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next] selftests: xsk: Disable IPv6 on VETH1
+Date:   Wed,  5 Apr 2023 10:29:04 +0200
+Message-Id: <20230405082905.6303-1-kal.conley@dectris.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-References: <20230404074733.22869-1-liangchen.linux@gmail.com>
- <7331d6d3f9044e386e425e89b1fc32d60b046cf3.camel@gmail.com> <20230404182116.5795563c@kernel.org>
-In-Reply-To: <20230404182116.5795563c@kernel.org>
-From:   Liang Chen <liangchen.linux@gmail.com>
-Date:   Wed, 5 Apr 2023 16:18:47 +0800
-Message-ID: <CAKhg4tLnSOxB7eeMqna1K3cmOn30cofxH=duOPLRs0h+59j01w@mail.gmail.com>
-Subject: Re: [PATCH] skbuff: Fix a race between coalescing and releasing SKBs
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander H Duyck <alexander.duyck@gmail.com>,
-        ilias.apalodimas@linaro.org, hawk@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 5, 2023 at 9:21=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wro=
-te:
->
-> On Tue, 04 Apr 2023 08:51:18 -0700 Alexander H Duyck wrote:
-> > I'm not quite sure I agree with the fix. Couldn't we just modify the
-> > check further down that does:
-> >
-> >         if (!skb_cloned(from))
-> >                 from_shinfo->nr_frags =3D 0;
-> >
-> > And instead just make that:
-> >       if (!skb->cloned || (!skb_cloned(from) && !from->pp_recycle))
-> >                 from_shinfo->nr_frags =3D 0;
-> >
-> > With that we would retain the existing behavior and in the case of
-> > cloned from frames we would take the references and let the original
-> > from skb freed to take care of pulling the pages from the page pool.
->
-> Sounds like a better fix, indeed. But this sort of code will require
-> another fat comment above to explain why. This:
->
->         if (to->pp_recycle =3D=3D from->pp_recycle && !skb_cloned(from))
->
-> is much easier to understand, no?
->
-> We should at least include that in the explanatory comment, I reckon...
+This change fixes flakiness in the BIDIRECTIONAL test:
 
-Sure, the idea of dealing with the case where @from transitioned into non c=
-loned
-skb in the function retains the existing behavior, and gives more
-opportunities to
-coalesce skbs. And it seems (!skb_cloned(from) && !from->pp_recycle) is eno=
-ugh
-here.
+    # [is_pkt_valid] expected length [60], got length [90]
+    not ok 1 FAIL: SKB BUSY-POLL BIDIRECTIONAL
 
-I will take a closer look at the code path for the fragstolen case
-before making v2
-patch  -  If @from transitioned into non cloned skb before "if
-(skb_head_is_locked(from))"
+When IPv6 is enabled, the interface will periodically send MLDv1 and
+MLDv2 packets. These packets can cause the BIDIRECTIONAL test to fail
+since it uses VETH0 for RX.
 
-Thanks for the reviews.
+For other tests, this was not a problem since they only receive on VETH1
+and IPv6 was already disabled on VETH0.
+
+Fixes: a89052572ebb ("selftests/bpf: Xsk selftests framework")
+Signed-off-by: Kal Conley <kal.conley@dectris.com>
+---
+ tools/testing/selftests/bpf/test_xsk.sh | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+index b077cf58f825..377fb157a57c 100755
+--- a/tools/testing/selftests/bpf/test_xsk.sh
++++ b/tools/testing/selftests/bpf/test_xsk.sh
+@@ -116,6 +116,7 @@ setup_vethPairs() {
+ 	ip link add ${VETH0} numtxqueues 4 numrxqueues 4 type veth peer name ${VETH1} numtxqueues 4 numrxqueues 4
+ 	if [ -f /proc/net/if_inet6 ]; then
+ 		echo 1 > /proc/sys/net/ipv6/conf/${VETH0}/disable_ipv6
++		echo 1 > /proc/sys/net/ipv6/conf/${VETH1}/disable_ipv6
+ 	fi
+ 	if [[ $verbose -eq 1 ]]; then
+ 	        echo "setting up ${VETH1}"
+-- 
+2.39.2
+
