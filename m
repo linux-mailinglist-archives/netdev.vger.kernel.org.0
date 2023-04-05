@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9B0B6D886D
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:28:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3DE16D8891
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232516AbjDEU2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40242 "EHLO
+        id S234717AbjDEU31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234149AbjDEU1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:27:32 -0400
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626FB7AB3;
-        Wed,  5 Apr 2023 13:27:29 -0700 (PDT)
-Received: by mail-oo1-f46.google.com with SMTP id n7-20020a4ae1c7000000b0053b61145406so5856494oot.11;
-        Wed, 05 Apr 2023 13:27:29 -0700 (PDT)
+        with ESMTP id S234366AbjDEU2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:28:31 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F28F7EF4;
+        Wed,  5 Apr 2023 13:27:36 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-177b78067ffso39945997fac.7;
+        Wed, 05 Apr 2023 13:27:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680726449;
+        d=1e100.net; s=20210112; t=1680726456;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GAqWU+48WoaNwVsMQUW3yn78CcKWsUQ7YyWgh3fTfc8=;
-        b=lul/71MgwuOto4d7ig/tFKcvDoW/R6QYfbMVYITcvk398F3bnpsNtrfVqNbOgwa6Mu
-         rbORTxRWdZQWPusXaFzsTdxonDPBQihl+cNXkZjgKDxlWx+XHxJ9Op/M7m+2V5cevP06
-         +GRhXNoVwVuqaT7egMpunJ+bqnJbNuE++q/LVik7WgHafMKE5Y1RRHpaUE2ixmi8eWNf
-         +LHJ+0ZWcEmiKRiSQxHwXw3HkdXJpG4FJszFxPcmtSswRhYmQuEW6r2os4jJjDMkzBSU
-         ix8pVm17GtGQJQkHubsDsoUvAl4Sp0IYWXcIeGVAZkzNcYV3MjaHCq4oD7jFT841Kg9g
-         7YNA==
-X-Gm-Message-State: AAQBX9c83hhfltEWHJvoDmpV0YOZjclHmtWf9gQCkZoDsT1hKJUfbKjq
-        K3yWc9avb9a7bn5jeBLh4rQbIl7pmg==
-X-Google-Smtp-Source: AKy350YDcJ1CZzHlV2kqdYr697ExgpShFdyPyAcvheTe5bMbxgbese/Ryv3UqrMfOdlmbR/018pfjA==
-X-Received: by 2002:a4a:abca:0:b0:53b:77e0:b7f4 with SMTP id o10-20020a4aabca000000b0053b77e0b7f4mr3417660oon.2.1680726448953;
-        Wed, 05 Apr 2023 13:27:28 -0700 (PDT)
+        bh=+WBV14RF3ai1fds2jyNkKU2Kc0Or0jrKGIWjLAOfy4c=;
+        b=KnDQD5LCkx1ndilaK1qw7VY/YkSs1RLsCALysFaxM+9xmSO72ZICfnCF0ZUdJrsf0+
+         LtDf9zZ0uGx6hO+7TU/6aydM1KGVCp0YFWx4acvnbvJFaOUmaN6FpVZAoC0s3n81PNtf
+         sdUYeu7Nw1dJsIFOKoKNSR+NjczfYYuk5t8dxORNz6s+i0AuD53ytf9CjzF4cEFLjcAu
+         l/XQmsdeKV1byw5D0S9DMEXFJv9pfn98pN6e8rJAHzGmQQlvbAJNG98X0Wocku45vmn4
+         l9laLk0TMMyzvGl26Dfbn8Bc+bgYn1Bpb/LDoS2Oo4jf0sNx+lYaYu8Go8DWLR6uT0v2
+         x9Sw==
+X-Gm-Message-State: AAQBX9c1VuQIcuYpwSJGtE9VHep8obRme42okfGTr6SrAChykug3tSpl
+        SBAiCDagjSnjkM2+ixQfpg==
+X-Google-Smtp-Source: AKy350aiKxsG+dePauZBrcR87GqsUUk+nMQbPX4th5YujgeuvnV5mcO/3hIgE2jvhfcX3KA3u1DgQg==
+X-Received: by 2002:a05:6870:ac07:b0:17a:ae34:12e6 with SMTP id kw7-20020a056870ac0700b0017aae3412e6mr2034130oab.10.1680726456030;
+        Wed, 05 Apr 2023 13:27:36 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 64-20020a4a0943000000b005315e8ca468sm7021809ooa.17.2023.04.05.13.27.27
+        by smtp.gmail.com with ESMTPSA id an1-20020a056871b18100b00177c314a358sm6332319oac.22.2023.04.05.13.27.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:27:28 -0700 (PDT)
-Received: (nullmailer pid 425892 invoked by uid 1000);
+        Wed, 05 Apr 2023 13:27:35 -0700 (PDT)
+Received: (nullmailer pid 425894 invoked by uid 1000);
         Wed, 05 Apr 2023 20:27:17 -0000
 From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 05 Apr 2023 15:27:21 -0500
-Subject: [PATCH v2 07/10] virtio-mmio: Add explicit include for of.h
+Date:   Wed, 05 Apr 2023 15:27:22 -0500
+Subject: [PATCH v2 08/10] tpm: atmel: Add explicit include for of.h
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-acpi-header-cleanup-v2-7-c902e581923b@kernel.org>
+Message-Id: <20230329-acpi-header-cleanup-v2-8-c902e581923b@kernel.org>
 References: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
 In-Reply-To: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
 To:     "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -82,31 +82,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With linux/acpi.h no longer implicitly including of.h, add an explicit
-include of of.h to fix the following error:
+With linux/acpi.h (in linux/tpm.h) no longer implicitly including of.h,
+add an explicit include of of.h to fix the following errors:
 
-drivers/virtio/virtio_mmio.c:492:13: error: implicit declaration of function 'of_property_read_bool'; did you mean 'fwnode_property_read_bool'? [-Werror=implicit-function-declaration]
+drivers/char/tpm/tpm_atmel.h:50:14: error: implicit declaration of function 'of_find_node_by_name'; did you mean 'bus_find_device_by_name'? [-Werror=implicit-function-declaration]
+drivers/char/tpm/tpm_atmel.h:50:12: error: assignment to 'struct device_node *' from 'int' makes pointer from integer without a cast [-Werror=int-conversion]
+drivers/char/tpm/tpm_atmel.h:55:14: error: implicit declaration of function 'of_device_is_compatible'; did you mean 'fwnode_device_is_compatible'? [-Werror=implicit-function-declaration]
+...
 
 Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
 v2: New patch
 ---
- drivers/virtio/virtio_mmio.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/tpm/tpm_atmel.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 3ff746e3f24a..4b5e883055ee 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -61,6 +61,7 @@
- #include <linux/io.h>
- #include <linux/list.h>
- #include <linux/module.h>
+diff --git a/drivers/char/tpm/tpm_atmel.h b/drivers/char/tpm/tpm_atmel.h
+index ba37e77e8af3..7ac3f69dcf0f 100644
+--- a/drivers/char/tpm/tpm_atmel.h
++++ b/drivers/char/tpm/tpm_atmel.h
+@@ -26,7 +26,7 @@ struct tpm_atmel_priv {
+ 
+ #ifdef CONFIG_PPC64
+ 
+-#include <asm/prom.h>
 +#include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/pm.h>
- #include <linux/slab.h>
+ 
+ #define atmel_getb(priv, offset) readb(priv->iobase + offset)
+ #define atmel_putb(val, priv, offset) writeb(val, priv->iobase + offset)
 
 -- 
 2.39.2
