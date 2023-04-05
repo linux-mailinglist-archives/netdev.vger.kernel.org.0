@@ -2,106 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04A096D8321
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 194886D8327
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232235AbjDEQK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 12:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35398 "EHLO
+        id S229945AbjDEQLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 12:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbjDEQKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:10:54 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6098659C;
-        Wed,  5 Apr 2023 09:10:49 -0700 (PDT)
-Received: from jupiter.universe (dyndsl-091-248-212-122.ewe-ip-backbone.de [91.248.212.122])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C41F56603101;
-        Wed,  5 Apr 2023 17:10:47 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1680711047;
-        bh=O0OERdh8YQllL/WUi4nWvlzY8+V5Fv1hvisy2ugrnhI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WbxXH31kvJ+rymvSpUIGGj1exJoQutsqaeLZcu701DEv+NQ7wP4UW7nVEyD04xuFp
-         NkypRVHronXrDyCFhgdNiXm90w7sdnmP01aDBPD4iRtRPG9ZvfM8w6SNzcwyv93Oxc
-         3rbxyPq2DJz9qIDdV5sx4fanYq5qk9mUw2nlZOjoGSlaI+gGUF9kniOpQPLnTfJY4h
-         Ze/4h+X8VQR0EpEugKxeUzD7F7+2NTVRFUELRksEIvcrB6dYM90r4D2A4lbK3Tj6Tj
-         MaG1hwYcQ6q+dDf2TGsN0eLMEfZB34PlL4Brk6VMlUYWhGmoLqsXdKt68lNLWORwPg
-         gvBQ8c+gnGdeg==
-Received: by jupiter.universe (Postfix, from userid 1000)
-        id 4482B4807E3; Wed,  5 Apr 2023 18:10:45 +0200 (CEST)
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCHv2 2/2] net: ethernet: stmmac: dwmac-rk: fix optional phy regulator handling
-Date:   Wed,  5 Apr 2023 18:10:43 +0200
-Message-Id: <20230405161043.46190-3-sebastian.reichel@collabora.com>
+        with ESMTP id S229503AbjDEQLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:11:51 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9465FD6;
+        Wed,  5 Apr 2023 09:11:31 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1pk5jM-0007kz-EG; Wed, 05 Apr 2023 18:11:28 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, bpf@vger.kernel.org,
+        dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>
+Subject: [PATCH bpf-next 0/6] bpf: add netfilter program type
+Date:   Wed,  5 Apr 2023 18:11:10 +0200
+Message-Id: <20230405161116.13565-1-fw@strlen.de>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230405161043.46190-1-sebastian.reichel@collabora.com>
-References: <20230405161043.46190-1-sebastian.reichel@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The usual devm_regulator_get() call already handles "optional"
-regulators by returning a valid dummy and printing a warning
-that the dummy regulator should be described properly. This
-code open coded the same behaviour, but masked any errors that
-are not -EPROBE_DEFER and is quite noisy.
+Add minimal support to hook bpf programs to netfilter hooks, e.g.
+PREROUTING or FORWARD.
 
-This change effectively unmasks and propagates regulators errors
-not involving -ENODEV, downgrades the error print to warning level
-if no regulator is specified and captures the probe defer message
-for /sys/kernel/debug/devices_deferred.
+For this the most relevant parts for registering a netfilter
+hook via the in-kernel api are exposed to userspace via bpf_link.
 
-Fixes: 2e12f536635f8 ("net: stmmac: dwmac-rk: Use standard devicetree property for phy regulator")
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+The new program type is 'tracing style', i.e. there is no context
+access rewrite done by verifier, the function argument (struct bpf_nf_ctx)
+isn't stable.
+There is no support for direct packet access, dynptr api should be used
+instead.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index 6fdad0f10d6f..d9deba110d4b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -1656,14 +1656,11 @@ static struct rk_priv_data *rk_gmac_setup(struct platform_device *pdev,
- 		}
- 	}
- 
--	bsp_priv->regulator = devm_regulator_get_optional(dev, "phy");
-+	bsp_priv->regulator = devm_regulator_get(dev, "phy");
- 	if (IS_ERR(bsp_priv->regulator)) {
--		if (PTR_ERR(bsp_priv->regulator) == -EPROBE_DEFER) {
--			dev_err(dev, "phy regulator is not available yet, deferred probing\n");
--			return ERR_PTR(-EPROBE_DEFER);
--		}
--		dev_err(dev, "no regulator found\n");
--		bsp_priv->regulator = NULL;
-+		ret = PTR_ERR(bsp_priv->regulator);
-+		dev_err_probe(dev, ret, "failed to get phy regulator\n");
-+		return ERR_PTR(ret);
- 	}
- 
- 	ret = of_property_read_string(dev->of_node, "clock_in_out", &strings);
+With this its possible to build a small test program such as:
+
+ #include "vmlinux.h"
+extern int bpf_dynptr_from_skb(struct __sk_buff *skb, __u64 flags,
+                               struct bpf_dynptr *ptr__uninit) __ksym;
+extern void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, uint32_t offset,
+                                   void *buffer, uint32_t buffer__sz) __ksym;
+SEC("netfilter")
+int nf_test(struct bpf_nf_ctx *ctx)
+{
+	struct nf_hook_state *state = ctx->state;
+	struct sk_buff *skb = ctx->skb;
+	const struct iphdr *iph, _iph;
+	const struct tcphdr *th, _th;
+	struct bpf_dynptr ptr;
+
+	if (bpf_dynptr_from_skb(skb, 0, &ptr))
+		return NF_DROP;
+
+	iph = bpf_dynptr_slice(&ptr, 0, &_iph, sizeof(_iph));
+	if (!iph)
+		return NF_DROP;
+
+	th = bpf_dynptr_slice(&ptr, iph->ihl << 2, &_th, sizeof(_th));
+	if (!th)
+		return NF_DROP;
+
+	bpf_printk("accept %x:%d->%x:%d, hook %d ifin %d\n", iph->saddr, bpf_ntohs(th->source), iph->daddr, bpf_ntohs(th->dest), state->hook, state->in->ifindex);
+        return NF_ACCEPT;
+}
+
+Then, tail /sys/kernel/tracing/trace_pipe.
+
+Changes since last RFC version:
+1. extend 'bpftool link show' to print prio/hooknum etc
+2. extend 'nft list hooks' so it can print the bpf program id
+3. Add an extra patch to artificially restrict bpf progs with
+   same priority.  Its fine from a technical pov but it will
+   cause ordering issues (most recent one comes first).
+   Can be removed later.
+4. Add test_run support for netfilter prog type and a small
+   extension to verifier tests to make sure we can't return
+   verdicts like NF_STOLEN.
+5. Alter the netfilter part of the bpf_link uapi struct:
+   - add flags/reserved members.
+  Not used here except returning errors when they are nonzero.
+  Plan is to allow the bpf_link users to enable netfilter
+  defrag or conntrack engine by setting feature flags at
+  link create time in the future.
+
+Let me know if there is anything missing that has to be addressed
+before this can be merged.
+
+Thanks!
+
+Florian Westphal (6):
+  bpf: add bpf_link support for BPF_NETFILTER programs
+  bpf: minimal support for programs hooked into netfilter framework
+  netfilter: nfnetlink hook: dump bpf prog id
+  netfilter: disallow bpf hook attachment at same priority
+  tools: bpftool: print netfilter link info
+  bpf: add test_run support for netfilter program type
+
+ include/linux/bpf.h                           |   3 +
+ include/linux/bpf_types.h                     |   4 +
+ include/linux/netfilter.h                     |   1 +
+ include/net/netfilter/nf_bpf_link.h           |   8 +
+ include/uapi/linux/bpf.h                      |  15 ++
+ include/uapi/linux/netfilter/nfnetlink_hook.h |  20 +-
+ kernel/bpf/btf.c                              |   6 +
+ kernel/bpf/syscall.c                          |   6 +
+ kernel/bpf/verifier.c                         |   3 +
+ net/bpf/test_run.c                            | 143 +++++++++++++
+ net/core/filter.c                             |   1 +
+ net/netfilter/Kconfig                         |   3 +
+ net/netfilter/Makefile                        |   1 +
+ net/netfilter/core.c                          |  12 ++
+ net/netfilter/nf_bpf_link.c                   | 190 ++++++++++++++++++
+ net/netfilter/nfnetlink_hook.c                |  81 ++++++--
+ tools/bpf/bpftool/link.c                      |  24 +++
+ tools/include/uapi/linux/bpf.h                |  15 ++
+ tools/lib/bpf/libbpf.c                        |   1 +
+ .../selftests/bpf/verifier/netfilter.c        |  23 +++
+ 20 files changed, 546 insertions(+), 14 deletions(-)
+ create mode 100644 include/net/netfilter/nf_bpf_link.h
+ create mode 100644 net/netfilter/nf_bpf_link.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/netfilter.c
+
 -- 
 2.39.2
 
