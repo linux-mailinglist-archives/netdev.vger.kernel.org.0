@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A878F6D8A5E
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930526D8A60
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234487AbjDEWKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 18:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
+        id S234081AbjDEWKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 18:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234314AbjDEWJt (ORCPT
+        with ESMTP id S231194AbjDEWJt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:09:49 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482D47282;
-        Wed,  5 Apr 2023 15:09:23 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id x15so35440655pjk.2;
-        Wed, 05 Apr 2023 15:09:23 -0700 (PDT)
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F066C7DAA;
+        Wed,  5 Apr 2023 15:09:24 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id l9-20020a17090a3f0900b0023d32684e7fso4661083pjc.1;
+        Wed, 05 Apr 2023 15:09:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680732563; x=1683324563;
+        d=gmail.com; s=20210112; t=1680732564; x=1683324564;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WnWen7kjqNC6BHyX2tSKhXwmBzaOl/pAI54Si9NYoD0=;
-        b=ogcOWXnlv8MV9+NWjX/TF/7ccialazYeDwWe1tvSHtUJoa4aK0zOpvxvEvTqxga6/W
-         4my+0GVvNRbsWjXlh2Mv6oOf07BCIv07d+sIT1mt0nCXfe6ihIXQaIMsZYtaV63TfF6F
-         0AG7UZmDZq2Xq/DcPvo3vxRCow9cx5UxulAk0k2MJ9B2jycwhSJOQZYD/IkbLsNjHn0x
-         0eelIDHCJ3TfTNI3o72DM5zah992j+upKfaOZqSn4sxUE2KVunWH+GSMHMAkCpC2jLK6
-         jPhw7NBzt2B84Rp1SJGw4VVzrFLCzLXJ7KFdiLykR+4FUvKjluFVq/PTkOZT88HS/9zE
-         cTew==
+        bh=I/e44MTh7M407OJ1hC7xQsEWYl13ekNij3tNSRQR2hY=;
+        b=mZ9ccmY84AoPWJe2PtvLix5dQToMqbEMiAerXXV+q27iNCJbuwcMTNl7RkSNTZHLsq
+         F+NTtOYLMEB56f8yjpFNSmJb8+RFigCANT9f5AsQRl3YyPf2iM/sF2mrBqUr06tmrBCH
+         ctFTIzRL4ZYCq3j2Fq/jIYqw1qLB7uskoGdTiOAhXD7EX6DFd3Az7GGjDpILXNbHvEC9
+         8/9g359WwamSo+wp6MYvuQgqUnxwrIO/I9VYgQMOSneAHXHB8sAehHOgI1ug71bxrEZW
+         NIBqps9iAbBwAPe6fvhZgXynOy/htcDbp3o/BrNmAWxNrJTpOSh4wKjSljR5HsQwP5qd
+         IQmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680732563; x=1683324563;
+        d=1e100.net; s=20210112; t=1680732564; x=1683324564;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=WnWen7kjqNC6BHyX2tSKhXwmBzaOl/pAI54Si9NYoD0=;
-        b=s+unBsLMyhmG8VmKdNjL7drJyGBpq/4LD2rf7pVMItIeNhVhT08KREMoZ8OOSj8h+j
-         bukvFk68U+aHrohAAaFgDlcDH5+cap+QY4EYMlFLRlCyh9Md0836jtrbPYVwA2USmJrP
-         r9q8oTVkwY/iNPDc5WrY0TpOGqIKKoRrwb3+e1SuD15/+KFYtFQASEw9VoBuNobw9Mqk
-         g3yDww1S6nL0NgDYmSdNAJR2/QZ98C31SsbZ5jbq0gPcQrvhSiiO4lLQUNdxVwEmLo5r
-         6+jMW0ujG5JgzMNP3s0QiQvzI7u+Ys3gA0zAzizCa+tb56S/ZzYjAKj9MMY3UsZXABHS
-         zbTQ==
-X-Gm-Message-State: AAQBX9dK99QzoULmzp3rVtkZ1jC7I+gosYQdTMIQR5Eumgicl/MFMqAM
-        4C3MtIQAawmP0hIWf/qfNdc=
-X-Google-Smtp-Source: AKy350bzs7H95vvmgN73sHE2jDuGAQuVUMbOyQUyRhs4EMI+cTlZETv5qrUG9lZrBdvX/kwfpnZW6g==
-X-Received: by 2002:a17:90a:41:b0:23e:2b3c:d4a7 with SMTP id 1-20020a17090a004100b0023e2b3cd4a7mr7785237pjb.35.1680732562849;
-        Wed, 05 Apr 2023 15:09:22 -0700 (PDT)
+        bh=I/e44MTh7M407OJ1hC7xQsEWYl13ekNij3tNSRQR2hY=;
+        b=W4hrHniWd/6mGEYqv4ylmqSwWrXMtNXmieMvdrytLzuxcexE7ux7WXsKS0qkGdnvpJ
+         c1hPtHExzD3IDAceuTL5eMKPlSNZtM7wA/9PKvsqcP5U1+twXIvGGXXjelCWKbyfdVH5
+         EgT3izZoOHXSuom8IQm3lKt8G8DfxP/PSBS2qk1Z4a+PeQCCcAZrGMfsNUd7roIeNOXm
+         oSDt7AOkO93Z3aNWgRvTot3wWXqYuJ+caZd6I4/Hsa+qZcmZYxgXuQdzr1ftdSD7MhgB
+         Ib7dc6mx5M+VXAzzqW1vzPeWPyehHGtVCpTMUZAjxe7i6NjyGfDDUH6DrQzBSP3xMkk1
+         fXaA==
+X-Gm-Message-State: AAQBX9e1tKN2u5QbiGidfNsJQ13lP66A6cjDr41Eot5CrhUBfu8Vq6G6
+        L2B9ixVRVnOmZjZNE8Dmito=
+X-Google-Smtp-Source: AKy350bJBwgRepmjDG1NPSEkfvI5iJFhmxf7V5lvqTBqKWHyw8Um6cmOoSJIhUlDre+LN8bMrQIeeg==
+X-Received: by 2002:a17:90b:4a91:b0:240:1d50:2725 with SMTP id lp17-20020a17090b4a9100b002401d502725mr8314336pjb.30.1680732564372;
+        Wed, 05 Apr 2023 15:09:24 -0700 (PDT)
 Received: from john.lan ([2605:59c8:4c5:7110:5120:4bff:95ea:9ce0])
-        by smtp.gmail.com with ESMTPSA id gz11-20020a17090b0ecb00b00230ffcb2e24sm1865697pjb.13.2023.04.05.15.09.21
+        by smtp.gmail.com with ESMTPSA id gz11-20020a17090b0ecb00b00230ffcb2e24sm1865697pjb.13.2023.04.05.15.09.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 15:09:22 -0700 (PDT)
+        Wed, 05 Apr 2023 15:09:23 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, daniel@iogearbox.net, edumazet@google.com
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
         will@isovalent.com
-Subject: [PATCH bpf v4 10/12] bpf: sockmap, test shutdown() correctly exits epoll and recv()=0
-Date:   Wed,  5 Apr 2023 15:09:02 -0700
-Message-Id: <20230405220904.153149-11-john.fastabend@gmail.com>
+Subject: [PATCH bpf v4 11/12] bpf: sockmap, test FIONREAD returns correct bytes in rx buffer
+Date:   Wed,  5 Apr 2023 15:09:03 -0700
+Message-Id: <20230405220904.153149-12-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20230405220904.153149-1-john.fastabend@gmail.com>
 References: <20230405220904.153149-1-john.fastabend@gmail.com>
@@ -72,56 +72,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When session gracefully shutdowns epoll needs to wake up and any recv()
-readers should return 0 not the -EAGAIN they previously returned.
+A bug was reported where ioctl(FIONREAD) returned zero even though the
+socket with a SK_SKB verdict program attached had bytes in the msg
+queue. The result is programs may hang or more likely try to recover,
+but use suboptimal buffer sizes.
 
-Note we use epoll instead of select to test the epoll wake on shutdown
-event as well.
+Add a test to check that ioctl(FIONREAD) returns the correct number of
+bytes.
 
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- .../selftests/bpf/prog_tests/sockmap_basic.c  | 68 +++++++++++++++++++
- .../bpf/progs/test_sockmap_pass_prog.c        | 32 +++++++++
- 2 files changed, 100 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
+ .../selftests/bpf/prog_tests/sockmap_basic.c  | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-index 0ce25a967481..f9f611618e45 100644
+index f9f611618e45..322b5a135740 100644
 --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
 +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-@@ -2,6 +2,7 @@
- // Copyright (c) 2020 Cloudflare
- #include <error.h>
- #include <netinet/tcp.h>
-+#include <sys/epoll.h>
- 
- #include "test_progs.h"
- #include "test_skmsg_load_helpers.skel.h"
-@@ -9,8 +10,11 @@
- #include "test_sockmap_invalid_update.skel.h"
- #include "test_sockmap_skb_verdict_attach.skel.h"
- #include "test_sockmap_progs_query.skel.h"
-+#include "test_sockmap_pass_prog.skel.h"
- #include "bpf_iter_sockmap.skel.h"
- 
-+#include "sockmap_helpers.h"
-+
- #define TCP_REPAIR		19	/* TCP sock is under repair right now */
- 
- #define TCP_REPAIR_ON		1
-@@ -350,6 +354,68 @@ static void test_sockmap_progs_query(enum bpf_attach_type attach_type)
- 	test_sockmap_progs_query__destroy(skel);
+@@ -416,6 +416,52 @@ static void test_sockmap_skb_verdict_shutdown(void)
+ 	test_sockmap_pass_prog__destroy(skel);
  }
  
-+#define MAX_EVENTS 10
-+static void test_sockmap_skb_verdict_shutdown(void)
++static void test_sockmap_skb_verdict_fionread(void)
 +{
-+	int n, err, map, verdict, s, c0, c1, p0, p1;
-+	struct epoll_event ev, events[MAX_EVENTS];
++	int err, map, verdict, s, c0, c1, p0, p1;
 +	struct test_sockmap_pass_prog *skel;
-+	int epollfd;
-+	int zero = 0;
-+	char b;
++	int zero = 0, sent, recvd, avail;
++	char buf[256] = "0123456789";
 +
 +	skel = test_sockmap_pass_prog__open_and_load();
 +	if (!ASSERT_OK_PTR(skel, "open_and_load"))
@@ -135,36 +112,23 @@ index 0ce25a967481..f9f611618e45 100644
 +		goto out;
 +
 +	s = socket_loopback(AF_INET, SOCK_STREAM);
-+	if (s < 0)
++	if (!ASSERT_GT(s, -1, "socket_loopback(s)"))
 +		goto out;
 +	err = create_socket_pairs(s, AF_INET, SOCK_STREAM, &c0, &c1, &p0, &p1);
-+	if (err < 0)
++	if (!ASSERT_OK(err, "create_socket_pairs(s)"))
 +		goto out;
 +
 +	err = bpf_map_update_elem(map, &zero, &c1, BPF_NOEXIST);
-+	if (err < 0)
++	if (!ASSERT_OK(err, "bpf_map_update_elem(c1)"))
 +		goto out_close;
 +
-+	shutdown(c0, SHUT_RDWR);
-+	shutdown(p1, SHUT_WR);
-+
-+	ev.events = EPOLLIN;
-+	ev.data.fd = c1;
-+
-+	epollfd = epoll_create1(0);
-+	if (!ASSERT_GT(epollfd, -1, "epoll_create(0)"))
-+		goto out_close;
-+	err = epoll_ctl(epollfd, EPOLL_CTL_ADD, c1, &ev);
-+	if (!ASSERT_OK(err, "epoll_ctl(EPOLL_CTL_ADD)"))
-+		goto out_close;
-+	err = epoll_wait(epollfd, events, MAX_EVENTS, -1);
-+	if (!ASSERT_EQ(err, 1, "epoll_wait(fd)"))
-+		goto out_close;
-+
-+	n = recv(c1, &b, 1, SOCK_NONBLOCK);
-+	ASSERT_EQ(n, 0, "recv_timeout(fin)");
-+	n = recv(p0, &b, 1, SOCK_NONBLOCK);
-+	ASSERT_EQ(n, 0, "recv_timeout(fin)");
++	sent = xsend(p1, &buf, sizeof(buf), 0);
++	ASSERT_EQ(sent, sizeof(buf), "xsend(p0)");
++	err = ioctl(c1, FIONREAD, &avail);
++	ASSERT_OK(err, "ioctl(FIONREAD) error");
++	ASSERT_EQ(avail, sizeof(buf), "ioctl(FIONREAD)");
++	recvd = recv_timeout(c1, &buf, sizeof(buf), SOCK_NONBLOCK, IO_TIMEOUT_SEC);
++	ASSERT_EQ(recvd, sizeof(buf), "recv_timeout(c0)");
 +
 +out_close:
 +	close(c0);
@@ -178,51 +142,13 @@ index 0ce25a967481..f9f611618e45 100644
  void test_sockmap_basic(void)
  {
  	if (test__start_subtest("sockmap create_update_free"))
-@@ -384,4 +450,6 @@ void test_sockmap_basic(void)
- 		test_sockmap_progs_query(BPF_SK_SKB_STREAM_VERDICT);
- 	if (test__start_subtest("sockmap skb_verdict progs query"))
+@@ -452,4 +498,6 @@ void test_sockmap_basic(void)
  		test_sockmap_progs_query(BPF_SK_SKB_VERDICT);
-+	if (test__start_subtest("sockmap skb_verdict shutdown"))
-+		test_sockmap_skb_verdict_shutdown();
+ 	if (test__start_subtest("sockmap skb_verdict shutdown"))
+ 		test_sockmap_skb_verdict_shutdown();
++	if (test__start_subtest("sockmap skb_verdict fionread"))
++		test_sockmap_skb_verdict_fionread();
  }
-diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c b/tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
-new file mode 100644
-index 000000000000..1d86a717a290
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_sockmap_pass_prog.c
-@@ -0,0 +1,32 @@
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 20);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_map_rx SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 20);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_map_tx SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 20);
-+	__type(key, int);
-+	__type(value, int);
-+} sock_map_msg SEC(".maps");
-+
-+SEC("sk_skb")
-+int prog_skb_verdict(struct __sk_buff *skb)
-+{
-+	return SK_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
 -- 
 2.33.0
 
