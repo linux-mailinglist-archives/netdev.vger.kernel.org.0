@@ -2,120 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E23B6D8512
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9326D8517
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232950AbjDERm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 13:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
+        id S233385AbjDERmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 13:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbjDERm1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:42:27 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2098.outbound.protection.outlook.com [40.107.244.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F5865A0;
-        Wed,  5 Apr 2023 10:42:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W4wc/x33skhbKjv6T+EG3RAZPTI9fGNW5ntZ2nCxZzzfpktCDTLnOGdNkqPJwwsDOpfnMB9fGIY6zE55As4BUX+s+lawXTI8XTuzS+B2rERcJWgQ1H58FCwdPzdanUup5K/SkN3sgsb3Dyu2hz5xXZR9eZsvAdovwRt+xQWM9mD0k0aFCp6jbe0YgTOugkDWBgFmH8wvgzMOAUznkCkGQIAL7byDRJF4pIxoV43UJIhtAN3FMfteTNAIAtyOrp6eQaT5acSe3fMkrari434KYLFxxDK4oyl3uoiEtigM2cAA9wKFUDhOEF+/BhimkTdmblOZ4WVyEqwAlTumUlJ8Gg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8C+WsZ0OJPFbnAmgXP/u09sQT5S1dOu+xMtHyXWVkLg=;
- b=ffq0yBVAUt3STxjwxKPG3Ms7aeFdLXuYNjW7613Musq15juXP9rmjxpLMhGld7h7Px8cuMc3vlFuZVHOGp3HXWNBgC3LQtrzj2WrOVbDiBUkWzR2f+vG+4yAtAWP1ez2S4JQdJv/WAEt5M/1RiskBbARwl7//KPRjEX92eyRn+9sviaWbIibTv24TK1X83qDUOAYy3t6w0CyxzT4jJ347TdMlJMVRrETuIa3rb2fVNHZOw95zzt4kukJ/+ks5meeFe3SBP0auFTsI4Ki5/wetupirINYgA8PmOb/cqdr+YEX7xHEug8BZAK5oyA0oFUGOyiLYBIBiIbtPyyT3UkOcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8C+WsZ0OJPFbnAmgXP/u09sQT5S1dOu+xMtHyXWVkLg=;
- b=dHKKKnhmJJRkfliMSgzYJDO4RWMOKlcS9BkLJDgxzRm1shCAkk38q3ZNI0Zbpb3HWYm1XC2KtoDNe3L+iAL+5vIvpCs+VY+kvzYbRDVvAoBq1y7rAOq2U/JEzaM3uRe0/j7+++yCPBePlaF9CPqhPIbU0LwIDcTt8mOxcMWm/60=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BL3PR13MB5122.namprd13.prod.outlook.com (2603:10b6:208:351::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Wed, 5 Apr
- 2023 17:42:15 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::c506:5243:557e:82cb%5]) with mapi id 15.20.6254.035; Wed, 5 Apr 2023
- 17:42:15 +0000
-Date:   Wed, 5 Apr 2023 19:42:05 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCHv2 1/2] net: ethernet: stmmac: dwmac-rk: rework optional
- clock handling
-Message-ID: <ZC2y7TWGbh9ZSuhs@corigine.com>
-References: <20230405161043.46190-1-sebastian.reichel@collabora.com>
- <20230405161043.46190-2-sebastian.reichel@collabora.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230405161043.46190-2-sebastian.reichel@collabora.com>
-X-ClientProxiedBy: AM0PR01CA0158.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:aa::27) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S233417AbjDERmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:42:39 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129CB6A52;
+        Wed,  5 Apr 2023 10:42:33 -0700 (PDT)
+Received: from lhrpeml500004.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4PsBjp51Zzz6J71r;
+        Thu,  6 Apr 2023 01:40:30 +0800 (CST)
+Received: from [10.123.123.126] (10.123.123.126) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.23; Wed, 5 Apr 2023 18:42:30 +0100
+Message-ID: <39980493-6107-0117-1d32-2af03fa23fa9@huawei.com>
+Date:   Wed, 5 Apr 2023 20:42:29 +0300
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5122:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9d5314b2-f60a-4343-9852-08db35fd17d6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Zh25DWtUpUSdx6EsKPT7CN85gJX74pN8uGoNFLnIEnB+3fekBVMxDumFA8FB9lnCBpr3w0YFTSnywZvGSscnjGSsa0MFlbP7KagaoymJEY0TDUIS2taFGTGPu4V4jTFSN86fukoQOLnCdrKR2UxQRfcCNgtuiI5XSlYpStY7i8WFNJSqk+WGk6wjqfeZ+Uh1zLeZftsl6UFBkY4MOj92v2HI2NQmmIEpapvLUBQmo1xjRVi2eCbSIXstGEdbObBSlKolLvRrt9DbYWqJxZt3n0itYklOdR+o7O8shBw+UIXODMkMtRAuS2hlMKvsfFZsQo8iBRRT4b7Y3poczFKUclFZTYRFDkEs46xcPrfYzDFBprGDbKwcUgCioMvBpocE3rKySATZY9nOZdsEEvhzGxO49wGTZhkYlcHEMVQQZoX1ugjxhZ4tSqGbsia5iyt57dNm2VdOOy+cbz+LYX5XfoXpu3BeC8FW1MLr5muugnoLn3Uv4wYnC6CdeJFpkSFi6qLysF8wDDD5iINExBWAqHWqqykkpA7/r74k2MSaPxSi9ayHZzen4z+RAoGuSSaA6BqgBK4C1MhR7GbwyUV8Gd73iR6Oz4plQi3mfjB/ap8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(376002)(39830400003)(366004)(346002)(136003)(396003)(451199021)(6486002)(66556008)(54906003)(8676002)(41300700001)(6916009)(66476007)(66946007)(36756003)(478600001)(316002)(86362001)(4326008)(6666004)(6506007)(186003)(38100700002)(6512007)(83380400001)(2616005)(2906002)(7416002)(5660300002)(44832011)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KGiL4OhDBLwIA/aZPVIv6VYgEH1AUCNJWrbncCCnQFZegaUQr47wiecObxR3?=
- =?us-ascii?Q?aKzySzcXJp1qlqw0wnVl9rWSEdFNvVtq3xiRj5L0nLwvgG/uXsRTRYRZZUl/?=
- =?us-ascii?Q?+kEIl+aPh3/oSN1RDfNrbfRpz/6k20galabSf5Jn340Ybf8zGg5ARH3VVsC6?=
- =?us-ascii?Q?JpljS2sTAEyKK3vli1BDlStRZLConkXE7kkWKQKhmlfa8cv6KC6VTHDfwbYj?=
- =?us-ascii?Q?Ywvie+cbvfx1rme8WQbQmSjyhp4lbEQg+dALB+o5Yq0Yule7S5FXN+YBbTJ/?=
- =?us-ascii?Q?ePbmLSSqehTg+Fofg6bg1pzbNdGk1w1uV/s16ZZJLKeKK8qIs7lc3mecaO87?=
- =?us-ascii?Q?o0psM4cwUkKnbtcJxs6rPZvk2oj5U9mcWsis3TvWBdViws2mchxynKC76U2F?=
- =?us-ascii?Q?At2mUdJsSsJJ5WugE8e4s2xOA4wr13Jifo7gMCXTrVS94fMeNN8sNl7Os5ob?=
- =?us-ascii?Q?OD18wg0e8qFocE20cOasRm+i6ZvfjNyNW5fL1vbS18uB8Xd636WIJuM13nQo?=
- =?us-ascii?Q?4DpicJhACgp1Pg+MaPzEWPcVJhj9ngIz+XxwxFDUAB80xC0td28dWr5OByb6?=
- =?us-ascii?Q?H/DG1yPcgmZJrXRxVmd5CtQaOO4YEhPMlUemwUvxHbd8gRy7h/RROKY/LAe7?=
- =?us-ascii?Q?jMYOfoefV67DaAvzMu8qsObuNgImnnOkH3G2bOMPW21MItVCdAJ3rbmk2rne?=
- =?us-ascii?Q?1K7cWIhqQR/qSWM5hzfrveMOmdQUpQRQcfPV0pEWypGLtmY4HjicApgXxc71?=
- =?us-ascii?Q?jZSzMaPvTfXBFtgiXlGgAUckdvUn2/Q7t5aNFXlkbD13g8387L++dthxYact?=
- =?us-ascii?Q?JkU3RNRtsc86D5iQGlwHRTtyk2Ay5rpb++PDRhkJGmIDcFY8avsY1ZkNwhAV?=
- =?us-ascii?Q?7Es9Ix1OQ+ZD0CVEYi56dlwVpt5dZwfUgJnKTNqyy/oPld6QByAN1RQ4XkFq?=
- =?us-ascii?Q?LAFLeudc/BByYp027usYPOy35+ObLzGlYzJs7PlSXHse/kvyB833p4+3NtCF?=
- =?us-ascii?Q?W3LFvrGVOJaPtbvZObSgameeycW+5+pPYScFYbcU8qkK71J7H+7h0IIDkstS?=
- =?us-ascii?Q?fzRJ3drHM0FiOl7tsbCZyE+LIXjf+3U5J30zBFTcLcZhJUuGANHxpqZebo7N?=
- =?us-ascii?Q?7XH160R1uqAJu5wNSR1JJo+nZTlU++anpwZYd8O4iUyydkK2v8EpbyioXq9I?=
- =?us-ascii?Q?uBxSwJmQiVZjStNONOsstZ590U6mYAvMVNP0IB7hCDBXwSR3JOwVPKJAHOky?=
- =?us-ascii?Q?zHByLnnF7ti5ZZzlgCHyXtS7q+o9oxZJsbA98H36C1NbWbAqMpQa0xDFDahn?=
- =?us-ascii?Q?X5Sw/DjiIL4kKPMXt2LrP0zmHk8oSPFdu14R7/XrFVr+iCY86KtVDoEJq6Ek?=
- =?us-ascii?Q?KpOGHyFA3DsAKJlkq00Uc6Ysc5B7aytRl4806Cvtn3xNR4EqALVfUlcgW2pK?=
- =?us-ascii?Q?iuIlQDh1RbGlQVP6mPonm9d2gTK4mggPuDz+fm3ZZSkj/59CPvAMKnv5B5tl?=
- =?us-ascii?Q?g0lginXnPuA4047B7WRPr7YfxLXRHEGBS0A/uSCy1zuJa0g+GoN2Ts+xloa5?=
- =?us-ascii?Q?knk4BOSM2ULlBgwIxORiwC6mzxh+kraEaCYYNKBKuxf1m3ophUpPOXQoW8gA?=
- =?us-ascii?Q?eFt+VO08krlNsxJRc6Y5EV6kyWzWcpn0Jmg8O55D5hlhYztQYqMaZbqcJEkD?=
- =?us-ascii?Q?7a/XnQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d5314b2-f60a-4343-9852-08db35fd17d6
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 17:42:14.9139
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YHu3RnrtI1h0AQH4VulEsrn7XW6Tl17t54Mp/kf+tz1iC6RkV39IP8tQO1zMWt4K00j0pDrlCKQBv3GyER3tZIgu8smhIf9CCQSZ41reKok=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5122
-X-Spam-Status: No, score=-0.0 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v10 09/13] landlock: Add network rules and TCP hooks
+ support
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>
+References: <20230323085226.1432550-1-konstantin.meskhidze@huawei.com>
+ <20230323085226.1432550-10-konstantin.meskhidze@huawei.com>
+ <468fbb05-6d72-3570-3453-b1f8bfdd5bc2@digikod.net>
+ <1f84d88f-9977-13a9-245a-c75cd3444b29@huawei.com>
+ <ac4d6244-641b-e1d4-5c34-d9a9bcd10498@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <ac4d6244-641b-e1d4-5c34-d9a9bcd10498@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.123.126]
+X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-3.7 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -123,33 +56,282 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 06:10:42PM +0200, Sebastian Reichel wrote:
-> The clock requesting code is quite repetitive. Fix this by requesting
-> the clocks in a loop. Also use devm_clk_get_optional instead of
-> devm_clk_get, since the old code effectively handles them as optional
-> clocks. This removes error messages about missing clocks for platforms
-> not using them and correct -EPROBE_DEFER handling.
+
+
+4/4/2023 7:42 PM, Mickaël Salaün пишет:
 > 
-> The new code also tries to get "clk_mac_ref" and "clk_mac_refout" when
-> the PHY is not configured as PHY_INTERFACE_MODE_RMII to keep the code
-> simple. This is possible since we use devm_clk_get_optional() for the
-> clock lookup anyways.
+> On 04/04/2023 11:31, Konstantin Meskhidze (A) wrote:
+>> 
+>> 
+>> 3/31/2023 8:24 PM, Mickaël Salaün пишет:
+>>>
+>>> On 23/03/2023 09:52, Konstantin Meskhidze wrote:
+>>>> This commit adds network rules support in the ruleset management
+>>>> helpers and the landlock_create_ruleset syscall.
+>>>> Refactor user space API to support network actions. Add new network
+>>>> access flags, network rule and network attributes. Increment Landlock
+>>>> ABI version. Expand access_masks_t to u32 to be sure network access
+>>>> rights can be stored. Implement socket_bind() and socket_connect()
+>>>> LSM hooks, which enable to restrict TCP socket binding and connection
+>>>> to specific ports.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
+>>>>
+>>>> Changes since v9:
+>>>> * Changes UAPI port field to __u64.
+>>>> * Moves shared code into check_socket_access().
+>>>> * Adds get_raw_handled_net_accesses() and
+>>>> get_current_net_domain() helpers.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v8:
+>>>> * Squashes commits.
+>>>> * Refactors commit message.
+>>>> * Changes UAPI port field to __be16.
+>>>> * Changes logic of bind/connect hooks with AF_UNSPEC families.
+>>>> * Adds address length checking.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v7:
+>>>> * Squashes commits.
+>>>> * Increments ABI version to 4.
+>>>> * Refactors commit message.
+>>>> * Minor fixes.
+>>>>
+>>>> Changes since v6:
+>>>> * Renames landlock_set_net_access_mask() to landlock_add_net_access_mask()
+>>>>     because it OR values.
+>>>> * Makes landlock_add_net_access_mask() more resilient incorrect values.
+>>>> * Refactors landlock_get_net_access_mask().
+>>>> * Renames LANDLOCK_MASK_SHIFT_NET to LANDLOCK_SHIFT_ACCESS_NET and use
+>>>>     LANDLOCK_NUM_ACCESS_FS as value.
+>>>> * Updates access_masks_t to u32 to support network access actions.
+>>>> * Refactors landlock internal functions to support network actions with
+>>>>     landlock_key/key_type/id types.
+>>>>
+>>>> Changes since v5:
+>>>> * Gets rid of partial revert from landlock_add_rule
+>>>> syscall.
+>>>> * Formats code with clang-format-14.
+>>>>
+>>>> Changes since v4:
+>>>> * Refactors landlock_create_ruleset() - splits ruleset and
+>>>> masks checks.
+>>>> * Refactors landlock_create_ruleset() and landlock mask
+>>>> setters/getters to support two rule types.
+>>>> * Refactors landlock_add_rule syscall add_rule_path_beneath
+>>>> function by factoring out get_ruleset_from_fd() and
+>>>> landlock_put_ruleset().
+>>>>
+>>>> Changes since v3:
+>>>> * Splits commit.
+>>>> * Adds network rule support for internal landlock functions.
+>>>> * Adds set_mask and get_mask for network.
+>>>> * Adds rb_root root_net_port.
+>>>>
+>>>> ---
+>>>>    include/uapi/linux/landlock.h                |  49 +++++
+>>>>    security/landlock/Kconfig                    |   1 +
+>>>>    security/landlock/Makefile                   |   2 +
+>>>>    security/landlock/limits.h                   |   6 +-
+>>>>    security/landlock/net.c                      | 198 +++++++++++++++++++
+>>>>    security/landlock/net.h                      |  26 +++
+>>>>    security/landlock/ruleset.c                  |  52 ++++-
+>>>>    security/landlock/ruleset.h                  |  63 +++++-
+>>>>    security/landlock/setup.c                    |   2 +
+>>>>    security/landlock/syscalls.c                 |  72 ++++++-
+>>>>    tools/testing/selftests/landlock/base_test.c |   2 +-
+>>>>    11 files changed, 450 insertions(+), 23 deletions(-)
+>>>>    create mode 100644 security/landlock/net.c
+>>>>    create mode 100644 security/landlock/net.h
+>>>
+>>> [...]
+>>>
+>>>> diff --git a/security/landlock/net.c b/security/landlock/net.c
+>>>
+>>> [...]
+>>>
+>>>> +static int check_addrlen(const struct sockaddr *const address, int addrlen)
+>>>
+>>> const int addrlen
+>> 
+>>     Got it.
+>>>
+>>>> +{
+>>>> +	if (addrlen < offsetofend(struct sockaddr, sa_family))
+>>>> +		return -EINVAL;
+>>>> +	switch (address->sa_family) {
+>>>> +	case AF_UNSPEC:
+>>>> +	case AF_INET:
+>>>> +		if (addrlen < sizeof(struct sockaddr_in))
+>>>> +			return -EINVAL;
+>>>> +		return 0;
+>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>> +	case AF_INET6:
+>>>> +		if (addrlen < SIN6_LEN_RFC2133)
+>>>> +			return -EINVAL;
+>>>> +		return 0;
+>>>> +#endif
+>>>> +	}
+>>>> +	WARN_ON_ONCE(1);
+>>>> +	return 0;
+>>>> +}
+>>>> +
+>>>> +static u16 get_port(const struct sockaddr *const address)
+>>>> +{
+>>>> +	/* Gets port value in host byte order. */
+>>>> +	switch (address->sa_family) {
+>>>> +	case AF_UNSPEC:
+>>>> +	case AF_INET: {
+>>>> +		const struct sockaddr_in *const sockaddr =
+>>>> +			(struct sockaddr_in *)address;
+>>>> +		return ntohs(sockaddr->sin_port);
+>>>
+>>> Storing ports in big endian (in rulesets) would avoid converting them
+>>> every time the kernel checks a socket port. The above comment should
+>>> then be updated too.
+>> 
+>>     I thought we came to a conclusion to stick to host endianess and
+>> let kernel do the checks under the hood:
+>> https://lore.kernel.org/linux-security-module/278ab07f-7583-a4e0-3d37-1bacd091531d@digikod.net/
+>> 
+>> Did I misunderstand something?
 > 
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Fixes: 7ad269ea1a2b7 ("GMAC: add driver for Rockchip RK3288 SoCs integrated GMAC")
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> We indeed stick to the host endianess for the UAPI/syscalls, but
+> internally the kernel has to do the conversion with as it is currently
+> done by calling ntohs(). To avoid calling ntohs() every time get_port()
+> is called, we can instead only call htons() when creating rules (i.e.
+> one-time htons call instead of multiple ntohs calls).
+> 
+  Do you mean we need to covert port in  landlock_append_net_rule():
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+  ...
 
-> +	for (i=0; i < ARRAY_SIZE(clocks); i++) {
-
-nit: spaces around '='. i.e. 'i = 0;'
-
-> +		*clocks[i].ptr = devm_clk_get_optional(dev, clocks[i].name);
-> +		if (IS_ERR(*clocks[i].ptr))
-> +			return dev_err_probe(dev, PTR_ERR(*clocks[i].ptr),
-> +					     "cannot get clock %s\n",
-> +					     clocks[i].name);
->  	}
-
+         int err;
+	const struct landlock_id id = {
+		.key.data = ntohs(port),
+		.type = LANDLOCK_KEY_NET_PORT,
+	};
+	BUILD_BUG_ON(sizeof(port) > sizeof(id.key.data));
 ...
+????
+> 
+>>    Do you mean we need to do port converting __be16 -> u16 in 
+>> check_socket_access()???
+> 
+> Removing the ntohs() call from get_port() enables to return __be16
+> instead of u16, and check_socket_access() will then need to use the same
+> type.
+
+   Ok. I got it. Thanks.
+> 
+> 
+>>>
+>>>
+>>>> +	}
+>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>> +	case AF_INET6: {
+>>>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
+>>>> +			(struct sockaddr_in6 *)address;
+>>>> +		return ntohs(sockaddr_ip6->sin6_port);
+>>>> +	}
+>>>> +#endif
+>>>> +	}
+>>>> +	WARN_ON_ONCE(1);
+>>>> +	return 0;
+>>>> +}
+>>>> +
+>>>> +static int check_socket_access(struct socket *sock, struct sockaddr *address, int addrlen, u16 port,
+>>>> +			       access_mask_t access_request)
+>>>> +{
+>>>> +	int ret;
+>>>> +	bool allowed = false;
+>>>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
+>>>> +	const struct landlock_rule *rule;
+>>>> +	access_mask_t handled_access;
+>>>> +	const struct landlock_id id = {
+>>>> +		.key.data = port,
+>>>> +		.type = LANDLOCK_KEY_NET_PORT,
+>>>> +	};
+>>>> +	const struct landlock_ruleset *const domain = get_current_net_domain();
+>>>> +
+>>>> +	if (WARN_ON_ONCE(!domain))
+>>>> +		return 0;
+>>>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
+>>>> +		return -EACCES;
+>>>> +	/* Check if it's a TCP socket. */
+>>>> +	if (sock->type != SOCK_STREAM)
+>>>> +		return 0;
+>>>> +
+>>>> +	ret = check_addrlen(address, addrlen);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	switch (address->sa_family) {
+>>>> +	case AF_UNSPEC:
+>>>> +		/*
+>>>> +		 * Connecting to an address with AF_UNSPEC dissolves the TCP
+>>>> +		 * association, which have the same effect as closing the
+>>>> +		 * connection while retaining the socket object (i.e., the file
+>>>> +		 * descriptor).  As for dropping privileges, closing
+>>>> +		 * connections is always allowed.
+>>>> +		 */
+>>>> +		if (access_request == LANDLOCK_ACCESS_NET_CONNECT_TCP)
+>>>> +			return 0;
+>>>> +
+>>>> +		/*
+>>>> +		 * For compatibility reason, accept AF_UNSPEC for bind
+>>>> +		 * accesses (mapped to AF_INET) only if the address is
+>>>> +		 * INADDR_ANY (cf. __inet_bind).  Checking the address is
+>>>> +		 * required to not wrongfully return -EACCES instead of
+>>>> +		 * -EAFNOSUPPORT.
+>>>> +		 */
+>>>> +		if (access_request == LANDLOCK_ACCESS_NET_BIND_TCP) {
+>>>> +			const struct sockaddr_in *const sockaddr =
+>>>> +				(struct sockaddr_in *)address;
+>>>> +
+>>>> +			if (sockaddr->sin_addr.s_addr != htonl(INADDR_ANY))
+>>>> +				return -EAFNOSUPPORT;
+>>>> +		}
+>>>> +
+>>>> +		fallthrough;
+>>>> +	case AF_INET:
+>>>> +#if IS_ENABLED(CONFIG_IPV6)
+>>>> +	case AF_INET6:
+>>>> +#endif
+>>>> +		rule = landlock_find_rule(domain, id);
+>>>> +		handled_access = landlock_init_layer_masks(
+>>>> +			domain, access_request, &layer_masks,
+>>>> +			LANDLOCK_KEY_NET_PORT);
+>>>> +		allowed = landlock_unmask_layers(rule, handled_access,
+>>>> +						 &layer_masks,
+>>>> +						 ARRAY_SIZE(layer_masks));
+>>>> +	}
+>>>> +	return allowed ? 0 : -EACCES;
+>>>> +}
+>>>> +
+>>>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
+>>>> +			    int addrlen)
+>>>> +{ >>> +	return check_socket_access(sock, address, addrlen, get_port(address),
+>>>> +				   LANDLOCK_ACCESS_NET_BIND_TCP);
+> 
+> get_port() is called before check_addrlen(), which is an issue.
+> 
+> You'll find attached a patch for these fixes, please squash it in this
+> one for the next version.
+> 
+> I'll send other reviews by the end of the week.
+> 
+> 
+>>>> +}
+>>>> +
+>>>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
+>>>> +			       int addrlen)
+>>>> +{
+>>>> +	return check_socket_access(sock, address, addrlen, get_port(address),
+>>>> +				   LANDLOCK_ACCESS_NET_CONNECT_TCP);
+>>>> +}
+>>>
+>>> [...]
+>>> .
