@@ -2,146 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED7F6D8709
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8FF6D870F
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234275AbjDETit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 15:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S233891AbjDETkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 15:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233825AbjDETib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:38:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F869109;
-        Wed,  5 Apr 2023 12:37:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AE84640BE;
-        Wed,  5 Apr 2023 19:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97283C433EF;
-        Wed,  5 Apr 2023 19:37:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680723429;
-        bh=TLG3NZx0ALC463PDdufiBKczspw2zuA1W3rAJxepf5k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=DTAlaf5qV1uSiQa5LuJCDGh/hcwXVcZFLUHADH/hguhCT/5asojITIl11hbOfUD4I
-         WEp7f4zsiFPpt7MZHXgDyCm6UG1y3a0CAn4ZmVd4lGyakXjZH0MGDsXJx/WShChi3E
-         p1+/Baw4gZykoqsFEiejtkDuVyjs3oPs9/bRD89LqFfEyHL5OiGzOkdPu7ZnFYegJu
-         0X5xKiFKYZQRSgUmExpzXr/f/Y6GC0oI+7DIsxxwXQXtq6Jeu9saRp9j+Q2RRi6IrF
-         HMruhZtAyGqwpOxwu2Ag8JCFs8aCQNZwMlYleJ6p/YWva8D1ultBAArTnD5/bVweNK
-         /woEU+KZWin+w==
-Date:   Wed, 5 Apr 2023 14:37:08 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     Denis Plotnikov <den-plotnikov@yandex-team.ru>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shshaikh@marvell.com, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
-Subject: Re: [PATCH] qlcnic: check pci_reset_function result
-Message-ID: <20230405193708.GA3632282@bhelgaas>
+        with ESMTP id S232442AbjDETk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:40:29 -0400
+Received: from out-37.mta1.migadu.com (out-37.mta1.migadu.com [95.215.58.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731987D8A
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 12:40:05 -0700 (PDT)
+Message-ID: <c0596a62-0873-5638-920b-235c55ff33a2@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1680723534;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Frao4MIUa9QmfySt08uJoD9P4bRv8oM72t8WzbutWUM=;
+        b=LZIQZ/bjypmz3jEsl53xilMeBc8YgL+90Ws8fG4BKba1/I26tuMu9JqWANc3SYv8W2e4+N
+        lcrcfXl2A3g8qWqBh3QCDWEDOrcTrGi4pJB91D1RvAiE9sttQNyxOtX9nRRSRZZP2zT2ey
+        nszvNq6wqqY3nycE/qhz4IiZNSIWTvs=
+Date:   Wed, 5 Apr 2023 12:38:48 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZC1x57v1JdUyK7aG@corigine.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf] xsk: Fix unaligned descriptor validation
+Content-Language: en-US
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Kal Conley <kal.conley@dectris.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20230403143601.32168-1-kal.conley@dectris.com>
+ <CAJ8uoz1BKJ1_jq6Sum-OkZQTR_ftmr5Enj+Cmn4Qsi15_jOpbQ@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <CAJ8uoz1BKJ1_jq6Sum-OkZQTR_ftmr5Enj+Cmn4Qsi15_jOpbQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 03:04:39PM +0200, Simon Horman wrote:
-> On Mon, Apr 03, 2023 at 01:58:49PM +0300, Denis Plotnikov wrote:
-> > On 31.03.2023 20:52, Simon Horman wrote:
-> > > On Fri, Mar 31, 2023 at 11:06:05AM +0300, Denis Plotnikov wrote:
-> > > > Static code analyzer complains to unchecked return value.
-> > > > It seems that pci_reset_function return something meaningful
-> > > > only if "reset_methods" is set.
-> > > > Even if reset_methods isn't used check the return value to avoid
-> > > > possible bugs leading to undefined behavior in the future.
-> > > > 
-> > > > Signed-off-by: Denis Plotnikov <den-plotnikov@yandex-team.ru>
-> > > nit: The tree this patch is targeted at should be designated, probably
-> > >       net-next, so the '[PATCH net-next]' in the subject.
-> > > 
-> > > > ---
-> > > >   drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c | 4 +++-
-> > > >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
-> > > > index 87f76bac2e463..39ecfc1a1dbd0 100644
-> > > > --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
-> > > > +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
-> > > > @@ -628,7 +628,9 @@ int qlcnic_fw_create_ctx(struct qlcnic_adapter *dev)
-> > > >   	int i, err, ring;
-> > > >   	if (dev->flags & QLCNIC_NEED_FLR) {
-> > > > -		pci_reset_function(dev->pdev);
-> > > > +		err = pci_reset_function(dev->pdev);
-> > > > +		if (err && err != -ENOTTY)
-> > > Are you sure about the -ENOTTY part?
-> > > 
-> > > It seems odd to me that an FLR would be required but reset is not supported.
-> > No, I'm not sure. My logic is: if the reset method isn't set than
-> > pci_reset_function() returns -ENOTTY so treat that result as ok.
-> > pci_reset_function may return something different than -ENOTTY only if
-> > pci_reset_fn_methods[m].reset_fn is set.
+On 4/3/23 11:25 PM, Magnus Karlsson wrote:
+> On Mon, 3 Apr 2023 at 16:38, Kal Conley <kal.conley@dectris.com> wrote:
+>>
+>> Make sure unaligned descriptors that straddle the end of the UMEM are
+>> considered invalid. Currently, descriptor validation is broken for
+>> zero-copy mode which only checks descriptors at page granularity.
+>> Descriptors that cross the end of the UMEM but not a page boundary may
+>> be therefore incorrectly considered valid. The check needs to happen
+>> before the page boundary and contiguity checks in
+>> xp_desc_crosses_non_contig_pg. Do this check in
+>> xp_unaligned_validate_desc instead like xp_check_unaligned already does.
 > 
-> I see your reasoning: -ENOTTY means nothing happened, and probably that is ok.
-> I think my main question is if that can ever happen.
-> If that is unknown, then I think this conservative approach makes sense.
+> Thanks for catching this Kal.
+> 
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-The commit log mentions "reset_methods", which I don't think is really
-relevant here because reset_methods is an internal implementation
-detail.  The point is that pci_reset_function() returns 0 if it was
-successful and a negative value if it failed.
+Is this case covered by an existing test?
 
-If the driver thinks the device needs to be reset, ignoring any
-negative return value seems like a mistake because the device was not
-reset.
-
-If the reset is required for a firmware update to take effect, maybe a
-diagnostic would be helpful if it fails, e.g., the other "Adapter
-initialization failed.  Please reboot" messages.
-
-"QLCNIC_NEED_FLR" suggests that the driver expects an FLR (as opposed
-to other kinds of reset).  If the driver knows that all qlcnic devices
-support FLR, it could use pcie_flr() directly.
-
-pci_reset_function() does have the possibility that the reset works on
-some devices but not all.  Secondary Bus Reset fails if there are
-other functions on the same bus, e.g., a multi-function device.  And
-there's some value in doing the reset the same way in all cases.
-
-So I would suggest something like:
-
-  if (dev->flags & QLCNIC_NEED_FLR) {
-    err = pcie_flr(dev->pdev);
-    if (err) {
-      dev_err(&pdev->dev, "Adapter reset failed (%d). Please reboot\n", err);
-      return err;
-    }
-    dev->flags &= ~QLCNIC_NEED_FLR;
-  }
-
-Or, if there are qlcnic devices that don't support FLR:
-
-  if (dev->flags & QLCNIC_NEED_FLR) {
-    err = pci_reset_function(dev->pdev);
-    if (err) {
-      dev_err(&pdev->dev, "Adapter reset failed (%d). Please reboot\n", err);
-      return err;
-    }
-    dev->flags &= ~QLCNIC_NEED_FLR;
-  }
-
-> > > > +			return err;
-> > > >   		dev->flags &= ~QLCNIC_NEED_FLR;
-> > > >   	}
-> > > > -- 
-> > > > 2.25.1
-> > > > 
