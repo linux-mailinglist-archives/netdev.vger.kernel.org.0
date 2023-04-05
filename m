@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 261CC6D88CB
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD746D88CF
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbjDEUkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
+        id S234117AbjDEUk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234427AbjDEUjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:39:47 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A09476B1;
-        Wed,  5 Apr 2023 13:39:24 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id t4so32196455wra.7;
-        Wed, 05 Apr 2023 13:39:24 -0700 (PDT)
+        with ESMTP id S234275AbjDEUkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:40:02 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302AB83F0;
+        Wed,  5 Apr 2023 13:39:27 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id n10-20020a05600c4f8a00b003ee93d2c914so24132457wmq.2;
+        Wed, 05 Apr 2023 13:39:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680727163;
+        d=gmail.com; s=20210112; t=1680727165;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=a6c6V/5LU1iA96LbQDMn3nYNgJi0pITa7Rc7pXzjwd8=;
-        b=XZPhIj2o/qg1/gyE2R6SPJrBAUKxbIiUIuTX1is2BacHL8r50IEfMUej2/1aeuvtRV
-         FdRSkJedwOlA+GjuTSfYFbO0jbUSHLDwlxNCu1bTXlHHQhMGoKi3v7rzMDhM4Fgw6PxN
-         ugXbeFcxI/o3hHz1ZXOpPUp52OLB69TBFPocWKq4zauwDZzC4/8vWtZEvqrRWRTYH4Bs
-         HS+/Pye0eX11PtDcKNvZqXfYeBlPAy0tDwWnlhJS91qZGTT6rK6pfnH1j/ERxAdhv3s3
-         it8aETPSNAzlrsqW7Wms//IdIcPSgrzimpzZSIXcQxwhhRA+K8NcFFELmYbbnxlpOyu3
-         0PeQ==
+        bh=ccZfgD4+ftjQv7yPb/kHCV5/7qZA3IEA73eZ7Pnga5c=;
+        b=bvFO76O+4mQqrUZx4Mm3FNB2nH+NrpS71Z37Z4lv9VtwxMlwNAI7Mg0VVTQ+c1pTbO
+         mUn/HmOB2IkOqc7wPnn8l2GJeoBU0OgNv7IpBYJSF0ns3+Y6S7UEbyKFLRMIaWNInbs/
+         vrGBNmjgSMWR86c3yc/75BrdQTUlvpHfNgEM0iXWPR3xO0uGAE2XMSC3xGhrPE1arilr
+         RzBqpM8sNI6R/1kzAoSFofsFAS0+7EZzbfCw8EMXTBHi9kRVohxpS00rt/A/0SqISSwj
+         bXCax3p+WrE/HBdKJPsdw9F7M2dteCEK5aVZCqvjdI/+H1Z34GCSTmnmpFse5fcSKdKB
+         bfjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680727163;
+        d=1e100.net; s=20210112; t=1680727165;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=a6c6V/5LU1iA96LbQDMn3nYNgJi0pITa7Rc7pXzjwd8=;
-        b=uS4GYhkbmJjV1BLJcf5hNhvhuZ48xi8hqK+WGKt7v3f+ieSKvZtjjn0wp7MOWqZ6Fz
-         0mI2TND6AwV6n1zqDuZfsBBA+THoIHivQP+Gkx3kCrwXfNWIL5lbWX0UI6fCGUMO36Od
-         CJByANj88Yxg9vGO/VaoeowC7yAXBjLOX5YQXnkkh3OuDClrVJOt4v+VCa0Tz5MqjV6A
-         Z7V0QHVJYIoR6nXFQjEgBQ4mTjsuKc3vCU909O+g64GVO37ldbsi/QEq4xHWnQdCDfqG
-         W1NM28+CJ58+OqCeSpQiLNH5XjLqNKjon9bCv725j224b8KM0QaXB+kGEnwgRvdT7bQK
-         Q7RA==
-X-Gm-Message-State: AAQBX9dL9FdFjFmx+KPlfPZTMhWZKEeGJDzx9qgDD3CTLjU+Fwj2CZWh
-        59YrqGPi3hQ2YFZXZ0DeTm0=
-X-Google-Smtp-Source: AKy350Y6Oh6tCjeg4QzeeYsJD/AXXzE1Hsqg2ZRfWrjUjrNhiARwwu9Gc4MrcPLsHmPZe9yOMswj3w==
-X-Received: by 2002:a05:6000:14f:b0:2d2:29a4:4457 with SMTP id r15-20020a056000014f00b002d229a44457mr4491825wrx.13.1680727162992;
-        Wed, 05 Apr 2023 13:39:22 -0700 (PDT)
+        bh=ccZfgD4+ftjQv7yPb/kHCV5/7qZA3IEA73eZ7Pnga5c=;
+        b=oRryuLrbdr+k4rgPz+8eB/URWWXw3lrnaT6VgOJM8dbX3v4VkBin0Fv/QNmGQTqUNm
+         oTOxA77v6Qk8QCKy0OfRXSlWZMB6I+D438Jqj/NdJ/nptAW5mLwOEJPPOpr1cG+PYsfe
+         AWC7yONcMTdoBoqxxSLBklQAylTQ9Eg+E8JKNAyhHrF7/qtvzKJdiwRXY2gNQ7g82rSa
+         J11AehTao2sDbsti0azSMFYOc7biZ6DS7Bbt1s95zSNiUmZzqv90if/9jm6wrmMCkgRY
+         3NM9z1VJZF6u0c1MkFLi2m50v7O4Q3Afat3J1945RaM8jEPDxAdaiovD7pkSYkoTC712
+         NXLQ==
+X-Gm-Message-State: AAQBX9cIf/i0ijdmzrO2Cf1zX3Eqh9nSZizeBRoRGJGIWyu+UU3LjtJG
+        WozrdlS5qhUg02PCm/Ousk0=
+X-Google-Smtp-Source: AKy350ZdEE8tqvVToRyuOt+VCUs/QF+vsXg1tVkXot5P9IJK1jRnKbUv9hfZyF/Ef04I09pLSAX/iA==
+X-Received: by 2002:a7b:ca48:0:b0:3ee:ed5:6115 with SMTP id m8-20020a7bca48000000b003ee0ed56115mr5638813wml.19.1680727165506;
+        Wed, 05 Apr 2023 13:39:25 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.20
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:39:22 -0700 (PDT)
+        Wed, 05 Apr 2023 13:39:25 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
@@ -75,9 +75,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 08/12] net: dsa: mt7530: remove pad_setup function pointer
-Date:   Wed,  5 Apr 2023 23:38:55 +0300
-Message-Id: <20230405203859.391267-9-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 09/12] net: dsa: mt7530: move enabling port 6 to mt7530_setup_port6()
+Date:   Wed,  5 Apr 2023 23:38:56 +0300
+Message-Id: <20230405203859.391267-10-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230405203859.391267-1-arinc.unal@arinc9.com>
 References: <20230405203859.391267-1-arinc.unal@arinc9.com>
@@ -96,153 +96,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-The pad_setup function pointer was introduced with 88bdef8be9f6 ("net: dsa:
-mt7530: Extend device data ready for adding a new hardware"). It was being
-used to set up the core clock and port 6 of the MT7530 switch, and pll of
-the MT7531 switch.
+Enable port 6 only when port 6 is being used. Read the HWTRAP_XTAL_MASK
+value from val now that val is equal to the value of MT7530_MHWTRAP.
 
-All of these were moved to more appropriate locations, and it was never
-used for the switch on the MT7988 SoC. Therefore, this function pointer
-hasn't got a use anymore. Remove it.
+Update the comment on mt7530_setup() with a better explanation.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 36 ++----------------------------------
- drivers/net/dsa/mt7530.h |  3 ---
- 2 files changed, 2 insertions(+), 37 deletions(-)
+
+Do I need to protect the register from being accessed by processes while
+this operation is being done? I don't see this on mt7530_setup() but it's
+being done on mt7530_setup_port5().
+
+There's an oddity here. The XTAL mask is defined on the MT7530_HWTRAP
+register, but it's being read from MT7530_MHWTRAP instead which is at a
+different address.
+
+HWTRAP_XTAL_MASK and reading HWTRAP_XTAL_MASK from MT7530_MHWTRAP was both
+added with:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit?id=7ef6f6f8d237fa6724108b57d9706cb5069688e4
+
+I did this to test it:
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index c636a888d194..0a6d1c0872be 100644
+index 46749aee3c49..7aa3b5828ac3 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -473,12 +473,6 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
- 	return 0;
- }
- 
--static int
--mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t interface)
--{
--	return 0;
--}
--
- static bool mt7531_dual_sgmii_supported(struct mt7530_priv *priv)
- {
- 	u32 val;
-@@ -488,12 +482,6 @@ static bool mt7531_dual_sgmii_supported(struct mt7530_priv *priv)
- 	return (val & PAD_DUAL_SGMII_EN) != 0;
- }
- 
--static int
--mt7531_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
--{
--	return 0;
--}
--
- static void
- mt7531_pll_setup(struct mt7530_priv *priv)
- {
-@@ -2576,14 +2564,6 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
- 	}
- }
- 
--static int
--mt753x_pad_setup(struct dsa_switch *ds, const struct phylink_link_state *state)
--{
--	struct mt7530_priv *priv = ds->priv;
--
--	return priv->info->pad_setup(ds, state->interface);
--}
--
- static int
- mt7530_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		  phy_interface_t interface)
-@@ -2754,8 +2734,6 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		if (priv->p6_interface == state->interface)
- 			break;
- 
--		mt753x_pad_setup(ds, state);
--
- 		if (mt753x_mac_config(ds, port, mode, state) < 0)
- 			goto unsupported;
- 
-@@ -3053,11 +3031,6 @@ static int mt753x_set_mac_eee(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static int mt7988_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
--{
--	return 0;
--}
--
- static int mt7988_setup(struct dsa_switch *ds)
+@@ -404,7 +404,7 @@ static int
+ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
  {
  	struct mt7530_priv *priv = ds->priv;
-@@ -3119,7 +3092,6 @@ const struct mt753x_info mt753x_table[] = {
- 		.phy_write_c22 = mt7530_phy_write_c22,
- 		.phy_read_c45 = mt7530_phy_read_c45,
- 		.phy_write_c45 = mt7530_phy_write_c45,
--		.pad_setup = mt7530_pad_clk_setup,
- 		.mac_port_get_caps = mt7530_mac_port_get_caps,
- 		.mac_port_config = mt7530_mac_config,
- 	},
-@@ -3131,7 +3103,6 @@ const struct mt753x_info mt753x_table[] = {
- 		.phy_write_c22 = mt7530_phy_write_c22,
- 		.phy_read_c45 = mt7530_phy_read_c45,
- 		.phy_write_c45 = mt7530_phy_write_c45,
--		.pad_setup = mt7530_pad_clk_setup,
- 		.mac_port_get_caps = mt7530_mac_port_get_caps,
- 		.mac_port_config = mt7530_mac_config,
- 	},
-@@ -3143,7 +3114,6 @@ const struct mt753x_info mt753x_table[] = {
- 		.phy_write_c22 = mt7531_ind_c22_phy_write,
- 		.phy_read_c45 = mt7531_ind_c45_phy_read,
- 		.phy_write_c45 = mt7531_ind_c45_phy_write,
--		.pad_setup = mt7531_pad_setup,
- 		.cpu_port_config = mt7531_cpu_port_config,
- 		.mac_port_get_caps = mt7531_mac_port_get_caps,
- 		.mac_port_config = mt7531_mac_config,
-@@ -3156,7 +3126,6 @@ const struct mt753x_info mt753x_table[] = {
- 		.phy_write_c22 = mt7531_ind_c22_phy_write,
- 		.phy_read_c45 = mt7531_ind_c45_phy_read,
- 		.phy_write_c45 = mt7531_ind_c45_phy_write,
--		.pad_setup = mt7988_pad_setup,
- 		.cpu_port_config = mt7988_cpu_port_config,
- 		.mac_port_get_caps = mt7988_mac_port_get_caps,
- 		.mac_port_config = mt7988_mac_config,
-@@ -3186,9 +3155,8 @@ mt7530_probe_common(struct mt7530_priv *priv)
- 	/* Sanity check if these required device operations are filled
- 	 * properly.
- 	 */
--	if (!priv->info->sw_setup || !priv->info->pad_setup ||
--	    !priv->info->phy_read_c22 || !priv->info->phy_write_c22 ||
--	    !priv->info->mac_port_get_caps ||
-+	if (!priv->info->sw_setup || !priv->info->phy_read_c22 ||
-+	    !priv->info->phy_write_c22 || !priv->info->mac_port_get_caps ||
- 	    !priv->info->mac_port_config)
- 		return -EINVAL;
+-	u32 ncpo1, ssc_delta, trgint, xtal, val;
++	u32 ncpo1, ssc_delta, trgint, xtal, xtal2, val;
  
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 01db5c9724fa..9e5b99b853ba 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -697,8 +697,6 @@ struct mt753x_pcs {
-  * @phy_write_c22:	Holding the way writing PHY port using C22
-  * @phy_read_c45:	Holding the way reading PHY port using C45
-  * @phy_write_c45:	Holding the way writing PHY port using C45
-- * @pad_setup:		Holding the way setting up the bus pad for a certain
-- *			MAC port
-  * @phy_mode_supported:	Check if the PHY type is being supported on a certain
-  *			port
-  * @mac_port_validate:	Holding the way to set addition validate type for a
-@@ -719,7 +717,6 @@ struct mt753x_info {
- 			    int regnum);
- 	int (*phy_write_c45)(struct mt7530_priv *priv, int port, int devad,
- 			     int regnum, u16 val);
--	int (*pad_setup)(struct dsa_switch *ds, phy_interface_t interface);
- 	int (*cpu_port_config)(struct dsa_switch *ds, int port);
- 	void (*mac_port_get_caps)(struct dsa_switch *ds, int port,
- 				  struct phylink_config *config);
+ 	/* Enable port 6 */
+ 	val = mt7530_read(priv, MT7530_MHWTRAP);
+@@ -413,6 +413,21 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
+ 	mt7530_write(priv, MT7530_MHWTRAP, val);
+ 
+ 	xtal = val & HWTRAP_XTAL_MASK;
++	xtal2 = mt7530_read(priv, MT7530_HWTRAP) & HWTRAP_XTAL_MASK;
++
++	if (xtal == HWTRAP_XTAL_20MHZ)
++		dev_info(priv->dev, "xtal 20 Mhz\n");
++	if (xtal == HWTRAP_XTAL_25MHZ)
++		dev_info(priv->dev, "xtal 25 Mhz\n");
++	if (xtal == HWTRAP_XTAL_40MHZ)
++		dev_info(priv->dev, "xtal 40 Mhz\n");
++
++	if (xtal2 == HWTRAP_XTAL_20MHZ)
++		dev_info(priv->dev, "actual xtal 20 Mhz\n");
++	if (xtal2 == HWTRAP_XTAL_25MHZ)
++		dev_info(priv->dev, "actual xtal 25 Mhz\n");
++	if (xtal2 == HWTRAP_XTAL_40MHZ)
++		dev_info(priv->dev, "actual xtal 40 Mhz\n");
+ 
+ 	if (xtal == HWTRAP_XTAL_20MHZ) {
+ 		dev_err(priv->dev,
+
+Both ended up reporting 40 Mhz so I'm not sure if this is a bug or intended
+to be done this way.
+
+Please advise.
+
+Arınç
+
+---
+ drivers/net/dsa/mt7530.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 0a6d1c0872be..70a673347cf9 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -404,9 +404,13 @@ static int
+ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+-	u32 ncpo1, ssc_delta, trgint, xtal;
++	u32 ncpo1, ssc_delta, trgint, xtal, val;
+ 
+-	xtal = mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
++	val = mt7530_read(priv, MT7530_MHWTRAP);
++	val &= ~MHWTRAP_P6_DIS;
++	mt7530_write(priv, MT7530_MHWTRAP, val);
++
++	xtal = val & HWTRAP_XTAL_MASK;
+ 
+ 	if (xtal == HWTRAP_XTAL_20MHZ) {
+ 		dev_err(priv->dev,
+@@ -2235,9 +2239,9 @@ mt7530_setup(struct dsa_switch *ds)
+ 		mt7530_rmw(priv, MT7530_TRGMII_RD(i),
+ 			   RD_TAP_MASK, RD_TAP(16));
+ 
+-	/* Enable port 6 */
++	/* Enable PHY access and operate in manual mode */
+ 	val = mt7530_read(priv, MT7530_MHWTRAP);
+-	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
++	val &= ~MHWTRAP_PHY_ACCESS;
+ 	val |= MHWTRAP_MANUAL;
+ 	mt7530_write(priv, MT7530_MHWTRAP, val);
+ 
 -- 
 2.37.2
 
