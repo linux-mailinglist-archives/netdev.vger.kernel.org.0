@@ -2,150 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 845276D8477
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB88E6D847A
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233369AbjDERDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 13:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
+        id S231173AbjDEREl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 13:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233751AbjDERDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:03:30 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4146A41;
-        Wed,  5 Apr 2023 10:02:20 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-17786581fe1so39204302fac.10;
-        Wed, 05 Apr 2023 10:02:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680714139;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wJdooDkKozVkmq/jE5ZIJWHR45XBypuBSfKalkLMI0w=;
-        b=lhndkTBq464U/Xt0gXIA3bzt6cy6hrEA9CqJAkmYdK2UONW6KBlkuDpUphZApxzZ9o
-         yH+WHRlywqpAaRY1ZtroZg+JfQkLAfyKahIkrCYlwB8BXLszNLKTUN0LxaTxuFJpxv/J
-         S2qbhbPM09ZG6KYFJPTlz29MDb3EjQCWPS/ogkmwnK4Ok3hQVrUk8DaF1hLSvfHFz2MM
-         IN/5d8GU44EBeqpNMLWKF4dmwjDfDmJYym1vvYwa+NWi0bSwStQADBYpJ2H27HZ2SAUm
-         +VswydxOZfluEWZLiH8oDcX3aCdtzHI8rUg8jISF3gXISZ067fWckPPrRZxI4ec1rMwD
-         FOHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680714139;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wJdooDkKozVkmq/jE5ZIJWHR45XBypuBSfKalkLMI0w=;
-        b=uhrshRQ1Cs7Ukpkh2G+Lu1ccU0gLGHT40clpt2j31M+b0xYREAXWkIK4pDPWZ8mVHw
-         5Q0AK4OJSyh7sIngKMKP4OvlsFDck+eSwEVy2K3+6vX2v36DFYEKvbUiwuhyDGdKWE0I
-         Dja+M9r2pTEZnyDB/DsWuABCgj3ZtzVPGgi4xAfZz5DALZ/knxvhFqi0HfQBg89BGW0+
-         d+JwjdW188Ei6Msn6jhJ19yrjdlFOOl2AISKu78LsTG1U4UIBEotm+hICqBuEUpc0U8y
-         TU8WWFRezPSqhZOtqPZGYlTqfWNzpKzCKRpjJPjhMjiaUfuxvSMuMdhZ/iArD4xmTabk
-         6tfQ==
-X-Gm-Message-State: AAQBX9ewaMjkHgqN0u1qOye8uJUossttIvCXeR/ilUTBw6RE6Otfu+B4
-        M12R59k2dHynCo9NIuwk6Rg=
-X-Google-Smtp-Source: AKy350Y+q+FZUc+o6NJRWKav1W5Jicca/zmUWi5GHYLjZcSC8DIl2a9Q6sS0FbYDYCYe31KADbNeuQ==
-X-Received: by 2002:a05:6870:6025:b0:17a:cb34:758a with SMTP id t37-20020a056870602500b0017acb34758amr4109941oaa.34.1680714139060;
-        Wed, 05 Apr 2023 10:02:19 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id s15-20020a0568301e0f00b006a1508d348dsm7177806otr.22.2023.04.05.10.02.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 10:02:18 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 5 Apr 2023 10:02:16 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
-Subject: Re: [PATCH net v3 2/3] net: stmmac: check if MAC needs to attach to
- a PHY
-Message-ID: <5bb39f85-7ef0-4cbb-a06b-0d6431ab09b7@roeck-us.net>
-References: <20230324081656.2969663-1-michael.wei.hong.sit@intel.com>
- <20230324081656.2969663-3-michael.wei.hong.sit@intel.com>
-MIME-Version: 1.0
+        with ESMTP id S231230AbjDEREX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:04:23 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2043.outbound.protection.outlook.com [40.107.104.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04816A77
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 10:03:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZLcUSnF9mTmb/NE8yZOlPXN7MudVX6opi7BwIc5pY1ek9eeML/cL+I9LDex1Uh/LWibNpI9SLtyXsG66SXhG5RzoBM0dG0GkdHvhlrbxWhYR5SEuHIqntFLz0ZgXPoc9H5yVk+tZKklx4q03zoP/UlyJYdZR9qeKOdGGFBxOiZLnQUK2kAO9pB8IATc8szipk0BZMP635O+Grej3vBaLV/9pIQSrljf5IG+eH2dqT2SpjZE2JXGQznJq1IN7Id0VjFlLYDPIPfgOi4ny8BWFsSz/aEOKXTRJLwOh3oWIJIoEEmXU0w2/DV/d1fAOP6w3IP7HwyUZWZKjrPB5qvoS6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bS4R7E8lcmCPIrmC6TgWJwphdBbmhmivExH16gzNLeo=;
+ b=efm+YPJfXK3PYfO2olUAJxYvVKncqiStoLw3ebMWLz1mcov3o+BR81LCdicJNdCuTc/EGpBdg+fnhQdsogcGCk1SryliCCCfDbLQal+iU70nQMmRKB/JFg/xfag3LIm+chxt8T3iRYtTKv/232eibRxN1W9HDiJ36xV2OoHYS1AiQiWleAdnOCswtiHx6R8nN35C206JolelUhvuJBfBN23FzaCcTvncd5FP7AZOi5gdvTOFsWj5o73fSmb7Tmji56CbcD91h81xN+9PMznKx61LzNJyPqtaukjQMYBV8unMOjNC1uBnVzwlNoF5OafsclfhBlyzsgrhJ8fBySmivQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bS4R7E8lcmCPIrmC6TgWJwphdBbmhmivExH16gzNLeo=;
+ b=FZLhcl3AtvX9L/574fqIV3w9GXkGA/1tfuoBjV/KVPHZPr6KYYPZV9ntUNQdtNeZUNpCPfgkKVtTH7xF2m1exVkv3k4wHrn2+0lzUVni20yr3Mw+KULD7NMX8xaYz+kKEF4dhDtUkTcFftcDAtixEHMESKb360eiWx/qzP0c/r4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by PAXPR04MB8405.eurprd04.prod.outlook.com (2603:10a6:102:1c2::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.29; Wed, 5 Apr
+ 2023 17:03:25 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::dfa2:5d65:fad:a2a5]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::dfa2:5d65:fad:a2a5%3]) with mapi id 15.20.6254.026; Wed, 5 Apr 2023
+ 17:03:25 +0000
+Date:   Wed, 5 Apr 2023 20:03:22 +0300
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Maxim Georgiev <glipus@gmail.com>, kory.maincent@bootlin.com,
+        netdev@vger.kernel.org, maxime.chevallier@bootlin.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com
+Subject: Re: [RFC PATCH v3 3/5] Add ndo_hwtstamp_get/set support to vlan code
+ path
+Message-ID: <20230405170322.epknfkxdupctg6um@skbuf>
+References: <20230405063323.36270-1-glipus@gmail.com>
+ <20230405094210.32c013a7@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230324081656.2969663-3-michael.wei.hong.sit@intel.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230405094210.32c013a7@kernel.org>
+X-ClientProxiedBy: FR0P281CA0074.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1e::20) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|PAXPR04MB8405:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8cd4e41d-438e-4af1-515a-08db35f7ab66
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: T5C1eFEb3Bo3b5sl3LhNnstOxzIa76JDgx9sWGg0Aa92gYOfWZa4QwxvRQzDKUi7xdVOwtfl+BslfBVDifOck7ougfAgUDQdvl/8hwVELhBeM/wKyTmYrb+hc/NpzlRSfaC7Xh5/CmGrMRKmzHKBQAgu4LtDsMa56EtHBSn5+HEYlYI8uqsSUNqQZIiLwP3kkeUi+ZSZMMVdyGrXnY6ZHqZgLQAfHmqM3w6J58uQfLFnvBeIj4XetBJRZ0tIbXln86hDgCb+YGk3OzN05rpWv/c2Pme/tXJ8neZgBVxChueBw/trVL69o+LilXrqRPBLDXxigrx2IiDiBv23SDp6TStlFiRExrZjGadzmU+bG1jU/bRKR/WY26bQ6VP4+mbGKBxjNSuMnUWujvEQJgXrMyV1rp7+im7H80puSYR4rVCI+gYXAYya+BcAAMwfSMoHQhXMgm9evyCQ80DCbs4KQm47BPh1GRG5CFk2U2vzD/unNjiRWfTKSNm0TRpxxegOaM7u9DcVZbnrwGEO3z5dTG+rEXcfYmAWimpPDXb8N2+vwORXT+rVINDuyUc+KvMh
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(7916004)(4636009)(346002)(39860400002)(366004)(376002)(136003)(396003)(451199021)(86362001)(2906002)(33716001)(8936002)(6486002)(6506007)(44832011)(186003)(6666004)(6512007)(1076003)(26005)(478600001)(66476007)(66946007)(6916009)(41300700001)(4744005)(9686003)(66556008)(4326008)(5660300002)(38100700002)(8676002)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QjH1w7A2BoAb8o/l9IBMJMkE1sPH06nYgLEbIwTVEGQFtBxcIEZYXXW2tYMI?=
+ =?us-ascii?Q?LqZVwzgRn77Hz/6Y1lsklsYIFQHoDLJaltNfSRhr3AKBLj73cU0eDP9dFEAx?=
+ =?us-ascii?Q?3g6QGTE99BpAzmNvkkUFzPcgqUzmNMQ3E4kU+Qq98N8HJ2snMW2cCm3ddjSJ?=
+ =?us-ascii?Q?0M2hXA622Q/cO51RmhbpDizmUhGxcEK0VCLLqk0AsyoowNxcgaoazo6pV+Jq?=
+ =?us-ascii?Q?CowNpcnQFbay+AurCY4GVq8cS9SftQ2MZPnd+3gWcTx2yu09Rvp+E1x8kacM?=
+ =?us-ascii?Q?CsDQHEOTtiV8NOxl+/IwtyTpwEnOIR1UdlI2CV6zD1ARIlMNz5GlslOnF+Dw?=
+ =?us-ascii?Q?2NO3sH77wTfsaLW9U5NMsezLATQ2NLYUUZNcc6HKkaNMjUdwkzSHLFNvEELf?=
+ =?us-ascii?Q?ZkCMjnJuXffS9U+6I7Tg6mBm8BTaAi3yEDZrzkyu8xfCeLEhJAvGm4ubYvdl?=
+ =?us-ascii?Q?ElrwWWtd0nQe1RBCUpBghhdS3caoB5JgmQ1Y2lHgr1GiYdl9qtOy9mkDSD8k?=
+ =?us-ascii?Q?EO6FRerUIySfZ1gbKVnR0VhyWRrWRdR6cx41eEgoslZi08PbkQBXWjAeULqs?=
+ =?us-ascii?Q?JDgsjQ2J/E79r1aaLw1NRcKRxfPeDOfM65z7nP/Ia5rV14bTdxwezHIPtY85?=
+ =?us-ascii?Q?2Isr5Ca2md7fXKJw2BjwSYrAZDNKfsa5BqN8oPNtsGkDZnGhWI7oSgCQGqdy?=
+ =?us-ascii?Q?xmI93vZe4p2izQy0gCg5/0MwRQT/kBgqT20xOwpP+SSmL0gZTg0liyHejg/w?=
+ =?us-ascii?Q?+QsiIqUndar3ARI0mixREMPtBsDAfHZ6DNW1cOULWek8fbM1xn/4RM/N+JMe?=
+ =?us-ascii?Q?GgbGjXR9BqbO9Hv+pnFOAyk5VviBQD9LnpIX/jYCXzZga2iCenTYDLeNjfDm?=
+ =?us-ascii?Q?iYD5Q7s2L/9CX6R6CBbGMY72351bWHTtTVPloyTbD3hQNa+orp3LtCWsuCej?=
+ =?us-ascii?Q?AuO5pFzqCUGWGR1rqT0xAwUJbdMNxRQoub/nPuSpGrTB7Gl8yJozQDKDJJ/U?=
+ =?us-ascii?Q?5BtCuYJLrBBEabxHFZzdNjyCq3dZDJtbZVZY1dzv2SMHm6K0oydNb6bhzqoV?=
+ =?us-ascii?Q?TuRT14AD/lPy7PeMCOugfEKzxx+/xHvXVvO0rknYEGBxBMwg8INDhOF3QzxS?=
+ =?us-ascii?Q?J1V7ltkRME687vND7RVlAeDpSkU+8E9LarjbD3qcmXsDkgR7HPUpNxyN9iM/?=
+ =?us-ascii?Q?1XLyYDSjo3tRo8Gez95C5+JROpr+nx/cG1rwcR0BL8zCbKeH1NyD/b3W3S6w?=
+ =?us-ascii?Q?0xoAyz+UG+TW0PsiQ6mBLdAvgB3Mt+Cdi/ZyvnZi6M9Nplgs7GzbnfjkPDWs?=
+ =?us-ascii?Q?89iOEcz6srBdnV5Brwwi6XvJlzSCPscsiFCTJx1yefHfvWj3ctrz9o/GnGHf?=
+ =?us-ascii?Q?snEwM4faqKp9Ez2jh9e3UfSUH9mBtHqoweg7p4ikrngoqNXotnJfVOi6zNhA?=
+ =?us-ascii?Q?LRaeU3xEj8KQYu2+fQFwQki6j1vbNr16KPX6Rgc3TRa74G5VluvJI/nd+A7n?=
+ =?us-ascii?Q?M5yzSeli5fr3Zab389/HItZFWsFuXG+hnvEnWjnSk6tLxuQimwplQ781QKzE?=
+ =?us-ascii?Q?iZ1DRwTK6k5cDNacvFZRx/wkXwt7n137/QLMdcHEd6E2BEjOVhTjelqqbeVO?=
+ =?us-ascii?Q?Eg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8cd4e41d-438e-4af1-515a-08db35f7ab66
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 17:03:25.4141
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gqoN6GJzfZjSgo/ZMOPtfuPzwsSR7FSwNPmIoziyhqZ6N6CcTkXn0KY7HezcI6V59mUhpuueTBuVAN8pFOJmxw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8405
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Fri, Mar 24, 2023 at 04:16:55PM +0800, Michael Sit Wei Hong wrote:
-> After the introduction of the fixed-link support, the MAC driver
-> no longer attempt to scan for a PHY to attach to. This causes the
-> non fixed-link setups to stop working.
+On Wed, Apr 05, 2023 at 09:42:10AM -0700, Jakub Kicinski wrote:
+> This needs to live in the core. I think the real_dev is a lower of the
+> vlan device? All the vlan driver should do is attach the generic helper:
 > 
-> Using the phylink_expects_phy() to check and determine if the MAC
-> should expect and attach a PHY.
+> 	.ndo_hwtstamp_get = generic_hwtstamp_get_lower,
 > 
-> Fixes: ab21cf920928 ("net: stmmac: make mdio register skips PHY scanning for fixed-link")
-> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-> Signed-off-by: Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
+> and the same for set. No?
 
-With this patch in linux-next, the orangepi-pc qemu emulation fails to
-bring up the Ethernet interface. The following error is seen.
+The goal would be for macvlan and bonding to use the same generic_hwtstamp_get_lower()?
+How would the generic helper get to bond_option_active_slave_get_rcu(),
+vlan_dev_priv(dev)->real_dev, macvlan_dev_real_dev(dev)?
 
-[   12.482401] dwmac-sun8i 1c30000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
-[   12.487789] dwmac-sun8i 1c30000.ethernet eth0: PHY [mdio_mux-0.1:01] driver [Generic PHY] (irq=POLL)
-[   12.488177] dwmac-sun8i 1c30000.ethernet eth0: no phy found
-[   12.488295] dwmac-sun8i 1c30000.ethernet eth0: __stmmac_open: Cannot attach to PHY (error: -19)
-
-Reverting this patch fixes the problem.
-
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 8f543c3ab5c5..41f0f3b74933 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -1135,6 +1135,7 @@ static int stmmac_init_phy(struct net_device *dev)
->  {
->  	struct stmmac_priv *priv = netdev_priv(dev);
->  	struct fwnode_handle *fwnode;
-> +	bool phy_needed;
->  	int ret;
->  
->  	fwnode = of_fwnode_handle(priv->plat->phylink_node);
-> @@ -1144,10 +1145,11 @@ static int stmmac_init_phy(struct net_device *dev)
->  	if (fwnode)
->  		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
->  
-> +	phy_needed = phylink_expects_phy(priv->phylink);
->  	/* Some DT bindings do not set-up the PHY handle. Let's try to
->  	 * manually parse it
->  	 */
-> -	if (!fwnode || ret) {
-> +	if (!fwnode || phy_needed || ret) {
-
-I don't really understand this condition. It starts taking this path even if ret == 0
-and fwnode != NULL if phy_needed is set. That means this path is now taken even if
-phylink_fwnode_phy_connect() returned no error. That seems odd.
-
-Guenter
-
->  		int addr = priv->plat->phy_addr;
->  		struct phy_device *phydev;
->  
-> -- 
-> 2.34.1
-> 
+Perhaps a generic_hwtstamp_get_lower() that takes the lower as argument,
+and 3 small wrappers in vlan, macvlan, bonding which identify that lower?
