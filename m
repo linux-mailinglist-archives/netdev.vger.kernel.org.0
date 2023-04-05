@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFD746D88CF
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24E036D88D1
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234117AbjDEUk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S234327AbjDEUkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234275AbjDEUkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:40:02 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302AB83F0;
-        Wed,  5 Apr 2023 13:39:27 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id n10-20020a05600c4f8a00b003ee93d2c914so24132457wmq.2;
-        Wed, 05 Apr 2023 13:39:27 -0700 (PDT)
+        with ESMTP id S234504AbjDEUkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:40:04 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8567ECD;
+        Wed,  5 Apr 2023 13:39:29 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id l15-20020a05600c4f0f00b003ef6d684102so19156898wmq.3;
+        Wed, 05 Apr 2023 13:39:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680727165;
+        d=gmail.com; s=20210112; t=1680727168;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ccZfgD4+ftjQv7yPb/kHCV5/7qZA3IEA73eZ7Pnga5c=;
-        b=bvFO76O+4mQqrUZx4Mm3FNB2nH+NrpS71Z37Z4lv9VtwxMlwNAI7Mg0VVTQ+c1pTbO
-         mUn/HmOB2IkOqc7wPnn8l2GJeoBU0OgNv7IpBYJSF0ns3+Y6S7UEbyKFLRMIaWNInbs/
-         vrGBNmjgSMWR86c3yc/75BrdQTUlvpHfNgEM0iXWPR3xO0uGAE2XMSC3xGhrPE1arilr
-         RzBqpM8sNI6R/1kzAoSFofsFAS0+7EZzbfCw8EMXTBHi9kRVohxpS00rt/A/0SqISSwj
-         bXCax3p+WrE/HBdKJPsdw9F7M2dteCEK5aVZCqvjdI/+H1Z34GCSTmnmpFse5fcSKdKB
-         bfjQ==
+        bh=Wk3K9bbT+tv5kBnVohJcLc2nqRP/uYdhv43DLYVwvrA=;
+        b=Nbp9QixTsTqXq+nlznFJzTPRU25T0EZ9MfYB0i3Bd1kaz5zF7jLHuPO4ztD5MflGWR
+         AN5suyxWvODfN++LkEf+UECj7CDSevmkzrBgi2ZCzKzZ/BV4DYNWV8zJjeenQrSm4KbQ
+         aQIZRGNJMAzD+Omq1Z53JJ9iH6Jah9w3XpnoC0d0WC9bXqgfFK+UtRuDJIBPJzAenZ4S
+         0JGtpgmFd1p4bI7KdW7XrBjdmn7NVm3SGGDWZP8BDs9IqegGqmd4aQ/WgMsbzzRhJP0E
+         W/WQeSkfeB/wwl9yl+SR4cGk2VknUiNU07J2Ua0LjagY+kM6F+4lA47K4LU7affatRR4
+         +6tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680727165;
+        d=1e100.net; s=20210112; t=1680727168;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ccZfgD4+ftjQv7yPb/kHCV5/7qZA3IEA73eZ7Pnga5c=;
-        b=oRryuLrbdr+k4rgPz+8eB/URWWXw3lrnaT6VgOJM8dbX3v4VkBin0Fv/QNmGQTqUNm
-         oTOxA77v6Qk8QCKy0OfRXSlWZMB6I+D438Jqj/NdJ/nptAW5mLwOEJPPOpr1cG+PYsfe
-         AWC7yONcMTdoBoqxxSLBklQAylTQ9Eg+E8JKNAyhHrF7/qtvzKJdiwRXY2gNQ7g82rSa
-         J11AehTao2sDbsti0azSMFYOc7biZ6DS7Bbt1s95zSNiUmZzqv90if/9jm6wrmMCkgRY
-         3NM9z1VJZF6u0c1MkFLi2m50v7O4Q3Afat3J1945RaM8jEPDxAdaiovD7pkSYkoTC712
-         NXLQ==
-X-Gm-Message-State: AAQBX9cIf/i0ijdmzrO2Cf1zX3Eqh9nSZizeBRoRGJGIWyu+UU3LjtJG
-        WozrdlS5qhUg02PCm/Ousk0=
-X-Google-Smtp-Source: AKy350ZdEE8tqvVToRyuOt+VCUs/QF+vsXg1tVkXot5P9IJK1jRnKbUv9hfZyF/Ef04I09pLSAX/iA==
-X-Received: by 2002:a7b:ca48:0:b0:3ee:ed5:6115 with SMTP id m8-20020a7bca48000000b003ee0ed56115mr5638813wml.19.1680727165506;
-        Wed, 05 Apr 2023 13:39:25 -0700 (PDT)
+        bh=Wk3K9bbT+tv5kBnVohJcLc2nqRP/uYdhv43DLYVwvrA=;
+        b=p42KtFOS0/pdLZ4QkXu7HCFRQAQT8QN0eOnmqYYq5J23NRPnKrQ56YbRsooY9p0Sz2
+         +g0qpUcIikCZLTP2ejMIwfn5YWYzBOFX39q0ibfYRQEmdwzvZ5J10Xl1varVK8MmEpHJ
+         r39psTHH0uknZcrosCilSuYUBM0ede7RyLHwU6aD1kcg9KjlGfBypaOEuOyNIeWRsNCp
+         gOw7q2hnBx3UdqwIFVbO6o6VtTWZMJKniDr/RZdoPmeGFYgSu/6Jfl/ZbP6/GaEZ2v+2
+         4l12ufAE80om6V/1abshnTxYXA+eiHB9zyPrq0EudeVbBxcrgzRT5PQVFPGuW1ztq2eF
+         a7aQ==
+X-Gm-Message-State: AAQBX9fwgxNrWe83Ee26sf0sbASuoJV+YexnZlF/hg+MuLvoBfkMlCgO
+        zOmUMYIxE+/kuJeIEtjZ3xA=
+X-Google-Smtp-Source: AKy350aFpJYsbdWGizzfVNQlwDH+aMdywoXrMBy75yzELYvUe4GwnL9XMmWJ89kOSD/km6FgxUxAYg==
+X-Received: by 2002:a7b:c38a:0:b0:3ed:e715:1784 with SMTP id s10-20020a7bc38a000000b003ede7151784mr6432135wmj.15.1680727167948;
+        Wed, 05 Apr 2023 13:39:27 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.23
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:39:25 -0700 (PDT)
+        Wed, 05 Apr 2023 13:39:27 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
@@ -75,9 +75,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 09/12] net: dsa: mt7530: move enabling port 6 to mt7530_setup_port6()
-Date:   Wed,  5 Apr 2023 23:38:56 +0300
-Message-Id: <20230405203859.391267-10-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 10/12] net: dsa: mt7530: switch to if/else statements on mt7530_setup_port6()
+Date:   Wed,  5 Apr 2023 23:38:57 +0300
+Message-Id: <20230405203859.391267-11-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230405203859.391267-1-arinc.unal@arinc9.com>
 References: <20230405203859.391267-1-arinc.unal@arinc9.com>
@@ -96,32 +96,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Enable port 6 only when port 6 is being used. Read the HWTRAP_XTAL_MASK
-value from val now that val is equal to the value of MT7530_MHWTRAP.
+This code is from before this driver was converted to phylink API. Phylink
+deals with the unsupported interface cases before mt7530_setup_port6() is
+run. Therefore, the default case would never run. However, it must be
+defined nonetheless to handle all the remaining enumeration values, the
+phy-modes.
 
-Update the comment on mt7530_setup() with a better explanation.
+Switch to if/else statements which simplifies the code.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
-
-Do I need to protect the register from being accessed by processes while
-this operation is being done? I don't see this on mt7530_setup() but it's
-being done on mt7530_setup_port5().
-
-There's an oddity here. The XTAL mask is defined on the MT7530_HWTRAP
-register, but it's being read from MT7530_MHWTRAP instead which is at a
-different address.
-
-HWTRAP_XTAL_MASK and reading HWTRAP_XTAL_MASK from MT7530_MHWTRAP was both
-added with:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit?id=7ef6f6f8d237fa6724108b57d9706cb5069688e4
-
-I did this to test it:
+ drivers/net/dsa/mt7530.c | 26 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 46749aee3c49..7aa3b5828ac3 100644
+index 70a673347cf9..fe496d865478 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
 @@ -404,7 +404,7 @@ static int
@@ -129,75 +119,52 @@ index 46749aee3c49..7aa3b5828ac3 100644
  {
  	struct mt7530_priv *priv = ds->priv;
 -	u32 ncpo1, ssc_delta, trgint, xtal, val;
-+	u32 ncpo1, ssc_delta, trgint, xtal, xtal2, val;
++	u32 ncpo1, ssc_delta, xtal, val;
  
- 	/* Enable port 6 */
  	val = mt7530_read(priv, MT7530_MHWTRAP);
-@@ -413,6 +413,21 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
- 	mt7530_write(priv, MT7530_MHWTRAP, val);
+ 	val &= ~MHWTRAP_P6_DIS;
+@@ -419,16 +419,18 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
+ 		return -EINVAL;
+ 	}
  
- 	xtal = val & HWTRAP_XTAL_MASK;
-+	xtal2 = mt7530_read(priv, MT7530_HWTRAP) & HWTRAP_XTAL_MASK;
+-	switch (interface) {
+-	case PHY_INTERFACE_MODE_RGMII:
+-		trgint = 0;
+-		break;
+-	case PHY_INTERFACE_MODE_TRGMII:
+-		trgint = 1;
++	if (interface == PHY_INTERFACE_MODE_RGMII) {
++		mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
++			   P6_INTF_MODE(0));
++	} else {
++		mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
++			   P6_INTF_MODE(1));
 +
-+	if (xtal == HWTRAP_XTAL_20MHZ)
-+		dev_info(priv->dev, "xtal 20 Mhz\n");
-+	if (xtal == HWTRAP_XTAL_25MHZ)
-+		dev_info(priv->dev, "xtal 25 Mhz\n");
-+	if (xtal == HWTRAP_XTAL_40MHZ)
-+		dev_info(priv->dev, "xtal 40 Mhz\n");
+ 		if (xtal == HWTRAP_XTAL_25MHZ)
+ 			ssc_delta = 0x57;
+ 		else
+ 			ssc_delta = 0x87;
 +
-+	if (xtal2 == HWTRAP_XTAL_20MHZ)
-+		dev_info(priv->dev, "actual xtal 20 Mhz\n");
-+	if (xtal2 == HWTRAP_XTAL_25MHZ)
-+		dev_info(priv->dev, "actual xtal 25 Mhz\n");
-+	if (xtal2 == HWTRAP_XTAL_40MHZ)
-+		dev_info(priv->dev, "actual xtal 40 Mhz\n");
+ 		if (priv->id == ID_MT7621) {
+ 			/* PLL frequency: 150MHz: 1.2GBit */
+ 			if (xtal == HWTRAP_XTAL_40MHZ)
+@@ -441,17 +443,7 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
+ 			if (xtal == HWTRAP_XTAL_25MHZ)
+ 				ncpo1 = 0x1400;
+ 		}
+-		break;
+-	default:
+-		dev_err(priv->dev, "xMII interface %d not supported\n",
+-			interface);
+-		return -EINVAL;
+-	}
+-
+-	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
+-		   P6_INTF_MODE(trgint));
  
- 	if (xtal == HWTRAP_XTAL_20MHZ) {
- 		dev_err(priv->dev,
-
-Both ended up reporting 40 Mhz so I'm not sure if this is a bug or intended
-to be done this way.
-
-Please advise.
-
-Arınç
-
----
- drivers/net/dsa/mt7530.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 0a6d1c0872be..70a673347cf9 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -404,9 +404,13 @@ static int
- mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
- {
- 	struct mt7530_priv *priv = ds->priv;
--	u32 ncpo1, ssc_delta, trgint, xtal;
-+	u32 ncpo1, ssc_delta, trgint, xtal, val;
- 
--	xtal = mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
-+	val = mt7530_read(priv, MT7530_MHWTRAP);
-+	val &= ~MHWTRAP_P6_DIS;
-+	mt7530_write(priv, MT7530_MHWTRAP, val);
-+
-+	xtal = val & HWTRAP_XTAL_MASK;
- 
- 	if (xtal == HWTRAP_XTAL_20MHZ) {
- 		dev_err(priv->dev,
-@@ -2235,9 +2239,9 @@ mt7530_setup(struct dsa_switch *ds)
- 		mt7530_rmw(priv, MT7530_TRGMII_RD(i),
- 			   RD_TAP_MASK, RD_TAP(16));
- 
--	/* Enable port 6 */
-+	/* Enable PHY access and operate in manual mode */
- 	val = mt7530_read(priv, MT7530_MHWTRAP);
--	val &= ~MHWTRAP_P6_DIS & ~MHWTRAP_PHY_ACCESS;
-+	val &= ~MHWTRAP_PHY_ACCESS;
- 	val |= MHWTRAP_MANUAL;
- 	mt7530_write(priv, MT7530_MHWTRAP, val);
+-	if (trgint) {
+ 		/* Disable the MT7530 TRGMII clocks */
+ 		core_clear(priv, CORE_TRGMII_GSW_CLK_CG, REG_TRGMIICK_EN);
  
 -- 
 2.37.2
