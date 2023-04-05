@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7781D6D887D
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:28:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2D4C6D884F
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbjDEU2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40244 "EHLO
+        id S234227AbjDEU1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233419AbjDEU1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:27:55 -0400
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0FA7DAD;
-        Wed,  5 Apr 2023 13:27:33 -0700 (PDT)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-17997ccf711so39964032fac.0;
-        Wed, 05 Apr 2023 13:27:33 -0700 (PDT)
+        with ESMTP id S233955AbjDEU1a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:27:30 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645E176A9;
+        Wed,  5 Apr 2023 13:27:26 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id bx42so12025182oib.6;
+        Wed, 05 Apr 2023 13:27:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680726452;
+        d=1e100.net; s=20210112; t=1680726445;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6TsRE4TQ/f8Cdh7WoRAUoCQ/ygs9RmxZbH2hBLQ+0B0=;
-        b=IQE5xp2kvQOjiP7FAHC7Tj9VaUqF1SmKgt17RCjAMh9+Tm0JRZttIg1MQ+DWFKLMMz
-         8eqNtUsC8OXnZHbvRcBULv4ivxLdQIGVd/dvD+HapSKOCu0ygG3fYs3atcSUqafWvwWG
-         P+NsXeSJZmN2xSlRd/At5JhRU2hJLKuecewUq9k2YG7V7dsLMB8Vst7RZ2sFBzysxxcl
-         dOsViVDINsayhP+/PGgow64vHaGVV4yYnFYROLKi8XGBR/L4S3NjBYcqrujCfKUUKmij
-         S3RMRwi1ElMALgo0y9tqjwYRJHEkFa/fEpu82UfJw56dJYre7L7P4PNtnWtY5bEt8lcx
-         eoMA==
-X-Gm-Message-State: AAQBX9engr+t3DjVPop6nFWWQeISv2i5yqqVyrd1KZpKpxLoI/DH08ST
-        fzoODIVKKeWnq/GFSkn5Pw==
-X-Google-Smtp-Source: AKy350YpAV4Ot9iJZkIzmYiWr5uOjLPTxFWn3uKDFPsohB5jBkFe6vSXLe2T2ZW1wyGq+/LUiLg3xw==
-X-Received: by 2002:a05:6870:d389:b0:17a:c2be:33c with SMTP id k9-20020a056870d38900b0017ac2be033cmr4333581oag.4.1680726452615;
-        Wed, 05 Apr 2023 13:27:32 -0700 (PDT)
+        bh=amARnlOF1iPOroaq57gvCO3EUIjXtRKKLgV+BAa7GyA=;
+        b=oNWBdf+LJQeupNotyx3roKGHF2oYc0YiILjtkYmJvehMr5/wxkeHGosGb0bTzOweuA
+         4h8IGp9M7u3BekL8X8G4FUjRKMAcSjxzvZ8fIQiSAantTZmAgubAz4pybtH6B0wVT9FQ
+         GBL6s8eNhlYr0Ctr0OHe5BDj0wHD90vKOwsln7BUj7mdxVfAB6pJHrWtftd03uMNox8L
+         31feFQEogsD9Nbs6HRHghcdTc9m3FPT4aTtXCPxo/qNZqXYBLnsFcDVolwAOI+5+0CVT
+         4nT6nzUuGy0558tTyOvbRsE2zw3WbbY7MbQBC2HUr0c7JkiZxn/CVCfH7JzA4Bb+c+Xi
+         O5dw==
+X-Gm-Message-State: AAQBX9eZrNhhLYHSF/kMOFlWdWlq+TwT9Ek0wE0TDpmidHb8oeltfidp
+        dD7qxUlKiG6/Pf0WgcW1ZQ==
+X-Google-Smtp-Source: AKy350ajTaLy0qTbb9yH+lxLfyhHHpsFZm2vXmFygDhy0JelJ9qq76gGsOP0SKY6SaEK7ABF4E+UaA==
+X-Received: by 2002:a05:6808:1a09:b0:389:4f05:5fa8 with SMTP id bk9-20020a0568081a0900b003894f055fa8mr1613117oib.9.1680726445531;
+        Wed, 05 Apr 2023 13:27:25 -0700 (PDT)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id yx16-20020a056871251000b001762d1bf6a9sm6184930oab.45.2023.04.05.13.27.31
+        by smtp.gmail.com with ESMTPSA id r204-20020acadad5000000b00383eaf88e75sm6759620oig.39.2023.04.05.13.27.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:27:32 -0700 (PDT)
-Received: (nullmailer pid 425896 invoked by uid 1000);
+        Wed, 05 Apr 2023 13:27:25 -0700 (PDT)
+Received: (nullmailer pid 425898 invoked by uid 1000);
         Wed, 05 Apr 2023 20:27:17 -0000
 From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 05 Apr 2023 15:27:23 -0500
-Subject: [PATCH v2 09/10] fpga: lattice-sysconfig-spi: Add explicit include
- for of.h
+Date:   Wed, 05 Apr 2023 15:27:24 -0500
+Subject: [PATCH v2 10/10] ACPI: Replace irqdomain.h include with struct
+ declarations
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230329-acpi-header-cleanup-v2-9-c902e581923b@kernel.org>
+Message-Id: <20230329-acpi-header-cleanup-v2-10-c902e581923b@kernel.org>
 References: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
 In-Reply-To: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
 To:     "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -83,31 +83,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With linux/acpi.h (in spi/spi.h) no longer implicitly including of.h,
-add an explicit include of of.h to fix the following errors:
+linux/acpi.h includes irqdomain.h which includes of.h. Break the include
+chain by replacing the irqdomain include with forward declarations for
+struct irq_domain and irq_domain_ops which is sufficient for acpi.h.
 
-drivers/fpga/lattice-sysconfig-spi.c:146:35: error: implicit declaration of function 'of_match_ptr' [-Werror=implicit-function-declaration]
+of.h also includes mod_devicetable.h which many drivers implicitly
+depend on. As acpi.h already includes it, just move it out of the
+'#ifdef CONFIG_ACPI'.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
-v2: New patch
+v2:
+ - Move mod_devicetable.h out of #ifdef
 ---
- drivers/fpga/lattice-sysconfig-spi.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/acpi.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/fpga/lattice-sysconfig-spi.c b/drivers/fpga/lattice-sysconfig-spi.c
-index 2702b26b7f55..44691cfcf50a 100644
---- a/drivers/fpga/lattice-sysconfig-spi.c
-+++ b/drivers/fpga/lattice-sysconfig-spi.c
-@@ -3,6 +3,7 @@
-  * Lattice FPGA programming over slave SPI sysCONFIG interface.
-  */
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index efff750f326d..96bd672dc336 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -10,12 +10,15 @@
  
-+#include <linux/of.h>
- #include <linux/spi/spi.h>
+ #include <linux/errno.h>
+ #include <linux/ioport.h>	/* for struct resource */
+-#include <linux/irqdomain.h>
+ #include <linux/resource_ext.h>
+ #include <linux/device.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/property.h>
+ #include <linux/uuid.h>
  
- #include "lattice-sysconfig.h"
++struct irq_domain;
++struct irq_domain_ops;
++
+ #ifndef _LINUX
+ #define _LINUX
+ #endif
+@@ -24,7 +27,6 @@
+ #ifdef	CONFIG_ACPI
+ 
+ #include <linux/list.h>
+-#include <linux/mod_devicetable.h>
+ #include <linux/dynamic_debug.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
 
 -- 
 2.39.2
