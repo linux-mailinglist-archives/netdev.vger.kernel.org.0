@@ -2,123 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 379836D84F6
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5EA86D84FA
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232795AbjDERaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 13:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        id S229632AbjDEReS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 13:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbjDERaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:30:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D5B5FCC;
-        Wed,  5 Apr 2023 10:30:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 744E263D8E;
-        Wed,  5 Apr 2023 17:30:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C881BC433D2;
-        Wed,  5 Apr 2023 17:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680715806;
-        bh=MTlSWkTVvQnj8bCbTnc5vIL49pqfkTClsa++NdTazCs=;
-        h=From:Date:Subject:To:Cc:From;
-        b=ra9q1p5bmBMGWpFgB4v4l6pgMweSZ39xkScSBol3GZgeY/cHHHzKh2ngiGKiZuab1
-         Q2tiW81XjCEiSpZywmVvCx2jwPIpbpUdGWetARjxtx7IuNk+2vLW/UgKaeOlHx6HaG
-         bJmpCr+w0cKAwzpIJPCicRYW64MFIlAmzHjtywCJ9CKKQjZvjVNjoJiwWqFSLQ7cDl
-         tzXdjnvs2+3Shtz7WX8kLmFDw3/6tCBkyBzrAUYCvDla9Ny5JCeePSRTr7e62xPpZg
-         PNYRoT4Mzwn333ihQj1Ph2GnSXJUQMI/H7rJcaXmdJVi6o0Wmn7JsSFd7DrylGt2kd
-         fwasqzz7SlSLQ==
-From:   Simon Horman <horms@kernel.org>
-Date:   Wed, 05 Apr 2023 19:29:48 +0200
-Subject: [PATCH net-next] net: sunhme: move asm includes to below linux
- includes
+        with ESMTP id S229514AbjDEReQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:34:16 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D635FC3;
+        Wed,  5 Apr 2023 10:34:13 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id n14so35697310qta.10;
+        Wed, 05 Apr 2023 10:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680716053; x=1683308053;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=91xrSAGJZ9CpF78jalzLZ0An4C+xQG0wK06zg5Q9bhM=;
+        b=DFjoByLeW3xSgganVKbt48AUQ8gq3tt7FUeDS+gkE7Vvc9tr3ZwW+oU8CPTjj6WI0E
+         9ddgcI8nexR7mnvkP3cgBhluYKMSEi5Q1jSmfAVtYd2bP/burf1kShz23DVK3/b5p8QL
+         m6P1FyNGTWHGpz3rgZcXMQ2gfVrnqwZV02Ucg/RmBu6dtjVg20AYLfXeSOgVHbi73Cyw
+         kCUO+15o08Y4gPztgklsfdwKCNRm2oCOjFNGP5c+w4ZCqFBw8EPRf9CdF6cp+bAw6SuP
+         AL2jD4lKX/RYjJnDbacUfbnpCZ6QKe+/1vzrxfHdVp/dT5DUZiFnPVISuO3mqTcT3wqy
+         RD7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680716053; x=1683308053;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=91xrSAGJZ9CpF78jalzLZ0An4C+xQG0wK06zg5Q9bhM=;
+        b=5LWGUTi6Dg1aeb+w3bG9FEWoubqEIgrGg1oAKZq/+Wcu5alMdwkvB/t/UAP22VolXn
+         5JrRWTbK9LEr4IyHJz86iYOoqjzoaUZiAT1maQjVrsQz9juMo1BLLX2WmFz+1yuDlxon
+         mM0q2ZgGK6oafrEs3h17kKAv/RqP3LRu6gWX9E/hT5B1r8Qqmao8t7CpKeC7Bq8J7roi
+         X8taZnc47sm5v9wIg/Oz+MGiFanEYUzkNhIj2mgv9t7bkgcej0otAfFkur6s1pTi7l0p
+         g7yv/XnVvZ+3r1m5oEvJm44RAKrkTfvfqvZy+WXuLx1KaXZGGD1Ii4+7BS4uw8zYZtRK
+         yjwQ==
+X-Gm-Message-State: AAQBX9eTC3CwDhNre0mO+EqkRV5DNsdO/5v/Mljv/GvE/562kcGsaSNT
+        AZacyFoc2nzJgIGi8W/5ARaCOyVwOwtkjA==
+X-Google-Smtp-Source: AKy350ZSwvPmWlKAkeXROHNK0HBSuMXc+fSio+emLVUsWSV1OyV0OTmkvCyL7paITBbMgRDTbW9qNQ==
+X-Received: by 2002:a05:622a:8e:b0:3db:9289:6949 with SMTP id o14-20020a05622a008e00b003db92896949mr5698120qtw.3.1680716052889;
+        Wed, 05 Apr 2023 10:34:12 -0700 (PDT)
+Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
+        by smtp.gmail.com with ESMTPSA id dm33-20020a05620a1d6100b0070648cf78bdsm4578581qkb.54.2023.04.05.10.34.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Apr 2023 10:34:12 -0700 (PDT)
+Message-ID: <082e6ff7-6799-fa80-81e2-6f8092f8bb51@gmail.com>
+Date:   Wed, 5 Apr 2023 13:34:11 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20230405-sunhme-includes-fix-v1-1-bf17cc5de20d@kernel.org>
-X-B4-Tracking: v=1; b=H4sIAAywLWQC/x2NywoCMQxFf2XI2kAdLaK/Ii76SG2gRmmmMjDMv
- xtcnsM93A2UOpPCbdqg05eV32JwPEyQapAnIWdjmN18cmfnUYfUl1lJbWRSLLxi8T7ma8mX4Ap
- YGYMSxh4kVWtltGby08m2/6s7CC0otC7w2PcfiPhXhoQAAAA=
-To:     Jakub Kicinski <kuba@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next] net: sunhme: move asm includes to below linux
+ includes
+Content-Language: en-US
+To:     Simon Horman <horms@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Sean Anderson <seanga2@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
         kernel test robot <lkp@intel.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Linux Memory Management List <linux-mm@kvack.org>,
         linux-m68k@lists.linux-m68k.org
-X-Mailer: b4 0.12.2
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230405-sunhme-includes-fix-v1-1-bf17cc5de20d@kernel.org>
+From:   Sean Anderson <seanga2@gmail.com>
+In-Reply-To: <20230405-sunhme-includes-fix-v1-1-bf17cc5de20d@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent rearrangement of includes has lead to a problem on m68k
-as flagged by the kernel test robot.
-
-Resolve this by moving the block asm includes to below linux includes.
-A side effect i that non-Sparc asm includes are now immediately
-before Sparc asm includes, which seems nice.
-
-Using sparse v0.6.4 I was able to reproduce this problem as follows
-using the config provided by the kernel test robot:
-
-$ wget https://download.01.org/0day-ci/archive/20230404/202304041748.0sQc4K4l-lkp@intel.com/config
-$ cp config .config
-$ make ARCH=m68k oldconfig
-$ make ARCH=m68k C=2 M=drivers/net/ethernet/sun
-   CC [M]  drivers/net/ethernet/sun/sunhme.o
- In file included from drivers/net/ethernet/sun/sunhme.c:19:
- ./arch/m68k/include/asm/irq.h:78:11: error: expected ‘;’ before ‘void’
-    78 | asmlinkage void do_IRQ(int irq, struct pt_regs *regs);
-       |           ^~~~~
-       |           ;
- ./arch/m68k/include/asm/irq.h:78:40: warning: ‘struct pt_regs’ declared inside parameter list will not be visible outside of this definition or declaration
-    78 | asmlinkage void do_IRQ(int irq, struct pt_regs *regs);
-       |                                        ^~~~~~~
-
-Compile tested only.
-
-Fixes: 1ff4f42aef60 ("net: sunhme: Alphabetize includes")
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/oe-kbuild-all/202304041748.0sQc4K4l-lkp@intel.com/
-Signed-off-by: Simon Horman <horms@kernel.org>
----
- drivers/net/ethernet/sun/sunhme.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index ec85aef35bf9..b93613cd1994 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -14,9 +14,6 @@
-  *     argument : macaddr=0x00,0x10,0x20,0x30,0x40,0x50
-  */
- 
--#include <asm/byteorder.h>
--#include <asm/dma.h>
--#include <asm/irq.h>
- #include <linux/bitops.h>
- #include <linux/crc32.h>
- #include <linux/delay.h>
-@@ -45,6 +42,10 @@
- #include <linux/types.h>
- #include <linux/uaccess.h>
- 
-+#include <asm/byteorder.h>
-+#include <asm/dma.h>
-+#include <asm/irq.h>
-+
- #ifdef CONFIG_SPARC
- #include <asm/auxio.h>
- #include <asm/idprom.h>
-
+T24gNC81LzIzIDEzOjI5LCBTaW1vbiBIb3JtYW4gd3JvdGU6DQo+IEEgcmVjZW50IHJlYXJy
+YW5nZW1lbnQgb2YgaW5jbHVkZXMgaGFzIGxlYWQgdG8gYSBwcm9ibGVtIG9uIG02OGsNCj4g
+YXMgZmxhZ2dlZCBieSB0aGUga2VybmVsIHRlc3Qgcm9ib3QuDQo+IA0KPiBSZXNvbHZlIHRo
+aXMgYnkgbW92aW5nIHRoZSBibG9jayBhc20gaW5jbHVkZXMgdG8gYmVsb3cgbGludXggaW5j
+bHVkZXMuDQo+IEEgc2lkZSBlZmZlY3QgaSB0aGF0IG5vbi1TcGFyYyBhc20gaW5jbHVkZXMg
+YXJlIG5vdyBpbW1lZGlhdGVseQ0KPiBiZWZvcmUgU3BhcmMgYXNtIGluY2x1ZGVzLCB3aGlj
+aCBzZWVtcyBuaWNlLg0KPiANCj4gVXNpbmcgc3BhcnNlIHYwLjYuNCBJIHdhcyBhYmxlIHRv
+IHJlcHJvZHVjZSB0aGlzIHByb2JsZW0gYXMgZm9sbG93cw0KPiB1c2luZyB0aGUgY29uZmln
+IHByb3ZpZGVkIGJ5IHRoZSBrZXJuZWwgdGVzdCByb2JvdDoNCj4gDQo+ICQgd2dldCBodHRw
+czovL2Rvd25sb2FkLjAxLm9yZy8wZGF5LWNpL2FyY2hpdmUvMjAyMzA0MDQvMjAyMzA0MDQx
+NzQ4LjBzUWM0SzRsLWxrcEBpbnRlbC5jb20vY29uZmlnDQo+ICQgY3AgY29uZmlnIC5jb25m
+aWcNCj4gJCBtYWtlIEFSQ0g9bTY4ayBvbGRjb25maWcNCj4gJCBtYWtlIEFSQ0g9bTY4ayBD
+PTIgTT1kcml2ZXJzL25ldC9ldGhlcm5ldC9zdW4NCj4gICAgIENDIFtNXSAgZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvc3VuL3N1bmhtZS5vDQo+ICAgSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGRy
+aXZlcnMvbmV0L2V0aGVybmV0L3N1bi9zdW5obWUuYzoxOToNCj4gICAuL2FyY2gvbTY4ay9p
+bmNsdWRlL2FzbS9pcnEuaDo3ODoxMTogZXJyb3I6IGV4cGVjdGVkIOKAmDvigJkgYmVmb3Jl
+IOKAmHZvaWTigJkNCj4gICAgICA3OCB8IGFzbWxpbmthZ2Ugdm9pZCBkb19JUlEoaW50IGly
+cSwgc3RydWN0IHB0X3JlZ3MgKnJlZ3MpOw0KPiAgICAgICAgIHwgICAgICAgICAgIF5+fn5+
+DQo+ICAgICAgICAgfCAgICAgICAgICAgOw0KPiAgIC4vYXJjaC9tNjhrL2luY2x1ZGUvYXNt
+L2lycS5oOjc4OjQwOiB3YXJuaW5nOiDigJhzdHJ1Y3QgcHRfcmVnc+KAmSBkZWNsYXJlZCBp
+bnNpZGUgcGFyYW1ldGVyIGxpc3Qgd2lsbCBub3QgYmUgdmlzaWJsZSBvdXRzaWRlIG9mIHRo
+aXMgZGVmaW5pdGlvbiBvciBkZWNsYXJhdGlvbg0KPiAgICAgIDc4IHwgYXNtbGlua2FnZSB2
+b2lkIGRvX0lSUShpbnQgaXJxLCBzdHJ1Y3QgcHRfcmVncyAqcmVncyk7DQo+ICAgICAgICAg
+fCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBefn5+fn5+DQoNClRo
+aXMgc2VlbXMgbGlrZSBhIHByb2JsZW0gd2l0aCB0aGUgaGVhZGVyLiBtNjhrJ3MgYXNtL2ly
+cS5oIHNob3VsZCBpbmNsdWRlIGxpbnV4L2ludGVycnVwdC5oIGJlZm9yZSBpdHMgZGVjbGFy
+YXRpb25zLg0KDQotLVNlYW4NCg0KPiBDb21waWxlIHRlc3RlZCBvbmx5Lg0KPiANCj4gRml4
+ZXM6IDFmZjRmNDJhZWY2MCAoIm5ldDogc3VuaG1lOiBBbHBoYWJldGl6ZSBpbmNsdWRlcyIp
+DQo+IFJlcG9ydGVkLWJ5OiBrZXJuZWwgdGVzdCByb2JvdCA8bGtwQGludGVsLmNvbT4NCj4g
+TGluazogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvb2Uta2J1aWxkLWFsbC8yMDIzMDQwNDE3
+NDguMHNRYzRLNGwtbGtwQGludGVsLmNvbS8NCj4gU2lnbmVkLW9mZi1ieTogU2ltb24gSG9y
+bWFuIDxob3Jtc0BrZXJuZWwub3JnPg0KPiAtLS0NCj4gICBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9zdW4vc3VuaG1lLmMgfCA3ICsrKystLS0NCj4gICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNl
+cnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+bmV0L2V0aGVybmV0L3N1bi9zdW5obWUuYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N1bi9z
+dW5obWUuYw0KPiBpbmRleCBlYzg1YWVmMzViZjkuLmI5MzYxM2NkMTk5NCAxMDA2NDQNCj4g
+LS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3VuL3N1bmhtZS5jDQo+ICsrKyBiL2RyaXZl
+cnMvbmV0L2V0aGVybmV0L3N1bi9zdW5obWUuYw0KPiBAQCAtMTQsOSArMTQsNiBAQA0KPiAg
+ICAqICAgICBhcmd1bWVudCA6IG1hY2FkZHI9MHgwMCwweDEwLDB4MjAsMHgzMCwweDQwLDB4
+NTANCj4gICAgKi8NCj4gICANCj4gLSNpbmNsdWRlIDxhc20vYnl0ZW9yZGVyLmg+DQo+IC0j
+aW5jbHVkZSA8YXNtL2RtYS5oPg0KPiAtI2luY2x1ZGUgPGFzbS9pcnEuaD4NCj4gICAjaW5j
+bHVkZSA8bGludXgvYml0b3BzLmg+DQo+ICAgI2luY2x1ZGUgPGxpbnV4L2NyYzMyLmg+DQo+
+ICAgI2luY2x1ZGUgPGxpbnV4L2RlbGF5Lmg+DQo+IEBAIC00NSw2ICs0MiwxMCBAQA0KPiAg
+ICNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPiAgICNpbmNsdWRlIDxsaW51eC91YWNjZXNz
+Lmg+DQo+ICAgDQo+ICsjaW5jbHVkZSA8YXNtL2J5dGVvcmRlci5oPg0KPiArI2luY2x1ZGUg
+PGFzbS9kbWEuaD4NCj4gKyNpbmNsdWRlIDxhc20vaXJxLmg+DQo+ICsNCj4gICAjaWZkZWYg
+Q09ORklHX1NQQVJDDQo+ICAgI2luY2x1ZGUgPGFzbS9hdXhpby5oPg0KPiAgICNpbmNsdWRl
+IDxhc20vaWRwcm9tLmg+DQo+IA0KDQo=
