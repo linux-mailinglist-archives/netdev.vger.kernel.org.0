@@ -2,77 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CC036D84CD
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A60B66D84EE
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:29:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232832AbjDERWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 13:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
+        id S232507AbjDER3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 13:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232696AbjDERWl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:22:41 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3A459E6;
-        Wed,  5 Apr 2023 10:22:31 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-946a769ae5cso57922166b.1;
-        Wed, 05 Apr 2023 10:22:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680715349;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qudjHEfwZN2ELTS5uL0dbGd2njDQoDIllVRSFmZf91w=;
-        b=pQd8omNiHGbe69W3r4RWtZbX1dS4H8lNwaGQ59NIJzC+zxvDCBDY73YiP51VPWnGuM
-         AU+AfrzuScmL6CQk4Vob1cwXbMMjvXSby4qzfrIYUH1w+YHiIxw7DiX/SKiTKd/DsHrN
-         HjC6thTdZDXvU7/1IHDxh7Jr4c1xJtsycc2D4YmIQRiB43vw5a8u0atQIPqwgcghsa3Y
-         R4pGpQSWYGgdRF2LpF1sAsQnjUwugZfYOJfmmtJOmPy/hJi4g2f+5WmxnVUxPfbDpTAc
-         QuzofrHDZJL7zi9PQwWXoeoMnGtSxFZwsYJVhLKEFOHITMaFUIT3X+TcRd66I67+Hh5o
-         KuDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680715349;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qudjHEfwZN2ELTS5uL0dbGd2njDQoDIllVRSFmZf91w=;
-        b=fJ/s3WSgZ1aVwyHsg7d8+5wxQt118FBIV1VaoiTWriVMvZJsVQRs7XCEtBl1eQs0q0
-         n93Q+NLHaERsce+yQg5soflGcrXRQHvgwbIZyq/4CPFGcuIby+natqfizBzNQS3s/SwT
-         4CbqYeiod+2XTPCCuUigIk7RvVdvOS99DtsX8vnkK0ZZ2iskL0EJ+4KX6Ev1veA9ovDC
-         9lurIzsWL8vxvdS33fS/TE0rZjdrVfUi7l8EUIWmLG0Lzcc2NFNJulj8iDfzAGgZjSwV
-         8yqvqubISKMLQzWJ+g5sUfZEiEOR/n4n8zZcb7CF43UkZ3zIX3CRUrq8QvmwDn6DjQiZ
-         FWjw==
-X-Gm-Message-State: AAQBX9cY1FbgIiiddCSU57kaSX/0CM6IKEf3FV2zeCpwxGbs6e5pc8Nu
-        mQEIPwTOYEjn9OvUirEZdym+qLO0R7IWRlI0AEraXgPoSzk=
-X-Google-Smtp-Source: AKy350aJRbu5NiZ90m6GXPJ7LXg82miPFAUuzYzMhf/xsH4Vf1FM0wA53TwtvvJDOvTMUmkoHUSS3Y67P58vi9Hcaho=
-X-Received: by 2002:a50:aa93:0:b0:4c0:71e6:9dc5 with SMTP id
- q19-20020a50aa93000000b004c071e69dc5mr1566796edc.1.1680715349174; Wed, 05 Apr
- 2023 10:22:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
- <20230404145131.GB3896@maniforge> <CAEf4BzYXpHMNDTCrBTjwvj3UU5xhS9mAKLx152NniKO27Rdbeg@mail.gmail.com>
- <CAADnVQKLe8+zJ0sMEOsh74EHhV+wkg0k7uQqbTkB3THx1CUyqw@mail.gmail.com> <20230404185147.17bf217a@kernel.org>
-In-Reply-To: <20230404185147.17bf217a@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Apr 2023 10:22:16 -0700
-Message-ID: <CAEf4BzY3-pXiM861OkqZ6eciBJnZS8gsBL2Le2rGiSU64GKYcg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/8] bpf: Follow up to RCU enforcement in the verifier.
+        with ESMTP id S233015AbjDER3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:29:02 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2081.outbound.protection.outlook.com [40.107.6.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06296591
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 10:28:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AQXPuTI8U+IKjTUCQmIeCuTAVrL+Gr6pxM+J+mjDWmxZ1zzKuXPU7yKfZ/1wTNZ6DS8Lwssr8v5LHSq4dw71IwMOWXlTc7uu/KSMoYZokoml+tYer/3yttMEOQ3RlWCz2BuiIJzAbMLBv4WWnVTLZCRLZiPOq2Y1NFA3NxAY7Fqk96mthWVpAJT/yttoLJQQj0GQ1BE66eimAg/WIZHsLQz3MfFIU6OVjc5BMwhob/+sDo0RSlWuTubIpoRu0tcl0FoFU1llAdmLANGpebaRaypsKuQp6ML6gAgvS1M4482Pk0ldgr+AXLo/KhY+3o/ydMinLhKPB3qldTqiNX6PuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kbzcWSlLchm87a8gWUdM5ziGVDbH/Q0gl5su4Hj0Yh4=;
+ b=VHO83G0s5oWWxMeTcRLvd+uyAkq6+clDmzkv76lGfzNF0iaMloZyGx3Y9OuFzS1tctyFZ5eH+j0UFbbUukCF7jXC2mO3DqnOhcC1ni5JjPwv02/ly0RZjqlt4WC3qlSyPkrU+b0ZINw4BTpc6LbUjtOvxa5GoKYPRaLmcgEMTZsU3DQNDWOR/4BRhoUCiUM4wL/dCEce4L+t0AxR0wtuIYXPPa249hxuxRvJAAe+aBgCMF4cUNt923jTGie177gqBfoLKLsC8RjwkIeFrHfqMlgEVmK5rO+T+hSzZwNVtcsj7Ew+VxUNiGfSSwYAEkhLggyTZnYLlpPSiLbwmqkUcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kbzcWSlLchm87a8gWUdM5ziGVDbH/Q0gl5su4Hj0Yh4=;
+ b=Xt0x7MMiD1rpMAdG5nEQ+58T7Q+a72Tub4+k2zXPJmdq9/xwekgyWRuZJ5HYwyY9vgFFiRQJgK28Ash1yILouwHNUy6SRHcSdXrH3LRiSuvPkQ3hSh0uIWpAMWyPwhYtV0tb1Jb1SeTue6T6e4v03Fnb85WLW3aqdmxA/FYH1l0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by VI1PR04MB6957.eurprd04.prod.outlook.com (2603:10a6:803:135::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.35; Wed, 5 Apr
+ 2023 17:28:44 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::dfa2:5d65:fad:a2a5]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::dfa2:5d65:fad:a2a5%3]) with mapi id 15.20.6254.026; Wed, 5 Apr 2023
+ 17:28:44 +0000
+Date:   Wed, 5 Apr 2023 20:28:40 +0300
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Vernet <void@manifault.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Dave Marchevsky <davemarchevsky@meta.com>,
-        Tejun Heo <tj@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Yonghong Song <yhs@meta.com>, Song Liu <song@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc:     Maxim Georgiev <glipus@gmail.com>, kory.maincent@bootlin.com,
+        netdev@vger.kernel.org, maxime.chevallier@bootlin.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com
+Subject: Re: [RFC PATCH v3 3/5] Add ndo_hwtstamp_get/set support to vlan code
+ path
+Message-ID: <20230405172840.onxjhr34l7jruofs@skbuf>
+References: <20230405063323.36270-1-glipus@gmail.com>
+ <20230405094210.32c013a7@kernel.org>
+ <20230405170322.epknfkxdupctg6um@skbuf>
+ <20230405101323.067a5542@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230405101323.067a5542@kernel.org>
+X-ClientProxiedBy: FR0P281CA0014.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::19) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|VI1PR04MB6957:EE_
+X-MS-Office365-Filtering-Correlation-Id: c99b5d29-ebc0-4967-d6e9-08db35fb348f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KBXLJoinYMQwKyailLBDDkQe/NyWnF7Ky1lcvCVLKHdcqiLlFxjA+jKHvi6Nsk0XeXGyJSS9GMLszWC5CLGJDlrzkkiRilZJoX4zbgm8UOB+ldf33dOdvYNxFAee8DexkB/U5rG8f8K81HUSth43igoDhJ3E/k/nk/8MKpfOgH8yC0Nl0kUrRox42Zd80yyGglgG5qGEq/rfARqrxg7iL1q72OsZWoqH4DwntSQZU7rhxEfXa9GambI3DMVng1t1qAdVi90RY8iFyC3AQYXZECkS0tJrsogO4WvyCvxvy6oReUzhnH7l9DGxiK39qhK2NFHspJQqYhNC+tq1EFAdKKAR3UNB0uSMEd5IES855rjy5Vueu+wj3NZJ5fyc/WcyOfwcw6Ikm7f4ySfeRZKXXMi60BOGaAxhtm9cGS88J7PB5ijUKEJq9r4FSAuK51DecAuuuzPcgf2FWhbKSRJWdkiRI6iXb3mdoToij7sXgLVfrGSE0wQdhvxb/PJpGF+Y30cR2R4wi4AxOF0CX9bfD+339Augp9G1zh2exXtyJu4lM0vXSmksilS7W0FM3jS5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(346002)(376002)(136003)(39860400002)(366004)(396003)(451199021)(6666004)(6486002)(83380400001)(86362001)(38100700002)(33716001)(9686003)(1076003)(6506007)(26005)(6512007)(186003)(2906002)(5660300002)(316002)(8936002)(41300700001)(8676002)(4326008)(66476007)(66556008)(6916009)(44832011)(66946007)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?orYILsyq9aeEUHxUvEycUq5sNbYOb6QtPYOrO1H+seVX+5UwzoBlC/aczA37?=
+ =?us-ascii?Q?oSC5/kU82d0zSjaW8mmG+7+3mbim17hget6H0UbRwirh7bJiVMuArrlofAEH?=
+ =?us-ascii?Q?iToCjZsS2N5Hdq5sGZ4OzooQlVNL7yO3OxkvZ7cG/CrFiD4SnmS2bK3if18T?=
+ =?us-ascii?Q?V09wdTbzPBBtDgAzwhZppoNHF0m2RJMsQOWtrGLWmn8iA56TY0EbE4GWe5hD?=
+ =?us-ascii?Q?xDkIG2yCzVwh+e7/QrD2HjD+oySl+pyxVMjmnJVkSqhLRfcC3KcqsbdeJ1OG?=
+ =?us-ascii?Q?ccnAnqSqlKILfE8oOQGImzbMjuIdSuFXfZXslnoHqzEQ0iVJxGuZsrH09m5P?=
+ =?us-ascii?Q?Ptcc8CKTwWi0pvuIeQJNx+QuP6TTDYDcECs8/fJBorAPrAAs1Zq3T3NBXK+Y?=
+ =?us-ascii?Q?dKzynmMqnJIRzX5ZwtU3wYxK4gy96g1BVnOCk1zBY6VWRmo3Vhol8guiwUSj?=
+ =?us-ascii?Q?rI5hsnzcal2oburtfxq6Yklj70W4F7L9HlYsjDnvgY1svMGGUoyWzHnjHBYK?=
+ =?us-ascii?Q?jJ0P8huuvnQwnXgJdYXhR/HIoHVdl81QA4chA6LpLFQkIUg3a4xQVq/ddfyI?=
+ =?us-ascii?Q?bnpaZHj4mc67yEH6Z1QAVWCdey+OQGkHXP9VuIASrpbkR/SikMCcuVCTdnDe?=
+ =?us-ascii?Q?8LVcAaLsM1kcNB1Nm7Kn5iLCtXvNlh8XJhh7b2w2Y4KZHIlziMxoMm7XXkVY?=
+ =?us-ascii?Q?Z7y7G6L+o+g+XPnAOL3HSbzXbnWyKSuetDTAT4RY9Nd+sXHO35Z1/AZG7xv9?=
+ =?us-ascii?Q?ZyUvyJ4ePA5B/hYNPcBbJX+BwlahatT6dpTG+ojWvvR+mRM794Y+tC8iVcPA?=
+ =?us-ascii?Q?MXA39hxU+YqmDQG9fmtOTgG9HVg3PR2RI5xYsgv4iIDPWe6Izl6alxHI1Sim?=
+ =?us-ascii?Q?tY4nvlGhE7t26YIUrdmb/zbM+Nm/UVXyORMOUvm77NDFW8aCgAZ3isagPPfP?=
+ =?us-ascii?Q?8oWGZM6Vyg92YSWzwNoR7hHNesojKFRrEUrr75PQq/xa/+WqV+wFqFtXL3NN?=
+ =?us-ascii?Q?ZMWOIBAZlEqYN10ShRpoXHMejaprR/yxVlxriAN0lVT9RV1JVXxXa8wFlC5J?=
+ =?us-ascii?Q?Qwb4klJ6aBh8WMeXkDq9CJHfSEZsmVsoSVlpK9T6IipZd6n4WcgNvcA4AbLY?=
+ =?us-ascii?Q?g5Hdo7x7x639l9g3eloqgd0xFSsySJSAcsZMw+SZbNxm/TVPfzp0jkYG+6nr?=
+ =?us-ascii?Q?FO6vQoRd6O98z3V52zRzsseiELOx0K3n2fLlrqlYwY84vVkORmOa3SBACjfX?=
+ =?us-ascii?Q?cdVk1Av/2Xu06KDSBsQvSArtcJrOAWDNgYUWCGllK3Hv8VqTjDUgaV8ytwpL?=
+ =?us-ascii?Q?6BXdb4KYoz68Rx0F0H32BC7ItOurrAiCrQOwmdJcWBuvUrQl5thKhSP6LeMZ?=
+ =?us-ascii?Q?LtU97UV+OLUVaPc8h4iqPZEFABqnmQ3t7ktKM8s5AA8hqIrwOxEG0aSsvGrk?=
+ =?us-ascii?Q?tNkAzCzQxXnXgKiHD0JgGVnNJFk38w7zolSi7B1rXUrugBaNcqMXiuBDQwkN?=
+ =?us-ascii?Q?+d/dwBn8mNagSO+WbJ188PowAxYUKZzt0n/CjTv0DEk+bKCaYz3Y3cfrnFMh?=
+ =?us-ascii?Q?FNSagrEogrkTkcGyGXBESbgVR6wLkM2tg4GYiMenJ6ED6aHE8HiteoFmqZ8p?=
+ =?us-ascii?Q?YQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c99b5d29-ebc0-4967-d6e9-08db35fb348f
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 17:28:43.9675
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: z9TtNuQQL/sJNUKnp8U10pDxcsmHM3YB/IKVItfu4G+C9sr0H9zr9ROpEdDo5eHo45Y4ldgOmdaJS3TCbxXglA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6957
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,50 +118,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 4, 2023 at 6:51=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wro=
-te:
->
-> On Tue, 4 Apr 2023 17:16:27 -0700 Alexei Starovoitov wrote:
-> > > Added David's acks manually (we really need to teach pw-apply to do
-> > > this automatically...) and applied.
-> >
-> > +1
-> > I was hoping that patchwork will add this feature eventually,
-> > but it seems faster to hack the pw-apply script instead.
->
-> pw-apply can kind of do it. It exports an env variable called ADD_TAGS
-> if it spots any tags in reply to the cover letter.
->
-> You need to add a snippet like this to your .git/hooks/applypatch-msg:
->
->   while IFS=3D read -r tag; do
->     echo -e Adding tag: '\e[35m'$tag'\e[0m'
->       git interpret-trailers --in-place \
->           --if-exists=3DaddIfDifferent \
->           --trailer "$tag" \
->           "$1"
->   done <<< "$ADD_TAGS"
->
-> to transfer those tags onto the commits.
->
-> Looking at the code you may also need to use -M to get ADD_TAGS
-> exported. I'm guessing I put this code under -M so that the extra curl
-> requests don't slow down the script for everyone. But we can probably
-> "graduate" that into the main body if you find it useful and hate -M :)
+On Wed, Apr 05, 2023 at 10:13:23AM -0700, Jakub Kicinski wrote:
+> On Wed, 5 Apr 2023 20:03:22 +0300 Vladimir Oltean wrote:
+> > The goal would be for macvlan and bonding to use the same generic_hwtstamp_get_lower()?
+> > How would the generic helper get to bond_option_active_slave_get_rcu(),
+> > vlan_dev_priv(dev)->real_dev, macvlan_dev_real_dev(dev)?
+> > 
+> > Perhaps a generic_hwtstamp_get_lower() that takes the lower as argument,
+> > and 3 small wrappers in vlan, macvlan, bonding which identify that lower?
+> 
+> The bonding situation is probably more complex, I haven't looked,
+> but for *vlans we can just get the lower from netdev linkage, no?
+> Sure the drivers have their own pointers for convenience and with
+> their own lifetime rules but under rtnl lock lower/upper should work...
 
-So I'm exclusively using `pw-apply -c <patchworks-url>` to apply
-everything locally. I'd expect that at this time the script would
-detect any Acked-by replies on *cover letter patch*, and apply them
-across all patches in the series. Such that we (humans) can look at
-them, fix them, add them, etc. Doing something like this in git hook
-seems unnecessary?
+So what do you suggest doing with bonding, then? Not use the generic
+helper at all? It's not that more complex, btw. Here are the differences:
 
-So I think the only thing that's missing is the code that would fetch
-all replies on the cover letter "patch" (e.g., like on [0]) and just
-apply it across everything. We must be doing something like this for
-acks on individual patches, so I imagine we are not far off to make
-this work, but I haven't looked at pw-apply carefully enough to know
-for sure.
+- it changes ifrr.ifr_name with real_dev->name for a reason I can't
+  really determine or find in commit 94dd016ae538 ("bond: pass
+  get_ts_info and SIOC[SG]HWTSTAMP ioctl to active device"). Since vlan
+  and macvlan don't do it, and operate with lower drivers from the same
+  pool as bonding, I'd imagine it's not needed.
 
-  [0] https://patchwork.kernel.org/project/netdevbpf/cover/20230404045029.8=
-2870-1-alexei.starovoitov@gmail.com/
+- it requires cfg.flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX to be set in
+  SET requests
+
+- it sets cfg.flags | HWTSTAMP_FLAG_BONDED_PHC_INDEX in GET responses
+
+Notably, something I would have expected it does but it doesn't do is it
+doesn't apply the same hwtstamping config to the lower interface that
+isn't active, when the switchover happens. Presumably user space does that.
+
+So it's not that much different.
