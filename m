@@ -2,80 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA5F6D86F0
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ED7F6D8709
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232655AbjDETfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 15:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        id S234275AbjDETit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 15:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230396AbjDETfm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:35:42 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A930D5FE1;
-        Wed,  5 Apr 2023 12:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GJLiNwhsL8BaZ9KZ/zH+hWXBLPuylC9ipjO8vXLfsjw=; b=xaJkJYJMmcRDgsC5EpE9PRIgAQ
-        HYv4+O2SHOJNB4PRH5kk8ZEsg5rvoIEsUC2FDG1gtqjCW2CRKPBLLrpsD6a+ZJV/znHN7muxtUtsT
-        yBtbpPOYuABPPh1etdclBxinSgqEt/2mGDjmNaZas/9XQKGVlIKbAY40aBlw5RIJNzVw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1pk8up-009YP9-2g; Wed, 05 Apr 2023 21:35:31 +0200
-Date:   Wed, 5 Apr 2023 21:35:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        system@metrotek.ru, stable@vger.kernel.org
-Subject: Re: [PATCH net] net: sfp: initialize sfp->i2c_block_size at sfp
- allocation
-Message-ID: <19d7ef3c-de9d-4a44-92e9-16ac14b663d9@lunn.ch>
-References: <20230405153900.747-1-i.bornyakov@metrotek.ru>
+        with ESMTP id S233825AbjDETib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:38:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F869109;
+        Wed,  5 Apr 2023 12:37:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AE84640BE;
+        Wed,  5 Apr 2023 19:37:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97283C433EF;
+        Wed,  5 Apr 2023 19:37:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680723429;
+        bh=TLG3NZx0ALC463PDdufiBKczspw2zuA1W3rAJxepf5k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=DTAlaf5qV1uSiQa5LuJCDGh/hcwXVcZFLUHADH/hguhCT/5asojITIl11hbOfUD4I
+         WEp7f4zsiFPpt7MZHXgDyCm6UG1y3a0CAn4ZmVd4lGyakXjZH0MGDsXJx/WShChi3E
+         p1+/Baw4gZykoqsFEiejtkDuVyjs3oPs9/bRD89LqFfEyHL5OiGzOkdPu7ZnFYegJu
+         0X5xKiFKYZQRSgUmExpzXr/f/Y6GC0oI+7DIsxxwXQXtq6Jeu9saRp9j+Q2RRi6IrF
+         HMruhZtAyGqwpOxwu2Ag8JCFs8aCQNZwMlYleJ6p/YWva8D1ultBAArTnD5/bVweNK
+         /woEU+KZWin+w==
+Date:   Wed, 5 Apr 2023 14:37:08 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Denis Plotnikov <den-plotnikov@yandex-team.ru>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shshaikh@marvell.com, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org
+Subject: Re: [PATCH] qlcnic: check pci_reset_function result
+Message-ID: <20230405193708.GA3632282@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230405153900.747-1-i.bornyakov@metrotek.ru>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <ZC1x57v1JdUyK7aG@corigine.com>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 06:39:00PM +0300, Ivan Bornyakov wrote:
-> sfp->i2c_block_size is initialized at SFP module insertion in
-> sfp_sm_mod_probe(). Because of that, if SFP module was not inserted
-> since boot, ethtool -m leads to zero-length I2C read attempt.
+On Wed, Apr 05, 2023 at 03:04:39PM +0200, Simon Horman wrote:
+> On Mon, Apr 03, 2023 at 01:58:49PM +0300, Denis Plotnikov wrote:
+> > On 31.03.2023 20:52, Simon Horman wrote:
+> > > On Fri, Mar 31, 2023 at 11:06:05AM +0300, Denis Plotnikov wrote:
+> > > > Static code analyzer complains to unchecked return value.
+> > > > It seems that pci_reset_function return something meaningful
+> > > > only if "reset_methods" is set.
+> > > > Even if reset_methods isn't used check the return value to avoid
+> > > > possible bugs leading to undefined behavior in the future.
+> > > > 
+> > > > Signed-off-by: Denis Plotnikov <den-plotnikov@yandex-team.ru>
+> > > nit: The tree this patch is targeted at should be designated, probably
+> > >       net-next, so the '[PATCH net-next]' in the subject.
+> > > 
+> > > > ---
+> > > >   drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c | 4 +++-
+> > > >   1 file changed, 3 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
+> > > > index 87f76bac2e463..39ecfc1a1dbd0 100644
+> > > > --- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
+> > > > +++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c
+> > > > @@ -628,7 +628,9 @@ int qlcnic_fw_create_ctx(struct qlcnic_adapter *dev)
+> > > >   	int i, err, ring;
+> > > >   	if (dev->flags & QLCNIC_NEED_FLR) {
+> > > > -		pci_reset_function(dev->pdev);
+> > > > +		err = pci_reset_function(dev->pdev);
+> > > > +		if (err && err != -ENOTTY)
+> > > Are you sure about the -ENOTTY part?
+> > > 
+> > > It seems odd to me that an FLR would be required but reset is not supported.
+> > No, I'm not sure. My logic is: if the reset method isn't set than
+> > pci_reset_function() returns -ENOTTY so treat that result as ok.
+> > pci_reset_function may return something different than -ENOTTY only if
+> > pci_reset_fn_methods[m].reset_fn is set.
 > 
->   # ethtool -m xge0
->   i2c i2c-3: adapter quirk: no zero length (addr 0x0050, size 0, read)
->   Cannot get Module EEPROM data: Operation not supported
+> I see your reasoning: -ENOTTY means nothing happened, and probably that is ok.
+> I think my main question is if that can ever happen.
+> If that is unknown, then I think this conservative approach makes sense.
 
-Do i understand you correct in that this is when the SFP cage has
-always been empty? The I2C transaction is going to fail whatever the
-length is.
+The commit log mentions "reset_methods", which I don't think is really
+relevant here because reset_methods is an internal implementation
+detail.  The point is that pci_reset_function() returns 0 if it was
+successful and a negative value if it failed.
 
-> If SFP module was plugged then removed at least once,
-> sfp->i2c_block_size will be initialized and ethtool -m will fail with
-> different error
-> 
->   # ethtool -m xge0
->   Cannot get Module EEPROM data: Remote I/O error
+If the driver thinks the device needs to be reset, ignoring any
+negative return value seems like a mistake because the device was not
+reset.
 
-So again, the SFP cage is empty?
+If the reset is required for a firmware update to take effect, maybe a
+diagnostic would be helpful if it fails, e.g., the other "Adapter
+initialization failed.  Please reboot" messages.
 
-I wonder if a better fix is to use
+"QLCNIC_NEED_FLR" suggests that the driver expects an FLR (as opposed
+to other kinds of reset).  If the driver knows that all qlcnic devices
+support FLR, it could use pcie_flr() directly.
 
-sfp->state & SFP_F_PRESENT
+pci_reset_function() does have the possibility that the reset works on
+some devices but not all.  Secondary Bus Reset fails if there are
+other functions on the same bus, e.g., a multi-function device.  And
+there's some value in doing the reset the same way in all cases.
 
-in sfp_module_eeprom() and sfp_module_eeprom_by_page() and don't even
-do the I2C read if there is no module in the cage?
+So I would suggest something like:
 
-   Andrew
+  if (dev->flags & QLCNIC_NEED_FLR) {
+    err = pcie_flr(dev->pdev);
+    if (err) {
+      dev_err(&pdev->dev, "Adapter reset failed (%d). Please reboot\n", err);
+      return err;
+    }
+    dev->flags &= ~QLCNIC_NEED_FLR;
+  }
+
+Or, if there are qlcnic devices that don't support FLR:
+
+  if (dev->flags & QLCNIC_NEED_FLR) {
+    err = pci_reset_function(dev->pdev);
+    if (err) {
+      dev_err(&pdev->dev, "Adapter reset failed (%d). Please reboot\n", err);
+      return err;
+    }
+    dev->flags &= ~QLCNIC_NEED_FLR;
+  }
+
+> > > > +			return err;
+> > > >   		dev->flags &= ~QLCNIC_NEED_FLR;
+> > > >   	}
+> > > > -- 
+> > > > 2.25.1
+> > > > 
