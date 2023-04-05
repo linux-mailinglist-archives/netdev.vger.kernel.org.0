@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E0B6D7853
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8CD56D7826
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:27:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237672AbjDEJbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 05:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        id S237447AbjDEJ14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 05:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237538AbjDEJa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:30:29 -0400
+        with ESMTP id S237418AbjDEJ1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:27:51 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87B7527A
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:29:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6596525B
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:27:37 -0700 (PDT)
 Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <m.felsch@pengutronix.de>)
-        id 1pjzQ7-0004pA-RV; Wed, 05 Apr 2023 11:27:11 +0200
+        id 1pjzQ8-0004pA-UM; Wed, 05 Apr 2023 11:27:12 +0200
 From:   Marco Felsch <m.felsch@pengutronix.de>
-Date:   Wed, 05 Apr 2023 11:27:00 +0200
-Subject: [PATCH 09/12] net: phy: nxp-tja11xx: make use of
- phy_device_atomic_register()
+Date:   Wed, 05 Apr 2023 11:27:01 +0200
+Subject: [PATCH 10/12] of: mdio: remove now unused
+ of_mdiobus_phy_device_register()
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230405-net-next-topic-net-phy-reset-v1-9-7e5329f08002@pengutronix.de>
+Message-Id: <20230405-net-next-topic-net-phy-reset-v1-10-7e5329f08002@pengutronix.de>
 References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
 In-Reply-To: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
@@ -68,61 +68,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new atomic API to setup and register the phy accordingly.
+There are no references to of_mdiobus_phy_device_register() anymore so
+we can remove the code.
 
 Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 ---
- drivers/net/phy/nxp-tja11xx.c | 31 +++++++------------------------
- 1 file changed, 7 insertions(+), 24 deletions(-)
+ drivers/net/mdio/of_mdio.c | 9 ---------
+ include/linux/of_mdio.h    | 8 --------
+ 2 files changed, 17 deletions(-)
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index 2a4c0f6d74eb..af9cb5e1a7ee 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -561,6 +561,8 @@ static void tja1102_p1_register(struct work_struct *work)
- 			/* Real PHY ID of Port 1 is 0 */
- 			.phy_id = PHY_ID_TJA1102,
- 			.phy_id_broken = true,
-+			.parent_mdiodev = dev,
-+			.fwnode = of_fwnode_handle(child),
- 		};
- 		struct phy_device *phy;
- 
-@@ -583,30 +585,11 @@ static void tja1102_p1_register(struct work_struct *work)
- 			continue;
- 		}
- 
--		phy = phy_device_create(&config);
--		if (IS_ERR(phy)) {
--			dev_err(dev, "Can't create PHY device for Port 1: %i\n",
--				config.phy_addr);
--			continue;
--		}
--
--		/* Overwrite parent device. phy_device_create() set parent to
--		 * the mii_bus->dev, which is not correct in case.
--		 */
--		phy->mdio.dev.parent = dev;
--
--		ret = of_mdiobus_phy_device_register(bus, phy, child,
--						     config.phy_addr);
--		if (ret) {
--			/* All resources needed for Port 1 should be already
--			 * available for Port 0. Both ports use the same
--			 * interrupt line, so -EPROBE_DEFER would make no sense
--			 * here.
--			 */
--			dev_err(dev, "Can't register Port 1. Unexpected error: %i\n",
--				ret);
--			phy_device_free(phy);
--		}
-+		phy = phy_device_atomic_register(&config);
-+		if (IS_ERR(phy))
-+			dev_err_probe(dev, PTR_ERR(phy),
-+				      "Can't create PHY device for Port 1: %i\n",
-+				      config.phy_addr);
- 	}
+diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+index 10dd45c3bde0..e85be8a72978 100644
+--- a/drivers/net/mdio/of_mdio.c
++++ b/drivers/net/mdio/of_mdio.c
+@@ -33,15 +33,6 @@ static int of_get_phy_id(struct device_node *device, u32 *phy_id)
+ 	return fwnode_get_phy_id(of_fwnode_handle(device), phy_id);
  }
+ 
+-int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
+-				   struct device_node *child, u32 addr)
+-{
+-	return fwnode_mdiobus_phy_device_register(mdio, phy,
+-						  of_fwnode_handle(child),
+-						  addr);
+-}
+-EXPORT_SYMBOL(of_mdiobus_phy_device_register);
+-
+ static int of_mdiobus_register_phy(struct mii_bus *mdio,
+ 				    struct device_node *child, u32 addr)
+ {
+diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
+index 8a52ef2e6fa6..ee1fe034f3fe 100644
+--- a/include/linux/of_mdio.h
++++ b/include/linux/of_mdio.h
+@@ -47,8 +47,6 @@ struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
+ int of_phy_register_fixed_link(struct device_node *np);
+ void of_phy_deregister_fixed_link(struct device_node *np);
+ bool of_phy_is_fixed_link(struct device_node *np);
+-int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
+-				   struct device_node *child, u32 addr);
+ 
+ static inline int of_mdio_parse_addr(struct device *dev,
+ 				     const struct device_node *np)
+@@ -142,12 +140,6 @@ static inline bool of_phy_is_fixed_link(struct device_node *np)
+ 	return false;
+ }
+ 
+-static inline int of_mdiobus_phy_device_register(struct mii_bus *mdio,
+-					    struct phy_device *phy,
+-					    struct device_node *child, u32 addr)
+-{
+-	return -ENOSYS;
+-}
+ #endif
+ 
  
 
 -- 
