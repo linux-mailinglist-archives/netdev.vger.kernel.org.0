@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7566D7848
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D796D7821
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237621AbjDEJaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 05:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
+        id S237308AbjDEJ1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 05:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237620AbjDEJ3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:29:44 -0400
+        with ESMTP id S237354AbjDEJ1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:27:42 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642575BB7
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:29:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D5A4C23
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:27:32 -0700 (PDT)
 Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <m.felsch@pengutronix.de>)
-        id 1pjzPy-0004pA-Rh; Wed, 05 Apr 2023 11:27:02 +0200
+        id 1pjzPz-0004pA-Ue; Wed, 05 Apr 2023 11:27:03 +0200
 From:   Marco Felsch <m.felsch@pengutronix.de>
-Date:   Wed, 05 Apr 2023 11:26:52 +0200
-Subject: [PATCH 01/12] net: phy: refactor phy_device_create function
+Date:   Wed, 05 Apr 2023 11:26:53 +0200
+Subject: [PATCH 02/12] net: phy: refactor get_phy_device function
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230405-net-next-topic-net-phy-reset-v1-1-7e5329f08002@pengutronix.de>
+Message-Id: <20230405-net-next-topic-net-phy-reset-v1-2-7e5329f08002@pengutronix.de>
 References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
 In-Reply-To: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
@@ -67,103 +67,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split phy_device_create() into local helper functions. This commit is in
+Split get_phy_device() into local helper function. This commit is in
 preparation of fixing the phy reset handling. No functional changes for
 the public API users.
 
 Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 ---
- drivers/net/phy/phy_device.c | 42 ++++++++++++++++++++++++++++++------------
- 1 file changed, 30 insertions(+), 12 deletions(-)
+ drivers/net/phy/phy_device.c | 44 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 917ba84105fc..dd0aaa866d17 100644
+index dd0aaa866d17..64292e47e3fc 100644
 --- a/drivers/net/phy/phy_device.c
 +++ b/drivers/net/phy/phy_device.c
-@@ -629,13 +629,10 @@ static int phy_request_driver_module(struct phy_device *dev, u32 phy_id)
- 	return 0;
+@@ -938,6 +938,32 @@ int fwnode_get_phy_id(struct fwnode_handle *fwnode, u32 *phy_id)
  }
+ EXPORT_SYMBOL(fwnode_get_phy_id);
  
--struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
--				     bool is_c45,
--				     struct phy_c45_device_ids *c45_ids)
-+static struct phy_device *phy_device_alloc(struct mii_bus *bus, int addr)
- {
- 	struct phy_device *dev;
- 	struct mdio_device *mdiodev;
--	int ret = 0;
- 
- 	/* We allocate the device, and initialize the default values */
- 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-@@ -653,6 +650,15 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 	mdiodev->device_free = phy_mdio_device_free;
- 	mdiodev->device_remove = phy_mdio_device_remove;
- 
-+	dev_set_name(&mdiodev->dev, PHY_ID_FMT, bus->id, addr);
-+	device_initialize(&mdiodev->dev);
++static int phy_device_detect(struct mii_bus *bus, int addr, bool *is_c45,
++			     u32 *phy_id, struct phy_c45_device_ids *c45_ids)
++{
++	int r;
 +
-+	return dev;
++	if (*is_c45)
++		r = get_phy_c45_ids(bus, addr, c45_ids);
++	else
++		r = get_phy_c22_id(bus, addr, phy_id);
++
++	if (r)
++		return r;
++
++	/* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
++	 * of 0 when probed using get_phy_c22_id() with no error. Proceed to
++	 * probe with C45 to see if we're able to get a valid PHY ID in the C45
++	 * space, if successful, create the C45 PHY device.
++	 */
++	if (!*is_c45 && *phy_id == 0 && bus->read_c45) {
++		*is_c45 = true;
++		return get_phy_c45_ids(bus, addr, c45_ids);
++	}
++
++	return 0;
 +}
 +
-+static int phy_device_init(struct phy_device *dev, u32 phy_id, bool is_c45,
-+			   struct phy_c45_device_ids *c45_ids)
-+{
- 	dev->speed = SPEED_UNKNOWN;
- 	dev->duplex = DUPLEX_UNKNOWN;
- 	dev->pause = 0;
-@@ -670,9 +676,6 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 		dev->c45_ids = *c45_ids;
- 	dev->irq = bus->irq[addr];
+ /**
+  * get_phy_device - reads the specified PHY device and returns its @phy_device
+  *		    struct
+@@ -967,26 +993,10 @@ struct phy_device *get_phy_device(struct mii_bus *bus, int addr, bool is_c45)
+ 	c45_ids.mmds_present = 0;
+ 	memset(c45_ids.device_ids, 0xff, sizeof(c45_ids.device_ids));
  
--	dev_set_name(&mdiodev->dev, PHY_ID_FMT, bus->id, addr);
--	device_initialize(&mdiodev->dev);
+-	if (is_c45)
+-		r = get_phy_c45_ids(bus, addr, &c45_ids);
+-	else
+-		r = get_phy_c22_id(bus, addr, &phy_id);
 -
- 	dev->state = PHY_DOWN;
++	r = phy_device_detect(bus, addr, &is_c45, &phy_id, &c45_ids);
+ 	if (r)
+ 		return ERR_PTR(r);
  
- 	mutex_init(&dev->lock);
-@@ -690,7 +693,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 	 */
- 	if (is_c45 && c45_ids) {
- 		const int num_ids = ARRAY_SIZE(c45_ids->device_ids);
--		int i;
-+		int ret, i;
- 
- 		for (i = 1; i < num_ids; i++) {
- 			if (c45_ids->device_ids[i] == 0xffffffff)
-@@ -699,14 +702,29 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 			ret = phy_request_driver_module(dev,
- 						c45_ids->device_ids[i]);
- 			if (ret)
--				break;
-+				return ret;
- 		}
--	} else {
--		ret = phy_request_driver_module(dev, phy_id);
-+
-+		return 0;
- 	}
- 
-+	return phy_request_driver_module(dev, phy_id);
-+}
-+
-+struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
-+				     bool is_c45,
-+				     struct phy_c45_device_ids *c45_ids)
-+{
-+	struct phy_device *dev;
-+	int ret;
-+
-+	dev = phy_device_alloc(bus, addr);
-+	if (IS_ERR(dev))
-+		return dev;
-+
-+	ret = phy_device_init(dev, phy_id, is_c45, c45_ids);
- 	if (ret) {
--		put_device(&mdiodev->dev);
-+		put_device(&dev->mdio.dev);
- 		dev = ERR_PTR(ret);
- 	}
- 
+-	/* PHY device such as the Marvell Alaska 88E2110 will return a PHY ID
+-	 * of 0 when probed using get_phy_c22_id() with no error. Proceed to
+-	 * probe with C45 to see if we're able to get a valid PHY ID in the C45
+-	 * space, if successful, create the C45 PHY device.
+-	 */
+-	if (!is_c45 && phy_id == 0 && bus->read_c45) {
+-		r = get_phy_c45_ids(bus, addr, &c45_ids);
+-		if (!r)
+-			return phy_device_create(bus, addr, phy_id,
+-						 true, &c45_ids);
+-	}
+-
+ 	return phy_device_create(bus, addr, phy_id, is_c45, &c45_ids);
+ }
+ EXPORT_SYMBOL(get_phy_device);
 
 -- 
 2.39.2
