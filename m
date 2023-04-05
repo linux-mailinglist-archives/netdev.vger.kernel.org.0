@@ -2,278 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D841A6D833E
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 755166D8376
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbjDEQMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 12:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
+        id S229731AbjDEQTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 12:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233855AbjDEQMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:12:00 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:237:300::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0A26E90;
-        Wed,  5 Apr 2023 09:11:54 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1pk5jl-0007mc-31; Wed, 05 Apr 2023 18:11:53 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     netfilter-devel@vger.kernel.org, bpf@vger.kernel.org,
-        dxu@dxuuu.xyz, qde@naccy.de, Florian Westphal <fw@strlen.de>
-Subject: [PATCH bpf-next 6/6] bpf: add test_run support for netfilter program type
-Date:   Wed,  5 Apr 2023 18:11:16 +0200
-Message-Id: <20230405161116.13565-7-fw@strlen.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230405161116.13565-1-fw@strlen.de>
-References: <20230405161116.13565-1-fw@strlen.de>
+        with ESMTP id S229642AbjDEQTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:19:24 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3812410D8
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 09:19:23 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id q102so34477991pjq.3
+        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 09:19:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680711562;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hsNKztUwvrgNAyta9cArzHzTsVyuxlP7iqWLvxSy6Jw=;
+        b=WuVeC81hkhGoHLMoHtvVU7VUPB5bBFGc8cK8QK6yXy64mfr5zN8RSFsSFDFycImtfo
+         y6QjvpXMEiIAkxDEZlM6nAaEFYzBKx8Ru4tw6iuxWRaPJbx11fGkH9Lxyj2nOuh+9ZAc
+         /htwgGAqollEB8PMksvc6FC0E03nWNJpUxQ3HxVbDc2Ufyt7VdbglC/VCw7VfwuBsFeQ
+         NovbACJG+tIoggaoq+EzWjT5+ghEpMNUnY4OiobLeysDI57aui68j6Q4GSAIkfKLoRT6
+         1K0Rbrht62mN/2BT4xgaVIKvzOzsVdx9RUy3K/FTpUzTZIqJaCMSR05GFxp1eykBnnDF
+         NzgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680711562;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hsNKztUwvrgNAyta9cArzHzTsVyuxlP7iqWLvxSy6Jw=;
+        b=psSE5H5i5GWbt+2dqOF64ONJ+SqClIqwPuf2cQcdqm1HLJIRlT/f4uUOdPyitnqvI9
+         opugrOI5iZr7Tcbkqz0CAvEVi0kRv1HNzP3ZpQaIwyxByYe8bNr/1jG2ka+Aw0NBpde6
+         tmJqlBVMqBDeEh6WjJKQqf4Rfe8bq+s77aohGPy24fAGDRIzIz4GZGBX3KUmjP6Rq3QQ
+         XSEoyZ2BnHx4imd3Xp/A9rUO0EFzFhjMTkf4ZTcN6SNMGcr5l5gsv8EnLN3gPAgWVPUX
+         /kNiccyGaPcJ16ZGdI3hbrcqeSUUlMlp5gK17aJa7CwW40Csn4jg7eu0IrCTPA/8kD9k
+         tKkw==
+X-Gm-Message-State: AAQBX9d/P9+YUTXO5lXVU8JJHvdLAF/JVbLLTMgYFUvr+y7vIfkiC0gH
+        wZTwgdNi7lq20vLf5d1Ui/DUWbGZFogK989QUZI=
+X-Google-Smtp-Source: AKy350ZaMEai1148HhgIgb2QcWzHD4deyusc40FV7ynYTvUBja5fgVcfEyd3xENG6Yc9tc8zV2xZeHqDidrgpok/0U4=
+X-Received: by 2002:a17:90b:1014:b0:23f:695a:1355 with SMTP id
+ gm20-20020a17090b101400b0023f695a1355mr2521347pjb.5.1680711562439; Wed, 05
+ Apr 2023 09:19:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20230405063323.36270-1-glipus@gmail.com> <20230405122628.4nxnja3hts4axzt5@skbuf>
+In-Reply-To: <20230405122628.4nxnja3hts4axzt5@skbuf>
+From:   Max Georgiev <glipus@gmail.com>
+Date:   Wed, 5 Apr 2023 10:19:11 -0600
+Message-ID: <CAP5jrPEcO8Xdjby=BHwPjBdCHaY1ajg6EZch=ZMx40DTFV0gLA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 3/5] Add ndo_hwtstamp_get/set support to vlan code path
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     kory.maincent@bootlin.com, kuba@kernel.org, netdev@vger.kernel.org,
+        maxime.chevallier@bootlin.com, vadim.fedorenko@linux.dev,
+        richardcochran@gmail.com, gerhard@engleder-embedded.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-also add two simple retval tests: as-is, a return value other
-than accept or drop will cause issues.
+On Wed, Apr 5, 2023 at 6:26=E2=80=AFAM Vladimir Oltean <vladimir.oltean@nxp=
+.com> wrote:
+>
+> On Wed, Apr 05, 2023 at 12:33:23AM -0600, Maxim Georgiev wrote:
+> > This patch makes VLAN subsystem to use the newly introduced
+> > ndo_hwtstamp_get/set API to pass hw timestamp requests to
+> > underlying NIC drivers in case if these drivers implement
+> > ndo_hwtstamp_get/set functions. Otherwise VLAN=E2=94=AC=C4=9Asubsystem
+>
+> Strange symbols (=E2=94=AC=C4=9A).
 
-NF_QUEUE could be implemented later IFF we can guarantee that
-attachment of such programs can be rejected if they get attached
-to a pf/hook that doesn't support async reinjection.
+Bad copy-paste, sorry. Fixed.
 
-NF_STOLEN could be implemented via trusted helpers that will eventually
-free the skb, else this would leak the skb reference.
+>
+> > falls back to calling ndo_eth_ioctl.
+> >
+> > Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > Signed-off-by: Maxim Georgiev <glipus@gmail.com>
+> > ---
+> >  net/8021q/vlan_dev.c | 42 +++++++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 41 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+> > index 5920544e93e8..66d54c610aa5 100644
+> > --- a/net/8021q/vlan_dev.c
+> > +++ b/net/8021q/vlan_dev.c
+> > @@ -353,6 +353,44 @@ static int vlan_dev_set_mac_address(struct net_dev=
+ice *dev, void *p)
+> >       return 0;
+> >  }
+> >
+> > +static int vlan_dev_hwtstamp(struct net_device *dev, struct ifreq *ifr=
+, int cmd)
+> > +{
+> > +     const struct net_device_ops *ops =3D dev->netdev_ops;
+> > +     struct kernel_hwtstamp_config kernel_config =3D {};
+> > +     struct hwtstamp_config config;
+> > +     int err;
+> > +
+> > +     if (!netif_device_present(dev))
+> > +             return -ENODEV;
+> > +
+> > +     if ((cmd =3D=3D SIOCSHWTSTAMP && !ops->ndo_hwtstamp_set) ||
+> > +         (cmd =3D=3D SIOCGHWTSTAMP && !ops->ndo_hwtstamp_get)) {
+> > +             if (ops->ndo_eth_ioctl) {
+> > +                     return ops->ndo_eth_ioctl(real_dev, &ifr, cmd);
+> > +             else
+> > +                     return -EOPNOTSUPP;
+> > +     }
+> > +
+> > +     kernel_config.ifr =3D ifr;
+> > +     if (cmd =3D=3D SIOCSHWTSTAMP) {
+> > +             if (copy_from_user(&config, ifr->ifr_data, sizeof(config)=
+))
+> > +                     return -EFAULT;
+> > +
+> > +             hwtstamp_config_to_kernel(&kernel_config, &config);
+> > +             err =3D ops->ndo_hwtstamp_set(dev, &kernel_config, NULL);
+> > +     } else if (cmd =3D=3D SIOCGHWTSTAMP) {
+> > +             err =3D ops->ndo_hwtstamp_get(dev, &kernel_config, NULL);
+> > +     }
+> > +
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     hwtstamp_kernel_to_config(&config, &kernel_config);
+> > +     if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
+> > +             return -EFAULT;
+> > +     return 0;
+> > +}
+> > +
+> >  static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, i=
+nt cmd)
+> >  {
+> >       struct net_device *real_dev =3D vlan_dev_priv(dev)->real_dev;
+> > @@ -368,10 +406,12 @@ static int vlan_dev_ioctl(struct net_device *dev,=
+ struct ifreq *ifr, int cmd)
+> >               if (!net_eq(dev_net(dev), dev_net(real_dev)))
+> >                       break;
+> >               fallthrough;
+> > +     case SIOCGHWTSTAMP:
+> > +             err =3D vlan_dev_hwtstamp(real_dev, &ifrr, cmd);
+> > +             break;
+> >       case SIOCGMIIPHY:
+> >       case SIOCGMIIREG:
+> >       case SIOCSMIIREG:
+> > -     case SIOCGHWTSTAMP:
+>
+> I would recommend also making vlan_dev_hwtstamp() be called from the
+> VLAN driver's ndo_hwtstamp_set() rather than from ndo_eth_ioctl().
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/linux/bpf.h                           |   3 +
- net/bpf/test_run.c                            | 143 ++++++++++++++++++
- net/netfilter/nf_bpf_link.c                   |   1 +
- .../selftests/bpf/verifier/netfilter.c        |  23 +++
- 4 files changed, 170 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/verifier/netfilter.c
+Vladimir, could you please elaborate here a bit?
+Are you saying that I should go all the way with vlan NDO conversion,
+implement ndo_hwtstamp_get/set() for vlan, and stop handling
+SIOCGHWTSTAMP/SIOCSHWTSTAMP in vlan_dev_ioctl()?
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 2d8f3f639e68..453cee1efdd3 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2235,6 +2235,9 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
- int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
- 				const union bpf_attr *kattr,
- 				union bpf_attr __user *uattr);
-+int bpf_prog_test_run_nf(struct bpf_prog *prog,
-+			 const union bpf_attr *kattr,
-+			 union bpf_attr __user *uattr);
- bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info);
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index f1652f5fbd2e..c14f577fd987 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -19,7 +19,9 @@
- #include <linux/error-injection.h>
- #include <linux/smp.h>
- #include <linux/sock_diag.h>
-+#include <linux/netfilter.h>
- #include <net/xdp.h>
-+#include <net/netfilter/nf_bpf_link.h>
- 
- #define CREATE_TRACE_POINTS
- #include <trace/events/bpf_test_run.h>
-@@ -1690,6 +1692,147 @@ int bpf_prog_test_run_syscall(struct bpf_prog *prog,
- 	return err;
- }
- 
-+static int verify_and_copy_hook_state(struct nf_hook_state *state,
-+				      const struct nf_hook_state *user,
-+				      struct net_device *dev)
-+{
-+	if (user->in || user->out)
-+		return -EINVAL;
-+
-+	if (user->net || user->sk || user->okfn)
-+		return -EINVAL;
-+
-+	switch (user->pf) {
-+	case NFPROTO_IPV4:
-+	case NFPROTO_IPV6:
-+		switch (state->hook) {
-+		case NF_INET_PRE_ROUTING:
-+			state->in = dev;
-+			break;
-+		case NF_INET_LOCAL_IN:
-+			state->in = dev;
-+			break;
-+		case NF_INET_FORWARD:
-+			state->in = dev;
-+			state->out = dev;
-+			break;
-+		case NF_INET_LOCAL_OUT:
-+			state->out = dev;
-+			break;
-+		case NF_INET_POST_ROUTING:
-+			state->out = dev;
-+			break;
-+		}
-+
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	state->pf = user->pf;
-+	state->hook = user->hook;
-+
-+	return 0;
-+}
-+
-+int bpf_prog_test_run_nf(struct bpf_prog *prog,
-+			 const union bpf_attr *kattr,
-+			 union bpf_attr __user *uattr)
-+{
-+	struct net *net = current->nsproxy->net_ns;
-+	struct net_device *dev = net->loopback_dev;
-+	struct nf_hook_state *user_ctx, hook_state = {
-+		.pf = NFPROTO_IPV4,
-+		.hook = NF_INET_PRE_ROUTING,
-+	};
-+	u32 size = kattr->test.data_size_in;
-+	u32 repeat = kattr->test.repeat;
-+	const struct ethhdr *eth;
-+	struct bpf_nf_ctx ctx = {
-+		.state = &hook_state,
-+	};
-+	struct sk_buff *skb = NULL;
-+	u32 retval, duration;
-+	void *data;
-+	int ret;
-+
-+	if (kattr->test.flags || kattr->test.cpu || kattr->test.batch_size)
-+		return -EINVAL;
-+
-+	if (size < ETH_HLEN + sizeof(struct iphdr))
-+		return -EINVAL;
-+
-+	data = bpf_test_init(kattr, kattr->test.data_size_in, size,
-+			     NET_SKB_PAD + NET_IP_ALIGN,
-+			     SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
-+	if (IS_ERR(data))
-+		return PTR_ERR(data);
-+
-+	eth = (struct ethhdr *)data;
-+
-+	if (!repeat)
-+		repeat = 1;
-+
-+	user_ctx = bpf_ctx_init(kattr, sizeof(struct nf_hook_state));
-+	if (IS_ERR(user_ctx)) {
-+		kfree(data);
-+		return PTR_ERR(user_ctx);
-+	}
-+
-+	if (user_ctx) {
-+		ret = verify_and_copy_hook_state(&hook_state, user_ctx, dev);
-+		if (ret)
-+			goto out;
-+	}
-+
-+	skb = slab_build_skb(data);
-+	if (!skb) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+
-+	data = NULL; /* data released via kfree_skb */
-+
-+	skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
-+	__skb_put(skb, size);
-+
-+	skb->protocol = eth_type_trans(skb, dev);
-+
-+	skb_reset_network_header(skb);
-+
-+	ret = -EINVAL;
-+
-+	switch (skb->protocol) {
-+	case htons(ETH_P_IP):
-+		if (hook_state.pf == NFPROTO_IPV4)
-+			break;
-+		goto out;
-+	case htons(ETH_P_IPV6):
-+		if (size < ETH_HLEN + sizeof(struct ipv6hdr))
-+			goto out;
-+		if (hook_state.pf == NFPROTO_IPV6)
-+			break;
-+		goto out;
-+	default:
-+		ret = -EPROTO;
-+		goto out;
-+	}
-+
-+	ctx.skb = skb;
-+
-+	ret = bpf_test_run(prog, &ctx, repeat, &retval, &duration, false);
-+	if (ret)
-+		goto out;
-+
-+	ret = bpf_test_finish(kattr, uattr, NULL, NULL, 0, retval, duration);
-+
-+out:
-+	kfree(user_ctx);
-+	kfree_skb(skb);
-+	kfree(data);
-+	return ret;
-+}
-+
- static const struct btf_kfunc_id_set bpf_prog_test_kfunc_set = {
- 	.owner = THIS_MODULE,
- 	.set   = &test_sk_check_kfunc_ids,
-diff --git a/net/netfilter/nf_bpf_link.c b/net/netfilter/nf_bpf_link.c
-index 4b22a31d6df5..c27fd569adf1 100644
---- a/net/netfilter/nf_bpf_link.c
-+++ b/net/netfilter/nf_bpf_link.c
-@@ -128,6 +128,7 @@ int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
- }
- 
- const struct bpf_prog_ops netfilter_prog_ops = {
-+	.test_run = bpf_prog_test_run_nf,
- };
- 
- static bool nf_ptr_to_btf_id(struct bpf_insn_access_aux *info, const char *name)
-diff --git a/tools/testing/selftests/bpf/verifier/netfilter.c b/tools/testing/selftests/bpf/verifier/netfilter.c
-new file mode 100644
-index 000000000000..deeb87afdf50
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/netfilter.c
-@@ -0,0 +1,23 @@
-+{
-+	"netfilter, accept all",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, 1),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_NETFILTER,
-+	.retval = 1,
-+	.data = {
-+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x08, 0x00,
-+	},
-+},
-+{
-+	"netfilter, stolen verdict",
-+	.insns = {
-+	BPF_MOV64_IMM(BPF_REG_0, 2),
-+	BPF_EXIT_INSN(),
-+	},
-+	.result = REJECT,
-+	.errstr = "At program exit the register R0 has value (0x2; 0x0) should have been in (0x0; 0x1)",
-+	.prog_type = BPF_PROG_TYPE_NETFILTER,
-+},
--- 
-2.39.2
+>
+> My understanding of Jakub's suggestion to (temporarily) stuff ifr
+> inside kernel_config was to do that from top-level net/core/dev_ioctl.c,
+> not from the VLAN driver.
 
+[RFC PATCH v3 2/5] in this patch stack changes net/core/dev_ioctl.c
+to insert ifr inside kernel_config. I assumed that I should do it here too
+so underlying drivers could rely on ifr pointer in kernel_config being
+always initialized.
+If the plan is to stop supporting SIOCGHWTSTAMP/SIOCSHWTSTAMP
+in vlan_dev_ioctl() all together and move the hw timestamp handling
+logic to vlan_get/set_hwtstamp() functions, then this ifr initialization
+code will be removed from net/8021q/vlan_dev.c anyway.
+
+>
+> >               if (netif_device_present(real_dev) && ops->ndo_eth_ioctl)
+> >                       err =3D ops->ndo_eth_ioctl(real_dev, &ifrr, cmd);
+> >               break;
+> > --
+> > 2.39.2
+> >
