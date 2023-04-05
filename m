@@ -2,205 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 280C06D7AC7
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 13:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 995B86D7AF6
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 13:16:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237765AbjDELKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 07:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
+        id S237730AbjDELQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 07:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237568AbjDELKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 07:10:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701DA59DF;
-        Wed,  5 Apr 2023 04:10:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B93E63CBC;
-        Wed,  5 Apr 2023 11:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4792BC43443;
-        Wed,  5 Apr 2023 11:10:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680693037;
-        bh=QDdiAsizQD2pJksHsO5vKjf20QqkDQ1vJFkPygFVjsE=;
-        h=From:Subject:To:Cc:Date:From;
-        b=nzHxuXoAF7pG5r1UgNumZrpd56IG3aM+hVxs+rIPf1j685pR/chk2M1SooBi5dI+q
-         UkVy1dZS5BczzBJaONLF2Em8ZXYN7w2oKsqrCX2nDQKB8OaTzGcAbW5Dii/Oz/8iCh
-         TVc54HVyGOiGqO8JAwvGAizi2AQl5zb6R/IA1u+55KWPsDKD9ulI2tyjHxSQABAJ/a
-         e12C2SlZUFjiYaFh06OaxusfD/1yVPTEEPvJJ40yx3NOsZuvoINsVDtowJMQA175IS
-         evaqkifhhZgn4wlwL/AlNryJYPG44Oiv2Bh1cVdms5GodOpgCqBi+7T7GkPbMczRD7
-         6uPg//Arcso2g==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237580AbjDELQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 07:16:48 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DEB55B6
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 04:16:42 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pk17z-0004DI-K8; Wed, 05 Apr 2023 13:16:35 +0200
+Message-ID: <04288ea7-a9d5-6a79-b0f7-fd2a714af8f5@leemhuis.info>
+Date:   Wed, 5 Apr 2023 13:16:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@kernel.org>
-Subject: pull-request: wireless-next-2023-04-05
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20230405111037.4792BC43443@smtp.kernel.org>
-Date:   Wed,  5 Apr 2023 11:10:37 +0000 (UTC)
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH net] bgmac: fix *initial* chip reset to support BCM5358
+Content-Language: en-US, de-DE
+To:     =?UTF-8?Q?Ricardo_Ca=c3=b1uelo?= <ricardo.canuelo@collabora.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jon Mason <jon.mason@broadcom.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Jon Mason <jdmason@kudzu.us>
+References: <20230227091156.19509-1-zajec5@gmail.com>
+ <20230404134613.wtikjp6v63isofoc@rcn-XPS-13-9305>
+From:   "Linux regression tracking #update (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+In-Reply-To: <20230404134613.wtikjp6v63isofoc@rcn-XPS-13-9305>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1680693402;0e69774e;
+X-HE-SMSGID: 1pk17z-0004DI-K8
+X-Spam-Status: No, score=-1.4 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 04.04.23 15:46, Ricardo Cañuelo wrote:
+>
+> On mar 07-02-2023 23:53:27, Rafał Miłecki wrote:
+>> While bringing hardware up we should perform a full reset including the
+>> switch bit (BGMAC_BCMA_IOCTL_SW_RESET aka SICF_SWRST). It's what
+>> specification says and what reference driver does.
+>>
+>> This seems to be critical for the BCM5358. Without this hardware doesn't
+>> get initialized properly and doesn't seem to transmit or receive any
+>> packets.
+>>
+>> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> 
+> KernelCI found this patch causes a regression in the
+> bootrr.deferred-probe-empty test [1] on sun8i-h3-libretech-all-h3-cc
+> [2], see the bisection report for more details [3]
+> 
+> Does it make sense to you?
+> 
+> Cheers,
+> Ricardo
+> 
+> [1] https://github.com/kernelci/bootrr/blob/3ae9fd5dffc667fa96012892ea08532bc6877276/helpers/bootrr-generic-tests#L3
+> [2] https://linux.kernelci.org/test/case/id/642a0f5c78c0feaf5d62f79c/
+> [3] https://groups.io/g/kernelci-results/message/40156
+> 
+> #regzbot introduced: f6a95a24957a
 
-here's a pull request to net-next tree, more info below. Please let me know if
-there are any problems.
+Thx for telling regzbot about this. It seems something went wrong here,
+the patch this thread about is f99e6d7c4ed3 (which contains a Fixes: tag
+for f6a95a24957a); copy and paste mistake maybe, whatever.
 
-Kalle
+Fixing this and while at it giving this a better title:
 
-The following changes since commit aa2aa818cd1198cfa2498116d57cd9f13fea80e4:
+#regzbot introduced: f99e6d7c4ed3
+#regzbot title: net: bgmac: bootrr.deferred-probe-empty test fails in
+KernelCi on sun8i-h3-libretech-all-h3-cc
+#regzbot ignore-activity
 
-  wifi: clean up erroneously introduced file (2023-03-30 22:50:12 +0200)
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+That page also explains what to do if mails like this annoy you.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2023-04-05
-
-for you to fetch changes up to cbef9a83c51dfcb07f77cfa6ac26f53a1ea86f49:
-
-  wifi: rt2x00: Fix memory leak when handling surveys (2023-04-03 16:44:27 +0300)
-
-----------------------------------------------------------------
-wireless-next patches for v6.3
-
-Smaller pull request this time, sending this early to fix the conflict
-in mac80211. Nothing really special this time, only smaller changes.
-
-Note: We pulled wireless into wireless-next to fix a complicated
-conflict in mac80211.
-
-Major changes:
-
-mac80211/cfg80211
-
-* enable Wi-Fi 7 (EHT) mesh support
-
-----------------------------------------------------------------
-Armin Wolf (1):
-      wifi: rt2x00: Fix memory leak when handling surveys
-
-Cai Huoqing (2):
-      wifi: rtw88: Remove redundant pci_clear_master
-      wifi: rtw89: Remove redundant pci_clear_master
-
-Chih-Kang Chang (3):
-      wifi: rtw89: set data lowest rate according to AP supported rate
-      wifi: rtw89: fix incorrect channel info during scan due to ppdu_sts filtering
-      wifi: rtw89: config EDCCA threshold during scan to prevent TX failed
-
-Chin-Yen Lee (1):
-      wifi: rtw89: remove superfluous H2C of join_info
-
-Ching-Te Ku (5):
-      wifi: rtw89: coex: Add LPS protocol radio state for RTL8852B
-      wifi: rtw89: coex: Not to enable firmware report when WiFi is power saving
-      wifi: rtw89: coex: Update RTL8852B LNA2 hardware parameter
-      wifi: rtw89: coex: Add report control v5 variation
-      wifi: rtw89: coex: Update Wi-Fi Bluetooth coexistence version to 7.0.1
-
-Christophe JAILLET (1):
-      wifi: rsi: Slightly simplify rsi_set_channel()
-
-Dan Carpenter (1):
-      wifi: rndis_wlan: clean up a type issue
-
-Felix Fietkau (6):
-      wifi: mac80211: drop bogus static keywords in A-MSDU rx
-      wifi: mac80211: fix potential null pointer dereference
-      wifi: mac80211: fix receiving mesh packets in forwarding=0 networks
-      wifi: mac80211: fix mesh forwarding
-      wifi: mac80211: fix flow dissection for forwarded packets
-      wifi: mac80211: fix invalid drv_sta_pre_rcu_remove calls for non-uploaded sta
-
-Gustavo A. R. Silva (2):
-      wifi: rndis_wlan: Replace fake flex-array with flexible-array member
-      wifi: rtlwifi: Replace fake flex-array with flex-array member
-
-Jiapeng Chong (1):
-      wifi: b43legacy: Remove the unused function prev_slot()
-
-Johannes Berg (1):
-      Merge wireless/main into wireless-next/main
-
-Ping-Ke Shih (2):
-      wifi: rtw89: add counters of register-based H2C/C2H
-      wifi: rtw89: fix potential race condition between napi_init and napi_enable
-
-Rob Herring (1):
-      bcma: Use of_address_to_resource()
-
-Ryder Lee (2):
-      wifi: mac80211: fix the size calculation of ieee80211_ie_len_eht_cap()
-      wifi: mac80211: enable EHT mesh support
-
-Tom Rix (7):
-      wifi: ipw2x00: remove unused _ipw_read16 function
-      wifi: rtw88: remove unused rtw_pci_get_tx_desc function
-      wifi: b43legacy: remove unused freq_r3A_value function
-      wifi: brcmsmac: remove unused has_5g variable
-      wifi: brcmsmac: ampdu: remove unused suc_mpdu variable
-      wifi: mwifiex: remove unused evt_buf variable
-      bcma: remove unused mips_read32 function
-
-Wei Chen (2):
-      wifi: rtlwifi: fix incorrect error codes in rtl_debugfs_set_write_rfreg()
-      wifi: rtlwifi: fix incorrect error codes in rtl_debugfs_set_write_reg()
-
- drivers/bcma/driver_mips.c                         |   6 -
- drivers/bcma/main.c                                |  10 +-
- drivers/net/wireless/broadcom/b43legacy/dma.c      |   8 -
- drivers/net/wireless/broadcom/b43legacy/radio.c    |  17 --
- .../wireless/broadcom/brcm80211/brcmsmac/ampdu.c   |   3 +-
- .../broadcom/brcm80211/brcmsmac/mac80211_if.c      |   2 -
- drivers/net/wireless/intel/ipw2x00/ipw2200.c       |  13 --
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  50 +++---
- drivers/net/wireless/intel/iwlwifi/mvm/mvm.h       |   6 +-
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c       |   6 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |  29 +++-
- drivers/net/wireless/legacy/rndis_wlan.c           |   8 +-
- drivers/net/wireless/marvell/mwifiex/11h.c         |   4 -
- drivers/net/wireless/marvell/mwifiex/pcie.c        |   2 +-
- drivers/net/wireless/marvell/mwifiex/sdio.c        |   2 +-
- drivers/net/wireless/mediatek/mt76/mac80211.c      |   8 +
- drivers/net/wireless/mediatek/mt76/mt76.h          |   1 +
- .../net/wireless/mediatek/mt76/mt76_connac_mcu.c   |   3 +
- drivers/net/wireless/mediatek/mt76/mt7915/init.c   |  40 +++--
- drivers/net/wireless/ralink/rt2x00/rt2x00dev.c     |   1 +
- drivers/net/wireless/realtek/rtlwifi/debug.c       |  12 +-
- drivers/net/wireless/realtek/rtlwifi/wifi.h        |   2 +-
- drivers/net/wireless/realtek/rtw88/pci.c           |   8 -
- drivers/net/wireless/realtek/rtw89/coex.c          | 171 ++++++++++++++++++++-
- drivers/net/wireless/realtek/rtw89/coex.h          |   1 +
- drivers/net/wireless/realtek/rtw89/core.c          |  57 +++++--
- drivers/net/wireless/realtek/rtw89/core.h          |  33 +++-
- drivers/net/wireless/realtek/rtw89/fw.c            |  11 ++
- drivers/net/wireless/realtek/rtw89/mac.c           |   2 +
- drivers/net/wireless/realtek/rtw89/pci.c           |  20 +--
- drivers/net/wireless/realtek/rtw89/phy.c           |  19 +++
- drivers/net/wireless/realtek/rtw89/phy.h           |   1 +
- drivers/net/wireless/realtek/rtw89/reg.h           |  10 ++
- drivers/net/wireless/realtek/rtw89/rtw8852a.c      |  14 +-
- drivers/net/wireless/realtek/rtw89/rtw8852b.c      |  54 ++++++-
- drivers/net/wireless/realtek/rtw89/rtw8852c.c      |  14 +-
- drivers/net/wireless/realtek/rtw89/wow.c           |   9 --
- drivers/net/wireless/rsi/rsi_91x_mgmt.c            |   7 +-
- net/mac80211/cfg.c                                 |  21 +--
- net/mac80211/ieee80211_i.h                         |   5 +
- net/mac80211/main.c                                |   2 +
- net/mac80211/mesh.c                                |  73 ++++++++-
- net/mac80211/mesh.h                                |   4 +
- net/mac80211/mesh_plink.c                          |  16 +-
- net/mac80211/rx.c                                  |  51 +++---
- net/mac80211/sta_info.c                            |   3 +-
- net/mac80211/util.c                                |  76 ++++++++-
- net/mac80211/wme.c                                 |   6 +-
- net/wireless/nl80211.c                             |  26 ++--
- 49 files changed, 718 insertions(+), 229 deletions(-)
