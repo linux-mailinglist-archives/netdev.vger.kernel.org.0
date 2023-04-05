@@ -2,112 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3F716D8E02
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 05:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D09D86D891B
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:51:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233854AbjDFDf1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Apr 2023 23:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        id S232489AbjDEUvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235287AbjDFDfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 23:35:25 -0400
-X-Greylist: delayed 20915 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 05 Apr 2023 20:35:24 PDT
-Received: from out15-58.antispamcloud.com (out15-58.antispamcloud.com [185.201.19.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815E58A4D
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 20:35:24 -0700 (PDT)
-Received: from iix60.idcloudhost.com ([103.28.53.75])
-        by mx249.antispamcloud.com with esmtpsa (TLSv1.2:AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <jXPKcXZDfI@nadilaaulya.my.id>)
-        id 1pkA55-0007Uw-Ir; Wed, 05 Apr 2023 22:50:13 +0200
-Received: from mob-176-243-3-86.net.vodafone.it ([176.243.3.86]:54427 helo=[192.168.43.208])
-        by iix60.idcloudhost.com with esmtpsa  (TLS1) tls TLS_DHE_RSA_WITH_AES_256_CBC_SHA
-        (Exim 4.96)
-        (envelope-from <jXPKcXZDfI@nadilaaulya.my.id>)
-        id 1pkA4v-0003N5-2r;
-        Thu, 06 Apr 2023 03:50:00 +0700
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S233303AbjDEUvu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:51:50 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81DF10E7;
+        Wed,  5 Apr 2023 13:51:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=T0ZqhZPbtMhYu+1Kx5ah/vE20PZzo7j6dPZIhhV5F5Y=; b=GVtSmAU6q5VpbkZSqCNz3QAYj+
+        SicXbl7rMYwbG1R8W8chI10Tn1xGF54DybDWExFzVdVDbhC0euQ2vGo/ZcrFCQOI1muP4uE4BVUDD
+        yjRy01GyQGNcx9nGIqJlq9P2+9D6IbhGNlCvq00xU98tE0pyNQu3zMGNqgNcu4fmiUFU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pkA6U-009Yut-1M; Wed, 05 Apr 2023 22:51:38 +0200
+Date:   Wed, 5 Apr 2023 22:51:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        system@metrotek.ru, stable@vger.kernel.org
+Subject: Re: [PATCH net] net: sfp: initialize sfp->i2c_block_size at sfp
+ allocation
+Message-ID: <4c78acf7-3c72-40c5-b6cf-ff6033b80e85@lunn.ch>
+References: <20230405153900.747-1-i.bornyakov@metrotek.ru>
+ <19d7ef3c-de9d-4a44-92e9-16ac14b663d9@lunn.ch>
+ <20230405204116.mo5j6klyjnuvenag@x260>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Inquiry
-To:     Recipients <jXPKcXZDfI@nadilaaulya.my.id>
-From:   "Mrs. Liubov Halkina" <jXPKcXZDfI@nadilaaulya.my.id>
-Date:   Wed, 05 Apr 2023 15:49:45 -0500
-Reply-To: cathles2126@aol.com
-X-AuthUser: jxpkcxzdfi@nadilaaulya.my.id
-Message-ID: <E1pkA55-0007Uw-Ir@mx249.antispamcloud.com>
-X-Originating-IP: 103.28.53.75
-X-Spampanel-Domain: cloudhost.id
-X-Spampanel-Username: iix60
-Authentication-Results: antispamcloud.com; auth=pass (login) smtp.auth=iix60@cloudhost.id
-X-Spampanel-Outgoing-Class: unsure
-X-Spampanel-Outgoing-Evidence: Combined (0.52)
-X-Recommended-Action: accept
-X-Filter-ID: Pt3MvcO5N4iKaDQ5O6lkdGlMVN6RH8bjRMzItlySaT9/iWsekoqn7fElRVT1CZrDPUtbdvnXkggZ
- 3YnVId/Y5jcf0yeVQAvfjHznO7+bT5w1OL79HMxE022P+rQy8YAdcSeERs4TOTnIH1kc1IWc5QvZ
- FNshWKOptDHV4rDuRrwD+zBJgS5HrOaXNfwbIcOpdhytPvAzwbvthr5T+WaJ3IrVe6MYchJAV6vY
- 2clitzmGR50Rt0hSj27ZfQBPfQS1BKGDzSBE0I7ahDVo+4Mi/dGECT3kI3RcmOSkkbGSnUdPy/CL
- haCNSxSeHzgt4C/wBQ1qSkPU1Z9IA5QRm6AYk/yjZOAkFkYkh+zBk/+h5FCL6wlQWcCa+d3t5m9d
- pOppr4EKf43h8s44lZGEOrirImZTn11A5J+voK+OZ+OysuJAeHDOlJamhyT3Zn1AP19paqpL04Lh
- kdzpQ3+YGOvCAqO4xQi9u21KYktPzlOrZrJEHFRKvsj+qr3uFx3SKW9wXJWlQddgqYifiN81A3Kr
- jtvHx/HPOHy66mtEZC0SffrcjrSM4XSckOzefRjSo7RJFnFk5QeoIhTb0vpmTUk/lmKzPznVCsTv
- wBdUt45TL/n+g1I5cU5ASWF3YihwlfqZPX6iPkYCg6IVeyIdiYVYZefHzJ6mVE7ewsipSVIfs4Yb
- 6F51o2dafSXEbwfPGzfUpXiX2pZguJIFYZQ5o/8glo7twBGNicoeAmiUJV7Lk7uPO6fMbrFkDBrl
- 30p2f0pIzFs+HYI+OPBhv7gMj92oF6sYlQv0kL5FekfrcqpfpJ7xGmS+MahgAkTUsi0l+6Y+feMH
- R8aq2/5i2Hq0azpR4/tJ1i8yWhKRhlZtIewm4g3qjDtNEr66BWV3gkpHrW5aDw5Ualc0WNVLVhn2
- ci9wolHuFYI49u8jswym/o0GV1/y46OqoeAXE4BQ8lBtKHg4RAwX31WVY5lWjWxuGSRuxeJzDfMA
- tOAceXA4ObfBDRMJjWbztcmmVLi5P0lVv9DM5YE5enyccp7RH4WQio3uGc4EkcYEFGi9FKW2Oquj
- YjMhEWyJzIkwSFAW0Pw8uiKeJZG7XQhExlDF+oTIhdGS/x0hu1s1K8XTCrJW070uKDB1yc6ww/XT
- ARu4cW2+Uxxg6J1fhOzjF0b4LXcjJZ5loijgMWruxKUku9HKw5IhWPC8+IJpFpKne5SaUkpGdYNY
- LvXfcnGNC76fNvUBGCoLT3N3abYXWbI9JuDPxxISxIxz7nWMGr3xQbXrR7W1uypKhXFibj3fdqcL
- 3gajWhuv+B0sXiGd+CR0+bwSJ9MYAzAMrOHK5tF4LTm+Tpi/hEbWrVVpgxtOyHAkGbMUNF55JnE6
- ETjtbMPjLpnRI5EDsgw8CVsONrMJuGzuoGnKTKcyccjSlBLa0Z1WYb08ADpE6rj9l4xDuhVGEyzE
- pCH9jwyCSFwt/3SZKT2WgmwgwxgOcbFs4wmqhX1OM8xewFO578I5fOquB5GOH0cddfTYFcVNLmly
- /OCFmsY98cJB17zYAWbDdcM2OyVTOCduVr2j/tLxg+DiPWzvay92L72jkjYVXu4E4Fz8wGp+xBlP
- H6E/MS+4ayUpOtEhdxekWDmK9g==
-X-Report-Abuse-To: spam@quarantine15.antispamcloud.com
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=FREEMAIL_FORGED_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,FROM_LOCAL_NOVOWEL,HK_NAME_MR_MRS,
-        HK_RANDOM_ENVFROM,HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [185.201.19.58 listed in list.dnswl.org]
-        *  0.9 HK_RANDOM_FROM From username looks random
-        *  0.0 HK_RANDOM_ENVFROM Envelope sender username looks random
-        *  0.5 FROM_LOCAL_NOVOWEL From: localpart has series of non-vowel
-        *      letters
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [cathles2126[at]aol.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 RCVD_IN_MSPIKE_H2 RBL: Average reputation (+2)
-        *      [185.201.19.58 listed in wl.mailspike.net]
-        *  1.0 HK_NAME_MR_MRS No description available.
-        *  2.5 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230405204116.mo5j6klyjnuvenag@x260>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Apr 05, 2023 at 11:41:16PM +0300, Ivan Bornyakov wrote:
+> On Wed, Apr 05, 2023 at 09:35:31PM +0200, Andrew Lunn wrote:
+> > On Wed, Apr 05, 2023 at 06:39:00PM +0300, Ivan Bornyakov wrote:
+> > > sfp->i2c_block_size is initialized at SFP module insertion in
+> > > sfp_sm_mod_probe(). Because of that, if SFP module was not inserted
+> > > since boot, ethtool -m leads to zero-length I2C read attempt.
+> > > 
+> > >   # ethtool -m xge0
+> > >   i2c i2c-3: adapter quirk: no zero length (addr 0x0050, size 0, read)
+> > >   Cannot get Module EEPROM data: Operation not supported
+> > 
+> > Do i understand you correct in that this is when the SFP cage has
+> > always been empty? The I2C transaction is going to fail whatever the
+> > length is.
+> > 
+> 
+> Yes, SFP cage is empty, I2C transaction will fail anyways, but not all
+> I2C controllers are happy about zero-length reads.
+> 
+> > > If SFP module was plugged then removed at least once,
+> > > sfp->i2c_block_size will be initialized and ethtool -m will fail with
+> > > different error
+> > > 
+> > >   # ethtool -m xge0
+> > >   Cannot get Module EEPROM data: Remote I/O error
+> > 
+> > So again, the SFP cage is empty?
+> > 
+> > I wonder if a better fix is to use
+> > 
+> > sfp->state & SFP_F_PRESENT
+> > 
+> > in sfp_module_eeprom() and sfp_module_eeprom_by_page() and don't even
+> > do the I2C read if there is no module in the cage?
+> > 
+> 
+> This is also worthy addition to sfp.c, but IMHO sfp->i2c_block_size
+> initialization still need to be fixed since
+> 
+>   $ grep -c "sfp_read(" drivers/net/phy/sfp.c
+>   31
+> 
+> and I can't vouch all of them are possible only after SFP module
+> insertion. Also for future proof reason.
 
-I hope this email finds you well. I just wanted to follow up with you
-regarding the letter I sent to you last week regarding an inquiry. I was
-curious if you have received it and if you have had a chance to review
-the information contained within.
+I think everything else should be safe. A lot of those reads are for
+the HWMON code. And the HWMON code only registers when the module is
+inserted.
 
-I would greatly appreciate if you could confirm receipt of the letter
-and share your thoughts with me on the matter. Your feedback would be
-valuable as I move forward with this inquiry.
+How about two patches, what you have here, plus checking sfp->state &
+SFP_F_PRESENT in the ethtool functions?
 
-Please let me know if you need any additional information or
-clarification. I look forward to hearing back from you soon.
-
-Best regards,
-
-Liubov
+	Andrew
