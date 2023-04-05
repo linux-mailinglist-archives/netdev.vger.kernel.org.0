@@ -2,80 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C61FC6D7466
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 08:32:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 541FF6D7467
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 08:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237027AbjDEGca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 02:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        id S237024AbjDEGdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 02:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237011AbjDEGc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 02:32:29 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555C63A9C
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 23:32:26 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id F3FB4229B1;
-        Wed,  5 Apr 2023 06:32:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1680676345; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SDi7jTnrPialMmk53o+/qu+PZf3xFKvnIKRCarR0d9k=;
-        b=KD1kFJw9rGxwEogwSS/QS4/r21QBkPiMphh4+6N1nCI0IkSTPSz/lEav63sTRssAoN+nO7
-        D+0K2Hw/eQOE20N6VRqN/LlMpgMZlYg+e6VBg5IsaH12dRfJgpqjWRXYLBSVbWQY5BLmf5
-        WwYRQ0B3avxj91/u911vS0w/bf/pM54=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1680676345;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SDi7jTnrPialMmk53o+/qu+PZf3xFKvnIKRCarR0d9k=;
-        b=avY3yoYEFJigO1mQGk42wNixpEvHRg27D2i+6jcciajAhCwawvsG3xwMgkjypUCglC8SZ3
-        N6va3b55bFXcVVDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 61DBB13A10;
-        Wed,  5 Apr 2023 06:32:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id uIosFPgVLWR/AwAAMHmgww
-        (envelope-from <hare@suse.de>); Wed, 05 Apr 2023 06:32:24 +0000
-Message-ID: <7dc57e79-bba4-edb3-28ee-60293bcaa9cd@suse.de>
-Date:   Wed, 5 Apr 2023 08:32:23 +0200
+        with ESMTP id S236912AbjDEGdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 02:33:09 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D9F30FF
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 23:33:08 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id d20so4679325ioe.4
+        for <netdev@vger.kernel.org>; Tue, 04 Apr 2023 23:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680676388;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DVEvhQ63v2M8qGMNfqrKQ30XTMTVWTaguYlJhV5s4BY=;
+        b=mZ8B1QOEIdhtqQEU3KFDl0C4NSq+9hcnsWKxJS+uUznfpbmwdq8jmW8cON38YzWLPM
+         70DQKGTzh6VcFAwuRdUdtbzN8iyJnB7kMxePT8A0yBQReOTHdxssJlpqY5VKwUfDFFjk
+         pTrHq3jj1jgVK4qeae3tCEG1655cZy/ftveXRptXIpCUM3pphbcPhdAFzhqonM3UmryZ
+         TlWKKmYY+49omYElACnv0J3k/agjL20GtTZvs49YJO3VpENJcWFzFdDIEu1bE9tqxVlS
+         /qb7EHmWk8qlEpzTvB4DjbjGnIjEbS1hE0wlIDsEA+hz6OvykVBv9UktwpRSj0yj+aOD
+         fKog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680676388;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DVEvhQ63v2M8qGMNfqrKQ30XTMTVWTaguYlJhV5s4BY=;
+        b=FGWMVwZ8UYDqSSdX2tWXf2lRndzAo0xxVLAwoQbVj+WMEmmei0txDMLHz5N1cC8LAr
+         fqCmu/Mh+/EUaPGo5/qxI1EtyV9JNKTRCAwzBw4SqJIXNhq1//DUZG/siJRWi5kbKVKS
+         MjGt2qKHOYp/4hIZvlbRm7oHpcCGZOd+t7JyINRq0JfIyN01usxK3Np/z5bydqohC5Oo
+         ZtEk12epsIexSrnyFNaxi4yExw3KmThtATl5tTRufRl67f1A0R+yKi5wLoT7mMcde2zm
+         ojEh3s8PANqcWXL8Da+JO/vvRZbunXKc6RyIvoii+XsGXp4V+oWI2y729a0KdmHDHrPH
+         bVzw==
+X-Gm-Message-State: AAQBX9dxSAOEgcCioQk+VJSkCO17jM7OOP/ZBgZ39uXpDJBEtro1UOw3
+        dSfyb1slHu+E+5NBvY5wi+o=
+X-Google-Smtp-Source: AKy350bzANOKaQJjRP0TUnIOBIAaIqrEchpen6ShXmtFUKF190CUya58VCb1a7tA+dPJ4HyaDVO3sQ==
+X-Received: by 2002:a6b:ee01:0:b0:74c:8b56:42bb with SMTP id i1-20020a6bee01000000b0074c8b5642bbmr1180347ioh.8.1680676387834;
+        Tue, 04 Apr 2023 23:33:07 -0700 (PDT)
+Received: from fedora.. (c-73-78-138-46.hsd1.co.comcast.net. [73.78.138.46])
+        by smtp.gmail.com with ESMTPSA id c18-20020a5ea912000000b007594a835232sm3915104iod.13.2023.04.04.23.33.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Apr 2023 23:33:07 -0700 (PDT)
+From:   Maxim Georgiev <glipus@gmail.com>
+To:     kory.maincent@bootlin.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, glipus@gmail.com,
+        maxime.chevallier@bootlin.com, vladimir.oltean@nxp.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com
+Subject: [RFC PATCH v3 2/5] Add ifreq pointer field to kernel_hwtstamp_config structure
+Date:   Wed,  5 Apr 2023 00:33:06 -0600
+Message-Id: <20230405063306.36253-1-glipus@gmail.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v8 1/4] net/handshake: Create a NETLINK service for
- handling handshake requests
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Chuck Lever III <chuck.lever@oracle.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "kernel-tls-handshake@lists.linux.dev" 
-        <kernel-tls-handshake@lists.linux.dev>,
-        John Haxby <john.haxby@oracle.com>
-References: <168054723583.2138.14337249041719295106.stgit@klimt.1015granger.net>
- <168054756211.2138.1880630504843421368.stgit@klimt.1015granger.net>
- <63A1FBC9-8970-4A36-80B1-9C7713FF1132@oracle.com>
- <4dde688e-21db-6cc6-080e-c451eac2a9ca@suse.de>
- <20230404170035.6650027d@kernel.org>
-From:   Hannes Reinecke <hare@suse.de>
-In-Reply-To: <20230404170035.6650027d@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -84,48 +70,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/5/23 02:00, Jakub Kicinski wrote:
-> On Tue, 4 Apr 2023 17:44:19 +0200 Hannes Reinecke wrote:
->>> We're still seeing NULL pointer dereferences here.
->>> Typically this happens after the remote closes the
->>> connection early.
->>>
->>> I guess I cannot rely on sock_hold(sk); from preventing
->>> someone from doing a "sock->sk = NULL;"
->>>
->>> Would it make more sense for req_submit and req_cancel to
->>> operate on "struct sock *" rather than "struct socket *" ?
->>>    
->> Stumbled across that one, too; that's why my initial submission
->> was sprinkled with 'if (!sock->sk)' statements.
->> So I think it's a good idea.
->>
->> But waiting for Jakub to enlighten us.
-> 
-> Ah, I'm probably the weakest of the netdev maintainers when it comes
-> to the socket layer :)
-> 
-> I thought sock->sk is only cleared if the "user" of the socket closes
-> it. But yes, both sock->sk == NULL and sk->sk_socket == NULL are
-> entirely possible, and the networking stack usually operates on
-> struct sock. Why exactly those two are separate beings is one of
-> the mysteries of Linux networking which causes guaranteed confusion
-> to all the newcomers. I wish I knew the details so I could at least
-> document it :S
+Considering the stackable nature of drivers there will be situations
+where a driver implementing ndo_hwtstamp_get/set functions will have
+to translate requests back to SIOCGHWTSTAMP/SIOCSHWTSTAMP IOCTLs
+to pass them to lower level drivers that do not provide
+ndo_hwtstamp_get/set callbacks. To simplify request translation in
+such scenarios let's include a pointer to the original struct ifreq
+to kernel_hwtstamp_config structure.
 
-Bummer. I had high hopes on you being able to shed some light on this.
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maxim Georgiev <glipus@gmail.com>
+---
+ include/linux/net_tstamp.h | 1 +
+ net/core/dev_ioctl.c       | 6 ++++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-So, Chuck: maybe we should be looking at switching over to 'struct sock' 
-for the internal stuff. If we don't have to do a 'fput()' somewhere we 
-should be good...
-
-Cheers,
-
-Hannes
+diff --git a/include/linux/net_tstamp.h b/include/linux/net_tstamp.h
+index 063260475e77..bbb41f4fe985 100644
+--- a/include/linux/net_tstamp.h
++++ b/include/linux/net_tstamp.h
+@@ -20,6 +20,7 @@ struct kernel_hwtstamp_config {
+ 	int flags;
+ 	int tx_type;
+ 	int rx_filter;
++	struct ifreq *ifr;
+ };
+ 
+ static inline void hwtstamp_config_to_kernel(struct kernel_hwtstamp_config *kernel_cfg,
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 736f310a0661..043f4363c98f 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -255,7 +255,7 @@ static int dev_eth_ioctl(struct net_device *dev,
+ static int dev_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+ {
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+-	struct kernel_hwtstamp_config kernel_cfg;
++	struct kernel_hwtstamp_config kernel_cfg = {};
+ 	struct hwtstamp_config config;
+ 	int err;
+ 
+@@ -265,6 +265,7 @@ static int dev_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+ 	if (!netif_device_present(dev))
+ 		return -ENODEV;
+ 
++	kernel_cfg.ifr = ifr;
+ 	err = ops->ndo_hwtstamp_get(dev, &kernel_cfg, NULL);
+ 	if (err)
+ 		return err;
+@@ -281,7 +282,7 @@ static int dev_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+ 	struct netdev_notifier_hwtstamp_info info = {
+ 		.info.dev = dev,
+ 	};
+-	struct kernel_hwtstamp_config kernel_cfg;
++	struct kernel_hwtstamp_config kernel_cfg = {};
+ 	struct netlink_ext_ack extack = {};
+ 	struct hwtstamp_config cfg;
+ 	int err;
+@@ -290,6 +291,7 @@ static int dev_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+ 		return -EFAULT;
+ 
+ 	hwtstamp_config_to_kernel(&kernel_cfg, &cfg);
++	kernel_cfg.ifr = ifr;
+ 
+ 	err = net_hwtstamp_validate(&kernel_cfg);
+ 	if (err)
 -- 
-Dr. Hannes Reinecke                Kernel Storage Architect
-hare@suse.de                              +49 911 74053 688
-SUSE Software Solutions GmbH, Maxfeldstr. 5, 90409 Nürnberg
-HRB 36809 (AG Nürnberg), Geschäftsführer: Ivo Totev, Andrew
-Myers, Andrew McDonald, Martje Boudien Moerman
+2.39.2
 
