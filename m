@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 690A56D844C
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F5E6D8444
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233915AbjDEQ4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 12:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        id S232507AbjDEQ4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 12:56:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233659AbjDEQ4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:56:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5A765BF
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 09:54:28 -0700 (PDT)
+        with ESMTP id S232011AbjDEQ4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:56:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8083761B6
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 09:54:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680713667;
+        s=mimecast20190719; t=1680713661;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DjALLcCTAkJ9GFGzQm0mxszTSA2UBcCYteYf8nsJBJs=;
-        b=N+dOJlSCwnYwjoUwYEBs7oEGxxH+9uR9ptKBUI/567bkC7teN8BnVdtrWfWGT3pVVLy7im
-        VyNi4xJJPnPtrB4pGzGX+0sxceYToMSEkImc0CY5h7m04Udo1e40dfWZOhFXSVq/qIVBTh
-        kiBa3g8tKk9xARJ3DiJXakgm67O1uPE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=3FA5Yjp/rAglxaSde3E7QeP89aqCLnwKrUfyvWNxLew=;
+        b=iF7LZ0fIlmdktmckJW8p9EWwJP3TLyy2mlRWqd0i4TcicrfhvvWSa/ZB4vibSq3N+XxwfC
+        XkinYHW0OMmbpnmOWHOnLYmVAeLuOptdEBfO5USXsDHLAy3AAV+CcQCZrN0+rS8b00PdLL
+        b0yepgdujJavksgwpO9x6z1A/jci1yI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-cGYh42d-MymHRdF7Qm9tVg-1; Wed, 05 Apr 2023 12:54:23 -0400
-X-MC-Unique: cGYh42d-MymHRdF7Qm9tVg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-452-U_gW8eScNw2-IFPm1Urp3A-1; Wed, 05 Apr 2023 12:54:18 -0400
+X-MC-Unique: U_gW8eScNw2-IFPm1Urp3A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9C29F88904E;
-        Wed,  5 Apr 2023 16:54:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6D39D2807D69;
+        Wed,  5 Apr 2023 16:54:17 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C0AA18EC7;
-        Wed,  5 Apr 2023 16:54:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3A90D40C6EC4;
+        Wed,  5 Apr 2023 16:54:15 +0000 (UTC)
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     David Howells <dhowells@redhat.com>,
@@ -53,17 +53,16 @@ Cc:     David Howells <dhowells@redhat.com>,
         Chuck Lever III <chuck.lever@oracle.com>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH net-next v4 10/20] espintcp: Inline do_tcp_sendpages()
-Date:   Wed,  5 Apr 2023 17:53:29 +0100
-Message-Id: <20230405165339.3468808-11-dhowells@redhat.com>
+        linux-mm@kvack.org, Boris Pismenny <borisp@nvidia.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH net-next v4 11/20] tls: Inline do_tcp_sendpages()
+Date:   Wed,  5 Apr 2023 17:53:30 +0100
+Message-Id: <20230405165339.3468808-12-dhowells@redhat.com>
 In-Reply-To: <20230405165339.3468808-1-dhowells@redhat.com>
 References: <20230405165339.3468808-1-dhowells@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.2
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
@@ -79,55 +78,103 @@ so inline it, allowing do_tcp_sendpages() to be removed.  This is part of
 replacing ->sendpage() with a call to sendmsg() with MSG_SPLICE_PAGES set.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Steffen Klassert <steffen.klassert@secunet.com>
-cc: Herbert Xu <herbert@gondor.apana.org.au>
-cc: Eric Dumazet <edumazet@google.com>
-cc: "David S. Miller" <davem@davemloft.net>
+cc: Boris Pismenny <borisp@nvidia.com>
+cc: John Fastabend <john.fastabend@gmail.com>
 cc: Jakub Kicinski <kuba@kernel.org>
+cc: "David S. Miller" <davem@davemloft.net>
+cc: Eric Dumazet <edumazet@google.com>
 cc: Paolo Abeni <pabeni@redhat.com>
 cc: Jens Axboe <axboe@kernel.dk>
 cc: Matthew Wilcox <willy@infradead.org>
 cc: netdev@vger.kernel.org
 ---
- net/xfrm/espintcp.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ include/net/tls.h  |  2 +-
+ net/tls/tls_main.c | 24 +++++++++++++++---------
+ 2 files changed, 16 insertions(+), 10 deletions(-)
 
-diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
-index 872b80188e83..3504925babdb 100644
---- a/net/xfrm/espintcp.c
-+++ b/net/xfrm/espintcp.c
-@@ -205,14 +205,16 @@ static int espintcp_sendskb_locked(struct sock *sk, struct espintcp_msg *emsg,
- static int espintcp_sendskmsg_locked(struct sock *sk,
- 				     struct espintcp_msg *emsg, int flags)
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 154949c7b0c8..d31521c36a84 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -256,7 +256,7 @@ struct tls_context {
+ 	struct scatterlist *partially_sent_record;
+ 	u16 partially_sent_offset;
+ 
+-	bool in_tcp_sendpages;
++	bool splicing_pages;
+ 	bool pending_open_record_frags;
+ 
+ 	struct mutex tx_lock; /* protects partially_sent_* fields and
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index b32c112984dd..1d0e318d7977 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -124,7 +124,10 @@ int tls_push_sg(struct sock *sk,
+ 		u16 first_offset,
+ 		int flags)
  {
-+	struct msghdr msghdr = { .msg_flags = flags | MSG_SPLICE_PAGES, };
- 	struct sk_msg *skmsg = &emsg->skmsg;
- 	struct scatterlist *sg;
- 	int done = 0;
- 	int ret;
+-	int sendpage_flags = flags | MSG_SENDPAGE_NOTLAST;
++	struct bio_vec bvec;
++	struct msghdr msg = {
++		.msg_flags = MSG_SENDPAGE_NOTLAST | MSG_SPLICE_PAGES | flags,
++	};
+ 	int ret = 0;
+ 	struct page *p;
+ 	size_t size;
+@@ -133,16 +136,19 @@ int tls_push_sg(struct sock *sk,
+ 	size = sg->length - offset;
+ 	offset += sg->offset;
  
--	flags |= MSG_SENDPAGE_NOTLAST;
-+	msghdr.msg_flags |= MSG_SENDPAGE_NOTLAST;
- 	sg = &skmsg->sg.data[skmsg->sg.start];
- 	do {
-+		struct bio_vec bvec;
- 		size_t size = sg->length - emsg->offset;
- 		int offset = sg->offset + emsg->offset;
- 		struct page *p;
-@@ -220,11 +222,13 @@ static int espintcp_sendskmsg_locked(struct sock *sk,
- 		emsg->offset = 0;
- 
+-	ctx->in_tcp_sendpages = true;
++	ctx->splicing_pages = true;
+ 	while (1) {
  		if (sg_is_last(sg))
--			flags &= ~MSG_SENDPAGE_NOTLAST;
-+			msghdr.msg_flags &= ~MSG_SENDPAGE_NOTLAST;
+-			sendpage_flags = flags;
++			msg.msg_flags = flags;
  
+ 		/* is sending application-limited? */
+ 		tcp_rate_check_app_limited(sk);
  		p = sg_page(sg);
  retry:
--		ret = do_tcp_sendpages(sk, p, offset, size, flags);
+-		ret = do_tcp_sendpages(sk, p, offset, size, sendpage_flags);
 +		bvec_set_page(&bvec, p, size, offset);
-+		iov_iter_bvec(&msghdr.msg_iter, ITER_SOURCE, &bvec, 1, size);
-+		ret = tcp_sendmsg_locked(sk, &msghdr, size);
- 		if (ret < 0) {
- 			emsg->offset = offset - sg->offset;
- 			skmsg->sg.start += done;
++		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, &bvec, 1, size);
++
++		ret = tcp_sendmsg_locked(sk, &msg, size);
+ 
+ 		if (ret != size) {
+ 			if (ret > 0) {
+@@ -154,7 +160,7 @@ int tls_push_sg(struct sock *sk,
+ 			offset -= sg->offset;
+ 			ctx->partially_sent_offset = offset;
+ 			ctx->partially_sent_record = (void *)sg;
+-			ctx->in_tcp_sendpages = false;
++			ctx->splicing_pages = false;
+ 			return ret;
+ 		}
+ 
+@@ -168,7 +174,7 @@ int tls_push_sg(struct sock *sk,
+ 		size = sg->length;
+ 	}
+ 
+-	ctx->in_tcp_sendpages = false;
++	ctx->splicing_pages = false;
+ 
+ 	return 0;
+ }
+@@ -246,11 +252,11 @@ static void tls_write_space(struct sock *sk)
+ {
+ 	struct tls_context *ctx = tls_get_ctx(sk);
+ 
+-	/* If in_tcp_sendpages call lower protocol write space handler
++	/* If splicing_pages call lower protocol write space handler
+ 	 * to ensure we wake up any waiting operations there. For example
+-	 * if do_tcp_sendpages where to call sk_wait_event.
++	 * if splicing pages where to call sk_wait_event.
+ 	 */
+-	if (ctx->in_tcp_sendpages) {
++	if (ctx->splicing_pages) {
+ 		ctx->sk_write_space(sk);
+ 		return;
+ 	}
 
