@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 312F46D8A9E
+	by mail.lfdr.de (Postfix) with ESMTP id 7C74F6D8A9F
 	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbjDEWcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 18:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59428 "EHLO
+        id S232116AbjDEWcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 18:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjDEWcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:32:11 -0400
+        with ESMTP id S232191AbjDEWcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:32:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E5A92139
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24536A40
         for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 15:32:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF27163D5A
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 22:32:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C9A0C433EF;
-        Wed,  5 Apr 2023 22:32:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48B9E63E7A
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 22:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F20BC4339C;
+        Wed,  5 Apr 2023 22:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1680733922;
-        bh=D5NiL6PcaRg7qJX/zbeB6bNrqiEXw76W84tiexecZSE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NcANsvx8DfXq/dRygNTBdjW3vXI6c5+/A5XYM0GMaRsaQ+d8G6opDmaNN4vSvrPqJ
-         MBPeDzIjx72QXxo5OpHMalXAIJIpHpOSUcSfClUya4S2/KPbvx+EWjgpqVjMbJVPpr
-         Owja0C9zavOYrm5+30qGkTrQKKD50YNqDKMPtVIUVHTIhBDxykMJZ9y9WpaMZet7XI
-         fL2kjDb45CHUxveRLf5RFAbyCoQvK0gNC2JU9eRz2LfvWD4AkIevtUkuMhQV9BDB0A
-         6o39yZ3yzOKmDjTt1pfY6GhWkzZWVurXKJYX493bLrXqz2B0az1grwhk/NFEGFbuvl
-         boVfgJPBQKmNQ==
+        bh=36mKSDo7caAzw9MeOJgOqj/hZuogqtg0PSbH1x+7xik=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HYTIzx+U1VjEetTYFbeL/Duw+Gh+GP9CkxRYdIf9sMQtIEhjgqnraDhaTEqQ2xT4C
+         gmhSsPvJ40i1UpBMk0eFXRgkf4l2F5thO3Cz9LTwGj99wv+SINIKa4D2OG21IvGHV/
+         mvata9Jjxa18xy8dPFeNxO9MjjIUy9Zi5rNMwHLSJqLG2BIx+9PqPpNC1HRQJMN/lR
+         lzF5apsvn6ftaNn6v60yqq+gGLRBEcuJ7upJ5KT0JFL0ACnhT6QDzSU30PFYOAdwAI
+         TtL8Ve6xNmoshkbl1KCsg65lk3jN4A2uUslrfUpfBFUiziezWjeeLAFVBzACWXRQzj
+         IBEg6TFjQTS0g==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         herbert@gondor.apana.org.au, alexander.duyck@gmail.com,
         hkallweit1@gmail.com, andrew@lunn.ch, willemb@google.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3 0/7] net: lockless stop/wake combo macros
-Date:   Wed,  5 Apr 2023 15:31:27 -0700
-Message-Id: <20230405223134.94665-1-kuba@kernel.org>
+Subject: [PATCH net-next v3 1/7] docs: net: reformat driver.rst from a list to sections
+Date:   Wed,  5 Apr 2023 15:31:28 -0700
+Message-Id: <20230405223134.94665-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20230405223134.94665-1-kuba@kernel.org>
+References: <20230405223134.94665-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
@@ -52,44 +54,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A lot of drivers follow the same scheme to stop / start queues
-without introducing locks between xmit and NAPI tx completions.
-I'm guessing they all copy'n'paste each other's code.
-The original code dates back all the way to e1000 and Linux 2.6.19.
+driver.rst had a historical form of list of common problems.
+In the age os Sphinx and rendered documentation it's better
+to use the more usual title + text format.
 
-v3:
- - render the info as part of documentation, maybe someone will
-   notice and use it (patches 1, 2, 3 are new)
- - use the __after_atomic barrier
- - add last patch to avoid a barrier in the wake path
-more detailed change logs in the patches.
+This will allow us to render kdoc into the output more naturally.
 
-v2: https://lore.kernel.org/all/20230401051221.3160913-2-kuba@kernel.org/
- - really flip the unlikely into a likely in __netif_tx_queue_maybe_wake()
- - convert if / else into pre-init of _ret
-v1: https://lore.kernel.org/all/20230322233028.269410-1-kuba@kernel.org/
- - perdicate -> predicate
- - on race use start instead of wake and make a note of that
-   in the doc / comment at the start
-rfc: https://lore.kernel.org/all/20230311050130.115138-1-kuba@kernel.org/
+No changes to the actual text.
 
-Jakub Kicinski (7):
-  docs: net: reformat driver.rst from a list to sections
-  docs: net: move the probe and open/close sections of driver.rst up
-  docs: net: use C syntax highlight in driver.rst
-  net: provide macros for commonly copied lockless queue stop/wake code
-  ixgbe: use new queue try_stop/try_wake macros
-  bnxt: use new queue try_stop/try_wake macros
-  net: piggy back on the memory barrier in bql when waking queues
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ Documentation/networking/driver.rst | 91 ++++++++++++++++++-----------
+ 1 file changed, 56 insertions(+), 35 deletions(-)
 
- Documentation/networking/driver.rst           | 119 ++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  42 +----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  42 ++---
- include/linux/netdevice.h                     |   3 +-
- include/net/netdev_queues.h                   | 165 ++++++++++++++++++
- 5 files changed, 264 insertions(+), 107 deletions(-)
- create mode 100644 include/net/netdev_queues.h
-
+diff --git a/Documentation/networking/driver.rst b/Documentation/networking/driver.rst
+index 64f7236ff10b..3040a74d421c 100644
+--- a/Documentation/networking/driver.rst
++++ b/Documentation/networking/driver.rst
+@@ -4,15 +4,19 @@
+ Softnet Driver Issues
+ =====================
+ 
+-Transmit path guidelines:
++Transmit path guidelines
++========================
+ 
+-1) The ndo_start_xmit method must not return NETDEV_TX_BUSY under
+-   any normal circumstances.  It is considered a hard error unless
+-   there is no way your device can tell ahead of time when its
+-   transmit function will become busy.
++Stop queues in advance
++----------------------
+ 
+-   Instead it must maintain the queue properly.  For example,
+-   for a driver implementing scatter-gather this means::
++The ndo_start_xmit method must not return NETDEV_TX_BUSY under
++any normal circumstances.  It is considered a hard error unless
++there is no way your device can tell ahead of time when its
++transmit function will become busy.
++
++Instead it must maintain the queue properly.  For example,
++for a driver implementing scatter-gather this means::
+ 
+ 	static netdev_tx_t drv_hard_start_xmit(struct sk_buff *skb,
+ 					       struct net_device *dev)
+@@ -42,56 +46,73 @@ Softnet Driver Issues
+ 		return NETDEV_TX_OK;
+ 	}
+ 
+-   And then at the end of your TX reclamation event handling::
++And then at the end of your TX reclamation event handling::
+ 
+ 	if (netif_queue_stopped(dp->dev) &&
+ 	    TX_BUFFS_AVAIL(dp) > (MAX_SKB_FRAGS + 1))
+ 		netif_wake_queue(dp->dev);
+ 
+-   For a non-scatter-gather supporting card, the three tests simply become::
++For a non-scatter-gather supporting card, the three tests simply become::
+ 
+ 		/* This is a hard error log it. */
+ 		if (TX_BUFFS_AVAIL(dp) <= 0)
+ 
+-   and::
++and::
+ 
+ 		if (TX_BUFFS_AVAIL(dp) == 0)
+ 
+-   and::
++and::
+ 
+ 	if (netif_queue_stopped(dp->dev) &&
+ 	    TX_BUFFS_AVAIL(dp) > 0)
+ 		netif_wake_queue(dp->dev);
+ 
+-2) An ndo_start_xmit method must not modify the shared parts of a
+-   cloned SKB.
++No exclusive ownership
++----------------------
++
++An ndo_start_xmit method must not modify the shared parts of a
++cloned SKB.
++
++Timely completions
++------------------
++
++Do not forget that once you return NETDEV_TX_OK from your
++ndo_start_xmit method, it is your driver's responsibility to free
++up the SKB and in some finite amount of time.
+ 
+-3) Do not forget that once you return NETDEV_TX_OK from your
+-   ndo_start_xmit method, it is your driver's responsibility to free
+-   up the SKB and in some finite amount of time.
++For example, this means that it is not allowed for your TX
++mitigation scheme to let TX packets "hang out" in the TX
++ring unreclaimed forever if no new TX packets are sent.
++This error can deadlock sockets waiting for send buffer room
++to be freed up.
+ 
+-   For example, this means that it is not allowed for your TX
+-   mitigation scheme to let TX packets "hang out" in the TX
+-   ring unreclaimed forever if no new TX packets are sent.
+-   This error can deadlock sockets waiting for send buffer room
+-   to be freed up.
++If you return NETDEV_TX_BUSY from the ndo_start_xmit method, you
++must not keep any reference to that SKB and you must not attempt
++to free it up.
+ 
+-   If you return NETDEV_TX_BUSY from the ndo_start_xmit method, you
+-   must not keep any reference to that SKB and you must not attempt
+-   to free it up.
++Probing guidelines
++==================
+ 
+-Probing guidelines:
++Address validation
++------------------
++
++Any hardware layer address you obtain for your device should
++be verified.  For example, for ethernet check it with
++linux/etherdevice.h:is_valid_ether_addr()
++
++Close/stop guidelines
++=====================
+ 
+-1) Any hardware layer address you obtain for your device should
+-   be verified.  For example, for ethernet check it with
+-   linux/etherdevice.h:is_valid_ether_addr()
++Quiescence
++----------
+ 
+-Close/stop guidelines:
++After the ndo_stop routine has been called, the hardware must
++not receive or transmit any data.  All in flight packets must
++be aborted. If necessary, poll or wait for completion of
++any reset commands.
+ 
+-1) After the ndo_stop routine has been called, the hardware must
+-   not receive or transmit any data.  All in flight packets must
+-   be aborted. If necessary, poll or wait for completion of
+-   any reset commands.
++Auto-close
++----------
+ 
+-2) The ndo_stop routine will be called by unregister_netdevice
+-   if device is still UP.
++The ndo_stop routine will be called by unregister_netdevice
++if device is still UP.
 -- 
 2.39.2
 
