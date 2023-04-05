@@ -2,130 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3F26D811F
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 17:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E60AF6D8147
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 17:13:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238688AbjDEPKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 11:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
+        id S238707AbjDEPNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 11:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238334AbjDEPJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 11:09:46 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECD5768A
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 08:06:48 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id gp15-20020a17090adf0f00b0023d1bbd9f9eso39862895pjb.0
-        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 08:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680707201;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Zqg0YTBi/aRoczoHuEbXWeH+FSGmPC7QlqYkCTzyWE4=;
-        b=et5ZVecpqowX3ksQf0JKNZpgZMkjiSuaFHGUntkE8fVuf6RRp2+b4Qdubx3Dq+J6xA
-         sLL4/p0OkhhZHjuFh2H3CW4cR1hcG4UsqunKV4P2HlDZiop7smSfJSxU4MvmklVEyJ0P
-         e4KhcCi2qMBBzPeB2MAnWDgK0R3op3QG6NDhw8+zX3W++5c1X7PEKOFLkKAZtsD31XfJ
-         okwv9JVFrDmZZ4j/tGRWkyIcwfwBIofAIclWFhXqFTt3Je7i2O6PASjVoM1fcqYPgi2+
-         6uXQM2EenbsdbWqQ+TFw7oEXx6FU0gUf7dhuwLnwLKAbUzrMLNB8+duKI7kGlUf55f8a
-         uB6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680707201;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Zqg0YTBi/aRoczoHuEbXWeH+FSGmPC7QlqYkCTzyWE4=;
-        b=5uK5cisV92HwJ+4qDyUxpt10zuijPTWWKiOpl+hxViuMjXgxac8ZdsZWU5PHhr9Q4y
-         y+eHtDUSjrWwW5Xg6fobSTTKf4oPartJm03/wi3AnpARf89HHyYRfqQyrGkmhWeFn12Z
-         wh6jsT20qfVcAJJG+Bphzd4Yb6YktgaAZUfRCyoKYszwtUesJyJFqcyqe5o7p+yUC1XZ
-         xZn2t0ngoPBD9GAX5eQ4W/lh+5ZU5TiYRqe7ufTluz97TSX6nqjyzNhCVqV2xuwWpkW7
-         Vrd3J8seU4t5Btfimjs3nVkZTKvBlIHD9GoXxUba/vygWWevWnyElSvn7nO2HOVirpJk
-         ATkg==
-X-Gm-Message-State: AAQBX9d6rIanSt/gICuERJFzqWPOBSvazfbOtlCmcOp0xOEQxP8BaI4z
-        2BZY05vIYLJTO3Ji73buQhGahko+8Vm9lJ7gOaU=
-X-Google-Smtp-Source: AKy350Zwes4SXTkzrJYvmV/pv/nIhr4Lezr9WFGLr0cgFQPRAXHwVK/4nm22YLwEEHRiVEfxDym3YcFIRz8cd71htOc=
-X-Received: by 2002:a17:903:50c:b0:19f:2339:b2ef with SMTP id
- jn12-20020a170903050c00b0019f2339b2efmr2728208plb.9.1680707201435; Wed, 05
- Apr 2023 08:06:41 -0700 (PDT)
+        with ESMTP id S238705AbjDEPMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 11:12:54 -0400
+Received: from nbd.name (nbd.name [46.4.11.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC749748
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 08:10:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+        s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=xfetUTrhw4TX8p+dLu7Byxyq1IfXCPJENj6/o+Lsk2s=; b=gOcsE3w4ZWUPj+0Uk0KVryLBnd
+        0XMa9/rar39UaodEMgq3OQNVRk5mVBvPmShlOeTPF4EnCl6ghoyCXC85BM/X4QQIMhUJyH3bBiMFQ
+        GoY6FkeLKZbnsr0z2UPVHPolySQAC7eOV8LERsEMiqTGv86NH09jB7DeYk8h6r7xaGZ4=;
+Received: from p57a6f5ea.dip0.t-ipconnect.de ([87.166.245.234] helo=localhost.localdomain)
+        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        (Exim 4.94.2)
+        (envelope-from <nbd@nbd.name>)
+        id 1pk4mJ-00B47s-Kh
+        for netdev@vger.kernel.org; Wed, 05 Apr 2023 17:10:27 +0200
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org
+Subject: [PATCH v4 net-next 1/2] net: ethernet: mtk_eth_soc: add code for offloading flows from wlan devices
+Date:   Wed,  5 Apr 2023 17:10:25 +0200
+Message-Id: <20230405151026.23583-1-nbd@nbd.name>
+X-Mailer: git-send-email 2.39.0
 MIME-Version: 1.0
-References: <20230404074733.22869-1-liangchen.linux@gmail.com>
- <7331d6d3f9044e386e425e89b1fc32d60b046cf3.camel@gmail.com>
- <20230404182116.5795563c@kernel.org> <CAKhg4tLnSOxB7eeMqna1K3cmOn30cofxH=duOPLRs0h+59j01w@mail.gmail.com>
-In-Reply-To: <CAKhg4tLnSOxB7eeMqna1K3cmOn30cofxH=duOPLRs0h+59j01w@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 5 Apr 2023 08:06:29 -0700
-Message-ID: <CAKgT0UfPvkiRSqxOjDUsEVapSbtV++AqSLctZHKKs=_gSxtWfA@mail.gmail.com>
-Subject: Re: [PATCH] skbuff: Fix a race between coalescing and releasing SKBs
-To:     Liang Chen <liangchen.linux@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, ilias.apalodimas@linaro.org,
-        hawk@kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 5, 2023 at 1:19=E2=80=AFAM Liang Chen <liangchen.linux@gmail.co=
-m> wrote:
->
-> On Wed, Apr 5, 2023 at 9:21=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> w=
-rote:
-> >
-> > On Tue, 04 Apr 2023 08:51:18 -0700 Alexander H Duyck wrote:
-> > > I'm not quite sure I agree with the fix. Couldn't we just modify the
-> > > check further down that does:
-> > >
-> > >         if (!skb_cloned(from))
-> > >                 from_shinfo->nr_frags =3D 0;
-> > >
-> > > And instead just make that:
-> > >       if (!skb->cloned || (!skb_cloned(from) && !from->pp_recycle))
-> > >                 from_shinfo->nr_frags =3D 0;
-> > >
-> > > With that we would retain the existing behavior and in the case of
-> > > cloned from frames we would take the references and let the original
-> > > from skb freed to take care of pulling the pages from the page pool.
-> >
-> > Sounds like a better fix, indeed. But this sort of code will require
-> > another fat comment above to explain why. This:
-> >
-> >         if (to->pp_recycle =3D=3D from->pp_recycle && !skb_cloned(from)=
-)
-> >
-> > is much easier to understand, no?
-> >
-> > We should at least include that in the explanatory comment, I reckon...
->
-> Sure, the idea of dealing with the case where @from transitioned into non=
- cloned
-> skb in the function retains the existing behavior, and gives more
-> opportunities to
-> coalesce skbs. And it seems (!skb_cloned(from) && !from->pp_recycle) is e=
-nough
-> here.
-> I will take a closer look at the code path for the fragstolen case
-> before making v2
-> patch  -  If @from transitioned into non cloned skb before "if
-> (skb_head_is_locked(from))"
->
-> Thanks for the reviews.
+WED version 2 (on MT7986 and later) can offload flows originating from
+wireless devices.
+In order to make that work, ndo_setup_tc needs to be implemented on the
+netdevs. This adds the required code to offload flows coming in from WED,
+while keeping track of the incoming wed index used for selecting the
+correct PPE device.
 
-Actually I am not sure that works now that I look at it closer. The
-problem with using (!skb_cloned(from) && !from->pp_recycle) is that it
-breaks the case where both from and to are pp_recycle without being
-cloned.
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+v4:
+ - fix compile error
+ - properly fix reverse xmas tree issue
+ - remove unused variable
+v3: revert broken last minute reverse xmas tree change
+v2:
+ - fix description
+ - fix reverse xmas tree
+ - make flow block refcounting more idiomatic
 
-So it probably needs to be something actually the setup Jakub
-suggested would probably work better:
-  if (to->pp_recycle =3D=3D from->pp_recycle && !skb_cloned(from))
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |   3 +
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |  40 ++++---
+ drivers/net/ethernet/mediatek/mtk_wed.c       | 101 ++++++++++++++++++
+ include/linux/soc/mediatek/mtk_wed.h          |   6 ++
+ 4 files changed, 136 insertions(+), 14 deletions(-)
 
-Basically we just have to guarantee that if we are copying frags over
-the frag destructor is the same for the origin and destination.
-Otherwise we can take a reference and convert them to being reference
-counted.
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index 23c7abeb5c14..cdcf8534283e 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -1276,6 +1276,9 @@ int mtk_gmac_rgmii_path_setup(struct mtk_eth *eth, int mac_id);
+ int mtk_eth_offload_init(struct mtk_eth *eth);
+ int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 		     void *type_data);
++int mtk_flow_offload_cmd(struct mtk_eth *eth, struct flow_cls_offload *cls,
++			 int ppe_index);
++void mtk_flow_offload_cleanup(struct mtk_eth *eth, struct list_head *list);
+ void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
+ 
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index 46634dc29d2f..02eebff02d45 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -235,7 +235,8 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
+ }
+ 
+ static int
+-mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
++mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f,
++			 int ppe_index)
+ {
+ 	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+ 	struct flow_action_entry *act;
+@@ -452,6 +453,7 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
+ 	entry->cookie = f->cookie;
+ 	memcpy(&entry->data, &foe, sizeof(entry->data));
+ 	entry->wed_index = wed_index;
++	entry->ppe_index = ppe_index;
+ 
+ 	err = mtk_foe_entry_commit(eth->ppe[entry->ppe_index], entry);
+ 	if (err < 0)
+@@ -520,25 +522,15 @@ mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
+ 
+ static DEFINE_MUTEX(mtk_flow_offload_mutex);
+ 
+-static int
+-mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
++int mtk_flow_offload_cmd(struct mtk_eth *eth, struct flow_cls_offload *cls,
++			 int ppe_index)
+ {
+-	struct flow_cls_offload *cls = type_data;
+-	struct net_device *dev = cb_priv;
+-	struct mtk_mac *mac = netdev_priv(dev);
+-	struct mtk_eth *eth = mac->hw;
+ 	int err;
+ 
+-	if (!tc_can_offload(dev))
+-		return -EOPNOTSUPP;
+-
+-	if (type != TC_SETUP_CLSFLOWER)
+-		return -EOPNOTSUPP;
+-
+ 	mutex_lock(&mtk_flow_offload_mutex);
+ 	switch (cls->command) {
+ 	case FLOW_CLS_REPLACE:
+-		err = mtk_flow_offload_replace(eth, cls);
++		err = mtk_flow_offload_replace(eth, cls, ppe_index);
+ 		break;
+ 	case FLOW_CLS_DESTROY:
+ 		err = mtk_flow_offload_destroy(eth, cls);
+@@ -555,6 +547,26 @@ mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_pri
+ 	return err;
+ }
+ 
++static int
++mtk_eth_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
++{
++	struct flow_cls_offload *cls = type_data;
++	struct net_device *dev = cb_priv;
++	struct mtk_mac *mac;
++	struct mtk_eth *eth;
++
++	mac = netdev_priv(dev);
++	eth = mac->hw;
++
++	if (!tc_can_offload(dev))
++		return -EOPNOTSUPP;
++
++	if (type != TC_SETUP_CLSFLOWER)
++		return -EOPNOTSUPP;
++
++	return mtk_flow_offload_cmd(eth, cls, 0);
++}
++
+ static int
+ mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
+ {
+diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
+index 95d890870984..4c205afbd230 100644
+--- a/drivers/net/ethernet/mediatek/mtk_wed.c
++++ b/drivers/net/ethernet/mediatek/mtk_wed.c
+@@ -13,6 +13,8 @@
+ #include <linux/mfd/syscon.h>
+ #include <linux/debugfs.h>
+ #include <linux/soc/mediatek/mtk_wed.h>
++#include <net/flow_offload.h>
++#include <net/pkt_cls.h>
+ #include "mtk_eth_soc.h"
+ #include "mtk_wed_regs.h"
+ #include "mtk_wed.h"
+@@ -41,6 +43,11 @@
+ static struct mtk_wed_hw *hw_list[2];
+ static DEFINE_MUTEX(hw_lock);
+ 
++struct mtk_wed_flow_block_priv {
++	struct mtk_wed_hw *hw;
++	struct net_device *dev;
++};
++
+ static void
+ wed_m32(struct mtk_wed_device *dev, u32 reg, u32 mask, u32 val)
+ {
+@@ -1745,6 +1752,99 @@ void mtk_wed_flow_remove(int index)
+ 	mutex_unlock(&hw_lock);
+ }
+ 
++static int
++mtk_wed_setup_tc_block_cb(enum tc_setup_type type, void *type_data, void *cb_priv)
++{
++	struct mtk_wed_flow_block_priv *priv = cb_priv;
++	struct flow_cls_offload *cls = type_data;
++	struct mtk_wed_hw *hw = priv->hw;
++
++	if (!tc_can_offload(priv->dev))
++		return -EOPNOTSUPP;
++
++	if (type != TC_SETUP_CLSFLOWER)
++		return -EOPNOTSUPP;
++
++	return mtk_flow_offload_cmd(hw->eth, cls, hw->index);
++}
++
++static int
++mtk_wed_setup_tc_block(struct mtk_wed_hw *hw, struct net_device *dev,
++		       struct flow_block_offload *f)
++{
++	struct mtk_wed_flow_block_priv *priv;
++	static LIST_HEAD(block_cb_list);
++	struct flow_block_cb *block_cb;
++	struct mtk_eth *eth = hw->eth;
++	flow_setup_cb_t *cb;
++
++	if (!eth->soc->offload_version)
++		return -EOPNOTSUPP;
++
++	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
++		return -EOPNOTSUPP;
++
++	cb = mtk_wed_setup_tc_block_cb;
++	f->driver_block_list = &block_cb_list;
++
++	switch (f->command) {
++	case FLOW_BLOCK_BIND:
++		block_cb = flow_block_cb_lookup(f->block, cb, dev);
++		if (block_cb) {
++			flow_block_cb_incref(block_cb);
++			return 0;
++		}
++
++		priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++		if (!priv)
++			return -ENOMEM;
++
++		priv->hw = hw;
++		priv->dev = dev;
++		block_cb = flow_block_cb_alloc(cb, dev, priv, NULL);
++		if (IS_ERR(block_cb)) {
++			kfree(priv);
++			return PTR_ERR(block_cb);
++		}
++
++		flow_block_cb_incref(block_cb);
++		flow_block_cb_add(block_cb, f);
++		list_add_tail(&block_cb->driver_list, &block_cb_list);
++		return 0;
++	case FLOW_BLOCK_UNBIND:
++		block_cb = flow_block_cb_lookup(f->block, cb, dev);
++		if (!block_cb)
++			return -ENOENT;
++
++		if (!flow_block_cb_decref(block_cb)) {
++			flow_block_cb_remove(block_cb, f);
++			list_del(&block_cb->driver_list);
++			kfree(block_cb->cb_priv);
++		}
++		return 0;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int
++mtk_wed_setup_tc(struct mtk_wed_device *wed, struct net_device *dev,
++		 enum tc_setup_type type, void *type_data)
++{
++	struct mtk_wed_hw *hw = wed->hw;
++
++	if (hw->version < 2)
++		return -EOPNOTSUPP;
++
++	switch (type) {
++	case TC_SETUP_BLOCK:
++	case TC_SETUP_FT:
++		return mtk_wed_setup_tc_block(hw, dev, type_data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
+ 		    void __iomem *wdma, phys_addr_t wdma_phy,
+ 		    int index)
+@@ -1764,6 +1864,7 @@ void mtk_wed_add_hw(struct device_node *np, struct mtk_eth *eth,
+ 		.irq_set_mask = mtk_wed_irq_set_mask,
+ 		.detach = mtk_wed_detach,
+ 		.ppe_check = mtk_wed_ppe_check,
++		.setup_tc = mtk_wed_setup_tc,
+ 	};
+ 	struct device_node *eth_np = eth->dev->of_node;
+ 	struct platform_device *pdev;
+diff --git a/include/linux/soc/mediatek/mtk_wed.h b/include/linux/soc/mediatek/mtk_wed.h
+index fd0b0605cf90..b2b28180dff7 100644
+--- a/include/linux/soc/mediatek/mtk_wed.h
++++ b/include/linux/soc/mediatek/mtk_wed.h
+@@ -6,6 +6,7 @@
+ #include <linux/regmap.h>
+ #include <linux/pci.h>
+ #include <linux/skbuff.h>
++#include <linux/netdevice.h>
+ 
+ #define MTK_WED_TX_QUEUES		2
+ #define MTK_WED_RX_QUEUES		2
+@@ -179,6 +180,8 @@ struct mtk_wed_ops {
+ 
+ 	u32 (*irq_get)(struct mtk_wed_device *dev, u32 mask);
+ 	void (*irq_set_mask)(struct mtk_wed_device *dev, u32 mask);
++	int (*setup_tc)(struct mtk_wed_device *wed, struct net_device *dev,
++			enum tc_setup_type type, void *type_data);
+ };
+ 
+ extern const struct mtk_wed_ops __rcu *mtk_soc_wed_ops;
+@@ -237,6 +240,8 @@ mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
+ 	(_dev)->ops->msg_update(_dev, _id, _msg, _len)
+ #define mtk_wed_device_stop(_dev) (_dev)->ops->stop(_dev)
+ #define mtk_wed_device_dma_reset(_dev) (_dev)->ops->reset_dma(_dev)
++#define mtk_wed_device_setup_tc(_dev, _netdev, _type, _type_data) \
++	(_dev)->ops->setup_tc(_dev, _netdev, _type, _type_data)
+ #else
+ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
+ {
+@@ -255,6 +260,7 @@ static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
+ #define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
+ #define mtk_wed_device_stop(_dev) do {} while (0)
+ #define mtk_wed_device_dma_reset(_dev) do {} while (0)
++#define mtk_wed_device_setup_tc(_dev, _netdev, _type, _type_data) -EOPNOTSUPP
+ #endif
+ 
+ #endif
+-- 
+2.39.0
+
