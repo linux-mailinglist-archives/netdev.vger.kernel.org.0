@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3426D814A
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 17:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207A16D81AF
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 17:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238720AbjDEPNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 11:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
+        id S238042AbjDEPXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 11:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238714AbjDEPM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 11:12:56 -0400
-Received: from nbd.name (nbd.name [46.4.11.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86716974B
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 08:10:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-        s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=CsmjTgEV6kFloiv2nSNJQ7iVO39BaGcPQE7Ysr1Ve5M=; b=QeknIDjAoj4rz+TBC+0xGkdebm
-        t/Von6cBacfcQU2pDVItAOXaRs3ZXYck7F0KtbfzynjPKBK08fqRC2tBXnKBpNpgwHsG2iMT5Hdeu
-        3XhHlkQt675IZ9XeQin3lioFj0/SrWaFEa/wb3GNEywJqCzNZVpNF9VssqpMoGSNm08Q=;
-Received: from p57a6f5ea.dip0.t-ipconnect.de ([87.166.245.234] helo=localhost.localdomain)
-        by ds12 with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-        (Exim 4.94.2)
-        (envelope-from <nbd@nbd.name>)
-        id 1pk4mJ-00B47s-Rc
-        for netdev@vger.kernel.org; Wed, 05 Apr 2023 17:10:27 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Subject: [PATCH v4 net-next 2/2] net: ethernet: mtk_eth_soc: mtk_ppe: prefer newly added l2 flows
-Date:   Wed,  5 Apr 2023 17:10:26 +0200
-Message-Id: <20230405151026.23583-2-nbd@nbd.name>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20230405151026.23583-1-nbd@nbd.name>
-References: <20230405151026.23583-1-nbd@nbd.name>
+        with ESMTP id S238761AbjDEPXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 11:23:21 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAF55B9D
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 08:23:04 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1pk4xx-00073O-O3; Wed, 05 Apr 2023 17:22:29 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1pk4xt-00017e-Jm; Wed, 05 Apr 2023 17:22:25 +0200
+Date:   Wed, 5 Apr 2023 17:22:25 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        devicetree@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH 06/12] net: phy: add phy_device_atomic_register helper
+Message-ID: <20230405152225.tu3wmbcvchuugs5u@pengutronix.de>
+References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
+ <20230405-net-next-topic-net-phy-reset-v1-6-7e5329f08002@pengutronix.de>
+ <ad0b0d90-04bf-457c-9bdf-a747d66871b5@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad0b0d90-04bf-457c-9bdf-a747d66871b5@lunn.ch>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a device is roaming between interfaces and a new flow entry is
-created, we should assume that its output device is more up to date than
-whatever entry existed already.
+On 23-04-05, Andrew Lunn wrote:
+> > To bundle the phy firmware parsing step within phx_device.c the commit
+> > copies the required code from fwnode_mdio.c. After we converterd all
+> > callers of fwnode_mdiobus_* to this new API we can remove the support
+> > from fwnode_mdio.c.
+> 
+> Why bundle the code? Why not call it in fwnode_mdio.c?
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
-v2: fix patch description
- drivers/net/ethernet/mediatek/mtk_ppe.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+The current fwnode_mdio.c don't provide the proper helper functions yet.
+Instead the parsing is spread between fwnode_mdiobus_register_phy() and
+fwnode_mdiobus_phy_device_register(). Of course these can be extracted
+and exported but I don't see the benefit. IMHO it just cause jumping
+around files and since fwnode is a proper firmware abstraction we could
+use is directly wihin core/lib files.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index f9c9f2ea4206..dd9581334b05 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -635,10 +635,20 @@ void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- static int
- mtk_foe_entry_commit_l2(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
-+	struct mtk_flow_entry *prev;
-+
- 	entry->type = MTK_FLOW_TYPE_L2;
- 
--	return rhashtable_insert_fast(&ppe->l2_flows, &entry->l2_node,
--				      mtk_flow_l2_ht_params);
-+	prev = rhashtable_lookup_get_insert_fast(&ppe->l2_flows, &entry->l2_node,
-+						 mtk_flow_l2_ht_params);
-+	if (likely(!prev))
-+		return 0;
-+
-+	if (IS_ERR(prev))
-+		return PTR_ERR(prev);
-+
-+	return rhashtable_replace_fast(&ppe->l2_flows, &prev->l2_node,
-+				       &entry->l2_node, mtk_flow_l2_ht_params);
- }
- 
- int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
--- 
-2.39.0
+> The bundling in this patch makes it harder to see the interesting part
+> of this patch, how the reset is handled. That is what this whole
+> patchset is about, so you want the review focus to be on that.
 
+I know and I thought about adding the firmware parsing helpers first but
+than I went this way. I can split this of course to make the patch
+smaller.
+
+Regards,
+  Marco
+
+
+> 
+> 	 Andrew
+> 
