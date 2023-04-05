@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A6C6D7139
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 02:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5406D7175
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 02:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236543AbjDEAYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 20:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
+        id S236593AbjDEAmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 20:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbjDEAYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 20:24:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEF349C6
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 17:24:06 -0700 (PDT)
+        with ESMTP id S236431AbjDEAmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 20:42:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4447F170C;
+        Tue,  4 Apr 2023 17:42:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CDF76399F
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 00:24:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 793F2C433D2;
-        Wed,  5 Apr 2023 00:24:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF7E263A08;
+        Wed,  5 Apr 2023 00:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED446C433D2;
+        Wed,  5 Apr 2023 00:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680654245;
-        bh=1M6cvLW0Xd/QG7c/z+xe00ry1BpvxevACez2MPuh+jM=;
+        s=k20201202; t=1680655320;
+        bh=+cjLkLoA9NyDufawosYM9Jf4qVxSowmmQusfhBSHjPg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F3Kxt6iNKdbueN4CosmmptKKb7bg2/KttdEdJcvYvg3SVxJDkNrxF4HsWavjDQOjj
-         1ZGwfSHzUPsTCqnIublhv4DSonximWwuZvUAai192m9UDkASto/SLBwKe4jtqpebkE
-         jfUPyk+oiZMLN1K1O+W/fPzcCIq9pqszHtTp37nnFuEKa5m3XL9xreIgavWe6Isf3O
-         ljjJqYmZ/1RSn7f7dERWXc6aq7uyfdxFN6Qd82efQK3U2DR23bCoTYRvzhasQtZyKW
-         8+Bmh6QKALNJVvNEV7w/V/CKOXEZFWwBNsdxGf+TXv/vPpx70inDkuc6hlUAHOecSB
-         AGYLdX8yqVfyQ==
-Date:   Tue, 4 Apr 2023 17:24:04 -0700
+        b=muZKDKB5P0sEX3SdkbTj9DJgulX43zg4X3Yi7yrOuujMhekHFi6f2NNl5nrTaFzdD
+         OstCzCC5UxPO0ADvSZdhEMkWMzGIYK4eR40he4I8hHPsqD04Fa7X02V/WIwwOHDIjL
+         tGBIqG7+CHvUpJkKcunaaP3B7lKq/aWi2b6OKwP3hs4omSOnwi+22Okxe4Zj0urZF4
+         FIlYJhR9t3T9gKEGHBjphW+4WyE508ehMCz3uES7LJqpSLgesheWai2X4tijPatnvI
+         acmWW/FyfdY6PE1OzcSLmpXfACFvIy/guwFZoYmz42XarLeA2dRY4sbol68w6jjbOn
+         dBEO3FdddrklQ==
+Date:   Tue, 4 Apr 2023 17:41:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chuck Lever <cel@kernel.org>
-Cc:     pabeni@redhat.com, edumazet@google.com, borisp@nvidia.com,
-        netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev,
-        john.haxby@oracle.com
-Subject: Re: [PATCH v8 3/4] net/handshake: Add Kunit tests for the handshake
- consumer API
-Message-ID: <20230404172404.335cac5c@kernel.org>
-In-Reply-To: <168054757552.2138.13089316455964656033.stgit@klimt.1015granger.net>
-References: <168054723583.2138.14337249041719295106.stgit@klimt.1015granger.net>
-        <168054757552.2138.13089316455964656033.stgit@klimt.1015granger.net>
+To:     Saeed Mahameed <saeed@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ 6a53bda3aaf3de5edeea27d0b1d8781d067640b6
+Message-ID: <20230404174158.35ea7a71@kernel.org>
+In-Reply-To: <642c8ceb.LBEdj8abbmwftu9h%lkp@intel.com>
+References: <642c8ceb.LBEdj8abbmwftu9h%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,14 +54,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 03 Apr 2023 14:46:15 -0400 Chuck Lever wrote:
-> From: Chuck Lever <chuck.lever@oracle.com>
-> 
-> These verify the API contracts and help exercise lifetime rules for
-> consumer sockets and handshake_req structures.
+On Wed, 05 Apr 2023 04:47:39 +0800 kernel test robot wrote:
+> drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c:148:31: error: implicit declaration of function 'pci_msix_can_alloc_dyn' [-Werror=implicit-function-declaration]
 
-Does it build with allmodconfig for you?
-
-error: the following would cause module name conflict:
-  lib/kunit/kunit-test.ko
-  net/handshake/kunit-test.ko
+CC: Saeed, Leon
