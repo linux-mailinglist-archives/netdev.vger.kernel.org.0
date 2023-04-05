@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 727B86D8678
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1676D8682
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233855AbjDETC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 15:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S231859AbjDETGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 15:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbjDETC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:02:27 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649D9BA;
-        Wed,  5 Apr 2023 12:02:26 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-17ab3a48158so39667505fac.1;
-        Wed, 05 Apr 2023 12:02:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680721345;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=iuciwAKZq2wJaT34pYXM66kr946sug+R1OznahFQbBs=;
-        b=GAaUYpEiV2Kl47BwmEhK7xVfJjJTlt1T3xzYge0UObeFDVpYOjI0mLsM/96CR/75Uc
-         iAEBzvLXK+sjUt+RJE2HG2iwOdLyHf9CpZt0CBsXeSf2Qqlhh/9+X5beAFjasahU1wX/
-         oObcb/d5krd9URFx9g8a2dHqSBA0f+Ix6GQFiiCm3thks0rqvXSdejTrYQpXHsq+J/5W
-         0cFgPVpH5cH3vo+70IBd3XztFas+fmbAYFRowEpJrzKLEc2eKmgsUcQJ6q5Fpy7ORqGd
-         QdHOQ/AhhH002MRxqQewW5fEdMX+519Q15s1l4G4CYGmgmi+thNCRLkBYiByR5ruIgmG
-         3TiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680721345;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iuciwAKZq2wJaT34pYXM66kr946sug+R1OznahFQbBs=;
-        b=iMSJLMDGjWz3Wc9KWxFTyVINcArkHix1OuiTnbA0fHowPJYrKC1UDowc2eaaVSwJjw
-         nDUTRk+gepoUPTEh5mJQb2FZNXdOVBZON5xOQ/IV4JHmy8NbAw74QbNSpMKH9/kjfh6U
-         xM6YsXcCqq9JwAtF/qRtjppDmxZ0OPyagvcY9JFuR9ngrecqSQeYJeiSZSzKFI32s/cE
-         VwWWRaYerIt9YLi5EGRJqXDHjZRw2S8HyO/nqB3hdS6b3ZHx801OaoZ7KoH0U9hyMQ3i
-         2TxYr3B7vvK9wmb0rYKPZ954w1tPd6Sb2U7MwFbP+PeE4NDhgpX/k9DGMXE295IXx26z
-         /1Rg==
-X-Gm-Message-State: AAQBX9eYH5+Km66X9TpvTVTAwcjnnejULW3YkzM3q3QU0FdGdUz11y6w
-        KCCLr/4nEuB+JCClRRV+1AI=
-X-Google-Smtp-Source: AKy350ZG/6KmGrQcmR25Tx+lgzJ67Tk0y/et/MTnFdphXiBVmC6K7HCCleCmK9YphFfExyB962br7w==
-X-Received: by 2002:a05:6870:41c8:b0:17a:a4af:8e3e with SMTP id z8-20020a05687041c800b0017aa4af8e3emr3874842oac.47.1680721345603;
-        Wed, 05 Apr 2023 12:02:25 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id zq42-20020a0568718eaa00b0016b0369f08fsm6214199oab.15.2023.04.05.12.02.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 12:02:24 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 5 Apr 2023 12:02:23 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+        with ESMTP id S229520AbjDETGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:06:11 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA4D558E;
+        Wed,  5 Apr 2023 12:06:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AAWJccQcWH6bVfGLn6jfJ5NweGGEWRAynxMYiwMVGXU=; b=R0W84hYPsUylEtIxFK88U1rk5h
+        KTNwBNeNeULfjCOYwN5R5VbJ0+Fyti9LpHL7L+rNAFlg5Gz8l6TQn5JpKN8tennO+B50F89Nlf2zG
+        pzgsEpgOkRGjYejJkYPsGoLGS5w5RrCDCSHl1rGjwpBWs5LyqOPva0aDM8ROqRlgWst0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1pk8SA-009YGD-Cu; Wed, 05 Apr 2023 21:05:54 +0200
+Date:   Wed, 5 Apr 2023 21:05:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>
 Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Shahab Vahedi <Shahab.Vahedi@synopsys.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>,
-        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>,
-        hock.leong.kweh@intel.com
-Subject: Re: [PATCH net 1/1] net: stmmac: check fwnode for phy device before
- scanning for phy
-Message-ID: <d942f8ac-3a60-4a71-8cd5-4f2f7aeaa2bd@roeck-us.net>
-References: <20230405093945.3549491-1-michael.wei.hong.sit@intel.com>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+Subject: Re: [PATCHv2 1/2] net: ethernet: stmmac: dwmac-rk: rework optional
+ clock handling
+Message-ID: <b92600f9-0ea8-433e-b992-6a3007766fbf@lunn.ch>
+References: <20230405161043.46190-1-sebastian.reichel@collabora.com>
+ <20230405161043.46190-2-sebastian.reichel@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230405093945.3549491-1-michael.wei.hong.sit@intel.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,
-        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20230405161043.46190-2-sebastian.reichel@collabora.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 05:39:45PM +0800, Michael Sit Wei Hong wrote:
-> Some DT devices already have phy device configured in the DT/ACPI.
-> Current implementation scans for a phy unconditionally even though
-> there is a phy listed in the DT/ACPI and already attached.
+On Wed, Apr 05, 2023 at 06:10:42PM +0200, Sebastian Reichel wrote:
+> The clock requesting code is quite repetitive. Fix this by requesting
+> the clocks in a loop. Also use devm_clk_get_optional instead of
+> devm_clk_get, since the old code effectively handles them as optional
+> clocks. This removes error messages about missing clocks for platforms
+> not using them and correct -EPROBE_DEFER handling.
 > 
-> We should check the fwnode if there is any phy device listed in
-> fwnode and decide whether to scan for a phy to attach to.y
+> The new code also tries to get "clk_mac_ref" and "clk_mac_refout" when
+> the PHY is not configured as PHY_INTERFACE_MODE_RMII to keep the code
+> simple. This is possible since we use devm_clk_get_optional() for the
+> clock lookup anyways.
 > 
-> Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Fixes: fe2cfbc96803 ("net: stmmac: check if MAC needs to attach to a PHY")
-> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-> Tested-by: Shahab Vahedi <shahab@synopsys.com>
-> Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Tested-by: Marek Szyprowski
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Fixes: 7ad269ea1a2b7 ("GMAC: add driver for Rockchip RK3288 SoCs integrated GMAC")
+> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> ---
+>  .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 63 ++++++-------------
+>  1 file changed, 20 insertions(+), 43 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+> index 4b8fd11563e4..6fdad0f10d6f 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+> @@ -1475,54 +1475,31 @@ static int rk_gmac_clk_init(struct plat_stmmacenet_data *plat)
+>  {
+>  	struct rk_priv_data *bsp_priv = plat->bsp_priv;
+>  	struct device *dev = &bsp_priv->pdev->dev;
+> -	int ret;
+> +	int i, ret;
+> +	struct {
+> +		struct clk **ptr;
+> +		const char *name;
+> +	} clocks[] = {
+> +		{ &bsp_priv->mac_clk_rx, "mac_clk_rx" },
+> +		{ &bsp_priv->mac_clk_tx, "mac_clk_tx" },
+> +		{ &bsp_priv->aclk_mac, "aclk_mac" },
+> +		{ &bsp_priv->pclk_mac, "pclk_mac" },
+> +		{ &bsp_priv->clk_mac, "stmmaceth" },
+> +		{ &bsp_priv->clk_mac_ref, "clk_mac_ref" },
+> +		{ &bsp_priv->clk_mac_refout, "clk_mac_refout" },
+> +		{ &bsp_priv->clk_mac_speed, "clk_mac_speed" },
+> +	};
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+> +	for (i=0; i < ARRAY_SIZE(clocks); i++) {
+> +		*clocks[i].ptr = devm_clk_get_optional(dev, clocks[i].name);
+> +		if (IS_ERR(*clocks[i].ptr))
+> +			return dev_err_probe(dev, PTR_ERR(*clocks[i].ptr),
+> +					     "cannot get clock %s\n",
+> +					     clocks[i].name);
+>  	}
 
-Guenter
+Could devm_clk_bulk_get_optional() be used?
+
+      Andrew
