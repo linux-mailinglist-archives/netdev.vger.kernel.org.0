@@ -2,106 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25B026D81F9
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 17:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAADD6D831B
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238501AbjDEPc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 11:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38368 "EHLO
+        id S233320AbjDEQKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 12:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237929AbjDEPc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 11:32:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4AD98
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 08:32:52 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pk56z-0008CX-OP; Wed, 05 Apr 2023 17:31:49 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1pk56y-0001Ro-IB; Wed, 05 Apr 2023 17:31:48 +0200
-Date:   Wed, 5 Apr 2023 17:31:48 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Radu Pirea <radu-nicolae.pirea@oss.nxp.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devicetree@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH 00/12] Rework PHY reset handling
-Message-ID: <20230405153148.f2pk2tya67uyweki@pengutronix.de>
-References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
- <da635af8-2052-40d5-846f-eda14af8c69b@lunn.ch>
+        with ESMTP id S232321AbjDEQKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:10:02 -0400
+X-Greylist: delayed 1809 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 05 Apr 2023 09:09:53 PDT
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633AB10D8;
+        Wed,  5 Apr 2023 09:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding;
+        bh=HXWZ4XUXK8vGxYsn5UqljiIqwaTfxIUTeJ93pQO8yv0=;
+        b=IIIgPy78rqr8S+tn6NsY2EvtjiKg+QIru842BL9PVeqTXvixeia2k4BeueSquX1gll0Q9MZpdk88P
+         9wkbyAQ1mY0IZkGHObVLjCDxKyE7uOzpGdB2pSKRCDOYCFGvVovxZWcN4ArP442YbUpgfeVmiZgjn6
+         B20s8KSfb8FdJPDiJH0tKbq49wMSRWpt80EPNpGf+X4KkLabY1WBNdnxVskiRdlaCt6DnsmmRuDGsf
+         +Bsn+BZ4Oi5m29jHnE0Tb4cZ5ePwG0kTPm6mPj6COz5OP4QkkVKWh5Yt+k2ftvJ7LpLGJpfhcER6pZ
+         58bgnFiOYPt+OvgZ2Ma8q0cwx1dtlNw==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.17.2.1477, Stamp: 3], Multi: [Enabled, t: (0.000012,0.013713)], BW: [Enabled, t: (0.000025,0.000001)], RTDA: [Enabled, t: (0.090298), Hit: No, Details: v2.49.0; Id: 15.4d9lk.1gt9153nq.b2hs; mclb], total: 0(700)
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Level: 
+X-Footer: bWV0cm90ZWsucnU=
+Received: from localhost.localdomain ([78.37.166.219])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Wed, 5 Apr 2023 18:39:18 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     netdev@vger.kernel.org
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, system@metrotek.ru,
+        stable@vger.kernel.org
+Subject: [PATCH net] net: sfp: initialize sfp->i2c_block_size at sfp allocation
+Date:   Wed,  5 Apr 2023 18:39:00 +0300
+Message-Id: <20230405153900.747-1-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <da635af8-2052-40d5-846f-eda14af8c69b@lunn.ch>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+sfp->i2c_block_size is initialized at SFP module insertion in
+sfp_sm_mod_probe(). Because of that, if SFP module was not inserted
+since boot, ethtool -m leads to zero-length I2C read attempt.
 
-On 23-04-05, Andrew Lunn wrote:
-> On Wed, Apr 05, 2023 at 11:26:51AM +0200, Marco Felsch wrote:
-> > The current phy reset handling is broken in a way that it needs
-> > pre-running firmware to setup the phy initially. Since the very first
-> > step is to readout the PHYID1/2 registers before doing anything else.
-> > 
-> > The whole dection logic will fall apart if the pre-running firmware
-> > don't setup the phy accordingly or the kernel boot resets GPIOs states
-> > or disables clocks. In such cases the PHYID1/2 read access will fail and
-> > so the whole detection will fail.
-> > 
-> > I fixed this via this series, the fix will include a new kernel API
-> > called phy_device_atomic_register() which will do all necessary things
-> > and return a 'struct phy_device' on success. So setting up a phy and the
-> > phy state machine is more convenient.
-> 
-> Please add a section explaining why the current API is broken beyond
-> repair.  You need to justify adding a new call, rather than fixing the
-> existing code to just do what is necessary to allow the PHY to be
-> found.
+  # ethtool -m xge0
+  i2c i2c-3: adapter quirk: no zero length (addr 0x0050, size 0, read)
+  Cannot get Module EEPROM data: Operation not supported
 
-TIL from Florian that you use the cover-letter information in your merge
-commits. I will adapt the cover-letter accordingly and mention why this
-PR introduces a new API.
+If SFP module was plugged then removed at least once,
+sfp->i2c_block_size will be initialized and ethtool -m will fail with
+different error
 
-Regards,
-  Marco
+  # ethtool -m xge0
+  Cannot get Module EEPROM data: Remote I/O error
+
+Fix this by initializing sfp->i2_block_size at struct sfp allocation
+stage so ethtool -m with SFP module removed will fail the same way, i.e.
+-EREMOTEIO, in both cases and without errors from I2C adapter.
+
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Fixes: 0d035bed2a4a ("net: sfp: VSOL V2801F / CarlitoxxPro CPGOS03-0490 v2.0 workaround")
+Cc: stable@vger.kernel.org
+---
+ drivers/net/phy/sfp.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 40c9a64c5e30..5663a184644d 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -212,6 +212,12 @@ static const enum gpiod_flags gpio_flags[] = {
+ #define SFP_PHY_ADDR		22
+ #define SFP_PHY_ADDR_ROLLBALL	17
+ 
++/* SFP_EEPROM_BLOCK_SIZE is the size of data chunk to read the EEPROM
++ * at a time. Some SFP modules and also some Linux I2C drivers do not like
++ * reads longer than 16 bytes.
++ */
++#define SFP_EEPROM_BLOCK_SIZE	16
++
+ struct sff_data {
+ 	unsigned int gpios;
+ 	bool (*module_supported)(const struct sfp_eeprom_id *id);
+@@ -1928,11 +1934,7 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	u8 check;
+ 	int ret;
+ 
+-	/* Some SFP modules and also some Linux I2C drivers do not like reads
+-	 * longer than 16 bytes, so read the EEPROM in chunks of 16 bytes at
+-	 * a time.
+-	 */
+-	sfp->i2c_block_size = 16;
++	sfp->i2c_block_size = SFP_EEPROM_BLOCK_SIZE;
+ 
+ 	ret = sfp_read(sfp, false, 0, &id.base, sizeof(id.base));
+ 	if (ret < 0) {
+@@ -2615,6 +2617,7 @@ static struct sfp *sfp_alloc(struct device *dev)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	sfp->dev = dev;
++	sfp->i2c_block_size = SFP_EEPROM_BLOCK_SIZE;
+ 
+ 	mutex_init(&sfp->sm_mutex);
+ 	mutex_init(&sfp->st_mutex);
+-- 
+2.39.2
 
 
-> 
-> 	Andrew
-> 
