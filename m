@@ -2,103 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4B6A6D712C
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 02:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE026D7135
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 02:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236202AbjDEARZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Apr 2023 20:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S232125AbjDEAXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Apr 2023 20:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234086AbjDEARY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 20:17:24 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441D044A8;
-        Tue,  4 Apr 2023 17:17:23 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id h8so137014070ede.8;
-        Tue, 04 Apr 2023 17:17:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680653842; x=1683245842;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YBQuZ6cO4NqY3NwYWWJVtGbrQabyGh82co3p2xzwZi0=;
-        b=JS0d3mSkT+PTeY8hdM8VYfm38Z3pU3M+ONW09aFWXqiYZ89KXTRUDJqTxzdCTDn2l/
-         3Rdt/9zF+oHXj4Mos1sZZBY5aXLUWi5bc8Y5rNT+RXgW23Jj8wED1yVren2xSN2vGXqk
-         3TLa3vR3p5Ox2byh+gUWT2f3/39X+jt4Yg1UfWi+1Obt0Qn/lwfDbfbWqk/VTawGNkXF
-         1pbqzDoXb/N8LLoH2llPPlMdTcXyVvpq+HSjsfKB+Xrif6bMhG7v25GiWdezfGXLrotZ
-         ompQmFIKGUdsVQ45YNOnqDLYdkoynWKhCWGO+XlsSg7mxs4V2jXFATJgtUHEM2Gn+Tb9
-         nujA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680653842; x=1683245842;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YBQuZ6cO4NqY3NwYWWJVtGbrQabyGh82co3p2xzwZi0=;
-        b=jzsvjrNIgiiWk/KmJ6+qTbWUkgxibW8JxOgR4XLqPszoyGcpoiNJNOsep7rBwPM0fR
-         HSsfMzHVwQOpGOuO1Jk2AX75UEpQxmllSRfPdEdr448AAC7ed//yNgLYcBdsizQCDhhj
-         kBK03oOEUCeAgi+NFhqzH/r3cTdx88msU+gz4EFkWMaxRQCnp7JJ7O9wPO19X45b6hm8
-         py/5Gls1GNRBk2rA/AhyeiTY6Xv5fP963RYQoKjPrmRBQHbPu5/Jf2JmkrC2TLFsFv/E
-         GnYV/FAsdyY9/Lu7HAjYh260rkqcEmnyHsONnpis5HIg+3dSvZpH2pk189B4OPicfhMP
-         o5ng==
-X-Gm-Message-State: AAQBX9dFe8yFJpUFkzS5+xyPZyoaocTKJiO+7ijOIMzM2IRLIpthgSZD
-        j+z8kqkmyXYtEumXX7FvO/4ZQm7eK4mwSFG3ATc=
-X-Google-Smtp-Source: AKy350avomeUafV60ijc8SGUwOyEkPbz/jsL6d3G/T6tWKQ8iFlL9zCEJNZJie8BSTsK/yPIX2dskG4Sp6Yp449OOEE=
-X-Received: by 2002:a17:906:3716:b0:93e:739f:b0b8 with SMTP id
- d22-20020a170906371600b0093e739fb0b8mr691617ejc.3.1680653841499; Tue, 04 Apr
- 2023 17:17:21 -0700 (PDT)
+        with ESMTP id S229748AbjDEAXW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Apr 2023 20:23:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F55358B
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 17:23:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4394638F5
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 00:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB5D0C433EF;
+        Wed,  5 Apr 2023 00:23:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680654200;
+        bh=ZaR/TrJIhvTI3AXjFyEfWFmb2sglI/FUamopBW/EXA8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=klFUMoZAzPmKuDhbY1DRH4MJJKwbMRTLOX/wLjkGRMVfEzi7BJMNH6/juz720C/4r
+         YPoOX5005sgPGixJq6TGco1bKCvFYQ7FFhMxWMb0RZEvKAKwymyvZwdUz+c6tBqZsT
+         L0WrZ4pt8DI3NG/ZLSLAB8mK3eIqDhjhSov1qDjWP21cljkPXfqIruS05iIPBwKJgg
+         x6e1TTW/PE6mfK3GRP15EqOkqKYn2z/XgYwsp/5TyQMVIwFsMihR3ioYNHQw24+NII
+         65w3ILLvPgHDN84YQp+BHHvsJFZaTeDaZKElntjvajxBp3cBuh+EYQrmULU648taGh
+         ndLMA9/WT21bA==
+Date:   Tue, 4 Apr 2023 17:23:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chuck Lever <cel@kernel.org>
+Cc:     pabeni@redhat.com, edumazet@google.com, borisp@nvidia.com,
+        netdev@vger.kernel.org, kernel-tls-handshake@lists.linux.dev,
+        john.haxby@oracle.com
+Subject: Re: [PATCH v8 1/4] net/handshake: Create a NETLINK service for
+ handling handshake requests
+Message-ID: <20230404172318.58e4d0dd@kernel.org>
+In-Reply-To: <168054756211.2138.1880630504843421368.stgit@klimt.1015granger.net>
+References: <168054723583.2138.14337249041719295106.stgit@klimt.1015granger.net>
+        <168054756211.2138.1880630504843421368.stgit@klimt.1015granger.net>
 MIME-Version: 1.0
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
- <20230404045029.82870-5-alexei.starovoitov@gmail.com> <eb07aa5a-e44c-67b7-e9c9-bd65602680ae@linux.dev>
-In-Reply-To: <eb07aa5a-e44c-67b7-e9c9-bd65602680ae@linux.dev>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 4 Apr 2023 17:17:10 -0700
-Message-ID: <CAADnVQ+z0ZLwo=rCSa=TrS-NFkgHy8r=nK38wgA5vmz4u2iyUA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/8] bpf: Teach verifier that certain helpers
- accept NULL pointer.
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        David Vernet <void@manifault.com>,
-        Dave Marchevsky <davemarchevsky@meta.com>,
-        Tejun Heo <tj@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 4, 2023 at 5:10=E2=80=AFPM Martin KaFai Lau <martin.lau@linux.d=
-ev> wrote:
->
-> On 4/3/23 9:50 PM, Alexei Starovoitov wrote:
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 1f2abf0f60e6..727c5269867d 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -4998,7 +4998,7 @@ const struct bpf_func_proto bpf_get_socket_ptr_co=
-okie_proto =3D {
-> >       .func           =3D bpf_get_socket_ptr_cookie,
-> >       .gpl_only       =3D false,
-> >       .ret_type       =3D RET_INTEGER,
-> > -     .arg1_type      =3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-> > +     .arg1_type      =3D ARG_PTR_TO_BTF_ID_SOCK_COMMON | PTR_MAYBE_NUL=
-L,
->
-> I think the bpf_skc_to_* helpers (eg. bpf_skc_to_tcp_sock) also need simi=
-lar
-> change. They are available to tracing also. It can be a follow-up. The pa=
-tch set
-> lgtm.
+On Mon, 03 Apr 2023 14:46:02 -0400 Chuck Lever wrote:
+> +int handshake_nl_done_doit(struct sk_buff *skb, struct genl_info *info)
+> +{
+> +	struct net *net = sock_net(skb->sk);
+> +	struct socket *sock = NULL;
+> +	struct handshake_req *req;
+> +	int fd, status, err;
+> +
+> +	if (GENL_REQ_ATTR_CHECK(info, HANDSHAKE_A_DONE_SOCKFD))
+> +		return -EINVAL;
+> +	fd = nla_get_u32(info->attrs[HANDSHAKE_A_DONE_SOCKFD]);
+> +
+> +	err = 0;
+> +	sock = sockfd_lookup(fd, &err);
+> +	if (err) {
+> +		err = -EBADF;
+> +		goto out_status;
+> +	}
+> +
+> +	req = handshake_req_hash_lookup(sock->sk);
+> +	if (!req) {
 
-Ok. I'll take a look.
+fput() missing on this path?
+
+> +		err = -EBUSY;
+> +		goto out_status;
+> +	}
+> +
+> +	trace_handshake_cmd_done(net, req, sock->sk, fd);
+> +
+> +	status = -EIO;
+> +	if (info->attrs[HANDSHAKE_A_DONE_STATUS])
+> +		status = nla_get_u32(info->attrs[HANDSHAKE_A_DONE_STATUS]);
+> +
+> +	handshake_complete(req, status, info);
+> +	fput(sock->file);
+> +	return 0;
+> +
+> +out_status:
+> +	trace_handshake_cmd_done_err(net, req, sock->sk, err);
+> +	return err;
+> +}
+
+> +	/*
+> +	 * Arbitrary limit to prevent handshakes that do not make
+> +	 * progress from clogging up the system.
+> +	 */
+> +	si_meminfo(&si);
+> +	tmp = si.totalram / (25 * si.mem_unit);
+> +	hn->hn_pending_max = clamp(tmp, 3UL, 25UL);
+
+No idea what this does (what's mem_unit?), we'll have to trust you :)
+
+
+And there are some kdoc issues here:
+
+include/trace/events/handshake.h:112: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+ ** Request lifetime events
+include/trace/events/handshake.h:149: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
