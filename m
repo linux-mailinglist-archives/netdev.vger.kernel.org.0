@@ -2,207 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8326D6D853A
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:51:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F49A6D8577
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 20:01:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbjDERvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 13:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S229872AbjDESBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 14:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbjDERvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:51:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5DA4ED2;
-        Wed,  5 Apr 2023 10:51:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF07063EF2;
-        Wed,  5 Apr 2023 17:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA45CC433EF;
-        Wed,  5 Apr 2023 17:51:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1680717067;
-        bh=XqEBg36D7MQGhRTugpz7Q4hNT4P3WsJ6RihjTc0nG6w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yALAChB9dSICV8ph9tMdaw9m/X01UEC3G6eUi5Smf3rrYcLwrPIAUvMvWNVzCK0q8
-         gKnvNtbozGt6J+CxiwAZhfrbFXid0nIot5wJw4tzHEabWGTjYPhs/ltX2ogUVf4UWH
-         m8hiAntRq6nxTwnN8ci0E3kBHAymg8C/X/Yn44cs=
-Date:   Wed, 5 Apr 2023 19:51:04 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH RFC net-next 6/7] net: dsa: mv88e6xxx: provide software
- node for default settings
-Message-ID: <2023040527-atop-talcum-46e3@gregkh>
-References: <ZCF2BLvGoaD/RGCS@shell.armlinux.org.uk>
- <ZCGkhUh20OK6rEck@kuha.fi.intel.com>
- <ZCGpDlaJ7+HmPQiB@shell.armlinux.org.uk>
- <ZCG6D7KV/0W0FUoI@shell.armlinux.org.uk>
- <ZCLZFA964zu/otQJ@kuha.fi.intel.com>
- <ZCLqXRKHh+VjCg8v@shell.armlinux.org.uk>
- <ZCRGHlERlLNuPHgE@kuha.fi.intel.com>
- <ZCRMTP1QJ0deQhOH@shell.armlinux.org.uk>
- <ZCWUq3yEn74JRW0w@kuha.fi.intel.com>
- <ZCrOeC+tYfQiBuoY@shell.armlinux.org.uk>
-MIME-Version: 1.0
+        with ESMTP id S229520AbjDESB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 14:01:29 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2080.outbound.protection.outlook.com [40.107.13.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3156759EA
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 11:01:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z9i47PUml9MBvrWOCy4GuQh8uWfWs3bueSg9+xcno2ca2CLOsISvGsm6mLNHezS3o+x4LL3ECeE6Vkbb68M747zh/Bw80WS/zaHW9aNm1vyKluHVW3+2pYtgqgD970XcDt3K0rVmQ+kCB0TYty6YrDG5+ITgMeGQIEnaR4s9mlWAGydu1Y6LwygrOKj1RBohI8yPCnUOXESgnTqYQcAnpjJd9A7iD7zU8nxoJ7+TYo/2oY+Y5NxdTJRuNXrEfM3WjwSvMMVfJtS42w1NqEZTyLUtlPoeA5cdWmcy3mpTM4xQzW5spu6AnDrCvcaH0+fg76xcC2CNjVcxsmjsUG1y5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8bF4aRoxXZDWuU/XrQIAFA4zN2XBCAZQ9NWATN/dYGw=;
+ b=V8EnRIEzGxFq8CHZ0BBXczgPKYJxKQ+ViNXoD2VZ4/yVEfN7Hhj6sA7+pwdalfFKX/n/ZejXknAWUrAfT3zrN3ukfpArqdixaXTUzFRkSJBjWWjf3/hS8YkxlGoukQlmDZzHdIZO+D6qIdLtbpqW7AyZs0fs0OtE6dBTp3f7omA1+tiK9qdxi+lVS0Nvb57VE3wJPTkiWxyIoV5G9bATbXKN9UQGXrM08XcAztlCFlKnJ8Khy8z2IzrFmvq3/lFHHvA1lPCeUQzRxSH7gpYzNnM5w1a1gaQtKgUvX1CfozyGlsMVxnzWOnuiPKD3Q5LfKuZ5g0geUSOkG93LaLR6hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8bF4aRoxXZDWuU/XrQIAFA4zN2XBCAZQ9NWATN/dYGw=;
+ b=JGQnfnYILMHccg9Izl6OBnTDgW+jXy0h7grAwF80ZhuRPzKN3uRPIVPB4jItiNCpJMNYLwvnVnHGpaAD3IcK5BAXcKYkc4jc5DJhlM1jdMavLqhjxqe6i+kM+k9+gmrQp/zINWMBf6WZeVeRGgJD5/QpVeIb/gqEkisLP8INph0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by DU0PR04MB9394.eurprd04.prod.outlook.com (2603:10a6:10:359::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.30; Wed, 5 Apr
+ 2023 18:01:25 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::dfa2:5d65:fad:a2a5]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::dfa2:5d65:fad:a2a5%3]) with mapi id 15.20.6254.026; Wed, 5 Apr 2023
+ 18:01:25 +0000
+Date:   Wed, 5 Apr 2023 21:01:21 +0300
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Maxim Georgiev <glipus@gmail.com>, kory.maincent@bootlin.com,
+        netdev@vger.kernel.org, maxime.chevallier@bootlin.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com
+Subject: Re: [RFC PATCH v3 3/5] Add ndo_hwtstamp_get/set support to vlan code
+ path
+Message-ID: <20230405180121.cefhbjlejuisywhk@skbuf>
+References: <20230405063323.36270-1-glipus@gmail.com>
+ <20230405094210.32c013a7@kernel.org>
+ <20230405170322.epknfkxdupctg6um@skbuf>
+ <20230405101323.067a5542@kernel.org>
+ <20230405172840.onxjhr34l7jruofs@skbuf>
+ <20230405104253.23a3f5de@kernel.org>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZCrOeC+tYfQiBuoY@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <20230405104253.23a3f5de@kernel.org>
+X-ClientProxiedBy: VI1PR0901CA0092.eurprd09.prod.outlook.com
+ (2603:10a6:800:7e::18) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|DU0PR04MB9394:EE_
+X-MS-Office365-Filtering-Correlation-Id: f066342d-3055-402a-cd4f-08db35ffc591
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ts8/X7Qxg3J101+InpXU53Db0pLR2nbUXkJUaRzAehamPejmRy6k1KwaxV9Jf4U17eGngS05msD4JwKHZZCvhmXnlFyH8RJwV3sMDCKog1jSpD3OoqBicHztLX3QXf/hgVqEYqQHpK2vll688y1pwyA4LBf8yCv509DVqcoquhnEOKZt4OzogGltRXFyi7ZY+TPFOPNuNuBpXjYesyVAXxzja+bzkyCtv3PuvXpyyrCGlAWqD/U1fTGlZrJ+1Bm4iHWVd6kfAojDj1Pi543cfkzcJTRTod+eKRXsjI0jzTBS0xCKxG5dgVTpknHx4+vlXnVKqZBRjCM9IUMF3GqDjeZNwdDjDZbtNDi3LDgw1BxFSEisHhKnsemheA714BgLYhJEftWpRlQgffz9t9/RxxQb5ky16f3nRL7WP/87kafOKO2TVp62nWxDf3FJJnbSqg6LVQAxRvgYP7nf+EQopEl/UzyMosSbPMtoPwEQKITNnzWIWhpfgfv0kWrvlp7t2dvrTe9/A5sFkHhimH+FzXmkW6z5NluWDc2O0ZPtwQg1T19S8aI7JcNn2YgVA5Xj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(136003)(39860400002)(396003)(376002)(366004)(346002)(451199021)(86362001)(2906002)(33716001)(3716004)(1076003)(186003)(83380400001)(6486002)(6506007)(9686003)(26005)(6666004)(66476007)(6916009)(478600001)(6512007)(4326008)(66946007)(41300700001)(8676002)(44832011)(66556008)(5660300002)(38100700002)(316002)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?a+EGc8jz9AaE3Z1ol+c7eb8BpNoSmbyW9eOVIffqQkPlc3nsyEYvknbsi89L?=
+ =?us-ascii?Q?NKs6LDZgz3pV7OnV1WbPL8e1D/HkykKm2BR/C3+m23YLXp/FHNBb/j98rGiX?=
+ =?us-ascii?Q?DdeDtJaOI4t6Pq3Eeiuz8DNqhXa6bg3TgzrIIIpo6QzXF3M1j49xGcPmQqK8?=
+ =?us-ascii?Q?tjBXoK6m6DeNHhZrOKqBVo3FKqjrhckIIFcX0W9XXfr9h4WJS1iBekUmUR6H?=
+ =?us-ascii?Q?bkEGEdoTMNxCSMlGIVHokkWMxbodBC9L75aSxsP4H6jttCRnDHhXFpAf7EZv?=
+ =?us-ascii?Q?59qjakGYJQTVWcwRtKiiPHTk9PJ6GRvXsNcLrgB1WsxtOpXhrCZGLRcW8Hzb?=
+ =?us-ascii?Q?CE3tQUE9Wnvt+uUMaZ9uq32RF5afHG9ClNI5X7sc7JuqK26wpT6LniriGfP0?=
+ =?us-ascii?Q?LwimEzay5wkuasl6/MgKJh1nj23qHIR3Dt40g1XqVRkf6XeBnd2Nl4bpVzI8?=
+ =?us-ascii?Q?/1owvOs11o7z1iAKbuyimKY/e16zGGmpJLnFPdiby5jxo9Sug7dkgesqAwpB?=
+ =?us-ascii?Q?/7IvVPAerkpjOXFG9/V7mg8wTRq1ZQU/VlROPnoPhIDzwCQiRCBrGS6GGg+e?=
+ =?us-ascii?Q?X5cXeVFGntOE5w+74b1kHVF6xeaoC26f5oyeG1tTEXhlT9x1WHS9gN3IiTwx?=
+ =?us-ascii?Q?QZvg4xCHGBMhFIugnv6DCMbpno/LPenx542I7PIZbdAWALAuNtaEAbASV24u?=
+ =?us-ascii?Q?Oa4RoKAu23S6i/iQiTrJzX+odGBGY25U5N8lXQMmnS+6xNvcRjMOwudJ/e5W?=
+ =?us-ascii?Q?Fs89T8UUPz3mZAGz6MVxleEsbkllmtpCxFfapUvLsTS5SWqxBEJr601uaCiT?=
+ =?us-ascii?Q?DdbNqLvDgcFRtjCMFUD9HRZoNQgO5pMrbCnx+Y5mwhedlhDe6k0UzhlEhEk2?=
+ =?us-ascii?Q?qXMNNbXcRJgjmMLX0yKEdoAESUHQStfCZxFu95sayrPo+kcAVezYeY3DY31b?=
+ =?us-ascii?Q?AjTlrxbIC9yp8fbXif4DzzzUDCC3CWw/e6rWdPg1da40Qgz6Fv/IaLqKlUQm?=
+ =?us-ascii?Q?GKWI0kyNYyeiaD00+B0NYxbgCWVy+Y+eZpEPu+nqW4xEnQ68h4WLi4CdUl6v?=
+ =?us-ascii?Q?UpAuA5VxZI0Ph7RIQkF0jEFHTII6fYkVoiSoEL9kmaUHD9xvdjC9DutIBgpB?=
+ =?us-ascii?Q?TVjwSe01Wof1kJ2M71oICq3pqbQAGkImaGFBraiTMvlb8K8eouies3UKxG38?=
+ =?us-ascii?Q?ZZDOrAxVNg8ElNO9TuYairGompalycDTWx/b3Ce9iXl7hhDnVXte5BjzoVOS?=
+ =?us-ascii?Q?uLhkebfu/Y8hsd+fOKDT2HNLpA07W2D35oPQsddMUUPy+Zqbd4SpM0PKn8N8?=
+ =?us-ascii?Q?KHuuaESkKtc/6Bqoqda4xSrZU5hnZeEfCJ9PDc6Qo6CmNeWJLnoIoRctslMG?=
+ =?us-ascii?Q?bC8Q/+Seb59EFutgMFuO2ipeI6isU3eEGDWnkQjSWMfSPLQynNxI25ar3Hbb?=
+ =?us-ascii?Q?7HnREPFZ9HO6bpfyRq2cON0pltJj+3AvGVm/WTekTmcT9mIL35VXZdl6HzP/?=
+ =?us-ascii?Q?Q5SiXqtPOOk+VtUHw157UNUm5ay0HAg0yt6puuDv1cyrspX/ab/XpWToh09C?=
+ =?us-ascii?Q?u7Lwyhn87tHJOZGesFbFlFQDGEBhdemHnhQk+dp6BHIG9FGwl5/l9avdYkI9?=
+ =?us-ascii?Q?PQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f066342d-3055-402a-cd4f-08db35ffc591
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 18:01:25.2558
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rB82GGuKNjScKr/+1mSpuX9zZ0noRojOb/rJmvQVcB8MWZpNvFxJXbm0d2X7EXF/5cjIDif9KkOir4LabQcGjA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9394
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 03, 2023 at 02:02:48PM +0100, Russell King (Oracle) wrote:
-> On Thu, Mar 30, 2023 at 04:54:51PM +0300, Heikki Krogerus wrote:
-> > On Wed, Mar 29, 2023 at 03:33:48PM +0100, Russell King (Oracle) wrote:
-> > > On Wed, Mar 29, 2023 at 05:07:26PM +0300, Heikki Krogerus wrote:
-> > > > On Tue, Mar 28, 2023 at 02:23:41PM +0100, Russell King (Oracle) wrote:
-> > > > > On Tue, Mar 28, 2023 at 03:09:56PM +0300, Heikki Krogerus wrote:
-> > > > > > The problem is that the function you are proposing will be exploited
-> > > > > > silently - people will use NULL as the parent without anybody
-> > > > > > noticing. Everything will work for a while, because everybody will
-> > > > > > first only have a single device for that driver. But as time goes by
-> > > > > > and new hardware appears, suddenly there are multiple devices for
-> > > > > > those drivers, and the conflict start to appear.
-> > > > > 
-> > > > > So, an easy solution would be to reject a call to
-> > > > > fwnode_create_named_software_node() when parent is NULL, thereby
-> > > > > preventing named nodes at the root level.
-> > > > > 
-> > > > > > At that point the changes that added the function call will have
-> > > > > > trickled down to the stable trees, so the distros are affected. Now we
-> > > > > > are no longer talking about a simple cleanup that fixes the issue. In
-> > > > > > the unlikely, but possible case, this will turn into ABI problem if
-> > > > > 
-> > > > > There is no such thing as stable APIs for internal kernel interfaces.
-> > > > > 
-> > > > > Documentation/process/stable-api-nonsense.rst
-> > > > > 
-> > > > > > As you pointed out, this kind of risks we have to live with kbojects,
-> > > > > > struct device stuff and many others, but the thing is, with the
-> > > > > > software node and device property APIs right now we don't. So the fact
-> > > > > > that a risk exists in one place just isn't justification to accept the
-> > > > > > same risk absolutely everywhere.
-> > > > > 
-> > > > > Meanwhile, firmware descriptions explicitly permit looking up nodes by
-> > > > > their names, but here we are, with the software node maintainers
-> > > > > basically stating that they don't wish to support creating software
-> > > > > nodes with explicit names.
-> > > > 
-> > > > If you want to name the nodes then you just go ahead and name them,
-> > > > nobody is preventing you and you can already do that, but if you do
-> > > > so, then you will take full responsibility of the entire software node
-> > > > - that is what you are naming here - instead of just the fwnode that
-> > > > it contains. The users of the node can deal with the fwnode alone, but
-> > > > you as the creator of the software node have to take proper ownership
-> > > > of it.
-> > > > 
-> > > > > > Russell, if you have some good arguments for accepting your proposal,
-> > > > > > I assure you I will agree with you, but so far all you have given are
-> > > > > > attacks on a sketch details and statements like that "I think you're
-> > > > > > making a mountain out of a mole". Those just are not good enough.
-> > > > > 
-> > > > > Basically, I think you are outright wrong for all the reasons I have
-> > > > > given in all my emails on this subject.
-> > > > > 
-> > > > > Yes, I accept there is a *slight* risk of abuse, but I see it as no
-> > > > > different from the risk from incorrect usage of any other kernel
-> > > > > internal interface. Therefore I just do not accept your argument
-> > > > > that we should not have this function, and I do not accept your
-> > > > > reasoning.
-> > > > 
-> > > > I would not be so against the function if there wasn't any other way
-> > > > to handle your case, but there is.
-> > > > 
-> > > > You really can not claim that the existing API is in any way inferior,
-> > > > or even more complex, compared to your function before you actually
-> > > > try it. You simply can not make judgement based on a sketch that is
-> > > > basically just showing you the functions and structures that you need.
-> > > > 
-> > > > If there are issues with the API, then we need to of course fix those
-> > > > issues, but please keep in mind that still does not mean we have any
-> > > > need for the function you are proposing.
-> > > > 
-> > > > Please also note that helpers are welcome if you feel we need them. If
-> > > > you want to add for example an allocation routine that duplicates also
-> > > > the properties in one go, then that alone would reduce the complexity
-> > > > needed in the drivers that create the nodes. I think in most cases,
-> > > > possibly also in yours, that alone would allow most stuff to be
-> > > > handled from stack memory.
-> > > > 
-> > > > fwnode_create_software_node() is there just to support the legacy
-> > > > device properties. You really should not be using even that. If you
-> > > > need to deal with software nodes then you deal with them with struct
-> > > > software_node.
-> > > 
-> > > You forgot to explain how to free them once they're done, because
-> > > struct swnode will contain a pointer to the struct software_node
-> > > which can be a dangling stale reference - and there's no way for
-> > > code outside swnode.c to know when that reference has gone.
-> > > 
-> > > That is another reason why I prefer my existing solution. That
-> > > problem is taken care of already by the existing code - and as
-> > > it's taken care of there, and properly, there's less possibilities
-> > > for users of swnode to get it wrong.
-> > 
-> > We need an improved release mechanism, yes.
-> > 
-> > My idea with the new dynamic allocation routine was that it could be
-> > introduced together with a release callback that we add to the struct
-> > software_node.
-> > 
-> > The idea of adding the release callback to the structure was actually
-> > considered already some time ago - I think it was discussed at least
-> > shortly also on the public ACPI mailing list. The idea back then
-> > included a default release function that simply frees the struct
-> > software_node instance. That default release function we could then
-> > assign to the release callback in that new software node
-> > allocation/creation routine. That way the drivers should be able to
-> > continue to rely on the underlying code to take care of freeing the
-> > node instance.
-> > 
-> > Back then there was nobody who really needed that functionality, so
-> > nobody even tried to implement it. Now we of course clearly do need
-> > something like it.
-> > 
-> > I think the release callback together with the default release
-> > function should work. Let me know what you guys think.
+On Wed, Apr 05, 2023 at 10:42:53AM -0700, Jakub Kicinski wrote:
+> On Wed, 5 Apr 2023 20:28:40 +0300 Vladimir Oltean wrote:
+> > So what do you suggest doing with bonding, then? Not use the generic
+> > helper at all?
 > 
-> Thinking about this more, no. This is utterly vile, and I will not
-> create code that is vile.
+> It'd seem most natural to me to split the generic "descend" helper into
+> two functions, one which retrieves the lower and one which does the
+> appropriate calling dance (ndo vs ioctl, and DSA, which I guess is now
+> gone?).
+
+There's nothing DSA-related to be done. DSA masters can't be lowers of
+any other virtual interface kinds except bridge or bonding/team, and:
+- bridge doesn't support hwtstamping
+- bonding is also DSA master when it has a DSA master as lower, so the
+  DSA master restriction has already run once - on the bonding device
+  itself
+
+> The latter could be used for the first descend as well I'd presume.
+> And it can be exported for the use of more complex drivers like
+> bonding which want to walk the lowers themselves.
 > 
-> Greg, please can you take a look at this, and give your opinion on
-> how named software nodes (which are required to describe things in
-> specific ways by firmware descriptions) should be handled? Is my
-> proposal reasonable in your eyes? Thanks.
-
-I'm lost, sorry, this thread is crazy long and I do not have the
-bandwidth to try to dig through it.  I think you two need to work it out
-together please.
-
-thanks,
-
-greg k-h
-
+> > - it requires cfg.flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX to be set in
+> >   SET requests
+> > 
+> > - it sets cfg.flags | HWTSTAMP_FLAG_BONDED_PHC_INDEX in GET responses
 > 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+> IIRC that was to indicate to user space that the real PHC may change
+> for this netdev so it needs to pay attention to netlink notifications.
+> Shouldn't apply to *vlans?
+
+No, this shouldn't apply to *vlans, but I didn't suggest that it should.
+I don't think my proposal was clear enough, so here's some code
+(untested, written in email client).
+
+static int macvlan_hwtstamp_get(struct net_device *dev,
+				struct kernel_hwtstamp_config *cfg,
+				struct netlink_ext_ack *extack)
+{
+	struct net_device *real_dev = macvlan_dev_real_dev(dev);
+
+	return generic_hwtstamp_get_lower(real_dev, cfg, extack);
+}
+
+static int macvlan_hwtstamp_set(struct net_device *dev,
+				struct kernel_hwtstamp_config *cfg,
+				struct netlink_ext_ack *extack)
+{
+	struct net_device *real_dev = macvlan_dev_real_dev(dev);
+
+	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+}
+
+static int vlan_hwtstamp_get(struct net_device *dev,
+			     struct kernel_hwtstamp_config *cfg,
+			     struct netlink_ext_ack *extack)
+{
+	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
+
+	return generic_hwtstamp_get_lower(real_dev, cfg, extack);
+}
+
+static int vlan_hwtstamp_set(struct net_device *dev,
+			     struct kernel_hwtstamp_config *cfg,
+			     struct netlink_ext_ack *extack)
+{
+	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
+
+	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+}
+
+static int bond_hwtstamp_get(struct net_device *bond_dev,
+			     struct kernel_hwtstamp_config *cfg,
+			     struct netlink_ext_ack *extack)
+{
+	struct bonding *bond = netdev_priv(bond_dev);
+	struct net_device *real_dev = bond_option_active_slave_get_rcu(bond);
+	int err;
+
+	if (!real_dev)
+		return -EOPNOTSUPP;
+
+	err = generic_hwtstamp_get_lower(real_dev, cfg, extack);
+	if (err)
+		return err;
+
+	/* Set the BOND_PHC_INDEX flag to notify user space */
+	cfg->flags |= HWTSTAMP_FLAG_BONDED_PHC_INDEX;
+
+	return 0;
+}
+
+static int bond_hwtstamp_set(struct net_device *bond_dev,
+			     struct kernel_hwtstamp_config *cfg,
+			     struct netlink_ext_ack *extack)
+{
+	struct bonding *bond = netdev_priv(bond_dev);
+	struct net_device *real_dev = bond_option_active_slave_get_rcu(bond);
+	int err;
+
+	if (!real_dev)
+		return -EOPNOTSUPP;
+
+	if (!(cfg->flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX))
+		return -EOPNOTSUPP;
+
+	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+}
+
+Doesn't seem in any way necessary to complicate things with the netdev
+adjacence lists?
+
+> Yes, user space must be involved anyway, because the entire clock will
+> change. IMHO implementing the pass thru for timestamping requests on
+> bonding is checkbox engineering, kernel can't make it work
+> transparently. But nobody else spoke up when it was proposed so...
+
+ok, but that's a bit beside the point here.
