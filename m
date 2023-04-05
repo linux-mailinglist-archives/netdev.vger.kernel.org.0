@@ -2,104 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A54606D848A
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B7046D849B
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231686AbjDERJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 13:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53656 "EHLO
+        id S232921AbjDERLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 13:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjDERJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:09:01 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFCEE41;
-        Wed,  5 Apr 2023 10:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fXg8Mb4yOCOXyW4T6AIOqAjFd/E1fGh7oVSStyatFrU=; b=sI1gxebUBcKKqxgNaWbHB180aE
-        WyuecNnx7sFIX6oa6Rc3UFJSttpR5yCk8wA+GX4Gs2/S4d8Kj5HyLJu+LG5f6hg4I1QSF85muu9Ig
-        UoZu9oCE3QTJJttpc31MIXwfVIFa0L4sxkml8rvWaNQm56wBQk7xrXQ8q4J/STD94u0WJ3Tl5ISX3
-        UFLT6GIYgrg9ZSPOEBjxHynE1Lg7X5hC3jV9KQI4G8VhVZFfTE+GvpVV/CEB23IGuGcfFjbldaV3D
-        t3HG9OuI3mZyeb0xBaN0TLlIZKYeeivLyrY4TOwFB7ey0AtPfxnfVyedE236HNPCObgbbXvKax51L
-        jx6G4gzw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50532)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pk6cg-0005ua-Jz; Wed, 05 Apr 2023 18:08:38 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pk6cY-0006Vl-Ur; Wed, 05 Apr 2023 18:08:30 +0100
-Date:   Wed, 5 Apr 2023 18:08:30 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
-Subject: Re: [PATCH net v3 2/3] net: stmmac: check if MAC needs to attach to
- a PHY
-Message-ID: <ZC2rDr0lE6p9VsdQ@shell.armlinux.org.uk>
-References: <20230324081656.2969663-1-michael.wei.hong.sit@intel.com>
- <20230324081656.2969663-3-michael.wei.hong.sit@intel.com>
- <5bb39f85-7ef0-4cbb-a06b-0d6431ab09b7@roeck-us.net>
+        with ESMTP id S232849AbjDERLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:11:48 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A3E5FD4
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 10:11:33 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id l27so36937791wrb.2
+        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 10:11:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680714692;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1y/vJsTY2A1FmW6gUN68//G6OPTX98iG+jP/G/a/zJM=;
+        b=dZbMPFY68y9iEW2Nh9Um+VS3HWqMX0n3QwotDEDFpuhfdzxDKtvslt9cv69LbQy1vx
+         C731Y+zGEP+IhKBbHt6lCOh8+RyWrMstzlbYbN4ItrwoIlOrRNkh2IlvP+hh2CfhvIpO
+         OYVUO5I0aRjTNlhDcijvJI+fL7wd/A+J3hLuOP2quIMGXcybGgEeSJiqJp1swVqK2O/w
+         tZwBR4gf7inmERAeJ1hv2v8BVX5ThU/bfPdZ7AIYiZEDNim/lsdxmJlExRhCzseLE69k
+         YsuyKeYuswrDH5nuOyyQRx396YHJApeFWmSmE5/q4Yc7PcpsiJ72JT1bJLFoOb6XXwPk
+         wOZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680714692;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1y/vJsTY2A1FmW6gUN68//G6OPTX98iG+jP/G/a/zJM=;
+        b=IBFxyw22+1e5vWHxz3sxktTg+htz47n4pJi04M3uEovZPI09M2KpfkBU5iEw100Cro
+         ckLsa3zG9d7k/CcKkiukoacAxQWmo+w0AgGlbIS2fG+wUbxwjk2UFdAV2qXIpp/6TMmB
+         irI3xf4e/1IsNHZR3V2lwZw2HM/+QD3cdeVRTlnF3fuW4jOKgfOJhVbViuhA9+TwU5AZ
+         Ei5L57hRUSkA8T1DJqSOHL6K6pgpxZSxWfqEw2cOKnt6iQfJz2A/+f3IUM3Yxsg4dmmF
+         2D6cBEVntzRHTI/l9ki8IbBoAI+9akkuap29LCzvOLlsIB3FUro9aGbM2LjN+zbFF3yf
+         iFmw==
+X-Gm-Message-State: AAQBX9dawaYs3dpapdgj6aqYwv2LW+NyytmCvb+RgiEiw9XGg+v/oXY8
+        JmCi3u3caLUu1OT/W3D8f12Op7zY++7f8hz5YHO+Hw==
+X-Google-Smtp-Source: AKy350aVs7YHwY2DXOMfkJRcPYYAXCpnl3wMEKlBVXUMSBZUYJTBMyjkIOwxhBRY5o6ey03/NjX6jfhWbaz3kkDOB9o=
+X-Received: by 2002:a5d:4601:0:b0:2cf:e70f:970c with SMTP id
+ t1-20020a5d4601000000b002cfe70f970cmr1309284wrq.12.1680714692069; Wed, 05 Apr
+ 2023 10:11:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5bb39f85-7ef0-4cbb-a06b-0d6431ab09b7@roeck-us.net>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20230331043906.3015706-1-kuba@kernel.org> <1f9cf03e-94cf-9787-44ce-23f6a8dd0a7a@huawei.com>
+ <CANn89iKsNYizAvoFisrFBSb-vXnn6BjkR7fuR1S5vQLggcLCdA@mail.gmail.com> <263c9940-ecd6-eba1-c971-2fd743671905@huawei.com>
+In-Reply-To: <263c9940-ecd6-eba1-c971-2fd743671905@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 5 Apr 2023 19:11:20 +0200
+Message-ID: <CANn89iLopSNwoEyZayuXnu7=Oc3=8nNdg1YDnjM_m5dzWHn9zA@mail.gmail.com>
+Subject: Re: [RFC net-next 1/2] page_pool: allow caching from safely localized NAPI
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, hawk@kernel.org,
+        ilias.apalodimas@linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 10:02:16AM -0700, Guenter Roeck wrote:
-> Hi,
-> 
-> On Fri, Mar 24, 2023 at 04:16:55PM +0800, Michael Sit Wei Hong wrote:
-> > After the introduction of the fixed-link support, the MAC driver
-> > no longer attempt to scan for a PHY to attach to. This causes the
-> > non fixed-link setups to stop working.
-> > 
-> > Using the phylink_expects_phy() to check and determine if the MAC
-> > should expect and attach a PHY.
-> > 
-> > Fixes: ab21cf920928 ("net: stmmac: make mdio register skips PHY scanning for fixed-link")
-> > Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-> > Signed-off-by: Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
-> 
-> With this patch in linux-next, the orangepi-pc qemu emulation fails to
-> bring up the Ethernet interface. The following error is seen.
-> 
-> [   12.482401] dwmac-sun8i 1c30000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
-> [   12.487789] dwmac-sun8i 1c30000.ethernet eth0: PHY [mdio_mux-0.1:01] driver [Generic PHY] (irq=POLL)
-> [   12.488177] dwmac-sun8i 1c30000.ethernet eth0: no phy found
-> [   12.488295] dwmac-sun8i 1c30000.ethernet eth0: __stmmac_open: Cannot attach to PHY (error: -19)
-> 
-> Reverting this patch fixes the problem.
+On Tue, Apr 4, 2023 at 12:50=E2=80=AFPM Yunsheng Lin <linyunsheng@huawei.co=
+m> wrote:
 
-Please see 20230405093945.3549491-1-michael.wei.hong.sit@intel.com
-for the fix.
+> Is there any reason not to introduce back the per socket defer_list to
+> not acquire the defer_lock for one skb at a time instead of adding
+> per-cpu caches?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+This is a disaster on hosts with millions of sockets.
+Just think how many pages _one_ skb can hold, and multiply this number
+by 10,000,000
+
+per-cpu is the more natural way to make sure this kind of cache will
+not use an unbound amount of memory.
+
+We had the same issues with sk->sk_forward_alloc per-socket reserves.
