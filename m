@@ -2,149 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CD86D8A7E
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 608E36D8A82
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 00:20:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233647AbjDEWRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 18:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
+        id S229608AbjDEWUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 18:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbjDEWRq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:17:46 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DAA5FFB;
-        Wed,  5 Apr 2023 15:17:45 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 4fb4d7f45d1cf-502234a1f08so738461a12.3;
-        Wed, 05 Apr 2023 15:17:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680733064;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hEqIXUH9r3N7RlJaWcTaXBh5Rq77VEZamzqIxseklB4=;
-        b=pmsiCnEQWWLWi/RWqC3RyJX0o62CeS8Z4fd/L+0yznB4p6bf5jzdc0q68BM6tEr8hZ
-         3DC9FudqGexE2bxpU4U1d2i7r4P3vOjHlFzz9Ee3cKjZqENKgm5/nCpUl5Jn3n9isu3/
-         wJYzG56ZnWGQk9zM47BdN29nL4oVczqMlLigDTT8VsJJjQYNkZy5Alb82F903roLy1Uf
-         m39nLwErJdr+dNSK88w88IHH56g9BLF4VniO/3Xq88qgKajzWFhXXN1U32u8+NK/Nr4m
-         7+OgdOTa4lKVaveRtu8hh3wa75d6fd9iz486ZxTof0MAzkGQ6TifbSarDzDUGqRRgS/L
-         zuMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680733064;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hEqIXUH9r3N7RlJaWcTaXBh5Rq77VEZamzqIxseklB4=;
-        b=oLtdhAwpK4xccyKXBteesNhr0J+N1pDJNOG5byb8Jn/7hA/RF2UxtFF2bRs4gsDAkO
-         EJg9aZ/Wrc5XQgiauRWPafnDCWIDQa8J4Fjbp/TYHt2mtI9dQAqvtiGe+y/IOwmF5Fr1
-         F6cBRzNbH3QXLD85dUtYH3Ck3FiuN6O88Yio0E0AgG3yy2wFs6fhwu9tdvLj35yqyju5
-         xeLzk8ZRUj3awbrg+2mdlIiZB+dyPE/RMfjIFwgD21q6pPYqhZMlTDevfXvM+35MI/J2
-         qcCM1sPDS0XjTGMUGz5bNDy/uYGEmvFQ1TPuDRB48Ns3IOyxffu1TAE+AxBkf0DPVO1c
-         KQpg==
-X-Gm-Message-State: AAQBX9dcc4byrpbk2kmIM+/52doBQOr0yFvbhdsyh1TLuut6lDuLPR0H
-        teknMfhsic5i1l3pdrGmEGRViyFM8DUcr94H34nVcuZP2wQ=
-X-Google-Smtp-Source: AKy350bFshQZR6uFfnwgwVCvKoEOQ6UmaakkklRkKHeXhsOGp/5U0PRrShz5olbrGXznCNnIcmcPWyxT34bF0xLe2fU=
-X-Received: by 2002:a05:6402:b33:b0:500:2e94:26aa with SMTP id
- bo19-20020a0564020b3300b005002e9426aamr3744876edb.20.1680733063621; Wed, 05
- Apr 2023 15:17:43 -0700 (PDT)
+        with ESMTP id S229815AbjDEWUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 18:20:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BFDD198
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 15:20:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E114260BFE
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 22:20:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D2A8C433D2;
+        Wed,  5 Apr 2023 22:20:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680733240;
+        bh=8WIKf/lhOSq4UZQnUDxG0ueB9hFQUlHsa6oJ0QOxsbY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=BPBP0y7MeU1+bqslSYDftV6gyy9c0YZIx794GGLhWninG2VmkU6tFljGtU/dlIUlZ
+         dHkchLtv8Ln0FRRIPqtvyB+8aXT8aAIypVAQs3/0sd7nEjMNS3WzclWgA4QwMqSJG7
+         6hSx9MZByBi1Lprp2eChqjg3R+0wCiK6cZ8dIEGcbiLB7A2C2tzEP394gd8sZUzmhS
+         +0g0A0RCKtlZp9gXWG/RDRr720pPMKx1VYW3ZCXKyx+VHiGGQs/vszaECAnEGILvqB
+         197glgtBNG5phI/J2+fkUjWKTGqt6Fr9G75pTJJDT+s9ab+mdb4XgNlf/9PqyItigI
+         gDOVw7x63ZH9g==
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id C872515404B4; Wed,  5 Apr 2023 15:20:39 -0700 (PDT)
+Date:   Wed, 5 Apr 2023 15:20:39 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
+ lockless queue stop/wake code
+Message-ID: <1e9bbdde-df97-4319-a4b7-e426c4351317@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <20230401051221.3160913-1-kuba@kernel.org>
+ <20230401051221.3160913-2-kuba@kernel.org>
+ <c39312a2-4537-14b4-270c-9fe1fbb91e89@gmail.com>
+ <20230401115854.371a5b4c@kernel.org>
+ <CAKgT0UeDy6B0QJt126tykUfu+cB2VK0YOoMOYcL1JQFmxtgG0A@mail.gmail.com>
+ <20230403085601.44f04cd2@kernel.org>
+ <CAKgT0UcsOwspt0TEashpWZ2_gFDR878NskBhquhEyCaN=uYnDQ@mail.gmail.com>
+ <20230403120345.0c02232c@kernel.org>
+ <CAKgT0Ue-hEycSyYvVJt0L5Z=373MyNPbgPjFZMA5j2v0hWg0zg@mail.gmail.com>
 MIME-Version: 1.0
-References: <CANn89iKn4rpqj_8fYt0UMMgAq5L_2PNoY0Ev70ck8u4t4FC_=g@mail.gmail.com>
- <20230405194143.15708-1-kuniyu@amazon.com> <CANn89iJeHFb8VnFPUq4-d+jzAO6XKiSQhaPsPFY98wjH0Yx1Lw@mail.gmail.com>
-In-Reply-To: <CANn89iJeHFb8VnFPUq4-d+jzAO6XKiSQhaPsPFY98wjH0Yx1Lw@mail.gmail.com>
-From:   "Dae R. Jeong" <threeearcat@gmail.com>
-Date:   Thu, 6 Apr 2023 07:17:30 +0900
-Message-ID: <CACsK=jf=nO-2N5HhqKd80m6RYpAFEd8rfUBrog6sKgnLuUnd9w@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in tcp_write_timer_handler
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>, bpf@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKgT0Ue-hEycSyYvVJt0L5Z=373MyNPbgPjFZMA5j2v0hWg0zg@mail.gmail.com>
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 6, 2023 at 4:48=E2=80=AFAM Eric Dumazet <edumazet@google.com> w=
-rote:
->
-> On Wed, Apr 5, 2023 at 9:42=E2=80=AFPM Kuniyuki Iwashima <kuniyu@amazon.c=
-om> wrote:
+On Mon, Apr 03, 2023 at 01:27:44PM -0700, Alexander Duyck wrote:
+> On Mon, Apr 3, 2023 at 12:03 PM Jakub Kicinski <kuba@kernel.org> wrote:
 > >
-> > From:   Eric Dumazet <edumazet@google.com>
-> > Date:   Wed, 5 Apr 2023 13:28:16 +0200
-> > > On Wed, Apr 5, 2023 at 12:41=E2=80=AFPM Dae R. Jeong <threeearcat@gma=
-il.com> wrote:
+> > On Mon, 3 Apr 2023 11:11:35 -0700 Alexander Duyck wrote:
+> > > On Mon, Apr 3, 2023 at 8:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > > I don't think in terms of flushes. Let me add line numbers to the
+> > > > producer and the consumer.
 > > > >
-> > > > Hi,
+> > > >  c1. WRITE cons
+> > > >  c2. mb()  # A
+> > > >  c3. READ stopped
+> > > >  c4. rmb() # C
+> > > >  c5. READ prod, cons
 > > > >
-> > > > We observed an issue "KASAN: use-after-free Read in tcp_write_timer=
-_handler" during fuzzing.
+> > > >  p1. WRITE prod
+> > > >  p2. READ prod, cons
+> > > >  p3. mb()  # B
+> > > >  p4. WRITE stopped
+> > > >  p5. READ prod, cons
 > > > >
-> > > > Unfortunately, we have not found a reproducer for the crash yet. We
-> > > > will inform you if we have any update on this crash.  Detailed cras=
-h
-> > > > information is attached below.
-> > > >
+> > > > The way I think the mb() orders c1 and c3 vs p2 and p4. The rmb()
+> > > > orders c3 and c5 vs p1 and p4. Let me impenitently add Paul..
 > > >
-> > > Thanks for the report.
-> > >
-> > > I have dozens of similar syzbot reports, with no repro.
-> > >
-> > > I usually hold them, because otherwise it is just noise to mailing li=
-sts.
-> > >
-> > > Normally, all user TCP sockets hold a reference on the netns
-> > >
-> > > In all these cases, we see a netns being dismantled while there is at
-> > > least one socket with a live timer.
-> > >
-> > > This is therefore a kernel TCP socket, for which we do not have yet
-> > > debugging infra ( REF_TRACKER )
-> > >
-> > > CONFIG_NET_DEV_REFCNT_TRACKER=3Dy is helping to detect too many dev_p=
-ut(),
-> > > we need something tracking the "kernel sockets" as well.
+> > > So which function is supposed to be consumer vs producer here?
 > >
-> > Maybe I missed something, but we track kernel sockets with netns
-> > by notrefcnt_tracker ?
->
-> Oh right, I forgot I did this already :)
->
-> commit 0cafd77dcd032d1687efaba5598cf07bce85997f
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Thu Oct 20 23:20:18 2022 +0000
->
->     net: add a refcount tracker for kernel sockets
->
-> Dae, make sure to not send reports based on old kernels.
->
-> Using 6.0-rc7 is a waste of your time, and everyone else reading this thr=
-ead.
->
-> I confess I did not check this, and I really should do that all the time.
+> > producer is xmit consumer is NAPI
+> >
+> > > I think your write stopped is on the wrong side of the memory barrier.
+> > > It should be writing prod and stopped both before the barrier.
+> >
+> > Indeed, Paul pointed out over chat that we need two barriers there
+> > to be correct :( Should be fine in practice, first one is BQL,
+> > second one is on the slow path.
+> >
+> > > The maybe/try stop should essentially be:
+> > > 1. write tail
+> > > 2. read prod/cons
+> > > 3. if unused >= 1x packet
+> > > 3.a return
+> > >
+> > > 4. set stop
+> > > 5. mb()
+> > > 6. Re-read prod/cons
+> > > 7. if unused >= 1x packet
+> > > 7.a. test_and_clear stop
+> > >
+> > > The maybe/try wake would be:
+> > > 1. write head
+> > > 2. read prod/cons
+> > > 3. if consumed == 0 || unused < 2x packet
+> > > 3.a. return
+> > >
+> > > 4. mb()
+> > > 5. test_and_clear stop
+> > >
+> > > > > One other thing to keep in mind is that the wake gives itself a pretty
+> > > > > good runway. We are talking about enough to transmit at least 2
+> > > > > frames. So if another consumer is stopping it we aren't waking it
+> > > > > unless there is enough space for yet another frame after the current
+> > > > > consumer.
+> > > >
+> > > > Ack, the race is very unlikely, basically the completing CPU would have
+> > > > to take an expensive IRQ between checking the descriptor count and
+> > > > checking if stopped -- to let the sending CPU queue multiple frames.
+> > > >
+> > > > But in theory the race is there, right?
+> > >
+> > > I don't think this is so much a race as a skid. Specifically when we
+> > > wake the queue it will only run for one more packet in such a
+> > > scenario. I think it is being run more like a flow control threshold
+> > > rather than some sort of lock.
+> > >
+> > > I think I see what you are getting at though. Basically if the xmit
+> > > function were to cycle several times between steps 3.a and 4 in the
+> > > maybe/try wake it could fill the queue and then trigger the wake even
+> > > though the queue is full and the unused space was already consumed.
+> >
+> > Yup, exactly. So we either need to sprinkle a couple more barriers
+> > and tests in, or document that the code is only 99.999999% safe
+> > against false positive restarts and drivers need to check for ring
+> > full at the beginning of xmit.
+> >
+> > I'm quite tempted to add the barriers, because on the NAPI/consumer
+> > side we could use this as an opportunity to start piggy backing on
+> > the BQL barrier.
+> 
+> The thing is the more barriers we add the more it will hurt
+> performance. I'd be tempted to just increase the runway we have as we
+> could afford a 1 packet skid if we had a 2 packet runway for the
+> start/stop thresholds.
+> 
+> I suspect that is probably why we haven't seen any issues as the
+> DESC_NEEDED is pretty generous since it is assuming worst case
+> scenarios.
 
-I'm sorry and I understand your time is valuable.
-I will let you know when I observe this issue again.
+Mightn't preemption or interrupts cause further issues?  Or are preemption
+and/or interrupts disabled across the relevant sections of code?
 
->
-> >
-> > I thought now CONFIG_NET_NS_REFCNT_TRACKER can catch the case.
-> >
-> >
-> > >
-> > > Otherwise bugs in subsystems not properly dismantling their kernel
-> > > socket at netns dismantle are next to impossible to track and fix.
-> > >
-> > > If anyone has time to implement this, feel free to submit patches.
-> > >
-> > > Thanks.
-
-Best regards,
-Dae R. Jeong.
+							Thanx, Paul
