@@ -2,157 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF2456D846C
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 18:59:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 845276D8477
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 19:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbjDEQ7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 12:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        id S233369AbjDERDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 13:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233923AbjDEQ7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 12:59:23 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2061c.outbound.protection.outlook.com [IPv6:2a01:111:f400:7d00::61c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9765A83FF
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 09:56:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DwmIa28xnKG33HZZXM613mnVlk9WqlMVS2VvV5D4J7Acd9ZaYQHxsRpudoRwweb+2ZHKnx601sT+3LNyt2wo2t6cHlveb/7LFUQlEPCuMqcJwifsNWKUBto5M5JGeXJOu//rqjQkCvt6qUm+MsyLsR8hg3XUnWKx/4w3niN4ye26M5T4E7KjkBuH0VIl/UKxlqsxuV0iqHK1fLSBWkgpOItLxKUQojBIad8eWe8n3kytEPCLxZyIbEk3h2AhINeJlSL/QBUOq3D303UZKuEyA/FoI2HiDdgj0rAUT6w644Vh5grkpadEvOFUxm3BtMuBCXrqRwUYHi/hDj57bgroLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hnUrsKjP9O4RFJ2begB+FatVOLk1ibzlA3fw5UBaHnY=;
- b=VE/3hO99ePBnSYTffO3iKEFHSdy3FOJltVqep64qiUr5O9DAx7/4OiXotP/8N3j6dRs41Fz+cbchg1JWA7cD5cwf6I9eWRpIM0+ppM65xTnnPto88paYm2d0pEeQKfzoJ4oV8ISRt1O7yy8P87rpLrc/mlJ8f53V1NYyzernxrGJWfIBUivc9DqjUmf2BVW3vyC2KfgcgHSjLXWq4PprBLpjFwZkRqI3jtEAh3Z7ZGwHD2HFIAkCN0/gJDp0PcV0MspDb2XtGzu+UtOQiuCG7vRbC4k7K+bwiFKxDvD46VDGNda++z0NkAt/ad7BdKRlAwYJlq4nAdJUcNjdWEK8fw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hnUrsKjP9O4RFJ2begB+FatVOLk1ibzlA3fw5UBaHnY=;
- b=Lt6bsnwxfXts5HKoiwEksRsMxomNti9h8wnkjdIkV7GxTSfMRCsSkA0O0OQ7KTBZHmw/dm6yopF03D1fj0yhRlK1mqmc9FybzThLaQqvYYs45bZRzPOEinTrrizGF338CHJ2NgJjqGPgRWWwHm/9YIZIUO5A/R8XcZTWJa4UdzU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
- by AS8PR04MB8071.eurprd04.prod.outlook.com (2603:10a6:20b:3f9::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6254.33; Wed, 5 Apr
- 2023 16:56:06 +0000
-Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::dfa2:5d65:fad:a2a5]) by AM0PR04MB6452.eurprd04.prod.outlook.com
- ([fe80::dfa2:5d65:fad:a2a5%3]) with mapi id 15.20.6254.026; Wed, 5 Apr 2023
- 16:56:06 +0000
-Date:   Wed, 5 Apr 2023 19:56:03 +0300
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233751AbjDERDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 13:03:30 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4146A41;
+        Wed,  5 Apr 2023 10:02:20 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-17786581fe1so39204302fac.10;
+        Wed, 05 Apr 2023 10:02:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680714139;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wJdooDkKozVkmq/jE5ZIJWHR45XBypuBSfKalkLMI0w=;
+        b=lhndkTBq464U/Xt0gXIA3bzt6cy6hrEA9CqJAkmYdK2UONW6KBlkuDpUphZApxzZ9o
+         yH+WHRlywqpAaRY1ZtroZg+JfQkLAfyKahIkrCYlwB8BXLszNLKTUN0LxaTxuFJpxv/J
+         S2qbhbPM09ZG6KYFJPTlz29MDb3EjQCWPS/ogkmwnK4Ok3hQVrUk8DaF1hLSvfHFz2MM
+         IN/5d8GU44EBeqpNMLWKF4dmwjDfDmJYym1vvYwa+NWi0bSwStQADBYpJ2H27HZ2SAUm
+         +VswydxOZfluEWZLiH8oDcX3aCdtzHI8rUg8jISF3gXISZ067fWckPPrRZxI4ec1rMwD
+         FOHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680714139;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wJdooDkKozVkmq/jE5ZIJWHR45XBypuBSfKalkLMI0w=;
+        b=uhrshRQ1Cs7Ukpkh2G+Lu1ccU0gLGHT40clpt2j31M+b0xYREAXWkIK4pDPWZ8mVHw
+         5Q0AK4OJSyh7sIngKMKP4OvlsFDck+eSwEVy2K3+6vX2v36DFYEKvbUiwuhyDGdKWE0I
+         Dja+M9r2pTEZnyDB/DsWuABCgj3ZtzVPGgi4xAfZz5DALZ/knxvhFqi0HfQBg89BGW0+
+         d+JwjdW188Ei6Msn6jhJ19yrjdlFOOl2AISKu78LsTG1U4UIBEotm+hICqBuEUpc0U8y
+         TU8WWFRezPSqhZOtqPZGYlTqfWNzpKzCKRpjJPjhMjiaUfuxvSMuMdhZ/iArD4xmTabk
+         6tfQ==
+X-Gm-Message-State: AAQBX9ewaMjkHgqN0u1qOye8uJUossttIvCXeR/ilUTBw6RE6Otfu+B4
+        M12R59k2dHynCo9NIuwk6Rg=
+X-Google-Smtp-Source: AKy350Y+q+FZUc+o6NJRWKav1W5Jicca/zmUWi5GHYLjZcSC8DIl2a9Q6sS0FbYDYCYe31KADbNeuQ==
+X-Received: by 2002:a05:6870:6025:b0:17a:cb34:758a with SMTP id t37-20020a056870602500b0017acb34758amr4109941oaa.34.1680714139060;
+        Wed, 05 Apr 2023 10:02:19 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id s15-20020a0568301e0f00b006a1508d348dsm7177806otr.22.2023.04.05.10.02.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Apr 2023 10:02:18 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 5 Apr 2023 10:02:16 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [RFC PATCH net-next] net: dsa: replace
- NETDEV_PRE_CHANGE_HWTSTAMP notifier with a stub
-Message-ID: <20230405165603.52xafuuhvcqsihtm@skbuf>
-References: <20230405165115.3744445-1-vladimir.oltean@nxp.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, Looi Hong Aun <hong.aun.looi@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
+Subject: Re: [PATCH net v3 2/3] net: stmmac: check if MAC needs to attach to
+ a PHY
+Message-ID: <5bb39f85-7ef0-4cbb-a06b-0d6431ab09b7@roeck-us.net>
+References: <20230324081656.2969663-1-michael.wei.hong.sit@intel.com>
+ <20230324081656.2969663-3-michael.wei.hong.sit@intel.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230405165115.3744445-1-vladimir.oltean@nxp.com>
-X-ClientProxiedBy: FR0P281CA0147.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:96::11) To AM0PR04MB6452.eurprd04.prod.outlook.com
- (2603:10a6:208:16d::21)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AS8PR04MB8071:EE_
-X-MS-Office365-Filtering-Correlation-Id: 04eeec1e-e480-4be5-e9ba-08db35f6a5c1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BPKb4nwlakHJ7at80rmc/j1JciCTyrhlGPVg+oHsc6k75FYWK6I4r8O6tR2VYifiXgKtE3xRaA1e5ChGw4F/fhZgDZu74Nl8qv2l/geOBrq9X7+sQyX2HMgWmGRweQAX7WKZ/qGZ9BECE3Qa9dCMw4h0VGVhcTo0ihZ3zluwZSWujN63PRJDA82oR/geE6oA2sd+xrtfnEtiOHsMvgxp8vS3L7IwrIhWnajgLXpRePFSpc8H9tJ3NzvsEmDibNtb64VlBKJIgdB6FM9PTrzDXOA3dBVEU3b5x5qAc7yWFEccFP4U29oFZ4pQ7cRwpkrxZ9uKK5FAMK+8neFKQnnijg8AhzJWTLeaWPygxLgyoCy3pX3ftlOGu4K2PGPSkK8rCM6FFFCYvUUDXFS+jkGijEuqOMjfMWxf7QEzxPmBNfKm1v6M+3xIBuWK9JlmEO9UcoK97eCAImaJpLPqxQmwA9PtU42D5lp/enRWvHf5FGrzuOx3i2qljyyNUnE4RL1d8S8PObca5yMjet24885kWz9vZERLVqToev+fZFcrMNcM7DKSYAdznHMeAx8OCsbp
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(7916004)(346002)(396003)(376002)(366004)(39860400002)(136003)(451199021)(2906002)(33716001)(86362001)(44832011)(6486002)(83380400001)(186003)(1076003)(26005)(6512007)(6506007)(9686003)(6666004)(66476007)(8676002)(66946007)(6916009)(41300700001)(66556008)(38100700002)(54906003)(5660300002)(478600001)(316002)(8936002)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dQJN2mBF/vwEIGiW/tqhlLPDpscJ/bdz0vcQl5vF/5A1nwK0R7fL4lfIqKth?=
- =?us-ascii?Q?I0sJUG0DS1eZdDyreodoqz6k48nj5ZLr7I7OXENwaW/bjbPcBthVV1iwea/W?=
- =?us-ascii?Q?YbKa7sVhdNDr7lJMuh4bHWlByq9X2zln0ELHRov5WJT3NU4VI1L5ODBmMDiY?=
- =?us-ascii?Q?eE3C4XYaifPS7Ap7N+MTXnpkJwMs4XUGrN1eZrw8ur7t47/OTplSR4lkXYmO?=
- =?us-ascii?Q?UasnXxxBvrLiNXlEOnsB40uA2UfPGpEhZ9YCkYphcPn5ob0CbF6DZUlEj2Jp?=
- =?us-ascii?Q?aQJkLw+y3NNNEe4bqA/mj63uYKQm532+e8xG7mjtVkDdi+X27H0JTSNmyByY?=
- =?us-ascii?Q?6RLH3MVCHUqeI2UdUctp5sp2GJL3KdMWa8dYmCa1PLYI+VK5PhqgZ5205b0o?=
- =?us-ascii?Q?j8BDMNJz10pjvnTKY4ccyIwpbl5mvY9IDYkqgm7r0SRa7Uw8SneeUCyPk+7t?=
- =?us-ascii?Q?W3cWTvAGCzMA2i3SfHlnuQ9yGmBYTxEm483b81d3C0TwCjdALOC0olj5tsd+?=
- =?us-ascii?Q?VAN/OzrWUTDiwkZJyAms6BRBzmZZsYbGP1ZPAzusKHqhsy0+lFlwgdLEbrJO?=
- =?us-ascii?Q?LxIKO9ISbunhG5UXvu/1tqy5ygZjiDwqVYTNh2mvN55IzY4r0Unu1KqnRXy9?=
- =?us-ascii?Q?w2rrNmPP3U0Sd2y0DddtKWgz/LvbNK6h+93OKfXF/I/XxMsnbKXaYsGKTbAX?=
- =?us-ascii?Q?z0WTREevxOvWkg+pe+gm0L3tJOrGZlJUiynANQ1xg2tTBHAfPQb+PYWkPyr9?=
- =?us-ascii?Q?szJSXfTZOmzCw9n1yl15PvG6Hb0lEhSoEPRH1KG44tCj9x0v58RUsTwcJ6sh?=
- =?us-ascii?Q?qPI5xIiZgyKBz7nZY0lr17PCJJG7JcsQvjsv+fn9Cp4TUeDLdYFqgQqKOQ6C?=
- =?us-ascii?Q?UtlQNe/OTfYqg15eXkV40p4ewyE7GCIcV9d4U2MEG1JyN+uCnwB/OfHjSIul?=
- =?us-ascii?Q?3uUNXRpMMT32ZW+iCgPkl4TXjWqChKPIc8h8fZnOCwqjRbZzPlEBdIvSBWLC?=
- =?us-ascii?Q?/PtglAw53TarOYVvrt8+qfBIm9azCg//jXtzfK2j0T6IIPSt8vLYxTmE5eNL?=
- =?us-ascii?Q?YTpnaWFHwLcJBPO9OWk2Y04jWhI9NtRlfJ8aUNZJO3EzX7AH8t6rDhKJwPny?=
- =?us-ascii?Q?D017aadye9CeC2JYnRoFxImn7lOQmtAlMDdylSvh1GrTMmizGPNlevlA1iZI?=
- =?us-ascii?Q?SsNOgEQB/th7IcuLdGZeY5VNtstFTMVSES5wiIhLrVyDhkypKcd7XQFi1tEt?=
- =?us-ascii?Q?qpta/8rbGNGZkzpxZWoaV0q4Z/8ajUo6+f1UCd74Rb5EyRRio+FGfs52WWZj?=
- =?us-ascii?Q?JwX+fSePDLBEFuMWbL8tUw1lUJZ+GEl12eNmhjUSxSg7A6iZdZr79OhrOG+C?=
- =?us-ascii?Q?WnDcFUGv+HeyxDRvZDlSluFnPS6vwNzU9Cfzls2gFQUjbVO9m6z7afucxPs4?=
- =?us-ascii?Q?3gr53V9vfDLNaBSOo9YTPQMgWuaMGgH/KSa9rs0nFr1vijB228WulcRWsVFp?=
- =?us-ascii?Q?Au6l2i60BpxiNxs/P1Rs83eKVgpUuqAN8GTx8faiQoOdS5l28O81MdtkDMhz?=
- =?us-ascii?Q?nR4afwGeUOgxsu+hTDwx6pWFgy6xmqKExozTpQo2dWWidfuC85QNSfGRuLt6?=
- =?us-ascii?Q?7Q=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04eeec1e-e480-4be5-e9ba-08db35f6a5c1
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2023 16:56:06.4738
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y0JM90VOjbuwrS7QKZ/SNQBeg5bFbzjKMQC5tUTYWL+WZhL0AbjFoyMJp6mFv2/LyDU9KWazi9CTFXWLLt3akw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8071
-X-Spam-Status: No, score=0.8 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,T_SPF_PERMERROR autolearn=no autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20230324081656.2969663-3-michael.wei.hong.sit@intel.com>
+X-Spam-Status: No, score=0.7 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,
+        FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 07:51:15PM +0300, Vladimir Oltean wrote:
-> +#if IS_ENABLED(CONFIG_NET_DSA)
-> +
-> +static inline int dsa_master_hwtstamp_validate(struct net_device *dev,
-> +					       const struct kernel_hwtstamp_config *config,
-> +					       struct netlink_ext_ack *extack)
-> +{
-> +}
-> +
-> +#else
-> +
-> +static inline int dsa_master_hwtstamp_validate(struct net_device *dev,
-> +					       const struct kernel_hwtstamp_config *config)
-> +{
-> +	return 0;
-> +}
-> +
-> +#endif
+Hi,
 
-This happened again, I need to do something about it... I ran
-format-patch before I added this last hunk to the commit:
+On Fri, Mar 24, 2023 at 04:16:55PM +0800, Michael Sit Wei Hong wrote:
+> After the introduction of the fixed-link support, the MAC driver
+> no longer attempt to scan for a PHY to attach to. This causes the
+> non fixed-link setups to stop working.
+> 
+> Using the phylink_expects_phy() to check and determine if the MAC
+> should expect and attach a PHY.
+> 
+> Fixes: ab21cf920928 ("net: stmmac: make mdio register skips PHY scanning for fixed-link")
+> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+> Signed-off-by: Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>
 
-diff --git a/include/net/dsa_stubs.h b/include/net/dsa_stubs.h
-index 27a1ad85c038..9556f9fb5a86 100644
---- a/include/net/dsa_stubs.h
-+++ b/include/net/dsa_stubs.h
-@@ -41,7 +41,8 @@ static inline int dsa_master_hwtstamp_validate(struct net_device *dev,
- #else
- 
- static inline int dsa_master_hwtstamp_validate(struct net_device *dev,
--					       const struct kernel_hwtstamp_config *config)
-+					       const struct kernel_hwtstamp_config *config,
-+					       struct netlink_ext_ack *extack)
- {
- 	return 0;
- }
+With this patch in linux-next, the orangepi-pc qemu emulation fails to
+bring up the Ethernet interface. The following error is seen.
 
-so that the build with CONFIG_NET_DSA=n passes too (which I did test).
+[   12.482401] dwmac-sun8i 1c30000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+[   12.487789] dwmac-sun8i 1c30000.ethernet eth0: PHY [mdio_mux-0.1:01] driver [Generic PHY] (irq=POLL)
+[   12.488177] dwmac-sun8i 1c30000.ethernet eth0: no phy found
+[   12.488295] dwmac-sun8i 1c30000.ethernet eth0: __stmmac_open: Cannot attach to PHY (error: -19)
 
-It's now fixed on my computer, but whoever is curious to test this will
-have to fix it up manually; I won't resend the RFC just for this.
+Reverting this patch fixes the problem.
+
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 8f543c3ab5c5..41f0f3b74933 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1135,6 +1135,7 @@ static int stmmac_init_phy(struct net_device *dev)
+>  {
+>  	struct stmmac_priv *priv = netdev_priv(dev);
+>  	struct fwnode_handle *fwnode;
+> +	bool phy_needed;
+>  	int ret;
+>  
+>  	fwnode = of_fwnode_handle(priv->plat->phylink_node);
+> @@ -1144,10 +1145,11 @@ static int stmmac_init_phy(struct net_device *dev)
+>  	if (fwnode)
+>  		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
+>  
+> +	phy_needed = phylink_expects_phy(priv->phylink);
+>  	/* Some DT bindings do not set-up the PHY handle. Let's try to
+>  	 * manually parse it
+>  	 */
+> -	if (!fwnode || ret) {
+> +	if (!fwnode || phy_needed || ret) {
+
+I don't really understand this condition. It starts taking this path even if ret == 0
+and fwnode != NULL if phy_needed is set. That means this path is now taken even if
+phylink_fwnode_phy_connect() returned no error. That seems odd.
+
+Guenter
+
+>  		int addr = priv->plat->phy_addr;
+>  		struct phy_device *phydev;
+>  
+> -- 
+> 2.34.1
+> 
