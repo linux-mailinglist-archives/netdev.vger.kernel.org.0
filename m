@@ -2,146 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A876D7D76
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 15:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA956D7D8C
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 15:19:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237221AbjDENNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 09:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57726 "EHLO
+        id S238134AbjDENTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 09:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237218AbjDENNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 09:13:07 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDE7171F
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 06:13:03 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id p34so20855711wms.3
-        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 06:13:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google; t=1680700382;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vNzCqRY1oZU1JbrORYUrLkQuB+gPG/h4L0AC8XHO9kU=;
-        b=dEnXU5fO8WSr2mycjTGgUd4XyqXV0ApnQCTK803awH65Tx+7EllzggNBnIveobwefF
-         5fLHM80ae3RGkTsK/n6iRkT/kWuY2JrKrrDnUtMceXufsjL32pxPj6pQ0UjPclBOOuXO
-         R0g2sYbv1KAkKZo9fjBw/aYXezILDTkf2SazmwITfmzi9RJS6RnQN4GprOjKjJzYwjRY
-         j8BNXKD01J40RkE1ro0Ok7f+nHpL+ryTBO6iXeyOR+keP9/DTjyEMOf8ICj2KB+4etjl
-         8ARkHX8CcjlsY7/HNrDNTlqHGz76RhzXfgAy8FdrTi7Uh5VZ61s3rDBPVCWKgqtv6bkR
-         S/9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680700382;
-        h=in-reply-to:from:references:cc:to:content-language:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=vNzCqRY1oZU1JbrORYUrLkQuB+gPG/h4L0AC8XHO9kU=;
-        b=Kvgaqkq22ZPXFOIIdhucEHzM11Tn87Rqn3jlrUaVXtVYVnstiIYWDpc4wT9upaJ/Qq
-         kwM3BXQA84oVGU9ohoaCIkfVqn/G+ARpSNVGqifHck5oWgb9rp+asJCjqdQn6pe/I0t2
-         Y9h1IketaAC9rGd4m9btRZb1P4HpD3PI8RmHxca1ZgSUQmpAnsNvHJfvegr/1DOB+4lG
-         6I0FgiffamrKKxmIlZheMp1lexp2aeNGs+qtLV0Sjzj3OaQCLOXS2Szq1qNX0rAd2IQK
-         xHh47F9yNE93OpxxAKHTRh58vLQIGZmwT7pCem6EQn/PcV+quSOulsvYSbpmeSKpvyJU
-         aqLA==
-X-Gm-Message-State: AAQBX9cEh7AcNaB3+keL2Vb8NMLIJGcDWwExvxFvy1CyzDggXNnRPBxP
-        59CVWqIqR4dIk+tbCUU8mKenYaLNnjelK+RzDQ+3cmZq
-X-Google-Smtp-Source: AKy350bFtuBSNejcuVbgom+HcWIqsRC+v8SFnaz9PxD6zQSMK0qFgyFg7N+1/4elyzQ4Vnfyu1dQ6g==
-X-Received: by 2002:a7b:c4c6:0:b0:3ed:5a12:5641 with SMTP id g6-20020a7bc4c6000000b003ed5a125641mr4636724wmk.36.1680700382246;
-        Wed, 05 Apr 2023 06:13:02 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:e35b:475e:3d7f:5843? ([2a02:578:8593:1200:e35b:475e:3d7f:5843])
-        by smtp.gmail.com with ESMTPSA id n19-20020a7bcbd3000000b003eae73f0fc1sm2175356wmi.18.2023.04.05.06.13.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Apr 2023 06:13:01 -0700 (PDT)
-Content-Type: multipart/mixed; boundary="------------s0bqkphGMolVar6IcbGgo030"
-Message-ID: <c5872985-1a95-0bc8-9dcc-b6f23b439e9d@tessares.net>
-Date:   Wed, 5 Apr 2023 15:13:00 +0200
+        with ESMTP id S237259AbjDENTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 09:19:32 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7921059C4;
+        Wed,  5 Apr 2023 06:19:28 -0700 (PDT)
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1pk32g-0003y8-KI; Wed, 05 Apr 2023 15:19:14 +0200
+Message-ID: <62f97c5c-4b18-181b-c541-9b19900a7cd8@leemhuis.info>
+Date:   Wed, 5 Apr 2023 15:19:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.1
-Subject: Re: [PATCH net v2] gve: Secure enough bytes in the first TX desc for
- all TCP pkts: manual merge
-Content-Language: en-GB
-To:     Shailend Chand <shailend@google.com>, netdev@vger.kernel.org,
-        Praveen Kaligineedi <pkaligineedi@google.com>,
-        Jeroen de Borst <jeroendb@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20230403172809.2939306-1-shailend@google.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20230403172809.2939306-1-shailend@google.com>
-X-Spam-Status: No, score=-1.6 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: Re: Bug report: UDP ~20% degradation
+Content-Language: en-US, de-DE
+To:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Tariq Toukan <ttoukan.linux@gmail.com>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        David Chen <david.chen@nutanix.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Gal Pressman <gal@nvidia.com>, Malek Imam <mimam@nvidia.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Talat Batheesh <talatb@nvidia.com>
+References: <113e81f6-b349-97c0-4cec-d90087e7e13b@nvidia.com>
+ <CAKfTPtCO=GFm6nKU0DVa-aa3f1pTQ5vBEF+9hJeTR9C_RRRZ9A@mail.gmail.com>
+ <8f95150d-db0d-d9e5-4eff-2196d5e8de05@gmail.com>
+ <6f90f500-ed4c-0650-0044-1cd1e3a632c3@gmail.com>
+ <CAKfTPtCSw4QL6F7sR+JVSJE2+_zhZ4eNdBtyQx6KZSD_b2kdhw@mail.gmail.com>
+From:   "Linux regression tracking (Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+In-Reply-To: <CAKfTPtCSw4QL6F7sR+JVSJE2+_zhZ4eNdBtyQx6KZSD_b2kdhw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1680700768;208748d8;
+X-HE-SMSGID: 1pk32g-0003y8-KI
+X-Spam-Status: No, score=-1.4 required=5.0 tests=NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------s0bqkphGMolVar6IcbGgo030
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Hi, Thorsten here, the Linux kernel's regression tracker. Top-posting
+for once, to make this easily accessible to everyone.
 
-Hello,
+Tariq Toukanm: it looks like you never provided the data Vincent asked
+for (see below). Did you stop caring, did this discussion continue
+somewhere else (doesn't look like it one lore), did the problem vanish,
+or was it fixed somehow? I for now assume it's one of the two latter
+option and will stop tracking this. If that was a bad assumption and
+worth continue tracking, please let me know -- otherwise consider this a
+"JFYI" mail.
 
-On 03/04/2023 19:28, Shailend Chand wrote:
-> Non-GSO TCP packets whose SKBs' linear portion did not include the
-> entire TCP header were not populating the first Tx descriptor with
-> as many bytes as the vNIC expected. This change ensures that all
-> TCP packets populate the first descriptor with the correct number of
-> bytes.
+#regzbot inconclusive: lack of data to debug, as it looks like the
+reporter stopped caring
+#regzbot ignore-activity
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
+
+On 22.02.23 17:51, Vincent Guittot wrote:
+> On Wed, 22 Feb 2023 at 09:49, Tariq Toukan <ttoukan.linux@gmail.com> wrote:
+>> On 12/02/2023 13:50, Tariq Toukan wrote:
+>>> On 08/02/2023 16:12, Vincent Guittot wrote:
+>>>> On Wed, 8 Feb 2023 at 12:09, Tariq Toukan <tariqt@nvidia.com> wrote:
+>>>>>
+>>>>> Our performance verification team spotted a degradation of up to ~20% in
+>>>>> UDP performance, for a specific combination of parameters.
+>>>>>
+>>>>> Our matrix covers several parameters values, like:
+>>>>> IP version: 4/6
+>>>>> MTU: 1500/9000
+>>>>> Msg size: 64/1452/8952 (only when applicable while avoiding ip
+>>>>> fragmentation).
+>>>>> Num of streams: 1/8/16/24.
+>>>>> Num of directions: unidir/bidir.
+>>>>>
+>>>>> Surprisingly, the issue exists only with this specific combination:
+>>>>> 8 streams,
+>>>>> MTU 9000,
+>>>>> Msg size 8952,
+>>>>> both ipv4/6,
+>>>>> bidir.
+>>>>> (in unidir it repros only with ipv4)
+>>>>>
+>>>>> The reproduction is consistent on all the different setups we tested
+>>>>> with.
+>>>>>
+>>>>> Bisect [2] was done between these two points, v5.19 (Good), and v6.0-rc1
+>>>>> (Bad), with ConnectX-6DX NIC.
+>>>>>
+>>>>> c82a69629c53eda5233f13fc11c3c01585ef48a2 is the first bad commit [1].
+>>>>>
+>>>>> We couldn't come up with a good explanation how this patch causes this
+>>>>> issue. We also looked for related changes in the networking/UDP stack,
+>>>>> but nothing looked suspicious.
+>>>>>
+>>>>> Maybe someone here can help with this.
+>>>>> We can provide more details or do further tests/experiments to progress
+>>>>> with the debug.
+>>>>
+>>>> Could you share more details about your system and the cpu topology ?
+>>>>
+>>>
+>>> output for 'lscpu':
+>>>
+>>> Architecture:                    x86_64
+>>> CPU op-mode(s):                  32-bit, 64-bit
+>>> Address sizes:                   40 bits physical, 57 bits virtual
+>>> Byte Order:                      Little Endian
+>>> CPU(s):                          24
+>>> On-line CPU(s) list:             0-23
+>>> Vendor ID:                       GenuineIntel
+>>> BIOS Vendor ID:                  QEMU
+>>> Model name:                      Intel(R) Xeon(R) Platinum 8380 CPU @
+>>> 2.30GHz
+>>> BIOS Model name:                 pc-q35-5.0
+>>> CPU family:                      6
+>>> Model:                           106
+>>> Thread(s) per core:              1
+>>> Core(s) per socket:              1
+>>> Socket(s):                       24
+>>> Stepping:                        6
+>>> BogoMIPS:                        4589.21
+>>> Flags:                           fpu vme de pse tsc msr pae mce cx8 apic
+>>> sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss syscall nx
+>>> pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good nopl xtopology
+>>> cpuid tsc_known_freq pni pclmulqdq vmx ssse3 fma cx16 pdcm pcid sse4_1
+>>> sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand
+>>> hypervisor lahf_lm abm 3dnowprefetch cpuid_fault invpcid_single ssbd
+>>> ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi flexpriority ept vpid
+>>> ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f
+>>> avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni
+>>> avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves wbnoinvd arat
+>>> avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni
+>>> avx512_bitalg avx512_vpopcntdq rdpid md_clear arch_capabilities
+>>> Virtualization:                  VT-x
+>>> Hypervisor vendor:               KVM
+>>> Virtualization type:             full
+>>> L1d cache:                       768 KiB (24 instances)
+>>> L1i cache:                       768 KiB (24 instances)
+>>> L2 cache:                        96 MiB (24 instances)
+>>> L3 cache:                        384 MiB (24 instances)
+>>> NUMA node(s):                    1
+>>> NUMA node0 CPU(s):               0-23
+>>> Vulnerability Itlb multihit:     Not affected
+>>> Vulnerability L1tf:              Not affected
+>>> Vulnerability Mds:               Not affected
+>>> Vulnerability Meltdown:          Not affected
+>>> Vulnerability Mmio stale data:   Vulnerable: Clear CPU buffers
+>>> attempted, no microcode; SMT Host state unknown
+>>> Vulnerability Retbleed:          Not affected
+>>> Vulnerability Spec store bypass: Mitigation; Speculative Store Bypass
+>>> disabled via prctl
+>>> Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers
+>>> and __user pointer sanitization
+>>> Vulnerability Spectre v2:        Vulnerable: eIBRS with unprivileged eBPF
+>>> Vulnerability Srbds:             Not affected
+>>> Vulnerability Tsx async abort:   Not affected
+>>>
+>>>> The commit  c82a69629c53 migrates a task on an idle cpu when the task
+>>>> is the only one running on local cpu but the time spent by this local
+>>>> cpu under interrupt or RT context becomes significant (10%-17%)
+>>>> I can imagine that 16/24 stream overload your system so load_balance
+>>>> doesn't end up in this case and the cpus are busy with several
+>>>> threads. On the other hand, 1 stream is small enough to keep your
+>>>> system lightly loaded but 8 streams make your system significantly
+>>>> loaded to trigger the reduced capacity case but still not overloaded.
+>>>>
+>>>
+>>> I see. Makes sense.
+>>> 1. How do you check this theory? Any suggested tests/experiments?
 > 
-> Fixes: 893ce44df565 ("gve: Add basic driver framework for Compute Engine Virtual NIC")
-> Signed-off-by: Shailend Chand <shailend@google.com>
-
-FYI, we got a small conflict when merging 'net' in 'net-next' in the
-MPTCP tree due to this patch applied in 'net':
-
-  3ce934558097 ("gve: Secure enough bytes in the first TX desc for all
-TCP pkts")
-
-and this one from 'net-next':
-
-  75eaae158b1b ("gve: Add XDP DROP and TX support for GQI-QPL format")
-
------ Generic Message -----
-The best is to avoid conflicts between 'net' and 'net-next' trees but if
-they cannot be avoided when preparing patches, a note about how to fix
-them is much appreciated.
-
-The conflict has been resolved on our side[1] and the resolution we
-suggest is attached to this email. Please report any issues linked to
-this conflict resolution as it might be used by others. If you worked on
-the mentioned patches, don't hesitate to ACK this conflict resolution.
----------------------------
-
-Regarding this conflict, the new "define"'s have been kept. Note that
-now, two "define"'s have the same value (182) but used in different
-contexts. Maybe someone will want to create a new patch to merge them.
-
-Cheers,
-Matt
-
-[1] https://github.com/multipath-tcp/mptcp_net-next/commit/5ea299ff55b5
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
---------------s0bqkphGMolVar6IcbGgo030
-Content-Type: text/x-patch; charset=UTF-8;
- name="5ea299ff55b5faad53889293c5d3e918deb456c6.patch"
-Content-Disposition: attachment;
- filename="5ea299ff55b5faad53889293c5d3e918deb456c6.patch"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWNjIGRyaXZlcnMvbmV0L2V0aGVybmV0L2dvb2dsZS9ndmUvZ3ZlLmgKaW5kZXgg
-ZTIxNGI1MWQzYzhiLDAwNWNiOWRmZTA3OC4uNGI5NWY2ZTlhNDYxCi0tLSBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L2dvb2dsZS9ndmUvZ3ZlLmgKKysrIGIvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvZ29vZ2xlL2d2ZS9ndmUuaApAQEAgLTQ3LDEwIC00Nyw4ICs0NywxMiBAQEAKICAKICAj
-ZGVmaW5lIEdWRV9SWF9CVUZGRVJfU0laRV9EUU8gMjA0OAogIAorICNkZWZpbmUgR1ZFX0dR
-X1RYX01JTl9QS1RfREVTQ19CWVRFUyAxODIKKyAKICsjZGVmaW5lIEdWRV9YRFBfQUNUSU9O
-UyA1CiArCiArI2RlZmluZSBHVkVfVFhfTUFYX0hFQURFUl9TSVpFIDE4MgogKwogIC8qIEVh
-Y2ggc2xvdCBpbiB0aGUgZGVzYyByaW5nIGhhcyBhIDE6MSBtYXBwaW5nIHRvIGEgc2xvdCBp
-biB0aGUgZGF0YSByaW5nICovCiAgc3RydWN0IGd2ZV9yeF9kZXNjX3F1ZXVlIHsKICAJc3Ry
-dWN0IGd2ZV9yeF9kZXNjICpkZXNjX3Jpbmc7IC8qIHRoZSBkZXNjcmlwdG9yIHJpbmcgKi8K
-
-
---------------s0bqkphGMolVar6IcbGgo030--
+> Could you get some statistics about the threads involved in your tests
+> ? Like the number of migrations as an example.
+> 
+> Or a trace but that might be a lot of data. I haven't tried to
+> reproduce this on a local system yet.
+> 
+> You can fall in the situation where the tasks of your bench are
+> periodically moved to the next cpu becoming idle.
+> 
+> Which cpufreq driver and governor are you using ? Could you also check
+> the average frequency of your cpu ? Another cause could be that we
+> spread tasks and irq on different cpus which then trigger a freq
+> decrease
+> 
+>>> 2. How do you suggest this degradation should be fixed?
+>>>
+>>
+>> Hi,
+>> A kind reminder.
