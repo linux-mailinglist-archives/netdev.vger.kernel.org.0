@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B277F6D73AE
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 07:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07EDA6D73B2
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 07:24:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbjDEFTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 01:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
+        id S236575AbjDEFYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 01:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbjDEFTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 01:19:01 -0400
+        with ESMTP id S229478AbjDEFYO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 01:24:14 -0400
 Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584523AB0
-        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 22:19:00 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 4153A320027A;
-        Wed,  5 Apr 2023 01:18:59 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Wed, 05 Apr 2023 01:18:59 -0400
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8533C0A
+        for <netdev@vger.kernel.org>; Tue,  4 Apr 2023 22:24:13 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 4A8F43200986;
+        Wed,  5 Apr 2023 01:24:12 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 05 Apr 2023 01:24:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nikishkin.pw; h=
         cc:cc:content-type:content-type:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1680671938; x=1680758338; bh=Op
-        x2IrhrGU9rqtGc87W+Tp35z/qUnw/Fv86rLrrP0vk=; b=TYiXEPhWCx6A7P6EZj
-        uZBsL12J452n6L7O2ZmDMxg0yhKt4aFzbD/Zv3bQOzXohdYi/Ed4O47mS3lDZbSD
-        RNxGwFxCTRDmdLSRVX81Q9SL8vzKcgknT/qrYsCghRwi+3jcePANKTj6VVZt3N5X
-        LFUCxOEhlfMabuqrPX8QFplwEDghz++GxWbCvogJc1/kWDDuZ+6/6bgWufHHaUEM
-        srfjhvqwmARWL0fKPJsEBBuXvQdxlXdk9iSNyHRLU9qZNpjQXLkaNDLvHBahdM7L
-        ow9rQTdsJyayCThTtDOEdgpYoLBQB/HPH9erH8vBTzl/HJ0CmjCbPsl3gsxf0kKJ
-        ABWw==
+        :subject:subject:to:to; s=fm2; t=1680672251; x=1680758651; bh=Kl
+        QnGU7QmA/EC6XNHygbudA8yWjsyJUeQJXilc11so8=; b=dO4EEWxYr5H+Zcbgd1
+        p0KFaOJFK3HhbgunWaLixk5QbVcezgc7qLJqBGDKu97HB8FG/p4k+KPHUKBuuTwl
+        bGQup++YTjjpecmR0L8mrgiL2rNSxasmPZp0m//ZuqyQyVPO5zKMvafDZfKw12MN
+        Hj3Y5hra44T6pz9iWd6LL5XdCvK3JZJyc+MH/DalwcT+dXLF0m3gbsnj5OSHHLD/
+        55PsCpi8eF2E2bmHvx1q0VkN6Sgq2Ue2/vUCyGfTBaMBmJgbRoNqsbn6fsAPzkdh
+        rZPTBWnLhBn2twzxLkeULp5BigIS5JcS0FeQvKgbptKpnv9/dcrfTB+5oNEeI2lm
+        heHg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-type:content-type:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1680671938; x=1680758338; bh=Opx2IrhrGU9rq
-        tGc87W+Tp35z/qUnw/Fv86rLrrP0vk=; b=itp1i5pwde7yJShiu+S9ZSr+S25ye
-        SosU0y8Q5l6LuBlu/aMiGHhg8ejFJxTgp2EKGdMktn21CdO3VfujTXgragYdbWCu
-        slb+l+Lg+NmLe/ATAmq7SB/tfZzllbo7LI3kTTHpFS/9X6dU0fr+MmyRnzIznkWg
-        5gOWXqYVyRkT2hBuvz8SxVL0ISgNv5d7KVi/hJxtTL3yrqo4UYvFeB8C298tw9eM
-        4U7gNOT8vUKjb4chyiix838+j1MX6FhsaKv1IN1DNnRKBcmVI4GLDLzmWopvZOwX
-        AJwGs4cNcA5XpByjeGSz7bhgkHQaLZRZM37AH4L7dpJP+xvxwQx6q8Qzg==
-X-ME-Sender: <xms:wgQtZCCGp33tiZdIk1JK-7wOFgQvEvSUCXmBw8nQ3WaVeQrOPu5j9A>
-    <xme:wgQtZMj3SrBTHIr7N_FyrUdiIB4zw64q3fP9VTr9breaxyoK8IGY8ijxIp2yoiGZi
-    Os6_mMqd22zzWiFkSY>
-X-ME-Received: <xmr:wgQtZFmIST4I-6-f6OmQN-8yNd9JdZS7JBDOCiM2TlJEzOlg2cBcm1iJR09ahyfY40Jdcm6n4Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdejtddgleduucetufdoteggodetrfdotf
+        :x-sasl-enc; s=fm2; t=1680672251; x=1680758651; bh=KlQnGU7QmA/EC
+        6XNHygbudA8yWjsyJUeQJXilc11so8=; b=HleWxGMdV0iPZyBSB4Kl3jABt8Ol/
+        zK7f9jpmuUHfo7zVxGKK/yNy2bWxOSLtE6/cEP0tBMx4xwAxepIaDwUR/nHPUm7j
+        pc2FSfJZIefxeQ1mXVjIXYSJQl5NyDCTxojb/6q4UD+KjA3jL4TLzbSAj4/C8X+S
+        c0OUL/xvHlhzV6ktbHSBGdLK4NffoOhSVcE1M5jNgJHpuj5YahVGdJTuU5amtFoV
+        hCR5IpGw68dSunzlk/oMair1ZDrzCBOp2z8Cy/mWHJrOhTh2zpRBue28/qb0e+bE
+        zpB0ZO4kUG9k1/fzksVdfuClALYn6SwdrfdFOrj0gzXsuTLAWBRz79Rug==
+X-ME-Sender: <xms:-wUtZDjX1cNETvjgw1sAqEc6kzAJbp2mCPsccIfC9K6z2NAdncVngA>
+    <xme:-wUtZAAP_8Al65IN8YaXVwO7FgP5eq4yZgg7EcrASjnuFHPmXWRV0in9Y3voIUXoe
+    V2lkiLoTOSLExdE-Ko>
+X-ME-Received: <xmr:-wUtZDG7cx-VnmS0JKDOs2ECocbGy5LP3NbQrvMJE-5geQvlvsTFuWbcBbvX7B-v1heiL72ADQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrvdejtddgledvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdljedmnecujfgurhepfhgfhffvvefuffgjkfggtgesthdtredttder
-    tdenucfhrhhomhepgghlrgguihhmihhrucfpihhkihhshhhkihhnuceovhhlrgguihhmih
-    hrsehnihhkihhshhhkihhnrdhpfieqnecuggftrfgrthhtvghrnhepiefgvdegieeiledu
-    heeuueeujeeiieehgeduvefhgfeggeduvdevudeuheeufeegnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepvhhlrgguihhmihhrsehnihhkihhs
-    hhhkihhnrdhpfi
-X-ME-Proxy: <xmx:wgQtZAxwvrrp7sAC9X2gpveH9q5YiigjmLEI7L3GruhjFkm6gHfEYw>
-    <xmx:wgQtZHRBFIt-zMqr5rXcgo0gMZyv7AW8cnMp52Rut1hOqTkOeXy4ng>
-    <xmx:wgQtZLayRNq_GbeFZwO-c-r15LS4E4sle2ENmOXp2KR1tYkOUyx4Mw>
-    <xmx:wgQtZAQEApJiJkrnuwOlaKRcbg3ARkH7dr-DwuJQ6lHiVp_Vell8-Q>
+    gfrhhlucfvnfffucdluddtmdenucfjughrpehffgfhvfevufffjgfkgggtsehttdertddt
+    redtnecuhfhrohhmpegglhgrughimhhirhcupfhikhhishhhkhhinhcuoehvlhgrughimh
+    hirhesnhhikhhishhhkhhinhdrphifqeenucggtffrrghtthgvrhhnpeeigfdvgeeiieel
+    udehueeuueejieeiheegudevhffggeeguddvveduueehueefgeenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehvlhgrughimhhirhesnhhikhhi
+    shhhkhhinhdrphif
+X-ME-Proxy: <xmx:-wUtZAQmhLIPwBunRtGMty5wLeTHrdtJbjQmS_OAnACnHg2js2_AWA>
+    <xmx:-wUtZAyMX3ybHsKA3jprNref7K-YAGY4OpQ4nF6CQkDMQdRSj4dZFA>
+    <xmx:-wUtZG4FeNBcu1ARMWwb18RNyKcu4pKZZJfw43jkznDNrHJJCx7Zvw>
+    <xmx:-wUtZFo5MdnBE6A6gf7oDnxcyWTha3LZwih51TxU15wZYbxs8pJu2Q>
 Feedback-ID: id3b446c5:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 5 Apr 2023 01:18:54 -0400 (EDT)
-References: <20230323042608.17573-1-vladimir@nikishkin.pw>
- <ZBxycrxU93mhgkAT@corigine.com>
+ 5 Apr 2023 01:24:07 -0400 (EDT)
+References: <20230323060451.24280-1-vladimir@nikishkin.pw>
+ <ZBz/FREYO5iho+eO@Laptop-X1>
 User-agent: mu4e 1.8.14; emacs 30.0.50
 From:   Vladimir Nikishkin <vladimir@nikishkin.pw>
-To:     Simon Horman <simon.horman@corigine.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com,
         eng.alaamohamedsoliman.am@gmail.com, gnault@redhat.com,
-        razor@blackwall.org
-Subject: Re: [PATCH net-next v5] vxlan: try to send a packet normally if
- local bypass fails
-Date:   Wed, 05 Apr 2023 13:05:02 +0800
-In-reply-to: <ZBxycrxU93mhgkAT@corigine.com>
-Message-ID: <87o7o2vrd0.fsf@laptop.lockywolf.net>
+        razor@blackwall.org, idosch@nvidia.com, eyal.birger@gmail.com,
+        jtoppins@redhat.com
+Subject: Re: [PATCH iproute2-next v1 1/1 v1] ip-link: add support for
+ nolocalbypass in vxlan
+Date:   Wed, 05 Apr 2023 13:21:17 +0800
+In-reply-to: <ZBz/FREYO5iho+eO@Laptop-X1>
+Message-ID: <87ileavr4c.fsf@laptop.lockywolf.net>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-0.9 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -89,37 +90,73 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Simon Horman <simon.horman@corigine.com> writes:
+Hangbin Liu <liuhangbin@gmail.com> writes:
 
-> I'm a bit unsure about the logic around dst_release().
-> But assuming it is correct, perhaps this is a slightly
+> Hi Vladimir,
+>
+> For the subject prefix, [PATCH iproute2-next] is enough for the v1 patch.
+>
+> On Thu, Mar 23, 2023 at 02:04:51PM +0800, Vladimir Nikishkin wrote:
+>> Add userspace support for the nolocalbypass vxlan netlink
+>> attribute. With nolocalbypass, if an entry is pointing to the
+>> local machine, but the system driver is not listening on this
+>> port, the driver will not drop packets, but will forward them
+>> to the userspace network stack instead.
+>> 
+>> This commit has a corresponding patch in the net-next list.
+>> 
+>> Signed-off-by: Vladimir Nikishkin <vladimir@nikishkin.pw>
+>> ---
+>>  include/uapi/linux/if_link.h |  1 +
+>>  ip/iplink_vxlan.c            | 18 ++++++++++++++++++
+>>  man/man8/ip-link.8.in        |  8 ++++++++
+>>  3 files changed, 27 insertions(+)
+>> 
+>> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+>> index d61bd32d..fd390b40 100644
+>> --- a/include/uapi/linux/if_link.h
+>> +++ b/include/uapi/linux/if_link.h
+>> @@ -824,6 +824,7 @@ enum {
+>>  	IFLA_VXLAN_TTL_INHERIT,
+>>  	IFLA_VXLAN_DF,
+>>  	IFLA_VXLAN_VNIFILTER, /* only applicable with COLLECT_METADATA mode */
+>> +	IFLA_VXLAN_LOCALBYPASS,
+>>  	__IFLA_VXLAN_MAX
+>>  };
+>>  #define IFLA_VXLAN_MAX	(__IFLA_VXLAN_MAX - 1)
+>
+> There is no need to include the uapi header. Stephen will sync it with upstream.
+>
+> Hi Stephen, should we add this note to the README.devel?
+>
 
-Let me try to defend this logic.
+Without this change, my code does not compile. I ended up modifying the
+header, but not adding it to git. Is this the correct way of doing it?
 
-In the previous version, if the destination is local (the first "if"),
-then there is no need to keep the address in memory any more, hence the
-address was free()'d at the beginning of the "if" (and was not freed
-after the "if", because the address was still needed at the userspace
-part.)
+>> diff --git a/ip/iplink_vxlan.c b/ip/iplink_vxlan.c
+>> index c7e0e1c4..17fa5cf7 100644
+>> --- a/ip/iplink_vxlan.c
+>> +++ b/ip/iplink_vxlan.c
+>> @@ -276,6 +276,12 @@ static int vxlan_parse_opt(struct link_util *lu, int argc, char **argv,
+>>  		} else if (!matches(*argv, "noudpcsum")) {
+>>  			check_duparg(&attrs, IFLA_VXLAN_UDP_CSUM, *argv, *argv);
+>>  			addattr8(n, 1024, IFLA_VXLAN_UDP_CSUM, 0);
+>> +		} else if (!matches(*argv, "localbypass")) {
+>> +			check_duparg(&attrs, IFLA_VXLAN_LOCALBYPASS, *argv, *argv);
+>> +			addattr8(n, 1024, IFLA_VXLAN_LOCALBYPASS, 1);
+>> +		} else if (!matches(*argv, "nolocalbypass")) {
+>> +			check_duparg(&attrs, IFLA_VXLAN_LOCALBYPASS, *argv, *argv);
+>> +			addattr8(n, 1024, IFLA_VXLAN_LOCALBYPASS, 0);
+>
+> matches is deparated, please use strcmp instead.
 
-With this patch, the "localbypass" creates one more branch inside that
-"if", which is handing over the processing logic to the userspace (which
-has no free()). The older two branches _inside_ the "if" (vxlan
-found/vxlan not found) are still terminating, and therefore have one
-call to free() each.
+Why is strcmp recommended, not strncmp? I remember strcmp being frowned
+upon for some potential memory bounds violations.
 
-Ido Schimmel <idosch@idosch.org> writes:
+>
+> Thanks
+> Hangbin
 
-> Also, please add a selftest under tools/testing/selftests/net/. We
-> already have a bunch of VXLAN tests that you can use as a reference.
-
-I have added a file
-tools/testing/selftests/net/test_vxlan_nolocalbypass.sh
-, which is written on the basis of test_vxlan_mdb.sh
-
-Some tests do have a "testing framework" for enumerating and running
-tests (for example, those in ./forwarding/lib.sh), and some do not. I
-have used the simplest one.
 
 -- 
 Your sincerely,
