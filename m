@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E036D88D1
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539106D88D4
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbjDEUkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
+        id S234413AbjDEUkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234504AbjDEUkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:40:04 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8567ECD;
-        Wed,  5 Apr 2023 13:39:29 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id l15-20020a05600c4f0f00b003ef6d684102so19156898wmq.3;
-        Wed, 05 Apr 2023 13:39:29 -0700 (PDT)
+        with ESMTP id S234377AbjDEUkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:40:15 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183E765B2;
+        Wed,  5 Apr 2023 13:39:32 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id l15-20020a05600c4f0f00b003ef6d684102so19156961wmq.3;
+        Wed, 05 Apr 2023 13:39:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680727168;
+        d=gmail.com; s=20210112; t=1680727170;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Wk3K9bbT+tv5kBnVohJcLc2nqRP/uYdhv43DLYVwvrA=;
-        b=Nbp9QixTsTqXq+nlznFJzTPRU25T0EZ9MfYB0i3Bd1kaz5zF7jLHuPO4ztD5MflGWR
-         AN5suyxWvODfN++LkEf+UECj7CDSevmkzrBgi2ZCzKzZ/BV4DYNWV8zJjeenQrSm4KbQ
-         aQIZRGNJMAzD+Omq1Z53JJ9iH6Jah9w3XpnoC0d0WC9bXqgfFK+UtRuDJIBPJzAenZ4S
-         0JGtpgmFd1p4bI7KdW7XrBjdmn7NVm3SGGDWZP8BDs9IqegGqmd4aQ/WgMsbzzRhJP0E
-         W/WQeSkfeB/wwl9yl+SR4cGk2VknUiNU07J2Ua0LjagY+kM6F+4lA47K4LU7affatRR4
-         +6tw==
+        bh=a9BgVJEEYWS/nr7ufBquG0YTtl1dQzZWs/MVrntK8ZE=;
+        b=PkCe8EUwo59MuxO0b6KKI0EmM0HxoC38GvoQCL9HKBu3Pi5g9oGx43peL0MKckQs05
+         9GTz+/qxJf8/I4YzJWNBHoxaqLYtCgzAi+4f3uduLglyaLnYD8bvZYKoMHf5SSvgNBrV
+         7ASNECmnIIspbW3qf7+L4jOm3cisQ42pq0C2zRANZt9PBwUTXmU4HV2ZE31zBqtBO7T0
+         Rnw7v6ZpKZdutrO2fHfH9Hi2hZ5dEftWF2d+Z73dcyXWJ3QsHayuBm8tzTjHTGb+ph/E
+         JzpsdA2CZPlKGb0u5yldIRaZ8s5eu93/BO+XocnBJwc3GTWOQJ/rJXA1295X0tm5hTSs
+         XDtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680727168;
+        d=1e100.net; s=20210112; t=1680727170;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Wk3K9bbT+tv5kBnVohJcLc2nqRP/uYdhv43DLYVwvrA=;
-        b=p42KtFOS0/pdLZ4QkXu7HCFRQAQT8QN0eOnmqYYq5J23NRPnKrQ56YbRsooY9p0Sz2
-         +g0qpUcIikCZLTP2ejMIwfn5YWYzBOFX39q0ibfYRQEmdwzvZ5J10Xl1varVK8MmEpHJ
-         r39psTHH0uknZcrosCilSuYUBM0ede7RyLHwU6aD1kcg9KjlGfBypaOEuOyNIeWRsNCp
-         gOw7q2hnBx3UdqwIFVbO6o6VtTWZMJKniDr/RZdoPmeGFYgSu/6Jfl/ZbP6/GaEZ2v+2
-         4l12ufAE80om6V/1abshnTxYXA+eiHB9zyPrq0EudeVbBxcrgzRT5PQVFPGuW1ztq2eF
-         a7aQ==
-X-Gm-Message-State: AAQBX9fwgxNrWe83Ee26sf0sbASuoJV+YexnZlF/hg+MuLvoBfkMlCgO
-        zOmUMYIxE+/kuJeIEtjZ3xA=
-X-Google-Smtp-Source: AKy350aFpJYsbdWGizzfVNQlwDH+aMdywoXrMBy75yzELYvUe4GwnL9XMmWJ89kOSD/km6FgxUxAYg==
-X-Received: by 2002:a7b:c38a:0:b0:3ed:e715:1784 with SMTP id s10-20020a7bc38a000000b003ede7151784mr6432135wmj.15.1680727167948;
-        Wed, 05 Apr 2023 13:39:27 -0700 (PDT)
+        bh=a9BgVJEEYWS/nr7ufBquG0YTtl1dQzZWs/MVrntK8ZE=;
+        b=oINRtDsAlSuUp0EMLSBrfeSObCH5W+TDEx/tom3Qus78lCiS807/KudDhinohB1WG3
+         KsUtLT0pBvs1WRK8NBv5J2WaV41FC6tgiIpD574OlhVBdxB+rN+VV3n4yKqf53Hfv7BU
+         OoKVxiaoblr69i+ewVVSDufIBAvH/vNOPrmA/6klmqBe5XmYliYpUHxkhoegedYtQbp5
+         Dc/3xmILoIXVkqmqfSmuo5LKzu0sFAnauMiGjtpIwFNw5z6ie4Q/1g9PvSj1n/+Dihs3
+         /itZqZRYLmYALo5MMtNlzL04qZXQATISpnU0M/ymgpcXpVhD8FBSYJnsWqAxHttzxDfY
+         U1BQ==
+X-Gm-Message-State: AAQBX9eGJE6J6m+yA1baDDtTIRVlXAAbf9X2L+JHGyQFYNeTuXgIbc1L
+        +BltphkL5Ypf+OW994W6kdI=
+X-Google-Smtp-Source: AKy350ak9wGsiF9xXKquHuS6fiWGFlLoT/KizsEmKlqSw6wiiOnCOZh9KwtUQUXE/BoiyAZ5k1Hx1Q==
+X-Received: by 2002:a1c:7211:0:b0:3ef:7584:9896 with SMTP id n17-20020a1c7211000000b003ef75849896mr5529893wmc.26.1680727170331;
+        Wed, 05 Apr 2023 13:39:30 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.25
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:39:27 -0700 (PDT)
+        Wed, 05 Apr 2023 13:39:29 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
@@ -75,9 +75,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 10/12] net: dsa: mt7530: switch to if/else statements on mt7530_setup_port6()
-Date:   Wed,  5 Apr 2023 23:38:57 +0300
-Message-Id: <20230405203859.391267-11-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 11/12] net: dsa: mt7530: set TRGMII RD TAP if trgmii is being used
+Date:   Wed,  5 Apr 2023 23:38:58 +0300
+Message-Id: <20230405203859.391267-12-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230405203859.391267-1-arinc.unal@arinc9.com>
 References: <20230405203859.391267-1-arinc.unal@arinc9.com>
@@ -96,76 +96,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-This code is from before this driver was converted to phylink API. Phylink
-deals with the unsupported interface cases before mt7530_setup_port6() is
-run. Therefore, the default case would never run. However, it must be
-defined nonetheless to handle all the remaining enumeration values, the
-phy-modes.
+This code sets the Read Data (RD) TAP value to 16 for all TRGMII control
+registers.
 
-Switch to if/else statements which simplifies the code.
+The for loop iterates over all the TRGMII control registers, and
+mt7530_rmw() function is used to perform a read-modify-write operation on
+each register's RD_TAP field to set its value to 16.
+
+This operation is used to tune the timing of the read data signal in
+TRGMII to match the TX signal of the link partner.
+
+Run this if trgmii is being used. Since this code doesn't lower the
+driving, there's no apparent benefit to run this if trgmii is not being
+used.
+
+Add a comment to explain the code.
+
+Thanks to 趙皎宏 (Landen Chao) for pointing out what the code does.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+ drivers/net/dsa/mt7530.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 70a673347cf9..fe496d865478 100644
+index fe496d865478..384e601b2ecd 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
 @@ -404,7 +404,7 @@ static int
  mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
  {
  	struct mt7530_priv *priv = ds->priv;
--	u32 ncpo1, ssc_delta, trgint, xtal, val;
-+	u32 ncpo1, ssc_delta, xtal, val;
+-	u32 ncpo1, ssc_delta, xtal, val;
++	u32 ncpo1, ssc_delta, i, xtal, val;
  
  	val = mt7530_read(priv, MT7530_MHWTRAP);
  	val &= ~MHWTRAP_P6_DIS;
-@@ -419,16 +419,18 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
- 		return -EINVAL;
+@@ -464,6 +464,11 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
+ 
+ 		/* Enable the MT7530 TRGMII clocks */
+ 		core_set(priv, CORE_TRGMII_GSW_CLK_CG, REG_TRGMIICK_EN);
++
++		/* Set the Read Data TAP value of the MT7530 TRGMII */
++		for (i = 0; i < NUM_TRGMII_CTRL; i++)
++			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
++				   RD_TAP_MASK, RD_TAP(16));
  	}
  
--	switch (interface) {
--	case PHY_INTERFACE_MODE_RGMII:
--		trgint = 0;
--		break;
--	case PHY_INTERFACE_MODE_TRGMII:
--		trgint = 1;
-+	if (interface == PHY_INTERFACE_MODE_RGMII) {
-+		mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
-+			   P6_INTF_MODE(0));
-+	} else {
-+		mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
-+			   P6_INTF_MODE(1));
-+
- 		if (xtal == HWTRAP_XTAL_25MHZ)
- 			ssc_delta = 0x57;
- 		else
- 			ssc_delta = 0x87;
-+
- 		if (priv->id == ID_MT7621) {
- 			/* PLL frequency: 150MHz: 1.2GBit */
- 			if (xtal == HWTRAP_XTAL_40MHZ)
-@@ -441,17 +443,7 @@ mt7530_setup_port6(struct dsa_switch *ds, phy_interface_t interface)
- 			if (xtal == HWTRAP_XTAL_25MHZ)
- 				ncpo1 = 0x1400;
- 		}
--		break;
--	default:
--		dev_err(priv->dev, "xMII interface %d not supported\n",
--			interface);
--		return -EINVAL;
--	}
+ 	return 0;
+@@ -2227,10 +2232,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 		mt7530_write(priv, MT7530_TRGMII_TD_ODT(i),
+ 			     TD_DM_DRVP(8) | TD_DM_DRVN(8));
+ 
+-	for (i = 0; i < NUM_TRGMII_CTRL; i++)
+-		mt7530_rmw(priv, MT7530_TRGMII_RD(i),
+-			   RD_TAP_MASK, RD_TAP(16));
 -
--	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
--		   P6_INTF_MODE(trgint));
- 
--	if (trgint) {
- 		/* Disable the MT7530 TRGMII clocks */
- 		core_clear(priv, CORE_TRGMII_GSW_CLK_CG, REG_TRGMIICK_EN);
- 
+ 	/* Enable PHY access and operate in manual mode */
+ 	val = mt7530_read(priv, MT7530_MHWTRAP);
+ 	val &= ~MHWTRAP_PHY_ACCESS;
 -- 
 2.37.2
 
