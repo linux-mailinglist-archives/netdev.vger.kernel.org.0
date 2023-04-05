@@ -2,96 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADBA16D85D9
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 20:19:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 628766D85DE
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 20:20:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233445AbjDESTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 14:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
+        id S232442AbjDESUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 14:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbjDEST3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 14:19:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4E95FD4;
-        Wed,  5 Apr 2023 11:19:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229645AbjDESUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 14:20:21 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1C37689;
+        Wed,  5 Apr 2023 11:20:12 -0700 (PDT)
+Received: from mercury (dyndsl-091-248-212-122.ewe-ip-backbone.de [91.248.212.122])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 482D1628B6;
-        Wed,  5 Apr 2023 18:19:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D83C4339E;
-        Wed,  5 Apr 2023 18:19:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680718767;
-        bh=ltcRjzdGmjNXGEWJl/BooIeS7nLENBrFKJLG6Y5huOs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rof4iplmdm6LS8gZFFtPkv+WWg2r511NloWG9UpdytcmLlTi9ZWefU/bSNuGeYWhP
-         UkKnK68QxnLTpdk8BsDhiKrbG61FNCu1eu5Ke/zVi68dMpjKBPNAqoetCnADJJypzr
-         tuHVZ2y56ppzCVWUHteUx48D1b8bE8iyB4rzgxugQSbVHjZAuBSHfViAUC51BW9zpk
-         pd8m44EmC2A7LFQtS44voYcoolYADQii7YALs3R5A6tUyspVrjqZMqJHLHVIKi3R+7
-         GPBe09IgRPYKlHn9jWoG7AV3jYXJobyRgvTNaRdnqMStqOBgWEGEKFSmPKczH5k6kL
-         G8uXYybArQBJg==
-Date:   Wed, 5 Apr 2023 11:19:26 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Vernet <void@manifault.com>,
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 75B3866031B4;
+        Wed,  5 Apr 2023 19:20:10 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1680718810;
+        bh=O1SmSIaEGwTASaQ4p6AtJMjiy2CQgrBY5WPfIwkrp5g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fzAzEpU6ldXCM+XK3H6e+HZis/nAJchFpWM59ew9VuFeiMTYws6t0NpVWmCD8LiNb
+         pZA4/SOCs/EIA5rfDlV8dMKiXJ72z2tH8HnZjLDn2DkSzx8zYtE13JoPGBjJTFM+eb
+         EOoqF02Zip1wlCdQnoeCzb/VP0bNrdeiUNLXguk2zNWLZg4ifKNLsVkUgo+P1Mv3Mo
+         ingtMZYWTLb17Wv7myGa1Vr2hxzg7rhCEG8rSiiDuoHXTuI8UXHWf5qgCiwbDxhqQV
+         V5gK7vdN1yo2rJkUAmDs5rbmGhXOhPMUMvRKnfZRxFvvGQvByTcwH5/ywsriiYSt6E
+         GBBKkrCLg/xJw==
+Received: by mercury (Postfix, from userid 1000)
+        id A88D5106125E; Wed,  5 Apr 2023 20:20:08 +0200 (CEST)
+Date:   Wed, 5 Apr 2023 20:20:08 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@kernel.org>,
-        Dave Marchevsky <davemarchevsky@meta.com>,
-        Tejun Heo <tj@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Yonghong Song <yhs@meta.com>, Song Liu <song@kernel.org>
-Subject: Re: [PATCH bpf-next 0/8] bpf: Follow up to RCU enforcement in the
- verifier.
-Message-ID: <20230405111926.7930dbcc@kernel.org>
-In-Reply-To: <CAEf4BzY3-pXiM861OkqZ6eciBJnZS8gsBL2Le2rGiSU64GKYcg@mail.gmail.com>
-References: <20230404045029.82870-1-alexei.starovoitov@gmail.com>
-        <20230404145131.GB3896@maniforge>
-        <CAEf4BzYXpHMNDTCrBTjwvj3UU5xhS9mAKLx152NniKO27Rdbeg@mail.gmail.com>
-        <CAADnVQKLe8+zJ0sMEOsh74EHhV+wkg0k7uQqbTkB3THx1CUyqw@mail.gmail.com>
-        <20230404185147.17bf217a@kernel.org>
-        <CAEf4BzY3-pXiM861OkqZ6eciBJnZS8gsBL2Le2rGiSU64GKYcg@mail.gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+Subject: Re: [PATCHv2 2/2] net: ethernet: stmmac: dwmac-rk: fix optional phy
+ regulator handling
+Message-ID: <20230405182008.tmegtq5xprkcwvss@mercury.elektranox.org>
+References: <20230405161043.46190-1-sebastian.reichel@collabora.com>
+ <20230405161043.46190-3-sebastian.reichel@collabora.com>
+ <ZC2zMzaUMY0/VCRR@corigine.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4mi6hilgokkjkgxj"
+Content-Disposition: inline
+In-Reply-To: <ZC2zMzaUMY0/VCRR@corigine.com>
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 5 Apr 2023 10:22:16 -0700 Andrii Nakryiko wrote:
-> So I'm exclusively using `pw-apply -c <patchworks-url>` to apply
-> everything locally.
 
-I think you can throw -M after -c $url? It can only help... :)
+--4mi6hilgokkjkgxj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> I'd expect that at this time the script would
-> detect any Acked-by replies on *cover letter patch*, and apply them
-> across all patches in the series. Such that we (humans) can look at
-> them, fix them, add them, etc. Doing something like this in git hook
-> seems unnecessary?
+Hi Simon,
 
-Maybe mb2q can do it, IDK. I don't use the mb2q thing.
-I don't think git has a way of doing git am and insert these tags if
-they don't exist, in a single command.
+On Wed, Apr 05, 2023 at 07:43:15PM +0200, Simon Horman wrote:
+> On Wed, Apr 05, 2023 at 06:10:43PM +0200, Sebastian Reichel wrote:
+> > The usual devm_regulator_get() call already handles "optional"
+> > regulators by returning a valid dummy and printing a warning
+> > that the dummy regulator should be described properly. This
+> > code open coded the same behaviour, but masked any errors that
+> > are not -EPROBE_DEFER and is quite noisy.
+> >=20
+> > This change effectively unmasks and propagates regulators errors
+> > not involving -ENODEV, downgrades the error print to warning level
+> > if no regulator is specified and captures the probe defer message
+> > for /sys/kernel/debug/devices_deferred.
+> >=20
+> > Fixes: 2e12f536635f8 ("net: stmmac: dwmac-rk: Use standard devicetree p=
+roperty for phy regulator")
+> > Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> > ---
+> >  drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 11 ++++-------
+> >  1 file changed, 4 insertions(+), 7 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/n=
+et/ethernet/stmicro/stmmac/dwmac-rk.c
+> > index 6fdad0f10d6f..d9deba110d4b 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
+> > @@ -1656,14 +1656,11 @@ static struct rk_priv_data *rk_gmac_setup(struc=
+t platform_device *pdev,
+> >  		}
+> >  	}
+> > =20
+> > -	bsp_priv->regulator =3D devm_regulator_get_optional(dev, "phy");
+> > +	bsp_priv->regulator =3D devm_regulator_get(dev, "phy");
+> >  	if (IS_ERR(bsp_priv->regulator)) {
+> > -		if (PTR_ERR(bsp_priv->regulator) =3D=3D -EPROBE_DEFER) {
+> > -			dev_err(dev, "phy regulator is not available yet, deferred probing\=
+n");
+> > -			return ERR_PTR(-EPROBE_DEFER);
+> > -		}
+> > -		dev_err(dev, "no regulator found\n");
+> > -		bsp_priv->regulator =3D NULL;
+>=20
+> Does phy_power_on() need to be updated for this change?
+> F.e. Does the bsp_priv->regulator =3D=3D NULL still make sense?
 
-> So I think the only thing that's missing is the code that would fetch
-> all replies on the cover letter "patch" (e.g., like on [0]) and just
-> apply it across everything. We must be doing something like this for
-> acks on individual patches, so I imagine we are not far off to make
-> this work, but I haven't looked at pw-apply carefully enough to know
-> for sure.
+Yes, it can be removed (but does not hurt). The regulator API
+returns NULL for devm_regulator_get when CONFIG_REGULATOR is
+not enabled. But regulator_enable/regulator_disable are just
+'return 0;' stubs for that case anyways.
 
-The individual patches are handled by patchwork.
+-- Sebastian
 
-Don't get me wrong, I'm not disagreeing with you. Just trying to help
-and point out existing workarounds..
+> > +		ret =3D PTR_ERR(bsp_priv->regulator);
+> > +		dev_err_probe(dev, ret, "failed to get phy regulator\n");
+> > +		return ERR_PTR(ret);
+> >  	}
+> > =20
+> >  	ret =3D of_property_read_string(dev->of_node, "clock_in_out", &string=
+s);
+> > --=20
+> > 2.39.2
+> >=20
+>=20
+> --=20
+> To unsubscribe, send mail to kernel-unsubscribe@lists.collabora.co.uk.
+
+--4mi6hilgokkjkgxj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmQtu8sACgkQ2O7X88g7
++ppRzA//QWUeFo5AdCjnToZr9ZTGZKoAOkYOoiXq5DvMYDdMSL6ibt8BGYJrSQ8/
+M792jDTc9YSAAF5vhzIjRlNaJsJVTZmFHXTuS6axvZTl/YwcyhnEpkTSEyf4YQCT
+Nh+BBl7Ie54dAAIgeowmcEwxnw736AIZczRCwjAz2/ZJm5WHXf2eXzTCifiav2V2
+ouTdJEfWiUn5/UJj+m1tbdbfRO+UWE+bASkEWNArhYi/5RcC1dMWElatorRxHz/0
+6aNaGmsRrC4XWETq/rpnvrDjDJO59NRpe43SkIiP5oB/HXb0MU6iAeuWtXbYr+G2
+i7qBELe4WT4Uiz48Nub0bguVZad86bkVg8T4+rTtli/JcTtX8g6ai0iMdvY59+ui
+y9B31VQD2KTupt5tU7wH10yvrS9KG9/c7qM2e4t1Iy7FuTtE2AaeFAdH85Wna+M/
+Sfm7qhcJBL7dSprzg84JUIw0akvLUnWi56YW5NcZFWLc5PU0si0rdh6lBKQf7GyB
+1VSseI4T37/ENwiyD359hkR3KHoK5fVzlkHacg3IBWd4KoUniJnnk39SPNPTeBEg
+57BSO1DykUFrVSIdVqEz1UE6NMs9L/qrm1XEl4W2rwLe20ROfBpN43T+r8yxg45u
+kw9DAyRKwsSzlMjaiUaDqisFn/rZIrlWD4AAz9Th/HK2vaJtUfU=
+=x7Bi
+-----END PGP SIGNATURE-----
+
+--4mi6hilgokkjkgxj--
