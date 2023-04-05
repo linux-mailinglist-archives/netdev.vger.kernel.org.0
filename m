@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEA146D88C5
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A352F6D88C8
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 22:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233798AbjDEUjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 16:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
+        id S234096AbjDEUjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 16:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231886AbjDEUjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:39:35 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FA26E8D;
-        Wed,  5 Apr 2023 13:39:17 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id n19so21596919wms.0;
-        Wed, 05 Apr 2023 13:39:17 -0700 (PDT)
+        with ESMTP id S234117AbjDEUjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 16:39:36 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C986A44;
+        Wed,  5 Apr 2023 13:39:19 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id m6-20020a05600c3b0600b003ee6e324b19so22722327wms.1;
+        Wed, 05 Apr 2023 13:39:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680727156;
+        d=gmail.com; s=20210112; t=1680727158;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jp4sFg0ojMV8MMU8A9Bkb7JvDbiYw4w687Rv39wQaSk=;
-        b=ogrQ00Dp40q8HszYOjDW7BkHkbDsaeh3gTS3X2D8xEh8EyqwhN2zlRUj4CxUSH53gD
-         bWQ7QRsAkRS8V8byFcM4sAvzSvnh1MmD3JPIiSVk5NcSczRX50Hc9yjKx4J25aXqw1dy
-         Ni/W6LBRqD5VaXUjJiwFb4POV7CM1UqLnj/NucR1ltexeiWhjH7zhWo5vON9+Ts+UDHG
-         xZRMXaxHTU5Q9dx4NKypSpTFdU9AsyV561K2f6u/nj2rqvgnyUxO2RhwCpgs5yoGFjcv
-         Fn//gj1hdEvVhTq28x67GvvPz9Ch2OdhakpzXrF25he58FllBXn8PqXws8ZIwVz2U4My
-         IBjg==
+        bh=Ry2z2xzBFl6Ly3vSlf60f+roED9HAgz7ua4fkZgzGE0=;
+        b=B10ji6xoiT0KxNstoIf5OK4ul/y1PldmpWHRRnHJt1TTMY8uy1Ri+rx+FbMG8mP5nx
+         wTD2y33SyfmX093zp8tIpavy1sb+9KEomRXl/FO+f6xxOC/m9jruqhWPxaIQCdu1LVNf
+         uvT/t3r/to1RYojP7TVRl8ook1fgIpCss11RcOxcLXlUurmJsQbXhBALHRSAFxiVVg5f
+         ymEWzmFrLRRgAiYlmWj3C/y8x2kup19rTBLxrMKnHg+Y4h4mBKBFP6Nb/S9p9nmqCFSs
+         KocXGXZdx8t7MCkX7DZ82p2f7imGHXztIQEeRqlIiNfvyu1RFK2Do2NIrLimLMw8Z5ff
+         bpIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680727156;
+        d=1e100.net; s=20210112; t=1680727158;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=jp4sFg0ojMV8MMU8A9Bkb7JvDbiYw4w687Rv39wQaSk=;
-        b=sJ2YpESFRx/hqM3hxxtwRsArxXLw44RyndoEV5nAfA+lOhjKuiNmx5r9zecmffGvnt
-         y2QRAg1MnhD746pAkyWM0RH6IKSfqd12x1OQXZ8o7EVkxGd/y/k2xfgBKtiu7cm9wMg7
-         PmdShuFZdt+TNps0x8sx5rv59Tw1XMN03bnwdcLPpEgGY5Ua0Q4UqtS7IKcdY7J/vNF8
-         TDpOdQ75SE9Bnp3tBKJ90Vi15np8nu4CkMB5gtYhuOdJ/7FeVuBvOzt2Ywi7YrN2k/w8
-         Ka4Ci8x+kEu0nQhlDZoN7rN6hVLMlmHZqCOtnQ0eL660xLrVXQFEcDADDD0n8TEuoLK+
-         9rBg==
-X-Gm-Message-State: AAQBX9fKKejc/xao7l5UIgcmw5kgA5L5eKJNJAFFPvS2Md0542dSxbDC
-        bT4fTmn7t4Zk37tCzkR92ag=
-X-Google-Smtp-Source: AKy350ZVk8+Ei+TV+4GGdj0W1xwoZVPnMiI9MhynZB1AsFil19iJwi0XmYRr9kmqdo9q1BV4k/E/1A==
-X-Received: by 2002:a05:600c:acb:b0:3ed:b6ad:54d with SMTP id c11-20020a05600c0acb00b003edb6ad054dmr5675428wmr.18.1680727155894;
-        Wed, 05 Apr 2023 13:39:15 -0700 (PDT)
+        bh=Ry2z2xzBFl6Ly3vSlf60f+roED9HAgz7ua4fkZgzGE0=;
+        b=qWpyjiwgC0OjPptaSUwhq9JuEnu8lum84Nnm8CllOTYCRdlu+2OaUs7c4czK09K/Cn
+         +lB4bVkrL3XUcG42oF0S4ylcuPODEJHyHwt10nX6hR0Lh2CHLpcxQSIRmdfSiJB1Rfd4
+         YiWnVe5RHV+3x92FcqnpbLBvgxvDXOJo3KXf0m5f1M5glK8mZGOBlf2g1k4jJhTppRFV
+         dpgh3yZCPHyFi0u9X3+YywMHhlN0Rl4+JrXMIbGgUaziXhSapFhYPU6Otjyf3rvCikly
+         /VzQi8hzGLLOABTiecRdCaj5NSO6tM7I3Cld6VTo/x7M8b6/YFuSyz41eJBW2fFg+pss
+         CqAw==
+X-Gm-Message-State: AAQBX9cDdB2Uo0jOtjIJMcM5p8d/DgFK80kLYNHAky8Nxy1E81nSg419
+        hy1vYXEPQwv7fToPFF8X2cg=
+X-Google-Smtp-Source: AKy350bQFfU4n56kkWO8UhzXgxMrHnZq+NNzuA43JcBRFIly5bQiINuogGqFG5ekfNdRs/vk5zwdgA==
+X-Received: by 2002:a05:600c:ace:b0:3ed:ea48:cd92 with SMTP id c14-20020a05600c0ace00b003edea48cd92mr5970347wmr.15.1680727158320;
+        Wed, 05 Apr 2023 13:39:18 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.13
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c469300b003eda46d6792sm3259867wmo.32.2023.04.05.13.39.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 13:39:15 -0700 (PDT)
+        Wed, 05 Apr 2023 13:39:17 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
@@ -75,9 +75,9 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [RFC PATCH net-next 05/12] net: dsa: mt7530: remove p5_intf_sel default case from mt7530_setup_port5()
-Date:   Wed,  5 Apr 2023 23:38:52 +0300
-Message-Id: <20230405203859.391267-6-arinc.unal@arinc9.com>
+Subject: [RFC PATCH net-next 06/12] net: dsa: mt7530: do not set CPU port interfaces to PHY_INTERFACE_MODE_NA
+Date:   Wed,  5 Apr 2023 23:38:53 +0300
+Message-Id: <20230405203859.391267-7-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20230405203859.391267-1-arinc.unal@arinc9.com>
 References: <20230405203859.391267-1-arinc.unal@arinc9.com>
@@ -96,53 +96,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-There're two code paths for setting up port 5:
+There is no need to set priv->p5_interface and priv->p6_interface to
+PHY_INTERFACE_MODE_NA on mt7530_setup() and mt7531_setup().
 
-mt7530_setup()
--> mt7530_setup_port5()
+As Vladimir explained, in include/linux/phy.h we have:
 
-mt753x_phylink_mac_config()
--> mt753x_mac_config()
-   -> mt7530_mac_config()
-      -> mt7530_setup_port5()
+typedef enum {
+	PHY_INTERFACE_MODE_NA,
 
-On the first code path, priv->p5_intf_sel is either set to
-P5_INTF_SEL_PHY_P0 or P5_INTF_SEL_PHY_P4 when mt7530_setup_port5() is run.
+In lack of other initialiser, the first element of an enum gets the value 0
+in C.
 
-On the second code path, priv->p5_intf_sel is set to P5_INTF_SEL_GMAC5 when
-mt7530_setup_port5() is run.
+Then, "priv" is allocated by this driver with devm_kzalloc(), which means
+that its entire memory is zero-filled. So priv->p5_interface and
+priv->p6_interface are already set to 0, PHY_INTERFACE_MODE_NA.
 
-Remove this default case which will never run.
+There is no code path between the devm_kzalloc(), and the position in
+mt7530_setup() and mt7531_setup() that would change the value of
+priv->p5_interface or priv->p6_interface from 0.
+
+The only place they are modified is mt753x_phylink_mac_config() but
+mt753x_phylink_mac_config() runs after mt753x_setup(), as can be seen on
+the code path below.
+
+mt7530_probe()
+   -> dsa_register_switch()
+      -> dsa_switch_probe()
+         -> dsa_tree_setup()
+            -> dsa_tree_setup_switches()
+               -> dsa_switch_setup()
+                  -> ds->ops->setup(): mt753x_setup()
+            -> dsa_tree_setup_ports()
+               -> dsa_port_setup()
+                  [...]
+                  -> dsa_port_phylink_create()
+                     [...]
+                     -> phylink_mac_config()
+                        -> pl->mac_ops->mac_config():
+                           dsa_port_phylink_mac_config()
+                           -> ds->ops->phylink_mac_config():
+                              mt753x_phylink_mac_config()
+
+Therefore, do not put 0 into a variable containing 0.
 
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- drivers/net/dsa/mt7530.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/dsa/mt7530.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index fccd59564532..8a47dcb96cdf 100644
+index 8a47dcb96cdf..fc5428baa905 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -943,10 +943,6 @@ static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
- 		/* MT7530_P5_MODE_GMAC: P5 -> External phy or 2nd GMAC */
- 		val &= ~MHWTRAP_P5_DIS;
- 		break;
--	default:
--		dev_err(ds->dev, "Unsupported p5_intf_sel %d\n",
--			priv->p5_intf_sel);
--		goto unlock_exit;
- 	}
+@@ -2247,8 +2247,6 @@ mt7530_setup(struct dsa_switch *ds)
+ 	val |= MHWTRAP_MANUAL;
+ 	mt7530_write(priv, MT7530_MHWTRAP, val);
  
- 	/* Setup RGMII settings */
-@@ -980,7 +976,6 @@ static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
- 	    priv->p5_intf_sel == P5_INTF_SEL_PHY_P4)
- 		priv->p5_interface = interface;
+-	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+-
+ 	/* Enable and reset MIB counters */
+ 	mt7530_mib_reset(ds);
  
--unlock_exit:
- 	mutex_unlock(&priv->reg_mutex);
- }
+@@ -2466,10 +2464,6 @@ mt7531_setup(struct dsa_switch *ds)
+ 	mt7530_rmw(priv, MT7531_GPIO_MODE0, MT7531_GPIO0_MASK,
+ 		   MT7531_GPIO0_INTERRUPT);
  
+-	/* Let phylink decide the interface later. */
+-	priv->p5_interface = PHY_INTERFACE_MODE_NA;
+-	priv->p6_interface = PHY_INTERFACE_MODE_NA;
+-
+ 	/* Enable PHY core PLL, since phy_device has not yet been created
+ 	 * provided for phy_[read,write]_mmd_indirect is called, we provide
+ 	 * our own mt7531_ind_mmd_phy_[read,write] to complete this
 -- 
 2.37.2
 
