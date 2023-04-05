@@ -2,72 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FB96D7B59
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 13:30:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 450986D7B64
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 13:32:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237310AbjDELad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 07:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
+        id S237771AbjDELcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 07:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236978AbjDELac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 07:30:32 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408931BEA;
-        Wed,  5 Apr 2023 04:30:31 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id a640c23a62f3a-94748e41044so30487966b.1;
-        Wed, 05 Apr 2023 04:30:31 -0700 (PDT)
+        with ESMTP id S237538AbjDELcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 07:32:14 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5831701;
+        Wed,  5 Apr 2023 04:32:14 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id f22so30002265plr.0;
+        Wed, 05 Apr 2023 04:32:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680694229;
+        d=gmail.com; s=20210112; t=1680694333;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HpdM1fn1DrC1PKAdJR2ZSS2rMGNzgFU5L+dCTrf3tRU=;
-        b=UTjS9jrQbpDvYRC4bMLJYJGC3k2T/LB3b3SWWdiYPR0CjxCzY5MQyxflCJwH+RJRS7
-         Kgtg79sj+ILkQ/bep34irWoStyzOXI2BiSx74IC6N4Z1aFJnirFYK8j74ouud84MYRtx
-         ZUvWHn0PPJMyL9DDdTmiIDWbwHD9IzpvLFmkLvF1BfO7Kzzy7RiU0TUmBpgi4QPmV1zB
-         Yxo0B5Dpzh5f4UEF+j5QbSNgaLksKAPA6Wvf1y78FjUI9Odvtt0qKnrE5rNPWrkEj7Jg
-         NuHf2RZqBlOzrYLDZwPOX4V8APEeges0+P2xMHU+SZm6nkEkSLYUWZaonMiahxtoVZf0
-         tGBQ==
+        bh=6/+oE/1qzPWFssmdy91t8fdNIxgaCXNVyfJtxrkUuno=;
+        b=LPHPvzA1J020CPcW/uXB9oEmBOAdH98SO1O3QaxLCtkZbyzAsTMAGr5YaZSCMl1Sv4
+         29XUgCecwJNKxDtrwRBYhdfwHJOEfxT16gkK0EL72JKOtssRTOG9PsnXoQyR5g5VpnxY
+         BQxL1gNPKPevpom9JX1dDoWI+Dip2Tvus3WjQ1Ia2r1mhQkT0lUMXxOJK/qTMPHD1YrX
+         7s56G8hzf1IrDjRAdGDC0Pu4dAu8B5SwBAmNIKLAW7q3yvbwMUKkItFKBZIpiBib7xg0
+         cWL8YtGKQdj0zI0SvCfoy2oakEcJEis4Ujz7xm8R7Cq7F7xO/l0JqWW8N0NkayjMhJkl
+         Wdaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680694229;
+        d=1e100.net; s=20210112; t=1680694333;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HpdM1fn1DrC1PKAdJR2ZSS2rMGNzgFU5L+dCTrf3tRU=;
-        b=UFnXBLQKmx718OlFEt246v2aVywg720AweRh2YfLflHj0lg0T98NkMC6myYxxi8OMY
-         DUHrBxhJQIOtH4+drLqvzx/aM3y8iu7PnEHyEH4EPXszpo+of9Jf7LjaD4TmFs7yKxd0
-         KPAs8CMY9AtGY2DthR+fi9Zc8r0hgyVR3wHFUwr1BgLSvR3Eks/TtCiE6m6sOTvKTYiM
-         03nKR6idNo8fdfk7rnNZ4AkPz22jKoVGz0XoS2BNZZ6gKsQzZfnpASasWNlVBUn2XckT
-         QDZktkK7SQs1WZ128WxMkOi+RDcItvXTXEhgM3ENzDJwGpl4irkD5da1OVs111vmx7jP
-         L7rQ==
-X-Gm-Message-State: AAQBX9fhPW/dER5fxKVpOb5sxuEnwFrFpfi4JrIL5T/zIJGgI6az7krr
-        ne4VQUIB6CDjF430MnV5LrQ=
-X-Google-Smtp-Source: AKy350Z4wEfHi4E1C4111W3snVxzXCX7+XVJkBZJJ09MtE+z6h7zJFIURLu8JNeDyQtrQt+2A3tWQA==
-X-Received: by 2002:aa7:df99:0:b0:502:2f3:abd3 with SMTP id b25-20020aa7df99000000b0050202f3abd3mr1540900edy.35.1680694229333;
-        Wed, 05 Apr 2023 04:30:29 -0700 (PDT)
-Received: from skbuf ([188.27.184.189])
-        by smtp.gmail.com with ESMTPSA id e9-20020a50a689000000b004fd2a7aa1ecsm7179244edc.32.2023.04.05.04.30.28
+        bh=6/+oE/1qzPWFssmdy91t8fdNIxgaCXNVyfJtxrkUuno=;
+        b=EMCPxpAm6PqyrmYfF3R++O6Qt8BL1kjJYtBn3Jkqhi+3SYJHpJ46tv0ZekSDyucKOL
+         dpLlTw/pG1JgtnawzXojsUiNb5Itd4ZC609b07NrzI5FI5msy53qaTUiE0bOlPK4DGqK
+         u3S1xzpqliVnvU4IZ+TdxoW+TtSTvhxA7c8o7jOhMqeo6laL87G8asQadKU/r+G5TcrT
+         wUF0Tu+Y+yNKXZO4Ao9gGpuGmwEqdUrwTl6wY5TUGgpJngq1UqVl/p/STf70QzJWS9di
+         5t/xu+m5qaqzt8htauccBBOk13hMLDDO2TCYQJy5CnnXczMl4JrmUC+ffDOza7i0YwA+
+         IN8Q==
+X-Gm-Message-State: AAQBX9eyQGI5Rd4MZJBu26XEBolcPjV+ntmxT7B1VJOCNKPUDYnAS+p/
+        3h1jYvIUD18OvOCm5hfMRY0=
+X-Google-Smtp-Source: AKy350aldD4O1UlZUF1oXulUPVTcaLV0KErUUZU6C2EUVJw/WIPcboaC0O4LT9MoT0yu7DNNfS59WQ==
+X-Received: by 2002:a17:902:c94e:b0:1a2:79f0:f059 with SMTP id i14-20020a170902c94e00b001a279f0f059mr6989062pla.28.1680694333386;
+        Wed, 05 Apr 2023 04:32:13 -0700 (PDT)
+Received: from dragonet (dragonet.kaist.ac.kr. [143.248.133.220])
+        by smtp.gmail.com with ESMTPSA id p10-20020a170902a40a00b0019aa8149cb9sm9964285plq.79.2023.04.05.04.32.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 04:30:29 -0700 (PDT)
-Date:   Wed, 5 Apr 2023 14:30:26 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Wed, 05 Apr 2023 04:32:12 -0700 (PDT)
+Date:   Wed, 5 Apr 2023 20:32:09 +0900
+From:   "Dae R. Jeong" <threeearcat@gmail.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     edumazet@google.com, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net: dsa: brcm,sf2: Drop unneeded
- "#address-cells/#size-cells"
-Message-ID: <20230405113026.a7xruh5lsmvizqmt@skbuf>
-References: <20230404204152.635400-1-robh@kernel.org>
+Subject: Re: INFO: task hung in rfkill_unregister
+Message-ID: <ZC1cObb9bAUKxdwu@dragonet>
+References: <ZC1P_MSpORnZZfL_@dragonet>
+ <20230405111921.853-1-hdanton@sina.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230404204152.635400-1-robh@kernel.org>
+In-Reply-To: <20230405111921.853-1-hdanton@sina.com>
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -78,13 +72,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 04, 2023 at 03:41:52PM -0500, Rob Herring wrote:
-> There's no need for "#address-cells/#size-cells" in the brcm,sf2 node as
-> no immediate child nodes have an address. What was probably intended was
-> to put them in the 'ports' node, but that's not necessary as that is
-> covered by ethernet-switch.yaml via dsa.yaml.
+On Wed, Apr 05, 2023 at 07:19:21PM +0800, Hillf Danton wrote:
+> On 5 Apr 2023 19:39:56 +0900 "Dae R. Jeong" <threeearcat@gmail.com>
+> > Hi,
+> > 
+> > We observed an issue "INFO: task hung in rfkill_unregister" during fuzzing.
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+> Known issue [1].
+> 
+> [1] https://lore.kernel.org/lkml/000000000000788a6905f0c06160@google.com/
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Ah, I couldn't find it in the syzbot dashboard. Thank you for letting
+me know it.
+
+> > Unfortunately, we have not found a reproducer for the crash yet. We
+> > will inform you if we have any update on this crash.  Detailed crash
+> > information is attached below.
+> > 
+> > Best regards,
+> > Dae R. Jeong
+> > 
+> > -----
+> > - Kernel version:
+> > 6.2
+> 
+> Curious why 6.2 is preferred over upstream given waste of time looking at 6.2
+> today.
+
+I'm sorry for wasting your time. I observed the issue before, but I
+had my jobs to do (kernel development is not my main job) so I
+reported it now with a small hope of being helpful. I will use the
+upstream kernel when I try to find bugs later.
+
+Best regards,
+Dae R. Jeong
