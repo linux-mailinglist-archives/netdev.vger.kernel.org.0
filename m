@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4438D6D7824
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E0B6D7853
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 11:31:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237384AbjDEJ1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 05:27:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53166 "EHLO
+        id S237672AbjDEJbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 05:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237415AbjDEJ1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:27:50 -0400
+        with ESMTP id S237538AbjDEJa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 05:30:29 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46E64C27
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:27:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87B7527A
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 02:29:50 -0700 (PDT)
 Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <m.felsch@pengutronix.de>)
-        id 1pjzQ6-0004pA-Oy; Wed, 05 Apr 2023 11:27:10 +0200
+        id 1pjzQ7-0004pA-RV; Wed, 05 Apr 2023 11:27:11 +0200
 From:   Marco Felsch <m.felsch@pengutronix.de>
-Date:   Wed, 05 Apr 2023 11:26:59 +0200
-Subject: [PATCH 08/12] net: phy: add possibility to specify mdio device
- parent
+Date:   Wed, 05 Apr 2023 11:27:00 +0200
+Subject: [PATCH 09/12] net: phy: nxp-tja11xx: make use of
+ phy_device_atomic_register()
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20230405-net-next-topic-net-phy-reset-v1-8-7e5329f08002@pengutronix.de>
+Message-Id: <20230405-net-next-topic-net-phy-reset-v1-9-7e5329f08002@pengutronix.de>
 References: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
 In-Reply-To: <20230405-net-next-topic-net-phy-reset-v1-0-7e5329f08002@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
@@ -68,50 +68,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the possibility to override the mdiodev parent device. This is
-required for the TJA1102 dual-port phy where the 2nd port uses the first
-port device.
+Use the new atomic API to setup and register the phy accordingly.
 
 Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 ---
- drivers/net/phy/phy_device.c | 2 +-
- include/linux/phy.h          | 3 +++
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/phy/nxp-tja11xx.c | 31 +++++++------------------------
+ 1 file changed, 7 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index a784ac06e6a9..30b3ac9818b1 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -642,7 +642,7 @@ static struct phy_device *phy_device_alloc(struct phy_device_config *config)
- 		return ERR_PTR(-ENOMEM);
+diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+index 2a4c0f6d74eb..af9cb5e1a7ee 100644
+--- a/drivers/net/phy/nxp-tja11xx.c
++++ b/drivers/net/phy/nxp-tja11xx.c
+@@ -561,6 +561,8 @@ static void tja1102_p1_register(struct work_struct *work)
+ 			/* Real PHY ID of Port 1 is 0 */
+ 			.phy_id = PHY_ID_TJA1102,
+ 			.phy_id_broken = true,
++			.parent_mdiodev = dev,
++			.fwnode = of_fwnode_handle(child),
+ 		};
+ 		struct phy_device *phy;
  
- 	mdiodev = &dev->mdio;
--	mdiodev->dev.parent = &bus->dev;
-+	mdiodev->dev.parent = config->parent_mdiodev ? : &bus->dev;
- 	mdiodev->dev.bus = &mdio_bus_type;
- 	mdiodev->dev.type = &mdio_bus_phy_type;
- 	mdiodev->bus = bus;
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index bdf6d27faefb..d7aea8622a95 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -760,6 +760,8 @@ static inline struct phy_device *to_phy_device(const struct device *dev)
-  * struct phy_device_config - Configuration of a PHY
-  *
-  * @mii_bus: The target MII bus the PHY is connected to
-+ * @parent_mdiodev: Set the MDIO device parent if specified else mii_bus->dev is
-+ *                  used as parent.
-  * @phy_addr: PHY address on the MII bus
-  * @fwnode: The PHY firmware handle
-  * @phy_id: UID for this device found during discovery
-@@ -774,6 +776,7 @@ static inline struct phy_device *to_phy_device(const struct device *dev)
+@@ -583,30 +585,11 @@ static void tja1102_p1_register(struct work_struct *work)
+ 			continue;
+ 		}
  
- struct phy_device_config {
- 	struct mii_bus *mii_bus;
-+	struct device *parent_mdiodev;
- 	int phy_addr;
- 	struct fwnode_handle *fwnode;
- 	u32 phy_id;
+-		phy = phy_device_create(&config);
+-		if (IS_ERR(phy)) {
+-			dev_err(dev, "Can't create PHY device for Port 1: %i\n",
+-				config.phy_addr);
+-			continue;
+-		}
+-
+-		/* Overwrite parent device. phy_device_create() set parent to
+-		 * the mii_bus->dev, which is not correct in case.
+-		 */
+-		phy->mdio.dev.parent = dev;
+-
+-		ret = of_mdiobus_phy_device_register(bus, phy, child,
+-						     config.phy_addr);
+-		if (ret) {
+-			/* All resources needed for Port 1 should be already
+-			 * available for Port 0. Both ports use the same
+-			 * interrupt line, so -EPROBE_DEFER would make no sense
+-			 * here.
+-			 */
+-			dev_err(dev, "Can't register Port 1. Unexpected error: %i\n",
+-				ret);
+-			phy_device_free(phy);
+-		}
++		phy = phy_device_atomic_register(&config);
++		if (IS_ERR(phy))
++			dev_err_probe(dev, PTR_ERR(phy),
++				      "Can't create PHY device for Port 1: %i\n",
++				      config.phy_addr);
+ 	}
+ }
+ 
 
 -- 
 2.39.2
