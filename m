@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8FF6D870F
-	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03BA96D8719
+	for <lists+netdev@lfdr.de>; Wed,  5 Apr 2023 21:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233891AbjDETkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 15:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33782 "EHLO
+        id S232822AbjDETmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 15:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232442AbjDETk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:40:29 -0400
-Received: from out-37.mta1.migadu.com (out-37.mta1.migadu.com [95.215.58.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731987D8A
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 12:40:05 -0700 (PDT)
-Message-ID: <c0596a62-0873-5638-920b-235c55ff33a2@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1680723534;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Frao4MIUa9QmfySt08uJoD9P4bRv8oM72t8WzbutWUM=;
-        b=LZIQZ/bjypmz3jEsl53xilMeBc8YgL+90Ws8fG4BKba1/I26tuMu9JqWANc3SYv8W2e4+N
-        lcrcfXl2A3g8qWqBh3QCDWEDOrcTrGi4pJB91D1RvAiE9sttQNyxOtX9nRRSRZZP2zT2ey
-        nszvNq6wqqY3nycE/qhz4IiZNSIWTvs=
-Date:   Wed, 5 Apr 2023 12:38:48 -0700
+        with ESMTP id S230059AbjDETmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 15:42:35 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553687DA1;
+        Wed,  5 Apr 2023 12:42:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1680723730; x=1712259730;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Il/c9zrZadYU+NJze4owrkPjczvBjhetfSLhJPy5Zbs=;
+  b=GQUoC3wxNbxhgcHYv8aW7Aky2HeAlY4R0PU05DYypWVf3oxiC4Vu5vo/
+   J2PciWleRKWIDf7SuE4KjJvPeXFsSy6rP4hAtis1CeVaQ/xh0U/k8WqFC
+   CDc7E44BFYjUT+1p2o8uQAAtSqS6g+fjIk0EJpUAp9S3uVrq2EHRUYcjQ
+   M=;
+X-IronPort-AV: E=Sophos;i="5.98,321,1673913600"; 
+   d="scan'208";a="201472885"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 19:41:58 +0000
+Received: from EX19MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-m6i4x-32fb4f1a.us-west-2.amazon.com (Postfix) with ESMTPS id 2F1CCC060D;
+        Wed,  5 Apr 2023 19:41:57 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.25; Wed, 5 Apr 2023 19:41:56 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.106.101.44) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 5 Apr 2023 19:41:53 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <bpf@vger.kernel.org>, <davem@davemloft.net>, <dsahern@kernel.org>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
+        <threeearcat@gmail.com>, <yoshfuji@linux-ipv6.org>,
+        <kuniyu@amazon.com>
+Subject: Re: KASAN: use-after-free Read in tcp_write_timer_handler
+Date:   Wed, 5 Apr 2023 12:41:43 -0700
+Message-ID: <20230405194143.15708-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iKn4rpqj_8fYt0UMMgAq5L_2PNoY0Ev70ck8u4t4FC_=g@mail.gmail.com>
+References: <CANn89iKn4rpqj_8fYt0UMMgAq5L_2PNoY0Ev70ck8u4t4FC_=g@mail.gmail.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf] xsk: Fix unaligned descriptor validation
-Content-Language: en-US
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Kal Conley <kal.conley@dectris.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20230403143601.32168-1-kal.conley@dectris.com>
- <CAJ8uoz1BKJ1_jq6Sum-OkZQTR_ftmr5Enj+Cmn4Qsi15_jOpbQ@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <CAJ8uoz1BKJ1_jq6Sum-OkZQTR_ftmr5Enj+Cmn4Qsi15_jOpbQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.106.101.44]
+X-ClientProxiedBy: EX19D032UWA004.ant.amazon.com (10.13.139.56) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-2.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,21 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/3/23 11:25 PM, Magnus Karlsson wrote:
-> On Mon, 3 Apr 2023 at 16:38, Kal Conley <kal.conley@dectris.com> wrote:
->>
->> Make sure unaligned descriptors that straddle the end of the UMEM are
->> considered invalid. Currently, descriptor validation is broken for
->> zero-copy mode which only checks descriptors at page granularity.
->> Descriptors that cross the end of the UMEM but not a page boundary may
->> be therefore incorrectly considered valid. The check needs to happen
->> before the page boundary and contiguity checks in
->> xp_desc_crosses_non_contig_pg. Do this check in
->> xp_unaligned_validate_desc instead like xp_check_unaligned already does.
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 5 Apr 2023 13:28:16 +0200
+> On Wed, Apr 5, 2023 at 12:41 PM Dae R. Jeong <threeearcat@gmail.com> wrote:
+> >
+> > Hi,
+> >
+> > We observed an issue "KASAN: use-after-free Read in tcp_write_timer_handler" during fuzzing.
+> >
+> > Unfortunately, we have not found a reproducer for the crash yet. We
+> > will inform you if we have any update on this crash.  Detailed crash
+> > information is attached below.
+> >
 > 
-> Thanks for catching this Kal.
+> Thanks for the report.
 > 
-> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> I have dozens of similar syzbot reports, with no repro.
+> 
+> I usually hold them, because otherwise it is just noise to mailing lists.
+> 
+> Normally, all user TCP sockets hold a reference on the netns
+> 
+> In all these cases, we see a netns being dismantled while there is at
+> least one socket with a live timer.
+> 
+> This is therefore a kernel TCP socket, for which we do not have yet
+> debugging infra ( REF_TRACKER )
+> 
+> CONFIG_NET_DEV_REFCNT_TRACKER=y is helping to detect too many dev_put(),
+> we need something tracking the "kernel sockets" as well.
 
-Is this case covered by an existing test?
+Maybe I missed something, but we track kernel sockets with netns
+by notrefcnt_tracker ?
 
+I thought now CONFIG_NET_NS_REFCNT_TRACKER can catch the case.
+
+
+> 
+> Otherwise bugs in subsystems not properly dismantling their kernel
+> socket at netns dismantle are next to impossible to track and fix.
+> 
+> If anyone has time to implement this, feel free to submit patches.
+> 
+> Thanks.
