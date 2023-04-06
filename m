@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8486D9344
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 11:51:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ACAB6D934A
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 11:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235411AbjDFJvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 05:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
+        id S236408AbjDFJvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 05:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236909AbjDFJvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 05:51:07 -0400
+        with ESMTP id S236726AbjDFJvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 05:51:16 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F7F9EF6;
-        Thu,  6 Apr 2023 02:49:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843EC10E7;
+        Thu,  6 Apr 2023 02:49:48 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1pkMEa-0000Bw-0t;
-        Thu, 06 Apr 2023 11:48:48 +0200
-Date:   Thu, 6 Apr 2023 10:48:45 +0100
+        id 1pkMF0-0000Cf-1R;
+        Thu, 06 Apr 2023 11:49:14 +0200
+Date:   Thu, 6 Apr 2023 10:49:11 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     arinc9.unal@gmail.com
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -43,16 +43,16 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 5/7] dt-bindings: net: dsa: mediatek,mt7530: disallow
- reset without mediatek,mcm
-Message-ID: <ZC6VfagqZQ18hPhm@makrotopia.org>
+Subject: Re: [PATCH 6/7] dt-bindings: net: dsa: mediatek,mt7530: disallow
+ core-supply and io-supply
+Message-ID: <ZC6Vl90k5CyeLhVE@makrotopia.org>
 References: <20230406080141.22924-1-arinc.unal@arinc9.com>
- <20230406080141.22924-5-arinc.unal@arinc9.com>
+ <20230406080141.22924-6-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230406080141.22924-5-arinc.unal@arinc9.com>
+In-Reply-To: <20230406080141.22924-6-arinc.unal@arinc9.com>
 X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,45 +61,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 11:01:39AM +0300, arinc9.unal@gmail.com wrote:
+On Thu, Apr 06, 2023 at 11:01:40AM +0300, arinc9.unal@gmail.com wrote:
 > From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> The resets and reset-names properties are used only if mediatek,mcm is
-> used. Set them to false if mediatek,mcm is not used.
-> 
-> Remove now unnecessary 'reset-names: false' from MT7988.
+> The core-supply and io-supply properties are used only on hardware that
+> uses the mediatek,mt7530 compatible string. Set them to false if the
+> compatible string is not mediatek,mt7530.
 > 
 > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
 Acked-by: Daniel Golle <daniel@makrotopia.org>
 
 > ---
->  .../devicetree/bindings/net/dsa/mediatek,mt7530.yaml         | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>  .../devicetree/bindings/net/dsa/mediatek,mt7530.yaml          | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 > diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index 9d99f7303453..3fd953b1453e 100644
+> index 3fd953b1453e..0095b7fcef72 100644
 > --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 > +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> @@ -282,6 +282,10 @@ allOf:
+> @@ -299,6 +299,10 @@ allOf:
 >        required:
->          - resets
->          - reset-names
+>          - core-supply
+>          - io-supply
 > +    else:
 > +      properties:
-> +        resets: false
-> +        reset-names: false
+> +        core-supply: false
+> +        io-supply: false
 >  
->    - dependencies:
->        interrupt-controller: [ interrupts ]
-> @@ -324,7 +328,6 @@ allOf:
+>    - if:
 >        properties:
->          gpio-controller: false
->          mediatek,mcm: false
-> -        reset-names: false
->  
->  unevaluatedProperties: false
->  
 > -- 
 > 2.37.2
 > 
