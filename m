@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16ECE6D90F9
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177B46D9104
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:02:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235463AbjDFIAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 04:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41070 "EHLO
+        id S234703AbjDFICP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 04:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235162AbjDFIAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:00:40 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2CE2E62;
-        Thu,  6 Apr 2023 01:00:38 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id eh3so147227535edb.11;
-        Thu, 06 Apr 2023 01:00:38 -0700 (PDT)
+        with ESMTP id S233572AbjDFICO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:02:14 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F09C93;
+        Thu,  6 Apr 2023 01:02:13 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id he13so2523225wmb.2;
+        Thu, 06 Apr 2023 01:02:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680768037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CQH+iRWXQXzrMch9aFmJkKfa79kh+f41Jg9zUvyUDYc=;
-        b=IzH1LBufvIiF5rjtHs2OViOTXLaUQ/nT0dvzEtNTVKku7M2CyskBPXnebDVe/qA0aR
-         FusvQs0umKVGxpL/VTQ0zwtxVwYQPwvXR2akjtb/iV1UkJZYhJlzwof2ojROi0PmDAJG
-         jvbqQ9+83P9+lvKfeB9y/itUyMR5fqY/xoRvOLFVcd8DzX6Ug/KMAag65CqjQgsStuTc
-         FO5wHPzoDfkHBSjioRBu5486GaRhP2qMTsgc210CuUEMvdXz+HT3YunOSDi9a/Oy9GIb
-         8fu52k0CNbdwc/s3N6aDZnO84/uixLGPYXKSKmfMV2POalKrRWGUYRhL2F0SeI9ItmvP
-         SS8w==
+        d=gmail.com; s=20210112; t=1680768132;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ICl5yXhMxeO2u+7yTPtP7Jl3u4X7NhJCydXnMv94CdE=;
+        b=it8N5epu/hXZbHWuT1hr22stKIGl0pvvUn+gedunaw90tc0hnlroPv6UR0rKExvyi+
+         /5HNW3X0Ey7HHnOjoxPAscBmzuT17opVmLbvKHPbxAl711L9R07V1KEsXUGg5vV06HuO
+         bZ5kFMF6w8bZZU7YwUoTdeLRR+lD6jPKd+bCJ0Qr9B2qnZCTYFvuKmQuq7v9J6HYVtc8
+         qkmBat7UPxpQ5MPXBkDfZJG9DUV0RANmcXSYDpJEtxYvai9w9ZpVQtUP5ezdt5QNVT8x
+         JJDinsYCQ0vLm1/73RGpI1qYadaH2rbnLSSsb6axGuq/3jwX5U27iIUFZhCW0uqGJmsL
+         jPxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680768037;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CQH+iRWXQXzrMch9aFmJkKfa79kh+f41Jg9zUvyUDYc=;
-        b=5Abx5pe6n5EWTtYAiP42uAPLN4Ljwyp2PttL5l5E9Mwk31t4Kbwn76NOsKMU7tFnh5
-         w3tBxdbfYeK/V6FWrMx1LQ9yf5hitJHNm90oGckjxiy0XmJSVi9qAutP792lkEs+U4Dg
-         L8zl2RdwTR9zAQuPdfz+T4bFpuIGFAzhb0R0858WtXD19NcPsWMp966I6rRpvBtS2DXC
-         wyuWHqWe6dzZfU+L9h63UIj9T3BW0rPkiKAszHFTZiAQktNQx82EK1O5Nd2kcs4g9S8B
-         X7kAbP1Kj9Kv4Cc8dpXn8S1bbDLr0CjizNg2uWOPzgYUPvGEw8av7opSGJJEFae2xwW2
-         /QsA==
-X-Gm-Message-State: AAQBX9dax8qyvgkXQ7uCKChe1DyLqg/m+OXxFyWXRq/+oLS3H6cLRSDT
-        I1lazfbmv1tgdlRqYmpFfT4=
-X-Google-Smtp-Source: AKy350Zln1rHkseAywxn36shRvYFdkWQ7QSVBFsGgDypBCXbFctm0iaYDiDxGcFUUhAKWrU2spc3MA==
-X-Received: by 2002:a17:906:fa9b:b0:945:d94e:7054 with SMTP id lt27-20020a170906fa9b00b00945d94e7054mr6300868ejb.36.1680768036990;
-        Thu, 06 Apr 2023 01:00:36 -0700 (PDT)
-Received: from orome (p200300e41f1c0800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f1c:800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id xf4-20020a17090731c400b00938041aef83sm452290ejb.169.2023.04.06.01.00.35
+        d=1e100.net; s=20210112; t=1680768132;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ICl5yXhMxeO2u+7yTPtP7Jl3u4X7NhJCydXnMv94CdE=;
+        b=MNIwDTlkxwvxD7SGwjUSKxmRuzgkRz46OpsJReivAnBnkG7zCxSZNQ2w1qvQzX2J7s
+         NoNCTqE4EXJcLWSvoyK4jcBaSAVo/zEIwwOsl3Cv6isjpHGZmtRJ5276v3j9bFmr87m+
+         BohRjbpMbxZnMA14JE9pd2LJIRnJnbo1re+RbXWpfy7fD9Zf1BuPsvM1/aG/uYb92O1r
+         uqODYET6lvpgSTHc+f3qHISrSiU7/PUBAR9vpKj5726OEDDq8K3pchm1mc32KNx6jv8b
+         dUkGpvG/TTJP9nzdHvWi6eQ2yeqw7dzBaXEwO675mqGz+Xgsa+XvHd/O06rrb4WHQSbO
+         Dg0Q==
+X-Gm-Message-State: AAQBX9fQSKlox2wJhOQOefK+GmLkluBiiHnYdn0nl/KR4X5BbckU/ugh
+        RpSURSuQZdDLXfJhLyiYLks=
+X-Google-Smtp-Source: AKy350a/F/lBPdvFizmroFVH3fzHbWGMlo4ft4HctNyHW+b1LaJS8K92j1zaDn1g279tfeuONBh+TA==
+X-Received: by 2002:a7b:ca47:0:b0:3ed:1f9c:af12 with SMTP id m7-20020a7bca47000000b003ed1f9caf12mr6967575wml.22.1680768131483;
+        Thu, 06 Apr 2023 01:02:11 -0700 (PDT)
+Received: from arinc9-PC.lan ([149.91.1.15])
+        by smtp.gmail.com with ESMTPSA id s9-20020a7bc389000000b003ef64affec7sm826993wmj.22.2023.04.06.01.02.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 01:00:36 -0700 (PDT)
-Date:   Thu, 6 Apr 2023 10:00:34 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
+        Thu, 06 Apr 2023 01:02:10 -0700 (PDT)
+From:   arinc9.unal@gmail.com
+X-Google-Original-From: arinc.unal@arinc9.com
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Marc Zyngier <maz@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: Re: [PATCH v2 04/10] serial: 8250_tegra: Add explicit include for
- of.h
-Message-ID: <ZC58Ikn9_BUFg_-h@orome>
-References: <20230329-acpi-header-cleanup-v2-0-c902e581923b@kernel.org>
- <20230329-acpi-header-cleanup-v2-4-c902e581923b@kernel.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH 1/7] dt-bindings: net: dsa: mediatek,mt7530: correct brand name
+Date:   Thu,  6 Apr 2023 11:01:35 +0300
+Message-Id: <20230406080141.22924-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="E3hFsuwxav/nr+wF"
-Content-Disposition: inline
-In-Reply-To: <20230329-acpi-header-cleanup-v2-4-c902e581923b@kernel.org>
-User-Agent: Mutt/2.2.10 (2023-03-25)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -94,47 +88,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
---E3hFsuwxav/nr+wF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The brand name is MediaTek, change it to that.
 
-On Wed, Apr 05, 2023 at 03:27:18PM -0500, Rob Herring wrote:
-> With linux/acpi.h no longer implicitly including of.h, add an explicit
-> include of of.h to fix the following error:
->=20
-> drivers/tty/serial/8250/8250_tegra.c:68:15: error: implicit declaration o=
-f function 'of_alias_get_id' [-Werror=3Dimplicit-function-declaration]
->=20
-> Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-> Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  drivers/tty/serial/8250/8250_tegra.c | 1 +
->  1 file changed, 1 insertion(+)
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+index e532c6b795f4..6df995478275 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Mediatek MT7530 and MT7531 Ethernet Switches
++title: MediaTek MT7530 and MT7531 Ethernet Switches
+ 
+ maintainers:
+   - Arınç ÜNAL <arinc.unal@arinc9.com>
+-- 
+2.37.2
 
---E3hFsuwxav/nr+wF
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmQufCIACgkQ3SOs138+
-s6F+KA/7Bm/KfMbX17OH6FnJh9eMe6ljjpv/iZNRAm7bGZO0mhFGi50XBZsNztqA
-VNB3JF2eIsl5fLvZBh3scXkKTB1CEYLOAuhQtUehAXCTDLIgRUn9IzRjit6RBnnU
-XTeYRtdEyWtdS90j2nK0edHGOcfOMxYyn1UV/Whtawnx16Ub/ZdIHmTvg454Upqd
-2Dv4LpcZIfLFJdPl5B+bYP/Q6Dg9mLDYr7U5V2zxziaDKMOb2L7gN5GMOCL0S+rw
-9yHOVa0YxfP6B1zvUjJ8xW0e0XPcRO2f1zApQ0SYpN9DVyKozeB1/U+itoq2wkXS
-zVAYUCydZ7TGrFL/NkksLddPwzdLiLeAVDTjwHadnaQERW8NGQkN0Dy+GKSGFFAo
-Vsd3TxyP107px9msXa9QHVlPnC2mVgwkg5ZJeWRonPo5lFTC/XpbPe1pnbtn3yjg
-o+CKRA75MyFgOIytYdgGK/3/9OJu85zmc0WEQy+0kJnnjLe45y7V7tpMHObl3dGa
-KqGTSfMmnf3G7cFAfE1PDdOh/vMO/z2oCc0XR9GdAsEbTXd2E0lrGuw5zrbZYWLO
-CeYAiWdsUDmqLEWwKwUT04Z9315lKkJvueZGXfxlGtsz/1j7jVDeC7lUl0u9zt9h
-pEq0jCI12awFhFZmUO+3w5b9DBTnKowjD+JwRlg+hs5o0OD1d88=
-=T9ol
------END PGP SIGNATURE-----
-
---E3hFsuwxav/nr+wF--
