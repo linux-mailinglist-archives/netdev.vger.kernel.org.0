@@ -2,104 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 141E66D9D8E
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 18:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A289C6D9D97
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 18:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238461AbjDFQ37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 12:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44278 "EHLO
+        id S236554AbjDFQdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 12:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236627AbjDFQ36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 12:29:58 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE16276AD;
-        Thu,  6 Apr 2023 09:29:55 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 2805518835E0;
-        Thu,  6 Apr 2023 16:29:44 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 178B125002BB;
-        Thu,  6 Apr 2023 16:29:44 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 0DE709B403E2; Thu,  6 Apr 2023 16:29:44 +0000 (UTC)
-X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
-Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 56BB791201E3;
-        Thu,  6 Apr 2023 16:29:43 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Ido Schimmel <idosch@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 6/6] selftests: forwarding: add dynamic FDB
- test
-In-Reply-To: <20230406152443.b3ps4x7e4kz4aes2@skbuf>
-References: <20230318141010.513424-1-netdev@kapio-technology.com>
- <20230318141010.513424-7-netdev@kapio-technology.com>
- <ZBgdAo8mxwnl+pEE@shredder> <87a5zzh65p.fsf@kapio-technology.com>
- <ZCMYbRqd+qZaiHfu@shredder> <874jq22h2u.fsf@kapio-technology.com>
- <20230330192714.oqosvifrftirshej@skbuf>
- <871ql5mjjp.fsf@kapio-technology.com>
- <20230331093732.s6loozkdhehewlm4@skbuf>
- <87tty1nlb4.fsf@kapio-technology.com>
- <20230406152443.b3ps4x7e4kz4aes2@skbuf>
-Date:   Thu, 06 Apr 2023 18:26:58 +0200
-Message-ID: <87wn2pj7sd.fsf@kapio-technology.com>
+        with ESMTP id S229728AbjDFQdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 12:33:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712767A8D;
+        Thu,  6 Apr 2023 09:33:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BEC6645BC;
+        Thu,  6 Apr 2023 16:33:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB808C433D2;
+        Thu,  6 Apr 2023 16:33:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1680798814;
+        bh=cTyaZcL9q+dhbrZewRGmFIE1Q1B/I9YJm6lfhVQDDB4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xmdRF3xBj09L62OvSpjXeC6FDz5wCXSVq7lLb8EeQHA9ApqCM3Yz3Y6CqPln+4tDj
+         bGQhxM22hfcAaZTkG4cRxrmrP3AevjnIWg8+niSkx8anfN1jW7qQMjEk2SYWMXwTjq
+         65G5n/XUySqcKk0qrmtqVivEUwh0msGKl+w9uRxE=
+Date:   Thu, 6 Apr 2023 18:33:31 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Sumitra Sharma <sumitraartsy@gmail.com>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, Coiby Xu <coiby.xu@gmail.com>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: qlge: Remove macro FILL_SEG
+Message-ID: <2023040618-dedicate-rebalance-90c6@gregkh>
+References: <20230405150627.GA227254@sumitra.com>
+ <ZC2gJdUA6zGOjX4P@corigine.com>
+ <20230406144644.GB231658@sumitra.com>
+ <2023040648-zeppelin-escapist-86d1@gregkh>
+ <20230406152855.GC231658@sumitra.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406152855.GC231658@sumitra.com>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 18:24, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Fri, Mar 31, 2023 at 02:43:11PM +0200, Hans Schultz wrote:
->> I will as long as the system is as it is with these selftests, just run
->> single subtests at a time on target, but if I have new phy problems like
->> the one you have seen I have had before, then testing on target becomes
->> off limits.
->
-> Please open a dedicated communication channel (separate email thread on
-> netdev@vger.kernel.org) with the appropriate maintainers for the PHY
-> code that is failing for you in To:, and you will get the help that you
-> need to resolve that and to be able to test on the target board.
+On Thu, Apr 06, 2023 at 08:28:55AM -0700, Sumitra Sharma wrote:
+> On Thu, Apr 06, 2023 at 04:57:44PM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Apr 06, 2023 at 07:46:44AM -0700, Sumitra Sharma wrote:
+> > > On Wed, Apr 05, 2023 at 06:21:57PM +0200, Simon Horman wrote:
+> > > > On Wed, Apr 05, 2023 at 08:06:27AM -0700, Sumitra Sharma wrote:
+> > > > > Remove macro FILL_SEG to fix the checkpatch warning:
+> > > > > 
+> > > > > WARNING: Macros with flow control statements should be avoided
+> > > > > 
+> > > > > Macros with flow control statements must be avoided as they
+> > > > > break the flow of the calling function and make it harder to
+> > > > > test the code.
+> > > > > 
+> > > > > Replace all FILL_SEG() macro calls with:
+> > > > > 
+> > > > > err = err || qlge_fill_seg_(...);
+> > > > 
+> > > > Perhaps I'm missing the point here.
+> > > > But won't this lead to err always either being true or false (1 or 0).
+> > > > Rather than the current arrangement where err can be
+> > > > either 0 or a negative error value, such as -EINVAL.
+> > > >
+> > > 
+> > > Hi Simon
+> > > 
+> > > 
+> > > Thank you for the point you mentioned which I missed while working on this
+> > > patch. 
+> > > 
+> > > However, after thinking on it, I am still not able to get any fix to this
+> > > except that we can possibly implement the Ira's solution here which is:
+> > > 
+> > > https://lore.kernel.org/outreachy/64154d438f0c8_28ae5229421@iweiny-mobl.notmuch/
+> > > 
+> > > Although we have to then deal with 40 lines of ifs.
+> > 
+> > Which implies that the current solution is the best one, so I would
+> > recommend just leaving it as-is.
+> >
+> 
+> Hi greg
+> 
+> Before leaving it I would like to know your opinion on the solution Dan is offering.
 
-The errors from the phy I saw in February. Maybe something was fixed in
-the meantime as I did not see the same warning and exception last I
-tried to run the newest kernel on target a little over a week ago.
+I still think you should leave it as-is.
+
+thanks,
+
+greg k-h
