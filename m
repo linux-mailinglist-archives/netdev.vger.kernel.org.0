@@ -2,206 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E549E6D9E49
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 19:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B1706D9EBB
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 19:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239358AbjDFRPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 13:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
+        id S234011AbjDFRaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 13:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbjDFRPe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 13:15:34 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5E97A8B
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 10:15:28 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id a640c23a62f3a-944bd1d58easo127178266b.0
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 10:15:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680801326;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6/acLh4KOig99xCm/V9WrFZvIgzSBqVUp64UT391SRw=;
-        b=JIwo5ZGRMeYyE/7IQxTnC3A+fotsrn9neIdNq6E4NRFpsndyz0JehvXFSIylJBK8ub
-         LoTdXHdIv2pb2QHJk08i423+1ZXsWKfwfXardNdMMYqjl8XGrTBflzMzgYxYb8Dq8cZY
-         wmFzjrSzL7x8l6aUC8Q4BP2jrAE/YIwbG/XNaUI+kc4U0I8JRag7J4iMb9aYymowQB4C
-         IUMSUOHYgOMSvXKup2jBydbq1nnvIb4coRAOpHIxHHhYUfJPfZczqErwZQwFsbNvUrlg
-         8WAFrQaSH9sYi2CpuOlwjZ0y97RysFZID/bdh+9H5ozb+Xki4QUP1xWCMvxjMZPB/Qv0
-         SMdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680801326;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6/acLh4KOig99xCm/V9WrFZvIgzSBqVUp64UT391SRw=;
-        b=YIu/7LuGhbOSZWUp7oKRZ8hNAR4KV3GCHLNPAw/urFxtUREYdLRwg8RUxSkdAQ16dO
-         Tw3158dieZ1xiPiAPNDvF+bGpbeT5QK5tjYIyo0ors/B5vyMQiwbELSGgXo0Rf+ltVBD
-         cLBZ3spqF2tE0Ay9343qLmzURCEl+t21p2EXYrG11ywN7kaniEhUe/H31Zz45etxuszr
-         pRdHCWeF/wRTItca1w9uBpVgPqN9KTVeJKi7Frg5JbW/NAF72aAcJRJujn+VgfCp2tiV
-         1HbJ1/KFJyYRPC24W7CA6ddQp86JbhvXVcRKHwpT02x2OIdrn0yu8DxEFPZeTXWOiLDl
-         Ac9Q==
-X-Gm-Message-State: AAQBX9dRDqZCtJt+UU1ULNr1Mf4xuAck9jRYsnCGv/QqUcjLnDiVnMUz
-        KEainGp35iroFcCser+8Qy7Siw==
-X-Google-Smtp-Source: AKy350bE/vnELTyryVtVPyEHqcyqo0/nGsw5Ao9XOGbN+UWCla4cqusv78f8aqXGcfYpdxMYmQ7eyw==
-X-Received: by 2002:a05:6402:611:b0:502:4c82:9b4d with SMTP id n17-20020a056402061100b005024c829b4dmr347667edv.15.1680801326585;
-        Thu, 06 Apr 2023 10:15:26 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed? ([2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed])
-        by smtp.gmail.com with ESMTPSA id k30-20020a508ade000000b005024aff3bb5sm965527edk.80.2023.04.06.10.15.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Apr 2023 10:15:26 -0700 (PDT)
-Message-ID: <223892d0-9b1b-9459-dec1-574875f7c1c6@linaro.org>
-Date:   Thu, 6 Apr 2023 19:15:25 +0200
+        with ESMTP id S229518AbjDFRaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 13:30:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF2F7AB9
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 10:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5697564A79
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 17:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C469FC433EF;
+        Thu,  6 Apr 2023 17:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680802216;
+        bh=hCCX2cA3QYGfj6QxeCyQVv6uXMkVZB5gXlYoQklEu+A=;
+        h=From:Subject:Date:To:Cc:From;
+        b=EOGTPMH6ZXuqE4xz3Nrf2FvN3yCGnO7fkPr8WQQwmh7WLzK32NhjVfgBSvAmWQTTg
+         xGOTv5I13I/A9BiAqFu0ybxlZaT8IBC0W07XRecaEojLs/kxzUtnea6S+9RWAiaqws
+         fm/p9xOq6wv/hZr87U90U6KNFNmpMjPXDM8JisV54uzsBBI6epBxpcslfqLGSPlJ9f
+         73kF69CVGl4JqtCtvHWf0dgkOmxGHoOUuFRuOJ2yGcNEqZnTgn3AGitl0A1pDGqlDi
+         WbukwAZXs8N9sgw/YJM9sgjDIihr1EgjUYKUMO4uqgG81Q49IeJBKC43CwORFe8ZQX
+         mbicwgJqxyeww==
+From:   Simon Horman <horms@kernel.org>
+Subject: [PATCH net-next 0/2] net: stmmac: dwmac-anarion: address issues
+ flagged by sparse
+Date:   Thu, 06 Apr 2023 19:30:08 +0200
+Message-Id: <20230406-dwmac-anarion-sparse-v1-0-b0c866c8be9d@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH v3 1/2] dt-bindings: net: Convert ATH10K to YAML
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@linaro.org>,
-        Kalle Valo <kvalo@kernel.org>,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKABL2QC/x2NQQrCQAxFr1KyNjDtWKleRVxkZqIdqLEkVQuld
+ ze4fI//+BsYa2WDS7OB8qdafYlDe2ggjyQPxlqcoQtdDMdwwvJ9UkYSUl+izaTG2PZDjGFIfeE
+ zeJrIZVKSPHos72lyOSvf6/r/uoLwgsLrArd9/wEEpRZOhQAAAA==
+To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>
-Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <20230406-topic-ath10k_bindings-v3-0-00895afc7764@linaro.org>
- <20230406-topic-ath10k_bindings-v3-1-00895afc7764@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230406-topic-ath10k_bindings-v3-1-00895afc7764@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+X-Mailer: b4 0.12.2
+X-Spam-Status: No, score=-5.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/04/2023 14:55, Konrad Dybcio wrote:
-> Convert the ATH10K bindings to YAML.
-> 
-> Dropped properties that are absent at the current state of mainline:
-> - qcom,msi_addr
-> - qcom,msi_base
-> 
-> qcom,coexist-support and qcom,coexist-gpio-pin do very little and should
-> be reconsidered on the driver side, especially the latter one.
-> 
-> Somewhat based on the ath11k bindings.
+Two minor enhancements to dwmac-anarion to address issues flagged by
+sparse.
 
+1. Always return struct anarion_gmac * from anarion_config_dt()
+2. Add __iomem annotation to register base
 
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - qcom,ipq4019-wifi
-> +    then:
-> +      properties:
-> +        interrupts:
-> +          minItems: 17
-> +          maxItems: 17
-> +
-> +        interrupt-names:
-> +          minItems: 17
+No functional change intended.
+Compile tested only.
 
-Drop minItems (the number of items is defined by listing them below, as
-you did).
+---
+Simon Horman (2):
+      net: stmmac: dwmac-anarion: Use annotation __iomem for register base
+      net: stmmac: dwmac-anarion: Always return struct anarion_gmac * from anarion_config_dt()
 
-> +          items:
-> +            - const: msi0
-> +            - const: msi1
-> +            - const: msi2
-> +            - const: msi3
-> +            - const: msi4
-> +            - const: msi5
-> +            - const: msi6
-> +            - const: msi7
-> +            - const: msi8
-> +            - const: msi9
-> +            - const: msi10
-> +            - const: msi11
-> +            - const: msi12
-> +            - const: msi13
-> +            - const: msi14
-> +            - const: msi15
-> +            - const: legacy
-> +
-> +        clocks:
-> +          items:
-> +            - description: Wi-Fi command clock
-> +            - description: Wi-Fi reference clock
-> +            - description: Wi-Fi RTC clock
-> +
-> +        clock-names:
-> +          items:
-> +            - const: wifi_wcss_cmd
-> +            - const: wifi_wcss_ref
-> +            - const: wifi_wcss_rtc
-> +
-> +      required:
-> +        - clocks
-> +        - clock-names
-> +        - interrupts
-> +        - interrupt-names
-> +        - resets
-> +        - reset-names
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - qcom,wcn3990-wifi
-> +
-> +    then:
-> +      properties:
-> +        clocks:
-> +          minItems: 1
-> +          items:
-> +            - description: XO reference clock
-> +            - description: Qualcomm Debug Subsystem clock
-> +
-> +        clock-names:
-> +          minItems: 1
-> +          items:
-> +            - const: cxo_ref_clk_pin
-> +            - const: qdss
-> +
-> +        interrupts:
-> +          items:
-> +            - description: CE0
-> +            - description: CE1
-> +            - description: CE2
-> +            - description: CE3
-> +            - description: CE4
-> +            - description: CE5
-> +            - description: CE6
-> +            - description: CE7
-> +            - description: CE8
-> +            - description: CE9
-> +            - description: CE10
-> +            - description: CE11
+ drivers/net/ethernet/stmicro/stmmac/dwmac-anarion.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-What about interrupt-names here? If they are not expected, then just
-interrupt-names: false
-
-
-
-Best regards,
-Krzysztof
+base-commit: 0ebd4fd6b9064764a3af3d671463b1350abffb6c
 
