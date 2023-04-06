@@ -2,106 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF0456D8CDE
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 03:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 492F36D8D27
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 04:02:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234721AbjDFBku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 21:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        id S234149AbjDFCCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 22:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233074AbjDFBkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 21:40:49 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EDA7EEF;
-        Wed,  5 Apr 2023 18:40:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680745240; x=1712281240;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=DCavWhtg2E8IoulfYWNZX/tJY4eyp3ElFmAFgZG+SzY=;
-  b=aQGJUMOm4ftVKlRmYsGKQlAvPcHfc3tnXIx3gQaS8WeHNO2XUBdM7Aqx
-   u565iabHtw7cwOGCiPNvjIFap/JuA8DXHIDkjHajubhTGk0hQQATbG6j/
-   b+fPgVgqY2sNUfW9YX+NBqVki/cb07cTki40K7yHGUK7xjYSnWB+m9vwz
-   TeDJbaco/xExYgNKKcBAuvFlhXXasVAro/KkA8Rz56dyf0wJN1sghbGFb
-   NUmnyG9ym9kK9hUDZ101WBGyjAK30U/mC6Xjsp1RuMZC4hVLvDi3/HqLm
-   cr5X8hneRtl50rOPih59gqfjkOD2h6eesie1U8FJvFo29j0VkipnvIb/Z
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="322262722"
-X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="322262722"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 18:40:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="810817453"
-X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="810817453"
-Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
-  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2023 18:40:34 -0700
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S234704AbjDFCCq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 22:02:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1237AA4
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 19:02:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2135B621A1
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 02:02:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 768DEC433D2;
+        Thu,  6 Apr 2023 02:02:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680746562;
+        bh=ncwyDJORjNYKnCNL50TzXseOdGA/APM7FWNBcVd/a4Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZqoLOWU5A0HesZ2kQrN5Y+xpkdqDE604ttTis9iq3amZHq8OR0Htd8w6pCVZF03jm
+         Z+7xXDiIswwx2NE/mSj71C9m2nR6f73z589c3AWx4+wvGoeWBljXM/HAmq28cvM+OP
+         tvjEr9dN6aECQRvgIeTrFWc8waBcDJIIzzSMhhAur00YeJSavFJqR/054CS8UlpN9M
+         yoWBdAkJgvW5sBtf7f3UH9dYQS+EeB/pwJwBIeTY37NX1E23sXWJogYJOl+B9ihlVs
+         caQXn1MfyCHkss2EPxeTRM08mW0MH4wB2ZBGBD6GFlYZ79HhpyLTZte/3+xV7Qtomc
+         HEBjqh9nv1PyQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Alexander Duyck <alexanderduyck@fb.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, stable@vger.kernel.org,
-        Song Yoong Siang <yoong.siang.song@intel.com>
-Subject: [PATCH net v2 1/1] net: stmmac: Add queue reset into stmmac_xdp_open() function
-Date:   Thu,  6 Apr 2023 09:40:04 +0800
-Message-Id: <20230406014004.3726672-1-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.34.1
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2023-04-05
+Date:   Wed,  5 Apr 2023 19:02:17 -0700
+Message-Id: <20230406020232.83844-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=AC_FROM_MANY_DOTS,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Queue reset was moved out from __init_dma_rx_desc_rings() and
-__init_dma_tx_desc_rings() functions. Thus, the driver fails to transmit
-and receive packet after XDP prog setup.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-This commit adds the missing queue reset into stmmac_xdp_open() function.
+This series provides misc updates to mlx5 driver.
+For more information please see tag log below.
 
-v2: Add reviewed-by tag
+Please pull and let me know if there is any problem.
 
-Fixes: f9ec5723c3db ("net: ethernet: stmicro: stmmac: move queue reset to dedicated functions")
-Cc: <stable@vger.kernel.org> # 6.0+
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Thanks,
+Saeed.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 3e5bbfe3c41b..e4c27eb17bd2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -6630,6 +6630,8 @@ int stmmac_xdp_open(struct net_device *dev)
- 		goto init_error;
- 	}
- 
-+	stmmac_reset_queues_param(priv);
-+
- 	/* DMA CSR Channel configuration */
- 	for (chan = 0; chan < dma_csr_ch; chan++) {
- 		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
--- 
-2.34.1
 
+The following changes since commit 8b0f256530d97f2a2310c4f8336ea2c477c8e6c4:
+
+  net/sched: sch_mqprio: use netlink payload helpers (2023-04-05 18:12:55 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2023-04-05
+
+for you to fetch changes up to b0d87ed27be7853af8f897c3cfcb9ddc5179a2a3:
+
+  net/mlx5e: Fix SQ SW state layout in SQ devlink health diagnostics (2023-04-05 18:57:34 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2023-04-05
+
+From Paul:
+ - TC action parsing cleanups
+ - Correctly report stats for missed packets
+ - Many CT actions limitations removed due to hw misses will now
+   continue from the relevant tc ct action in software.
+
+From Adham:
+ - RQ/SQ devlink health diagnostics layout fixes
+
+From Gal And Rahul:
+ - PTP code cleanup and cyclecounter shift value improvement
+
+----------------------------------------------------------------
+Adham Faris (2):
+      net/mlx5e: Fix RQ SW state layout in RQ devlink health diagnostics
+      net/mlx5e: Fix SQ SW state layout in SQ devlink health diagnostics
+
+Emeel Hakim (1):
+      net/mlx5e: Remove redundant macsec code
+
+Gal Pressman (1):
+      net/mlx5e: Rename misleading skb_pc/cc references in ptp code
+
+Paul Blakey (10):
+      net/mlx5e: Set default can_offload action
+      net/mlx5e: TC, Remove unused vf_tun variable
+      net/mlx5e: TC, Move main flow attribute cleanup to helper func
+      net/mlx5e: CT: Use per action stats
+      net/mlx5e: TC, Remove CT action reordering
+      net/mlx5e: TC, Remove special handling of CT action
+      net/mlx5e: TC, Remove multiple ct actions limitation
+      net/mlx5e: TC, Remove tuple rewrite and ct limitation
+      net/mlx5e: TC, Remove mirror and ct limitation
+      net/mlx5e: TC, Remove sample and ct limitation
+
+Rahul Rameshbabu (1):
+      net/mlx5: Update cyclecounter shift value to improve ptp free running mode precision
+
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |  22 +-
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |  10 +-
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   |  10 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/act/accept.c |  10 -
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.c    |  20 --
+ .../ethernet/mellanox/mlx5/core/en/tc/act/act.h    |   8 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c |  66 +----
+ .../ethernet/mellanox/mlx5/core/en/tc/act/drop.c   |  10 -
+ .../ethernet/mellanox/mlx5/core/en/tc/act/pedit.c  |  10 -
+ .../ethernet/mellanox/mlx5/core/en/tc/act/ptype.c  |  10 -
+ .../ethernet/mellanox/mlx5/core/en/tc/act/sample.c |  20 --
+ .../ethernet/mellanox/mlx5/core/en/tc/act/trap.c   |  10 -
+ .../ethernet/mellanox/mlx5/core/en/tc/act/tun.c    |  10 -
+ .../ethernet/mellanox/mlx5/core/en/tc/act/vlan.c   |  10 -
+ .../mellanox/mlx5/core/en/tc/act/vlan_mangle.c     |  10 -
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 169 +++----------
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h |  31 +--
+ .../net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |  11 +-
+ .../mellanox/mlx5/core/en_accel/macsec_fs.c        |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 279 ++++++---------------
+ .../net/ethernet/mellanox/mlx5/core/lib/clock.c    |   2 +-
+ 21 files changed, 159 insertions(+), 574 deletions(-)
