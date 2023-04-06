@@ -2,118 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8665B6DA233
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 22:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1286DA389
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 22:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238562AbjDFUHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 16:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
+        id S240229AbjDFUkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 16:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238238AbjDFUH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 16:07:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41648903F
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 13:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680811600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UhmlLvqF6da/QeN+M/XiLghLgzDAr8RSwO2FXFQLnAM=;
-        b=fo+s4t3gHydQtSYukR101dvYEjiPtJ11UYRHI7eJum/+q5r5qacYSxpbcVYudPIM755f1b
-        bwnRL3XjTQr4bMDxIGVJ/TKMnqb1JEYD965h7i+hYEogE8GRUU48yK4OEga0kctUfXYn1s
-        7unWkZEP3DOUmYt3bXoIPYTD1AHc5yU=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-658-nK1xJpMCMWOc9hrqH4tX1w-1; Thu, 06 Apr 2023 16:06:39 -0400
-X-MC-Unique: nK1xJpMCMWOc9hrqH4tX1w-1
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-3e385709826so3669151cf.0
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 13:06:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680811599; x=1683403599;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=UhmlLvqF6da/QeN+M/XiLghLgzDAr8RSwO2FXFQLnAM=;
-        b=n+7/6OEDq5BD7l5W8nZr78CN6RaU7+YYhl+DuMWzARl9R3EXAjvbZfLpLxJ9PwWbPT
-         +Tth9z/DyS1GpYNnyd3gmeV1bxPH40LYw7PnCvXLCfGKdHl+/FRBWYYP5DrLYGSEGb0j
-         U1HLmpfrtofQHWd269JW9IzdNv52M8kUAU9gGKPIfbdKLELCuFQDhvH/DAV1hOMIC2nu
-         8NEaaa1jkI65YnVxejZZ/qmYClCs9dvqqKHS1bAHrmLlpdF5NynPqWh7QPknKSVyTv4Z
-         q7JbNdrkjH2o/W/huZZwI3j+VjPLZxdm5c2rOr300SQlMdttYekLWmQ191yL1UnPVZ8w
-         7Kwg==
-X-Gm-Message-State: AAQBX9eYJ+O1DMiJC9ojmAXjLGPlUJebX2jATXVwIZ6l81fDA9wbwSfV
-        oPWg7Tie/JWpS60i+UIpMvuNWRNWD0AV1IdOJcPPuQGV0Wy8+lu8HHtTJoXsqwcCjLCTgAm3jdP
-        4hU4kJxe0azaKrAZe
-X-Received: by 2002:ac8:4e81:0:b0:3e6:707e:d3b1 with SMTP id 1-20020ac84e81000000b003e6707ed3b1mr367777qtp.0.1680811598751;
-        Thu, 06 Apr 2023 13:06:38 -0700 (PDT)
-X-Google-Smtp-Source: AKy350ZPAT8/mfBeygZApOE+HH1z1q+F581N5hs+GA2lzop1GnVCSbhthuavSrBaVKK/62Zf7anwGQ==
-X-Received: by 2002:ac8:4e81:0:b0:3e6:707e:d3b1 with SMTP id 1-20020ac84e81000000b003e6707ed3b1mr367746qtp.0.1680811598535;
-        Thu, 06 Apr 2023 13:06:38 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-227-151.dyn.eolo.it. [146.241.227.151])
-        by smtp.gmail.com with ESMTPSA id m8-20020ac866c8000000b003e398d00fabsm647030qtp.85.2023.04.06.13.06.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 13:06:38 -0700 (PDT)
-Message-ID: <7ab4950ea08e89fe0481a08a8b49de4291b9451f.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/3] ksz884x: remove unused #defines
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Simon Horman <horms@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Date:   Thu, 06 Apr 2023 22:06:35 +0200
-In-Reply-To: <ZC7vgRFmqAjGQyss@kernel.org>
-References: <20230405-ksz884x-unused-code-v1-0-a3349811d5ef@kernel.org>
-         <20230405-ksz884x-unused-code-v1-2-a3349811d5ef@kernel.org>
-         <454a61709e442f717fbde4b0ebb8b4c3fdfb515e.camel@redhat.com>
-         <20230406090017.0fc0ae34@kernel.org> <ZC7vgRFmqAjGQyss@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
+        with ESMTP id S240721AbjDFUkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 16:40:32 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBE69767;
+        Thu,  6 Apr 2023 13:36:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1680813396; x=1712349396;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=glRId3TCjvVwkSyTTe1OVXVyxecEefJVI+EkBN/jPxc=;
+  b=D3d/72cr7XzDezJrhwct98a/FY/gL2KCZOGFUDIZumVI1kPS0ueN/CPZ
+   gmegO0blWZUGGS5DiR68LrVrQbmw7n/c6iZyj2UbuGOlKZeitgt26y3yV
+   s8OcKCxxckFJFOiDU9TCLDxiuF5pMn7r6lEV37fKHZtgPLKQ0q7+TesbC
+   8=;
+X-IronPort-AV: E=Sophos;i="5.98,323,1673913600"; 
+   d="scan'208";a="311400107"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2023 20:36:33 +0000
+Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com (Postfix) with ESMTPS id 6F94EC18F0;
+        Thu,  6 Apr 2023 20:36:30 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 6 Apr 2023 20:36:29 +0000
+Received: from 88665a182662.ant.amazon.com (10.119.181.3) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Thu, 6 Apr 2023 20:36:26 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <yuehaibing@huawei.com>
+CC:     <corbet@lwn.net>, <davem@davemloft.net>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuniyu@amazon.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH net] tcp: restrict net.ipv4.tcp_app_win
+Date:   Thu, 6 Apr 2023 13:36:15 -0700
+Message-ID: <20230406203615.43591-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20230406063450.19572-1-yuehaibing@huawei.com>
+References: <20230406063450.19572-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.119.181.3]
+X-ClientProxiedBy: EX19D033UWC001.ant.amazon.com (10.13.139.218) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2023-04-06 at 18:12 +0200, Simon Horman wrote:
-> On Thu, Apr 06, 2023 at 09:00:17AM -0700, Jakub Kicinski wrote:
-> > On Thu, 06 Apr 2023 15:37:36 +0200 Paolo Abeni wrote:
-> > > On Wed, 2023-04-05 at 10:39 +0200, Simon Horman wrote:
-> > > > Remove unused #defines from ksz884x driver.
-> > > >=20
-> > > > These #defines may have some value in documenting the hardware.
-> > > > But that information may be accessed via scm history. =20
-> > >=20
-> > > I personally have a slight preference for keeping these definitions i=
-n
-> > > the sources (for doc purposes), but it's not a big deal.=20
-> > >=20
-> > > Any 3rd opinion more then welcome!
-> >=20
-> > I had the same reaction, FWIW.
-> >=20
-> > Cleaning up unused "code" macros, pure software stuff makes perfect
-> > sense. But I feel a bit ambivalent about removing definitions of HW
-> > registers and bits.
->=20
-> I guess that it two down-votes for removing the #defines.
->=20
-> Would it be acceptable if I reworked the series to only remove
-> the dead code - which would leave only subset of patch 3/3 ?
+From:   YueHaibing <yuehaibing@huawei.com>
+Date:   Thu, 6 Apr 2023 14:34:50 +0800
+> UBSAN: shift-out-of-bounds in net/ipv4/tcp_input.c:555:23
+> shift exponent 255 is too large for 32-bit type 'int'
+> CPU: 1 PID: 7907 Comm: ssh Not tainted 6.3.0-rc4-00161-g62bad54b26db-dirty #206
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x136/0x150
+>  __ubsan_handle_shift_out_of_bounds+0x21f/0x5a0
+>  tcp_init_transfer.cold+0x3a/0xb9
+>  tcp_finish_connect+0x1d0/0x620
+>  tcp_rcv_state_process+0xd78/0x4d60
+>  tcp_v4_do_rcv+0x33d/0x9d0
+>  __release_sock+0x133/0x3b0
+>  release_sock+0x58/0x1b0
+> 
+> 'maxwin' is int, shifting int for 32 or more bits is undefined behaviour.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-I would be fine with that.
+Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 
 Thanks!
 
-Paolo
-
+> ---
+>  Documentation/networking/ip-sysctl.rst | 2 ++
+>  net/ipv4/sysctl_net_ipv4.c             | 3 +++
+>  2 files changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+> index 87dd1c5283e6..58a78a316697 100644
+> --- a/Documentation/networking/ip-sysctl.rst
+> +++ b/Documentation/networking/ip-sysctl.rst
+> @@ -340,6 +340,8 @@ tcp_app_win - INTEGER
+>  	Reserve max(window/2^tcp_app_win, mss) of window for application
+>  	buffer. Value 0 is special, it means that nothing is reserved.
+>  
+> +	Possible values are [0, 31], inclusive.
+> +
+>  	Default: 31
+>  
+>  tcp_autocorking - BOOLEAN
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index 0d0cc4ef2b85..40fe70fc2015 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -25,6 +25,7 @@ static int ip_local_port_range_min[] = { 1, 1 };
+>  static int ip_local_port_range_max[] = { 65535, 65535 };
+>  static int tcp_adv_win_scale_min = -31;
+>  static int tcp_adv_win_scale_max = 31;
+> +static int tcp_app_win_max = 31;
+>  static int tcp_min_snd_mss_min = TCP_MIN_SND_MSS;
+>  static int tcp_min_snd_mss_max = 65535;
+>  static int ip_privileged_port_min;
+> @@ -1198,6 +1199,8 @@ static struct ctl_table ipv4_net_table[] = {
+>  		.maxlen		= sizeof(u8),
+>  		.mode		= 0644,
+>  		.proc_handler	= proc_dou8vec_minmax,
+> +		.extra1		= SYSCTL_ZERO,
+> +		.extra2		= &tcp_app_win_max,
+>  	},
+>  	{
+>  		.procname	= "tcp_adv_win_scale",
+> -- 
+> 2.34.1
