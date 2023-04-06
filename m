@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 302686D8D33
+	by mail.lfdr.de (Postfix) with ESMTP id 7A5EE6D8D34
 	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 04:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234964AbjDFCD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 22:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35286 "EHLO
+        id S234846AbjDFCD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 22:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234723AbjDFCDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 22:03:03 -0400
+        with ESMTP id S234887AbjDFCDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 22:03:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011238A7D
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 19:02:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D403786BD
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 19:02:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABD4762B22
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 02:02:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E188C433EF;
-        Thu,  6 Apr 2023 02:02:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4CA262D0A
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 02:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165D5C433D2;
+        Thu,  6 Apr 2023 02:02:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680746574;
-        bh=BC6izT+qiBRLN7XOEgGF0y/iFj01R66HGAMRlC6Pzd4=;
+        s=k20201202; t=1680746575;
+        bh=tiqQz0ldwqpyO86Nh/ljYioAvVPRGYJ2jenDCJXHmXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CqsP4TxiA0g/O/50EDguq3vC3QpCWK3bkjZ39ZigIq8i0aT61dQ7aLkLnqQxBsxIy
-         eoOFusAxi1rCNbXDveR+HCDCzNp3DKszpSHRaVbzfdMMwRYmkJOpJhPAj3lnaqcqXK
-         6ucez3jmretY4DTlUs4DQXfTEsvmLQeuEiIl3Ws6LNv1x4BGb3RTkElk5fwgHzcLa7
-         NclJtIUYrYpwHcu3f2HjgIU2Q2uoWK+/1Kc9MAB5TdNpYT9XpcgPP31QUUHJGTFpiY
-         PB6u7ddP07s2LZqIz8PIKz3VQCDW1+GND8ltM6toHlNhkIlhcU+XyfEi4YZH9rIRDs
-         u2IbyJkHEZ05Q==
+        b=fWNA8KaLafCy1hYZ4b30LGC0Eco6JwCHI0il/HZT5fc8/b2W7ig4eOcVfKQTIW5mL
+         mlevyYYQGpJgNmFVnDn3VB6f1X7cukxBMUFMKUheW1/0VHQoDodikkBRJ/diaexFod
+         klmO/lJGEnjnqLLPMRuIRtvvwBEGbyB6z1zGfemZByu7IVT0nRviOiyODw2akpR0HN
+         8HR40PdPwukD1tw47eIqTKBTANI+BMRMwv+1Ar4qAeNigV6jEjNmS4pJR4SOdJXZaI
+         dsov9me+XWCaO282C1CacAZPZ6HnC83I09kh3x11C2kmI4Oruyqw3hfS+hNFHfskk2
+         aQ8Hygax6g7cg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,12 +38,12 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
         Gal Pressman <gal@nvidia.com>,
-        Bar Shapira <bshapira@nvidia.com>
-Subject: [net-next 12/15] net/mlx5: Update cyclecounter shift value to improve ptp free running mode precision
-Date:   Wed,  5 Apr 2023 19:02:29 -0700
-Message-Id: <20230406020232.83844-13-saeed@kernel.org>
+        Rahul Rameshbabu <rrameshbabu@nvidia.com>,
+        Adham Faris <afaris@nvidia.com>
+Subject: [net-next 13/15] net/mlx5e: Rename misleading skb_pc/cc references in ptp code
+Date:   Wed,  5 Apr 2023 19:02:30 -0700
+Message-Id: <20230406020232.83844-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20230406020232.83844-1-saeed@kernel.org>
 References: <20230406020232.83844-1-saeed@kernel.org>
@@ -58,37 +58,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rahul Rameshbabu <rrameshbabu@nvidia.com>
+From: Gal Pressman <gal@nvidia.com>
 
-Multiplier values are equivalent to 2^(shift constant) since all mlx5
-devices advertise a 1Ghz frequency for the internal timer. The previous
-shift constant of 23 led to internal timer adjustments only taking place
-when the provided adjustment values were greater than or equal to ~120 ppb
-or ~7864 scaled ppm. Using a shift constant of 31 enables adjustments when
-an adjustment parameter is greater than or equal to ~0.47 ppb or ~30.8
-scaled ppm.
+The 'skb_pc/cc' naming is misleading as the values hold the
+producer/consumer indices (masked values), not the counters. Rename to
+'skb_pi/ci'.
 
-Signed-off-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Bar Shapira <bshapira@nvidia.com>
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Rahul Rameshbabu <rrameshbabu@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Adham Faris <afaris@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 22 +++++++++----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-index 4c9a40211059..932fbc843c69 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-@@ -39,7 +39,7 @@
- #include "clock.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+index eb5aeba3addf..eb5abd0e55d9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+@@ -81,23 +81,23 @@ void mlx5e_skb_cb_hwtstamp_handler(struct sk_buff *skb, int hwtstamp_type,
  
- enum {
--	MLX5_CYCLES_SHIFT	= 23
-+	MLX5_CYCLES_SHIFT	= 31
- };
+ #define PTP_WQE_CTR2IDX(val) ((val) & ptpsq->ts_cqe_ctr_mask)
  
- enum {
+-static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_cc, u16 skb_id)
++static bool mlx5e_ptp_ts_cqe_drop(struct mlx5e_ptpsq *ptpsq, u16 skb_ci, u16 skb_id)
+ {
+-	return (ptpsq->ts_cqe_ctr_mask && (skb_cc != skb_id));
++	return (ptpsq->ts_cqe_ctr_mask && (skb_ci != skb_id));
+ }
+ 
+ static bool mlx5e_ptp_ts_cqe_ooo(struct mlx5e_ptpsq *ptpsq, u16 skb_id)
+ {
+-	u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+-	u16 skb_pc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc);
++	u16 skb_ci = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
++	u16 skb_pi = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_pc);
+ 
+-	if (PTP_WQE_CTR2IDX(skb_id - skb_cc) >= PTP_WQE_CTR2IDX(skb_pc - skb_cc))
++	if (PTP_WQE_CTR2IDX(skb_id - skb_ci) >= PTP_WQE_CTR2IDX(skb_pi - skb_ci))
+ 		return true;
+ 
+ 	return false;
+ }
+ 
+-static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_cc,
++static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_ci,
+ 					     u16 skb_id, int budget)
+ {
+ 	struct skb_shared_hwtstamps hwts = {};
+@@ -105,13 +105,13 @@ static void mlx5e_ptp_skb_fifo_ts_cqe_resync(struct mlx5e_ptpsq *ptpsq, u16 skb_
+ 
+ 	ptpsq->cq_stats->resync_event++;
+ 
+-	while (skb_cc != skb_id) {
++	while (skb_ci != skb_id) {
+ 		skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
+ 		hwts.hwtstamp = mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp;
+ 		skb_tstamp_tx(skb, &hwts);
+ 		ptpsq->cq_stats->resync_cqe++;
+ 		napi_consume_skb(skb, budget);
+-		skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
++		skb_ci = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+ 	}
+ }
+ 
+@@ -120,7 +120,7 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+ 				    int budget)
+ {
+ 	u16 skb_id = PTP_WQE_CTR2IDX(be16_to_cpu(cqe->wqe_counter));
+-	u16 skb_cc = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
++	u16 skb_ci = PTP_WQE_CTR2IDX(ptpsq->skb_fifo_cc);
+ 	struct mlx5e_txqsq *sq = &ptpsq->txqsq;
+ 	struct sk_buff *skb;
+ 	ktime_t hwtstamp;
+@@ -131,13 +131,13 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
+ 		goto out;
+ 	}
+ 
+-	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_cc, skb_id)) {
++	if (mlx5e_ptp_ts_cqe_drop(ptpsq, skb_ci, skb_id)) {
+ 		if (mlx5e_ptp_ts_cqe_ooo(ptpsq, skb_id)) {
+ 			/* already handled by a previous resync */
+ 			ptpsq->cq_stats->ooo_cqe_drop++;
+ 			return;
+ 		}
+-		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_cc, skb_id, budget);
++		mlx5e_ptp_skb_fifo_ts_cqe_resync(ptpsq, skb_ci, skb_id, budget);
+ 	}
+ 
+ 	skb = mlx5e_skb_fifo_pop(&ptpsq->skb_fifo);
 -- 
 2.39.2
 
