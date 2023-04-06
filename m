@@ -2,77 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 461AD6D94DC
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:16:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74ACB6D9518
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237581AbjDFLQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 07:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
+        id S229784AbjDFLan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 07:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237205AbjDFLQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:16:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD0240C6
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 04:15:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680779715;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mJIFUKdbCVxH+e/HWZUZILs1Tdh2bp6w12YNbU+lrBE=;
-        b=WngAuUzvCWRSSv+l2PHzkPQvO9HcQWyYTqPMqDIYe5gjEQ94c4hNKIWgw19hnrfrazClxo
-        UP2pJk7k5WsXCEiSrWo0kTREyDKRZulqeUuOUNV0QTV6AsQSuN6ORepkuUXl/MIW/BkEuX
-        qbL8OaXnKKlYKUHjq9Lp80aTJDOEnz4=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-556-Mg_Z0m74OlO_xNPWYsBsfA-1; Thu, 06 Apr 2023 07:15:14 -0400
-X-MC-Unique: Mg_Z0m74OlO_xNPWYsBsfA-1
-Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-5a3c1e28e73so2813006d6.0
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 04:15:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680779714; x=1683371714;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=mJIFUKdbCVxH+e/HWZUZILs1Tdh2bp6w12YNbU+lrBE=;
-        b=zDQ1AuFNEY6aCPSgefbzBdeFeugEK7CQXs1nyA7mg9sasvRXN6hpu+zwQ6WhLLbsIl
-         db0fLUfWGheMzyn3PLnZ4ccqD5d+1mYMNKOtVvgs9UkLacYlm+F292FTZMhMJcnrbPNf
-         Jf1FsFSTRQ5Qqc278NL3KIXQCUzeIRzdAH+M8SGkp+auotFeEY3pTQfPCevojVvtU2I5
-         Yts0ynFy9yQ7qMvzj6y1QQTnwYfs/qcDYuJKow2TKP8Qkfo6zWeICfBsyMuNhHv3mMTm
-         Y2lkNmRu3PGd0J7kTngg0Q8L1Y6beICAjAK0CObIHyenKXnYiboCSJq1vBD+UBVJ3MW3
-         n1xQ==
-X-Gm-Message-State: AAQBX9c2mcOMl3Hiky1+PLlYoZj/bXh5MKhiWbcuy5BruImNNKqdoDO5
-        Mga1nnUfOPI0lyYT7ZRpC1Nxrn2oAN5advbMqRTXZaZplv/K7PscRs9Uk7V5k7ZIe/iSkl/8hKv
-        H1NzClWRA8C9LdrxL
-X-Received: by 2002:a05:6214:410d:b0:5df:4d41:9560 with SMTP id kc13-20020a056214410d00b005df4d419560mr8365681qvb.0.1680779714109;
-        Thu, 06 Apr 2023 04:15:14 -0700 (PDT)
-X-Google-Smtp-Source: AKy350acgJFhERoKoMnZoLl+AOfUrAe2JLco/YpvIHdVhTrerf8HDLTi5O4DDcW1RvnctM3ICg9VjA==
-X-Received: by 2002:a05:6214:410d:b0:5df:4d41:9560 with SMTP id kc13-20020a056214410d00b005df4d419560mr8365650qvb.0.1680779713836;
-        Thu, 06 Apr 2023 04:15:13 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-227-151.dyn.eolo.it. [146.241.227.151])
-        by smtp.gmail.com with ESMTPSA id fc2-20020ad44f22000000b005dd8b9345c2sm427343qvb.90.2023.04.06.04.15.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 04:15:13 -0700 (PDT)
-Message-ID: <d24bcf952c8ceb3fa97b11cab222945b73723052.camel@redhat.com>
-Subject: Re: [PATCH] r8152: Advertise support for software timestamping
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Matthew Dawson <matthew@mjdsystems.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 06 Apr 2023 13:15:10 +0200
-In-Reply-To: <3218086.lGaqSPkdTl@cwmtaff>
-References: <3218086.lGaqSPkdTl@cwmtaff>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
-MIME-Version: 1.0
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        with ESMTP id S229579AbjDFLam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:30:42 -0400
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [63.216.63.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92250A2;
+        Thu,  6 Apr 2023 04:30:39 -0700 (PDT)
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4PsfSY64Yfz8R040;
+        Thu,  6 Apr 2023 19:30:37 +0800 (CST)
+Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
+        by mse-fl1.zte.com.cn with SMTP id 336BUVXP094943;
+        Thu, 6 Apr 2023 19:30:31 +0800 (+08)
+        (envelope-from yang.yang29@zte.com.cn)
+Received: from mapi (szxlzmapp01[null])
+        by mapi (Zmail) with MAPI id mid14;
+        Thu, 6 Apr 2023 19:30:34 +0800 (CST)
+Date:   Thu, 6 Apr 2023 19:30:34 +0800 (CST)
+X-Zmail-TransId: 2b03642ead5affffffffdc9-cfc64
+X-Mailer: Zmail v1.0
+Message-ID: <202304061930349843930@zte.com.cn>
+Mime-Version: 1.0
+From:   <yang.yang29@zte.com.cn>
+To:     <davem@davemloft.net>
+Cc:     <edumazet@google.com>, <pabeni@redhat.com>, <roopa@nvidia.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <kuba@kernel.org>,
+        <zhang.yunkai@zte.com.cn>, <jiang.xuexin@zte.com.cn>
+Subject: =?UTF-8?B?W1BBVENIIG5ldC1uZXh0XSBuZXQvYnJpZGdlOiBhZGQgZHJvcCByZWFzb25zIGZvciBicmlkZ2UgZm9yd2FyZGluZw==?=
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl1.zte.com.cn 336BUVXP094943
+X-Fangmail-Gw-Spam-Type: 0
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 642EAD5D.000/4PsfSY64Yfz8R040
+X-Spam-Status: No, score=0.0 required=5.0 tests=RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,39 +53,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: xu xin <xu.xin16@zte.com.cn>
 
-On Wed, 2023-04-05 at 01:26 -0400, Matthew Dawson wrote:
-> Since this drivers initial merge, the necessary support for software
-> based timestamping has been available.  Advertise support for this
-> feature enables the linuxptp project to work with it.
->=20
-> Signed-off-by: Matthew Dawson <matthew@mjdsystems.ca>
-> Tested-by: Mostafa Ayesh <mostafaayesh@outlook.com>
-> ---
->  drivers/net/usb/r8152.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index decb5ba56a259..44f64fd765a7d 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-> @@ -9132,6 +9132,7 @@ static const struct ethtool_ops ops =3D {
->  	.set_ringparam =3D rtl8152_set_ringparam,
->  	.get_pauseparam =3D rtl8152_get_pauseparam,
->  	.set_pauseparam =3D rtl8152_set_pauseparam,
-> +	.get_ts_info =3D ethtool_op_get_ts_info,
->  };
-> =20
->  static int rtl8152_ioctl(struct net_device *netdev, struct ifreq *rq, in=
-t=20
-> cmd)
+This creates six drop reasons as follows, which will help users know the
+specific reason why bridge drops the packets when forwarding.
 
-Does not apply cleanly to net-next due to last line being wrapped.
+1) SKB_DROP_REASON_BRIDGE_FWD_NO_BACKUP_PORT: failed to get a backup
+   port link when the destination port is down.
 
-Please re-spin and specify the target tree into the subj.
+2) SKB_DROP_REASON_BRIDGE_FWD_SAME_PORT: destination port is the same
+   with originating port when forwarding by a bridge.
 
-Thanks!
+3) SKB_DROP_REASON_BRIDGE_NON_FORWARDING_STATE: the bridge's state is
+   not forwarding.
 
-Paolo
+4) SKB_DROP_REASON_BRIDGE_NOT_ALLOWED_EGRESS: the packet is not allowed
+   to go out through the port due to vlan filtering.
 
+5) SKB_DROP_REASON_BRIDGE_SWDEV_NOT_ALLOWED_EGRESS: the packet is not
+   allowed to go out through the port which is offloaded by a hardware
+   switchdev, checked by nbp_switchdev_allowed_egress().
+
+6) SKB_DROP_REASON_BRIDGE_BOTH_PORT_ISOLATED: both source port and dest
+   port are in BR_ISOLATED state when bridge forwarding.
+
+Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Reviewed-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+Reviewed-by: Yang Yang <yang.yang19@zte.com.cn>
+Cc: Xuexin Jiang <jiang.xuexin@zte.com.cn>
+---
+ include/net/dropreason.h | 33 ++++++++++++++++++++++++++++++++
+ net/bridge/br_forward.c  | 49 +++++++++++++++++++++++++++++++++++++-----------
+ 2 files changed, 71 insertions(+), 11 deletions(-)
+
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index c0a3ea806cd5..888039fd01c9 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -78,6 +78,12 @@
+ 	FN(IPV6_NDISC_BAD_CODE)		\
+ 	FN(IPV6_NDISC_BAD_OPTIONS)	\
+ 	FN(IPV6_NDISC_NS_OTHERHOST)	\
++	FN(BRIDGE_FWD_NO_BACKUP_PORT) \
++	FN(BRIDGE_FWD_SAME_PORT) \
++	FN(BRIDGE_NON_FORWARDING_STATE) \
++	FN(BRIDGE_NOT_ALLOWED_EGRESS) \
++	FN(BRIDGE_SWDEV_NOT_ALLOWED_EGRESS) \
++	FN(BRIDGE_BOTH_PORT_ISOLATED) \
+ 	FNe(MAX)
+
+ /**
+@@ -338,6 +344,33 @@ enum skb_drop_reason {
+ 	 * for another host.
+ 	 */
+ 	SKB_DROP_REASON_IPV6_NDISC_NS_OTHERHOST,
++	/** @SKB_DROP_REASON_BRIDGE_FWD_NO_BACKUP_PORT: failed to get a backup
++	 * port link when the destination port is down.
++	 */
++	SKB_DROP_REASON_BRIDGE_FWD_NO_BACKUP_PORT,
++	/** @SKB_DROP_REASON_BRIDGE_FWD_SAME_PORT: destination port is the same
++	 * with originating port when forwarding by a bridge.
++	 */
++	SKB_DROP_REASON_BRIDGE_FWD_SAME_PORT,
++	/** @SKB_DROP_REASON_BRIDGE_NON_FORWARDING_STATE: the bridge's state is
++	 * not forwarding.
++	 */
++	SKB_DROP_REASON_BRIDGE_NON_FORWARDING_STATE,
++	/** @SKB_DROP_REASON_BRIDGE_NOT_ALLOWED_EGRESS: the packet is not allowed
++	 * to go out through the port due to vlan filtering.
++	 */
++	SKB_DROP_REASON_BRIDGE_NOT_ALLOWED_EGRESS,
++	/** @SKB_DROP_REASON_BRIDGE_SWDEV_NOT_ALLOWED_EGRESS: the packet is not
++	 * allowed to go out through the port which is offloaded by a hardware
++	 * switchdev, checked by nbp_switchdev_allowed_egress(). E.g, the source
++	 * switchdev is the same with the switchdev by which the dest port is
++	 * offloaded.
++	 */
++	SKB_DROP_REASON_BRIDGE_SWDEV_NOT_ALLOWED_EGRESS,
++	/** @SKB_DROP_REASON_BRIDGE_BOTH_PORT_ISOLATED: both source port and dest
++	 * port are in BR_ISOLATED state when bridge forwarding.
++	 */
++	SKB_DROP_REASON_BRIDGE_BOTH_PORT_ISOLATED,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+index 02bb620d3b8d..7ebdf9937125 100644
+--- a/net/bridge/br_forward.c
++++ b/net/bridge/br_forward.c
+@@ -18,16 +18,39 @@
+ #include "br_private.h"
+
+ /* Don't forward packets to originating port or forwarding disabled */
+-static inline int should_deliver(const struct net_bridge_port *p,
+-				 const struct sk_buff *skb)
++static inline bool should_deliver(const struct net_bridge_port *p, const struct sk_buff *skb,
++					 enum skb_drop_reason *need_reason)
+ {
+ 	struct net_bridge_vlan_group *vg;
++	enum skb_drop_reason reason;
+
+ 	vg = nbp_vlan_group_rcu(p);
+-	return ((p->flags & BR_HAIRPIN_MODE) || skb->dev != p->dev) &&
+-		p->state == BR_STATE_FORWARDING && br_allowed_egress(vg, skb) &&
+-		nbp_switchdev_allowed_egress(p, skb) &&
+-		!br_skb_isolated(p, skb);
++	if (!(p->flags & BR_HAIRPIN_MODE) && skb->dev == p->dev) {
++		reason = SKB_DROP_REASON_BRIDGE_FWD_SAME_PORT;
++		goto undeliverable;
++	}
++	if (p->state != BR_STATE_FORWARDING) {
++		reason = SKB_DROP_REASON_BRIDGE_NON_FORWARDING_STATE;
++		goto undeliverable;
++	}
++	if (!br_allowed_egress(vg, skb)) {
++		reason = SKB_DROP_REASON_BRIDGE_NOT_ALLOWED_EGRESS;
++		goto undeliverable;
++	}
++	if (!nbp_switchdev_allowed_egress(p, skb)) {
++		reason = SKB_DROP_REASON_BRIDGE_SWDEV_NOT_ALLOWED_EGRESS;
++		goto undeliverable;
++	}
++	if (br_skb_isolated(p, skb)) {
++		reason = SKB_DROP_REASON_BRIDGE_BOTH_PORT_ISOLATED;
++		goto undeliverable;
++	}
++	return true;
++
++undeliverable:
++	if (need_reason)
++		*need_reason = reason;
++	return false;
+ }
+
+ int br_dev_queue_push_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+@@ -144,6 +167,8 @@ static int deliver_clone(const struct net_bridge_port *prev,
+ void br_forward(const struct net_bridge_port *to,
+ 		struct sk_buff *skb, bool local_rcv, bool local_orig)
+ {
++	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
++
+ 	if (unlikely(!to))
+ 		goto out;
+
+@@ -152,12 +177,14 @@ void br_forward(const struct net_bridge_port *to,
+ 		struct net_bridge_port *backup_port;
+
+ 		backup_port = rcu_dereference(to->backup_port);
+-		if (unlikely(!backup_port))
++		if (unlikely(!backup_port)) {
++			reason = SKB_DROP_REASON_BRIDGE_FWD_NO_BACKUP_PORT;
+ 			goto out;
++		}
+ 		to = backup_port;
+ 	}
+
+-	if (should_deliver(to, skb)) {
++	if (should_deliver(to, skb, &reason)) {
+ 		if (local_rcv)
+ 			deliver_clone(to, skb, local_orig);
+ 		else
+@@ -167,7 +194,7 @@ void br_forward(const struct net_bridge_port *to,
+
+ out:
+ 	if (!local_rcv)
+-		kfree_skb(skb);
++		kfree_skb_reason(skb, reason);
+ }
+ EXPORT_SYMBOL_GPL(br_forward);
+
+@@ -178,7 +205,7 @@ static struct net_bridge_port *maybe_deliver(
+ 	u8 igmp_type = br_multicast_igmp_type(skb);
+ 	int err;
+
+-	if (!should_deliver(p, skb))
++	if (!should_deliver(p, skb, NULL))
+ 		return prev;
+
+ 	nbp_switchdev_frame_mark_tx_fwd_to_hwdom(p, skb);
+@@ -254,7 +281,7 @@ static void maybe_deliver_addr(struct net_bridge_port *p, struct sk_buff *skb,
+ 	struct net_device *dev = BR_INPUT_SKB_CB(skb)->brdev;
+ 	const unsigned char *src = eth_hdr(skb)->h_source;
+
+-	if (!should_deliver(p, skb))
++	if (!should_deliver(p, skb, NULL))
+ 		return;
+
+ 	/* Even with hairpin, no soliloquies - prevent breaking IPv6 DAD */
+-- 
+2.15.2
