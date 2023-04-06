@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E2F26D9FA3
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 20:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 659826D9FC7
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 20:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240054AbjDFSRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 14:17:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35050 "EHLO
+        id S240171AbjDFS0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 14:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbjDFSRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 14:17:06 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C2A2D7F
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 11:17:05 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id e9e14a558f8ab-322fc56a20eso397525ab.0
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 11:17:05 -0700 (PDT)
+        with ESMTP id S239566AbjDFS0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 14:26:36 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC86900C
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 11:26:29 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id h11so45011363lfu.8
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 11:26:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112; t=1680805024;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=h70PraPH5+GMWozAhM7JaPVH30CeiE+sjPLouQsdB7g=;
-        b=sV0bNyy9DUoGVmnnZYp++9XpnHtdFFdBIfUu98tiebaRLFSkMDjqsbZX5u2udu69+Y
-         NWdL2QKNoj40V0Xpai63YRAE2NFq4G0ApvL0Seq8uOnnpjOIY98m5/FJ+jA7YQUsLw2T
-         bzb6HqEUDO1i0XQgWyH2SFNkZT6MQ2EpnWsommuVxAol7APb1dh3X74x5lR/fgRFt4ME
-         79KCT3E0JCzB+cinRi4Qww3f1lTq1vV9bb4Z30q6vx0LkuvbZ0QHlv+I7rGhWyShLhya
-         OsM+H88PXCY3o5lUcgSuRGNaDR3mIesOqI117sq4d0NwSFNMRoApUNatSKDXEi4dqi11
-         OyCA==
+        d=linaro.org; s=google; t=1680805588;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VrPZiBBEPnTeAG4ijDo3nsObeCJTrwIJDTUCNITg5iI=;
+        b=CqY6xF+cOM6sbxvjz1Ff7fcQTniOYKz25DBG6qwejTmMEtsmz5R30IcQ4sXU09agqz
+         P2PmuH6Zw2bKIlZNN6pfWhu8qqUxSJLAvzstuk0VDd9a90kRfEe2y3Ik22OCGmhp2uHV
+         qModnBJcJBhDhgSwuY5jGg+eLZ4iDFenf1vxh/bGXh9z+V8icUiD9i5qAT/VXwbu7flL
+         0KZIFha7SMukx/q98vET3mn+TYaju71P93US6xA8xhFUfIfhX8gZPoiCqVs9APcBPung
+         hX3ctOJ+/HYMko8xKotKi0hFQXT2S9ekgcGnI/ptduyfF+3ahLqbNXocC5t04IHUe9Me
+         q0nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680805024;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=h70PraPH5+GMWozAhM7JaPVH30CeiE+sjPLouQsdB7g=;
-        b=z699DmlTAvyNLhu6dagKvvMJn5fFv+KlU90OVHnr3hQJDtMlYp/d/VaHhYXeEfnG7n
-         Uij+sGB3gHj9785cswXRSKmP8xWdHVlYCtKVZcyy29/JbdnAZPjyD3xHz8L42g9Ez/D8
-         EidCMc4M5pzmu7Q2U8jvxVm+6hxUrpvl1ziWwMbCs6dgqZB4441qaShswe0iuFUb91vW
-         XzSg19dijBg7eHc86+QeNgPNyizgDoj3o2E7+TsRIoA1hBo93xOCsmLlU0rKpalTaP7z
-         qiDZUVjRdlPyEEeaAmo7Nn4uJV2egITXApX4bzwxlyxeJjBirr77oA6dTSPMX9LC6q84
-         6zOQ==
-X-Gm-Message-State: AAQBX9c/A/gWdh08P8EwDcp29Q095zXX9aYFZaYSjVrlfTzjhrNMIeE3
-        b1p7mltce5CwcEjVR56ge0vrEBLlxVdWm0AfQFo9CQ==
-X-Google-Smtp-Source: AKy350b6bIn2q5v2MiKCNJhNqfrzRDXgyf/sd6L4aQ3P3U8+mlRZqYYT3NQuDmpc3IFVPLht2efOKqjcmlhBOYYVtCY=
-X-Received: by 2002:a05:6e02:1e0a:b0:326:55d0:efad with SMTP id
- g10-20020a056e021e0a00b0032655d0efadmr20905ila.12.1680805024290; Thu, 06 Apr
- 2023 11:17:04 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680805588;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VrPZiBBEPnTeAG4ijDo3nsObeCJTrwIJDTUCNITg5iI=;
+        b=CT6XY/S0t3cEzeeTUKXyhaNKoX52TEGmT+YjUAqP/sL+c/cCHo5wYn09DUb0M2CRc/
+         tc2MKYsoINU3Lze9qcjzgyjKymwvXgWuS13ojjTtVI2lgQ+/vB7fl8P8PSsDJW0vw7rE
+         gomC1ApQ6chUYGxBLHwzZ40+gso1Hryb7jG/JJAk5Bt4e/3jJ1k7ImTEbUeP42UZha/w
+         PvNEyt/uI0FQSbDFqQS7WvNf0lsNq0T9WmBhOoSia7FRbgK65hGQO3Ac9fzVQ0+6g/0Q
+         EA7WH5CJT+B3gczI/OvPLbN/1GU35E42s2x1iVqBFT/MmKhusj1Ay9EsgBIxAXV2BXFz
+         IeTA==
+X-Gm-Message-State: AAQBX9fWRxp3QnRcMS06EmLba0qMoqDhvp7JTEuyJW5RRaySSsW0mxbB
+        wj4I5/yreGSa8XVN+RZKR5r4tA==
+X-Google-Smtp-Source: AKy350Zoz7gSPFtYZOf28QyZRifSrImimrPXqKp3I11ff3EWM5EclgyEAjZIR1qhjTDNBFSIbmszqQ==
+X-Received: by 2002:ac2:43d7:0:b0:4eb:3b7c:233 with SMTP id u23-20020ac243d7000000b004eb3b7c0233mr18951lfl.16.1680805587873;
+        Thu, 06 Apr 2023 11:26:27 -0700 (PDT)
+Received: from [192.168.1.101] (abxh37.neoplus.adsl.tpnet.pl. [83.9.1.37])
+        by smtp.gmail.com with ESMTPSA id w26-20020a05651204da00b004e88a166eb6sm368106lfq.46.2023.04.06.11.26.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Apr 2023 11:26:27 -0700 (PDT)
+Message-ID: <8c818f95-b4a4-658f-701d-3151afdd5179@linaro.org>
+Date:   Thu, 6 Apr 2023 20:26:20 +0200
 MIME-Version: 1.0
-References: <20230406144330.1932798-1-leitao@debian.org> <CA+FuTSeKpOJVqcneCoh_4x4OuK1iE0Tr6f3rSNrQiR-OUgjWow@mail.gmail.com>
- <ZC7seVq7St6UnKjl@gmail.com>
-In-Reply-To: <ZC7seVq7St6UnKjl@gmail.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Thu, 6 Apr 2023 14:16:24 -0400
-Message-ID: <CA+FuTSf9LEhzjBey_Nm_-vN0ZjvtBSQkcDWS+5uBnLmr8Qh5uA@mail.gmail.com>
-Subject: Re: [PATCH 0/5] add initial io_uring_cmd support for sockets
-To:     Breno Leitao <leitao@debian.org>
-Cc:     io-uring@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
-        asml.silence@gmail.com, axboe@kernel.dk, leit@fb.com,
-        edumazet@google.com, pabeni@redhat.com, davem@davemloft.net,
-        dccp@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org, dsahern@kernel.org,
-        willemdebruijn.kernel@gmail.com, matthieu.baerts@tessares.net,
-        marcelo.leitner@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-15.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,ENV_AND_HDR_SPF_MATCH,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.9.1
+Subject: Re: [PATCH v3 1/2] dt-bindings: net: Convert ATH10K to YAML
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20230406-topic-ath10k_bindings-v3-0-00895afc7764@linaro.org>
+ <20230406-topic-ath10k_bindings-v3-1-00895afc7764@linaro.org>
+ <223892d0-9b1b-9459-dec1-574875f7c1c6@linaro.org>
+From:   Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <223892d0-9b1b-9459-dec1-574875f7c1c6@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,99 +87,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 6, 2023 at 11:59=E2=80=AFAM Breno Leitao <leitao@debian.org> wr=
-ote:
->
-> On Thu, Apr 06, 2023 at 11:34:28AM -0400, Willem de Bruijn wrote:
-> > On Thu, Apr 6, 2023 at 10:45=E2=80=AFAM Breno Leitao <leitao@debian.org=
-> wrote:
-> > >
-> > > From: Breno Leitao <leit@fb.com>
-> > >
-> > > This patchset creates the initial plumbing for a io_uring command for
-> > > sockets.
-> > >
-> > > For now, create two uring commands for sockets, SOCKET_URING_OP_SIOCO=
-UTQ
-> > > and SOCKET_URING_OP_SIOCINQ. They are similar to ioctl operations
-> > > SIOCOUTQ and SIOCINQ. In fact, the code on the protocol side itself i=
-s
-> > > heavily based on the ioctl operations.
-> >
-> > This duplicates all the existing ioctl logic of each protocol.
-> >
-> > Can this just call the existing proto_ops.ioctl internally and translat=
-e from/to
-> > io_uring format as needed?
->
-> This is doable, and we have two options in this case:
->
-> 1) Create a ioctl core function that does not call `put_user()`, and
-> call it from both the `udp_ioctl` and `udp_uring_cmd`, doing the proper
-> translations. Something as:
->
->         int udp_ioctl_core(struct sock *sk, int cmd, unsigned long arg)
->         {
->                 int amount;
->                 switch (cmd) {
->                 case SIOCOUTQ: {
->                         amount =3D sk_wmem_alloc_get(sk);
->                         break;
->                 }
->                 case SIOCINQ: {
->                         amount =3D max_t(int, 0, first_packet_length(sk))=
-;
->                         break;
->                 }
->                 default:
->                         return -ENOIOCTLCMD;
->                 }
->                 return amount;
->         }
->
->         int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
->         {
->                 int amount =3D udp_ioctl_core(sk, cmd, arg);
->
->                 return put_user(amount, (int __user *)arg);
->         }
->         EXPORT_SYMBOL(udp_ioctl);
->
->
-> 2) Create a function for each "case entry". This seems a bit silly for
-> UDP, but it makes more sense for other protocols. The code will look
-> something like:
->
->          int udp_ioctl(struct sock *sk, int cmd, unsigned long arg)
->          {
->                 switch (cmd) {
->                 case SIOCOUTQ:
->                 {
->                         int amount =3D udp_ioctl_siocoutq();
->                         return put_user(amount, (int __user *)arg);
->                 }
->                 ...
->           }
->
-> What is the best approach?
 
-A, the issue is that sock->ops->ioctl directly call put_user.
 
-I was thinking just having sock_uring_cmd call sock->ops->ioctl, like
-sock_do_ioctl.
+On 6.04.2023 19:15, Krzysztof Kozlowski wrote:
+> On 06/04/2023 14:55, Konrad Dybcio wrote:
+>> Convert the ATH10K bindings to YAML.
+>>
+>> Dropped properties that are absent at the current state of mainline:
+>> - qcom,msi_addr
+>> - qcom,msi_base
+>>
+>> qcom,coexist-support and qcom,coexist-gpio-pin do very little and should
+>> be reconsidered on the driver side, especially the latter one.
+>>
+>> Somewhat based on the ath11k bindings.
+> 
+> 
+>> +  - reg
+>> +
+>> +additionalProperties: false
+>> +
+>> +allOf:
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - qcom,ipq4019-wifi
+>> +    then:
+>> +      properties:
+>> +        interrupts:
+>> +          minItems: 17
+>> +          maxItems: 17
+>> +
+>> +        interrupt-names:
+>> +          minItems: 17
+> 
+> Drop minItems (the number of items is defined by listing them below, as
+> you did).
+OK
 
-But that would require those callbacks to return a negative error or
-positive integer, rather than calling put_user. And then move the
-put_user to sock_do_ioctl. Such a change is at least as much code
-change as your series. Though without the ending up with code
-duplication. It also works only if all ioctls only put_user of integer
-size. That's true for TCP, UDP and RAW, but not sure if true more
-broadly.
+> 
+>> +          items:
+>> +            - const: msi0
+>> +            - const: msi1
+>> +            - const: msi2
+>> +            - const: msi3
+>> +            - const: msi4
+>> +            - const: msi5
+>> +            - const: msi6
+>> +            - const: msi7
+>> +            - const: msi8
+>> +            - const: msi9
+>> +            - const: msi10
+>> +            - const: msi11
+>> +            - const: msi12
+>> +            - const: msi13
+>> +            - const: msi14
+>> +            - const: msi15
+>> +            - const: legacy
+>> +
+>> +        clocks:
+>> +          items:
+>> +            - description: Wi-Fi command clock
+>> +            - description: Wi-Fi reference clock
+>> +            - description: Wi-Fi RTC clock
+>> +
+>> +        clock-names:
+>> +          items:
+>> +            - const: wifi_wcss_cmd
+>> +            - const: wifi_wcss_ref
+>> +            - const: wifi_wcss_rtc
+>> +
+>> +      required:
+>> +        - clocks
+>> +        - clock-names
+>> +        - interrupts
+>> +        - interrupt-names
+>> +        - resets
+>> +        - reset-names
+>> +
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - qcom,wcn3990-wifi
+>> +
+>> +    then:
+>> +      properties:
+>> +        clocks:
+>> +          minItems: 1
+>> +          items:
+>> +            - description: XO reference clock
+>> +            - description: Qualcomm Debug Subsystem clock
+>> +
+>> +        clock-names:
+>> +          minItems: 1
+>> +          items:
+>> +            - const: cxo_ref_clk_pin
+>> +            - const: qdss
+>> +
+>> +        interrupts:
+>> +          items:
+>> +            - description: CE0
+>> +            - description: CE1
+>> +            - description: CE2
+>> +            - description: CE3
+>> +            - description: CE4
+>> +            - description: CE5
+>> +            - description: CE6
+>> +            - description: CE7
+>> +            - description: CE8
+>> +            - description: CE9
+>> +            - description: CE10
+>> +            - description: CE11
+> 
+> What about interrupt-names here? If they are not expected, then just
+> interrupt-names: false
+They obviously wouldn't hurt, but they're unused on the driver side:
 
-Another approach may be to pass another argument to the ioctl
-callbacks, whether to call put_user or return the integer and let the
-caller take care of the output to user. This could possibly be
-embedded in the a high-order bit of the cmd, so that it fails on ioctl
-callbacks that do not support this mode.
+for (i = 0; i < CE_COUNT; i++) {
+		ret = platform_get_irq(ar_snoc->dev, i);
 
-Of the two approaches you suggest, I find the first preferable.
+So I will forbid them.
+
+Konrad
+> 
+> 
+> 
+> Best regards,
+> Krzysztof
+> 
