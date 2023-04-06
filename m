@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 177B46D9104
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:02:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5BF36D9107
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:02:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234703AbjDFICP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 04:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
+        id S235685AbjDFICT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 04:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbjDFICO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:02:14 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F09C93;
-        Thu,  6 Apr 2023 01:02:13 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id he13so2523225wmb.2;
-        Thu, 06 Apr 2023 01:02:13 -0700 (PDT)
+        with ESMTP id S233572AbjDFICR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:02:17 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6E493;
+        Thu,  6 Apr 2023 01:02:15 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id n10-20020a05600c4f8a00b003ee93d2c914so24735441wmq.2;
+        Thu, 06 Apr 2023 01:02:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680768132;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ICl5yXhMxeO2u+7yTPtP7Jl3u4X7NhJCydXnMv94CdE=;
-        b=it8N5epu/hXZbHWuT1hr22stKIGl0pvvUn+gedunaw90tc0hnlroPv6UR0rKExvyi+
-         /5HNW3X0Ey7HHnOjoxPAscBmzuT17opVmLbvKHPbxAl711L9R07V1KEsXUGg5vV06HuO
-         bZ5kFMF6w8bZZU7YwUoTdeLRR+lD6jPKd+bCJ0Qr9B2qnZCTYFvuKmQuq7v9J6HYVtc8
-         qkmBat7UPxpQ5MPXBkDfZJG9DUV0RANmcXSYDpJEtxYvai9w9ZpVQtUP5ezdt5QNVT8x
-         JJDinsYCQ0vLm1/73RGpI1qYadaH2rbnLSSsb6axGuq/3jwX5U27iIUFZhCW0uqGJmsL
-         jPxg==
+        d=gmail.com; s=20210112; t=1680768134;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Qh7/8q6ObYiJ8rFG7u0fNoXDSPJQ6AW2HK/HF1hPhps=;
+        b=BnHWav7djfJ0AnrN+7BSjt2yjCiUpxrN2syTjNZ6vdv3213viKA4wHb0Vcqzj5m4Vd
+         SwmooCnH0nPxRf8nXu6VPgOH8Vkh3oAiDfMYToZTTX5XC7uF0uvkGCe2xaVHsLHCVT6q
+         kgYN5DVuxR0T6LpqVa17kk8lND1sgA48HGPnPdB41B4abfnbrHfpMxCwUBwBLrJmimCT
+         kJ/6h8yIFb1oxz7P7VBJnrJfEqRHJibSQGtcMNuAoaKMIG3DHSLhICxP6j0YK216xu4t
+         DePFP7rcsrsb8/K5H8jtVrJgcXibo0BUFKvmQMZNQZPsSAVmhC5xyQiE8ePgxaU7MZn6
+         tNtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680768132;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ICl5yXhMxeO2u+7yTPtP7Jl3u4X7NhJCydXnMv94CdE=;
-        b=MNIwDTlkxwvxD7SGwjUSKxmRuzgkRz46OpsJReivAnBnkG7zCxSZNQ2w1qvQzX2J7s
-         NoNCTqE4EXJcLWSvoyK4jcBaSAVo/zEIwwOsl3Cv6isjpHGZmtRJ5276v3j9bFmr87m+
-         BohRjbpMbxZnMA14JE9pd2LJIRnJnbo1re+RbXWpfy7fD9Zf1BuPsvM1/aG/uYb92O1r
-         uqODYET6lvpgSTHc+f3qHISrSiU7/PUBAR9vpKj5726OEDDq8K3pchm1mc32KNx6jv8b
-         dUkGpvG/TTJP9nzdHvWi6eQ2yeqw7dzBaXEwO675mqGz+Xgsa+XvHd/O06rrb4WHQSbO
-         Dg0Q==
-X-Gm-Message-State: AAQBX9fQSKlox2wJhOQOefK+GmLkluBiiHnYdn0nl/KR4X5BbckU/ugh
-        RpSURSuQZdDLXfJhLyiYLks=
-X-Google-Smtp-Source: AKy350a/F/lBPdvFizmroFVH3fzHbWGMlo4ft4HctNyHW+b1LaJS8K92j1zaDn1g279tfeuONBh+TA==
-X-Received: by 2002:a7b:ca47:0:b0:3ed:1f9c:af12 with SMTP id m7-20020a7bca47000000b003ed1f9caf12mr6967575wml.22.1680768131483;
-        Thu, 06 Apr 2023 01:02:11 -0700 (PDT)
+        d=1e100.net; s=20210112; t=1680768134;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Qh7/8q6ObYiJ8rFG7u0fNoXDSPJQ6AW2HK/HF1hPhps=;
+        b=zncueYby89Chs6shbUogQE2Yi908D+vz17w923qfyuLbMROr1ahaDT/4LVH/1ciHjd
+         6MeC9pxGm5bYwdUOoP/9rKbbW39j7tT/24IZ8CkkOy6lAcO2ez4df52uGHo3+t8XI+hQ
+         6154refoCaNvbenZcsGEvVtdEQ92B3iuJieP7ZMHrVfhS9d5q4/ed/xtSjMRAds2ENua
+         RIdJ/1BECEQ81gDfedYSxmoqlr0iJqnGFe31FAdCrNGzY7GtXm1i5HHnEp4FhsCjny3B
+         YRUrFYWjBIWnoFQfqiBmInag0zu5dstsKHzePx2qEPWeqalOXnvw8HbVEv2oHVrfVtQI
+         UUfw==
+X-Gm-Message-State: AAQBX9c/ibD4z1Kmqgt0Pfqli7wkhNAhm4JzJLYwzji+pRvfqbandf3G
+        cjow61HfKWTjfsOgsKQrkzQUovwiPUD/0A==
+X-Google-Smtp-Source: AKy350Z8BUntUGgaUZ0JsYY0YWX6eYpdtEuArg2Rn3T2ll8NM3bGUndFU79f26oyoEzymFlcIcppzA==
+X-Received: by 2002:a05:600c:2312:b0:3ef:6396:d9c8 with SMTP id 18-20020a05600c231200b003ef6396d9c8mr6317377wmo.5.1680768134079;
+        Thu, 06 Apr 2023 01:02:14 -0700 (PDT)
 Received: from arinc9-PC.lan ([149.91.1.15])
-        by smtp.gmail.com with ESMTPSA id s9-20020a7bc389000000b003ef64affec7sm826993wmj.22.2023.04.06.01.02.08
+        by smtp.gmail.com with ESMTPSA id s9-20020a7bc389000000b003ef64affec7sm826993wmj.22.2023.04.06.01.02.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 01:02:10 -0700 (PDT)
+        Thu, 06 Apr 2023 01:02:13 -0700 (PDT)
 From:   arinc9.unal@gmail.com
 X-Google-Original-From: arinc.unal@arinc9.com
 To:     Andrew Lunn <andrew@lunn.ch>,
@@ -71,10 +72,12 @@ Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH 1/7] dt-bindings: net: dsa: mediatek,mt7530: correct brand name
-Date:   Thu,  6 Apr 2023 11:01:35 +0300
-Message-Id: <20230406080141.22924-1-arinc.unal@arinc9.com>
+Subject: [PATCH 2/7] dt-bindings: net: dsa: mediatek,mt7530: improve MCM and MT7988 information
+Date:   Thu,  6 Apr 2023 11:01:36 +0300
+Message-Id: <20230406080141.22924-2-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20230406080141.22924-1-arinc.unal@arinc9.com>
+References: <20230406080141.22924-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -90,26 +93,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-The brand name is MediaTek, change it to that.
+Improve the description of the schema.
+
+The MT7620 SoCs described are not part of the multi-chip module but rather
+built into the SoC. Mention the MT7530 MMIO driver not supporting them.
+
+Move information for the switch on the MT7988 SoC below MT7531, and improve
+it.
+
+List maintainers in alphabetical order by first name.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 25 ++++++++++---------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index e532c6b795f4..6df995478275 100644
+index 6df995478275..7045a98d9593 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -4,7 +4,7 @@
- $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Mediatek MT7530 and MT7531 Ethernet Switches
-+title: MediaTek MT7530 and MT7531 Ethernet Switches
+@@ -8,29 +8,30 @@ title: MediaTek MT7530 and MT7531 Ethernet Switches
  
  maintainers:
    - Arınç ÜNAL <arinc.unal@arinc9.com>
++  - Daniel Golle <daniel@makrotopia.org>
+   - Landen Chao <Landen.Chao@mediatek.com>
+   - DENG Qingfang <dqfext@gmail.com>
+   - Sean Wang <sean.wang@mediatek.com>
+-  - Daniel Golle <daniel@makrotopia.org>
+ 
+ description: |
+-  There are three versions of MT7530, standalone, in a multi-chip module and
+-  built-into a SoC.
++  There are three versions of MT7530, standalone, in a multi-chip module, and
++  built into an SoC.
+ 
+-  MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
+-  MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
+-
+-  The MT7988 SoC comes with a built-in switch similar to MT7531 as well as four
+-  Gigabit Ethernet PHYs. The switch registers are directly mapped into the SoC's
+-  memory map rather than using MDIO. The switch got an internally connected 10G
+-  CPU port and 4 user ports connected to the built-in Gigabit Ethernet PHYs.
++  MT7530 is a part of the multi-chip module in MT7621AT, MT7621DAT, MT7621ST and
++  MT7623AI SoCs.
+ 
+   MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
+-  and the switch registers are directly mapped into SoC's memory map rather than
+-  using MDIO. The DSA driver currently doesn't support MT7620 variants.
++  and the switch registers are directly mapped into the SoC's memory map rather
++  than using MDIO. The MT7530 MMIO driver currently doesn't support these SoCs.
+ 
+   There is only the standalone version of MT7531.
+ 
++  The MT7988 SoC comes with a built-in switch with four Gigabit Ethernet PHYs.
++  The characteristics of the switch is similar to MT7531. The switch registers
++  are directly mapped into the SoC's memory map rather than using MDIO. The
++  switch has got an internally connected 10G CPU port and 4 user ports connected
++  to the built-in Gigabit Ethernet PHYs.
++
+   Port 5 on MT7530 has got various ways of configuration:
+ 
+     - Port 5 can be used as a CPU port.
 -- 
 2.37.2
 
