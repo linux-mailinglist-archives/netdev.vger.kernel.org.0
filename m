@@ -2,71 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EF3F6D94AE
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A5B6D94D4
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236995AbjDFLHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 07:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
+        id S236833AbjDFLOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 07:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236987AbjDFLHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:07:34 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A607A9D;
-        Thu,  6 Apr 2023 04:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=29DiQcJ+NesR4bzlrgSGDb6JnN91qFQawEIe6tNxYUo=; b=BaTEkyAhdN5dw6cCUs02xo/plw
-        WLCS1AwOw7Zev1BLZKXfHyhlnjjP4ozYoeSUWRONWbmN0kba+V79CUy1Jbd7mClSdQvOmm+DeKbF9
-        QOgTs7KK1c0Y1EvvPS9742xOwiQ+ehUMnp9kMAfP6KIc6NCR7kwM+lsRFHvBII9EYFbKGZqnuVvpk
-        WsRwArejLCyVoakKWoeGXIFdfT2za2hfvRhiJfZaz0u5hp+5h6b6SWAdw9AOGikDrBObt7z+PXTfe
-        jazufLNrIJMXtIDEZSWaGiw3XZ2UHf2CnxFB1+BRLVDOySv5sNwEVGNnVEVoHmEt5FTgJ3o4LFSnS
-        /rlKe9rQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46406)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1pkNSN-0006ry-9H; Thu, 06 Apr 2023 12:07:07 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1pkNSH-0007R0-4o; Thu, 06 Apr 2023 12:07:01 +0100
-Date:   Thu, 6 Apr 2023 12:07:01 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     arinc9.unal@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
- for MT7988
-Message-ID: <ZC6n1XAGyZFlxyXx@shell.armlinux.org.uk>
-References: <20230406100445.52915-1-arinc.unal@arinc9.com>
+        with ESMTP id S229771AbjDFLOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:14:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE91E6;
+        Thu,  6 Apr 2023 04:14:40 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3368qPG8011886;
+        Thu, 6 Apr 2023 11:14:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=WjEAuWLkS9VAxEzf203T1+TPUhyVG+CqnTJOgnevsgM=;
+ b=hIfsr24GJBPrrREnaBWIwEALiXZwnLtAkeqY+V3yjr64Z5gA7FDotLDDdFxMlMkYY+db
+ X6WVN65GdJf7DaV2YMmSminAVkRGd3lBGD4ZYnWck6UYe24RqsmMnhXo9DT38HygnjMb
+ mHE0JgWmKR6/7rPFautu1KUyK+kReZTIp/wgHO2DOIa4Sosv89w2a1qNqOrur8h/sgVC
+ qpXXMzV/8XGq/FDbQc3X227ifSUkBbTj21TiTtB0tIeRqv+Ai+OjSxME2MMhStTkdEGd
+ rjVG4kY24mh6DPc+llYVXWDTbMTgkHXeBaDdRE9eeVjoa+sxRKbUYT2fyp8wcWfVuiwd yw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3psar79fvj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 06 Apr 2023 11:14:35 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 336B07qr030927;
+        Thu, 6 Apr 2023 11:14:35 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3psar79fut-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 06 Apr 2023 11:14:35 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3364GjDZ027288;
+        Thu, 6 Apr 2023 11:14:33 GMT
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+        by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3ppc87c8pw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 06 Apr 2023 11:14:32 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+        by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 336BETMu61866262
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 6 Apr 2023 11:14:29 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0CBFC2004D;
+        Thu,  6 Apr 2023 11:14:29 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9F8C220043;
+        Thu,  6 Apr 2023 11:14:28 +0000 (GMT)
+Received: from [9.152.224.183] (unknown [9.152.224.183])
+        by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
+        Thu,  6 Apr 2023 11:14:28 +0000 (GMT)
+Message-ID: <33ab688e-88c9-d950-be66-f0f79774ff6c@linux.ibm.com>
+Date:   Thu, 6 Apr 2023 13:14:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230406100445.52915-1-arinc.unal@arinc9.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.9.1
+Subject: Re: [RFC PATCH net-next v4 0/9] net/smc: Introduce SMC-D-based OS
+ internal communication acceleration
+To:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, jaka@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1679887699-54797-1-git-send-email-guwen@linux.alibaba.com>
+ <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
+Content-Language: en-US
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <6156aaad710bc7350cbae6cb821289c8a37f44bb.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: I5uCFC6L47uNjIs2DB9yjf9t5XvJvDUe
+X-Proofpoint-GUID: n3LH0WtZmqozgv_4YrVMHpESp8mAnFCi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.254,Aquarius:18.0.942,Hydra:6.0.573,FMLib:17.11.170.22
+ definitions=2023-04-06_04,2023-04-05_01,2023-02-09_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 impostorscore=0 adultscore=0
+ mlxscore=0 priorityscore=1501 spamscore=0 suspectscore=0 mlxlogscore=999
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2303200000 definitions=main-2304060096
+X-Spam-Status: No, score=-2.3 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,65 +97,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 01:04:45PM +0300, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
-> 
-> On the switch on the MT7988 SoC, there are only 4 PHYs. There's only port 6
-> as the CPU port, there's no port 5. Split the switch statement with a check
-> to enforce these for the switch on the MT7988 SoC. The internal phy-mode is
-> specific to MT7988 so put it for MT7988 only.
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
-> 
-> Daniel, this is based on the information you provided me about the switch.
-> I will add this to my current patch series if it looks good to you.
-> 
-> Arınç
-> 
-> ---
->  drivers/net/dsa/mt7530.c | 67 ++++++++++++++++++++++++++--------------
->  1 file changed, 43 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 6fbbdcb5987f..f167fa135ef1 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
->  	phy_interface_zero(config->supported_interfaces);
->  
->  	switch (port) {
-> -	case 0 ... 4: /* Internal phy */
-> +	case 0 ... 3: /* Internal phy */
->  		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
->  			  config->supported_interfaces);
->  		break;
-> @@ -2710,37 +2710,56 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
->  	struct mt7530_priv *priv = ds->priv;
->  	u32 mcr_cur, mcr_new;
->  
-> -	switch (port) {
-> -	case 0 ... 4: /* Internal phy */
-> -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
-> -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
-> -			goto unsupported;
-> -		break;
-> -	case 5: /* Port 5, a CPU port. */
-> -		if (priv->p5_interface == state->interface)
-> +	if (priv->id == ID_MT7988) {
-> +		switch (port) {
-> +		case 0 ... 3: /* Internal phy */
-> +			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
 
-How do these end up with PHY_INTERFACE_MODE_INTERNAL ? phylib defaults
-to GMII mode without something else being specified in DT.
 
-Also note that you should *not* be validating state->interface in the
-mac_config() method because it's way too late to reject it - if you get
-an unsupported interface here, then that is down to the get_caps()
-method being buggy. Only report interfaces in get_caps() that you are
-prepared to handle in the rest of the system.
+On 05.04.23 19:04, Niklas Schnelle wrote:
+> One more question though, what about the SEID why does that have to be
+> fixed and at least partially match what ISM devices use? I think I'm
+> missing some SMC protocol/design detail here. I'm guessing this would
+> require a protocol change?
+> 
+> Thanks,
+> Niklas
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+Niklas,
+in the initial SMC CLC handshake the client and server exchange the SEID (one per peer system)
+and up to 8 proposals for SMC-D interfaces.
+Wen's current proposal assumes that smc-d loopback can be one of these 8 proposed interfaces,
+iiuc. So on s390 the proposal can contain ISM devices and a smc-d loopback device at the same time.
+If one of the peers is e.g. an older Linux version, it will just ignore the loopback-device
+in the list (Don't find a match for CHID 0xFFFF) and use an ISM interface for SMC-D if possible.
+Therefor it is important that the SEID is used in the same way as it is today in the handshake.
+
+If we decide for some reason (virtio-ism open issues?) that a protocol change/extension is
+required/wanted, then it is a new game and we can come up with new identifiers, but we may
+lose compatibility to backlevel systems.
+
+Alexandra
