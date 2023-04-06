@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5812E6D9D71
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 18:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930466D9D7F
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 18:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239197AbjDFQXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 12:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
+        id S238682AbjDFQZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 12:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbjDFQXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 12:23:03 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD8EA4C16;
-        Thu,  6 Apr 2023 09:22:56 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id E6C8F1883A29;
-        Thu,  6 Apr 2023 16:22:52 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id C003425005BD;
-        Thu,  6 Apr 2023 16:22:52 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id A22749B403E2; Thu,  6 Apr 2023 16:22:52 +0000 (UTC)
-X-Screener-Id: e32ae469fa6e394734d05373d3a705875723cf1e
-Received: from fujitsu (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 0211891201E3;
-        Thu,  6 Apr 2023 16:22:51 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "maintainer:MICROCHIP KSZ SERIES ETHERNET SWITCH DRIVER" 
-        <UNGLinuxDriver@microchip.com>, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?utf-8?Q?Cl=C3=A9ment_L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "open list:RENESAS RZ/N1 A5PSW SWITCH DRIVER" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "moderated list:ETHERNET BRIDGE" <bridge@lists.linux-foundation.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 2/6] net: dsa: propagate flags down towards
- drivers
-In-Reply-To: <20230406152159.zfg6kxuimulnpops@skbuf>
-References: <20230327225933.plm5raegywbe7g2a@skbuf>
- <87ileljfwo.fsf@kapio-technology.com>
- <20230328114943.4mibmn2icutcio4m@skbuf>
- <87cz4slkx5.fsf@kapio-technology.com>
- <20230330124326.v5mqg7do25tz6izk@skbuf>
- <87wn2yxunb.fsf@kapio-technology.com>
- <20230330130936.hxme34qrqwolvpsh@skbuf>
- <875yaimgro.fsf@kapio-technology.com>
- <20230330150752.gdquw5kudtrqgzyz@skbuf>
- <87o7o1ox9h.fsf@kapio-technology.com>
- <20230406152159.zfg6kxuimulnpops@skbuf>
-Date:   Thu, 06 Apr 2023 18:20:05 +0200
-Message-ID: <87zg7lj83u.fsf@kapio-technology.com>
+        with ESMTP id S238265AbjDFQZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 12:25:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA86D46B3
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 09:25:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E06860D2D
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 16:25:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE27C433EF;
+        Thu,  6 Apr 2023 16:25:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680798310;
+        bh=voEKh0gXuGpuufJcxWGEcbDKLnc9kXxQvXL1LZIzdqU=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=vDTIk60E7OBX3uLR5GUxVePsvcE9oE3IqMZF5zJieCv6cl1o+MGyaxlJIv055035U
+         qLxhtXV7YUhcz4mRsh4nYY5TKg0Aq9xd9IDcC/JtXc4RieBQZYA4pi9ySeIKuzv5IJ
+         mJyVGV7nITzRjTkasQJSudEn4vSLo6wFuC0q9ZcSpBzj9zMOGmOHbjRg7LWEO8lD/4
+         RQW00nw+EAiAJ4hYAAItm6hzyJtUCAGiEZq2sA1/usAV7BUUvm3cRC80XoR6psVkTT
+         NLG+JSeP88f/1y+f42yQoU8sagjOT+0ocahx2US5x3m4tKOj5RS/0reOzgEJZqottR
+         nZ0H2u1c+eJUg==
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 5904115404B4; Thu,  6 Apr 2023 09:25:10 -0700 (PDT)
+Date:   Thu, 6 Apr 2023 09:25:10 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com
+Subject: Re: [PATCH net-next 1/3] net: provide macros for commonly copied
+ lockless queue stop/wake code
+Message-ID: <5f1ea1ed-739d-4d0d-a08e-748249ef8175@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <20230403085601.44f04cd2@kernel.org>
+ <CAKgT0UcsOwspt0TEashpWZ2_gFDR878NskBhquhEyCaN=uYnDQ@mail.gmail.com>
+ <20230403120345.0c02232c@kernel.org>
+ <CAKgT0Ue-hEycSyYvVJt0L5Z=373MyNPbgPjFZMA5j2v0hWg0zg@mail.gmail.com>
+ <1e9bbdde-df97-4319-a4b7-e426c4351317@paulmck-laptop>
+ <ZC5VbfkTIluwKYDn@gondor.apana.org.au>
+ <dba8aec7-f236-4cb6-b53b-fabefcfa295a@paulmck-laptop>
+ <20230406074648.4c26a795@kernel.org>
+ <c3b05efb-e691-4947-84f9-cf524e7d2cd9@paulmck-laptop>
+ <20230406085629.3e0c9514@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-0.7 required=5.0 tests=RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230406085629.3e0c9514@kernel.org>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 18:21, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Thu, Apr 06, 2023 at 05:17:46PM +0200, Hans Schultz wrote:
->> On Thu, Mar 30, 2023 at 18:07, Vladimir Oltean <olteanv@gmail.com> wrote:
->> > As a bug fix, stop reporting to switchdev those FDB entries with
->> > BR_FDB_ADDED_BY_USER && !BR_FDB_STATIC. Then, after "net" is merged into
->> > "net-next" next Thursday (the ship has sailed for today), add "bool static"
->> 
->> It is probably too late today (now I have a Debian based VM that can do
->> the selftests), but with this bug fix I have 1) not submitted bug fixes
->> before and 2) it probably needs an appropriate explanation, where I
->> don't know the problem well enough for general switchcores to submit
->> with a suitable text.
->
-> Do you want me to try to submit this change as a bug fix?
+On Thu, Apr 06, 2023 at 08:56:29AM -0700, Jakub Kicinski wrote:
+> On Thu, 6 Apr 2023 08:45:10 -0700 Paul E. McKenney wrote:
+> > > Starting the queue only happens from softirq (I hope) and stopping 
+> > > can happen from any context. So we're risking false-starts again.
+> > > I think this puts to bed any hope of making this code safe against
+> > > false-starts with just barriers :(  
+> > 
+> > Is it possible to jam all the relevant state into a single variable?
+> > (I believe that that answer is "no", but just in case asking this question
+> > inspires someone to come up with a good idea.)
+> 
+> Not in any obvious way, half of the state is driver-specific the other
+> half is flags maintained by the core :S
 
-I think that would be fine as you would know the matter best.
+Hey, I had to ask!  ;-)
+
+							Thanx, Paul
