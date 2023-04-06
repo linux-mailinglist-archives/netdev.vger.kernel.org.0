@@ -2,123 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC006D9489
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 12:57:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF3F6D94AE
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 13:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237004AbjDFK5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 06:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
+        id S236995AbjDFLHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 07:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234983AbjDFK5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 06:57:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D0FC5FC7
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 03:56:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1680778601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zMeQxZQg6MXfV4MGHzz3ouxaZBZa4sXe5adkrdIvgDA=;
-        b=h1kRa8TsbkiRR7MDE8muDt6upawdYYnAIe/YYxvx8FpAy5higCcTOr5p0hPapNKfj5Cwl/
-        XLiz8DTBe1LHNupaEipjSEwuyAOGJrc0jqIBgfg9v8zfb8mvn4Ga+UuOyO8ub+8VJNDbe2
-        lc38DKDNFHKVAfPajvDDDE8HzOx40Ys=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-616-dI7Qid53N0-2fcggxMEYxg-1; Thu, 06 Apr 2023 06:56:38 -0400
-X-MC-Unique: dI7Qid53N0-2fcggxMEYxg-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 01EB9384708E;
-        Thu,  6 Apr 2023 10:56:38 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B936492C14;
-        Thu,  6 Apr 2023 10:56:35 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CANn89iLFc3gxo-5gEn36VFYdocXQPiAqRsTPEHcB8JA3mw8+8g@mail.gmail.com>
-References: <CANn89iLFc3gxo-5gEn36VFYdocXQPiAqRsTPEHcB8JA3mw8+8g@mail.gmail.com> <20230406094245.3633290-1-dhowells@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        with ESMTP id S236987AbjDFLHe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 07:07:34 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A607A9D;
+        Thu,  6 Apr 2023 04:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=29DiQcJ+NesR4bzlrgSGDb6JnN91qFQawEIe6tNxYUo=; b=BaTEkyAhdN5dw6cCUs02xo/plw
+        WLCS1AwOw7Zev1BLZKXfHyhlnjjP4ozYoeSUWRONWbmN0kba+V79CUy1Jbd7mClSdQvOmm+DeKbF9
+        QOgTs7KK1c0Y1EvvPS9742xOwiQ+ehUMnp9kMAfP6KIc6NCR7kwM+lsRFHvBII9EYFbKGZqnuVvpk
+        WsRwArejLCyVoakKWoeGXIFdfT2za2hfvRhiJfZaz0u5hp+5h6b6SWAdw9AOGikDrBObt7z+PXTfe
+        jazufLNrIJMXtIDEZSWaGiw3XZ2UHf2CnxFB1+BRLVDOySv5sNwEVGNnVEVoHmEt5FTgJ3o4LFSnS
+        /rlKe9rQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46406)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1pkNSN-0006ry-9H; Thu, 06 Apr 2023 12:07:07 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1pkNSH-0007R0-4o; Thu, 06 Apr 2023 12:07:01 +0100
+Date:   Thu, 6 Apr 2023 12:07:01 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     arinc9.unal@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Jeff Layton <jlayton@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH net-next v5 00/19] splice, net: Replace sendpage with sendmsg(MSG_SPLICE_PAGES), part 1
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: fix port specifications
+ for MT7988
+Message-ID: <ZC6n1XAGyZFlxyXx@shell.armlinux.org.uk>
+References: <20230406100445.52915-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3636417.1680778595.1@warthog.procyon.org.uk>
-Date:   Thu, 06 Apr 2023 11:56:35 +0100
-Message-ID: <3636418.1680778595@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230406100445.52915-1-arinc.unal@arinc9.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <edumazet@google.com> wrote:
-
-> > Here's the first tranche of patches towards providing a MSG_SPLICE_PAGES
-> > internal sendmsg flag that is intended to replace the ->sendpage() op with
-> > calls to sendmsg().  MSG_SPLICE is a hint that tells the protocol that it
-> > should splice the pages supplied if it can and copy them if not.
-> >
+On Thu, Apr 06, 2023 at 01:04:45PM +0300, arinc9.unal@gmail.com wrote:
+> From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> I find this patch series quite big/risky for 6.4
+> On the switch on the MT7988 SoC, there are only 4 PHYs. There's only port 6
+> as the CPU port, there's no port 5. Split the switch statement with a check
+> to enforce these for the switch on the MT7988 SoC. The internal phy-mode is
+> specific to MT7988 so put it for MT7988 only.
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+> 
+> Daniel, this is based on the information you provided me about the switch.
+> I will add this to my current patch series if it looks good to you.
+> 
+> Arınç
+> 
+> ---
+>  drivers/net/dsa/mt7530.c | 67 ++++++++++++++++++++++++++--------------
+>  1 file changed, 43 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 6fbbdcb5987f..f167fa135ef1 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -2548,7 +2548,7 @@ static void mt7988_mac_port_get_caps(struct dsa_switch *ds, int port,
+>  	phy_interface_zero(config->supported_interfaces);
+>  
+>  	switch (port) {
+> -	case 0 ... 4: /* Internal phy */
+> +	case 0 ... 3: /* Internal phy */
+>  		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+>  			  config->supported_interfaces);
+>  		break;
+> @@ -2710,37 +2710,56 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
+>  	struct mt7530_priv *priv = ds->priv;
+>  	u32 mcr_cur, mcr_new;
+>  
+> -	switch (port) {
+> -	case 0 ... 4: /* Internal phy */
+> -		if (state->interface != PHY_INTERFACE_MODE_GMII &&
+> -		    state->interface != PHY_INTERFACE_MODE_INTERNAL)
+> -			goto unsupported;
+> -		break;
+> -	case 5: /* Port 5, a CPU port. */
+> -		if (priv->p5_interface == state->interface)
+> +	if (priv->id == ID_MT7988) {
+> +		switch (port) {
+> +		case 0 ... 3: /* Internal phy */
+> +			if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
 
-If you want me to hold this till after the merge window, that's fine.
+How do these end up with PHY_INTERFACE_MODE_INTERNAL ? phylib defaults
+to GMII mode without something else being specified in DT.
 
-> Can you spell out why we need "unspliceable pages support" ?
-> This seems to add quite a lot of code in fast paths.
+Also note that you should *not* be validating state->interface in the
+mac_config() method because it's way too late to reject it - if you get
+an unsupported interface here, then that is down to the get_caps()
+method being buggy. Only report interfaces in get_caps() that you are
+prepared to handle in the rest of the system.
 
-The patches to copy unspliceable pages (patches 6, 14 and 19) only really add
-to the MSG_SPLICE_PAGES path - I don't know whether you count this as a fast
-path or not.  (Or are you objecting to MSG_SPLICE_PAGES and getting rid of
-sendpage in general?)
-
-What I'm trying to do with this aspect is twofold:
-
-Firstly, I'm trying to make it such that the layer above can send each
-message in a single sendmsg() if possible.  This is possible with sunrpc and
-siw, for example, but currently they make a whole bunch of separate calls into
-the transport layer - typically at least three for header, body, trailer.
-
-Secondly, I'm trying to avoid a double copy.  The layer above TCP/UDP/etc
-(sunrpc[*], siw, etc.) needs to glue protocol bits on either end of the
-message body and it may have this data in the slab or on the stack - which it
-would then need to copy into a page fragment so that it can be zero-copied.
-However, if the device can handle this or we don't have sufficient frags, the
-network layer may decide to copy it anyway - I'm not sure how the higher layer
-can determine this.
-
-It just seems there are fewer places this is required if it can be done in the
-network protocol.  Note that userspace cannot make use of this since they're
-not allowed to set MSG_SPLICE_PAGES.
-
-However, I have kept these bits separate and discard them if it's considered a
-bad idea and that MSG_SPLICE_PAGES should, say, give an error in such a case.
-
-David
-
-[*] sunrpc, at least, seems to store the header and trailer in zerocopyable
-    pages, but has an additional bit on the front that's not.
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
