@@ -2,126 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5336D91F0
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990EE6D9202
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 10:51:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236038AbjDFIso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 04:48:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        id S235911AbjDFIv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 04:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235849AbjDFIsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:48:40 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A748684
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 01:48:34 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id d8so23319844pgm.3
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 01:48:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680770913;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4W1/El1Qit9ksuyHkDehv76aGNH702gMKCwzh/+uISw=;
-        b=hy1LcUXZdoXkIb5T4xnttLHIXF1gUdl2RrDzLMYX7ISp18tFr8/XK93yEbH6ULpz9h
-         WJGK8ioedryjAXWHgeDtR+YId789nS1r7gIt2XriJCeGUC5kscNJlx5E+E5IJjBztGqB
-         a0rPjPC7r0VHoGQue5HDXiVQscAB/gd9nb3mysMpbVIeJ7yR36S6XeeX1lQdgnYRp+L4
-         Eyz+70/FbkaL4NCHzNFijB0DTltilA6mzzyFJq4oHM8Dj/qdJPeMIpqknQE+BnzAFA0x
-         SnhoW2rQMcDeB4cbu+fpHUtGVM1pW+htrLnB0kglC2wCTzBkCyG/Rar2gwL33ZgPIUtP
-         xzKQ==
+        with ESMTP id S235883AbjDFIvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 04:51:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF9B4EE2
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 01:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1680771060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W1Bdx/wsQfRAwIInAabAl9Jx8i29x6dlAdIxMNIdY9w=;
+        b=D+bJgOZCRTg/iJX67fgU+KIIdNrNmFGhgdV9v/Z19n9jvvrZw0Pb0YhbIEn+VggqMc8NGg
+        VjcVpa+fn+AxNzWaxMmfop12qLNCbV3cqF4z39cUxyCWcdFIFFHvCeu/9vwVllNFmPHhed
+        O3r/H8wk8IiOOhPS44ubUNskewfrl0c=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-577-ODX7MRDYO5y7UBzP0Ot2cA-1; Thu, 06 Apr 2023 04:50:59 -0400
+X-MC-Unique: ODX7MRDYO5y7UBzP0Ot2cA-1
+Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-3e2daffa0d4so13699761cf.0
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 01:50:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680770913;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4W1/El1Qit9ksuyHkDehv76aGNH702gMKCwzh/+uISw=;
-        b=Qy+P2s/u5BJ3YuaVpFFvtL82lBhZbna079Q3vteWbSFek5+L7l9gz2lFbpMIAs1OSm
-         RFKWmzo9SrdBhDa9BM4bQntUmSVHFzp+0we2EQTVQAR42CvocPw3aWXt3o+p4rAEvucM
-         pZZFTABmPyohyOGDoewXYn7AHysxVDi6BPLqzihg9q523ClMbzw7XrPUtf8IBN/G+DIY
-         PECxMtlP82Eo9cJUIZsTljtIYtkSYSmVC5OoOLIeLmsAHaI3vHzPtMsp6Wbv1fbUXbjE
-         QReVtq5vw+Ii/owBy/GAvnsHkYOCpstsXIAfZbdidqm+gUqs7U0jMsq/Z+lQWWgjqFut
-         a0yw==
-X-Gm-Message-State: AAQBX9ekIfqQKAyUNuWw5e3rqpSFVOxeJPlDijcxUs7iHOc88ajZbElN
-        qZTqhCbalqL6kJbguVN8Xbk=
-X-Google-Smtp-Source: AKy350aN7lb3HtZtH74kMQvrP2WBbXb65fWdutdrGRcAXUsQE56wekyhHVhQxSKNp3NZEVNBBxQMUg==
-X-Received: by 2002:a62:79d5:0:b0:5df:9809:2e95 with SMTP id u204-20020a6279d5000000b005df98092e95mr10020947pfc.11.1680770913314;
-        Thu, 06 Apr 2023 01:48:33 -0700 (PDT)
-Received: from Laptop-X1 ([2409:8a02:782e:a1c0:2082:5d32:9dce:4c17])
-        by smtp.gmail.com with ESMTPSA id k13-20020aa792cd000000b0062cf75a9e6bsm796833pfa.131.2023.04.06.01.48.30
+        d=1e100.net; s=20210112; t=1680771059;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=W1Bdx/wsQfRAwIInAabAl9Jx8i29x6dlAdIxMNIdY9w=;
+        b=uA54mQaKah9DIkhk9PISlY3lIEIMRwG4lKkSw8eudblGRJwNeZhxVoX/77w6QSoppB
+         knnGKL8shzU6SwW9cWrMh7DgmuIZuvY+qUyB8OSnARDE5NwZzcADCBdZdNsfx9iUk8pg
+         sCE4ktoItS4xAi2m4Y2e/ZT69SYtWStCl5X2/7o0RZZTuYI5Cok0HhtBXZCA3nfEuK+c
+         e6RZD5Uc10wzRJpBEpXzLhJv54bZDGx5fynYAEcbNXKyl5r6ArQwf4yOKc0QqhBaqStb
+         m37UuI051a89bB2ZE1rIjQt3ZnzULtusbvXcXIWnt0Ghz38+Xm8Ybm8AXp0G7AknBC0K
+         vtSA==
+X-Gm-Message-State: AAQBX9epryZ8R1F7UuNSFfHTZGUgfTJCLU6oy2p1iZ3VTCmmhvp+2Cbs
+        HOULXFKdlHFmqNrgV3FGRw0IGcIFp8k7bn7b8HLqaScN3Y7JjzrB2uQ7DcyLGlAPWXc9Q/NbTLP
+        LRw1qTlyN6EKqZknv
+X-Received: by 2002:a05:622a:1a24:b0:3e6:707e:d3c2 with SMTP id f36-20020a05622a1a2400b003e6707ed3c2mr10814501qtb.0.1680771059054;
+        Thu, 06 Apr 2023 01:50:59 -0700 (PDT)
+X-Google-Smtp-Source: AKy350bo5VqIhFeRZZcRwVCtgs8cYkmbupz1mYsttbY1gkrcv9BmYYkg1QFtxoLmxwuXn4DxKkvkSg==
+X-Received: by 2002:a05:622a:1a24:b0:3e6:707e:d3c2 with SMTP id f36-20020a05622a1a2400b003e6707ed3c2mr10814489qtb.0.1680771058733;
+        Thu, 06 Apr 2023 01:50:58 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-227-151.dyn.eolo.it. [146.241.227.151])
+        by smtp.gmail.com with ESMTPSA id p15-20020a37420f000000b00749fc742ab4sm327473qka.7.2023.04.06.01.50.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 01:48:32 -0700 (PDT)
-Date:   Thu, 6 Apr 2023 16:48:27 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>,
-        Danielle Ratson <danieller@nvidia.com>, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next] selftests: forwarding: hw_stats_l3: Detect
- failure to install counters
-Message-ID: <ZC6HWxlZVM5VvClx@Laptop-X1>
-References: <a86817961903cca5cb0aebf2b2a06294b8aa7dea.1680704172.git.petrm@nvidia.com>
+        Thu, 06 Apr 2023 01:50:58 -0700 (PDT)
+Message-ID: <17cb566ef79342f77b50ad999e9fa910be4cb27f.camel@redhat.com>
+Subject: Re: [PATCH v2 net-next 06/10] dt-bindings: soc: mediatek: move ilm
+ in a dedicated dts node
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
+        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, lorenzo.bianconi@redhat.com,
+        daniel@makrotopia.org, devicetree@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Date:   Thu, 06 Apr 2023 10:50:54 +0200
+In-Reply-To: <18109725ba14d2fe5c00e627b064b38b5c8f2223.1680268101.git.lorenzo@kernel.org>
+References: <cover.1680268101.git.lorenzo@kernel.org>
+         <18109725ba14d2fe5c00e627b064b38b5c8f2223.1680268101.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4 (3.46.4-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a86817961903cca5cb0aebf2b2a06294b8aa7dea.1680704172.git.petrm@nvidia.com>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 05, 2023 at 04:25:12PM +0200, Petr Machata wrote:
-> Running this test makes little sense if the enabled l3_stats are not
-> actually reported as "used". This can signify a failure of a driver to
-> install the necessary counters, or simply lack of support for enabling
-> in-HW counters on a given netdevice. It is generally impossible to tell
-> from the outside which it is. But more likely than not, if somebody is
-> running this on veth pairs, they do not intend to actually test that a
-> certain piece of HW can install in-HW counters for the veth. It is more
-> likely they are e.g. running the test by mistake.
-> 
-> Therefore detect that the counter has not been actually installed. In that
-> case, if the netdevice is one end of a veth pair, SKIP. Otherwise FAIL.
-> 
-> Suggested-by: Hangbin Liu <liuhangbin@gmail.com>
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> Reviewed-by: Danielle Ratson <danieller@nvidia.com>
+On Fri, 2023-03-31 at 15:12 +0200, Lorenzo Bianconi wrote:
+> Since the ilm memory region is not part of the MT7986 RAM SoC, move ilm
+> in a deidicated syscon node.
+>=20
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  .../selftests/net/forwarding/hw_stats_l3.sh       | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/net/forwarding/hw_stats_l3.sh b/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-> index 9c1f76e108af..432fe8469851 100755
-> --- a/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-> +++ b/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-> @@ -319,6 +319,19 @@ trap cleanup EXIT
->  setup_prepare
->  setup_wait
->  
-> -tests_run
-> +used=$(ip -j stats show dev $rp1.200 group offload subgroup hw_stats_info |
-> +	   jq '.[].info.l3_stats.used')
-> +kind=$(ip -j -d link show dev $rp1 |
-> +	   jq -r '.[].linkinfo.info_kind')
-> +if [[ $used != true ]]; then
-> +	if [[ $kind == veth ]]; then
-> +		log_test_skip "l3_stats not offloaded on veth interface"
-> +		EXIT_STATUS=$ksft_skip
-> +	else
-> +		RET=1 log_test "l3_stats not offloaded"
-> +	fi
-> +else
-> +	tests_run
-> +fi
->  
->  exit $EXIT_STATUS
-> -- 
-> 2.39.0
-> 
+>  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 14 +++---
+>  .../soc/mediatek/mediatek,mt7986-wo-ilm.yaml  | 45 +++++++++++++++++++
+>  2 files changed, 53 insertions(+), 6 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mediat=
+ek,mt7986-wo-ilm.yaml
+>=20
+> diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt76=
+22-wed.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt762=
+2-wed.yaml
+> index 7f6638d43854..e63fb22447c6 100644
+> --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.=
+yaml
+> +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.=
+yaml
+> @@ -32,14 +32,12 @@ properties:
+>    memory-region:
+>      items:
+>        - description: firmware EMI region
+> -      - description: firmware ILM region
+>        - description: firmware DLM region
+>        - description: firmware CPU DATA region
+> =20
+>    memory-region-names:
+>      items:
+>        - const: wo-emi
+> -      - const: wo-ilm
+>        - const: wo-dlm
+>        - const: wo-data
+> =20
+> @@ -51,6 +49,10 @@ properties:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description: mediatek wed-wo cpuboot controller interface.
+> =20
+> +  mediatek,wo-ilm:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: mediatek wed-wo ilm interface.
+> +
+>  allOf:
+>    - if:
+>        properties:
+> @@ -63,6 +65,7 @@ allOf:
+>          memory-region: false
+>          mediatek,wo-ccif: false
+>          mediatek,wo-cpuboot: false
+> +        mediatek,wo-ilm: false
+> =20
+>  required:
+>    - compatible
+> @@ -97,11 +100,10 @@ examples:
+>          reg =3D <0 0x15010000 0 0x1000>;
+>          interrupts =3D <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
+> =20
+> -        memory-region =3D <&wo_emi>, <&wo_ilm>, <&wo_dlm>,
+> -                        <&wo_data>;
+> -        memory-region-names =3D "wo-emi", "wo-ilm", "wo-dlm",
+> -                              "wo-data";
+> +        memory-region =3D <&wo_emi>, <&wo_dlm>, <&wo_data>;
+> +        memory-region-names =3D "wo-emi", "wo-dlm", "wo-data";
+>          mediatek,wo-ccif =3D <&wo_ccif0>;
+>          mediatek,wo-cpuboot =3D <&wo_cpuboot>;
+> +        mediatek,wo-ilm =3D <&wo_ilm>;
+>        };
+>      };
+> diff --git a/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt79=
+86-wo-ilm.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt=
+7986-wo-ilm.yaml
+> new file mode 100644
+> index 000000000000..2a3775cd941e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mt7986-wo-i=
+lm.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mt7986-wo-ilm.y=
+aml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Wireless Ethernet Dispatch (WED) WO ILM firmware interfa=
+ce for MT7986
+> +
+> +maintainers:
+> +  - Lorenzo Bianconi <lorenzo@kernel.org>
+> +  - Felix Fietkau <nbd@nbd.name>
+> +
+> +description:
+> +  The MediaTek wo-ilm (Information Lifecycle Management) provides a conf=
+iguration
+> +  interface for WiFi critical data used by WED WO firmware. WED WO contr=
+oller is
+> +  used to perform offload rx packet processing (e.g. 802.11 aggregation =
+packet
+> +  reordering or rx header translation) on MT7986 soc.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - mediatek,mt7986-wo-ilm
+> +      - const: syscon
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    soc {
+> +      #address-cells =3D <2>;
+> +      #size-cells =3D <2>;
+> +
+> +      syscon@151e0000 {
+> +        compatible =3D "mediatek,mt7986-wo-ilm", "syscon";
+> +        reg =3D <0 0x151e0000 0 0x8000>;
+> +      };
+> +    };
 
-Tested-by: Hangbin Liu <liuhangbin@gmail.com>
+Hi Rob,
+
+it's not clear to me if this version and Lorenzo's replies on the
+previous one address your doubts here. Do you have any further
+comments?
+
+Thanks,
+
+Paolo
+
