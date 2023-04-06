@@ -2,80 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 579276D8C08
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 02:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A39576D8C26
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 02:49:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234268AbjDFAk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 20:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
+        id S233927AbjDFAte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 20:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233940AbjDFAkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 20:40:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210BB6A41;
-        Wed,  5 Apr 2023 17:40:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231574AbjDFAtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 20:49:33 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8B64ED5;
+        Wed,  5 Apr 2023 17:49:32 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B49C562C3B;
-        Thu,  6 Apr 2023 00:40:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 29D99C4339B;
-        Thu,  6 Apr 2023 00:40:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1680741621;
-        bh=pE6FGg408nNIvbYKPpOo+ehMAuEdbMRHafgacoD9EWI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=q0jxM7cWNAZwJxgomPu2kMpbxi9D3RGzsAqXREhVgi7QJq3kfSgAzXXmq5fUEoPjw
-         ialAobY5Hgwx3NVPjCiu9Cncpon4M6ym4BKxx3E9EL/Mp2C9vUHhK5B/4NRiW0JGHz
-         Kl37tOHyFhBo2L91H7fxhxsDCIqxqiB3LrrG5egAKy/IKUW68CtENBXfQ6a/n7uTjI
-         9ZAP/+ss/pzKrRbSjpSTPc/YLcFIRgdliulpnwIXXD5UNbBTc+WV2wVTfC+hNhtg+N
-         x+yF2g44x/P7UjZIFwridYbi9NVPGi+TvderLltjlva0Sn0tSTwmiKFmDbO+4M6/Vd
-         W8OCMqp8YterQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1722CC4167B;
-        Thu,  6 Apr 2023 00:40:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4PsNDp1TJqz4x91;
+        Thu,  6 Apr 2023 10:49:29 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1680742171;
+        bh=zpUvxjvHIXJ+KL1mMiQcCdPhGDYp+/oHa5Cn/32a+D0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=EKhtp0QpxCKEuPuzooSaS/mbw8Wm8AgVfHmedu+W6HOnyDrPy9q+L8VZnQ92YtAV2
+         8XNj/KqsoUWpYeyu3aRrQD2QsUzKPsdfEcbdQJjWGxZ9zBmxwmDEPpOafsvzDkqpoj
+         37KnUHQhKTLEAd2yylyuibG5vyfv6bIG0yLKc5miaehEBZAjALNc53h0spmDbw9Nxs
+         oGa9A4rXHFex7m/2VWoX022pyEe+2m06Qh92w2vUOwIKSl8f3VZ4IkhEw9YMfdyulq
+         LpKRMq2HyVSuzYkKeGGpU/MGeqfVUfO7EbpdJwMQ+WX/Z39+nTg6B5+6u6krBXXNBA
+         SvNARDD9L4BhQ==
+Date:   Thu, 6 Apr 2023 10:49:27 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Praveen Kaligineedi <pkaligineedi@google.com>,
+        Shailend Chand <shailend@google.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20230406104927.45d176f5@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-next-2023-04-05
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <168074162109.7173.7606066704308184808.git-patchwork-notify@kernel.org>
-Date:   Thu, 06 Apr 2023 00:40:21 +0000
-References: <20230405111037.4792BC43443@smtp.kernel.org>
-In-Reply-To: <20230405111037.4792BC43443@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/VrxD0TXPjQ5VZeU1RZLkr5Y";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-0.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--Sig_/VrxD0TXPjQ5VZeU1RZLkr5Y
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This pull request was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+Hi all,
 
-On Wed,  5 Apr 2023 11:10:37 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Here is the summary with links:
-  - pull-request: wireless-next-2023-04-05
-    https://git.kernel.org/netdev/net-next/c/acd11255ca46
+  drivers/net/ethernet/google/gve/gve.h
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+between commit:
 
+  3ce934558097 ("gve: Secure enough bytes in the first TX desc for all TCP =
+pkts")
 
+from the net tree and commit:
+
+  75eaae158b1b ("gve: Add XDP DROP and TX support for GQI-QPL format")
+
+from the net-next tree.
+
+Matthieu, thanks for the head up.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/google/gve/gve.h
+index 005cb9dfe078,e214b51d3c8b..000000000000
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@@ -47,8 -47,10 +47,12 @@@
+ =20
+  #define GVE_RX_BUFFER_SIZE_DQO 2048
+ =20
+ +#define GVE_GQ_TX_MIN_PKT_DESC_BYTES 182
+ +
++ #define GVE_XDP_ACTIONS 5
++=20
++ #define GVE_TX_MAX_HEADER_SIZE 182
++=20
+  /* Each slot in the desc ring has a 1:1 mapping to a slot in the data rin=
+g */
+  struct gve_rx_desc_queue {
+  	struct gve_rx_desc *desc_ring; /* the descriptor ring */
+
+--Sig_/VrxD0TXPjQ5VZeU1RZLkr5Y
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmQuFxcACgkQAVBC80lX
+0GysmwgAmGFqGdHEnspTgHXVlv7FWqkHag/8zckbD//AJ+SP8CvVHkaGd4iFwU5m
+WuLYrUPgO/wvDR4QE7nnocVkEFexHGzYRkCQFo81DT50wHSIe4F3pLcE0gCYmo8s
+hEf2/4rVgJV5/lM8cK6gT9l0R1t0SM5fVixSEfX770McG8t/CNrDV/fjG/YDJK+F
+dlm2XbVItQiN/peHxdZ+UzZyzcjKukKhOkECCkptLU4l87A2EBxBwuV8o7pGeCTv
+9Ab5d0bbbWzfJj89eWpLMlnuWwFrxwt0XHXYZLhiV4dTk+dnTioSg4o1dMrpAbn7
++oXdRqH4eF2gdzVi6t06xdJSB4CFSA==
+=1SrI
+-----END PGP SIGNATURE-----
+
+--Sig_/VrxD0TXPjQ5VZeU1RZLkr5Y--
