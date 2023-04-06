@@ -2,41 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 979426D8DE5
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 05:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA066D8DF6
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 05:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234499AbjDFDMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 23:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        id S235172AbjDFDWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 23:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233419AbjDFDMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 23:12:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE575119
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 20:12:48 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4PsRMD2pSNzKwy8;
-        Thu,  6 Apr 2023 11:10:16 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.23; Thu, 6 Apr 2023 11:11:49 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <dlstevens@us.ibm.com>
-Subject: [PATCH net] ipv4: Fix potential uninit variable access buf in __ip_make_skb()
-Date:   Thu, 6 Apr 2023 11:11:36 +0800
-Message-ID: <20230406031136.2814421-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235170AbjDFDWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 23:22:47 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54F95B97
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 20:22:44 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id h11so42216892lfu.8
+        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 20:22:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112; t=1680751363;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jLsdkKSOG2rq0aV8V5BIigN4MrlmAhfq4cfWPS9Ha5U=;
+        b=K89ygBQsh/ifz78AM5AOkVoAwrLbVO7T94CBw9keEPZflOn93km+xjTzALaxrIT6N0
+         zTBVq8Njn4ON6TmvxSRIfWlLmC0K+fHVzrZ3lSpEQFaOiQGQQbuff7p4pQTQ2iZ1z6Kf
+         PNxKKqIfvJ0uD4279nQE9LJmR1q9LsN7P2N5yg/FNABZJ9BdMSfCVml6V+VApEFE+RMD
+         rbYUBqGixX4wzLeNH+a2M0IK8M9RWyQ5cERCnSCNEjFC84Lc9zTma/gjtqGxbeDDdvun
+         jHTSBvd6Eg6leliiIa2uGjF4afkT8i1mFAQMZFvbfAC2V4b5KYpSw+kCQsjBsJsAVF6y
+         jzEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680751363;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jLsdkKSOG2rq0aV8V5BIigN4MrlmAhfq4cfWPS9Ha5U=;
+        b=x8Isc/iqyd78fh7lCICNO3AAw2xtBsSwteEMxl276ND3TIG5icC8vWdby2N6p5yDBA
+         m9R2QExjeoFvhWW1ZXIqMSvnVzbvmX+DsImNVPixktCxHphn2K5XhK0IgNlfA1T7xlFf
+         JlElnDvE/uapKyX0n2t9eLpDAyYMjv+ZMDUdZNc7y3WFYZ1Z6zBHH/6EIr6YYw9IBcSp
+         Wsy/AUGlmUZtYL5jR/DSq1EGsOEtn1ZAIlw3pLgXHt0TjY8cn8ipKkFT4Fu1E+qLN4PU
+         vt7DLK/YWS7PTpbyqlFncZSlGkzWgWLQTdGdcUIQo3cde7XDT82DmiFzxHdVUw1JWjzq
+         Hhlw==
+X-Gm-Message-State: AAQBX9c4vf3VDg7ivDPS1AnO0GekzJMJtAhVEwMfUPBNbOarZOXqt4U9
+        F0A234iK8QCNncckfjerOoCXzSSlrbO3USqjvS0=
+X-Google-Smtp-Source: AKy350ar5fmY8kuwnE6/Pu6kYDSbBNWTg1qOGCpDkAdstk1D7mh6BpUPmXM01TjLwNzmE0n8Mn5Jz648vmTrXBygcbo=
+X-Received: by 2002:ac2:5923:0:b0:4e8:44ee:e2d with SMTP id
+ v3-20020ac25923000000b004e844ee0e2dmr2534336lfi.5.1680751362880; Wed, 05 Apr
+ 2023 20:22:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.3 required=5.0 tests=RCVD_IN_DNSWL_MED,
+References: <20230404074733.22869-1-liangchen.linux@gmail.com>
+ <7331d6d3f9044e386e425e89b1fc32d60b046cf3.camel@gmail.com>
+ <20230404182116.5795563c@kernel.org> <CAKhg4tLnSOxB7eeMqna1K3cmOn30cofxH=duOPLRs0h+59j01w@mail.gmail.com>
+ <20230405075050.2fbc4502@kernel.org>
+In-Reply-To: <20230405075050.2fbc4502@kernel.org>
+From:   Liang Chen <liangchen.linux@gmail.com>
+Date:   Thu, 6 Apr 2023 11:22:30 +0800
+Message-ID: <CAKhg4tJLW35D-euBFM+_ph=deSq1uHjpYQVWuZUHdCL8D3h5Og@mail.gmail.com>
+Subject: Re: [PATCH] skbuff: Fix a race between coalescing and releasing SKBs
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        ilias.apalodimas@linaro.org, hawk@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -45,43 +72,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like commit ea30388baebc ("ipv6: Fix an uninit variable access bug in
-__ip6_make_skb()"). icmphdr does not in skb linear region under the
-scenario of SOCK_RAW socket. Access icmp_hdr(skb)->type directly will
-trigger the uninit variable access bug.
+On Wed, Apr 5, 2023 at 10:50=E2=80=AFPM Jakub Kicinski <kuba@kernel.org> wr=
+ote:
+>
+> On Wed, 5 Apr 2023 16:18:47 +0800 Liang Chen wrote:
+> > > Sounds like a better fix, indeed. But this sort of code will require
+> > > another fat comment above to explain why. This:
+> > >
+> > >         if (to->pp_recycle =3D=3D from->pp_recycle && !skb_cloned(fro=
+m))
+> > >
+> > > is much easier to understand, no?
+> > >
+> > > We should at least include that in the explanatory comment, I reckon.=
+..
+> >
+> > Sure, the idea of dealing with the case where @from transitioned into n=
+on cloned
+> > skb in the function retains the existing behavior, and gives more
+> > opportunities to
+> > coalesce skbs. And it seems (!skb_cloned(from) && !from->pp_recycle) is=
+ enough
+> > here.
+>
+> Well, that's pretty much what Alex suggested minus the optimization he
+> put in for "was never cloned" which is probably worth having. So if
+> you're gonna do this just use his code.
+>
+> My point was that !from->pp_recycle requires the reader to understand
+> the relationship between this check and the previous condition at entry.
+> While to->pp_recycle =3D=3D from->pp_recycle seems much more obvious to m=
+e -
+> directly shifting frags between skbs with different refcount styles is
+> dangerous.
+>
 
-Use a local variable icmp_type to carry the correct value in different
-scenarios.
+Yeah, I agree with the point that to->pp_recycle =3D=3D from->pp_recycle
+is easier to understand, and will use it in the next iteration of the
+patch. Thanks!
 
-Fixes: 96793b482540 ("[IPV4]: Add ICMPMsgStats MIB (RFC 4293)")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/ipv4/ip_output.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+> Maybe it's just me, so whatever.
+> Make sure you write a good comment.
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 4e4e308c3230..57921b297a8e 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1570,9 +1570,15 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
- 	cork->dst = NULL;
- 	skb_dst_set(skb, &rt->dst);
- 
--	if (iph->protocol == IPPROTO_ICMP)
--		icmp_out_count(net, ((struct icmphdr *)
--			skb_transport_header(skb))->type);
-+	if (iph->protocol == IPPROTO_ICMP) {
-+		u8 icmp_type;
-+
-+		if (sk->sk_socket->type == SOCK_RAW && !inet_sk(sk)->hdrincl)
-+			icmp_type = fl4->fl4_icmp_type;
-+		else
-+			icmp_type = icmp_hdr(skb)->type;
-+		icmp_out_count(net, icmp_type);
-+	}
- 
- 	ip_cork_release(cork);
- out:
--- 
-2.25.1
+Sure.
+>
+> > I will take a closer look at the code path for the fragstolen case
+> > before making v2
+> > patch  -  If @from transitioned into non cloned skb before "if
+> > (skb_head_is_locked(from))"
+> >
 
+I took a closer look at the code path for the "fragstolen" case, and
+it indeed requires a special handle for the situation addressed in
+this patch. Something like,
+
+    if( to->pp_recycle !=3D from->pp_recycle )
+        get_page(page);
+
+before  "*fragstolen =3D true;".   But this makes the logic a bit
+complicated. Anyway, I will include the logic in the v2 patch. Let's
+see if it looks better.
+
+> > Thanks for the reviews.
