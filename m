@@ -2,62 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE24C6DA0AF
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEB646DA0EE
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:19:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239786AbjDFTI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 15:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
+        id S240335AbjDFTTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 15:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229612AbjDFTI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:08:58 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E601BC1
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 12:08:57 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id 4fb4d7f45d1cf-50263dfe37dso7598799a12.0
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 12:08:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680808135;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vjIeWljkDiGyVmX8p5PiMW5AuNIJngh/JEy2k4kLvdY=;
-        b=Lx3ugf/d11TNRbx8QoXYNh2DV52F69YHH1k8fmUCKqy5Yv1vwlecJ2GMKtqL17fuWu
-         U/gxeR51c6dX346UvGryYnG4TsJjKpISIKh0IXjMQv4sFxbrKmUplnpkMOyKGQ3oihBm
-         JmO14GNMY6yvTk8gI3YiKgOizcGkjzh71fD6UvJLJED+pjoApwXwmgCoZVCH4TejvtLg
-         Xgrk1ncncV+PAStXrbgkLuvEoKDByI3cvBcSkwJIrcXJIg6NL6lxRoXVeg2UFJU+ap8u
-         6ptcU3bmgij726ejGmGfdXlu1XkLpe36ahIJoGLp8gAuH/X3DhRnOD4iVl1OqL3ClEtU
-         B+RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680808135;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vjIeWljkDiGyVmX8p5PiMW5AuNIJngh/JEy2k4kLvdY=;
-        b=iiUPUyUKYNj4TQlmzUpxIVN33CgGlJclMgPAiEZFgUjQCFPxPDCO66MaWaXtdt/NLz
-         0j+Dr/xb/ccetHvvB3XYl2smzKdBcwuxAb10tucARnEr9WYN3tUNDthvBFzDMliYH8c2
-         kvZsZbegetTz2derSi/k13zOdJhjjL+iUzbHa3a5oDms1bU0h0aiTH/GuujZI9mUD/1P
-         2CujYZwv3262JWhdLv35fD5cqbOBfglu9vsrEaxMy8DH56O4Y0F3Yaf5oHr3cdz5/X74
-         WEeGWSInZC37jAJgAFpakp2LfHiJ2gIgaoZju3cNRrS4kX5hvxBd+r8dpyQV96OsNgQs
-         rjTw==
-X-Gm-Message-State: AAQBX9cRHOrjt2WHqyg9sRkJZi4MjBM2/Ov54OdiQKr5oxiM6t91xG8N
-        qsaAvMrebt3iyCnOFVoSfF03Qw==
-X-Google-Smtp-Source: AKy350b2MQipma8N3wDe2Xv4yTaCDB5UeFUQNpadW9SOXDpVOEm+DLx1Mh2NrS3v/9rJea1inAeWag==
-X-Received: by 2002:aa7:d948:0:b0:502:7d43:2ce0 with SMTP id l8-20020aa7d948000000b005027d432ce0mr5234051eds.13.1680808135616;
-        Thu, 06 Apr 2023 12:08:55 -0700 (PDT)
-Received: from ?IPV6:2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed? ([2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed])
-        by smtp.gmail.com with ESMTPSA id s19-20020a508d13000000b005023dc49bdasm1048166eds.83.2023.04.06.12.08.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Apr 2023 12:08:55 -0700 (PDT)
-Message-ID: <d5769d8f-29f3-063e-0562-487b1b509d3c@linaro.org>
-Date:   Thu, 6 Apr 2023 21:08:53 +0200
+        with ESMTP id S240038AbjDFTTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:19:38 -0400
+Received: from sender4-op-o10.zoho.com (sender4-op-o10.zoho.com [136.143.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0748A213E;
+        Thu,  6 Apr 2023 12:19:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1680808741; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=Hp9mo9y/mjafGapyQczZVlad+8CSGNJUpCIF4eDU6EbAyO3uJl0H1GY+a5Yfj9Sjr33xAMV0Xckx9uHojpjgnqqCwVYEvi/njtVlfcXBEiFighZ7Iok6LFW2dz07TTMuUqdwqW/sgq+xb2Dv4OZpizjPKKqdw3itc7wgZ/xjwqE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1680808741; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=lWWci+lrJXVbFfP28Kyr0CNGSZHTByAVqFq1NMWsDvo=; 
+        b=TlZ8hv0cdA/lVQcf58skLejVYg8t1qFdBpwHxkDGwpEGuY5PBr3JNWxXQ/wG88n1I5hfDHof/ZisSB7hF/yTSVdsLawdM1MhcLPd7juK5LXum5PRrR6R7PsD07ZxjYV1Hvse6STVG95GVdSuqo293tHZXQjaWNOlfE4c15a6U/M=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1680808741;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=lWWci+lrJXVbFfP28Kyr0CNGSZHTByAVqFq1NMWsDvo=;
+        b=KBDx7bi5RulXnw7eT41euWDN5N0tswvitovUr6nXDxScbhiKn9e2U2oLEZKmdgnT
+        5O5xmLJPrygN86f0Rgq/0Zn3XjMdzdkEgMCl7NQGe4KV3XPR8wpBizn5a+2CZQ92eX6
+        jVgO01ycSRzJ4fppbqB24SghzFe1/HB2gNKOYxM8=
+Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
+        with SMTPS id 1680808738233794.3345617672512; Thu, 6 Apr 2023 12:18:58 -0700 (PDT)
+Message-ID: <5b3a10ff-e960-1c6e-3482-cb25200c83c6@arinc9.com>
+Date:   Thu, 6 Apr 2023 22:18:51 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH 5/7] dt-bindings: net: dsa: mediatek,mt7530: disallow
- reset without mediatek,mcm
+Subject: Re: [PATCH 3/7] dt-bindings: net: dsa: mediatek,mt7530: add port
+ bindings for MT7988
 Content-Language: en-US
-To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -73,17 +59,18 @@ To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
         Landen Chao <Landen.Chao@mediatek.com>,
         DENG Qingfang <dqfext@gmail.com>,
         Sean Wang <sean.wang@mediatek.com>
-Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+Cc:     erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 References: <20230406080141.22924-1-arinc.unal@arinc9.com>
- <20230406080141.22924-5-arinc.unal@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230406080141.22924-5-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
+ <20230406080141.22924-3-arinc.unal@arinc9.com>
+ <23c8c4b5-baaa-b72b-4103-b415d970acf2@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <23c8c4b5-baaa-b72b-4103-b415d970acf2@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
         DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
@@ -94,43 +81,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
-> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+On 6.04.2023 22:07, Krzysztof Kozlowski wrote:
+> On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
+>> From: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>
+>> The switch on MT7988 has got only port 6 as a CPU port. The only phy-mode
+>> to be used is internal. Add this.
+>>
+>> Some bindings are incorrect for this switch now, so move them to more
+>> specific places.
+>>
+>> Address the incorrect information of which ports can be used as a user
+>> port. Any port can be used as a user port.
+>>
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> ---
+>>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 63 ++++++++++++++-----
+>>   1 file changed, 46 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> index 7045a98d9593..605888ce2bc6 100644
+>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> @@ -160,22 +160,6 @@ patternProperties:
+>>         "^(ethernet-)?port@[0-9]+$":
+>>           type: object
+>>   
+>> -        properties:
+>> -          reg:
+>> -            description:
+>> -              Port address described must be 5 or 6 for CPU port and from 0 to 5
+>> -              for user ports.
+>> -
+>> -        allOf:
+>> -          - if:
+>> -              required: [ ethernet ]
+>> -            then:
+>> -              properties:
+>> -                reg:
+>> -                  enum:
+>> -                    - 5
+>> -                    - 6
+>> -
 > 
-> The resets and reset-names properties are used only if mediatek,mcm is
-> used. Set them to false if mediatek,mcm is not used.
+> I have doubts that the binding is still maintainable/reviewable. First,
+> why do you need all above patterns after removal of entire contents?
+
+The 'type: object' item is still globally used. I'd have to define that 
+on each definitions, I suppose?
+
 > 
-> Remove now unnecessary 'reset-names: false' from MT7988.
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->  .../devicetree/bindings/net/dsa/mediatek,mt7530.yaml         | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index 9d99f7303453..3fd953b1453e 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> @@ -282,6 +282,10 @@ allOf:
->        required:
->          - resets
->          - reset-names
-> +    else:
-> +      properties:
-> +        resets: false
-> +        reset-names: false
->  
->    - dependencies:
->        interrupt-controller: [ interrupts ]
-> @@ -324,7 +328,6 @@ allOf:
->        properties:
->          gpio-controller: false
->          mediatek,mcm: false
-> -        reset-names: false
+> Second, amount of if-then-if-then located in existing blocks (not
+> top-level) is quite big. I counted if-then-using defs, where defs has
+> patternProps-patternProps-if-then-if-then-properties.... OMG. :)
 
-I don't see such hunk in linux-next.
+Yup, not much to do if we want to keep the information. I'm still 
+maintaining this though. ¯\_(ツ)_/¯
 
-
-Best regards,
-Krzysztof
-
+Arınç
