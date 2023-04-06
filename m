@@ -2,130 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 162B36D9C52
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6646D9C61
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 17:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239419AbjDFP3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 11:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
+        id S238523AbjDFPax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 11:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238947AbjDFP3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:29:20 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582781BCD;
-        Thu,  6 Apr 2023 08:29:02 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id o6-20020a17090a9f8600b0023f32869993so43206213pjp.1;
-        Thu, 06 Apr 2023 08:29:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112; t=1680794942;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=619nQ0lsEgEINdCEqk6IT2CyO/5/oumKn1+zUtFno4k=;
-        b=YnP4GgynlL7t7+IONZVDilf5FdPhppgHVhPH7qFsWwOeDXZPJ2gMBDgEa+TSEZ4gwJ
-         VWgtTUa10TteY5POfC+h22Cb7gC+x6aGBpGPxo+8MTx5r+PYZc5ZNynUn4s3nZK4Is2b
-         5q3K52/jo9yTZxmj50Qzdb4cU/KUjYQLjyT34WedNl2n7iTbqOhLvkITZMWvIlvXdCu0
-         pR+CUptJ23IMUPtc0sDT/8y1TycaLyruUkEqOB0SMkNrRYUD2iaIGLzYM0o49eUs8sMD
-         UpJus3VnJ2AR1GbAhWT3EmCmJIBTwQ2EKpdy+Zx5IpOuTMKOZUpVS1VU4Zu8zdK7Mlt3
-         nKjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680794942;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=619nQ0lsEgEINdCEqk6IT2CyO/5/oumKn1+zUtFno4k=;
-        b=Hamt+4c8IprS2ZKJz6FT6zRGQwB1gL0WhY+hMObRjaEXn9ChJUc22BkApHgJ1rAIXe
-         A6uH8mYDGSNlsQAltLl/4kZnoAqs7U5kA8j7f37Gnmw9nKme/vreGGcx4dH2PW9nvKRG
-         xZ431edBkwHUu65KP1AZVhkj2+n8/dWFgSrfmIEltNUygXlI50Ju9Kvcc2/EoTInia5g
-         Lsny/oym2nauTGd74iTueQGh97yBoEJ3xERHnyltEVuEHL7QxHEJ5nbdCukcmB17cAPG
-         UllKEeRstGiKPVesHfn7c1M/JxOuR0Pc+uK+dlAedv6y77PaVnMSvq5lVwsvzo6f3egh
-         fESQ==
-X-Gm-Message-State: AAQBX9eSjHtSQHydmzwWC/cHkYmiLiKUhaKT4VDq5cJJJ/6SBUxLd/ar
-        7TWpK9iCP8+7RmBZvGEmA3xYusWsPa8WL6h6
-X-Google-Smtp-Source: AKy350aL0d6vsdrWRXnaqUJo+aSZdHYPn8zOrCf5LeepDfVwSJ8pPtckKKR1Ack72MDaBZxWxYO5Ow==
-X-Received: by 2002:a17:902:fb90:b0:1a2:9183:a499 with SMTP id lg16-20020a170902fb9000b001a29183a499mr9395030plb.34.1680794941673;
-        Thu, 06 Apr 2023 08:29:01 -0700 (PDT)
-Received: from sumitra.com ([59.95.156.146])
-        by smtp.gmail.com with ESMTPSA id i2-20020a1709026ac200b001a4fecf79e4sm1318249plt.49.2023.04.06.08.28.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 08:29:01 -0700 (PDT)
-Date:   Thu, 6 Apr 2023 08:28:55 -0700
-From:   Sumitra Sharma <sumitraartsy@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com, Coiby Xu <coiby.xu@gmail.com>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: qlge: Remove macro FILL_SEG
-Message-ID: <20230406152855.GC231658@sumitra.com>
-References: <20230405150627.GA227254@sumitra.com>
- <ZC2gJdUA6zGOjX4P@corigine.com>
- <20230406144644.GB231658@sumitra.com>
- <2023040648-zeppelin-escapist-86d1@gregkh>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2023040648-zeppelin-escapist-86d1@gregkh>
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S237927AbjDFPat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 11:30:49 -0400
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8162F1BC0;
+        Thu,  6 Apr 2023 08:30:45 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R781e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VfTVmew_1680795034;
+Received: from j66a10360.sqa.eu95.tbsite.net(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VfTVmew_1680795034)
+          by smtp.aliyun-inc.com;
+          Thu, 06 Apr 2023 23:30:41 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, jaka@linux.ibm.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [RFC PATCH bpf-next 0/5] net/smc: Introduce BPF injection capability
+Date:   Thu,  6 Apr 2023 23:30:29 +0800
+Message-Id: <1680795034-86384-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-8.0 required=5.0 tests=ENV_AND_HDR_SPF_MATCH,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 06, 2023 at 04:57:44PM +0200, Greg Kroah-Hartman wrote:
-> On Thu, Apr 06, 2023 at 07:46:44AM -0700, Sumitra Sharma wrote:
-> > On Wed, Apr 05, 2023 at 06:21:57PM +0200, Simon Horman wrote:
-> > > On Wed, Apr 05, 2023 at 08:06:27AM -0700, Sumitra Sharma wrote:
-> > > > Remove macro FILL_SEG to fix the checkpatch warning:
-> > > > 
-> > > > WARNING: Macros with flow control statements should be avoided
-> > > > 
-> > > > Macros with flow control statements must be avoided as they
-> > > > break the flow of the calling function and make it harder to
-> > > > test the code.
-> > > > 
-> > > > Replace all FILL_SEG() macro calls with:
-> > > > 
-> > > > err = err || qlge_fill_seg_(...);
-> > > 
-> > > Perhaps I'm missing the point here.
-> > > But won't this lead to err always either being true or false (1 or 0).
-> > > Rather than the current arrangement where err can be
-> > > either 0 or a negative error value, such as -EINVAL.
-> > >
-> > 
-> > Hi Simon
-> > 
-> > 
-> > Thank you for the point you mentioned which I missed while working on this
-> > patch. 
-> > 
-> > However, after thinking on it, I am still not able to get any fix to this
-> > except that we can possibly implement the Ira's solution here which is:
-> > 
-> > https://lore.kernel.org/outreachy/64154d438f0c8_28ae5229421@iweiny-mobl.notmuch/
-> > 
-> > Although we have to then deal with 40 lines of ifs.
-> 
-> Which implies that the current solution is the best one, so I would
-> recommend just leaving it as-is.
->
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Hi greg
+This patches attempt to introduce BPF injection capability for SMC,
+and add selftest to ensure code stability.
 
-Before leaving it I would like to know your opinion on the solution Dan is offering.
+As we all know that the SMC protocol is not suitable for all scenarios,
+especially for short-lived. However, for most applications, they cannot
+guarantee that there are no such scenarios at all. Therefore, apps
+may need some specific strategies to decide shall we need to use SMC
+or not, for example, apps can limit the scope of the SMC to a specific
+IP address or port.
 
+Based on the consideration of transparent replacement, we hope that apps
+can remain transparent even if they need to formulate some specific
+strategies for SMC using. That is, do not need to recompile their code.
 
-Regards
-Sumitra
+On the other hand, we need to ensure the scalability of strategies
+implementation. Although it is simple to use socket options or sysctl,
+it will bring more complexity to subsequent expansion.
 
-> Remember, checkpatch.pl is a tool to provide hints, it does not have
-> much context, if any, to determine if it's hints actually make sense.
-> 
-> thanks,
-> 
-> greg k-h
+Fortunately, BPF can solve these concerns very well, users can write
+thire own strategies in eBPF to choose whether to use SMC or not.
+And it's quite easy for them to modify their strategies in the future.
+
+This patches implement injection capability for SMC via struct_ops.
+In that way, we can add new injection scenarios in the future.
+
+D. Wythe (5):
+  net/smc: move smc_sock related structure definition
+  net/smc: net/smc: allow smc to negotiate protocols on policies
+  net/smc: allow set or get smc negotiator by sockopt
+  bpf: add smc negotiator support in BPF struct_ops
+  bpf/selftests: add selftest for SMC bpf capability
+
+ include/net/smc.h                                | 268 +++++++++++++++++
+ include/uapi/linux/smc.h                         |   1 +
+ kernel/bpf/bpf_struct_ops_types.h                |   4 +
+ net/Makefile                                     |   1 +
+ net/smc/Kconfig                                  |  13 +
+ net/smc/af_smc.c                                 | 203 ++++++++++---
+ net/smc/bpf_smc.c                                | 359 +++++++++++++++++++++++
+ net/smc/smc.h                                    | 224 --------------
+ tools/testing/selftests/bpf/prog_tests/bpf_smc.c | 107 +++++++
+ tools/testing/selftests/bpf/progs/bpf_smc.c      | 265 +++++++++++++++++
+ 10 files changed, 1186 insertions(+), 259 deletions(-)
+ create mode 100644 net/smc/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_smc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_smc.c
+
+-- 
+1.8.3.1
+
