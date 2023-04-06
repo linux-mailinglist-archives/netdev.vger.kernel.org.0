@@ -2,174 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C33116DA609
-	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 00:59:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44DC76DA621
+	for <lists+netdev@lfdr.de>; Fri,  7 Apr 2023 01:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239399AbjDFW7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 18:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
+        id S233135AbjDFXbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 19:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239314AbjDFW7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 18:59:44 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA24A3
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 15:59:42 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 163DF2C0580;
-        Fri,  7 Apr 2023 10:59:35 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1680821975;
-        bh=DCVQy/4aUCcqjlIwJbqgMuRMIMGXNmkWAzo+9Vb0FW0=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=CD9Xq3UEDoPnT/jqjL67cTMfWFHCQjowvx7tTD8zjWHtopB902tClxqNKV5CuyNba
-         lilcmlk6eX67vao5kRSOZS8Bq1OdcqKRxBX1EbyNAPidSY+vGc8JAENFMB0Z3BAKKb
-         re/TQuIGsqzRAPGq9UdjjEjpxiVjeCYfXWAwQ2LTtK/Un4W4smJ7yZKul6grHVqc3n
-         LpF6igZz6OCfkTeXXR4k5TyQzz8Jx1r2lcYgqVRAWhrzlkk+DHD3i/coS9ZeYUL7gE
-         +pQ6hgvgZgvYgjyzITBykE2fkMpcPzt5jqh2GPxTwO6tdOIDRNEo4lpdA9rLBewRda
-         lKpCNBGT+3byQ==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B642f4ed60000>; Fri, 07 Apr 2023 10:59:34 +1200
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
- by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
- Microsoft SMTP Server (TLS) id 15.0.1497.48; Fri, 7 Apr 2023 10:59:33 +1200
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.048; Fri, 7 Apr 2023 10:59:33 +1200
-From:   Thomas Winter <Thomas.Winter@alliedtelesis.co.nz>
-To:     "ashumnik9@gmail.com" <ashumnik9@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "edumazet@google.com" <edumazet@google.com>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "a@unstable.cc" <a@unstable.cc>
-Subject: Re: [BUG] gre interface incorrectly generates link-local addresses
-Thread-Topic: [BUG] gre interface incorrectly generates link-local addresses
-Thread-Index: AQHZXqDEeI+88FfXw0GKYKB5JOW0Tq8dq8aAgACEbgA=
-Date:   Thu, 6 Apr 2023 22:59:33 +0000
-Message-ID: <be4cd6bf2103caa42f475739a3dc6a841e1c6542.camel@alliedtelesis.co.nz>
-References: <CAJGXZLhL-LLjiA-ge8O5A5NDoZ5JABqZHqix0y-8ThcJjBSe=A@mail.gmail.com>
-         <20230324153407.096d6248@kernel.org>
-         <CAJGXZLi7LedV_MYr==1RsN6goth73Y4txA=neci_QQcwa5Oqvw@mail.gmail.com>
-In-Reply-To: <CAJGXZLi7LedV_MYr==1RsN6goth73Y4txA=neci_QQcwa5Oqvw@mail.gmail.com>
-Accept-Language: en-GB, en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [2001:df5:b000:25:642:1aff:fe08:1270]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B82BCFD318C7654CAFF14BAF7DC1C539@atlnz.lc>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229626AbjDFXbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 19:31:13 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2041.outbound.protection.outlook.com [40.107.8.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12219EC5
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 16:31:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RTu+6ra3ABDlg9ocFrljMDM26fz6VsZhZ7NxN+Dl/pHpDQRSfy+yCEHr20nWdizdvBBsxHku5xgGfjh+ohR6XpWhTwGM7BTIWX+Xcx8v68OhkKRqC+3vkyzTjH0QmcsnsKRvUz8IQv2ZWfhRoWvGONsekkXyx+V4hm2WZhQyOJ8x+BoLuxA+6Mu+O4jK7jomL+TASLsAO3SEZRunrpU6NP+2MfSCmXsSxV6TE3HPIinYyRzeLaks1fNafqDhRpsz6pBDorJgiBdVpvWt9PyrJP7J0miP38xLQVuvLJAnyRg1m1ZFBUCoIJj1feLNuSoZadPp2KegtXyndFGyTCl/ag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VopkhZfm5MTOY5VWLRZGBFYjIaXBvnZ2RP4kL+O3Lfk=;
+ b=ajlYJTPs0YuqHUgslSBGwvHHKTUM+bM7oti1zYWW+9wcENQ0rp7t4180CeubvdQcNT6CL86jQY4MNIEhzp9rqdRKS3WE2CJKRSYSO2shMZ/7ev+EfFhz2f9n+Q7tq7t5NlhPGeqW/iCv7HtsNIqgzxP9CgyzmHMYNcECMyEgAWsQusyEucqzUHUWALf2kDbPOhFMsVgm6TCoEctojJmIwu99VrdPXzG6+7Q4bxWngb0jnKkJQm16pRNGHx3U4+oiBqLHlWEuyfOuXevBgCI6dZQju3pZK7lxpH15qdjdXDTeMlt/TtuLmZS6fMy81AWDVXnlaM8ieEmaei7rE8UUzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VopkhZfm5MTOY5VWLRZGBFYjIaXBvnZ2RP4kL+O3Lfk=;
+ b=U+o+Tj4bQeJ4bKgb8jeLiKL1YPvCGiha1lNGZsfqk/PwGJtIT8whY8YIfFck0Q1gGWxNNzeKXNv0ZjdLiEMidIQ2UEJ7DMDr7qtFlWIUQo/wWomYA+0OcAb/ss1xAFrUWsf8hBGrpHqcYYJso+vm0A+foOZQRjfoykSzYseQOXk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com (2603:10a6:208:16d::21)
+ by AM9PR04MB7507.eurprd04.prod.outlook.com (2603:10a6:20b:2d7::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6277.31; Thu, 6 Apr
+ 2023 23:31:09 +0000
+Received: from AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b]) by AM0PR04MB6452.eurprd04.prod.outlook.com
+ ([fe80::55b1:d2dd:4327:912b%5]) with mapi id 15.20.6277.033; Thu, 6 Apr 2023
+ 23:31:08 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: [RFC PATCH net] net: ipv4/ipv6 addrconf: call igmp{,6}_group_dropped() while dev is still up
+Date:   Fri,  7 Apr 2023 02:30:58 +0300
+Message-Id: <20230406233058.780721-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR3P281CA0075.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:1f::23) To AM0PR04MB6452.eurprd04.prod.outlook.com
+ (2603:10a6:208:16d::21)
 MIME-Version: 1.0
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=NayYKFL4 c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=dKHAf1wccvYA:10 a=VwQbUJbxAAAA:8 a=NEAV23lmAAAA:8 a=jJc_k--Hmfcm_WrrQZUA:9 a=QEXdDO2ut3YA:10 a=AjGcO6oz07-iQ99wixmX:22
-X-SEG-SpamProfiler-Score: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6452:EE_|AM9PR04MB7507:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3bcde5de-6223-4609-f17a-08db36f6ffcc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UQNYgxoMCWviljuRgqzkwEDFkQBy+hfV0SaU//TBTefaMf+b9gF5LmRFWcGFbPPb/L2xueaQbDHz4lZm4E6tTw73okgwNOLhNkrblxLT7ufzPsuSUsCf/gJ3J8cY6pX9IipKrQ8wl1tH4zq7pL2xl/qyjVla4QEasS1tp1xjJOZALxX91vK1M0JepplKjVysvY+gUEnCiSgmMr39QP+sVAXdgnKfbVf4Nmv4ixon7FZXkTJUctyiQ9g/grO/HpF1r6A9Vxhs6j1rnx+IknLItGiBd0hEUIZnR2gLAeKBCa4fGsMZ33V/Njr27RXo7z4eVTsbJUoHYOeSjYm/xZJsE6hx8Y2WSLq3lblWdL/qhkS2lXczQg8aFhAAkqxORrleFKOfCvIFIn9vAPBf2mPkcZDqupmvRTI/uL90t2efqOeIQfZwnMY685PXzimYjcB3XiaI3zvkq66vUWwqz+46nMpzm27/Zh6XpZ2ZDkyrHBalxMI3ycwhRnNdQYRvMw/WMWft4YM+NEt7yItzGtlWBinAJcWcvTusdi/pCrYLU+oEF2pWunaXzjPeBUOYy9VUu5vK1zGiyp1iozB53Dhf8Pr0EOCjFcGDlaOC6bCIman0iC6uFnX/X8pZnO/swumU
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6452.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230028)(4636009)(39860400002)(376002)(346002)(136003)(366004)(396003)(451199021)(38350700002)(38100700002)(36756003)(2906002)(44832011)(4326008)(5660300002)(66476007)(8936002)(6916009)(66556008)(86362001)(8676002)(41300700001)(66946007)(6486002)(83380400001)(2616005)(186003)(6506007)(26005)(54906003)(6512007)(1076003)(6666004)(52116002)(316002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JKukS5l6oe7zl3RZLK1dlZRVQezndxlv+595dqEIMLoCg5Uwr6gwMws8eTPK?=
+ =?us-ascii?Q?0//A9Ifan+FXNDVBm7YD1PWUQ4Wk4hhV0sYDsWE2mDM3leLFzzK5m/s8tjPX?=
+ =?us-ascii?Q?+3cV8SfCzfVilp24cG8dHoe80ixK/qilSnS+si2qjcUy23qdUsycLAWqzIIN?=
+ =?us-ascii?Q?BtBcZlSLFNGEWGMzoNvGJKZP/juyyWNZi791UYcdeK85GQrni0TbxElMmktu?=
+ =?us-ascii?Q?kOvDAgWG7q2Kx+7CcytyfWD9AldV/e7goWdkeo45vY6Ej5XjCjz4mgj7h+FW?=
+ =?us-ascii?Q?K4xCLxAqIdQXu+JTNOJ3iNJkblD8WnUOYXKJ3c+n1fxROzN0vpSMsVTg650G?=
+ =?us-ascii?Q?16/PUqG+UbNXKJs2AcvdBCCj4R/CsR7DLDxEwPMPRFRtPWAs2xlRJNHavy7f?=
+ =?us-ascii?Q?WkZWbvVrWdC7EUBKhAHTTiY2RxexiZiq4lp0PFb06Pk30UeIujebZJyHiDGv?=
+ =?us-ascii?Q?oKnYiVCb/bOgYdvu+GNmnLk3hrOq3RmyVfURRVtQgo1L+E0ooolVC6MzgQ4N?=
+ =?us-ascii?Q?SyVSDa3bjyBULf8IQLg7ekAY58++Csy+3lysDqEw9UbOyLyXL500sg1Zn+OG?=
+ =?us-ascii?Q?vVOPBPrn52xvFyXWbqAPoIvb7NavAgzlfD9B/shNLI3ynXCGtpfc3vHHUt8w?=
+ =?us-ascii?Q?Dr5/bPm8ceexK6HCrGLY/45mbhbNR6LTJKem/Ie3wZN1I5XVnD9IXfCrGrPC?=
+ =?us-ascii?Q?tSwRhzCzwOHqQe0eOLsshXSTSSBF6t0zVmVw5L+vcdlEUfvQhQUwiZQ0I3RH?=
+ =?us-ascii?Q?0May9QqCZJatJ+YFZPSaKGXZT2EzFd55fUDuEvFyhF8+9GgIAmAZWdBZOIrh?=
+ =?us-ascii?Q?+o4iinGfhiGOhhrXfX3NwnuzrEjSBg6oA1JwOClCin1j5sO2K/g6Z/H+F7FJ?=
+ =?us-ascii?Q?BieAthXMOWZmU0LinRuf/AKLcqQVcEvHaA46YzCv2DpzKMON/AdZxD6W1E7R?=
+ =?us-ascii?Q?LOEm6reny9FBAukUOZ7nfYiv74Im1xmPo/wqNGlm1Gews+fl8dNlrBljViPQ?=
+ =?us-ascii?Q?lyRhrlVSRR3K+jZBmgFt1OizCJvzRVvSXndU1AgAxOV0ZGh0YkFhpe3Rws24?=
+ =?us-ascii?Q?0HHWpEGB4Z94U4Yx9HNar5wnHhMJ85sIoIXcdYqu84pwjzd6oIBuuQgGJ9zD?=
+ =?us-ascii?Q?2jWn19UomQd+Y9OPhGyTS/jLekuA3Ekpv4KpSpsYQ6TEusTUCO4LBnQEknzn?=
+ =?us-ascii?Q?uKFmomngEljk+8r7BRb9e2OwOO6jhyiI+vLrqVgj68tZPyWTpUqGR3Fpkx59?=
+ =?us-ascii?Q?UpCnNC7M3Oj6kpzy5lDxFcpvWdSjqLN/KCbatKl0Bh9eHPOSxkx9wlfLFyIc?=
+ =?us-ascii?Q?RirMxuTQGlEA//KdXWywxj5j3Zpc87+WiyNH/tnydo/l40YVdHO+SoyrwD/b?=
+ =?us-ascii?Q?bJ25hEjZojvaYKX66S6cgI/ya6hSnXZQ8QtOl+DX6C2mKS8w0BsN3uFoRVxI?=
+ =?us-ascii?Q?ld0LKwgeNZ2Mv+ELNkVmilm7NbHBxx1pFJuVFezGVpdOruKVMmEn16rcG26V?=
+ =?us-ascii?Q?c0QtcrpD4N/oGEmiJ6pgSrG9pVvyTmM655xkKzHXDUOmrcPPW2ukjwM883dz?=
+ =?us-ascii?Q?zba+o90+GsiGNeKrQeD/vzFgaszBpjitIYiONEZVO5OyVppFQ5vyzu6IOAlw?=
+ =?us-ascii?Q?Ng=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3bcde5de-6223-4609-f17a-08db36f6ffcc
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6452.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2023 23:31:08.7663
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hN2LLHa/0tWdc99SsussQ8ATDQMzdiPf7I0Fgp2rQPAWn3DJxWFuTJvUbMOmuykmZrXwLVLto3flylCaWMj+5g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB7507
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gQWxla3NleSwNCg0KU29ycnksIEkgd2FzIG9uIGxlYXZlIGR1cmluZyBNYXJjaCBzbyBv
-bmx5IGdldHRpbmcgdG8gdGhpcyBub3cuIEkgd2lsbA0KaGF2ZSBhIHByb3BlciBsb29rIGF0IHRo
-aXMgd2hlbiBJIGdldCBiYWNrIHRvIHdvcmsgb24gVHVlc2RheSBhbmQgdHJ5DQp0byByZXByb2R1
-Y2UgeW91ciBpc3N1ZS4NCg0KTXkgaXNzdWUgd2FzIG9uIG91ciByb3V0ZXJzIHVzaW5nIGtlcm5l
-bCA1LjE1Ljg5IGFuZCB3ZSBkb24ndA0KdXNlIC9ldGMvbmV0d29yay9pbnRlcmZhY2VzIGZvciBj
-b25maWd1cmF0aW9uLiBUaGUgdHVubmVsIHdhcyBjcmVhdGVkDQp3aXRoIG5ldGxpbmsgbWVzc2Fn
-ZXMgbGlrZSB3aXRoIHRoZSAiaXAgbGluayIgY29tbWFuZCBhbmQgYW4gSVB2NiBsaW5rDQpsb2Nh
-bCBhZGRyZXNzIGlzIGdlbmVyYXRlZCBieQ0Kc2V0dGluZyAvcHJvYy9zeXMvbmV0L2lwdjYvY29u
-Zi90dW5uZWwwL2FkZHJfZ2VuX21vZGUgYnV0IHRoaXMgYnJva2UNCmFmdGVyIGNvbW1pdCBlNWRk
-NzI5NDYwY2EuIEkgZGlkIG5vdCBzZWUgYW55IGhhbmdpbmcgYWRkcmVzc2VzIGxpa2UgeW91DQpk
-ZXNjcmliZWQuDQoNClJlZ2FyZHMsDQpUaG9tYXMNCg0KT24gVGh1LCAyMDIzLTA0LTA2IGF0IDE4
-OjA0ICswMzAwLCBBbGVrc2V5IFNodW1uaWsgd3JvdGU6DQo+IERlYXIgbWFpbnRhaW5lcnMsDQo+
-IA0KPiBJIHJlbWluZCB5b3UgdGhhdCB0aGUgcHJvYmxlbSBpcyBzdGlsbCByZWxldmFudC4NCj4g
-VGhlIHByb2JsZW0gaXMgbm90IG9ubHkgaW4gZ2VuZXJhdGluZyB0aGUgbnVtYmVyIG9mIGxpbmst
-bG9jYWwNCj4gYWRkcmVzc2VzIGluIGFuIGFtb3VudCBlcXVhbCB0byB0aGUgbnVtYmVyIG9mIGFk
-ZHJlc3NlcyBvbiBhbGwNCj4gaW50ZXJmYWNlcyBkZWZpbmVkIGluIC9ldGMvbmV0d29yay9pbnRl
-cmZhY2VzIGJlZm9yZSB0aGUgZ3JlDQo+IGludGVyZmFjZS4NCj4gRHVlIHRvIHRoZSBuZXcgbWV0
-aG9kIG9mIGxpbmstbG9jYWwgYWRkcmVzcyBnZW5lcmF0aW9uLCB0aGUgc2FtZQ0KPiBsaW5rLWxv
-Y2FsIGFkZHJlc3MgbWF5IGJlIGZvcm1lZCBvbiBzZXZlcmFsIGdyZSBpbnRlcmZhY2VzLCB3aGlj
-aCBtYXkNCj4gbGVhZCB0byBlcnJvcnMgaW4gdGhlIG9wZXJhdGlvbiBvZiBzb21lIG5ldHdvcmsg
-c2VydmljZXMNCj4gDQo+IFdvdWxkIHlvdSBwbGVhc2UgYW5zd2VyIHRoZSBmb2xsb3dpbmcgcXVl
-c3Rpb25zDQo+ID4gV2hpY2ggbGludXggZGlzdHJpYnV0aW9uIGRpZCB5b3UgdXNlIHdoZW4geW91
-IGZvdW5kIGFuIGVycm9yIHdpdGgNCj4gPiB0aGUNCj4gPiBsYWNrIG9mIGxpbmstbG9jYWwgYWRk
-cmVzcyBnZW5lcmF0aW9uIG9uIHRoZSBncmUgaW50ZXJmYWNlPw0KPiA+IEFmdGVyIGZpeGluZyB0
-aGUgZXJyb3IsIG9ubHkgb25lIGxpbmstbG9jYWwgYWRkcmVzcyBpcyBnZW5lcmF0ZWQ/DQo+IElz
-IHRoaXMgYSBidWcgb3IgYW4gZXhwZWN0ZWQgYmVoYXZpb3I/DQo+IA0KPiBPbiBTYXQsIE1hciAy
-NSwgMjAyMyBhdCAxOjM04oCvQU0gSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz4NCj4g
-d3JvdGU6DQo+ID4gQWRkaW5nIFRob21hcyBhcyB3ZWxsLg0KPiA+IA0KPiA+IE9uIEZyaSwgMjQg
-TWFyIDIwMjMgMTk6MzU6MDYgKzAzMDAgQWxla3NleSBTaHVtbmlrIHdyb3RlOg0KPiA+ID4gRGVh
-ciBNYWludGFpbmVycywNCj4gPiA+IA0KPiA+ID4gSSBmb3VuZCB0aGF0IEdSRSBhcmJpdHJhcmls
-eSBoYW5ncyBJUCBhZGRyZXNzZXMgZnJvbSBvdGhlcg0KPiA+ID4gaW50ZXJmYWNlcw0KPiA+ID4g
-ZGVzY3JpYmVkIGluIC9ldGMvbmV0d29yay9pbnRlcmZhY2VzIGFib3ZlIGl0c2VsZiAoZnJvbSBi
-b3R0b20gdG8NCj4gPiA+IHRvcCkuIE1vcmVvdmVyLCB0aGlzIGVycm9yIG9jY3VycyBvbiBib3Ro
-IGlwNGdyZSBhbmQgaXA2Z3JlLg0KPiA+ID4gDQo+ID4gPiBFeGFtcGxlIG9mIG1ncmUgaW50ZXJm
-YWNlOg0KPiA+ID4gDQo+ID4gPiAxMzogbWdyZTFATk9ORTogPE1VTFRJQ0FTVCxOT0FSUCxVUCxM
-T1dFUl9VUD4gbXR1IDE0MDAgcWRpc2MNCj4gPiA+IG5vcXVldWUNCj4gPiA+IHN0YXRlIFVOS05P
-V04gZ3JvdXAgZGVmYXVsdCBxbGVuIDEwMDANCj4gPiA+ICAgICBsaW5rL2dyZSAwLjAuMC4wIGJy
-ZCAwLjAuMC4wDQo+ID4gPiAgICAgaW5ldCAxMC4xMC4xMC4xMDAvOCBicmQgMTAuMjU1LjI1NS4y
-NTUgc2NvcGUgZ2xvYmFsIG1ncmUxDQo+ID4gPiAgICAgICAgdmFsaWRfbGZ0IGZvcmV2ZXIgcHJl
-ZmVycmVkX2xmdCBmb3JldmVyDQo+ID4gPiAgICAgaW5ldDYgZmU4MDo6YTBhOmE2NC82NCBzY29w
-ZSBsaW5rDQo+ID4gPiAgICAgICAgdmFsaWRfbGZ0IGZvcmV2ZXIgcHJlZmVycmVkX2xmdCBmb3Jl
-dmVyDQo+ID4gPiAgICAgaW5ldDYgZmU4MDo6N2YwMDoxLzY0IHNjb3BlIGhvc3QNCj4gPiA+ICAg
-ICAgICB2YWxpZF9sZnQgZm9yZXZlciBwcmVmZXJyZWRfbGZ0IGZvcmV2ZXINCj4gPiA+ICAgICBp
-bmV0NiBmZTgwOjphMDo2ODQyLzY0IHNjb3BlIGhvc3QNCj4gPiA+ICAgICAgICB2YWxpZF9sZnQg
-Zm9yZXZlciBwcmVmZXJyZWRfbGZ0IGZvcmV2ZXINCj4gPiA+ICAgICBpbmV0NiBmZTgwOjpjMGE4
-OjEyNjQvNjQgc2NvcGUgaG9zdA0KPiA+ID4gICAgICAgIHZhbGlkX2xmdCBmb3JldmVyIHByZWZl
-cnJlZF9sZnQgZm9yZXZlcg0KPiA+ID4gDQo+ID4gPiBJdCBzZWVtcyB0aGF0IGFmdGVyIHRoZSBj
-b3JyZWN0aW9ucyBpbiB0aGUgZm9sbG93aW5nIGNvbW1pdHMNCj4gPiA+IGh0dHBzOi8vZ2l0aHVi
-LmNvbS90b3J2YWxkcy9saW51eC9jb21taXQvZTVkZDcyOTQ2MGNhOGQyZGEwMjAyOGRiZjI2NGI2
-NWJlOGNkNGI1Zg0KPiA+ID4gaHR0cHM6Ly9naXRodWIuY29tL3RvcnZhbGRzL2xpbnV4L2NvbW1p
-dC8zMGUyMjkxZjYxZjkzZjcxMzJjMDYwMTkwZjgzNjBkZjUyNjQ0ZWMxDQo+ID4gPiBodHRwczov
-L2dpdGh1Yi5jb20vdG9ydmFsZHMvbGludXgvY29tbWl0LzIzY2EwYzJjOTM0MDZiZGIxMTUwNjU5
-ZTcyMGJkYTFjZWMxZmFkMDQNCj4gPiA+IA0KPiA+ID4gaW4gZnVuY3Rpb24gYWRkX3Y0X2FkZHJz
-KCkgaW5zdGVhZCBvZiBzdG9wcGluZyBhZnRlciB0aGlzIGNoZWNrOg0KPiA+ID4gDQo+ID4gPiBp
-ZiAoYWRkci5zNl9hZGRyMzJbM10pIHsNCj4gPiA+ICAgICAgICAgICAgICAgICBhZGRfYWRkcihp
-ZGV2LCAmYWRkciwgcGxlbiwgc2NvcGUsDQo+ID4gPiBJRkFQUk9UX1VOU1BFQyk7DQo+ID4gPiAg
-ICAgICAgICAgICAgICAgYWRkcmNvbmZfcHJlZml4X3JvdXRlKCZhZGRyLCBwbGVuLCAwLCBpZGV2
-LT5kZXYsDQo+ID4gPiAwLCBwZmxhZ3MsDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRw0KPiA+ID4gRlBfS0VSTkVM
-KTsNCj4gPiA+ICAgICAgICAgICAgICAgICAgcmV0dXJuOw0KPiA+ID4gfQ0KPiA+ID4gDQo+ID4g
-PiBpdCBnb2VzIGZ1cnRoZXIgYW5kIGluIHRoaXMgY3ljbGUgaGFuZ3MgYWRkcmVzc2VzIGZyb20g
-YWxsDQo+ID4gPiBpbnRlcmZhY2VzIG9uIHRoZSBncmUNCj4gPiA+IA0KPiA+ID4gZm9yX2VhY2hf
-bmV0ZGV2KG5ldCwgZGV2KSB7DQo+ID4gPiAgICAgICBzdHJ1Y3QgaW5fZGV2aWNlICppbl9kZXYg
-PSBfX2luX2Rldl9nZXRfcnRubChkZXYpOw0KPiA+ID4gICAgICAgaWYgKGluX2RldiAmJiAoZGV2
-LT5mbGFncyAmIElGRl9VUCkpIHsNCj4gPiA+ICAgICAgIHN0cnVjdCBpbl9pZmFkZHIgKmlmYTsN
-Cj4gPiA+ICAgICAgIGludCBmbGFnID0gc2NvcGU7DQo+ID4gPiAgICAgICBpbl9kZXZfZm9yX2Vh
-Y2hfaWZhX3J0bmwoaWZhLCBpbl9kZXYpIHsNCj4gPiA+ICAgICAgICAgICAgIGFkZHIuczZfYWRk
-cjMyWzNdID0gaWZhLT5pZmFfbG9jYWw7DQo+ID4gPiAgICAgICAgICAgICBpZiAoaWZhLT5pZmFf
-c2NvcGUgPT0gUlRfU0NPUEVfTElOSykNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgIGNvbnRp
-bnVlOw0KPiA+ID4gICAgICAgICAgICAgaWYgKGlmYS0+aWZhX3Njb3BlID49IFJUX1NDT1BFX0hP
-U1QpIHsNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgIGlmIChpZGV2LT5kZXYtPmZsYWdzJklG
-Rl9QT0lOVE9QT0lOVCkNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRp
-bnVlOw0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgZmxhZyB8PSBJRkFfSE9TVDsNCj4gPiA+
-ICAgICAgICAgICAgIH0NCj4gPiA+ICAgICAgICAgICAgIGFkZF9hZGRyKGlkZXYsICZhZGRyLCBw
-bGVuLCBmbGFnLA0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSUZB
-UFJPVF9VTlNQRUMpOw0KPiA+ID4gICAgICAgICAgICAgYWRkcmNvbmZfcHJlZml4X3JvdXRlKCZh
-ZGRyLCBwbGVuLCAwLCBpZGV2LT5kZXYsDQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgMCwgcGZsYWdzLCBHRlBfS0VSTkVMKTsNCj4gPiA+ICAgICAgICAgICAgIH0N
-Cj4gPiA+IH0NCj4gPiA+IA0KPiA+ID4gTW9yZW92ZXIsIGJlZm9yZSBzd2l0Y2hpbmcgdG8gRGVi
-aWFuIDEyIGtlcm5lbCB2ZXJzaW9uIDYuMS4xNSwgSQ0KPiA+ID4gdXNlZA0KPiA+ID4gRGViaWFu
-IDExIG9uIDUuMTAuMTQwLCBhbmQgdGhlcmUgd2FzIG5vIGVycm9yIGRlc2NyaWJlZCBpbiB0aGUN
-Cj4gPiA+IGNvbW1pdA0KPiA+ID4gaHR0cHM6Ly9naXRodWIuY29tL3RvcnZhbGRzL2xpbnV4L2Nv
-bW1pdC9lNWRkNzI5NDYwY2E4ZDJkYTAyMDI4ZGJmMjY0YjY1YmU4Y2Q0YjVmLg0KPiA+ID4gT25l
-IGxpbmstbG9jYWwgYWRkcmVzcyB3YXMgYWx3YXlzIGdlbmVyYXRlZCBvbiB0aGUgZ3JlIGludGVy
-ZmFjZSwNCj4gPiA+IHJlZ2FyZGxlc3Mgb2Ygd2hldGhlciB0aGUgZGVzdGluYXRpb24gb3IgdGhl
-IGxvY2FsIGFkZHJlc3Mgb2YgdGhlDQo+ID4gPiB0dW5uZWwgd2FzIHNwZWNpZmllZC4NCj4gPiA+
-IA0KPiA+ID4gV2hpY2ggbGludXggZGlzdHJpYnV0aW9uIGRpZCB5b3UgdXNlIHdoZW4geW91IGZv
-dW5kIGFuIGVycm9yIHdpdGgNCj4gPiA+IHRoZQ0KPiA+ID4gbGFjayBvZiBsaW5rLWxvY2FsIGFk
-ZHJlc3MgZ2VuZXJhdGlvbiBvbiB0aGUgZ3JlIGludGVyZmFjZT8NCj4gPiA+IEFmdGVyIGZpeGlu
-ZyB0aGUgZXJyb3IsIG9ubHkgb25lIGxpbmstbG9jYWwgYWRkcmVzcyBpcyBnZW5lcmF0ZWQ/DQo+
-ID4gPiBJIHRoaW5rIHRoaXMgaXMgYSBidWcgYW5kIG1vc3QgbGlrZWx5IHRoZSBwcm9ibGVtIGlz
-IGluDQo+ID4gPiBnZW5lcmF0aW5nDQo+ID4gPiBkZXYtPmRldl9hZGRyLCBzaW5jZSBsaW5rLWxv
-Y2FsIGlzIGZvcm1lZCBmcm9tIGl0Lg0KPiA+ID4gDQo+ID4gPiBJIHN1Z2dlc3Qgc29sdmluZyB0
-aGlzIHByb2JsZW0gb3Igcm9sbCBiYWNrIHRoZSBjb2RlIGNoYW5nZXMgbWFkZQ0KPiA+ID4gaW4N
-Cj4gPiA+IHRoZSBjb21tZW50cyBhYm92ZS4NCg==
+ipv4 devinet calls ip_mc_down(), and ipv6 calls addrconf_ifdown(), and
+both of these eventually result in calls to dev_mc_del(), either through
+igmp_group_dropped() or igmp6_group_dropped().
+
+The problem is that dev_mc_del() does call __dev_set_rx_mode(), but this
+will not propagate all the way to the ndo_set_rx_mode() of the device,
+because of this check:
+
+	/* dev_open will call this function so the list will stay sane. */
+	if (!(dev->flags&IFF_UP))
+		return;
+
+and the NETDEV_DOWN notifier is emitted while the interface is already
+down. OTOH we have NETDEV_GOING_DOWN which is emitted a bit earlier -
+see:
+
+dev_close_many()
+-> __dev_close_many()
+   -> call_netdevice_notifiers(NETDEV_GOING_DOWN, dev);
+   -> dev->flags &= ~IFF_UP;
+-> call_netdevice_notifiers(NETDEV_DOWN, dev);
+
+Normally this oversight is easy to miss, because the addresses aren't
+lost, just not synced to the device until the next up event.
+
+DSA does some processing in its dsa_slave_set_rx_mode(), and assumes
+that all addresses that were synced are also unsynced by the time the
+device is unregistered. Due to that assumption not being satisfied,
+the WARN_ON(!list_empty(&dp->mdbs)); from dsa_switch_release_ports()
+triggers, and we leak memory corresponding to the multicast addresses
+that were never synced.
+
+Minimal reproducer:
+ip link set swp0 up
+ip link set swp0 down
+echo 0000:00:00.5 > /sys/bus/pci/drivers/mscc_felix/unbind
+
+The proposal is to respond to that slightly earlier notifier with the
+IGMP address deletion, so that the ndo_set_rx_mode() of the device does
+actually get called. I am not familiar with the details of these layers,
+but it appeared to me that NETDEV_DOWN needed to be replaced everywhere
+with NETDEV_GOING_DOWN, so I blindly did that and it worked.
+
+Fixes: 5e8a1e03aa4d ("net: dsa: install secondary unicast and multicast addresses as host FDB/MDB")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+Obviously DSA is not the only affected driver, but the extent to which
+other drivers are impacted is not obvious to me. At least in DSA, there
+is a WARN_ON() and a memory leak, so this is why I chose that Fixes tag.
+
+ net/ipv4/devinet.c  |  7 ++++---
+ net/ipv6/addrconf.c | 12 ++++++------
+ 2 files changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index 5deac0517ef7..95690d16d651 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -392,7 +392,8 @@ static void __inet_del_ifa(struct in_device *in_dev,
+ 
+ 				rtmsg_ifa(RTM_DELADDR, ifa, nlh, portid);
+ 				blocking_notifier_call_chain(&inetaddr_chain,
+-						NETDEV_DOWN, ifa);
++							     NETDEV_GOING_DOWN,
++							     ifa);
+ 				inet_free_ifa(ifa);
+ 			} else {
+ 				promote = ifa;
+@@ -429,7 +430,7 @@ static void __inet_del_ifa(struct in_device *in_dev,
+ 	   So that, this order is correct.
+ 	 */
+ 	rtmsg_ifa(RTM_DELADDR, ifa1, nlh, portid);
+-	blocking_notifier_call_chain(&inetaddr_chain, NETDEV_DOWN, ifa1);
++	blocking_notifier_call_chain(&inetaddr_chain, NETDEV_GOING_DOWN, ifa1);
+ 
+ 	if (promote) {
+ 		struct in_ifaddr *next_sec;
+@@ -1588,7 +1589,7 @@ static int inetdev_event(struct notifier_block *this, unsigned long event,
+ 		/* Send gratuitous ARP to notify of link change */
+ 		inetdev_send_gratuitous_arp(dev, in_dev);
+ 		break;
+-	case NETDEV_DOWN:
++	case NETDEV_GOING_DOWN:
+ 		ip_mc_down(in_dev);
+ 		break;
+ 	case NETDEV_PRE_TYPE_CHANGE:
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 3797917237d0..9e484f829f1c 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1307,7 +1307,7 @@ static void ipv6_del_addr(struct inet6_ifaddr *ifp)
+ 
+ 	ipv6_ifa_notify(RTM_DELADDR, ifp);
+ 
+-	inet6addr_notifier_call_chain(NETDEV_DOWN, ifp);
++	inet6addr_notifier_call_chain(NETDEV_GOING_DOWN, ifp);
+ 
+ 	if (action != CLEANUP_PREFIX_RT_NOP) {
+ 		cleanup_prefix_route(ifp, expires,
+@@ -3670,12 +3670,12 @@ static int addrconf_notify(struct notifier_block *this, unsigned long event,
+ 		}
+ 		break;
+ 
+-	case NETDEV_DOWN:
++	case NETDEV_GOING_DOWN:
+ 	case NETDEV_UNREGISTER:
+ 		/*
+ 		 *	Remove all addresses from this interface.
+ 		 */
+-		addrconf_ifdown(dev, event != NETDEV_DOWN);
++		addrconf_ifdown(dev, event != NETDEV_GOING_DOWN);
+ 		break;
+ 
+ 	case NETDEV_CHANGENAME:
+@@ -3741,7 +3741,7 @@ static bool addr_is_local(const struct in6_addr *addr)
+ 
+ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ {
+-	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
++	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_GOING_DOWN;
+ 	struct net *net = dev_net(dev);
+ 	struct inet6_dev *idev;
+ 	struct inet6_ifaddr *ifa;
+@@ -3877,7 +3877,7 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
+ 
+ 		if (state != INET6_IFADDR_STATE_DEAD) {
+ 			__ipv6_ifa_notify(RTM_DELADDR, ifa);
+-			inet6addr_notifier_call_chain(NETDEV_DOWN, ifa);
++			inet6addr_notifier_call_chain(NETDEV_GOING_DOWN, ifa);
+ 		} else {
+ 			if (idev->cnf.forwarding)
+ 				addrconf_leave_anycast(ifa);
+@@ -6252,7 +6252,7 @@ static void dev_disable_change(struct inet6_dev *idev)
+ 
+ 	netdev_notifier_info_init(&info, idev->dev);
+ 	if (idev->cnf.disable_ipv6)
+-		addrconf_notify(NULL, NETDEV_DOWN, &info);
++		addrconf_notify(NULL, NETDEV_GOING_DOWN, &info);
+ 	else
+ 		addrconf_notify(NULL, NETDEV_UP, &info);
+ }
+-- 
+2.34.1
+
