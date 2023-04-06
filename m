@@ -2,120 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AC36D8D7A
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 04:32:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351486D8DA7
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 04:49:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234841AbjDFCcN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Apr 2023 22:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54578 "EHLO
+        id S234740AbjDFCtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 22:49:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231889AbjDFCcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 22:32:10 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863238A53;
-        Wed,  5 Apr 2023 19:32:07 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 3362VKyiC027848, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36506.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 3362VKyiC027848
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=OK);
-        Thu, 6 Apr 2023 10:31:20 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36506.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.17; Thu, 6 Apr 2023 10:31:39 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Thu, 6 Apr 2023 10:31:39 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02]) by
- RTEXMBS04.realtek.com.tw ([fe80::b4a2:2bcc:48d1:8b02%5]) with mapi id
- 15.01.2375.007; Thu, 6 Apr 2023 10:31:39 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        "Nitin Gupta" <nitin.gupta981@gmail.com>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        =?iso-8859-1?Q?Pali_Roh=E1r?= <pali@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: RE: [PATCH v5 2/9] wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets
-Thread-Topic: [PATCH v5 2/9] wifi: rtw88: sdio: Add HCI implementation for
- SDIO based chipsets
-Thread-Index: AQHZZ/pJyJYNwZ4fx0+w0E4CUS/4Nq8dj67A
-Date:   Thu, 6 Apr 2023 02:31:39 +0000
-Message-ID: <0c9e1c2b3bc04abcb79de87610382d6a@realtek.com>
-References: <20230405200729.632435-1-martin.blumenstingl@googlemail.com>
- <20230405200729.632435-3-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20230405200729.632435-3-martin.blumenstingl@googlemail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-antispam-interceptor-info: fallback
-x-kse-antivirus-interceptor-info: fallback
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S234692AbjDFCth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 22:49:37 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C69AD3A;
+        Wed,  5 Apr 2023 19:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1680749204; x=1712285204;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OYFGzpPYLI2q69hmtLhmRnE7jbvoO6JpkJESOEl3xDA=;
+  b=CyabcphvFd/lpg25lY7l0vdTe4qDlNWr2NqJjYhNyMdp4070WZnEJ2Rw
+   rrVj/N/ZsYajjterDP9gY2bt/6giOUng89fsgt1I/U9OHJmP1+X6Ja8Ec
+   9mDHFYOlLApILSUgZG5XfzzHkeJGthMvQ1ztrWuTdOhmDQvEzJ0sUUwL6
+   Z5OAxlicBe9RtBDLeM0H8cizw5/9v4/3kYhcG3EDWSmlzsNUFPfnFCROY
+   9/MEPrkQnTtZSUbriwMXvn0SbLRn/FdwRpoZXHc60xLMVJnVetu/B1jPc
+   BWZNrfvo4uvshgjlP+CPOqPQYdsC4y/AfQldSj3EDggYOugpGwSSyA5tl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="345217309"
+X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
+   d="scan'208";a="345217309"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 19:46:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="810830733"
+X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
+   d="scan'208";a="810830733"
+Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
+  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2023 19:46:37 -0700
+From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, andrew@lunn.ch,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Shahab Vahedi <Shahab.Vahedi@synopsys.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Looi Hong Aun <hong.aun.looi@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Lai Peter Jun Ann <peter.jun.ann.lai@intel.com>,
+        Zulkifli Muhammad Husaini <muhammad.husaini.zulkifli@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>,
+        hock.leong.kweh@intel.com
+Subject: [RESEND PATCH net 1/1] net: stmmac: check fwnode for phy device before scanning for phy
+Date:   Thu,  6 Apr 2023 10:45:41 +0800
+Message-Id: <20230406024541.3556305-1-michael.wei.hong.sit@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=0.0 required=5.0 tests=SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.5 required=5.0 tests=AC_FROM_MANY_DOTS,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Some DT devices already have phy device configured in the DT/ACPI.
+Current implementation scans for a phy unconditionally even though
+there is a phy listed in the DT/ACPI and already attached.
 
+We should check the fwnode if there is any phy device listed in
+fwnode and decide whether to scan for a phy to attach to.
 
-> -----Original Message-----
-> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Sent: Thursday, April 6, 2023 4:07 AM
-> To: linux-wireless@vger.kernel.org
-> Cc: Yan-Hsuan Chuang <tony0620emma@gmail.com>; Kalle Valo <kvalo@kernel.org>; Ulf Hansson
-> <ulf.hansson@linaro.org>; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
-> linux-mmc@vger.kernel.org; Chris Morgan <macromorgan@hotmail.com>; Nitin Gupta <nitin.gupta981@gmail.com>;
-> Neo Jou <neojou@gmail.com>; Ping-Ke Shih <pkshih@realtek.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
-> Larry Finger <Larry.Finger@lwfinger.net>; Pali Rohár <pali@kernel.org>; Simon Horman
-> <simon.horman@corigine.com>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Subject: [PATCH v5 2/9] wifi: rtw88: sdio: Add HCI implementation for SDIO based chipsets
-> 
-> Add a sub-driver for SDIO based chipsets which implements the following
-> functionality:
-> - register accessors for 8, 16 and 32 bits for all states of the card
->   (including usage of 4x 8 bit access for one 32 bit buffer if the card
->   is not fully powered on yet - or if it's fully powered on then 1x 32
->   bit access is used)
-> - checking whether there's space in the TX FIFO queue to transmit data
-> - transfers from the host to the device for actual network traffic,
->   reserved pages (for firmware download) and H2C (host-to-card)
->   transfers
-> - receiving data from the device
-> - deep power saving state
-> 
-> The transmit path is optimized so DMA-capable SDIO host controllers can
-> directly use the buffers provided because the buffer's physical
-> addresses are 8 byte aligned.
-> 
-> The receive path is prepared to support RX aggregation where the
-> chipset combines multiple MAC frames into one bigger buffer to reduce
-> SDIO transfer overhead.
-> 
-> Co-developed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Fixes: fe2cfbc96803 ("net: stmmac: check if MAC needs to attach to a PHY")
+Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Link: https://lore.kernel.org/lkml/20230403212434.296975-1-martin.blumenstingl@googlemail.com/
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+Tested-by: Shahab Vahedi <shahab@synopsys.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index d41a5f92aee7..7ca9be7bec06 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1134,22 +1134,26 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
+ static int stmmac_init_phy(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
++	struct fwnode_handle *phy_fwnode;
+ 	struct fwnode_handle *fwnode;
+-	bool phy_needed;
+ 	int ret;
+ 
++	if (!phylink_expects_phy(priv->phylink))
++		return 0;
++
+ 	fwnode = of_fwnode_handle(priv->plat->phylink_node);
+ 	if (!fwnode)
+ 		fwnode = dev_fwnode(priv->device);
+ 
+ 	if (fwnode)
+-		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
++		phy_fwnode = fwnode_get_phy_node(fwnode);
++	else
++		phy_fwnode = NULL;
+ 
+-	phy_needed = phylink_expects_phy(priv->phylink);
+ 	/* Some DT bindings do not set-up the PHY handle. Let's try to
+ 	 * manually parse it
+ 	 */
+-	if (!fwnode || phy_needed || ret) {
++	if (!phy_fwnode || IS_ERR(phy_fwnode)) {
+ 		int addr = priv->plat->phy_addr;
+ 		struct phy_device *phydev;
+ 
+@@ -1165,6 +1169,9 @@ static int stmmac_init_phy(struct net_device *dev)
+ 		}
+ 
+ 		ret = phylink_connect_phy(priv->phylink, phydev);
++	} else {
++		fwnode_handle_put(phy_fwnode);
++		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
+ 	}
+ 
+ 	if (!priv->plat->pmt) {
+-- 
+2.34.1
 
