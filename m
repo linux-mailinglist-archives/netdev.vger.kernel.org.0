@@ -2,134 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1286DA389
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 22:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD4E6DA496
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 23:22:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240229AbjDFUkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 16:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
+        id S236233AbjDFVWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 17:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240721AbjDFUkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 16:40:32 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBE69767;
-        Thu,  6 Apr 2023 13:36:35 -0700 (PDT)
+        with ESMTP id S230128AbjDFVWV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 17:22:21 -0400
+Received: from mail-ej1-x662.google.com (mail-ej1-x662.google.com [IPv6:2a00:1450:4864:20::662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB7FA5C9
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 14:22:18 -0700 (PDT)
+Received: by mail-ej1-x662.google.com with SMTP id l15so4468056ejq.10
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 14:22:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1680813396; x=1712349396;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=glRId3TCjvVwkSyTTe1OVXVyxecEefJVI+EkBN/jPxc=;
-  b=D3d/72cr7XzDezJrhwct98a/FY/gL2KCZOGFUDIZumVI1kPS0ueN/CPZ
-   gmegO0blWZUGGS5DiR68LrVrQbmw7n/c6iZyj2UbuGOlKZeitgt26y3yV
-   s8OcKCxxckFJFOiDU9TCLDxiuF5pMn7r6lEV37fKHZtgPLKQ0q7+TesbC
-   8=;
-X-IronPort-AV: E=Sophos;i="5.98,323,1673913600"; 
-   d="scan'208";a="311400107"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2023 20:36:33 +0000
-Received: from EX19MTAUWA002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-m6i4x-153b24bc.us-east-1.amazon.com (Postfix) with ESMTPS id 6F94EC18F0;
-        Thu,  6 Apr 2023 20:36:30 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX19MTAUWA002.ant.amazon.com (10.250.64.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 6 Apr 2023 20:36:29 +0000
-Received: from 88665a182662.ant.amazon.com (10.119.181.3) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.26; Thu, 6 Apr 2023 20:36:26 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <yuehaibing@huawei.com>
-CC:     <corbet@lwn.net>, <davem@davemloft.net>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH net] tcp: restrict net.ipv4.tcp_app_win
-Date:   Thu, 6 Apr 2023 13:36:15 -0700
-Message-ID: <20230406203615.43591-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20230406063450.19572-1-yuehaibing@huawei.com>
-References: <20230406063450.19572-1-yuehaibing@huawei.com>
+        d=dectris.com; s=google; t=1680816137;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=NsmzvC9OdqUOMKAkahmLy6MXdtOQelQ2/iP2u3yfnac=;
+        b=CWWvjPEbXBcVtsdWmkz/LciVKz3v2BYdKEi9Z3/ykViVIjzx5L7+mZg9R/2cKVL3vj
+         1LBuoSlmcimL0xAi7EhfZjHceF6OQhGQvTEIH8br40GQUg3T/FdNQBpat4WDZENbqfva
+         NhKXMAn2QZQ3coJjXwtbm3e3oR1E7IxskIgNA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680816137;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NsmzvC9OdqUOMKAkahmLy6MXdtOQelQ2/iP2u3yfnac=;
+        b=E2sIl6hkepwbHKGLEWfXLz7frg0dDfeeluJoZ38p+0pmJIVP5FI1PyaaBlJLiUr7m3
+         RmyFEuqIB+iVT6ACeegIcLDr6VFgQhR3Zp3OiYYYsR16qkxcrWPqeFlNwrNOqQqybUV0
+         uYdZwX2f+Z9RuXHjcRLmfc4692Oy3HUKMbzy95jZa24lDunDZLyW5jtHV+YddePcS46q
+         YsbjToeWCuSA3LwdL1LEK+Re2vLtoWP+XqJi8M/Gd3+9BRkRscSMIc9vgIBm7/G0N5wZ
+         ewts5xfGXFKZv5OrpGd5S5ftI+VK70jEAF3sp4jOTx8hJhGmokPWcAXXQige8P/3pkE4
+         96kg==
+X-Gm-Message-State: AAQBX9cAlkOvQRG6FTOmO8iaK/88uXIv+P/SoWqu/PsoSef9w9g1pMzV
+        w+v4pW0xb5m3Z4zkaEgdTGq3nPlR9+wGhTgpnOqRcFhKUHHz
+X-Google-Smtp-Source: AKy350byBFC1vM5pmpkaNxr0CP5celhBeQSbRUGflgaIoIwmchMQQ/DXb0AA8SwyU99rgwNlkOmXQbjOARBy
+X-Received: by 2002:a17:906:585:b0:925:6bcb:4796 with SMTP id 5-20020a170906058500b009256bcb4796mr6565710ejn.38.1680816136943;
+        Thu, 06 Apr 2023 14:22:16 -0700 (PDT)
+Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
+        by smtp-relay.gmail.com with ESMTPS id gs37-20020a1709072d2500b0094964d26463sm186140ejc.25.2023.04.06.14.22.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Apr 2023 14:22:16 -0700 (PDT)
+X-Relaying-Domain: dectris.com
+From:   Kal Conley <kal.conley@dectris.com>
+To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next] xsk: Elide base_addr comparison in xp_unaligned_validate_desc
+Date:   Thu,  6 Apr 2023 23:21:36 +0200
+Message-Id: <20230406212136.19716-1-kal.conley@dectris.com>
+X-Mailer: git-send-email 2.39.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.119.181.3]
-X-ClientProxiedBy: EX19D033UWC001.ant.amazon.com (10.13.139.218) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   YueHaibing <yuehaibing@huawei.com>
-Date:   Thu, 6 Apr 2023 14:34:50 +0800
-> UBSAN: shift-out-of-bounds in net/ipv4/tcp_input.c:555:23
-> shift exponent 255 is too large for 32-bit type 'int'
-> CPU: 1 PID: 7907 Comm: ssh Not tainted 6.3.0-rc4-00161-g62bad54b26db-dirty #206
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x136/0x150
->  __ubsan_handle_shift_out_of_bounds+0x21f/0x5a0
->  tcp_init_transfer.cold+0x3a/0xb9
->  tcp_finish_connect+0x1d0/0x620
->  tcp_rcv_state_process+0xd78/0x4d60
->  tcp_v4_do_rcv+0x33d/0x9d0
->  __release_sock+0x133/0x3b0
->  release_sock+0x58/0x1b0
-> 
-> 'maxwin' is int, shifting int for 32 or more bits is undefined behaviour.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Remove redundant (base_addr >= pool->addrs_cnt) comparison from the
+conditional.
 
-Reviewed-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+In particular, addr is computed as:
 
-Thanks!
+    addr = base_addr + offset
 
-> ---
->  Documentation/networking/ip-sysctl.rst | 2 ++
->  net/ipv4/sysctl_net_ipv4.c             | 3 +++
->  2 files changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index 87dd1c5283e6..58a78a316697 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -340,6 +340,8 @@ tcp_app_win - INTEGER
->  	Reserve max(window/2^tcp_app_win, mss) of window for application
->  	buffer. Value 0 is special, it means that nothing is reserved.
->  
-> +	Possible values are [0, 31], inclusive.
-> +
->  	Default: 31
->  
->  tcp_autocorking - BOOLEAN
-> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> index 0d0cc4ef2b85..40fe70fc2015 100644
-> --- a/net/ipv4/sysctl_net_ipv4.c
-> +++ b/net/ipv4/sysctl_net_ipv4.c
-> @@ -25,6 +25,7 @@ static int ip_local_port_range_min[] = { 1, 1 };
->  static int ip_local_port_range_max[] = { 65535, 65535 };
->  static int tcp_adv_win_scale_min = -31;
->  static int tcp_adv_win_scale_max = 31;
-> +static int tcp_app_win_max = 31;
->  static int tcp_min_snd_mss_min = TCP_MIN_SND_MSS;
->  static int tcp_min_snd_mss_max = 65535;
->  static int ip_privileged_port_min;
-> @@ -1198,6 +1199,8 @@ static struct ctl_table ipv4_net_table[] = {
->  		.maxlen		= sizeof(u8),
->  		.mode		= 0644,
->  		.proc_handler	= proc_dou8vec_minmax,
-> +		.extra1		= SYSCTL_ZERO,
-> +		.extra2		= &tcp_app_win_max,
->  	},
->  	{
->  		.procname	= "tcp_adv_win_scale",
-> -- 
-> 2.34.1
+where base_addr and offset are stored as 48-bit and 16-bit unsigned
+integers, respectively. The above sum cannot overflow u64 since
+base_addr has a maximum value of 0x0000ffffffffffff and offset has a
+maximum value of 0xffff (implying a maximum sum of 0x000100000000fffe).
+Since overflow is impossible, it follows that addr >= base_addr.
+
+Now if (base_addr >= pool->addrs_cnt), then clearly:
+
+    addr >= base_addr
+         >= pool->addrs_cnt
+
+Thus, (base_addr >= pool->addrs_cnt) implies (addr >= pool->addrs_cnt).
+Subsequently, the former comparison is unnecessary in the conditional
+since for any boolean expressions A and B, (A || B) && (A -> B) is
+equivalent to B.
+
+Signed-off-by: Kal Conley <kal.conley@dectris.com>
+---
+ net/xdp/xsk_queue.h | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index 66c6f57c9c44..016f3753180a 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -153,16 +153,14 @@ static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
+ static inline bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
+ 					      struct xdp_desc *desc)
+ {
+-	u64 addr, base_addr;
+-
+-	base_addr = xp_unaligned_extract_addr(desc->addr);
+-	addr = xp_unaligned_add_offset_to_addr(desc->addr);
++	u64 addr;
+ 
+ 	if (desc->len > pool->chunk_size)
+ 		return false;
+ 
+-	if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
+-	    addr + desc->len > pool->addrs_cnt ||
++	addr = xp_unaligned_add_offset_to_addr(desc->addr);
++
++	if (addr >= pool->addrs_cnt || addr + desc->len > pool->addrs_cnt ||
+ 	    xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
+ 		return false;
+ 
+-- 
+2.39.2
+
