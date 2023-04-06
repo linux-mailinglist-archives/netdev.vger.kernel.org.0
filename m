@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C296DA076
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318366DA08C
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:01:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240331AbjDFTAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 15:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
+        id S240443AbjDFTBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 15:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbjDFTAt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:00:49 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3189926B2
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 12:00:47 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id a640c23a62f3a-930129be52dso134220766b.1
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 12:00:47 -0700 (PDT)
+        with ESMTP id S240385AbjDFTBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:01:22 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9C64696
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 12:01:03 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id a640c23a62f3a-94771f05e20so134596266b.1
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 12:01:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1680807645;
+        d=linaro.org; s=google; t=1680807662;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=6bum/yWGbHMLt1EOFHvTWnBxq9eD7t+qsjTNeqkn9sM=;
-        b=CaFz4Ll9HSjfp9WnbEfCJKng1D3GwpCX+2GMTfWMCanvgwMkGmhKqx5zCQZi2RbeVQ
-         PUMEyb/sY3anAc1WS81l0nuGAEfUD5O5FievJS1stvUVJWI9e0CdYWaExKN0j5hoxc75
-         M4wgqR60SES71Pbaa2Skjxn7n/bJkRelRp81p+H/NYrJQFYxi+ocQSqOHnm+f9pnNsli
-         SM31YE2ySEoKy5AystZv3bXJUio/O/of9wyckuwfzMxwyXgh6lDWkzdtA15JSM2SwjA1
-         PctiWbldVGJ4Xad6V7SbdPdCxu5A4aKA2xtjL3NnSlm0LqADLY/sYvMVr60fVJXtAnd+
-         Gjyg==
+        bh=45/7TKpTCK5h6ilh1LUuYviPKiZpP9rCbl++IuI078M=;
+        b=AJvUwHrCIdJ0dugZeaXPR9QOmXg1fGP9y7UZ0f2s8f9oAcsuhPGeYFOo7n2XS2BDP3
+         w1XG9rv95+HdYppKZu+EXeUbWxDEzBgXDc3O87lWERYFnHv9dAxrdzDKTieu914+curg
+         9Y4zxXZ2XbcTQWJxc3SLoHX2fXd2IsQ6dtonVY+aEIfYsnLvfUVjPF+NxSnfWFpG8nfO
+         e/M7RrqCvv4/a3fiTBHYliRDaKNazhAQcLeNRA5hmVuWb+q/X2T49Bd7BuJDwFJncxBm
+         hQNpi7RT32yy2Jp5oEzg9CV3JctwMyx7SG8KG4I7h6ebOEEbZdUBjZ1l76vEX/piYcLl
+         dbNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680807645;
+        d=1e100.net; s=20210112; t=1680807662;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6bum/yWGbHMLt1EOFHvTWnBxq9eD7t+qsjTNeqkn9sM=;
-        b=IZvmAO9+mSH+wdfNC2ih8Bh49YlKmKUs5QK7Dt06vWujoFqvNBhDGGpnzxLhVhox8a
-         /NFFAvn/VB7az6XI5D3TDVxJJn/l+kYWuXgrJrI0UErFPJpnydhcn4Dvft4jge0EdRhN
-         4pwscEUYaV+kthLhSxWATGJyKbPnSfevIoRf8uoTaL+wNwZ66AISDnpEwuk38AJriDNx
-         4cvwtDRLioSS3l5HDET+ObPlmH934F/jMRvHGFZJQDNeEKBvgQunZvt57FXtfOvhiwPg
-         5t2/+xK2rta7tBxbB1S7Boy99nyRfD/J4OfEp8yWCh37qUI2gElPovo26bZ61Wlfe4w1
-         0KkA==
-X-Gm-Message-State: AAQBX9ezdzdaw9cosxH//aoCAWQHUsQsMAWmwyh8So52kQC90U28k2Ki
-        KZbU2URf/gcg3xxhTramFspwpw==
-X-Google-Smtp-Source: AKy350Z8stGIoN0clalRjlcrw4YuEeDel7GzxJhI8mHMUqprxubCAqKxoonftbqeyBRB5AZPNECy6A==
-X-Received: by 2002:a50:ef17:0:b0:502:a6b3:6e2 with SMTP id m23-20020a50ef17000000b00502a6b306e2mr561489eds.3.1680807645684;
-        Thu, 06 Apr 2023 12:00:45 -0700 (PDT)
+        bh=45/7TKpTCK5h6ilh1LUuYviPKiZpP9rCbl++IuI078M=;
+        b=d27QWgc7IaH6Q1YVOM0/HGSArBezIf+SCnb2l7Q8JfTW/wDPu2pPRgOKZuQOAwZ26H
+         RgAswaF2xWh0SrixWpjOyRyYX8iH6DcoX4D3E8R39stNClBm8OLFfhh65pw4XBpCeeyY
+         tWkqPrZfiGooB/rbNQGeEYsVbsXugXv0ZbuVcYcl0/C/457+ODuVZTnnTiPH6EqgTtg9
+         tuUEMiImWJ/6fyPhadIv6BKgAaOQ7go4kXblShxASWs511FTTBN7ztSSfO78b/w83Don
+         Wk+uaQv798LYWMxkHO5dNqPoq/IUGsKufG1SK03W1ZV0MTedRJDIWO9j50EUrBqeLgMw
+         Qv8w==
+X-Gm-Message-State: AAQBX9deVlCmmQTKdxabmrkXBv6nmggYTbdybOWbi+L/TxAv54Wgb5I6
+        N3r9uMWS671tWuEvphNdCjoDpw==
+X-Google-Smtp-Source: AKy350YprH2WnV7+jiFkLh1Q5wGRZkgpCiVtUPg4XJUg3nVkktNIL9AJ0vmKPH7xXC9eO0PeALpsZw==
+X-Received: by 2002:aa7:d556:0:b0:4fa:ad62:b1a0 with SMTP id u22-20020aa7d556000000b004faad62b1a0mr445160edr.41.1680807662032;
+        Thu, 06 Apr 2023 12:01:02 -0700 (PDT)
 Received: from ?IPV6:2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed? ([2a02:810d:15c0:828:49e6:bb8c:a05b:c4ed])
-        by smtp.gmail.com with ESMTPSA id e14-20020a50a68e000000b004bb810e0b87sm1071884edc.39.2023.04.06.12.00.44
+        by smtp.gmail.com with ESMTPSA id d20-20020a50cd54000000b005027dd7c403sm1056008edj.66.2023.04.06.12.01.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Apr 2023 12:00:45 -0700 (PDT)
-Message-ID: <678d5752-b5c8-dd21-9e43-68f4d4e674ee@linaro.org>
-Date:   Thu, 6 Apr 2023 21:00:43 +0200
+        Thu, 06 Apr 2023 12:01:01 -0700 (PDT)
+Message-ID: <b30f8159-e2b0-8a1a-1feb-507c3a9b37ee@linaro.org>
+Date:   Thu, 6 Apr 2023 21:00:59 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.9.0
-Subject: Re: [PATCH 1/7] dt-bindings: net: dsa: mediatek,mt7530: correct brand
- name
+Subject: Re: [PATCH 2/7] dt-bindings: net: dsa: mediatek,mt7530: improve MCM
+ and MT7988 information
 Content-Language: en-US
 To:     arinc9.unal@gmail.com, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -79,8 +79,9 @@ Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 References: <20230406080141.22924-1-arinc.unal@arinc9.com>
+ <20230406080141.22924-2-arinc.unal@arinc9.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230406080141.22924-1-arinc.unal@arinc9.com>
+In-Reply-To: <20230406080141.22924-2-arinc.unal@arinc9.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
@@ -96,16 +97,21 @@ X-Mailing-List: netdev@vger.kernel.org
 On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
 > From: Arınç ÜNAL <arinc.unal@arinc9.com>
 > 
-> The brand name is MediaTek, change it to that.
+> Improve the description of the schema.
+> 
+> The MT7620 SoCs described are not part of the multi-chip module but rather
+> built into the SoC. Mention the MT7530 MMIO driver not supporting them.
+> 
+> Move information for the switch on the MT7988 SoC below MT7531, and improve
+> it.
+> 
+> List maintainers in alphabetical order by first name.
 > 
 > Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 > ---
->  Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml | 2 +-
 
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-although maybe this would be a lot of churn if done per-file.
 
 Best regards,
 Krzysztof
