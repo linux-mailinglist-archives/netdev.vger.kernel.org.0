@@ -2,133 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FD4E6DA496
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 23:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F0136DA4A7
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 23:25:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236233AbjDFVWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 17:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        id S229773AbjDFVZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 17:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbjDFVWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 17:22:21 -0400
-Received: from mail-ej1-x662.google.com (mail-ej1-x662.google.com [IPv6:2a00:1450:4864:20::662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB7FA5C9
-        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 14:22:18 -0700 (PDT)
-Received: by mail-ej1-x662.google.com with SMTP id l15so4468056ejq.10
-        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 14:22:18 -0700 (PDT)
+        with ESMTP id S232461AbjDFVZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 17:25:20 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7B810E5;
+        Thu,  6 Apr 2023 14:25:19 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id v9so2368654pjk.0;
+        Thu, 06 Apr 2023 14:25:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1680816137;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=NsmzvC9OdqUOMKAkahmLy6MXdtOQelQ2/iP2u3yfnac=;
-        b=CWWvjPEbXBcVtsdWmkz/LciVKz3v2BYdKEi9Z3/ykViVIjzx5L7+mZg9R/2cKVL3vj
-         1LBuoSlmcimL0xAi7EhfZjHceF6OQhGQvTEIH8br40GQUg3T/FdNQBpat4WDZENbqfva
-         NhKXMAn2QZQ3coJjXwtbm3e3oR1E7IxskIgNA=
+        d=gmail.com; s=20210112; t=1680816319; x=1683408319;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jVlOlkoXNAtZlrEiaIusqat9aNgJfbSvvGWuZy6PpLM=;
+        b=lBLBoW0dYYKV3gmElyZfVwV7tiEbKOjqAkHnuLeFzlDudSKS4xPjI+Yo1MRbwAZ/YX
+         JGCcenM5TsOFzNuG2NDGPYFsVmRa2YLte5byyJlxE74/lsrQvcJ0O/ebU54XMjJ+6y5j
+         izDvJIJZb9zQQ+S5Dc8RwvR+hmPKBk97Oj3ZYY41aldHyvTCmCh1r0tVTidsF+Fm7TlQ
+         C7tYyxz2ac49oR2jLYlOMBs1FUQD1aDyeicWxvA2tEF0WFyoA88a4yKCTh8pyH5z4r/u
+         Ln+qn2eYHutwKEp3J4VPaRrWzeYh6hEoGKRmbV36KuieRivsG8MtDyzXpc/dSD2nSGyE
+         Y6BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680816137;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NsmzvC9OdqUOMKAkahmLy6MXdtOQelQ2/iP2u3yfnac=;
-        b=E2sIl6hkepwbHKGLEWfXLz7frg0dDfeeluJoZ38p+0pmJIVP5FI1PyaaBlJLiUr7m3
-         RmyFEuqIB+iVT6ACeegIcLDr6VFgQhR3Zp3OiYYYsR16qkxcrWPqeFlNwrNOqQqybUV0
-         uYdZwX2f+Z9RuXHjcRLmfc4692Oy3HUKMbzy95jZa24lDunDZLyW5jtHV+YddePcS46q
-         YsbjToeWCuSA3LwdL1LEK+Re2vLtoWP+XqJi8M/Gd3+9BRkRscSMIc9vgIBm7/G0N5wZ
-         ewts5xfGXFKZv5OrpGd5S5ftI+VK70jEAF3sp4jOTx8hJhGmokPWcAXXQige8P/3pkE4
-         96kg==
-X-Gm-Message-State: AAQBX9cAlkOvQRG6FTOmO8iaK/88uXIv+P/SoWqu/PsoSef9w9g1pMzV
-        w+v4pW0xb5m3Z4zkaEgdTGq3nPlR9+wGhTgpnOqRcFhKUHHz
-X-Google-Smtp-Source: AKy350byBFC1vM5pmpkaNxr0CP5celhBeQSbRUGflgaIoIwmchMQQ/DXb0AA8SwyU99rgwNlkOmXQbjOARBy
-X-Received: by 2002:a17:906:585:b0:925:6bcb:4796 with SMTP id 5-20020a170906058500b009256bcb4796mr6565710ejn.38.1680816136943;
-        Thu, 06 Apr 2023 14:22:16 -0700 (PDT)
-Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id gs37-20020a1709072d2500b0094964d26463sm186140ejc.25.2023.04.06.14.22.16
+        d=1e100.net; s=20210112; t=1680816319; x=1683408319;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=jVlOlkoXNAtZlrEiaIusqat9aNgJfbSvvGWuZy6PpLM=;
+        b=SmWBcEXadokjIawPhsDXtJ1/+WzJ5ZMTBhmvbC9dhNTROe9kJhtSiwMAR1kFSXTDTy
+         Kusst/Z+b7wrh2IFzbPZ0sXaZVYqC58U3N2UO5N7eZIYZphh2GposmCGi59obw25IT6X
+         JSkWn0K4rNpyvhBVx/5pkjNKSABykLvYjZf0Fe4Wl2E6kn2suC9VIOKjQV3ljo+XjDHJ
+         IJ8QTQTb3eNCBfm2ifNKS6Xx7vdy7XZri04rUgG5vHfxOfC+PE6NpBwGEZnrTJ7DWDKr
+         Dm+aOMxlPlHi22IJ5ZOkMuxVfxR74Z90URsbcGBVeRxn/hNQrW8smHHA1CUYIADdI9G8
+         TYsQ==
+X-Gm-Message-State: AAQBX9fqBdcCucAVC0zRYtOk0SMn/OGLYlPdpio7G0b25w9vy6+5hUDJ
+        FjPM1o7PEYNobmv2AaI4/h0=
+X-Google-Smtp-Source: AKy350aFX3Jnil974ISMRxBWnDWUfrQcQntiN20c67FNwf3zF7DQspOer8zH0Jsl0FYhRUSqt7xpGw==
+X-Received: by 2002:a17:902:e752:b0:1a1:cae6:cfd with SMTP id p18-20020a170902e75200b001a1cae60cfdmr7814151plf.34.1680816318763;
+        Thu, 06 Apr 2023 14:25:18 -0700 (PDT)
+Received: from localhost ([67.170.148.130])
+        by smtp.gmail.com with ESMTPSA id y5-20020a170902700500b001a1c2ee06e0sm1803889plk.15.2023.04.06.14.25.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Apr 2023 14:22:16 -0700 (PDT)
-X-Relaying-Domain: dectris.com
-From:   Kal Conley <kal.conley@dectris.com>
-To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] xsk: Elide base_addr comparison in xp_unaligned_validate_desc
-Date:   Thu,  6 Apr 2023 23:21:36 +0200
-Message-Id: <20230406212136.19716-1-kal.conley@dectris.com>
-X-Mailer: git-send-email 2.39.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 06 Apr 2023 14:25:18 -0700 (PDT)
+Date:   Thu, 06 Apr 2023 14:25:17 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>, jakub@cloudflare.com,
+        daniel@iogearbox.net, edumazet@google.com, cong.wang@bytedance.com,
+        lmb@isovalent.com
+Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
+        will@isovalent.com
+Message-ID: <642f38bd52cac_10ba920879@john.notmuch>
+In-Reply-To: <20230406010031.3354-1-john.fastabend@gmail.com>
+References: <20230406010031.3354-1-john.fastabend@gmail.com>
+Subject: RE: [PATCH bpf v5 00/12] bpf sockmap fixes
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove redundant (base_addr >= pool->addrs_cnt) comparison from the
-conditional.
+John Fastabend wrote:
+> Fixes for sockmap running against NGINX TCP tests and also on an
+> underprovisioned VM so that we hit error (ENOMEM) cases regularly.
+> 
+> The first 3 patches fix cases related to ENOMEM that were either
+> causing splats or data hangs.
+> 
+> Then 4-7 resolved cases found when running NGINX with its sockets
+> assigned to sockmap. These mostly have to do with handling fin/shutdown
+> incorrectly and ensuring epoll_wait works as expected.
+> 
+> Patches 8 and 9 extract some of the logic used for sockmap_listen tests
+> so that we can use it in other tests because it didn't make much
+> sense to me to add tests to the sockmap_listen cases when here we
+> are testing send/recv *basic* cases.
+> 
+> Finally patches 10, 11 and 12 add the new tests to ensure we handle
+> ioctl(FIONREAD) and shutdown correctly.
+> 
+> To test the series I ran the NGINX compliance tests and the sockmap
+> selftests. For now our compliance test just runs with SK_PASS.
+> 
+> There are some more things to be done here, but these 11 patches
+> stand on their own in my opionion and fix issues we are having in
+> CI now. For bpf-next we can fixup/improve selftests to use the
+> ASSERT_* in sockmap_helpers, streamline some of the testing, and
+> add more tests. We also still are debugging a few additional flakes
+> patches coming soon.
+> 
+> v2: use skb_queue_empty instead of *_empty_lockless (Eric)
+>     oops incorrectly updated copied_seq on DROP case (Eric)
+>     added test for drop case copied_seq update
+> 
+> v3: Fix up comment to use /**/ formatting and update commit
+>     message to capture discussion about previous fix attempt
+>     for hanging backlog being imcomplete.
+> 
+> v4: build error sockmap things are behind NET_SKMSG not in
+>     BPF_SYSCALL otherwise you can build the .c file but not
+>     have correct headers.
+> 
+> v5: typo with mispelled SOCKMAP_HELPERS
+> 
 
-In particular, addr is computed as:
-
-    addr = base_addr + offset
-
-where base_addr and offset are stored as 48-bit and 16-bit unsigned
-integers, respectively. The above sum cannot overflow u64 since
-base_addr has a maximum value of 0x0000ffffffffffff and offset has a
-maximum value of 0xffff (implying a maximum sum of 0x000100000000fffe).
-Since overflow is impossible, it follows that addr >= base_addr.
-
-Now if (base_addr >= pool->addrs_cnt), then clearly:
-
-    addr >= base_addr
-         >= pool->addrs_cnt
-
-Thus, (base_addr >= pool->addrs_cnt) implies (addr >= pool->addrs_cnt).
-Subsequently, the former comparison is unnecessary in the conditional
-since for any boolean expressions A and B, (A || B) && (A -> B) is
-equivalent to B.
-
-Signed-off-by: Kal Conley <kal.conley@dectris.com>
----
- net/xdp/xsk_queue.h | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index 66c6f57c9c44..016f3753180a 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -153,16 +153,14 @@ static inline bool xp_aligned_validate_desc(struct xsk_buff_pool *pool,
- static inline bool xp_unaligned_validate_desc(struct xsk_buff_pool *pool,
- 					      struct xdp_desc *desc)
- {
--	u64 addr, base_addr;
--
--	base_addr = xp_unaligned_extract_addr(desc->addr);
--	addr = xp_unaligned_add_offset_to_addr(desc->addr);
-+	u64 addr;
- 
- 	if (desc->len > pool->chunk_size)
- 		return false;
- 
--	if (base_addr >= pool->addrs_cnt || addr >= pool->addrs_cnt ||
--	    addr + desc->len > pool->addrs_cnt ||
-+	addr = xp_unaligned_add_offset_to_addr(desc->addr);
-+
-+	if (addr >= pool->addrs_cnt || addr + desc->len > pool->addrs_cnt ||
- 	    xp_desc_crosses_non_contig_pg(pool, addr, desc->len))
- 		return false;
- 
--- 
-2.39.2
-
+Still another build problem apparently we can have the
+CONFIG_NET_SOCK_MSG option set with CONFIG_INET disabled.
+OK I can fix it but seems a bit strange to me a sockmap
+deployment without inet is mostly useless I suspect.
