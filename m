@@ -2,77 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2C166DA10F
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A319E6DA1D4
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 21:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240212AbjDFTXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Apr 2023 15:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52370 "EHLO
+        id S237174AbjDFTql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Apr 2023 15:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240205AbjDFTXx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:23:53 -0400
-Received: from sender3-op-o19.zoho.com (sender3-op-o19.zoho.com [136.143.184.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9D661AC;
-        Thu,  6 Apr 2023 12:23:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1680809003; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=hYBOG+y/5rMK2lctWKFmWUBjL2d5tYyfVSmTy4KefCPkvjyQZqPkt8QZykIBPpFdCc5WbR6kbNn/h3vafI4gF+BuGsN0A7YteqSjiqNGbvrHToxVoCZzIVnt9Wxh/lfY0ZQNi/nmkF9qHpWUk5D6yRagneJ9+p5bkq3OB0oeyBs=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1680809003; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=LwgiuEaZIlD8XunLUQ5/YjDJuNsb06sdZkJZhpcL7eU=; 
-        b=VfcT1WCQM/FeGMyK95ctSGgql9oNLSs/e6p5+a+OAlXNv/p70BXqkxsGnTJk5Rgh9+Qv22AmWxqVOfnE6bXs0yLCq7R3cuGoccBj0BMxG0+duaOEeHOQlK7Ps4db3oV2SZAEOVuteFVY2MBE41dUs9FbesgfhUPPinIwec/Tfwg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1680809003;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=LwgiuEaZIlD8XunLUQ5/YjDJuNsb06sdZkJZhpcL7eU=;
-        b=UOp7eTX4Qus9073eY8AFx6SORU3GEdQPAdiC6Fj/Em2q50+Hx/oJ7fzaHFiFpoec
-        MjA6ZS1SOYO77+W7R/J4YLff8FG5wur1o6g5rP6+TeHav1AP7Bz6VzLrXUPJRdoYxJy
-        34pvPWu2LBdyri7OBS7q+eumPrRDxmSP4QkghehQ=
-Received: from [10.10.10.3] (149.91.1.15 [149.91.1.15]) by mx.zohomail.com
-        with SMTPS id 1680809001550322.06011498171586; Thu, 6 Apr 2023 12:23:21 -0700 (PDT)
-Message-ID: <fc5c1f34-632e-57d0-233d-806484a9ec9c@arinc9.com>
-Date:   Thu, 6 Apr 2023 22:23:15 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.9.0
-Subject: Re: [PATCH 1/7] dt-bindings: net: dsa: mediatek,mt7530: correct brand
- name
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229475AbjDFTqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Apr 2023 15:46:39 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C978688
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 12:46:38 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id z4-20020a25bb04000000b00b392ae70300so40351327ybg.21
+        for <netdev@vger.kernel.org>; Thu, 06 Apr 2023 12:46:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112; t=1680810397;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kqTBetZeJEZAfE1b7iBbguTM38AcSrNLYr+CME4BWRg=;
+        b=szLgtpPbr44LSNta3Ab9VgYjNlpVshHOGY71++M27G4myKigKL89nPEeAR1f8mdgQr
+         bLTqvMV4gMWxNlOSByeFK2KsOnsEGFkxeSuepgLgiDu6gtOTfllghjxK9ixjKgcF8RDg
+         6VmvmuWgb50pPJjbrsWulLtaUCY/+pcMn5k1vgmVafRXmKnOMZzERGwroJBB4BSij1pT
+         p0EFva+azPrzAeDWuAc/Nk4Yz+Q+x5wKSCo/f+sVf13aZdT7EZ8Y8pBZgGMSQmZLOpFL
+         WBBMA6WPUJEDRBKKo8Qy7jC8oNRdFBgY+cRNP1vQu4aO88N17dRTJugMIIH9ZOdoFJ4C
+         Y3YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680810397;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=kqTBetZeJEZAfE1b7iBbguTM38AcSrNLYr+CME4BWRg=;
+        b=FI8sHIuqnvD7Em1QIZvvvdba/EuRLQkE0TL7SptAPQzUMTGJ+KGFj/m2EtUfZr9NJb
+         +O8QdhjKR77RTewvWTFLOmM8ghXbqenO8aVEXIeTZhOdGNj5OrSxdtG5IIxgibUF7urs
+         tGxFJo4tv1BO9mzG8srI5T9hwzfyuKmn0jT1UviedYpXuY8gOIYtjtuM2kr/82rm/pih
+         pZ1GauPDb69GSYVgc4kYf/M3OCj9L86plwaOhlxbt4SVbOat2IGCGpYkakXg16sZ1pAt
+         H8AEvOTjfv9WH9zHzSYP5chCtZ0k/Vxmmm0KmUhOXpq4jrxd5J6aR//BeyNvkK2JPa8H
+         /xiQ==
+X-Gm-Message-State: AAQBX9dwqeTN8Hqn1rtbjNn/q/FPnxN6VXfslHKBe8AJXcgTkf6dNWBf
+        rGzRFroAdpGOJMZoLdjL0XKIYbjH0xLe5w==
+X-Google-Smtp-Source: AKy350akUygHBzO7eIqkSXYABYhGinWBtLvH1nqfBc9C2Ew7Hvd7v6FhJsqSX/j/jyBgfU1H8BsLfC3AfawYkA==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a81:c509:0:b0:549:143f:3d3 with SMTP id
+ k9-20020a81c509000000b00549143f03d3mr6539308ywi.0.1680810397600; Thu, 06 Apr
+ 2023 12:46:37 -0700 (PDT)
+Date:   Thu,  6 Apr 2023 19:46:34 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.40.0.577.gac1e443424-goog
+Message-ID: <20230406194634.1804691-1-edumazet@google.com>
+Subject: [PATCH net-next] net: make SO_BUSY_POLL available to all users
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Golle <daniel@makrotopia.org>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>
-Cc:     erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20230406080141.22924-1-arinc.unal@arinc9.com>
- <678d5752-b5c8-dd21-9e43-68f4d4e674ee@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <678d5752-b5c8-dd21-9e43-68f4d4e674ee@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.4 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,23 +67,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6.04.2023 22:00, Krzysztof Kozlowski wrote:
-> On 06/04/2023 10:01, arinc9.unal@gmail.com wrote:
->> From: Arınç ÜNAL <arinc.unal@arinc9.com>
->>
->> The brand name is MediaTek, change it to that.
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->>   Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml | 2 +-
-> 
-> 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> although maybe this would be a lot of churn if done per-file.
+After commit 217f69743681 ("net: busy-poll: allow preemption
+in sk_busy_loop()"), a thread willing to use busy polling
+is not hurting other threads anymore in a non preempt kernel.
 
-I don't intend to. There's only this schema of MediaTek for DSA, and I 
-happen to maintain it. Maybe I can do a treewide change for other 
-schemas in the future.
+I think it is safe to remove CAP_NET_ADMIN check.
 
-Arınç
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/sock.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index c258887953905c340ad6deab8b66cbf45ecbf178..5440e67bcfe3b0874756fd87a9d79ded41c2e4a4 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1396,15 +1396,10 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
+ 
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	case SO_BUSY_POLL:
+-		/* allow unprivileged users to decrease the value */
+-		if ((val > sk->sk_ll_usec) && !sockopt_capable(CAP_NET_ADMIN))
+-			ret = -EPERM;
+-		else {
+-			if (val < 0)
+-				ret = -EINVAL;
+-			else
+-				WRITE_ONCE(sk->sk_ll_usec, val);
+-		}
++		if (val < 0)
++			ret = -EINVAL;
++		else
++			WRITE_ONCE(sk->sk_ll_usec, val);
+ 		break;
+ 	case SO_PREFER_BUSY_POLL:
+ 		if (valbool && !sockopt_capable(CAP_NET_ADMIN))
+-- 
+2.40.0.577.gac1e443424-goog
+
