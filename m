@@ -2,154 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B936D8B51
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 01:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2B56D8B55
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 02:00:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233929AbjDEX7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 19:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44574 "EHLO
+        id S233128AbjDFAAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 20:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234086AbjDEX7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 19:59:44 -0400
-Received: from mail-ed1-x562.google.com (mail-ed1-x562.google.com [IPv6:2a00:1450:4864:20::562])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C13769B
-        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 16:59:40 -0700 (PDT)
-Received: by mail-ed1-x562.google.com with SMTP id ew6so145151654edb.7
-        for <netdev@vger.kernel.org>; Wed, 05 Apr 2023 16:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dectris.com; s=google; t=1680739179;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aiktHjl/mMcq2QHaTiXh/kaZ7IlrVAnqoR/RxQRC2zg=;
-        b=M4qbOdZXV1C/wDoAtkeyblRD3pP/gVWJ2ejk/HkiM7w0jCcQ+v29RtLw8uUviwLJl1
-         auBRb4iOIKy8itmdG/qdpbrAKRxz64u2qESoitiubJYsYHgTftPuHS1ASwXk3vl7M4az
-         3IStF2usOaKTZJlThJ/IelRoZTkMFI4q2YFm8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112; t=1680739179;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aiktHjl/mMcq2QHaTiXh/kaZ7IlrVAnqoR/RxQRC2zg=;
-        b=QOEjSBcQxCGovumsCjgBoN1vrbhoL7nNrzdwOdGNiEcocZ4ts3NPfNGVHaXK/0vYBr
-         pHOF/d8slDIPdV5XeCVW935hIBOCpH/mn6dUg/Ic4WPpdGdl6PyDFwIAJJQs6exBndjn
-         Ci0urzEtsm/paK8Hoo5zyUfgrnZc1REt2mObj7bK7WT3sFCo6N+1aZTklwqbKh5ZY4Ay
-         JPYEfbuMMg0werTYl8zJkZWR4prJ11SSblmVeV2kIspXZO6So3gzcu4vPd+3vWq060FU
-         o4/H9FH71NKhbqjrI7cDtBW+W+0M+/eyGA30/HNC2cT/2DStFyt4RO/p9NDcjkmMjgKH
-         kJww==
-X-Gm-Message-State: AAQBX9ePxAgQAPGCCKvWh0XvcoB2kALPDlLWuQrWfaxfXZG5kk8+ddQY
-        oN8glUrPRCD4LhklPtLzelKuboK2hfjRDq+sfmhcALdaNAIb
-X-Google-Smtp-Source: AKy350ZO1gDgW7Ny5Ov0vBQrRbAUQYqALMitKDhaeYZHL3oGuCKea7cv8SV217niml8vcg3/D1sq64+4Br0U
-X-Received: by 2002:a17:906:edcb:b0:930:f953:9614 with SMTP id sb11-20020a170906edcb00b00930f9539614mr5666535ejb.1.1680739178981;
-        Wed, 05 Apr 2023 16:59:38 -0700 (PDT)
-Received: from fedora.dectris.local (dect-ch-bad-pfw.cyberlink.ch. [62.12.151.50])
-        by smtp-relay.gmail.com with ESMTPS id hd33-20020a17090796a100b00949174b747bsm8548ejc.96.2023.04.05.16.59.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Apr 2023 16:59:38 -0700 (PDT)
-X-Relaying-Domain: dectris.com
-From:   Kal Conley <kal.conley@dectris.com>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>
-Cc:     Kal Conley <kal.conley@dectris.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 2/2] selftests: xsk: Add test UNALIGNED_INV_DESC_4K1_FRAME_SIZE
-Date:   Thu,  6 Apr 2023 01:59:19 +0200
-Message-Id: <20230405235920.7305-3-kal.conley@dectris.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20230405235920.7305-1-kal.conley@dectris.com>
-References: <20230405235920.7305-1-kal.conley@dectris.com>
+        with ESMTP id S232719AbjDFAAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 20:00:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E2A7AA7
+        for <netdev@vger.kernel.org>; Wed,  5 Apr 2023 17:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C0264131
+        for <netdev@vger.kernel.org>; Thu,  6 Apr 2023 00:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D518C433D2;
+        Thu,  6 Apr 2023 00:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1680739211;
+        bh=adpXKpFzIcwzFZL3VggpO3JXGfmYDPgocAoA5cINAgo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IfMZJlcN4u09OfK/vB8ECSKL1m9lu3vu4BS83+ZVPqo2cRTOiA8kR04HVWUzi+E3V
+         R/SHCoLVDD1XcCF5TbgZqRpkbj5Db+lVqWf5zsxWFvtU4UutRKywX8YJj2Po99zpRv
+         FcUxk/B1b/J0IEcPAS7OkRzOWKTKhS/OOjEM0r8B/4c1zujtsQf3rJtuuITBPNSpws
+         OxZiG40O7b/0JhXjll31wIupt0TvjYPgp8YtOFo91msw8Sasj3LsvlEC8FYtv9/k5U
+         4814ugM9ovFmHL3bpLtrWJuBqj1JhPWOQ9nZ6Dekwuay+RU2dOLQyhnF+x4eSxI/eb
+         /3EeyYXsu2E8g==
+Date:   Wed, 5 Apr 2023 17:00:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Maxim Georgiev <glipus@gmail.com>, kory.maincent@bootlin.com,
+        netdev@vger.kernel.org, maxime.chevallier@bootlin.com,
+        vadim.fedorenko@linux.dev, richardcochran@gmail.com,
+        gerhard@engleder-embedded.com
+Subject: Re: [RFC PATCH v3 3/5] Add ndo_hwtstamp_get/set support to vlan
+ code path
+Message-ID: <20230405170010.1c989a8f@kernel.org>
+In-Reply-To: <20230405180121.cefhbjlejuisywhk@skbuf>
+References: <20230405063323.36270-1-glipus@gmail.com>
+        <20230405094210.32c013a7@kernel.org>
+        <20230405170322.epknfkxdupctg6um@skbuf>
+        <20230405101323.067a5542@kernel.org>
+        <20230405172840.onxjhr34l7jruofs@skbuf>
+        <20230405104253.23a3f5de@kernel.org>
+        <20230405180121.cefhbjlejuisywhk@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.2 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add unaligned descriptor test for frame size of 4001. Using an odd frame
-size ensures that the end of the UMEM is not near a page boundary. This
-allows testing descriptors that staddle the end of the UMEM but not a
-page.
+On Wed, 5 Apr 2023 21:01:21 +0300 Vladimir Oltean wrote:
+> - bonding is also DSA master when it has a DSA master as lower, so the
+>   DSA master restriction has already run once - on the bonding device
+>   itself
 
-This test used to fail without the previous commit ("xsk: Add check for
-unaligned descriptors that overrun UMEM").
+Huh, didn't know that.
 
-Signed-off-by: Kal Conley <kal.conley@dectris.com>
----
- tools/testing/selftests/bpf/xskxceiver.c | 24 ++++++++++++++++++++++++
- tools/testing/selftests/bpf/xskxceiver.h |  1 +
- 2 files changed, 25 insertions(+)
+> > The latter could be used for the first descend as well I'd presume.
+> > And it can be exported for the use of more complex drivers like
+> > bonding which want to walk the lowers themselves.
+> >   
+> > > - it requires cfg.flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX to be set in
+> > >   SET requests
+> > > 
+> > > - it sets cfg.flags | HWTSTAMP_FLAG_BONDED_PHC_INDEX in GET responses  
+> > 
+> > IIRC that was to indicate to user space that the real PHC may change
+> > for this netdev so it needs to pay attention to netlink notifications.
+> > Shouldn't apply to *vlans?  
+> 
+> No, this shouldn't apply to *vlans, but I didn't suggest that it should.
 
-diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-index 1a4bdd5aa78c..5a9691e942de 100644
---- a/tools/testing/selftests/bpf/xskxceiver.c
-+++ b/tools/testing/selftests/bpf/xskxceiver.c
-@@ -69,6 +69,7 @@
-  */
- 
- #define _GNU_SOURCE
-+#include <assert.h>
- #include <fcntl.h>
- #include <errno.h>
- #include <getopt.h>
-@@ -1876,6 +1877,29 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		test->ifobj_rx->umem->unaligned_mode = true;
- 		testapp_invalid_desc(test);
- 		break;
-+	case TEST_TYPE_UNALIGNED_INV_DESC_4K1_FRAME: {
-+		u64 page_size, umem_size;
-+
-+		if (!hugepages_present(test->ifobj_tx)) {
-+			ksft_test_result_skip("No 2M huge pages present.\n");
-+			return;
-+		}
-+		test_spec_set_name(test, "UNALIGNED_INV_DESC_4K1_FRAME_SIZE");
-+		/* Odd frame size so the UMEM doesn't end near a page boundary. */
-+		test->ifobj_tx->umem->frame_size = 4001;
-+		test->ifobj_rx->umem->frame_size = 4001;
-+		test->ifobj_tx->umem->unaligned_mode = true;
-+		test->ifobj_rx->umem->unaligned_mode = true;
-+		/* This test exists to test descriptors that staddle the end of
-+		 * the UMEM but not a page.
-+		 */
-+		page_size = sysconf(_SC_PAGESIZE);
-+		umem_size = test->ifobj_tx->umem->num_frames * test->ifobj_tx->umem->frame_size;
-+		assert(umem_size % page_size > PKT_SIZE);
-+		assert(umem_size % page_size < page_size - PKT_SIZE);
-+		testapp_invalid_desc(test);
-+		break;
-+	}
- 	case TEST_TYPE_UNALIGNED:
- 		if (!testapp_unaligned(test))
- 			return;
-diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
-index cc24ab72f3ff..919327807a4e 100644
---- a/tools/testing/selftests/bpf/xskxceiver.h
-+++ b/tools/testing/selftests/bpf/xskxceiver.h
-@@ -78,6 +78,7 @@ enum test_type {
- 	TEST_TYPE_ALIGNED_INV_DESC,
- 	TEST_TYPE_ALIGNED_INV_DESC_2K_FRAME,
- 	TEST_TYPE_UNALIGNED_INV_DESC,
-+	TEST_TYPE_UNALIGNED_INV_DESC_4K1_FRAME,
- 	TEST_TYPE_HEADROOM,
- 	TEST_TYPE_TEARDOWN,
- 	TEST_TYPE_BIDI,
--- 
-2.39.2
+Good, so if we just target *vlans we don't have to worry.
 
+> I don't think my proposal was clear enough, so here's some code
+> (untested, written in email client).
+> 
+> static int macvlan_hwtstamp_get(struct net_device *dev,
+> 				struct kernel_hwtstamp_config *cfg,
+> 				struct netlink_ext_ack *extack)
+> {
+> 	struct net_device *real_dev = macvlan_dev_real_dev(dev);
+> 
+> 	return generic_hwtstamp_get_lower(real_dev, cfg, extack);
+> }
+> 
+> static int macvlan_hwtstamp_set(struct net_device *dev,
+> 				struct kernel_hwtstamp_config *cfg,
+> 				struct netlink_ext_ack *extack)
+> {
+> 	struct net_device *real_dev = macvlan_dev_real_dev(dev);
+> 
+> 	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+> }
+> 
+> static int vlan_hwtstamp_get(struct net_device *dev,
+> 			     struct kernel_hwtstamp_config *cfg,
+> 			     struct netlink_ext_ack *extack)
+> {
+> 	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
+> 
+> 	return generic_hwtstamp_get_lower(real_dev, cfg, extack);
+> }
+> 
+> static int vlan_hwtstamp_set(struct net_device *dev,
+> 			     struct kernel_hwtstamp_config *cfg,
+> 			     struct netlink_ext_ack *extack)
+> {
+> 	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
+> 
+> 	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+> }
+
+I got that, but why wouldn't this not be better, as it avoids 
+the 3 driver stubs? (also written in the MUA)
+
+int net_lower_hwtstamp_set(struct net_device *dev,
+			   struct kernel_hwtstamp_config *cfg,
+			   struct netlink_ext_ack *extack)
+{
+	struct list_head *iter = dev->adj_list.lower.next;
+	struct net_device *lower;
+	
+	lower = netdev_lower_get_next(dev, &iter);
+	return generic_hwtstamp_set_lower(lower, cfg, extack);
+}
+
+> static int bond_hwtstamp_get(struct net_device *bond_dev,
+> 			     struct kernel_hwtstamp_config *cfg,
+> 			     struct netlink_ext_ack *extack)
+> {
+> 	struct bonding *bond = netdev_priv(bond_dev);
+> 	struct net_device *real_dev = bond_option_active_slave_get_rcu(bond);
+> 	int err;
+> 
+> 	if (!real_dev)
+> 		return -EOPNOTSUPP;
+> 
+> 	err = generic_hwtstamp_get_lower(real_dev, cfg, extack);
+> 	if (err)
+> 		return err;
+> 
+> 	/* Set the BOND_PHC_INDEX flag to notify user space */
+> 	cfg->flags |= HWTSTAMP_FLAG_BONDED_PHC_INDEX;
+> 
+> 	return 0;
+> }
+> 
+> static int bond_hwtstamp_set(struct net_device *bond_dev,
+> 			     struct kernel_hwtstamp_config *cfg,
+> 			     struct netlink_ext_ack *extack)
+> {
+> 	struct bonding *bond = netdev_priv(bond_dev);
+> 	struct net_device *real_dev = bond_option_active_slave_get_rcu(bond);
+> 	int err;
+> 
+> 	if (!real_dev)
+> 		return -EOPNOTSUPP;
+> 
+> 	if (!(cfg->flags & HWTSTAMP_FLAG_BONDED_PHC_INDEX))
+> 		return -EOPNOTSUPP;
+> 
+> 	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
+> }
+> 
+> Doesn't seem in any way necessary to complicate things with the netdev
+> adjacence lists?
+
+What is the complication? We can add a "get first" helper maybe to hide
+the oddities of the linking.
+
+> > Yes, user space must be involved anyway, because the entire clock will
+> > change. IMHO implementing the pass thru for timestamping requests on
+> > bonding is checkbox engineering, kernel can't make it work
+> > transparently. But nobody else spoke up when it was proposed so...  
+> 
+> ok, but that's a bit beside the point here.
+
+You cut off the quote it was responding to so IDK if it is.
