@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3E26D8CB6
-	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 03:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF0456D8CDE
+	for <lists+netdev@lfdr.de>; Thu,  6 Apr 2023 03:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231574AbjDFB1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Apr 2023 21:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
+        id S234721AbjDFBku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Apr 2023 21:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbjDFB1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 21:27:38 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD156EB9;
-        Wed,  5 Apr 2023 18:27:36 -0700 (PDT)
+        with ESMTP id S233074AbjDFBkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Apr 2023 21:40:49 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EDA7EEF;
+        Wed,  5 Apr 2023 18:40:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1680744456; x=1712280456;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SOxmFzB3flkE0fuJtRea00vB3Ul8POf8DLfK/eHdwdU=;
-  b=MZBa7nWQkiu5RrrOuVy4XDdwUZp8AXa8+DY1YAMJxqlsTw9PGYM5MAWR
-   KjDw0MJBoFTXCV9sgfy0r6Sdz6ulmCjY8ecVDOSAtWHZ90vHZGBQwpoKc
-   kttRGXcMd1kdNfAhRbUPZW4XVMrhJWfvZmt2UTiqtJQkLokUxgMzXMjaF
-   zUcnTHzO+HsU5jUSeIcwZMc0LCEAMpAn3/2Cowa/ZMfboyDThieGYQoa3
-   JrLYVEuCPuvnWDwCa2zT5jxABgi8s8NZFyli5p7SSmfpslbm4gi3wGMa2
-   wvVl9soSoaHj83KGIuUT8tTLeEmn/tkdgT+aaMRPn8PFce4Iq55K8BJUN
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="407701744"
+  t=1680745240; x=1712281240;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=DCavWhtg2E8IoulfYWNZX/tJY4eyp3ElFmAFgZG+SzY=;
+  b=aQGJUMOm4ftVKlRmYsGKQlAvPcHfc3tnXIx3gQaS8WeHNO2XUBdM7Aqx
+   u565iabHtw7cwOGCiPNvjIFap/JuA8DXHIDkjHajubhTGk0hQQATbG6j/
+   b+fPgVgqY2sNUfW9YX+NBqVki/cb07cTki40K7yHGUK7xjYSnWB+m9vwz
+   TeDJbaco/xExYgNKKcBAuvFlhXXasVAro/KkA8Rz56dyf0wJN1sghbGFb
+   NUmnyG9ym9kK9hUDZ101WBGyjAK30U/mC6Xjsp1RuMZC4hVLvDi3/HqLm
+   cr5X8hneRtl50rOPih59gqfjkOD2h6eesie1U8FJvFo29j0VkipnvIb/Z
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="322262722"
 X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="407701744"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 18:27:35 -0700
+   d="scan'208";a="322262722"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2023 18:40:40 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="717256678"
+X-IronPort-AV: E=McAfee;i="6600,9927,10671"; a="810817453"
 X-IronPort-AV: E=Sophos;i="5.98,322,1673942400"; 
-   d="scan'208";a="717256678"
-Received: from lkp-server01.sh.intel.com (HELO b613635ddfff) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 05 Apr 2023 18:27:32 -0700
-Received: from kbuild by b613635ddfff with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1pkEPU-000QxG-05;
-        Thu, 06 Apr 2023 01:27:32 +0000
-Date:   Thu, 6 Apr 2023 09:26:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     John Fastabend <john.fastabend@gmail.com>, jakub@cloudflare.com,
-        daniel@iogearbox.net, edumazet@google.com
-Cc:     llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-        john.fastabend@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
-        will@isovalent.com
-Subject: Re: [PATCH bpf v4 07/12] bpf: sockmap incorrectly handling copied_seq
-Message-ID: <202304060904.QIeejeZ5-lkp@intel.com>
-References: <20230405220904.153149-8-john.fastabend@gmail.com>
+   d="scan'208";a="810817453"
+Received: from p12ill20yoongsia.png.intel.com ([10.88.227.28])
+  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2023 18:40:34 -0700
+From:   Song Yoong Siang <yoong.siang.song@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Alexander Duyck <alexanderduyck@fb.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        Song Yoong Siang <yoong.siang.song@intel.com>
+Subject: [PATCH net v2 1/1] net: stmmac: Add queue reset into stmmac_xdp_open() function
+Date:   Thu,  6 Apr 2023 09:40:04 +0800
+Message-Id: <20230406014004.3726672-1-yoong.siang.song@intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230405220904.153149-8-john.fastabend@gmail.com>
-X-Spam-Status: No, score=-2.5 required=5.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.5 required=5.0 tests=AC_FROM_MANY_DOTS,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,45 +73,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+Queue reset was moved out from __init_dma_rx_desc_rings() and
+__init_dma_tx_desc_rings() functions. Thus, the driver fails to transmit
+and receive packet after XDP prog setup.
 
-kernel test robot noticed the following build errors:
+This commit adds the missing queue reset into stmmac_xdp_open() function.
 
-[auto build test ERROR on bpf/master]
+v2: Add reviewed-by tag
 
-url:    https://github.com/intel-lab-lkp/linux/commits/John-Fastabend/bpf-sockmap-pass-skb-ownership-through-read_skb/20230406-061159
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git master
-patch link:    https://lore.kernel.org/r/20230405220904.153149-8-john.fastabend%40gmail.com
-patch subject: [PATCH bpf v4 07/12] bpf: sockmap incorrectly handling copied_seq
-config: hexagon-randconfig-r045-20230403 (https://download.01.org/0day-ci/archive/20230406/202304060904.QIeejeZ5-lkp@intel.com/config)
-compiler: clang version 17.0.0 (https://github.com/llvm/llvm-project 67409911353323ca5edf2049ef0df54132fa1ca7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/dc5529fda29b6c2077f7da535a3f902a4dc3dfa9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review John-Fastabend/bpf-sockmap-pass-skb-ownership-through-read_skb/20230406-061159
-        git checkout dc5529fda29b6c2077f7da535a3f902a4dc3dfa9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+Fixes: f9ec5723c3db ("net: ethernet: stmicro: stmmac: move queue reset to dedicated functions")
+Cc: <stable@vger.kernel.org> # 6.0+
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-| Link: https://lore.kernel.org/oe-kbuild-all/202304060904.QIeejeZ5-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> ld.lld: error: undefined symbol: tcp_eat_skb
-   >>> referenced by skmsg.c:1062 (net/core/skmsg.c:1062)
-   >>>               net/core/skmsg.o:(sk_psock_verdict_recv) in archive vmlinux.a
-   >>> referenced by skmsg.c:1062 (net/core/skmsg.c:1062)
-   >>>               net/core/skmsg.o:(sk_psock_verdict_recv) in archive vmlinux.a
-   >>> referenced by skmsg.c:1056 (net/core/skmsg.c:1056)
-   >>>               net/core/skmsg.o:(sk_psock_verdict_recv) in archive vmlinux.a
-   >>> referenced 3 more times
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 3e5bbfe3c41b..e4c27eb17bd2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -6630,6 +6630,8 @@ int stmmac_xdp_open(struct net_device *dev)
+ 		goto init_error;
+ 	}
+ 
++	stmmac_reset_queues_param(priv);
++
+ 	/* DMA CSR Channel configuration */
+ 	for (chan = 0; chan < dma_csr_ch; chan++) {
+ 		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+2.34.1
+
